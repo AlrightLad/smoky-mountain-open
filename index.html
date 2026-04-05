@@ -1250,6 +1250,9 @@ var PB = (function() {
       });
       var avg = Math.round(rounds.reduce(function(a,r){return a+r.score},0) / rounds.length * 10) / 10;
       var best = Math.min.apply(null, rounds.map(function(r){return r.score}));
+      var uniqueCourses = {};
+      rounds.forEach(function(r) { uniqueCourses[r.course] = 1; });
+      var courseNames = Object.keys(uniqueCourses);
       return {
         id: p.id,
         username: p.username || p.name,
@@ -1258,7 +1261,8 @@ var PB = (function() {
         points: points,
         avg: avg,
         best: best,
-        hcap: calcHandicap(rounds)
+        hcap: calcHandicap(rounds),
+        courses: courseNames
       };
     }).filter(function(s) { return s !== null; });
     standings.sort(function(a, b) { return b.points - a.points; });
@@ -1680,6 +1684,19 @@ Router.register("rules", function() {
   });
   h += '</div>';
 
+  // Season point system explanation
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Season point system</span></div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
+  h += 'The Parbaugh Season uses a handicap-adjusted point system so all skill levels compete on an even playing field. Your expected score is calculated as course par + your handicap. Points are awarded based on how you perform against that number.<br><br>';
+  h += '<span style="color:var(--gold);font-weight:600">Base points:</span> Each round starts at 100 points. For every stroke better than your expected score, you gain 5 points. For every stroke worse, you lose 5 points. Minimum 10 points per round — you always get credit for showing up.<br><br>';
+  h += '<span style="color:var(--gold);font-weight:600">Example:</span> If par is 72 and your handicap is 18, your expected score is 90. Shoot 85 and you earn 125 points (100 + 5×5). Shoot 95 and you earn 75 points (100 - 5×5). A scratch golfer shooting 75 (+3) earns 85 points, same as a 20-handicap shooting 95 (+3). Equal performance = equal points.<br><br>';
+  h += '<span style="color:var(--gold);font-weight:600">Bonus points:</span><br>';
+  h += '• Personal best round: +50 points<br>';
+  h += '• New course played: +25 points<br>';
+  h += '• Attested score: +15 points<br><br>';
+  h += '<span style="color:var(--gold);font-weight:600">Why points?</span> A 40-handicap who beats their expected score by 5 strokes earns the same points as a scratch player who beats theirs by 5. Improvement is rewarded equally regardless of skill. Playing more rounds and more courses also earns more points — activity is rewarded alongside performance.';
+  h += '</div></div></div>';
+
   // Scramble specific rules
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Scramble rules</span></div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
@@ -1691,7 +1708,7 @@ Router.register("rules", function() {
 
   // USGA link
   h += '<div style="padding:16px;text-align:center">';
-  h += '<a href="https://www.usga.org/rules/rules-of-golf.html" target="_blank" style="font-size:12px;color:var(--gold);text-decoration:none;letter-spacing:.3px">Official USGA Rules & Guidelines →</a>';
+  h += '<a href="https://rules.usga.org/" target="_blank" rel="noopener" style="font-size:12px;color:var(--gold);text-decoration:none;letter-spacing:.3px">Official USGA Rules of Golf →</a>';
   h += '</div>';
 
   document.querySelector('[data-page="rules"]').innerHTML = h;
@@ -1767,10 +1784,46 @@ function renderMemberDetail(pid) {
   h += '<div class="pd-banner"><div class="pd-av" onclick="uploadMemberPhoto(\'' + pid + '\')" style="border-color:' + frameColor + '">' + Router.getAvatar(p) + '<div class="pd-edit">✎</div></div>';
   h += '<div class="pd-name">' + (p.username || p.name) + '</div>';
   if (p.username && p.name && p.username !== p.name) h += '<div style="font-size:11px;color:var(--muted);margin-top:1px">' + p.name + '</div>';
-  h += '<div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:6px">';
-  if (p.founding) h += '<span style="font-size:9px;padding:3px 8px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);border-radius:10px;color:var(--gold);font-weight:600;letter-spacing:.5px">★ THE ORIGINAL FOUR</span>';
-  if (isBeta) h += '<span style="font-size:9px;padding:3px 8px;background:rgba(78,201,122,.08);border:1px solid rgba(78,201,122,.15);border-radius:10px;color:var(--birdie);font-weight:600;letter-spacing:.5px">BETA TESTER</span>';
-  h += '</div>';
+
+  // Display badges (max 3, player-selected)
+  var allBadges = [];
+  if (p.founding) allBadges.push({id:"og",label:"★ THE ORIGINAL FOUR",color:"var(--gold)",bg:"rgba(201,168,76,.1)",border:"rgba(201,168,76,.2)"});
+  if (isBeta) allBadges.push({id:"beta",label:"BETA TESTER",color:"var(--birdie)",bg:"rgba(78,201,122,.08)",border:"rgba(78,201,122,.15)"});
+  achievements.forEach(function(a) {
+    if (a.id === "champion") allBadges.push({id:"champion",label:"CHAMPION",color:"var(--gold)",bg:"rgba(201,168,76,.1)",border:"rgba(201,168,76,.2)"});
+    if (a.id === "sub80") allBadges.push({id:"sub80",label:"SUB-80 CLUB",color:"var(--birdie)",bg:"rgba(78,201,122,.08)",border:"rgba(78,201,122,.15)"});
+    if (a.id === "sub90") allBadges.push({id:"sub90",label:"SUB-90 CLUB",color:"var(--cream)",bg:"rgba(234,232,224,.06)",border:"rgba(234,232,224,.1)"});
+    if (a.id === "ace") allBadges.push({id:"ace",label:"ACE MAKER",color:"var(--gold)",bg:"rgba(201,168,76,.1)",border:"rgba(201,168,76,.2)"});
+    if (a.id === "centurion") allBadges.push({id:"centurion",label:"CENTURION",color:"var(--gold)",bg:"rgba(201,168,76,.1)",border:"rgba(201,168,76,.2)"});
+    if (a.id === "captain") allBadges.push({id:"captain",label:"CAPTAIN",color:"var(--cream)",bg:"rgba(234,232,224,.06)",border:"rgba(234,232,224,.1)"});
+    if (a.id === "roadwarrior") allBadges.push({id:"roadwarrior",label:"ROAD WARRIOR",color:"var(--birdie)",bg:"rgba(78,201,122,.08)",border:"rgba(78,201,122,.15)"});
+  });
+  // Add level badge
+  if (lvl.level >= 10) allBadges.push({id:"lvl",label:"LEVEL " + lvl.level,color:"var(--gold)",bg:"rgba(201,168,76,.1)",border:"rgba(201,168,76,.2)"});
+
+  var displayBadges = p.displayBadges || allBadges.slice(0, 3).map(function(b){return b.id});
+  var shownBadges = allBadges.filter(function(b){return displayBadges.indexOf(b.id) !== -1}).slice(0, 3);
+
+  if (shownBadges.length) {
+    h += '<div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:6px">';
+    shownBadges.forEach(function(b) {
+      h += '<span style="font-size:9px;padding:3px 8px;background:' + b.bg + ';border:1px solid ' + b.border + ';border-radius:10px;color:' + b.color + ';font-weight:600;letter-spacing:.5px">' + b.label + '</span>';
+    });
+    h += '</div>';
+  }
+
+  // Badge picker (tap to manage)
+  if (allBadges.length > 0) {
+    h += '<div style="margin-top:4px"><span style="font-size:9px;color:var(--muted2);cursor:pointer;letter-spacing:.3px" onclick="document.getElementById(\'badge-picker\').style.display=document.getElementById(\'badge-picker\').style.display===\'none\'?\'block\':\'none\'">Edit badges (' + shownBadges.length + '/3)</span></div>';
+    h += '<div id="badge-picker" style="display:none;margin-top:6px;max-width:300px;margin-left:auto;margin-right:auto;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);text-align:left">';
+    allBadges.forEach(function(b) {
+      var isOn = displayBadges.indexOf(b.id) !== -1;
+      h += '<div onclick="toggleBadge(\'' + pid + '\',\'' + b.id + '\')" style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center">';
+      h += '<span style="font-size:11px;font-weight:600;color:' + (isOn ? b.color : 'var(--muted2)') + '">' + b.label + '</span>';
+      h += '<span style="font-size:10px;color:' + (isOn ? 'var(--gold)' : 'var(--muted2)') + '">' + (isOn ? 'ON' : 'OFF') + '</span></div>';
+    });
+    h += '</div>';
+  }
   h += '<div style="font-size:12px;color:var(--gold);margin-top:4px;font-weight:600;letter-spacing:.3px;cursor:pointer" onclick="document.getElementById(\'title-picker\').style.display=document.getElementById(\'title-picker\').style.display===\'none\'?\'block\':\'none\'">' + activeTitle + ' <span style="font-size:9px;color:var(--muted)">▼</span></div>';
 
   // Inline title picker
@@ -2365,6 +2418,21 @@ function selectStockAvatar(pid, src) {
   PB.updatePlayer(pid, { stockAvatar: src, photo: "" });
   Router.toast("Avatar updated");
   Router.go("members", { edit: pid });
+}
+
+function toggleBadge(pid, badgeId) {
+  var p = PB.getPlayer(pid);
+  if (!p) return;
+  var badges = p.displayBadges || [];
+  var idx = badges.indexOf(badgeId);
+  if (idx !== -1) {
+    badges.splice(idx, 1);
+  } else {
+    if (badges.length >= 3) { Router.toast("Max 3 badges — remove one first"); return; }
+    badges.push(badgeId);
+  }
+  PB.updatePlayer(pid, { displayBadges: badges });
+  Router.go("members", { id: pid });
 }
 
 /* ================================================
@@ -3150,8 +3218,7 @@ Router.register("standings", function() {
   var h = '<div class="sh"><h2>Season</h2><button class="back" onclick="Router.go(\'records\')">← Back</button></div>';
 
   h += '<div style="text-align:center;padding:20px 16px 24px;background:linear-gradient(180deg,#111520,var(--bg));border-bottom:1px solid var(--border)">';
-  h += '<div style="font-family:Playfair Display,serif;font-size:32px;color:var(--gold);font-weight:700">The ' + year + '</div>';
-  h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--cream);margin-top:2px">Parbaugh Season</div>';
+  h += '<div style="font-family:Playfair Display,serif;font-size:28px;color:var(--gold);font-weight:700">' + year + ' Parbaugh Season</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1.5px;text-transform:uppercase">March 1 — September 30</div>';
   if (inSeason) {
     var seasonEnd = new Date(year, 8, 30);
@@ -3185,7 +3252,11 @@ Router.register("standings", function() {
       h += '<div style="display:flex;align-items:center;gap:14px">';
       h += '<div style="font-size:16px;width:32px;text-align:center;font-weight:800;color:' + medalColor + '">' + medal + '</div>';
       h += '<div><div style="font-size:14px;font-weight:600">' + s.username + '</div>';
-      h += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + s.rounds + ' rds · Best: ' + (s.best||"—") + ' · HCP: ' + (s.hcap||"—") + '</div></div></div>';
+      h += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + s.rounds + ' rds · Avg: ' + (s.avg||"—") + ' · Best: ' + (s.best||"—") + '</div>';
+      if (s.courses && s.courses.length) {
+        h += '<div style="font-size:9px;color:var(--muted2);margin-top:3px;line-height:1.4">' + s.courses.join(', ') + '</div>';
+      }
+      h += '</div></div>';
       h += '<div style="text-align:right"><div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:var(--gold)">' + (s.points||0) + '</div>';
       h += '<div style="font-size:9px;color:var(--muted);letter-spacing:.5px">PTS</div></div>';
       h += '</div></div>';
