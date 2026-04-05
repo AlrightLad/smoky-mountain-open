@@ -6,14 +6,14 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Parbaughs">
-<meta name="theme-color" content="#0c0e0c">
+<meta name="theme-color" content="#0e1118">
 <meta property="og:title" content="The Parbaughs">
 <meta property="og:description" content="Golf league platform · Est. 2026 · York, PA">
 <meta property="og:image" content="social-card.jpg">
 <meta property="og:type" content="website">
 <title>The Parbaughs</title>
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="icon" type="image/png" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" href="watermark.jpg">
+<link rel="icon" type="image/jpeg" href="watermark.jpg">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -23,17 +23,19 @@ input[type=number]{-moz-appearance:textfield}
 input,select,textarea{font-family:inherit}
 select{-webkit-appearance:none;appearance:none}
 
-:root{--bg:#0c0e0c;--bg2:#121514;--bg3:#191d1a;--bg4:#1f2521;--gold:#c9a84c;--gold2:#a68b3a;--gold3:#dfc06a;--green:#1a3d24;--green2:#2a5a38;--cream:#eae8e0;--muted:#7a7d75;--muted2:#52564e;--red:#d4604e;--birdie:#4ec97a;--card:#131614;--border:#222822;--radius:6px}
+:root{--bg:#0e1118;--bg2:#131722;--bg3:#1a1f2c;--bg4:#212738;--gold:#c9a84c;--gold2:#a68b3a;--gold3:#dfc06a;--green:#1a2840;--green2:#253a58;--cream:#eae8e0;--muted:#7a7e8a;--muted2:#484d5c;--red:#d4604e;--birdie:#4ec97a;--card:#121620;--border:#1e2333;--radius:6px}
 
 .hidden{display:none!important}
 
 /* NAV */
-.nav{display:flex;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;background:rgba(12,14,12,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.nav{display:flex;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;background:rgba(14,17,24,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .nav button{flex:1;padding:14px 0;background:0 0;color:var(--muted2);border:none;border-bottom:2px solid transparent;font:600 10px/1 'Inter',sans-serif;cursor:pointer;white-space:nowrap;text-transform:uppercase;letter-spacing:1.2px;transition:all .15s;text-align:center}
+.nav button:hover{color:var(--cream);background:var(--bg3)}
 .nav button.a{color:var(--gold);border-bottom-color:var(--gold)}
+.nav button.a:hover{color:var(--gold3)}
 
 /* HERO */
-.hero{padding:36px 20px 22px;text-align:center;background:linear-gradient(180deg,#111411,var(--bg));border-bottom:1px solid var(--border)}
+.hero{padding:36px 20px 22px;text-align:center;background:linear-gradient(180deg,#111520,var(--bg));border-bottom:1px solid var(--border)}
 .hero-logo{width:80px;height:80px;border-radius:20px;margin:0 auto 14px;overflow:hidden;background:var(--bg3);border:1px solid var(--border)}
 .hero-logo img{width:100%;height:100%;object-fit:cover}
 .hero h1{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--gold);letter-spacing:3px}
@@ -44,14 +46,17 @@ select{-webkit-appearance:none;appearance:none}
 .sec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .sec-title{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase}
 .sec-link{font-size:11px;color:var(--muted);cursor:pointer;letter-spacing:.3px}
+.sec-link:hover{color:var(--gold)}
 .sec-link:active{color:var(--gold)}
 .sh{padding:16px 16px 10px;display:flex;justify-content:space-between;align-items:center}
 .sh h2{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gold)}
 .back{background:none;border:none;color:var(--muted);font:600 13px 'Inter',sans-serif;cursor:pointer;padding:6px 10px;border-radius:6px;transition:background .15s}
+.back:hover{color:var(--cream);background:var(--bg3)}
 .back:active{background:var(--bg3)}
 
 /* CARDS */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:8px;transition:transform .1s,background .15s}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:8px;transition:transform .1s,background .15s,border-color .15s}
+.card:hover{background:var(--bg3);border-color:rgba(201,168,76,.12)}
 .card:active{transform:scale(.985);background:var(--bg3)}
 .card-body{padding:14px 16px}
 
@@ -60,8 +65,10 @@ select{-webkit-appearance:none;appearance:none}
 .btn:active{transform:scale(.97);opacity:.85}
 .btn.full{width:100%;display:block}
 .btn.green{background:var(--gold);color:var(--bg)}
+.btn.green:hover{background:var(--gold3);box-shadow:0 0 12px rgba(201,168,76,.15)}
 .btn.green:active{background:var(--gold2)}
 .btn.outline{background:transparent;border:1px solid var(--border);color:var(--cream)}
+.btn.outline:hover{border-color:var(--muted);background:var(--bg3);color:var(--gold)}
 .btn.outline:active{background:var(--bg3)}
 .btn-sm{padding:8px 14px;border-radius:6px;font:600 11px/1 'Inter',sans-serif;cursor:pointer;border:none;transition:transform .1s;letter-spacing:.3px}
 .btn-sm:active{transform:scale(.95)}
@@ -71,7 +78,8 @@ select{-webkit-appearance:none;appearance:none}
 .badge.gld{background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.2)}
 
 /* NEXT TRIP */
-.next-trip{background:linear-gradient(135deg,#171a15,#111310);border:1px solid rgba(201,168,76,.15);border-radius:var(--radius);padding:18px;margin-bottom:8px;cursor:pointer;position:relative;overflow:hidden;transition:transform .1s}
+.next-trip{background:linear-gradient(135deg,#151929,#0f121c);border:1px solid rgba(201,168,76,.15);border-radius:var(--radius);padding:18px;margin-bottom:8px;cursor:pointer;position:relative;overflow:hidden;transition:transform .1s}
+.next-trip:hover{border-color:rgba(201,168,76,.35);background:linear-gradient(135deg,#1c2038,#141825);box-shadow:0 0 20px rgba(201,168,76,.04)}
 .next-trip:active{transform:scale(.98)}
 .next-trip::after{content:'';position:absolute;top:-50%;right:-50%;width:50%;height:200%;background:linear-gradient(135deg,transparent,rgba(201,168,76,.02),transparent);transform:rotate(30deg);pointer-events:none}
 .nt-eye{font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:3px;font-weight:700;margin-bottom:6px}
@@ -82,11 +90,12 @@ select{-webkit-appearance:none;appearance:none}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
 
 /* RIVALRY */
-.rivalry-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:8px}
+.rivalry-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:8px;transition:border-color .15s}
+.rivalry-card:hover{border-color:rgba(201,168,76,.15);background:var(--bg2)}
 .rivalry-eye{font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:3px;font-weight:600;margin-bottom:14px;text-align:center}
 .rivalry-vs{display:flex;align-items:center;justify-content:center;gap:16px}
 .rv-player{text-align:center}
-.rv-av{width:44px;height:44px;border-radius:50%;background:var(--bg3);border:2px solid var(--border);margin:0 auto 4px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:18px}
+.rv-av{position:relative;width:44px;height:44px;border-radius:50%;background:var(--bg3);border:2px solid var(--border);margin:0 auto 4px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:18px}
 .rv-av img{width:100%;height:100%;object-fit:cover}
 .rv-name{font-size:12px;font-weight:600}
 .rv-x{font-size:18px;font-weight:800;color:var(--muted2)}
@@ -94,7 +103,8 @@ select{-webkit-appearance:none;appearance:none}
 .rv-label{font-size:10px;color:var(--muted);text-align:center;margin-top:2px}
 
 /* FEED */
-.feed-row{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer}
+.feed-row{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+.feed-row:hover{background:var(--bg3)}
 .feed-row:last-child{border:none}
 .feed-name{font-size:13px;font-weight:600;letter-spacing:.1px}
 .feed-course{font-size:11px;color:var(--muted);margin-top:1px}
@@ -105,6 +115,7 @@ select{-webkit-appearance:none;appearance:none}
 /* QUICK LINKS */
 .qlinks{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .ql{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 8px 12px;text-align:center;cursor:pointer;transition:transform .1s,background .15s}
+.ql:hover{background:var(--bg3);border-color:rgba(201,168,76,.15)}
 .ql:active{background:var(--bg3);transform:scale(.95)}
 .ql-icon{display:flex;justify-content:center;margin-bottom:6px}
 .ql-label{font-size:10px;font-weight:600;color:var(--cream);letter-spacing:.5px;text-transform:uppercase}
@@ -122,8 +133,9 @@ select{-webkit-appearance:none;appearance:none}
 
 /* MEMBERS */
 .member-row{display:flex;align-items:center;gap:14px;padding:14px 16px;cursor:pointer;transition:background .15s}
+.member-row:hover{background:var(--bg3)}
 .member-row:active{background:var(--bg3)}
-.m-av{width:48px;height:48px;border-radius:50%;background:var(--bg3);border:2px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--gold);font-weight:700;flex-shrink:0}
+.m-av{position:relative;width:48px;height:48px;border-radius:50%;background:var(--bg3);border:2px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--gold);font-weight:700;flex-shrink:0}
 .m-av img{width:100%;height:100%;object-fit:cover}
 .m-info{flex:1;min-width:0}
 .m-name{font-size:14px;font-weight:600}
@@ -133,7 +145,7 @@ select{-webkit-appearance:none;appearance:none}
 
 /* PROFILE DETAIL */
 .pd-banner{text-align:center;padding:20px 16px 16px}
-.pd-av{width:86px;height:86px;border-radius:50%;background:var(--bg3);border:2px solid var(--gold2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--gold);font-weight:700;margin:0 auto 10px;cursor:pointer;position:relative}
+.pd-av{position:relative;width:86px;height:86px;border-radius:50%;background:var(--bg3);border:2px solid var(--gold2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--gold);font-weight:700;margin:0 auto 10px;cursor:pointer;position:relative}
 .pd-av img{width:100%;height:100%;object-fit:cover}
 .pd-edit{position:absolute;bottom:0;right:0;width:24px;height:24px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid var(--bg);color:var(--bg)}
 .pd-name{font-family:"Playfair Display",serif;font-size:22px;font-weight:700}
@@ -156,9 +168,10 @@ select{-webkit-appearance:none;appearance:none}
 .fact-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:4px;font-size:12px;color:var(--muted);line-height:1.4}
 
 /* H2H */
-.h2h-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:4px}
+.h2h-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:4px;transition:border-color .15s,background .15s}
+.h2h-row:hover{background:var(--bg3);border-color:rgba(201,168,76,.1)}
 .h2h-left{display:flex;align-items:center;gap:8px}
-.h2h-av{width:28px;height:28px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:12px}
+.h2h-av{position:relative;width:28px;height:28px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:12px}
 .h2h-av img{width:100%;height:100%;object-fit:cover}
 .h2h-name{font-size:13px;font-weight:600}
 .h2h-record{font-size:13px;color:var(--gold);font-weight:700}
@@ -190,7 +203,8 @@ textarea.ff-input{min-height:60px;resize:vertical}
 .trip-members{font-size:11px;color:var(--muted2);margin-top:2px}
 
 /* COURSES */
-.course-row{display:flex;gap:12px;padding:12px 16px;cursor:pointer;align-items:center}
+.course-row{display:flex;gap:12px;padding:12px 16px;cursor:pointer;align-items:center;transition:background .15s}
+.course-row:hover{background:var(--bg3)}
 .c-thumb{width:60px;height:42px;border-radius:8px;background:var(--bg3);overflow:hidden;flex-shrink:0}
 .c-thumb img{width:100%;height:100%;object-fit:cover}
 .c-thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:18px}
@@ -211,7 +225,8 @@ textarea.ff-input{min-height:60px;resize:vertical}
 
 /* HOF */
 .hof-card{margin:0 16px 10px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
-.hof-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--gold);margin-bottom:10px}
+.hof-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--gold);margin-bottom:10px;transition:color .15s}
+.hof-title:hover{color:var(--gold3);text-shadow:0 0 8px rgba(201,168,76,.1)}
 .hof-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);gap:8px}
 .hof-row:last-child{border:none}
 .hof-label{font-size:13px;color:var(--muted);flex-shrink:0}
@@ -245,7 +260,7 @@ th:first-child{text-align:left;padding-left:10px;position:sticky;left:0;z-index:
 th.g{color:var(--gold)}
 .r0{background:var(--bg2)}.r1{background:var(--bg)}
 .r0 td:first-child{background:var(--bg2)}.r1 td:first-child{background:var(--bg)}
-td{padding:3px 4px;text-align:center;border-bottom:1px solid rgba(34,40,34,.5)}
+td{padding:3px 4px;text-align:center;border-bottom:1px solid rgba(30,35,51,.5)}
 td:first-child{padding:6px 10px;font-weight:600;position:sticky;left:0;z-index:1;font-size:12px;color:var(--muted)}
 .sr{background:var(--bg3)!important}.sr td{padding:7px 6px;font-weight:700;font-size:12px;color:var(--muted)}.sr td:first-child{background:var(--bg3)!important;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
 .ttr{background:var(--bg3)!important;border-top:2px solid var(--gold2)}.ttr td{padding:8px 6px;font-family:'Playfair Display',serif;font-weight:700;font-size:16px;color:var(--gold)}.ttr td:first-child{background:var(--bg3)!important;font-family:'Inter',sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
@@ -254,10 +269,10 @@ td:first-child{padding:6px 10px;font-weight:600;position:sticky;left:0;z-index:1
 input.s{width:42px;height:36px;text-align:center;border-radius:4px;font:600 14px 'Inter',sans-serif;outline:0;background:var(--bg3);border:1px solid var(--border);color:var(--cream);transition:border .15s}
 input.s:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(201,168,76,.1)}
 input.s.w{width:48px}
-input.s.bi{background:rgba(78,201,122,.06);border:1px solid rgba(78,201,122,.3);border-radius:50%;color:var(--birdie)}
-input.s.ea{background:rgba(201,168,76,.06);border:2px solid var(--gold);border-radius:50%;color:var(--gold)}
-input.s.bo{background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.2);color:var(--red)}
-input.s.db{background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.2);color:var(--red)}
+input.s.bi{background:rgba(78,201,122,.08);border:1px solid rgba(78,201,122,.3);border-radius:50%;color:var(--birdie)}
+input.s.ea{background:rgba(201,168,76,.08);border:2px solid var(--gold);border-radius:50%;color:var(--gold)}
+input.s.bo{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);color:var(--red)}
+input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);color:var(--red)}
 .lg{padding:10px 16px;background:var(--bg2);border-top:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
 .li{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted);letter-spacing:.3px}
 .ld{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;font-size:9px;font-weight:800;border-radius:4px;background:var(--bg3);border:1px solid var(--border)}
@@ -267,7 +282,7 @@ input.s.db{background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.2);co
 .lbs{padding:16px}
 .lb-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gold);margin-bottom:12px}
 .lb-card{display:flex;align-items:center;justify-content:space-between;padding:14px;margin-bottom:6px;background:var(--card);border-radius:var(--radius);border:1px solid var(--border)}
-.lb-card.first{background:linear-gradient(135deg,#1a1e17,var(--bg2));border-color:rgba(201,168,76,.2)}
+.lb-card.first{background:linear-gradient(135deg,#1a1e30,var(--bg2));border-color:rgba(201,168,76,.2)}
 .lb-left{display:flex;align-items:center;gap:10px}
 .lb-medal{font-size:12px;font-weight:800;color:var(--gold);width:28px;text-align:center;letter-spacing:-.5px}
 .lb-name{font-weight:600;font-size:14px}
@@ -309,6 +324,7 @@ input.s.db{background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.2);co
 <div data-page="members" class="hidden"></div>
 <div data-page="trips" class="hidden"></div>
 <div data-page="rounds" class="hidden"></div>
+<div data-page="playnow" class="hidden"></div>
 <div data-page="courses" class="hidden"></div>
 <div data-page="scramble" class="hidden"></div>
 <div data-page="aces" class="hidden"></div>
@@ -316,6 +332,7 @@ input.s.db{background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.2);co
 <div data-page="scorecard" class="hidden"></div>
 <div data-page="profile-edit" class="hidden"></div>
 <div data-page="settings" class="hidden"></div>
+<div data-page="merch" class="hidden"></div>
 <div class="footer">The Parbaughs · Est. 2026</div>
 <div class="toast" id="toast"></div>
 <script>
@@ -330,13 +347,17 @@ var PB = (function() {
 
   /* ---------- DEFAULT DATA ---------- */
   var DEFAULT_PLAYERS = [
-    {id:"zach",name:"Zach",nick:"The Commissioner",title:"The Original Four · Commissioner",range:"85-95",bio:"Founded the Parbaughs. Tracks stats like his life depends on it.",emoji:"⛳",photo:"",homeCourse:"Royal Manchester Golf Links",favoriteCourse:"Sequoyah National",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,
-     clubs:{driver:"250",three_wood:"230",hybrid:"210",five_iron:"180",six_iron:"170",seven_iron:"160",eight_iron:"150",nine_iron:"140",pw:"130",gw:"115",sw:"100",lw:"80",putter:""},
-     bag:{driver:"TaylorMade Qi4D Driver",irons:"Callaway Quantum Max OS 5-PW",wedges:"",putter:"",bag_brand:"",accessories:"",fav_ball:""},
+    {id:"zach",name:"Zach Parbaugh",username:"TheCommissioner",title:"The Original Four · Commissioner",range:"88-96",bio:"Founded the Parbaughs. Tracks stats like his life depends on it.",emoji:"⛳",photo:"",homeCourse:"Briarwood East",favoriteCourse:"Royal Manchester Golf Links",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:18.8,equippedTitle:"The Original Four · Commissioner",
+     clubs:{driver:"270",three_wood:"250",five_wood:"230",four_iron:"215",five_iron:"210",six_iron:"200",seven_iron:"190",eight_iron:"180",nine_iron:"165",pw:"140",gw:"120",sw:"110",lw:"95",putter:""},
+     bag:{driver:"TaylorMade Qi4D Driver",irons:"Callaway Quantum Max OS 5-PW",wedges:"Cleveland RTX 6 ZipCore 52/56",putter:"",bag_brand:"",accessories:"",fav_ball:""},
      funnyFacts:["Bought custom-fit irons before breaking 85","Owns more golf trackers than golf shirts","Will quote his handicap unprompted"]},
-    {id:"kayvan",name:"Kayvan",nick:"",title:"The Original Four",range:"105-115",bio:"",emoji:"🏌️",photo:"",homeCourse:"",favoriteCourse:"",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,clubs:{},bag:{},funnyFacts:[]},
-    {id:"kiyan",name:"Kiyan",nick:"",title:"The Original Four",range:"99-104",bio:"",emoji:"🔥",photo:"",homeCourse:"",favoriteCourse:"",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,clubs:{},bag:{},funnyFacts:[]},
-    {id:"nick",name:"Nick",nick:"",title:"The Original Four",range:"115-120",bio:"",emoji:"💀",photo:"",homeCourse:"",favoriteCourse:"",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,clubs:{},bag:{},funnyFacts:[]}
+    {id:"kayvan",name:"Kayvan",username:"Kayvan",title:"The Original Four",range:"102-115",bio:"",emoji:"⛳",photo:"",homeCourse:"Pleasant Valley Golf Club",favoriteCourse:"Royal Manchester Golf Links",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,equippedTitle:"The Original Four",
+     clubs:{driver:"210",five_wood:"180",four_hybrid:"170",five_iron:"150",six_iron:"140",seven_iron:"130",eight_iron:"120",nine_iron:"110",pw:"100",gw:"90",putter:""},
+     bag:{},funnyFacts:[]},
+    {id:"kiyan",name:"Kiyan",username:"Kiyan",title:"The Original Four",range:"91-104",bio:"",emoji:"⛳",photo:"",homeCourse:"Pleasant Valley Golf Club",favoriteCourse:"Westminster National",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,equippedTitle:"The Original Four",
+     clubs:{},bag:{},funnyFacts:[]},
+    {id:"nick",name:"Nick",username:"Nick",title:"The Original Four",range:"115-120",bio:"",emoji:"⛳",photo:"",homeCourse:"Honey Run Golf Club",favoriteCourse:"Honey Run Golf Club",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:40,equippedTitle:"The Original Four",
+     clubs:{},bag:{},funnyFacts:[]}
   ];
 
   var DEFAULT_COURSES = [
@@ -662,6 +683,37 @@ var PB = (function() {
   function getBonusWinner(id) { return state.bonusWinners[id] || ""; }
   function setBonusWinner(id, pid) { state.bonusWinners[id] = pid; save(); }
 
+  /* ---------- FIR/GIR TRACKING ---------- */
+  function getFirGir(tripId, courseKey, playerId) {
+    if (!state.firGir) state.firGir = {};
+    var key = tripId + ":" + courseKey + ":" + playerId;
+    return state.firGir[key] || { fir: Array(18).fill(false), gir: Array(18).fill(false) };
+  }
+
+  function setFir(tripId, courseKey, playerId, hole, val) {
+    if (!state.firGir) state.firGir = {};
+    var key = tripId + ":" + courseKey + ":" + playerId;
+    if (!state.firGir[key]) state.firGir[key] = { fir: Array(18).fill(false), gir: Array(18).fill(false) };
+    state.firGir[key].fir[hole] = val;
+    save();
+  }
+
+  function setGir(tripId, courseKey, playerId, hole, val) {
+    if (!state.firGir) state.firGir = {};
+    var key = tripId + ":" + courseKey + ":" + playerId;
+    if (!state.firGir[key]) state.firGir[key] = { fir: Array(18).fill(false), gir: Array(18).fill(false) };
+    state.firGir[key].gir[hole] = val;
+    save();
+  }
+
+  function getFirGirTotals(tripId, courseKey, playerId) {
+    var data = getFirGir(tripId, courseKey, playerId);
+    return {
+      fir: data.fir.filter(function(v) { return v; }).length,
+      gir: data.gir.filter(function(v) { return v; }).length
+    };
+  }
+
   /* ---------- SCRAMBLE TEAM OPS ---------- */
   function getScrambleTeams() { return state.scrambleTeams || []; }
 
@@ -848,6 +900,209 @@ var PB = (function() {
     return state.activity.slice().sort(function(a,b){return(b.ts||0)-(a.ts||0)}).slice(0, limit || 15);
   }
 
+  /* ---------- ACHIEVEMENTS & XP SYSTEM ---------- */
+
+  // Titles unlock every 5 levels up to 100
+  var LEVEL_TITLES = {
+    1:"Rookie",5:"Weekend Warrior",10:"Range Rat",15:"Fairway Finder",20:"Club Member",
+    25:"Course Regular",30:"Low Handicapper",35:"Scratch Aspirant",40:"Ironman",
+    45:"Birdie Hunter",50:"Eagle Eye",55:"Tour Wannabe",60:"Golf Addict",
+    65:"Links Legend",70:"Course Conqueror",75:"The Professor",80:"Hall of Famer",
+    85:"Living Legend",90:"Immortal",95:"Transcendent",100:"G.O.A.T."
+  };
+
+  function xpForLevel(level) {
+    // Exponential curve: each level takes more XP
+    // Level 1=0, Level 2=500, Level 10=~15000, Level 25=~120000, Level 50=~600000, Level 100=~5M
+    if (level <= 1) return 0;
+    return Math.floor(200 * Math.pow(level - 1, 1.8));
+  }
+
+  function getPlayerLevel(pid) {
+    if (!pid) return {level:1,name:"Rookie",xp:0,currentLevelXp:0,nextLevelXp:500,titleLevel:1};
+    var xp = getPlayerXP(pid);
+    var level = 1;
+    while (xpForLevel(level + 1) <= xp) level++;
+    var currentLevelXp = xpForLevel(level);
+    var nextLevelXp = xpForLevel(level + 1);
+    // Find the most recent title unlock
+    var titleLevel = 1;
+    var keys = Object.keys(LEVEL_TITLES).map(Number).sort(function(a,b){return a-b});
+    for (var i = keys.length - 1; i >= 0; i--) {
+      if (level >= keys[i]) { titleLevel = keys[i]; break; }
+    }
+    return {
+      level: level,
+      name: LEVEL_TITLES[titleLevel] || "Rookie",
+      xp: xp,
+      currentLevelXp: currentLevelXp,
+      nextLevelXp: nextLevelXp,
+      titleLevel: titleLevel
+    };
+  }
+
+  function getPlayerXP(pid) {
+    if (!pid) return 0;
+    var rounds = getPlayerRounds(pid);
+    var player = getPlayer(pid);
+    if (!player) return 0;
+    var xp = 0;
+
+    // Rounds XP
+    rounds.forEach(function(r) {
+      xp += r.holeScores ? 150 : 100; // Play Now bonus
+      if (r.scorecardPhoto) xp += 25;
+    });
+
+    // New course bonus
+    var seenCourses = {};
+    rounds.forEach(function(r) {
+      if (!seenCourses[r.course]) { xp += 75; seenCourses[r.course] = 1; }
+    });
+
+    // New state bonus
+    var seenStates = {};
+    rounds.forEach(function(r) {
+      var c = getCourseByName(r.course);
+      if (c && c.region && !seenStates[c.region]) { xp += 150; seenStates[c.region] = 1; }
+    });
+
+    // Personal best bonus
+    if (rounds.length >= 2) {
+      var sorted = rounds.slice().sort(function(a,b){return new Date(a.date)-new Date(b.date)});
+      var bestSoFar = sorted[0].score;
+      for (var i = 1; i < sorted.length; i++) {
+        if (sorted[i].score < bestSoFar) { xp += 200; bestSoFar = sorted[i].score; }
+      }
+    }
+
+    // H2H wins
+    var players = getPlayers();
+    players.forEach(function(opp) {
+      if (opp.id === pid) return;
+      var oppRounds = getPlayerRounds(opp.id);
+      rounds.forEach(function(r) {
+        var match = oppRounds.find(function(o){return o.course===r.course&&o.date===r.date});
+        if (match && r.score < match.score) xp += 50;
+      });
+    });
+
+    // Event wins
+    if (player) xp += (player.wins || 0) * 500;
+
+    // Aces
+    var rec = getRecords();
+    if (rec.holeInOnes && player) {
+      rec.holeInOnes.forEach(function(a) { if (a.by === player.name) xp += 1000; });
+    }
+
+    // Reviews
+    var courses = getCourses();
+    courses.forEach(function(c) {
+      if (c.reviews) c.reviews.forEach(function(r) { if (r.by === (player?player.name:"")) xp += 25; });
+    });
+
+    return xp;
+  }
+
+  function getAchievements(pid) {
+    var rounds = getPlayerRounds(pid);
+    var player = getPlayer(pid);
+    var xp = getPlayerXP(pid);
+    var lvl = getPlayerLevel(pid);
+    var achievements = [];
+
+    // --- ROUND MILESTONES ---
+    if (rounds.length >= 1) achievements.push({id:"first_blood",name:"First Blood",desc:"Log your first round",icon:"▲",xp:100,cat:"milestone"});
+    if (rounds.length >= 5) achievements.push({id:"getting_started",name:"Getting Started",desc:"Log 5 rounds",icon:"▲",xp:50,cat:"milestone"});
+    if (rounds.length >= 10) achievements.push({id:"regular",name:"Regular",desc:"Log 10 rounds",icon:"◆",xp:100,cat:"milestone"});
+    if (rounds.length >= 25) achievements.push({id:"grinder",name:"Grinder",desc:"Log 25 rounds",icon:"◆◆",xp:250,cat:"milestone"});
+    if (rounds.length >= 50) achievements.push({id:"veteran",name:"Veteran",desc:"Log 50 rounds",icon:"★",xp:500,cat:"milestone"});
+    if (rounds.length >= 100) achievements.push({id:"centurion",name:"Centurion",desc:"Log 100 rounds",icon:"★★",xp:1000,cat:"milestone"});
+
+    // --- SCORE ACHIEVEMENTS ---
+    if (rounds.some(function(r){return r.score<=120})) achievements.push({id:"sub120",name:"Breaking In",desc:"Break 120",icon:"▲",xp:50,cat:"score"});
+    if (rounds.some(function(r){return r.score<100})) achievements.push({id:"sub100",name:"Double Digits",desc:"Break 100",icon:"▲▲",xp:100,cat:"score"});
+    if (rounds.some(function(r){return r.score<90})) achievements.push({id:"sub90",name:"Sub-90 Club",desc:"Shoot under 90",icon:"◆",xp:200,cat:"score"});
+    if (rounds.some(function(r){return r.score<85})) achievements.push({id:"sub85",name:"Mid-80s",desc:"Shoot under 85",icon:"◆◆",xp:300,cat:"score"});
+    if (rounds.some(function(r){return r.score<80})) achievements.push({id:"sub80",name:"Sharpshooter",desc:"Shoot under 80",icon:"★",xp:500,cat:"score"});
+    if (rounds.some(function(r){return r.score<75})) achievements.push({id:"sub75",name:"Near Scratch",desc:"Shoot under 75",icon:"★★",xp:750,cat:"score"});
+    if (rounds.some(function(r){return r.score<70})) achievements.push({id:"sub70",name:"Tour Ready",desc:"Shoot under 70",icon:"★★★",xp:1000,cat:"score"});
+    if (rounds.some(function(r){return r.score===Number(r.rating)})) achievements.push({id:"course_rating",name:"Par for the Course",desc:"Shoot exactly the course rating",icon:"◆",xp:200,cat:"score"});
+
+    // --- COURSE EXPLORATION ---
+    var uniqueCourses = {}; rounds.forEach(function(r){uniqueCourses[r.course]=1});
+    var courseCount = Object.keys(uniqueCourses).length;
+    if (courseCount >= 3) achievements.push({id:"sampler",name:"Course Sampler",desc:"Play 3 different courses",icon:"▲",xp:50,cat:"explore"});
+    if (courseCount >= 5) achievements.push({id:"explorer",name:"Explorer",desc:"Play 5 different courses",icon:"◆",xp:100,cat:"explore"});
+    if (courseCount >= 10) achievements.push({id:"collector",name:"Course Collector",desc:"Play 10 different courses",icon:"◆◆",xp:200,cat:"explore"});
+    if (courseCount >= 25) achievements.push({id:"nomad",name:"Nomad",desc:"Play 25 different courses",icon:"★",xp:500,cat:"explore"});
+
+    var states = {}; rounds.forEach(function(r){var c=getCourseByName(r.course);if(c&&c.region)states[c.region]=1});
+    var stateCount = Object.keys(states).length;
+    if (stateCount >= 2) achievements.push({id:"traveler2",name:"State Hopper",desc:"Play courses in 2 states",icon:"▲",xp:75,cat:"explore"});
+    if (stateCount >= 3) achievements.push({id:"traveler",name:"Globe Trotter",desc:"Play in 3+ states",icon:"◆",xp:150,cat:"explore"});
+    if (stateCount >= 5) achievements.push({id:"roadwarrior",name:"Road Warrior",desc:"Play in 5+ states",icon:"★",xp:300,cat:"explore"});
+
+    // --- COMPETITIVE ---
+    var totalH2Hwins = 0;
+    var players = getPlayers();
+    players.forEach(function(opp){
+      if(opp.id===pid)return;
+      var oppR=getPlayerRounds(opp.id);
+      rounds.forEach(function(r){var m=oppR.find(function(o){return o.course===r.course&&o.date===r.date});if(m&&r.score<m.score)totalH2Hwins++});
+    });
+    if (totalH2Hwins >= 1) achievements.push({id:"first_win",name:"First Win",desc:"Win an H2H matchup",icon:"▲",xp:50,cat:"compete"});
+    if (totalH2Hwins >= 5) achievements.push({id:"rival",name:"Rival",desc:"Win 5 H2H matchups",icon:"◆",xp:100,cat:"compete"});
+    if (totalH2Hwins >= 10) achievements.push({id:"nemesis",name:"Nemesis",desc:"Win 10 H2H matchups",icon:"◆◆",xp:200,cat:"compete"});
+    if (totalH2Hwins >= 25) achievements.push({id:"dominator",name:"Dominator",desc:"Win 25 H2H matchups",icon:"★",xp:500,cat:"compete"});
+
+    if (player && player.wins >= 1) achievements.push({id:"champion",name:"Champion",desc:"Win an event",icon:"★",xp:500,cat:"compete"});
+    if (player && player.wins >= 3) achievements.push({id:"dynasty",name:"Dynasty",desc:"Win 3 events",icon:"★★",xp:1000,cat:"compete"});
+
+    // --- IMPROVEMENT ---
+    if (rounds.length >= 5) {
+      var first5=Math.round(rounds.slice(0,5).reduce(function(a,r){return a+r.score},0)/5);
+      var last5=Math.round(rounds.slice(-5).reduce(function(a,r){return a+r.score},0)/5);
+      if (last5<first5-3) achievements.push({id:"improving",name:"On The Rise",desc:"Average improved by 3+",icon:"▲",xp:100,cat:"growth"});
+      if (last5<first5-8) achievements.push({id:"transformed",name:"Transformed",desc:"Average improved by 8+",icon:"◆",xp:250,cat:"growth"});
+      if (last5<first5-15) achievements.push({id:"metamorphosis",name:"Metamorphosis",desc:"Average improved by 15+",icon:"★",xp:500,cat:"growth"});
+    }
+    if (rounds.length >= 3) {
+      var avg=Math.round(rounds.reduce(function(a,r){return a+r.score},0)/rounds.length);
+      if (rounds.some(function(r){return r.score<avg-10})) achievements.push({id:"sandbagger",name:"Sandbagger",desc:"Beat average by 10+",icon:"◆",xp:150,cat:"growth"});
+    }
+
+    // --- SPECIAL ---
+    var rec = getRecords();
+    if (rec.holeInOnes&&rec.holeInOnes.some(function(a){return a.by===(player?player.name:"")})) achievements.push({id:"ace",name:"Ace",desc:"Make a hole-in-one",icon:"★★★",xp:1000,cat:"special"});
+    if (player && player.founding) achievements.push({id:"og",name:"The Original Four",desc:"Founding member",icon:"★",xp:0,cat:"special"});
+    if (player && getPlayers().indexOf(player) < 30) achievements.push({id:"beta",name:"Beta Tester",desc:"Among the first 30 members",icon:"◆",xp:0,cat:"special"});
+
+    // --- PLAY NOW SPECIFIC ---
+    var playNowRounds = rounds.filter(function(r){return r.holeScores});
+    if (playNowRounds.length >= 1) achievements.push({id:"live_scorer",name:"Live Scorer",desc:"Complete a Play Now round",icon:"▲",xp:50,cat:"milestone"});
+    if (playNowRounds.length >= 10) achievements.push({id:"dedicated",name:"Dedicated",desc:"10 Play Now rounds",icon:"◆",xp:150,cat:"milestone"});
+
+    // --- CONSISTENCY ---
+    var coursePlays = {};
+    rounds.forEach(function(r){coursePlays[r.course]=(coursePlays[r.course]||0)+1});
+    var maxPlays = Math.max.apply(null, Object.values(coursePlays).concat([0]));
+    if (maxPlays >= 5) achievements.push({id:"home_course",name:"Home Course Hero",desc:"Play same course 5 times",icon:"▲",xp:75,cat:"milestone"});
+    if (maxPlays >= 10) achievements.push({id:"local_legend",name:"Local Legend",desc:"Play same course 10 times",icon:"◆",xp:150,cat:"milestone"});
+    if (maxPlays >= 25) achievements.push({id:"resident",name:"Resident Pro",desc:"Play same course 25 times",icon:"★",xp:300,cat:"milestone"});
+
+    // --- LEVEL ACHIEVEMENTS ---
+    if (lvl.level >= 5) achievements.push({id:"lvl5",name:"Level 5",desc:"Reach Weekend Warrior",icon:"◆",xp:0,cat:"level"});
+    if (lvl.level >= 10) achievements.push({id:"lvl10",name:"Level 10",desc:"Reach Range Rat",icon:"◆",xp:0,cat:"level"});
+    if (lvl.level >= 25) achievements.push({id:"lvl25",name:"Level 25",desc:"Reach Course Regular",icon:"◆◆",xp:0,cat:"level"});
+    if (lvl.level >= 50) achievements.push({id:"lvl50",name:"Level 50",desc:"Reach Eagle Eye",icon:"★",xp:0,cat:"level"});
+    if (lvl.level >= 75) achievements.push({id:"lvl75",name:"Level 75",desc:"Reach The Professor",icon:"★★",xp:0,cat:"level"});
+    if (lvl.level >= 100) achievements.push({id:"lvl100",name:"Level 100",desc:"Reach G.O.A.T.",icon:"★★★",xp:0,cat:"level"});
+
+    return achievements;
+  }
+
   /* ---------- INIT ---------- */
   state = load();
   if (!state.activity) state.activity = [];
@@ -859,6 +1114,7 @@ var PB = (function() {
     getRounds:getRounds, getPlayerRounds:getPlayerRounds, getCourseRounds:getCourseRounds, addRound:addRound, deleteRound:deleteRound,
     getTrips:getTrips, getTrip:getTrip, addTrip:addTrip, updateTrip:updateTrip, addTripPhoto:addTripPhoto,
     getScores:getScores, setScore:setScore,
+    getFirGir:getFirGir, setFir:setFir, setGir:setGir, getFirGirTotals:getFirGirTotals,
     getMiniWinner:getMiniWinner, setMiniWinner:setMiniWinner, getBonusWinner:getBonusWinner, setBonusWinner:setBonusWinner,
     getScrambleTeams:getScrambleTeams, addScrambleTeam:addScrambleTeam, addScrambleMatch:addScrambleMatch,
     getRecords:getRecords, setRecord:setRecord,
@@ -866,7 +1122,7 @@ var PB = (function() {
     getPlayerAvg:getPlayerAvg, getPlayerBest:getPlayerBest, getUniqueCourses:getUniqueCourses,
     getTripStableford:getTripStableford, getTripTotal:getTripTotal,
     getMiniPoints:getMiniPoints, getBonusPoints:getBonusPoints, getTripPoints:getTripPoints,
-    daysUntil:daysUntil, generateRoundCommentary:generateRoundCommentary, getActivity:getActivity,
+    daysUntil:daysUntil, generateRoundCommentary:generateRoundCommentary, getActivity:getActivity, getAchievements:getAchievements, getPlayerXP:getPlayerXP, getPlayerLevel:getPlayerLevel,
     exportBackup:exportBackup, importBackup:importBackup, reset:reset, save:save
   };
 })();
@@ -905,7 +1161,7 @@ var Router = (function() {
       { p: "home", l: "Home", match: ["home"] },
       { p: "members", l: "Members", match: ["members","profile-edit"] },
       { p: "trips", l: "Events", match: ["trips","scorecard"] },
-      { p: "rounds", l: "Rounds", match: ["rounds"] },
+      { p: "rounds", l: "Rounds", match: ["rounds","playnow"] },
       { p: "records", l: "Records", match: ["records","aces","scramble","courses"] }
     ];
     var h = "";
@@ -926,12 +1182,21 @@ var Router = (function() {
   var STOCK_AVATARS = ["stock_profile_gold.jpg","stock_profile_green.jpg","stock_profile_navy.jpg","stock_profile_charcoal.jpg","stock_profile_red.jpg","stock_profile_teal.jpg"];
 
   function getAvatar(player, fallback) {
-    if (player.photo) return '<img src="' + player.photo + '" alt="' + player.name + '">';
-    if (player.stockAvatar) return '<img src="' + player.stockAvatar + '" onerror="this.parentElement.textContent=\'' + player.name.charAt(0) + '\'" alt="' + player.name + '">';
-    var hash = 0;
-    for (var i = 0; i < player.name.length; i++) hash = ((hash << 5) - hash) + player.name.charCodeAt(i);
-    var idx = Math.abs(hash) % STOCK_AVATARS.length;
-    return '<img src="' + STOCK_AVATARS[idx] + '" onerror="this.parentElement.textContent=\'' + player.name.charAt(0) + '\'" alt="' + player.name + '">';
+    var imgSrc = '';
+    if (player.photo) {
+      imgSrc = player.photo;
+    } else if (player.stockAvatar) {
+      imgSrc = player.stockAvatar;
+    } else {
+      var hash = 0;
+      for (var i = 0; i < (player.username||player.name).length; i++) hash = ((hash << 5) - hash) + (player.username||player.name).charCodeAt(i);
+      var idx = Math.abs(hash) % STOCK_AVATARS.length;
+      imgSrc = STOCK_AVATARS[idx];
+    }
+    var lvl = null;
+    try { if (typeof PB !== 'undefined' && PB.getPlayerLevel && player.id) lvl = PB.getPlayerLevel(player.id); } catch(e) {}
+    var badge = lvl && lvl.level ? '<div style="position:absolute;bottom:-2px;right:-2px;min-width:18px;height:18px;padding:0 4px;background:var(--gold);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:var(--bg);border:2px solid var(--bg);letter-spacing:-.3px;pointer-events:none">' + lvl.level + '</div>' : '';
+    return '<img src="' + imgSrc + '" onerror="this.parentElement.textContent=\'' + (player.username||player.name).charAt(0) + '\'" alt="' + (player.username||player.name) + '" style="width:100%;height:100%;object-fit:cover">' + badge;
   }
 
   function handlePhotoUpload(callback, maxW, maxH, quality) {
@@ -1099,8 +1364,11 @@ Router.register("home", function() {
     h += '</div><div class="rv-score">' + bestRivalry.h2h.p1wins + ' — ' + bestRivalry.h2h.p2wins + '</div><div class="rv-label">Head-to-head record</div></div></div>';
   }
 
-  // Backup (subtle, at bottom)
-  h += '<div style="text-align:center;padding:8px 16px 4px"><span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="Router.go(\'settings\')">Settings & Backup</span></div>';
+  // Backup and merch links
+  h += '<div style="text-align:center;padding:8px 16px 4px;display:flex;justify-content:center;gap:16px">';
+  h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="Router.go(\'merch\')">Merch</span>';
+  h += '<span style="font-size:11px;color:var(--muted2)">·</span>';
+  h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="Router.go(\'settings\')">Settings</span></div>';
 
   document.querySelector('[data-page="home"]').innerHTML = h;
 });
@@ -1124,7 +1392,11 @@ Router.register("settings", function() {
   h += '<div class="form-section"><div class="form-title">Data management</div>';
   h += '<div style="margin-bottom:12px"><button class="btn full outline" onclick="doCopy()">Copy backup code</button></div>';
   h += '<div style="margin-bottom:12px"><button class="btn full outline" onclick="doRestore()">Restore from backup</button></div>';
-  h += '<div style="margin-bottom:12px"><button class="btn full" style="background:#1a1212;border:1px solid #2a1818;color:#cc6666" onclick="if(confirm(\'This will erase ALL data. Are you sure?\')){PB.reset();Router.go(\'home\')}">Reset all data</button></div>';
+  h += '<div style="margin-bottom:12px"><button class="btn full" style="background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);color:var(--red)" onclick="document.getElementById(\'reset-confirm\').style.display=\'block\'">Reset all data</button></div>';
+  h += '<div id="reset-confirm" style="display:none;margin-bottom:12px;padding:12px;background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);border-radius:var(--radius);text-align:center">';
+  h += '<div style="font-size:12px;color:var(--red);margin-bottom:8px">This will erase ALL data. Are you sure?</div>';
+  h += '<div style="display:flex;gap:8px"><button class="btn outline" style="flex:1;font-size:11px" onclick="document.getElementById(\'reset-confirm\').style.display=\'none\'">Cancel</button>';
+  h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(212,96,78,.15);color:var(--red)" onclick="PB.reset();Router.go(\'home\')">Erase everything</button></div></div>';
   h += '</div>';
 
   h += '<div class="form-section"><div class="form-title">About</div>';
@@ -1135,6 +1407,39 @@ Router.register("settings", function() {
   h += '</div></div>';
 
   document.querySelector('[data-page="settings"]').innerHTML = h;
+});
+
+/* ================================================
+   PAGE: MERCH
+   ================================================ */
+Router.register("merch", function() {
+  var h = '<div class="sh"><h2>Merch</h2><button class="back" onclick="Router.go(\'home\')">← Back</button></div>';
+
+  h += '<div style="text-align:center;padding:20px 16px"><div style="width:60px;height:60px;border-radius:14px;margin:0 auto 12px;overflow:hidden"><img src="watermark.jpg" style="width:100%;height:100%;object-fit:cover"></div>';
+  h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">Parbaughs Collection</div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.3px">Rep the crew on and off the course</div></div>';
+
+  var items = [
+    {name:"Parbaughs Performance Polo",desc:"Moisture-wicking, 4-way stretch. Navy with gold crest.",price:"$65",status:"Coming soon"},
+    {name:"Parbaughs Bucket Hat",desc:"The signature look. Structured fit, embroidered logo.",price:"$35",status:"Coming soon"},
+    {name:"Parbaughs Headcover Set",desc:"Driver, fairway, hybrid. Premium leather with gold stamp.",price:"$85",status:"Coming soon"},
+    {name:"Parbaughs Divot Tool & Marker",desc:"Brass finish divot tool with custom ball marker.",price:"$25",status:"Coming soon"},
+    {name:"Parbaughs Golf Towel",desc:"Waffle weave microfiber. Navy with gold embroidery.",price:"$28",status:"Coming soon"},
+    {name:"Parbaughs Yeti Tumbler",desc:"20oz insulated. Matte navy with gold crest.",price:"$40",status:"Coming soon"}
+  ];
+
+  items.forEach(function(item) {
+    h += '<div class="card"><div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center">';
+    h += '<div><div style="font-size:14px;font-weight:600">' + item.name + '</div>';
+    h += '<div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">' + item.desc + '</div>';
+    h += '<div style="font-size:13px;color:var(--gold);font-weight:700;margin-top:4px">' + item.price + '</div></div>';
+    h += '<div style="font-size:10px;padding:4px 10px;border:1px solid var(--border);border-radius:12px;color:var(--muted);white-space:nowrap">' + item.status + '</div>';
+    h += '</div></div>';
+  });
+
+  h += '<div style="padding:16px;text-align:center;font-size:11px;color:var(--muted)">Interested? Let The Commissioner know.</div>';
+
+  document.querySelector('[data-page="merch"]').innerHTML = h;
 });
 
 /* ================================================
@@ -1154,11 +1459,14 @@ function renderMemberList() {
   players.forEach(function(p) {
     var avg = PB.getPlayerAvg(p.id);
     var rounds = PB.getPlayerRounds(p.id);
-    var hcap = PB.calcHandicap(rounds);
+    var hcap = PB.calcHandicap(rounds) || (p.manualHandicap ? p.manualHandicap : null);
+    var plvl = {level:1};
+    try { plvl = PB.getPlayerLevel(p.id) || {level:1}; } catch(e) {}
     h += '<div class="card" onclick="Router.go(\'members\',{id:\'' + p.id + '\'})">';
     h += '<div class="member-row"><div class="m-av">' + Router.getAvatar(p) + '</div><div class="m-info">';
-    h += '<div class="m-name">' + p.name + '</div>';
-    if (p.nick) h += '<div class="m-nick">' + p.nick + '</div>';
+    h += '<div class="m-name">' + (p.username || p.name) + ' <span style="font-size:9px;color:var(--gold);font-weight:600">LV' + (plvl.level || 1) + '</span></div>';
+    if (p.equippedTitle && p.equippedTitle !== "Member" && p.equippedTitle !== "Rookie") h += '<div class="m-nick">' + p.equippedTitle + '</div>';
+    else if (p.username && p.name && p.username !== p.name) h += '<div class="m-nick" style="color:var(--muted)">' + p.name + '</div>';
     h += '<div class="m-stats">' + (hcap !== null ? 'HCP: ' + hcap + ' · ' : '') + (avg ? 'Avg: ' + avg + ' · ' : '') + rounds.length + ' rounds · ' + PB.getUniqueCourses(p.id) + ' courses</div>';
     h += '</div><div class="m-arrow">›</div></div></div>';
   });
@@ -1172,105 +1480,426 @@ function renderMemberDetail(pid) {
   var rounds = PB.getPlayerRounds(pid);
   var avg = PB.getPlayerAvg(pid);
   var best = PB.getPlayerBest(pid);
-  var hcap = PB.calcHandicap(rounds);
+  var hcap = PB.calcHandicap(rounds) || (p.manualHandicap ? p.manualHandicap : null);
   var unique = PB.getUniqueCourses(pid);
-  var clubLabels = {driver:"Driver",three_wood:"3 Wood",hybrid:"Hybrid",five_iron:"5 Iron",six_iron:"6 Iron",seven_iron:"7 Iron",eight_iron:"8 Iron",nine_iron:"9 Iron",pw:"PW",gw:"GW",sw:"SW",lw:"LW",putter:"Putter"};
+  var clubLabels = {driver:"Driver",three_wood:"3 Wood",four_wood:"4 Wood",five_wood:"5 Wood",seven_wood:"7 Wood",nine_wood:"9 Wood",two_hybrid:"2 Hybrid",three_hybrid:"3 Hybrid",four_hybrid:"4 Hybrid",five_hybrid:"5 Hybrid",six_hybrid:"6 Hybrid",two_iron:"2 Iron",three_iron:"3 Iron",four_iron:"4 Iron",five_iron:"5 Iron",six_iron:"6 Iron",seven_iron:"7 Iron",eight_iron:"8 Iron",nine_iron:"9 Iron",pw:"PW",aw:"AW (48-50)",gw:"GW (50-52)",gap52:"52°",sw:"SW (54-56)",gap56:"56°",gap58:"58°",lw:"LW (60°)",gap64:"64°",putter:"Putter"};
+
+  // Helper for collapsible profile sections
+  function profSection(id, title, content, startOpen) {
+    return '<div class="section"><div class="sec-head" onclick="toggleSection(\'ps-' + id + '\')" style="cursor:pointer"><span class="sec-title">' + title + '</span><span class="sec-link" id="ps-' + id + '-toggle">' + (startOpen ? '▼' : '▶') + '</span></div><div id="ps-' + id + '"' + (startOpen ? '' : ' style="display:none"') + '>' + content + '</div></div>';
+  }
 
   var h = '<div class="sh"><h2>' + p.name + '</h2><button class="back" onclick="Router.go(\'members\')">← Back</button></div>';
 
+  // Get achievements and level early for frame/title
+  var achievements = [];
+  try { achievements = PB.getAchievements(pid) || []; } catch(e) {}
+  var lvl = {level:1,name:"Rookie",xp:0,currentLevelXp:0,nextLevelXp:500};
+  try { lvl = PB.getPlayerLevel(pid) || lvl; } catch(e) {}
+
+  // Determine profile frame based on achievements
+  var frameColor = 'var(--border)';
+  if (achievements.some(function(a){return a.id==="champion"})) frameColor = 'var(--gold)';
+  else if (achievements.some(function(a){return a.id==="sub80"})) frameColor = 'var(--birdie)';
+  else if (achievements.some(function(a){return a.id==="sub90"})) frameColor = 'rgba(201,168,76,.5)';
+  else if (p.founding) frameColor = 'var(--gold2)';
+
+  // Active title (equipped or default)
+  var activeTitle = p.equippedTitle || p.title || "Member";
+  var isBeta = PB.getPlayers().indexOf(p) < 30;
+
   // Banner
-  h += '<div class="pd-banner"><div class="pd-av" onclick="uploadMemberPhoto(\'' + pid + '\')">' + Router.getAvatar(p) + '<div class="pd-edit">✎</div></div>';
-  h += '<div class="pd-name">' + p.name + '</div>';
-  if (p.title) h += '<div class="pd-nick" style="' + (p.founding ? 'color:var(--gold);font-weight:700' : '') + '">' + (p.founding ? '★ ' : '') + p.title + '</div>';
-  if (p.nick && p.nick !== p.title) h += '<div class="pd-nick">"' + p.nick + '"</div>';
+  h += '<div class="pd-banner"><div class="pd-av" onclick="uploadMemberPhoto(\'' + pid + '\')" style="border-color:' + frameColor + '">' + Router.getAvatar(p) + '<div class="pd-edit">✎</div></div>';
+  h += '<div class="pd-name">' + (p.username || p.name) + '</div>';
+  if (p.username && p.name && p.username !== p.name) h += '<div style="font-size:11px;color:var(--muted);margin-top:1px">' + p.name + '</div>';
+  h += '<div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:6px">';
+  if (p.founding) h += '<span style="font-size:9px;padding:3px 8px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);border-radius:10px;color:var(--gold);font-weight:600;letter-spacing:.5px">★ THE ORIGINAL FOUR</span>';
+  if (isBeta) h += '<span style="font-size:9px;padding:3px 8px;background:rgba(78,201,122,.08);border:1px solid rgba(78,201,122,.15);border-radius:10px;color:var(--birdie);font-weight:600;letter-spacing:.5px">BETA TESTER</span>';
+  h += '</div>';
+  h += '<div style="font-size:12px;color:var(--gold);margin-top:4px;font-weight:600;letter-spacing:.3px;cursor:pointer" onclick="document.getElementById(\'title-picker\').style.display=document.getElementById(\'title-picker\').style.display===\'none\'?\'block\':\'none\'">' + activeTitle + ' <span style="font-size:9px;color:var(--muted)">▼</span></div>';
+
+  // Inline title picker
+  h += '<div id="title-picker" style="display:none;margin-top:8px;text-align:left;max-width:320px;margin-left:auto;margin-right:auto">';
+  var allTitles = [
+    {name:"Rookie",req:"Default",unlocked:true},
+    {name:"Weekend Warrior",req:"Level 5",unlocked:lvl.level>=5},
+    {name:"Range Rat",req:"Level 10",unlocked:lvl.level>=10},
+    {name:"Fairway Finder",req:"Level 15",unlocked:lvl.level>=15},
+    {name:"Club Member",req:"Level 20",unlocked:lvl.level>=20},
+    {name:"Course Regular",req:"Level 25",unlocked:lvl.level>=25},
+    {name:"Low Handicapper",req:"Level 30",unlocked:lvl.level>=30},
+    {name:"Scratch Aspirant",req:"Level 35",unlocked:lvl.level>=35},
+    {name:"Ironman",req:"Level 40",unlocked:lvl.level>=40},
+    {name:"Birdie Hunter",req:"Level 45",unlocked:lvl.level>=45},
+    {name:"Eagle Eye",req:"Level 50",unlocked:lvl.level>=50},
+    {name:"Tour Wannabe",req:"Level 55",unlocked:lvl.level>=55},
+    {name:"Golf Addict",req:"Level 60",unlocked:lvl.level>=60},
+    {name:"Links Legend",req:"Level 65",unlocked:lvl.level>=65},
+    {name:"Course Conqueror",req:"Level 70",unlocked:lvl.level>=70},
+    {name:"The Professor",req:"Level 75",unlocked:lvl.level>=75},
+    {name:"Hall of Famer",req:"Level 80",unlocked:lvl.level>=80},
+    {name:"Living Legend",req:"Level 85",unlocked:lvl.level>=85},
+    {name:"Immortal",req:"Level 90",unlocked:lvl.level>=90},
+    {name:"Transcendent",req:"Level 95",unlocked:lvl.level>=95},
+    {name:"G.O.A.T.",req:"Level 100",unlocked:lvl.level>=100}
+  ];
+  var aTitles = [
+    {name:"Sharpshooter",req:"Shoot under 80",unlocked:achievements.some(function(a){return a.id==="sub80"})},
+    {name:"Tour Ready",req:"Shoot under 70",unlocked:achievements.some(function(a){return a.id==="sub70"})},
+    {name:"Ace Maker",req:"Hole-in-one",unlocked:achievements.some(function(a){return a.id==="ace"})},
+    {name:"Champion",req:"Win an event",unlocked:achievements.some(function(a){return a.id==="champion"})},
+    {name:"Dynasty Builder",req:"Win 3 events",unlocked:achievements.some(function(a){return a.id==="dynasty"})},
+    {name:"The Dominator",req:"25 H2H wins",unlocked:achievements.some(function(a){return a.id==="dominator"})},
+    {name:"Nemesis",req:"10 H2H wins",unlocked:achievements.some(function(a){return a.id==="nemesis"})},
+    {name:"The Nomad",req:"25 courses",unlocked:achievements.some(function(a){return a.id==="nomad"})},
+    {name:"Road Warrior",req:"5 states",unlocked:achievements.some(function(a){return a.id==="roadwarrior"})},
+    {name:"Local Legend",req:"10 rounds same course",unlocked:achievements.some(function(a){return a.id==="local_legend"})},
+    {name:"Centurion",req:"100 rounds",unlocked:achievements.some(function(a){return a.id==="centurion"})},
+    {name:"Metamorphosis",req:"Average improved 15+",unlocked:achievements.some(function(a){return a.id==="metamorphosis"})}
+  ];
+  var sTitles = [
+    {name:"The Original Four",req:"Founding member",unlocked:!!p.founding},
+    {name:"The Original Four · Commissioner",req:"Be The Commissioner",unlocked:p.founding&&pid==="zach"},
+    {name:"Beta Tester",req:"First 30 members",unlocked:isBeta}
+  ];
+  var combined = allTitles.concat(aTitles).concat(sTitles);
+  h += '<div style="max-height:240px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius);background:var(--card)">';
+  combined.forEach(function(t) {
+    var isEquipped = activeTitle === t.name;
+    if (t.unlocked) {
+      h += '<div onclick="PB.updatePlayer(\'' + pid + '\',{equippedTitle:\'' + t.name.replace(/'/g,"\\'") + '\'});Router.go(\'members\',{id:\'' + pid + '\'})" style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:' + (isEquipped ? 'rgba(201,168,76,.08)' : 'transparent') + '">';
+      h += '<div><div style="font-size:12px;font-weight:600;color:' + (isEquipped ? 'var(--gold)' : 'var(--cream)') + '">' + t.name + '</div>';
+      h += '<div style="font-size:9px;color:var(--muted)">' + t.req + '</div></div>';
+      if (isEquipped) h += '<div style="font-size:9px;color:var(--gold);font-weight:700;letter-spacing:.5px">EQUIPPED</div>';
+      h += '</div>';
+    } else {
+      h += '<div style="padding:10px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;opacity:.35">';
+      h += '<div><div style="font-size:12px;font-weight:600;color:var(--muted2)">' + t.name + '</div>';
+      h += '<div style="font-size:9px;color:var(--muted2)">' + t.req + '</div></div>';
+      h += '<div style="font-size:10px;color:var(--muted2)">Locked</div></div>';
+    }
+  });
+  h += '</div></div>';
   if (p.range) h += '<div class="pd-range">Typical range: ' + p.range + '</div>';
   if (p.homeCourse) h += '<div class="pd-range">Home course: ' + p.homeCourse + '</div>';
   if (p.favoriteCourse) h += '<div class="pd-range">Favorite course: ' + p.favoriteCourse + '</div>';
   if (p.referredBy) h += '<div class="pd-range">Referred by: ' + p.referredBy + '</div>';
   if (p.bio) h += '<div class="pd-bio">' + p.bio + '</div>';
+  var joinDate = p.joinDate || "2026";
+  h += '<div style="font-size:10px;color:var(--muted2);margin-top:6px;letter-spacing:1px">MEMBER SINCE ' + joinDate + '</div>';
   h += '<div style="margin-top:12px"><button class="btn-sm green" onclick="Router.go(\'members\',{edit:\'' + pid + '\'})">Edit profile</button></div></div>';
 
-  // Stats grid
+  // XP and Level bar
+  var lvl = PB.getPlayerLevel(pid);
+  h += '<div style="padding:0 16px 14px">';
+  h += '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">';
+  h += '<div style="font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.3px">Level ' + lvl.level + ' · ' + lvl.name + '</div>';
+  h += '<div style="font-size:10px;color:var(--muted)">' + lvl.xp.toLocaleString() + ' XP</div></div>';
+  var pct = Math.min(100, Math.round(((lvl.xp - lvl.currentLevelXp) / Math.max(1, lvl.nextLevelXp - lvl.currentLevelXp)) * 100));
+  h += '<div style="height:5px;background:var(--bg3);border-radius:3px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:3px;transition:width .3s"></div></div>';
+  h += '<div style="font-size:9px;color:var(--muted2);margin-top:3px;text-align:right">' + (lvl.nextLevelXp - lvl.xp).toLocaleString() + ' XP to Level ' + (lvl.level + 1) + '</div>';
+  h += '</div>';
+
+  // Stats grid — always visible
   h += '<div class="stats-grid">';
   h += statBox(hcap !== null ? hcap : "—", "Handicap");
   h += statBox(avg || "—", "Avg score");
   h += statBox(best || "—", "Best round");
   h += statBox(rounds.length, "Rounds");
   h += statBox(unique, "Courses");
-  h += statBox(p.wins || 0, "Trip wins");
+  h += statBox(p.wins || 0, "Event wins");
   h += '</div>';
 
-  // What's In The Bag
-  if (p.bagPhoto || (p.bag && Object.keys(p.bag).some(function(k){return p.bag[k]}))) {
-    h += '<div class="section"><div class="sec-head" onclick="toggleSection(\'bag-' + pid + '\')" style="cursor:pointer"><span class="sec-title">What\'s in the bag</span><span class="sec-link" id="bag-' + pid + '-toggle">▼</span></div>';
-    h += '<div id="bag-' + pid + '">';
-    if (p.bagPhoto) h += '<div style="border-radius:var(--radius);overflow:hidden;margin-bottom:8px"><img src="' + p.bagPhoto + '" style="width:100%;display:block"></div>';
-    if (p.bag) {
-      var bagLabels = {driver:"Driver",irons:"Irons",wedges:"Wedges",putter:"Putter",bag_brand:"Bag",accessories:"Accessories",fav_ball:"Favorite Ball"};
-      Object.keys(bagLabels).forEach(function(k) {
-        if (p.bag[k]) h += '<div class="club-row"><span class="club-name">' + bagLabels[k] + '</span><span class="club-yd" style="max-width:200px;text-align:right">' + p.bag[k] + '</span></div>';
-      });
-    }
-    h += '</div></div>';
+  // === HANDICAP TRACKER (collapsible, open by default) ===
+  var hcapContent = '';
+  if (rounds.length >= 3) {
+    hcapContent += buildHandicapGraph(rounds, pid);
+  } else {
+    hcapContent += '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">Log ' + (3 - rounds.length) + ' more round' + (3 - rounds.length !== 1 ? 's' : '') + ' to activate handicap tracking</div>';
   }
+  h += profSection("hcap-" + pid, "Handicap tracker", hcapContent, rounds.length >= 3);
 
-  // Club distances (collapsible)
+  // === LAST 3 ROUNDS (collapsible, open by default) ===
+  var last3Content = '';
+  if (rounds.length) {
+    var last3 = rounds.slice(-3).reverse();
+    last3.forEach(function(r) {
+      var c = PB.generateRoundCommentary(r);
+      var quip = c.roasts.length ? c.roasts[0] : (c.highlights.length ? c.highlights[0] : "");
+      last3Content += '<div class="card"><div class="round-card"><div class="rc-top"><div><div class="rc-course">' + r.course + '</div><div class="rc-date">' + r.date + (r.format && r.format !== "stroke" ? ' · ' + r.format : '') + '</div></div>';
+      last3Content += '<div class="rc-score">' + r.score + '</div></div>';
+      if (quip) last3Content += '<div class="rc-quip">' + quip + '</div>';
+      last3Content += '</div></div>';
+    });
+  } else {
+    last3Content = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No rounds logged yet</div>';
+  }
+  h += profSection("last3-" + pid, "Last 3 rounds", last3Content, true);
+
+  // === WHAT'S IN THE BAG (collapsible) ===
+  var bagContent = '';
+  if (p.bagPhoto) bagContent += '<div style="border-radius:var(--radius);overflow:hidden;margin-bottom:8px"><img src="' + p.bagPhoto + '" style="width:100%;display:block"></div>';
+  if (p.bag) {
+    var bagLabels = {driver:"Driver",irons:"Irons",wedges:"Wedges",putter:"Putter",bag_brand:"Bag",accessories:"Accessories",fav_ball:"Favorite Ball"};
+    Object.keys(bagLabels).forEach(function(k) {
+      if (p.bag && p.bag[k]) bagContent += '<div class="club-row"><span class="club-name">' + bagLabels[k] + '</span><span class="club-yd" style="max-width:200px;text-align:right">' + p.bag[k] + '</span></div>';
+    });
+  }
+  if (!bagContent) bagContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No equipment listed yet</div>';
+  h += profSection("bag-" + pid, "What\'s in the bag", bagContent, false);
+
+  // === CLUB DISTANCES (collapsible) ===
+  var clubContent = '';
   if (p.clubs && Object.keys(p.clubs).some(function(k) { return p.clubs[k]; })) {
-    h += '<div class="section"><div class="sec-head" onclick="toggleSection(\'clubs-' + pid + '\')" style="cursor:pointer"><span class="sec-title">Club distances</span><span class="sec-link" id="clubs-' + pid + '-toggle">▼</span></div>';
-    h += '<div id="clubs-' + pid + '">';
     Object.keys(clubLabels).forEach(function(k) {
-      if (p.clubs[k]) h += '<div class="club-row"><span class="club-name">' + clubLabels[k] + '</span><span class="club-yd">' + p.clubs[k] + ' yds</span></div>';
+      if (p.clubs[k]) clubContent += '<div class="club-row"><span class="club-name">' + clubLabels[k] + '</span><span class="club-yd">' + p.clubs[k] + ' yds</span></div>';
     });
-    h += '</div></div>';
+  } else {
+    clubContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No distances logged yet</div>';
   }
+  h += profSection("clubs-" + pid, "Club distances", clubContent, false);
 
-  // Known for
+  // === KNOWN FOR (collapsible) ===
   if (p.funnyFacts && p.funnyFacts.length) {
-    h += '<div class="section"><div class="sec-head"><span class="sec-title">Known for</span></div>';
-    p.funnyFacts.forEach(function(f) {
-      h += '<div class="fact-item">• ' + f + '</div>';
-    });
-    h += '</div>';
+    var factsContent = '';
+    p.funnyFacts.forEach(function(f) { factsContent += '<div class="fact-item">• ' + f + '</div>'; });
+    h += profSection("facts-" + pid, "Known for", factsContent, false);
   }
 
-  // Head to head
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Head to head</span></div>';
+  // === ACHIEVEMENTS (collapsible) ===
+  var achieveContent = '';
+  if (achievements.length) {
+    achieveContent += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
+    var cats = {milestone:"Milestones",score:"Scoring",explore:"Exploration",compete:"Competitive",growth:"Improvement",special:"Special",level:"Level"};
+    var grouped = {};
+    achievements.forEach(function(a) { if (!grouped[a.cat]) grouped[a.cat] = []; grouped[a.cat].push(a); });
+    Object.keys(cats).forEach(function(cat) {
+      if (!grouped[cat]) return;
+      achieveContent += '<div style="width:100%;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:6px;margin-bottom:2px">' + cats[cat] + '</div>';
+      grouped[cat].forEach(function(a) {
+        achieveContent += '<div style="padding:6px 10px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.12);border-radius:var(--radius);cursor:default">';
+        achieveContent += '<div style="font-size:11px;font-weight:700;color:var(--gold)">' + a.icon + ' ' + a.name + '</div>';
+        achieveContent += '<div style="font-size:9px;color:var(--muted);margin-top:1px">' + a.desc + '</div></div>';
+      });
+    });
+    achieveContent += '</div>';
+  } else {
+    achieveContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No achievements yet — log rounds to unlock</div>';
+  }
+  h += profSection("achieve-" + pid, "Achievements (" + achievements.length + ")", achieveContent, false);
+
+  // === TEAMS (collapsible) ===
+  var teams = PB.getScrambleTeams();
+  var playerTeams = teams.filter(function(t) { return t.members.indexOf(pid) !== -1; });
+  var teamContent = '';
+  if (playerTeams.length) {
+    playerTeams.forEach(function(t) {
+      var w = (t.matches || []).filter(function(m){return m.result==="win"}).length;
+      var l = (t.matches || []).filter(function(m){return m.result==="loss"}).length;
+      var mates = t.members.filter(function(id){return id !== pid}).map(function(id){var p=PB.getPlayer(id);return p?p.name:id}).join(", ");
+      teamContent += '<div class="h2h-row" onclick="Router.go(\'scramble\',{id:\'' + t.id + '\'})" style="cursor:pointer"><div><div style="font-size:13px;font-weight:600">' + t.name + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">w/ ' + mates + '</div></div><div style="font-size:14px;font-weight:700;color:var(--gold)">' + w + '-' + l + '</div></div>';
+    });
+  } else {
+    teamContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">Not on any teams yet</div>';
+  }
+  h += profSection("teams-" + pid, "Teams (" + playerTeams.length + ")", teamContent, false);
+
+  // === ACCOLADES (collapsible) ===
+  var accoladeContent = '';
+  var accolades = [];
+  // Event wins
+  PB.getTrips().forEach(function(t) {
+    if (t.champion === pid) accolades.push({type:"Event champion", detail: t.name});
+  });
+  // Records held
+  var rec = PB.getRecords();
+  if (rec.longestDrive && rec.longestDrive.by === p.name) accolades.push({type:"Record holder", detail:"Longest drive — " + rec.longestDrive.distance + " yds"});
+  if (rec.longestPutt && rec.longestPutt.by === p.name) accolades.push({type:"Record holder", detail:"Longest putt — " + rec.longestPutt.distance + " ft"});
+  if (rec.longestHoleOut && rec.longestHoleOut.by === p.name) accolades.push({type:"Record holder", detail:"Longest hole out — " + rec.longestHoleOut.distance + " yds"});
+  // Aces
+  if (rec.holeInOnes) {
+    rec.holeInOnes.forEach(function(a) {
+      if (a.by === p.name) accolades.push({type:"Hole-in-one", detail: a.course + " hole " + (a.hole||"?")});
+    });
+  }
+  if (accolades.length) {
+    accolades.forEach(function(a) {
+      accoladeContent += '<div class="club-row"><span class="club-name" style="color:var(--gold)">' + a.type + '</span><span class="club-yd" style="max-width:200px;text-align:right;font-weight:500">' + a.detail + '</span></div>';
+    });
+  } else {
+    accoladeContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No accolades yet</div>';
+  }
+  h += profSection("accolades-" + pid, "Accolades", accoladeContent, false);
+
+  // === HEAD TO HEAD (collapsible) ===
+  var h2hContent = '';
   PB.getPlayers().forEach(function(opp) {
     if (opp.id === pid) return;
     var h2h = calcH2H(pid, opp.id);
     var record = h2h.p1wins + ' — ' + h2h.p2wins + (h2h.ties ? ' — ' + h2h.ties + 'T' : '');
     var color = h2h.p1wins > h2h.p2wins ? 'var(--birdie)' : h2h.p2wins > h2h.p1wins ? 'var(--red)' : 'var(--gold)';
-    h += '<div class="h2h-row"><div class="h2h-left"><div class="h2h-av">' + Router.getAvatar(opp) + '</div><span class="h2h-name">' + opp.name + '</span></div><span class="h2h-record" style="color:' + color + '">' + record + '</span></div>';
+    h2hContent += '<div class="h2h-row"><div class="h2h-left"><div class="h2h-av">' + Router.getAvatar(opp) + '</div><span class="h2h-name">' + opp.name + '</span></div><span class="h2h-record" style="color:' + color + '">' + record + '</span></div>';
   });
-  h += '</div>';
+  h += profSection("h2h-" + pid, "Head to head", h2hContent, false);
 
-  // Recent rounds with AI commentary
-  if (rounds.length) {
-    h += '<div class="section"><div class="sec-head"><span class="sec-title">Recent rounds</span></div>';
-    rounds.slice(-5).reverse().forEach(function(r) {
-      var c = PB.generateRoundCommentary(r);
-      var quip = c.roasts.length ? c.roasts[0] : (c.highlights.length ? c.highlights[0] : "");
-      h += '<div class="round-card"><div class="rc-top"><div><div class="rc-course">' + r.course + '</div><div class="rc-date">' + r.date + '</div></div>';
-      h += '<div class="rc-score">' + r.score + '</div></div>';
-      if (quip) h += '<div class="rc-quip">' + quip + '</div>';
-      h += '</div>';
+  // === ALL ROUNDS (collapsible) ===
+  if (rounds.length > 3) {
+    var allContent = '';
+    rounds.slice().reverse().forEach(function(r) {
+      allContent += '<div class="club-row" style="padding:10px 12px"><span class="club-name">' + r.course + ' · ' + r.date + '</span><span class="club-yd">' + r.score + '</span></div>';
     });
-    h += '</div>';
+    h += profSection("allrounds-" + pid, "All rounds (" + rounds.length + ")", allContent, false);
   }
 
   document.querySelector('[data-page="members"]').innerHTML = h;
 }
 
+/* Handicap graph builder */
+function buildHandicapGraph(rounds, pid) {
+  // Build monthly handicap data
+  var sorted = rounds.slice().sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
+  if (!sorted.length) return '';
+
+  var startDate = new Date(sorted[0].date);
+  var now = new Date();
+  var months = [];
+  var d = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+
+  while (d <= now) {
+    months.push({ year: d.getFullYear(), month: d.getMonth(), label: ["J","F","M","A","M","J","J","A","S","O","N","D"][d.getMonth()], rounds: [] });
+    d.setMonth(d.getMonth() + 1);
+  }
+
+  // Assign rounds to months
+  sorted.forEach(function(r) {
+    var rd = new Date(r.date);
+    var m = months.find(function(mo) { return mo.year === rd.getFullYear() && mo.month === rd.getMonth(); });
+    if (m) m.rounds.push(r);
+  });
+
+  // Calculate running handicap per month with season inactivity rule
+  var lastHcap = null;
+  var inactiveMonths = 0;
+  var needsReactivation = false;
+  var reactivationRounds = 0;
+  var graphData = [];
+
+  months.forEach(function(m) {
+    var isSeason = m.month >= 2 && m.month <= 8; // Mar-Sep
+    if (m.rounds.length > 0) {
+      if (needsReactivation) {
+        reactivationRounds += m.rounds.length;
+        if (reactivationRounds >= 3) {
+          needsReactivation = false;
+          reactivationRounds = 0;
+        }
+      }
+      // Recalculate handicap from all rounds up to this month
+      var roundsToDate = sorted.filter(function(r) {
+        var rd = new Date(r.date);
+        return rd <= new Date(m.year, m.month + 1, 0);
+      });
+      lastHcap = PB.calcHandicap(roundsToDate);
+      inactiveMonths = 0;
+    } else {
+      if (isSeason) inactiveMonths++;
+      if (isSeason && inactiveMonths >= 3 && !needsReactivation) {
+        needsReactivation = true;
+        reactivationRounds = 0;
+      }
+    }
+    graphData.push({ label: m.label, hcap: needsReactivation ? null : lastHcap, inactive: needsReactivation });
+  });
+
+  // Only show last 12 months max
+  if (graphData.length > 12) graphData = graphData.slice(-12);
+
+  // Build SVG graph
+  var validPts = graphData.filter(function(g) { return g.hcap !== null; });
+  if (!validPts.length) return '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">Not enough data for graph</div>';
+
+  var minH = Math.floor(Math.min.apply(null, validPts.map(function(g) { return g.hcap; })) - 2);
+  var maxH = Math.ceil(Math.max.apply(null, validPts.map(function(g) { return g.hcap; })) + 2);
+  if (maxH - minH < 4) { minH -= 2; maxH += 2; }
+  var range = maxH - minH;
+
+  var svgW = 300, svgH = 120, padL = 30, padR = 10, padT = 10, padB = 22;
+  var chartW = svgW - padL - padR, chartH = svgH - padT - padB;
+
+  var svg = '<svg viewBox="0 0 ' + svgW + ' ' + svgH + '" style="width:100%;height:auto;display:block">';
+
+  // Grid lines
+  var gridSteps = 4;
+  for (var g = 0; g <= gridSteps; g++) {
+    var gy = padT + (chartH / gridSteps) * g;
+    var val = maxH - (range / gridSteps) * g;
+    svg += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (svgW - padR) + '" y2="' + gy + '" stroke="rgba(34,40,34,.5)" stroke-width=".5"/>';
+    svg += '<text x="' + (padL - 4) + '" y="' + (gy + 3) + '" text-anchor="end" fill="rgba(122,125,117,.6)" font-size="7" font-family="Inter">' + val.toFixed(0) + '</text>';
+  }
+
+  // Month labels
+  graphData.forEach(function(pt, i) {
+    var x = padL + (chartW / (graphData.length - 1 || 1)) * i;
+    svg += '<text x="' + x + '" y="' + (svgH - 4) + '" text-anchor="middle" fill="rgba(122,125,117,.6)" font-size="7" font-family="Inter">' + pt.label + '</text>';
+  });
+
+  // Line path
+  var points = [];
+  graphData.forEach(function(pt, i) {
+    if (pt.hcap === null) return;
+    var x = padL + (chartW / (graphData.length - 1 || 1)) * i;
+    var y = padT + chartH - ((pt.hcap - minH) / range) * chartH;
+    points.push(x + ',' + y);
+  });
+
+  if (points.length > 1) {
+    svg += '<polyline points="' + points.join(' ') + '" fill="none" stroke="rgba(201,168,76,.7)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>';
+  }
+
+  // Dots
+  graphData.forEach(function(pt, i) {
+    if (pt.hcap === null) return;
+    var x = padL + (chartW / (graphData.length - 1 || 1)) * i;
+    var y = padT + chartH - ((pt.hcap - minH) / range) * chartH;
+    svg += '<circle cx="' + x + '" cy="' + y + '" r="2.5" fill="' + (pt.inactive ? 'var(--red)' : 'var(--gold)') + '"/>';
+  });
+
+  // Inactive markers
+  graphData.forEach(function(pt, i) {
+    if (!pt.inactive) return;
+    var x = padL + (chartW / (graphData.length - 1 || 1)) * i;
+    svg += '<text x="' + x + '" y="' + (padT + 8) + '" text-anchor="middle" fill="var(--red)" font-size="6" font-family="Inter">!</text>';
+  });
+
+  svg += '</svg>';
+
+  var result = '<div style="padding:8px 0">' + svg + '</div>';
+
+  // Current status
+  var currentHcap = graphData[graphData.length - 1];
+  if (currentHcap.inactive) {
+    result += '<div style="padding:8px 12px;background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);border-radius:var(--radius);font-size:11px;color:var(--red);margin-top:4px">Inactive — log 3 rounds to reactivate handicap</div>';
+  } else if (validPts.length >= 2) {
+    var first = validPts[0].hcap, last = validPts[validPts.length - 1].hcap;
+    var diff = last - first;
+    var trend = diff < -1 ? 'Trending down (improving)' : diff > 1 ? 'Trending up' : 'Holding steady';
+    var trendColor = diff < -1 ? 'var(--birdie)' : diff > 1 ? 'var(--red)' : 'var(--gold)';
+    result += '<div style="text-align:center;font-size:11px;color:' + trendColor + ';margin-top:4px;letter-spacing:.3px">' + trend + '</div>';
+  }
+
+  return result;
+}
+
 function renderMemberEdit(pid) {
   var p = PB.getPlayer(pid);
   if (!p) { renderMemberList(); return; }
-  var clubLabels = {driver:"Driver",three_wood:"3 Wood",hybrid:"Hybrid",five_iron:"5 Iron",six_iron:"6 Iron",seven_iron:"7 Iron",eight_iron:"8 Iron",nine_iron:"9 Iron",pw:"PW",gw:"GW",sw:"SW",lw:"LW"};
+  var clubLabels = {driver:"Driver",three_wood:"3 Wood",four_wood:"4 Wood",five_wood:"5 Wood",seven_wood:"7 Wood",nine_wood:"9 Wood",two_hybrid:"2 Hybrid",three_hybrid:"3 Hybrid",four_hybrid:"4 Hybrid",five_hybrid:"5 Hybrid",six_hybrid:"6 Hybrid",two_iron:"2 Iron",three_iron:"3 Iron",four_iron:"4 Iron",five_iron:"5 Iron",six_iron:"6 Iron",seven_iron:"7 Iron",eight_iron:"8 Iron",nine_iron:"9 Iron",pw:"PW",aw:"AW (48-50)",gw:"GW (50-52)",gap52:"52°",sw:"SW (54-56)",gap56:"56°",gap58:"58°",lw:"LW (60°)",gap64:"64°",putter:"Putter"};
 
   var h = '<div class="sh"><h2>Edit profile</h2><button class="back" onclick="Router.go(\'members\',{id:\'' + pid + '\'})">← Back</button></div>';
 
   h += '<div class="form-section"><div class="form-title">Basic info</div>';
-  h += formField("Name", "edit-name", p.name, "text");
-  h += formField("Nickname", "edit-nick", p.nick || "", "text", "e.g. The Commissioner");
+  h += formField("Full name", "edit-name", p.name, "text");
+  h += formField("Username", "edit-username", p.username || "", "text", "e.g. TheCommissioner");
   h += formField("Score range", "edit-range", p.range || "", "text", "e.g. 85-95");
   h += '<div class="ff"><label class="ff-label">Bio</label><textarea class="ff-input" id="edit-bio" placeholder="Tell us about your game...">' + (p.bio || "") + '</textarea></div>';
   h += '<div class="ff"><label class="ff-label">Profile photo</label>';
@@ -1323,7 +1952,7 @@ function renderMemberEdit(pid) {
 
 function saveMemberEdit(pid) {
   var clubs = {};
-  var clubKeys = ["driver","three_wood","hybrid","five_iron","six_iron","seven_iron","eight_iron","nine_iron","pw","gw","sw","lw"];
+  var clubKeys = ["driver","three_wood","four_wood","five_wood","seven_wood","nine_wood","two_hybrid","three_hybrid","four_hybrid","five_hybrid","six_hybrid","two_iron","three_iron","four_iron","five_iron","six_iron","seven_iron","eight_iron","nine_iron","pw","aw","gw","gap52","sw","gap56","gap58","lw","gap64","putter"];
   clubKeys.forEach(function(k) {
     var v = document.getElementById("edit-club-" + k);
     if (v && v.value) clubs[k] = v.value;
@@ -1341,7 +1970,7 @@ function saveMemberEdit(pid) {
   }
   var updates = {
     name: document.getElementById("edit-name").value,
-    nick: document.getElementById("edit-nick").value,
+    username: document.getElementById("edit-username").value,
     range: document.getElementById("edit-range").value,
     bio: document.getElementById("edit-bio").value,
     homeCourse: document.getElementById("edit-homecourse").value,
@@ -1870,7 +2499,12 @@ function renderAceDetail(idx) {
   }
 
   // Delete
-  h += '<div class="section"><button class="btn full" style="background:#2a1515;border:1px solid #3a2020;color:#cc6666" onclick="deleteAce(' + idx + ')">Delete this ace</button></div>';
+  h += '<div class="section">';
+  h += '<div id="ace-del-confirm" style="display:none;margin-bottom:8px;padding:12px;background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);border-radius:var(--radius);text-align:center">';
+  h += '<div style="font-size:12px;color:var(--red);margin-bottom:8px">Delete this hole-in-one?</div>';
+  h += '<div style="display:flex;gap:8px"><button class="btn outline" style="flex:1;font-size:11px" onclick="document.getElementById(\'ace-del-confirm\').style.display=\'none\'">Cancel</button>';
+  h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(212,96,78,.15);color:var(--red)" onclick="confirmDeleteAce(' + idx + ')">Delete</button></div></div>';
+  h += '<button class="btn full" style="background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);color:var(--red)" onclick="deleteAce(' + idx + ')">Delete this ace</button></div>';
 
   document.querySelector('[data-page="aces"]').innerHTML = h;
 }
@@ -1955,7 +2589,11 @@ function saveAce(ace) {
 }
 
 function deleteAce(idx) {
-  if (!confirm("Delete this hole-in-one?")) return;
+  var el = document.getElementById("ace-del-confirm");
+  if (el) { el.style.display = "block"; return; }
+}
+
+function confirmDeleteAce(idx) {
   var rec = PB.getRecords();
   if (rec.holeInOnes) {
     rec.holeInOnes.splice(idx, 1);
@@ -1963,6 +2601,267 @@ function deleteAce(idx) {
   }
   Router.toast("Ace removed");
   Router.go("aces");
+}
+
+/* ================================================
+   PLAY NOW - LIVE SCORING
+   ================================================ */
+
+var liveState = {
+  active: false,
+  player: null,
+  course: null,
+  courseData: null,
+  startTime: null,
+  currentHole: 0,
+  scores: Array(18).fill(""),
+  fir: Array(18).fill(false),
+  gir: Array(18).fill(false),
+  putts: Array(18).fill("")
+};
+
+Router.register("playnow", function(params) {
+  if (params.setup) { renderPlaySetup(); return; }
+  if (liveState.active) { renderLiveScoring(); return; }
+  renderPlaySetup();
+});
+
+function renderPlaySetup() {
+  var h = '<div class="sh"><h2>Play now</h2><button class="back" onclick="Router.go(\'rounds\')">← Back</button></div>';
+
+  h += '<div style="text-align:center;padding:16px"><div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">Start a round</div><div style="font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.3px">Score hole by hole as you play</div></div>';
+
+  h += '<div class="form-section">';
+  h += '<div class="ff"><label class="ff-label">Player</label><select class="ff-input" id="pn-player">';
+  PB.getPlayers().forEach(function(p) { h += '<option value="' + p.id + '">' + p.name + '</option>'; });
+  h += '</select></div>';
+
+  h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="pn-course" placeholder="Start typing to search..." oninput="showPlayCourseSearch(this)"><div id="search-pn-course" class="search-results"></div></div>';
+  h += '<input type="hidden" id="pn-rating" value=""><input type="hidden" id="pn-slope" value="">';
+
+  h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="pn-format"><option value="stroke">Stroke play</option><option value="stableford">Stableford</option><option value="match">Match play</option></select></div>';
+
+  h += '<button class="btn full green" onclick="startLiveRound()" style="margin-top:8px">Tee it up</button>';
+  h += '</div>';
+
+  document.querySelector('[data-page="playnow"]').innerHTML = h;
+}
+
+function showPlayCourseSearch(input) {
+  var results = PB.searchCourses(input.value);
+  var container = document.getElementById("search-pn-course");
+  if (!results.length) { container.innerHTML = ""; return; }
+  var h = '';
+  results.forEach(function(c) {
+    h += '<div class="search-item" onclick="document.getElementById(\'pn-course\').value=\'' + c.name.replace(/'/g, "\\'") + '\';document.getElementById(\'pn-rating\').value=\'' + c.rating + '\';document.getElementById(\'pn-slope\').value=\'' + c.slope + '\';document.getElementById(\'search-pn-course\').innerHTML=\'\'">' + c.name + ' <span style="color:var(--muted);font-size:11px">' + c.loc + '</span></div>';
+  });
+  container.innerHTML = h;
+}
+
+function startLiveRound() {
+  var player = document.getElementById("pn-player").value;
+  var course = document.getElementById("pn-course").value;
+  if (!course) { Router.toast("Select a course"); return; }
+
+  liveState = {
+    active: true,
+    player: player,
+    course: course,
+    rating: parseFloat(document.getElementById("pn-rating").value) || 72,
+    slope: parseInt(document.getElementById("pn-slope").value) || 113,
+    format: document.getElementById("pn-format").value,
+    startTime: Date.now(),
+    currentHole: 0,
+    scores: Array(18).fill(""),
+    fir: Array(18).fill(false),
+    gir: Array(18).fill(false),
+    putts: Array(18).fill("")
+  };
+
+  Router.toast("Let's go!");
+  Router.go("playnow");
+}
+
+function renderLiveScoring() {
+  var hole = liveState.currentHole;
+  var player = PB.getPlayer(liveState.player);
+  var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+  var par = defaultPar[hole] || 4;
+  var isPar3 = par === 3;
+
+  // Calculate running total
+  var totalSoFar = 0, holesPlayed = 0;
+  liveState.scores.forEach(function(s) { if (s !== "") { totalSoFar += parseInt(s); holesPlayed++; } });
+  var parSoFar = 0;
+  for (var pi = 0; pi < holesPlayed; pi++) parSoFar += defaultPar[pi] || 4;
+
+  var h = '';
+
+  // Top bar with course name and running score
+  h += '<div style="padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">';
+  h += '<div><div style="font-size:13px;font-weight:600">' + liveState.course + '</div>';
+  h += '<div style="font-size:10px;color:var(--muted);margin-top:1px">' + (player ? player.name : '') + ' · ' + liveState.format + '</div></div>';
+  h += '<div style="text-align:right"><div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:var(--gold)">' + (totalSoFar || "—") + '</div>';
+  if (holesPlayed > 0) {
+    var diff = totalSoFar - parSoFar;
+    h += '<div style="font-size:10px;color:' + (diff > 0 ? 'var(--red)' : diff < 0 ? 'var(--birdie)' : 'var(--muted)') + '">' + (diff > 0 ? '+' : '') + diff + ' thru ' + holesPlayed + '</div>';
+  }
+  h += '</div></div>';
+
+  // Hole selector dots
+  h += '<div style="padding:10px 16px;display:flex;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none">';
+  for (var d = 0; d < 18; d++) {
+    var scored = liveState.scores[d] !== "";
+    var isCurrent = d === hole;
+    var dotColor = isCurrent ? 'var(--gold)' : scored ? 'var(--birdie)' : 'var(--border)';
+    var dotBg = isCurrent ? 'rgba(201,168,76,.15)' : scored ? 'rgba(78,201,122,.08)' : 'transparent';
+    h += '<div onclick="liveState.currentHole=' + d + ';Router.go(\'playnow\')" style="min-width:24px;height:24px;border-radius:12px;border:1.5px solid ' + dotColor + ';background:' + dotBg + ';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:' + dotColor + ';cursor:pointer;flex-shrink:0">' + (d+1) + '</div>';
+  }
+  h += '</div>';
+
+  // Current hole card
+  h += '<div style="padding:20px 16px">';
+  h += '<div style="text-align:center;margin-bottom:20px">';
+  h += '<div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px">Hole ' + (hole+1) + '</div>';
+  h += '<div style="font-family:Playfair Display,serif;font-size:48px;font-weight:700;color:var(--cream);margin-top:4px">Par ' + par + '</div>';
+  h += '</div>';
+
+  // Score input - big buttons
+  var currentScore = liveState.scores[hole];
+  h += '<div style="text-align:center;margin-bottom:20px">';
+  h += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Score</div>';
+  h += '<div style="display:flex;justify-content:center;align-items:center;gap:16px">';
+  h += '<div onclick="adjustLiveScore(-1)" style="width:44px;height:44px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--muted);cursor:pointer;transition:background .15s">−</div>';
+  h += '<div style="font-family:Playfair Display,serif;font-size:48px;font-weight:700;color:var(--gold);min-width:60px;text-align:center">' + (currentScore || "—") + '</div>';
+  h += '<div onclick="adjustLiveScore(1)" style="width:44px;height:44px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--muted);cursor:pointer;transition:background .15s">+</div>';
+  h += '</div>';
+
+  // Score label
+  if (currentScore !== "") {
+    var scoreDiff = parseInt(currentScore) - par;
+    var labels = {"-3":"Albatross","-2":"Eagle","-1":"Birdie","0":"Par","1":"Bogey","2":"Double","3":"Triple"};
+    var label = labels[scoreDiff.toString()] || (scoreDiff > 0 ? '+' + scoreDiff : scoreDiff);
+    var labelColor = scoreDiff < 0 ? 'var(--birdie)' : scoreDiff === 0 ? 'var(--cream)' : 'var(--red)';
+    h += '<div style="font-size:12px;color:' + labelColor + ';margin-top:6px;font-weight:600;letter-spacing:.5px">' + label + '</div>';
+  }
+  h += '</div>';
+
+  // FIR / GIR / Putts
+  h += '<div style="display:flex;justify-content:center;gap:16px;margin-bottom:24px">';
+  if (!isPar3) {
+    h += '<div onclick="liveState.fir[' + hole + ']=!liveState.fir[' + hole + '];Router.go(\'playnow\')" style="text-align:center;cursor:pointer">';
+    h += '<div style="width:40px;height:40px;border-radius:8px;border:1.5px solid ' + (liveState.fir[hole] ? 'var(--birdie)' : 'var(--border)') + ';background:' + (liveState.fir[hole] ? 'rgba(78,201,122,.12)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;font-size:14px;color:' + (liveState.fir[hole] ? 'var(--birdie)' : 'var(--muted2)') + ';margin:0 auto 4px">' + (liveState.fir[hole] ? '✓' : '') + '</div>';
+    h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">FIR</div></div>';
+  }
+  h += '<div onclick="liveState.gir[' + hole + ']=!liveState.gir[' + hole + '];Router.go(\'playnow\')" style="text-align:center;cursor:pointer">';
+  h += '<div style="width:40px;height:40px;border-radius:8px;border:1.5px solid ' + (liveState.gir[hole] ? 'var(--gold)' : 'var(--border)') + ';background:' + (liveState.gir[hole] ? 'rgba(201,168,76,.12)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;font-size:14px;color:' + (liveState.gir[hole] ? 'var(--gold)' : 'var(--muted2)') + ';margin:0 auto 4px">' + (liveState.gir[hole] ? '✓' : '') + '</div>';
+  h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">GIR</div></div>';
+
+  // Putts
+  var puttVal = liveState.putts[hole];
+  h += '<div style="text-align:center">';
+  h += '<div onclick="cyclePutts(' + hole + ')" style="width:40px;height:40px;border-radius:8px;border:1.5px solid ' + (puttVal ? 'var(--cream)' : 'var(--border)') + ';background:' + (puttVal ? 'rgba(234,232,224,.06)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--cream);margin:0 auto 4px;cursor:pointer">' + (puttVal || '') + '</div>';
+  h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Putts</div></div>';
+  h += '</div>';
+
+  // Navigation
+  h += '<div style="display:flex;gap:8px">';
+  if (hole > 0) {
+    h += '<button class="btn outline" style="flex:1" onclick="liveState.currentHole--;Router.go(\'playnow\')">Previous</button>';
+  }
+  if (hole < 17) {
+    h += '<button class="btn green" style="flex:1" onclick="if(liveState.scores[' + hole + ']===\'\'){Router.toast(\'Enter a score\');return;}liveState.currentHole++;Router.go(\'playnow\')">Next hole</button>';
+  } else {
+    h += '<button class="btn green" style="flex:1" onclick="finishLiveRound()">Finish round</button>';
+  }
+  h += '</div>';
+
+  // Turn summary (show at hole 9)
+  if (hole === 9 || hole === 17) {
+    var front = 0, frontCount = 0, back = 0, backCount = 0;
+    for (var ti = 0; ti < 9; ti++) { if (liveState.scores[ti] !== "") { front += parseInt(liveState.scores[ti]); frontCount++; } }
+    for (var bi = 9; bi < 18; bi++) { if (liveState.scores[bi] !== "") { back += parseInt(liveState.scores[bi]); backCount++; } }
+    if (frontCount > 0) {
+      h += '<div style="margin-top:16px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);display:flex;justify-content:space-around;text-align:center">';
+      h += '<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Front</div><div style="font-family:Playfair Display,serif;font-size:20px;color:var(--gold)">' + front + '</div></div>';
+      if (backCount > 0) h += '<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Back</div><div style="font-family:Playfair Display,serif;font-size:20px;color:var(--gold)">' + back + '</div></div>';
+      h += '<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Total</div><div style="font-family:Playfair Display,serif;font-size:20px;color:var(--gold)">' + totalSoFar + '</div></div>';
+      h += '</div>';
+    }
+  }
+
+  h += '</div>';
+
+  // Quit button
+  h += '<div style="padding:0 16px 16px">';
+  h += '<div id="quit-confirm" style="display:none;margin-bottom:8px;padding:12px;background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);border-radius:var(--radius);text-align:center">';
+  h += '<div style="font-size:12px;color:var(--red);margin-bottom:8px">Quit this round? Scores will be lost.</div>';
+  h += '<div style="display:flex;gap:8px"><button class="btn outline" style="flex:1;font-size:11px" onclick="document.getElementById(\'quit-confirm\').style.display=\'none\'">Cancel</button>';
+  h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(212,96,78,.15);color:var(--red)" onclick="liveState.active=false;Router.go(\'rounds\')">Quit</button></div></div>';
+  h += '<button class="btn full" style="background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);color:var(--red);font-size:11px" onclick="document.getElementById(\'quit-confirm\').style.display=\'block\'">Quit round</button>';
+  h += '</div>';
+
+  document.querySelector('[data-page="playnow"]').innerHTML = h;
+}
+
+function adjustLiveScore(delta) {
+  var hole = liveState.currentHole;
+  var current = liveState.scores[hole];
+  if (current === "") {
+    var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+    liveState.scores[hole] = defaultPar[hole] || 4;
+  } else {
+    var newVal = parseInt(current) + delta;
+    if (newVal >= 1 && newVal <= 15) liveState.scores[hole] = newVal;
+  }
+  Router.go("playnow");
+}
+
+function cyclePutts(hole) {
+  var current = liveState.putts[hole];
+  if (!current) liveState.putts[hole] = 1;
+  else if (current >= 4) liveState.putts[hole] = "";
+  else liveState.putts[hole] = current + 1;
+  Router.go("playnow");
+}
+
+function finishLiveRound() {
+  var totalScore = 0, completed = 0;
+  liveState.scores.forEach(function(s) { if (s !== "") { totalScore += parseInt(s); completed++; } });
+
+  if (completed < 9) { Router.toast("Play at least 9 holes"); return; }
+
+  // Save as a local round
+  var round = PB.addRound({
+    player: liveState.player,
+    course: liveState.course,
+    score: totalScore,
+    date: new Date().toISOString().split("T")[0],
+    rating: liveState.rating,
+    slope: liveState.slope,
+    format: liveState.format,
+    holesPlayed: completed,
+    holeScores: liveState.scores.slice(),
+    firData: liveState.fir.slice(),
+    girData: liveState.gir.slice(),
+    puttsData: liveState.putts.slice()
+  });
+
+  // Calculate stats
+  var firCount = 0, girCount = 0, totalPutts = 0;
+  var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+  for (var i = 0; i < completed; i++) {
+    if (defaultPar[i] !== 3 && liveState.fir[i]) firCount++;
+    if (liveState.gir[i]) girCount++;
+    if (liveState.putts[i]) totalPutts += liveState.putts[i];
+  }
+
+  liveState.active = false;
+
+  var commentary = PB.generateRoundCommentary(round);
+  var msg = commentary.roasts.length ? commentary.roasts[0] : (commentary.highlights.length ? commentary.highlights[0] : "Round complete!");
+  Router.toast(totalScore + " — " + msg);
+  Router.go("rounds", { roundId: round.id });
 }
 
 /* ================================================
@@ -2275,6 +3174,39 @@ function renderTripScorecard(trip, tripPlayers) {
   }
   h += '</tbody></table></div>';
 
+  // FIR/GIR section (individual rounds only)
+  if (!iS) {
+    h += '<div style="padding:12px 16px"><div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Fairways & Greens</div>';
+    tripPlayers.forEach(function(p) {
+      var totals = PB.getFirGirTotals(tid, c.key, p.id);
+      var fg = PB.getFirGir(tid, c.key, p.id);
+      h += '<div style="margin-bottom:12px"><div style="font-size:12px;font-weight:600;margin-bottom:6px;display:flex;justify-content:space-between"><span>' + p.name + '</span><span style="color:var(--muted);font-size:10px">FIR: ' + totals.fir + '/14 · GIR: ' + totals.gir + '/18</span></div>';
+      h += '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table style="min-width:280px"><thead><tr><th style="font-size:8px;padding:4px 2px;position:static">H</th>';
+      for (var hi = 0; hi < 18; hi++) h += '<th style="font-size:8px;padding:4px 2px;position:static">' + (hi+1) + '</th>';
+      h += '</tr></thead><tbody>';
+      // FIR row (only on non-par-3 holes)
+      h += '<tr style="background:var(--bg2)"><td style="font-size:8px;padding:4px;color:var(--muted);position:static">FIR</td>';
+      for (var fi = 0; fi < 18; fi++) {
+        var isPar3 = c.p[fi] === 3;
+        if (isPar3) {
+          h += '<td style="padding:2px;position:static"><div style="width:18px;height:18px;margin:auto;font-size:8px;color:var(--muted2);display:flex;align-items:center;justify-content:center">—</div></td>';
+        } else {
+          var firVal = fg.fir[fi];
+          h += '<td style="padding:2px;position:static"><div onclick="PB.setFir(\'' + tid + "','" + c.key + "','" + p.id + "'," + fi + ',' + !firVal + ');Router.go(\'scorecard\',{tripId:\'' + tid + '\'})" style="width:18px;height:18px;border-radius:3px;border:1px solid ' + (firVal ? 'var(--birdie)' : 'var(--border)') + ';background:' + (firVal ? 'rgba(78,201,122,.15)' : 'transparent') + ';margin:auto;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--birdie)">' + (firVal ? '✓' : '') + '</div></td>';
+        }
+      }
+      h += '</tr>';
+      // GIR row
+      h += '<tr style="background:var(--bg)"><td style="font-size:8px;padding:4px;color:var(--muted);position:static">GIR</td>';
+      for (var gi = 0; gi < 18; gi++) {
+        var girVal = fg.gir[gi];
+        h += '<td style="padding:2px;position:static"><div onclick="PB.setGir(\'' + tid + "','" + c.key + "','" + p.id + "'," + gi + ',' + !girVal + ');Router.go(\'scorecard\',{tripId:\'' + tid + '\'})" style="width:18px;height:18px;border-radius:3px;border:1px solid ' + (girVal ? 'var(--gold)' : 'var(--border)') + ';background:' + (girVal ? 'rgba(201,168,76,.15)' : 'transparent') + ';margin:auto;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--gold)">' + (girVal ? '✓' : '') + '</div></td>';
+      }
+      h += '</tr></tbody></table></div></div>';
+    });
+    h += '</div>';
+  }
+
   if (!iS) {
     h += '<div class="lg"><div class="li"><span class="ld c" style="border:2px solid var(--gold);color:var(--gold)">6</span>Eagle+</div>';
     h += '<div class="li"><span class="ld c" style="border:1px solid var(--birdie);color:var(--birdie);background:#12261a">4</span>Birdie</div>';
@@ -2365,7 +3297,7 @@ Router.register("rounds", function(params) {
   var zachRounds = rounds.filter(function(r) { return r.player === "zach"; });
   var hcap = PB.calcHandicap(zachRounds);
 
-  var h = '<div class="sh"><h2>Local rounds</h2></div>';
+  var h = '<div class="sh"><h2>Rounds</h2><button class="btn-sm green" onclick="Router.go(\'playnow\')">Play now</button></div>';
 
   // Handicap
   h += '<div class="hcap-box"><div class="hcap-val">' + (hcap !== null ? hcap : "—") + '</div><div class="hcap-label">Your handicap index</div></div>';
@@ -2455,7 +3387,12 @@ function renderRoundDetail(roundId) {
   }
 
   // Delete round
-  h += '<div class="section"><button class="btn full" style="background:#2a1515;border:1px solid #3a2020;color:#cc6666" onclick="if(confirm(\'Delete this round?\')){PB.deleteRound(\'' + roundId + '\');Router.toast(\'Round deleted\');Router.go(\'rounds\')}">Delete round</button></div>';
+  h += '<div class="section">';
+  h += '<div id="del-confirm" style="display:none;margin-bottom:8px;padding:12px;background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);border-radius:var(--radius);text-align:center">';
+  h += '<div style="font-size:12px;color:var(--red);margin-bottom:8px">Delete this round?</div>';
+  h += '<div style="display:flex;gap:8px"><button class="btn outline" style="flex:1;font-size:11px" onclick="document.getElementById(\'del-confirm\').style.display=\'none\'">Cancel</button>';
+  h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(212,96,78,.15);color:var(--red)" onclick="PB.deleteRound(\'' + roundId + '\');Router.toast(\'Round deleted\');Router.go(\'rounds\')">Delete</button></div></div>';
+  h += '<button class="btn full" style="background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);color:var(--red)" onclick="document.getElementById(\'del-confirm\').style.display=\'block\'">Delete round</button></div>';
 
   document.querySelector('[data-page="rounds"]').innerHTML = h;
 }
