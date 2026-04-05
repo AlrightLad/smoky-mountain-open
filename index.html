@@ -333,6 +333,9 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 <div data-page="profile-edit" class="hidden"></div>
 <div data-page="settings" class="hidden"></div>
 <div data-page="merch" class="hidden"></div>
+<div data-page="standings" class="hidden"></div>
+<div data-page="challenges" class="hidden"></div>
+<div data-page="rules" class="hidden"></div>
 <div class="footer">The Parbaughs · Est. 2026</div>
 <div class="toast" id="toast"></div>
 <script>
@@ -536,7 +539,44 @@ var PB = (function() {
   function addPlayer(name, referredBy) {
     var id = name.toLowerCase().replace(/[^a-z0-9]/g, "");
     if (state.players.find(function(p) { return p.id === id; })) return null;
-    var p = {id:id,name:name,nick:"",title:"Member",range:"",bio:"",emoji:"⛳",photo:"",homeCourse:"",favoriteCourse:"",bagPhoto:"",founding:false,referredBy:referredBy||null,trips:0,wins:0,clubs:{},bag:{},funnyFacts:[]};
+    var p = {
+      id: id,
+      name: name,
+      username: name,
+      title: "Member",
+      equippedTitle: "Rookie",
+      range: "",
+      bio: "",
+      photo: "",
+      stockAvatar: "",
+      homeCourse: "",
+      favoriteCourse: "",
+      bagPhoto: "",
+      founding: false,
+      referredBy: referredBy || null,
+      joinDate: new Date().toISOString().split("T")[0],
+      trips: 0,
+      wins: 0,
+      manualHandicap: null,
+      clubs: {},
+      bag: {},
+      funnyFacts: [],
+      // Privacy
+      settings: {
+        roundVisibility: "public", // "public" or "private"
+        profileVisible: true,
+        scoreRangeVisible: true
+      },
+      // Notifications
+      notifications: {
+        achievementUnlocked: true,
+        h2hChallenge: true,
+        eventInvite: true,
+        roundLogged: true
+      },
+      // Profile feed posts
+      posts: []
+    };
     state.players.push(p);
     if (!state.activity) state.activity = [];
     state.activity.push({type:"member_joined",name:name,referredBy:referredBy||"",date:new Date().toISOString().split("T")[0],ts:Date.now()});
@@ -723,6 +763,7 @@ var PB = (function() {
       id: Date.now().toString(36),
       name: data.name,
       members: data.members,
+      captain: data.captain || data.members[0],
       size: data.size || data.members.length,
       matches: []
     };
@@ -1084,6 +1125,16 @@ var PB = (function() {
     if (playNowRounds.length >= 1) achievements.push({id:"live_scorer",name:"Live Scorer",desc:"Complete a Play Now round",icon:"▲",xp:50,cat:"milestone"});
     if (playNowRounds.length >= 10) achievements.push({id:"dedicated",name:"Dedicated",desc:"10 Play Now rounds",icon:"◆",xp:150,cat:"milestone"});
 
+    // --- SCRAMBLE CAPTAIN ---
+    var teams = getScrambleTeams();
+    var isCaptain = teams.some(function(t){return t.captain === pid});
+    if (isCaptain) achievements.push({id:"captain",name:"Captain",desc:"Named team captain",icon:"◆",xp:100,cat:"compete"});
+
+    // --- ATTESTATION ---
+    var attestedRounds = rounds.filter(function(r){return r.attestedBy});
+    if (attestedRounds.length >= 1) achievements.push({id:"attested",name:"Verified",desc:"Have a score attested",icon:"▲",xp:50,cat:"milestone"});
+    if (attestedRounds.length >= 10) achievements.push({id:"honest_game",name:"Honest Game",desc:"10 attested rounds",icon:"◆",xp:150,cat:"milestone"});
+
     // --- CONSISTENCY ---
     var coursePlays = {};
     rounds.forEach(function(r){coursePlays[r.course]=(coursePlays[r.course]||0)+1});
@@ -1103,9 +1154,151 @@ var PB = (function() {
     return achievements;
   }
 
+  /* ---------- H2H CHALLENGES ---------- */
+  function createChallenge(fromId, toId, courseId, stakes) {
+    if (!state.challenges) state.challenges = [];
+    var challenge = {
+      id: Date.now().toString(36),
+      from: fromId,
+      to: toId,
+      course: courseId,
+      stakes: stakes || "",
+      status: "pending", // pending, accepted, declined, completed
+      created: new Date().toISOString().split("T")[0],
+      result: null
+    };
+    state.challenges.push(challenge);
+    addNotification(toId, {type:"h2h_challenge",from:fromId,challengeId:challenge.id,text:(getPlayer(fromId)||{}).username+" challenged you!"});
+    save();
+    return challenge;
+  }
+
+  function getChallenges(pid) {
+    if (!state.challenges) return [];
+    return state.challenges.filter(function(c) { return c.from === pid || c.to === pid; });
+  }
+
+  function updateChallenge(id, updates) {
+    if (!state.challenges) return;
+    var c = state.challenges.find(function(ch) { return ch.id === id; });
+    if (c) { Object.keys(updates).forEach(function(k) { c[k] = updates[k]; }); save(); }
+  }
+
+  /* ---------- NOTIFICATIONS ---------- */
+  function addNotification(pid, notif) {
+    if (!state.notifications) state.notifications = {};
+    if (!state.notifications[pid]) state.notifications[pid] = [];
+    notif.id = Date.now().toString(36);
+    notif.read = false;
+    notif.ts = Date.now();
+    notif.date = new Date().toISOString().split("T")[0];
+    state.notifications[pid].push(notif);
+    save();
+  }
+
+  function getNotifications(pid) {
+    if (!state.notifications || !state.notifications[pid]) return [];
+    return state.notifications[pid].slice().sort(function(a,b){return(b.ts||0)-(a.ts||0)});
+  }
+
+  function markNotificationRead(pid, notifId) {
+    if (!state.notifications || !state.notifications[pid]) return;
+    var n = state.notifications[pid].find(function(x){return x.id===notifId});
+    if (n) { n.read = true; save(); }
+  }
+
+  function getUnreadCount(pid) {
+    if (!state.notifications || !state.notifications[pid]) return 0;
+    return state.notifications[pid].filter(function(n){return !n.read}).length;
+  }
+
+  /* ---------- SEASON STANDINGS (Point System) ---------- */
+  // Points per round: based on differential (score - handicap - par)
+  // Better than expected = more points. Levels the playing field.
+  // Base 100pts per round, +/- 5pts per stroke vs expected
+  // Bonus: personal best = 50pts, new course = 25pts, attested = 15pts
+  function getSeasonStandings(year) {
+    year = year || new Date().getFullYear();
+    var seasonStart = year + "-03-01";
+    var seasonEnd = year + "-09-30";
+    var players = getPlayers();
+    var standings = players.map(function(p) {
+      var allRounds = getPlayerRounds(p.id);
+      var rounds = allRounds.filter(function(r) {
+        return r.date >= seasonStart && r.date <= seasonEnd && r.visibility !== "private";
+      });
+      if (!rounds.length) return null;
+      var hcap = p.manualHandicap || calcHandicap(allRounds) || 36;
+      var points = 0;
+      var bestSoFar = 999;
+      var seenCourses = {};
+      rounds.forEach(function(r) {
+        var coursePar = 72;
+        var c = getCourseByName(r.course);
+        if (c && c.par) coursePar = c.par;
+        var expected = coursePar + hcap;
+        var diff = r.score - expected;
+        var roundPts = Math.max(10, 100 - (diff * 5));
+        // Personal best bonus
+        if (r.score < bestSoFar) { roundPts += 50; bestSoFar = r.score; }
+        else if (bestSoFar === 999) bestSoFar = r.score;
+        // New course bonus
+        if (!seenCourses[r.course]) { roundPts += 25; seenCourses[r.course] = 1; }
+        // Attested bonus
+        if (r.attestedBy) roundPts += 15;
+        points += Math.round(roundPts);
+      });
+      var avg = Math.round(rounds.reduce(function(a,r){return a+r.score},0) / rounds.length * 10) / 10;
+      var best = Math.min.apply(null, rounds.map(function(r){return r.score}));
+      return {
+        id: p.id,
+        username: p.username || p.name,
+        name: p.name,
+        rounds: rounds.length,
+        points: points,
+        avg: avg,
+        best: best,
+        hcap: calcHandicap(rounds)
+      };
+    }).filter(function(s) { return s !== null; });
+    standings.sort(function(a, b) { return b.points - a.points; });
+    return { year: year, standings: standings };
+  }
+
+  /* ---------- PROFILE POSTS ---------- */
+  function addPost(pid, post) {
+    var p = getPlayer(pid);
+    if (!p) return null;
+    if (!p.posts) p.posts = [];
+    var newPost = {
+      id: Date.now().toString(36),
+      type: post.type || "text", // text, photo, round, h2h
+      text: post.text || "",
+      photo: post.photo || "",
+      roundId: post.roundId || null,
+      visibility: post.visibility || "public",
+      ts: Date.now(),
+      date: new Date().toISOString().split("T")[0]
+    };
+    p.posts.unshift(newPost);
+    if (newPost.visibility === "public") {
+      if (!state.activity) state.activity = [];
+      state.activity.push({type:"post",playerName:p.username||p.name,text:newPost.text,date:newPost.date,ts:Date.now()});
+    }
+    save();
+    return newPost;
+  }
+
+  function getPlayerPosts(pid) {
+    var p = getPlayer(pid);
+    return p && p.posts ? p.posts : [];
+  }
+
   /* ---------- INIT ---------- */
   state = load();
   if (!state.activity) state.activity = [];
+  if (!state.challenges) state.challenges = [];
+  if (!state.notifications) state.notifications = {};
 
   /* ---------- PUBLIC API ---------- */
   return {
@@ -1123,6 +1316,10 @@ var PB = (function() {
     getTripStableford:getTripStableford, getTripTotal:getTripTotal,
     getMiniPoints:getMiniPoints, getBonusPoints:getBonusPoints, getTripPoints:getTripPoints,
     daysUntil:daysUntil, generateRoundCommentary:generateRoundCommentary, getActivity:getActivity, getAchievements:getAchievements, getPlayerXP:getPlayerXP, getPlayerLevel:getPlayerLevel,
+    createChallenge:createChallenge, getChallenges:getChallenges, updateChallenge:updateChallenge,
+    addNotification:addNotification, getNotifications:getNotifications, markNotificationRead:markNotificationRead, getUnreadCount:getUnreadCount,
+    getSeasonStandings:getSeasonStandings,
+    addPost:addPost, getPlayerPosts:getPlayerPosts,
     exportBackup:exportBackup, importBackup:importBackup, reset:reset, save:save
   };
 })();
@@ -1162,7 +1359,8 @@ var Router = (function() {
       { p: "members", l: "Members", match: ["members","profile-edit"] },
       { p: "trips", l: "Events", match: ["trips","scorecard"] },
       { p: "rounds", l: "Rounds", match: ["rounds","playnow"] },
-      { p: "records", l: "Records", match: ["records","aces","scramble","courses"] }
+      { p: "records", l: "Records", match: ["records","aces","scramble","courses","standings","challenges"] },
+      { p: "rules", l: "Rules", match: ["rules"] }
     ];
     var h = "";
     tabs.forEach(function(t) {
@@ -1195,8 +1393,10 @@ var Router = (function() {
     }
     var lvl = null;
     try { if (typeof PB !== 'undefined' && PB.getPlayerLevel && player.id) lvl = PB.getPlayerLevel(player.id); } catch(e) {}
-    var badge = lvl && lvl.level ? '<div style="position:absolute;bottom:-2px;right:-2px;min-width:18px;height:18px;padding:0 4px;background:var(--gold);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:var(--bg);border:2px solid var(--bg);letter-spacing:-.3px;pointer-events:none">' + lvl.level + '</div>' : '';
-    return '<img src="' + imgSrc + '" onerror="this.parentElement.textContent=\'' + (player.username||player.name).charAt(0) + '\'" alt="' + (player.username||player.name) + '" style="width:100%;height:100%;object-fit:cover">' + badge;
+    var lvlNum = (lvl && lvl.level) ? lvl.level : 1;
+    var initial = (player.username||player.name).charAt(0).toUpperCase();
+    var badge = '<div style="position:absolute;bottom:-1px;right:-1px;min-width:16px;height:16px;padding:0 3px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:#0e1118;border:1.5px solid #0e1118;pointer-events:none;line-height:1;z-index:2">' + lvlNum + '</div>';
+    return '<img src="' + imgSrc + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"><div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;color:var(--gold);font-weight:700;font-size:18px;background:var(--bg3);border-radius:inherit">' + initial + '</div>' + badge;
   }
 
   function handlePhotoUpload(callback, maxW, maxH, quality) {
@@ -1440,6 +1640,61 @@ Router.register("merch", function() {
   h += '<div style="padding:16px;text-align:center;font-size:11px;color:var(--muted)">Interested? Let The Commissioner know.</div>';
 
   document.querySelector('[data-page="merch"]').innerHTML = h;
+});
+
+/* ================================================
+   PAGE: RULES
+   ================================================ */
+Router.register("rules", function() {
+  var h = '<div class="sh"><h2>Rules</h2><button class="back" onclick="Router.go(\'home\')">← Back</button></div>';
+
+  // Parbaugh house rules
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Parbaugh house rules</span></div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
+  h += 'All Parbaugh rounds follow USGA rules with the following exceptions:<br><br>';
+  h += '<span style="color:var(--gold);font-weight:600">Breakfast balls:</span> 2 per round — 1 on the front 9, 1 on the back 9. Re-tee only, no re-hitting approach shots.<br><br>';
+  h += '<span style="color:var(--gold);font-weight:600">Honor system:</span> Scouts honor. Log your scores truthfully. Having another Parbaugh attest your score earns 150 XP.<br><br>';
+  h += '<span style="color:var(--gold);font-weight:600">Scoring:</span> Only the player can log their own rounds. The Commissioner cannot override scores.<br><br>';
+  h += '<span style="color:var(--gold);font-weight:600">Profile ownership:</span> Only the player can edit their own profile. No exceptions.';
+  h += '</div></div></div>';
+
+  // Game formats
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Game formats</span></div>';
+
+  var formats = [
+    {name:"Stroke play",desc:"Standard golf. Lowest total score wins. Every stroke counts. The purest form of the game."},
+    {name:"Stableford",desc:"Point-based scoring. Double bogey or worse = 0 pts, Bogey = 1, Par = 2, Birdie = 3, Eagle = 4, Albatross = 5. Higher is better. Rewards aggressive play and minimizes blowup hole damage."},
+    {name:"Scramble",desc:"Team format (2-4 players). Everyone tees off, pick the best shot, everyone plays from there. Repeat until holed. Captain hits last on every shot. Great equalizer across skill levels."},
+    {name:"Best ball",desc:"Team format. Everyone plays their own ball for the entire hole. The lowest individual score on each hole counts as the team score."},
+    {name:"Match play",desc:"Head-to-head, hole by hole. Win a hole = 1 up. Lose a hole = 1 down. Tie = halved. Match ends when one player is up by more holes than remain (e.g. 3&2 means 3 up with 2 to play)."},
+    {name:"Skins",desc:"Each hole has a value (skin). Lowest score on the hole wins the skin. If tied, the skin carries over to the next hole. High-pressure format where one great hole can win everything."},
+    {name:"Chapman (Pinehurst)",desc:"Both players tee off. Players swap balls for the second shot. After the second shot, choose the better ball and alternate shots until holed."},
+    {name:"Shamble",desc:"Like a scramble off the tee — everyone tees off, pick the best drive, then everyone plays their own ball from there. Combines the scramble tee advantage with individual play."}
+  ];
+
+  formats.forEach(function(f) {
+    h += '<div class="card"><div style="padding:14px 16px">';
+    h += '<div style="font-size:14px;font-weight:600;color:var(--gold);margin-bottom:4px">' + f.name + '</div>';
+    h += '<div style="font-size:12px;color:var(--muted);line-height:1.6">' + f.desc + '</div>';
+    h += '</div></div>';
+  });
+  h += '</div>';
+
+  // Scramble specific rules
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Scramble rules</span></div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
+  h += '<span style="color:var(--gold);font-weight:600">Captain:</span> Every scramble team has a designated captain. Captain must hit last on every shot — tee shots, approaches, chips, and putts.<br><br>';
+  h += '<span style="color:var(--gold);font-weight:600">Ball placement:</span> Within one club length of the chosen shot, no closer to the hole. On the green, within one putter head length.<br><br>';
+  h += '<span style="color:var(--gold);font-weight:600">Tee shots:</span> Each player must contribute a minimum number of tee shots (typically 3-4 per 18 holes depending on team size).<br><br>';
+  h += '<span style="color:var(--gold);font-weight:600">Scoring:</span> Both players log the scramble round separately on their own profile for tracking purposes.';
+  h += '</div></div></div>';
+
+  // USGA link
+  h += '<div style="padding:16px;text-align:center">';
+  h += '<a href="https://www.usga.org/rules/rules-of-golf.html" target="_blank" style="font-size:12px;color:var(--gold);text-decoration:none;letter-spacing:.3px">Official USGA Rules & Guidelines →</a>';
+  h += '</div>';
+
+  document.querySelector('[data-page="rules"]').innerHTML = h;
 });
 
 /* ================================================
@@ -2772,8 +3027,18 @@ function renderLiveScoring() {
   if (hole < 17) {
     h += '<button class="btn green" style="flex:1" onclick="if(liveState.scores[' + hole + ']===\'\'){Router.toast(\'Enter a score\');return;}liveState.currentHole++;Router.go(\'playnow\')">Next hole</button>';
   } else {
-    h += '<button class="btn green" style="flex:1" onclick="finishLiveRound()">Finish round</button>';
+    h += '<button class="btn green" style="flex:1" onclick="showFinishOptions()">Finish round</button>';
   }
+  h += '</div>';
+
+  // Finish options (visibility before publishing)
+  h += '<div id="finish-options" style="display:none;margin-top:12px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)">';
+  h += '<div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Publish round</div>';
+  h += '<div style="display:flex;gap:8px;margin-bottom:10px">';
+  h += '<div onclick="document.getElementById(\'vis-public\').style.borderColor=\'var(--gold)\';document.getElementById(\'vis-private\').style.borderColor=\'var(--border)\';liveState.visibility=\'public\'" id="vis-public" style="flex:1;padding:10px;text-align:center;border:2px solid var(--gold);border-radius:var(--radius);cursor:pointer;background:rgba(201,168,76,.06)"><div style="font-size:12px;font-weight:600;color:var(--cream)">Public</div><div style="font-size:9px;color:var(--muted);margin-top:2px">Shows in activity feed</div></div>';
+  h += '<div onclick="document.getElementById(\'vis-private\').style.borderColor=\'var(--gold)\';document.getElementById(\'vis-public\').style.borderColor=\'var(--border)\';liveState.visibility=\'private\'" id="vis-private" style="flex:1;padding:10px;text-align:center;border:2px solid var(--border);border-radius:var(--radius);cursor:pointer"><div style="font-size:12px;font-weight:600;color:var(--cream)">Private</div><div style="font-size:9px;color:var(--muted);margin-top:2px">Only on your profile</div></div>';
+  h += '</div>';
+  h += '<button class="btn full green" onclick="finishLiveRound()">Confirm & save</button>';
   h += '</div>';
 
   // Turn summary (show at hole 9)
@@ -2862,6 +3127,175 @@ function finishLiveRound() {
   var msg = commentary.roasts.length ? commentary.roasts[0] : (commentary.highlights.length ? commentary.highlights[0] : "Round complete!");
   Router.toast(totalScore + " — " + msg);
   Router.go("rounds", { roundId: round.id });
+}
+
+function showFinishOptions() {
+  var el = document.getElementById("finish-options");
+  if (el) el.style.display = "block";
+  liveState.visibility = "public";
+  window.scrollTo(0, document.body.scrollHeight);
+}
+
+/* ================================================
+   PAGE: SEASON
+   ================================================ */
+
+Router.register("standings", function() {
+  var year = new Date().getFullYear();
+  var season = PB.getSeasonStandings(year);
+  var now = new Date();
+  var month = now.getMonth();
+  var inSeason = month >= 2 && month <= 8;
+
+  var h = '<div class="sh"><h2>Season</h2><button class="back" onclick="Router.go(\'records\')">← Back</button></div>';
+
+  h += '<div style="text-align:center;padding:20px 16px 24px;background:linear-gradient(180deg,#111520,var(--bg));border-bottom:1px solid var(--border)">';
+  h += '<div style="font-family:Playfair Display,serif;font-size:32px;color:var(--gold);font-weight:700">The ' + year + '</div>';
+  h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--cream);margin-top:2px">Parbaugh Season</div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1.5px;text-transform:uppercase">March 1 — September 30</div>';
+  if (inSeason) {
+    var seasonEnd = new Date(year, 8, 30);
+    var daysLeft = Math.ceil((seasonEnd - now) / (1000*60*60*24));
+    h += '<div style="display:inline-block;margin-top:10px;padding:5px 14px;background:rgba(78,201,122,.08);border:1px solid rgba(78,201,122,.15);border-radius:12px;font-size:10px;color:var(--birdie);font-weight:600;letter-spacing:.5px">IN SEASON · ' + daysLeft + ' DAYS LEFT</div>';
+  } else {
+    var nextSeason = new Date(month >= 9 ? year+1 : year, 2, 1);
+    var daysUntil = Math.ceil((nextSeason - now) / (1000*60*60*24));
+    h += '<div style="display:inline-block;margin-top:10px;padding:5px 14px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.12);border-radius:12px;font-size:10px;color:var(--gold);font-weight:600;letter-spacing:.5px">OFFSEASON · ' + daysUntil + ' DAYS UNTIL NEXT</div>';
+  }
+  h += '</div>';
+
+  if (season.standings.length) {
+    var totalRounds = season.standings.reduce(function(a,s){return a+s.rounds},0);
+    var bestScore = Math.min.apply(null, season.standings.filter(function(s){return s.best}).map(function(s){return s.best}).concat([999]));
+    h += '<div class="stats-grid" style="padding:12px 16px">';
+    h += '<div class="stat-box"><div class="stat-val">' + season.standings.length + '</div><div class="stat-label">Active</div></div>';
+    h += '<div class="stat-box"><div class="stat-val">' + totalRounds + '</div><div class="stat-label">Rounds</div></div>';
+    h += '<div class="stat-box"><div class="stat-val">' + (bestScore < 999 ? bestScore : "—") + '</div><div class="stat-label">Low round</div></div>';
+    h += '</div>';
+  }
+
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Standings</span></div>';
+  if (season.standings.length) {
+    season.standings.forEach(function(s, idx) {
+      var medal = idx === 0 ? '1st' : idx === 1 ? '2nd' : idx === 2 ? '3rd' : (idx+1) + '';
+      var medalColor = idx === 0 ? 'var(--gold)' : idx === 1 ? '#b0b0b0' : idx === 2 ? '#cd7f32' : 'var(--muted)';
+      var isFirst = idx === 0;
+      h += '<div class="card" style="' + (isFirst ? 'border-color:rgba(201,168,76,.2);background:linear-gradient(135deg,#1a1e30,var(--card))' : '') + '">';
+      h += '<div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center">';
+      h += '<div style="display:flex;align-items:center;gap:14px">';
+      h += '<div style="font-size:16px;width:32px;text-align:center;font-weight:800;color:' + medalColor + '">' + medal + '</div>';
+      h += '<div><div style="font-size:14px;font-weight:600">' + s.username + '</div>';
+      h += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + s.rounds + ' rds · Best: ' + (s.best||"—") + ' · HCP: ' + (s.hcap||"—") + '</div></div></div>';
+      h += '<div style="text-align:right"><div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:var(--gold)">' + (s.points||0) + '</div>';
+      h += '<div style="font-size:9px;color:var(--muted);letter-spacing:.5px">PTS</div></div>';
+      h += '</div></div>';
+    });
+  } else {
+    h += '<div class="card"><div class="empty" style="padding:28px"><div style="width:40px;height:40px;margin:0 auto 8px;opacity:.3;border-radius:8px;overflow:hidden"><img src="watermark.jpg" style="width:100%;height:100%;object-fit:cover"></div>';
+    h += '<div class="empty-text">No rounds this season</div>';
+    h += '<div style="font-size:10px;color:var(--muted2);margin-top:4px">Log rounds March—September to appear</div></div></div>';
+  }
+  h += '</div>';
+
+  h += '<div class="section"><div class="sec-head" onclick="toggleSection(\'season-rules\')" style="cursor:pointer"><span class="sec-title">Season rules</span><span class="sec-link" id="season-rules-toggle">▶</span></div>';
+  h += '<div id="season-rules" style="display:none">';
+  h += '<div class="club-row"><span class="club-name">Season window</span><span class="club-yd">March 1 — September 30</span></div>';
+  h += '<div class="club-row"><span class="club-name">Ranking method</span><span class="club-yd">Season point system</span></div>';
+  h += '<div class="club-row"><span class="club-name">Base rules</span><span class="club-yd">USGA rules apply</span></div>';
+  h += '<div class="club-row"><span class="club-name">Breakfast balls</span><span class="club-yd">2 per round (1 front, 1 back)</span></div>';
+  h += '<div class="club-row"><span class="club-name">Honor system</span><span class="club-yd">Scouts honor — attested scores earn 150 XP</span></div>';
+  h += '<div class="club-row"><span class="club-name">Inactivity</span><span class="club-yd">3 months = 3 rounds to reactivate</span></div>';
+  h += '<div class="club-row"><span class="club-name">Eligible rounds</span><span class="club-yd">Public rounds only</span></div>';
+  h += '<div class="club-row"><span class="club-name">Season winner</span><span class="club-yd">Earns title + unique profile photo</span></div>';
+  h += '</div></div>';
+
+  document.querySelector('[data-page="standings"]').innerHTML = h;
+});
+
+/* ================================================
+   PAGE: H2H CHALLENGES
+   ================================================ */
+
+Router.register("challenges", function(params) {
+  if (params && params.create) { renderCreateChallenge(); return; }
+  renderChallengeList();
+});
+
+function renderChallengeList() {
+  var challenges = [];
+  try {
+    PB.getPlayers().forEach(function(p) {
+      var pc = PB.getChallenges(p.id);
+      pc.forEach(function(c) {
+        if (!challenges.find(function(x){return x.id===c.id})) challenges.push(c);
+      });
+    });
+  } catch(e) {}
+
+  var h = '<div class="sh"><h2>Challenges</h2><button class="btn-sm green" onclick="Router.go(\'challenges\',{create:true})">+ New</button></div>';
+
+  if (challenges.length) {
+    challenges.sort(function(a,b){return (b.ts||0)-(a.ts||0)});
+    challenges.forEach(function(c) {
+      var from = PB.getPlayer(c.from);
+      var to = PB.getPlayer(c.to);
+      var statusColor = c.status === "pending" ? "var(--gold)" : c.status === "accepted" ? "var(--birdie)" : c.status === "completed" ? "var(--cream)" : "var(--red)";
+      h += '<div class="card"><div style="padding:14px 16px">';
+      h += '<div style="display:flex;justify-content:space-between;align-items:center">';
+      h += '<div><div style="font-size:13px;font-weight:600">' + (from?from.username||from.name:"?") + ' vs ' + (to?to.username||to.name:"?") + '</div>';
+      if (c.course) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + c.course + '</div>';
+      if (c.stakes) h += '<div style="font-size:11px;color:var(--gold2);margin-top:2px;font-style:italic">' + c.stakes + '</div>';
+      h += '<div style="font-size:9px;color:var(--muted2);margin-top:3px">' + (c.created || "") + '</div>';
+      h += '</div>';
+      h += '<div style="font-size:10px;font-weight:600;color:' + statusColor + ';text-transform:uppercase;letter-spacing:.5px">' + c.status + '</div>';
+      h += '</div></div></div>';
+    });
+  } else {
+    h += '<div class="card"><div class="empty" style="padding:28px"><div class="empty-text">No challenges yet</div>';
+    h += '<div style="font-size:10px;color:var(--muted2);margin-top:4px">Challenge a member to a H2H match</div></div></div>';
+  }
+
+  document.querySelector('[data-page="challenges"]').innerHTML = h;
+}
+
+function renderCreateChallenge() {
+  var players = PB.getPlayers();
+  var h = '<div class="sh"><h2>New challenge</h2><button class="back" onclick="Router.go(\'challenges\')">← Back</button></div>';
+
+  h += '<div class="form-section"><div class="form-title">Challenge details</div>';
+  h += '<div class="ff"><label class="ff-label">From</label><select class="ff-input" id="ch-from">';
+  players.forEach(function(p) { h += '<option value="' + p.id + '">' + (p.username||p.name) + '</option>'; });
+  h += '</select></div>';
+  h += '<div class="ff"><label class="ff-label">Challenge</label><select class="ff-input" id="ch-to">';
+  players.forEach(function(p,i) { h += '<option value="' + p.id + '"' + (i===1?' selected':'') + '>' + (p.username||p.name) + '</option>'; });
+  h += '</select></div>';
+  h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="ch-course" placeholder="Start typing..." oninput="showChallengeCourseSearch(this)"><div id="search-ch-course" class="search-results"></div></div>';
+  h += '<div class="ff"><label class="ff-label">Stakes (optional)</label><input class="ff-input" id="ch-stakes" placeholder="e.g. Loser buys drinks"></div>';
+  h += '<button class="btn full green" onclick="submitChallenge()">Send challenge</button></div>';
+
+  document.querySelector('[data-page="challenges"]').innerHTML = h;
+}
+
+function showChallengeCourseSearch(input) {
+  var results = PB.searchCourses(input.value);
+  var container = document.getElementById("search-ch-course");
+  if (!results.length) { container.innerHTML = ""; return; }
+  var h = '';
+  results.forEach(function(c) {
+    h += '<div class="search-item" onclick="document.getElementById(\'ch-course\').value=\'' + c.name.replace(/'/g, "\\'") + '\';document.getElementById(\'search-ch-course\').innerHTML=\'\'">' + c.name + ' <span style="color:var(--muted);font-size:11px">' + c.loc + '</span></div>';
+  });
+  container.innerHTML = h;
+}
+
+function submitChallenge() {
+  var from = document.getElementById("ch-from").value;
+  var to = document.getElementById("ch-to").value;
+  if (from === to) { Router.toast("Pick two different players"); return; }
+  var course = document.getElementById("ch-course").value;
+  var stakes = document.getElementById("ch-stakes").value;
+  PB.createChallenge(from, to, course, stakes);
+  Router.toast("Challenge sent!");
+  Router.go("challenges");
 }
 
 /* ================================================
@@ -3581,27 +4015,72 @@ function submitCourseReview(courseId) {
 Router.register("records", function() {
   var rounds = PB.getRounds();
   var players = PB.getPlayers();
-  var h = '<div class="sh"><h2>Hall of fame</h2></div>';
+  var rec = PB.getRecords();
 
-  // Sub-nav for related pages
-  h += '<div style="display:flex;gap:8px;padding:0 16px 12px;overflow-x:auto">';
-  h += '<div class="ql" onclick="Router.go(\'aces\')" style="flex:0 0 auto;padding:10px 16px;display:flex;align-items:center;gap:6px"><span style="font-size:12px;font-weight:700">◆</span><span style="font-size:12px;font-weight:600;color:var(--gold)">Ace Wall</span></div>';
-  h += '<div class="ql" onclick="Router.go(\'scramble\')" style="flex:0 0 auto;padding:10px 16px;display:flex;align-items:center;gap:6px"><span style="font-size:12px;font-weight:700">◆</span><span style="font-size:12px;font-weight:600;color:var(--gold)">Teams</span></div>';
-  h += '<div class="ql" onclick="Router.go(\'courses\')" style="flex:0 0 auto;padding:10px 16px;display:flex;align-items:center;gap:6px"><span style="font-size:12px;font-weight:700">◆</span><span style="font-size:12px;font-weight:600;color:var(--gold)">Courses</span></div>';
+  var h = '<div class="sh"><h2>Records</h2></div>';
+
+  // Season standings card (prominent at top)
+  var year = new Date().getFullYear();
+  var month = new Date().getMonth();
+  var inSeason = month >= 2 && month <= 8;
+  h += '<div class="card" onclick="Router.go(\'standings\')" style="cursor:pointer;' + (inSeason ? 'border-color:rgba(201,168,76,.2);background:linear-gradient(135deg,#1a1e30,var(--card))' : '') + '">';
+  h += '<div style="padding:16px;display:flex;justify-content:space-between;align-items:center">';
+  h += '<div><div style="font-family:Playfair Display,serif;font-size:16px;font-weight:700;color:var(--gold)">' + year + ' Season Standings</div>';
+  h += '<div style="font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.3px">March — September · ' + (inSeason ? 'In season' : 'Offseason') + '</div></div>';
+  h += '<div class="m-arrow" style="color:var(--gold);font-size:20px">›</div></div></div>';
+
+  // Navigation grid — 2 columns
+  h += '<div style="padding:0 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">';
+
+  // Challenges
+  var challengeCount = 0;
+  try { PB.getPlayers().forEach(function(p){challengeCount += PB.getChallenges(p.id).filter(function(c){return c.status==="pending"}).length}); } catch(e) {}
+  h += '<div class="card" onclick="Router.go(\'challenges\')" style="cursor:pointer;margin-bottom:0"><div style="padding:14px 12px;text-align:center">';
+  h += '<div style="font-size:20px;font-family:Playfair Display,serif;font-weight:700;color:var(--gold)">' + (challengeCount || "0") + '</div>';
+  h += '<div style="font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.8px">Challenges</div></div></div>';
+
+  // Ace Wall
+  var aceCount = (rec.holeInOnes && rec.holeInOnes.length) || 0;
+  h += '<div class="card" onclick="Router.go(\'aces\')" style="cursor:pointer;margin-bottom:0"><div style="padding:14px 12px;text-align:center">';
+  h += '<div style="font-size:20px;font-family:Playfair Display,serif;font-weight:700;color:var(--gold)">' + aceCount + '</div>';
+  h += '<div style="font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.8px">Aces</div></div></div>';
+
+  // Teams
+  var teamCount = PB.getScrambleTeams().length;
+  h += '<div class="card" onclick="Router.go(\'scramble\')" style="cursor:pointer;margin-bottom:0"><div style="padding:14px 12px;text-align:center">';
+  h += '<div style="font-size:20px;font-family:Playfair Display,serif;font-weight:700;color:var(--gold)">' + teamCount + '</div>';
+  h += '<div style="font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.8px">Teams</div></div></div>';
+
+  // Courses
+  var coursesPlayed = PB.getCourses().filter(function(c){return PB.getCourseRounds(c.name).length>0}).length;
+  h += '<div class="card" onclick="Router.go(\'courses\')" style="cursor:pointer;margin-bottom:0"><div style="padding:14px 12px;text-align:center">';
+  h += '<div style="font-size:20px;font-family:Playfair Display,serif;font-weight:700;color:var(--gold)">' + coursesPlayed + '</div>';
+  h += '<div style="font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.8px">Courses played</div></div></div>';
+
   h += '</div>';
 
   // Helper for collapsible hof card
-  function hofCard(id, icon, title, content) {
-    return '<div class="hof-card"><div class="hof-title" onclick="toggleSection(\'rec-' + id + '\')" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center"><span>' + icon + ' ' + title + '</span><span id="rec-' + id + '-toggle" style="font-size:12px;color:var(--muted)">▼</span></div><div id="rec-' + id + '">' + content + '</div></div>';
+  function hofCard(id, title, content) {
+    return '<div class="hof-card"><div class="hof-title" onclick="toggleSection(\'rec-' + id + '\')" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center"><span>' + title + '</span><span id="rec-' + id + '-toggle" style="font-size:12px;color:var(--muted)">▶</span></div><div id="rec-' + id + '" style="display:none">' + content + '</div></div>';
   }
 
-  // 1. Event Champions
-  var champContent = '';
-  PB.getTrips().forEach(function(t) {
-    var champ = t.champion ? (PB.getPlayer(t.champion) || {name:t.champion}).name : "TBD";
-    champContent += '<div class="hof-row"><span class="hof-label">' + t.name + '</span><span class="hof-val">' + champ + '</span></div>';
-  });
-  h += hofCard("champs", "", "Event champions", champContent);
+  // 1. Event Champions — ALWAYS VISIBLE, they earned it
+  var trips = PB.getTrips();
+  if (trips.length) {
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Event champions</span></div>';
+    trips.forEach(function(t) {
+      var champ = t.champion ? PB.getPlayer(t.champion) : null;
+      var champName = champ ? (champ.username || champ.name) : "TBD";
+      var isChamp = !!t.champion;
+      h += '<div class="card" style="' + (isChamp ? 'border-color:rgba(201,168,76,.2);background:linear-gradient(135deg,#1a1e30,var(--card))' : '') + '">';
+      h += '<div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center">';
+      h += '<div><div style="font-family:Playfair Display,serif;font-size:15px;font-weight:700;color:var(--gold)">' + t.name + '</div>';
+      h += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + (t.dates||"") + ' · ' + (t.location||"") + '</div></div>';
+      h += '<div style="text-align:right"><div style="font-size:14px;font-weight:700;color:' + (isChamp ? 'var(--gold)' : 'var(--muted)') + '">' + champName + '</div></div>';
+      h += '</div></div>';
+    });
+    h += '</div>';
+  }
 
   // 2. All-time records
   var recContent = '';
@@ -3617,7 +4096,7 @@ Router.register("records", function() {
   recContent += '<div class="hof-row"><span class="hof-label">Longest hole out</span><span class="hof-val">' + (rec.longestHoleOut ? rec.longestHoleOut.distance + ' yds — ' + rec.longestHoleOut.by : "—") + '</span></div>';
   recContent += '<div class="hof-row"><span class="hof-label">Chip-ins</span><span class="hof-val">' + (rec.chipIns || 0) + '</span></div>';
   recContent += '<div class="hof-row" onclick="Router.go(\'aces\')" style="cursor:pointer"><span class="hof-label">Hole-in-ones</span><span class="hof-val" style="color:var(--gold)">' + (rec.holeInOnes && rec.holeInOnes.length ? rec.holeInOnes.length + ' → View Ace Wall' : 'View Ace Wall →') + '</span></div>';
-  h += hofCard("alltime", "", "All-time records", recContent);
+  h += hofCard("alltime", "All-time records", recContent);
 
   // Log record button
   h += '<div style="padding:0 16px 8px"><button class="btn full outline" onclick="showAddRecord()">+ Log a record</button></div>';
@@ -3644,7 +4123,7 @@ Router.register("records", function() {
     }
   }
   if (!h2hContent) h2hContent = '<div class="hof-row"><span class="hof-label">No head-to-head data</span><span class="hof-val">Play same course, same day</span></div>';
-  h += hofCard("h2h", "", "Head-to-head records", h2hContent);
+  h += hofCard("h2h", "Head-to-head records", h2hContent);
 
   // 4. Scramble team records
   var teams = PB.getScrambleTeams();
@@ -3670,7 +4149,7 @@ Router.register("records", function() {
   } else {
     scrambleContent = '<div class="hof-row"><span class="hof-label">No teams yet</span><span class="hof-val">Create a team</span></div>';
   }
-  h += hofCard("scramble", "", "Scramble team records", scrambleContent);
+  h += hofCard("scramble", "Scramble team records", scrambleContent);
 
   // 5. Best scores by course
   var courseContent = '';
@@ -3698,7 +4177,7 @@ Router.register("records", function() {
   } else {
     courseContent = '<div class="hof-row"><span class="hof-label">No course records</span><span class="hof-val">Log rounds to populate</span></div>';
   }
-  h += hofCard("courses", "", "Best scores by course", courseContent);
+  h += hofCard("courses", "Best scores by course", courseContent);
 
   // 6. Handicap leaderboard
   var hcapContent = '';
@@ -3706,7 +4185,7 @@ Router.register("records", function() {
     .filter(function(x) { return x.hcap !== null; }).sort(function(a, b) { return a.hcap - b.hcap; });
   if (hcaps.length) { hcaps.forEach(function(x) { hcapContent += '<div class="hof-row"><span class="hof-label">' + x.name + '</span><span class="hof-val">' + x.hcap + '</span></div>'; }); }
   else hcapContent = '<div class="hof-row"><span class="hof-label">No handicaps yet</span><span class="hof-val">Log 3+ rounds</span></div>';
-  h += hofCard("hcap", "", "Handicap leaderboard", hcapContent);
+  h += hofCard("hcap", "Handicap leaderboard", hcapContent);
 
   // 7. Member averages
   var avgContent = '';
@@ -3715,7 +4194,7 @@ Router.register("records", function() {
     var avg = r.length ? Math.round(r.reduce(function(a, x) { return a + x.score; }, 0) / r.length) : "—";
     avgContent += '<div class="hof-row"><span class="hof-label">' + p.name + '</span><span class="hof-val">' + avg + (r.length ? ' (' + r.length + ')' : '') + '</span></div>';
   });
-  h += hofCard("avg", "", "Member averages", avgContent);
+  h += hofCard("avg", "Member averages", avgContent);
 
   document.querySelector('[data-page="records"]').innerHTML = h;
 });
