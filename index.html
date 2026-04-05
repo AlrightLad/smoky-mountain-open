@@ -759,7 +759,7 @@ function doRegister() {
       // Permission or other Firestore error on username check — skip it and proceed
       console.warn("[Auth] Username check failed, proceeding:", e);
       return auth.createUserWithEmailAndPassword(email, pw);
-    });then(function(cred) {
+    }).then(function(cred) {
       return cred.user.updateProfile({ displayName:username }).then(function() { return cred.user; });
     }).then(function(user) {
       // First founding member becomes Commissioner, rest are members
