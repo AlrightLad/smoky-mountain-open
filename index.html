@@ -2909,8 +2909,8 @@ function renderMemberDetailWithData(p) {
   h += '<div style="font-size:10px;color:var(--muted2);margin-top:6px;letter-spacing:1px">MEMBER SINCE ' + joinDate + '</div>';
   h += '<div style="margin-top:12px;display:flex;gap:8px;justify-content:center">';
   // Edit button — only for own profile or commissioner
-  var canEdit = (currentUser && currentUser.uid === pid) || (currentProfile && currentProfile.role === "commissioner");
-  if (canEdit) {
+  var isOwnProfile = currentUser && currentUser.uid === pid;
+  if (isOwnProfile) {
     h += '<button class="btn-sm green" onclick="Router.go(\'members\',{edit:\'' + pid + '\'})">Edit profile</button>';
   }
   // Report button (not for self)
@@ -3221,8 +3221,34 @@ function buildHandicapGraph(rounds, pid) {
 }
 
 function renderMemberEdit(pid) {
+  // Only allow editing your own profile
+  if (currentUser && pid !== currentUser.uid) {
+    Router.toast("You can only edit your own profile");
+    Router.go("members", { id: pid });
+    return;
+  }
+  
   var p = PB.getPlayer(pid);
+  
+  // If not in local data, try Firebase
+  if (!p && db && pid) {
+    db.collection("members").doc(pid).get().then(function(doc) {
+      if (doc.exists) {
+        renderMemberEditForm(doc.data());
+      } else {
+        Router.toast("Profile not found");
+        renderMemberList();
+      }
+    }).catch(function() { renderMemberList(); });
+    document.querySelector('[data-page="members"]').innerHTML = '<div class="loading"><div class="spinner"></div>Loading profile...</div>';
+    return;
+  }
   if (!p) { renderMemberList(); return; }
+  renderMemberEditForm(p);
+}
+
+function renderMemberEditForm(p) {
+  var pid = p.id;
   var clubLabels = {driver:"Driver",three_wood:"3 Wood",four_wood:"4 Wood",five_wood:"5 Wood",seven_wood:"7 Wood",nine_wood:"9 Wood",two_hybrid:"2 Hybrid",three_hybrid:"3 Hybrid",four_hybrid:"4 Hybrid",five_hybrid:"5 Hybrid",six_hybrid:"6 Hybrid",two_iron:"2 Iron",three_iron:"3 Iron",four_iron:"4 Iron",five_iron:"5 Iron",six_iron:"6 Iron",seven_iron:"7 Iron",eight_iron:"8 Iron",nine_iron:"9 Iron",pw:"PW",aw:"AW (48-50)",gw:"GW (50-52)",gap52:"52°",sw:"SW (54-56)",gap56:"56°",gap58:"58°",lw:"LW (60°)",gap64:"64°",putter:"Putter"};
 
   var h = '<div class="sh"><h2>Edit profile</h2><button class="back" onclick="Router.go(\'members\',{id:\'' + pid + '\'})">← Back</button></div>';
@@ -3353,6 +3379,14 @@ function saveMemberEdit(pid) {
     reader.readAsDataURL(bagInput.files[0]);
   } else {
     PB.updatePlayer(pid, updates);
+    // Also save to Firestore
+    if (db && currentUser && pid === currentUser.uid) {
+      updates.updatedAt = fsTimestamp();
+      db.collection("members").doc(pid).set(updates, { merge: true }).then(function() {
+        currentProfile = Object.assign(currentProfile || {}, updates);
+      });
+    }
+    syncMember(Object.assign({id:pid}, updates));
     Router.toast("Profile saved!");
     Router.go("members", { id: pid });
   }
