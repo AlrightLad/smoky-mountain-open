@@ -25,6 +25,8 @@
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--cream);min-height:100vh;min-height:100dvh;max-width:520px;margin:0 auto;overflow-x:hidden;-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 input[type=number]{-moz-appearance:textfield}
+input[type=date]{-webkit-appearance:none;appearance:none;min-width:0;font-size:14px}
+input[type=date]::-webkit-date-and-time-value{text-align:left}
 input,select,textarea{font-family:inherit}
 select{-webkit-appearance:none;appearance:none}
 
@@ -531,6 +533,8 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
   <div data-page="scorecard" class="hidden"></div>
   <div data-page="profile-edit" class="hidden"></div>
   <div data-page="settings" class="hidden"></div>
+  <div data-page="merch" class="hidden"></div>
+  <div data-page="faq" class="hidden"></div>
   <div data-page="standings" class="hidden"></div>
   <div data-page="challenges" class="hidden"></div>
   <div data-page="rules" class="hidden"></div>
@@ -558,6 +562,7 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 
 // ========== FIREBASE INIT ==========
 var PHOTO_MAX_KB = 80; // Target max photo size in KB after compression
+var COURSE_DEFAULT_IMG = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCABUAFQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDgs0ZpKK0JHZpc02imIdRmkzRmgBaM0maSgBc0maSkpDFzRSZopAP20oSnieIDmEZ/3jTluIs/6gf990XQEeylCVKZeMrCg9iSafEZJcBFhB9807oRB5Z9KXyzWrHYTty0lsg9MZqYW0MJ3TzwlfQJTAxPLPpSGM10In0hPvRhse9K2p6QiN5VvuIHA2dT6ZpaAc2Yz6U0xn0rphqOmSrwoU+hXFVZb6yyQIxkDOKNAuYflmitN723BG23YgjOaKNAMUAdzijkUDrxzQayLJojIwwgJxV6CIgZYgH0qrZruLbnKDHBxnJrohf2BjWM2SuQMfcAqkS2QWZQBsmIE/3s1Fd2YlO4XEWfQNVgsrS+YkSW6f3Fyc1KJVGNqjP0qeYkxG0+UKXDqQBnv+VUSx/Ct69mDjbkZ77ax5LbHKn8DRcpMg3nvzQTTWUqeRSE5pjFJJopM0UDEBo69KQVJGO5pAS25wQOefSrkEjCTacGqffjrU8BCc96TJZoBih45NO8wqNxPNVhLkdeajaYlqgmxMymQllO0+1JNcNLGkdwCwToQcUzzflqB5uoqkNDJRBsJUybuwIGKpHrVlipHzE/hVeQKD8uce9UixtFJRTAM1JH1qKnrxSYE27DA1MG4qtmnq2DSET7jSk96h30b6VhEm/FMc5ORTN1JmqAQmmEA05qZQUNIOaKdRTAaKcOlFFJgLThRRQAuaSiigANGaKKAEPSm0UUAFFFFMD/2Q==';
 var fbApp, db, auth;
 var firebaseAvailable = false;
 try {
@@ -732,10 +737,23 @@ function doRegister() {
 
   validatePromise.then(function(inv) {
     if (!inv.valid) { showError("regError", inv.reason); return Promise.reject("invalid"); }
-    return db.collection("members").where("username","==",username.toLowerCase()).get().then(function(snap) {
-      if (!snap.empty) { showError("regError", "Username already taken"); return Promise.reject("taken"); }
+    // Check username availability, but don't block if check fails
+    var usernameCheck;
+    try {
+      usernameCheck = db.collection("members").where("username","==",username.toLowerCase()).get();
+    } catch(e) {
+      usernameCheck = Promise.resolve({empty:true});
+    }
+    return usernameCheck.then(function(snap) {
+      if (snap && !snap.empty) { showError("regError", "Username already taken"); return Promise.reject("taken"); }
       return auth.createUserWithEmailAndPassword(email, pw);
-    }).then(function(cred) {
+    }).catch(function(e) {
+      if (e === "taken") return Promise.reject("taken");
+      if (e.code && e.code.indexOf("auth") !== -1) return Promise.reject(e);
+      // Permission or other Firestore error on username check — skip it and proceed
+      console.warn("[Auth] Username check failed, proceeding:", e);
+      return auth.createUserWithEmailAndPassword(email, pw);
+    });then(function(cred) {
       return cred.user.updateProfile({ displayName:username }).then(function() { return cred.user; });
     }).then(function(user) {
       // First founding member becomes Commissioner, rest are members
@@ -805,7 +823,15 @@ function doRegister() {
     var msg = "Registration failed";
     if (e.code === "auth/email-already-in-use") msg = "Email already registered";
     else if (e.code === "auth/weak-password") msg = "Password too weak";
-    if (e.code) showError("regError", msg);
+    else if (e.code === "auth/invalid-email") msg = "Invalid email format";
+    else if (e.code === "auth/operation-not-allowed") msg = "Email/password accounts not enabled";
+    else if (e.code === "auth/network-request-failed") msg = "Network error — check your connection";
+    else if (e.message) msg = "Registration failed: " + e.message;
+    console.error("[Auth] Registration error:", e);
+    showError("regError", msg);
+    // Unlock button
+    var btn = document.querySelector("#registerForm .auth-btn");
+    if (btn) { btn.disabled = false; btn.textContent = "Create Account"; btn.style.opacity = "1"; }
   });
 }
 
@@ -1015,35 +1041,188 @@ function finishTripRound(tripId, courseKey) {
   if (!trip) return;
   var course = trip.courses.find(function(c) { return c.key === courseKey; });
   if (!course) return;
-  if (!confirm("Finish " + course.n + " and post results to the feed?")) return;
+  
+  if (!confirm("End scoring for " + course.n + " and start attestation?")) return;
+  
+  // Create attestation record in Firestore
+  if (!db) { Router.toast("Firebase required"); return; }
   
   var tripPlayers = trip.members.map(function(id) { return PB.getPlayer(id); }).filter(Boolean);
+  var attestations = {};
+  tripPlayers.forEach(function(p) { attestations[p.id] = { name: p.name, attested: false, attestedAt: null }; });
   
-  // Build results summary
-  var results = "";
+  // Build standings for the record
+  var standings = [];
   if (!course.s) {
-    // Individual scoring — show Stableford points
-    var standings = tripPlayers.map(function(p) {
+    standings = tripPlayers.map(function(p) {
       var pts = PB.getTripStableford(tripId, courseKey, p.id);
       var total = PB.getTripTotal(tripId, courseKey, p.id, 0, 18);
-      return { name: p.name, pts: pts, total: total };
+      return { id: p.id, name: p.name, score: total, pts: pts };
     }).sort(function(a, b) { return b.pts - a.pts; });
-    
-    if (standings.length && standings[0].total > 0) {
-      results = "\n";
-      standings.forEach(function(s, i) {
-        var medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : (i+1) + ".";
-        if (s.total > 0) results += medal + " " + s.name + " — " + s.total + " (" + s.pts + " pts)\n";
-      });
-    }
   } else {
-    // Scramble — show team total
     var teamTotal = PB.getTripTotal(tripId, courseKey, "team", 0, 18);
-    if (teamTotal > 0) results = "\nTeam score: " + teamTotal;
+    standings = [{ id: "team", name: "Team", score: teamTotal, pts: 0 }];
   }
   
-  announceEventEnd(tripId, course.n, results);
-  Router.toast("Results posted to feed!");
+  var docId = tripId + "_" + courseKey;
+  db.collection("attestations").doc(docId).set({
+    tripId: tripId,
+    courseKey: courseKey,
+    courseName: course.n,
+    status: "pending", // pending, complete, overridden
+    standings: standings,
+    attestations: attestations,
+    createdBy: currentUser ? currentUser.uid : "local",
+    createdAt: fsTimestamp()
+  }).then(function() {
+    // Announce to feed
+    db.collection("chat").add({
+      id: genId(),
+      text: "📋 " + course.n + " scoring is complete. All players must attest their scores.",
+      authorId: "system",
+      authorName: "Parbaughs",
+      createdAt: fsTimestamp()
+    });
+    Router.toast("Attestation started! Players must confirm their scores.");
+    Router.go("scorecard", { tripId: tripId });
+  });
+}
+
+function attestMyScore(tripId, courseKey) {
+  if (!db || !currentUser) { Router.toast("Sign in required"); return; }
+  var docId = tripId + "_" + courseKey;
+  
+  if (!confirm("I attest that the scores on this scorecard are accurate and complete.")) return;
+  
+  var field = "attestations." + currentUser.uid;
+  var update = {};
+  update[field + ".attested"] = true;
+  update[field + ".attestedAt"] = fsTimestamp();
+  
+  db.collection("attestations").doc(docId).update(update).then(function() {
+    Router.toast("Score attested ✓");
+    // Check if all players have attested
+    return db.collection("attestations").doc(docId).get();
+  }).then(function(doc) {
+    if (!doc.exists) return;
+    var data = doc.data();
+    var allAttested = Object.keys(data.attestations).every(function(pid) { return data.attestations[pid].attested; });
+    
+    if (allAttested) {
+      // All players attested — finalize and post results
+      finalizeAttestedRound(docId, data);
+    }
+  }).catch(function(e) { Router.toast("Failed: " + e.message); });
+}
+
+function overrideAttestation(tripId, courseKey) {
+  if (!currentProfile || currentProfile.role !== "commissioner") return;
+  if (!confirm("Override attestation and post results now? Some players haven't attested yet.")) return;
+  
+  var docId = tripId + "_" + courseKey;
+  db.collection("attestations").doc(docId).get().then(function(doc) {
+    if (!doc.exists) return;
+    finalizeAttestedRound(docId, doc.data(), true);
+  });
+}
+
+function finalizeAttestedRound(docId, data, overridden) {
+  // Mark as complete
+  db.collection("attestations").doc(docId).update({
+    status: overridden ? "overridden" : "complete",
+    completedAt: fsTimestamp()
+  });
+  
+  // Post results to feed
+  var results = "";
+  if (data.standings && data.standings.length) {
+    if (data.standings[0].id === "team") {
+      results = "\nTeam score: " + data.standings[0].score;
+    } else {
+      results = "\n";
+      data.standings.forEach(function(s, i) {
+        var medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : (i+1) + ".";
+        if (s.score > 0) results += medal + " " + s.name + " — " + s.score + (s.pts ? " (" + s.pts + " pts)" : "") + "\n";
+      });
+    }
+  }
+  
+  var attestNote = overridden ? " (Commissioner override)" : " (All players attested ✓)";
+  announceEventEnd(data.tripId, data.courseName, results + attestNote);
+  Router.toast("Results posted! " + (overridden ? "Commissioner override." : "All players attested."));
+  Router.go("scorecard", { tripId: data.tripId });
+}
+
+function renderAttestationStatus(tripId, courseKey) {
+  var docId = tripId + "_" + courseKey;
+  var h = '<div id="attestStatus_' + courseKey + '"><div class="loading"><div class="spinner"></div>Checking attestation...</div></div>';
+  
+  // Load attestation status asynchronously
+  if (db) {
+    setTimeout(function() {
+      db.collection("attestations").doc(docId).get().then(function(doc) {
+        var el = document.getElementById("attestStatus_" + courseKey);
+        if (!el) return;
+        
+        if (!doc.exists) {
+          el.innerHTML = '<div style="font-size:10px;color:var(--muted);text-align:center;padding:8px">Round has not been finalized yet</div>';
+          return;
+        }
+        
+        var data = doc.data();
+        var ah = '<div class="card" style="margin:0 16px"><div class="card-body">';
+        ah += '<div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px">Score Attestation</div>';
+        
+        if (data.status === "complete") {
+          ah += '<div style="font-size:11px;color:var(--birdie);margin-bottom:8px">✓ All players attested — scores are official</div>';
+        } else if (data.status === "overridden") {
+          ah += '<div style="font-size:11px;color:var(--gold);margin-bottom:8px">✓ Scores finalized (Commissioner override)</div>';
+        } else {
+          ah += '<div style="font-size:11px;color:var(--muted);margin-bottom:8px">⏳ Waiting for all players to attest</div>';
+        }
+        
+        // Show each player's attestation status
+        var attestations = data.attestations || {};
+        var allAttested = true;
+        Object.keys(attestations).forEach(function(pid) {
+          var a = attestations[pid];
+          var status = a.attested ? '<span style="color:var(--birdie)">✓ Attested</span>' : '<span style="color:var(--red)">⏳ Pending</span>';
+          ah += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)">';
+          ah += '<span style="font-size:12px">' + escHtml(a.name) + '</span>';
+          ah += '<span style="font-size:10px;font-weight:600">' + status + '</span></div>';
+          if (!a.attested) allAttested = false;
+        });
+        
+        // Action buttons
+        if (data.status === "pending") {
+          var myAttestation = attestations[currentUser ? currentUser.uid : ""];
+          // Also check by claimedFrom
+          if (!myAttestation && currentProfile && currentProfile.claimedFrom) {
+            myAttestation = attestations[currentProfile.claimedFrom];
+          }
+          
+          if (myAttestation && !myAttestation.attested) {
+            ah += '<div style="margin-top:10px"><button class="btn full green" onclick="attestMyScore(\'' + tripId + '\',\'' + courseKey + '\')">I Attest These Scores Are Accurate</button></div>';
+          } else if (myAttestation && myAttestation.attested) {
+            ah += '<div style="margin-top:8px;font-size:10px;color:var(--birdie);text-align:center">✓ You have attested</div>';
+          }
+          
+          // Commissioner override
+          if (currentProfile && currentProfile.role === "commissioner" && !allAttested) {
+            ah += '<div style="margin-top:8px"><button class="btn-sm outline" style="width:100%;font-size:9px;color:var(--muted)" onclick="overrideAttestation(\'' + tripId + '\',\'' + courseKey + '\')">Commissioner: Override & Finalize</button></div>';
+          }
+        }
+        
+        ah += '</div></div>';
+        el.innerHTML = ah;
+      }).catch(function() {
+        var el = document.getElementById("attestStatus_" + courseKey);
+        if (el) el.innerHTML = '';
+      });
+    }, 100);
+  }
+  
+  return h;
 }
 
 // ========== FIRESTORE PHOTO SYSTEM ==========
@@ -1611,19 +1790,66 @@ var PB = (function() {
   }
 
   function calcHandicap(rounds) {
+    // GHIN / World Handicap System formula
+    // 1. Calculate Score Differential for each round: (113 / Slope) × (Score - Rating)
+    // 2. Use most recent 20 rounds
+    // 3. Select best differentials based on count:
+    //    3 rounds=lowest 1, 4=lowest 1, 5=lowest 1, 6=lowest 2, 
+    //    7-8=lowest 2, 9-10=lowest 3, 11-12=lowest 4, 13-14=lowest 5,
+    //    15-16=lowest 6, 17-18=lowest 7, 19=lowest 8, 20=lowest 8
+    // 4. Average the selected differentials
+    // 5. Multiply by 0.96 (96% adjustment per WHS)
+    // 6. Round to one decimal
     if (!rounds || rounds.length < 3) return null;
-    var diffs = rounds.map(function(r) { return ((r.score - (r.rating || 72)) * 113 / (r.slope || 113)); });
+    
+    // Sort by date descending, take most recent 20
+    var recent = rounds.slice().sort(function(a,b) { return new Date(b.date) - new Date(a.date); }).slice(0, 20);
+    
+    // Calculate score differentials
+    var diffs = recent.map(function(r) {
+      var rating = parseFloat(r.rating) || 72;
+      var slope = parseInt(r.slope) || 113;
+      return (113 / slope) * (r.score - rating);
+    });
+    
+    // Sort differentials lowest first
     var sorted = diffs.slice().sort(function(a, b) { return a - b; });
-    var n = Math.min(rounds.length, 20);
-    var use = n <= 4 ? 1 : n <= 6 ? 2 : n <= 8 ? 3 : n <= 10 ? 4 : n <= 12 ? 5 : n <= 14 ? 6 : n <= 16 ? 7 : n <= 18 ? 8 : 10;
+    
+    // GHIN selection table
+    var n = sorted.length;
+    var use;
+    if (n <= 5) use = 1;
+    else if (n <= 8) use = 2;
+    else if (n <= 10) use = 3;
+    else if (n <= 12) use = 4;
+    else if (n <= 14) use = 5;
+    else if (n <= 16) use = 6;
+    else if (n <= 18) use = 7;
+    else use = 8;
+    
     var best = sorted.slice(0, use);
     var avg = best.reduce(function(a, b) { return a + b; }, 0) / best.length;
-    return Math.round(avg * 10) / 10;
+    
+    // Apply 0.96 multiplier (WHS standard)
+    var handicap = avg * 0.96;
+    
+    // Cap at 54.0 (max GHIN handicap)
+    handicap = Math.min(54.0, handicap);
+    
+    return Math.round(handicap * 10) / 10;
   }
 
   function getPlayerAvg(pid) {
     var r = getPlayerRounds(pid);
     return r.length ? Math.round(r.reduce(function(a, x) { return a + x.score; }, 0) / r.length) : null;
+  }
+
+  function getDisplayName(p) {
+    if (!p) return "Unknown";
+    var pref = p.displayPref || "name";
+    if (pref === "username" && p.username) return p.username;
+    if (pref === "nick" && p.nick) return p.nick;
+    return p.name || p.username || "Unknown";
   }
 
   function getPlayerBest(pid) {
@@ -2136,7 +2362,7 @@ var PB = (function() {
     getScrambleTeams:getScrambleTeams, addScrambleTeam:addScrambleTeam, addScrambleMatch:addScrambleMatch,
     getRecords:getRecords, setRecord:setRecord,
     calcStableford:calcStableford, calcHandicap:calcHandicap,
-    getPlayerAvg:getPlayerAvg, getPlayerBest:getPlayerBest, getUniqueCourses:getUniqueCourses,
+    getPlayerAvg:getPlayerAvg, getPlayerBest:getPlayerBest, getDisplayName:getDisplayName, getUniqueCourses:getUniqueCourses,
     getTripStableford:getTripStableford, getTripTotal:getTripTotal,
     getMiniPoints:getMiniPoints, getBonusPoints:getBonusPoints, getTripPoints:getTripPoints,
     daysUntil:daysUntil, generateRoundCommentary:generateRoundCommentary, getActivity:getActivity, getAchievements:getAchievements, getPlayerXP:getPlayerXP, getPlayerLevel:getPlayerLevel,
@@ -2428,9 +2654,15 @@ Router.register("home", function() {
     h += '</div></div></div>';
   }
 
-  // Backup and merch links
-  h += '<div style="text-align:center;padding:8px 16px 4px;display:flex;justify-content:center;gap:16px">';
+  // Footer links
+  h += '<div style="text-align:center;padding:8px 16px 4px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap">';
   h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="Router.go(\'merch\')">Merch</span>';
+  h += '<span style="font-size:11px;color:var(--muted2)">·</span>';
+  h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="Router.go(\'rules\')">Rules</span>';
+  h += '<span style="font-size:11px;color:var(--muted2)">·</span>';
+  h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="Router.go(\'faq\')">FAQ</span>';
+  h += '<span style="font-size:11px;color:var(--muted2)">·</span>';
+  h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="openFeatureRequest()">Feature Request</span>';
   h += '<span style="font-size:11px;color:var(--muted2)">·</span>';
   h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="Router.go(\'settings\')">Settings</span></div>';
 
@@ -2623,6 +2855,7 @@ Router.register("rules", function() {
 
   var formats = [
     {name:"Stroke play",desc:"Standard golf. Lowest total score wins. Every stroke counts. The purest form of the game."},
+    {name:"Parbaugh Stroke Play",desc:"The Parbaughs signature format. Handicap-adjusted stroke play that levels the playing field. Your net score = gross score minus your GHIN handicap strokes (allocated by hole difficulty). The lowest net score wins. A 20-handicapper and a scratch player compete on equal footing."},
     {name:"Stableford",desc:"Point-based scoring. Double bogey or worse = 0 pts, Bogey = 1, Par = 2, Birdie = 3, Eagle = 4, Albatross = 5. Higher is better. Rewards aggressive play and minimizes blowup hole damage."},
     {name:"Scramble",desc:"Team format (2-4 players). Everyone tees off, pick the best shot, everyone plays from there. Repeat until holed. Captain hits last on every shot. Great equalizer across skill levels."},
     {name:"Best ball",desc:"Team format. Everyone plays their own ball for the entire hole. The lowest individual score on each hole counts as the team score."},
@@ -2666,6 +2899,25 @@ Router.register("rules", function() {
   h += '<div style="padding:16px;text-align:center">';
   h += '<a href="https://rules.usga.org/" target="_blank" rel="noopener" style="font-size:12px;color:var(--gold);text-decoration:none;letter-spacing:.3px">Official USGA Rules of Golf →</a>';
   h += '</div>';
+
+  // GHIN Handicap explanation
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">GHIN Handicap System</span></div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
+  h += 'The Parbaughs uses the <span style="color:var(--gold);font-weight:600">World Handicap System (WHS)</span> formula, the same one used by GHIN and the USGA.<br><br>';
+  h += '<span style="color:var(--gold);font-weight:600">How it works:</span><br>';
+  h += '1. Each round generates a <em>Score Differential</em>: (113 ÷ Slope) × (Score − Rating)<br>';
+  h += '2. Your most recent 20 rounds are considered<br>';
+  h += '3. The best differentials are selected (number depends on how many rounds you have)<br>';
+  h += '4. Those are averaged and multiplied by 0.96<br>';
+  h += '5. The result is your Handicap Index (capped at 54.0)<br><br>';
+  h += '<span style="color:var(--gold);font-weight:600">Selection table:</span><br>';
+  h += '3-5 rounds → best 1 differential<br>';
+  h += '6-8 rounds → best 2 differentials<br>';
+  h += '9-10 rounds → best 3 differentials<br>';
+  h += '11-20 rounds → scales up to best 8 differentials<br><br>';
+  h += '<span style="color:var(--gold);font-weight:600">Minimum rounds:</span> 3 rounds required to establish a handicap. Until then, you can set a manual handicap on your profile.<br><br>';
+  h += '<span style="color:var(--gold);font-weight:600">Course Handicap:</span> For Parbaugh Stroke Play, your Handicap Index is adjusted to the specific course: Course Handicap = Index × (Slope ÷ 113) + (Rating − Par). Strokes are allocated by hole difficulty rating.';
+  h += '</div></div></div>';
 
   document.querySelector('[data-page="rules"]').innerHTML = h;
 });
@@ -3255,8 +3507,16 @@ function renderMemberEditForm(p) {
 
   h += '<div class="form-section"><div class="form-title">Basic info</div>';
   h += formField("Display name", "edit-name", p.name, "text");
-  h += formField("Username", "edit-username", p.username || "", "text", "e.g. TheCommissioner");
+  h += formField("Username", "edit-username", p.username || "", "text", "Permanent · Cannot be changed");
+  h += '<div class="ff"><label class="ff-label">Username</label><div class="ff-input" style="background:var(--bg4);color:var(--muted)">' + escHtml(p.username || "") + ' <span style="font-size:9px">(permanent)</span></div></div>';
   h += formField("Nickname", "edit-nick", p.nick || "", "text", "e.g. The Commissioner");
+  
+  // Display name preference
+  h += '<div class="ff"><label class="ff-label">Show on scorecards & feed as</label><select class="ff-input" id="edit-displayPref">';
+  h += '<option value="name"' + ((p.displayPref||"name")==="name"?" selected":"") + '>Display Name (' + escHtml(p.name) + ')</option>';
+  h += '<option value="username"' + (p.displayPref==="username"?" selected":"") + '>Username (' + escHtml(p.username||"") + ')</option>';
+  h += '<option value="nick"' + (p.displayPref==="nick"?" selected":"") + '>Nickname (' + escHtml(p.nick||p.name) + ')</option>';
+  h += '</select></div>';
   h += formField("Score range", "edit-range", p.range || "", "text", "e.g. 85-95");
   
   // Equipped title selector
@@ -3346,6 +3606,7 @@ function saveMemberEdit(pid) {
     name: document.getElementById("edit-name").value,
     username: document.getElementById("edit-username").value,
     nick: document.getElementById("edit-nick").value,
+    displayPref: document.getElementById("edit-displayPref").value,
     equippedTitle: document.getElementById("edit-title").value,
     range: document.getElementById("edit-range").value,
     bio: document.getElementById("edit-bio").value,
@@ -3356,7 +3617,55 @@ function saveMemberEdit(pid) {
     funnyFacts: facts
   };
 
-  // Handle bag photo
+  // Validate username and nickname uniqueness before saving
+  if (!updates.username || updates.username.trim().length < 3) {
+    Router.toast("Username must be 3+ characters");
+    return;
+  }
+
+  var checkUniqueness = Promise.resolve();
+  if (db) {
+    checkUniqueness = db.collection("members").get().then(function(snap) {
+      var conflicts = [];
+      snap.forEach(function(doc) {
+        if (doc.id === pid) return; // Skip self
+        var m = doc.data();
+        if (m.username && updates.username && m.username.toLowerCase() === updates.username.toLowerCase()) {
+          conflicts.push("Username '" + updates.username + "' is already taken by " + (m.name || "another member"));
+        }
+        if (updates.nick && updates.nick.trim() !== "" && m.nick && m.nick.toLowerCase() === updates.nick.toLowerCase()) {
+          conflicts.push("Nickname '" + updates.nick + "' is already taken by " + (m.name || "another member"));
+        }
+      });
+      if (conflicts.length) {
+        return Promise.reject(conflicts[0]);
+      }
+    });
+  }
+
+  checkUniqueness.then(function() {
+    doSaveMemberEdit(pid, updates);
+  }).catch(function(err) {
+    if (typeof err === "string") {
+      Router.toast(err);
+    } else {
+      // Firestore error — proceed anyway
+      doSaveMemberEdit(pid, updates);
+    }
+  });
+}
+
+function doSaveMemberEdit(pid, updates) {
+  // Get old name before saving to detect changes
+  var oldPlayer = PB.getPlayer(pid);
+  var oldName = oldPlayer ? (oldPlayer.name || oldPlayer.username) : null;
+  var oldUsername = oldPlayer ? oldPlayer.username : null;
+  var newDisplayName = PB.getDisplayName ? PB.getDisplayName(Object.assign({}, oldPlayer || {}, updates)) : updates.name;
+  
+  // Check if name actually changed
+  var nameChanged = oldName && updates.name && oldName !== updates.name;
+  var usernameChanged = oldUsername && updates.username && oldUsername !== updates.username;
+
   var bagInput = document.getElementById("edit-bagphoto");
   if (bagInput && bagInput.files && bagInput.files[0]) {
     var reader = new FileReader();
@@ -3371,6 +3680,7 @@ function saveMemberEdit(pid) {
         canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
         updates.bagPhoto = canvas.toDataURL("image/jpeg", 0.7);
         PB.updatePlayer(pid, updates);
+        if (nameChanged) propagateNameChange(pid, oldName, updates.name);
         Router.toast("Profile saved!");
         Router.go("members", { id: pid });
       };
@@ -3387,9 +3697,129 @@ function saveMemberEdit(pid) {
       });
     }
     syncMember(Object.assign({id:pid}, updates));
+    if (nameChanged) propagateNameChange(pid, oldName, updates.name);
     Router.toast("Profile saved!");
     Router.go("members", { id: pid });
   }
+}
+
+// Propagate name changes across all historical Firestore data
+function propagateNameChange(uid, oldName, newName) {
+  if (!db || !uid || !oldName || !newName || oldName === newName) return;
+  console.log("[Name] Propagating:", oldName, "→", newName);
+  
+  var updates = 0;
+  
+  // 1. Chat messages — authorName
+  db.collection("chat").where("authorId","==",uid).get().then(function(snap) {
+    if (snap.empty) return;
+    var batch = db.batch();
+    snap.forEach(function(doc) {
+      batch.update(doc.ref, { authorName: newName });
+      updates++;
+    });
+    return batch.commit();
+  }).then(function() {
+    console.log("[Name] Chat updated");
+  }).catch(function(e) { console.warn("[Name] Chat failed:", e.message); });
+  
+  // 2. Rounds — playerName
+  db.collection("rounds").where("playerId","==",uid).get().then(function(snap) {
+    if (snap.empty) return;
+    var batch = db.batch();
+    snap.forEach(function(doc) {
+      batch.update(doc.ref, { playerName: newName });
+      updates++;
+    });
+    return batch.commit();
+  }).catch(function(e) { console.warn("[Name] Rounds failed:", e.message); });
+  
+  // 3. Tee times — createdByName
+  db.collection("teetimes").where("createdBy","==",uid).get().then(function(snap) {
+    if (snap.empty) return;
+    var batch = db.batch();
+    snap.forEach(function(doc) {
+      batch.update(doc.ref, { createdByName: newName });
+      updates++;
+    });
+    return batch.commit();
+  }).catch(function(e) { console.warn("[Name] Tee times failed:", e.message); });
+  
+  // 4. Party games — createdByName and winnerName
+  db.collection("partygames").where("createdBy","==",uid).get().then(function(snap) {
+    if (snap.empty) return;
+    var batch = db.batch();
+    snap.forEach(function(doc) { batch.update(doc.ref, { createdByName: newName }); updates++; });
+    return batch.commit();
+  }).catch(function() {});
+  
+  db.collection("partygames").where("winner","==",uid).get().then(function(snap) {
+    if (snap.empty) return;
+    var batch = db.batch();
+    snap.forEach(function(doc) { batch.update(doc.ref, { winnerName: newName }); updates++; });
+    return batch.commit();
+  }).catch(function() {});
+  
+  // 5. Invites — createdByName
+  db.collection("invites").where("createdBy","==",uid).get().then(function(snap) {
+    if (snap.empty) return;
+    var batch = db.batch();
+    snap.forEach(function(doc) { batch.update(doc.ref, { createdByName: newName }); updates++; });
+    return batch.commit();
+  }).catch(function() {});
+  
+  // 6. Synced rounds — update player name inside the players map
+  db.collection("syncrounds").get().then(function(snap) {
+    snap.forEach(function(doc) {
+      var data = doc.data();
+      if (data.players && data.players[uid]) {
+        var update = {};
+        update["players." + uid + ".name"] = newName;
+        doc.ref.update(update);
+        updates++;
+      }
+      if (data.createdBy === uid) {
+        doc.ref.update({ createdByName: newName });
+      }
+    });
+  }).catch(function() {});
+  
+  // 7. Attestations — update player name inside attestations map
+  db.collection("attestations").get().then(function(snap) {
+    snap.forEach(function(doc) {
+      var data = doc.data();
+      if (data.attestations && data.attestations[uid]) {
+        var update = {};
+        update["attestations." + uid + ".name"] = newName;
+        doc.ref.update(update);
+        updates++;
+      }
+      if (data.standings) {
+        var newStandings = data.standings.map(function(s) {
+          if (s.id === uid) s.name = newName;
+          return s;
+        });
+        doc.ref.update({ standings: newStandings });
+      }
+    });
+  }).catch(function() {});
+  
+  // 8. Comments in chat — update name in comment arrays
+  db.collection("chat").get().then(function(snap) {
+    snap.forEach(function(doc) {
+      var data = doc.data();
+      if (data.comments && data.comments.length) {
+        var changed = false;
+        var newComments = data.comments.map(function(c) {
+          if (c.uid === uid) { c.name = newName; changed = true; }
+          return c;
+        });
+        if (changed) doc.ref.update({ comments: newComments });
+      }
+    });
+  }).catch(function() {});
+  
+  setTimeout(function() { console.log("[Name] Propagation complete. ~" + updates + " documents updated."); }, 3000);
 }
 
 function handleEditPhoto(pid, input) {
@@ -4136,7 +4566,7 @@ function renderPlaySetup() {
   h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="pn-course" placeholder="Start typing to search..." oninput="showPlayCourseSearch(this)"><div id="search-pn-course" class="search-results"></div></div>';
   h += '<input type="hidden" id="pn-rating" value=""><input type="hidden" id="pn-slope" value="">';
 
-  h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="pn-format"><option value="stroke">Stroke play</option><option value="stableford">Stableford</option><option value="match">Match play</option></select></div>';
+  h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="pn-format"><option value="stroke">Stroke play</option><option value="parbaugh">Parbaugh Stroke Play (handicap-adjusted)</option><option value="stableford">Stableford</option><option value="match">Match play</option><option value="scramble">Scramble</option><option value="bestball">Best ball</option><option value="skins">Skins</option></select></div>';
 
   h += '<button class="btn full green" onclick="startLiveRound()" style="margin-top:8px">Tee it up</button>';
   h += '</div>';
@@ -4602,9 +5032,21 @@ function renderTripCreate() {
   h += '<div id="tc-course-list" style="margin-top:8px"></div>';
   h += '</div>';
 
-  // Step 4: Format preferences
-  h += '<div class="form-section"><div class="form-title">Notes</div>';
-  h += '<div class="ff"><label class="ff-label">Special rules or notes</label><textarea class="ff-input" id="tc-notes" placeholder="e.g. Championship multiplier on final round, specific tee times..."></textarea></div>';
+  // Step 4: Smart Tournament Generator
+  h += '<div class="form-section"><div class="form-title">Tournament Format</div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Select a preset or customize. The generator builds fair pairings based on player handicaps.</div>';
+  h += '<div class="ff"><label class="ff-label">Tournament style</label><select class="ff-input" id="tc-style" onchange="updateFormatPreview()">';
+  h += '<option value="custom">Custom (manual setup)</option>';
+  h += '<option value="classic">Classic — Stableford each day, cumulative points</option>';
+  h += '<option value="mixed">Mixed — Different format each day</option>';
+  h += '<option value="parbaugh">Parbaugh Championship — Handicap-adjusted stroke play</option>';
+  h += '<option value="ryder">Ryder Cup — Teams, alternating formats</option>';
+  h += '<option value="skins">Skins Weekend — Skins every round, pot carries over</option>';
+  h += '<option value="scramble">Scramble Showdown — Scramble format, balanced teams</option>';
+  h += '</select></div>';
+  h += '<div id="formatPreview"></div>';
+  h += '<div class="ff"><label class="ff-label">Championship multiplier on final round?</label><select class="ff-input" id="tc-champ"><option value="no">No</option><option value="1.5">1.5x points</option><option value="2">2x points</option></select></div>';
+  h += '<div class="ff"><label class="ff-label">Additional notes</label><textarea class="ff-input" id="tc-notes" placeholder="Any special rules, side bets, tee time preferences..."></textarea></div>';
   h += '</div>';
 
   h += '<div class="form-section"><button class="btn full green" onclick="submitTripCreate()">Create event</button></div>';
@@ -4677,6 +5119,136 @@ function renderTripCourseList() {
   container.innerHTML = h;
 }
 
+// ========== SMART TOURNAMENT GENERATOR ==========
+function getTournamentFormats(style, numRounds) {
+  var formats = [];
+  switch(style) {
+    case "classic":
+      for (var i = 0; i < numRounds; i++) formats.push({ format: "stableford", teeTime: "8:00 AM", desc: "Modified Stableford" });
+      break;
+    case "mixed":
+      var rotation = ["stableford", "bestball", "scramble", "skins", "parbaugh", "match", "stroke"];
+      for (var i = 0; i < numRounds; i++) formats.push({ format: rotation[i % rotation.length], teeTime: "8:00 AM", desc: "" });
+      break;
+    case "parbaugh":
+      for (var i = 0; i < numRounds; i++) formats.push({ format: "parbaugh", teeTime: "8:30 AM", desc: "Handicap-adjusted stroke play" });
+      break;
+    case "ryder":
+      var ryderRotation = ["bestball", "scramble", "match", "bestball", "match"];
+      for (var i = 0; i < numRounds; i++) formats.push({ format: ryderRotation[i % ryderRotation.length], teeTime: "9:00 AM", desc: "Team format" });
+      break;
+    case "skins":
+      for (var i = 0; i < numRounds; i++) formats.push({ format: "skins", teeTime: "8:00 AM", desc: "Skins — pot carries over" });
+      break;
+    case "scramble":
+      for (var i = 0; i < numRounds; i++) formats.push({ format: "scramble", teeTime: "Shotgun 9:00 AM", desc: "Teams balanced by handicap" });
+      break;
+    default:
+      for (var i = 0; i < numRounds; i++) formats.push({ format: "stableford", teeTime: "TBD", desc: "" });
+  }
+  return formats;
+}
+
+function updateFormatPreview() {
+  var style = document.getElementById("tc-style").value;
+  var el = document.getElementById("formatPreview");
+  if (!el) return;
+  
+  if (style === "custom") { el.innerHTML = ''; return; }
+  
+  var numCourses = tripCreateState.courses.length || 3;
+  var numPlayers = tripCreateState.members.length || 4;
+  var formats = getTournamentFormats(style, numCourses);
+  var formatLabels = {stableford:"Stableford",stroke:"Stroke Play",parbaugh:"Parbaugh Stroke Play",scramble:"Scramble",bestball:"Best Ball",match:"Match Play",skins:"Skins"};
+  
+  var descriptions = {
+    classic: "Every round is Modified Stableford. Points accumulate across all rounds. Highest total points wins. Simple, fair, and rewards consistent play across the whole event.",
+    mixed: "A different format each day keeps things fresh. Tests all aspects of your game — individual scoring, team play, head-to-head, and strategy.",
+    parbaugh: "Parbaugh Stroke Play levels the playing field. Each player's handicap adjusts their gross score so higher handicappers compete fairly against lower ones. The best net score wins.",
+    ryder: "Split into two teams balanced by combined handicap. Alternate between best ball and scramble formats. Final day is individual match play. Team with most points wins.",
+    skins: "Every hole is worth money (or bragging rights). Win the hole outright or the skin carries over, making the next hole worth double. High drama guaranteed.",
+    scramble: "Teams balanced by combined handicap. Everyone drives, pick the best ball, everyone plays from there. Best team score wins. Great for groups with mixed skill levels."
+  };
+  
+  var ph = '<div class="card" style="margin:8px 0"><div class="card-body">';
+  ph += '<div style="font-size:12px;font-weight:600;color:var(--gold);margin-bottom:6px">' + style.charAt(0).toUpperCase() + style.slice(1) + ' Format</div>';
+  ph += '<div style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:8px">' + (descriptions[style] || "") + '</div>';
+  
+  ph += '<div style="font-size:10px;color:var(--cream)">';
+  formats.slice(0, numCourses).forEach(function(f, i) {
+    ph += '<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border)">';
+    ph += '<span>Day ' + (i+1) + '</span>';
+    ph += '<span style="color:var(--gold)">' + (formatLabels[f.format] || f.format) + '</span></div>';
+  });
+  ph += '</div>';
+  
+  if (numPlayers >= 2) {
+    ph += '<div style="margin-top:8px;font-size:10px;color:var(--muted)">';
+    if (style === "ryder" || style === "scramble") {
+      ph += 'Teams will be auto-balanced by handicap (' + numPlayers + ' players → ' + Math.ceil(numPlayers/2) + ' per team)';
+    } else {
+      ph += numPlayers + ' players competing individually';
+    }
+    ph += '</div>';
+  }
+  
+  ph += '</div></div>';
+  el.innerHTML = ph;
+}
+
+function generateFairPairings(memberIds, style) {
+  // Get players with handicaps, sort by skill
+  var players = memberIds.map(function(id) {
+    var p = PB.getPlayer(id);
+    var rounds = PB.getPlayerRounds(id);
+    var hcap = PB.calcHandicap(rounds) || (p ? (p.manualHandicap || 20) : 20);
+    return { id: id, name: p ? p.name : id, handicap: hcap };
+  }).sort(function(a, b) { return a.handicap - b.handicap; });
+  
+  if (style === "ryder" || style === "scramble") {
+    // Snake draft for fair teams: best + worst, 2nd best + 2nd worst, etc.
+    var team1 = [], team2 = [];
+    players.forEach(function(p, i) {
+      if (i % 4 === 0 || i % 4 === 3) team1.push(p);
+      else team2.push(p);
+    });
+    
+    var t1hcap = team1.reduce(function(a, p) { return a + p.handicap; }, 0);
+    var t2hcap = team2.reduce(function(a, p) { return a + p.handicap; }, 0);
+    
+    return {
+      type: "teams",
+      team1: { players: team1, combinedHandicap: Math.round(t1hcap * 10) / 10 },
+      team2: { players: team2, combinedHandicap: Math.round(t2hcap * 10) / 10 },
+      fairness: Math.abs(t1hcap - t2hcap) < 3 ? "Excellent balance" : Math.abs(t1hcap - t2hcap) < 6 ? "Good balance" : "Moderate imbalance"
+    };
+  }
+  
+  // Individual — return players sorted by handicap for tee time grouping
+  return {
+    type: "individual",
+    players: players,
+    groups: groupPlayersForTee(players)
+  };
+}
+
+function groupPlayersForTee(players) {
+  // Group players in foursomes, mixing skill levels
+  if (players.length <= 4) return [players];
+  var groups = [];
+  var remaining = players.slice();
+  while (remaining.length > 0) {
+    var group = [];
+    // Take best available, worst available, then fill middle
+    if (remaining.length > 0) group.push(remaining.shift()); // best
+    if (remaining.length > 0) group.push(remaining.pop());   // worst
+    if (remaining.length > 0) group.push(remaining.shift()); // 2nd best
+    if (remaining.length > 0) group.push(remaining.pop());   // 2nd worst
+    groups.push(group);
+  }
+  return groups;
+}
+
 function submitTripCreate() {
   var name = document.getElementById("tc-name").value;
   if (!name) { Router.toast("Enter an event name"); return; }
@@ -4688,6 +5260,11 @@ function submitTripCreate() {
   if (!start || !end) { Router.toast("Start and end dates required"); return; }
   var loc = document.getElementById("tc-location").value;
   var notes = document.getElementById("tc-notes").value;
+  var style = document.getElementById("tc-style").value;
+  var champMult = parseFloat(document.getElementById("tc-champ").value) || 1;
+
+  // Apply tournament style to course formats
+  var styleFormats = getTournamentFormats(style, tripCreateState.courses.length);
 
   // Build date display
   var dates = "";
@@ -4697,26 +5274,29 @@ function submitTripCreate() {
     dates = months[s.getMonth()] + " " + s.getDate() + "-" + e.getDate() + ", " + s.getFullYear();
   }
 
-  // Build course configs using per-course format selections
+  // Build course configs
   var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
-  var formatLabels = {stableford:"Stableford",stroke:"Stroke play",scramble:"Scramble",bestball:"Best ball",match:"Match play",skins:"Skins"};
+  var formatLabels = {stableford:"Stableford",stroke:"Stroke play",parbaugh:"Parbaugh Stroke Play",scramble:"Scramble",bestball:"Best ball",match:"Match play",skins:"Skins"};
   var courseConfigs = tripCreateState.courses.map(function(c, idx) {
     var dayLabels = ["Day 1","Day 2","Day 3","Day 4","Day 5","Day 6","Day 7"];
-    var mult = parseFloat(c.multiplier) || 1;
-    var fmt = c.format || "stableford";
+    var fmt = (style !== "custom" && styleFormats[idx]) ? styleFormats[idx].format : (c.format || "stableford");
+    var mult = (idx === tripCreateState.courses.length - 1 && champMult > 1) ? champMult : (parseFloat(c.multiplier) || 1);
     var label = (formatLabels[fmt] || fmt) + (mult !== 1 ? " (" + mult + "x)" : "");
     return {
       key: c.id + "_" + idx,
       courseId: c.id,
       n: c.name,
       d: dayLabels[idx] || "Day " + (idx+1),
-      t: "TBD",
+      t: styleFormats[idx] ? (styleFormats[idx].teeTime || "TBD") : "TBD",
       p: defaultPar,
       f: label,
       s: fmt === "scramble" ? 1 : 0,
       m: mult
     };
   });
+
+  // Generate fair pairings if team format
+  var pairings = generateFairPairings(tripCreateState.members, style);
 
   var trip = PB.addTrip({
     name: name,
@@ -4726,6 +5306,8 @@ function submitTripCreate() {
     endDate: end,
     members: tripCreateState.members,
     courses: courseConfigs,
+    tournamentStyle: style,
+    pairings: pairings,
     miniGames: [],
     bonusAwards: [
       {i:"sandman_"+Date.now(),l:"Sandman",d:"Most pars-or-better from bunkers",p:5},
@@ -4784,6 +5366,11 @@ Router.register("scorecard", function(params) {
   if (scState.view === "leaderboard") { h += renderTripLB(trip, tripPlayers); }
   else if (scState.view === "photos") { h += renderTripPhotos(trip); }
   else { h += renderTripScorecard(trip, tripPlayers); }
+
+  // Attestation status
+  if (scState.view === "scorecard" && scState.courseKey) {
+    h += renderAttestationStatus(trip.id, scState.courseKey);
+  }
 
   // Backup
   h += '<div class="section"><div class="bk-row"><button class="btn-sm green" onclick="doCopy()">Backup</button><button class="btn-sm outline" onclick="doRestore()">Restore</button></div></div>';
@@ -5061,7 +5648,7 @@ Router.register("rounds", function(params) {
   var roundAs = myRoundPlayer || myRoundLocal || PB.getPlayers()[0];
   h += '<div class="ff-input" style="background:var(--bg4);color:var(--gold);font-weight:600">' + escHtml(roundAs.name) + '</div><input type="hidden" id="rf-player" value="' + roundAs.id + '"></div>';
   h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="rf-course" placeholder="Start typing to search courses..." oninput="showRoundCourseSearch(this)"><div id="search-round-course" class="search-results"></div></div>';
-  h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="rf-format"><option value="stroke">Stroke play</option><option value="stableford">Modified Stableford</option><option value="scramble">Scramble (2-man)</option><option value="scramble4">Scramble (4-man)</option><option value="bestball">Best ball</option><option value="alternate">Alternate shot</option><option value="skins">Skins</option><option value="match">Match play</option></select></div>';
+  h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="rf-format"><option value="stroke">Stroke play</option><option value="parbaugh">Parbaugh Stroke Play</option><option value="stableford">Modified Stableford</option><option value="scramble">Scramble (2-man)</option><option value="scramble4">Scramble (4-man)</option><option value="bestball">Best ball</option><option value="alternate">Alternate shot</option><option value="skins">Skins</option><option value="match">Match play</option></select></div>';
   h += '<div class="ff-row" style="grid-template-columns:1fr 1fr">';
   h += '<div class="ff"><label class="ff-label">Score</label><input type="number" inputmode="numeric" class="ff-input" id="rf-score" placeholder="85" style="min-width:0"></div>';
   h += '<div class="ff"><label class="ff-label">Date</label><input type="date" class="ff-input" id="rf-date" value="' + new Date().toISOString().split("T")[0] + '" style="min-width:0"></div>';
@@ -5208,7 +5795,7 @@ Router.register("courses", function(params) {
     var stars = c.reviews && c.reviews.length ? Math.round(c.reviews.reduce(function(a, r) { return a + r.rating; }, 0) / c.reviews.length * 10) / 10 : null;
     h += '<div class="card" onclick="Router.go(\'courses\',{id:\'' + c.id + '\'})">';
     var thumbSrc = photoCache["course:" + c.id] || c.photo || '';
-    h += '<div class="course-row"><div class="c-thumb">' + (thumbSrc ? '<img src="' + thumbSrc + '" onerror="this.style.display=\'none\'">' : '<div class="c-thumb-placeholder">⛳</div>') + '</div>';
+    h += '<div class="course-row"><div class="c-thumb">' + (thumbSrc ? '<img src="' + thumbSrc + '" onerror="this.src=COURSE_DEFAULT_IMG">' : '<img src="' + COURSE_DEFAULT_IMG + '">') + '</div>';
     h += '<div class="c-info"><div class="c-name">' + c.name + '</div><div class="c-loc">' + c.loc + ' · ' + c.rating + '/' + c.slope + '</div>';
     h += '<div class="c-meta">' + (stars ? '★ ' + stars + '/5 · ' : '') + roundsHere.length + ' rounds' + (avg ? ' · Avg: ' + avg : '') + '</div></div></div></div>';
   });
@@ -5222,8 +5809,8 @@ function renderCourseDetail(courseId) {
 
   var h = '<div class="sh"><h2>' + c.name + '</h2><button class="back" onclick="Router.go(\'courses\')">← Back</button></div>';
 
-  var coursePhotoSrc = photoCache["course:" + courseId] || c.photo || '';
-  if (coursePhotoSrc) h += '<div class="course-banner"><img src="' + coursePhotoSrc + '" onerror="this.parentElement.style.display=\'none\'"></div>';
+  var coursePhotoSrc = photoCache["course:" + courseId] || c.photo || COURSE_DEFAULT_IMG;
+  h += '<div class="course-banner"><img src="' + coursePhotoSrc + '" onerror="this.src=COURSE_DEFAULT_IMG"></div>';
   h += '<div class="section"><div class="c-detail-info">' + c.loc + ' · Rating: ' + c.rating + ' · Slope: ' + c.slope + ' · Par: ' + c.par + '</div>';
   h += '<button class="btn-sm outline" onclick="uploadCoursePhoto(\'' + courseId + '\')">Upload photo</button></div>';
 
@@ -5812,54 +6399,122 @@ var liveChat = [];
 
 Router.register("chat", function() {
   var h = '<div class="sh"><h2>Feed</h2><button class="btn-sm outline" onclick="Router.go(\'dms\')">DMs</button></div>';
-  h += '<div id="chatFeed" class="section" style="max-height:60vh;overflow-y:auto">';
-  if (!liveChat.length) {
-    h += '<div class="card"><div class="empty"><div class="empty-icon">💬</div><div class="empty-text">No messages yet. Start the trash talk.</div></div></div>';
-  } else {
-    h += '<div class="card" style="padding:12px 16px">';
-    liveChat.forEach(function(msg) {
-      var m = PB.getPlayer(msg.authorId);
-      h += '<div class="chat-msg"><div class="c-av">' + (m ? Router.getAvatar(m) : "⛳") + '</div>';
-      h += '<div><div class="chat-author">' + escHtml(msg.authorName||"Anon") + '</div>';
-      h += '<div class="chat-text">' + escHtml(msg.text) + '</div>';
-      if (msg.createdAt && msg.createdAt.toDate) h += '<div class="chat-time">' + msg.createdAt.toDate().toLocaleDateString() + '</div>';
-      h += '</div></div>';
-    });
-    h += '</div>';
-  }
-  h += '</div>';
+  h += '<div id="chatFeed" class="section" style="max-height:65vh;overflow-y:auto"><div class="loading"><div class="spinner"></div>Loading feed...</div></div>';
   h += '<div class="chat-input-row"><input type="text" id="chatInput" placeholder="Talk trash..." onkeydown="if(event.key===\'Enter\')sendChat()"><button onclick="sendChat()">Send</button></div>';
   document.querySelector('[data-page="chat"]').innerHTML = h;
 
-  // Start listener — update feed content only, not the whole page
+  // Start listener
   if (db) {
     db.collection("chat").orderBy("createdAt","desc").limit(50).onSnapshot(function(snap) {
       liveChat = [];
-      snap.forEach(function(doc){liveChat.push(doc.data())});
+      snap.forEach(function(doc){ liveChat.push(Object.assign({_docId:doc.id}, doc.data())); });
       liveChat.reverse();
       var feed = document.getElementById("chatFeed");
       if (feed && Router.getPage() === "chat") {
-        var ch = '';
-        if (!liveChat.length) {
-          ch = '<div class="card"><div class="empty"><div class="empty-icon">💬</div><div class="empty-text">No messages yet</div></div></div>';
-        } else {
-          ch = '<div class="card" style="padding:12px 16px">';
-          liveChat.forEach(function(msg) {
-            var m = PB.getPlayer(msg.authorId);
-            ch += '<div class="chat-msg"><div class="c-av">' + (m ? Router.getAvatar(m) : "⛳") + '</div>';
-            ch += '<div><div class="chat-author">' + escHtml(msg.authorName||"Anon") + '</div>';
-            ch += '<div class="chat-text">' + escHtml(msg.text) + '</div>';
-            if (msg.createdAt && msg.createdAt.toDate) ch += '<div class="chat-time">' + msg.createdAt.toDate().toLocaleDateString() + '</div>';
-            ch += '</div></div>';
-          });
-          ch += '</div>';
-        }
-        feed.innerHTML = ch;
+        feed.innerHTML = renderChatMessages(liveChat);
         feed.scrollTop = feed.scrollHeight;
       }
     });
   }
 });
+
+function renderChatMessages(messages) {
+  if (!messages.length) return '<div class="card"><div class="empty"><div class="empty-icon">💬</div><div class="empty-text">No messages yet. Start the trash talk.</div></div></div>';
+  
+  var ch = '';
+  messages.forEach(function(msg) {
+    var m = PB.getPlayer(msg.authorId);
+    var mLvl = m ? PB.getPlayerLevel(m.id) : null;
+    var likes = msg.likes || [];
+    var likeCount = likes.length;
+    var iLiked = currentUser && likes.indexOf(currentUser.uid) !== -1;
+    var comments = msg.comments || [];
+    var isCommissioner = currentProfile && currentProfile.role === "commissioner";
+    var isMine = currentUser && msg.authorId === currentUser.uid;
+    
+    ch += '<div class="card" style="margin-bottom:6px"><div style="padding:10px 14px">';
+    // Header
+    ch += '<div style="display:flex;gap:10px">';
+    ch += '<div class="c-av">' + (m ? Router.getAvatar(m) : "⛳") + '</div>';
+    ch += '<div style="flex:1"><div class="chat-author">' + escHtml(msg.authorName||"Anon") + (mLvl ? ' <span style="font-size:8px;color:var(--gold);font-weight:600">LV' + mLvl.level + '</span>' : '') + '</div>';
+    ch += '<div class="chat-text">' + escHtml(msg.text) + '</div>';
+    if (msg.createdAt && msg.createdAt.toDate) ch += '<div class="chat-time">' + msg.createdAt.toDate().toLocaleDateString() + '</div>';
+    ch += '</div></div>';
+    
+    // Like + Comment bar
+    ch += '<div style="display:flex;gap:14px;margin-top:8px;padding-top:6px;border-top:1px solid var(--border)">';
+    ch += '<span style="font-size:11px;cursor:pointer;color:' + (iLiked ? 'var(--gold)' : 'var(--muted)') + '" onclick="toggleLike(\'' + msg._docId + '\')">' + (iLiked ? '♥' : '♡') + ' ' + (likeCount || '') + '</span>';
+    ch += '<span style="font-size:11px;cursor:pointer;color:var(--muted)" onclick="showCommentInput(\'' + msg._docId + '\')">💬 ' + (comments.length || '') + '</span>';
+    if (isCommissioner || isMine) {
+      ch += '<span style="font-size:11px;cursor:pointer;color:var(--muted2);margin-left:auto" onclick="deleteChat(\'' + msg._docId + '\')">🗑</span>';
+    }
+    ch += '</div>';
+    
+    // Comments
+    if (comments.length) {
+      ch += '<div style="margin-top:6px;padding-top:4px">';
+      comments.forEach(function(c) {
+        ch += '<div style="display:flex;gap:6px;padding:4px 0;font-size:11px">';
+        ch += '<span style="color:var(--gold);font-weight:600">' + escHtml(c.name||"Anon") + '</span>';
+        ch += '<span style="color:var(--cream)">' + escHtml(c.text) + '</span>';
+        ch += '</div>';
+      });
+      ch += '</div>';
+    }
+    
+    // Comment input area (hidden by default)
+    ch += '<div id="comment-' + msg._docId + '" class="hidden" style="margin-top:6px;display:flex;gap:6px">';
+    ch += '<input type="text" class="ff-input" style="flex:1;padding:6px 10px;font-size:11px" id="commentText-' + msg._docId + '" placeholder="Add a comment..." onkeydown="if(event.key===\'Enter\')submitComment(\'' + msg._docId + '\')">';
+    ch += '<button class="btn-sm green" style="font-size:10px;padding:6px 10px" onclick="submitComment(\'' + msg._docId + '\')">Post</button>';
+    ch += '</div>';
+    
+    ch += '</div></div>';
+  });
+  return ch;
+}
+
+function toggleLike(docId) {
+  if (!db || !currentUser) { Router.toast("Sign in to like"); return; }
+  var uid = currentUser.uid;
+  db.collection("chat").doc(docId).get().then(function(doc) {
+    if (!doc.exists) return;
+    var likes = doc.data().likes || [];
+    var idx = likes.indexOf(uid);
+    if (idx !== -1) { likes.splice(idx, 1); } else { likes.push(uid); }
+    return db.collection("chat").doc(docId).update({ likes: likes });
+  });
+}
+
+function showCommentInput(docId) {
+  var el = document.getElementById("comment-" + docId);
+  if (el) { el.classList.toggle("hidden"); el.style.display = el.classList.contains("hidden") ? "none" : "flex"; }
+  var input = document.getElementById("commentText-" + docId);
+  if (input) input.focus();
+}
+
+function submitComment(docId) {
+  if (!db || !currentUser) { Router.toast("Sign in to comment"); return; }
+  var input = document.getElementById("commentText-" + docId);
+  var text = input ? input.value.trim() : "";
+  if (!text) return;
+  
+  var name = currentProfile ? PB.getDisplayName(currentProfile) : "Anon";
+  
+  db.collection("chat").doc(docId).get().then(function(doc) {
+    if (!doc.exists) return;
+    var comments = doc.data().comments || [];
+    comments.push({ uid: currentUser.uid, name: name, text: text, at: new Date().toISOString() });
+    return db.collection("chat").doc(docId).update({ comments: comments });
+  }).then(function() {
+    if (input) input.value = "";
+  });
+}
+
+function deleteChat(docId) {
+  if (!db) return;
+  if (!confirm("Delete this post?")) return;
+  db.collection("chat").doc(docId).delete().then(function() { Router.toast("Deleted"); });
+}
 
 function sendChat() {
   var input = document.getElementById("chatInput"); var text = input.value.trim();
@@ -6393,6 +7048,70 @@ function bulkGenerateInvites() {
     Router.toast(count + " invites generated!");
     loadAdminInviteList();
   }).catch(function() { Router.toast("Failed to generate"); });
+}
+
+
+// ========== FAQ PAGE ==========
+Router.register("faq", function() {
+  var h = '<div class="sh"><h2>FAQ</h2><button class="back" onclick="Router.go(\'home\')">← Back</button></div>';
+  
+  var faqs = [
+    { q: "How do I join the Parbaughs?", a: "You need an invite code from an existing member. They can generate one from the Members page. Enter the code when creating your account." },
+    { q: "How do I log a round?", a: "Go to Rounds → Log a Round. Enter your course, score, and date. You can only log rounds for yourself. For live hole-by-hole scoring, use Play Now." },
+    { q: "What is a Synced Round?", a: "A real-time shared scorecard. One person creates the round and others join. Everyone sees scores update live on their own phone. When finished, it saves as an individual round for each player." },
+    { q: "How does the handicap work?", a: "Your handicap is calculated automatically after 3 rounds using your best scores, course rating, and slope. Manually entered handicaps are replaced once you have enough rounds logged." },
+    { q: "What are Party Games?", a: "Fun side competitions during your round — Closest to Pin, Long Drive, Putt-Off, and more. Start one from the Party Games page. The winner earns bonus XP." },
+    { q: "How does XP and leveling work?", a: "You earn XP by logging rounds, winning events, completing achievements, and participating in party games. XP levels you up from Rookie (LV1) to G.O.A.T. (LV100). Tap the XP bar on any profile to see the Trophy Room." },
+    { q: "What is score attestation?", a: "After a tournament round, all players must confirm the scorecard is accurate. This prevents disputes and earns bonus XP for verified rounds." },
+    { q: "How do season standings work?", a: "The Parbaughs season runs March 1 through September 30. Points are earned through live rounds, event finishes, and participation. Only live-scored rounds count toward season rankings." },
+    { q: "Can I change my username?", a: "No — your username is permanent and serves as your unique identifier. You can change your display name and nickname in your profile settings." },
+    { q: "How do I invite someone?", a: "Go to Members → Invite New Member → Generate Invite Code. Share the code with the person. You have a limited number of invites — ask the Commissioner if you need more." },
+    { q: "What does the Commissioner do?", a: "The Commissioner manages the league — creating events, moderating the feed, suspending members for violations, managing invite quotas, and posting official results." },
+    { q: "How do I report a member?", a: "Tap their profile → Report. Choose a reason and add details. The report goes directly to the Commissioner for review." },
+    { q: "I found a bug or have a feature idea!", a: "Tap Feature Request at the bottom of the home page to send your idea directly to the Commissioner." }
+  ];
+  
+  faqs.forEach(function(faq, i) {
+    h += '<div class="card" style="cursor:pointer" onclick="toggleSection(\'faq-' + i + '\')">';
+    h += '<div class="card-body"><div style="display:flex;justify-content:space-between;align-items:center">';
+    h += '<div style="font-size:13px;font-weight:600;color:var(--cream);flex:1;padding-right:8px">' + faq.q + '</div>';
+    h += '<span id="faq-' + i + '-toggle" style="font-size:10px;color:var(--muted);transition:transform .2s">▶</span></div>';
+    h += '<div id="faq-' + i + '" class="hidden" style="margin-top:8px;font-size:12px;color:var(--muted);line-height:1.6">' + faq.a + '</div>';
+    h += '</div></div>';
+  });
+  
+  h += '<div style="padding:20px 16px;text-align:center"><button class="btn full outline" onclick="openFeatureRequest()">Submit a Feature Request</button></div>';
+  
+  document.querySelector('[data-page="faq"]').innerHTML = h;
+});
+
+
+// ========== FEATURE REQUEST ==========
+function openFeatureRequest() {
+  var name = currentProfile ? (currentProfile.name || currentProfile.username) : "Member";
+  var feature = prompt("Describe the feature you'd like to see:");
+  if (!feature || !feature.trim()) return;
+  
+  var subject = encodeURIComponent("Parbaughs Feature Request from " + name);
+  var body = encodeURIComponent("Feature Request\n\nFrom: " + name + "\nDate: " + new Date().toLocaleDateString() + "\n\nRequest:\n" + feature + "\n\n---\nSent from The Parbaughs App");
+  
+  // Open email client
+  window.location.href = "mailto:zboogher@gmail.com?subject=" + subject + "&body=" + body;
+  
+  // Also save to Firestore for Commissioner dashboard
+  if (db && currentUser) {
+    db.collection("feature_requests").add({
+      from: currentUser.uid,
+      fromName: name,
+      request: feature,
+      status: "new",
+      createdAt: fsTimestamp()
+    }).then(function() {
+      Router.toast("Request sent! Thanks " + name);
+    });
+  } else {
+    Router.toast("Opening email...");
+  }
 }
 
 
