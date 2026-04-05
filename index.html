@@ -541,6 +541,7 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
   <div data-page="settings" class="hidden"></div>
   <div data-page="merch" class="hidden"></div>
   <div data-page="faq" class="hidden"></div>
+  <div data-page="caddynotes" class="hidden"></div>
   <div data-page="standings" class="hidden"></div>
   <div data-page="challenges" class="hidden"></div>
   <div data-page="rules" class="hidden"></div>
@@ -935,7 +936,7 @@ function updateProfileBar() {
   var p = null;
   
   if (currentProfile) {
-    name = currentProfile.name || currentProfile.username || "Member";
+    name = PB.getDisplayName ? PB.getDisplayName(currentProfile) : (currentProfile.name || currentProfile.username || "Member");
     p = currentProfile;
   }
   if (currentUser) {
@@ -2241,6 +2242,83 @@ var PB = (function() {
     if (lvl.level >= 75) achievements.push({id:"lvl75",name:"Level 75",desc:"Reach The Professor",icon:"★★",xp:0,cat:"level"});
     if (lvl.level >= 100) achievements.push({id:"lvl100",name:"Level 100",desc:"Reach G.O.A.T.",icon:"★★★",xp:0,cat:"level"});
 
+    // --- BLUNDERS (fun shame achievements) ---
+    if (rounds.some(function(r){return r.score>=120})) achievements.push({id:"blow120",name:"The Blow-Up",desc:"Shoot 120 or higher",icon:"💥",xp:25,cat:"blunder",title:"The Blow-Up Artist"});
+    if (rounds.some(function(r){return r.score>=130})) achievements.push({id:"blow130",name:"Cart Path Warrior",desc:"Shoot 130 or higher",icon:"🛒",xp:25,cat:"blunder",title:"Cart Path Warrior"});
+    if (rounds.some(function(r){return r.score>=140})) achievements.push({id:"blow140",name:"Lost in the Woods",desc:"Shoot 140 or higher",icon:"🌲",xp:25,cat:"blunder",title:"Lost in the Woods"});
+    if (rounds.length >= 2) {
+      var scores = rounds.map(function(r){return r.score}).sort(function(a,b){return a-b});
+      if (scores[scores.length-1] - scores[0] >= 20) achievements.push({id:"roller_coaster",name:"Roller Coaster",desc:"20+ stroke difference between best and worst round",icon:"🎢",xp:50,cat:"blunder",title:"The Roller Coaster"});
+    }
+    if (rounds.length >= 3) {
+      var last3 = rounds.slice(-3);
+      var allWorse = last3.every(function(r,i){return i===0 || r.score > last3[i-1].score});
+      if (allWorse && last3.length === 3) achievements.push({id:"downhill",name:"Going Downhill",desc:"3 rounds in a row getting worse",icon:"📉",xp:25,cat:"blunder",title:"Mr. Downhill"});
+    }
+    if (rounds.filter(function(r){return r.score>=110}).length >= 5) achievements.push({id:"thick_skin",name:"Thick Skin",desc:"Log 5 rounds of 110+",icon:"🛡",xp:50,cat:"blunder",title:"Thick Skinned"});
+    if (rounds.length >= 10 && !rounds.some(function(r){return r.score<100})) achievements.push({id:"triple_club",name:"Triple Digit Club",desc:"10 rounds without breaking 100",icon:"💯",xp:50,cat:"blunder",title:"Triple Digit King"});
+
+    // --- DEDICATION & SOCIAL ---
+    if (rounds.length >= 3) {
+      var dates = rounds.map(function(r){return r.date}).sort();
+      var streak = 1, maxStreak = 1;
+      for (var si=1;si<dates.length;si++) {
+        var d1=new Date(dates[si-1]),d2=new Date(dates[si]);
+        var diff = (d2-d1)/(1000*60*60*24);
+        if (diff <= 7) { streak++; maxStreak = Math.max(maxStreak, streak); } else { streak = 1; }
+      }
+      if (maxStreak >= 3) achievements.push({id:"hot_streak",name:"Hot Streak",desc:"Play 3 weeks in a row",icon:"🔥",xp:100,cat:"milestone",title:"On Fire"});
+      if (maxStreak >= 6) achievements.push({id:"iron_man_streak",name:"Iron Man",desc:"Play 6 weeks in a row",icon:"⚡",xp:200,cat:"milestone",title:"The Iron Man"});
+    }
+
+    // --- PARBAUGH ROUND ACHIEVEMENTS ---
+    var parbaughRounds = rounds.filter(function(r){return r.syncedRound});
+    if (parbaughRounds.length >= 1) achievements.push({id:"first_parbaugh",name:"First Parbaugh Round",desc:"Complete a Parbaugh Round",icon:"🤝",xp:75,cat:"milestone"});
+    if (parbaughRounds.length >= 5) achievements.push({id:"parbaugh_regular",name:"Parbaugh Regular",desc:"5 Parbaugh Rounds",icon:"🤝",xp:150,cat:"milestone",title:"Team Player"});
+    if (parbaughRounds.length >= 25) achievements.push({id:"parbaugh_veteran",name:"Parbaugh Veteran",desc:"25 Parbaugh Rounds",icon:"🤝",xp:500,cat:"milestone",title:"The Glue Guy"});
+
+    // --- UNIQUE SPECIAL BADGES ---
+    if (player && player.email === "jopinksalot@msn.com") achievements.push({id:"boss_wife",name:"The Boss's Wife",desc:"The one who really runs things",icon:"👑",xp:0,cat:"special",title:"The Boss's Wife",badge:"boss_wife"});
+    if (player && player.role === "commissioner") achievements.push({id:"the_commish",name:"The Commissioner",desc:"Running the show",icon:"🏛",xp:0,cat:"special",title:"The Commissioner",badge:"commissioner"});
+
+    // --- EVENT PARTICIPATION BADGES ---
+    // Each event a player participates in earns them a unique badge
+    var trips = getTrips();
+    var eventCount = 0;
+    trips.forEach(function(trip) {
+      if (trip.members && trip.members.indexOf(pid) !== -1) {
+        eventCount++;
+        achievements.push({
+          id: "event_" + trip.id,
+          name: trip.name,
+          desc: (trip.location || "Event") + " · " + (trip.dates || ""),
+          icon: "🏌️",
+          xp: 100,
+          cat: "event",
+          badge: "event_" + trip.id
+        });
+      }
+      // Also check by claimedFrom
+      if (player && player.claimedFrom && trip.members && trip.members.indexOf(player.claimedFrom) !== -1) {
+        if (!achievements.some(function(a){return a.id === "event_" + trip.id})) {
+          eventCount++;
+          achievements.push({
+            id: "event_" + trip.id,
+            name: trip.name,
+            desc: (trip.location || "Event") + " · " + (trip.dates || ""),
+            icon: "🏌️",
+            xp: 100,
+            cat: "event",
+            badge: "event_" + trip.id
+          });
+        }
+      }
+    });
+    if (eventCount >= 1) achievements.push({id:"event_goer",name:"Event Goer",desc:"Participate in an event",icon:"🎪",xp:50,cat:"milestone"});
+    if (eventCount >= 3) achievements.push({id:"event_regular",name:"Event Regular",desc:"Participate in 3 events",icon:"🎪",xp:150,cat:"milestone",title:"Event Regular"});
+    if (eventCount >= 5) achievements.push({id:"road_dog",name:"Road Dog",desc:"Participate in 5 events",icon:"🚗",xp:300,cat:"milestone",title:"Road Dog"});
+    if (eventCount >= 10) achievements.push({id:"tour_life",name:"Tour Life",desc:"Participate in 10 events",icon:"✈",xp:500,cat:"milestone",title:"Tour Life"});
+
     return achievements;
   }
 
@@ -2646,7 +2724,7 @@ Router.register("home", function() {
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Play</span></div>';
   h += '<div class="qlinks" style="grid-template-columns:repeat(2,1fr)">';
   var primaryLinks = [
-    {p:"syncround",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='22' height='22'><path d='M4 4v5h5'/><path d='M20 20v-5h-5'/><path d='M4 9a8 8 0 0114.4-4.8'/><path d='M20 15a8 8 0 01-14.4 4.8'/></svg>",l:"Synced Round"},
+    {p:"syncround",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='22' height='22'><path d='M4 4v5h5'/><path d='M20 20v-5h-5'/><path d='M4 9a8 8 0 0114.4-4.8'/><path d='M20 15a8 8 0 01-14.4 4.8'/></svg>",l:"Parbaugh Round"},
     {p:"partygames",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='22' height='22'><circle cx='12' cy='12' r='10'/><path d='M8 14s1.5 2 4 2 4-2 4-2'/><circle cx='9' cy='9' r='1' fill='currentColor'/><circle cx='15' cy='9' r='1' fill='currentColor'/></svg>",l:"Party Games"}
   ];
   primaryLinks.forEach(function(lnk) {
@@ -2709,6 +2787,9 @@ Router.register("home", function() {
   h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="openFeatureRequest()">Feature Request</span>';
   h += '<span style="font-size:11px;color:var(--muted2)">·</span>';
   h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="Router.go(\'settings\')">Settings</span></div>';
+
+  h += '<div style="text-align:center;padding:4px 16px 0">';
+  h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="Router.go(\'caddynotes\')">📋 The Caddy Notes</span></div>';
 
   document.querySelector('[data-page="home"]').innerHTML = h;
 });
@@ -3581,6 +3662,12 @@ function renderMemberEditForm(p) {
   titleKeys.forEach(function(lv) { if (lvl.level >= lv) availableTitles.push(TITLES[lv]); });
   if (p.founding) availableTitles.push("The Original Four");
   if (p.founding) availableTitles.push("The Original Four · Commissioner");
+  
+  // Add titles from achievements
+  var myAchievements = PB.getAchievements(pid);
+  myAchievements.forEach(function(a) {
+    if (a.title && availableTitles.indexOf(a.title) === -1) availableTitles.push(a.title);
+  });
   
   h += '<div class="ff"><label class="ff-label">Equipped title</label><select class="ff-input" id="edit-title">';
   h += '<option value="">— Select title —</option>';
@@ -5307,7 +5394,7 @@ function submitTripCreate() {
   var name = document.getElementById("tc-name").value;
   if (!name) { Router.toast("Enter an event name"); return; }
   if (!tripCreateState.members.length) { Router.toast("Select at least one member"); return; }
-  if (tripCreateState.courses.length < 3) { Router.toast("Events require at least 3 rounds"); return; }
+  if (tripCreateState.courses.length < 1) { Router.toast("Add at least one course"); return; }
 
   var start = document.getElementById("tc-start").value;
   var end = document.getElementById("tc-end").value;
@@ -6573,7 +6660,7 @@ function deleteChat(docId) {
 function sendChat() {
   var input = document.getElementById("chatInput"); var text = input.value.trim();
   if (!text || !db) return;
-  db.collection("chat").add({ id:genId(), text:text, authorId:currentUser?currentUser.uid:"anon", authorName:currentProfile?(currentProfile.name||currentProfile.username):"Anon", createdAt:fsTimestamp() })
+  db.collection("chat").add({ id:genId(), text:text, authorId:currentUser?currentUser.uid:"anon", authorName:currentProfile?PB.getDisplayName(currentProfile):"Anon", createdAt:fsTimestamp() })
     .then(function(){input.value=""}).catch(function(){Router.toast("Failed to send")});
 }
 
@@ -6677,7 +6764,7 @@ function sendDM() {
   var input = document.getElementById("dmInput"); var text = input.value.trim();
   if (!text || !db || !currentUser || !activeDmPartner) return;
   var cid = getDmConvoId(currentUser.uid, activeDmPartner);
-  db.collection("dms").doc(cid).collection("messages").add({ text:text, authorId:currentUser.uid, authorName:currentProfile?(currentProfile.name||currentProfile.username):"Anon", createdAt:fsTimestamp() })
+  db.collection("dms").doc(cid).collection("messages").add({ text:text, authorId:currentUser.uid, authorName:currentProfile?PB.getDisplayName(currentProfile):"Anon", createdAt:fsTimestamp() })
     .then(function(){input.value=""; db.collection("dms").doc(cid).update({lastMessage:text,lastMessageAt:fsTimestamp(),lastMessageBy:currentUser.uid}); })
     .catch(function(){Router.toast("Failed to send")});
 }
@@ -6719,7 +6806,7 @@ function createInviteDoc(code) {
   return {
     code: code,
     createdBy: currentUser.uid,
-    createdByName: currentProfile.name || currentProfile.username,
+    createdByName: PB.getDisplayName(currentProfile),
     usedBy: null,
     status: "active",
     createdAt: fsTimestamp(),
@@ -7112,7 +7199,7 @@ Router.register("faq", function() {
   var faqs = [
     { q: "How do I join the Parbaughs?", a: "You need an invite code from an existing member. They can generate one from the Members page. Enter the code when creating your account." },
     { q: "How do I log a round?", a: "Go to Rounds → Log a Round. Enter your course, score, and date. You can only log rounds for yourself. For live hole-by-hole scoring, use Play Now." },
-    { q: "What is a Synced Round?", a: "A real-time shared scorecard. One person creates the round and others join. Everyone sees scores update live on their own phone. When finished, it saves as an individual round for each player." },
+    { q: "What is a Parbaugh Round?", a: "A real-time shared scorecard. One person creates the round and others join. Everyone sees scores update live on their own phone. When finished, it saves as an individual round for each player." },
     { q: "How does the handicap work?", a: "Your handicap is calculated automatically after 3 rounds using your best scores, course rating, and slope. Manually entered handicaps are replaced once you have enough rounds logged." },
     { q: "What are Party Games?", a: "Fun side competitions during your round — Closest to Pin, Long Drive, Putt-Off, and more. Start one from the Party Games page. The winner earns bonus XP." },
     { q: "How does XP and leveling work?", a: "You earn XP by logging rounds, winning events, completing achievements, and participating in party games. XP levels you up from Rookie (LV1) to G.O.A.T. (LV100). Tap the XP bar on any profile to see the Trophy Room." },
@@ -7167,6 +7254,114 @@ function openFeatureRequest() {
     Router.toast("Opening email...");
   }
 }
+
+
+// ========== THE CADDY NOTES ==========
+Router.register("caddynotes", function() {
+  var h = '<div class="sh"><h2>The Caddy Notes</h2><button class="back" onclick="Router.go(\'home\')">← Back</button></div>';
+
+  h += '<div style="text-align:center;padding:16px"><div style="font-size:28px;margin-bottom:6px">📋</div>';
+  h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">Your caddy\'s rundown on what this app can do</div></div>';
+
+  // Current Features
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">What\'s in the Bag</span></div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
+  var features = [
+    "Account creation with invite-only access",
+    "Profile claiming for founding members",
+    "Live hole-by-hole scoring (Play Now)",
+    "Parbaugh Round — real-time shared scorecard across devices",
+    "Trip/event creation with smart tournament generator",
+    "Live event scoring with real-time sync",
+    "Score attestation — all players verify the scorecard",
+    "Season standings with handicap-adjusted points",
+    "GHIN World Handicap System calculation",
+    "Parbaugh Stroke Play (handicap-adjusted format)",
+    "8 game formats: Stroke, Stableford, Scramble, Best Ball, Match, Skins, Shamble, Chapman",
+    "10 party games: CTP, Long Drive, Putt-Off, Chip-Off, and more",
+    "47 achievements across 7 categories",
+    "Trophy Room with XP, levels, and title progression (Rookie → G.O.A.T.)",
+    "Activity feed with likes, comments, and real-time updates",
+    "Direct messages between members",
+    "Tee time posting with RSVP",
+    "Calendar with event tracking",
+    "Course directory with reviews and photos",
+    "Photo uploads stored in the cloud",
+    "Commissioner admin panel (suspend, remove, manage invites)",
+    "Member reporting system",
+    "Head-to-head rivalry tracking",
+    "Scramble team management",
+    "Ace wall for hole-in-ones",
+    "Merch page",
+    "FAQ and feature request system"
+  ];
+  features.forEach(function(f) {
+    h += '<div style="padding:3px 0;display:flex;gap:8px"><span style="color:var(--gold)">✓</span> ' + f + '</div>';
+  });
+  h += '</div></div></div>';
+
+  // Recently Added — v5.1
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">Just Off the Tee — Latest Update</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">v5.1 · April 5, 2026</div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
+  var recent = [
+    {item: "Firebase backend — all data syncs across devices in real-time", tag: "NEW"},
+    {item: "Account system with email/password auth and invite codes", tag: "NEW"},
+    {item: "Profile claiming — founding four members keep all SMO data", tag: "NEW"},
+    {item: "Parbaugh Round — multiplayer real-time scorecard", tag: "NEW"},
+    {item: "Live event scoring with Firestore sync", tag: "NEW"},
+    {item: "Score attestation system for tournament integrity", tag: "NEW"},
+    {item: "Party Golf Games — 10 mini-games with XP rewards", tag: "NEW"},
+    {item: "Smart Tournament Generator with 6 preset styles", tag: "NEW"},
+    {item: "GHIN World Handicap System formula", tag: "NEW"},
+    {item: "Parbaugh Stroke Play format (handicap-adjusted)", tag: "NEW"},
+    {item: "Feed likes and comments", tag: "NEW"},
+    {item: "Display name preference (username, name, or nickname)", tag: "NEW"},
+    {item: "Name change propagation across all historical data", tag: "NEW"},
+    {item: "FAQ page with 13 topics", tag: "NEW"},
+    {item: "Feature request system (emails Commissioner)", tag: "NEW"},
+    {item: "The Caddy Notes — you\'re reading it", tag: "NEW"},
+    {item: "Profile bar with avatar and quick profile access", tag: "NEW"},
+    {item: "Commissioner admin panel with suspension and moderation", tag: "NEW"},
+    {item: "Trophy Room with 47 achievements", tag: "NEW"},
+    {item: "Photo system using Firestore (no external hosting)", tag: "NEW"},
+    {item: "Invite expiration (7-day auto-expire)", tag: "IMPROVED"},
+    {item: "Nav bar now scrolls horizontally on mobile", tag: "FIXED"},
+    {item: "Date inputs properly sized on iOS", tag: "FIXED"},
+    {item: "Course default photo added", tag: "FIXED"},
+    {item: "Merch page restored (prices removed)", tag: "FIXED"},
+    {item: "Registration bug causing missing profiles", tag: "FIXED"}
+  ];
+  recent.forEach(function(r) {
+    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : "var(--muted)";
+    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
+    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
+    h += '<span>' + r.item + '</span></div>';
+  });
+  h += '</div></div></div>';
+
+  // Coming soon
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--muted)">On the Range — Coming Soon</span></div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--muted);line-height:1.8">';
+  var upcoming = [
+    "AI-powered tournament generator",
+    "SMS/phone number authentication",
+    "Season recap with highlights and stats",
+    "Feed post notifications",
+    "Push notifications for tee times and events",
+    "Scramble live scoring mode",
+    "Yearly awards ceremony"
+  ];
+  upcoming.forEach(function(u) {
+    h += '<div style="padding:3px 0;display:flex;gap:8px"><span style="color:var(--muted2)">○</span> ' + u + '</div>';
+  });
+  h += '</div></div></div>';
+
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · Powered by too many late nights</div>';
+
+  document.querySelector('[data-page="caddynotes"]').innerHTML = h;
+});
 
 
 // ========== TROPHY ROOM ==========
@@ -7234,7 +7429,9 @@ function renderTrophyRoom(p) {
     { key: "compete", name: "Competitive", icon: "⚔" },
     { key: "growth", name: "Improvement", icon: "📈" },
     { key: "special", name: "Special", icon: "⭐" },
-    { key: "level", name: "Level Milestones", icon: "🏆" }
+    { key: "level", name: "Level Milestones", icon: "🏆" },
+    { key: "event", name: "Events", icon: "🏌️" },
+    { key: "blunder", name: "Hall of Shame", icon: "💀" }
   ];
   
   categories.forEach(function(cat) {
@@ -7328,7 +7525,21 @@ function getAllPossibleAchievements() {
     {id:"lvl25",name:"Level 25",desc:"Reach Course Regular",icon:"◆◆",xp:0,cat:"level"},
     {id:"lvl50",name:"Level 50",desc:"Reach Eagle Eye",icon:"★",xp:0,cat:"level"},
     {id:"lvl75",name:"Level 75",desc:"Reach The Professor",icon:"★★",xp:0,cat:"level"},
-    {id:"lvl100",name:"Level 100",desc:"Reach G.O.A.T.",icon:"★★★",xp:0,cat:"level"}
+    {id:"lvl100",name:"Level 100",desc:"Reach G.O.A.T.",icon:"★★★",xp:0,cat:"level"},
+    {id:"blow120",name:"The Blow-Up",desc:"Shoot 120 or higher",icon:"💥",xp:25,cat:"blunder"},
+    {id:"blow130",name:"Cart Path Warrior",desc:"Shoot 130 or higher",icon:"🛒",xp:25,cat:"blunder"},
+    {id:"blow140",name:"Lost in the Woods",desc:"Shoot 140 or higher",icon:"🌲",xp:25,cat:"blunder"},
+    {id:"roller_coaster",name:"Roller Coaster",desc:"20+ stroke swing between best and worst",icon:"🎢",xp:50,cat:"blunder"},
+    {id:"downhill",name:"Going Downhill",desc:"3 rounds in a row getting worse",icon:"📉",xp:25,cat:"blunder"},
+    {id:"thick_skin",name:"Thick Skin",desc:"Log 5 rounds of 110+",icon:"🛡",xp:50,cat:"blunder"},
+    {id:"triple_club",name:"Triple Digit Club",desc:"10 rounds without breaking 100",icon:"💯",xp:50,cat:"blunder"},
+    {id:"hot_streak",name:"Hot Streak",desc:"Play 3 weeks in a row",icon:"🔥",xp:100,cat:"milestone"},
+    {id:"iron_man_streak",name:"Iron Man",desc:"Play 6 weeks in a row",icon:"⚡",xp:200,cat:"milestone"},
+    {id:"first_parbaugh",name:"First Parbaugh Round",desc:"Complete a Parbaugh Round",icon:"🤝",xp:75,cat:"milestone"},
+    {id:"parbaugh_regular",name:"Parbaugh Regular",desc:"5 Parbaugh Rounds",icon:"🤝",xp:150,cat:"milestone"},
+    {id:"parbaugh_veteran",name:"Parbaugh Veteran",desc:"25 Parbaugh Rounds",icon:"🤝",xp:500,cat:"milestone"},
+    {id:"boss_wife",name:"The Boss's Wife",desc:"The one who really runs things",icon:"👑",xp:0,cat:"special"},
+    {id:"the_commish",name:"The Commissioner",desc:"Running the show",icon:"🏛",xp:0,cat:"special"}
   ];
 }
 
@@ -7410,7 +7621,7 @@ function startPartyGame(gameType) {
     gameName: game ? game.name : gameType,
     status: "active",
     createdBy: currentUser.uid,
-    createdByName: currentProfile ? (currentProfile.name || currentProfile.username) : "Unknown",
+    createdByName: currentProfile ? PB.getDisplayName(currentProfile) : "Unknown",
     winner: null,
     createdAt: fsTimestamp()
   }).then(function() {
@@ -7455,15 +7666,15 @@ Router.register("syncround", function(params) {
 });
 
 function renderSyncRoundSetup() {
-  var h = '<div class="sh"><h2>Synced Round</h2><button class="back" onclick="Router.go(\'rounds\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>Parbaugh Round</h2><button class="back" onclick="Router.go(\'rounds\')">← Back</button></div>';
   h += '<div style="text-align:center;padding:20px 16px"><div style="font-size:11px;color:var(--muted);line-height:1.6">Play together on one shared scorecard. Everyone sees scores update in real-time. Counts as one round for each player — no double XP.</div></div>';
   
-  // Start new synced round
-  h += '<div class="form-section"><div class="form-title">Start a Synced Round</div>';
+  // Start new Parbaugh Round
+  h += '<div class="form-section"><div class="form-title">Start a Parbaugh Round</div>';
   h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="sync-course" placeholder="Start typing..." oninput="showSyncCourseSearch(this)"><div id="search-sync-course" class="search-results"></div></div>';
   h += '<input type="hidden" id="sync-rating" value=""><input type="hidden" id="sync-slope" value="">';
-  h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="sync-format"><option value="stroke">Stroke play</option><option value="stableford">Stableford</option><option value="scramble">Scramble</option></select></div>';
-  h += '<button class="btn full green" onclick="createSyncRound()">Create Synced Round</button>';
+  h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="sync-format"><option value="stroke">Stroke play</option><option value="parbaugh">Parbaugh Stroke Play (handicap-adjusted)</option><option value="stableford">Stableford</option><option value="scramble">Scramble</option><option value="bestball">Best Ball</option><option value="match">Match Play</option><option value="skins">Skins</option></select></div>';
+  h += '<button class="btn full green" onclick="createSyncRound()">Create Parbaugh Round</button>';
   h += '</div>';
   
   // Join existing
@@ -7473,7 +7684,7 @@ function renderSyncRoundSetup() {
   
   document.querySelector('[data-page="syncround"]').innerHTML = h;
   
-  // Load open synced rounds
+  // Load open Parbaugh Rounds
   if (db) {
     db.collection("syncrounds").where("status","==","active").get().then(function(snap) {
       var rounds = []; snap.forEach(function(doc) { rounds.push(Object.assign({_id:doc.id}, doc.data())); });
@@ -7481,7 +7692,7 @@ function renderSyncRoundSetup() {
       rounds = rounds.slice(0, 10);
       var el = document.getElementById("openSyncRounds");
       if (!el) return;
-      if (!rounds.length) { el.innerHTML = '<div style="font-size:11px;color:var(--muted);text-align:center;padding:12px">No active synced rounds. Start one above!</div>'; return; }
+      if (!rounds.length) { el.innerHTML = '<div style="font-size:11px;color:var(--muted);text-align:center;padding:12px">No active Parbaugh Rounds. Start one above!</div>'; return; }
       var rh = '';
       rounds.forEach(function(r) {
         var playerCount = r.players ? Object.keys(r.players).length : 0;
@@ -7516,7 +7727,7 @@ function createSyncRound() {
   var slope = parseInt(document.getElementById("sync-slope").value) || 113;
   
   var myId = currentUser.uid;
-  var myName = currentProfile.name || currentProfile.username || "Unknown";
+  var myName = currentProfile ? PB.getDisplayName(currentProfile) : "Unknown";
   var players = {};
   players[myId] = { name: myName, scores: Array(18).fill(""), joinedAt: new Date().toISOString() };
   
@@ -7704,7 +7915,7 @@ function finishSyncRound(roundId) {
       }
     });
     
-    // Mark synced round as completed
+    // Mark Parbaugh Round as completed
     return db.collection("syncrounds").doc(roundId).update({ status: "completed", completedAt: fsTimestamp() });
   }).then(function() {
     if (syncRoundListener) { syncRoundListener(); syncRoundListener = null; }
