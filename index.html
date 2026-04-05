@@ -927,6 +927,7 @@ var Router = (function() {
 
   function getAvatar(player, fallback) {
     if (player.photo) return '<img src="' + player.photo + '" alt="' + player.name + '">';
+    if (player.stockAvatar) return '<img src="' + player.stockAvatar + '" onerror="this.parentElement.textContent=\'' + player.name.charAt(0) + '\'" alt="' + player.name + '">';
     var hash = 0;
     for (var i = 0; i < player.name.length; i++) hash = ((hash << 5) - hash) + player.name.charCodeAt(i);
     var idx = Math.abs(hash) % STOCK_AVATARS.length;
@@ -994,7 +995,7 @@ Router.register("home", function() {
   var h = '';
 
   // Hero
-  h += '<div class="hero"><div class="hero-logo"><img src="apple-touch-icon.png" onerror="this.textContent=\'P\'"></div>';
+  h += '<div class="hero"><div class="hero-logo" style="border:none;background:transparent"><img src="watermark.jpg" style="border-radius:16px"></div>';
   h += '<h1>THE PARBAUGHS</h1><div class="est">Est. 2026 · York, PA</div></div>';
 
   // 1. Champions
@@ -1055,9 +1056,9 @@ Router.register("home", function() {
       h += '</div>';
     });
   } else {
-    h += '<div class="empty" style="padding:24px"><div class="hero-logo" style="width:48px;height:48px;border-radius:14px;margin:0 auto 10px"><img src="apple-touch-icon.png" style="width:100%;height:100%;object-fit:cover" onerror="this.textContent=\'⛳\'"></div>';
+    h += '<div class="empty" style="padding:28px"><div style="width:52px;height:52px;border-radius:12px;margin:0 auto 12px;overflow:hidden;opacity:.5"><img src="watermark.jpg" style="width:100%;height:100%;object-fit:cover"></div>';
     h += '<div class="empty-text">Nothing in the feed yet</div>';
-    h += '<div style="font-size:11px;color:var(--muted2);margin-top:4px">Log a round, add a member, or create an event to get started</div></div>';
+    h += '<div style="font-size:10px;color:var(--muted2);margin-top:4px;letter-spacing:.3px">Log a round, add a member, or create an event</div></div>';
   }
   h += '</div></div>';
 
@@ -1272,7 +1273,16 @@ function renderMemberEdit(pid) {
   h += formField("Nickname", "edit-nick", p.nick || "", "text", "e.g. The Commissioner");
   h += formField("Score range", "edit-range", p.range || "", "text", "e.g. 85-95");
   h += '<div class="ff"><label class="ff-label">Bio</label><textarea class="ff-input" id="edit-bio" placeholder="Tell us about your game...">' + (p.bio || "") + '</textarea></div>';
-  h += '<div class="ff"><label class="ff-label">Profile photo</label><input type="file" accept="image/*" onchange="handleEditPhoto(\'' + pid + '\',this)" style="color:var(--muted);font-size:12px"></div>';
+  h += '<div class="ff"><label class="ff-label">Profile photo</label>';
+  h += '<div style="margin-bottom:8px"><input type="file" accept="image/*" onchange="handleEditPhoto(\'' + pid + '\',this)" style="color:var(--muted);font-size:12px"></div>';
+  h += '<div class="ff-label" style="margin-top:8px;margin-bottom:6px">Or choose a default</div>';
+  h += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
+  var stockAvatars = ["stock_profile_gold.jpg","stock_profile_green.jpg","stock_profile_navy.jpg","stock_profile_charcoal.jpg","stock_profile_red.jpg","stock_profile_teal.jpg"];
+  stockAvatars.forEach(function(src) {
+    var selected = p.stockAvatar === src ? 'border:2px solid var(--gold);' : 'border:2px solid var(--border);';
+    h += '<div onclick="selectStockAvatar(\'' + pid + '\',\'' + src + '\')" style="width:44px;height:44px;border-radius:50%;overflow:hidden;cursor:pointer;' + selected + 'flex-shrink:0"><img src="' + src + '" style="width:100%;height:100%;object-fit:cover"></div>';
+  });
+  h += '</div></div>';
   h += '</div>';
 
   // Course preferences with search
@@ -1465,6 +1475,12 @@ function toggleSection(id) {
     el.style.display = "none";
     if (toggle) toggle.textContent = "▶";
   }
+}
+
+function selectStockAvatar(pid, src) {
+  PB.updatePlayer(pid, { stockAvatar: src, photo: "" });
+  Router.toast("Avatar updated");
+  Router.go("members", { edit: pid });
 }
 
 /* ================================================
