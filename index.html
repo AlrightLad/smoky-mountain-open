@@ -197,7 +197,7 @@ select{-webkit-appearance:none;appearance:none}
 .form-title{font-size:14px;font-weight:700;color:var(--gold);margin-bottom:10px}
 .ff{margin-bottom:10px}
 .ff-label{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-weight:600}
-.ff-input{width:100%;padding:11px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--cream);font-size:14px;outline:none;transition:border .15s,box-shadow .15s}
+.ff-input{width:100%;padding:11px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--cream);font-size:14px;outline:none;transition:border .15s,box-shadow .15s;min-width:0;max-width:100%;box-sizing:border-box}
 .ff-input:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(197,165,90,.1)}
 textarea.ff-input{min-height:60px;resize:vertical}
 .ff-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -384,8 +384,8 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 .cal-nav-btn:hover{background:var(--bg3)}
 .cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);padding:0 8px;margin-bottom:4px}
 .cal-weekday{text-align:center;font-size:9px;font-weight:600;color:var(--muted2);text-transform:uppercase;padding:4px 0;letter-spacing:.5px}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:0 8px}
-.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:6px;font-size:12px;color:var(--muted);position:relative;cursor:pointer;transition:background .15s}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:0 8px;margin-bottom:8px}
+.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:6px;font-size:12px;color:var(--muted);position:relative;cursor:pointer;transition:background .15s;max-height:44px}
 .cal-day:active{background:var(--bg3)}
 .cal-day.today{background:var(--bg3);color:var(--gold);font-weight:700}
 .cal-day.has-event::after,.cal-day.has-tee::after,.cal-day.has-trip::after{content:'';position:absolute;bottom:3px;border-radius:50%}
@@ -1091,10 +1091,11 @@ function loadPhoto(type, refId) {
 
 function loadTripPhotos(tripId) {
   if (!db) return Promise.resolve([]);
-  return db.collection("photos").where("type","==","trip").where("refId","==",tripId).orderBy("createdAt","asc").get()
+  return db.collection("photos").where("type","==","trip").where("refId","==",tripId).get()
     .then(function(snap) {
       var photos = [];
-      snap.forEach(function(doc) { var d = doc.data(); photos.push({ src: d.data, caption: d.caption, uploadedBy: d.uploadedBy, id: doc.id }); });
+      snap.forEach(function(doc) { var d = doc.data(); photos.push({ src: d.data, caption: d.caption, uploadedBy: d.uploadedBy, id: doc.id, createdAt: d.createdAt }); });
+      photos.sort(function(a,b) { return (a.createdAt||0) - (b.createdAt||0); });
       return photos;
     })
     .catch(function() { return []; });
@@ -2216,12 +2217,8 @@ var Router = (function() {
       var idx = Math.abs(hash) % STOCK_AVATARS.length;
       imgSrc = STOCK_AVATARS[idx];
     }
-    var lvl = null;
-    try { if (typeof PB !== 'undefined' && PB.getPlayerLevel && player.id) lvl = PB.getPlayerLevel(player.id); } catch(e) {}
-    var lvlNum = (lvl && lvl.level) ? lvl.level : 1;
     var initial = (player.username||player.name).charAt(0).toUpperCase();
-    var badge = '<div style="position:absolute;bottom:-1px;right:-1px;min-width:16px;height:16px;padding:0 3px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:#0e1118;border:1.5px solid #0e1118;pointer-events:none;line-height:1;z-index:2">' + lvlNum + '</div>';
-    return '<img src="' + imgSrc + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"><div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;color:var(--gold);font-weight:700;font-size:18px;background:var(--bg3);border-radius:inherit">' + initial + '</div>' + badge;
+    return '<img src="' + imgSrc + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"><div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;color:var(--gold);font-weight:700;font-size:18px;background:var(--bg3);border-radius:inherit">' + initial + '</div>';
   }
 
   function handlePhotoUpload(callback, maxW, maxH, quality) {
@@ -2282,10 +2279,11 @@ function sendNotification(toUserId, notif) {
 }
 function startNotificationListener() {
   if (!db || !currentUser) return;
-  db.collection("notifications").where("toUserId","==",currentUser.uid).where("read","==",false).orderBy("createdAt","desc").limit(20)
+  db.collection("notifications").where("toUserId","==",currentUser.uid).where("read","==",false).limit(20)
     .onSnapshot(function(snap) {
       liveNotifications = [];
       snap.forEach(function(doc) { liveNotifications.push(Object.assign({_id:doc.id}, doc.data())); });
+      liveNotifications.sort(function(a,b) { return (b.createdAt||0) - (a.createdAt||0); });
       if (liveNotifications.length > 0 && liveNotifications[0].message) Router.toast(liveNotifications[0].message);
     }, function(err) { console.warn("[Notify] Listener error:", err.message); });
 }
@@ -5030,12 +5028,12 @@ Router.register("rounds", function(params) {
   h += '<div class="ff-input" style="background:var(--bg4);color:var(--gold);font-weight:600">' + escHtml(roundAs.name) + '</div><input type="hidden" id="rf-player" value="' + roundAs.id + '"></div>';
   h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="rf-course" placeholder="Start typing to search courses..." oninput="showRoundCourseSearch(this)"><div id="search-round-course" class="search-results"></div></div>';
   h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="rf-format"><option value="stroke">Stroke play</option><option value="stableford">Modified Stableford</option><option value="scramble">Scramble (2-man)</option><option value="scramble4">Scramble (4-man)</option><option value="bestball">Best ball</option><option value="alternate">Alternate shot</option><option value="skins">Skins</option><option value="match">Match play</option></select></div>';
-  h += '<div class="ff-row">';
-  h += '<div class="ff"><label class="ff-label">Score</label><input type="number" inputmode="numeric" class="ff-input" id="rf-score" placeholder="85"></div>';
-  h += '<div class="ff"><label class="ff-label">Date</label><input type="date" class="ff-input" id="rf-date" value="' + new Date().toISOString().split("T")[0] + '"></div>';
-  h += '</div><div class="ff-row">';
-  h += '<div class="ff"><label class="ff-label">Rating</label><input type="number" step="0.1" class="ff-input" id="rf-rating" placeholder="auto"></div>';
-  h += '<div class="ff"><label class="ff-label">Slope</label><input type="number" class="ff-input" id="rf-slope" placeholder="auto"></div>';
+  h += '<div class="ff-row" style="grid-template-columns:1fr 1fr">';
+  h += '<div class="ff"><label class="ff-label">Score</label><input type="number" inputmode="numeric" class="ff-input" id="rf-score" placeholder="85" style="min-width:0"></div>';
+  h += '<div class="ff"><label class="ff-label">Date</label><input type="date" class="ff-input" id="rf-date" value="' + new Date().toISOString().split("T")[0] + '" style="min-width:0"></div>';
+  h += '</div><div class="ff-row" style="grid-template-columns:1fr 1fr">';
+  h += '<div class="ff"><label class="ff-label">Rating</label><input type="number" step="0.1" class="ff-input" id="rf-rating" placeholder="auto" style="min-width:0"></div>';
+  h += '<div class="ff"><label class="ff-label">Slope</label><input type="number" class="ff-input" id="rf-slope" placeholder="auto" style="min-width:0"></div>';
   h += '</div>';
   h += '<div class="ff"><label class="ff-label">Scorecard photo (optional)</label><input type="file" accept="image/*" id="rf-photo" style="color:var(--muted);font-size:12px"></div>';
   h += '<button class="btn full green" onclick="submitRound()">+ Log round</button></div>';
@@ -6052,8 +6050,10 @@ Router.register("admin", function() {
 
 function loadAdminReports() {
   if (!db) { document.getElementById("adminReports").innerHTML = '<div style="font-size:11px;color:var(--muted)">Requires Firebase</div>'; return; }
-  db.collection("reports").where("resolved","==",false).orderBy("createdAt","desc").limit(20).get().then(function(snap) {
+  db.collection("reports").where("resolved","==",false).get().then(function(snap) {
     var reports = []; snap.forEach(function(doc) { reports.push(Object.assign({_id:doc.id}, doc.data())); });
+    reports.sort(function(a,b) { return (b.createdAt||0) - (a.createdAt||0); });
+    reports = reports.slice(0, 20);
     var h = '';
     if (!reports.length) {
       h = '<div class="card"><div class="card-body" style="text-align:center"><div style="font-size:11px;color:var(--muted)">No pending reports</div></div></div>';
@@ -6566,8 +6566,9 @@ Router.register("partygames", function() {
   
   // Load active games
   if (db) {
-    db.collection("partygames").where("status","==","active").orderBy("createdAt","desc").get().then(function(snap) {
+    db.collection("partygames").where("status","==","active").get().then(function(snap) {
       var games = []; snap.forEach(function(doc) { games.push(Object.assign({_id:doc.id}, doc.data())); });
+      games.sort(function(a,b) { return (b.createdAt||0) - (a.createdAt||0); });
       var el = document.getElementById("activeGames");
       if (!el) return;
       if (!games.length) { el.innerHTML = '<div class="section"><div style="font-size:11px;color:var(--muted);text-align:center;padding:12px">No active games. Start one below!</div></div>'; return; }
@@ -6667,8 +6668,10 @@ function renderSyncRoundSetup() {
   
   // Load open synced rounds
   if (db) {
-    db.collection("syncrounds").where("status","==","active").orderBy("createdAt","desc").limit(10).get().then(function(snap) {
+    db.collection("syncrounds").where("status","==","active").get().then(function(snap) {
       var rounds = []; snap.forEach(function(doc) { rounds.push(Object.assign({_id:doc.id}, doc.data())); });
+      rounds.sort(function(a,b) { return (b.createdAt||0) - (a.createdAt||0); });
+      rounds = rounds.slice(0, 10);
       var el = document.getElementById("openSyncRounds");
       if (!el) return;
       if (!rounds.length) { el.innerHTML = '<div style="font-size:11px;color:var(--muted);text-align:center;padding:12px">No active synced rounds. Start one above!</div>'; return; }
