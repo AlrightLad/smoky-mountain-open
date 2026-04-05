@@ -921,14 +921,15 @@ function enterApp() {
   PB.load();
   initSync();
   preloadMemberPhotos();
-  updateProfileBar();
+  // Delay profile bar update to ensure DOM is ready
+  setTimeout(function() { updateProfileBar(); }, 100);
   Router.go("home");
 }
 
 function updateProfileBar() {
   var avatarEl = document.getElementById("profileBarAvatar");
   var rightEl = document.getElementById("profileBarRight");
-  if (!avatarEl || !rightEl) return;
+  if (!avatarEl || !rightEl) { console.warn("[ProfileBar] Elements not found"); return; }
   
   var name = "Member";
   var p = null;
@@ -939,7 +940,7 @@ function updateProfileBar() {
   }
   if (currentUser) {
     var localP = PB.getPlayer(currentUser.uid);
-    if (localP) p = localP;
+    if (localP) { p = localP; name = p.name || p.username || name; }
   }
   
   if (p) {
@@ -950,6 +951,7 @@ function updateProfileBar() {
   }
   
   rightEl.innerHTML = 'Hi, <span style="color:var(--gold);font-weight:600">' + escHtml(name) + '</span>';
+  console.log("[ProfileBar] Updated for:", name);
 }
 
 function goToMyProfile() {
@@ -2977,7 +2979,9 @@ Router.register("members", function(params) {
 
 function renderMemberList() {
   var players = PB.getPlayers();
-  var h = '<div class="sh"><h2>Parbaugh members</h2></div>';
+  
+  // Show loading while fetching Firebase members
+  document.querySelector('[data-page="members"]').innerHTML = '<div class="sh"><h2>Parbaugh members</h2></div><div class="loading"><div class="spinner"></div>Loading members...</div>';
   
   if (db) {
     db.collection("members").get().then(function(snap) {
@@ -2985,9 +2989,12 @@ function renderMemberList() {
       var claimedFromIds = [];
       snap.forEach(function(doc) { 
         var d = doc.data();
+        d.id = d.id || doc.id; // Ensure id is set
         fbMembers.push(d); 
         if (d.claimedFrom) claimedFromIds.push(d.claimedFrom);
       });
+      
+      console.log("[Members] Firebase:", fbMembers.length, "Local:", players.length, "Claimed:", claimedFromIds.length);
       
       // Filter local players: remove any whose ID was claimed by a Firebase account
       var filtered = players.filter(function(p) {
@@ -3002,12 +3009,17 @@ function renderMemberList() {
         }
       });
       
+      console.log("[Members] Final list:", filtered.length, filtered.map(function(p){return p.name||p.username}).join(", "));
+      
       var h2 = '<div class="sh"><h2>Parbaugh members</h2></div>';
       renderMemberListHtml(filtered, h2);
-    }).catch(function() {
+    }).catch(function(e) {
+      console.error("[Members] Firebase load failed:", e);
+      var h = '<div class="sh"><h2>Parbaugh members</h2></div>';
       renderMemberListHtml(players, h);
     });
   } else {
+    var h = '<div class="sh"><h2>Parbaugh members</h2></div>';
     renderMemberListHtml(players, h);
   }
 }
