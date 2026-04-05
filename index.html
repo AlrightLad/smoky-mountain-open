@@ -520,6 +520,12 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 
 <!-- ============ MAIN APP ============ -->
 <div id="mainApp" class="hidden">
+  <div id="profileBar" style="display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:var(--bg);border-bottom:1px solid var(--border)">
+    <div id="profileBarLeft" style="display:flex;align-items:center;gap:8px;cursor:pointer" onclick="goToMyProfile()">
+      <div id="profileBarAvatar" style="width:28px;height:28px;border-radius:50%;overflow:hidden;background:var(--bg3);display:flex;align-items:center;justify-content:center;position:relative"></div>
+    </div>
+    <div id="profileBarRight" style="font-size:12px;color:var(--muted);cursor:pointer" onclick="goToMyProfile()"></div>
+  </div>
   <div class="nav" id="nav"></div>
   <div data-page="home"></div>
   <div data-page="members" class="hidden"></div>
@@ -915,7 +921,43 @@ function enterApp() {
   PB.load();
   initSync();
   preloadMemberPhotos();
+  updateProfileBar();
   Router.go("home");
+}
+
+function updateProfileBar() {
+  var avatarEl = document.getElementById("profileBarAvatar");
+  var rightEl = document.getElementById("profileBarRight");
+  if (!avatarEl || !rightEl) return;
+  
+  var name = "Member";
+  var p = null;
+  
+  if (currentProfile) {
+    name = currentProfile.name || currentProfile.username || "Member";
+    p = currentProfile;
+  }
+  if (currentUser) {
+    var localP = PB.getPlayer(currentUser.uid);
+    if (localP) p = localP;
+  }
+  
+  if (p) {
+    avatarEl.innerHTML = Router.getAvatar(p);
+  } else {
+    var initial = name.charAt(0).toUpperCase();
+    avatarEl.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700;font-size:12px;background:var(--bg3);border-radius:50%">' + initial + '</div>';
+  }
+  
+  rightEl.innerHTML = 'Hi, <span style="color:var(--gold);font-weight:600">' + escHtml(name) + '</span>';
+}
+
+function goToMyProfile() {
+  if (currentUser) {
+    Router.go("members", { id: currentUser.uid });
+  } else {
+    Router.go("settings");
+  }
 }
 
 function exitApp() {
