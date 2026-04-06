@@ -29,6 +29,7 @@ input[type=date]{-webkit-appearance:none;appearance:none;min-width:0;font-size:1
 input[type=date]::-webkit-date-and-time-value{text-align:left}
 input,select,textarea{font-family:inherit}
 select{-webkit-appearance:none;appearance:none}
+button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
 
 :root{--bg:#0e1118;--bg2:#131722;--bg3:#1a1f2c;--bg4:#212738;--gold:#c9a84c;--gold2:#a68b3a;--gold3:#dfc06a;--green:#1a2840;--green2:#253a58;--cream:#eae8e0;--muted:#7a7e8a;--muted2:#484d5c;--red:#d4604e;--birdie:#4ec97a;--card:#121620;--border:#1e2333;--radius:6px}
 
@@ -327,7 +328,7 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 
 
 /* ===== FIREBASE SYNC BAR ===== */
-.sync-bar{position:fixed;top:0;left:0;right:0;max-width:520px;margin:0 auto;height:3px;z-index:100;transition:opacity .3s;opacity:0}
+.sync-bar{position:fixed;top:0;left:0;right:0;max-width:520px;margin:0 auto;height:3px;z-index:100;transition:opacity .3s;opacity:0;pointer-events:none;background:transparent}
 .sync-bar.online{background:#2a6a3a;opacity:0}
 .sync-bar.syncing{background:var(--gold);opacity:1;animation:syncPulse 1.5s infinite}
 .sync-bar.offline{background:var(--red);opacity:1}
@@ -484,7 +485,7 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 .rip-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;animation:pulse-dot 2s infinite;flex-shrink:0}
 
 /* ===== CONNECTION STATUS BAR ===== */
-.conn-bar{display:flex;align-items:center;gap:6px;padding:6px 16px;font-size:9px;letter-spacing:.5px;text-transform:uppercase;font-weight:600;transition:all .3s}
+.conn-bar{display:flex;align-items:center;gap:6px;padding:6px 16px;font-size:9px;letter-spacing:.5px;text-transform:uppercase;font-weight:600;transition:all .3s;pointer-events:none}
 .conn-bar.live{color:rgba(78,201,122,.6)}
 .conn-bar.syncing{color:var(--gold)}
 .conn-bar.offline{color:var(--red);background:rgba(212,96,78,.06)}
@@ -2750,8 +2751,8 @@ Router.register("home", function() {
   h += '<div class="hero"><div class="hero-logo" style="border:none;background:transparent"><img src="watermark.jpg" style="border-radius:16px"></div>';
   h += '<h1>THE PARBAUGHS</h1><div class="est">Est. 2026 · York, PA</div></div>';
 
-  // Connection status
-  h += '<div id="connBar" class="conn-bar live" style="opacity:0"><span>●</span> Live</div>';
+  // Connection status — hidden by default, shows only on offline
+  h += '<div id="connBar" class="conn-bar live" style="display:none"><span>●</span> Live</div>';
 
   // 0. Who's Online
   h += '<div id="onlineSection"></div>';
@@ -9217,14 +9218,11 @@ function updateConnBar() {
   var el = document.getElementById("connBar");
   if (!el) return;
   el.className = "conn-bar " + connStatus;
-  var dot = connStatus === "live" ? "●" : connStatus === "syncing" ? "◉" : "●";
-  var label = connStatus === "live" ? "Live" : connStatus === "syncing" ? "Syncing..." : "Offline";
-  el.innerHTML = '<span>' + dot + '</span> ' + label;
-  // Auto-hide the live indicator after 3 seconds
-  if (connStatus === "live") {
-    setTimeout(function() { if (el && connStatus === "live") el.style.opacity = "0"; }, 3000);
+  if (connStatus === "offline") {
+    el.style.display = "flex";
+    el.innerHTML = '<span>●</span> Offline';
   } else {
-    el.style.opacity = "1";
+    el.style.display = "none";
   }
 }
 
