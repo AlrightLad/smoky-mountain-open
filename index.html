@@ -7586,53 +7586,49 @@ function toggleClubhouseCal() {
 function renderClubCalGrid(year, month, todayStr, events) {
   var firstDay = new Date(year, month, 1).getDay();
   var daysInMonth = new Date(year, month + 1, 0).getDate();
-  
-  var eventDates = {};
-  if (events) events.forEach(function(e) { eventDates[e.date] = e; });
-  liveTeeTimes.forEach(function(t) { if (t.status !== "cancelled") eventDates[t.date] = {type:"tee",title:t.courseName,time:t.time}; });
+  calEventMap = {};
+  function addEv(date, ev) { if (!calEventMap[date]) calEventMap[date] = []; calEventMap[date].push(ev); }
+  liveTeeTimes.forEach(function(t) {
+    if (t.status === "cancelled") return;
+    var accepted = t.responses ? Object.keys(t.responses).filter(function(k){return t.responses[k]==="accepted"}) : [];
+    var names = []; accepted.forEach(function(uid) { var m = PB.getPlayer(uid) || (typeof fbMemberCache!=="undefined"?fbMemberCache[uid]:null); if(m) names.push(m.name||m.username||"Member"); });
+    addEv(t.date, {type:"tee", title:t.courseName||"Tee Time", time:t.time||"", spots:t.spots||4, accepted:accepted.length, players:names});
+  });
   PB.getTrips().forEach(function(trip) {
-    if (trip.startDate) {
-      var sd = new Date(trip.startDate + "T12:00:00");
-      var ed = trip.endDate ? new Date(trip.endDate + "T12:00:00") : sd;
-      for (var dt = new Date(sd); dt <= ed; dt.setDate(dt.getDate() + 1)) {
-        var ds = dt.getFullYear() + "-" + String(dt.getMonth()+1).padStart(2,"0") + "-" + String(dt.getDate()).padStart(2,"0");
-        eventDates[ds] = {type:"trip",title:trip.name,time:""};
-      }
+    if (!trip.startDate) return;
+    var sd = new Date(trip.startDate+"T12:00:00"), ed = trip.endDate ? new Date(trip.endDate+"T12:00:00") : sd;
+    var mN = []; if(trip.members) trip.members.forEach(function(uid){var m=PB.getPlayer(uid)||(typeof fbMemberCache!=="undefined"?fbMemberCache[uid]:null);if(m)mN.push(m.name||m.username||"Member");});
+    for (var dt=new Date(sd); dt<=ed; dt.setDate(dt.getDate()+1)) {
+      var ds=dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0");
+      addEv(ds, {type:"event", title:trip.name, location:trip.location||"", dates:trip.startDate+(trip.endDate&&trip.endDate!==trip.startDate?" to "+trip.endDate:""), players:mN});
     }
   });
-  
+  PB.getRounds().forEach(function(r) {
+    if (!r.date) return;
+    var p = PB.getPlayer(r.player); var pN = p?(p.name||p.username||""):"";
+    addEv(r.date, {type:"round", title:r.course||"Round", player:pN, score:r.score});
+  });
   var h = '';
-  for (var i = 0; i < firstDay; i++) h += '<div style="padding:8px;font-size:12px"></div>';
-  for (var d = 1; d <= daysInMonth; d++) {
-    var dateStr = year + "-" + String(month + 1).padStart(2,"0") + "-" + String(d).padStart(2,"0");
-    var isToday = dateStr === todayStr;
-    var isSelected = dateStr === clubCalSelectedDate;
-    var isRangeStart = dateStr === clubCalRangeStart;
-    var isRangeEnd = dateStr === clubCalRangeEnd;
-    var inRange = clubCalRangeStart && clubCalRangeEnd && dateStr >= clubCalRangeStart && dateStr <= clubCalRangeEnd;
-    var hasEvent = eventDates[dateStr];
-    var hasSelection = clubCalSelectedDate || clubCalRangeStart; // any selection active
-    
-    // Selection states take full priority over today
-    var bg = isRangeStart || isRangeEnd ? "var(--gold)" : inRange ? "rgba(201,168,76,.25)" : isSelected ? "var(--gold)" : "transparent";
-    var color = isRangeStart || isRangeEnd || isSelected ? "var(--bg)" : isToday && !hasSelection ? "var(--gold)" : "var(--cream)";
-    var weight = isToday ? "700" : "400";
-    
-    // Today dot — only shows when today is NOT selected/in-range
-    var todayDot = (isToday && !isSelected && !isRangeStart && !isRangeEnd && !inRange) ? '<div style="width:4px;height:4px;border-radius:50%;background:var(--birdie);margin:1px auto 0"></div>' : '';
-    // Event dot — shows alongside today dot if both apply
-    var eventDot = hasEvent ? '<div style="width:4px;height:4px;border-radius:50%;background:' + (hasEvent.type === "trip" ? "var(--gold)" : "var(--birdie)") + ';margin:1px auto 0"></div>' : '';
-    var dotHtml = todayDot || eventDot; // today dot takes visual priority, event dot as fallback
-    if (isToday && hasEvent && !isSelected && !isRangeStart && !isRangeEnd && !inRange) {
-      // Both today and event — show two dots
-      dotHtml = '<div style="display:flex;justify-content:center;gap:2px;margin-top:1px"><div style="width:3px;height:3px;border-radius:50%;background:var(--birdie)"></div><div style="width:3px;height:3px;border-radius:50%;background:' + (hasEvent.type === "trip" ? "var(--gold)" : "var(--birdie)") + '"></div></div>';
-    }
-    
-    h += '<div onclick="selectClubCalDay(\'' + dateStr + '\')" style="padding:6px 0;font-size:12px;font-weight:' + weight + ';color:' + color + ';background:' + bg + ';border-radius:6px;cursor:pointer;line-height:1">' + d + dotHtml + '</div>';
+  for (var i=0;i<firstDay;i++) h+='<div style="padding:8px;font-size:12px"></div>';
+  for (var d=1;d<=daysInMonth;d++) {
+    var ds=year+"-"+String(month+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+    var isT=ds===todayStr,isS=ds===clubCalSelectedDate,isRS=ds===clubCalRangeStart,isRE=ds===clubCalRangeEnd;
+    var inR=clubCalRangeStart&&clubCalRangeEnd&&ds>=clubCalRangeStart&&ds<=clubCalRangeEnd;
+    var evs=calEventMap[ds]||[],hasSel=clubCalSelectedDate||clubCalRangeStart;
+    var bg=isRS||isRE?"var(--gold)":inR?"rgba(201,168,76,.25)":isS?"var(--gold)":"transparent";
+    var cl=isRS||isRE||isS?"var(--bg)":isT&&!hasSel?"var(--gold)":"var(--cream)";
+    var dots=[];
+    if(isT&&!isS&&!isRS&&!isRE&&!inR) dots.push("#4ade80");
+    var ht={};
+    evs.forEach(function(ev){if(ev.type==="event"&&!ht.e){dots.push("var(--gold)");ht.e=1;}if(ev.type==="tee"&&!ht.t){dots.push("#60a5fa");ht.t=1;}if(ev.type==="round"&&!ht.r){dots.push("#a78bfa");ht.r=1;}});
+    var dH='';
+    if(dots.length===1)dH='<div style="width:4px;height:4px;border-radius:50%;background:'+dots[0]+';margin:1px auto 0"></div>';
+    else if(dots.length>1){dH='<div style="display:flex;justify-content:center;gap:2px;margin-top:1px">';dots.slice(0,3).forEach(function(c){dH+='<div style="width:3px;height:3px;border-radius:50%;background:'+c+'"></div>';});dH+='</div>';}
+    h+='<div onclick="selectClubCalDay(\''+ds+'\')" style="padding:6px 0;font-size:12px;font-weight:'+(isT?"700":"400")+';color:'+cl+';background:'+bg+';border-radius:6px;cursor:pointer;line-height:1">'+d+dH+'</div>';
   }
   return h;
 }
-
+var calEventMap = {};
 function selectClubCalDay(dateStr) {
   // If nothing selected, select as start
   if (!clubCalSelectedDate && !clubCalRangeStart) {
@@ -7721,24 +7717,70 @@ function refreshClubCal() {
     return;
   }
   
-  // SINGLE DATE SELECTED → tee time creation
+  // SINGLE DATE SELECTED
   if (clubCalSelectedDate) {
-    var dayEvents = [];
-    liveTeeTimes.forEach(function(t) { if (t.date === clubCalSelectedDate && t.status !== "cancelled") dayEvents.push({type:"tee",title:t.courseName||"Tee Time",time:t.time||""}); });
-    PB.getTrips().forEach(function(trip) { if (trip.startDate && trip.startDate <= clubCalSelectedDate && (!trip.endDate || trip.endDate >= clubCalSelectedDate)) dayEvents.push({type:"trip",title:trip.name,time:""}); });
+    var dayEvs = calEventMap[clubCalSelectedDate] || [];
     var eh = '';
     var selDate = new Date(clubCalSelectedDate + "T12:00:00");
-    eh += '<div style="font-size:11px;font-weight:600;color:var(--cream);margin-bottom:6px">' + dayNames[selDate.getDay()] + ', ' + monNames[selDate.getMonth()] + ' ' + selDate.getDate() + '</div>';
-    if (dayEvents.length) {
-      dayEvents.forEach(function(ev) {
-        var dotColor = ev.type === "trip" ? "var(--gold)" : "var(--birdie)";
-        eh += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0"><div style="width:6px;height:6px;border-radius:50%;background:' + dotColor + ';flex-shrink:0"></div><div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
-        if (ev.time) eh += '<div style="font-size:10px;color:var(--muted)">' + ev.time + '</div>';
-        eh += '</div></div>';
+    eh += '<div style="font-size:11px;font-weight:600;color:var(--cream);margin-bottom:8px">' + dayNames[selDate.getDay()] + ', ' + monNames[selDate.getMonth()] + ' ' + selDate.getDate() + '</div>';
+    
+    if (dayEvs.length) {
+      // Separate by type
+      var teeEvs = dayEvs.filter(function(e){return e.type==="tee"});
+      var eventEvs = dayEvs.filter(function(e){return e.type==="event"});
+      var roundEvs = dayEvs.filter(function(e){return e.type==="round"});
+      
+      // Events (gold)
+      eventEvs.forEach(function(ev) {
+        eh += '<div style="background:var(--bg3);border-left:3px solid var(--gold);border-radius:4px;padding:10px 12px;margin-bottom:6px">';
+        eh += '<div style="font-size:8px;color:var(--gold);font-weight:700;letter-spacing:.5px;margin-bottom:3px">EVENT</div>';
+        eh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
+        if (ev.location) eh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(ev.location) + '</div>';
+        if (ev.dates) eh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + ev.dates + '</div>';
+        if (ev.players && ev.players.length) eh += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + ev.players.length + ' attending: ' + ev.players.join(", ") + '</div>';
+        eh += '</div>';
       });
+      
+      // Tee times (blue)
+      teeEvs.forEach(function(ev) {
+        eh += '<div style="background:var(--bg3);border-left:3px solid #60a5fa;border-radius:4px;padding:10px 12px;margin-bottom:6px">';
+        eh += '<div style="font-size:8px;color:#60a5fa;font-weight:700;letter-spacing:.5px;margin-bottom:3px">TEE TIME</div>';
+        eh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
+        if (ev.time) eh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + ev.time + '</div>';
+        if (ev.players && ev.players.length) eh += '<div style="font-size:10px;color:#60a5fa;margin-top:3px">' + ev.accepted + '/' + ev.spots + ' going: ' + ev.players.join(", ") + '</div>';
+        else eh += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + ev.accepted + '/' + ev.spots + ' spots filled</div>';
+        eh += '</div>';
+      });
+      
+      // Rounds (purple) — grouped by course
+      if (roundEvs.length) {
+        var courseGroups = {};
+        roundEvs.forEach(function(ev) {
+          if (!courseGroups[ev.title]) courseGroups[ev.title] = [];
+          courseGroups[ev.title].push(ev);
+        });
+        Object.keys(courseGroups).forEach(function(course) {
+          var group = courseGroups[course];
+          eh += '<div style="background:var(--bg3);border-left:3px solid #a78bfa;border-radius:4px;padding:10px 12px;margin-bottom:6px">';
+          eh += '<div style="font-size:8px;color:#a78bfa;font-weight:700;letter-spacing:.5px;margin-bottom:3px">ROUND' + (group.length > 1 ? 'S' : '') + '</div>';
+          eh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(course) + '</div>';
+          group.forEach(function(r) {
+            var scoreColor = r.score <= 72 ? "var(--birdie)" : r.score >= 100 ? "var(--red)" : "var(--cream)";
+            eh += '<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px"><span style="color:var(--muted)">' + escHtml(r.player) + '</span><span style="font-weight:600;color:' + scoreColor + '">' + (r.score || "—") + '</span></div>';
+          });
+          eh += '</div>';
+        });
+      }
     } else {
       eh += '<div style="font-size:11px;color:var(--muted);padding:4px 0">Nothing scheduled</div>';
     }
+    // Legend
+    eh += '<div style="display:flex;gap:10px;margin-top:6px;font-size:9px;color:var(--muted2)">';
+    eh += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#60a5fa;vertical-align:middle;margin-right:3px"></span>Tee</span>';
+    eh += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold);vertical-align:middle;margin-right:3px"></span>Event</span>';
+    eh += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#a78bfa;vertical-align:middle;margin-right:3px"></span>Round</span>';
+    eh += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#4ade80;vertical-align:middle;margin-right:3px"></span>Today</span>';
+    eh += '</div>';
     eh += '<div style="display:flex;gap:6px;margin-top:8px">';
     eh += '<button class="btn-sm green" style="flex:1;font-size:10px" onclick="Router.go(\'tee-create\',{date:\'' + clubCalSelectedDate + '\'})">+ Tee Time</button>';
     eh += '<button class="btn-sm outline" style="flex:1;font-size:10px" onclick="createEventFromCal(\'' + clubCalSelectedDate + '\',\'' + clubCalSelectedDate + '\')">+ Event</button>';
@@ -7749,7 +7791,6 @@ function refreshClubCal() {
     eventsEl.innerHTML = '';
   }
 }
-
 function createEventFromCal(startDate, endDate) {
   var name = prompt("Event name:");
   if (!name || !name.trim()) return;
@@ -8655,93 +8696,84 @@ function openFeatureRequest() {
 Router.register("caddynotes", function() {
   var h = '<div class="sh"><h2>The Caddy Notes</h2><button class="back" onclick="Router.go(\'home\')">← Back</button></div>';
 
-  h += '<div style="text-align:center;padding:16px"><div style="font-size:28px;margin-bottom:6px">📋</div>';
+  h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
-  h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">Your caddy\'s rundown on what this app can do</div></div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div></div>';
 
-  // Current Features
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">What\'s in the Bag</span></div>';
+  // Latest Patch Notes
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">Patch Notes — v5.3</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 6, 2026</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
-  var features = [
-    "Account creation with invite-only access",
-    "Profile claiming for founding members",
-    "Live hole-by-hole scoring (Play Now)",
-    "Parbaugh Round — real-time shared scorecard across devices",
-    "Trip/event creation with smart tournament generator",
-    "Live event scoring with real-time sync",
-    "Score attestation — all players verify the scorecard",
-    "Season standings with handicap-adjusted points",
-    "GHIN World Handicap System calculation",
-    "Parbaugh Stroke Play (handicap-adjusted format)",
-    "8 game formats: Stroke, Stableford, Scramble, Best Ball, Match, Skins, Shamble, Chapman",
-    "10 party games: CTP, Long Drive, Putt-Off, Chip-Off, and more",
-    "47 achievements across 7 categories",
-    "Trophy Room with XP, levels, and title progression (Rookie → G.O.A.T.)",
-    "Activity feed with likes, comments, and real-time updates",
-    "Direct messages between members",
-    "Tee time posting with RSVP",
-    "Calendar with event tracking",
-    "Course directory with reviews and photos",
-    "Photo uploads stored in the cloud",
-    "Commissioner admin panel (suspend, remove, manage invites)",
-    "Member reporting system",
-    "Head-to-head rivalry tracking",
-    "Scramble team management",
-    "Ace wall for hole-in-ones",
-    "Merch page",
-    "FAQ and feature request system"
+  var patchNotes = [
+    {item: "Clubhouse tab — calendar, upcoming events, and trash talk in one place", tag: "NEW"},
+    {item: "Inline calendar with date range selection for scheduling events", tag: "NEW"},
+    {item: "Schedule tee times and multi-day events directly from the calendar", tag: "NEW"},
+    {item: "Live Spotlight — see who\'s playing right now on the home page", tag: "NEW"},
+    {item: "110+ achievements with hole-by-hole scoring, golf culture badges, and famous courses", tag: "NEW"},
+    {item: "XP system rebalanced — Level 100 reachable in ~1 year of active play", tag: "IMPROVED"},
+    {item: "Quick Add Course — add a new course in 5 seconds from Play Now", tag: "NEW"},
+    {item: "Party games now require an active round and link to your scorecard", tag: "IMPROVED"},
+    {item: "Comment delete — remove your own comments from posts", tag: "NEW"},
+    {item: "Badge and title editing now syncs to all devices", tag: "FIXED"},
+    {item: "8 new displayable profile badges (Commissioner, Ambassador, Beast Mode, and more)", tag: "NEW"},
+    {item: "Feature requests now notify the Commissioner and post to the feed", tag: "IMPROVED"},
+    {item: "Desktop responsive layout — looks proper on tablets and laptops", tag: "NEW"},
+    {item: "200+ courses across PA, VA, MD, and NC", tag: "NEW"},
+    {item: "Pull-to-refresh on all pages", tag: "NEW"},
+    {item: "Notification panel rebuilt — per-item dismiss, deep linking, never gets stuck", tag: "FIXED"},
+    {item: "Connectivity indicator in footer (green = live, red = offline)", tag: "NEW"},
+    {item: "Nav bar tap reliability improved — no more ghost taps on mobile", tag: "FIXED"},
+    {item: "Online section now shows profile photos and full display names", tag: "FIXED"},
+    {item: "Calendar today indicator redesigned — subtle green dot, doesn\'t compete with selections", tag: "FIXED"},
+    {item: "Like button now updates instantly (optimistic UI)", tag: "FIXED"},
+    {item: "Presence system optimized — 70% fewer Firestore reads", tag: "IMPROVED"},
+    {item: "Firestore security rules hardened with member verification", tag: "IMPROVED"},
+    {item: "Global error logging to Firestore for production debugging", tag: "NEW"},
+    {item: "Photo upload consolidated to one reliable path with Firestore sync", tag: "FIXED"}
   ];
-  features.forEach(function(f) {
-    h += '<div style="padding:3px 0;display:flex;gap:8px"><span style="color:var(--gold)">✓</span> ' + f + '</div>';
-  });
-  h += '</div></div></div>';
-
-  // Recently Added — v5.1
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">Just Off the Tee — Latest Update</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">v5.2 · April 5, 2026</div>';
-  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
-  var recent = [
-    {item: "Firebase backend — all data syncs across devices in real-time", tag: "NEW"},
-    {item: "Account system with email/password auth and invite codes", tag: "NEW"},
-    {item: "Profile claiming — founding four members keep all SMO data", tag: "NEW"},
-    {item: "Parbaugh Round — multiplayer real-time scorecard", tag: "NEW"},
-    {item: "Live event scoring with Firestore sync", tag: "NEW"},
-    {item: "Score attestation system for tournament integrity", tag: "NEW"},
-    {item: "Party Golf Games — 10 mini-games with XP rewards", tag: "NEW"},
-    {item: "Smart Tournament Generator with 6 preset styles", tag: "NEW"},
-    {item: "GHIN World Handicap System formula", tag: "NEW"},
-    {item: "Parbaugh Stroke Play format (handicap-adjusted)", tag: "NEW"},
-    {item: "Feed likes and comments", tag: "NEW"},
-    {item: "Display name preference (username, name, or nickname)", tag: "NEW"},
-    {item: "Name change propagation across all historical data", tag: "NEW"},
-    {item: "FAQ page with 13 topics", tag: "NEW"},
-    {item: "Feature request system (emails Commissioner)", tag: "NEW"},
-    {item: "The Caddy Notes — you\'re reading it", tag: "NEW"},
-    {item: "Profile bar with avatar and quick profile access", tag: "NEW"},
-    {item: "Commissioner admin panel with suspension and moderation", tag: "NEW"},
-    {item: "Trophy Room with 47 achievements", tag: "NEW"},
-    {item: "Photo system using Firestore (no external hosting)", tag: "NEW"},
-    {item: "Invite expiration (7-day auto-expire)", tag: "IMPROVED"},
-    {item: "Nav bar now scrolls horizontally on mobile", tag: "FIXED"},
-    {item: "Date inputs properly sized on iOS", tag: "FIXED"},
-    {item: "Course default photo added", tag: "FIXED"},
-    {item: "Merch page restored (prices removed)", tag: "FIXED"},
-    {item: "Registration bug causing missing profiles", tag: "FIXED"},
-    {item: "AI-powered tournament generator (coming soon — needs API configuration)", tag: "SOON"},
-    {item: "Who's Online — see active members on the home page in real-time", tag: "NEW"},
-    {item: "Share round card — copy your stats to iMessage after finishing a round", tag: "NEW"},
-    {item: "Scramble live scoring — hole-by-hole team scoring", tag: "NEW"},
-    {item: "Season recap with champion, awards, and stats", tag: "NEW"},
-    {item: "Yearly awards ceremony (Player of the Year, Most Improved, Iron Man, and more)", tag: "NEW"},
-    {item: "Feed post notifications — get notified when someone likes or comments", tag: "NEW"},
-    {item: "Notification bell with slide-out panel and mark-all-read", tag: "NEW"},
-    {item: "DM bug fixed — you no longer see yourself in the messages list", tag: "FIXED"}
-  ];
-  recent.forEach(function(r) {
-    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "SOON" ? "#f59e0b" : "var(--muted)";
+  patchNotes.forEach(function(r) {
+    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
     h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
     h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
     h += '<span>' + r.item + '</span></div>';
+  });
+  h += '</div></div></div>';
+
+  // What's in the Bag — full feature list
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">What\'s in the Bag</span></div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
+  var features = [
+    "Invite-only membership with invite codes",
+    "Live hole-by-hole scoring (Play Now)",
+    "Parbaugh Round — real-time shared scorecard",
+    "Clubhouse — calendar, chat, and scheduling in one tab",
+    "Live Spotlight — see active rounds on the home page",
+    "110+ achievements across 9 categories",
+    "Trophy Room with XP, levels, titles, and badge customization",
+    "Season standings with handicap-adjusted points",
+    "GHIN World Handicap System handicap calculation",
+    "8 game formats: Stroke, Stableford, Scramble, Best Ball, Match, Skins, Shamble, Chapman",
+    "10 party games linked to your active round",
+    "Trash talk feed with likes, comments, and delete",
+    "Direct messages between members",
+    "Tee time posting with RSVP and notifications",
+    "Full calendar with date range event creation",
+    "200+ course database across PA, VA, MD, NC",
+    "Quick Add Course from Play Now and Round Log",
+    "Photo uploads synced across all devices",
+    "Notification bell with deep linking",
+    "Who\'s Online with live round broadcasting",
+    "Commissioner admin panel",
+    "Scramble team management",
+    "Ace wall",
+    "Season recap and yearly awards ceremony",
+    "Pull-to-refresh",
+    "Desktop and mobile responsive design",
+    "Feature request system",
+    "Share round card after completing a round"
+  ];
+  features.forEach(function(f) {
+    h += '<div style="padding:3px 0;display:flex;gap:8px"><span style="color:var(--gold)">✓</span> ' + f + '</div>';
   });
   h += '</div></div></div>';
 
@@ -8749,17 +8781,20 @@ Router.register("caddynotes", function() {
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--muted)">On the Range — Coming Soon</span></div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--muted);line-height:1.8">';
   var upcoming = [
-    "SMS/phone number authentication",
-    "Push notifications to locked screen (requires Firebase Blaze plan)",
-    "Badge image gallery (64 custom achievement icons)",
-    "Cosmetic avatar selector with unlockable borders and banners"
+    "PWA install — add to home screen like a native app",
+    "Push notifications to locked screen",
+    "AI-powered tournament generator",
+    "Custom badge image gallery (64 icons)",
+    "Cosmetic avatar borders and banners",
+    "Merch store integration",
+    "SMS/phone number authentication"
   ];
   upcoming.forEach(function(u) {
     h += '<div style="padding:3px 0;display:flex;gap:8px"><span style="color:var(--muted2)">○</span> ' + u + '</div>';
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · Powered by too many late nights</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.3 · 10,700+ lines</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
