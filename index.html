@@ -1742,190 +1742,14 @@ var PB = (function() {
      clubs:{},bag:{},funnyFacts:[]}
   ];
 
-  var DEFAULT_COURSES = [
-    // PA - York area
-    {id:"westminster",name:"Westminster National",loc:"Westminster, MD",region:"MD",rating:71.2,slope:126,par:72,photo:"",reviews:[]},
-    {id:"hickory",name:"Hickory Heights",loc:"Spring Grove, PA",region:"PA",rating:68.5,slope:118,par:72,photo:"",reviews:[]},
-    {id:"briarwood",name:"Briarwood East",loc:"York, PA",region:"PA",rating:69.0,slope:120,par:72,photo:"",reviews:[]},
-    {id:"sunset",name:"Sunset Golf Course",loc:"Middletown, PA",region:"PA",rating:67.8,slope:114,par:70,photo:"",reviews:[]},
-    {id:"gburg",name:"Gettysburg Links",loc:"Gettysburg, PA",region:"PA",rating:68.0,slope:116,par:72,photo:"",reviews:[]},
-    {id:"occy",name:"Outdoor Country Club of York",loc:"York, PA",region:"PA",rating:70.5,slope:128,par:72,photo:"",reviews:[]},
-    {id:"honeyrun",name:"Honey Run Golf Club",loc:"York, PA",region:"PA",rating:69.5,slope:122,par:72,photo:"",reviews:[]},
-    {id:"royal",name:"Royal Manchester Golf Links",loc:"Mt Wolf, PA",region:"PA",rating:71.0,slope:130,par:72,photo:"",reviews:[]},
-    {id:"grandview",name:"Grandview Golf Course",loc:"York, PA",region:"PA",rating:68.8,slope:119,par:71,photo:"",reviews:[]},
-    {id:"heritage",name:"Heritage Hills Golf Resort",loc:"York, PA",region:"PA",rating:71.5,slope:131,par:72,photo:"",reviews:[]},
-    {id:"pleasant",name:"Pleasant Valley Golf Club",loc:"Stewartstown, PA",region:"PA",rating:67.0,slope:112,par:70,photo:"",reviews:[]},
-    {id:"springwood",name:"Springwood Golf Club",loc:"York, PA",region:"PA",rating:68.2,slope:117,par:72,photo:"",reviews:[]},
-    {id:"coolcreek",name:"Cool Creek Golf Club",loc:"Wrightsville, PA",region:"PA",rating:69.3,slope:121,par:72,photo:"",reviews:[]},
-    // PA - Harrisburg/Lancaster area
-    {id:"bluemtn",name:"Blue Mountain Golf Course",loc:"Fredericksburg, PA",region:"PA",rating:70.0,slope:124,par:72,photo:"",reviews:[]},
-    {id:"dauphin",name:"Dauphin Highlands",loc:"Harrisburg, PA",region:"PA",rating:72.3,slope:136,par:72,photo:"",reviews:[]},
-    {id:"foxchase",name:"Fox Chase Golf Club",loc:"Stevens, PA",region:"PA",rating:72.0,slope:133,par:72,photo:"",reviews:[]},
-    {id:"pilgrimoak",name:"Pilgrim's Oak Golf Course",loc:"Peach Bottom, PA",region:"PA",rating:71.8,slope:134,par:72,photo:"",reviews:[]},
-    {id:"crossgates",name:"Crossgates Golf Club",loc:"Millersville, PA",region:"PA",rating:71.2,slope:129,par:72,photo:"",reviews:[]},
-    {id:"meadia",name:"Meadia Heights Golf Club",loc:"Lancaster, PA",region:"PA",rating:69.8,slope:123,par:72,photo:"",reviews:[]},
-    {id:"tanglewood",name:"Tanglewood Manor Golf Club",loc:"Quarryville, PA",region:"PA",rating:70.5,slope:127,par:72,photo:"",reviews:[]},
-    // PA - more York/Adams/Cumberland
-    {id:"rangend",name:"Range End Golf Club",loc:"Dillsburg, PA",region:"PA",rating:69.2,slope:120,par:72,photo:"",reviews:[]},
-    {id:"cedarcrest",name:"Cedar Ridge Golf Course",loc:"East Berlin, PA",region:"PA",rating:67.5,slope:113,par:71,photo:"",reviews:[]},
-    {id:"ironvalley",name:"Iron Valley Golf Club",loc:"Lebanon, PA",region:"PA",rating:71.8,slope:132,par:72,photo:"",reviews:[]},
-    {id:"cumberland",name:"Cumberland Golf Club",loc:"Carlisle, PA",region:"PA",rating:70.8,slope:127,par:72,photo:"",reviews:[]},
-    {id:"silverspg",name:"Silver Spring Golf Course",loc:"Mechanicsburg, PA",region:"PA",rating:68.0,slope:115,par:70,photo:"",reviews:[]},
-    {id:"mannitto",name:"Manito Golf Club",loc:"Harrisburg, PA",region:"PA",rating:70.2,slope:126,par:72,photo:"",reviews:[]},
-    {id:"armitage",name:"Armitage Golf Course",loc:"Mechanicsburg, PA",region:"PA",rating:69.5,slope:121,par:72,photo:"",reviews:[]},
-    {id:"mooreland",name:"Mooreland Golf Club",loc:"Carlisle, PA",region:"PA",rating:69.0,slope:118,par:72,photo:"",reviews:[]},
-    {id:"cederbrook",name:"Cederbrook Golf Course",loc:"Belle Vernon, PA",region:"PA",rating:68.5,slope:117,par:72,photo:"",reviews:[]},
-    {id:"southhill",name:"South Hills Golf Course",loc:"Hanover, PA",region:"PA",rating:68.0,slope:116,par:72,photo:"",reviews:[]},
-    {id:"cedarhills",name:"Cedar Hills Golf Club",loc:"Wellsville, PA",region:"PA",rating:67.8,slope:114,par:72,photo:"",reviews:[]},
-    {id:"flatrock",name:"Flatrock Golf Course",loc:"Littlestown, PA",region:"PA",rating:66.5,slope:111,par:70,photo:"",reviews:[]},
-    {id:"windinghills",name:"Winding Hills Golf Club",loc:"Mechanicsburg, PA",region:"PA",rating:69.8,slope:123,par:72,photo:"",reviews:[]},
-    {id:"mayapple",name:"Mayapple Golf Links",loc:"Carlisle, PA",region:"PA",rating:72.5,slope:135,par:72,photo:"",reviews:[]},
-    {id:"hershey",name:"Hershey Country Club",loc:"Hershey, PA",region:"PA",rating:73.0,slope:138,par:72,photo:"",reviews:[]},
-    {id:"persimmon",name:"Persimmon Golf Club",loc:"Chambersburg, PA",region:"PA",rating:71.0,slope:128,par:72,photo:"",reviews:[]},
-    // PA - York/Adams/Lancaster expanded
-    {id:"briarwood",name:"Briarwood Golf Club",loc:"York, PA",region:"PA",rating:70.8,slope:126,par:72,photo:"",reviews:[]},
-    {id:"grandview",name:"Grandview Golf Course",loc:"York, PA",region:"PA",rating:68.5,slope:117,par:71,photo:"",reviews:[]},
-    {id:"heritagehlls",name:"Heritage Hills Golf Resort",loc:"York, PA",region:"PA",rating:72.0,slope:131,par:72,photo:"",reviews:[]},
-    {id:"honeyrungc",name:"Honey Run Golf Club",loc:"York, PA",region:"PA",rating:70.2,slope:123,par:72,photo:"",reviews:[]},
-    {id:"valleygreenyl",name:"Valley Green Golf Course",loc:"Etters, PA",region:"PA",rating:68.0,slope:115,par:71,photo:"",reviews:[]},
-    {id:"coolcreek",name:"Cool Creek Golf Club",loc:"Wrightsville, PA",region:"PA",rating:69.5,slope:120,par:72,photo:"",reviews:[]},
-    {id:"pleasant",name:"Pleasant Valley Golf Club",loc:"Stewartstown, PA",region:"PA",rating:68.8,slope:118,par:72,photo:"",reviews:[]},
-    {id:"springwood",name:"Out Door Country Club",loc:"York, PA",region:"PA",rating:71.5,slope:130,par:72,photo:"",reviews:[]},
-    {id:"bridgesgy",name:"Bridges Golf Club",loc:"Abbottstown, PA",region:"PA",rating:71.0,slope:126,par:72,photo:"",reviews:[]},
-    {id:"hickoryheights",name:"Hickory Heights Golf Course",loc:"Spring Grove, PA",region:"PA",rating:67.5,slope:113,par:70,photo:"",reviews:[]},
-    {id:"pioneer",name:"Pioneer Golf Course",loc:"Shrewsbury, PA",region:"PA",rating:66.0,slope:108,par:68,photo:"",reviews:[]},
-    {id:"regalegolf",name:"Regale Golf and Country Club",loc:"Parkton, MD",region:"MD",rating:69.5,slope:121,par:72,photo:"",reviews:[]},
-    {id:"foxchase",name:"Fox Chase Golf Club",loc:"Stevens, PA",region:"PA",rating:72.2,slope:132,par:72,photo:"",reviews:[]},
-    {id:"overlook",name:"Overlook Golf Course",loc:"Lancaster, PA",region:"PA",rating:69.0,slope:119,par:70,photo:"",reviews:[]},
-    {id:"fourseasons",name:"Four Seasons Golf Club",loc:"Landisville, PA",region:"PA",rating:70.5,slope:124,par:72,photo:"",reviews:[]},
-    {id:"pilgrimsoak",name:"Pilgrim's Oak Golf Course",loc:"Peach Bottom, PA",region:"PA",rating:71.8,slope:130,par:72,photo:"",reviews:[]},
-    {id:"tresfntn",name:"Tres Fontaine Golf Club",loc:"Fawn Grove, PA",region:"PA",rating:68.2,slope:116,par:71,photo:"",reviews:[]},
-    {id:"crofton",name:"Crofton Country Club",loc:"Crofton, MD",region:"MD",rating:70.5,slope:125,par:71,photo:"",reviews:[]},
-    {id:"richlnd",name:"Richland Golf Course",loc:"Middletown, PA",region:"PA",rating:69.8,slope:121,par:72,photo:"",reviews:[]},
-    {id:"sunset",name:"Sunset Golf Course",loc:"Middletown, PA",region:"PA",rating:67.0,slope:112,par:70,photo:"",reviews:[]},
-    {id:"dauphinhi",name:"Dauphin Highlands Golf Course",loc:"Harrisburg, PA",region:"PA",rating:72.0,slope:131,par:72,photo:"",reviews:[]},
-    {id:"bluemtn",name:"Blue Mountain Golf Course",loc:"Fredericksburg, PA",region:"PA",rating:68.5,slope:117,par:71,photo:"",reviews:[]},
-    {id:"lebosprgs",name:"Royal Oaks Golf Club",loc:"Lebanon, PA",region:"PA",rating:70.0,slope:122,par:72,photo:"",reviews:[]},
-    // MD - expanded
-    {id:"musketridge",name:"Musket Ridge Golf Club",loc:"Myersville, MD",region:"MD",rating:72.8,slope:139,par:72,photo:"",reviews:[]},
-    {id:"whiskeycreek",name:"Whiskey Creek Golf Club",loc:"Ijamsville, MD",region:"MD",rating:73.6,slope:139,par:71,photo:"",reviews:[]},
-    {id:"worthington",name:"Worthington Manor",loc:"Urbana, MD",region:"MD",rating:75.0,slope:144,par:72,photo:"",reviews:[]},
-    {id:"bulle",name:"Bulle Rock Golf Course",loc:"Havre de Grace, MD",region:"MD",rating:74.2,slope:141,par:72,photo:"",reviews:[]},
-    {id:"greystone",name:"Greystone Golf Course",loc:"White Hall, MD",region:"MD",rating:70.4,slope:130,par:72,photo:"",reviews:[]},
-    {id:"wakefield",name:"Wakefield Valley Golf Club",loc:"Westminster, MD",region:"MD",rating:71.0,slope:128,par:72,photo:"",reviews:[]},
-    {id:"bearcreek",name:"Bear Creek Golf Club",loc:"Elizabethtown, PA",region:"PA",rating:70.2,slope:126,par:72,photo:"",reviews:[]},
-    {id:"mtnbranch",name:"Mountain Branch Golf Course",loc:"Joppa, MD",region:"MD",rating:71.5,slope:132,par:72,photo:"",reviews:[]},
-    {id:"richlandmd",name:"Richland Golf Course",loc:"Middletown, MD",region:"MD",rating:68.5,slope:119,par:72,photo:"",reviews:[]},
-    {id:"clusteredspires",name:"Clustered Spires Golf Course",loc:"Frederick, MD",region:"MD",rating:70.2,slope:125,par:72,photo:"",reviews:[]},
-    {id:"beaver",name:"Beaver Creek Country Club",loc:"Hagerstown, MD",region:"MD",rating:70.8,slope:128,par:72,photo:"",reviews:[]},
-    {id:"blackrock",name:"Black Rock Golf Course",loc:"Hagerstown, MD",region:"MD",rating:71.0,slope:127,par:72,photo:"",reviews:[]},
-    {id:"marylands",name:"Maryland National Golf Club",loc:"Middletown, MD",region:"MD",rating:72.5,slope:135,par:72,photo:"",reviews:[]},
-    {id:"piney",name:"PB Dye Golf Club",loc:"Ijamsville, MD",region:"MD",rating:73.0,slope:137,par:72,photo:"",reviews:[]},
-    {id:"timbers",name:"Timbers at Troy Golf Course",loc:"Elkridge, MD",region:"MD",rating:72.0,slope:131,par:72,photo:"",reviews:[]},
-    {id:"compass",name:"Compass Pointe Golf Courses",loc:"Pasadena, MD",region:"MD",rating:70.5,slope:126,par:72,photo:"",reviews:[]},
-    // VA
-    {id:"stonewall",name:"Stonewall Golf Club",loc:"Gainesville, VA",region:"VA",rating:73.5,slope:138,par:72,photo:"",reviews:[]},
-    {id:"raspberry",name:"Raspberry Falls Golf & Hunt Club",loc:"Leesburg, VA",region:"VA",rating:73.0,slope:136,par:72,photo:"",reviews:[]},
-    {id:"bullrun",name:"Bull Run Golf Club",loc:"Haymarket, VA",region:"VA",rating:72.5,slope:134,par:72,photo:"",reviews:[]},
-    {id:"augustnat",name:"Augustine Golf Club",loc:"Stafford, VA",region:"VA",rating:72.8,slope:135,par:71,photo:"",reviews:[]},
-    {id:"royalnewkent",name:"Royal New Kent Golf Club",loc:"Providence Forge, VA",region:"VA",rating:74.2,slope:143,par:72,photo:"",reviews:[]},
-    {id:"kingsmill",name:"Kingsmill Resort - River Course",loc:"Williamsburg, VA",region:"VA",rating:73.8,slope:141,par:71,photo:"",reviews:[]},
-    {id:"goldenhorshoe",name:"Golden Horseshoe - Gold Course",loc:"Williamsburg, VA",region:"VA",rating:73.6,slope:140,par:71,photo:"",reviews:[]},
-    {id:"viniterra",name:"Viniterra Golf Club",loc:"New Kent, VA",region:"VA",rating:73.0,slope:137,par:72,photo:"",reviews:[]},
-    {id:"birkdale",name:"Birkdale Golf Club",loc:"Chesterfield, VA",region:"VA",rating:72.5,slope:133,par:71,photo:"",reviews:[]},
-    {id:"brambleton",name:"Brambleton Regional Park Golf Course",loc:"Ashburn, VA",region:"VA",rating:71.8,slope:128,par:72,photo:"",reviews:[]},
-    {id:"bristolva",name:"The Virginian Golf Club",loc:"Bristol, VA",region:"VA",rating:72.0,slope:131,par:72,photo:"",reviews:[]},
-    {id:"algonkian",name:"Algonkian Golf Course",loc:"Sterling, VA",region:"VA",rating:71.5,slope:127,par:72,photo:"",reviews:[]},
-    {id:"southwales",name:"South Wales Golf Course",loc:"Jeffersonton, VA",region:"VA",rating:70.8,slope:125,par:72,photo:"",reviews:[]},
-    {id:"landsdowne",name:"Lansdowne Resort - Robert Trent Jones",loc:"Leesburg, VA",region:"VA",rating:73.2,slope:136,par:72,photo:"",reviews:[]},
-    {id:"woodlands",name:"The Woodlands Golf Course",loc:"Hampton, VA",region:"VA",rating:70.2,slope:122,par:72,photo:"",reviews:[]},
-    {id:"kiskiack",name:"Kiskiack Golf Club",loc:"Williamsburg, VA",region:"VA",rating:72.0,slope:130,par:72,photo:"",reviews:[]},
-    {id:"fordcolony",name:"Ford's Colony - Blackheath",loc:"Williamsburg, VA",region:"VA",rating:72.8,slope:132,par:72,photo:"",reviews:[]},
-    {id:"shenandoahva",name:"Shenandoah Valley Golf Club",loc:"Front Royal, VA",region:"VA",rating:71.0,slope:126,par:72,photo:"",reviews:[]},
-    {id:"caverns",name:"Caverns Country Club Resort",loc:"Luray, VA",region:"VA",rating:70.5,slope:124,par:72,photo:"",reviews:[]},
-    {id:"lakeofwoods",name:"Lake of the Woods Golf Course",loc:"Locust Grove, VA",region:"VA",rating:71.2,slope:128,par:72,photo:"",reviews:[]},
-    {id:"glenmore",name:"Glenmore Country Club",loc:"Keswick, VA",region:"VA",rating:72.5,slope:134,par:72,photo:"",reviews:[]},
-    {id:"springcreek",name:"Spring Creek Golf Club",loc:"Gordonsville, VA",region:"VA",rating:72.0,slope:131,par:72,photo:"",reviews:[]},
-    {id:"birdwood",name:"Birdwood Golf Course",loc:"Charlottesville, VA",region:"VA",rating:73.5,slope:140,par:72,photo:"",reviews:[]},
-    {id:"oldhills",name:"Old Trail Golf Club",loc:"Crozet, VA",region:"VA",rating:71.8,slope:129,par:72,photo:"",reviews:[]},
-    {id:"herndon",name:"Herndon Centennial Golf Course",loc:"Herndon, VA",region:"VA",rating:69.5,slope:118,par:71,photo:"",reviews:[]},
-    {id:"reston",name:"Reston National Golf Course",loc:"Reston, VA",region:"VA",rating:72.8,slope:134,par:71,photo:"",reviews:[]},
-    {id:"westfields",name:"Westfields Golf Club",loc:"Clifton, VA",region:"VA",rating:73.5,slope:139,par:71,photo:"",reviews:[]},
-    {id:"laurelhill",name:"Laurel Hill Golf Club",loc:"Lorton, VA",region:"VA",rating:72.2,slope:130,par:72,photo:"",reviews:[]},
-    {id:"penderbrook",name:"Penderbrook Golf Club",loc:"Fairfax, VA",region:"VA",rating:69.8,slope:122,par:71,photo:"",reviews:[]},
-    {id:"pohick",name:"Pohick Bay Regional Park Golf Course",loc:"Lorton, VA",region:"VA",rating:70.0,slope:120,par:72,photo:"",reviews:[]},
-    {id:"twinlakes",name:"Twin Lakes Golf Course",loc:"Clifton, VA",region:"VA",rating:71.0,slope:126,par:72,photo:"",reviews:[]},
-    {id:"independence",name:"Independence Golf Club",loc:"Midlothian, VA",region:"VA",rating:72.0,slope:131,par:72,photo:"",reviews:[]},
-    {id:"magnolia",name:"Magnolia Green Golf Club",loc:"Moseley, VA",region:"VA",rating:72.5,slope:133,par:72,photo:"",reviews:[]},
-    {id:"belmont",name:"Belmont Golf Course",loc:"Richmond, VA",region:"VA",rating:70.5,slope:124,par:71,photo:"",reviews:[]},
-    {id:"glenwood",name:"Glenwood Golf Club",loc:"Richmond, VA",region:"VA",rating:69.0,slope:118,par:72,photo:"",reviews:[]},
-    {id:"crossings",name:"The Crossings Golf Club",loc:"Glen Allen, VA",region:"VA",rating:71.5,slope:128,par:72,photo:"",reviews:[]},
-    {id:"pendleton",name:"Pendleton Golf Club",loc:"Virginia Beach, VA",region:"VA",rating:70.8,slope:126,par:72,photo:"",reviews:[]},
-    {id:"bayville",name:"Bayville Golf Club",loc:"Virginia Beach, VA",region:"VA",rating:70.5,slope:123,par:72,photo:"",reviews:[]},
-    {id:"hellspoint",name:"Hell's Point Golf Club",loc:"Virginia Beach, VA",region:"VA",rating:73.0,slope:136,par:72,photo:"",reviews:[]},
-    {id:"redhawk",name:"Red Wing Lake Golf Course",loc:"Virginia Beach, VA",region:"VA",rating:71.0,slope:127,par:72,photo:"",reviews:[]},
-    {id:"cypresspoint",name:"Cypress Point Country Club",loc:"Virginia Beach, VA",region:"VA",rating:71.5,slope:130,par:72,photo:"",reviews:[]},
-    {id:"riverfront",name:"Riverfront Golf Club",loc:"Suffolk, VA",region:"VA",rating:72.2,slope:132,par:72,photo:"",reviews:[]},
-    {id:"nansemond",name:"Nansemond River Golf Club",loc:"Suffolk, VA",region:"VA",rating:71.0,slope:128,par:72,photo:"",reviews:[]},
-    {id:"newport",name:"Newport News Golf Club - Deer Run",loc:"Newport News, VA",region:"VA",rating:72.0,slope:130,par:72,photo:"",reviews:[]},
-    {id:"hampton",name:"Hampton Golf Course",loc:"Hampton, VA",region:"VA",rating:69.5,slope:118,par:72,photo:"",reviews:[]},
-    {id:"pquason",name:"Kiln Creek Golf Club",loc:"Newport News, VA",region:"VA",rating:71.5,slope:129,par:72,photo:"",reviews:[]},
-    {id:"wintergreen",name:"Wintergreen Resort - Stoney Creek",loc:"Wintergreen, VA",region:"VA",rating:72.8,slope:135,par:72,photo:"",reviews:[]},
-    {id:"hotsprings",name:"The Omni Homestead - Cascades",loc:"Hot Springs, VA",region:"VA",rating:74.0,slope:142,par:70,photo:"",reviews:[]},
-    {id:"primland",name:"Primland - Highland Course",loc:"Meadows of Dan, VA",region:"VA",rating:73.5,slope:139,par:72,photo:"",reviews:[]},
-    // VA expanded
-    {id:"mattaponi",name:"Mattaponi Springs Golf Club",loc:"Ruther Glen, VA",region:"VA",rating:72.5,slope:133,par:72,photo:"",reviews:[]},
-    {id:"glenmore2",name:"Keswick Hall Golf Club",loc:"Keswick, VA",region:"VA",rating:73.8,slope:141,par:72,photo:"",reviews:[]},
-    {id:"williamsbcc",name:"Williamsburg National",loc:"Williamsburg, VA",region:"VA",rating:72.0,slope:131,par:72,photo:"",reviews:[]},
-    {id:"traditionsclub",name:"The Traditions Golf Club",loc:"Midlothian, VA",region:"VA",rating:71.5,slope:128,par:72,photo:"",reviews:[]},
-    {id:"brandermill",name:"Brandermill Country Club",loc:"Midlothian, VA",region:"VA",rating:71.0,slope:127,par:72,photo:"",reviews:[]},
-    {id:"fredericksburggc",name:"Fredericksburg Country Club",loc:"Fredericksburg, VA",region:"VA",rating:71.8,slope:130,par:72,photo:"",reviews:[]},
-    {id:"leeshtl",name:"Lee's Hill Golf Club",loc:"Fredericksburg, VA",region:"VA",rating:72.2,slope:132,par:72,photo:"",reviews:[]},
-    {id:"gauntlet",name:"The Gauntlet Golf Club",loc:"Fredericksburg, VA",region:"VA",rating:73.0,slope:137,par:72,photo:"",reviews:[]},
-    {id:"bristow",name:"Bristow Manor Golf Club",loc:"Bristow, VA",region:"VA",rating:72.5,slope:134,par:72,photo:"",reviews:[]},
-    {id:"southriding",name:"South Riding Golf Club",loc:"South Riding, VA",region:"VA",rating:71.0,slope:126,par:72,photo:"",reviews:[]},
-    {id:"blueridge",name:"Blue Ridge Shadows Golf Club",loc:"Front Royal, VA",region:"VA",rating:73.2,slope:138,par:72,photo:"",reviews:[]},
-    {id:"nationalgc",name:"The National Golf Club",loc:"Bluemont, VA",region:"VA",rating:72.8,slope:136,par:72,photo:"",reviews:[]},
-    {id:"greendale",name:"Greendale Golf Course",loc:"Richmond, VA",region:"VA",rating:69.5,slope:118,par:70,photo:"",reviews:[]},
-    {id:"traditionswa",name:"Traditions of Williamsburg",loc:"Williamsburg, VA",region:"VA",rating:71.2,slope:128,par:72,photo:"",reviews:[]},
-    // MD expanded
-    {id:"bulle",name:"Bulle Rock Golf Course",loc:"Havre de Grace, MD",region:"MD",rating:73.8,slope:141,par:72,photo:"",reviews:[]},
-    {id:"richterpark",name:"Richter Park Golf Course",loc:"Danbury, MD",region:"MD",rating:72.5,slope:133,par:72,photo:"",reviews:[]},
-    {id:"waverly",name:"Waverly Woods Golf Club",loc:"Marriottsville, MD",region:"MD",rating:72.8,slope:135,par:72,photo:"",reviews:[]},
-    {id:"greystone",name:"Greystone Golf Course",loc:"White Hall, MD",region:"MD",rating:71.0,slope:127,par:72,photo:"",reviews:[]},
-    {id:"pinetree",name:"Pine Ridge Golf Course",loc:"Lutherville, MD",region:"MD",rating:70.5,slope:123,par:72,photo:"",reviews:[]},
-    {id:"timbers",name:"Timbers at Troy Golf Course",loc:"Elkridge, MD",region:"MD",rating:71.5,slope:129,par:72,photo:"",reviews:[]},
-    {id:"compass",name:"Compass Pointe Golf Courses",loc:"Pasadena, MD",region:"MD",rating:70.0,slope:121,par:72,photo:"",reviews:[]},
-    {id:"renditions",name:"Renditions Golf Course",loc:"Davidsonville, MD",region:"MD",rating:71.8,slope:130,par:72,photo:"",reviews:[]},
-    {id:"queenstownh",name:"Queenstown Harbor Golf Links",loc:"Queenstown, MD",region:"MD",rating:73.5,slope:139,par:72,photo:"",reviews:[]},
-    {id:"rattlewood",name:"Rattlewood Golf Course",loc:"Mt. Airy, MD",region:"MD",rating:70.8,slope:126,par:72,photo:"",reviews:[]},
-    {id:"haystack",name:"Haystack Mountain Golf Course",loc:"Frederick, MD",region:"MD",rating:69.5,slope:120,par:72,photo:"",reviews:[]},
-    {id:"clustered",name:"Clustered Spires Golf Course",loc:"Frederick, MD",region:"MD",rating:71.2,slope:128,par:72,photo:"",reviews:[]},
-    {id:"marylandnati",name:"Maryland National Golf Club",loc:"Middletown, MD",region:"MD",rating:72.5,slope:134,par:72,photo:"",reviews:[]},
-    {id:"oakmont",name:"Oakmont Green Golf Course",loc:"Hampstead, MD",region:"MD",rating:68.0,slope:115,par:70,photo:"",reviews:[]},
-    {id:"beavercreek",name:"Beaver Creek Country Club",loc:"Hagerstown, MD",region:"MD",rating:71.0,slope:127,par:72,photo:"",reviews:[]},
-    {id:"blackrock",name:"Black Rock Golf Course",loc:"Hagerstown, MD",region:"MD",rating:72.0,slope:131,par:72,photo:"",reviews:[]},
-    // NC
-    {id:"sequoyah",name:"Sequoyah National",loc:"Whittier, NC",region:"NC",rating:72.0,slope:142,par:72,photo:"",reviews:[]},
-    {id:"springdale",name:"Springdale Resort",loc:"Canton, NC",region:"NC",rating:72.5,slope:130,par:72,photo:"",reviews:[]},
-    {id:"maggie",name:"Maggie Valley Club & Resort",loc:"Maggie Valley, NC",region:"NC",rating:70.8,slope:125,par:72,photo:"",reviews:[]},
-    {id:"connestee",name:"Connestee Falls Golf Course",loc:"Brevard, NC",region:"NC",rating:69.9,slope:128,par:72,photo:"",reviews:[]},
-    {id:"pinehurst2",name:"Pinehurst No. 2",loc:"Pinehurst, NC",region:"NC",rating:75.4,slope:148,par:72,photo:"",reviews:[]},
-    {id:"tobaccoroad",name:"Tobacco Road Golf Club",loc:"Sanford, NC",region:"NC",rating:71.0,slope:150,par:71,photo:"",reviews:[]},
-    // NJ
-    {id:"ballyowen",name:"Ballyowen Golf Club",loc:"Hamburg, NJ",region:"NJ",rating:73.2,slope:137,par:72,photo:"",reviews:[]},
-    {id:"crystalsprings",name:"Crystal Springs Resort",loc:"Hamburg, NJ",region:"NJ",rating:74.0,slope:140,par:72,photo:"",reviews:[]},
-    // DE
-    {id:"baybeach",name:"Baywood Greens",loc:"Long Neck, DE",region:"DE",rating:72.5,slope:134,par:72,photo:"",reviews:[]},
-    {id:"backcrk",name:"Back Creek Golf Club",loc:"Middletown, DE",region:"DE",rating:71.8,slope:130,par:72,photo:"",reviews:[]}
-  ];
+  var DEFAULT_COURSES = [];
 
-  /* Course search - fuzzy match */
+  /* Course search - fuzzy match against imported/added courses */
   function searchCourses(query) {
     if (!query || query.length < 2) return [];
     var q = query.toLowerCase();
-    return DEFAULT_COURSES.filter(function(c) {
-      return c.name.toLowerCase().indexOf(q) !== -1 || c.loc.toLowerCase().indexOf(q) !== -1 || c.region.toLowerCase() === q;
+    return state.courses.filter(function(c) {
+      return c.name.toLowerCase().indexOf(q) !== -1 || (c.loc||"").toLowerCase().indexOf(q) !== -1 || (c.region||"").toLowerCase() === q;
     }).slice(0, 8);
   }
 
@@ -1933,10 +1757,10 @@ var PB = (function() {
     {id:"smo2026",name:"The Smoky Mountain Open",location:"Asheville, NC",dates:"Apr 8-12, 2026",startDate:"2026-04-08",endDate:"2026-04-12",status:"upcoming",champion:null,
      members:["zach","kayvan","kiyan","nick"],photos:[],
      courses:[
-       {key:"scramble",courseId:"sequoyah",n:"Sequoyah National",d:"Thursday",t:"1:20 PM",p:[4,4,3,5,4,4,3,4,5,4,4,3,5,4,4,3,4,5],f:"Scramble",s:1},
-       {key:"springdale",courseId:"springdale",n:"Springdale Resort",d:"Friday AM",t:"8:30 AM",p:[4,4,3,4,5,4,4,3,5,3,4,4,4,3,4,4,5,5],f:"Stableford (1x)",m:1},
-       {key:"maggie",courseId:"maggie",n:"Maggie Valley",d:"Friday PM",t:"4:00 PM",p:[4,4,3,5,4,3,4,5,4,4,3,4,5,4,3,4,4,5],f:"Stableford (1x)",m:1},
-       {key:"connestee",courseId:"connestee",n:"Connestee Falls",d:"Saturday",t:"TBD",p:[4,4,3,4,5,4,3,4,5,4,3,4,5,4,4,3,4,5],f:"Stableford (1.5x)",m:1.5}
+       {key:"scramble",courseId:"sequoyah",n:"Sequoyah National",d:"Thursday",t:"1:20 PM",p:[5,3,5,4,4,3,4,3,5,4,5,5,3,4,4,4,3,4],f:"Scramble",s:1,tee:"Silver",r:67.5,sl:130,y:5528},
+       {key:"springdale",courseId:"springdale",n:"Springdale Resort",d:"Friday AM",t:"8:30 AM",p:[4,5,3,4,4,4,4,3,5,4,5,3,4,4,4,5,3,4],f:"Stableford (1x)",m:1,tee:"White",r:70.8,sl:132,y:6452},
+       {key:"maggie",courseId:"maggie",n:"Maggie Valley",d:"Friday PM",t:"4:00 PM",p:[4,4,4,5,4,5,3,4,3,4,4,3,5,4,3,4,4,5],f:"Stableford (1x)",m:1,tee:"White",r:69.1,sl:129,y:5907},
+       {key:"connestee",courseId:"connestee",n:"Connestee Falls",d:"Saturday",t:"TBD",p:[4,5,4,4,3,4,5,3,4,4,5,4,3,4,5,4,3,4],f:"Stableford (1.5x)",m:1.5,tee:"White",r:68.4,sl:121,y:5727}
      ],
      miniGames:[
        {i:"ctp1",l:"CTP #1",p:2},{i:"ctp2",l:"CTP #2",p:2},{i:"ctp3",l:"CTP #3",p:2},{i:"ctp4",l:"CTP #4",p:2},
@@ -2083,6 +1907,23 @@ var PB = (function() {
   function getCourseByName(name) { return state.courses.find(function(c) { return c.name === name; }); }
 
   function addCourse(data) {
+    // Dedup: if course with same name exists, enrich it instead of duplicating
+    var existingByName = state.courses.find(function(c) { return c.name.toLowerCase() === data.name.toLowerCase(); });
+    if (existingByName) {
+      // Enrich with richer data from API
+      if (data.loc && !existingByName.loc) existingByName.loc = data.loc;
+      if (data.region && !existingByName.region) existingByName.region = data.region;
+      if (data.rating && data.rating !== 72) existingByName.rating = parseFloat(data.rating);
+      if (data.slope && data.slope !== 113) existingByName.slope = parseInt(data.slope);
+      if (data.par && data.par !== 72) existingByName.par = parseInt(data.par);
+      if (data.phone) existingByName.phone = data.phone;
+      if (data.website) existingByName.website = data.website;
+      if (data.lat) existingByName.lat = data.lat;
+      if (data.lng) existingByName.lng = data.lng;
+      if (data.source) existingByName.source = data.source;
+      save();
+      return existingByName;
+    }
     var id = data.name.toLowerCase().replace(/[^a-z0-9]/g, "").substring(0, 20);
     var existing = getCourse(id);
     if (existing) id = id + "_" + Date.now().toString(36);
@@ -5324,8 +5165,10 @@ function toggleSection(id) {
   var el = document.getElementById(id);
   var toggle = document.getElementById(id + "-toggle");
   if (!el) return;
-  if (el.style.display === "none") {
-    el.style.display = "";
+  var isHidden = el.classList.contains("hidden") || el.style.display === "none";
+  if (isHidden) {
+    el.classList.remove("hidden");
+    el.style.display = "block";
     if (toggle) toggle.style.transform = "rotate(90deg)";
   } else {
     el.style.display = "none";
@@ -7308,13 +7151,9 @@ function _searchGcApiForDirectory(query) {
 
 function _renderDirApiResults(courses, el, query) {
   if (!el) return;
-  var q = (query || "").toLowerCase();
   var filtered = courses.filter(function(c) {
     var name = c.course_name || c.club_name || c.name || c.courseName || "";
-    var city = (c.location && typeof c.location === "object" ? c.location.city : c.city) || "";
-    var state = (c.location && typeof c.location === "object" ? c.location.state : c.state) || "";
-    var match = !q || name.toLowerCase().indexOf(q) !== -1 || city.toLowerCase().indexOf(q) !== -1 || state.toLowerCase().indexOf(q) !== -1;
-    return match && !PB.getCourseByName(name);
+    return !PB.getCourseByName(name);
   });
   if (!filtered.length) { el.innerHTML = ""; return; }
   var h = '<div style="padding:4px 16px 2px;font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;font-weight:700">Online Results</div>';
@@ -7442,13 +7281,9 @@ function _searchGcApi(query, containerId, onSelect) {
 
 function _renderApiResults(courses, apiContainer, containerId, onSelect, query) {
   if (!apiContainer) return;
-  var q = (query || "").toLowerCase();
   var filtered = courses.filter(function(c) {
     var name = c.course_name || c.club_name || c.name || c.courseName || "";
-    var city = (c.location && typeof c.location === "object" ? c.location.city : c.city) || "";
-    var state = (c.location && typeof c.location === "object" ? c.location.state : c.state) || "";
-    var match = !q || name.toLowerCase().indexOf(q) !== -1 || city.toLowerCase().indexOf(q) !== -1 || state.toLowerCase().indexOf(q) !== -1;
-    return match && !PB.getCourseByName(name);
+    return !PB.getCourseByName(name);
   });
   if (!filtered.length) {
     apiContainer.innerHTML = '<div style="font-size:9px;color:var(--muted2);padding:4px 12px">No online results</div>';
@@ -7552,8 +7387,10 @@ function renderCourseDetail(courseId) {
 
   var h = '<div class="sh"><h2>' + c.name + '</h2><button class="back" onclick="Router.go(\'courses\')">← Back</button></div>';
 
-  var coursePhotoSrc = photoCache["course:" + courseId] || c.photo || COURSE_DEFAULT_IMG;
-  h += '<div class="course-banner"><img alt="" src="' + coursePhotoSrc + '" onerror="this.src=COURSE_DEFAULT_IMG"></div>';
+  var coursePhotoSrc = photoCache["course:" + courseId] || c.photo || "";
+  if (coursePhotoSrc && coursePhotoSrc !== COURSE_DEFAULT_IMG) {
+    h += '<div class="course-banner"><img alt="" src="' + coursePhotoSrc + '" onerror="this.parentElement.style.display=\'none\'"></div>';
+  }
   h += '<div class="section"><div class="c-detail-info">' + c.loc + ' · Rating: ' + c.rating + ' · Slope: ' + c.slope + ' · Par: ' + c.par + '</div>';
   h += '<button class="btn-sm outline" onclick="uploadCoursePhoto(\'' + courseId + '\')">Upload photo</button></div>';
 
@@ -10068,117 +9905,35 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.5.0 <span style="color:var(--muted);font-weight:400">← v5.4.0</span></div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.5.0</div></div>';
 
-  // v5.5.0 — Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">v5.5.0 — Scorekeeper & Course API</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 6, 2026</div>';
+  // Current Release
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
-  var v550 = [
-    {item: "GolfCourseAPI integration — search 30,000+ courses from any course field", tag: "NEW"},
-    {item: "Firebase Cloud Function proxy for secure, CORS-free API access", tag: "NEW"},
-    {item: "Unified course search — local results + online results + manual add in one flow", tag: "NEW"},
-    {item: "Course Directory search/filter bar", tag: "NEW"},
-    {item: "Scorekeeper system — Commissioner assigns one scorekeeper per course", tag: "NEW"},
-    {item: "Score locking — Finish Round locks all inputs except Commissioner", tag: "NEW"},
-    {item: "Unlock Round — Commissioner can re-open locked scores for corrections", tag: "NEW"},
-    {item: "Unfinished round reminder on home page for Commissioner", tag: "NEW"},
-    {item: "Profile photos locked to self-only — no one can change another user's photo", tag: "IMPROVED"},
-    {item: "Edit icon only shows on your own profile", tag: "IMPROVED"},
-    {item: "Header avatar now syncs correctly after photo upload and login", tag: "FIXED"},
-    {item: "Comment reply toggle — tap Reply again to close the input", tag: "FIXED"},
-    {item: "Parbaugh Round sync icon redesigned", tag: "FIXED"},
-    {item: "Pull-to-refresh no longer interferes with form inputs on mobile", tag: "FIXED"},
-    {item: "Paste button added for mobile-friendly text input", tag: "NEW"},
-    {item: "Players can only log rounds and records as themselves", tag: "IMPROVED"},
-    {item: "API key shared via Firestore — all members can search courses automatically", tag: "NEW"}
+  var currentNotes = [
+    {item: "Search 30,000+ golf courses from any course field in the app", tag: "NEW"},
+    {item: "Import courses with real ratings, slope, par, and tee data", tag: "NEW"},
+    {item: "Scorekeeper system — one person handles scores per round", tag: "NEW"},
+    {item: "Score locking — finish a round to lock scores, Commissioner can unlock", tag: "NEW"},
+    {item: "Activity tab with Rounds and Range views", tag: "NEW"},
+    {item: "Range Session timer with drills, XP, and practice insights", tag: "NEW"},
+    {item: "Comment replies — tap Reply to @mention someone", tag: "NEW"},
+    {item: "Comment likes with hearts", tag: "NEW"},
+    {item: "Calendar shows course name and tee time for each trip day", tag: "NEW"},
+    {item: "Profile photos can only be changed by the account owner", tag: "IMPROVED"},
+    {item: "Players can only log rounds as themselves", tag: "IMPROVED"},
+    {item: "Course directory is now clean — search and import only", tag: "IMPROVED"},
+    {item: "Consistent icon design across the entire app", tag: "IMPROVED"},
+    {item: "Pull-to-refresh works better on mobile", tag: "FIXED"},
+    {item: "Reply toggle — tap again to close the comment input", tag: "FIXED"},
+    {item: "Profile edit icon only appears on your own profile", tag: "FIXED"},
+    {item: "Header photo syncs correctly after upload", tag: "FIXED"}
   ];
-  v550.forEach(function(r) {
+  currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
     h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
     h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
-    h += '<span>' + r.item + '</span></div>';
-  });
-  h += '</div></div></div>';
-
-  // v5.4.0 — Previous Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--muted)">v5.4.0 — Activity & Range Update</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 6, 2026</div>';
-  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--muted);line-height:1.8">';
-  var v540 = [
-    {item: "Activity tab replaces Rounds — toggle between Rounds and Range views", tag: "NEW"},
-    {item: "Range Session system — timer, drill selector, XP, and practice insights", tag: "NEW"},
-    {item: "15 stock drills with equipment requirements and how-to instructions", tag: "NEW"},
-    {item: "Custom drill creation — add your own drills to the library", tag: "NEW"},
-    {item: "Practice Insights — distribution chart showing which areas you practice most", tag: "NEW"},
-    {item: "20+ range achievements: streaks, consistency, volume, endurance, and special", tag: "NEW"},
-    {item: "Hit the Range button on home page and calendar", tag: "NEW"},
-    {item: "Pink calendar dots for range sessions", tag: "NEW"},
-    {item: "Public/Private toggle for range sessions and tee times", tag: "NEW"},
-    {item: "Private sessions don't award XP or show on other users' calendars", tag: "NEW"},
-    {item: "Profile completion achievements — Getting Settled, Profile Complete, Fully Loaded", tag: "NEW"},
-    {item: "Profile completion reminder on home page with progress counter", tag: "NEW"},
-    {item: "New user notification prompting profile completion", tag: "NEW"},
-    {item: "Comment likes — tap the heart on any comment", tag: "NEW"},
-    {item: "Comment replies — tap Reply to @mention the commenter", tag: "NEW"},
-    {item: "Comment timestamps — date and time on every comment", tag: "NEW"},
-    {item: "Chat timestamps — date and time on every message", tag: "IMPROVED"},
-    {item: "Chat feed now shows newest messages first", tag: "IMPROVED"},
-    {item: "Calendar click behavior fixed — single tap views date, Select Range toggle for multi-day events", tag: "FIXED"},
-    {item: "Calendar event cards now clickable — navigate directly to the event scorecard", tag: "FIXED"},
-    {item: "Calendar shows course name and tee time for each trip day", tag: "NEW"},
-    {item: "Travel/rest days show 'No round scheduled' instead of blank", tag: "IMPROVED"},
-    {item: "Event dedup — same trip no longer shows multiple cards per day", tag: "FIXED"},
-    {item: "Date format — human-readable (Apr 8-12, 2026) instead of ISO", tag: "FIXED"},
-    {item: "Tee Time label fixed in calendar legend", tag: "FIXED"},
-    {item: "Achievement earned-at dates — inferred retroactively from round/session data", tag: "NEW"},
-    {item: "Achievement dates shown on profile page and trophy room", tag: "NEW"},
-    {item: "Range Practice category added to trophy room", tag: "NEW"},
-    {item: "Trophy room event badge category now renders properly", tag: "FIXED"},
-    {item: "Coming Up cards now navigate to event scorecard instead of tee times", tag: "FIXED"},
-    {item: "All emojis replaced with SVG icons for consistent brand aesthetic", tag: "IMPROVED"},
-    {item: "Pull-to-refresh no longer triggers when scrolling inside chat feed", tag: "FIXED"},
-    {item: "Account creation hardened — improved new user registration security", tag: "FIXED"},
-    {item: "Registration form improvements — cleaner flow for new members", tag: "FIXED"},
-    {item: "Profile data integrity — automatic detection and repair of account issues", tag: "FIXED"},
-    {item: "Online presence dedup — same user no longer shows twice", tag: "FIXED"},
-    {item: "Backend performance and security improvements", tag: "IMPROVED"},
-    {item: "Semantic versioning adopted (major.minor.patch)", tag: "IMPROVED"}
-  ];
-  v540.forEach(function(r) {
-    var tagColor = r.tag === "NEW" ? "rgba(78,201,122,.5)" : r.tag === "FIXED" ? "rgba(201,168,76,.5)" : "rgba(96,165,250,.5)";
-    h += '<div style="padding:3px 0;display:flex;gap:8px;align-items:flex-start">';
-    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
-    h += '<span>' + r.item + '</span></div>';
-  });
-  h += '</div></div></div>';
-
-  // v5.3.0 — Previous Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--muted)">v5.3.0 — Clubhouse & Calendar</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 5, 2026</div>';
-  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--muted);line-height:1.8">';
-  var v530 = [
-    {item: "Clubhouse tab — calendar, upcoming events, and trash talk in one place", tag: "NEW"},
-    {item: "Inline calendar with date range selection for scheduling events", tag: "NEW"},
-    {item: "Live Spotlight — see who's playing right now on the home page", tag: "NEW"},
-    {item: "110+ achievements with hole-by-hole scoring and golf culture badges", tag: "NEW"},
-    {item: "XP system rebalanced — Level 100 reachable in ~1 year", tag: "IMPROVED"},
-    {item: "Quick Add Course from Play Now and Round Log", tag: "NEW"},
-    {item: "Party games now require an active round", tag: "IMPROVED"},
-    {item: "Comment delete — remove your own comments", tag: "NEW"},
-    {item: "Desktop responsive layout", tag: "NEW"},
-    {item: "200+ courses across PA, VA, MD, and NC", tag: "NEW"},
-    {item: "Pull-to-refresh on all pages", tag: "NEW"},
-    {item: "Notification panel rebuilt with deep linking", tag: "FIXED"},
-    {item: "Connectivity indicator in footer", tag: "NEW"},
-    {item: "Performance optimized — faster loading and less data usage", tag: "IMPROVED"},
-    {item: "Security improvements across all features", tag: "IMPROVED"},
-    {item: "Stability improvements and bug tracking", tag: "NEW"}
-  ];
-  v530.forEach(function(r) {
-    var tagColor = r.tag === "NEW" ? "rgba(78,201,122,.5)" : r.tag === "FIXED" ? "rgba(201,168,76,.5)" : "rgba(96,165,250,.5)";
-    h += '<div style="padding:3px 0;display:flex;gap:8px;align-items:flex-start">';
-    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
     h += '<span>' + r.item + '</span></div>';
   });
   h += '</div></div></div>';
@@ -10250,7 +10005,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.5.0 · 12,300+ lines · 370+ functions</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.5.0</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
