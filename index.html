@@ -1358,6 +1358,22 @@ function announceEventEnd(tripId, courseName, results) {
   });
 }
 
+function assignScorekeeper(tripId, courseKey, uid) {
+  var trip = PB.getTrip(tripId);
+  if (!trip) return;
+  var course = trip.courses.find(function(c) { return c.key === courseKey; });
+  if (!course) return;
+  course.scorekeeper = uid || null;
+  PB.save();
+  // Sync to Firestore
+  if (db) {
+    db.collection("trips").doc(tripId).update({ courses: trip.courses }).catch(function(){});
+  }
+  var skName = uid ? (PB.getPlayer(uid) || {}).name || "Member" : "Anyone";
+  Router.toast("Scorekeeper: " + skName);
+  Router.go("scorecard", { tripId: tripId });
+}
+
 function finishTripRound(tripId, courseKey) {
   var trip = PB.getTrip(tripId);
   if (!trip) return;
@@ -1365,6 +1381,13 @@ function finishTripRound(tripId, courseKey) {
   if (!course) return;
   
   if (!confirm("End scoring for " + course.n + " and start attestation?")) return;
+  
+  // Mark course as finished (locks scores for non-Commissioner)
+  course.finished = true;
+  PB.save();
+  if (db) {
+    db.collection("trips").doc(tripId).update({ courses: trip.courses }).catch(function(){});
+  }
   
   // Create attestation record in Firestore
   if (!db) { Router.toast("Firebase required"); return; }
@@ -1408,6 +1431,25 @@ function finishTripRound(tripId, courseKey) {
     Router.toast("Attestation started! Players must confirm their scores.");
     Router.go("scorecard", { tripId: tripId });
   });
+}
+
+function unlockTripRound(tripId, courseKey) {
+  var trip = PB.getTrip(tripId);
+  if (!trip) return;
+  var course = trip.courses.find(function(c) { return c.key === courseKey; });
+  if (!course) return;
+  if (!confirm("Unlock " + course.n + " for score editing? This will reset attestation status.")) return;
+  
+  course.finished = false;
+  PB.save();
+  if (db) {
+    db.collection("trips").doc(tripId).update({ courses: trip.courses }).catch(function(){});
+    // Reset attestation status
+    var docId = tripId + "_" + courseKey;
+    db.collection("attestations").doc(docId).update({ status: "pending" }).catch(function(){});
+  }
+  Router.toast(course.n + " unlocked for editing");
+  Router.go("scorecard", { tripId: tripId });
 }
 
 function attestMyScore(tripId, courseKey) {
@@ -3583,6 +3625,33 @@ Router.register("home", function() {
   if (!achievementCount && currentProfile && currentProfile.claimedFrom) achievementCount = PB.getAchievements(currentProfile.claimedFrom).length;
   
   var motivationCards = [];
+  
+  // Unfinished round reminder — show if any trip course has scores but isn't finished
+  if (currentProfile && currentProfile.role === "commissioner") {
+    var allTrips = PB.getTrips();
+    allTrips.forEach(function(tr) {
+      if (!tr.courses) return;
+      tr.courses.forEach(function(crs) {
+        if (crs.finished) return;
+        // Check if any scores exist for this course
+        var hasScores = false;
+        if (tr.members) {
+          tr.members.forEach(function(pid) {
+            var scores = PB.getScores(tr.id, crs.key, crs.s ? "team" : pid);
+            if (scores && scores.some(function(s){return s !== ""})) hasScores = true;
+          });
+        }
+        if (hasScores) {
+          h += '<div onclick="Router.go(\'scorecard\',{tripId:\'' + tr.id + '\',course:\'' + crs.key + '\'})" style="margin-bottom:8px;padding:12px 16px;background:linear-gradient(135deg,rgba(78,201,122,.06),rgba(78,201,122,.02));border:1px solid rgba(78,201,122,.15);border-radius:var(--radius);cursor:pointer">';
+          h += '<div style="display:flex;align-items:center;gap:10px"><div style="flex-shrink:0;color:var(--birdie)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h2M14 14h2M8 18h2"/></svg></div>';
+          h += '<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--birdie)">' + escHtml(crs.n || crs.key) + ' — scores not finalized</div>';
+          h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(tr.name) + ' · Tap to review and finish round</div></div>';
+          h += '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M6 4l4 4-4 4"/></svg>';
+          h += '</div></div>';
+        }
+      });
+    });
+  }
   
   // Profile completion reminder — show if profile is incomplete
   if (currentProfile) {
@@ -6654,9 +6723,14 @@ Router.register("scorecard", function(params) {
   // Commissioner controls: Start/End round announcements
   if (currentProfile && currentProfile.role === "commissioner") {
     var currentCourse = trip.courses.find(function(x) { return x.key === scState.courseKey; }) || trip.courses[0];
+    var courseFinished = currentCourse && currentCourse.finished === true;
     h += '<div style="display:flex;gap:6px;padding:8px 16px">';
     h += '<button class="btn-sm green" style="flex:1;font-size:9px" onclick="announceEventStart(\'' + trip.id + '\',\'' + escHtml(currentCourse.n).replace(/'/g,"\\'") + '\')"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M2 6v4l3 1V5L2 6zM5 5l7-3v12l-7-3"/><path d="M13 7h2M13 9h2"/></svg> Announce Start</button>';
-    h += '<button class="btn-sm outline" style="flex:1;font-size:9px" onclick="finishTripRound(\'' + trip.id + '\',\'' + scState.courseKey + '\')"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><rect x="4" y="2" width="9" height="6" rx="1"/><path d="M4 2v12"/><path d="M7 2v6M10 2v6M4 5h9"/></svg> Finish Round</button>';
+    if (courseFinished) {
+      h += '<button class="btn-sm outline" style="flex:1;font-size:9px;color:var(--gold);border-color:rgba(201,168,76,.3)" onclick="unlockTripRound(\'' + trip.id + '\',\'' + scState.courseKey + '\')"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 016 0"/></svg> Unlock Round</button>';
+    } else {
+      h += '<button class="btn-sm outline" style="flex:1;font-size:9px" onclick="finishTripRound(\'' + trip.id + '\',\'' + scState.courseKey + '\')"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><rect x="4" y="2" width="9" height="6" rx="1"/><path d="M4 2v12"/><path d="M7 2v6M10 2v6M4 5h9"/></svg> Finish Round</button>';
+    }
     h += '</div>';
   }
 
@@ -6696,8 +6770,37 @@ function renderTripScorecard(trip, tripPlayers) {
 
   var c = trip.courses.find(function(x) { return x.key === scState.courseKey; }) || trip.courses[0];
   var iS = c.s, pT = c.p.reduce(function(a, b) { return a + b; }, 0);
+  var isComm = currentProfile && currentProfile.role === "commissioner";
+  var myUid = currentUser ? currentUser.uid : null;
+  var isScorekeeper = c.scorekeeper && myUid && c.scorekeeper === myUid;
+  var isRoundFinished = c.finished === true;
 
   h += '<div class="ci"><div><div class="nm">' + c.n + '</div><div class="dt">' + c.d + ' · ' + c.t + ' · Par ' + pT + '</div></div><div class="bd">' + c.f + '</div></div>';
+
+  // Scorekeeper info bar
+  if (c.scorekeeper) {
+    var skPlayer = PB.getPlayer(c.scorekeeper);
+    var skName = skPlayer ? (skPlayer.name || skPlayer.username) : "Assigned";
+    h += '<div style="padding:4px 16px 8px;font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px">';
+    h += '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M11 2l3 3-8 8H3v-3z"/></svg>';
+    h += 'Scorekeeper: <span style="color:var(--gold);font-weight:600">' + escHtml(skName) + '</span>';
+    if (isRoundFinished) h += ' <span style="color:var(--birdie);margin-left:6px"><svg viewBox="0 0 16 16" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg> Scores locked</span>';
+    h += '</div>';
+  } else if (isComm) {
+    h += '<div style="padding:4px 16px 8px;font-size:10px;color:var(--muted2)">No scorekeeper assigned — all members can enter scores</div>';
+  }
+
+  // Commissioner: assign scorekeeper
+  if (isComm) {
+    h += '<div style="padding:0 16px 8px;display:flex;align-items:center;gap:8px">';
+    h += '<label style="font-size:10px;color:var(--muted);white-space:nowrap">Scorekeeper:</label>';
+    h += '<select class="ff-input" style="flex:1;padding:6px 8px;font-size:10px" onchange="assignScorekeeper(\'' + trip.id + '\',\'' + c.key + '\',this.value)">';
+    h += '<option value="">Anyone can score</option>';
+    tripPlayers.forEach(function(p) {
+      h += '<option value="' + p.id + '"' + (c.scorekeeper === p.id ? ' selected' : '') + '>' + escHtml(p.name || p.username) + '</option>';
+    });
+    h += '</select></div>';
+  }
 
   // Mini games
   if (iS && trip.miniGames && trip.miniGames.length) {
@@ -6709,6 +6812,16 @@ function renderTripScorecard(trip, tripPlayers) {
       h += '</select></div>';
     });
     h += '</div></div>';
+  }
+
+  // Permission helper: can this user edit this player's score?
+  function canEditCell(playerId) {
+    if (isComm) return true; // Commissioner always
+    if (isRoundFinished) return false; // Locked after finish
+    if (isScorekeeper) return true; // Assigned scorekeeper
+    if (!c.scorekeeper) return true; // No scorekeeper assigned = anyone can edit
+    if (playerId === myUid) return true; // Own score
+    return false;
   }
 
   // Table
@@ -6730,11 +6843,13 @@ function renderTripScorecard(trip, tripPlayers) {
     h += '<tr class="r' + (i % 2) + '"><td>' + (i + 1) + '</td><td class="' + pc + '">' + pa + '</td>';
     if (iS) {
       var v = PB.getScores(tid, c.key, "team")[i] || "";
-      h += '<td><input type="number" inputmode="numeric" class="s w ' + scoreClass(v, pa) + '" value="' + (v || "") + '" onchange="PB.setScore(\'' + tid + "','" + c.key + "','team'," + i + ',this.value===\"\"?\"\":Math.max(1,Math.min(15,parseInt(this.value)||0)));Router.go(\'scorecard\',{tripId:\'' + tid + '\'})" onfocus="this.select()"></td>';
+      var canEdit = canEditCell("team");
+      h += '<td><input type="number" inputmode="numeric" class="s w ' + scoreClass(v, pa) + '" value="' + (v || "") + '"' + (canEdit ? '' : ' disabled style="opacity:.5"') + ' onchange="PB.setScore(\'' + tid + "','" + c.key + "','team'," + i + ',this.value===\"\"?\"\":Math.max(1,Math.min(15,parseInt(this.value)||0)));Router.go(\'scorecard\',{tripId:\'' + tid + '\'})" onfocus="this.select()"></td>';
     } else {
       tripPlayers.forEach(function(p) {
         var v = PB.getScores(tid, c.key, p.id)[i] || "";
-        h += '<td><input type="number" inputmode="numeric" class="s ' + scoreClass(v, pa) + '" value="' + (v || "") + '" onchange="PB.setScore(\'' + tid + "','" + c.key + "','" + p.id + "'," + i + ',this.value===\"\"?\"\":Math.max(1,Math.min(15,parseInt(this.value)||0)));Router.go(\'scorecard\',{tripId:\'' + tid + '\'})" onfocus="this.select()"></td>';
+        var canEdit = canEditCell(p.id);
+        h += '<td><input type="number" inputmode="numeric" class="s ' + scoreClass(v, pa) + '" value="' + (v || "") + '"' + (canEdit ? '' : ' disabled style="opacity:.5"') + ' onchange="PB.setScore(\'' + tid + "','" + c.key + "','" + p.id + "'," + i + ',this.value===\"\"?\"\":Math.max(1,Math.min(15,parseInt(this.value)||0)));Router.go(\'scorecard\',{tripId:\'' + tid + '\'})" onfocus="this.select()"></td>';
       });
     }
     h += '</tr>';
