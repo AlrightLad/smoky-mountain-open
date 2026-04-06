@@ -395,6 +395,21 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 .cal-day.has-trip::after{width:10px;height:3px;border-radius:2px;background:var(--gold)}
 .cal-day.empty{color:var(--bg4);pointer-events:none}
 .cal-day.selected{background:var(--bg4);color:var(--gold);font-weight:700}
+.activity-toggle{display:flex;background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:0 16px 16px}
+.activity-toggle button{flex:1;padding:10px;background:none;border:none;color:var(--muted);font:600 11px/1 'Inter',sans-serif;cursor:pointer;text-transform:uppercase;letter-spacing:.5px;transition:all .15s}
+.activity-toggle button.active{background:var(--gold);color:var(--bg)}
+.range-timer-display{text-align:center;padding:32px 16px}
+.range-timer-time{font-size:48px;font-weight:800;color:var(--gold);font-family:'Playfair Display',serif;letter-spacing:2px}
+.range-timer-label{font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+.drill-chip{display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;font-size:11px;color:var(--cream);cursor:pointer;transition:all .15s;margin:3px}
+.drill-chip:hover{border-color:var(--gold)}
+.drill-chip.selected{background:rgba(201,168,76,.15);border-color:var(--gold);color:var(--gold)}
+.drill-chip .drill-x{margin-left:4px;font-size:14px;line-height:1;opacity:.6}
+.feel-btn{flex:1;padding:12px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg3);color:var(--cream);font:600 12px/1 'Inter',sans-serif;cursor:pointer;transition:all .15s;text-align:center}
+.feel-btn:hover{border-color:var(--gold)}
+.feel-btn.sel{border-color:var(--gold);background:rgba(201,168,76,.15);color:var(--gold)}
+.insight-bar{height:6px;border-radius:3px;background:var(--bg4);overflow:hidden;margin-top:4px}
+.insight-bar-fill{height:100%;border-radius:3px;transition:width .3s}
 .cal-event-item{display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:6px;margin-bottom:6px}
 .cal-event-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 .cal-event-dot.tee{background:#4ec97a}
@@ -657,6 +672,8 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
   <div data-page="members" class="hidden"></div>
   <div data-page="trips" class="hidden"></div>
   <div data-page="rounds" class="hidden"></div>
+  <div data-page="activity" class="hidden"></div>
+  <div data-page="range" class="hidden"></div>
   <div data-page="playnow" class="hidden"></div>
   <div data-page="courses" class="hidden"></div>
   <div data-page="scramble" class="hidden"></div>
@@ -793,55 +810,96 @@ function showRegister() {
   document.getElementById("forgotForm").classList.add("hidden"); 
   clearErrors();
   
-  // Show claimable profiles (local PB players that haven't been claimed by a Firebase account)
+  // Reset claim selection
+  document.getElementById("regClaimId").value = "";
+  selectedClaimId = null;
+  
+  // Show claimable profiles ONLY for FOUNDING-FOUR invite code
+  // Non-founding users should NEVER see or claim existing profiles
+  var claimSection = document.getElementById("claimSection");
+  if (claimSection) claimSection.classList.add("hidden");
+  
+  // Watch for FOUNDING-FOUR code to enable claim section
+  var inviteInput = document.getElementById("regInvite");
+  if (inviteInput) {
+    inviteInput.removeEventListener("input", checkClaimEligibility);
+    inviteInput.addEventListener("input", checkClaimEligibility);
+  }
+}
+
+function checkClaimEligibility() {
+  var invite = (document.getElementById("regInvite").value || "").trim().toUpperCase();
+  var claimSection = document.getElementById("claimSection");
+  var claimDiv = document.getElementById("claimProfiles");
+  
+  if (invite !== "FOUNDING-FOUR") {
+    if (claimSection) claimSection.classList.add("hidden");
+    document.getElementById("regClaimId").value = "";
+    selectedClaimId = null;
+    return;
+  }
+  
+  // Only show claim for founding code
   var players = PB.getPlayers();
-  if (players.length > 0) {
-    var claimDiv = document.getElementById("claimProfiles");
-    var claimSection = document.getElementById("claimSection");
-    
-    // Check which profiles are already claimed in Firestore
-    if (db) {
-      db.collection("members").get().then(function(snap) {
-        var claimedLocalIds = [];
-        snap.forEach(function(doc) {
-          var d = doc.data();
-          if (d.claimedFrom) claimedLocalIds.push(d.claimedFrom);
-        });
-        
-        var unclaimed = players.filter(function(p) { return claimedLocalIds.indexOf(p.id) === -1; });
-        if (unclaimed.length > 0) {
-          var ch = '';
-          unclaimed.forEach(function(p) {
-            ch += '<div onclick="selectClaimProfile(\'' + p.id + '\')" id="claim-' + p.id + '" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border:2px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color .15s">';
-            ch += '<div style="width:36px;height:36px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">' + (p.emoji || "⛳") + '</div>';
-            ch += '<div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:var(--cream)">' + escHtml(p.name) + '</div>';
-            ch += '<div style="font-size:10px;color:var(--muted)">' + (p.range || "No range set") + (p.manualHandicap ? ' · HCP ' + p.manualHandicap : '') + '</div></div>';
-            ch += '</div>';
-          });
-          claimDiv.innerHTML = ch;
-          claimSection.classList.remove("hidden");
-        } else {
-          claimSection.classList.add("hidden");
+  if (players.length > 0 && db) {
+    db.collection("members").get().then(function(snap) {
+      // Build comprehensive "already claimed" set
+      var claimedLocalIds = [];
+      var existingUsernames = [];
+      var existingNames = [];
+      snap.forEach(function(doc) {
+        var d = doc.data();
+        if (d.claimedFrom) claimedLocalIds.push(d.claimedFrom);
+        if (d.username) existingUsernames.push(d.username.toLowerCase());
+        if (d.name) existingNames.push(d.name.toLowerCase());
+        // Any founding member already in Firestore is claimed
+        if (d.isFoundingFour) {
+          claimedLocalIds.push(d.claimedFrom || d.id);
         }
-      }).catch(function() {
-        // If Firebase fails, show all local players as claimable
+      });
+      
+      var unclaimed = players.filter(function(p) {
+        // Already claimed by claimedFrom ID
+        if (claimedLocalIds.indexOf(p.id) !== -1) return false;
+        // Username already exists in Firestore
+        if (p.username && existingUsernames.indexOf(p.username.toLowerCase()) !== -1) return false;
+        // Name already matches a Firestore member (catches manual creates)
+        if (p.name && existingNames.indexOf(p.name.toLowerCase()) !== -1) return false;
+        return true;
+      });
+      
+      if (unclaimed.length > 0 && claimDiv) {
         var ch = '';
-        players.forEach(function(p) {
+        unclaimed.forEach(function(p) {
           ch += '<div onclick="selectClaimProfile(\'' + p.id + '\')" id="claim-' + p.id + '" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border:2px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color .15s">';
           ch += '<div style="width:36px;height:36px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">' + (p.emoji || "⛳") + '</div>';
           ch += '<div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:var(--cream)">' + escHtml(p.name) + '</div>';
-          ch += '<div style="font-size:10px;color:var(--muted)">' + (p.range || "") + '</div></div>';
+          ch += '<div style="font-size:10px;color:var(--muted)">' + (p.range || "No range set") + (p.manualHandicap ? ' · HCP ' + p.manualHandicap : '') + '</div></div>';
           ch += '</div>';
         });
         claimDiv.innerHTML = ch;
         claimSection.classList.remove("hidden");
-      });
-    }
+      } else if (claimSection) {
+        claimSection.classList.add("hidden");
+      }
+    }).catch(function() { if (claimSection) claimSection.classList.add("hidden"); });
   }
 }
 
 var selectedClaimId = null;
 function selectClaimProfile(pid) {
+  // TOGGLE: if same profile tapped again, deselect it
+  if (selectedClaimId === pid) {
+    selectedClaimId = null;
+    document.getElementById("regClaimId").value = "";
+    // Clear all borders
+    var items = document.querySelectorAll("#claimProfiles > div");
+    items.forEach(function(el) { el.style.borderColor = "var(--border)"; });
+    // Clear auto-filled username
+    document.getElementById("regUsername").value = "";
+    return;
+  }
+  
   selectedClaimId = pid;
   document.getElementById("regClaimId").value = pid || "";
   // Update visual selection
@@ -933,28 +991,50 @@ function doRegister() {
         ? db.collection("members").where("isFoundingFour","==",true).get().then(function(snap) { return snap.size === 0 ? "commissioner" : "member"; })
         : Promise.resolve("member");
       
+      // SAFETY NET: Only allow claiming profiles with FOUNDING-FOUR code
+      // This prevents any leaked claimId from non-founding registrations
       var claimId = document.getElementById("regClaimId").value;
+      if (!isFoundingCode) claimId = ""; // Force clear for non-founding users
       var claimedPlayer = claimId ? PB.getPlayer(claimId) : null;
       
       return rolePromise.then(function(assignedRole) {
         var profile;
         
         if (claimedPlayer) {
-          // CLAIMING existing profile — merge all existing data with Firebase auth
-          profile = JSON.parse(JSON.stringify(claimedPlayer));
-          profile.id = user.uid;          // New Firebase UID
-          profile.claimedFrom = claimId;  // Original local ID for tracking
-          profile.email = email;
-          profile.username = username.toLowerCase();
-          profile.role = assignedRole;
-          profile.maxInvites = assignedRole === "commissioner" ? 999 : 3;
-          profile.invitesUsed = 0;
-          profile.isFoundingFour = isFoundingCode;
-          profile.createdAt = fsTimestamp();
-          if (!profile.badges) profile.badges = [];
-          if (isFoundingCode && profile.badges.indexOf("founder") === -1) profile.badges.push("founder");
-          // Keep all existing data: name, nick, bio, range, clubs, bag, funnyFacts, 
-          // photo, homeCourse, favoriteCourse, wins, trips, equippedTitle, etc.
+          // CLAIMING existing profile — only keep safe, non-privileged data
+          profile = {
+            id: user.uid,
+            claimedFrom: claimId,
+            email: email,
+            username: username.toLowerCase(),
+            name: claimedPlayer.name || username,
+            nick: claimedPlayer.nick || "",
+            bio: claimedPlayer.bio || "",
+            range: claimedPlayer.range || "",
+            emoji: claimedPlayer.emoji || "⛳",
+            photo: claimedPlayer.photo || null,
+            homeCourse: claimedPlayer.homeCourse || "",
+            favoriteCourse: claimedPlayer.favoriteCourse || "",
+            clubs: claimedPlayer.clubs || {},
+            bag: claimedPlayer.bag || {},
+            funnyFacts: claimedPlayer.funnyFacts || [],
+            bagPhoto: claimedPlayer.bagPhoto || "",
+            // Privileged fields — always set from role/code, NEVER from claimed player
+            role: assignedRole,
+            title: isFoundingCode ? "The Original Four" + (assignedRole === "commissioner" ? " · Commissioner" : "") : "",
+            equippedTitle: isFoundingCode ? "The Original Four" + (assignedRole === "commissioner" ? " · Commissioner" : "") : "",
+            maxInvites: assignedRole === "commissioner" ? 999 : 3,
+            invitesUsed: 0,
+            invitedBy: inv.createdBy || "founding",
+            isFoundingFour: isFoundingCode,
+            founding: isFoundingCode,
+            badges: isFoundingCode ? ["founder"] : [],
+            xp: 0, level: 1,
+            avgScore: null, bestRound: null, handicap: null,
+            manualHandicap: claimedPlayer.manualHandicap || null,
+            wins: 0, trips: 0,
+            createdAt: fsTimestamp()
+          };
           pbLog("[Auth] Claiming existing profile:", claimId, "→", user.uid);
         } else {
           // NEW profile — create from scratch
@@ -2576,6 +2656,36 @@ var PB = (function() {
     if (player && player.role === "commissioner") xp += 500;
     if (player && player.email === "jopinksalot@msn.com") xp += 250;
 
+    // Range session XP
+    var rangeSessions = typeof liveRangeSessions !== "undefined" ? liveRangeSessions.filter(function(s){return s.playerId===pid}) : [];
+    rangeSessions.forEach(function(s) { xp += getRangeSessionXP(s); });
+    // Range achievement XP
+    if (rangeSessions.length >= 1) xp += 50;  // First Swing
+    if (rangeSessions.length >= 10) xp += 100; // Range Rat
+    if (rangeSessions.length >= 25) xp += 200; // Creature of Habit
+    if (rangeSessions.length >= 50) xp += 400; // Iron Sharpener
+    if (rangeSessions.length >= 100) xp += 750; // Range Resident
+    var rangeStreak = typeof calcRangeStreak !== "undefined" ? calcRangeStreak(rangeSessions) : 0;
+    if (rangeStreak >= 2) xp += 50;   // Two-Peat
+    if (rangeStreak >= 4) xp += 100;  // Hot Streak
+    if (rangeStreak >= 8) xp += 250;  // Dialed In
+    if (rangeStreak >= 12) xp += 500; // Relentless
+    var rangeTotalMins = rangeSessions.reduce(function(a,s){return a+(s.durationMin||0)},0);
+    if (rangeTotalMins >= 300) xp += 75;   // Bucket Buster (5hrs)
+    if (rangeTotalMins >= 1500) xp += 200; // Sweat Equity (25hrs)
+    if (rangeTotalMins >= 6000) xp += 750; // 10,000 Hours (100hrs)
+    if (rangeSessions.some(function(s){return (s.durationMin||0)>=60})) xp += 100; // Locked In
+    if (rangeSessions.some(function(s){return (s.durationMin||0)>=90})) xp += 200; // Marathon Man
+    // Special range achievements
+    if (rangeSessions.some(function(s){return s.drills&&s.drills.length>=3})) xp += 50; // Lab Work
+    var rangeDrillCounts = {};
+    rangeSessions.forEach(function(s){if(s.drills)s.drills.forEach(function(d){rangeDrillCounts[d]=(rangeDrillCounts[d]||0)+1})});
+    if (Object.values(rangeDrillCounts).some(function(c){return c>=10})) xp += 75; // Specialist
+    // Double Duty: range + round same day
+    var rangeDates = {};
+    rangeSessions.forEach(function(s){if(s.date)rangeDates[s.date]=1});
+    if (rounds.some(function(r){return r.date && rangeDates[r.date]})) xp += 100; // Double Duty
+
     return xp;
   }
 
@@ -2977,6 +3087,47 @@ var PB = (function() {
     if (player && inviteCount >= 1) achievements.push({id:"recruiter",name:"Recruiter",desc:"Invite a new member",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M12 3v4M10 5h4' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"special",title:"The Recruiter"});
     if (player && inviteCount >= 3) achievements.push({id:"ambassador",name:"Ambassador",desc:"Use all 3 invites",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:250,cat:"special",title:"Ambassador"});
 
+    // ===== RANGE ACHIEVEMENTS =====
+    var _rangeSVG = "<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>";
+    var _rangeS = typeof liveRangeSessions !== "undefined" ? liveRangeSessions.filter(function(s){return s.playerId===pid}) : [];
+    // Consistency
+    if (_rangeS.length >= 1) achievements.push({id:"first_swing",name:"First Swing",desc:"Log your first range session",icon:_rangeSVG,xp:50,cat:"range"});
+    if (_rangeS.length >= 10) achievements.push({id:"range_rat",name:"Range Rat",desc:"10 range sessions",icon:_rangeSVG,xp:100,cat:"range",title:"Range Rat"});
+    if (_rangeS.length >= 25) achievements.push({id:"creature_habit",name:"Creature of Habit",desc:"25 range sessions",icon:_rangeSVG,xp:200,cat:"range"});
+    if (_rangeS.length >= 50) achievements.push({id:"iron_sharpener",name:"Iron Sharpener",desc:"50 range sessions",icon:_rangeSVG,xp:400,cat:"range",title:"Iron Sharpener"});
+    if (_rangeS.length >= 100) achievements.push({id:"range_resident",name:"Range Resident",desc:"100 range sessions",icon:_rangeSVG,xp:750,cat:"range",title:"Range Resident"});
+    // Streaks
+    var _rStreak = typeof calcRangeStreak !== "undefined" ? calcRangeStreak(_rangeS) : 0;
+    if (_rStreak >= 2) achievements.push({id:"two_peat",name:"Two-Peat",desc:"2-week range streak",icon:_rangeSVG,xp:50,cat:"range"});
+    if (_rStreak >= 4) achievements.push({id:"hot_streak",name:"Hot Streak",desc:"4-week range streak",icon:_rangeSVG,xp:100,cat:"range",title:"Hot Streak"});
+    if (_rStreak >= 8) achievements.push({id:"dialed_in",name:"Dialed In",desc:"8-week range streak",icon:_rangeSVG,xp:250,cat:"range",title:"Dialed In"});
+    if (_rStreak >= 12) achievements.push({id:"relentless",name:"Relentless",desc:"12-week range streak",icon:_rangeSVG,xp:500,cat:"range",title:"Relentless"});
+    // Volume
+    var _rMins = _rangeS.reduce(function(a,s){return a+(s.durationMin||0)},0);
+    if (_rMins >= 300) achievements.push({id:"bucket_buster",name:"Bucket Buster",desc:"5 total hours on the range",icon:_rangeSVG,xp:75,cat:"range"});
+    if (_rMins >= 1500) achievements.push({id:"sweat_equity",name:"Sweat Equity",desc:"25 total hours on the range",icon:_rangeSVG,xp:200,cat:"range",title:"Sweat Equity"});
+    if (_rMins >= 6000) achievements.push({id:"ten_k_hours",name:"10,000 Hours",desc:"100 total hours on the range",icon:_rangeSVG,xp:750,cat:"range",title:"10,000 Hours"});
+    // Endurance
+    if (_rangeS.some(function(s){return (s.durationMin||0)>=60})) achievements.push({id:"locked_in",name:"Locked In",desc:"60+ minute range session",icon:_rangeSVG,xp:100,cat:"range"});
+    if (_rangeS.some(function(s){return (s.durationMin||0)>=90})) achievements.push({id:"marathon_man",name:"Marathon Man",desc:"90+ minute range session",icon:_rangeSVG,xp:200,cat:"range",title:"Marathon Man"});
+    // Drills
+    if (_rangeS.some(function(s){return s.drills&&s.drills.length>=3})) achievements.push({id:"lab_work",name:"Lab Work",desc:"Use 3+ drills in one session",icon:_rangeSVG,xp:50,cat:"range"});
+    var _rDC={};_rangeS.forEach(function(s){if(s.drills)s.drills.forEach(function(d){_rDC[d]=(_rDC[d]||0)+1})});
+    if (Object.values(_rDC).some(function(c){return c>=10})) achievements.push({id:"specialist",name:"Specialist",desc:"Use the same drill in 10 sessions",icon:_rangeSVG,xp:75,cat:"range",title:"Specialist"});
+    // Check all cats covered
+    var _rCats={};_rangeS.forEach(function(s){if(s.drills)s.drills.forEach(function(did){var dl=(typeof DRILL_LIBRARY!=="undefined"?DRILL_LIBRARY:[]).find(function(x){return x.id===did});if(dl)_rCats[dl.cat]=1;})});
+    if (_rCats.path&&_rCats.extension&&_rCats.short&&_rCats.general) achievements.push({id:"well_rounded",name:"Well-Rounded",desc:"Use drills from every category",icon:_rangeSVG,xp:100,cat:"range",title:"Well-Rounded"});
+    // Custom drill
+    if (_rangeS.some(function(s){return s.drills&&s.drills.some(function(d){return d.indexOf("custom_")===0})})) achievements.push({id:"custom_built",name:"Custom Built",desc:"Create and use a custom drill",icon:_rangeSVG,xp:50,cat:"range"});
+    // Coach's Orders
+    if (_rangeS.some(function(s){return s.drills&&s.drills.length>=4})) achievements.push({id:"coachs_orders",name:"Coach's Orders",desc:"Complete a session with 4 drills",icon:_rangeSVG,xp:75,cat:"range"});
+    // Double Duty
+    var _rDates={};_rangeS.forEach(function(s){if(s.date)_rDates[s.date]=1});
+    if (rounds.some(function(r){return r.date&&_rDates[r.date]})) achievements.push({id:"double_duty",name:"Double Duty",desc:"Range session + round same day",icon:_rangeSVG,xp:100,cat:"range",title:"Double Duty"});
+    // Dawn Patrol / Night Owl (based on startedAt hour)
+    if (_rangeS.some(function(s){if(!s.startedAt)return false;var h=new Date(s.startedAt).getHours();return h<8})) achievements.push({id:"range_dawn",name:"Dawn Patrol",desc:"Range session before 8am",icon:_rangeSVG,xp:50,cat:"range"});
+    if (_rangeS.some(function(s){if(!s.startedAt)return false;var h=new Date(s.startedAt).getHours();return h>=20})) achievements.push({id:"range_night_owl",name:"Night Owl",desc:"Range session after 8pm",icon:_rangeSVG,xp:50,cat:"range"});
+
     return achievements;
   }
 
@@ -3187,7 +3338,7 @@ var Router = (function() {
       { p: "teetimes", l: "Tee Times", match: ["teetimes","tee-create"] },
       { p: "members", l: "Members", match: ["members","profile-edit"] },
       { p: "trips", l: "Events", match: ["trips","scorecard"] },
-      { p: "rounds", l: "Rounds", match: ["rounds","playnow"] },
+      { p: "activity", l: "Activity", match: ["activity","rounds","playnow","range"] },
       { p: "records", l: "Records", match: ["records","aces","scramble","courses","standings","challenges"] },
       { p: "chat", l: "Clubhouse", match: ["chat","dms","dm-thread"] }
     ];
@@ -3327,6 +3478,7 @@ Router.register("home", function() {
   // Quick Actions
   h += '<div style="display:flex;gap:8px;margin-bottom:16px">';
   h += '<button class="btn full green" onclick="Router.go(\'playnow\')" style="flex:1;font-size:11px;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg> Play Now</button>';
+  h += '<button class="btn full outline" onclick="startRangeSession()" style="flex:1;font-size:11px;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Hit the Range</button>';
   h += '<button class="btn full outline" onclick="Router.go(\'tee-create\')" style="flex:1;font-size:11px;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Post Tee Time</button>';
   h += '</div>';
 
@@ -3342,9 +3494,9 @@ Router.register("home", function() {
   var motivationCards = [];
   
   if (myRounds.length === 0) {
-    motivationCards.push({icon:"🏌️", title:"Log your first round", sub:"Earn 100 XP, unlock the First Blood badge, and establish your handicap.", cta:"Play Now →", page:"playnow"});
+    motivationCards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='4' r='3'/><path d='M4 14l4-4 4 4'/><line x1='8' y1='10' x2='8' y2='16'/></svg>", title:"Log your first round", sub:"Earn 100 XP, unlock the First Blood badge, and establish your handicap.", cta:"Play Now →", page:"playnow"});
   } else if (myRounds.length < 3) {
-    motivationCards.push({icon:"📊", title: (3 - myRounds.length) + " more round" + (myRounds.length < 2 ? "s" : "") + " until your handicap", sub:"Log " + (3 - myRounds.length) + " more to get your official GHIN handicap calculated.", cta:"Play Now →", page:"playnow"});
+    motivationCards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><rect x='2' y='3' width='12' height='10' rx='1'/><path d='M5 7h6M5 10h4'/></svg>", title: (3 - myRounds.length) + " more round" + (myRounds.length < 2 ? "s" : "") + " until your handicap", sub:"Log " + (3 - myRounds.length) + " more to get your official GHIN handicap calculated.", cta:"Play Now →", page:"playnow"});
   }
   
   if (xpToNext <= 200 && myLevel.level > 1) {
@@ -3353,7 +3505,7 @@ Router.register("home", function() {
   
   if (myRounds.length >= 3 && myRounds.length < 10) {
     var best = Math.min.apply(null, myRounds.map(function(r){return r.score||999}));
-    motivationCards.push({icon:"🎯", title:"Your best: " + best, sub:"Can you beat it? Every round that ties or beats your PR earns a 50-point bonus.", cta:"Play Now →", page:"playnow"});
+    motivationCards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='8' r='6'/><circle cx='8' cy='8' r='3'/><circle cx='8' cy='8' r='.8' fill='currentColor'/></svg>", title:"Your best: " + best, sub:"Can you beat it? Every round that ties or beats your PR earns a 50-point bonus.", cta:"Play Now →", page:"playnow"});
   }
   
   var now = new Date();
@@ -3363,12 +3515,12 @@ Router.register("home", function() {
     if (myStanding && season.standings.indexOf(myStanding) > 0) {
       var ahead = season.standings[season.standings.indexOf(myStanding) - 1];
       var gap = ahead.points - myStanding.points;
-      motivationCards.push({icon:"🏆", title: gap + " points behind " + (ahead.name||ahead.username), sub:"One big round with an attested score could close that gap.", cta:"View Standings →", page:"standings"});
+      motivationCards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M5 2h6v5a3 3 0 01-6 0V2z'/><path d='M5 4H3a1 1 0 00-1 1v1a2 2 0 002 2h1M11 4h2a1 1 0 011 1v1a2 2 0 01-2 2h-1'/><path d='M6 10v2h4v-2M4 14h8'/></svg>", title: gap + " points behind " + (ahead.name||ahead.username), sub:"One big round with an attested score could close that gap.", cta:"View Standings →", page:"standings"});
     }
   }
   
   if (!motivationCards.length) {
-    motivationCards.push({icon:"⛳", title:"The course is calling", sub:"Every round earns XP, builds your handicap, and pushes you up the standings.", cta:"Play Now →", page:"playnow"});
+    motivationCards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M3 2v12'/><path d='M3 2l9 3.5L3 9'/></svg>", title:"The course is calling", sub:"Every round earns XP, builds your handicap, and pushes you up the standings.", cta:"Play Now →", page:"playnow"});
   }
   
   // Pick one randomly (or cycle daily based on date)
@@ -6371,7 +6523,7 @@ Router.register("scorecard", function(params) {
   if (currentProfile && currentProfile.role === "commissioner") {
     var currentCourse = trip.courses.find(function(x) { return x.key === scState.courseKey; }) || trip.courses[0];
     h += '<div style="display:flex;gap:6px;padding:8px 16px">';
-    h += '<button class="btn-sm green" style="flex:1;font-size:9px" onclick="announceEventStart(\'' + trip.id + '\',\'' + escHtml(currentCourse.n).replace(/'/g,"\\'") + '\')">📢 Announce Start</button>';
+    h += '<button class="btn-sm green" style="flex:1;font-size:9px" onclick="announceEventStart(\'' + trip.id + '\',\'' + escHtml(currentCourse.n).replace(/'/g,"\\'") + '\')"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M2 6v4l3 1V5L2 6zM5 5l7-3v12l-7-3"/><path d="M13 7h2M13 9h2"/></svg> Announce Start</button>';
     h += '<button class="btn-sm outline" style="flex:1;font-size:9px" onclick="finishTripRound(\'' + trip.id + '\',\'' + scState.courseKey + '\')">🏁 Finish Round</button>';
     h += '</div>';
   }
@@ -6651,48 +6803,9 @@ function scoreClass(v, pa) {
    ================================================ */
 Router.register("rounds", function(params) {
   if (params.roundId) { renderRoundDetail(params.roundId); return; }
-  var rounds = PB.getRounds();
-  var zachRounds = rounds.filter(function(r) { return r.player === "zach"; });
-  var hcap = PB.calcHandicap(zachRounds);
-
-  var h = '<div class="sh"><h2>Rounds</h2><button class="btn-sm green" onclick="Router.go(\'playnow\')">Play now</button></div>';
-
-  // Handicap
-  h += '<div class="hcap-box"><div class="hcap-val">' + (hcap !== null ? hcap : "—") + '</div><div class="hcap-label">Your handicap index</div></div>';
-
-  // Form
-  h += '<div class="form-section"><div class="form-title">Log a round</div>';
-  h += '<div class="ff"><label class="ff-label">Player</label>';
-  var myRoundPlayer = currentUser ? PB.getPlayer(currentUser.uid) : null;
-  var myRoundLocal = PB.getPlayers().find(function(p) { return currentProfile && (p.id === currentProfile.claimedFrom || p.name === currentProfile.name); });
-  var roundAs = myRoundPlayer || myRoundLocal || PB.getPlayers()[0];
-  h += '<div class="ff-input" style="background:var(--bg4);color:var(--gold);font-weight:600">' + escHtml(roundAs.name) + '</div><input type="hidden" id="rf-player" value="' + roundAs.id + '"></div>';
-  h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="rf-course" placeholder="Start typing to search courses..." oninput="showRoundCourseSearch(this)"><div id="search-round-course" class="search-results"></div></div>';
-  h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="rf-format"><option value="stroke">Stroke play</option><option value="parbaugh">Parbaugh Stroke Play</option><option value="stableford">Modified Stableford</option><option value="scramble">Scramble (2-man)</option><option value="scramble4">Scramble (4-man)</option><option value="bestball">Best ball</option><option value="alternate">Alternate shot</option><option value="skins">Skins</option><option value="match">Match play</option></select></div>';
-  h += '<div class="ff-row" style="grid-template-columns:1fr 1fr">';
-  h += '<div class="ff"><label class="ff-label">Score</label><input type="number" inputmode="numeric" class="ff-input" id="rf-score" placeholder="85" style="min-width:0"></div>';
-  h += '<div class="ff"><label class="ff-label">Date</label><input type="date" class="ff-input" id="rf-date" value="' + new Date().toISOString().split("T")[0] + '" style="min-width:0"></div>';
-  h += '</div><div class="ff-row" style="grid-template-columns:1fr 1fr">';
-  h += '<div class="ff"><label class="ff-label">Rating</label><input type="number" step="0.1" class="ff-input" id="rf-rating" placeholder="auto" style="min-width:0"></div>';
-  h += '<div class="ff"><label class="ff-label">Slope</label><input type="number" class="ff-input" id="rf-slope" placeholder="auto" style="min-width:0"></div>';
-  h += '</div>';
-  h += '<div class="ff"><label class="ff-label">Scorecard photo (optional)</label><input type="file" accept="image/*" id="rf-photo" style="color:var(--muted);font-size:12px"></div>';
-  h += '<button class="btn full green" onclick="submitRound()">+ Log round</button></div>';
-
-  // History
-  if (rounds.length) {
-    h += '<div class="section"><div class="sec-head"><span class="sec-title">Round history</span><span class="sec-link">' + rounds.length + ' total</span></div>';
-    rounds.slice().reverse().slice(0, 25).forEach(function(r) {
-      var c = PB.generateRoundCommentary(r);
-      var quip = c.roasts.length ? c.roasts[0] : (c.highlights.length ? c.highlights[0] : "");
-      h += '<div class="card" onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer"><div class="round-card"><div class="rc-top"><div><div class="rc-course">' + r.course + '</div><div class="rc-date">' + r.date + ' · ' + r.playerName + (r.format && r.format !== 'stroke' ? ' · ' + r.format : '') + '</div></div>';
-      h += '<div class="rc-score">' + r.score + '</div></div>';
-      if (quip) h += '<div class="rc-quip">' + quip + '</div>';
-      h += '</div></div>';
-    });
-    h += '</div>';
-  }
-  document.querySelector('[data-page="rounds"]').innerHTML = h;
+  // Redirect to new Activity page
+  rangeActiveView = "rounds";
+  Router.go("activity");
 });
 
 function renderRoundDetail(roundId) {
@@ -7402,6 +7515,414 @@ function markOfficial(teeId) { db.collection("teetimes").doc(teeId).update({offi
 var calMonth = new Date().getMonth(), calYear = new Date().getFullYear(), calSelectedDate = null;
 var liveEvents = [];
 
+// ========== RANGE SESSION SYSTEM ==========
+var liveRangeSessions = [];
+var activeRangeTimer = null;
+var activeRangeStart = null;
+var activeRangeDrills = [];
+var activeRangeFocus = "";
+var rangeActiveView = "rounds"; // "rounds" or "range"
+
+var DRILL_LIBRARY = [
+  {id:"headcover_trap", name:"Headcover Trap", cat:"path", desc:"Tuck headcover under trail arm to fix over-the-top"},
+  {id:"alignment_stick_path", name:"Alignment Stick Path", cat:"path", desc:"Stick on ground for visual path feedback"},
+  {id:"trail_elbow_tuck", name:"Trail Elbow Tuck", cat:"path", desc:"Keep trail elbow close on downswing"},
+  {id:"inside_out_gate", name:"Inside-Out Gate", cat:"path", desc:"Two tees creating a gate for club path"},
+  {id:"chest_down", name:"Chest-Down Through Impact", cat:"extension", desc:"Maintain spine angle through the ball"},
+  {id:"wall_sit_swing", name:"Wall Sit Swing", cat:"extension", desc:"Practice posture against a wall"},
+  {id:"step_back", name:"Step-Back Drill", cat:"extension", desc:"Step back from address for proper distance"},
+  {id:"clock_drill", name:"Clock Drill", cat:"short", desc:"Wedge distance control at 9, 10:30, full"},
+  {id:"one_hand_chips", name:"One-Handed Chips", cat:"short", desc:"Feel the clubface with each hand separately"},
+  {id:"ladder_drill", name:"Ladder Drill", cat:"short", desc:"Putt to progressively longer distances"},
+  {id:"circle_drill", name:"Circle Drill", cat:"short", desc:"3-foot putts all around the hole"},
+  {id:"slow_motion", name:"Slow Motion Swings", cat:"general", desc:"Full swing at 25% speed for feel"},
+  {id:"feet_together", name:"Feet-Together", cat:"general", desc:"Hit balls with feet touching for balance"},
+  {id:"pause_at_top", name:"Pause-at-Top", cat:"general", desc:"Full pause at top of backswing"},
+  {id:"driver_70", name:"Driver Block at 70%", cat:"general", desc:"Driver at 70% effort for control"}
+];
+var DRILL_CATS = {path:"Path & Plane",extension:"Extension & Posture",short:"Short Game",general:"Full Swing",custom:"My Drills"};
+var customDrills = JSON.parse(localStorage.getItem("pb_custom_drills")||"[]");
+
+function startRangeSessionListener() {
+  if (!db) return;
+  db.collection("rangeSessions").orderBy("startedAt","desc").limit(100).onSnapshot(function(snap) {
+    liveRangeSessions = [];
+    snap.forEach(function(doc) { liveRangeSessions.push(Object.assign({_id:doc.id}, doc.data())); });
+    if (Router.getPage() === "activity" && rangeActiveView === "range") Router.go("activity");
+  });
+}
+
+function syncRangeSession(s) {
+  if (!db||syncStatus==="offline") return;
+  var d = JSON.parse(JSON.stringify(s));
+  db.collection("rangeSessions").doc(s.id).set(d,{merge:true}).catch(function(){});
+}
+
+function getRangeSessionXP(session) {
+  var mins = (session.durationMin || 0);
+  var xp = Math.min(Math.floor(mins / 30) * 25, 100);
+  if (session.drills && session.drills.length >= 3) xp += 10;
+  return xp;
+}
+
+function getPlayerRangeSessions(pid) {
+  return liveRangeSessions.filter(function(s) { return s.playerId === pid; });
+}
+
+function formatRangeTime(totalSeconds) {
+  var h = Math.floor(totalSeconds / 3600);
+  var m = Math.floor((totalSeconds % 3600) / 60);
+  var s = totalSeconds % 60;
+  if (h > 0) return h + ":" + String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+  return String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+}
+
+function startRangeSession() {
+  activeRangeStart = Date.now();
+  activeRangeDrills = [];
+  activeRangeFocus = "";
+  Router.go("range");
+}
+
+function tickRangeTimer() {
+  var el = document.getElementById("rangeTimerDisplay");
+  if (!el || !activeRangeStart) return;
+  var elapsed = Math.floor((Date.now() - activeRangeStart) / 1000);
+  el.textContent = formatRangeTime(elapsed);
+}
+
+function toggleRangeDrill(drillId) {
+  var idx = activeRangeDrills.indexOf(drillId);
+  if (idx === -1) { if (activeRangeDrills.length < 4) activeRangeDrills.push(drillId); }
+  else activeRangeDrills.splice(idx, 1);
+  renderDrillChips();
+}
+
+function renderDrillChips() {
+  var el = document.getElementById("rangeDrillChips");
+  if (!el) return;
+  var allDrills = DRILL_LIBRARY.concat(customDrills);
+  var cats = {};
+  allDrills.forEach(function(d) { if (!cats[d.cat]) cats[d.cat] = []; cats[d.cat].push(d); });
+  var h = '';
+  Object.keys(DRILL_CATS).forEach(function(catKey) {
+    var drills = cats[catKey];
+    if (!drills || !drills.length) return;
+    h += '<div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:.8px;margin:10px 0 4px">' + DRILL_CATS[catKey] + '</div>';
+    h += '<div style="display:flex;flex-wrap:wrap;gap:0">';
+    drills.forEach(function(d) {
+      var sel = activeRangeDrills.indexOf(d.id) !== -1;
+      h += '<div class="drill-chip' + (sel ? " selected" : "") + '" onclick="toggleRangeDrill(\'' + d.id + '\')" title="' + escHtml(d.desc) + '">' + escHtml(d.name) + (sel ? '<span class="drill-x">✕</span>' : '') + '</div>';
+    });
+    h += '</div>';
+  });
+  el.innerHTML = h;
+  var countEl = document.getElementById("rangeDrillCount");
+  if (countEl) countEl.textContent = activeRangeDrills.length + "/4 selected";
+}
+
+function addCustomDrill() {
+  var name = prompt("Drill name:");
+  if (!name || !name.trim()) return;
+  var desc = prompt("Short description (optional):", "");
+  var drill = {id: "custom_" + Date.now(), name: name.trim(), cat: "custom", desc: desc || ""};
+  customDrills.push(drill);
+  localStorage.setItem("pb_custom_drills", JSON.stringify(customDrills));
+  renderDrillChips();
+  Router.toast("Drill added!");
+}
+
+function endRangeSession() {
+  if (!activeRangeStart) return;
+  var elapsed = Math.floor((Date.now() - activeRangeStart) / 1000);
+  var mins = Math.round(elapsed / 60);
+  if (mins < 1) mins = 1;
+  // Show end summary
+  if (activeRangeTimer) { clearInterval(activeRangeTimer); activeRangeTimer = null; }
+  var allDrills = DRILL_LIBRARY.concat(customDrills);
+  var drillNames = activeRangeDrills.map(function(did) { var d = allDrills.find(function(x){return x.id===did}); return d ? d.name : did; });
+  var xp = getRangeSessionXP({durationMin: mins, drills: activeRangeDrills});
+
+  var h = '<div class="sh"><h2>Session Complete</h2></div>';
+  h += '<div class="range-timer-display"><div class="range-timer-time">' + formatRangeTime(elapsed) + '</div>';
+  h += '<div class="range-timer-label">' + mins + ' minutes on the range</div></div>';
+  if (drillNames.length) {
+    h += '<div style="padding:0 16px 12px;text-align:center"><div style="font-size:10px;color:var(--muted);margin-bottom:6px">Drills worked</div>';
+    drillNames.forEach(function(n) { h += '<span class="drill-chip selected" style="cursor:default">' + escHtml(n) + '</span>'; });
+    h += '</div>';
+  }
+  h += '<div style="padding:0 16px 16px"><div style="font-size:11px;color:var(--muted);margin-bottom:8px;text-align:center">How did it feel?</div>';
+  h += '<div style="display:flex;gap:8px" id="feelBtns">';
+  h += '<button class="feel-btn" onclick="selectRangeFeel(1,this)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--red)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 15s1-2 4-2 4 2 4 2"/><circle cx="9" cy="9" r="1" fill="var(--red)"/><circle cx="15" cy="9" r="1" fill="var(--red)"/></svg><br><span style="font-size:10px">Rough</span></button>';
+  h += '<button class="feel-btn" onclick="selectRangeFeel(2,this)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--cream)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14h8"/><circle cx="9" cy="9" r="1" fill="var(--cream)"/><circle cx="15" cy="9" r="1" fill="var(--cream)"/></svg><br><span style="font-size:10px">Solid</span></button>';
+  h += '<button class="feel-btn" onclick="selectRangeFeel(3,this)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--gold)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="var(--gold)"/><circle cx="15" cy="9" r="1" fill="var(--gold)"/></svg><br><span style="font-size:10px">Dialed</span></button>';
+  h += '</div></div>';
+  h += '<div style="text-align:center;padding:0 16px 8px"><div style="font-size:18px;font-weight:700;color:var(--gold)">+' + xp + ' XP</div></div>';
+  h += '<div class="section"><button class="btn full green" onclick="saveRangeSession(' + mins + ',' + elapsed + ')">Save Session</button>';
+  h += '<button class="btn full outline" style="margin-top:8px" onclick="activeRangeStart=null;Router.go(\'activity\')">Discard</button></div>';
+  document.querySelector('[data-page="range"]').innerHTML = h;
+}
+
+var rangeFeel = 0;
+function selectRangeFeel(val, btn) {
+  rangeFeel = val;
+  var btns = document.querySelectorAll("#feelBtns .feel-btn");
+  btns.forEach(function(b) { b.classList.remove("sel"); });
+  btn.classList.add("sel");
+}
+
+function saveRangeSession(mins, totalSec) {
+  var session = {
+    id: genId(),
+    playerId: currentUser ? currentUser.uid : "local",
+    playerName: currentProfile ? PB.getDisplayName(currentProfile) : "You",
+    date: new Date().toISOString().split("T")[0],
+    startedAt: new Date(activeRangeStart).toISOString(),
+    endedAt: new Date().toISOString(),
+    durationMin: mins,
+    durationSec: totalSec,
+    drills: activeRangeDrills.slice(),
+    feel: rangeFeel || 2,
+    focus: activeRangeFocus
+  };
+  syncRangeSession(session);
+  var xp = getRangeSessionXP(session);
+  // Post to feed
+  if (db) {
+    db.collection("chat").add({
+      id: genId(),
+      text: "🏌️ " + session.playerName + " just finished a " + mins + "-minute range session" + (session.drills.length ? " working on " + session.drills.length + " drill" + (session.drills.length>1?"s":"") : "") + " (+"+xp+" XP)",
+      authorId: "system", authorName: "Parbaughs", createdAt: fsTimestamp()
+    }).catch(function(){});
+  }
+  activeRangeStart = null;
+  activeRangeDrills = [];
+  rangeFeel = 0;
+  Router.toast("Session saved! +" + xp + " XP");
+  rangeActiveView = "range";
+  Router.go("activity");
+}
+
+// ========== ACTIVITY PAGE (Rounds + Range) ==========
+Router.register("activity", function() {
+  var h = '<div class="sh"><h2>Activity</h2>';
+  if (rangeActiveView === "range") {
+    h += '<button class="btn-sm green" onclick="startRangeSession()">Hit the Range</button>';
+  } else {
+    h += '<button class="btn-sm green" onclick="Router.go(\'playnow\')">Play now</button>';
+  }
+  h += '</div>';
+
+  // Toggle bar
+  h += '<div class="activity-toggle">';
+  h += '<button class="' + (rangeActiveView==="rounds"?"active":"") + '" onclick="rangeActiveView=\'rounds\';Router.go(\'activity\')">Rounds</button>';
+  h += '<button class="' + (rangeActiveView==="range"?"active":"") + '" onclick="rangeActiveView=\'range\';Router.go(\'activity\')">Range</button>';
+  h += '</div>';
+
+  if (rangeActiveView === "rounds") {
+    h += renderActivityRounds();
+  } else {
+    h += renderActivityRange();
+  }
+  document.querySelector('[data-page="activity"]').innerHTML = h;
+});
+
+function renderActivityRounds() {
+  var rounds = PB.getRounds();
+  var myId = currentUser ? currentUser.uid : null;
+  var myLocal = currentProfile ? currentProfile.claimedFrom : null;
+  var myRounds = rounds.filter(function(r) { return r.player === myId || r.player === myLocal || r.player === "zach"; });
+  var hcap = PB.calcHandicap(myRounds);
+  var h = '';
+
+  // Handicap
+  h += '<div class="hcap-box"><div class="hcap-val">' + (hcap !== null ? hcap : "—") + '</div><div class="hcap-label">Your handicap index</div></div>';
+
+  // Form
+  h += '<div class="form-section"><div class="form-title">Log a round</div>';
+  h += '<div class="ff"><label class="ff-label">Player</label>';
+  var myRoundPlayer = currentUser ? PB.getPlayer(currentUser.uid) : null;
+  var myRoundLocal = PB.getPlayers().find(function(p) { return currentProfile && (p.id === currentProfile.claimedFrom || p.name === currentProfile.name); });
+  var roundAs = myRoundPlayer || myRoundLocal || PB.getPlayers()[0];
+  h += '<div class="ff-input" style="background:var(--bg4);color:var(--gold);font-weight:600">' + escHtml(roundAs.name) + '</div><input type="hidden" id="rf-player" value="' + roundAs.id + '"></div>';
+  h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="rf-course" placeholder="Start typing to search courses..." oninput="showRoundCourseSearch(this)"><div id="search-round-course" class="search-results"></div></div>';
+  h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="rf-format"><option value="stroke">Stroke play</option><option value="parbaugh">Parbaugh Stroke Play</option><option value="stableford">Modified Stableford</option><option value="scramble">Scramble (2-man)</option><option value="scramble4">Scramble (4-man)</option><option value="bestball">Best ball</option><option value="alternate">Alternate shot</option><option value="skins">Skins</option><option value="match">Match play</option></select></div>';
+  h += '<div class="ff-row" style="grid-template-columns:1fr 1fr">';
+  h += '<div class="ff"><label class="ff-label">Score</label><input type="number" inputmode="numeric" class="ff-input" id="rf-score" placeholder="85" style="min-width:0"></div>';
+  h += '<div class="ff"><label class="ff-label">Date</label><input type="date" class="ff-input" id="rf-date" value="' + new Date().toISOString().split("T")[0] + '" style="min-width:0"></div>';
+  h += '</div><div class="ff-row" style="grid-template-columns:1fr 1fr">';
+  h += '<div class="ff"><label class="ff-label">Rating</label><input type="number" step="0.1" class="ff-input" id="rf-rating" placeholder="auto" style="min-width:0"></div>';
+  h += '<div class="ff"><label class="ff-label">Slope</label><input type="number" class="ff-input" id="rf-slope" placeholder="auto" style="min-width:0"></div>';
+  h += '</div>';
+  h += '<div class="ff"><label class="ff-label">Scorecard photo (optional)</label><input type="file" accept="image/*" id="rf-photo" style="color:var(--muted);font-size:12px"></div>';
+  h += '<button class="btn full green" onclick="submitRound()">+ Log round</button></div>';
+
+  // History
+  if (rounds.length) {
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Round history</span><span class="sec-link">' + rounds.length + ' total</span></div>';
+    rounds.slice().reverse().slice(0, 25).forEach(function(r) {
+      var c = PB.generateRoundCommentary(r);
+      var quip = c.roasts.length ? c.roasts[0] : (c.highlights.length ? c.highlights[0] : "");
+      h += '<div class="card" onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer"><div class="round-card"><div class="rc-top"><div><div class="rc-course">' + r.course + '</div><div class="rc-date">' + r.date + ' · ' + r.playerName + (r.format && r.format !== 'stroke' ? ' · ' + r.format : '') + '</div></div>';
+      h += '<div class="rc-score">' + r.score + '</div></div>';
+      if (quip) h += '<div class="rc-quip">' + quip + '</div>';
+      h += '</div></div>';
+    });
+    h += '</div>';
+  }
+  return h;
+}
+
+function renderActivityRange() {
+  var h = '';
+  var myId = currentUser ? currentUser.uid : "local";
+  var mySessions = liveRangeSessions.filter(function(s) { return s.playerId === myId; });
+
+  // Active session indicator
+  if (activeRangeStart) {
+    h += '<div class="section"><div class="card" onclick="Router.go(\'range\')" style="cursor:pointer;border-left:3px solid #f472b6">';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:2px 0">';
+    h += '<div><div style="font-size:12px;font-weight:600;color:#f472b6">Session in progress</div>';
+    h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">Tap to return</div></div>';
+    h += '<div style="font-size:9px;color:#f472b6;animation:pulse 2s infinite">● LIVE</div>';
+    h += '</div></div></div>';
+  }
+
+  // Stats summary
+  var totalSessions = mySessions.length;
+  var totalMins = mySessions.reduce(function(a,s){return a+(s.durationMin||0)},0);
+  var totalHrs = Math.floor(totalMins/60);
+  var avgFeel = totalSessions ? (mySessions.reduce(function(a,s){return a+(s.feel||2)},0)/totalSessions).toFixed(1) : "—";
+  var streakWeeks = calcRangeStreak(mySessions);
+
+  h += '<div class="stats-grid" style="padding:0 16px 8px">';
+  h += statBox(totalSessions, "Sessions");
+  h += statBox(totalHrs + "h " + (totalMins%60) + "m", "Total Time");
+  h += statBox(streakWeeks + "wk", "Streak");
+  h += '</div>';
+
+  // Practice Insights
+  if (mySessions.length >= 3) {
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Practice Insights</span></div>';
+    var drillCounts = {};
+    var catCounts = {path:0,extension:0,short:0,general:0,custom:0};
+    var allDrills = DRILL_LIBRARY.concat(customDrills);
+    mySessions.forEach(function(s) {
+      if (!s.drills) return;
+      s.drills.forEach(function(did) {
+        drillCounts[did] = (drillCounts[did]||0)+1;
+        var drill = allDrills.find(function(x){return x.id===did});
+        if (drill) catCounts[drill.cat] = (catCounts[drill.cat]||0)+1;
+      });
+    });
+    var totalDrillUse = Object.values(catCounts).reduce(function(a,b){return a+b},0) || 1;
+    var catColors = {path:"#60a5fa",extension:"#a78bfa",short:"#4ade80",general:"var(--gold)",custom:"#f472b6"};
+    h += '<div class="card"><div style="font-size:11px;font-weight:600;color:var(--cream);margin-bottom:8px">Practice Distribution</div>';
+    Object.keys(DRILL_CATS).forEach(function(cat) {
+      if (!catCounts[cat]) return;
+      var pct = Math.round((catCounts[cat]/totalDrillUse)*100);
+      h += '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:2px"><span>' + DRILL_CATS[cat] + '</span><span style="color:var(--cream)">' + pct + '%</span></div>';
+      h += '<div class="insight-bar"><div class="insight-bar-fill" style="width:'+pct+'%;background:'+catColors[cat]+'"></div></div>';
+      h += '<div style="height:6px"></div>';
+    });
+    // Check for gaps
+    var catKeys = Object.keys(catCounts);
+    var zeroCats = ["path","extension","short","general"].filter(function(c){return !catCounts[c]});
+    if (zeroCats.length && mySessions.length >= 5) {
+      h += '<div style="margin-top:8px;padding:8px;background:rgba(201,168,76,.06);border-radius:4px;font-size:10px;color:var(--gold)">💡 You haven\'t touched ' + zeroCats.map(function(c){return DRILL_CATS[c]}).join(" or ") + ' drills in a while</div>';
+    }
+    h += '</div></div>';
+  }
+
+  // Session history
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Range Sessions</span><span class="sec-link">' + totalSessions + ' total</span></div>';
+  if (!mySessions.length) {
+    h += '<div class="card"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>';
+    h += '<div class="empty-text">No range sessions yet. Hit the Range to get started!</div></div></div>';
+  }
+  mySessions.slice(0, 20).forEach(function(s) {
+    var allDrills = DRILL_LIBRARY.concat(customDrills);
+    var drillNames = (s.drills||[]).map(function(did){var d=allDrills.find(function(x){return x.id===did});return d?d.name:did;});
+    var feelIcon = s.feel === 1 ? '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="var(--red)" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 10s1-1.5 3-1.5 3 1.5 3 1.5"/></svg>' : s.feel === 3 ? '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="var(--gold)" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 10s1 1.5 3 1.5 3-1.5 3-1.5"/></svg>' : '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="var(--cream)" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 10h6"/></svg>';
+    var dateObj = new Date(s.date+"T12:00:00");
+    var monNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    var fmtDate = monNames[dateObj.getMonth()] + " " + dateObj.getDate();
+    h += '<div class="card" style="border-left:3px solid #f472b6"><div style="display:flex;justify-content:space-between;align-items:flex-start">';
+    h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream);display:flex;align-items:center;gap:4px">' + s.durationMin + ' min ' + feelIcon + '</div>';
+    h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + fmtDate + '</div>';
+    if (drillNames.length) h += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + drillNames.join(", ") + '</div>';
+    h += '</div>';
+    h += '<div style="font-size:11px;font-weight:600;color:var(--gold)">+' + getRangeSessionXP(s) + ' XP</div>';
+    h += '</div></div>';
+  });
+  h += '</div>';
+  return h;
+}
+
+function calcRangeStreak(sessions) {
+  if (!sessions.length) return 0;
+  var weekSet = {};
+  sessions.forEach(function(s) {
+    if (!s.date) return;
+    var d = new Date(s.date+"T12:00:00");
+    var yr = d.getFullYear();
+    var wk = Math.floor((d - new Date(yr,0,1)) / 604800000);
+    weekSet[yr+"-"+wk] = 1;
+  });
+  var weeks = Object.keys(weekSet).sort().reverse();
+  if (!weeks.length) return 0;
+  var streak = 1;
+  for (var i = 1; i < weeks.length; i++) {
+    var prev = weeks[i-1].split("-"), curr = weeks[i].split("-");
+    if (parseInt(prev[0])===parseInt(curr[0]) && parseInt(prev[1])===parseInt(curr[1])+1) streak++;
+    else break;
+  }
+  return streak;
+}
+
+// ========== RANGE ACTIVE SESSION PAGE ==========
+Router.register("range", function() {
+  if (!activeRangeStart) { Router.go("activity"); return; }
+
+  var h = '<div class="sh"><h2>On the Range</h2><button class="back" onclick="rangeActiveView=\'range\';Router.go(\'activity\')">← Back</button></div>';
+
+  // Timer
+  var elapsed = Math.floor((Date.now() - activeRangeStart) / 1000);
+  h += '<div class="range-timer-display"><div class="range-timer-time" id="rangeTimerDisplay">' + formatRangeTime(elapsed) + '</div>';
+  h += '<div class="range-timer-label">Session time</div></div>';
+
+  // Selected drills summary
+  if (activeRangeDrills.length) {
+    var allDrills = DRILL_LIBRARY.concat(customDrills);
+    h += '<div style="text-align:center;padding:0 16px 12px">';
+    h += '<div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">Today\'s drills</div>';
+    activeRangeDrills.forEach(function(did) {
+      var d = allDrills.find(function(x){return x.id===did});
+      if (d) h += '<span class="drill-chip selected" style="cursor:default">' + escHtml(d.name) + '</span>';
+    });
+    h += '</div>';
+  }
+
+  // Drill selector (collapsed)
+  h += '<div class="section"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
+  h += '<div style="font-size:11px;font-weight:600;color:var(--cream)">Select drills</div>';
+  h += '<div style="display:flex;align-items:center;gap:8px"><span id="rangeDrillCount" style="font-size:10px;color:var(--muted)">' + activeRangeDrills.length + '/4 selected</span>';
+  h += '<button class="btn-sm outline" style="font-size:9px;padding:4px 8px" onclick="addCustomDrill()">+ Custom</button></div></div>';
+  h += '<div id="rangeDrillChips"></div></div>';
+
+  // End session button
+  h += '<div class="section"><button class="btn full" style="background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.3);color:#f472b6;font-weight:700" onclick="endRangeSession()">End Session</button></div>';
+
+  document.querySelector('[data-page="range"]').innerHTML = h;
+
+  // Start timer interval
+  if (activeRangeTimer) clearInterval(activeRangeTimer);
+  activeRangeTimer = setInterval(tickRangeTimer, 1000);
+
+  // Render drill chips
+  setTimeout(renderDrillChips, 50);
+});
+
 function startEventListener() {
   if (!db) return;
   db.collection("events").onSnapshot(function(snap) {
@@ -7560,11 +8081,10 @@ Router.register("chat", function() {
     db.collection("chat").orderBy("createdAt","desc").limit(50).onSnapshot(function(snap) {
       liveChat = [];
       snap.forEach(function(doc){ liveChat.push(Object.assign({_docId:doc.id}, doc.data())); });
-      liveChat.reverse();
+      // Keep newest-first order (no reverse)
       var feed = document.getElementById("chatFeed");
       if (feed && Router.getPage() === "chat") {
         feed.innerHTML = renderChatMessages(liveChat);
-        feed.scrollTop = feed.scrollHeight;
       }
     });
   }
@@ -7600,13 +8120,20 @@ function renderClubCalGrid(year, month, todayStr, events) {
     var mN = []; if(trip.members) trip.members.forEach(function(uid){var m=PB.getPlayer(uid)||(typeof fbMemberCache!=="undefined"?fbMemberCache[uid]:null);if(m)mN.push(m.name||m.username||"Member");});
     for (var dt=new Date(sd); dt<=ed; dt.setDate(dt.getDate()+1)) {
       var ds=dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0");
-      addEv(ds, {type:"event", title:trip.name, location:trip.location||"", dates:trip.startDate+(trip.endDate&&trip.endDate!==trip.startDate?" to "+trip.endDate:""), players:mN});
+      var _mn=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      var _sd2=new Date(trip.startDate+"T12:00:00"),_ed2=trip.endDate?new Date(trip.endDate+"T12:00:00"):_sd2;
+      var _fmtDates=_mn[_sd2.getMonth()]+" "+_sd2.getDate()+(trip.endDate&&trip.endDate!==trip.startDate?"–"+(_ed2.getMonth()===_sd2.getMonth()?_ed2.getDate():_mn[_ed2.getMonth()]+" "+_ed2.getDate())+", "+_ed2.getFullYear():", "+_sd2.getFullYear());
+      addEv(ds, {type:"event", title:trip.name, location:trip.location||"", dates:_fmtDates, tripId:trip.id, players:mN});
     }
   });
   PB.getRounds().forEach(function(r) {
     if (!r.date) return;
     var p = PB.getPlayer(r.player); var pN = p?(p.name||p.username||""):"";
     addEv(r.date, {type:"round", title:r.course||"Round", player:pN, score:r.score});
+  });
+  liveRangeSessions.forEach(function(s) {
+    if (!s.date) return;
+    addEv(s.date, {type:"range", title:"Range Session", player:s.playerName||"", duration:s.durationMin||0});
   });
   var h = '';
   for (var i=0;i<firstDay;i++) h+='<div style="padding:8px;font-size:12px"></div>';
@@ -7620,7 +8147,7 @@ function renderClubCalGrid(year, month, todayStr, events) {
     var dots=[];
     if(isT&&!isS&&!isRS&&!isRE&&!inR) dots.push("#4ade80");
     var ht={};
-    evs.forEach(function(ev){if(ev.type==="event"&&!ht.e){dots.push("var(--gold)");ht.e=1;}if(ev.type==="tee"&&!ht.t){dots.push("#60a5fa");ht.t=1;}if(ev.type==="round"&&!ht.r){dots.push("#a78bfa");ht.r=1;}});
+    evs.forEach(function(ev){if(ev.type==="event"&&!ht.e){dots.push("var(--gold)");ht.e=1;}if(ev.type==="tee"&&!ht.t){dots.push("#60a5fa");ht.t=1;}if(ev.type==="round"&&!ht.r){dots.push("#a78bfa");ht.r=1;}if(ev.type==="range"&&!ht.rng){dots.push("#f472b6");ht.rng=1;}});
     var dH='';
     if(dots.length===1)dH='<div style="width:4px;height:4px;border-radius:50%;background:'+dots[0]+';margin:1px auto 0"></div>';
     else if(dots.length>1){dH='<div style="display:flex;justify-content:center;gap:2px;margin-top:1px">';dots.slice(0,3).forEach(function(c){dH+='<div style="width:3px;height:3px;border-radius:50%;background:'+c+'"></div>';});dH+='</div>';}
@@ -7729,9 +8256,13 @@ function refreshClubCal() {
       var teeEvs = dayEvs.filter(function(e){return e.type==="tee"});
       var eventEvs = dayEvs.filter(function(e){return e.type==="event"});
       var roundEvs = dayEvs.filter(function(e){return e.type==="round"});
+      var rangeEvs = dayEvs.filter(function(e){return e.type==="range"});
       
-      // Events (gold)
+      // Events (gold) — dedup by title
+      var seenEventTitles = {};
       eventEvs.forEach(function(ev) {
+        if (seenEventTitles[ev.title]) return;
+        seenEventTitles[ev.title] = true;
         eh += '<div style="background:var(--bg3);border-left:3px solid var(--gold);border-radius:4px;padding:10px 12px;margin-bottom:6px">';
         eh += '<div style="font-size:8px;color:var(--gold);font-weight:700;letter-spacing:.5px;margin-bottom:3px">EVENT</div>';
         eh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
@@ -7771,14 +8302,26 @@ function refreshClubCal() {
           eh += '</div>';
         });
       }
+      
+      // Range sessions (pink)
+      if (rangeEvs.length) {
+        rangeEvs.forEach(function(ev) {
+          eh += '<div style="background:var(--bg3);border-left:3px solid #f472b6;border-radius:4px;padding:10px 12px;margin-bottom:6px">';
+          eh += '<div style="font-size:8px;color:#f472b6;font-weight:700;letter-spacing:.5px;margin-bottom:3px">RANGE SESSION</div>';
+          eh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + (ev.duration||0) + ' min</div>';
+          if (ev.player) eh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(ev.player) + '</div>';
+          eh += '</div>';
+        });
+      }
     } else {
       eh += '<div style="font-size:11px;color:var(--muted);padding:4px 0">Nothing scheduled</div>';
     }
     // Legend
     eh += '<div style="display:flex;gap:10px;margin-top:6px;font-size:9px;color:var(--muted2)">';
-    eh += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#60a5fa;vertical-align:middle;margin-right:3px"></span>Tee</span>';
+    eh += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#60a5fa;vertical-align:middle;margin-right:3px"></span>Tee Time</span>';
     eh += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold);vertical-align:middle;margin-right:3px"></span>Event</span>';
     eh += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#a78bfa;vertical-align:middle;margin-right:3px"></span>Round</span>';
+    eh += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#f472b6;vertical-align:middle;margin-right:3px"></span>Range</span>';
     eh += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#4ade80;vertical-align:middle;margin-right:3px"></span>Today</span>';
     eh += '</div>';
     eh += '<div style="display:flex;gap:6px;margin-top:8px">';
@@ -7850,15 +8393,22 @@ function renderChatMessages(messages) {
     ch += '<div class="c-av">' + (m ? Router.getAvatar(m) : "⛳") + '</div>';
     ch += '<div style="flex:1"><div class="chat-author">' + escHtml(msg.authorName||"Anon") + (mLvl ? ' <span style="font-size:8px;color:var(--gold);font-weight:600">LV' + mLvl.level + '</span>' : '') + '</div>';
     ch += '<div class="chat-text">' + escHtml(msg.text) + '</div>';
-    if (msg.createdAt && msg.createdAt.toDate) ch += '<div class="chat-time">' + msg.createdAt.toDate().toLocaleDateString() + '</div>';
+    if (msg.createdAt && msg.createdAt.toDate) {
+      var _d = msg.createdAt.toDate();
+      var _mn = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      var _hr = _d.getHours(), _ampm = _hr >= 12 ? "PM" : "AM";
+      _hr = _hr % 12 || 12;
+      var _min = String(_d.getMinutes()).padStart(2,"0");
+      ch += '<div class="chat-time">' + _mn[_d.getMonth()] + ' ' + _d.getDate() + ', ' + _d.getFullYear() + ' · ' + _hr + ':' + _min + ' ' + _ampm + '</div>';
+    }
     ch += '</div></div>';
     
-    // Like + Comment bar
+    // Like + Comment + Reply bar
     ch += '<div style="display:flex;gap:14px;margin-top:8px;padding-top:6px;border-top:1px solid var(--border)">';
-    ch += '<span style="font-size:11px;cursor:pointer;color:' + (iLiked ? 'var(--gold)' : 'var(--muted)') + ';padding:4px 0" onclick="event.stopPropagation();toggleLike(\'' + msg._docId + '\')">' + (iLiked ? '♥' : '♡') + ' ' + (likeCount || '') + '</span>';
-    ch += '<span style="font-size:11px;cursor:pointer;color:var(--muted);padding:4px 0" onclick="event.stopPropagation();showCommentInput(\'' + msg._docId + '\')">💬 ' + (comments.length || '') + '</span>';
+    ch += '<span style="font-size:11px;cursor:pointer;color:' + (iLiked ? 'var(--gold)' : 'var(--muted)') + ';padding:4px 0;display:flex;align-items:center;gap:3px" onclick="event.stopPropagation();toggleLike(\'' + msg._docId + '\')"><svg viewBox="0 0 16 16" width="12" height="12" fill="' + (iLiked ? 'var(--gold)' : 'none') + '" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg>' + (likeCount ? ' ' + likeCount : '') + '</span>';
+    ch += '<span style="font-size:11px;cursor:pointer;color:var(--muted);padding:4px 0;display:flex;align-items:center;gap:3px" onclick="event.stopPropagation();showCommentInput(\'' + msg._docId + '\')"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 10a1.5 1.5 0 01-1.5 1.5H5L2 14V3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5z"/></svg>' + (comments.length ? ' ' + comments.length : '') + '</span>';
     if (isCommissioner || isMine) {
-      ch += '<span id="del-' + msg._docId + '" style="font-size:11px;cursor:pointer;color:var(--muted2);margin-left:auto;padding:4px 0" onclick="event.stopPropagation();confirmDelete(this,\'' + msg._docId + '\')">✕</span>';
+      ch += '<span id="del-' + msg._docId + '" style="font-size:11px;cursor:pointer;color:var(--muted2);margin-left:auto;padding:4px 0;display:flex;align-items:center" onclick="event.stopPropagation();confirmDelete(this,\'' + msg._docId + '\')"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4l8 8M12 4l-8 8"/></svg></span>';
     }
     ch += '</div>';
     
@@ -10428,6 +10978,15 @@ function renderOnlineSection() {
   if (!el) return;
   
   var uids = Object.keys(onlineMembers);
+  // Dedup: ensure each name only shows once (handles multiple sessions from same user)
+  var seenNames = {};
+  var dedupedUids = [];
+  uids.forEach(function(uid) {
+    var data = onlineMembers[uid];
+    var name = data.name || uid;
+    if (!seenNames[name]) { seenNames[name] = uid; dedupedUids.push(uid); }
+  });
+  uids = dedupedUids;
   if (uids.length <= 1) { el.innerHTML = ""; return; }
   
   var h = '<div style="padding:8px 16px 12px">';
@@ -10737,10 +11296,65 @@ function renderContextualEmpty(type) {
 function initFirebaseListeners() {
   startTeeTimeListener();
   startEventListener();
+  startRangeSessionListener();
   startNotificationListener();
   startDmUnreadListener();
   startPresenceSystem();
   initConnStatus();
+  cleanupCorruptedProfiles();
+}
+
+// One-time cleanup: detect non-founding members who inherited founding data via claim bug
+function cleanupCorruptedProfiles() {
+  if (!db || !currentUser) return;
+  // Only Commissioner can run this for all members
+  if (!currentProfile || currentProfile.role !== "commissioner") return;
+  
+  db.collection("members").get().then(function(snap) {
+    snap.forEach(function(doc) {
+      var m = doc.data();
+      // Skip actual founding-four members (they used FOUNDING-FOUR code)
+      if (m.isFoundingFour === true) return;
+      
+      var needsFix = false;
+      var updates = {};
+      
+      // Check for inherited founding data
+      if (m.founding === true) { updates.founding = false; needsFix = true; }
+      if (m.title && m.title.indexOf("Original Four") !== -1) { updates.title = ""; updates.equippedTitle = ""; needsFix = true; }
+      if (m.equippedTitle && m.equippedTitle.indexOf("Original Four") !== -1) { updates.equippedTitle = ""; needsFix = true; }
+      if (m.role === "commissioner" && doc.id !== currentUser.uid) {
+        // Only the real commissioner should have this role
+        updates.role = "member"; needsFix = true;
+      }
+      // Check for badges they shouldn't have
+      if (m.badges && m.badges.indexOf("founder") !== -1 && !m.isFoundingFour) {
+        updates.badges = m.badges.filter(function(b) { return b !== "founder"; });
+        needsFix = true;
+      }
+      // If they have someone else's name (claimedFrom but name matches a default player exactly)
+      if (m.claimedFrom && !m.isFoundingFour) {
+        var defaultNames = ["Zach Parbaugh","Kayvan","Kiyan","Nick"];
+        if (defaultNames.indexOf(m.name) !== -1) {
+          updates.name = m.username || "Member";
+          needsFix = true;
+        }
+      }
+      // Clean inherited data from non-founding members who claimed profiles
+      if (m.claimedFrom && !m.isFoundingFour) {
+        if (m.manualHandicap) { updates.manualHandicap = null; needsFix = true; }
+        if (m.funnyFacts && m.funnyFacts.length) { updates.funnyFacts = []; needsFix = true; }
+        if (m.range) { updates.range = ""; needsFix = true; }
+        if (m.clubs && Object.keys(m.clubs).length) { updates.clubs = {}; needsFix = true; }
+        if (m.bag && Object.keys(m.bag).length) { updates.bag = {}; needsFix = true; }
+      }
+      
+      if (needsFix) {
+        pbLog("[Cleanup] Fixing corrupted profile:", doc.id, updates);
+        db.collection("members").doc(doc.id).update(updates).catch(function(e) { pbWarn("[Cleanup] Failed:", doc.id, e); });
+      }
+    });
+  }).catch(function(){});
 }
 
 // Override enterApp to include Firebase listeners
