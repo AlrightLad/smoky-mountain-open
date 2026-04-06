@@ -563,7 +563,7 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22" style="color:var(--muted)"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
         <div id="notifBadge" style="display:none;position:absolute;top:-2px;right:-2px;min-width:16px;height:16px;padding:0 4px;background:#e53935;border-radius:8px;font-size:9px;font-weight:700;color:#fff;align-items:center;justify-content:center;border:2px solid var(--bg)"></div>
       </div>
-      <div id="dmInbox" style="position:relative;cursor:pointer;padding:4px" onclick="Router.go('dms')">
+      <div id="dmInbox" style="position:relative;cursor:pointer;padding:4px" onclick="closeNotifPanel();Router.go('dms')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22" style="color:var(--muted)"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         <div id="dmBadge" style="display:none;position:absolute;top:-2px;right:-2px;min-width:16px;height:16px;padding:0 4px;background:#e53935;border-radius:8px;font-size:9px;font-weight:700;color:#fff;align-items:center;justify-content:center;border:2px solid var(--bg)"></div>
       </div>
@@ -603,13 +603,13 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
   <div data-page="awards" class="hidden"></div>
   <div data-page="scramble-live" class="hidden"></div>
   <div class="footer">The Parbaughs · Est. 2026 · <span id="connDot" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#4ade80;margin:0 4px;vertical-align:middle"></span><span id="syncStatusText">Connecting...</span></div>
-  <div class="notif-overlay" id="notifOverlay" onclick="toggleNotifPanel()"></div>
+  <div class="notif-overlay" id="notifOverlay" onclick="closeNotifPanel()"></div>
   <div class="notif-panel" id="notifPanel">
     <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg);z-index:5">
       <div style="font-size:16px;font-weight:700;color:var(--gold)">Notifications</div>
       <div style="display:flex;gap:14px;align-items:center">
         <button style="background:none;border:1px solid var(--border);color:var(--muted);font-size:10px;padding:5px 12px;border-radius:4px;cursor:pointer;font-family:inherit" onclick="markAllNotifsRead()">Mark all read</button>
-        <button style="background:none;border:none;color:var(--cream);font-size:22px;cursor:pointer;padding:4px 8px;line-height:1;font-weight:300" onclick="toggleNotifPanel()">✕</button>
+        <button style="background:none;border:none;color:var(--cream);font-size:22px;cursor:pointer;padding:4px 8px;line-height:1;font-weight:300" onclick="closeNotifPanel()">✕</button>
       </div>
     </div>
     <div id="notifList"></div>
@@ -8982,19 +8982,13 @@ function finishSyncRound(roundId) {
 // ========== NOTIFICATION PANEL ==========
 var notifPanelOpen = false;
 
-function toggleNotifPanel() {
-  notifPanelOpen = !notifPanelOpen;
+function openNotifPanel() {
+  notifPanelOpen = true;
   var panel = document.getElementById("notifPanel");
   var overlay = document.getElementById("notifOverlay");
-  if (panel) panel.classList.toggle("open", notifPanelOpen);
-  if (overlay) overlay.classList.toggle("open", notifPanelOpen);
-  if (notifPanelOpen) {
-    renderNotifPanel();
-  } else {
-    // Failsafe: force close state
-    if (panel) panel.classList.remove("open");
-    if (overlay) overlay.classList.remove("open");
-  }
+  if (panel) panel.classList.add("open");
+  if (overlay) overlay.classList.add("open");
+  renderNotifPanel();
 }
 
 function closeNotifPanel() {
@@ -9003,6 +8997,11 @@ function closeNotifPanel() {
   var overlay = document.getElementById("notifOverlay");
   if (panel) panel.classList.remove("open");
   if (overlay) overlay.classList.remove("open");
+}
+
+function toggleNotifPanel() {
+  if (notifPanelOpen) closeNotifPanel();
+  else openNotifPanel();
 }
 
 function renderNotifPanel() {
