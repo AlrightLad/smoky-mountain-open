@@ -7611,11 +7611,24 @@ function renderClubCalGrid(year, month, todayStr, events) {
     var isRangeEnd = dateStr === clubCalRangeEnd;
     var inRange = clubCalRangeStart && clubCalRangeEnd && dateStr >= clubCalRangeStart && dateStr <= clubCalRangeEnd;
     var hasEvent = eventDates[dateStr];
+    var hasSelection = clubCalSelectedDate || clubCalRangeStart; // any selection active
     
-    var bg = isRangeStart || isRangeEnd ? "var(--gold)" : inRange ? "rgba(201,168,76,.25)" : isSelected ? "var(--gold)" : isToday ? "rgba(201,168,76,.15)" : "transparent";
-    var color = isRangeStart || isRangeEnd || isSelected ? "var(--bg)" : isToday ? "var(--gold)" : "var(--cream)";
-    var dotHtml = hasEvent ? '<div style="width:4px;height:4px;border-radius:50%;background:' + (hasEvent.type === "trip" ? "var(--gold)" : "var(--birdie)") + ';margin:1px auto 0"></div>' : '';
-    h += '<div onclick="selectClubCalDay(\'' + dateStr + '\')" style="padding:6px 0;font-size:12px;font-weight:' + (isToday ? "700" : "400") + ';color:' + color + ';background:' + bg + ';border-radius:6px;cursor:pointer;line-height:1">' + d + dotHtml + '</div>';
+    // Selection states take full priority over today
+    var bg = isRangeStart || isRangeEnd ? "var(--gold)" : inRange ? "rgba(201,168,76,.25)" : isSelected ? "var(--gold)" : "transparent";
+    var color = isRangeStart || isRangeEnd || isSelected ? "var(--bg)" : isToday && !hasSelection ? "var(--gold)" : "var(--cream)";
+    var weight = isToday ? "700" : "400";
+    
+    // Today dot — only shows when today is NOT selected/in-range
+    var todayDot = (isToday && !isSelected && !isRangeStart && !isRangeEnd && !inRange) ? '<div style="width:4px;height:4px;border-radius:50%;background:var(--birdie);margin:1px auto 0"></div>' : '';
+    // Event dot — shows alongside today dot if both apply
+    var eventDot = hasEvent ? '<div style="width:4px;height:4px;border-radius:50%;background:' + (hasEvent.type === "trip" ? "var(--gold)" : "var(--birdie)") + ';margin:1px auto 0"></div>' : '';
+    var dotHtml = todayDot || eventDot; // today dot takes visual priority, event dot as fallback
+    if (isToday && hasEvent && !isSelected && !isRangeStart && !isRangeEnd && !inRange) {
+      // Both today and event — show two dots
+      dotHtml = '<div style="display:flex;justify-content:center;gap:2px;margin-top:1px"><div style="width:3px;height:3px;border-radius:50%;background:var(--birdie)"></div><div style="width:3px;height:3px;border-radius:50%;background:' + (hasEvent.type === "trip" ? "var(--gold)" : "var(--birdie)") + '"></div></div>';
+    }
+    
+    h += '<div onclick="selectClubCalDay(\'' + dateStr + '\')" style="padding:6px 0;font-size:12px;font-weight:' + weight + ';color:' + color + ';background:' + bg + ';border-radius:6px;cursor:pointer;line-height:1">' + d + dotHtml + '</div>';
   }
   return h;
 }
@@ -10433,7 +10446,7 @@ function renderOnlineSection() {
     }
     
     h += '</div>';
-    h += '<div style="font-size:9px;color:' + (isMe ? 'var(--gold)' : 'var(--muted)') + ';max-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center">' + escHtml(name.split(" ")[0]) + '</div>';
+    h += '<div style="font-size:9px;color:' + (isMe ? 'var(--gold)' : 'var(--muted)') + ';max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center">' + escHtml(name) + '</div>';
     h += '</div>';
   });
   
