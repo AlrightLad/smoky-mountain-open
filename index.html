@@ -39,7 +39,7 @@ select{-webkit-appearance:none;appearance:none}
 .nav::-webkit-scrollbar{display:none}
 .nav button{flex:0 0 auto;padding:14px 14px;background:0 0;color:var(--muted2);border:none;border-bottom:2px solid transparent;font:600 10px/1 'Inter',sans-serif;cursor:pointer;white-space:nowrap;text-transform:uppercase;letter-spacing:1.2px;transition:all .15s;text-align:center}
 .nav button:hover{color:var(--cream);background:var(--bg3)}
-.nav button.a{color:var(--gold);border-bottom-color:var(--gold)}
+.nav button.a{color:var(--gold);border-bottom-color:var(--gold);background:rgba(201,168,76,.08)}
 .nav button.a:hover{color:var(--gold3)}
 
 /* HERO */
@@ -434,7 +434,7 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 .chat-author{font-size:11px;font-weight:700;color:var(--gold)}
 .chat-text{font-size:12px;color:var(--cream);margin-top:2px;line-height:1.4}
 .chat-time{font-size:9px;color:var(--muted2);margin-top:2px}
-.chat-input-row{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--bg)}
+.chat-input-row{display:flex;gap:8px;padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--bg)}
 .chat-input-row input{flex:1;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;color:var(--cream);font-size:13px;outline:none;font-family:'Inter',sans-serif}
 .chat-input-row button{padding:10px 16px;background:var(--gold);color:var(--bg);border:none;border-radius:20px;font:700 12px 'Inter',sans-serif;cursor:pointer}
 
@@ -464,7 +464,43 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 /* ===== LOADING ===== */
 .loading{display:flex;align-items:center;justify-content:center;padding:40px;gap:8px;color:var(--muted);font-size:12px}
 .spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+
+/* ===== SKELETON LOADING ===== */
+.skeleton{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel-line{height:12px;margin-bottom:8px;border-radius:4px}
+.skel-line.short{width:60%}
+.skel-line.medium{width:80%}
+.skel-circle{width:40px;height:40px;border-radius:50%}
+.skel-card{padding:16px;margin-bottom:8px}
+
+/* ===== SCORE POP ANIMATION ===== */
+@keyframes scorePop{0%{transform:scale(1)}30%{transform:scale(1.15)}100%{transform:scale(1)}}
+.score-pop{animation:scorePop .2s ease}
+
+/* ===== ROUND IN PROGRESS BANNER ===== */
+.rip-banner{position:sticky;top:0;z-index:60;background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.06));border-bottom:1px solid rgba(201,168,76,.2);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.rip-banner:active{background:rgba(201,168,76,.15)}
+.rip-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;animation:pulse-dot 2s infinite;flex-shrink:0}
+
+/* ===== CONNECTION STATUS BAR ===== */
+.conn-bar{display:flex;align-items:center;gap:6px;padding:6px 16px;font-size:9px;letter-spacing:.5px;text-transform:uppercase;font-weight:600;transition:all .3s}
+.conn-bar.live{color:rgba(78,201,122,.6)}
+.conn-bar.syncing{color:var(--gold)}
+.conn-bar.offline{color:var(--red);background:rgba(212,96,78,.06)}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== NOTIFICATION PANEL ===== */
+.sh .back{font-size:11px;min-height:36px;padding:6px 14px;white-space:nowrap}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+.notif-panel{position:fixed;top:0;right:0;width:min(320px,90vw);height:100vh;height:100dvh;background:var(--bg);border-left:1px solid var(--border);z-index:200;transform:translateX(100%);transition:transform .2s ease;overflow-y:auto}
+.notif-panel.open{transform:translateX(0)}
+.notif-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;opacity:0;pointer-events:none;transition:opacity .2s}
+.notif-overlay.open{opacity:1;pointer-events:auto}
+.notif-item{padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+.notif-item:active{background:var(--bg2)}
+.notif-item.unread{background:rgba(201,168,76,.04);border-left:3px solid var(--gold)}
+.notif-time{font-size:9px;color:var(--muted2);margin-top:4px}
 </style>
 </head>
 <body>
@@ -523,8 +559,18 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
   <div id="profileBar" style="display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:var(--bg);border-bottom:1px solid var(--border)">
     <div id="profileBarLeft" style="display:flex;align-items:center;gap:8px;cursor:pointer" onclick="goToMyProfile()">
       <div id="profileBarAvatar" style="width:28px;height:28px;border-radius:50%;overflow:hidden;background:var(--bg3);display:flex;align-items:center;justify-content:center;position:relative"></div>
+      <div id="profileBarRight" style="font-size:12px;color:var(--muted)"></div>
     </div>
-    <div id="profileBarRight" style="font-size:12px;color:var(--muted);cursor:pointer" onclick="goToMyProfile()"></div>
+    <div style="display:flex;align-items:center;gap:14px">
+      <div id="notifBell" style="position:relative;cursor:pointer;padding:4px" onclick="toggleNotifPanel()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22" style="color:var(--muted)"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <div id="notifBadge" style="display:none;position:absolute;top:-2px;right:-2px;min-width:16px;height:16px;padding:0 4px;background:#e53935;border-radius:8px;font-size:9px;font-weight:700;color:#fff;align-items:center;justify-content:center;border:2px solid var(--bg)"></div>
+      </div>
+      <div id="dmInbox" style="position:relative;cursor:pointer;padding:4px" onclick="Router.go('dms')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22" style="color:var(--muted)"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <div id="dmBadge" style="display:none;position:absolute;top:-2px;right:-2px;min-width:16px;height:16px;padding:0 4px;background:#e53935;border-radius:8px;font-size:9px;font-weight:700;color:#fff;align-items:center;justify-content:center;border:2px solid var(--bg)"></div>
+      </div>
+    </div>
   </div>
   <div class="nav" id="nav"></div>
   <div data-page="home"></div>
@@ -556,7 +602,21 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
   <div data-page="trophyroom" class="hidden"></div>
   <div data-page="syncround" class="hidden"></div>
   <div data-page="partygames" class="hidden"></div>
+  <div data-page="seasonrecap" class="hidden"></div>
+  <div data-page="awards" class="hidden"></div>
+  <div data-page="scramble-live" class="hidden"></div>
   <div class="footer">The Parbaughs · Est. 2026 · <span id="syncStatusText">Connecting...</span></div>
+  <div class="notif-overlay" id="notifOverlay" onclick="toggleNotifPanel()"></div>
+  <div class="notif-panel" id="notifPanel">
+    <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:16px;font-weight:700;color:var(--gold)">Notifications</div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <span style="font-size:10px;color:var(--muted);cursor:pointer" onclick="markAllNotifsRead()">Mark all read</span>
+        <span style="font-size:18px;cursor:pointer;color:var(--muted)" onclick="toggleNotifPanel()">✕</span>
+      </div>
+    </div>
+    <div id="notifList"></div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -822,6 +882,35 @@ function doRegister() {
           }
           
           currentProfile = profile;
+          
+          // Post welcome to activity feed with a funny ribb
+          var welcomeName = profile.name || profile.username || "Someone";
+          var welcomeRibbs = [
+            "🚨 " + welcomeName + " just joined the Parbaughs. Hide your trophies and lower your expectations.",
+            "👀 " + welcomeName + " has entered the chat. The handicap leaderboard just got more interesting.",
+            "🏌️ " + welcomeName + " is officially a Parbaugh. Their golf game? Remains to be seen.",
+            "📢 Breaking: " + welcomeName + " joined the Parbaughs. The course rangers have been notified.",
+            "🎉 Welcome " + welcomeName + "! We hope your golf game is better than your timing.",
+            "⛳ " + welcomeName + " just signed up. Someone tell them we don't do mulligans here... okay fine, breakfast balls only.",
+            "🔥 " + welcomeName + " has joined. The leaderboard shuffles nervously.",
+            "🚀 " + welcomeName + " is now a Parbaugh. Their first round will either be legendary or legendary bad.",
+            "👋 " + welcomeName + " walked in like they own the place. Prove it on the course.",
+            "📋 " + welcomeName + " reporting for duty. The Commissioner has been alerted and the roasts are loading.",
+            "🏆 " + welcomeName + " just joined and already thinks they can beat you. They probably can't. Probably.",
+            "🤝 " + welcomeName + " is in. Someone get them a sleeve of balls — they'll need it.",
+            "⚡ " + welcomeName + " just entered the Parbaughs universe. Their handicap says one thing, their confidence says another.",
+            "🎯 " + welcomeName + " has joined. May their drives be long and their putts be short. We're not optimistic.",
+            "🧢 " + welcomeName + " is officially a member. The dress code is vibes only and the only rule is don't be slower than Nick."
+          ];
+          var ribb = welcomeRibbs[Math.floor(Math.random() * welcomeRibbs.length)];
+          db.collection("chat").add({
+            id: genId(),
+            text: ribb,
+            authorId: "system",
+            authorName: "The Caddy",
+            createdAt: fsTimestamp(),
+            type: "welcome"
+          }).catch(function(){});
         });
       });
     });
@@ -2515,6 +2604,8 @@ var Router = (function() {
       if (pages[page]) pages[page](current.params);
     }
     window.scrollTo(0, 0);
+    // Subtle fade-in
+    if (target) { target.style.opacity = "0"; target.style.transition = "opacity .15s ease"; setTimeout(function(){ target.style.opacity = "1"; }, 10); }
   }
 
   function getPage() { return current.page; }
@@ -2542,7 +2633,7 @@ var Router = (function() {
     var el = document.getElementById("toast");
     el.textContent = msg;
     el.classList.add("show");
-    setTimeout(function() { el.classList.remove("show"); }, 2200);
+    setTimeout(function() { el.classList.remove("show"); }, 3200);
   }
 
   var STOCK_AVATARS = ["stock_profile_gold.jpg","stock_profile_green.jpg","stock_profile_navy.jpg","stock_profile_charcoal.jpg","stock_profile_red.jpg","stock_profile_teal.jpg"];
@@ -2655,6 +2746,18 @@ Router.register("home", function() {
   // Hero
   h += '<div class="hero"><div class="hero-logo" style="border:none;background:transparent"><img src="watermark.jpg" style="border-radius:16px"></div>';
   h += '<h1>THE PARBAUGHS</h1><div class="est">Est. 2026 · York, PA</div></div>';
+
+  // Connection status
+  h += '<div id="connBar" class="conn-bar live" style="opacity:0"><span>●</span> Live</div>';
+
+  // 0. Who's Online
+  h += '<div id="onlineSection"></div>';
+
+  // Quick Actions
+  h += '<div style="display:flex;gap:8px;padding:0 16px 16px">';
+  h += '<button class="btn full green" onclick="Router.go(\'playnow\')" style="flex:1;font-size:11px;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg> Play Now</button>';
+  h += '<button class="btn full outline" onclick="Router.go(\'tee-create\')" style="flex:1;font-size:11px;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Post Tee Time</button>';
+  h += '</div>';
 
   // 1. Champions
   var pastTournaments = tournaments.filter(function(t) { return t.champion; });
@@ -3062,7 +3165,7 @@ function renderMemberList() {
   var players = PB.getPlayers();
   
   // Show loading while fetching Firebase members
-  document.querySelector('[data-page="members"]').innerHTML = '<div class="sh"><h2>Parbaugh members</h2></div><div class="loading"><div class="spinner"></div>Loading members...</div>';
+  document.querySelector('[data-page="members"]').innerHTML = '<div class="sh"><h2>Parbaugh members</h2></div>' + skeletonMemberRow() + skeletonMemberRow() + skeletonMemberRow() + skeletonMemberRow();
   
   if (db) {
     db.collection("members").get().then(function(snap) {
@@ -4695,7 +4798,8 @@ Router.register("playnow", function(params) {
 function renderPlaySetup() {
   var h = '<div class="sh"><h2>Play now</h2><button class="back" onclick="Router.go(\'rounds\')">← Back</button></div>';
 
-  h += '<div style="text-align:center;padding:16px"><div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">Start a round</div><div style="font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.3px">Score hole by hole as you play</div></div>';
+  h += '<div style="text-align:center;padding:16px"><div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">Start a round</div><div style="font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.3px">Score hole by hole as you play</div>';
+  h += '<div style="margin-top:10px"><span style="font-size:11px;color:var(--gold);cursor:pointer;text-decoration:underline" onclick="Router.go(\'scramble-live\')">Or start a Scramble Round →</span></div></div>';
 
   h += '<div class="form-section">';
   // Player is always the current user — locked
@@ -4799,9 +4903,9 @@ function renderLiveScoring() {
   h += '<div style="text-align:center;margin-bottom:20px">';
   h += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Score</div>';
   h += '<div style="display:flex;justify-content:center;align-items:center;gap:16px">';
-  h += '<div onclick="adjustLiveScore(-1)" style="width:44px;height:44px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--muted);cursor:pointer;transition:background .15s">−</div>';
-  h += '<div style="font-family:Playfair Display,serif;font-size:48px;font-weight:700;color:var(--gold);min-width:60px;text-align:center">' + (currentScore || "—") + '</div>';
-  h += '<div onclick="adjustLiveScore(1)" style="width:44px;height:44px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--muted);cursor:pointer;transition:background .15s">+</div>';
+  h += '<div onclick="adjustLiveScore(-1)" style="width:52px;height:52px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--muted);cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent">−</div>';
+  h += '<div id="liveScoreNum" style="font-family:Playfair Display,serif;font-size:48px;font-weight:700;color:var(--gold);min-width:60px;text-align:center">' + (currentScore || "—") + '</div>';
+  h += '<div onclick="adjustLiveScore(1)" style="width:52px;height:52px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--muted);cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent">+</div>';
   h += '</div>';
 
   // Score label
@@ -4818,17 +4922,17 @@ function renderLiveScoring() {
   h += '<div style="display:flex;justify-content:center;gap:16px;margin-bottom:24px">';
   if (!isPar3) {
     h += '<div onclick="liveState.fir[' + hole + ']=!liveState.fir[' + hole + '];Router.go(\'playnow\')" style="text-align:center;cursor:pointer">';
-    h += '<div style="width:40px;height:40px;border-radius:8px;border:1.5px solid ' + (liveState.fir[hole] ? 'var(--birdie)' : 'var(--border)') + ';background:' + (liveState.fir[hole] ? 'rgba(78,201,122,.12)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;font-size:14px;color:' + (liveState.fir[hole] ? 'var(--birdie)' : 'var(--muted2)') + ';margin:0 auto 4px">' + (liveState.fir[hole] ? '✓' : '') + '</div>';
+    h += '<div style="width:48px;height:48px;border-radius:10px;border:1.5px solid ' + (liveState.fir[hole] ? 'var(--birdie)' : 'var(--border)') + ';background:' + (liveState.fir[hole] ? 'rgba(78,201,122,.12)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;font-size:14px;color:' + (liveState.fir[hole] ? 'var(--birdie)' : 'var(--muted2)') + ';margin:0 auto 4px">' + (liveState.fir[hole] ? '✓' : '') + '</div>';
     h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">FIR</div></div>';
   }
   h += '<div onclick="liveState.gir[' + hole + ']=!liveState.gir[' + hole + '];Router.go(\'playnow\')" style="text-align:center;cursor:pointer">';
-  h += '<div style="width:40px;height:40px;border-radius:8px;border:1.5px solid ' + (liveState.gir[hole] ? 'var(--gold)' : 'var(--border)') + ';background:' + (liveState.gir[hole] ? 'rgba(201,168,76,.12)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;font-size:14px;color:' + (liveState.gir[hole] ? 'var(--gold)' : 'var(--muted2)') + ';margin:0 auto 4px">' + (liveState.gir[hole] ? '✓' : '') + '</div>';
+  h += '<div style="width:48px;height:48px;border-radius:10px;border:1.5px solid ' + (liveState.gir[hole] ? 'var(--gold)' : 'var(--border)') + ';background:' + (liveState.gir[hole] ? 'rgba(201,168,76,.12)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;font-size:14px;color:' + (liveState.gir[hole] ? 'var(--gold)' : 'var(--muted2)') + ';margin:0 auto 4px">' + (liveState.gir[hole] ? '✓' : '') + '</div>';
   h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">GIR</div></div>';
 
   // Putts
   var puttVal = liveState.putts[hole];
   h += '<div style="text-align:center">';
-  h += '<div onclick="cyclePutts(' + hole + ')" style="width:40px;height:40px;border-radius:8px;border:1.5px solid ' + (puttVal ? 'var(--cream)' : 'var(--border)') + ';background:' + (puttVal ? 'rgba(234,232,224,.06)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--cream);margin:0 auto 4px;cursor:pointer">' + (puttVal || '') + '</div>';
+  h += '<div onclick="cyclePutts(' + hole + ')" style="width:48px;height:48px;border-radius:10px;border:1.5px solid ' + (puttVal ? 'var(--cream)' : 'var(--border)') + ';background:' + (puttVal ? 'rgba(234,232,224,.06)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--cream);margin:0 auto 4px;cursor:pointer">' + (puttVal || '') + '</div>';
   h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Putts</div></div>';
   h += '</div>';
 
@@ -4893,6 +4997,11 @@ function adjustLiveScore(delta) {
     if (newVal >= 1 && newVal <= 15) liveState.scores[hole] = newVal;
   }
   Router.go("playnow");
+  // Trigger pop animation
+  setTimeout(function() {
+    var el = document.getElementById("liveScoreNum");
+    if (el) { el.classList.remove("score-pop"); void el.offsetWidth; el.classList.add("score-pop"); }
+  }, 20);
 }
 
 function cyclePutts(hole) {
@@ -4928,18 +5037,33 @@ function finishLiveRound() {
   // Calculate stats
   var firCount = 0, girCount = 0, totalPutts = 0;
   var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+  var parTotal = 0;
   for (var i = 0; i < completed; i++) {
     if (defaultPar[i] !== 3 && liveState.fir[i]) firCount++;
     if (liveState.gir[i]) girCount++;
     if (liveState.putts[i]) totalPutts += liveState.putts[i];
+    parTotal += defaultPar[i] || 4;
   }
+  var firHoles = 0;
+  for (var j = 0; j < completed; j++) { if (defaultPar[j] !== 3) firHoles++; }
 
   liveState.active = false;
 
   var commentary = PB.generateRoundCommentary(round);
   var msg = commentary.roasts.length ? commentary.roasts[0] : (commentary.highlights.length ? commentary.highlights[0] : "Round complete!");
-  Router.toast(totalScore + " — " + msg);
-  Router.go("rounds", { roundId: round.id });
+
+  // Build share card text
+  var diff = totalScore - parTotal;
+  var diffStr = diff > 0 ? "+" + diff : diff === 0 ? "E" : diff;
+  var playerName = currentProfile ? (currentProfile.name || currentProfile.username) : "A Parbaugh";
+  var shareText = "⛳ " + playerName + " shot " + totalScore + " (" + diffStr + ") at " + liveState.course;
+  if (firHoles > 0) shareText += " · FIR " + firCount + "/" + firHoles;
+  shareText += " · GIR " + girCount + "/" + completed;
+  if (totalPutts > 0) shareText += " · " + totalPutts + " putts";
+  shareText += "\n🏌️ parbaughs.golf";
+
+  // Show share card modal
+  showShareCard(totalScore, diffStr, liveState.course, playerName, firCount, firHoles, girCount, completed, totalPutts, shareText, round.id);
 }
 
 function showFinishOptions() {
@@ -5002,7 +5126,7 @@ Router.register("standings", function() {
         h += '<div style="font-size:9px;color:var(--muted2);margin-top:3px;line-height:1.4">' + s.courses.join(', ') + '</div>';
       }
       h += '</div></div>';
-      h += '<div style="text-align:right"><div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:var(--gold)">' + (s.points||0) + '</div>';
+      h += '<div style="text-align:right"><div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:var(--gold)" data-count="' + (s.points||0) + '">0</div>';
       h += '<div style="font-size:9px;color:var(--muted);letter-spacing:.5px">PTS</div></div>';
       h += '</div></div>';
     });
@@ -5025,7 +5149,14 @@ Router.register("standings", function() {
   h += '<div class="club-row"><span class="club-name">Season winner</span><span class="club-yd">Earns title + unique profile photo</span></div>';
   h += '</div></div>';
 
+  // Season Recap & Awards links
+  h += '<div class="section" style="padding:0 16px 16px;display:flex;gap:8px">';
+  h += '<button class="btn full outline" onclick="Router.go(\'seasonrecap\',{year:' + year + '})" style="flex:1">📊 Season Recap</button>';
+  h += '<button class="btn full outline" onclick="Router.go(\'awards\',{year:' + year + '})" style="flex:1">🏆 Awards Night</button>';
+  h += '</div>';
+  
   document.querySelector('[data-page="standings"]').innerHTML = h;
+  setTimeout(initCountAnimations, 50);
 });
 
 /* ================================================
@@ -5173,6 +5304,9 @@ function renderTripCreate() {
   h += '<div id="tc-course-list" style="margin-top:8px"></div>';
   h += '</div>';
 
+  // AI Tournament Generator button (gated — needs API key)
+  h += '<div class="form-section"><div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border:1px dashed var(--border);border-radius:var(--radius);opacity:.5;margin-bottom:12px"><span>🤖</span><span style="font-size:12px;color:var(--muted)">AI Tournament Generator</span><span style="font-size:9px;background:rgba(201,168,76,.1);color:var(--gold);padding:2px 8px;border-radius:4px;font-weight:600">COMING SOON</span></div></div>';
+  
   // Step 4: Smart Tournament Generator
   h += '<div class="form-section"><div class="form-title">Tournament Format</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Select a preset or customize. The generator builds fair pairings based on player handicaps.</div>';
@@ -6325,8 +6459,13 @@ function startTeeTimeListener() {
 
 Router.register("teetimes", function() {
   var now = new Date().toISOString().split("T")[0];
+  var threeDaysAgo = new Date(Date.now() - 3 * 86400000).toISOString().split("T")[0];
+  
   var upcoming = liveTeeTimes.filter(function(t) { return t.date >= now && t.status !== "cancelled"; });
-  var past = liveTeeTimes.filter(function(t) { return t.date < now || t.status === "completed"; }).slice(0,5);
+  var past = liveTeeTimes.filter(function(t) { return (t.date < now || t.status === "completed") && t.status !== "cancelled"; }).slice(0,5);
+  var recentlyCancelled = liveTeeTimes.filter(function(t) { 
+    return t.status === "cancelled" && t.cancelledAt && t.cancelledAt >= threeDaysAgo;
+  });
 
   var h = '<div class="sh"><h2>Tee Times</h2><button class="btn-sm green" onclick="Router.go(\'tee-create\')">+ Post</button></div>';
 
@@ -6340,18 +6479,26 @@ Router.register("teetimes", function() {
     past.forEach(function(t) { h += renderTeeCard(t, true); });
     h += '</div>';
   }
+  
+  if (recentlyCancelled.length) {
+    h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--muted)">Recently Cancelled</span></div>';
+    recentlyCancelled.forEach(function(t) { h += renderTeeCard(t, true, true); });
+    h += '</div>';
+  }
+  
   document.querySelector('[data-page="teetimes"]').innerHTML = h;
 });
 
-function renderTeeCard(t, isPast) {
+function renderTeeCard(t, isPast, isCancelled) {
   var course = PB.getCourse(t.courseId) || PB.getCourseByName(t.courseName);
   var responses = t.responses || {};
   var acceptedIds = Object.keys(responses).filter(function(k) { return responses[k] === "accepted"; });
   var spotsLeft = (t.spots || 4) - acceptedIds.length;
   var myResponse = currentUser ? responses[currentUser.uid] : null;
 
-  var h = '<div class="tee-card' + (t.official ? " official" : "") + '">';
+  var h = '<div class="tee-card' + (t.official ? " official" : "") + '"' + (isCancelled ? ' style="opacity:.5"' : '') + '>';
   if (t.official) h += '<div class="tee-official-tag">Official Round</div>';
+  if (isCancelled) h += '<div style="position:absolute;top:12px;right:12px;font-size:9px;font-weight:700;color:var(--red);background:rgba(229,57,53,.1);padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px">Cancelled</div>';
   h += '<div class="tee-course">' + escHtml(course ? course.name : t.courseName || "TBD") + '</div>';
 
   var dateObj = new Date(t.date + "T12:00:00");
@@ -6362,7 +6509,11 @@ function renderTeeCard(t, isPast) {
 
   var host = PB.getPlayer(t.createdBy);
   h += '<div class="tee-host">Posted by ' + escHtml(host ? host.name : t.createdByName || "Unknown") + ' · ';
-  h += '<span class="tee-status ' + (t.status||"open") + '">' + (spotsLeft > 0 ? spotsLeft + " spot" + (spotsLeft>1?"s":"") + " open" : "FULL") + '</span></div>';
+  if (isCancelled) {
+    h += '<span style="color:var(--red);font-size:10px">Cancelled</span></div>';
+  } else {
+    h += '<span class="tee-status ' + (t.status||"open") + '">' + (spotsLeft > 0 ? spotsLeft + " spot" + (spotsLeft>1?"s":"") + " open" : "FULL") + '</span></div>';
+  }
 
   h += '<div class="tee-spots">';
   for (var i = 0; i < (t.spots||4); i++) {
@@ -6373,7 +6524,7 @@ function renderTeeCard(t, isPast) {
   }
   h += '</div>';
 
-  if (!isPast && t.status !== "cancelled" && t.status !== "completed") {
+  if (!isPast && !isCancelled && t.status !== "cancelled" && t.status !== "completed") {
     h += '<div class="tee-rsvp-row">';
     h += '<button class="tee-rsvp-btn accept' + (myResponse==="accepted"?" selected":"") + '" onclick="rsvpTeeTime(\'' + t._id + '\',\'accepted\')">✓ In</button>';
     h += '<button class="tee-rsvp-btn maybe' + (myResponse==="maybe"?" selected":"") + '" onclick="rsvpTeeTime(\'' + t._id + '\',\'maybe\')">? Maybe</button>';
@@ -6398,6 +6549,14 @@ function renderTeeCard(t, isPast) {
       h += '</div>';
     }
   }
+  
+  // Commissioner-only hard delete for cancelled or past tee times
+  if ((isCancelled || isPast) && currentProfile && currentProfile.role === "commissioner") {
+    h += '<div style="margin-top:8px;text-align:right">';
+    h += '<button style="background:none;border:none;color:var(--red);font-size:10px;text-decoration:underline;cursor:pointer;opacity:.7" onclick="deleteTeeTime(\'' + t._id + '\')">Delete permanently</button>';
+    h += '</div>';
+  }
+  
   h += '</div>';
   return h;
 }
@@ -6453,13 +6612,21 @@ function rsvpTeeTime(teeId, response) {
 function cancelTeeTime(teeId) {
   if (!confirm("Cancel this tee time?")) return;
   var tee = liveTeeTimes.find(function(t){return t._id===teeId});
-  db.collection("teetimes").doc(teeId).update({status:"cancelled"}).then(function() {
+  db.collection("teetimes").doc(teeId).update({status:"cancelled", cancelledAt: new Date().toISOString().split("T")[0]}).then(function() {
     Router.toast("Cancelled");
     if (tee && tee.responses) {
       var ids = Object.keys(tee.responses).filter(function(k){return(tee.responses[k]==="accepted"||tee.responses[k]==="maybe")&&k!==(currentUser?currentUser.uid:"")});
       ids.forEach(function(uid) { sendNotification(uid, { type:"tee_cancelled", title:"Tee Time Cancelled", message:(tee.courseName||"Tee time") + " on " + tee.date + " was cancelled" }); });
     }
   });
+}
+
+function deleteTeeTime(teeId) {
+  if (!currentProfile || currentProfile.role !== "commissioner") { Router.toast("Commissioner only"); return; }
+  if (!confirm("Permanently delete this tee time? This cannot be undone.")) return;
+  db.collection("teetimes").doc(teeId).delete().then(function() {
+    Router.toast("Deleted");
+  }).catch(function() { Router.toast("Failed to delete"); });
 }
 
 function markOfficial(teeId) { db.collection("teetimes").doc(teeId).update({official:true}).then(function(){Router.toast("Marked official")}); }
@@ -6540,7 +6707,7 @@ var liveChat = [];
 
 Router.register("chat", function() {
   var h = '<div class="sh"><h2>Feed</h2><button class="btn-sm outline" onclick="Router.go(\'dms\')">DMs</button></div>';
-  h += '<div id="chatFeed" class="section" style="max-height:65vh;overflow-y:auto"><div class="loading"><div class="spinner"></div>Loading feed...</div></div>';
+  h += '<div id="chatFeed" class="section" style="max-height:65vh;overflow-y:auto">' + skeletonFeed() + '</div>';
   h += '<div class="chat-input-row"><input type="text" id="chatInput" placeholder="Talk trash..." onkeydown="if(event.key===\'Enter\')sendChat()"><button onclick="sendChat()">Send</button></div>';
   document.querySelector('[data-page="chat"]').innerHTML = h;
 
@@ -6619,10 +6786,23 @@ function toggleLike(docId) {
   var uid = currentUser.uid;
   db.collection("chat").doc(docId).get().then(function(doc) {
     if (!doc.exists) return;
-    var likes = doc.data().likes || [];
+    var data = doc.data();
+    var likes = data.likes || [];
     var idx = likes.indexOf(uid);
+    var isLiking = idx === -1;
     if (idx !== -1) { likes.splice(idx, 1); } else { likes.push(uid); }
-    return db.collection("chat").doc(docId).update({ likes: likes });
+    db.collection("chat").doc(docId).update({ likes: likes }).then(function() {
+      // Send notification to post author (not to yourself)
+      if (isLiking && data.authorId && data.authorId !== uid && data.authorId !== "system") {
+        var myName = currentProfile ? PB.getDisplayName(currentProfile) : "Someone";
+        sendNotification(data.authorId, {
+          type: "feed_like",
+          title: "New Like",
+          message: myName + " liked your post",
+          linkPage: "chat"
+        });
+      }
+    });
   });
 }
 
@@ -6643,9 +6823,35 @@ function submitComment(docId) {
   
   db.collection("chat").doc(docId).get().then(function(doc) {
     if (!doc.exists) return;
-    var comments = doc.data().comments || [];
+    var data = doc.data();
+    var comments = data.comments || [];
     comments.push({ uid: currentUser.uid, name: name, text: text, at: new Date().toISOString() });
-    return db.collection("chat").doc(docId).update({ comments: comments });
+    return db.collection("chat").doc(docId).update({ comments: comments }).then(function() {
+      // Notify post author
+      if (data.authorId && data.authorId !== currentUser.uid && data.authorId !== "system") {
+        sendNotification(data.authorId, {
+          type: "feed_comment",
+          title: "New Comment",
+          message: name + " commented: \"" + text.substring(0, 40) + (text.length > 40 ? "..." : "") + "\"",
+          linkPage: "chat"
+        });
+      }
+      // Also notify other commenters (not the author, not yourself)
+      var notified = {};
+      notified[currentUser.uid] = true;
+      if (data.authorId) notified[data.authorId] = true;
+      comments.forEach(function(c) {
+        if (c.uid && !notified[c.uid]) {
+          notified[c.uid] = true;
+          sendNotification(c.uid, {
+            type: "feed_reply",
+            title: "New Reply",
+            message: name + " also commented on a post you commented on",
+            linkPage: "chat"
+          });
+        }
+      });
+    });
   }).then(function() {
     if (input) input.value = "";
   });
@@ -6680,12 +6886,28 @@ Router.register("dms", function() {
     return;
   }
   
-  h += '<div id="dmMemberList"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
+  h += '<div id="dmMemberList">' + skeletonMemberRow() + skeletonMemberRow() + skeletonMemberRow() + '</div>';
   document.querySelector('[data-page="dms"]').innerHTML = h;
   
   // Load members from Firebase + local
   var renderDmList = function(members) {
-    var filtered = members.filter(function(m) { return m.id !== currentUser.uid && m.role !== "removed"; });
+    var myUid = currentUser.uid;
+    var myClaimedFrom = currentProfile ? currentProfile.claimedFrom : null;
+    var filtered = members.filter(function(m) { 
+      if (m.role === "removed") return false;
+      if (m.id === myUid) return false;
+      if (myClaimedFrom && m.id === myClaimedFrom) return false;
+      if (m.claimedFrom && m.claimedFrom === myClaimedFrom && myClaimedFrom) return false;
+      return true;
+    });
+    // Deduplicate — if a member appears as both local and Firebase, keep Firebase version
+    var seen = {};
+    filtered = filtered.filter(function(m) {
+      var key = m.claimedFrom || m.id;
+      if (seen[key]) return false;
+      seen[key] = true;
+      return true;
+    });
     var dh = '';
     if (!filtered.length) {
       dh = '<div class="section"><div class="empty"><div class="empty-icon">💬</div><div class="empty-text">No other members yet</div></div></div>';
@@ -6718,10 +6940,13 @@ Router.register("dms", function() {
     db.collection("members").get().then(function(snap) {
       var members = [];
       snap.forEach(function(doc) { members.push(doc.data()); });
-      // Merge with local
+      // Merge with local — skip locals that have been claimed by a Firebase account
       var localPlayers = PB.getPlayers();
       var fbIds = members.map(function(m) { return m.id; });
-      localPlayers.forEach(function(lp) { if (fbIds.indexOf(lp.id) === -1) members.push(lp); });
+      var fbClaimedFromIds = members.map(function(m) { return m.claimedFrom; }).filter(Boolean);
+      localPlayers.forEach(function(lp) { 
+        if (fbIds.indexOf(lp.id) === -1 && fbClaimedFromIds.indexOf(lp.id) === -1) members.push(lp); 
+      });
       renderDmList(members);
     }).catch(function() { renderDmList(PB.getPlayers()); });
   } else {
@@ -6744,6 +6969,10 @@ Router.register("dm-thread", function(params) {
   if (db && currentUser) {
     var cid = getDmConvoId(currentUser.uid, activeDmPartner);
     db.collection("dms").doc(cid).set({participants:[currentUser.uid,activeDmPartner].sort(),updatedAt:fsTimestamp()},{merge:true});
+    // Mark as read
+    var readUpdate = {};
+    readUpdate["lastRead." + currentUser.uid] = fsTimestamp();
+    db.collection("dms").doc(cid).update(readUpdate).catch(function(){});
     dmListenerUnsub = db.collection("dms").doc(cid).collection("messages").orderBy("createdAt","asc").onSnapshot(function(snap) {
       var msgs = []; snap.forEach(function(doc){msgs.push(doc.data())});
       var c = document.getElementById("dmMessages"); if (!c) return;
@@ -7303,7 +7532,7 @@ Router.register("caddynotes", function() {
 
   // Recently Added — v5.1
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">Just Off the Tee — Latest Update</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">v5.1 · April 5, 2026</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">v5.2 · April 5, 2026</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var recent = [
     {item: "Firebase backend — all data syncs across devices in real-time", tag: "NEW"},
@@ -7331,10 +7560,19 @@ Router.register("caddynotes", function() {
     {item: "Date inputs properly sized on iOS", tag: "FIXED"},
     {item: "Course default photo added", tag: "FIXED"},
     {item: "Merch page restored (prices removed)", tag: "FIXED"},
-    {item: "Registration bug causing missing profiles", tag: "FIXED"}
+    {item: "Registration bug causing missing profiles", tag: "FIXED"},
+    {item: "AI-powered tournament generator (coming soon — needs API configuration)", tag: "SOON"},
+    {item: "Who's Online — see active members on the home page in real-time", tag: "NEW"},
+    {item: "Share round card — copy your stats to iMessage after finishing a round", tag: "NEW"},
+    {item: "Scramble live scoring — hole-by-hole team scoring", tag: "NEW"},
+    {item: "Season recap with champion, awards, and stats", tag: "NEW"},
+    {item: "Yearly awards ceremony (Player of the Year, Most Improved, Iron Man, and more)", tag: "NEW"},
+    {item: "Feed post notifications — get notified when someone likes or comments", tag: "NEW"},
+    {item: "Notification bell with slide-out panel and mark-all-read", tag: "NEW"},
+    {item: "DM bug fixed — you no longer see yourself in the messages list", tag: "FIXED"}
   ];
   recent.forEach(function(r) {
-    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : "var(--muted)";
+    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "SOON" ? "#f59e0b" : "var(--muted)";
     h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
     h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
     h += '<span>' + r.item + '</span></div>';
@@ -7345,13 +7583,10 @@ Router.register("caddynotes", function() {
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--muted)">On the Range — Coming Soon</span></div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--muted);line-height:1.8">';
   var upcoming = [
-    "AI-powered tournament generator",
     "SMS/phone number authentication",
-    "Season recap with highlights and stats",
-    "Feed post notifications",
-    "Push notifications for tee times and events",
-    "Scramble live scoring mode",
-    "Yearly awards ceremony"
+    "Push notifications to locked screen (requires Firebase Blaze plan)",
+    "Badge image gallery (64 custom achievement icons)",
+    "Cosmetic avatar selector with unlockable borders and banners"
   ];
   upcoming.forEach(function(u) {
     h += '<div style="padding:3px 0;display:flex;gap:8px"><span style="color:var(--muted2)">○</span> ' + u + '</div>';
@@ -7396,7 +7631,7 @@ function renderTrophyRoom(p) {
   h += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px">' + escHtml(p.username || p.name) + '</div>';
   h += '<div class="trophy-level">' + lvl.level + '</div>';
   h += '<div class="trophy-title">' + escHtml(lvl.name) + '</div>';
-  h += '<div class="trophy-xp">' + lvl.xp.toLocaleString() + ' XP</div>';
+  h += '<div class="trophy-xp"><span data-count="' + lvl.xp + '">0</span> XP</div>';
   
   // XP progress bar
   var xpInLevel = lvl.xp - lvl.currentLevelXp;
@@ -7473,6 +7708,7 @@ function renderTrophyRoom(p) {
   h += '</div>';
   
   document.querySelector('[data-page="trophyroom"]').innerHTML = h;
+  setTimeout(initCountAnimations, 50);
 }
 
 // All possible achievements (for showing locked state)
@@ -7925,11 +8161,1098 @@ function finishSyncRound(roundId) {
 }
 
 
+
+
+// ========== NOTIFICATION PANEL ==========
+var notifPanelOpen = false;
+
+function toggleNotifPanel() {
+  notifPanelOpen = !notifPanelOpen;
+  document.getElementById("notifPanel").classList.toggle("open", notifPanelOpen);
+  document.getElementById("notifOverlay").classList.toggle("open", notifPanelOpen);
+  if (notifPanelOpen) renderNotifPanel();
+}
+
+function renderNotifPanel() {
+  var el = document.getElementById("notifList");
+  if (!el) return;
+  if (!liveNotifications.length) {
+    el.innerHTML = '<div class="empty" style="padding:40px 16px"><div class="empty-icon">🔔</div><div class="empty-text">No notifications yet</div><div style="font-size:10px;color:var(--muted2);margin-top:4px">You\'ll see likes, comments, tee times, and more here</div></div>';
+    return;
+  }
+  var h = '';
+  liveNotifications.forEach(function(n) {
+    var icon = n.type === "feed_like" ? "♥" : n.type === "feed_comment" || n.type === "feed_reply" ? "💬" : n.type === "tee_rsvp" ? "⛳" : n.type === "tee_cancelled" ? "🚫" : n.type === "tee_withdrawal" ? "👋" : n.type === "report" ? "⚠️" : "🔔";
+    h += '<div class="notif-item unread" onclick="handleNotifClick(\'' + (n._id||"") + '\',\'' + (n.linkPage||"home") + '\')">';
+    h += '<div style="display:flex;gap:10px;align-items:flex-start">';
+    h += '<div style="font-size:16px;flex-shrink:0;margin-top:2px">' + icon + '</div>';
+    h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(n.title||"Notification") + '</div>';
+    h += '<div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">' + escHtml(n.message||"") + '</div>';
+    if (n.createdAt && n.createdAt.toDate) {
+      h += '<div class="notif-time">' + formatDmTime(n.createdAt.toDate()) + '</div>';
+    }
+    h += '</div></div></div>';
+  });
+  el.innerHTML = h;
+}
+
+function handleNotifClick(notifId, linkPage) {
+  if (notifId && db) {
+    db.collection("notifications").doc(notifId).update({ read: true }).catch(function(){});
+  }
+  toggleNotifPanel();
+  if (linkPage) Router.go(linkPage);
+}
+
+function markAllNotifsRead() {
+  if (!db || !liveNotifications.length) return;
+  liveNotifications.forEach(function(n) {
+    if (n._id) db.collection("notifications").doc(n._id).update({ read: true }).catch(function(){});
+  });
+  Router.toast("All caught up");
+}
+
+// Update notification badge count
+function updateNotifBadge() {
+  var badge = document.getElementById("notifBadge");
+  if (!badge) return;
+  var count = liveNotifications.length;
+  if (count > 0) {
+    badge.style.display = "flex";
+    badge.textContent = count > 9 ? "9+" : count;
+  } else {
+    badge.style.display = "none";
+  }
+}
+
+// DM unread badge
+var dmUnreadCount = 0;
+var dmUnreadListener = null;
+
+function startDmUnreadListener() {
+  if (!db || !currentUser) return;
+  // Listen to all DM conversations where we're a participant
+  dmUnreadListener = db.collection("dms")
+    .where("participants", "array-contains", currentUser.uid)
+    .onSnapshot(function(snap) {
+      var unread = 0;
+      snap.forEach(function(doc) {
+        var data = doc.data();
+        // Count as unread if last message wasn't by us and we haven't read it
+        if (data.lastMessageBy && data.lastMessageBy !== currentUser.uid) {
+          var lastRead = data.lastRead && data.lastRead[currentUser.uid];
+          var lastMsg = data.lastMessageAt;
+          if (lastMsg && (!lastRead || (lastMsg.toDate && lastRead.toDate && lastMsg.toDate() > lastRead.toDate()))) {
+            unread++;
+          } else if (lastMsg && !lastRead) {
+            unread++;
+          }
+        }
+      });
+      dmUnreadCount = unread;
+      updateDmBadge();
+    }, function(err) { console.warn("[DM] Unread listener error:", err.message); });
+}
+
+function updateDmBadge() {
+  var badge = document.getElementById("dmBadge");
+  if (!badge) return;
+  if (dmUnreadCount > 0) {
+    badge.style.display = "flex";
+    badge.textContent = dmUnreadCount > 9 ? "9+" : dmUnreadCount;
+  } else {
+    badge.style.display = "none";
+  }
+}
+
+// Override the notification listener to also update badge
+var _origNotifListener = startNotificationListener;
+startNotificationListener = function() {
+  if (!db || !currentUser) return;
+  db.collection("notifications").where("toUserId","==",currentUser.uid).where("read","==",false).limit(30)
+    .onSnapshot(function(snap) {
+      liveNotifications = [];
+      snap.forEach(function(doc) { liveNotifications.push(Object.assign({_id:doc.id}, doc.data())); });
+      liveNotifications.sort(function(a,b) { 
+        var at = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate().getTime() : 0;
+        var bt = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate().getTime() : 0;
+        return bt - at; 
+      });
+      updateNotifBadge();
+      if (notifPanelOpen) renderNotifPanel();
+    }, function(err) { console.warn("[Notify] Listener error:", err.message); });
+};
+
+
+// ========== AI TOURNAMENT GENERATOR ==========
+function showAITournamentGenerator() {
+  var members = PB.getPlayers();
+  var h = '<div class="sh"><h2>AI Tournament Builder</h2><button class="back" onclick="Router.go(\'trips\')">← Back</button></div>';
+  
+  h += '<div style="text-align:center;padding:20px 16px"><div style="font-size:28px;margin-bottom:6px">🤖</div>';
+  h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">AI Tournament Generator</div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">Describe what you want and the AI builds it</div></div>';
+  
+  h += '<div class="form-section"><div class="form-title">Tell the AI what you want</div>';
+  h += '<textarea class="ff-input" id="ai-prompt" rows="4" placeholder="e.g. A 3-day trip for 8 players with mixed formats, championship feel on the final day, balanced teams for scramble rounds..."></textarea>';
+  
+  h += '<div style="margin-top:12px"><div class="form-title">Players (' + members.length + ' available)</div>';
+  h += '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">Select who\'s playing</div>';
+  h += '<div id="ai-players" style="display:flex;flex-wrap:wrap;gap:6px">';
+  members.forEach(function(m) {
+    h += '<div class="badge" style="cursor:pointer;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius)" id="aip-' + m.id + '" onclick="toggleAIPlayer(\'' + m.id + '\')">' + escHtml(m.name||m.username) + '</div>';
+  });
+  h += '</div></div>';
+  
+  h += '<div style="margin-top:12px"><div class="form-title">Number of rounds</div>';
+  h += '<select class="ff-input" id="ai-rounds"><option value="1">1 round</option><option value="2">2 rounds</option><option value="3" selected>3 rounds</option><option value="4">4 rounds</option><option value="5">5 rounds</option></select></div>';
+  
+  h += '<button class="btn full green" onclick="generateAITournament()" style="margin-top:16px" id="ai-gen-btn">Generate Tournament</button>';
+  h += '<div id="ai-result" style="margin-top:16px"></div>';
+  h += '</div>';
+  
+  return h;
+}
+
+var aiSelectedPlayers = [];
+
+function toggleAIPlayer(pid) {
+  var idx = aiSelectedPlayers.indexOf(pid);
+  if (idx === -1) aiSelectedPlayers.push(pid); else aiSelectedPlayers.splice(idx, 1);
+  var el = document.getElementById("aip-" + pid);
+  if (el) {
+    el.style.background = aiSelectedPlayers.indexOf(pid) !== -1 ? "rgba(201,168,76,.15)" : "transparent";
+    el.style.borderColor = aiSelectedPlayers.indexOf(pid) !== -1 ? "var(--gold)" : "var(--border)";
+    el.style.color = aiSelectedPlayers.indexOf(pid) !== -1 ? "var(--gold)" : "var(--cream)";
+  }
+}
+
+function generateAITournament() {
+  var prompt = document.getElementById("ai-prompt").value.trim();
+  var numRounds = parseInt(document.getElementById("ai-rounds").value) || 3;
+  var btn = document.getElementById("ai-gen-btn");
+  var resultEl = document.getElementById("ai-result");
+  
+  if (!aiSelectedPlayers.length) { Router.toast("Select at least 2 players"); return; }
+  if (aiSelectedPlayers.length < 2) { Router.toast("Need at least 2 players"); return; }
+  
+  // Build player info string
+  var playerInfo = aiSelectedPlayers.map(function(pid) {
+    var p = PB.getPlayer(pid);
+    if (!p) return pid;
+    var hcap = p.manualHandicap || PB.calcHandicap(PB.getPlayerRounds(pid)) || "unknown";
+    return (p.name||p.username) + " (HCP: " + hcap + ")";
+  }).join(", ");
+  
+  var formats = ["Stroke Play", "Stableford", "Scramble", "Best Ball", "Match Play", "Skins", "Parbaugh Stroke Play (handicap-adjusted)", "Shamble", "Chapman/Pinehurst"];
+  
+  var systemPrompt = "You are a golf tournament organizer for The Parbaughs, a private golf group. Generate a tournament format as JSON only. No markdown, no preamble. Return ONLY valid JSON with this structure: {title: string, description: string, rounds: [{day: number, format: string, description: string, teeTime: string, pairings: [[string, string], ...] or null, teams: [{name: string, members: [string]}] or null, notes: string}], specialRules: [string]}. Available formats: " + formats.join(", ") + ". Players: " + playerInfo + ". Number of rounds: " + numRounds + ".";
+  
+  var userPrompt = prompt || "Create a fun, competitive " + numRounds + "-round tournament with varied formats. Balance teams by handicap for team events. Make the final round the most dramatic.";
+  
+  btn.disabled = true;
+  btn.textContent = "Generating...";
+  resultEl.innerHTML = '<div class="loading"><div class="spinner"></div>The AI is building your tournament...</div>';
+  
+  fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1000,
+      messages: [
+        { role: "user", content: systemPrompt + "\n\nUser request: " + userPrompt }
+      ]
+    })
+  }).then(function(resp) { return resp.json(); })
+  .then(function(data) {
+    btn.disabled = false;
+    btn.textContent = "Generate Tournament";
+    
+    var text = "";
+    if (data.content) {
+      data.content.forEach(function(block) { if (block.type === "text") text += block.text; });
+    }
+    
+    try {
+      var clean = text.replace(/```json|```/g, "").trim();
+      var tournament = JSON.parse(clean);
+      renderAITournamentResult(tournament, resultEl);
+    } catch(e) {
+      resultEl.innerHTML = '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.6">' + escHtml(text || "No response received") + '</div></div>';
+    }
+  }).catch(function(err) {
+    btn.disabled = false;
+    btn.textContent = "Generate Tournament";
+    resultEl.innerHTML = '<div class="card"><div class="card-body" style="color:var(--red);font-size:12px">Failed to generate: ' + escHtml(err.message||"Network error") + '</div></div>';
+  });
+}
+
+function renderAITournamentResult(t, el) {
+  var h = '<div class="card" style="border-color:rgba(201,168,76,.2)">';
+  h += '<div style="padding:16px;background:linear-gradient(135deg,#1a1e30,var(--card));border-radius:var(--radius) var(--radius) 0 0">';
+  h += '<div style="font-family:Playfair Display,serif;font-size:20px;color:var(--gold);font-weight:700">' + escHtml(t.title||"AI Tournament") + '</div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5">' + escHtml(t.description||"") + '</div></div>';
+  
+  if (t.rounds && t.rounds.length) {
+    t.rounds.forEach(function(r) {
+      h += '<div style="padding:14px 16px;border-top:1px solid var(--border)">';
+      h += '<div style="display:flex;justify-content:space-between;align-items:center">';
+      h += '<div style="font-size:14px;font-weight:700;color:var(--cream)">Round ' + (r.day||"") + '</div>';
+      h += '<div style="font-size:10px;color:var(--gold);font-weight:600">' + escHtml(r.format||"") + '</div></div>';
+      h += '<div style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4">' + escHtml(r.description||"") + '</div>';
+      if (r.teeTime) h += '<div style="font-size:10px;color:var(--muted2);margin-top:4px">Tee time: ' + escHtml(r.teeTime) + '</div>';
+      
+      if (r.pairings && r.pairings.length) {
+        h += '<div style="margin-top:8px"><div style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Pairings</div>';
+        r.pairings.forEach(function(pair, i) {
+          h += '<div style="font-size:11px;color:var(--cream);padding:2px 0">Group ' + (i+1) + ': ' + pair.join(" · ") + '</div>';
+        });
+        h += '</div>';
+      }
+      
+      if (r.teams && r.teams.length) {
+        h += '<div style="margin-top:8px"><div style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Teams</div>';
+        r.teams.forEach(function(team) {
+          h += '<div style="font-size:11px;color:var(--cream);padding:2px 0"><span style="color:var(--gold)">' + escHtml(team.name) + ':</span> ' + team.members.join(" · ") + '</div>';
+        });
+        h += '</div>';
+      }
+      
+      if (r.notes) h += '<div style="font-size:10px;color:var(--muted2);margin-top:6px;font-style:italic">' + escHtml(r.notes) + '</div>';
+      h += '</div>';
+    });
+  }
+  
+  if (t.specialRules && t.specialRules.length) {
+    h += '<div style="padding:14px 16px;border-top:1px solid var(--border);background:rgba(201,168,76,.03)">';
+    h += '<div style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Special Rules</div>';
+    t.specialRules.forEach(function(rule) {
+      h += '<div style="font-size:11px;color:var(--muted);padding:2px 0;display:flex;gap:6px"><span style="color:var(--gold)">•</span> ' + escHtml(rule) + '</div>';
+    });
+    h += '</div>';
+  }
+  
+  h += '</div>';
+  h += '<button class="btn full outline" onclick="generateAITournament()" style="margin-top:12px">Regenerate</button>';
+  el.innerHTML = h;
+}
+
+
+// ========== SCRAMBLE LIVE SCORING ==========
+var scrambleLiveState = { active: false, team: null, course: "", scores: [], currentHole: 0 };
+
+function startScrambleLive() {
+  var courseEl = document.getElementById("sl-course");
+  var teamEl = document.getElementById("sl-team");
+  if (!courseEl || !teamEl) return;
+  var course = courseEl.value;
+  var teamId = teamEl.value;
+  if (!course) { Router.toast("Select a course"); return; }
+  if (!teamId) { Router.toast("Select a team"); return; }
+  
+  var team = PB.getScrambleTeams().find(function(t) { return t.id === teamId; });
+  if (!team) { Router.toast("Team not found"); return; }
+  
+  scrambleLiveState = {
+    active: true,
+    team: team,
+    teamId: teamId,
+    course: course,
+    rating: parseFloat(document.getElementById("sl-rating").value) || 72,
+    slope: parseInt(document.getElementById("sl-slope").value) || 113,
+    startTime: Date.now(),
+    currentHole: 0,
+    scores: Array(18).fill(""),
+    putts: Array(18).fill("")
+  };
+  Router.go("scramble-live");
+}
+
+Router.register("scramble-live", function() {
+  if (!scrambleLiveState.active) {
+    renderScrambleLiveSetup();
+    return;
+  }
+  renderScrambleLiveScoring();
+});
+
+function renderScrambleLiveSetup() {
+  var teams = PB.getScrambleTeams();
+  var h = '<div class="sh"><h2>Scramble Round</h2><button class="back" onclick="Router.go(\'rounds\')">← Back</button></div>';
+  
+  h += '<div style="text-align:center;padding:16px"><div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">Live Scramble Scoring</div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">Score hole by hole as a team</div></div>';
+  
+  h += '<div class="form-section">';
+  h += '<div class="ff"><label class="ff-label">Team</label><select class="ff-input" id="sl-team">';
+  h += '<option value="">Select team...</option>';
+  teams.forEach(function(t) {
+    var names = t.members.map(function(id) { var p = PB.getPlayer(id); return p ? p.name : id; }).join(" & ");
+    h += '<option value="' + t.id + '">' + escHtml(t.name) + ' (' + names + ')</option>';
+  });
+  h += '</select></div>';
+  
+  h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="sl-course" placeholder="Start typing..." oninput="showScrambleCourseSearch(this)"><div id="search-sl-course" class="search-results"></div></div>';
+  h += '<input type="hidden" id="sl-rating" value=""><input type="hidden" id="sl-slope" value="">';
+  
+  if (!teams.length) {
+    h += '<div style="text-align:center;padding:12px;font-size:11px;color:var(--muted)">No scramble teams yet — <span style="color:var(--gold);cursor:pointer" onclick="Router.go(\'scramble\',{create:true})">create one first</span></div>';
+  } else {
+    h += '<button class="btn full green" onclick="startScrambleLive()" style="margin-top:8px">Start Scramble Round</button>';
+  }
+  h += '</div>';
+  
+  document.querySelector('[data-page="scramble-live"]').innerHTML = h;
+}
+
+function showScrambleCourseSearch(input) {
+  var results = PB.searchCourses(input.value);
+  var container = document.getElementById("search-sl-course");
+  if (!results.length) { container.innerHTML = ""; return; }
+  var h = '';
+  results.forEach(function(c) {
+    h += '<div class="search-item" onclick="document.getElementById(\'sl-course\').value=\'' + c.name.replace(/'/g, "\\'") + '\';document.getElementById(\'sl-rating\').value=\'' + c.rating + '\';document.getElementById(\'sl-slope\').value=\'' + c.slope + '\';document.getElementById(\'search-sl-course\').innerHTML=\'\'"><span>' + c.name + '</span> <span style="color:var(--muted);font-size:11px">' + c.loc + '</span></div>';
+  });
+  container.innerHTML = h;
+}
+
+function renderScrambleLiveScoring() {
+  var s = scrambleLiveState;
+  var hole = s.currentHole;
+  var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+  var par = defaultPar[hole] || 4;
+  var members = s.team.members.map(function(id) { var p = PB.getPlayer(id); return p ? p.name : id; });
+  
+  var totalSoFar = 0, holesPlayed = 0;
+  s.scores.forEach(function(sc) { if (sc !== "") { totalSoFar += parseInt(sc); holesPlayed++; } });
+  var parSoFar = 0;
+  for (var pi = 0; pi < holesPlayed; pi++) parSoFar += defaultPar[pi] || 4;
+  
+  var h = '';
+  h += '<div style="padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">';
+  h += '<div><div style="font-size:13px;font-weight:600">' + escHtml(s.course) + '</div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:1px">' + escHtml(s.team.name) + ' · Scramble</div></div>';
+  h += '<div style="text-align:right"><div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:var(--gold)">' + (totalSoFar || "—") + '</div>';
+  if (holesPlayed > 0) {
+    var diff = totalSoFar - parSoFar;
+    h += '<div style="font-size:10px;color:' + (diff > 0 ? 'var(--red)' : diff < 0 ? 'var(--birdie)' : 'var(--muted)') + '">' + (diff > 0 ? '+' : '') + diff + ' thru ' + holesPlayed + '</div>';
+  }
+  h += '</div></div>';
+  
+  // Hole dots
+  h += '<div style="padding:10px 16px;display:flex;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none">';
+  for (var i = 0; i < 18; i++) {
+    var dotColor = s.scores[i] !== "" ? (parseInt(s.scores[i]) <= (defaultPar[i]||4) ? "var(--birdie)" : parseInt(s.scores[i]) > (defaultPar[i]||4)+1 ? "var(--red)" : "var(--gold)") : (i === hole ? "var(--cream)" : "var(--bg4)");
+    h += '<div onclick="scrambleLiveState.currentHole=' + i + ';Router.go(\'scramble-live\')" style="width:14px;height:14px;border-radius:50%;background:' + dotColor + ';flex-shrink:0;cursor:pointer;border:' + (i === hole ? '2px solid var(--gold)' : '1px solid var(--border)') + '"></div>';
+  }
+  h += '</div>';
+  
+  // Current hole
+  h += '<div style="text-align:center;padding:32px 16px">';
+  h += '<div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px">Hole ' + (hole+1) + '</div>';
+  h += '<div style="font-family:Playfair Display,serif;font-size:48px;color:var(--gold);font-weight:700;margin:8px 0">Par ' + par + '</div>';
+  h += '<div style="font-size:10px;color:var(--muted2)">' + members.join(" · ") + '</div>';
+  
+  // Score buttons
+  h += '<div style="display:flex;gap:8px;justify-content:center;margin-top:24px;flex-wrap:wrap">';
+  for (var sc = Math.max(1, par - 2); sc <= par + 4; sc++) {
+    var label = sc === par - 2 ? "Eagle" : sc === par - 1 ? "Birdie" : sc === par ? "Par" : sc === par + 1 ? "Bogey" : sc === par + 2 ? "Double" : sc === par + 3 ? "Triple" : "+" + (sc - par);
+    var color = sc < par ? "var(--birdie)" : sc === par ? "var(--gold)" : sc === par + 1 ? "var(--muted)" : "var(--red)";
+    var isSelected = s.scores[hole] !== "" && parseInt(s.scores[hole]) === sc;
+    h += '<div onclick="setScrambleScore(' + hole + ',' + sc + ')" style="width:68px;padding:12px 4px;text-align:center;border-radius:var(--radius);cursor:pointer;border:2px solid ' + (isSelected ? color : 'var(--border)') + ';background:' + (isSelected ? color + '15' : 'var(--card)') + '">';
+    h += '<div style="font-size:20px;font-weight:700;color:' + color + '">' + sc + '</div>';
+    h += '<div style="font-size:8px;color:var(--muted);margin-top:2px">' + label + '</div></div>';
+  }
+  h += '</div></div>';
+  
+  // Nav buttons
+  h += '<div style="display:flex;gap:8px;padding:16px">';
+  if (hole > 0) h += '<button class="btn full outline" onclick="scrambleLiveState.currentHole--;Router.go(\'scramble-live\')">← Prev</button>';
+  if (hole < 17) h += '<button class="btn full green" onclick="scrambleLiveState.currentHole++;Router.go(\'scramble-live\')">Next →</button>';
+  else h += '<button class="btn full green" onclick="finishScrambleLive()">Finish Round</button>';
+  h += '</div>';
+  
+  // Quit option
+  h += '<div style="text-align:center;padding:0 16px 20px"><span style="font-size:10px;color:var(--muted2);cursor:pointer" onclick="if(confirm(\'Quit this round?\')){ scrambleLiveState.active=false; Router.go(\'rounds\'); }">Quit round</span></div>';
+  
+  document.querySelector('[data-page="scramble-live"]').innerHTML = h;
+}
+
+function setScrambleScore(hole, score) {
+  scrambleLiveState.scores[hole] = score;
+  Router.go("scramble-live");
+}
+
+function finishScrambleLive() {
+  var s = scrambleLiveState;
+  var total = 0, played = 0;
+  s.scores.forEach(function(sc) { if (sc !== "") { total += parseInt(sc); played++; } });
+  
+  if (played < 9) { Router.toast("Score at least 9 holes"); return; }
+  if (!confirm("Finish scramble round? Total: " + total + " (" + played + " holes)")) return;
+  
+  // Log the match for the team
+  var match = {
+    id: Date.now().toString(36),
+    date: new Date().toISOString().split("T")[0],
+    course: s.course,
+    score: total,
+    holes: played,
+    result: "complete",
+    scores: s.scores.slice()
+  };
+  
+  var team = PB.getScrambleTeams().find(function(t) { return t.id === s.teamId; });
+  if (team) {
+    if (!team.matches) team.matches = [];
+    team.matches.push(match);
+    PB.save();
+  }
+  
+  // Sync to Firebase
+  if (db) {
+    db.collection("scramble_rounds").add({
+      teamId: s.teamId,
+      teamName: s.team.name,
+      course: s.course,
+      score: total,
+      holes: played,
+      scores: s.scores,
+      date: match.date,
+      createdBy: currentUser ? currentUser.uid : "local",
+      createdAt: fsTimestamp()
+    }).catch(function(){});
+    
+    // Post to activity feed
+    db.collection("chat").add({
+      id: genId(),
+      text: "🏌️ " + s.team.name + " shot " + total + " in a scramble at " + s.course + "!",
+      authorId: "system",
+      authorName: "Parbaughs",
+      createdAt: fsTimestamp()
+    }).catch(function(){});
+  }
+  
+  scrambleLiveState = { active: false };
+  Router.toast("Scramble round saved! 🎉");
+  Router.go("rounds");
+}
+
+
+// ========== SEASON RECAP ==========
+Router.register("seasonrecap", function(params) {
+  var year = (params && params.year) ? parseInt(params.year) : new Date().getFullYear();
+  var season = PB.getSeasonStandings(year);
+  var players = PB.getPlayers();
+  var allRounds = [];
+  players.forEach(function(p) {
+    PB.getPlayerRounds(p.id).forEach(function(r) {
+      if (r.date && r.date >= year + "-03-01" && r.date <= year + "-09-30") {
+        allRounds.push(Object.assign({playerName: p.name || p.username, playerId: p.id}, r));
+      }
+    });
+  });
+  
+  var h = '<div class="sh"><h2>' + year + ' Recap</h2><button class="back" onclick="Router.go(\'standings\')">← Back</button></div>';
+  
+  h += '<div style="text-align:center;padding:24px 16px;background:linear-gradient(180deg,#111520,var(--bg));border-bottom:1px solid var(--border)">';
+  h += '<div style="font-size:28px;margin-bottom:8px">🏆</div>';
+  h += '<div style="font-family:Playfair Display,serif;font-size:24px;color:var(--gold);font-weight:700">' + year + ' Season Recap</div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:6px">March 1 — September 30</div></div>';
+  
+  // Overall stats
+  var uniquePlayers = {};
+  var uniqueCourses = {};
+  var totalScore = 0;
+  allRounds.forEach(function(r) { uniquePlayers[r.playerId] = 1; uniqueCourses[r.course] = 1; totalScore += (r.score||0); });
+  
+  h += '<div class="stats-grid" style="padding:16px">';
+  h += '<div class="stat-box"><div class="stat-val">' + allRounds.length + '</div><div class="stat-label">Total Rounds</div></div>';
+  h += '<div class="stat-box"><div class="stat-val">' + Object.keys(uniquePlayers).length + '</div><div class="stat-label">Active Players</div></div>';
+  h += '<div class="stat-box"><div class="stat-val">' + Object.keys(uniqueCourses).length + '</div><div class="stat-label">Courses Played</div></div>';
+  h += '</div>';
+  
+  // Champion
+  if (season.standings.length) {
+    var champ = season.standings[0];
+    h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--gold)">Season Champion</span></div>';
+    h += '<div class="card" style="border-color:rgba(201,168,76,.3);background:linear-gradient(135deg,#1a1e30,var(--card))">';
+    h += '<div style="padding:20px;text-align:center">';
+    h += '<div style="font-size:48px;margin-bottom:8px">👑</div>';
+    h += '<div style="font-family:Playfair Display,serif;font-size:22px;color:var(--gold);font-weight:700">' + escHtml(champ.name||champ.username) + '</div>';
+    h += '<div style="font-size:24px;font-weight:800;color:var(--cream);margin-top:4px">' + champ.points + ' points</div>';
+    h += '<div style="font-size:11px;color:var(--muted);margin-top:8px">' + champ.rounds + ' rounds · Avg: ' + champ.avg + ' · Best: ' + champ.best + '</div>';
+    h += '</div></div></div>';
+  }
+  
+  // Awards
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Season Awards</span></div>';
+  
+  var awards = [];
+  
+  // Best single round
+  var bestRound = null;
+  allRounds.forEach(function(r) { if (r.score && (!bestRound || r.score < bestRound.score)) bestRound = r; });
+  if (bestRound) awards.push({icon:"🔥", title:"Low Round of the Season", winner: bestRound.playerName, detail: bestRound.score + " at " + bestRound.course});
+  
+  // Most rounds played
+  var roundCounts = {};
+  allRounds.forEach(function(r) { roundCounts[r.playerName] = (roundCounts[r.playerName]||0) + 1; });
+  var mostRounds = Object.entries(roundCounts).sort(function(a,b){return b[1]-a[1]});
+  if (mostRounds.length) awards.push({icon:"🏋️", title:"Grinder Award", winner: mostRounds[0][0], detail: mostRounds[0][1] + " rounds played"});
+  
+  // Most improved (biggest avg drop)
+  if (season.standings.length >= 2) {
+    var lastStandings = season.standings.filter(function(s){return s.rounds >= 3});
+    // Use first half vs second half avg
+    lastStandings.forEach(function(s) {
+      var pRounds = allRounds.filter(function(r){return r.playerId === s.id}).sort(function(a,b){return a.date > b.date ? 1 : -1});
+      if (pRounds.length >= 4) {
+        var half = Math.floor(pRounds.length / 2);
+        var firstHalf = pRounds.slice(0, half);
+        var secondHalf = pRounds.slice(half);
+        var firstAvg = firstHalf.reduce(function(a,r){return a+r.score},0) / firstHalf.length;
+        var secondAvg = secondHalf.reduce(function(a,r){return a+r.score},0) / secondHalf.length;
+        s._improvement = firstAvg - secondAvg;
+      } else { s._improvement = 0; }
+    });
+    var mostImproved = lastStandings.sort(function(a,b){return (b._improvement||0)-(a._improvement||0)});
+    if (mostImproved.length && mostImproved[0]._improvement > 0) {
+      awards.push({icon:"📈", title:"Most Improved", winner: mostImproved[0].name||mostImproved[0].username, detail: "Improved " + Math.round(mostImproved[0]._improvement*10)/10 + " strokes"});
+    }
+  }
+  
+  // Road warrior (most courses)
+  var courseCounts = {};
+  allRounds.forEach(function(r) {
+    if (!courseCounts[r.playerName]) courseCounts[r.playerName] = {};
+    courseCounts[r.playerName][r.course] = 1;
+  });
+  var roadWarriors = Object.entries(courseCounts).map(function(e){return [e[0], Object.keys(e[1]).length]}).sort(function(a,b){return b[1]-a[1]});
+  if (roadWarriors.length) awards.push({icon:"🗺️", title:"Road Warrior", winner: roadWarriors[0][0], detail: roadWarriors[0][1] + " different courses"});
+  
+  // Consistency king (lowest std dev)
+  var consistencyData = [];
+  players.forEach(function(p) {
+    var pr = allRounds.filter(function(r){return r.playerId === p.id});
+    if (pr.length >= 3) {
+      var avg = pr.reduce(function(a,r){return a+r.score},0) / pr.length;
+      var variance = pr.reduce(function(a,r){return a + Math.pow(r.score-avg,2)},0) / pr.length;
+      consistencyData.push({name: p.name||p.username, stdDev: Math.sqrt(variance)});
+    }
+  });
+  if (consistencyData.length) {
+    consistencyData.sort(function(a,b){return a.stdDev-b.stdDev});
+    awards.push({icon:"🎯", title:"Consistency King", winner: consistencyData[0].name, detail: "±" + Math.round(consistencyData[0].stdDev*10)/10 + " stroke variance"});
+  }
+  
+  awards.forEach(function(a) {
+    h += '<div class="card" style="margin-bottom:8px"><div style="padding:14px 16px;display:flex;align-items:center;gap:14px">';
+    h += '<div style="font-size:28px;flex-shrink:0">' + a.icon + '</div>';
+    h += '<div><div style="font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">' + a.title + '</div>';
+    h += '<div style="font-size:15px;font-weight:700;color:var(--cream)">' + escHtml(a.winner) + '</div>';
+    h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + escHtml(a.detail) + '</div>';
+    h += '</div></div></div>';
+  });
+  
+  if (!awards.length) {
+    h += '<div class="card"><div class="empty"><div class="empty-text">No awards yet — log some rounds!</div></div></div>';
+  }
+  h += '</div>';
+  
+  // Final standings
+  if (season.standings.length) {
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Final Standings</span></div>';
+    season.standings.forEach(function(s, idx) {
+      var medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : (idx+1) + ".";
+      h += '<div class="card" style="margin-bottom:6px"><div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center">';
+      h += '<div style="display:flex;align-items:center;gap:12px">';
+      h += '<div style="font-size:18px;width:28px;text-align:center">' + medal + '</div>';
+      h += '<div><div style="font-size:13px;font-weight:600">' + escHtml(s.name||s.username) + '</div>';
+      h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + s.rounds + ' rds · Avg: ' + s.avg + '</div></div></div>';
+      h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--gold)">' + s.points + '</div>';
+      h += '</div></div>';
+    });
+    h += '</div>';
+  }
+  
+  h += '<div style="text-align:center;padding:20px;font-size:10px;color:var(--muted2)">See you next season · March ' + (year+1) + '</div>';
+  
+  document.querySelector('[data-page="seasonrecap"]').innerHTML = h;
+});
+
+
+// ========== YEARLY AWARDS CEREMONY ==========
+Router.register("awards", function(params) {
+  var year = (params && params.year) ? parseInt(params.year) : new Date().getFullYear();
+  var now = new Date();
+  var seasonOver = now.getMonth() > 8 || (now.getMonth() === 8 && now.getDate() === 30);
+  var season = PB.getSeasonStandings(year);
+  var players = PB.getPlayers();
+  
+  var h = '<div class="sh"><h2>Awards Night</h2><button class="back" onclick="Router.go(\'standings\')">← Back</button></div>';
+  
+  h += '<div style="text-align:center;padding:30px 16px 24px;background:linear-gradient(180deg,#0d1118,#111520,var(--bg));border-bottom:1px solid rgba(201,168,76,.15)">';
+  h += '<div style="font-size:48px;margin-bottom:12px">🏆</div>';
+  h += '<div style="font-family:Playfair Display,serif;font-size:28px;color:var(--gold);font-weight:700;letter-spacing:1px">The ' + year + '</div>';
+  h += '<div style="font-family:Playfair Display,serif;font-size:22px;color:var(--cream);font-weight:400;margin-top:2px">Parbaugh Awards</div>';
+  if (!seasonOver) {
+    h += '<div style="display:inline-block;margin-top:14px;padding:5px 14px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.12);border-radius:12px;font-size:10px;color:var(--gold);font-weight:600;letter-spacing:.5px">PROJECTED · SEASON IN PROGRESS</div>';
+  }
+  h += '</div>';
+  
+  // Build all awards from season data
+  var allRounds = [];
+  players.forEach(function(p) {
+    PB.getPlayerRounds(p.id).forEach(function(r) {
+      if (r.date && r.date >= year + "-03-01" && r.date <= year + "-09-30") {
+        allRounds.push(Object.assign({playerName: p.name || p.username, playerId: p.id}, r));
+      }
+    });
+  });
+  
+  var ceremonyAwards = [];
+  
+  // 1. Player of the Year
+  if (season.standings.length) {
+    ceremonyAwards.push({icon: "👑", title: "Player of the Year", winner: season.standings[0].name||season.standings[0].username, detail: season.standings[0].points + " season points", tier: "gold"});
+  }
+  
+  // 2. Scoring Champion (lowest avg)
+  var scoringChamp = season.standings.filter(function(s){return s.rounds >= 3}).sort(function(a,b){return a.avg-b.avg});
+  if (scoringChamp.length) {
+    ceremonyAwards.push({icon: "🎯", title: "Scoring Champion", winner: scoringChamp[0].name||scoringChamp[0].username, detail: "Average: " + scoringChamp[0].avg, tier: "gold"});
+  }
+  
+  // 3. Round of the Year
+  var bestRound = null;
+  allRounds.forEach(function(r) { if (r.score && (!bestRound || r.score < bestRound.score)) bestRound = r; });
+  if (bestRound) ceremonyAwards.push({icon: "🔥", title: "Round of the Year", winner: bestRound.playerName, detail: bestRound.score + " at " + bestRound.course, tier: "gold"});
+  
+  // 4. Iron Man (most rounds)
+  var roundCounts = {};
+  allRounds.forEach(function(r) { roundCounts[r.playerName] = (roundCounts[r.playerName]||0) + 1; });
+  var ironMan = Object.entries(roundCounts).sort(function(a,b){return b[1]-a[1]});
+  if (ironMan.length) ceremonyAwards.push({icon: "💪", title: "Iron Man", winner: ironMan[0][0], detail: ironMan[0][1] + " rounds played", tier: "silver"});
+  
+  // 5. Most Improved
+  var improvData = season.standings.filter(function(s){return s.rounds >= 3});
+  improvData.forEach(function(s) {
+    var pRounds = allRounds.filter(function(r){return r.playerId === s.id}).sort(function(a,b){return a.date > b.date ? 1 : -1});
+    if (pRounds.length >= 4) {
+      var half = Math.floor(pRounds.length / 2);
+      var firstAvg = pRounds.slice(0, half).reduce(function(a,r){return a+r.score},0) / half;
+      var secondAvg = pRounds.slice(half).reduce(function(a,r){return a+r.score},0) / (pRounds.length - half);
+      s._improv = firstAvg - secondAvg;
+    } else s._improv = 0;
+  });
+  var mostImproved = improvData.sort(function(a,b){return (b._improv||0)-(a._improv||0)});
+  if (mostImproved.length && mostImproved[0]._improv > 0) {
+    ceremonyAwards.push({icon: "📈", title: "Most Improved", winner: mostImproved[0].name||mostImproved[0].username, detail: "Dropped " + Math.round(mostImproved[0]._improv*10)/10 + " strokes avg", tier: "silver"});
+  }
+  
+  // 6. Explorer
+  var exploreCounts = {};
+  allRounds.forEach(function(r) {
+    if (!exploreCounts[r.playerName]) exploreCounts[r.playerName] = {};
+    exploreCounts[r.playerName][r.course] = 1;
+  });
+  var explorers = Object.entries(exploreCounts).map(function(e){return [e[0], Object.keys(e[1]).length]}).sort(function(a,b){return b[1]-a[1]});
+  if (explorers.length) ceremonyAwards.push({icon: "🗺️", title: "Explorer Award", winner: explorers[0][0], detail: explorers[0][1] + " courses played", tier: "silver"});
+  
+  // 7. Consistency Award
+  var conData = [];
+  players.forEach(function(p) {
+    var pr = allRounds.filter(function(r){return r.playerId === p.id});
+    if (pr.length >= 3) {
+      var avg = pr.reduce(function(a,r){return a+r.score},0) / pr.length;
+      var variance = pr.reduce(function(a,r){return a + Math.pow(r.score-avg,2)},0) / pr.length;
+      conData.push({name: p.name||p.username, stdDev: Math.sqrt(variance)});
+    }
+  });
+  if (conData.length) {
+    conData.sort(function(a,b){return a.stdDev-b.stdDev});
+    ceremonyAwards.push({icon: "🧘", title: "Mr. Consistent", winner: conData[0].name, detail: "±" + Math.round(conData[0].stdDev*10)/10 + " variance", tier: "bronze"});
+  }
+  
+  // 8. Attendance award (perfect attendance = played every month Mar-Sep)
+  players.forEach(function(p) {
+    var months = {};
+    allRounds.filter(function(r){return r.playerId === p.id}).forEach(function(r) {
+      var m = parseInt(r.date.split("-")[1]);
+      months[m] = true;
+    });
+    var activeMonths = Object.keys(months).length;
+    if (activeMonths >= 7) ceremonyAwards.push({icon: "📅", title: "Perfect Attendance", winner: p.name||p.username, detail: "Played all 7 months", tier: "bronze"});
+  });
+  
+  // Render ceremony
+  ceremonyAwards.forEach(function(a) {
+    var borderColor = a.tier === "gold" ? "rgba(201,168,76,.25)" : a.tier === "silver" ? "rgba(176,176,176,.15)" : "rgba(205,127,50,.1)";
+    var bgGrad = a.tier === "gold" ? "linear-gradient(135deg,#1a1e30,var(--card))" : "var(--card)";
+    h += '<div class="card" style="margin:8px 16px;border-color:' + borderColor + ';background:' + bgGrad + '">';
+    h += '<div style="padding:16px;display:flex;align-items:center;gap:16px">';
+    h += '<div style="font-size:36px;flex-shrink:0">' + a.icon + '</div>';
+    h += '<div style="flex:1"><div style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px">' + a.title + '</div>';
+    h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--cream);font-weight:700">' + escHtml(a.winner) + '</div>';
+    h += '<div style="font-size:11px;color:var(--muted);margin-top:3px">' + escHtml(a.detail) + '</div>';
+    h += '</div></div></div>';
+  });
+  
+  if (!ceremonyAwards.length) {
+    h += '<div class="card" style="margin:16px"><div class="empty" style="padding:32px"><div class="empty-icon">🏌️</div><div class="empty-text">No season data yet</div>';
+    h += '<div style="font-size:10px;color:var(--muted2);margin-top:4px">Log rounds during the season (Mar—Sep) to unlock awards</div></div></div>';
+  }
+  
+  h += '<div style="text-align:center;padding:24px;font-size:10px;color:var(--muted2);font-style:italic">"It\'s not about the handicap you have, it\'s about the stories you make."</div>';
+  
+  document.querySelector('[data-page="awards"]').innerHTML = h;
+});
+
+// ========== SHARE ROUND CARD ==========
+function showShareCard(score, diffStr, course, playerName, fir, firHoles, gir, holes, putts, shareText, roundId) {
+  // Remove any existing modal
+  var existing = document.getElementById("shareCardModal");
+  if (existing) existing.remove();
+  
+  var diffColor = diffStr.charAt(0) === "+" ? "var(--red)" : diffStr === "E" ? "var(--gold)" : "var(--birdie)";
+  
+  var modal = document.createElement("div");
+  modal.id = "shareCardModal";
+  modal.style.cssText = "position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;padding:20px";
+  
+  var h = '<div style="position:fixed;inset:0;background:rgba(0,0,0,.6)" onclick="closeShareCard()"></div>';
+  h += '<div style="position:relative;width:100%;max-width:320px;background:linear-gradient(135deg,#111520,#0e1118);border:1px solid rgba(201,168,76,.2);border-radius:16px;overflow:hidden">';
+  
+  // Card header
+  h += '<div style="padding:20px 20px 16px;text-align:center;border-bottom:1px solid rgba(201,168,76,.08)">';
+  h += '<div style="font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;font-weight:600">Round Complete</div>';
+  h += '<div style="font-family:Playfair Display,serif;font-size:52px;color:var(--cream);font-weight:700;margin:8px 0 4px">' + score + '</div>';
+  h += '<div style="font-size:16px;font-weight:700;color:' + diffColor + '">' + diffStr + '</div>';
+  h += '<div style="font-size:12px;color:var(--muted);margin-top:6px">' + escHtml(course) + '</div>';
+  h += '<div style="font-size:11px;color:var(--muted2);margin-top:2px">' + escHtml(playerName) + '</div></div>';
+  
+  // Stats row
+  h += '<div style="display:flex;padding:14px 20px;gap:4px">';
+  if (firHoles > 0) h += '<div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:700;color:var(--cream)">' + fir + '/' + firHoles + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">FIR</div></div>';
+  h += '<div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:700;color:var(--cream)">' + gir + '/' + holes + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">GIR</div></div>';
+  if (putts > 0) h += '<div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:700;color:var(--cream)">' + putts + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">Putts</div></div>';
+  h += '</div>';
+  
+  // Buttons
+  h += '<div style="padding:4px 20px 20px;display:flex;flex-direction:column;gap:8px">';
+  h += '<button class="btn full green" onclick="copyShareText()" style="font-size:12px">📋 Copy to share</button>';
+  h += '<button class="btn full outline" onclick="closeShareCard()" style="font-size:12px">Done</button>';
+  h += '</div>';
+  
+  // Hidden text area for copy
+  h += '<textarea id="shareCardText" style="position:absolute;left:-9999px">' + escHtml(shareText) + '</textarea>';
+  
+  h += '</div>';
+  modal.innerHTML = h;
+  document.body.appendChild(modal);
+}
+
+function copyShareText() {
+  var ta = document.getElementById("shareCardText");
+  if (ta) {
+    ta.style.left = "0";
+    ta.select();
+    try {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(ta.value).then(function() { Router.toast("Copied!"); });
+      } else {
+        document.execCommand("copy");
+        Router.toast("Copied!");
+      }
+    } catch(e) { Router.toast("Couldn't copy — long press to select"); }
+    ta.style.left = "-9999px";
+  }
+}
+
+function closeShareCard() {
+  var modal = document.getElementById("shareCardModal");
+  if (modal) modal.remove();
+  Router.go("rounds");
+}
+
+
+// ========== PRESENCE / WHO'S ONLINE ==========
+var onlineMembers = {};
+
+function updatePresence() {
+  if (!db || !currentUser) return;
+  db.collection("presence").doc(currentUser.uid).set({
+    uid: currentUser.uid,
+    name: currentProfile ? (currentProfile.name || currentProfile.username) : "Member",
+    lastSeen: fsTimestamp(),
+    online: true
+  }, { merge: true }).catch(function(){});
+}
+
+function startPresenceSystem() {
+  if (!db || !currentUser) return;
+  
+  // Update own presence immediately and every 2 minutes
+  updatePresence();
+  setInterval(updatePresence, 120000);
+  
+  // Set offline on page unload
+  window.addEventListener("beforeunload", function() {
+    if (db && currentUser) {
+      // Use sendBeacon for reliable offline marking
+      db.collection("presence").doc(currentUser.uid).update({ online: false }).catch(function(){});
+    }
+  });
+  
+  // Listen to all presence docs
+  db.collection("presence").onSnapshot(function(snap) {
+    onlineMembers = {};
+    var now = new Date();
+    snap.forEach(function(doc) {
+      var data = doc.data();
+      if (data.lastSeen && data.lastSeen.toDate) {
+        var diff = now - data.lastSeen.toDate();
+        // Consider online if seen in last 5 minutes
+        if (diff < 300000) {
+          onlineMembers[doc.id] = data;
+        }
+      }
+    });
+    renderOnlineSection();
+  }, function(err) { console.warn("[Presence] error:", err.message); });
+}
+
+function renderOnlineSection() {
+  var el = document.getElementById("onlineSection");
+  if (!el) return;
+  
+  var uids = Object.keys(onlineMembers);
+  if (uids.length <= 1) { el.innerHTML = ""; return; } // Don't show if only you
+  
+  var h = '<div style="padding:8px 16px 12px">';
+  h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><div style="width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse-dot 2s infinite"></div><span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">' + uids.length + ' Online Now</span></div>';
+  h += '<div style="display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px">';
+  
+  uids.forEach(function(uid) {
+    var data = onlineMembers[uid];
+    var p = PB.getPlayer(uid);
+    var name = data.name || (p ? p.name : "Member");
+    var isMe = currentUser && uid === currentUser.uid;
+    
+    h += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0">';
+    h += '<div style="position:relative;width:36px;height:36px;border-radius:50%;overflow:hidden;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid ' + (isMe ? 'var(--gold)' : 'rgba(74,222,128,.4)') + '">';
+    if (p) { h += Router.getAvatar(p); }
+    else { h += '<span style="color:var(--gold);font-weight:700">' + name.charAt(0).toUpperCase() + '</span>'; }
+    h += '</div>';
+    h += '<div style="font-size:9px;color:' + (isMe ? 'var(--gold)' : 'var(--muted)') + ';max-width:48px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center">' + escHtml(name.split(" ")[0]) + '</div>';
+    h += '</div>';
+  });
+  
+  h += '</div></div>';
+  el.innerHTML = h;
+}
+
+
+// ========== ROUND IN PROGRESS BANNER ==========
+function renderRipBanner() {
+  var existing = document.getElementById("ripBanner");
+  if (existing) existing.remove();
+  
+  if (!liveState.active) return;
+  
+  var hole = liveState.currentHole + 1;
+  var totalSoFar = 0, played = 0;
+  var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+  var parSoFar = 0;
+  liveState.scores.forEach(function(s, i) { if (s !== "") { totalSoFar += parseInt(s); played++; parSoFar += defaultPar[i]||4; } });
+  var diff = totalSoFar - parSoFar;
+  var diffStr = played > 0 ? (diff > 0 ? "+" + diff : diff === 0 ? "E" : diff) : "";
+  
+  var banner = document.createElement("div");
+  banner.id = "ripBanner";
+  banner.className = "rip-banner";
+  banner.onclick = function() { Router.go("playnow"); };
+  banner.innerHTML = '<div style="display:flex;align-items:center;gap:8px">' +
+    '<div class="rip-dot"></div>' +
+    '<div><div style="font-size:11px;font-weight:600;color:var(--cream)">Round in progress</div>' +
+    '<div style="font-size:9px;color:var(--muted);margin-top:1px">' + escHtml(liveState.course) + ' · Hole ' + hole + (diffStr ? ' · ' + diffStr : '') + '</div></div></div>' +
+    '<div style="font-size:10px;color:var(--gold);font-weight:600">Resume →</div>';
+  
+  var nav = document.getElementById("nav");
+  if (nav && nav.parentNode) {
+    nav.parentNode.insertBefore(banner, nav.nextSibling);
+  }
+}
+
+// Hook into Router.go to show/hide the banner on non-playnow pages
+var _origRouterGo = Router.go;
+Router.go = function(page, params) {
+  _origRouterGo(page, params);
+  if (page !== "playnow" && liveState.active) {
+    setTimeout(renderRipBanner, 50);
+  }
+};
+
+
+// ========== CONNECTION STATUS BAR ==========
+var connStatus = "live";
+
+function updateConnBar() {
+  var el = document.getElementById("connBar");
+  if (!el) return;
+  el.className = "conn-bar " + connStatus;
+  var dot = connStatus === "live" ? "●" : connStatus === "syncing" ? "◉" : "●";
+  var label = connStatus === "live" ? "Live" : connStatus === "syncing" ? "Syncing..." : "Offline";
+  el.innerHTML = '<span>' + dot + '</span> ' + label;
+  // Auto-hide the live indicator after 3 seconds
+  if (connStatus === "live") {
+    setTimeout(function() { if (el && connStatus === "live") el.style.opacity = "0"; }, 3000);
+  } else {
+    el.style.opacity = "1";
+  }
+}
+
+function initConnStatus() {
+  // Insert connection bar at the top of the home page
+  if (!db) return;
+  
+  // Monitor Firestore connectivity via a simple write test
+  var connRef = db.collection("presence");
+  // Use the existing sync status text
+  var origSyncText = document.getElementById("syncStatusText");
+  if (origSyncText) {
+    // Listen for online/offline
+    window.addEventListener("online", function() { connStatus = "live"; updateConnBar(); if(origSyncText) origSyncText.textContent = "Live"; });
+    window.addEventListener("offline", function() { connStatus = "offline"; updateConnBar(); if(origSyncText) origSyncText.textContent = "Offline"; });
+    if (navigator.onLine) { connStatus = "live"; if(origSyncText) origSyncText.textContent = "Live"; }
+    else { connStatus = "offline"; if(origSyncText) origSyncText.textContent = "Offline"; }
+  }
+}
+
+
+// ========== SKELETON LOADING HELPERS ==========
+function skeletonCard(lines) {
+  var h = '<div class="skel-card">';
+  for (var i = 0; i < (lines||3); i++) {
+    var cls = i === 0 ? "short" : i === lines-1 ? "short" : "medium";
+    h += '<div class="skeleton skel-line ' + cls + '" style="animation-delay:' + (i*0.1) + 's"></div>';
+  }
+  h += '</div>';
+  return h;
+}
+
+function skeletonMemberRow() {
+  return '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border)">' +
+    '<div class="skeleton skel-circle"></div>' +
+    '<div style="flex:1"><div class="skeleton skel-line short" style="margin-bottom:6px"></div><div class="skeleton skel-line medium"></div></div></div>';
+}
+
+function skeletonFeed() {
+  var h = '';
+  for (var i = 0; i < 4; i++) {
+    h += '<div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:10px">';
+    h += '<div class="skeleton" style="width:32px;height:32px;border-radius:50%;flex-shrink:0"></div>';
+    h += '<div style="flex:1"><div class="skeleton skel-line short" style="margin-bottom:8px"></div>';
+    h += '<div class="skeleton skel-line medium"></div><div class="skeleton skel-line" style="width:40%;margin-top:6px"></div></div></div>';
+  }
+  return h;
+}
+
+
+// ========== ANIMATED NUMBER COUNTING ==========
+function animateNumber(el, target, duration) {
+  if (!el) return;
+  duration = duration || 600;
+  var start = 0;
+  var startTime = null;
+  target = parseInt(target) || 0;
+  if (target === 0) { el.textContent = "0"; return; }
+  
+  function step(timestamp) {
+    if (!startTime) startTime = timestamp;
+    var progress = Math.min((timestamp - startTime) / duration, 1);
+    // Ease out cubic
+    var eased = 1 - Math.pow(1 - progress, 3);
+    var current = Math.round(eased * target);
+    el.textContent = current;
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = target;
+  }
+  requestAnimationFrame(step);
+}
+
+// Auto-animate elements with data-count attribute after page renders
+function initCountAnimations() {
+  var els = document.querySelectorAll("[data-count]");
+  els.forEach(function(el) {
+    var target = el.getAttribute("data-count");
+    animateNumber(el, target, 500);
+  });
+}
+
+
+// ========== CONTEXTUAL EMPTY STATES ==========
+var contextualEmptyStates = {
+  rounds: {
+    icon: "🏌️",
+    text: "No rounds logged yet",
+    sub: "Your first round earns 100 XP and the First Blood badge",
+    action: "Play Now →",
+    actionPage: "playnow"
+  },
+  teetimes: {
+    icon: "📅",
+    text: "No upcoming tee times",
+    sub: "Post one and your crew gets notified instantly",
+    action: "Post Tee Time →",
+    actionPage: "tee-create"
+  },
+  scramble: {
+    icon: "🤝",
+    text: "No scramble teams yet",
+    sub: "Create a 2, 3, or 4-man team and start tracking W-L records",
+    action: "Create Team →",
+    actionPage: "scramble"
+  },
+  chat: {
+    icon: "💬",
+    text: "The feed is quiet",
+    sub: "Be the first to talk trash. Someone has to.",
+    action: null
+  },
+  challenges: {
+    icon: "⚔️",
+    text: "No active challenges",
+    sub: "Call someone out. Loser buys the post-round beers.",
+    action: "New Challenge →",
+    actionPage: "challenges"
+  }
+};
+
+function renderContextualEmpty(type) {
+  var config = contextualEmptyStates[type];
+  if (!config) return '<div class="empty"><div class="empty-text">Nothing here yet</div></div>';
+  var h = '<div class="empty" style="padding:28px 16px"><div class="empty-icon" style="font-size:28px;margin-bottom:8px">' + config.icon + '</div>';
+  h += '<div class="empty-text" style="font-size:13px">' + config.text + '</div>';
+  h += '<div style="font-size:10px;color:var(--muted2);margin-top:6px;line-height:1.5">' + config.sub + '</div>';
+  if (config.action) {
+    h += '<div style="margin-top:12px"><span style="font-size:11px;color:var(--gold);cursor:pointer;font-weight:600" onclick="Router.go(\'' + config.actionPage + '\')">' + config.action + '</span></div>';
+  }
+  h += '</div>';
+  return h;
+}
+
+
 // ========== INIT FIREBASE LISTENERS ==========
 function initFirebaseListeners() {
   startTeeTimeListener();
   startEventListener();
   startNotificationListener();
+  startDmUnreadListener();
+  startPresenceSystem();
+  initConnStatus();
 }
 
 // Override enterApp to include Firebase listeners
