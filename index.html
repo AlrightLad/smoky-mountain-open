@@ -205,7 +205,7 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
 .form-title{font-size:14px;font-weight:700;color:var(--gold);margin-bottom:10px}
 .ff{margin-bottom:10px}
 .ff-label{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-weight:600}
-.ff-input{width:100%;padding:11px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--cream);font-size:14px;outline:none;transition:border .15s,box-shadow .15s;min-width:0;max-width:100%;box-sizing:border-box}
+.ff-input{width:100%;padding:11px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--cream);font-size:14px;outline:none;transition:border .15s,box-shadow .15s;min-width:0;max-width:100%;box-sizing:border-box;-webkit-user-select:text;user-select:text;touch-action:manipulation}
 .ff-input:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(197,165,90,.1)}
 textarea.ff-input{min-height:60px;resize:vertical}
 .ff-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -4014,7 +4014,7 @@ Router.register("settings", function() {
     h += '<div class="card"><div class="card-body">';
     h += '<div style="font-size:12px;font-weight:600;margin-bottom:6px">GolfCourseAPI.com</div>';
     h += '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">Free API key for searching 30,000+ courses. Sign up at <span style="color:var(--gold);cursor:pointer" onclick="window.open(\'https://golfcourseapi.com\',\'_blank\')">golfcourseapi.com</span> and paste your key below.</div>';
-    h += '<div style="display:flex;gap:6px"><input type="text" class="ff-input" id="gcapi-key" value="' + escHtml(savedKey) + '" placeholder="Paste API key..." style="flex:1;font-size:11px">';
+    h += '<div style="display:flex;gap:6px"><input type="text" class="ff-input" id="gcapi-key" value="' + escHtml(savedKey) + '" placeholder="Paste API key..." style="flex:1;font-size:12px;-webkit-user-select:text;user-select:text" onkeydown="if(event.key===\'Enter\')saveGolfApiKey()">';
     h += '<button class="btn-sm green" onclick="saveGolfApiKey()" style="font-size:10px">Save</button></div>';
     if (savedKey) h += '<div style="font-size:9px;color:var(--birdie);margin-top:4px"><svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg> Key saved</div>';
     h += '</div></div></div>';
@@ -11955,6 +11955,9 @@ function renderContextualEmpty(type) {
   var indicator = null;
   
   document.addEventListener("touchstart", function(e) {
+    // Skip pull-to-refresh when interacting with form elements
+    var tag = e.target.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") { pulling = false; return; }
     if (window.scrollY <= 0 && e.touches.length === 1) {
       // Check if touch is inside a scrollable container that isn't at top
       var el = e.target;
