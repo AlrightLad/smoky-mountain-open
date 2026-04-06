@@ -69,7 +69,7 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
 .back:active{background:var(--bg3)}
 
 /* CARDS */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:8px;transition:transform .1s,background .15s,border-color .15s}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:0 16px 8px;transition:transform .1s,background .15s,border-color .15s}
 .card:hover{background:var(--bg3);border-color:rgba(201,168,76,.12)}
 .card:active{transform:scale(.985);background:var(--bg3)}
 .card-body{padding:14px 16px}
@@ -127,7 +127,7 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
 .feed-date{font-size:10px;color:var(--muted);text-align:right;letter-spacing:.3px}
 
 /* QUICK LINKS */
-.qlinks{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.qlinks{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:0 16px}
 .ql{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 8px 12px;text-align:center;cursor:pointer;transition:transform .1s,background .15s}
 .ql:hover{background:var(--bg3);border-color:rgba(201,168,76,.15)}
 .ql:active{background:var(--bg3);transform:scale(.95)}
@@ -535,7 +535,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
   .est{font-size:12px}
   .ff-input,.ff select{font-size:14px;padding:12px 14px}
   .chat-input-row input{font-size:14px}
-  /* Uniform content padding — everything inside pages gets consistent spacing */
+  .qlinks{gap:10px}
   [data-page]{padding:0 8px}
 }
 @media (min-width: 1024px) {
@@ -544,6 +544,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
   .hero{padding:56px 40px 36px}
   .hero h1{font-size:32px}
   .hero-logo{width:120px;height:120px}
+  .qlinks{gap:12px}
   [data-page]{padding:0 16px}
 }
 </style>
@@ -6861,7 +6862,7 @@ Router.register("records", function() {
   h += '<div class="m-arrow" style="color:var(--gold);font-size:20px">›</div></div></div>';
 
   // Navigation grid — 2 columns
-  h += '<div style="padding:0 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">';
+  h += '<div class="qlinks" style="grid-template-columns:1fr 1fr;margin-bottom:12px">';
 
   // Challenges
   var challengeCount = 0;
