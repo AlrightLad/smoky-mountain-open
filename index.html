@@ -327,7 +327,7 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 
 
 /* ===== FIREBASE SYNC BAR ===== */
-.sync-bar{position:fixed;top:0;left:0;right:0;max-width:520px;margin:0 auto;height:3px;z-index:100;transition:opacity .3s}
+.sync-bar{position:fixed;top:0;left:0;right:0;max-width:520px;margin:0 auto;height:3px;z-index:100;transition:opacity .3s;opacity:0}
 .sync-bar.online{background:#2a6a3a;opacity:0}
 .sync-bar.syncing{background:var(--gold);opacity:1;animation:syncPulse 1.5s infinite}
 .sync-bar.offline{background:var(--red);opacity:1}
@@ -1070,7 +1070,7 @@ function setSyncStatus(s) {
 
 function initSync() {
   if (!db) { setSyncStatus("offline"); return; }
-  setSyncStatus("syncing");
+  // Don't show syncing bar on load — go silent until confirmed
   db.collection("config").doc("app").get().then(function(doc) {
     if (doc.exists) { setSyncStatus("online"); }
     else { seedFirestore(); }
@@ -2740,6 +2740,7 @@ Router.register("home", function() {
   var tournaments = PB.getTrips();
   var rounds = PB.getRounds();
   var recent = rounds.slice().reverse().slice(0, 5);
+  var season = PB.getSeasonStandings(new Date().getFullYear());
 
   var h = '';
 
@@ -2758,6 +2759,59 @@ Router.register("home", function() {
   h += '<button class="btn full green" onclick="Router.go(\'playnow\')" style="flex:1;font-size:11px;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg> Play Now</button>';
   h += '<button class="btn full outline" onclick="Router.go(\'tee-create\')" style="flex:1;font-size:11px;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Post Tee Time</button>';
   h += '</div>';
+
+  // Motivation card — dynamic based on player state
+  var myRounds = currentUser ? PB.getPlayerRounds(currentUser.uid) : [];
+  if (!myRounds.length && currentProfile && currentProfile.claimedFrom) myRounds = PB.getPlayerRounds(currentProfile.claimedFrom);
+  var myLevel = currentUser ? PB.getPlayerLevel(currentUser.uid) : {level:1,xp:0,nextLevelXp:100,currentLevelXp:0};
+  if (myLevel.level <= 1 && currentProfile && currentProfile.claimedFrom) myLevel = PB.getPlayerLevel(currentProfile.claimedFrom);
+  var xpToNext = myLevel.nextLevelXp - myLevel.xp;
+  var achievementCount = currentUser ? PB.getAchievements(currentUser.uid).length : 0;
+  if (!achievementCount && currentProfile && currentProfile.claimedFrom) achievementCount = PB.getAchievements(currentProfile.claimedFrom).length;
+  
+  var motivationCards = [];
+  
+  if (myRounds.length === 0) {
+    motivationCards.push({icon:"🏌️", title:"Log your first round", sub:"Earn 100 XP, unlock the First Blood badge, and establish your handicap.", cta:"Play Now →", page:"playnow"});
+  } else if (myRounds.length < 3) {
+    motivationCards.push({icon:"📊", title: (3 - myRounds.length) + " more round" + (myRounds.length < 2 ? "s" : "") + " until your handicap", sub:"Log " + (3 - myRounds.length) + " more to get your official GHIN handicap calculated.", cta:"Play Now →", page:"playnow"});
+  }
+  
+  if (xpToNext <= 200 && myLevel.level > 1) {
+    motivationCards.push({icon:"⚡", title: xpToNext + " XP to Level " + (myLevel.level+1), sub:"One solid round could get you there. New title unlocks every 5 levels.", cta:"View Trophy Room →", page:"trophyroom"});
+  }
+  
+  if (myRounds.length >= 3 && myRounds.length < 10) {
+    var best = Math.min.apply(null, myRounds.map(function(r){return r.score||999}));
+    motivationCards.push({icon:"🎯", title:"Your best: " + best, sub:"Can you beat it? Every round that ties or beats your PR earns a 50-point bonus.", cta:"Play Now →", page:"playnow"});
+  }
+  
+  var now = new Date();
+  var inSeason = now.getMonth() >= 2 && now.getMonth() <= 8;
+  if (inSeason && season.standings.length > 0) {
+    var myStanding = season.standings.find(function(s) { return s.id === (currentUser ? currentUser.uid : "") || s.id === (currentProfile ? currentProfile.claimedFrom : ""); });
+    if (myStanding && season.standings.indexOf(myStanding) > 0) {
+      var ahead = season.standings[season.standings.indexOf(myStanding) - 1];
+      var gap = ahead.points - myStanding.points;
+      motivationCards.push({icon:"🏆", title: gap + " points behind " + (ahead.name||ahead.username), sub:"One big round with an attested score could close that gap.", cta:"View Standings →", page:"standings"});
+    }
+  }
+  
+  if (!motivationCards.length) {
+    motivationCards.push({icon:"⛳", title:"The course is calling", sub:"Every round earns XP, builds your handicap, and pushes you up the standings.", cta:"Play Now →", page:"playnow"});
+  }
+  
+  // Pick one randomly (or cycle daily based on date)
+  var dayIndex = Math.floor(Date.now() / 86400000) % motivationCards.length;
+  var mCard = motivationCards[dayIndex];
+  
+  h += '<div style="padding:0 16px 12px"><div onclick="Router.go(\'' + mCard.page + '\')" style="background:linear-gradient(135deg,rgba(201,168,76,.06),rgba(201,168,76,.02));border:1px solid rgba(201,168,76,.12);border-radius:var(--radius);padding:14px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
+  h += '<div style="display:flex;align-items:flex-start;gap:12px">';
+  h += '<div style="font-size:24px;flex-shrink:0;margin-top:2px">' + mCard.icon + '</div>';
+  h += '<div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--cream)">' + mCard.title + '</div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4">' + mCard.sub + '</div>';
+  h += '<div style="font-size:11px;color:var(--gold);font-weight:600;margin-top:8px">' + mCard.cta + '</div>';
+  h += '</div></div></div></div>';
 
   // 1. Champions
   var pastTournaments = tournaments.filter(function(t) { return t.champion; });
@@ -7012,8 +7066,19 @@ function sendDM() {
   var input = document.getElementById("dmInput"); var text = input.value.trim();
   if (!text || !db || !currentUser || !activeDmPartner) return;
   var cid = getDmConvoId(currentUser.uid, activeDmPartner);
-  db.collection("dms").doc(cid).collection("messages").add({ text:text, authorId:currentUser.uid, authorName:currentProfile?PB.getDisplayName(currentProfile):"Anon", createdAt:fsTimestamp() })
-    .then(function(){input.value=""; db.collection("dms").doc(cid).update({lastMessage:text,lastMessageAt:fsTimestamp(),lastMessageBy:currentUser.uid}); })
+  var myName = currentProfile ? PB.getDisplayName(currentProfile) : "Someone";
+  db.collection("dms").doc(cid).collection("messages").add({ text:text, authorId:currentUser.uid, authorName:myName, createdAt:fsTimestamp() })
+    .then(function(){
+      input.value=""; 
+      db.collection("dms").doc(cid).update({lastMessage:text,lastMessageAt:fsTimestamp(),lastMessageBy:currentUser.uid});
+      // Send notification to the other person
+      sendNotification(activeDmPartner, {
+        type: "dm",
+        title: "New Message",
+        message: myName + ": " + text.substring(0, 50) + (text.length > 50 ? "..." : ""),
+        linkPage: "dms"
+      });
+    })
     .catch(function(){Router.toast("Failed to send")});
 }
 
@@ -8201,7 +8266,7 @@ function renderNotifPanel() {
   }
   var h = '';
   liveNotifications.forEach(function(n) {
-    var icon = n.type === "feed_like" ? "♥" : n.type === "feed_comment" || n.type === "feed_reply" ? "💬" : n.type === "tee_rsvp" ? "⛳" : n.type === "tee_cancelled" ? "🚫" : n.type === "tee_withdrawal" ? "👋" : n.type === "report" ? "⚠️" : "🔔";
+    var icon = n.type === "feed_like" ? "♥" : n.type === "feed_comment" || n.type === "feed_reply" ? "💬" : n.type === "dm" ? "✉️" : n.type === "tee_rsvp" ? "⛳" : n.type === "tee_cancelled" ? "🚫" : n.type === "tee_withdrawal" ? "👋" : n.type === "report" ? "⚠️" : "🔔";
     h += '<div class="notif-item unread" onclick="handleNotifClick(\'' + (n._id||"") + '\',\'' + (n.linkPage||"home") + '\')">';
     h += '<div style="display:flex;gap:10px;align-items:flex-start">';
     h += '<div style="font-size:16px;flex-shrink:0;margin-top:2px">' + icon + '</div>';
@@ -9048,7 +9113,22 @@ function renderOnlineSection() {
   if (!el) return;
   
   var uids = Object.keys(onlineMembers);
-  if (uids.length <= 1) { el.innerHTML = ""; return; } // Don't show if only you
+  if (uids.length <= 1) { el.innerHTML = ""; return; }
+  
+  // Try to resolve full profiles from Firestore members cache or local
+  var resolveProfile = function(uid) {
+    // Try local first
+    var p = PB.getPlayer(uid);
+    if (p) return p;
+    // Try by claimedFrom — founding members have local id != firebase uid
+    var players = PB.getPlayers();
+    for (var i = 0; i < players.length; i++) {
+      if (players[i].claimedFrom && players[i].id === uid) return players[i];
+    }
+    // Check if currentProfile matches
+    if (currentProfile && currentProfile.id === uid) return currentProfile;
+    return null;
+  };
   
   var h = '<div style="padding:8px 16px 12px">';
   h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><div style="width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse-dot 2s infinite"></div><span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">' + uids.length + ' Online Now</span></div>';
@@ -9056,21 +9136,33 @@ function renderOnlineSection() {
   
   uids.forEach(function(uid) {
     var data = onlineMembers[uid];
-    var p = PB.getPlayer(uid);
-    var name = data.name || (p ? p.name : "Member");
+    var p = resolveProfile(uid);
+    var name = (p ? (p.name || p.username) : null) || data.name || "Member";
     var isMe = currentUser && uid === currentUser.uid;
     
-    h += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0">';
-    h += '<div style="position:relative;width:36px;height:36px;border-radius:50%;overflow:hidden;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid ' + (isMe ? 'var(--gold)' : 'rgba(74,222,128,.4)') + '">';
+    h += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0" onclick="Router.go(\'members\',{id:\'' + uid + '\'})">';
+    h += '<div style="position:relative;width:40px;height:40px;border-radius:50%;overflow:hidden;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid ' + (isMe ? 'var(--gold)' : 'rgba(74,222,128,.4)') + ';cursor:pointer">';
     if (p) { h += Router.getAvatar(p); }
     else { h += '<span style="color:var(--gold);font-weight:700">' + name.charAt(0).toUpperCase() + '</span>'; }
     h += '</div>';
-    h += '<div style="font-size:9px;color:' + (isMe ? 'var(--gold)' : 'var(--muted)') + ';max-width:48px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center">' + escHtml(name.split(" ")[0]) + '</div>';
+    h += '<div style="font-size:9px;color:' + (isMe ? 'var(--gold)' : 'var(--muted)') + ';max-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center">' + escHtml(name.split(" ")[0]) + '</div>';
     h += '</div>';
   });
   
   h += '</div></div>';
   el.innerHTML = h;
+  
+  // Async fetch missing profiles from Firestore to fill in avatars
+  uids.forEach(function(uid) {
+    if (!resolveProfile(uid) && db) {
+      db.collection("members").doc(uid).get().then(function(doc) {
+        if (doc.exists) {
+          onlineMembers[uid]._profile = doc.data();
+          renderOnlineSection(); // Re-render with updated data
+        }
+      }).catch(function(){});
+    }
+  });
 }
 
 
