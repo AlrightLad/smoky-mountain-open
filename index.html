@@ -159,9 +159,9 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
 
 /* PROFILE DETAIL */
 .pd-banner{text-align:center;padding:20px 16px 16px}
-.pd-av{position:relative;width:86px;height:86px;border-radius:50%;background:var(--bg3);border:2px solid var(--gold2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--gold);font-weight:700;margin:0 auto 10px;cursor:pointer;position:relative}
-.pd-av img{width:100%;height:100%;object-fit:cover}
-.pd-edit{position:absolute;bottom:0;right:0;width:24px;height:24px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid var(--bg);color:var(--bg)}
+.pd-av{position:relative;width:86px;height:86px;border-radius:50%;background:var(--bg3);border:2px solid var(--gold2);display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--gold);font-weight:700;margin:0 auto 10px;cursor:pointer}
+.pd-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.pd-edit{position:absolute;bottom:-4px;right:-4px;width:26px;height:26px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid var(--bg);color:var(--bg);z-index:2}
 .pd-name{font-family:"Playfair Display",serif;font-size:22px;font-weight:700}
 .pd-nick{font-size:12px;color:var(--gold);margin-top:3px;letter-spacing:.3px}
 .pd-range{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.2px}
@@ -8682,10 +8682,10 @@ function renderChatMessages(messages) {
         ch += '<span style="color:var(--cream);flex:1">' + escHtml(c.text) + '</span>';
         ch += '</div>';
         // Comment actions: timestamp, like, reply, delete
-        ch += '<div style="display:flex;gap:10px;margin-top:2px;padding-left:0">';
+        ch += '<div style="display:flex;gap:12px;margin-top:3px;padding:2px 0">';
         if (cTimeStr) ch += '<span style="font-size:9px;color:var(--muted2)">' + cTimeStr + '</span>';
-        ch += '<span style="font-size:9px;cursor:pointer;color:' + (cILiked ? 'var(--gold)' : 'var(--muted2)') + ';display:flex;align-items:center;gap:2px" onclick="event.stopPropagation();toggleCommentLike(\'' + msg._docId + '\',' + ci + ')"><svg viewBox="0 0 16 16" width="9" height="9" fill="' + (cILiked ? 'var(--gold)' : 'none') + '" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg>' + (cLikes.length ? ' ' + cLikes.length : '') + '</span>';
-        ch += '<span style="font-size:9px;cursor:pointer;color:var(--muted2)" onclick="event.stopPropagation();replyToComment(\'' + msg._docId + '\',\'' + escHtml((c.name||"Anon").replace(/'/g,"\\'")) + '\')">Reply</span>';
+        ch += '<span style="font-size:9px;cursor:pointer;padding:2px 4px;color:' + (cILiked ? 'var(--gold)' : 'var(--muted2)') + ';display:flex;align-items:center;gap:2px" onclick="event.stopPropagation();toggleCommentLike(\'' + msg._docId + '\',' + ci + ')"><svg viewBox="0 0 16 16" width="9" height="9" fill="' + (cILiked ? 'var(--gold)' : 'none') + '" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg>' + (cLikes.length ? ' ' + cLikes.length : '') + '</span>';
+        ch += '<span style="font-size:9px;cursor:pointer;padding:2px 4px;color:var(--muted2);display:flex;align-items:center;gap:2px" onclick="event.stopPropagation();replyToComment(\'' + msg._docId + '\',\'' + escHtml((c.name||"Anon").replace(/'/g,"\\'")) + '\')"><svg viewBox="0 0 16 16" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 8L2 11V5.5A1.5 1.5 0 013.5 4h9A1.5 1.5 0 0114 5.5v4a1.5 1.5 0 01-1.5 1.5H7z"/></svg> Reply</span>';
         if (canDeleteComment) {
           ch += '<span style="color:var(--muted2);cursor:pointer;font-size:9px" onclick="event.stopPropagation();confirmDeleteComment(this,\'' + msg._docId + '\',' + ci + ')"><svg viewBox="0 0 16 16" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4l8 8M12 4l-8 8"/></svg></span>';
         }
@@ -8861,7 +8861,13 @@ function replyToComment(docId, commentAuthor) {
     if (el.id !== "comment-" + docId) el.style.display = "none";
   });
   var el = document.getElementById("comment-" + docId);
-  if (el) el.style.display = "flex";
+  if (!el) return;
+  // Toggle: if already open, close it
+  if (el.style.display === "flex") {
+    el.style.display = "none";
+    return;
+  }
+  el.style.display = "flex";
   var input = document.getElementById("commentText-" + docId);
   if (input) {
     input.value = "@" + commentAuthor + " ";
@@ -9631,11 +9637,11 @@ Router.register("caddynotes", function() {
     {item: "Coming Up cards now navigate to event scorecard instead of tee times", tag: "FIXED"},
     {item: "All emojis replaced with SVG icons for consistent brand aesthetic", tag: "IMPROVED"},
     {item: "Pull-to-refresh no longer triggers when scrolling inside chat feed", tag: "FIXED"},
-    {item: "Account creation hardened — claim profiles only for FOUNDING-FOUR code", tag: "FIXED"},
-    {item: "Profile claim deselect bug fixed — tap again properly clears selection", tag: "FIXED"},
-    {item: "Auto-cleanup for corrupted profiles (claimedFrom, inherited data)", tag: "FIXED"},
+    {item: "Account creation hardened — improved new user registration security", tag: "FIXED"},
+    {item: "Registration form improvements — cleaner flow for new members", tag: "FIXED"},
+    {item: "Profile data integrity — automatic detection and repair of account issues", tag: "FIXED"},
     {item: "Online presence dedup — same user no longer shows twice", tag: "FIXED"},
-    {item: "Firestore rules updated for rangeSessions, tripscores, attestations", tag: "IMPROVED"},
+    {item: "Backend performance and security improvements", tag: "IMPROVED"},
     {item: "Semantic versioning adopted (major.minor.patch)", tag: "IMPROVED"}
   ];
   v540.forEach(function(r) {
@@ -9664,9 +9670,9 @@ Router.register("caddynotes", function() {
     {item: "Pull-to-refresh on all pages", tag: "NEW"},
     {item: "Notification panel rebuilt with deep linking", tag: "FIXED"},
     {item: "Connectivity indicator in footer", tag: "NEW"},
-    {item: "Presence system optimized — 70% fewer Firestore reads", tag: "IMPROVED"},
-    {item: "Firestore security rules hardened", tag: "IMPROVED"},
-    {item: "Global error logging for production debugging", tag: "NEW"}
+    {item: "Performance optimized — faster loading and less data usage", tag: "IMPROVED"},
+    {item: "Security improvements across all features", tag: "IMPROVED"},
+    {item: "Stability improvements and bug tracking", tag: "NEW"}
   ];
   v530.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "rgba(78,201,122,.5)" : r.tag === "FIXED" ? "rgba(201,168,76,.5)" : "rgba(96,165,250,.5)";
@@ -9707,7 +9713,7 @@ Router.register("caddynotes", function() {
     "Photo uploads synced across all devices",
     "Notification bell with deep linking",
     "Who's Online with live round broadcasting",
-    "Commissioner admin panel with profile cleanup",
+    "Commissioner admin panel",
     "Scramble team management",
     "Ace wall",
     "Season recap and yearly awards ceremony",
@@ -9726,7 +9732,7 @@ Router.register("caddynotes", function() {
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--muted)">On the Range — Coming Soon</span></div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--muted);line-height:1.8">';
   var upcoming = [
-    "Custom badge image gallery (64 icons via Bing AI)",
+    "Custom badge image gallery",
     "Cosmetic avatar borders and banners",
     "PWA install — add to home screen like a native app",
     "Push notifications to locked screen",
