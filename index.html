@@ -433,7 +433,7 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 .chat-author{font-size:11px;font-weight:700;color:var(--gold)}
 .chat-text{font-size:12px;color:var(--cream);margin-top:2px;line-height:1.4}
 .chat-time{font-size:9px;color:var(--muted2);margin-top:2px}
-.chat-input-row{display:flex;gap:8px;padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--bg)}
+.chat-input-row{display:flex;gap:8px;padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--bg);z-index:10}
 .chat-input-row input{flex:1;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;color:var(--cream);font-size:13px;outline:none;font-family:'Inter',sans-serif}
 .chat-input-row button{padding:10px 16px;background:var(--gold);color:var(--bg);border:none;border-radius:20px;font:700 12px 'Inter',sans-serif;cursor:pointer}
 
@@ -516,12 +516,16 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 /* ===== RESPONSIVE DESKTOP ===== */
 @media (min-width: 768px) {
-  body{max-width:900px;font-size:15px}
+  body{max-width:960px;font-size:15px}
   .hero h1{font-size:28px}
   .hero{padding:48px 32px 32px}
   .hero-logo{width:100px;height:100px;border-radius:24px}
+  .sh{padding:16px 24px}
   .sh h2{font-size:22px}
+  .sec-head{padding:12px 24px 8px}
   .nav button{font-size:11px;padding:18px 20px;letter-spacing:1.5px}
+  .card{margin-left:24px;margin-right:24px}
+  .qlinks{padding:0 24px;gap:10px}
   .btn,.btn-sm{font-size:12px;padding:11px 18px}
   .auth-screen{padding:40px}
   .auth-title{font-size:28px}
@@ -529,23 +533,44 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
   #profileBar{padding:12px 24px}
   .footer{font-size:11px;padding:24px 24px 32px}
   .notif-panel{width:400px}
+  .trophy-header{padding:28px 24px}
   .trophy-level{font-size:56px}
-  .ach-grid{grid-template-columns:repeat(4,1fr)}
+  .ach-grid{grid-template-columns:repeat(4,1fr);padding:0 24px}
+  .ach-cat-head{padding-left:24px;padding-right:24px}
   .ach-card{padding:16px 10px}
+  .stat-box{padding:14px 8px}
   .est{font-size:12px}
   .ff-input,.ff select{font-size:14px;padding:12px 14px}
+  .chat-input-row{padding:10px 24px}
   .chat-input-row input{font-size:14px}
-  .qlinks{gap:10px}
-  [data-page]{padding:0 8px}
+  .member-row{padding:14px 24px}
+  .empty{padding:32px 24px}
+  .title-row{margin-left:24px;margin-right:24px}
+  .hcap-box{margin:0 24px 16px}
+  .hof-card{margin:0 24px 10px}
+  .course-banner{margin:0 24px}
+  .home-actions{padding-left:24px!important;padding-right:24px!important}
 }
 @media (min-width: 1024px) {
-  body{max-width:1080px}
-  .ach-grid{grid-template-columns:repeat(5,1fr)}
+  body{max-width:1100px}
   .hero{padding:56px 40px 36px}
   .hero h1{font-size:32px}
   .hero-logo{width:120px;height:120px}
-  .qlinks{gap:12px}
-  [data-page]{padding:0 16px}
+  .sh{padding:16px 32px}
+  .sec-head{padding:12px 32px 8px}
+  .card{margin-left:32px;margin-right:32px}
+  .qlinks{padding:0 32px;gap:12px}
+  .ach-grid{grid-template-columns:repeat(5,1fr);padding:0 32px}
+  .ach-cat-head{padding-left:32px;padding-right:32px}
+  #profileBar{padding:14px 32px}
+  .member-row{padding:14px 32px}
+  .chat-input-row{padding:10px 32px}
+  .hcap-box{margin:0 32px 16px}
+  .hof-card{margin:0 32px 10px}
+  .course-banner{margin:0 32px}
+  .title-row{margin-left:32px;margin-right:32px}
+  .empty{padding:32px 32px}
+  .home-actions{padding-left:32px!important;padding-right:32px!important}
 }
 </style>
 </head>
@@ -3081,6 +3106,9 @@ var Router = (function() {
       if (pages[page]) pages[page](current.params);
     }
     window.scrollTo(0, 0);
+    // Hide footer on pages with sticky input (chat, DMs)
+    var footer = document.querySelector(".footer");
+    if (footer) footer.style.display = (page === "chat" || page === "dms" || page === "dm-thread") ? "none" : "";
   }
 
   function getPage() { return current.page; }
@@ -3229,7 +3257,7 @@ Router.register("home", function() {
   h += '<div id="onlineSection"></div>';
 
   // Quick Actions
-  h += '<div style="display:flex;gap:8px;padding:0 16px 16px">';
+  h += '<div class="home-actions" style="display:flex;gap:8px;padding:0 16px 16px">';
   h += '<button class="btn full green" onclick="Router.go(\'playnow\')" style="flex:1;font-size:11px;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg> Play Now</button>';
   h += '<button class="btn full outline" onclick="Router.go(\'tee-create\')" style="flex:1;font-size:11px;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Post Tee Time</button>';
   h += '</div>';
