@@ -11792,6 +11792,24 @@ function cleanupCorruptedProfiles() {
         if (m.wins) { updates.wins = 0; }
         if (m.trips) { updates.trips = 0; }
       }
+      // Fallback: catch profiles where claimedFrom was already deleted but inherited data remains
+      if (!m.claimedFrom && !m.isFoundingFour) {
+        var founderBios = ["Founded the Parbaughs","Tracks stats like his life depends on it"];
+        if (m.bio && founderBios.some(function(fb){return m.bio.indexOf(fb) !== -1})) {
+          updates.bio = ""; needsFix = true;
+        }
+        if (m.funnyFacts && m.funnyFacts.length && !m.isFoundingFour) {
+          // Check if funnyFacts match a founding member's
+          var founderFacts = ["Bought custom-fit irons","Owns more golf trackers","Will quote his handicap"];
+          if (m.funnyFacts.some(function(f){return founderFacts.some(function(ff){return f.indexOf(ff)!==-1})})) {
+            updates.funnyFacts = []; needsFix = true;
+          }
+        }
+        if (m.nick && !m.isFoundingFour) {
+          var founderNicks = ["The Commissioner","Mr Parbaugh"];
+          if (founderNicks.indexOf(m.nick) !== -1) { updates.nick = ""; needsFix = true; }
+        }
+      }
       
       if (needsFix) {
         pbLog("[Cleanup] Fixing corrupted profile:", doc.id, updates);
