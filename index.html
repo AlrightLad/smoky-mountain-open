@@ -3799,7 +3799,7 @@ Router.register("home", function() {
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Play</span></div>';
   h += '<div class="qlinks" style="grid-template-columns:repeat(2,1fr)">';
   var primaryLinks = [
-    {p:"syncround",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='22' height='22'><path d='M4 4v5h5'/><path d='M20 20v-5h-5'/><path d='M4 9a8 8 0 0114.4-4.8'/><path d='M20 15a8 8 0 01-14.4 4.8'/></svg>",l:"Parbaugh Round"},
+    {p:"syncround",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='22' height='22'><path d='M21 3v6h-6'/><path d='M3 21v-6h6'/><path d='M21 9A9 9 0 006.3 5.3L3 9'/><path d='M3 15a9 9 0 0014.7 3.7L21 15'/></svg>",l:"Parbaugh Round"},
     {p:"partygames",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='22' height='22'><circle cx='12' cy='12' r='10'/><path d='M8 14s1.5 2 4 2 4-2 4-2'/><circle cx='9' cy='9' r='1' fill='currentColor'/><circle cx='15' cy='9' r='1' fill='currentColor'/></svg>",l:"Party Games"}
   ];
   primaryLinks.forEach(function(lnk) {
@@ -5876,7 +5876,12 @@ function renderPlaySetup() {
   // Player is always the current user — locked
   var myPlayer = currentUser ? PB.getPlayer(currentUser.uid) : null;
   var myLocalPlayer = PB.getPlayers().find(function(p) { return currentProfile && (p.id === currentProfile.claimedFrom || p.name === currentProfile.name); });
-  var playAs = myPlayer || myLocalPlayer || PB.getPlayers()[0];
+  var playAs = myPlayer || myLocalPlayer;
+  if (!playAs) {
+    h += '<div style="padding:20px;text-align:center;font-size:12px;color:var(--red)">Could not identify your player profile. Please contact the Commissioner.</div>';
+    document.querySelector('[data-page="playnow"]').innerHTML = h;
+    return;
+  }
   h += '<div class="ff"><label class="ff-label">Playing as</label><div class="ff-input" style="background:var(--bg4);color:var(--gold);font-weight:600">' + escHtml(playAs.name) + '</div><input type="hidden" id="pn-player" value="' + playAs.id + '"></div>';
 
   h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="pn-course" placeholder="Start typing to search..." oninput="showPlayCourseSearch(this)"><div id="search-pn-course" class="search-results"></div></div>';
@@ -7603,7 +7608,14 @@ Router.register("records", function() {
   h += '<div id="add-record-form" style="display:none;padding:0 16px 16px"><div class="card"><div class="card-body">';
   h += '<div class="ff"><label class="ff-label">Record type</label><select class="ff-input" id="rec-type"><option value="longestDrive">Longest drive</option><option value="longestPutt">Longest putt</option><option value="longestHoleOut">Longest hole out</option><option value="chipIn">Chip-in</option></select></div>';
   h += '<div class="ff"><label class="ff-label">Player</label><select class="ff-input" id="rec-player">';
-  players.forEach(function(p) { h += '<option value="' + p.name + '">' + p.name + '</option>'; });
+  var recPlayer = currentUser ? PB.getPlayer(currentUser.uid) : null;
+  var recLocal = PB.getPlayers().find(function(p) { return currentProfile && (p.id === currentProfile.claimedFrom || p.name === currentProfile.name); });
+  var recAs = recPlayer || recLocal;
+  if (recAs) {
+    h += '<option value="' + recAs.name + '">' + recAs.name + '</option>';
+  } else {
+    players.forEach(function(p) { h += '<option value="' + p.name + '">' + p.name + '</option>'; });
+  }
   h += '</select></div>';
   h += '<div class="ff"><label class="ff-label">Distance (yds or ft)</label><input class="ff-input" id="rec-distance" type="number" placeholder="e.g. 285"></div>';
   h += '<div class="ff"><label class="ff-label">Club used</label><input class="ff-input" id="rec-club" placeholder="e.g. 7 iron"></div>';
@@ -8191,8 +8203,12 @@ function renderActivityRounds() {
   h += '<div class="ff"><label class="ff-label">Player</label>';
   var myRoundPlayer = currentUser ? PB.getPlayer(currentUser.uid) : null;
   var myRoundLocal = PB.getPlayers().find(function(p) { return currentProfile && (p.id === currentProfile.claimedFrom || p.name === currentProfile.name); });
-  var roundAs = myRoundPlayer || myRoundLocal || PB.getPlayers()[0];
-  h += '<div class="ff-input" style="background:var(--bg4);color:var(--gold);font-weight:600">' + escHtml(roundAs.name) + '</div><input type="hidden" id="rf-player" value="' + roundAs.id + '"></div>';
+  var roundAs = myRoundPlayer || myRoundLocal;
+  if (!roundAs) {
+    h += '<div style="font-size:12px;color:var(--red)">Could not identify your player profile.</div></div>';
+  } else {
+    h += '<div class="ff-input" style="background:var(--bg4);color:var(--gold);font-weight:600">' + escHtml(roundAs.name) + '</div><input type="hidden" id="rf-player" value="' + roundAs.id + '"></div>';
+  }
   h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="rf-course" placeholder="Start typing to search courses..." oninput="showRoundCourseSearch(this)"><div id="search-round-course" class="search-results"></div></div>';
   h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="rf-format"><option value="stroke">Stroke play</option><option value="parbaugh">Parbaugh Stroke Play</option><option value="stableford">Modified Stableford</option><option value="scramble">Scramble (2-man)</option><option value="scramble4">Scramble (4-man)</option><option value="bestball">Best ball</option><option value="alternate">Alternate shot</option><option value="skins">Skins</option><option value="match">Match play</option></select></div>';
   h += '<div class="ff-row" style="grid-template-columns:1fr 1fr">';
