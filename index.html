@@ -7481,24 +7481,21 @@ Router.register("chat", function() {
 
 var clubCalOpen = false;
 var clubCalSelectedDate = null;
+var clubCalRangeStart = null;
+var clubCalRangeEnd = null;
 
 function toggleClubhouseCal() {
   clubCalOpen = !clubCalOpen;
   var el = document.getElementById("clubhouseCal");
   var btn = document.getElementById("calToggleBtn");
-  if (el) {
-    el.style.display = clubCalOpen ? "block" : "none";
-  }
-  if (btn) {
-    btn.innerHTML = clubCalOpen ? "✕ Close" : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Calendar';
-  }
+  if (el) el.style.display = clubCalOpen ? "block" : "none";
+  if (btn) btn.innerHTML = clubCalOpen ? "✕ Close" : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Calendar';
 }
 
 function renderClubCalGrid(year, month, todayStr, events) {
   var firstDay = new Date(year, month, 1).getDay();
   var daysInMonth = new Date(year, month + 1, 0).getDate();
   
-  // Build event dates set
   var eventDates = {};
   if (events) events.forEach(function(e) { eventDates[e.date] = e; });
   liveTeeTimes.forEach(function(t) { if (t.status !== "cancelled") eventDates[t.date] = {type:"tee",title:t.courseName,time:t.time}; });
@@ -7519,9 +7516,13 @@ function renderClubCalGrid(year, month, todayStr, events) {
     var dateStr = year + "-" + String(month + 1).padStart(2,"0") + "-" + String(d).padStart(2,"0");
     var isToday = dateStr === todayStr;
     var isSelected = dateStr === clubCalSelectedDate;
+    var isRangeStart = dateStr === clubCalRangeStart;
+    var isRangeEnd = dateStr === clubCalRangeEnd;
+    var inRange = clubCalRangeStart && clubCalRangeEnd && dateStr >= clubCalRangeStart && dateStr <= clubCalRangeEnd;
     var hasEvent = eventDates[dateStr];
-    var bg = isSelected ? "var(--gold)" : isToday ? "rgba(201,168,76,.15)" : "transparent";
-    var color = isSelected ? "var(--bg)" : isToday ? "var(--gold)" : "var(--cream)";
+    
+    var bg = isRangeStart || isRangeEnd ? "var(--gold)" : inRange ? "rgba(201,168,76,.25)" : isSelected ? "var(--gold)" : isToday ? "rgba(201,168,76,.15)" : "transparent";
+    var color = isRangeStart || isRangeEnd || isSelected ? "var(--bg)" : isToday ? "var(--gold)" : "var(--cream)";
     var dotHtml = hasEvent ? '<div style="width:4px;height:4px;border-radius:50%;background:' + (hasEvent.type === "trip" ? "var(--gold)" : "var(--birdie)") + ';margin:1px auto 0"></div>' : '';
     h += '<div onclick="selectClubCalDay(\'' + dateStr + '\')" style="padding:6px 0;font-size:12px;font-weight:' + (isToday ? "700" : "400") + ';color:' + color + ';background:' + bg + ';border-radius:6px;cursor:pointer;line-height:1">' + d + dotHtml + '</div>';
   }
@@ -7529,26 +7530,56 @@ function renderClubCalGrid(year, month, todayStr, events) {
 }
 
 function selectClubCalDay(dateStr) {
-  clubCalSelectedDate = (clubCalSelectedDate === dateStr) ? null : dateStr;
+  // If nothing selected, select as start
+  if (!clubCalSelectedDate && !clubCalRangeStart) {
+    clubCalSelectedDate = dateStr;
+    clubCalRangeStart = null;
+    clubCalRangeEnd = null;
+  }
+  // If same date tapped again, deselect
+  else if (clubCalSelectedDate === dateStr && !clubCalRangeEnd) {
+    clubCalSelectedDate = null;
+    clubCalRangeStart = null;
+    clubCalRangeEnd = null;
+  }
+  // If a date is selected and a different date is tapped, create a range
+  else if (clubCalSelectedDate && !clubCalRangeEnd) {
+    if (dateStr > clubCalSelectedDate) {
+      clubCalRangeStart = clubCalSelectedDate;
+      clubCalRangeEnd = dateStr;
+    } else if (dateStr < clubCalSelectedDate) {
+      clubCalRangeStart = dateStr;
+      clubCalRangeEnd = clubCalSelectedDate;
+    }
+    clubCalSelectedDate = null;
+  }
+  // If a range exists and user taps again, reset to single date
+  else {
+    clubCalSelectedDate = dateStr;
+    clubCalRangeStart = null;
+    clubCalRangeEnd = null;
+  }
   refreshClubCal();
 }
 
 function clubCalPrev() {
   calMonth--;
   if (calMonth < 0) { calMonth = 11; calYear--; }
-  clubCalSelectedDate = null;
+  clubCalSelectedDate = null; clubCalRangeStart = null; clubCalRangeEnd = null;
   refreshClubCal();
 }
 
 function clubCalNext() {
   calMonth++;
   if (calMonth > 11) { calMonth = 0; calYear++; }
-  clubCalSelectedDate = null;
+  clubCalSelectedDate = null; clubCalRangeStart = null; clubCalRangeEnd = null;
   refreshClubCal();
 }
 
 function refreshClubCal() {
   var monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  var monNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var now = new Date();
   var todayStr = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0") + "-" + String(now.getDate()).padStart(2,"0");
   
@@ -7558,47 +7589,98 @@ function refreshClubCal() {
   var gridEl = document.getElementById("clubCalGrid");
   if (gridEl) gridEl.innerHTML = renderClubCalGrid(calYear, calMonth, todayStr, []);
   
-  // Show selected day events
   var eventsEl = document.getElementById("clubCalEvents");
-  if (eventsEl) {
-    if (clubCalSelectedDate) {
-      var dayEvents = [];
-      liveTeeTimes.forEach(function(t) { if (t.date === clubCalSelectedDate && t.status !== "cancelled") dayEvents.push({type:"tee",title:t.courseName||"Tee Time",time:t.time||""}); });
-      PB.getTrips().forEach(function(trip) {
-        if (trip.startDate && trip.startDate <= clubCalSelectedDate && (!trip.endDate || trip.endDate >= clubCalSelectedDate)) {
-          dayEvents.push({type:"trip",title:trip.name,time:""});
-        }
+  if (!eventsEl) return;
+  
+  // DATE RANGE SELECTED → event/trip creation
+  if (clubCalRangeStart && clubCalRangeEnd) {
+    var sd = new Date(clubCalRangeStart + "T12:00:00");
+    var ed = new Date(clubCalRangeEnd + "T12:00:00");
+    var days = Math.round((ed - sd) / 86400000) + 1;
+    var eh = '<div style="font-size:11px;font-weight:600;color:var(--cream);margin-bottom:6px">' + monNames[sd.getMonth()] + ' ' + sd.getDate() + ' — ' + monNames[ed.getMonth()] + ' ' + ed.getDate() + ' (' + days + ' days)</div>';
+    
+    var rangeEvents = [];
+    liveTeeTimes.forEach(function(t) { if (t.date >= clubCalRangeStart && t.date <= clubCalRangeEnd && t.status !== "cancelled") rangeEvents.push({type:"tee",title:t.courseName||"Tee Time",date:t.date,time:t.time}); });
+    PB.getTrips().forEach(function(trip) { if (trip.startDate && trip.startDate <= clubCalRangeEnd && (!trip.endDate || trip.endDate >= clubCalRangeStart)) rangeEvents.push({type:"trip",title:trip.name}); });
+    if (rangeEvents.length) {
+      rangeEvents.forEach(function(ev) {
+        eh += '<div style="display:flex;align-items:center;gap:6px;padding:3px 0"><div style="width:5px;height:5px;border-radius:50%;background:' + (ev.type==="trip"?"var(--gold)":"var(--birdie)") + '"></div><span style="font-size:11px;color:var(--cream)">' + escHtml(ev.title) + '</span></div>';
       });
-      
-      var eh = '';
-      // Show selected date header
-      var selDate = new Date(clubCalSelectedDate + "T12:00:00");
-      var dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-      var monNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-      eh += '<div style="font-size:11px;font-weight:600;color:var(--cream);margin-bottom:6px">' + dayNames[selDate.getDay()] + ', ' + monNames[selDate.getMonth()] + ' ' + selDate.getDate() + '</div>';
-      
-      if (dayEvents.length) {
-        dayEvents.forEach(function(ev) {
-          var dotColor = ev.type === "trip" ? "var(--gold)" : "var(--birdie)";
-          eh += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0"><div style="width:6px;height:6px;border-radius:50%;background:' + dotColor + ';flex-shrink:0"></div>';
-          eh += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
-          if (ev.time) eh += '<div style="font-size:10px;color:var(--muted)">' + ev.time + '</div>';
-          eh += '</div></div>';
-        });
-      } else {
-        eh += '<div style="font-size:11px;color:var(--muted);padding:4px 0">Nothing scheduled</div>';
-      }
-      
-      // Quick action buttons for the selected date
-      eh += '<div style="display:flex;gap:6px;margin-top:8px">';
-      eh += '<button class="btn-sm green" style="flex:1;font-size:10px" onclick="Router.go(\'tee-create\',{date:\'' + clubCalSelectedDate + '\'})">+ Tee Time</button>';
-      eh += '</div>';
-      
-      eventsEl.innerHTML = eh;
-    } else {
-      eventsEl.innerHTML = '';
     }
+    eh += '<div style="display:flex;gap:6px;margin-top:8px">';
+    eh += '<button class="btn-sm green" style="flex:1;font-size:10px" onclick="createEventFromCal(\'' + clubCalRangeStart + '\',\'' + clubCalRangeEnd + '\')">+ Create Event</button>';
+    eh += '<button class="btn-sm outline" style="flex:1;font-size:10px" onclick="clubCalRangeStart=null;clubCalRangeEnd=null;clubCalSelectedDate=null;refreshClubCal()">Clear</button>';
+    eh += '</div>';
+    eh += '<div style="font-size:9px;color:var(--muted2);margin-top:6px">Tap a single date for a tee time</div>';
+    eventsEl.innerHTML = eh;
+    return;
   }
+  
+  // SINGLE DATE SELECTED → tee time creation
+  if (clubCalSelectedDate) {
+    var dayEvents = [];
+    liveTeeTimes.forEach(function(t) { if (t.date === clubCalSelectedDate && t.status !== "cancelled") dayEvents.push({type:"tee",title:t.courseName||"Tee Time",time:t.time||""}); });
+    PB.getTrips().forEach(function(trip) { if (trip.startDate && trip.startDate <= clubCalSelectedDate && (!trip.endDate || trip.endDate >= clubCalSelectedDate)) dayEvents.push({type:"trip",title:trip.name,time:""}); });
+    var eh = '';
+    var selDate = new Date(clubCalSelectedDate + "T12:00:00");
+    eh += '<div style="font-size:11px;font-weight:600;color:var(--cream);margin-bottom:6px">' + dayNames[selDate.getDay()] + ', ' + monNames[selDate.getMonth()] + ' ' + selDate.getDate() + '</div>';
+    if (dayEvents.length) {
+      dayEvents.forEach(function(ev) {
+        var dotColor = ev.type === "trip" ? "var(--gold)" : "var(--birdie)";
+        eh += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0"><div style="width:6px;height:6px;border-radius:50%;background:' + dotColor + ';flex-shrink:0"></div><div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
+        if (ev.time) eh += '<div style="font-size:10px;color:var(--muted)">' + ev.time + '</div>';
+        eh += '</div></div>';
+      });
+    } else {
+      eh += '<div style="font-size:11px;color:var(--muted);padding:4px 0">Nothing scheduled</div>';
+    }
+    eh += '<div style="display:flex;gap:6px;margin-top:8px">';
+    eh += '<button class="btn-sm green" style="flex:1;font-size:10px" onclick="Router.go(\'tee-create\',{date:\'' + clubCalSelectedDate + '\'})">+ Tee Time</button>';
+    eh += '</div>';
+    eh += '<div style="font-size:9px;color:var(--muted2);margin-top:6px">Tap another date to select a range for events</div>';
+    eventsEl.innerHTML = eh;
+  } else {
+    eventsEl.innerHTML = '';
+  }
+}
+
+function createEventFromCal(startDate, endDate) {
+  var name = prompt("Event name:");
+  if (!name || !name.trim()) return;
+  var location = prompt("Location (optional):", "");
+  
+  var eventData = {
+    id: genId(),
+    name: name.trim(),
+    startDate: startDate,
+    endDate: endDate,
+    location: location || "",
+    members: currentUser ? [currentUser.uid] : [],
+    createdBy: currentUser ? currentUser.uid : "local",
+    createdAt: fsTimestamp()
+  };
+  
+  // Save to Firestore trips collection
+  if (db) {
+    db.collection("trips").doc(eventData.id).set(eventData).then(function() {
+      Router.toast("Event created!");
+      // Post to activity feed
+      db.collection("chat").add({
+        id: genId(),
+        text: "📅 " + (currentProfile ? PB.getDisplayName(currentProfile) : "Someone") + " created a new event: " + name.trim() + " (" + startDate + " to " + endDate + ")",
+        authorId: "system",
+        authorName: "Parbaughs",
+        createdAt: fsTimestamp()
+      }).catch(function(){});
+      clubCalRangeStart = null;
+      clubCalRangeEnd = null;
+      clubCalSelectedDate = null;
+      refreshClubCal();
+    }).catch(function() { Router.toast("Failed to create event"); });
+  }
+  
+  // Also save locally
+  PB.addTrip(eventData);
 }
 
 function renderChatMessages(messages) {
@@ -10151,7 +10233,6 @@ function updatePresence() {
     lastSeen: fsTimestamp(),
     online: true
   };
-  // Broadcast live round info if playing
   if (liveState.active) {
     presenceData.liveRound = {
       course: liveState.course || "",
@@ -10163,25 +10244,30 @@ function updatePresence() {
   } else {
     presenceData.liveRound = null;
   }
+  // Skip redundant writes — only write if state changed or forced heartbeat
+  var sig = (presenceData.name||"") + "|" + (liveState.active ? liveState.currentHole + ":" + liveState.scores.filter(function(s){return s!==""}).length : "idle");
+  if (updatePresence._lastSig === sig && !updatePresence._force) return;
+  updatePresence._lastSig = sig;
+  updatePresence._force = false;
   db.collection("presence").doc(currentUser.uid).set(presenceData, { merge: true }).catch(function(){});
 }
 
 function startPresenceSystem() {
   if (!db || !currentUser) return;
   
-  // Update own presence immediately and every 2 minutes
+  // Update immediately, then every 5 min (saves 60% writes vs 2 min)
+  updatePresence._force = true;
   updatePresence();
-  setInterval(updatePresence, 120000);
+  setInterval(function() { updatePresence._force = true; updatePresence(); }, 300000);
   
   // Set offline on page unload
   window.addEventListener("beforeunload", function() {
     if (db && currentUser) {
-      // Use sendBeacon for reliable offline marking
       db.collection("presence").doc(currentUser.uid).update({ online: false }).catch(function(){});
     }
   });
   
-  // Listen to all presence docs
+  // Listen to presence — 10 min window (matches 5 min heartbeat with buffer)
   db.collection("presence").onSnapshot(function(snap) {
     onlineMembers = {};
     var now = new Date();
@@ -10189,10 +10275,7 @@ function startPresenceSystem() {
       var data = doc.data();
       if (data.lastSeen && data.lastSeen.toDate) {
         var diff = now - data.lastSeen.toDate();
-        // Consider online if seen in last 5 minutes
-        if (diff < 300000) {
-          onlineMembers[doc.id] = data;
-        }
+        if (diff < 600000) { onlineMembers[doc.id] = data; }
       }
     });
     renderOnlineSection();
