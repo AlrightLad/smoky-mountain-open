@@ -5897,20 +5897,10 @@ function renderPlaySetup() {
 }
 
 function showPlayCourseSearch(input) {
-  var val = input.value.trim();
-  var results = PB.searchCourses(val);
-  var container = document.getElementById("search-pn-course");
-  if (!val || val.length < 2) { container.innerHTML = ""; return; }
-  var h = '';
-  results.forEach(function(c) {
-    h += '<div class="search-item" onclick="document.getElementById(\'pn-course\').value=\'' + c.name.replace(/'/g, "\\'") + '\';document.getElementById(\'pn-rating\').value=\'' + c.rating + '\';document.getElementById(\'pn-slope\').value=\'' + c.slope + '\';document.getElementById(\'search-pn-course\').innerHTML=\'\'">' + c.name + ' <span style="color:var(--muted);font-size:11px">' + c.loc + '</span></div>';
-  });
-  if (!results.length) {
-    h += '<div class="search-item" style="display:flex;justify-content:space-between;align-items:center" onclick="quickAddCourse(\'' + val.replace(/'/g, "\\'") + '\')">';
-    h += '<div><div style="font-size:12px;color:var(--cream)">' + escHtml(val) + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Not found — tap to quick add</div></div>';
-    h += '<div style="font-size:10px;color:var(--gold);font-weight:600">+ Add</div></div>';
-  }
-  container.innerHTML = h;
+  courseSearchWithApi(input.value.trim(), "search-pn-course",
+    function(c) { return "document.getElementById('pn-course').value='" + c.name.replace(/'/g, "\\'") + "';document.getElementById('pn-rating').value='" + c.rating + "';document.getElementById('pn-slope').value='" + c.slope + "';document.getElementById('search-pn-course').innerHTML=''"; },
+    function(val) { return "quickAddCourse('" + val.replace(/'/g, "\\'") + "')"; }
+  );
 }
 
 function quickAddCourse(name) {
@@ -7166,20 +7156,10 @@ function submitRound() {
 }
 
 function showRoundCourseSearch(input) {
-  var val = input.value.trim();
-  var results = PB.searchCourses(val);
-  var container = document.getElementById("search-round-course");
-  if (!val || val.length < 2) { container.innerHTML = ""; return; }
-  var h = '';
-  results.forEach(function(c) {
-    h += '<div class="search-item" onclick="document.getElementById(\'rf-course\').value=\'' + c.name.replace(/'/g, "\\'") + '\';document.getElementById(\'search-round-course\').innerHTML=\'\';var ri=document.getElementById(\'rf-rating\');var si=document.getElementById(\'rf-slope\');if(ri&&!ri.value)ri.value=\'' + c.rating + '\';if(si&&!si.value)si.value=\'' + c.slope + '\';">' + c.name + ' <span style="color:var(--muted);font-size:11px">' + c.loc + '</span></div>';
-  });
-  if (!results.length) {
-    h += '<div class="search-item" style="display:flex;justify-content:space-between;align-items:center" onclick="quickAddCourseForRound(\'' + val.replace(/'/g, "\\'") + '\')">';
-    h += '<div><div style="font-size:12px;color:var(--cream)">' + escHtml(val) + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Not found — tap to quick add</div></div>';
-    h += '<div style="font-size:10px;color:var(--gold);font-weight:600">+ Add</div></div>';
-  }
-  container.innerHTML = h;
+  courseSearchWithApi(input.value.trim(), "search-round-course",
+    function(c) { return "document.getElementById('rf-course').value='" + c.name.replace(/'/g, "\\'") + "';document.getElementById('search-round-course').innerHTML='';var ri=document.getElementById('rf-rating');var si=document.getElementById('rf-slope');if(ri&&!ri.value)ri.value='" + c.rating + "';if(si&&!si.value)si.value='" + c.slope + "'"; },
+    function(val) { return "quickAddCourseForRound('" + val.replace(/'/g, "\\'") + "')"; }
+  );
 }
 
 function quickAddCourseForRound(name) {
@@ -7209,34 +7189,312 @@ function showRoundCommentary(round) {
 Router.register("courses", function(params) {
   if (params.add) { renderAddCourseForm(); return; }
   if (params.id) { renderCourseDetail(params.id); return; }
-  if (params.search === "online") { renderOnlineCourseSearch(); return; }
   var courses = PB.getCourses();
   var h = '<div class="sh"><h2>Course directory</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.go(\'records\')">← Back</button><button class="btn-sm green" onclick="promptAddCourse()">+ Add</button></div></div>';
   
-  // Search online banner (if API key exists)
-  var hasApiKey = !!localStorage.getItem("golfcourse_api_key");
-  if (hasApiKey) {
-    h += '<div onclick="Router.go(\'courses\',{search:\'online\'})" style="margin:0 16px 12px;padding:10px 14px;background:linear-gradient(135deg,rgba(201,168,76,.06),rgba(201,168,76,.02));border:1px solid rgba(201,168,76,.15);border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;gap:10px">';
-    h += '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--gold)" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>';
-    h += '<div><div style="font-size:12px;font-weight:600;color:var(--gold)">Search 30,000+ courses online</div>';
-    h += '<div style="font-size:10px;color:var(--muted)">Find and import courses from GolfCourseAPI</div></div>';
-    h += '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M6 4l4 4-4 4"/></svg></div>';
-  }
+  // Search filter
+  h += '<div style="padding:0 16px 10px"><input type="text" class="ff-input" id="dir-search" placeholder="Search courses..." style="font-size:12px" oninput="filterCourseDirectory(this.value)"></div>';
+  
+  // API results container (above local list)
+  h += '<div id="dir-api-results"></div>';
+  // Manual add prompt
+  h += '<div id="dir-manual-add" style="display:none"></div>';
   
   courses.forEach(function(c) {
     var roundsHere = PB.getCourseRounds(c.name);
     var avg = roundsHere.length ? Math.round(roundsHere.reduce(function(a, r) { return a + r.score; }, 0) / roundsHere.length) : null;
     var stars = c.reviews && c.reviews.length ? Math.round(c.reviews.reduce(function(a, r) { return a + r.rating; }, 0) / c.reviews.length * 10) / 10 : null;
-    h += '<div class="card" onclick="Router.go(\'courses\',{id:\'' + c.id + '\'})">';
+    h += '<div class="card course-dir-item" data-name="' + escHtml(c.name.toLowerCase()) + '" data-loc="' + escHtml((c.loc||"").toLowerCase()) + '" onclick="Router.go(\'courses\',{id:\'' + c.id + '\'})">';
     var thumbSrc = photoCache["course:" + c.id] || c.photo || '';
     h += '<div class="course-row"><div class="c-thumb">' + (thumbSrc ? '<img alt="" src="' + thumbSrc + '" onerror="this.src=COURSE_DEFAULT_IMG">' : '<img alt="" src="' + COURSE_DEFAULT_IMG + '">') + '</div>';
     h += '<div class="c-info"><div class="c-name">' + c.name + '</div><div class="c-loc">' + c.loc + ' · ' + c.rating + '/' + c.slope + '</div>';
-    h += '<div class="c-meta">' + (stars ? ''+ stars + '/5 · ' : '') + roundsHere.length + ' rounds' + (avg ? ' · Avg: ' + avg : '') + '</div></div></div></div>';
+    h += '<div class="c-meta">' + (stars ? '' + stars + '/5 · ' : '') + roundsHere.length + ' rounds' + (avg ? ' · Avg: ' + avg : '') + '</div></div></div></div>';
   });
+  h += '<div style="text-align:center;padding:12px;font-size:10px;color:var(--muted2)">' + courses.length + ' courses</div>';
   document.querySelector('[data-page="courses"]').innerHTML = h;
 });
 
-// ========== GOLFCOURSE API INTEGRATION ==========
+var _dirSearchTimer = null;
+function filterCourseDirectory(val) {
+  var q = val.toLowerCase().trim();
+  var visibleCount = 0;
+  document.querySelectorAll(".course-dir-item").forEach(function(el) {
+    var name = el.getAttribute("data-name") || "";
+    var loc = el.getAttribute("data-loc") || "";
+    var show = !q || name.indexOf(q) !== -1 || loc.indexOf(q) !== -1;
+    el.style.display = show ? "" : "none";
+    if (show) visibleCount++;
+  });
+  
+  // Show manual add option when filtering
+  var manualEl = document.getElementById("dir-manual-add");
+  if (manualEl && q.length >= 2) {
+    var exactMatch = PB.getCourseByName(val.trim());
+    if (!exactMatch) {
+      manualEl.style.display = "block";
+      manualEl.innerHTML = '<div style="padding:0 16px 8px"><div class="card" style="cursor:pointer" onclick="quickAddCourseFromDir(\'' + escHtml(val.trim()).replace(/'/g, "\\'") + '\')"><div class="card-body" style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;color:var(--cream)">' + escHtml(val.trim()) + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Not in directory — tap to add manually</div></div><div style="font-size:10px;color:var(--gold);font-weight:600">+ Add</div></div></div></div>';
+    } else {
+      manualEl.style.display = "none";
+    }
+  } else if (manualEl) {
+    manualEl.style.display = "none";
+  }
+  
+  // API search after debounce
+  var apiEl = document.getElementById("dir-api-results");
+  var apiKey = localStorage.getItem("golfcourse_api_key");
+  if (apiKey && q.length >= 3) {
+    clearTimeout(_dirSearchTimer);
+    _dirSearchTimer = setTimeout(function() {
+      if (apiEl) apiEl.innerHTML = '<div style="padding:4px 16px;font-size:9px;color:var(--muted2)">Searching online...</div>';
+      _searchGcApiForDirectory(q);
+    }, 500);
+  } else if (apiEl) {
+    apiEl.innerHTML = "";
+  }
+}
+
+function _searchGcApiForDirectory(query) {
+  var apiKey = localStorage.getItem("golfcourse_api_key");
+  if (!apiKey) return;
+  var apiEl = document.getElementById("dir-api-results");
+  if (!apiEl) return;
+  
+  var cacheKey = "dir_" + query.toLowerCase();
+  if (_gcSearchCache[cacheKey]) { _renderDirApiResults(_gcSearchCache[cacheKey], apiEl); return; }
+  
+  var apiUrl = "https://api.golfcourseapi.com/v1/courses/search?q=" + encodeURIComponent(query);
+  var functionUrl = localStorage.getItem("golfcourse_fn_url");
+  var fetchUrl, fetchHeaders;
+  if (functionUrl) {
+    fetchUrl = functionUrl + "?q=" + encodeURIComponent(query) + "&key=" + encodeURIComponent(apiKey);
+    fetchHeaders = {};
+  } else {
+    fetchUrl = "https://corsproxy.io/?" + encodeURIComponent(apiUrl);
+    fetchHeaders = { "x-api-key": apiKey };
+  }
+  
+  fetch(fetchUrl, { headers: fetchHeaders })
+  .then(function(res) { if (!res.ok) throw new Error(res.status); return res.json(); })
+  .then(function(data) {
+    var courses = Array.isArray(data) ? data : (data.courses || data.results || data.data || data.items || []);
+    _gcSearchCache[cacheKey] = courses.slice(0, 10);
+    _renderDirApiResults(_gcSearchCache[cacheKey], apiEl);
+  })
+  .catch(function() {
+    if (apiEl) apiEl.innerHTML = '<div style="padding:4px 16px;font-size:9px;color:var(--muted2)">Online search unavailable</div>';
+  });
+}
+
+function _renderDirApiResults(courses, el) {
+  if (!el) return;
+  var filtered = courses.filter(function(c) {
+    var name = c.name || c.courseName || c.club_name || c.course_name || "";
+    return !PB.getCourseByName(name);
+  });
+  if (!filtered.length) { el.innerHTML = ""; return; }
+  var h = '<div style="padding:4px 16px 2px;font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;font-weight:700">Online Results</div>';
+  filtered.forEach(function(c, idx) {
+    var name = c.name || c.courseName || c.club_name || c.course_name || "Unknown";
+    var city = c.city || c.location || "";
+    var state = c.state || c.province || c.region || "";
+    var loc = [city, state].filter(Boolean).join(", ");
+    var par = c.par || "";
+    var rating = c.courseRating || c.rating || c.course_rating || "";
+    var slope = c.slopeRating || c.slope || c.slope_rating || "";
+    h += '<div class="card" style="margin:0 16px 6px;cursor:pointer" onclick="importDirApiCourse(' + idx + ')">';
+    h += '<div class="card-body" style="display:flex;justify-content:space-between;align-items:center">';
+    h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(name) + '</div>';
+    h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(loc) + (par ? ' · Par ' + par : '') + (rating ? ' · ' + rating + '/' + slope : '') + '</div></div>';
+    h += '<div style="font-size:9px;color:var(--birdie);font-weight:600;white-space:nowrap">+ Import</div>';
+    h += '</div></div>';
+  });
+  el.innerHTML = h;
+}
+
+var _dirApiFiltered = [];
+function importDirApiCourse(idx) {
+  var cacheKeys = Object.keys(_gcSearchCache).filter(function(k){return k.indexOf("dir_")===0});
+  var lastResults = cacheKeys.length ? _gcSearchCache[cacheKeys[cacheKeys.length - 1]] : [];
+  var filtered = lastResults.filter(function(c) {
+    var name = c.name || c.courseName || c.club_name || c.course_name || "";
+    return !PB.getCourseByName(name);
+  });
+  var c = filtered[idx];
+  if (!c) return;
+  var name = c.name || c.courseName || c.club_name || c.course_name || "Unknown";
+  var city = c.city || c.location || "";
+  var state = c.state || c.province || c.region || "";
+  var loc = [city, state].filter(Boolean).join(", ");
+  var course = PB.addCourse({ name: name, loc: loc, region: state || "US", rating: parseFloat(c.courseRating||c.rating||c.course_rating)||72, slope: parseInt(c.slopeRating||c.slope||c.slope_rating)||113, par: parseInt(c.par)||72, source: "golfcourseapi" });
+  if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:loc,region:state||"US",rating:parseFloat(c.courseRating||c.rating||c.course_rating)||72,slope:parseInt(c.slopeRating||c.slope||c.slope_rating)||113,par:parseInt(c.par)||72,source:"golfcourseapi",createdAt:fsTimestamp()}).catch(function(){});
+  Router.toast(name + " imported");
+  Router.go("courses");
+}
+
+function quickAddCourseFromDir(name) {
+  var state = prompt("State (e.g. VA, PA, NC):", "");
+  if (state === null) return;
+  state = (state||"").trim().toUpperCase().substring(0, 2);
+  var id = name.toLowerCase().replace(/[^a-z0-9]/g, "").substring(0, 20) + Date.now().toString(36).slice(-4);
+  var course = PB.addCourse({id:id,name:name,loc:(state||"Unknown"),region:state||"US",rating:72.0,slope:113,par:72,photo:"",reviews:[],quickAdd:true});
+  if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:(state||"Unknown"),region:state||"US",rating:72.0,slope:113,par:72,quickAdd:true,createdAt:fsTimestamp()}).catch(function(){});
+  Router.toast(name + " added");
+  Router.go("courses");
+}
+
+// ========== UNIFIED COURSE SEARCH WITH API ==========
+var _gcSearchTimer = null;
+var _gcSearchCache = {};
+
+function courseSearchWithApi(val, containerId, onSelect, onQuickAdd) {
+  var results = PB.searchCourses(val);
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  if (!val || val.length < 2) { container.innerHTML = ""; return; }
+  
+  // Render local results immediately
+  var h = '';
+  if (results.length) {
+    results.forEach(function(c) {
+      h += '<div class="search-item" onclick="' + onSelect(c) + '">';
+      h += escHtml(c.name) + ' <span style="color:var(--muted);font-size:10px">' + escHtml(c.loc) + ' · ' + c.rating + '/' + c.slope + '</span></div>';
+    });
+  }
+  
+  // Always show quick add at bottom
+  var exactMatch = results.some(function(c) { return c.name.toLowerCase() === val.toLowerCase(); });
+  if (!exactMatch) {
+    h += '<div class="search-item" style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border)" onclick="' + onQuickAdd(val) + '">';
+    h += '<div><div style="font-size:12px;color:var(--cream)">' + escHtml(val) + '</div><div style="font-size:10px;color:var(--muted);margin-top:1px">Not in directory — tap to add manually</div></div>';
+    h += '<div style="font-size:10px;color:var(--gold);font-weight:600;white-space:nowrap">+ Add</div></div>';
+  }
+  
+  // API search placeholder
+  var apiKey = localStorage.getItem("golfcourse_api_key");
+  if (apiKey && !exactMatch) {
+    h += '<div id="' + containerId + '-api" style="border-top:1px solid var(--border);padding-top:4px">';
+    h += '<div style="font-size:9px;color:var(--muted2);padding:6px 12px">Searching online...</div></div>';
+  }
+  container.innerHTML = h;
+  
+  // Debounced API search
+  if (apiKey && val.length >= 3 && !exactMatch) {
+    clearTimeout(_gcSearchTimer);
+    _gcSearchTimer = setTimeout(function() {
+      _searchGcApi(val, containerId, onSelect);
+    }, 400);
+  }
+}
+
+function _searchGcApi(query, containerId, onSelect) {
+  var apiKey = localStorage.getItem("golfcourse_api_key");
+  if (!apiKey) return;
+  var apiContainer = document.getElementById(containerId + "-api");
+  if (!apiContainer) return;
+  
+  // Check cache
+  var cacheKey = query.toLowerCase();
+  if (_gcSearchCache[cacheKey]) {
+    _renderApiResults(_gcSearchCache[cacheKey], apiContainer, containerId, onSelect);
+    return;
+  }
+  
+  // Option 1: Firebase Cloud Function (set this after deploying)
+  var functionUrl = localStorage.getItem("golfcourse_fn_url");
+  // Option 2: CORS proxy fallback
+  var apiUrl = "https://api.golfcourseapi.com/v1/courses/search?q=" + encodeURIComponent(query);
+  
+  var fetchUrl, fetchHeaders;
+  if (functionUrl) {
+    fetchUrl = functionUrl + "?q=" + encodeURIComponent(query) + "&key=" + encodeURIComponent(apiKey);
+    fetchHeaders = {};
+  } else {
+    fetchUrl = "https://corsproxy.io/?" + encodeURIComponent(apiUrl);
+    fetchHeaders = { "x-api-key": apiKey };
+  }
+  
+  fetch(fetchUrl, { headers: fetchHeaders })
+  .then(function(res) { if (!res.ok) throw new Error(res.status); return res.json(); })
+  .then(function(data) {
+    var courses = Array.isArray(data) ? data : (data.courses || data.results || data.data || data.items || []);
+    _gcSearchCache[cacheKey] = courses.slice(0, 10);
+    _renderApiResults(_gcSearchCache[cacheKey], apiContainer, containerId, onSelect);
+  })
+  .catch(function(err) {
+    pbWarn("[GolfCourseAPI]", err);
+    if (apiContainer) apiContainer.innerHTML = '<div style="font-size:9px;color:var(--muted2);padding:4px 12px">Online search unavailable</div>';
+  });
+}
+
+function _renderApiResults(courses, apiContainer, containerId, onSelect) {
+  if (!apiContainer) return;
+  if (!courses.length) {
+    apiContainer.innerHTML = '<div style="font-size:9px;color:var(--muted2);padding:4px 12px">No online results</div>';
+    return;
+  }
+  var h = '<div style="font-size:9px;color:var(--gold);padding:4px 12px;text-transform:uppercase;letter-spacing:.5px">Online Results</div>';
+  courses.forEach(function(c, idx) {
+    var name = c.name || c.courseName || c.club_name || c.course_name || "Unknown";
+    var city = c.city || c.location || "";
+    var state = c.state || c.province || c.region || "";
+    var loc = [city, state].filter(Boolean).join(", ");
+    var par = c.par || "";
+    var slope = c.slopeRating || c.slope || c.slope_rating || "";
+    var rating = c.courseRating || c.rating || c.course_rating || "";
+    var alreadyAdded = PB.getCourseByName(name);
+    if (alreadyAdded) return; // Skip if already in directory
+    
+    h += '<div class="search-item" style="display:flex;justify-content:space-between;align-items:center" onclick="importAndSelectCourse(' + idx + ',\'' + containerId + '\')">';
+    h += '<div style="flex:1"><div style="font-size:12px;color:var(--cream)">' + escHtml(name) + '</div>';
+    h += '<div style="font-size:10px;color:var(--muted);margin-top:1px">' + escHtml(loc) + (par ? ' · Par ' + par : '') + (rating ? ' · ' + rating + '/' + slope : '') + '</div></div>';
+    h += '<div style="font-size:9px;color:var(--birdie);font-weight:600;white-space:nowrap">Import</div></div>';
+  });
+  apiContainer.innerHTML = h;
+}
+
+// Store last API results for import
+var _lastApiResults = [];
+function importAndSelectCourse(idx, containerId) {
+  var cacheKeys = Object.keys(_gcSearchCache);
+  var lastResults = cacheKeys.length ? _gcSearchCache[cacheKeys[cacheKeys.length - 1]] : [];
+  // Filter out already-added to match the rendered index
+  var filtered = lastResults.filter(function(c) {
+    var name = c.name || c.courseName || c.club_name || c.course_name || "Unknown";
+    return !PB.getCourseByName(name);
+  });
+  var c = filtered[idx];
+  if (!c) return;
+  var name = c.name || c.courseName || c.club_name || c.course_name || "Unknown";
+  var city = c.city || c.location || "";
+  var state = c.state || c.province || c.region || "";
+  var loc = [city, state].filter(Boolean).join(", ");
+  var par = parseInt(c.par) || 72;
+  var rating = parseFloat(c.courseRating || c.rating || c.course_rating) || 72.0;
+  var slope = parseInt(c.slopeRating || c.slope || c.slope_rating) || 113;
+  
+  var course = PB.addCourse({ name: name, loc: loc, region: state || "US", rating: rating, slope: slope, par: par, source: "golfcourseapi" });
+  if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:loc,region:state||"US",rating:rating,slope:slope,par:par,source:"golfcourseapi",createdAt:fsTimestamp()}).catch(function(){});
+  
+  Router.toast(name + " imported");
+  // Fill the course input field
+  var container = document.getElementById(containerId);
+  if (container) container.innerHTML = "";
+  // Try to fill common input fields
+  var inputs = [
+    {course:"pn-course",rating:"pn-rating",slope:"pn-slope"},
+    {course:"rf-course",rating:"rf-rating",slope:"rf-slope"},
+    {course:"sync-course",rating:"sync-rating",slope:"sync-slope"}
+  ];
+  inputs.forEach(function(ids) {
+    var ci = document.getElementById(ids.course);
+    if (ci) { ci.value = name; }
+    var ri = document.getElementById(ids.rating);
+    if (ri && !ri.value) ri.value = rating;
+    var si = document.getElementById(ids.slope);
+    if (si && !si.value) si.value = slope;
+  });
+}
 function pasteApiKey() {
   if (navigator.clipboard && navigator.clipboard.readText) {
     navigator.clipboard.readText().then(function(text) {
@@ -7266,135 +7524,6 @@ function saveGolfApiKey() {
     Router.toast("API key removed");
   }
   Router.go("settings");
-}
-
-var gcApiResults = [];
-
-function renderOnlineCourseSearch() {
-  var h = '<div class="sh"><h2>Search courses</h2><button class="back" onclick="Router.go(\'courses\')">← Back</button></div>';
-  h += '<div style="padding:0 16px 12px">';
-  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Search 30,000+ courses from GolfCourseAPI.com</div>';
-  h += '<div style="display:flex;gap:6px">';
-  h += '<input type="text" class="ff-input" id="gcapi-search" placeholder="Course name or city..." style="flex:1;font-size:12px" onkeydown="if(event.key===\'Enter\')searchGolfCourseApi()">';
-  h += '<button class="btn-sm green" onclick="searchGolfCourseApi()" style="font-size:10px;white-space:nowrap"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><circle cx="7" cy="7" r="5"/><path d="M14 14l-3.5-3.5"/></svg> Search</button>';
-  h += '</div></div>';
-  h += '<div id="gcapi-results" style="padding:0 16px">';
-  if (gcApiResults.length) {
-    renderGcApiResults();
-  } else {
-    h += '<div style="text-align:center;padding:20px;font-size:11px;color:var(--muted)">Enter a course name or city to search</div>';
-  }
-  h += '</div>';
-  document.querySelector('[data-page="courses"]').innerHTML = h;
-  // Re-render results if cached
-  if (gcApiResults.length) renderGcApiResults();
-  var input = document.getElementById("gcapi-search");
-  if (input) input.focus();
-}
-
-function searchGolfCourseApi() {
-  var input = document.getElementById("gcapi-search");
-  if (!input || !input.value.trim()) { Router.toast("Enter a search term"); return; }
-  var query = input.value.trim();
-  var apiKey = localStorage.getItem("golfcourse_api_key");
-  if (!apiKey) { Router.toast("Set your API key in Settings first"); return; }
-  
-  var resultsEl = document.getElementById("gcapi-results");
-  if (resultsEl) resultsEl.innerHTML = '<div style="text-align:center;padding:20px"><div style="font-size:11px;color:var(--gold)">Searching...</div></div>';
-  
-  fetch("https://api.golfcourseapi.com/api/courses?search=" + encodeURIComponent(query), {
-    headers: { "Authorization": "Key " + apiKey }
-  }).then(function(res) {
-    if (!res.ok) throw new Error("API returned " + res.status);
-    return res.json();
-  }).then(function(data) {
-    // Handle different response formats
-    var courses = Array.isArray(data) ? data : (data.courses || data.results || data.data || []);
-    gcApiResults = courses.slice(0, 20);
-    renderGcApiResults();
-  }).catch(function(err) {
-    pbWarn("[GolfCourseAPI] Error:", err);
-    if (resultsEl) {
-      resultsEl.innerHTML = '<div style="text-align:center;padding:20px">';
-      resultsEl.innerHTML += '<div style="font-size:12px;color:var(--red);margin-bottom:6px">Search failed</div>';
-      resultsEl.innerHTML += '<div style="font-size:10px;color:var(--muted)">' + escHtml(err.message) + '</div>';
-      resultsEl.innerHTML += '<div style="font-size:9px;color:var(--muted2);margin-top:8px">If CORS blocked, the API may need a proxy. Check browser console for details.</div>';
-      resultsEl.innerHTML += '</div>';
-    }
-  });
-}
-
-function renderGcApiResults() {
-  var el = document.getElementById("gcapi-results");
-  if (!el) return;
-  if (!gcApiResults.length) {
-    el.innerHTML = '<div style="text-align:center;padding:20px;font-size:11px;color:var(--muted)">No courses found. Try a different search.</div>';
-    return;
-  }
-  var h = '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">' + gcApiResults.length + ' result' + (gcApiResults.length !== 1 ? 's' : '') + '</div>';
-  gcApiResults.forEach(function(c, idx) {
-    var name = c.name || c.courseName || c.club_name || c.course_name || "Unknown";
-    var city = c.city || c.location || "";
-    var state = c.state || c.province || c.region || "";
-    var country = c.country || "";
-    var loc = [city, state].filter(Boolean).join(", ");
-    var holes = c.holes || c.number_of_holes || c.numHoles || "";
-    var par = c.par || "";
-    var alreadyAdded = PB.getCourseByName(name);
-    
-    h += '<div class="card" style="margin-bottom:6px;' + (alreadyAdded ? 'opacity:.5' : '') + '">';
-    h += '<div class="card-body" style="display:flex;align-items:center;gap:10px">';
-    h += '<div style="flex:1">';
-    h += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(name) + '</div>';
-    if (loc) h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(loc) + '</div>';
-    var meta = [];
-    if (holes) meta.push(holes + ' holes');
-    if (par) meta.push('Par ' + par);
-    if (meta.length) h += '<div style="font-size:9px;color:var(--muted2);margin-top:2px">' + meta.join(' · ') + '</div>';
-    h += '</div>';
-    if (alreadyAdded) {
-      h += '<div style="font-size:9px;color:var(--birdie);white-space:nowrap"><svg viewBox="0 0 16 16" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg> Added</div>';
-    } else {
-      h += '<button class="btn-sm green" style="font-size:9px;white-space:nowrap" onclick="importGcApiCourse(' + idx + ')">+ Import</button>';
-    }
-    h += '</div></div>';
-  });
-  el.innerHTML = h;
-}
-
-function importGcApiCourse(idx) {
-  var c = gcApiResults[idx];
-  if (!c) return;
-  var name = c.name || c.courseName || c.club_name || c.course_name || "Unknown";
-  var city = c.city || c.location || "";
-  var state = c.state || c.province || c.region || "";
-  var loc = [city, state].filter(Boolean).join(", ");
-  var par = parseInt(c.par) || 72;
-  var rating = parseFloat(c.courseRating || c.rating || c.course_rating) || 72.0;
-  var slope = parseInt(c.slopeRating || c.slope || c.slope_rating) || 113;
-  var phone = c.phone || c.phoneNumber || "";
-  var website = c.website || c.url || "";
-  var lat = c.lat || c.latitude || null;
-  var lng = c.lng || c.longitude || null;
-  
-  var course = PB.addCourse({
-    name: name,
-    loc: loc,
-    region: state || "US",
-    rating: rating,
-    slope: slope,
-    par: par,
-    phone: phone,
-    website: website,
-    lat: lat,
-    lng: lng,
-    source: "golfcourseapi"
-  });
-  
-  if (course) {
-    Router.toast(name + " imported");
-    renderGcApiResults(); // Re-render to show "Added" state
-  }
 }
 
 function renderCourseDetail(courseId) {
@@ -10555,14 +10684,10 @@ function renderSyncRoundSetup() {
 }
 
 function showSyncCourseSearch(input) {
-  var results = PB.searchCourses(input.value);
-  var container = document.getElementById("search-sync-course");
-  if (!results.length) { container.innerHTML = ""; return; }
-  var h = '';
-  results.forEach(function(c) {
-    h += '<div class="search-item" onclick="document.getElementById(\'sync-course\').value=\'' + c.name.replace(/'/g, "\\'") + '\';document.getElementById(\'search-sync-course\').innerHTML=\'\';document.getElementById(\'sync-rating\').value=\'' + c.rating + '\';document.getElementById(\'sync-slope\').value=\'' + c.slope + '\';">' + c.name + ' <span style="color:var(--muted);font-size:11px">' + c.loc + '</span></div>';
-  });
-  container.innerHTML = h;
+  courseSearchWithApi(input.value.trim(), "search-sync-course",
+    function(c) { return "document.getElementById('sync-course').value='" + c.name.replace(/'/g, "\\'") + "';document.getElementById('search-sync-course').innerHTML='';document.getElementById('sync-rating').value='" + c.rating + "';document.getElementById('sync-slope').value='" + c.slope + "'"; },
+    function(val) { return "quickAddCourse('" + val.replace(/'/g, "\\'") + "')"; }
+  );
 }
 
 function createSyncRound() {
