@@ -709,7 +709,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
       <div style="font-size:16px;font-weight:700;color:var(--gold)">Notifications</div>
       <div style="display:flex;gap:14px;align-items:center">
         <button style="background:none;border:1px solid var(--border);color:var(--muted);font-size:10px;padding:5px 12px;border-radius:4px;cursor:pointer;font-family:inherit" onclick="markAllNotifsRead()">Mark all read</button>
-        <button style="background:none;border:none;color:var(--cream);font-size:22px;cursor:pointer;padding:4px 8px;line-height:1;font-weight:300" onclick="closeNotifPanel()">✕</button>
+        <button style="background:none;border:none;color:var(--cream);font-size:22px;cursor:pointer;padding:4px 8px;line-height:1;font-weight:300" onclick="closeNotifPanel()">×</button>
       </div>
     </div>
     <div id="notifList"></div>
@@ -720,7 +720,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.2 — COMPLETE MERGED APPLICATION
+   PARBAUGHS v5.4.0 — ACTIVITY & RANGE UPDATE
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -872,7 +872,7 @@ function checkClaimEligibility() {
         var ch = '';
         unclaimed.forEach(function(p) {
           ch += '<div onclick="selectClaimProfile(\'' + p.id + '\')" id="claim-' + p.id + '" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border:2px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color .15s">';
-          ch += '<div style="width:36px;height:36px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">' + (p.emoji || "⛳") + '</div>';
+          ch += '<div style="width:36px;height:36px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">' + (p.emoji || "") + '</div>';
           ch += '<div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:600;color:var(--cream)">' + escHtml(p.name) + '</div>';
           ch += '<div style="font-size:10px;color:var(--muted)">' + (p.range || "No range set") + (p.manualHandicap ? ' · HCP ' + p.manualHandicap : '') + '</div></div>';
           ch += '</div>';
@@ -1011,7 +1011,7 @@ function doRegister() {
             nick: claimedPlayer.nick || "",
             bio: claimedPlayer.bio || "",
             range: claimedPlayer.range || "",
-            emoji: claimedPlayer.emoji || "⛳",
+            emoji: claimedPlayer.emoji || "",
             photo: claimedPlayer.photo || null,
             homeCourse: claimedPlayer.homeCourse || "",
             favoriteCourse: claimedPlayer.favoriteCourse || "",
@@ -1040,7 +1040,7 @@ function doRegister() {
           // NEW profile — create from scratch
           profile = {
             id:user.uid, email:email, username:username.toLowerCase(), name:username,
-            nick:"", bio:"", range:"", photo:null, emoji:"⛳", clubs:{}, facts:[],
+            nick:"", bio:"", range:"", photo:null, emoji:"", clubs:{}, facts:[],
             xp:0, level:1, badges:isFoundingCode ? ["founder"] : [], 
             role:assignedRole,
             invitedBy:inv.createdBy||"founding", invitesUsed:0, 
@@ -1070,21 +1070,21 @@ function doRegister() {
           // Post welcome to activity feed with a funny ribb
           var welcomeName = profile.name || profile.username || "Someone";
           var welcomeRibbs = [
-            "🚨 " + welcomeName + " just joined the Parbaughs. Hide your trophies and lower your expectations.",
-            "👀 " + welcomeName + " has entered the chat. The handicap leaderboard just got more interesting.",
-            "🏌️ " + welcomeName + " is officially a Parbaugh. Their golf game? Remains to be seen.",
-            "📢 Breaking: " + welcomeName + " joined the Parbaughs. The course rangers have been notified.",
-            "🎉 Welcome " + welcomeName + "! We hope your golf game is better than your timing.",
-            "⛳ " + welcomeName + " just signed up. Someone tell them we don't do mulligans here... okay fine, breakfast balls only.",
-            "🔥 " + welcomeName + " has joined. The leaderboard shuffles nervously.",
-            "🚀 " + welcomeName + " is now a Parbaugh. Their first round will either be legendary or legendary bad.",
-            "👋 " + welcomeName + " walked in like they own the place. Prove it on the course.",
-            "📋 " + welcomeName + " reporting for duty. The Commissioner has been alerted and the roasts are loading.",
-            "🏆 " + welcomeName + " just joined and already thinks they can beat you. They probably can't. Probably.",
-            "🤝 " + welcomeName + " is in. Someone get them a sleeve of balls — they'll need it.",
-            "⚡ " + welcomeName + " just entered the Parbaughs universe. Their handicap says one thing, their confidence says another.",
-            "🎯 " + welcomeName + " has joined. May their drives be long and their putts be short. We're not optimistic.",
-            "🧢 " + welcomeName + " is officially a member. The dress code is vibes only and the only rule is don't be slower than Nick."
+            welcomeName + " just joined the Parbaughs. Hide your trophies and lower your expectations.",
+            welcomeName + " has entered the chat. The handicap leaderboard just got more interesting.",
+            welcomeName + " is officially a Parbaugh. Their golf game? Remains to be seen.",
+            "Breaking: " + welcomeName + " joined the Parbaughs. The course rangers have been notified.",
+            "Welcome " + welcomeName + "! We hope your golf game is better than your timing.",
+            welcomeName + " just signed up. Someone tell them we don't do mulligans here... okay fine, breakfast balls only.",
+            welcomeName + " has joined. The leaderboard shuffles nervously.",
+            welcomeName + " is now a Parbaugh. Their first round will either be legendary or legendary bad.",
+            welcomeName + " walked in like they own the place. Prove it on the course.",
+            welcomeName + " reporting for duty. The Commissioner has been alerted and the roasts are loading.",
+            welcomeName + " just joined and already thinks they can beat you. They probably can't. Probably.",
+            welcomeName + " is in. Someone get them a sleeve of balls — they'll need it.",
+            welcomeName + " just entered the Parbaughs universe. Their handicap says one thing, their confidence says another.",
+            welcomeName + " has joined. May their drives be long and their putts be short. We're not optimistic.",
+            welcomeName + " is officially a member. The dress code is vibes only and the only rule is don't be slower than Nick."
           ];
           var ribb = welcomeRibbs[Math.floor(Math.random() * welcomeRibbs.length)];
           db.collection("chat").add({
@@ -1338,7 +1338,7 @@ function announceEventStart(tripId, courseName) {
   if (!db) return;
   db.collection("chat").add({
     id: genId(),
-    text: "🏌️ Live scoring started for " + courseName + "! Watch the scorecard update in real-time.",
+    text: "Live scoring started for " + courseName + "! Watch the scorecard update in real-time.",
     authorId: "system",
     authorName: "Parbaughs",
     createdAt: fsTimestamp()
@@ -1347,7 +1347,7 @@ function announceEventStart(tripId, courseName) {
 
 function announceEventEnd(tripId, courseName, results) {
   if (!db) return;
-  var msg = "🏁 " + courseName + " is complete!";
+  var msg = courseName + " is complete!";
   if (results) msg += " " + results;
   db.collection("chat").add({
     id: genId(),
@@ -1400,7 +1400,7 @@ function finishTripRound(tripId, courseKey) {
     // Announce to feed
     db.collection("chat").add({
       id: genId(),
-      text: "📋 " + course.n + " scoring is complete. All players must attest their scores.",
+      text: course.n + " scoring is complete. All players must attest their scores.",
       authorId: "system",
       authorName: "Parbaughs",
       createdAt: fsTimestamp()
@@ -1422,7 +1422,7 @@ function attestMyScore(tripId, courseKey) {
   update[field + ".attestedAt"] = fsTimestamp();
   
   db.collection("attestations").doc(docId).update(update).then(function() {
-    Router.toast("Score attested ✓");
+    Router.toast("Score attested");
     // Check if all players have attested
     return db.collection("attestations").doc(docId).get();
   }).then(function(doc) {
@@ -1463,13 +1463,13 @@ function finalizeAttestedRound(docId, data, overridden) {
     } else {
       results = "\n";
       data.standings.forEach(function(s, i) {
-        var medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : (i+1) + ".";
+        var medal = i === 0 ? "1st" : i === 1 ? "2nd" : i === 2 ? "3rd" : (i+1) + ".";
         if (s.score > 0) results += medal + " " + s.name + " — " + s.score + (s.pts ? " (" + s.pts + " pts)" : "") + "\n";
       });
     }
   }
   
-  var attestNote = overridden ? " (Commissioner override)" : " (All players attested ✓)";
+  var attestNote = overridden ? " (Commissioner override)" : " (All players attested)";
   announceEventEnd(data.tripId, data.courseName, results + attestNote);
   Router.toast("Results posted! " + (overridden ? "Commissioner override." : "All players attested."));
   Router.go("scorecard", { tripId: data.tripId });
@@ -1496,11 +1496,11 @@ function renderAttestationStatus(tripId, courseKey) {
         ah += '<div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px">Score Attestation</div>';
         
         if (data.status === "complete") {
-          ah += '<div style="font-size:11px;color:var(--birdie);margin-bottom:8px">✓ All players attested — scores are official</div>';
+          ah += '<div style="font-size:11px;color:var(--birdie);margin-bottom:8px"> All players attested — scores are official</div>';
         } else if (data.status === "overridden") {
-          ah += '<div style="font-size:11px;color:var(--gold);margin-bottom:8px">✓ Scores finalized (Commissioner override)</div>';
+          ah += '<div style="font-size:11px;color:var(--gold);margin-bottom:8px"> Scores finalized (Commissioner override)</div>';
         } else {
-          ah += '<div style="font-size:11px;color:var(--muted);margin-bottom:8px">⏳ Waiting for all players to attest</div>';
+          ah += '<div style="font-size:11px;color:var(--muted);margin-bottom:8px"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2" style="vertical-align:middle"><path d="M4 2h8v3L8 8l4 3v3H4v-3l4-3L4 5z"/></svg> Waiting for all players to attest</div>';
         }
         
         // Show each player's attestation status
@@ -1508,7 +1508,7 @@ function renderAttestationStatus(tripId, courseKey) {
         var allAttested = true;
         Object.keys(attestations).forEach(function(pid) {
           var a = attestations[pid];
-          var status = a.attested ? '<span style="color:var(--birdie)">✓ Attested</span>' : '<span style="color:var(--red)">⏳ Pending</span>';
+          var status = a.attested ? '<span style="color:var(--birdie)">Attested</span>' : '<span style="color:var(--red)"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2" style="vertical-align:middle"><path d="M4 2h8v3L8 8l4 3v3H4v-3l4-3L4 5z"/></svg> Pending</span>';
           ah += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)">';
           ah += '<span style="font-size:12px">' + escHtml(a.name) + '</span>';
           ah += '<span style="font-size:10px;font-weight:600">' + status + '</span></div>';
@@ -1526,7 +1526,7 @@ function renderAttestationStatus(tripId, courseKey) {
           if (myAttestation && !myAttestation.attested) {
             ah += '<div style="margin-top:10px"><button class="btn full green" onclick="attestMyScore(\'' + tripId + '\',\'' + courseKey + '\')">I Attest These Scores Are Accurate</button></div>';
           } else if (myAttestation && myAttestation.attested) {
-            ah += '<div style="margin-top:8px;font-size:10px;color:var(--birdie);text-align:center">✓ You have attested</div>';
+            ah += '<div style="margin-top:8px;font-size:10px;color:var(--birdie);text-align:center">You have attested</div>';
           }
           
           // Commissioner override
@@ -1679,16 +1679,16 @@ var PB = (function() {
 
   /* ---------- DEFAULT DATA ---------- */
   var DEFAULT_PLAYERS = [
-    {id:"zach",name:"Zach Parbaugh",username:"TheCommissioner",title:"The Original Four · Commissioner",range:"88-96",bio:"Founded the Parbaughs. Tracks stats like his life depends on it.",emoji:"⛳",photo:"",homeCourse:"Briarwood East",favoriteCourse:"Royal Manchester Golf Links",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:18.8,equippedTitle:"The Original Four · Commissioner",
+    {id:"zach",name:"Zach Parbaugh",username:"TheCommissioner",title:"The Original Four · Commissioner",range:"88-96",bio:"Founded the Parbaughs. Tracks stats like his life depends on it.",emoji:"",photo:"",homeCourse:"Briarwood East",favoriteCourse:"Royal Manchester Golf Links",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:18.8,equippedTitle:"The Original Four · Commissioner",
      clubs:{driver:"270",three_wood:"250",five_wood:"230",four_iron:"215",five_iron:"210",six_iron:"200",seven_iron:"190",eight_iron:"180",nine_iron:"165",pw:"140",gw:"120",sw:"110",lw:"95",putter:""},
      bag:{driver:"TaylorMade Qi4D Driver",irons:"Callaway Quantum Max OS 5-PW",wedges:"Cleveland RTX 6 ZipCore 52/56",putter:"",bag_brand:"",accessories:"",fav_ball:""},
      funnyFacts:["Bought custom-fit irons before breaking 85","Owns more golf trackers than golf shirts","Will quote his handicap unprompted"]},
-    {id:"kayvan",name:"Kayvan",username:"Kayvan",title:"The Original Four",range:"102-115",bio:"",emoji:"⛳",photo:"",homeCourse:"Pleasant Valley Golf Club",favoriteCourse:"Royal Manchester Golf Links",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,equippedTitle:"The Original Four",
+    {id:"kayvan",name:"Kayvan",username:"Kayvan",title:"The Original Four",range:"102-115",bio:"",emoji:"",photo:"",homeCourse:"Pleasant Valley Golf Club",favoriteCourse:"Royal Manchester Golf Links",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,equippedTitle:"The Original Four",
      clubs:{driver:"210",five_wood:"180",four_hybrid:"170",five_iron:"150",six_iron:"140",seven_iron:"130",eight_iron:"120",nine_iron:"110",pw:"100",gw:"90",putter:""},
      bag:{},funnyFacts:[]},
-    {id:"kiyan",name:"Kiyan",username:"Kiyan",title:"The Original Four",range:"91-104",bio:"",emoji:"⛳",photo:"",homeCourse:"Pleasant Valley Golf Club",favoriteCourse:"Westminster National",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,equippedTitle:"The Original Four",
+    {id:"kiyan",name:"Kiyan",username:"Kiyan",title:"The Original Four",range:"91-104",bio:"",emoji:"",photo:"",homeCourse:"Pleasant Valley Golf Club",favoriteCourse:"Westminster National",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,equippedTitle:"The Original Four",
      clubs:{},bag:{},funnyFacts:[]},
-    {id:"nick",name:"Nick",username:"Nick",title:"The Original Four",range:"115-120",bio:"",emoji:"⛳",photo:"",homeCourse:"Honey Run Golf Club",favoriteCourse:"Honey Run Golf Club",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:40,equippedTitle:"The Original Four",
+    {id:"nick",name:"Nick",username:"Nick",title:"The Original Four",range:"115-120",bio:"",emoji:"",photo:"",homeCourse:"Honey Run Golf Club",favoriteCourse:"Honey Run Golf Club",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:40,equippedTitle:"The Original Four",
      clubs:{},bag:{},funnyFacts:[]}
   ];
 
@@ -2656,8 +2656,26 @@ var PB = (function() {
     if (player && player.role === "commissioner") xp += 500;
     if (player && player.email === "jopinksalot@msn.com") xp += 250;
 
-    // Range session XP
-    var rangeSessions = typeof liveRangeSessions !== "undefined" ? liveRangeSessions.filter(function(s){return s.playerId===pid}) : [];
+    // Profile completion XP
+    if (player) {
+      var _pf = 0;
+      if (player.bio && player.bio.trim()) _pf++;
+      if (player.range && player.range.trim()) _pf++;
+      if (player.homeCourse && player.homeCourse.trim()) _pf++;
+      if (player.favoriteCourse && player.favoriteCourse.trim()) _pf++;
+      var _cc = 0; if (player.clubs) Object.keys(player.clubs).forEach(function(k){if(player.clubs[k])_cc++});
+      if (_cc >= 1) _pf++;
+      if (_pf >= 1) xp += 25;   // Getting Settled
+      if (_pf >= 4) xp += 100;  // Profile Complete
+      // Fully Loaded check (need photo too)
+      var _hp = false;
+      if (typeof photoCache !== "undefined") { var _xpc = photoCache["member:"+pid]; if (_xpc && _xpc.indexOf("stock_profile")===-1) _hp = true; }
+      if (!_hp && player.photoUrl && player.photoUrl.indexOf("stock_profile")===-1) _hp = true;
+      if (_pf >= 4 && _hp && _cc >= 5) xp += 200; // Fully Loaded
+    }
+
+    // Range session XP — only public sessions earn XP
+    var rangeSessions = typeof liveRangeSessions !== "undefined" ? liveRangeSessions.filter(function(s){return s.playerId===pid && s.visibility !== "private"}) : [];
     rangeSessions.forEach(function(s) { xp += getRangeSessionXP(s); });
     // Range achievement XP
     if (rangeSessions.length >= 1) xp += 50;  // First Swing
@@ -2782,6 +2800,27 @@ var PB = (function() {
     }
     if (player && (playerIdx < 30 || allPlayers.length < 30)) achievements.push({id:"beta",name:"Beta Tester",desc:"Among the first 30 members",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:250,cat:"special"});
 
+    // --- PROFILE COMPLETION ---
+    if (player) {
+      var profFields = 0;
+      if (player.bio && player.bio.trim()) profFields++;
+      if (player.range && player.range.trim()) profFields++;
+      if (player.homeCourse && player.homeCourse.trim()) profFields++;
+      if (player.favoriteCourse && player.favoriteCourse.trim()) profFields++;
+      var clubCount = 0;
+      if (player.clubs) { Object.keys(player.clubs).forEach(function(k){ if(player.clubs[k]) clubCount++; }); }
+      if (clubCount >= 1) profFields++;
+      var hasPhoto = false;
+      if (typeof photoCache !== "undefined") {
+        var pc = photoCache["member:" + pid];
+        if (pc && pc.indexOf("stock_profile") === -1) hasPhoto = true;
+      }
+      if (!hasPhoto && player.photoUrl && player.photoUrl.indexOf("stock_profile") === -1) hasPhoto = true;
+      if (profFields >= 1) achievements.push({id:"profile_started",name:"Getting Settled",desc:"Add your first profile detail",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:25,cat:"special"});
+      if (profFields >= 4) achievements.push({id:"profile_complete",name:"Profile Complete",desc:"Fill in bio, range, home course & clubs",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M6 9l2 2 3-4' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"special",title:"The Complete Package"});
+      if (profFields >= 4 && hasPhoto && clubCount >= 5) achievements.push({id:"fully_loaded",name:"Fully Loaded",desc:"Complete profile with photo & 5+ club distances",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='.8'/></svg>",xp:200,cat:"special",title:"Fully Loaded"});
+    }
+
     // --- PLAY NOW SPECIFIC ---
     var playNowRounds = rounds.filter(function(r){return r.holeScores});
     if (playNowRounds.length >= 1) achievements.push({id:"live_scorer",name:"Live Scorer",desc:"Complete a Play Now round",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"milestone"});
@@ -2863,7 +2902,7 @@ var PB = (function() {
           id: "event_" + trip.id,
           name: trip.name,
           desc: (trip.location || "Event") + " · " + (trip.dates || ""),
-          icon: "🏌️",
+          icon: "<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='4' r='3'/><path d='M3 14l5-5 5 5'/><line x1='8' y1='9' x2='8' y2='16'/></svg>",
           xp: 100,
           cat: "event",
           badge: "event_" + trip.id
@@ -2877,7 +2916,7 @@ var PB = (function() {
             id: "event_" + trip.id,
             name: trip.name,
             desc: (trip.location || "Event") + " · " + (trip.dates || ""),
-            icon: "🏌️",
+            icon: "<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='4' r='3'/><path d='M3 14l5-5 5 5'/><line x1='8' y1='9' x2='8' y2='16'/></svg>",
             xp: 100,
             cat: "event",
             badge: "event_" + trip.id
@@ -3089,7 +3128,7 @@ var PB = (function() {
 
     // ===== RANGE ACHIEVEMENTS =====
     var _rangeSVG = "<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>";
-    var _rangeS = typeof liveRangeSessions !== "undefined" ? liveRangeSessions.filter(function(s){return s.playerId===pid}) : [];
+    var _rangeS = typeof liveRangeSessions !== "undefined" ? liveRangeSessions.filter(function(s){return s.playerId===pid && s.visibility !== "private"}) : [];
     // Consistency
     if (_rangeS.length >= 1) achievements.push({id:"first_swing",name:"First Swing",desc:"Log your first range session",icon:_rangeSVG,xp:50,cat:"range"});
     if (_rangeS.length >= 10) achievements.push({id:"range_rat",name:"Range Rat",desc:"10 range sessions",icon:_rangeSVG,xp:100,cat:"range",title:"Range Rat"});
@@ -3127,6 +3166,58 @@ var PB = (function() {
     // Dawn Patrol / Night Owl (based on startedAt hour)
     if (_rangeS.some(function(s){if(!s.startedAt)return false;var h=new Date(s.startedAt).getHours();return h<8})) achievements.push({id:"range_dawn",name:"Dawn Patrol",desc:"Range session before 8am",icon:_rangeSVG,xp:50,cat:"range"});
     if (_rangeS.some(function(s){if(!s.startedAt)return false;var h=new Date(s.startedAt).getHours();return h>=20})) achievements.push({id:"range_night_owl",name:"Night Owl",desc:"Range session after 8pm",icon:_rangeSVG,xp:50,cat:"range"});
+
+    // ===== INFER earnedAt DATES =====
+    var sortedRounds = rounds.slice().sort(function(a,b){return (a.date||"")>(b.date||"")?1:-1});
+    var sortedRange = _rangeS.slice().sort(function(a,b){return (a.date||"")>(b.date||"")?1:-1});
+    var playerCreated = player && player.createdAt ? (player.createdAt.toDate ? player.createdAt.toDate().toISOString().split("T")[0] : (typeof player.createdAt === "string" ? player.createdAt.split("T")[0] : null)) : null;
+    
+    // Helper: get date of Nth round
+    function nthRoundDate(n) { return sortedRounds.length >= n ? sortedRounds[n-1].date : null; }
+    // Helper: first round matching condition
+    function firstRoundWhere(fn) { for (var i=0;i<sortedRounds.length;i++) { if (fn(sortedRounds[i])) return sortedRounds[i].date; } return null; }
+    // Helper: date when Nth unique course was reached
+    function nthCourseDate(n) { var seen={},count=0; for (var i=0;i<sortedRounds.length;i++) { if (!seen[sortedRounds[i].course]) { seen[sortedRounds[i].course]=1; count++; if (count>=n) return sortedRounds[i].date; } } return null; }
+    // Helper: date when Nth unique state was reached
+    function nthStateDate(n) { var seen={},count=0; for (var i=0;i<sortedRounds.length;i++) { var c=getCourseByName(sortedRounds[i].course); if (c&&c.region&&!seen[c.region]) { seen[c.region]=1; count++; if (count>=n) return sortedRounds[i].date; } } return null; }
+    // Helper: Nth range session date
+    function nthRangeDate(n) { return sortedRange.length >= n ? sortedRange[n-1].date : null; }
+    // Helper: first range session where condition
+    function firstRangeWhere(fn) { for (var i=0;i<sortedRange.length;i++) { if (fn(sortedRange[i])) return sortedRange[i].date; } return null; }
+    
+    var dateMap = {
+      // Round milestones
+      first_blood: nthRoundDate(1), getting_started: nthRoundDate(5), regular: nthRoundDate(10),
+      grinder: nthRoundDate(25), veteran: nthRoundDate(50), centurion: nthRoundDate(100),
+      rounds_200: nthRoundDate(200), rounds_500: nthRoundDate(500),
+      // Score
+      sub120: firstRoundWhere(function(r){return r.score<=120}), sub100: firstRoundWhere(function(r){return r.score<100}),
+      sub90: firstRoundWhere(function(r){return r.score<90}), sub85: firstRoundWhere(function(r){return r.score<85}),
+      sub80: firstRoundWhere(function(r){return r.score<80}), sub75: firstRoundWhere(function(r){return r.score<75}),
+      sub70: firstRoundWhere(function(r){return r.score<70}),
+      course_rating: firstRoundWhere(function(r){return r.score===Number(r.rating)}),
+      // Explore
+      sampler: nthCourseDate(3), explorer: nthCourseDate(5), collector: nthCourseDate(10), nomad: nthCourseDate(25),
+      traveler2: nthStateDate(2), traveler: nthStateDate(3), roadwarrior: nthStateDate(5),
+      // Play Now
+      live_scorer: firstRoundWhere(function(r){return r.holeScores}),
+      attested: firstRoundWhere(function(r){return r.attestedBy}),
+      // Range
+      first_swing: nthRangeDate(1), range_rat: nthRangeDate(10), creature_habit: nthRangeDate(25),
+      iron_sharpener: nthRangeDate(50), range_resident: nthRangeDate(100),
+      locked_in: firstRangeWhere(function(s){return (s.durationMin||0)>=60}),
+      marathon_man: firstRangeWhere(function(s){return (s.durationMin||0)>=90}),
+      lab_work: firstRangeWhere(function(s){return s.drills&&s.drills.length>=3}),
+      coachs_orders: firstRangeWhere(function(s){return s.drills&&s.drills.length>=4}),
+      custom_built: firstRangeWhere(function(s){return s.drills&&s.drills.some(function(d){return d.indexOf("custom_")===0})}),
+      // Special
+      founding: playerCreated, beta: playerCreated, commissioner_ach: playerCreated
+    };
+    
+    achievements.forEach(function(ach) {
+      if (dateMap[ach.id]) ach.earnedAt = dateMap[ach.id];
+      else if (playerCreated) ach.earnedAt = playerCreated;
+    });
 
     return achievements;
   }
@@ -3493,6 +3584,37 @@ Router.register("home", function() {
   
   var motivationCards = [];
   
+  // Profile completion reminder — show if profile is incomplete
+  if (currentProfile) {
+    var _profDone = 0, _profTotal = 6;
+    if (currentProfile.bio && currentProfile.bio.trim()) _profDone++;
+    if (currentProfile.range && currentProfile.range.trim()) _profDone++;
+    if (currentProfile.homeCourse && currentProfile.homeCourse.trim()) _profDone++;
+    if (currentProfile.favoriteCourse && currentProfile.favoriteCourse.trim()) _profDone++;
+    var _clubsDone = 0;
+    if (currentProfile.clubs) Object.keys(currentProfile.clubs).forEach(function(k){if(currentProfile.clubs[k])_clubsDone++});
+    if (_clubsDone >= 1) _profDone++;
+    var _hasPhoto = false;
+    if (typeof photoCache !== "undefined") {
+      var _pc = photoCache["member:" + (currentUser?currentUser.uid:"")];
+      if (_pc && _pc.indexOf("stock_profile") === -1) _hasPhoto = true;
+    }
+    if (_hasPhoto) _profDone++;
+    if (_profDone < 4) {
+      var _missing = [];
+      if (!currentProfile.bio || !currentProfile.bio.trim()) _missing.push("bio");
+      if (!currentProfile.range || !currentProfile.range.trim()) _missing.push("score range");
+      if (!currentProfile.homeCourse || !currentProfile.homeCourse.trim()) _missing.push("home course");
+      if (_clubsDone < 1) _missing.push("club distances");
+      h += '<div onclick="Router.go(\'members\',{edit:\'' + (currentUser?currentUser.uid:"") + '\'})" style="margin-bottom:12px;padding:12px 16px;background:linear-gradient(135deg,rgba(201,168,76,.08),rgba(201,168,76,.02));border:1px solid rgba(201,168,76,.15);border-radius:var(--radius);cursor:pointer">';
+      h += '<div style="display:flex;align-items:center;gap:10px"><div style="flex-shrink:0;color:var(--gold)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="5"/><path d="M3 21c0-4.4 3.6-8 9-8s9 3.6 9 8"/><path d="M12 14v4M10 16h4"/></svg></div>';
+      h += '<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--gold)">Complete your profile</div>';
+      h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">Add your ' + _missing.slice(0,2).join(" & ") + ' to earn XP and unlock achievements</div></div>';
+      h += '<div style="font-size:10px;color:var(--gold);font-weight:600">' + _profDone + '/' + _profTotal + '</div>';
+      h += '</div></div>';
+    }
+  }
+  
   if (myRounds.length === 0) {
     motivationCards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='4' r='3'/><path d='M4 14l4-4 4 4'/><line x1='8' y1='10' x2='8' y2='16'/></svg>", title:"Log your first round", sub:"Earn 100 XP, unlock the First Blood badge, and establish your handicap.", cta:"Play Now →", page:"playnow"});
   } else if (myRounds.length < 3) {
@@ -3542,7 +3664,7 @@ Router.register("home", function() {
     h += '<div class="card">';
     pastTournaments.forEach(function(t) {
       var champ = PB.getPlayer(t.champion);
-      h += '<div class="champ-row"><div class="champ-medal" style="color:var(--gold)">♦</div><div class="champ-info"><div class="champ-tournament">' + t.name + '</div>';
+      h += '<div class="champ-row"><div class="champ-medal" style="color:var(--gold)"><svg viewBox="0 0 16 16" width="10" height="10" fill="var(--gold)" stroke="none"><path d="M8 2l4 6-4 6-4-6z"/></svg></div><div class="champ-info"><div class="champ-tournament">' + t.name + '</div>';
       h += '<div class="champ-winner">' + (champ ? champ.name : t.champion) + '</div></div></div>';
     });
     h += '</div>';
@@ -3584,7 +3706,7 @@ Router.register("home", function() {
         if (a.referredBy) h += '<div class="feed-course">Referred by ' + a.referredBy + '</div>';
         h += '</div><div class="feed-right"><div class="feed-date">' + (a.date||"") + '</div></div>';
       } else if (a.type === "review") {
-        h += '<div class="feed-left"><div class="feed-name">' + (a.by||"Someone") + ' reviewed ' + (a.course||"a course") + '</div><div class="feed-course">★ ' + (a.rating||"") + '/5</div></div>';
+        h += '<div class="feed-left"><div class="feed-name">' + (a.by||"Someone") + ' reviewed ' + (a.course||"a course") + '</div><div class="feed-course">' + (a.rating||"") + '/5</div></div>';
         h += '<div class="feed-right"><div class="feed-date">' + (a.date||"") + '</div></div>';
       } else if (a.type === "tournament_created") {
         h += '<div class="feed-left"><div class="feed-name">New event: ' + (a.name||"") + '</div><div class="feed-course">' + (a.dates||"") + '</div></div>';
@@ -3770,12 +3892,12 @@ function showRivalryDetail(p1id, p2id) {
 
 function doCopy() {
   var code = PB.exportBackup();
-  navigator.clipboard.writeText(code).then(function() { Router.toast("✅ Backup copied!"); }).catch(function() { prompt("Copy this code:", code); });
+  navigator.clipboard.writeText(code).then(function() { Router.toast("Backup copied!"); }).catch(function() { prompt("Copy this code:", code); });
 }
 function doRestore() {
   var code = prompt("Paste backup code:");
-  if (code && PB.importBackup(code)) { Router.toast("✅ Restored!"); Router.go("home"); }
-  else if (code) Router.toast("❌ Invalid code");
+  if (code && PB.importBackup(code)) { Router.toast("Restored!"); Router.go("home"); }
+  else if (code) Router.toast("Invalid code");
 }
 
 /* ================================================
@@ -4099,13 +4221,13 @@ function renderMemberDetailWithData(p) {
   var isBeta = PB.getPlayers().indexOf(p) < 30;
 
   // Banner
-  h += '<div class="pd-banner"><div class="pd-av" onclick="uploadMemberPhoto(\'' + pid + '\')" style="border-color:' + frameColor + '">' + Router.getAvatar(p) + '<div class="pd-edit">✎</div></div>';
+  h += '<div class="pd-banner"><div class="pd-av" onclick="uploadMemberPhoto(\'' + pid + '\')" style="border-color:' + frameColor + '">' + Router.getAvatar(p) + '<div class="pd-edit"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2" style="vertical-align:middle"><path d="M11 2l3 3-8 8H3v-3z"/></svg></div></div>';
   h += '<div class="pd-name">' + (p.username || p.name) + '</div>';
   if (p.username && p.name && p.username !== p.name) h += '<div style="font-size:11px;color:var(--muted);margin-top:1px">' + p.name + '</div>';
 
   // Display badges (max 3, player-selected)
   var allBadges = [];
-  if (p.founding || p.isFoundingFour) allBadges.push({id:"og",label:"★ THE ORIGINAL FOUR",color:"var(--gold)",bg:"rgba(201,168,76,.1)",border:"rgba(201,168,76,.2)"});
+  if (p.founding || p.isFoundingFour) allBadges.push({id:"og",label:"THE ORIGINAL FOUR",color:"var(--gold)",bg:"rgba(201,168,76,.1)",border:"rgba(201,168,76,.2)"});
   if (isBeta) allBadges.push({id:"beta",label:"BETA TESTER",color:"var(--birdie)",bg:"rgba(78,201,122,.08)",border:"rgba(78,201,122,.15)"});
   achievements.forEach(function(a) {
     if (a.id === "champion") allBadges.push({id:"champion",label:"CHAMPION",color:"var(--gold)",bg:"rgba(201,168,76,.1)",border:"rgba(201,168,76,.2)"});
@@ -4315,16 +4437,22 @@ function renderMemberDetailWithData(p) {
   var achieveContent = '';
   if (achievements.length) {
     achieveContent += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
-    var cats = {milestone:"Milestones",score:"Scoring",explore:"Exploration",compete:"Competitive",growth:"Improvement",special:"Special",level:"Level"};
+    var cats = {milestone:"Milestones",score:"Scoring",explore:"Exploration",compete:"Competitive",growth:"Improvement",special:"Special",range:"Range Practice",level:"Level"};
     var grouped = {};
     achievements.forEach(function(a) { if (!grouped[a.cat]) grouped[a.cat] = []; grouped[a.cat].push(a); });
     Object.keys(cats).forEach(function(cat) {
       if (!grouped[cat]) return;
       achieveContent += '<div style="width:100%;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:6px;margin-bottom:2px">' + cats[cat] + '</div>';
       grouped[cat].forEach(function(a) {
+        var _eStr = "";
+        if (a.earnedAt) {
+          var _eD2 = new Date(a.earnedAt + "T12:00:00");
+          var _eMn2 = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+          _eStr = ' · ' + _eMn2[_eD2.getMonth()] + ' ' + _eD2.getDate() + ', ' + _eD2.getFullYear();
+        }
         achieveContent += '<div style="padding:6px 10px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.12);border-radius:var(--radius);cursor:default">';
         achieveContent += '<div style="font-size:11px;font-weight:700;color:var(--gold)">' + a.icon + ' ' + a.name + '</div>';
-        achieveContent += '<div style="font-size:9px;color:var(--muted);margin-top:1px">' + a.desc + '</div></div>';
+        achieveContent += '<div style="font-size:9px;color:var(--muted);margin-top:1px">' + a.desc + (_eStr ? '<span style="color:var(--muted2)">' + _eStr + '</span>' : '') + '</div></div>';
       });
     });
     achieveContent += '</div>';
@@ -5010,7 +5138,7 @@ function renderAddMemberForm() {
     h += formField("Name", "add-name", "", "text", "First name or nickname");
     h += '<div class="ff"><label class="ff-label">Referred by</label><select class="ff-input" id="add-referral"><option value="">— Select member —</option>';
     PB.getPlayers().forEach(function(p) {
-      h += '<option value="' + p.name + '">' + p.name + (p.founding ? ' ★' : '') + '</option>';
+      h += '<option value="' + p.name + '">' + p.name + (p.founding ? '' : '') + '</option>';
     });
     h += '</select></div>';
     h += formField("Score range", "add-range", "", "text", "e.g. 95-105");
@@ -5245,7 +5373,7 @@ function toggleScrambleMember(pid) {
   var el = document.getElementById("st-check-" + pid);
   var isIn = scrambleSelected.indexOf(pid) !== -1;
   if (el) {
-    el.textContent = isIn ? "✓" : "";
+    el.textContent = isIn ? "Done" : "";
     el.style.background = isIn ? "var(--green)" : "transparent";
     el.style.borderColor = isIn ? "var(--green)" : "var(--border)";
   }
@@ -5438,7 +5566,7 @@ function renderAceList() {
       h += '<div style="padding:14px 16px">';
       h += '<div style="display:flex;justify-content:space-between;align-items:flex-start">';
       h += '<div><div style="font-size:17px;font-weight:700;color:var(--gold)">' + ace.by + '</div>';
-      h += '<div style="font-size:13px;color:var(--cream);margin-top:2px">' + ace.course + (isDirectory ? ' <span style="color:var(--gold)" title="Parbaugh Directory Course">★</span>' : '') + '</div>';
+      h += '<div style="font-size:13px;color:var(--cream);margin-top:2px">' + ace.course + (isDirectory ? ' <span style="color:var(--gold)" title="Parbaugh Directory Course"></span>' : '') + '</div>';
       h += '<div style="font-size:12px;color:var(--muted);margin-top:4px">';
       if (ace.hole) h += 'Hole ' + ace.hole + ' · ';
       if (ace.distance) h += ace.distance + ' yds · ';
@@ -5475,7 +5603,7 @@ function renderAceList() {
     h += '</div></div>';
   }
 
-  h += '<div style="padding:16px;text-align:center;font-size:10px;color:var(--muted2)">★ = Parbaugh Directory course</div>';
+  h += '<div style="padding:16px;text-align:center;font-size:10px;color:var(--muted2)">Parbaugh Directory course</div>';
 
   document.querySelector('[data-page="aces"]').innerHTML = h;
 }
@@ -5500,7 +5628,7 @@ function renderAceDetail(idx) {
   h += '<div class="pd-banner">';
   if (player) h += '<div class="pd-av" style="width:70px;height:70px;font-size:28px;border-width:3px;border-color:var(--gold)">' + Router.getAvatar(player) + '</div>';
   h += '<div style="font-size:24px;font-weight:800;color:var(--gold);margin-top:4px">' + ace.by + '</div>';
-  h += '<div style="font-size:15px;color:var(--cream);margin-top:4px">' + ace.course + (isDirectory ? ' <span style="color:var(--gold)">★</span>' : '') + '</div>';
+  h += '<div style="font-size:15px;color:var(--cream);margin-top:4px">' + ace.course + (isDirectory ? ' <span style="color:var(--gold)"></span>' : '') + '</div>';
   h += '<div style="font-size:13px;color:var(--muted);margin-top:4px">' + ace.date + '</div>';
   h += '</div>';
 
@@ -5819,11 +5947,11 @@ function renderLiveScoring() {
   h += '<div style="display:flex;justify-content:center;gap:16px;margin-bottom:24px">';
   if (!isPar3) {
     h += '<div onclick="liveState.fir[' + hole + ']=!liveState.fir[' + hole + '];Router.go(\'playnow\')" style="text-align:center;cursor:pointer">';
-    h += '<div style="width:48px;height:48px;border-radius:10px;border:1.5px solid ' + (liveState.fir[hole] ? 'var(--birdie)' : 'var(--border)') + ';background:' + (liveState.fir[hole] ? 'rgba(78,201,122,.12)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;font-size:14px;color:' + (liveState.fir[hole] ? 'var(--birdie)' : 'var(--muted2)') + ';margin:0 auto 4px">' + (liveState.fir[hole] ? '✓' : '') + '</div>';
+    h += '<div style="width:48px;height:48px;border-radius:10px;border:1.5px solid ' + (liveState.fir[hole] ? 'var(--birdie)' : 'var(--border)') + ';background:' + (liveState.fir[hole] ? 'rgba(78,201,122,.12)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;font-size:14px;color:' + (liveState.fir[hole] ? 'var(--birdie)' : 'var(--muted2)') + ';margin:0 auto 4px">' + (liveState.fir[hole] ? '•' : '') + '</div>';
     h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">FIR</div></div>';
   }
   h += '<div onclick="liveState.gir[' + hole + ']=!liveState.gir[' + hole + '];Router.go(\'playnow\')" style="text-align:center;cursor:pointer">';
-  h += '<div style="width:48px;height:48px;border-radius:10px;border:1.5px solid ' + (liveState.gir[hole] ? 'var(--gold)' : 'var(--border)') + ';background:' + (liveState.gir[hole] ? 'rgba(201,168,76,.12)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;font-size:14px;color:' + (liveState.gir[hole] ? 'var(--gold)' : 'var(--muted2)') + ';margin:0 auto 4px">' + (liveState.gir[hole] ? '✓' : '') + '</div>';
+  h += '<div style="width:48px;height:48px;border-radius:10px;border:1.5px solid ' + (liveState.gir[hole] ? 'var(--gold)' : 'var(--border)') + ';background:' + (liveState.gir[hole] ? 'rgba(201,168,76,.12)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;font-size:14px;color:' + (liveState.gir[hole] ? 'var(--gold)' : 'var(--muted2)') + ';margin:0 auto 4px">' + (liveState.gir[hole] ? '•' : '') + '</div>';
   h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">GIR</div></div>';
 
   // Putts
@@ -5953,11 +6081,11 @@ function finishLiveRound() {
   var diff = totalScore - parTotal;
   var diffStr = diff > 0 ? "+" + diff : diff === 0 ? "E" : diff;
   var playerName = currentProfile ? (currentProfile.name || currentProfile.username) : "A Parbaugh";
-  var shareText = "⛳ " + playerName + " shot " + totalScore + " (" + diffStr + ") at " + liveState.course;
+  var shareText = playerName + " shot " + totalScore + " (" + diffStr + ") at " + liveState.course;
   if (firHoles > 0) shareText += " · FIR " + firCount + "/" + firHoles;
   shareText += " · GIR " + girCount + "/" + completed;
   if (totalPutts > 0) shareText += " · " + totalPutts + " putts";
-  shareText += "\n🏌️ parbaughs.golf";
+  shareText += "\nparbaughs.golf";
 
   // Show share card modal
   showShareCard(totalScore, diffStr, liveState.course, playerName, firCount, firHoles, girCount, completed, totalPutts, shareText, round.id);
@@ -6188,7 +6316,7 @@ function renderTripCreate() {
   allPlayers.forEach(function(p) {
     h += '<div class="h2h-row" style="cursor:pointer" onclick="toggleTripMember(\'' + p.id + '\')">';
     h += '<div class="h2h-left"><div class="h2h-av">' + Router.getAvatar(p) + '</div><span class="h2h-name">' + p.name + '</span>';
-    if (p.founding) h += '<span style="font-size:9px;color:var(--gold);margin-left:6px">★</span>';
+    if (p.founding) h += '<span style="font-size:9px;color:var(--gold);margin-left:6px"></span>';
     h += '</div>';
     h += '<div id="tc-check-' + p.id + '" style="width:22px;height:22px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--birdie)"></div>';
     h += '</div>';
@@ -6231,7 +6359,7 @@ function toggleTripMember(pid) {
   if (idx === -1) tripCreateState.members.push(pid);
   else tripCreateState.members.splice(idx, 1);
   var el = document.getElementById("tc-check-" + pid);
-  if (el) el.textContent = tripCreateState.members.indexOf(pid) !== -1 ? "✓" : "";
+  if (el) el.textContent = tripCreateState.members.indexOf(pid) !== -1 ? "Done" : "";
   if (el) el.style.background = tripCreateState.members.indexOf(pid) !== -1 ? "var(--green)" : "transparent";
   if (el) el.style.borderColor = tripCreateState.members.indexOf(pid) !== -1 ? "var(--green)" : "var(--border)";
 }
@@ -6268,7 +6396,7 @@ function renderTripCourseList() {
   tripCreateState.courses.forEach(function(c, idx) {
     h += '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:8px">';
     h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:13px;font-weight:600">' + c.name + '</div>';
-    h += '<div style="cursor:pointer;color:var(--red);font-weight:700;font-size:14px" onclick="removeTripCourse(' + idx + ')">✕</div></div>';
+    h += '<div style="cursor:pointer;color:var(--red);font-weight:700;font-size:14px" onclick="removeTripCourse(' + idx + ')">×</div></div>';
     h += '<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Rating: ' + c.rating + ' · Slope: ' + c.slope + '</div>';
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
     h += '<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Format</div>';
@@ -6507,6 +6635,10 @@ var scState = { courseKey: null, view: "scorecard" };
 Router.register("scorecard", function(params) {
   var trip = PB.getTrip(params.tripId) || PB.getTrips()[0];
   if (!trip) { Router.go("trips"); return; }
+  // If course param passed (from calendar day click), select that tab
+  if (params.course && trip.courses.some(function(c){return c.key === params.course})) {
+    scState.courseKey = params.course;
+  }
   if (!scState.courseKey && trip.courses.length) scState.courseKey = trip.courses[0].key;
   var tripPlayers = trip.members.map(function(id) { return PB.getPlayer(id); }).filter(Boolean);
 
@@ -6524,7 +6656,7 @@ Router.register("scorecard", function(params) {
     var currentCourse = trip.courses.find(function(x) { return x.key === scState.courseKey; }) || trip.courses[0];
     h += '<div style="display:flex;gap:6px;padding:8px 16px">';
     h += '<button class="btn-sm green" style="flex:1;font-size:9px" onclick="announceEventStart(\'' + trip.id + '\',\'' + escHtml(currentCourse.n).replace(/'/g,"\\'") + '\')"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M2 6v4l3 1V5L2 6zM5 5l7-3v12l-7-3"/><path d="M13 7h2M13 9h2"/></svg> Announce Start</button>';
-    h += '<button class="btn-sm outline" style="flex:1;font-size:9px" onclick="finishTripRound(\'' + trip.id + '\',\'' + scState.courseKey + '\')">🏁 Finish Round</button>';
+    h += '<button class="btn-sm outline" style="flex:1;font-size:9px" onclick="finishTripRound(\'' + trip.id + '\',\'' + scState.courseKey + '\')"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><rect x="4" y="2" width="9" height="6" rx="1"/><path d="M4 2v12"/><path d="M7 2v6M10 2v6M4 5h9"/></svg> Finish Round</button>';
     h += '</div>';
   }
 
@@ -6646,7 +6778,7 @@ function renderTripScorecard(trip, tripPlayers) {
           h += '<td style="padding:2px;position:static"><div style="width:18px;height:18px;margin:auto;font-size:8px;color:var(--muted2);display:flex;align-items:center;justify-content:center">—</div></td>';
         } else {
           var firVal = fg.fir[fi];
-          h += '<td style="padding:2px;position:static"><div onclick="PB.setFir(\'' + tid + "','" + c.key + "','" + p.id + "'," + fi + ',' + !firVal + ');Router.go(\'scorecard\',{tripId:\'' + tid + '\'})" style="width:18px;height:18px;border-radius:3px;border:1px solid ' + (firVal ? 'var(--birdie)' : 'var(--border)') + ';background:' + (firVal ? 'rgba(78,201,122,.15)' : 'transparent') + ';margin:auto;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--birdie)">' + (firVal ? '✓' : '') + '</div></td>';
+          h += '<td style="padding:2px;position:static"><div onclick="PB.setFir(\'' + tid + "','" + c.key + "','" + p.id + "'," + fi + ',' + !firVal + ');Router.go(\'scorecard\',{tripId:\'' + tid + '\'})" style="width:18px;height:18px;border-radius:3px;border:1px solid ' + (firVal ? 'var(--birdie)' : 'var(--border)') + ';background:' + (firVal ? 'rgba(78,201,122,.15)' : 'transparent') + ';margin:auto;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--birdie)">' + (firVal ? '•' : '') + '</div></td>';
         }
       }
       h += '</tr>';
@@ -6654,7 +6786,7 @@ function renderTripScorecard(trip, tripPlayers) {
       h += '<tr style="background:var(--bg)"><td style="font-size:8px;padding:4px;color:var(--muted);position:static">GIR</td>';
       for (var gi = 0; gi < 18; gi++) {
         var girVal = fg.gir[gi];
-        h += '<td style="padding:2px;position:static"><div onclick="PB.setGir(\'' + tid + "','" + c.key + "','" + p.id + "'," + gi + ',' + !girVal + ');Router.go(\'scorecard\',{tripId:\'' + tid + '\'})" style="width:18px;height:18px;border-radius:3px;border:1px solid ' + (girVal ? 'var(--gold)' : 'var(--border)') + ';background:' + (girVal ? 'rgba(201,168,76,.15)' : 'transparent') + ';margin:auto;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--gold)">' + (girVal ? '✓' : '') + '</div></td>';
+        h += '<td style="padding:2px;position:static"><div onclick="PB.setGir(\'' + tid + "','" + c.key + "','" + p.id + "'," + gi + ',' + !girVal + ');Router.go(\'scorecard\',{tripId:\'' + tid + '\'})" style="width:18px;height:18px;border-radius:3px;border:1px solid ' + (girVal ? 'var(--gold)' : 'var(--border)') + ';background:' + (girVal ? 'rgba(201,168,76,.15)' : 'transparent') + ';margin:auto;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--gold)">' + (girVal ? '•' : '') + '</div></td>';
       }
       h += '</tr></tbody></table></div></div>';
     });
@@ -6737,7 +6869,7 @@ function renderTripPhotos(trip) {
     var allPhotos = photos.concat(localPhotos);
 
     if (!allPhotos.length) {
-      grid.innerHTML = '<div class="empty"><div class="empty-icon" style="font-size:14px;color:var(--muted)">📸</div><div class="empty-text">No photos yet — add some from the trip!</div></div>';
+      grid.innerHTML = '<div class="empty"><div class="empty-icon" style="font-size:14px;color:var(--muted)"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="4" width="12" height="9" rx="1"/><circle cx="8" cy="9" r="2.5"/><path d="M6 4l1-2h2l1 2"/></svg></div><div class="empty-text">No photos yet — add some from the trip!</div></div>';
       return;
     }
 
@@ -6950,7 +7082,7 @@ Router.register("courses", function(params) {
     var thumbSrc = photoCache["course:" + c.id] || c.photo || '';
     h += '<div class="course-row"><div class="c-thumb">' + (thumbSrc ? '<img alt="" src="' + thumbSrc + '" onerror="this.src=COURSE_DEFAULT_IMG">' : '<img alt="" src="' + COURSE_DEFAULT_IMG + '">') + '</div>';
     h += '<div class="c-info"><div class="c-name">' + c.name + '</div><div class="c-loc">' + c.loc + ' · ' + c.rating + '/' + c.slope + '</div>';
-    h += '<div class="c-meta">' + (stars ? '★ ' + stars + '/5 · ' : '') + roundsHere.length + ' rounds' + (avg ? ' · Avg: ' + avg : '') + '</div></div></div></div>';
+    h += '<div class="c-meta">' + (stars ? ''+ stars + '/5 · ' : '') + roundsHere.length + ' rounds' + (avg ? ' · Avg: ' + avg : '') + '</div></div></div></div>';
   });
   document.querySelector('[data-page="courses"]').innerHTML = h;
 });
@@ -7004,11 +7136,11 @@ function renderCourseDetail(courseId) {
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Reviews</span></div>';
   if (c.reviews && c.reviews.length) {
     c.reviews.forEach(function(r) {
-      h += '<div class="card"><div class="card-body"><div class="review-head">★ ' + r.rating + '/5 — ' + r.by + '</div><div class="review-text">' + r.text + '</div></div></div>';
+      h += '<div class="card"><div class="card-body"><div class="review-head">' + r.rating + '/5 — ' + r.by + '</div><div class="review-text">' + r.text + '</div></div></div>';
     });
   }
   h += '<div id="review-form-' + courseId + '" style="display:none;margin-top:8px">';
-  h += '<div class="ff"><label class="ff-label">Rating</label><select class="ff-input" id="rev-rating"><option value="5">★★★★★ (5)</option><option value="4">★★★★ (4)</option><option value="3">★★★ (3)</option><option value="2">★★ (2)</option><option value="1">★ (1)</option></select></div>';
+  h += '<div class="ff"><label class="ff-label">Rating</label><select class="ff-input" id="rev-rating"><option value="5">5 stars (5)</option><option value="4">4 stars (4)</option><option value="3">3 stars (3)</option><option value="2">2 stars (2)</option><option value="1">(1)</option></select></div>';
   h += '<div class="ff"><label class="ff-label">Review</label><textarea class="ff-input" id="rev-text" placeholder="What did you think of this course?"></textarea></div>';
   h += '<button class="btn full green" onclick="submitCourseReview(\'' + courseId + '\')">Submit review</button></div>';
   h += '<button class="btn full outline" onclick="document.getElementById(\'review-form-' + courseId + '\').style.display=\'block\';this.style.display=\'none\'">+ Write review</button></div>';
@@ -7397,16 +7529,16 @@ function renderTeeCard(t, isPast, isCancelled) {
   for (var i = 0; i < (t.spots||4); i++) {
     if (i < acceptedIds.length) {
       var m = PB.getPlayer(acceptedIds[i]);
-      h += '<div class="tee-spot filled">' + (m ? Router.getAvatar(m) : "✓") + '</div>';
+      h += '<div class="tee-spot filled">' + (m ? Router.getAvatar(m) : "Done") + '</div>';
     } else h += '<div class="tee-spot open">+</div>';
   }
   h += '</div>';
 
   if (!isPast && !isCancelled && t.status !== "cancelled" && t.status !== "completed") {
     h += '<div class="tee-rsvp-row">';
-    h += '<button class="tee-rsvp-btn accept' + (myResponse==="accepted"?" selected":"") + '" onclick="rsvpTeeTime(\'' + t._id + '\',\'accepted\')">✓ In</button>';
-    h += '<button class="tee-rsvp-btn maybe' + (myResponse==="maybe"?" selected":"") + '" onclick="rsvpTeeTime(\'' + t._id + '\',\'maybe\')">? Maybe</button>';
-    h += '<button class="tee-rsvp-btn decline' + (myResponse==="declined"?" selected":"") + '" onclick="rsvpTeeTime(\'' + t._id + '\',\'declined\')">✗ Out</button>';
+    h += '<button class="tee-rsvp-btn accept' + (myResponse==="accepted"?" selected":"") + '" onclick="rsvpTeeTime(\'' + t._id + '\',\'accepted\')">In</button>';
+    h += '<button class="tee-rsvp-btn maybe' + (myResponse==="maybe"?" selected":"") + '" onclick="rsvpTeeTime(\'' + t._id + '\',\'maybe\')">Maybe/button>';
+    h += '<button class="tee-rsvp-btn decline' + (myResponse==="declined"?" selected":"") + '" onclick="rsvpTeeTime(\'' + t._id + '\',\'declined\')">Out</button>';
     h += '</div>';
 
     var maybeIds = Object.keys(responses).filter(function(k){return responses[k]==="maybe"});
@@ -7451,6 +7583,7 @@ Router.register("tee-create", function(params) {
   h += '<div class="ff"><label class="ff-label">Tee Time</label><input type="time" id="teeTime" class="ff-input"></div>';
   h += '<div class="ff"><label class="ff-label">Spots</label><select id="teeSpots" class="ff-input"><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option><option value="5">5+</option></select></div>';
   h += '<div class="ff"><label class="ff-label">Message (optional)</label><input type="text" id="teeMessage" class="ff-input" placeholder="Let\'s get after it" maxlength="100"></div>';
+  h += '<div class="ff"><label class="ff-label">Visibility</label><select id="teeVisibility" class="ff-input"><option value="public">Public — visible to all members</option><option value="private">Private — only you and invitees</option></select></div>';
   h += '<button class="btn full green" onclick="submitTeeTime()">Post Tee Time</button>';
   h += '</div>';
   document.querySelector('[data-page="tee-create"]').innerHTML = h;
@@ -7462,13 +7595,14 @@ function submitTeeTime() {
   var time = document.getElementById("teeTime").value;
   var spots = parseInt(document.getElementById("teeSpots").value);
   var message = document.getElementById("teeMessage").value.trim();
+  var visibility = document.getElementById("teeVisibility").value || "public";
   if (!date) { Router.toast("Pick a date"); return; }
   if (!time) { Router.toast("Pick a tee time"); return; }
   var course = PB.getCourse(courseId);
   var timeParts = time.split(":"); var hr = parseInt(timeParts[0]); var ampm = hr >= 12 ? "PM" : "AM";
   if (hr > 12) hr -= 12; if (hr === 0) hr = 12;
   var timeStr = hr + ":" + timeParts[1] + " " + ampm;
-  var tee = { courseId:courseId, courseName:course?course.name:courseId, date:date, time:timeStr, spots:spots, message:message, status:"open", official:false, createdBy:currentUser?currentUser.uid:"anon", createdByName:currentProfile?(currentProfile.name||currentProfile.username):"Anon", responses:{}, createdAt:fsTimestamp() };
+  var tee = { courseId:courseId, courseName:course?course.name:courseId, date:date, time:timeStr, spots:spots, message:message, visibility:visibility, status:"open", official:false, createdBy:currentUser?currentUser.uid:"anon", createdByName:currentProfile?(currentProfile.name||currentProfile.username):"Anon", responses:{}, createdAt:fsTimestamp() };
   if (currentUser) tee.responses[currentUser.uid] = "accepted";
   db.collection("teetimes").add(tee).then(function() { Router.toast("Tee time posted!"); Router.go("teetimes"); }).catch(function(e) { Router.toast("Failed: " + e.message); });
 }
@@ -7522,23 +7656,24 @@ var activeRangeStart = null;
 var activeRangeDrills = [];
 var activeRangeFocus = "";
 var rangeActiveView = "rounds"; // "rounds" or "range"
+var rangeSessionPrivate = false;
 
 var DRILL_LIBRARY = [
-  {id:"headcover_trap", name:"Headcover Trap", cat:"path", desc:"Tuck headcover under trail arm to fix over-the-top"},
-  {id:"alignment_stick_path", name:"Alignment Stick Path", cat:"path", desc:"Stick on ground for visual path feedback"},
-  {id:"trail_elbow_tuck", name:"Trail Elbow Tuck", cat:"path", desc:"Keep trail elbow close on downswing"},
-  {id:"inside_out_gate", name:"Inside-Out Gate", cat:"path", desc:"Two tees creating a gate for club path"},
-  {id:"chest_down", name:"Chest-Down Through Impact", cat:"extension", desc:"Maintain spine angle through the ball"},
-  {id:"wall_sit_swing", name:"Wall Sit Swing", cat:"extension", desc:"Practice posture against a wall"},
-  {id:"step_back", name:"Step-Back Drill", cat:"extension", desc:"Step back from address for proper distance"},
-  {id:"clock_drill", name:"Clock Drill", cat:"short", desc:"Wedge distance control at 9, 10:30, full"},
-  {id:"one_hand_chips", name:"One-Handed Chips", cat:"short", desc:"Feel the clubface with each hand separately"},
-  {id:"ladder_drill", name:"Ladder Drill", cat:"short", desc:"Putt to progressively longer distances"},
-  {id:"circle_drill", name:"Circle Drill", cat:"short", desc:"3-foot putts all around the hole"},
-  {id:"slow_motion", name:"Slow Motion Swings", cat:"general", desc:"Full swing at 25% speed for feel"},
-  {id:"feet_together", name:"Feet-Together", cat:"general", desc:"Hit balls with feet touching for balance"},
-  {id:"pause_at_top", name:"Pause-at-Top", cat:"general", desc:"Full pause at top of backswing"},
-  {id:"driver_70", name:"Driver Block at 70%", cat:"general", desc:"Driver at 70% effort for control"}
+  {id:"headcover_trap", name:"Headcover Trap", cat:"path", desc:"Tuck headcover under trail arm to fix over-the-top", equip:"Headcover", howTo:"Place headcover under your right armpit (for righties). Make swings keeping it pinned — if it falls, your trail elbow is flying out and causing an over-the-top path."},
+  {id:"alignment_stick_path", name:"Alignment Stick Path", cat:"path", desc:"Stick on ground for visual path feedback", equip:"Alignment stick", howTo:"Lay the stick on the ground along your target line. Practice swinging along the stick's path. For draw work, angle the stick slightly inside-to-out."},
+  {id:"trail_elbow_tuck", name:"Trail Elbow Tuck", cat:"path", desc:"Keep trail elbow close on downswing", equip:"None", howTo:"At the top of your backswing, focus on dropping your trail elbow toward your hip before rotating. Feel like the elbow leads the hands down."},
+  {id:"inside_out_gate", name:"Inside-Out Gate", cat:"path", desc:"Two tees creating a gate for club path", equip:"2 tees", howTo:"Place two tees about 4 inches apart, slightly outside the ball, angled inside-to-out. Swing through the gate without hitting the tees."},
+  {id:"chest_down", name:"Chest-Down Through Impact", cat:"extension", desc:"Maintain spine angle through the ball", equip:"None", howTo:"Focus on keeping your chest pointing at the ball through impact. Feel like your sternum stays over the ball — don't let your hips thrust forward or your spine straighten early."},
+  {id:"wall_sit_swing", name:"Wall Sit Swing", cat:"extension", desc:"Practice posture against a wall", equip:"Wall", howTo:"Stand with your butt against a wall in golf posture. Make slow backswings and downswings keeping contact with the wall. This trains you to maintain spine angle."},
+  {id:"step_back", name:"Step-Back Drill", cat:"extension", desc:"Step back from address for proper distance", equip:"None", howTo:"Set up to the ball normally, then take one small step back. This forces you to reach slightly, preventing standing too close which causes steep swings and toe hits."},
+  {id:"clock_drill", name:"Clock Drill", cat:"short", desc:"Wedge distance control at 9, 10:30, full", equip:"Wedges", howTo:"Hit 10 balls each at three backswing lengths: 9 o'clock (hip height), 10:30 (3/4), and full. Track your carry distances. Goal: consistent gaps between each position."},
+  {id:"one_hand_chips", name:"One-Handed Chips", cat:"short", desc:"Feel the clubface with each hand separately", equip:"Wedge", howTo:"Chip 10 balls with only your lead hand, then 10 with only your trail hand. This builds clubface awareness and prevents wrist flip."},
+  {id:"ladder_drill", name:"Ladder Drill", cat:"short", desc:"Putt to progressively longer distances", equip:"5 tees or coins", howTo:"Set markers at 10, 20, 30, 40, 50 feet. Putt one ball to each distance, trying to stop within 3 feet. Builds distance control and green-reading."},
+  {id:"circle_drill", name:"Circle Drill", cat:"short", desc:"3-foot putts all around the hole", equip:"4-8 balls", howTo:"Place balls in a circle 3 feet from the hole. Make every putt before moving on. If you miss, start over. Builds confidence on short putts under pressure."},
+  {id:"slow_motion", name:"Slow Motion Swings", cat:"general", desc:"Full swing at 25% speed for feel", equip:"Any club", howTo:"Make your full swing motion at 25% speed. Feel every position — takeaway, top, transition, impact, follow-through. Do 5 slow then hit one ball. Resets muscle memory."},
+  {id:"feet_together", name:"Feet-Together", cat:"general", desc:"Hit balls with feet touching for balance", equip:"7 or 8 iron", howTo:"Address the ball with feet touching. Make half to 3/4 swings. If you lose balance, your weight shift is too aggressive. Trains centered contact."},
+  {id:"pause_at_top", name:"Pause-at-Top", cat:"general", desc:"Full pause at top of backswing", equip:"Any club", howTo:"Make your backswing, hold for a full 2 seconds at the top, then swing down. This breaks the rush from backswing to downswing and improves transition timing."},
+  {id:"driver_70", name:"Driver Block at 70%", cat:"general", desc:"Driver at 70% effort for control", equip:"Driver", howTo:"Hit drivers at 70% effort focusing on center contact and a controlled fade or straight ball. No swing-for-the-fences. Track fairway accuracy mentally."}
 ];
 var DRILL_CATS = {path:"Path & Plane",extension:"Extension & Posture",short:"Short Game",general:"Full Swing",custom:"My Drills"};
 var customDrills = JSON.parse(localStorage.getItem("pb_custom_drills")||"[]");
@@ -7578,9 +7713,14 @@ function formatRangeTime(totalSeconds) {
 }
 
 function startRangeSession() {
-  activeRangeStart = Date.now();
+  activeRangeStart = null; // Timer doesn't start yet
   activeRangeDrills = [];
   activeRangeFocus = "";
+  Router.go("range");
+}
+
+function beginRangeTimer() {
+  activeRangeStart = Date.now();
   Router.go("range");
 }
 
@@ -7609,16 +7749,31 @@ function renderDrillChips() {
     var drills = cats[catKey];
     if (!drills || !drills.length) return;
     h += '<div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:.8px;margin:10px 0 4px">' + DRILL_CATS[catKey] + '</div>';
-    h += '<div style="display:flex;flex-wrap:wrap;gap:0">';
     drills.forEach(function(d) {
       var sel = activeRangeDrills.indexOf(d.id) !== -1;
-      h += '<div class="drill-chip' + (sel ? " selected" : "") + '" onclick="toggleRangeDrill(\'' + d.id + '\')" title="' + escHtml(d.desc) + '">' + escHtml(d.name) + (sel ? '<span class="drill-x">✕</span>' : '') + '</div>';
+      var expanded = document.getElementById("drillExpand-" + d.id);
+      h += '<div style="margin-bottom:4px">';
+      h += '<div style="display:flex;align-items:center;gap:4px">';
+      h += '<div class="drill-chip' + (sel ? " selected" : "") + '" onclick="toggleRangeDrill(\'' + d.id + '\')">' + escHtml(d.name) + (sel ? '<span class="drill-x">×</span>' : '') + '</div>';
+      if (d.howTo) h += '<span onclick="toggleDrillInfo(\'' + d.id + '\')" style="font-size:11px;color:var(--muted);cursor:pointer;padding:2px 6px;border-radius:50%;border:1px solid var(--border);line-height:1;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px">?</span>';
+      h += '</div>';
+      h += '<div id="drillExpand-' + d.id + '" style="display:none;padding:6px 10px;margin:2px 0 4px;font-size:10px;background:var(--bg3);border-radius:4px;border-left:2px solid var(--gold)">';
+      if (d.equip && d.equip !== "None") h += '<div style="color:var(--gold);font-weight:600;margin-bottom:3px"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M2 8h12M8 2v12"/></svg> ' + escHtml(d.equip) + '</div>';
+      else h += '<div style="color:var(--muted);margin-bottom:3px">No extra equipment needed</div>';
+      if (d.howTo) h += '<div style="color:var(--cream);line-height:1.4">' + escHtml(d.howTo) + '</div>';
+      h += '</div>';
+      h += '</div>';
     });
-    h += '</div>';
   });
   el.innerHTML = h;
   var countEl = document.getElementById("rangeDrillCount");
   if (countEl) countEl.textContent = activeRangeDrills.length + "/4 selected";
+}
+
+function toggleDrillInfo(drillId) {
+  var el = document.getElementById("drillExpand-" + drillId);
+  if (!el) return;
+  el.style.display = el.style.display === "none" ? "block" : "none";
 }
 
 function addCustomDrill() {
@@ -7672,6 +7827,7 @@ function selectRangeFeel(val, btn) {
 }
 
 function saveRangeSession(mins, totalSec) {
+  var isPrivate = rangeSessionPrivate;
   var session = {
     id: genId(),
     playerId: currentUser ? currentUser.uid : "local",
@@ -7683,22 +7839,24 @@ function saveRangeSession(mins, totalSec) {
     durationSec: totalSec,
     drills: activeRangeDrills.slice(),
     feel: rangeFeel || 2,
-    focus: activeRangeFocus
+    focus: activeRangeFocus,
+    visibility: isPrivate ? "private" : "public"
   };
   syncRangeSession(session);
-  var xp = getRangeSessionXP(session);
-  // Post to feed
-  if (db) {
+  var xp = isPrivate ? 0 : getRangeSessionXP(session);
+  // Only post to feed and award XP if public
+  if (!isPrivate && db) {
     db.collection("chat").add({
       id: genId(),
-      text: "🏌️ " + session.playerName + " just finished a " + mins + "-minute range session" + (session.drills.length ? " working on " + session.drills.length + " drill" + (session.drills.length>1?"s":"") : "") + " (+"+xp+" XP)",
+      text: session.playerName + " just finished a " + mins + "-minute range session" + (session.drills.length ? " working on " + session.drills.length + " drill" + (session.drills.length>1?"s":"") : "") + " (+"+xp+" XP)",
       authorId: "system", authorName: "Parbaughs", createdAt: fsTimestamp()
     }).catch(function(){});
   }
   activeRangeStart = null;
   activeRangeDrills = [];
   rangeFeel = 0;
-  Router.toast("Session saved! +" + xp + " XP");
+  rangeSessionPrivate = false;
+  Router.toast(isPrivate ? "Private session saved" : "Session saved! +" + xp + " XP");
   rangeActiveView = "range";
   Router.go("activity");
 }
@@ -7829,7 +7987,7 @@ function renderActivityRange() {
     var catKeys = Object.keys(catCounts);
     var zeroCats = ["path","extension","short","general"].filter(function(c){return !catCounts[c]});
     if (zeroCats.length && mySessions.length >= 5) {
-      h += '<div style="margin-top:8px;padding:8px;background:rgba(201,168,76,.06);border-radius:4px;font-size:10px;color:var(--gold)">💡 You haven\'t touched ' + zeroCats.map(function(c){return DRILL_CATS[c]}).join(" or ") + ' drills in a while</div>';
+      h += '<div style="margin-top:8px;padding:8px;background:rgba(201,168,76,.06);border-radius:4px;font-size:10px;color:var(--gold)"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2" style="vertical-align:middle"><path d="M8 1C5 1 3 3.5 3 6c0 1.5.7 2.7 2 3.5V12h6V9.5c1.3-.8 2-2 2-3.5 0-2.5-2-5-5-5z"/><path d="M6 14h4"/></svg> You haven\'t touched ' + zeroCats.map(function(c){return DRILL_CATS[c]}).join(" or ") + ' drills in a while</div>';
     }
     h += '</div></div>';
   }
@@ -7882,9 +8040,39 @@ function calcRangeStreak(sessions) {
 
 // ========== RANGE ACTIVE SESSION PAGE ==========
 Router.register("range", function() {
-  if (!activeRangeStart) { Router.go("activity"); return; }
+  var h = '';
 
-  var h = '<div class="sh"><h2>On the Range</h2><button class="back" onclick="rangeActiveView=\'range\';Router.go(\'activity\')">← Back</button></div>';
+  // ===== SETUP MODE (timer not started yet) =====
+  if (!activeRangeStart) {
+    h += '<div class="sh"><h2>Range Setup</h2><button class="back" onclick="rangeActiveView=\'range\';Router.go(\'activity\')">← Back</button></div>';
+
+    h += '<div style="text-align:center;padding:16px"><div style="font-size:13px;color:var(--cream);font-weight:600">Pick your drills, then start.</div>';
+    h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">Phone goes away once the timer starts.</div></div>';
+
+    // Drill selector
+    h += '<div class="section"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
+    h += '<div style="font-size:11px;font-weight:600;color:var(--cream)">Select drills <span style="font-size:10px;color:var(--muted);font-weight:400">(optional)</span></div>';
+    h += '<div style="display:flex;align-items:center;gap:8px"><span id="rangeDrillCount" style="font-size:10px;color:var(--muted)">' + activeRangeDrills.length + '/4 selected</span>';
+    h += '<button class="btn-sm outline" style="font-size:9px;padding:4px 8px" onclick="addCustomDrill()">+ Custom</button></div></div>';
+    h += '<div id="rangeDrillChips"></div></div>';
+
+    // Visibility toggle
+    h += '<div style="padding:0 16px 8px;display:flex;align-items:center;justify-content:space-between">';
+    h += '<div><div style="font-size:11px;font-weight:600;color:var(--cream)">Visibility</div>';
+    h += '<div style="font-size:9px;color:var(--muted);margin-top:1px">' + (rangeSessionPrivate ? 'Private — no XP, not on calendar' : 'Public — earns XP, shows on calendar') + '</div></div>';
+    h += '<button id="rangeVisBtn" onclick="rangeSessionPrivate=!rangeSessionPrivate;Router.go(\'range\')" style="background:' + (rangeSessionPrivate ? 'rgba(212,96,78,.15)' : 'rgba(78,201,122,.1)') + ';border:1px solid ' + (rangeSessionPrivate ? 'rgba(212,96,78,.3)' : 'rgba(78,201,122,.2)') + ';color:' + (rangeSessionPrivate ? 'var(--red)' : 'var(--birdie)') + ';font:600 10px/1 Inter,sans-serif;padding:6px 12px;border-radius:4px;cursor:pointer">' + (rangeSessionPrivate ? '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg> Private' : '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><circle cx="8" cy="8" r="6"/><path d="M8 5v6M5 8h6"/></svg> Public') + '</button>';
+    h += '</div>';
+
+    // Start button
+    h += '<div class="section"><button class="btn full green" style="font-size:14px;padding:14px" onclick="beginRangeTimer()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg> Start Session</button></div>';
+
+    document.querySelector('[data-page="range"]').innerHTML = h;
+    setTimeout(renderDrillChips, 50);
+    return;
+  }
+
+  // ===== ACTIVE MODE (timer running) =====
+  h += '<div class="sh"><h2>On the Range</h2><button class="back" onclick="rangeActiveView=\'range\';Router.go(\'activity\')">← Back</button></div>';
 
   // Timer
   var elapsed = Math.floor((Date.now() - activeRangeStart) / 1000);
@@ -7903,13 +8091,6 @@ Router.register("range", function() {
     h += '</div>';
   }
 
-  // Drill selector (collapsed)
-  h += '<div class="section"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
-  h += '<div style="font-size:11px;font-weight:600;color:var(--cream)">Select drills</div>';
-  h += '<div style="display:flex;align-items:center;gap:8px"><span id="rangeDrillCount" style="font-size:10px;color:var(--muted)">' + activeRangeDrills.length + '/4 selected</span>';
-  h += '<button class="btn-sm outline" style="font-size:9px;padding:4px 8px" onclick="addCustomDrill()">+ Custom</button></div></div>';
-  h += '<div id="rangeDrillChips"></div></div>';
-
   // End session button
   h += '<div class="section"><button class="btn full" style="background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.3);color:#f472b6;font-weight:700" onclick="endRangeSession()">End Session</button></div>';
 
@@ -7918,9 +8099,6 @@ Router.register("range", function() {
   // Start timer interval
   if (activeRangeTimer) clearInterval(activeRangeTimer);
   activeRangeTimer = setInterval(tickRangeTimer, 1000);
-
-  // Render drill chips
-  setTimeout(renderDrillChips, 50);
 });
 
 function startEventListener() {
@@ -8007,7 +8185,7 @@ Router.register("chat", function() {
   });
   PB.getTrips().forEach(function(trip) {
     if (trip.startDate && trip.startDate >= todayStr) {
-      upcomingEvents.push({date: trip.startDate, title: trip.name, time: "", type: "trip"});
+      upcomingEvents.push({date: trip.startDate, title: trip.name, time: "", type: "trip", tripId: trip.id});
     }
   });
   liveEvents.forEach(function(ev) {
@@ -8029,6 +8207,7 @@ Router.register("chat", function() {
   h += '<div onclick="clubCalPrev()" style="cursor:pointer;padding:6px 10px;color:var(--muted);font-size:16px">‹</div>';
   h += '<div id="clubCalTitle" style="font-size:13px;font-weight:600;color:var(--gold)">' + monthNames[calMonth] + ' ' + calYear + '</div>';
   h += '<div onclick="clubCalNext()" style="cursor:pointer;padding:6px 10px;color:var(--muted);font-size:16px">›</div></div>';
+  h += '<div style="text-align:right;padding:0 4px 6px"><button id="calRangeModeBtn" onclick="toggleCalRangeMode()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font:500 9px/1 Inter,sans-serif;padding:4px 10px;border-radius:4px;cursor:pointer;letter-spacing:.3px">' + (calRangeMode ? '× Cancel Range' : 'Select Range') + '</button></div>';
   
   h += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;margin-bottom:4px">';
   dayLabels.forEach(function(d) { h += '<div style="font-size:9px;color:var(--muted2);padding:4px 0">' + d + '</div>'; });
@@ -8055,7 +8234,8 @@ Router.register("chat", function() {
       var dotColor = ev.type === "trip" ? "var(--gold)" : ev.type === "tee" ? "var(--birdie)" : "var(--muted)";
       var accepted = ev.responses ? Object.keys(ev.responses).filter(function(k){return ev.responses[k]==="accepted"}).length : 0;
       
-      h += '<div onclick="Router.go(\'teetimes\')" style="flex-shrink:0;min-width:140px;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer">';
+      var clickAction = ev.type === "trip" && ev.tripId ? "Router.go('scorecard',{tripId:'" + ev.tripId + "'})" : "Router.go('teetimes')";
+      h += '<div onclick="' + clickAction + '" style="flex-shrink:0;min-width:140px;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer">';
       h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><div style="width:6px;height:6px;border-radius:50%;background:' + dotColor + '"></div>';
       h += '<span style="font-size:10px;color:var(--gold);font-weight:600">' + dayLabel + ', ' + mons[dateObj.getMonth()] + ' ' + dateObj.getDate() + '</span></div>';
       h += '<div style="font-size:12px;font-weight:600;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(ev.title) + '</div>';
@@ -8094,13 +8274,29 @@ var clubCalOpen = false;
 var clubCalSelectedDate = null;
 var clubCalRangeStart = null;
 var clubCalRangeEnd = null;
+var calRangeMode = false;
+
+function toggleCalRangeMode() {
+  calRangeMode = !calRangeMode;
+  clubCalSelectedDate = null;
+  clubCalRangeStart = null;
+  clubCalRangeEnd = null;
+  refreshClubCal();
+  var btn = document.getElementById("calRangeModeBtn");
+  if (btn) {
+    btn.style.background = calRangeMode ? "rgba(201,168,76,.2)" : "transparent";
+    btn.style.color = calRangeMode ? "var(--gold)" : "var(--muted)";
+    btn.style.borderColor = calRangeMode ? "var(--gold)" : "var(--border)";
+    btn.textContent = calRangeMode ? "× Cancel Range" : "Select Range";
+  }
+}
 
 function toggleClubhouseCal() {
   clubCalOpen = !clubCalOpen;
   var el = document.getElementById("clubhouseCal");
   var btn = document.getElementById("calToggleBtn");
   if (el) el.style.display = clubCalOpen ? "block" : "none";
-  if (btn) btn.innerHTML = clubCalOpen ? "✕ Close" : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Calendar';
+  if (btn) btn.innerHTML = clubCalOpen ? "× Close" : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Calendar';
 }
 
 function renderClubCalGrid(year, month, todayStr, events) {
@@ -8108,8 +8304,14 @@ function renderClubCalGrid(year, month, todayStr, events) {
   var daysInMonth = new Date(year, month + 1, 0).getDate();
   calEventMap = {};
   function addEv(date, ev) { if (!calEventMap[date]) calEventMap[date] = []; calEventMap[date].push(ev); }
+  var _myUid = typeof currentUser !== "undefined" && currentUser ? currentUser.uid : null;
   liveTeeTimes.forEach(function(t) {
     if (t.status === "cancelled") return;
+    // Skip private tee times for non-participants
+    if (t.visibility === "private" && _myUid) {
+      var isParticipant = t.createdBy === _myUid || (t.responses && t.responses[_myUid]);
+      if (!isParticipant) return;
+    }
     var accepted = t.responses ? Object.keys(t.responses).filter(function(k){return t.responses[k]==="accepted"}) : [];
     var names = []; accepted.forEach(function(uid) { var m = PB.getPlayer(uid) || (typeof fbMemberCache!=="undefined"?fbMemberCache[uid]:null); if(m) names.push(m.name||m.username||"Member"); });
     addEv(t.date, {type:"tee", title:t.courseName||"Tee Time", time:t.time||"", spots:t.spots||4, accepted:accepted.length, players:names});
@@ -8118,12 +8320,23 @@ function renderClubCalGrid(year, month, todayStr, events) {
     if (!trip.startDate) return;
     var sd = new Date(trip.startDate+"T12:00:00"), ed = trip.endDate ? new Date(trip.endDate+"T12:00:00") : sd;
     var mN = []; if(trip.members) trip.members.forEach(function(uid){var m=PB.getPlayer(uid)||(typeof fbMemberCache!=="undefined"?fbMemberCache[uid]:null);if(m)mN.push(m.name||m.username||"Member");});
+    // Map day-of-week names to course data
+    var dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    var shortDays = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    var tripCourses = trip.courses || [];
     for (var dt=new Date(sd); dt<=ed; dt.setDate(dt.getDate()+1)) {
       var ds=dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0");
       var _mn=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
       var _sd2=new Date(trip.startDate+"T12:00:00"),_ed2=trip.endDate?new Date(trip.endDate+"T12:00:00"):_sd2;
       var _fmtDates=_mn[_sd2.getMonth()]+" "+_sd2.getDate()+(trip.endDate&&trip.endDate!==trip.startDate?"–"+(_ed2.getMonth()===_sd2.getMonth()?_ed2.getDate():_mn[_ed2.getMonth()]+" "+_ed2.getDate())+", "+_ed2.getFullYear():", "+_sd2.getFullYear());
-      addEv(ds, {type:"event", title:trip.name, location:trip.location||"", dates:_fmtDates, tripId:trip.id, players:mN});
+      // Find courses scheduled for this day of the week
+      var dayOfWeek = dayNames[dt.getDay()];
+      var dayCourses = tripCourses.filter(function(c) {
+        var cd = c.d || c.day || "";
+        return cd.toLowerCase().indexOf(dayOfWeek.toLowerCase()) === 0 || 
+               cd.toLowerCase().indexOf(shortDays[dt.getDay()].toLowerCase()) === 0;
+      });
+      addEv(ds, {type:"event", title:trip.name, location:trip.location||"", dates:_fmtDates, tripId:trip.id, players:mN, dayCourses:dayCourses});
     }
   });
   PB.getRounds().forEach(function(r) {
@@ -8133,7 +8346,9 @@ function renderClubCalGrid(year, month, todayStr, events) {
   });
   liveRangeSessions.forEach(function(s) {
     if (!s.date) return;
-    addEv(s.date, {type:"range", title:"Range Session", player:s.playerName||"", duration:s.durationMin||0});
+    // Skip other users' private sessions
+    if (s.visibility === "private" && s.playerId !== _myUid) return;
+    addEv(s.date, {type:"range", title:"Range Session" + (s.visibility === "private" ? " (Private)" : ""), player:s.playerName||"", duration:s.durationMin||0});
   });
   var h = '';
   for (var i=0;i<firstDay;i++) h+='<div style="padding:8px;font-size:12px"></div>';
@@ -8157,32 +8372,35 @@ function renderClubCalGrid(year, month, todayStr, events) {
 }
 var calEventMap = {};
 function selectClubCalDay(dateStr) {
-  // If nothing selected, select as start
-  if (!clubCalSelectedDate && !clubCalRangeStart) {
-    clubCalSelectedDate = dateStr;
-    clubCalRangeStart = null;
-    clubCalRangeEnd = null;
-  }
-  // If same date tapped again, deselect
-  else if (clubCalSelectedDate === dateStr && !clubCalRangeEnd) {
-    clubCalSelectedDate = null;
-    clubCalRangeStart = null;
-    clubCalRangeEnd = null;
-  }
-  // If a date is selected and a different date is tapped, create a range
-  else if (clubCalSelectedDate && !clubCalRangeEnd) {
-    if (dateStr > clubCalSelectedDate) {
-      clubCalRangeStart = clubCalSelectedDate;
-      clubCalRangeEnd = dateStr;
-    } else if (dateStr < clubCalSelectedDate) {
-      clubCalRangeStart = dateStr;
-      clubCalRangeEnd = clubCalSelectedDate;
+  if (calRangeMode) {
+    // RANGE MODE: two taps define a range
+    if (!clubCalSelectedDate && !clubCalRangeStart) {
+      clubCalSelectedDate = dateStr;
+      clubCalRangeStart = null;
+      clubCalRangeEnd = null;
+    } else if (clubCalSelectedDate === dateStr && !clubCalRangeEnd) {
+      clubCalSelectedDate = null;
+    } else if (clubCalSelectedDate && !clubCalRangeEnd) {
+      if (dateStr > clubCalSelectedDate) {
+        clubCalRangeStart = clubCalSelectedDate;
+        clubCalRangeEnd = dateStr;
+      } else if (dateStr < clubCalSelectedDate) {
+        clubCalRangeStart = dateStr;
+        clubCalRangeEnd = clubCalSelectedDate;
+      }
+      clubCalSelectedDate = null;
+    } else {
+      clubCalSelectedDate = dateStr;
+      clubCalRangeStart = null;
+      clubCalRangeEnd = null;
     }
-    clubCalSelectedDate = null;
-  }
-  // If a range exists and user taps again, reset to single date
-  else {
-    clubCalSelectedDate = dateStr;
+  } else {
+    // NORMAL MODE: single tap toggles date view, no range creation
+    if (clubCalSelectedDate === dateStr) {
+      clubCalSelectedDate = null;
+    } else {
+      clubCalSelectedDate = dateStr;
+    }
     clubCalRangeStart = null;
     clubCalRangeEnd = null;
   }
@@ -8263,18 +8481,46 @@ function refreshClubCal() {
       eventEvs.forEach(function(ev) {
         if (seenEventTitles[ev.title]) return;
         seenEventTitles[ev.title] = true;
-        eh += '<div style="background:var(--bg3);border-left:3px solid var(--gold);border-radius:4px;padding:10px 12px;margin-bottom:6px">';
+        var _firstCourseKey = (ev.dayCourses && ev.dayCourses.length && ev.dayCourses[0].key) ? ev.dayCourses[0].key : "";
+        var _evClick = ev.tripId ? "Router.go('scorecard',{tripId:'" + ev.tripId + "'" + (_firstCourseKey ? ",course:'" + _firstCourseKey + "'" : "") + "})" : "";
+        eh += '<div style="background:var(--bg3);border-left:3px solid var(--gold);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="' + _evClick + '">';
         eh += '<div style="font-size:8px;color:var(--gold);font-weight:700;letter-spacing:.5px;margin-bottom:3px">EVENT</div>';
         eh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
         if (ev.location) eh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(ev.location) + '</div>';
         if (ev.dates) eh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + ev.dates + '</div>';
         if (ev.players && ev.players.length) eh += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + ev.players.length + ' attending: ' + ev.players.join(", ") + '</div>';
+        // Show courses scheduled for this day from the trip data
+        if (ev.dayCourses && ev.dayCourses.length) {
+          ev.dayCourses.forEach(function(dc) {
+            eh += '<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);display:flex;align-items:center;gap:6px">';
+            eh += '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="#60a5fa" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg>';
+            eh += '<span style="font-size:11px;color:#60a5fa;font-weight:600">' + escHtml(dc.n || dc.name || "Course") + '</span>';
+            eh += '<span style="font-size:10px;color:var(--muted)"> · ' + (dc.t || dc.time || "TBD") + '</span>';
+            if (dc.f || dc.format) eh += '<span style="font-size:9px;color:var(--muted2)"> · ' + escHtml(dc.f || dc.format) + '</span>';
+            eh += '</div>';
+          });
+        } else if (teeEvs.length) {
+          // Fall back to standalone tee times
+          teeEvs.forEach(function(tev) {
+            eh += '<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);display:flex;align-items:center;gap:6px">';
+            eh += '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="#60a5fa" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg>';
+            eh += '<span style="font-size:11px;color:#60a5fa;font-weight:600">' + escHtml(tev.title) + '</span>';
+            if (tev.time) eh += '<span style="font-size:10px;color:var(--muted)"> · ' + tev.time + '</span>';
+            eh += '</div>';
+          });
+        } else {
+          // No course or tee time for this trip day
+          eh += '<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border)">';
+          eh += '<div style="font-size:10px;color:var(--muted)"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="var(--muted)" stroke-width="1.5" style="vertical-align:middle"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg> No round scheduled — travel or rest day</div>';
+          eh += '</div>';
+        }
         eh += '</div>';
       });
       
-      // Tee times (blue)
-      teeEvs.forEach(function(ev) {
-        eh += '<div style="background:var(--bg3);border-left:3px solid #60a5fa;border-radius:4px;padding:10px 12px;margin-bottom:6px">';
+      // Tee times (blue) — only show standalone if no events on this day
+      if (!eventEvs.length) {
+        teeEvs.forEach(function(ev) {
+        eh += '<div style="background:var(--bg3);border-left:3px solid #60a5fa;border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="Router.go(\'teetimes\')">';
         eh += '<div style="font-size:8px;color:#60a5fa;font-weight:700;letter-spacing:.5px;margin-bottom:3px">TEE TIME</div>';
         eh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
         if (ev.time) eh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + ev.time + '</div>';
@@ -8282,6 +8528,7 @@ function refreshClubCal() {
         else eh += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + ev.accepted + '/' + ev.spots + ' spots filled</div>';
         eh += '</div>';
       });
+      }
       
       // Rounds (purple) — grouped by course
       if (roundEvs.length) {
@@ -8306,7 +8553,7 @@ function refreshClubCal() {
       // Range sessions (pink)
       if (rangeEvs.length) {
         rangeEvs.forEach(function(ev) {
-          eh += '<div style="background:var(--bg3);border-left:3px solid #f472b6;border-radius:4px;padding:10px 12px;margin-bottom:6px">';
+          eh += '<div style="background:var(--bg3);border-left:3px solid #f472b6;border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="rangeActiveView=\'range\';Router.go(\'activity\')">';
           eh += '<div style="font-size:8px;color:#f472b6;font-weight:700;letter-spacing:.5px;margin-bottom:3px">RANGE SESSION</div>';
           eh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + (ev.duration||0) + ' min</div>';
           if (ev.player) eh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(ev.player) + '</div>';
@@ -8327,8 +8574,9 @@ function refreshClubCal() {
     eh += '<div style="display:flex;gap:6px;margin-top:8px">';
     eh += '<button class="btn-sm green" style="flex:1;font-size:10px" onclick="Router.go(\'tee-create\',{date:\'' + clubCalSelectedDate + '\'})">+ Tee Time</button>';
     eh += '<button class="btn-sm outline" style="flex:1;font-size:10px" onclick="createEventFromCal(\'' + clubCalSelectedDate + '\',\'' + clubCalSelectedDate + '\')">+ Event</button>';
+    eh += '<button class="btn-sm outline" style="flex:1;font-size:10px;color:#f472b6;border-color:rgba(244,114,182,.3)" onclick="startRangeSession()"><svg viewBox="0 0 16 16" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg> Range</button>';
     eh += '</div>';
-    eh += '<div style="font-size:9px;color:var(--muted2);margin-top:6px">Tap another date to select a range for multi-day events</div>';
+    eh += '<div style="font-size:9px;color:var(--muted2);margin-top:6px">Use "Select Range" above for multi-day events</div>';
     eventsEl.innerHTML = eh;
   } else {
     eventsEl.innerHTML = '';
@@ -8357,7 +8605,7 @@ function createEventFromCal(startDate, endDate) {
       // Post to activity feed
       db.collection("chat").add({
         id: genId(),
-        text: "📅 " + (currentProfile ? PB.getDisplayName(currentProfile) : "Someone") + " created a new event: " + name.trim() + " (" + startDate + " to " + endDate + ")",
+        text: (currentProfile ? PB.getDisplayName(currentProfile) : "Someone") + " created a new event: " + name.trim() + " (" + startDate + " to " + endDate + ")",
         authorId: "system",
         authorName: "Parbaughs",
         createdAt: fsTimestamp()
@@ -8390,7 +8638,7 @@ function renderChatMessages(messages) {
     ch += '<div class="card" style="margin-bottom:6px"><div style="padding:10px 14px">';
     // Header
     ch += '<div style="display:flex;gap:10px">';
-    ch += '<div class="c-av">' + (m ? Router.getAvatar(m) : "⛳") + '</div>';
+    ch += '<div class="c-av">' + (m ? Router.getAvatar(m) : "") + '</div>';
     ch += '<div style="flex:1"><div class="chat-author">' + escHtml(msg.authorName||"Anon") + (mLvl ? ' <span style="font-size:8px;color:var(--gold);font-weight:600">LV' + mLvl.level + '</span>' : '') + '</div>';
     ch += '<div class="chat-text">' + escHtml(msg.text) + '</div>';
     if (msg.createdAt && msg.createdAt.toDate) {
@@ -8415,21 +8663,40 @@ function renderChatMessages(messages) {
     // Comments
     if (comments.length) {
       ch += '<div style="margin-top:6px;padding-top:4px">';
+      var commentLikes = msg.commentLikes || {};
       comments.forEach(function(c, ci) {
         var canDeleteComment = (currentUser && c.uid === currentUser.uid) || isCommissioner;
-        ch += '<div style="display:flex;gap:6px;padding:4px 0;font-size:11px;align-items:flex-start">';
+        var cLikes = commentLikes[String(ci)] || [];
+        var cILiked = currentUser && cLikes.indexOf(currentUser.uid) !== -1;
+        var cAt = c.at ? new Date(c.at) : null;
+        var cTimeStr = "";
+        if (cAt) {
+          var _cmn = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+          var _chr = cAt.getHours(), _camp = _chr >= 12 ? "PM" : "AM";
+          _chr = _chr % 12 || 12;
+          cTimeStr = _cmn[cAt.getMonth()] + " " + cAt.getDate() + " · " + _chr + ":" + String(cAt.getMinutes()).padStart(2,"0") + " " + _camp;
+        }
+        ch += '<div style="padding:4px 0;font-size:11px">';
+        ch += '<div style="display:flex;gap:6px;align-items:flex-start">';
         ch += '<span style="color:var(--gold);font-weight:600;flex-shrink:0">' + escHtml(c.name||"Anon") + '</span>';
         ch += '<span style="color:var(--cream);flex:1">' + escHtml(c.text) + '</span>';
+        ch += '</div>';
+        // Comment actions: timestamp, like, reply, delete
+        ch += '<div style="display:flex;gap:10px;margin-top:2px;padding-left:0">';
+        if (cTimeStr) ch += '<span style="font-size:9px;color:var(--muted2)">' + cTimeStr + '</span>';
+        ch += '<span style="font-size:9px;cursor:pointer;color:' + (cILiked ? 'var(--gold)' : 'var(--muted2)') + ';display:flex;align-items:center;gap:2px" onclick="event.stopPropagation();toggleCommentLike(\'' + msg._docId + '\',' + ci + ')"><svg viewBox="0 0 16 16" width="9" height="9" fill="' + (cILiked ? 'var(--gold)' : 'none') + '" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg>' + (cLikes.length ? ' ' + cLikes.length : '') + '</span>';
+        ch += '<span style="font-size:9px;cursor:pointer;color:var(--muted2)" onclick="event.stopPropagation();replyToComment(\'' + msg._docId + '\',\'' + escHtml((c.name||"Anon").replace(/'/g,"\\'")) + '\')">Reply</span>';
         if (canDeleteComment) {
-          ch += '<span style="color:var(--muted2);cursor:pointer;font-size:10px;flex-shrink:0;padding:2px 4px" onclick="event.stopPropagation();confirmDeleteComment(this,\'' + msg._docId + '\',' + ci + ')">✕</span>';
+          ch += '<span style="color:var(--muted2);cursor:pointer;font-size:9px" onclick="event.stopPropagation();confirmDeleteComment(this,\'' + msg._docId + '\',' + ci + ')"><svg viewBox="0 0 16 16" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4l8 8M12 4l-8 8"/></svg></span>';
         }
+        ch += '</div>';
         ch += '</div>';
       });
       ch += '</div>';
     }
     
     // Comment input area (hidden by default)
-    ch += '<div id="comment-' + msg._docId + '" class="hidden" style="margin-top:6px;display:flex;gap:6px">';
+    ch += '<div id="comment-' + msg._docId + '" style="display:none;margin-top:6px;gap:6px">';
     ch += '<input type="text" class="ff-input" style="flex:1;padding:6px 10px;font-size:11px" id="commentText-' + msg._docId + '" placeholder="Add a comment..." onkeydown="if(event.key===\'Enter\')submitComment(\'' + msg._docId + '\')">';
     ch += '<button class="btn-sm green" style="font-size:10px;padding:6px 10px" onclick="submitComment(\'' + msg._docId + '\')">Post</button>';
     ch += '</div>';
@@ -8477,11 +8744,27 @@ function toggleLike(docId) {
   });
 }
 
-function showCommentInput(docId) {
+function showCommentInput(docId, isReply) {
+  // Close all other open comment inputs
+  document.querySelectorAll('[id^="comment-"]').forEach(function(el) {
+    if (el.id.indexOf("commentText") !== -1) return;
+    if (el.id !== "comment-" + docId) {
+      el.style.display = "none";
+      var inp = el.querySelector("input");
+      if (inp) inp.value = "";
+    }
+  });
   var el = document.getElementById("comment-" + docId);
-  if (el) { el.classList.toggle("hidden"); el.style.display = el.classList.contains("hidden") ? "none" : "flex"; }
-  var input = document.getElementById("commentText-" + docId);
-  if (input) input.focus();
+  if (!el) return;
+  var isHidden = el.style.display === "none" || el.style.display === "";
+  el.style.display = isHidden ? "flex" : "none";
+  if (isHidden) {
+    var input = document.getElementById("commentText-" + docId);
+    if (input) {
+      if (!isReply) input.value = "";
+      input.focus();
+    }
+  }
 }
 
 function submitComment(docId) {
@@ -8528,6 +8811,66 @@ function submitComment(docId) {
   });
 }
 
+function toggleCommentLike(docId, commentIdx) {
+  if (!db || !currentUser) { Router.toast("Sign in to like"); return; }
+  var uid = currentUser.uid;
+  
+  // Optimistic update
+  var localMsg = liveChat.find(function(m) { return m._docId === docId; });
+  if (localMsg) {
+    if (!localMsg.commentLikes) localMsg.commentLikes = {};
+    var key = String(commentIdx);
+    if (!localMsg.commentLikes[key]) localMsg.commentLikes[key] = [];
+    var idx = localMsg.commentLikes[key].indexOf(uid);
+    if (idx !== -1) localMsg.commentLikes[key].splice(idx, 1);
+    else localMsg.commentLikes[key].push(uid);
+    var feed = document.getElementById("chatFeed");
+    if (feed) feed.innerHTML = renderChatMessages(liveChat);
+  }
+  
+  // Sync to Firestore
+  db.collection("chat").doc(docId).get().then(function(doc) {
+    if (!doc.exists) return;
+    var data = doc.data();
+    var commentLikes = data.commentLikes || {};
+    var key = String(commentIdx);
+    if (!commentLikes[key]) commentLikes[key] = [];
+    var idx = commentLikes[key].indexOf(uid);
+    if (idx !== -1) commentLikes[key].splice(idx, 1);
+    else commentLikes[key].push(uid);
+    db.collection("chat").doc(docId).update({ commentLikes: commentLikes }).then(function() {
+      // Notify comment author
+      var comments = data.comments || [];
+      if (comments[commentIdx] && comments[commentIdx].uid && comments[commentIdx].uid !== uid) {
+        var myName = currentProfile ? PB.getDisplayName(currentProfile) : "Someone";
+        sendNotification(comments[commentIdx].uid, {
+          type: "comment_like",
+          title: "Comment Liked",
+          message: myName + " liked your comment",
+          linkPage: "chat"
+        });
+      }
+    });
+  });
+}
+
+function replyToComment(docId, commentAuthor) {
+  // Close other inputs first
+  document.querySelectorAll('[id^="comment-"]').forEach(function(el) {
+    if (el.id.indexOf("commentText") !== -1) return;
+    if (el.id !== "comment-" + docId) el.style.display = "none";
+  });
+  var el = document.getElementById("comment-" + docId);
+  if (el) el.style.display = "flex";
+  var input = document.getElementById("commentText-" + docId);
+  if (input) {
+    input.value = "@" + commentAuthor + " ";
+    input.focus();
+    var len = input.value.length;
+    input.setSelectionRange(len, len);
+  }
+}
+
 function confirmDelete(el, docId) {
   if (el.dataset.armed === "true") {
     deleteChat(docId);
@@ -8538,7 +8881,7 @@ function confirmDelete(el, docId) {
   el.style.color = "#e53935";
   // Reset after 3 seconds if not tapped
   setTimeout(function() { 
-    if (el) { el.dataset.armed = "false"; el.textContent = "✕"; el.style.color = "var(--muted2)"; }
+    if (el) { el.dataset.armed = "false"; el.textContent = "×"; el.style.color = "var(--muted2)"; }
   }, 3000);
 }
 
@@ -8551,7 +8894,7 @@ function confirmDeleteComment(el, docId, commentIndex) {
   el.innerHTML = '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="#e53935" stroke-width="1.5"><path d="M2 4h12M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1M6 7v5M10 7v5"/><path d="M3 4l1 10a1 1 0 001 1h6a1 1 0 001-1l1-10"/></svg>';
   el.style.color = "#e53935";
   setTimeout(function() {
-    if (el) { el.dataset.armed = "false"; el.textContent = "✕"; el.style.color = "var(--muted2)"; }
+    if (el) { el.dataset.armed = "false"; el.textContent = "×"; el.style.color = "var(--muted2)"; }
   }, 3000);
 }
 
@@ -8809,7 +9152,7 @@ function generateInvite() {
 Router.register("admin", function() {
   if (!currentProfile || currentProfile.role !== "commissioner") {
     var h = '<div class="sh"><h2>Access Denied</h2><button class="back" onclick="Router.go(\'home\')">← Back</button></div>';
-    h += '<div class="section"><div class="card"><div class="empty"><div class="empty-icon">🔒</div><div class="empty-text">Commissioner access only</div></div></div></div>';
+    h += '<div class="section"><div class="card"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg></div><div class="empty-text">Commissioner access only</div></div></div></div>';
     document.querySelector('[data-page="admin"]').innerHTML = h;
     return;
   }
@@ -9228,7 +9571,7 @@ function openFeatureRequest() {
     // Also post to activity feed so everyone can see/discuss
     db.collection("chat").add({
       id: genId(),
-      text: "💡 " + name + " submitted a feature request: \"" + feature.substring(0, 100) + (feature.length > 100 ? "..." : "") + "\"",
+      text: name + " submitted a feature request: \"" + feature.substring(0, 100) + (feature.length > 100 ? "..." : "") + "\"",
       authorId: "system",
       authorName: "Parbaughs",
       createdAt: fsTimestamp(),
@@ -9248,43 +9591,87 @@ Router.register("caddynotes", function() {
 
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
-  h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div></div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.4.0 <span style="color:var(--muted);font-weight:400">← v5.3.0</span></div></div>';
 
-  // Latest Patch Notes
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">Patch Notes — v5.3</span></div>';
+  // v5.4.0 — Current Release
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">v5.4.0 — Activity & Range Update</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 6, 2026</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
-  var patchNotes = [
-    {item: "Clubhouse tab — calendar, upcoming events, and trash talk in one place", tag: "NEW"},
-    {item: "Inline calendar with date range selection for scheduling events", tag: "NEW"},
-    {item: "Schedule tee times and multi-day events directly from the calendar", tag: "NEW"},
-    {item: "Live Spotlight — see who\'s playing right now on the home page", tag: "NEW"},
-    {item: "110+ achievements with hole-by-hole scoring, golf culture badges, and famous courses", tag: "NEW"},
-    {item: "XP system rebalanced — Level 100 reachable in ~1 year of active play", tag: "IMPROVED"},
-    {item: "Quick Add Course — add a new course in 5 seconds from Play Now", tag: "NEW"},
-    {item: "Party games now require an active round and link to your scorecard", tag: "IMPROVED"},
-    {item: "Comment delete — remove your own comments from posts", tag: "NEW"},
-    {item: "Badge and title editing now syncs to all devices", tag: "FIXED"},
-    {item: "8 new displayable profile badges (Commissioner, Ambassador, Beast Mode, and more)", tag: "NEW"},
-    {item: "Feature requests now notify the Commissioner and post to the feed", tag: "IMPROVED"},
-    {item: "Desktop responsive layout — looks proper on tablets and laptops", tag: "NEW"},
-    {item: "200+ courses across PA, VA, MD, and NC", tag: "NEW"},
-    {item: "Pull-to-refresh on all pages", tag: "NEW"},
-    {item: "Notification panel rebuilt — per-item dismiss, deep linking, never gets stuck", tag: "FIXED"},
-    {item: "Connectivity indicator in footer (green = live, red = offline)", tag: "NEW"},
-    {item: "Nav bar tap reliability improved — no more ghost taps on mobile", tag: "FIXED"},
-    {item: "Online section now shows profile photos and full display names", tag: "FIXED"},
-    {item: "Calendar today indicator redesigned — subtle green dot, doesn\'t compete with selections", tag: "FIXED"},
-    {item: "Like button now updates instantly (optimistic UI)", tag: "FIXED"},
-    {item: "Presence system optimized — 70% fewer Firestore reads", tag: "IMPROVED"},
-    {item: "Firestore security rules hardened with member verification", tag: "IMPROVED"},
-    {item: "Global error logging to Firestore for production debugging", tag: "NEW"},
-    {item: "Photo upload consolidated to one reliable path with Firestore sync", tag: "FIXED"}
+  var v540 = [
+    {item: "Activity tab replaces Rounds — toggle between Rounds and Range views", tag: "NEW"},
+    {item: "Range Session system — timer, drill selector, XP, and practice insights", tag: "NEW"},
+    {item: "15 stock drills with equipment requirements and how-to instructions", tag: "NEW"},
+    {item: "Custom drill creation — add your own drills to the library", tag: "NEW"},
+    {item: "Practice Insights — distribution chart showing which areas you practice most", tag: "NEW"},
+    {item: "20+ range achievements: streaks, consistency, volume, endurance, and special", tag: "NEW"},
+    {item: "Hit the Range button on home page and calendar", tag: "NEW"},
+    {item: "Pink calendar dots for range sessions", tag: "NEW"},
+    {item: "Public/Private toggle for range sessions and tee times", tag: "NEW"},
+    {item: "Private sessions don't award XP or show on other users' calendars", tag: "NEW"},
+    {item: "Profile completion achievements — Getting Settled, Profile Complete, Fully Loaded", tag: "NEW"},
+    {item: "Profile completion reminder on home page with progress counter", tag: "NEW"},
+    {item: "New user notification prompting profile completion", tag: "NEW"},
+    {item: "Comment likes — tap the heart on any comment", tag: "NEW"},
+    {item: "Comment replies — tap Reply to @mention the commenter", tag: "NEW"},
+    {item: "Comment timestamps — date and time on every comment", tag: "NEW"},
+    {item: "Chat timestamps — date and time on every message", tag: "IMPROVED"},
+    {item: "Chat feed now shows newest messages first", tag: "IMPROVED"},
+    {item: "Calendar click behavior fixed — single tap views date, Select Range toggle for multi-day events", tag: "FIXED"},
+    {item: "Calendar event cards now clickable — navigate directly to the event scorecard", tag: "FIXED"},
+    {item: "Calendar shows course name and tee time for each trip day", tag: "NEW"},
+    {item: "Travel/rest days show 'No round scheduled' instead of blank", tag: "IMPROVED"},
+    {item: "Event dedup — same trip no longer shows multiple cards per day", tag: "FIXED"},
+    {item: "Date format — human-readable (Apr 8-12, 2026) instead of ISO", tag: "FIXED"},
+    {item: "Tee Time label fixed in calendar legend", tag: "FIXED"},
+    {item: "Achievement earned-at dates — inferred retroactively from round/session data", tag: "NEW"},
+    {item: "Achievement dates shown on profile page and trophy room", tag: "NEW"},
+    {item: "Range Practice category added to trophy room", tag: "NEW"},
+    {item: "Trophy room event badge category now renders properly", tag: "FIXED"},
+    {item: "Coming Up cards now navigate to event scorecard instead of tee times", tag: "FIXED"},
+    {item: "All emojis replaced with SVG icons for consistent brand aesthetic", tag: "IMPROVED"},
+    {item: "Pull-to-refresh no longer triggers when scrolling inside chat feed", tag: "FIXED"},
+    {item: "Account creation hardened — claim profiles only for FOUNDING-FOUR code", tag: "FIXED"},
+    {item: "Profile claim deselect bug fixed — tap again properly clears selection", tag: "FIXED"},
+    {item: "Auto-cleanup for corrupted profiles (claimedFrom, inherited data)", tag: "FIXED"},
+    {item: "Online presence dedup — same user no longer shows twice", tag: "FIXED"},
+    {item: "Firestore rules updated for rangeSessions, tripscores, attestations", tag: "IMPROVED"},
+    {item: "Semantic versioning adopted (major.minor.patch)", tag: "IMPROVED"}
   ];
-  patchNotes.forEach(function(r) {
+  v540.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
     h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
     h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
+    h += '<span>' + r.item + '</span></div>';
+  });
+  h += '</div></div></div>';
+
+  // v5.3.0 — Previous Release
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--muted)">v5.3.0 — Clubhouse & Calendar</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 5, 2026</div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--muted);line-height:1.8">';
+  var v530 = [
+    {item: "Clubhouse tab — calendar, upcoming events, and trash talk in one place", tag: "NEW"},
+    {item: "Inline calendar with date range selection for scheduling events", tag: "NEW"},
+    {item: "Live Spotlight — see who's playing right now on the home page", tag: "NEW"},
+    {item: "110+ achievements with hole-by-hole scoring and golf culture badges", tag: "NEW"},
+    {item: "XP system rebalanced — Level 100 reachable in ~1 year", tag: "IMPROVED"},
+    {item: "Quick Add Course from Play Now and Round Log", tag: "NEW"},
+    {item: "Party games now require an active round", tag: "IMPROVED"},
+    {item: "Comment delete — remove your own comments", tag: "NEW"},
+    {item: "Desktop responsive layout", tag: "NEW"},
+    {item: "200+ courses across PA, VA, MD, and NC", tag: "NEW"},
+    {item: "Pull-to-refresh on all pages", tag: "NEW"},
+    {item: "Notification panel rebuilt with deep linking", tag: "FIXED"},
+    {item: "Connectivity indicator in footer", tag: "NEW"},
+    {item: "Presence system optimized — 70% fewer Firestore reads", tag: "IMPROVED"},
+    {item: "Firestore security rules hardened", tag: "IMPROVED"},
+    {item: "Global error logging for production debugging", tag: "NEW"}
+  ];
+  v530.forEach(function(r) {
+    var tagColor = r.tag === "NEW" ? "rgba(78,201,122,.5)" : r.tag === "FIXED" ? "rgba(201,168,76,.5)" : "rgba(96,165,250,.5)";
+    h += '<div style="padding:3px 0;display:flex;gap:8px;align-items:flex-start">';
+    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
     h += '<span>' + r.item + '</span></div>';
   });
   h += '</div></div></div>';
@@ -9296,34 +9683,42 @@ Router.register("caddynotes", function() {
     "Invite-only membership with invite codes",
     "Live hole-by-hole scoring (Play Now)",
     "Parbaugh Round — real-time shared scorecard",
+    "Activity tab — Rounds and Range views with toggle",
+    "Range Session timer with drill tracking and XP",
+    "15 stock drills + custom drill creation",
+    "Practice Insights with distribution analysis",
+    "Public/Private visibility for sessions and tee times",
     "Clubhouse — calendar, chat, and scheduling in one tab",
     "Live Spotlight — see active rounds on the home page",
-    "110+ achievements across 9 categories",
+    "130+ achievements across 10 categories including Range Practice",
     "Trophy Room with XP, levels, titles, and badge customization",
+    "Achievement earned-at dates with retroactive inference",
+    "Profile completion achievements and reminders",
     "Season standings with handicap-adjusted points",
     "GHIN World Handicap System handicap calculation",
     "8 game formats: Stroke, Stableford, Scramble, Best Ball, Match, Skins, Shamble, Chapman",
     "10 party games linked to your active round",
-    "Trash talk feed with likes, comments, and delete",
+    "Trash talk feed with likes, comments, replies, and timestamps",
+    "Comment likes and @mention replies",
     "Direct messages between members",
-    "Tee time posting with RSVP and notifications",
-    "Full calendar with date range event creation",
+    "Tee time posting with RSVP, visibility, and notifications",
+    "Full calendar with Select Range toggle and per-day course display",
     "200+ course database across PA, VA, MD, NC",
-    "Quick Add Course from Play Now and Round Log",
     "Photo uploads synced across all devices",
     "Notification bell with deep linking",
-    "Who\'s Online with live round broadcasting",
-    "Commissioner admin panel",
+    "Who's Online with live round broadcasting",
+    "Commissioner admin panel with profile cleanup",
     "Scramble team management",
     "Ace wall",
     "Season recap and yearly awards ceremony",
-    "Pull-to-refresh",
+    "Pull-to-refresh (smart — doesn't trigger in scrollable containers)",
+    "All SVG icons — no emojis, consistent brand aesthetic",
     "Desktop and mobile responsive design",
     "Feature request system",
     "Share round card after completing a round"
   ];
   features.forEach(function(f) {
-    h += '<div style="padding:3px 0;display:flex;gap:8px"><span style="color:var(--gold)">✓</span> ' + f + '</div>';
+    h += '<div style="padding:3px 0;display:flex;gap:8px"><span style="color:var(--gold)"><svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg></span> ' + f + '</div>';
   });
   h += '</div></div></div>';
 
@@ -9331,20 +9726,20 @@ Router.register("caddynotes", function() {
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--muted)">On the Range — Coming Soon</span></div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--muted);line-height:1.8">';
   var upcoming = [
+    "Custom badge image gallery (64 icons via Bing AI)",
+    "Cosmetic avatar borders and banners",
     "PWA install — add to home screen like a native app",
     "Push notifications to locked screen",
     "AI-powered tournament generator",
-    "Custom badge image gallery (64 icons)",
-    "Cosmetic avatar borders and banners",
     "Merch store integration",
     "SMS/phone number authentication"
   ];
   upcoming.forEach(function(u) {
-    h += '<div style="padding:3px 0;display:flex;gap:8px"><span style="color:var(--muted2)">○</span> ' + u + '</div>';
+    h += '<div style="padding:3px 0;display:flex;gap:8px"><span style="color:var(--muted2)"><svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/></svg></span> ' + u + '</div>';
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.3 · 10,700+ lines</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.4.0 · 11,760+ lines · 353 functions</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
@@ -9406,7 +9801,7 @@ function renderTrophyRoom(p) {
   h += '<div id="trophyAchGrid"></div>';
   
   // Title progression
-  h += '<div class="ach-cat-head">🎖 Title Progression</div>';
+  h += '<div class="ach-cat-head">Title Progression</div>';
   h += '<div style="padding:0 16px">';
   var titleKeys = [1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100];
   var TITLES = {1:"Rookie",5:"Weekend Warrior",10:"Range Rat",15:"Fairway Finder",20:"Club Member",25:"Course Regular",30:"Low Handicapper",35:"Scratch Aspirant",40:"Ironman",45:"Birdie Hunter",50:"Eagle Eye",55:"Tour Wannabe",60:"Golf Addict",65:"Links Legend",70:"Course Conqueror",75:"The Professor",80:"Hall of Famer",85:"Living Legend",90:"Immortal",95:"Transcendent",100:"G.O.A.T."};
@@ -9457,6 +9852,7 @@ function renderTrophyAchGrid(pid, unlockedOnly) {
     { key: "compete", name: "Competitive" },
     { key: "growth", name: "Improvement" },
     { key: "special", name: "Special" },
+    { key: "range", name: "Range Practice" },
     { key: "level", name: "Level Milestones" },
     { key: "event", name: "Events" },
     { key: "blunder", name: "Hall of Shame" }
@@ -9469,14 +9865,15 @@ function renderTrophyAchGrid(pid, unlockedOnly) {
   
   categories.forEach(function(cat) {
     var catAchs = allPossible.filter(function(a) { return a.cat === cat.key; });
-    if (!catAchs.length) return;
     
-    // Also include dynamically unlocked achievements not in allPossible (like event badges)
+    // Include dynamically unlocked achievements not in allPossible (like event badges)
     achievements.forEach(function(a) {
       if (a.cat === cat.key && !catAchs.some(function(p){return p.id === a.id})) {
         catAchs.push(a);
       }
     });
+    
+    if (!catAchs.length) return;
     
     if (unlockedOnly) {
       catAchs = catAchs.filter(function(a) { return unlockedIds[a.id]; });
@@ -9495,7 +9892,16 @@ function renderTrophyAchGrid(pid, unlockedOnly) {
       h += '<div class="ach-name">' + escHtml(a.name) + '</div>';
       h += '<div class="ach-desc">' + escHtml(a.desc) + '</div>';
       if (a.xp > 0) h += '<div class="ach-xp">+' + a.xp + ' XP</div>';
-      if (unlocked) h += '<div style="font-size:8px;color:var(--birdie);margin-top:3px">✓ UNLOCKED</div>';
+      if (unlocked) {
+        var _eAt = unlocked.earnedAt;
+        if (_eAt) {
+          var _eD = new Date(_eAt + "T12:00:00");
+          var _eMn = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+          h += '<div style="font-size:8px;color:var(--birdie);margin-top:3px"><svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M13 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V3a1 1 0 00-1-1zM11 1v2M5 1v2M2 6h12"/></svg> ' + _eMn[_eD.getMonth()] + ' ' + _eD.getDate() + ', ' + _eD.getFullYear() + '</div>';
+        } else {
+          h += '<div style="font-size:8px;color:var(--birdie);margin-top:3px"><svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M6 8l2 2 3-4"/></svg> UNLOCKED</div>';
+        }
+      }
       h += '</div>';
     });
     h += '</div>';
@@ -9549,6 +9955,9 @@ function getAllPossibleAchievements() {
     {id:"ace",name:"Ace",desc:"Make a hole-in-one",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:1000,cat:"special"},
     {id:"og",name:"The Original Four",desc:"Founding member",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"special"},
     {id:"beta",name:"Beta Tester",desc:"Among the first 30 members",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:250,cat:"special"},
+    {id:"profile_started",name:"Getting Settled",desc:"Add your first profile detail",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:25,cat:"special"},
+    {id:"profile_complete",name:"Profile Complete",desc:"Fill in bio, range, home course & clubs",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M6 9l2 2 3-4' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"special"},
+    {id:"fully_loaded",name:"Fully Loaded",desc:"Complete profile with photo & 5+ club distances",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='.8'/></svg>",xp:200,cat:"special"},
     {id:"lvl5",name:"Level 5",desc:"Reach Weekend Warrior",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:0,cat:"level"},
     {id:"lvl10",name:"Level 10",desc:"Reach Range Rat",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:0,cat:"level"},
     {id:"lvl25",name:"Level 25",desc:"Reach Course Regular",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='7' r='1.5' fill='currentColor'/></svg>",xp:0,cat:"level"},
@@ -9593,16 +10002,16 @@ function getAllPossibleAchievements() {
 
 // ========== PARTY GOLF GAMES ==========
 var PARTY_GAMES = [
-  { id:"ctp", name:"Closest to Pin", desc:"Nearest to the flag on a par 3", icon:"🎯", xpWin:75 },
-  { id:"longdrive", name:"Long Drive", desc:"Longest drive on a designated hole", icon:"💪", xpWin:75 },
-  { id:"puttoff", name:"Putt-Off", desc:"Head-to-head putting contest from 20ft", icon:"🏌️", xpWin:50 },
-  { id:"chipoff", name:"Chip-Off", desc:"Closest chip from off the green", icon:"⛳", xpWin:50 },
-  { id:"firstteeshot", name:"First Tee Jitters", desc:"Most fairways hit on the front 9", icon:"😰", xpWin:60 },
-  { id:"sandman", name:"Sandman Challenge", desc:"Best up-and-down from a bunker", icon:"🏖", xpWin:60 },
-  { id:"bingo", name:"Bingo Bango Bongo", desc:"Points for first on green, closest to pin, first in hole", icon:"🎰", xpWin:100 },
-  { id:"wolfgame", name:"Wolf", desc:"Rotating captain picks partner each hole", icon:"🐺", xpWin:100 },
-  { id:"nassau", name:"Nassau", desc:"Three bets: front 9, back 9, overall", icon:"💰", xpWin:100 },
-  { id:"skins", name:"Skins Game", desc:"Win the hole outright or skin carries over", icon:"🃏", xpWin:75 }
+  { id:"ctp", name:"Closest to Pin", desc:"Nearest to the flag on a par 3", icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='8' r='6'/><circle cx='8' cy='8' r='3'/><circle cx='8' cy='8' r='.8' fill='currentColor'/></svg>", xpWin:75 },
+  { id:"longdrive", name:"Long Drive", desc:"Longest drive on a designated hole", icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M4 10c0-3 2-6 4-6s4 3 4 6'/><path d='M6 10c0-2 1-4 2-4s2 2 2 4'/></svg>", xpWin:75 },
+  { id:"puttoff", name:"Putt-Off", desc:"Head-to-head putting contest from 20ft", icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='4' r='3'/><path d='M4 14l4-4 4 4'/><line x1='8' y1='9' x2='8' y2='14'/></svg>", xpWin:50 },
+  { id:"chipoff", name:"Chip-Off", desc:"Closest chip from off the green", icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M3 2v12'/><path d='M3 2l9 3.5L3 9'/></svg>", xpWin:50 },
+  { id:"firstteeshot", name:"First Tee Jitters", desc:"Most fairways hit on the front 9", icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='8' r='6'/><path d='M6 6v1M10 6v1M6 11s1 1 2 1 2-1 2-1'/></svg>", xpWin:60 },
+  { id:"sandman", name:"Sandman Challenge", desc:"Best up-and-down from a bunker", icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M2 12c2-1 3-2 6-2s4 1 6 2'/><circle cx='8' cy='6' r='4'/></svg>", xpWin:60 },
+  { id:"bingo", name:"Bingo Bango Bongo", desc:"Points for first on green, closest to pin, first in hole", icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><rect x='2' y='3' width='12' height='10' rx='1'/><path d='M6 3v10M10 3v10M2 8h12'/></svg>", xpWin:100 },
+  { id:"wolfgame", name:"Wolf", desc:"Rotating captain picks partner each hole", icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M3 4l5 2 5-2v8l-5 2-5-2z'/></svg>", xpWin:100 },
+  { id:"nassau", name:"Nassau", desc:"Three bets: front 9, back 9, overall", icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='8' r='6'/><path d='M8 4v8M6 6c0-1 1-1.5 2-1.5s2 .5 2 1.5-1 1.5-2 2-2 .5-2 1.5 1 1.5 2 1.5'/></svg>", xpWin:100 },
+  { id:"skins", name:"Skins Game", desc:"Win the hole outright or skin carries over", icon:"", xpWin:75 }
 ];
 
 Router.register("partygames", function() {
@@ -9662,7 +10071,7 @@ Router.register("partygames", function() {
         gh += '<div><div style="font-size:14px;font-weight:600">' + game.icon + ' ' + game.name + '</div>';
         gh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">Started by ' + escHtml(g.createdByName || "Unknown") + '</div></div>';
         if (canDelete) {
-          gh += '<div onclick="event.stopPropagation();deletePartyGame(\'' + g._id + '\')" style="cursor:pointer;padding:4px 8px;color:var(--muted2);font-size:16px">✕</div>';
+          gh += '<div onclick="event.stopPropagation();deletePartyGame(\'' + g._id + '\')" style="cursor:pointer;padding:4px 8px;color:var(--muted2);font-size:16px">×</div>';
         }
         gh += '</div>';
         // Declare winner
@@ -9700,7 +10109,7 @@ Router.register("partygames", function() {
         ph += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + game.name + '</div>';
         ph += '<div style="font-size:10px;color:var(--muted)">Winner: <span style="color:var(--gold)">' + escHtml(g.winnerName || "Unknown") + '</span>' + (dateStr ? ' · ' + dateStr : '') + '</div></div></div>';
         if (canDelete) {
-          ph += '<div onclick="deletePartyGame(\'' + g._id + '\')" style="cursor:pointer;padding:4px 8px;color:var(--muted2);font-size:14px">✕</div>';
+          ph += '<div onclick="deletePartyGame(\'' + g._id + '\')" style="cursor:pointer;padding:4px 8px;color:var(--muted2);font-size:14px">×</div>';
         }
         ph += '</div></div>';
       });
@@ -9749,11 +10158,11 @@ function declarePartyWinner(gameId, winnerId, winnerName) {
     winnerName: winnerName,
     completedAt: fsTimestamp()
   }).then(function() {
-    Router.toast(winnerName + " wins! 🏆");
+    Router.toast(winnerName + " wins!");
     // Post to activity feed
     db.collection("chat").add({
       id: genId(),
-      text: "🏆 " + winnerName + " won " + (PARTY_GAMES.find(function(g) { return g.id; }) || {name:"a party game"}).name + "!",
+      text: winnerName + " won " + (PARTY_GAMES.find(function(g) { return g.id; }) || {name:"a party game"}).name + "!",
       authorId: "system",
       authorName: "Parbaughs",
       createdAt: fsTimestamp()
@@ -10071,7 +10480,7 @@ function renderNotifPanel() {
   }
   var h = '';
   liveNotifications.forEach(function(n) {
-    var icon = n.type === "feed_like" ? "♥" : n.type === "feed_comment" || n.type === "feed_reply" ? "💬" : n.type === "dm" ? "✉️" : n.type === "tee_rsvp" ? "⛳" : n.type === "tee_cancelled" ? "🚫" : n.type === "tee_withdrawal" ? "👋" : n.type === "welcome" ? "🎉" : n.type === "report" ? "⚠️" : "🔔";
+    var icon = n.type === "feed_like" ? "<svg viewBox='0 0 16 16' width='10' height='10' fill='var(--gold)' stroke='none'><path d='M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z'/></svg>" : n.type === "feed_comment" || n.type === "feed_reply" ? "" : n.type === "dm" ? "" : n.type === "tee_rsvp" ? "" : n.type === "tee_cancelled" ? "" : n.type === "tee_withdrawal" ? "" : n.type === "welcome" ? "" : n.type === "report" ? "" : "";
     var linkPage = n.linkPage || "home";
     // Better deep linking based on notification type
     if (n.type === "dm") linkPage = "dms";
@@ -10090,7 +10499,7 @@ function renderNotifPanel() {
     h += '<span style="font-size:9px;color:var(--gold);cursor:pointer;font-weight:600" onclick="event.stopPropagation();handleNotifClick(\'' + (n._id||"") + '\',\'' + linkPage + '\')">View →</span>';
     h += '</div></div></div>';
     // Dismiss X button — top right of each notification
-    h += '<div onclick="event.stopPropagation();dismissNotif(\'' + (n._id||"") + '\')" style="position:absolute;top:10px;right:10px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted2);font-size:14px;border-radius:4px;transition:background .15s" onmouseover="this.style.background=\'var(--bg3)\'" onmouseout="this.style.background=\'transparent\'">✕</div>';
+    h += '<div onclick="event.stopPropagation();dismissNotif(\'' + (n._id||"") + '\')" style="position:absolute;top:10px;right:10px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted2);font-size:14px;border-radius:4px;transition:background .15s" onmouseover="this.style.background=\'var(--bg3)\'" onmouseout="this.style.background=\'transparent\'">×</div>';
     h += '</div>';
   });
   el.innerHTML = h;
@@ -10201,7 +10610,7 @@ function showAITournamentGenerator() {
   var members = PB.getPlayers();
   var h = '<div class="sh"><h2>AI Tournament Builder</h2><button class="back" onclick="Router.go(\'trips\')">← Back</button></div>';
   
-  h += '<div style="text-align:center;padding:20px 16px"><div style="font-size:28px;margin-bottom:6px">🤖</div>';
+  h += '<div style="text-align:center;padding:20px 16px">';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">AI Tournament Generator</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">Describe what you want and the AI builds it</div></div>';
   
@@ -10539,7 +10948,7 @@ function finishScrambleLive() {
     // Post to activity feed
     db.collection("chat").add({
       id: genId(),
-      text: "🏌️ " + s.team.name + " shot " + total + " in a scramble at " + s.course + "!",
+      text: s.team.name + " shot " + total + " in a scramble at " + s.course + "!",
       authorId: "system",
       authorName: "Parbaughs",
       createdAt: fsTimestamp()
@@ -10547,7 +10956,7 @@ function finishScrambleLive() {
   }
   
   scrambleLiveState = { active: false };
-  Router.toast("Scramble round saved! 🎉");
+  Router.toast("Scramble round saved! ");
   Router.go("rounds");
 }
 
@@ -10569,7 +10978,7 @@ Router.register("seasonrecap", function(params) {
   var h = '<div class="sh"><h2>' + year + ' Recap</h2><button class="back" onclick="Router.go(\'standings\')">← Back</button></div>';
   
   h += '<div style="text-align:center;padding:24px 16px;background:linear-gradient(180deg,#111520,var(--bg));border-bottom:1px solid var(--border)">';
-  h += '<div style="font-size:28px;margin-bottom:8px">🏆</div>';
+  h += '';
   h += '<div style="font-family:Playfair Display,serif;font-size:24px;color:var(--gold);font-weight:700">' + year + ' Season Recap</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:6px">March 1 — September 30</div></div>';
   
@@ -10591,7 +11000,7 @@ Router.register("seasonrecap", function(params) {
     h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--gold)">Season Champion</span></div>';
     h += '<div class="card" style="border-color:rgba(201,168,76,.3);background:linear-gradient(135deg,#1a1e30,var(--card))">';
     h += '<div style="padding:20px;text-align:center">';
-    h += '<div style="font-size:48px;margin-bottom:8px">👑</div>';
+    h += '';
     h += '<div style="font-family:Playfair Display,serif;font-size:22px;color:var(--gold);font-weight:700">' + escHtml(champ.name||champ.username) + '</div>';
     h += '<div style="font-size:24px;font-weight:800;color:var(--cream);margin-top:4px">' + champ.points + ' points</div>';
     h += '<div style="font-size:11px;color:var(--muted);margin-top:8px">' + champ.rounds + ' rounds · Avg: ' + champ.avg + ' · Best: ' + champ.best + '</div>';
@@ -10612,7 +11021,7 @@ Router.register("seasonrecap", function(params) {
   var roundCounts = {};
   allRounds.forEach(function(r) { roundCounts[r.playerName] = (roundCounts[r.playerName]||0) + 1; });
   var mostRounds = Object.entries(roundCounts).sort(function(a,b){return b[1]-a[1]});
-  if (mostRounds.length) awards.push({icon:"🏋️", title:"Grinder Award", winner: mostRounds[0][0], detail: mostRounds[0][1] + " rounds played"});
+  if (mostRounds.length) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M3 7h10M5 5v4M11 5v4M8 4v8'/></svg>", title:"Grinder Award", winner: mostRounds[0][0], detail: mostRounds[0][1] + " rounds played"});
   
   // Most improved (biggest avg drop)
   if (season.standings.length >= 2) {
@@ -10631,7 +11040,7 @@ Router.register("seasonrecap", function(params) {
     });
     var mostImproved = lastStandings.sort(function(a,b){return (b._improvement||0)-(a._improvement||0)});
     if (mostImproved.length && mostImproved[0]._improvement > 0) {
-      awards.push({icon:"📈", title:"Most Improved", winner: mostImproved[0].name||mostImproved[0].username, detail: "Improved " + Math.round(mostImproved[0]._improvement*10)/10 + " strokes"});
+      awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M2 12l4-4 3 2 5-6'/><path d='M11 4h3v3'/></svg>", title:"Most Improved", winner: mostImproved[0].name||mostImproved[0].username, detail: "Improved " + Math.round(mostImproved[0]._improvement*10)/10 + " strokes"});
     }
   }
   
@@ -10642,7 +11051,7 @@ Router.register("seasonrecap", function(params) {
     courseCounts[r.playerName][r.course] = 1;
   });
   var roadWarriors = Object.entries(courseCounts).map(function(e){return [e[0], Object.keys(e[1]).length]}).sort(function(a,b){return b[1]-a[1]});
-  if (roadWarriors.length) awards.push({icon:"🗺️", title:"Road Warrior", winner: roadWarriors[0][0], detail: roadWarriors[0][1] + " different courses"});
+  if (roadWarriors.length) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M2 3l4 1 4-1 4 1v10l-4-1-4 1-4-1z'/><path d='M6 4v10M10 3v10'/></svg>", title:"Road Warrior", winner: roadWarriors[0][0], detail: roadWarriors[0][1] + " different courses"});
   
   // Consistency king (lowest std dev)
   var consistencyData = [];
@@ -10656,7 +11065,7 @@ Router.register("seasonrecap", function(params) {
   });
   if (consistencyData.length) {
     consistencyData.sort(function(a,b){return a.stdDev-b.stdDev});
-    awards.push({icon:"🎯", title:"Consistency King", winner: consistencyData[0].name, detail: "±" + Math.round(consistencyData[0].stdDev*10)/10 + " stroke variance"});
+    awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='8' r='6'/><circle cx='8' cy='8' r='3'/><circle cx='8' cy='8' r='.8' fill='currentColor'/></svg>", title:"Consistency King", winner: consistencyData[0].name, detail: "±" + Math.round(consistencyData[0].stdDev*10)/10 + " stroke variance"});
   }
   
   awards.forEach(function(a) {
@@ -10677,7 +11086,7 @@ Router.register("seasonrecap", function(params) {
   if (season.standings.length) {
     h += '<div class="section"><div class="sec-head"><span class="sec-title">Final Standings</span></div>';
     season.standings.forEach(function(s, idx) {
-      var medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : (idx+1) + ".";
+      var medal = idx === 0 ? "1st" : idx === 1 ? "2nd" : idx === 2 ? "3rd" : (idx+1) + ".";
       h += '<div class="card" style="margin-bottom:6px"><div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center">';
       h += '<div style="display:flex;align-items:center;gap:12px">';
       h += '<div style="font-size:18px;width:28px;text-align:center">' + medal + '</div>';
@@ -10706,7 +11115,7 @@ Router.register("awards", function(params) {
   var h = '<div class="sh"><h2>Awards Night</h2><button class="back" onclick="Router.go(\'standings\')">← Back</button></div>';
   
   h += '<div style="text-align:center;padding:30px 16px 24px;background:linear-gradient(180deg,#0d1118,#111520,var(--bg));border-bottom:1px solid rgba(201,168,76,.15)">';
-  h += '<div style="font-size:48px;margin-bottom:12px">🏆</div>';
+  h += '';
   h += '<div style="font-family:Playfair Display,serif;font-size:28px;color:var(--gold);font-weight:700;letter-spacing:1px">The ' + year + '</div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:22px;color:var(--cream);font-weight:400;margin-top:2px">Parbaugh Awards</div>';
   if (!seasonOver) {
@@ -10728,25 +11137,25 @@ Router.register("awards", function(params) {
   
   // 1. Player of the Year
   if (season.standings.length) {
-    ceremonyAwards.push({icon: "👑", title: "Player of the Year", winner: season.standings[0].name||season.standings[0].username, detail: season.standings[0].points + " season points", tier: "gold"});
+    ceremonyAwards.push({icon: "", title: "Player of the Year", winner: season.standings[0].name||season.standings[0].username, detail: season.standings[0].points + " season points", tier: "gold"});
   }
   
   // 2. Scoring Champion (lowest avg)
   var scoringChamp = season.standings.filter(function(s){return s.rounds >= 3}).sort(function(a,b){return a.avg-b.avg});
   if (scoringChamp.length) {
-    ceremonyAwards.push({icon: "🎯", title: "Scoring Champion", winner: scoringChamp[0].name||scoringChamp[0].username, detail: "Average: " + scoringChamp[0].avg, tier: "gold"});
+    ceremonyAwards.push({icon: "", title: "Scoring Champion", winner: scoringChamp[0].name||scoringChamp[0].username, detail: "Average: " + scoringChamp[0].avg, tier: "gold"});
   }
   
   // 3. Round of the Year
   var bestRound = null;
   allRounds.forEach(function(r) { if (r.score && (!bestRound || r.score < bestRound.score)) bestRound = r; });
-  if (bestRound) ceremonyAwards.push({icon: "🔥", title: "Round of the Year", winner: bestRound.playerName, detail: bestRound.score + " at " + bestRound.course, tier: "gold"});
+  if (bestRound) ceremonyAwards.push({icon: "", title: "Round of the Year", winner: bestRound.playerName, detail: bestRound.score + " at " + bestRound.course, tier: "gold"});
   
   // 4. Iron Man (most rounds)
   var roundCounts = {};
   allRounds.forEach(function(r) { roundCounts[r.playerName] = (roundCounts[r.playerName]||0) + 1; });
   var ironMan = Object.entries(roundCounts).sort(function(a,b){return b[1]-a[1]});
-  if (ironMan.length) ceremonyAwards.push({icon: "💪", title: "Iron Man", winner: ironMan[0][0], detail: ironMan[0][1] + " rounds played", tier: "silver"});
+  if (ironMan.length) ceremonyAwards.push({icon: "", title: "Iron Man", winner: ironMan[0][0], detail: ironMan[0][1] + " rounds played", tier: "silver"});
   
   // 5. Most Improved
   var improvData = season.standings.filter(function(s){return s.rounds >= 3});
@@ -10761,7 +11170,7 @@ Router.register("awards", function(params) {
   });
   var mostImproved = improvData.sort(function(a,b){return (b._improv||0)-(a._improv||0)});
   if (mostImproved.length && mostImproved[0]._improv > 0) {
-    ceremonyAwards.push({icon: "📈", title: "Most Improved", winner: mostImproved[0].name||mostImproved[0].username, detail: "Dropped " + Math.round(mostImproved[0]._improv*10)/10 + " strokes avg", tier: "silver"});
+    ceremonyAwards.push({icon: "", title: "Most Improved", winner: mostImproved[0].name||mostImproved[0].username, detail: "Dropped " + Math.round(mostImproved[0]._improv*10)/10 + " strokes avg", tier: "silver"});
   }
   
   // 6. Explorer
@@ -10771,7 +11180,7 @@ Router.register("awards", function(params) {
     exploreCounts[r.playerName][r.course] = 1;
   });
   var explorers = Object.entries(exploreCounts).map(function(e){return [e[0], Object.keys(e[1]).length]}).sort(function(a,b){return b[1]-a[1]});
-  if (explorers.length) ceremonyAwards.push({icon: "🗺️", title: "Explorer Award", winner: explorers[0][0], detail: explorers[0][1] + " courses played", tier: "silver"});
+  if (explorers.length) ceremonyAwards.push({icon: "", title: "Explorer Award", winner: explorers[0][0], detail: explorers[0][1] + " courses played", tier: "silver"});
   
   // 7. Consistency Award
   var conData = [];
@@ -10785,7 +11194,7 @@ Router.register("awards", function(params) {
   });
   if (conData.length) {
     conData.sort(function(a,b){return a.stdDev-b.stdDev});
-    ceremonyAwards.push({icon: "🧘", title: "Mr. Consistent", winner: conData[0].name, detail: "±" + Math.round(conData[0].stdDev*10)/10 + " variance", tier: "bronze"});
+    ceremonyAwards.push({icon: "", title: "Mr. Consistent", winner: conData[0].name, detail: "±" + Math.round(conData[0].stdDev*10)/10 + " variance", tier: "bronze"});
   }
   
   // 8. Attendance award (perfect attendance = played every month Mar-Sep)
@@ -10796,7 +11205,7 @@ Router.register("awards", function(params) {
       months[m] = true;
     });
     var activeMonths = Object.keys(months).length;
-    if (activeMonths >= 7) ceremonyAwards.push({icon: "📅", title: "Perfect Attendance", winner: p.name||p.username, detail: "Played all 7 months", tier: "bronze"});
+    if (activeMonths >= 7) ceremonyAwards.push({icon: "", title: "Perfect Attendance", winner: p.name||p.username, detail: "Played all 7 months", tier: "bronze"});
   });
   
   // Render ceremony
@@ -10857,7 +11266,7 @@ function showShareCard(score, diffStr, course, playerName, fir, firHoles, gir, h
   
   // Buttons
   h += '<div style="padding:4px 20px 20px;display:flex;flex-direction:column;gap:8px">';
-  h += '<button class="btn full green" onclick="copyShareText()" style="font-size:12px">📋 Copy to share</button>';
+  h += '<button class="btn full green" onclick="copyShareText()" style="font-size:12px">Copy to share</button>';
   h += '<button class="btn full outline" onclick="closeShareCard()" style="font-size:12px">Done</button>';
   h += '</div>';
   
@@ -11191,34 +11600,34 @@ function initCountAnimations() {
 // ========== CONTEXTUAL EMPTY STATES ==========
 var contextualEmptyStates = {
   rounds: {
-    icon: "🏌️",
+    icon: "<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='4' r='3'/><path d='M3 14l5-5 5 5'/><line x1='8' y1='9' x2='8' y2='16'/></svg>",
     text: "No rounds logged yet",
     sub: "Your first round earns 100 XP and the First Blood badge",
     action: "Play Now →",
     actionPage: "playnow"
   },
   teetimes: {
-    icon: "📅",
+    icon: "",
     text: "No upcoming tee times",
     sub: "Post one and your crew gets notified instantly",
     action: "Post Tee Time →",
     actionPage: "tee-create"
   },
   scramble: {
-    icon: "🤝",
+    icon: "",
     text: "No scramble teams yet",
     sub: "Create a 2, 3, or 4-man team and start tracking W-L records",
     action: "Create Team →",
     actionPage: "scramble"
   },
   chat: {
-    icon: "💬",
+    icon: "",
     text: "The clubhouse is quiet",
     sub: "Be the first to talk trash. Someone has to.",
     action: null
   },
   challenges: {
-    icon: "⚔️",
+    icon: "",
     text: "No active challenges",
     sub: "Call someone out. Loser buys the post-round beers.",
     action: "New Challenge →",
@@ -11250,6 +11659,24 @@ function renderContextualEmpty(type) {
   
   document.addEventListener("touchstart", function(e) {
     if (window.scrollY <= 0 && e.touches.length === 1) {
+      // Check if touch is inside a scrollable container that isn't at top
+      var el = e.target;
+      var insideScrollable = false;
+      while (el && el !== document.body) {
+        if (el.scrollHeight > el.clientHeight + 2) {
+          var style = window.getComputedStyle(el);
+          var overflow = style.overflowY;
+          if (overflow === "auto" || overflow === "scroll") {
+            if (el.scrollTop > 0) {
+              // User is scrolling inside a container that has content above — don't pull-to-refresh
+              insideScrollable = true;
+              break;
+            }
+          }
+        }
+        el = el.parentElement;
+      }
+      if (insideScrollable) { pulling = false; return; }
       startY = e.touches[0].clientY;
       pulling = true;
       triggered = false;
@@ -11342,11 +11769,21 @@ function cleanupCorruptedProfiles() {
       }
       // Clean inherited data from non-founding members who claimed profiles
       if (m.claimedFrom && !m.isFoundingFour) {
-        if (m.manualHandicap) { updates.manualHandicap = null; needsFix = true; }
-        if (m.funnyFacts && m.funnyFacts.length) { updates.funnyFacts = []; needsFix = true; }
-        if (m.range) { updates.range = ""; needsFix = true; }
-        if (m.clubs && Object.keys(m.clubs).length) { updates.clubs = {}; needsFix = true; }
-        if (m.bag && Object.keys(m.bag).length) { updates.bag = {}; needsFix = true; }
+        // Non-founding members should never have claimedFrom — this was the bug
+        updates.claimedFrom = firebase.firestore.FieldValue.delete();
+        needsFix = true;
+        if (m.bio) { updates.bio = ""; }
+        if (m.nick) { updates.nick = ""; }
+        if (m.manualHandicap) { updates.manualHandicap = null; }
+        if (m.funnyFacts && m.funnyFacts.length) { updates.funnyFacts = []; }
+        if (m.range) { updates.range = ""; }
+        if (m.clubs && Object.keys(m.clubs).length) { updates.clubs = {}; }
+        if (m.bag && Object.keys(m.bag).length) { updates.bag = {}; }
+        if (m.homeCourse) { updates.homeCourse = ""; }
+        if (m.favoriteCourse) { updates.favoriteCourse = ""; }
+        if (m.bagPhoto) { updates.bagPhoto = ""; }
+        if (m.wins) { updates.wins = 0; }
+        if (m.trips) { updates.trips = 0; }
       }
       
       if (needsFix) {
@@ -11362,6 +11799,23 @@ var _origEnterApp = enterApp;
 enterApp = function() {
   _origEnterApp();
   initFirebaseListeners();
+  // Check profile completion — send one-time reminder notification
+  setTimeout(function() {
+    if (!db || !currentUser || !currentProfile) return;
+    var profComplete = currentProfile.bio && currentProfile.range && currentProfile.homeCourse;
+    if (profComplete) return;
+    // Only send once — check if we already sent this notification
+    var sentKey = "pb_profile_notif_" + currentUser.uid;
+    if (localStorage.getItem(sentKey)) return;
+    localStorage.setItem(sentKey, "1");
+    sendNotification(currentUser.uid, {
+      type: "profile_reminder",
+      title: "Complete Your Profile",
+      message: "Add your bio, score range, and home course to earn XP and unlock the Getting Settled achievement!",
+      linkPage: "members",
+      linkParams: {edit: currentUser.uid}
+    });
+  }, 5000); // Delay 5s so it doesn't fire on initial load
 };
 
 // ========== FINAL INIT ==========
