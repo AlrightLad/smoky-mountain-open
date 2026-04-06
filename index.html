@@ -6955,21 +6955,20 @@ Router.register("dms", function() {
 });
 
 Router.register("dm-thread", function(params) {
-  activeDmPartner = params.partner;
-  var partner = PB.getPlayer(activeDmPartner);
-  if (!partner) { Router.go("dms"); return; }
-
-  var h = '<div class="sh"><div style="display:flex;align-items:center;gap:8px"><div class="m-av" style="width:28px;height:28px;font-size:10px">' + Router.getAvatar(partner) + '</div><h2 style="font-size:16px">' + escHtml(partner.name) + '</h2></div>';
-  h += '<button class="back" onclick="Router.go(\'dms\')">← Back</button></div>';
-  h += '<div class="dm-thread"><div id="dmMessages" class="dm-messages"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
-  h += '<div class="dm-input-area"><input type="text" id="dmInput" placeholder="Message..." onkeydown="if(event.key===\'Enter\')sendDM()"><button onclick="sendDM()">Send</button></div></div>';
-  document.querySelector('[data-page="dm-thread"]').innerHTML = h;
-
+  activeDmPartner = params ? params.partner : null;
+  if (!activeDmPartner || !currentUser) { Router.go("dms"); return; }
+  
+  // Render immediately with loading state — don't wait for anything async
+  var threadEl = document.querySelector('[data-page="dm-thread"]');
+  threadEl.innerHTML = '<div class="sh" id="dmThreadHeader"><h2 style="font-size:16px">Message</h2><button class="back" onclick="Router.go(\'dms\')">← Back</button></div>' +
+    '<div class="dm-thread"><div id="dmMessages" class="dm-messages"><div class="loading"><div class="spinner"></div>Loading...</div></div>' +
+    '<div class="dm-input-area"><input type="text" id="dmInput" placeholder="Message..." onkeydown="if(event.key===\'Enter\')sendDM()"><button onclick="sendDM()">Send</button></div></div>';
+  
+  // Start message listener immediately
   if (dmListenerUnsub) dmListenerUnsub();
-  if (db && currentUser) {
+  if (db) {
     var cid = getDmConvoId(currentUser.uid, activeDmPartner);
-    db.collection("dms").doc(cid).set({participants:[currentUser.uid,activeDmPartner].sort(),updatedAt:fsTimestamp()},{merge:true});
-    // Mark as read
+    db.collection("dms").doc(cid).set({participants:[currentUser.uid,activeDmPartner].sort(),updatedAt:fsTimestamp()},{merge:true}).catch(function(){});
     var readUpdate = {};
     readUpdate["lastRead." + currentUser.uid] = fsTimestamp();
     db.collection("dms").doc(cid).update(readUpdate).catch(function(){});
@@ -6986,6 +6985,26 @@ Router.register("dm-thread", function(params) {
       });
       c.innerHTML = mh; c.scrollTop = c.scrollHeight;
     });
+  }
+  
+  // Update header with partner name async — page is already showing
+  function setHeader(name, partner) {
+    var hdr = document.getElementById("dmThreadHeader");
+    if (!hdr) return;
+    var av = partner ? Router.getAvatar(partner) : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg3);border-radius:50%;color:var(--gold);font-weight:700;font-size:12px">' + (name||"?").charAt(0).toUpperCase() + '</div>';
+    hdr.innerHTML = '<div style="display:flex;align-items:center;gap:8px"><div class="m-av" style="width:28px;height:28px;font-size:10px">' + av + '</div><h2 style="font-size:16px">' + escHtml(name) + '</h2></div><button class="back" onclick="Router.go(\'dms\')">← Back</button>';
+    var inp = document.getElementById("dmInput");
+    if (inp) inp.placeholder = "Message " + name + "...";
+  }
+  
+  var partner = PB.getPlayer(activeDmPartner);
+  if (partner) {
+    setHeader(partner.name || partner.username, partner);
+  } else if (db) {
+    db.collection("members").doc(activeDmPartner).get().then(function(doc) {
+      var d = doc.exists ? doc.data() : null;
+      setHeader(d ? (d.name || d.username || activeDmPartner) : activeDmPartner, d);
+    }).catch(function() { setHeader(activeDmPartner, null); });
   }
 });
 
