@@ -1816,7 +1816,26 @@ var PB = (function() {
 
   /* ---------- ROUND OPS ---------- */
   function getRounds() { return state.rounds; }
-  function getPlayerRounds(pid) { return state.rounds.filter(function(r) { return r.player === pid; }); }
+  function getPlayerRounds(pid) {
+    var rounds = state.rounds.filter(function(r) { return r.player === pid; });
+    // If no rounds found and pid might be a Firebase UID, check claimedFrom mappings
+    if (!rounds.length) {
+      // Check if any local player was claimed by this Firebase UID
+      var localPlayer = state.players.find(function(p) { return p.claimedFrom === pid; });
+      if (localPlayer) {
+        rounds = state.rounds.filter(function(r) { return r.player === localPlayer.id; });
+      }
+      // Also check fbMemberCache for claimedFrom mapping
+      if (!rounds.length && typeof fbMemberCache !== "undefined" && fbMemberCache[pid] && fbMemberCache[pid].claimedFrom) {
+        rounds = state.rounds.filter(function(r) { return r.player === fbMemberCache[pid].claimedFrom; });
+      }
+      // Also check currentProfile
+      if (!rounds.length && typeof currentProfile !== "undefined" && currentProfile && currentProfile.id === pid && currentProfile.claimedFrom) {
+        rounds = state.rounds.filter(function(r) { return r.player === currentProfile.claimedFrom; });
+      }
+    }
+    return rounds;
+  }
   function getCourseRounds(courseName) { return state.rounds.filter(function(r) { return r.course === courseName; }); }
 
   function addRound(data) {
@@ -2378,9 +2397,19 @@ var PB = (function() {
     if (chatCount >= 1) xp += 25;
     if (chatCount >= 25) xp += 75;
     if (chatCount >= 100) xp += 200;
-    // Invites
-    if (player && player.invitesUsed >= 1) xp += 100;
-    if (player && player.invitesUsed >= 3) xp += 250;
+    // Invites — also check fbMemberCache for recruited member count
+    var inviteCount = player ? (player.invitesUsed || 0) : 0;
+    if (player && player.role === "commissioner" && typeof fbMemberCache !== "undefined") {
+      var recruited = Object.values(fbMemberCache).filter(function(m) { return m.invitedBy === pid; });
+      if (recruited.length > inviteCount) inviteCount = recruited.length;
+    }
+    if (inviteCount >= 1) xp += 100;
+    if (inviteCount >= 3) xp += 250;
+    // Special achievement XP
+    if (player && (player.founding || player.isFoundingFour)) xp += 500;
+    if (player) xp += 250; // Beta tester — all current members qualify
+    if (player && player.role === "commissioner") xp += 500;
+    if (player && player.email === "jopinksalot@msn.com") xp += 250;
 
     return xp;
   }
@@ -2469,14 +2498,14 @@ var PB = (function() {
     // --- SPECIAL ---
     var rec = getRecords();
     if (rec.holeInOnes&&rec.holeInOnes.some(function(a){return a.by===(player?player.name:"")})) achievements.push({id:"ace",name:"Ace",desc:"Make a hole-in-one",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:1000,cat:"special"});
-    if (player && (player.founding || player.isFoundingFour)) achievements.push({id:"og",name:"The Original Four",desc:"Founding member",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"special"});
+    if (player && (player.founding || player.isFoundingFour)) achievements.push({id:"og",name:"The Original Four",desc:"Founding member",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"special"});
     // Beta tester — all current members are in the first 30
     var playerIdx = -1;
     var allPlayers = getPlayers();
     for (var bi = 0; bi < allPlayers.length; bi++) {
       if (allPlayers[bi].id === pid || (player && allPlayers[bi].id === player.claimedFrom) || allPlayers[bi].claimedFrom === pid) { playerIdx = bi; break; }
     }
-    if (player && (playerIdx < 30 || allPlayers.length < 30)) achievements.push({id:"beta",name:"Beta Tester",desc:"Among the first 30 members",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:0,cat:"special"});
+    if (player && (playerIdx < 30 || allPlayers.length < 30)) achievements.push({id:"beta",name:"Beta Tester",desc:"Among the first 30 members",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:250,cat:"special"});
 
     // --- PLAY NOW SPECIFIC ---
     var playNowRounds = rounds.filter(function(r){return r.holeScores});
@@ -2545,8 +2574,8 @@ var PB = (function() {
     if (parbaughRounds.length >= 25) achievements.push({id:"parbaugh_veteran",name:"Parbaugh Veteran",desc:"25 Parbaugh Rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"milestone",title:"The Glue Guy"});
 
     // --- UNIQUE SPECIAL BADGES ---
-    if (player && player.email === "jopinksalot@msn.com") achievements.push({id:"boss_wife",name:"The Boss's Wife",desc:"The one who really runs things",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M2 12h12L13 5l-3 3-2-4-2 4-3-3z' fill='none' stroke='currentColor' stroke-width='1.2'/><rect x='2' y='12' width='12' height='2' rx='1' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"special",title:"The Boss's Wife",badge:"boss_wife"});
-    if (player && player.role === "commissioner") achievements.push({id:"the_commish",name:"The Commissioner",desc:"Running the show",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l6 4H2zM3 6v7M6 6v7M10 6v7M13 6v7M1 13h14M1 14h14' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"special",title:"The Commissioner",badge:"commissioner"});
+    if (player && player.email === "jopinksalot@msn.com") achievements.push({id:"boss_wife",name:"The Boss's Wife",desc:"The one who really runs things",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M2 12h12L13 5l-3 3-2-4-2 4-3-3z' fill='none' stroke='currentColor' stroke-width='1.2'/><rect x='2' y='12' width='12' height='2' rx='1' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:250,cat:"special",title:"The Boss's Wife",badge:"boss_wife"});
+    if (player && player.role === "commissioner") achievements.push({id:"the_commish",name:"The Commissioner",desc:"Running the show",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l6 4H2zM3 6v7M6 6v7M10 6v7M13 6v7M1 13h14M1 14h14' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"special",title:"The Commissioner",badge:"commissioner"});
 
     // --- EVENT PARTICIPATION BADGES ---
     // Each event a player participates in earns them a unique badge
@@ -3122,9 +3151,6 @@ Router.register("home", function() {
   // Hero
   h += '<div class="hero"><div class="hero-logo" style="border:none;background:transparent"><img src="watermark.jpg" style="border-radius:16px"></div>';
   h += '<h1>THE PARBAUGHS</h1><div class="est">Est. 2026 · York, PA</div></div>';
-
-  // Connection status — hidden by default, shows only on offline
-  h += '<div id="connBar" class="conn-bar live" style="display:none"><span>●</span> Live</div>';
 
   // 0. Who's Online
   h += '<div id="onlineSection"></div>';
@@ -8371,9 +8397,9 @@ function renderTrophyRoom(p) {
   h += '<div class="trophy-next">' + (xpNeeded - xpInLevel).toLocaleString() + ' XP to Level ' + (lvl.level + 1) + '</div>';
   h += '</div>';
   
-  // Quick stats
+  // Quick stats — Unlocked is now a clickable filter toggle
   h += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:12px 16px">';
-  h += '<div class="stat-box"><div class="stat-val" style="font-size:18px">' + achievements.length + '</div><div class="stat-label">Unlocked</div></div>';
+  h += '<div class="stat-box" id="trophyFilterBtn" onclick="toggleTrophyFilter(\'' + pid + '\')" style="cursor:pointer;border:1px solid var(--border);transition:border-color .15s"><div class="stat-val" style="font-size:18px">' + achievements.length + '</div><div class="stat-label">Unlocked</div></div>';
   h += '<div class="stat-box"><div class="stat-val" style="font-size:18px">' + rounds.length + '</div><div class="stat-label">Rounds</div></div>';
   var best = PB.getPlayerBest(pid);
   h += '<div class="stat-box"><div class="stat-val" style="font-size:18px">' + (best || "—") + '</div><div class="stat-label">Best</div></div>';
@@ -8381,43 +8407,8 @@ function renderTrophyRoom(p) {
   h += '<div class="stat-box"><div class="stat-val" style="font-size:18px">' + unique + '</div><div class="stat-label">Courses</div></div>';
   h += '</div>';
   
-  // All possible achievements with locked/unlocked state
-  var allPossible = getAllPossibleAchievements();
-  var unlockedIds = {};
-  achievements.forEach(function(a) { unlockedIds[a.id] = a; });
-  
-  // Group by category
-  var categories = [
-    { key: "milestone", name: "Milestones", icon: "🏁" },
-    { key: "score", name: "Score Achievements", icon: "🎯" },
-    { key: "explore", name: "Exploration", icon: "🗺" },
-    { key: "compete", name: "Competitive", icon: "⚔" },
-    { key: "growth", name: "Improvement", icon: "📈" },
-    { key: "special", name: "Special", icon: "⭐" },
-    { key: "level", name: "Level Milestones", icon: "🏆" },
-    { key: "event", name: "Events", icon: "🏌️" },
-    { key: "blunder", name: "Hall of Shame", icon: "💀" }
-  ];
-  
-  categories.forEach(function(cat) {
-    var catAchs = allPossible.filter(function(a) { return a.cat === cat.key; });
-    if (!catAchs.length) return;
-    var unlockedCount = catAchs.filter(function(a) { return unlockedIds[a.id]; }).length;
-    
-    h += '<div class="ach-cat-head">' + cat.icon + ' ' + cat.name + ' <span style="color:var(--muted);font-weight:400">' + unlockedCount + '/' + catAchs.length + '</span></div>';
-    h += '<div class="ach-grid">';
-    catAchs.forEach(function(a) {
-      var unlocked = unlockedIds[a.id];
-      h += '<div class="ach-card' + (unlocked ? '' : ' locked') + '">';
-      h += '<div class="ach-icon">' + a.icon + '</div>';
-      h += '<div class="ach-name">' + escHtml(a.name) + '</div>';
-      h += '<div class="ach-desc">' + escHtml(a.desc) + '</div>';
-      if (a.xp > 0) h += '<div class="ach-xp">+' + a.xp + ' XP</div>';
-      if (unlocked) h += '<div style="font-size:8px;color:var(--birdie);margin-top:3px">✓ UNLOCKED</div>';
-      h += '</div>';
-    });
-    h += '</div>';
-  });
+  // Achievement grid container — will be re-rendered by filter toggle
+  h += '<div id="trophyAchGrid"></div>';
   
   // Title progression
   h += '<div class="ach-cat-head">🎖 Title Progression</div>';
@@ -8438,7 +8429,84 @@ function renderTrophyRoom(p) {
   h += '</div>';
   
   document.querySelector('[data-page="trophyroom"]').innerHTML = h;
+  // Render achievement grid (default: show all)
+  trophyFilterPid = pid;
+  trophyShowUnlockedOnly = false;
+  renderTrophyAchGrid(pid, false);
   setTimeout(initCountAnimations, 50);
+}
+
+var trophyFilterPid = null;
+var trophyShowUnlockedOnly = false;
+
+function toggleTrophyFilter(pid) {
+  trophyShowUnlockedOnly = !trophyShowUnlockedOnly;
+  var btn = document.getElementById("trophyFilterBtn");
+  if (btn) btn.style.borderColor = trophyShowUnlockedOnly ? "var(--gold)" : "var(--border)";
+  renderTrophyAchGrid(pid, trophyShowUnlockedOnly);
+}
+
+function renderTrophyAchGrid(pid, unlockedOnly) {
+  var el = document.getElementById("trophyAchGrid");
+  if (!el) return;
+  
+  var achievements = PB.getAchievements(pid);
+  var allPossible = getAllPossibleAchievements();
+  var unlockedIds = {};
+  achievements.forEach(function(a) { unlockedIds[a.id] = a; });
+  
+  var categories = [
+    { key: "milestone", name: "Milestones" },
+    { key: "score", name: "Score" },
+    { key: "explore", name: "Exploration" },
+    { key: "compete", name: "Competitive" },
+    { key: "growth", name: "Improvement" },
+    { key: "special", name: "Special" },
+    { key: "level", name: "Level Milestones" },
+    { key: "event", name: "Events" },
+    { key: "blunder", name: "Hall of Shame" }
+  ];
+  
+  var h = '';
+  if (unlockedOnly) {
+    h += '<div style="padding:8px 16px;font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1px">Showing unlocked only · <span style="cursor:pointer;text-decoration:underline" onclick="toggleTrophyFilter(\'' + pid + '\')">Show all</span></div>';
+  }
+  
+  categories.forEach(function(cat) {
+    var catAchs = allPossible.filter(function(a) { return a.cat === cat.key; });
+    if (!catAchs.length) return;
+    
+    // Also include dynamically unlocked achievements not in allPossible (like event badges)
+    achievements.forEach(function(a) {
+      if (a.cat === cat.key && !catAchs.some(function(p){return p.id === a.id})) {
+        catAchs.push(a);
+      }
+    });
+    
+    if (unlockedOnly) {
+      catAchs = catAchs.filter(function(a) { return unlockedIds[a.id]; });
+      if (!catAchs.length) return;
+    }
+    
+    var unlockedCount = catAchs.filter(function(a) { return unlockedIds[a.id]; }).length;
+    var totalCount = unlockedOnly ? catAchs.length : catAchs.length;
+    
+    h += '<div class="ach-cat-head">' + cat.name + ' <span style="color:var(--muted);font-weight:400">' + unlockedCount + (unlockedOnly ? '' : '/' + totalCount) + '</span></div>';
+    h += '<div class="ach-grid">';
+    catAchs.forEach(function(a) {
+      var unlocked = unlockedIds[a.id];
+      h += '<div class="ach-card' + (unlocked ? '' : ' locked') + '">';
+      h += '<div class="ach-icon">' + a.icon + '</div>';
+      h += '<div class="ach-name">' + escHtml(a.name) + '</div>';
+      h += '<div class="ach-desc">' + escHtml(a.desc) + '</div>';
+      if (a.xp > 0) h += '<div class="ach-xp">+' + a.xp + ' XP</div>';
+      if (unlocked) h += '<div style="font-size:8px;color:var(--birdie);margin-top:3px">✓ UNLOCKED</div>';
+      h += '</div>';
+    });
+    h += '</div>';
+  });
+  
+  el.innerHTML = h;
 }
 
 // All possible achievements (for showing locked state)
@@ -8484,8 +8552,8 @@ function getAllPossibleAchievements() {
     {id:"metamorphosis",name:"Metamorphosis",desc:"Average improved by 15+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"growth"},
     {id:"sandbagger",name:"Sandbagger",desc:"Beat average by 10+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"growth"},
     {id:"ace",name:"Ace",desc:"Make a hole-in-one",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:1000,cat:"special"},
-    {id:"og",name:"The Original Four",desc:"Founding member",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"special"},
-    {id:"beta",name:"Beta Tester",desc:"Among the first 30 members",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:0,cat:"special"},
+    {id:"og",name:"The Original Four",desc:"Founding member",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"special"},
+    {id:"beta",name:"Beta Tester",desc:"Among the first 30 members",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:250,cat:"special"},
     {id:"lvl5",name:"Level 5",desc:"Reach Weekend Warrior",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:0,cat:"level"},
     {id:"lvl10",name:"Level 10",desc:"Reach Range Rat",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:0,cat:"level"},
     {id:"lvl25",name:"Level 25",desc:"Reach Course Regular",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='7' r='1.5' fill='currentColor'/></svg>",xp:0,cat:"level"},
@@ -8504,8 +8572,8 @@ function getAllPossibleAchievements() {
     {id:"first_parbaugh",name:"First Parbaugh Round",desc:"Complete a Parbaugh Round",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:75,cat:"milestone"},
     {id:"parbaugh_regular",name:"Parbaugh Regular",desc:"5 Parbaugh Rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:150,cat:"milestone"},
     {id:"parbaugh_veteran",name:"Parbaugh Veteran",desc:"25 Parbaugh Rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"milestone"},
-    {id:"boss_wife",name:"The Boss's Wife",desc:"The one who really runs things",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M2 12h12L13 5l-3 3-2-4-2 4-3-3z' fill='none' stroke='currentColor' stroke-width='1.2'/><rect x='2' y='12' width='12' height='2' rx='1' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"special"},
-    {id:"the_commish",name:"The Commissioner",desc:"Running the show",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l6 4H2zM3 6v7M6 6v7M10 6v7M13 6v7M1 13h14M1 14h14' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"special"},
+    {id:"boss_wife",name:"The Boss's Wife",desc:"The one who really runs things",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M2 12h12L13 5l-3 3-2-4-2 4-3-3z' fill='none' stroke='currentColor' stroke-width='1.2'/><rect x='2' y='12' width='12' height='2' rx='1' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:250,cat:"special"},
+    {id:"the_commish",name:"The Commissioner",desc:"Running the show",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l6 4H2zM3 6v7M6 6v7M10 6v7M13 6v7M1 13h14M1 14h14' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"special"},
     {id:"first_post",name:"First Post",desc:"Send a message in the Clubhouse",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M14 10a2 2 0 01-2 2H6l-3 3V4a2 2 0 012-2h7a2 2 0 012 2z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:25,cat:"milestone"},
     {id:"trash_talker",name:"Trash Talker",desc:"25 messages in the Clubhouse",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M14 10a2 2 0 01-2 2H6l-3 3V4a2 2 0 012-2h7a2 2 0 012 2z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M6 6h4M6 8h2' stroke='currentColor' stroke-width='1'/></svg>",xp:75,cat:"milestone"},
     {id:"motormouth",name:"Motor Mouth",desc:"100 messages in the Clubhouse",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M14 10a2 2 0 01-2 2H6l-3 3V4a2 2 0 012-2h7a2 2 0 012 2z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M14 10a2 2 0 01-2 2H6l-3 3V4a2 2 0 012-2h7a2 2 0 012 2z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:200,cat:"milestone"},
@@ -9938,17 +10006,6 @@ Router.go = function(page, params) {
 // ========== CONNECTION STATUS BAR ==========
 var connStatus = "live";
 
-function updateConnBar() {
-  var el = document.getElementById("connBar");
-  if (!el) return;
-  el.className = "conn-bar " + connStatus;
-  if (connStatus === "offline") {
-    el.style.display = "flex";
-    el.innerHTML = '<span>●</span> Offline';
-  } else {
-    el.style.display = "none";
-  }
-}
 
 function initConnStatus() {
   if (!db) return;
