@@ -41,10 +41,10 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
 .hidden{display:none!important}
 
 /* NAV */
-.nav{display:flex;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;background:rgba(14,17,24,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}
+.nav{display:flex;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;background:var(--bg);scrollbar-width:none}
 .nav::-webkit-scrollbar{display:none}
-.nav button{flex:0 0 auto;padding:16px 16px;background:0 0;color:var(--muted2);border:none;border-bottom:2px solid transparent;font:600 10px/1 'Inter',sans-serif;cursor:pointer;white-space:nowrap;text-transform:uppercase;letter-spacing:1.2px;transition:all .15s;text-align:center;touch-action:manipulation;-webkit-tap-highlight-color:rgba(201,168,76,.1);min-width:44px}
-.nav button:hover{color:var(--cream);background:var(--bg3)}
+.nav button{flex:1 1 0;padding:14px 4px;background:0 0;color:var(--muted2);border:none;border-bottom:2px solid transparent;font:600 9px/1 'Inter',sans-serif;cursor:pointer;white-space:nowrap;text-transform:uppercase;letter-spacing:.8px;transition:color .1s,border-color .1s;text-align:center;touch-action:manipulation;-webkit-tap-highlight-color:rgba(201,168,76,.1);min-height:44px}
+.nav button:hover{color:var(--cream)}
 .nav button.a{color:var(--gold);border-bottom-color:var(--gold);background:rgba(201,168,76,.08)}
 .nav button.a:hover{color:var(--gold3)}
 
@@ -2670,8 +2670,6 @@ var Router = (function() {
       if (pages[page]) pages[page](current.params);
     }
     window.scrollTo(0, 0);
-    // Subtle fade-in
-    if (target) { target.style.opacity = "0"; target.style.transition = "opacity .15s ease"; setTimeout(function(){ target.style.opacity = "1"; }, 10); }
   }
 
   function getPage() { return current.page; }
@@ -9735,7 +9733,7 @@ function renderContextualEmpty(type) {
   var startY = 0;
   var pulling = false;
   var triggered = false;
-  var threshold = 90;
+  var threshold = 140;
   var indicator = null;
   
   document.addEventListener("touchstart", function(e) {
