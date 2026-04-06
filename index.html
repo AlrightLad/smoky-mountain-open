@@ -4014,7 +4014,8 @@ Router.register("settings", function() {
     h += '<div class="card"><div class="card-body">';
     h += '<div style="font-size:12px;font-weight:600;margin-bottom:6px">GolfCourseAPI.com</div>';
     h += '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">Free API key for searching 30,000+ courses. Sign up at <span style="color:var(--gold);cursor:pointer" onclick="window.open(\'https://golfcourseapi.com\',\'_blank\')">golfcourseapi.com</span> and paste your key below.</div>';
-    h += '<div style="display:flex;gap:6px"><input type="text" class="ff-input" id="gcapi-key" value="' + escHtml(savedKey) + '" placeholder="Paste API key..." style="flex:1;font-size:12px;-webkit-user-select:text;user-select:text" onkeydown="if(event.key===\'Enter\')saveGolfApiKey()">';
+    h += '<div style="display:flex;gap:6px"><input type="text" class="ff-input" id="gcapi-key" value="' + escHtml(savedKey) + '" placeholder="Paste API key..." style="flex:1;font-size:12px;-webkit-user-select:text;user-select:text" onkeydown="if(event.key===\'Enter\')saveGolfApiKey()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">';
+    h += '<button class="btn-sm outline" onclick="pasteApiKey()" style="font-size:9px;white-space:nowrap">Paste</button>';
     h += '<button class="btn-sm green" onclick="saveGolfApiKey()" style="font-size:10px">Save</button></div>';
     if (savedKey) h += '<div style="font-size:9px;color:var(--birdie);margin-top:4px"><svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg> Key saved</div>';
     h += '</div></div></div>';
@@ -7236,6 +7237,20 @@ Router.register("courses", function(params) {
 });
 
 // ========== GOLFCOURSE API INTEGRATION ==========
+function pasteApiKey() {
+  if (navigator.clipboard && navigator.clipboard.readText) {
+    navigator.clipboard.readText().then(function(text) {
+      var input = document.getElementById("gcapi-key");
+      if (input && text) { input.value = text.trim(); Router.toast("Pasted"); }
+    }).catch(function() {
+      Router.toast("Allow clipboard access when prompted");
+    });
+  } else {
+    var input = document.getElementById("gcapi-key");
+    if (input) { input.focus(); Router.toast("Long-press the field to paste"); }
+  }
+}
+
 function saveGolfApiKey() {
   var key = document.getElementById("gcapi-key");
   if (!key) return;
