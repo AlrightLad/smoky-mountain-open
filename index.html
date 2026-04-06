@@ -41,9 +41,9 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
 .hidden{display:none!important}
 
 /* NAV */
-.nav{display:flex;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;background:rgba(14,17,24,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.nav{display:flex;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;background:rgba(14,17,24,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}
 .nav::-webkit-scrollbar{display:none}
-.nav button{flex:0 0 auto;padding:14px 14px;background:0 0;color:var(--muted2);border:none;border-bottom:2px solid transparent;font:600 10px/1 'Inter',sans-serif;cursor:pointer;white-space:nowrap;text-transform:uppercase;letter-spacing:1.2px;transition:all .15s;text-align:center}
+.nav button{flex:0 0 auto;padding:16px 16px;background:0 0;color:var(--muted2);border:none;border-bottom:2px solid transparent;font:600 10px/1 'Inter',sans-serif;cursor:pointer;white-space:nowrap;text-transform:uppercase;letter-spacing:1.2px;transition:all .15s;text-align:center;touch-action:manipulation;-webkit-tap-highlight-color:rgba(201,168,76,.1);min-width:44px}
 .nav button:hover{color:var(--cream);background:var(--bg3)}
 .nav button.a{color:var(--gold);border-bottom-color:var(--gold);background:rgba(201,168,76,.08)}
 .nav button.a:hover{color:var(--gold3)}
@@ -1425,8 +1425,28 @@ function preloadMemberPhotos() {
         photoCache["member:" + d.refId] = d.data;
       });
       console.log("[Photo] Preloaded", snap.size, "member photos");
-      // Re-render current page to show photos
-      if (Router.getPage() === "home" || Router.getPage() === "members") Router.go(Router.getPage());
+      
+      // Also cross-reference: if a member's Firebase UID has a photo but their claimedFrom doesn't (or vice versa), cache both ways
+      db.collection("members").get().then(function(mSnap) {
+        mSnap.forEach(function(mDoc) {
+          var m = mDoc.data();
+          var fbPhoto = photoCache["member:" + m.id];
+          var localPhoto = m.claimedFrom ? photoCache["member:" + m.claimedFrom] : null;
+          // If we have a photo under one key, also store under the other
+          if (fbPhoto && m.claimedFrom && !localPhoto) {
+            photoCache["member:" + m.claimedFrom] = fbPhoto;
+          }
+          if (localPhoto && !fbPhoto) {
+            photoCache["member:" + m.id] = localPhoto;
+          }
+          // Also check if the member doc has a photoUrl field
+          if (m.photoUrl && !photoCache["member:" + m.id]) {
+            photoCache["member:" + m.id] = m.photoUrl;
+          }
+        });
+        // Re-render current page to show photos
+        if (Router.getPage() === "home" || Router.getPage() === "members") Router.go(Router.getPage());
+      });
     });
 }
 
@@ -6528,7 +6548,7 @@ Router.register("teetimes", function() {
   var h = '<div class="sh"><h2>Tee Times</h2><button class="btn-sm green" onclick="Router.go(\'tee-create\')">+ Post</button></div>';
 
   if (!upcoming.length) {
-    h += '<div class="section"><div class="card"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><circle cx="12" cy="5" r="2"/><path d="M12 7v4l3 5M12 11l-3 5M8 21h8"/><path d="M16 3l2 4"/></svg></div><div class="empty-text">No upcoming tee times. Be the first to post one!</div></div></div></div>';
+    h += '<div class="section"><div class="card"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><path d="M12 22V2"/><path d="M12 2l8 4-8 4"/><circle cx="12" cy="22" r="2"/></svg></div><div class="empty-text">No upcoming tee times. Be the first to post one!</div></div></div></div>';
   }
   upcoming.forEach(function(t) { h += '<div class="section">' + renderTeeCard(t) + '</div>'; });
 
@@ -9200,7 +9220,7 @@ Router.register("awards", function(params) {
   });
   
   if (!ceremonyAwards.length) {
-    h += '<div class="card" style="margin:16px"><div class="empty" style="padding:32px"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><circle cx="12" cy="5" r="2"/><path d="M12 7v4l3 5M12 11l-3 5M8 21h8"/><path d="M16 3l2 4"/></svg></div><div class="empty-text">No season data yet</div>';
+    h += '<div class="card" style="margin:16px"><div class="empty" style="padding:32px"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><path d="M12 22V2"/><path d="M12 2l8 4-8 4"/><circle cx="12" cy="22" r="2"/></svg></div><div class="empty-text">No season data yet</div>';
     h += '<div style="font-size:10px;color:var(--muted2);margin-top:4px">Log rounds during the season (Mar—Sep) to unlock awards</div></div></div>';
   }
   
@@ -9440,12 +9460,17 @@ function updateConnBar() {
 function initConnStatus() {
   if (!db) return;
   
-  window.addEventListener("online", function() { setSyncStatus("online"); });
+  // Only use browser online/offline events as a supplement, not the primary signal
+  // Firestore initSync already confirmed connectivity — don't override it
   window.addEventListener("offline", function() { setSyncStatus("offline"); });
+  window.addEventListener("online", function() { 
+    // Re-verify with Firestore before claiming online
+    db.collection("config").doc("app").get().then(function() {
+      setSyncStatus("online");
+    }).catch(function() { setSyncStatus("offline"); });
+  });
   
-  // Set initial state
-  if (navigator.onLine) { setSyncStatus("online"); }
-  else { setSyncStatus("offline"); }
+  // Don't set initial state here — initSync already handled it
 }
 
 
