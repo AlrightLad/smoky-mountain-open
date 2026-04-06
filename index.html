@@ -549,7 +549,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
   .hcap-box{margin:0 24px 16px}
   .hof-card{margin:0 24px 10px}
   .course-banner{margin:0 24px}
-  .home-actions{padding-left:24px!important;padding-right:24px!important}
+  .home-actions{margin-left:24px!important;margin-right:24px!important}
 }
 @media (min-width: 1024px) {
   body{max-width:1100px}
@@ -570,7 +570,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
   .course-banner{margin:0 32px}
   .title-row{margin-left:32px;margin-right:32px}
   .empty{padding:32px 32px}
-  .home-actions{padding-left:32px!important;padding-right:32px!important}
+  .home-actions{margin-left:32px!important;margin-right:32px!important}
 }
 </style>
 </head>
@@ -3257,7 +3257,7 @@ Router.register("home", function() {
   h += '<div id="onlineSection"></div>';
 
   // Quick Actions
-  h += '<div class="home-actions" style="display:flex;gap:8px;padding:0 16px 16px">';
+  h += '<div class="home-actions" style="display:flex;gap:8px;margin:0 16px 16px">';
   h += '<button class="btn full green" onclick="Router.go(\'playnow\')" style="flex:1;font-size:11px;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg> Play Now</button>';
   h += '<button class="btn full outline" onclick="Router.go(\'tee-create\')" style="flex:1;font-size:11px;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Post Tee Time</button>';
   h += '</div>';
@@ -3307,7 +3307,7 @@ Router.register("home", function() {
   var dayIndex = Math.floor(Date.now() / 86400000) % motivationCards.length;
   var mCard = motivationCards[dayIndex];
   
-  h += '<div style="padding:0 16px 12px"><div onclick="Router.go(\'' + mCard.page + '\')" style="background:linear-gradient(135deg,rgba(201,168,76,.06),rgba(201,168,76,.02));border:1px solid rgba(201,168,76,.12);border-radius:var(--radius);padding:14px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
+  h += '<div style="margin:0 16px 12px"><div onclick="Router.go(\'' + mCard.page + '\')" style="background:linear-gradient(135deg,rgba(201,168,76,.06),rgba(201,168,76,.02));border:1px solid rgba(201,168,76,.12);border-radius:var(--radius);padding:14px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
   h += '<div style="display:flex;align-items:flex-start;gap:12px">';
   h += '<div style="font-size:24px;flex-shrink:0;margin-top:2px">' + mCard.icon + '</div>';
   h += '<div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--cream)">' + mCard.title + '</div>';
@@ -3467,7 +3467,7 @@ Router.register("home", function() {
     h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;cursor:pointer" onclick="Router.go(\'playnow\')">Start a round →</div>';
     h += '</div>';
   }
-  h += '<div style="padding:8px 16px 0"><button class="btn full outline" onclick="Router.go(\'standings\')" style="font-size:11px;padding:10px">Season Standings</button></div>';
+  h += '<div style="margin:8px 16px 0"><button class="btn full outline" onclick="Router.go(\'standings\')" style="font-size:11px;padding:10px">Season Standings</button></div>';
   h += '</div>';
 
   // Footer links
@@ -7444,7 +7444,7 @@ Router.register("chat", function() {
   }
   
   // Chat feed
-  h += '<div style="padding:0 16px 6px"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Trash Talk</div></div>';
+  h += '<div style="margin:0 16px 6px"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Trash Talk</div></div>';
   h += '<div id="chatFeed" class="section" style="max-height:55vh;overflow-y:auto">' + skeletonFeed() + '</div>';
   h += '<div class="chat-input-row"><input type="text" id="chatInput" placeholder="Talk trash..." onkeydown="if(event.key===\'Enter\')sendChat()"><button onclick="sendChat()">Send</button></div>';
   document.querySelector('[data-page="chat"]').innerHTML = h;
@@ -7632,6 +7632,20 @@ function renderChatMessages(messages) {
 function toggleLike(docId) {
   if (!db || !currentUser) { Router.toast("Sign in to like"); return; }
   var uid = currentUser.uid;
+  
+  // Optimistic UI update — update local data immediately
+  var localMsg = liveChat.find(function(m) { return m._docId === docId; });
+  if (localMsg) {
+    if (!localMsg.likes) localMsg.likes = [];
+    var localIdx = localMsg.likes.indexOf(uid);
+    if (localIdx !== -1) localMsg.likes.splice(localIdx, 1);
+    else localMsg.likes.push(uid);
+    // Re-render feed immediately
+    var feed = document.getElementById("chatFeed");
+    if (feed) feed.innerHTML = renderChatMessages(liveChat);
+  }
+  
+  // Then sync to Firestore
   db.collection("chat").doc(docId).get().then(function(doc) {
     if (!doc.exists) return;
     var data = doc.data();
@@ -7640,7 +7654,6 @@ function toggleLike(docId) {
     var isLiking = idx === -1;
     if (idx !== -1) { likes.splice(idx, 1); } else { likes.push(uid); }
     db.collection("chat").doc(docId).update({ likes: likes }).then(function() {
-      // Send notification to post author (not to yourself)
       if (isLiking && data.authorId && data.authorId !== uid && data.authorId !== "system") {
         var myName = currentProfile ? PB.getDisplayName(currentProfile) : "Someone";
         sendNotification(data.authorId, {
