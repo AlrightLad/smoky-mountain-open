@@ -7300,19 +7300,19 @@ function _searchGcApiForDirectory(query) {
 function _renderDirApiResults(courses, el) {
   if (!el) return;
   var filtered = courses.filter(function(c) {
-    var name = c.name || c.courseName || c.club_name || c.course_name || "";
+    var name = c.course_name || c.club_name || c.name || c.courseName || "";
     return !PB.getCourseByName(name);
   });
   if (!filtered.length) { el.innerHTML = ""; return; }
   var h = '<div style="padding:4px 16px 2px;font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;font-weight:700">Online Results</div>';
   filtered.forEach(function(c, idx) {
-    var name = c.name || c.courseName || c.club_name || c.course_name || "Unknown";
-    var city = c.city || c.location || "";
-    var state = c.state || c.province || c.region || "";
+    var name = c.course_name || c.club_name || c.name || c.courseName || "Unknown";
+    var city = (c.location && typeof c.location === "object" ? c.location.city : c.city) || "";
+    var state = (c.location && typeof c.location === "object" ? c.location.state : c.state) || c.province || c.region || "";
     var loc = [city, state].filter(Boolean).join(", ");
     var par = c.par || "";
-    var rating = c.courseRating || c.rating || c.course_rating || "";
-    var slope = c.slopeRating || c.slope || c.slope_rating || "";
+    var rating = c.course_rating || c.courseRating || c.rating || "";
+    var slope = c.slope_rating || c.slopeRating || c.slope || "";
     h += '<div class="card" style="margin:0 16px 6px;cursor:pointer" onclick="importDirApiCourse(' + idx + ')">';
     h += '<div class="card-body" style="display:flex;justify-content:space-between;align-items:center">';
     h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(name) + '</div>';
@@ -7328,17 +7328,17 @@ function importDirApiCourse(idx) {
   var cacheKeys = Object.keys(_gcSearchCache).filter(function(k){return k.indexOf("dir_")===0});
   var lastResults = cacheKeys.length ? _gcSearchCache[cacheKeys[cacheKeys.length - 1]] : [];
   var filtered = lastResults.filter(function(c) {
-    var name = c.name || c.courseName || c.club_name || c.course_name || "";
+    var name = c.course_name || c.club_name || c.name || c.courseName || "";
     return !PB.getCourseByName(name);
   });
   var c = filtered[idx];
   if (!c) return;
-  var name = c.name || c.courseName || c.club_name || c.course_name || "Unknown";
-  var city = c.city || c.location || "";
-  var state = c.state || c.province || c.region || "";
+  var name = c.course_name || c.club_name || c.name || c.courseName || "Unknown";
+  var city = (c.location && typeof c.location === "object" ? c.location.city : c.city) || "";
+  var state = (c.location && typeof c.location === "object" ? c.location.state : c.state) || c.province || c.region || "";
   var loc = [city, state].filter(Boolean).join(", ");
-  var course = PB.addCourse({ name: name, loc: loc, region: state || "US", rating: parseFloat(c.courseRating||c.rating||c.course_rating)||72, slope: parseInt(c.slopeRating||c.slope||c.slope_rating)||113, par: parseInt(c.par)||72, source: "golfcourseapi" });
-  if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:loc,region:state||"US",rating:parseFloat(c.courseRating||c.rating||c.course_rating)||72,slope:parseInt(c.slopeRating||c.slope||c.slope_rating)||113,par:parseInt(c.par)||72,source:"golfcourseapi",createdAt:fsTimestamp()}).catch(function(){});
+  var course = PB.addCourse({ name: name, loc: loc, region: state || "US", rating: parseFloat(c.course_rating||c.courseRating||c.rating)||72, slope: parseInt(c.slope_rating||c.slopeRating||c.slope)||113, par: parseInt(c.par)||72, source: "golfcourseapi" });
+  if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:loc,region:state||"US",rating:parseFloat(c.course_rating||c.courseRating||c.rating)||72,slope:parseInt(c.slope_rating||c.slopeRating||c.slope)||113,par:parseInt(c.par)||72,source:"golfcourseapi",createdAt:fsTimestamp()}).catch(function(){});
   Router.toast(name + " imported");
   Router.go("courses");
 }
@@ -7435,13 +7435,13 @@ function _renderApiResults(courses, apiContainer, containerId, onSelect) {
   }
   var h = '<div style="font-size:9px;color:var(--gold);padding:4px 12px;text-transform:uppercase;letter-spacing:.5px">Online Results</div>';
   courses.forEach(function(c, idx) {
-    var name = c.name || c.courseName || c.club_name || c.course_name || "Unknown";
-    var city = c.city || c.location || "";
-    var state = c.state || c.province || c.region || "";
+    var name = c.course_name || c.club_name || c.name || c.courseName || "Unknown";
+    var city = (c.location && typeof c.location === "object" ? c.location.city : c.city) || "";
+    var state = (c.location && typeof c.location === "object" ? c.location.state : c.state) || c.province || c.region || "";
     var loc = [city, state].filter(Boolean).join(", ");
     var par = c.par || "";
-    var slope = c.slopeRating || c.slope || c.slope_rating || "";
-    var rating = c.courseRating || c.rating || c.course_rating || "";
+    var slope = c.slope_rating || c.slopeRating || c.slope || "";
+    var rating = c.course_rating || c.courseRating || c.rating || "";
     var alreadyAdded = PB.getCourseByName(name);
     if (alreadyAdded) return; // Skip if already in directory
     
@@ -7460,18 +7460,18 @@ function importAndSelectCourse(idx, containerId) {
   var lastResults = cacheKeys.length ? _gcSearchCache[cacheKeys[cacheKeys.length - 1]] : [];
   // Filter out already-added to match the rendered index
   var filtered = lastResults.filter(function(c) {
-    var name = c.name || c.courseName || c.club_name || c.course_name || "Unknown";
+    var name = c.course_name || c.club_name || c.name || c.courseName || "Unknown";
     return !PB.getCourseByName(name);
   });
   var c = filtered[idx];
   if (!c) return;
-  var name = c.name || c.courseName || c.club_name || c.course_name || "Unknown";
-  var city = c.city || c.location || "";
-  var state = c.state || c.province || c.region || "";
+  var name = c.course_name || c.club_name || c.name || c.courseName || "Unknown";
+  var city = (c.location && typeof c.location === "object" ? c.location.city : c.city) || "";
+  var state = (c.location && typeof c.location === "object" ? c.location.state : c.state) || c.province || c.region || "";
   var loc = [city, state].filter(Boolean).join(", ");
   var par = parseInt(c.par) || 72;
-  var rating = parseFloat(c.courseRating || c.rating || c.course_rating) || 72.0;
-  var slope = parseInt(c.slopeRating || c.slope || c.slope_rating) || 113;
+  var rating = parseFloat(c.course_rating || c.courseRating || c.rating) || 72.0;
+  var slope = parseInt(c.slope_rating || c.slopeRating || c.slope) || 113;
   
   var course = PB.addCourse({ name: name, loc: loc, region: state || "US", rating: rating, slope: slope, par: par, source: "golfcourseapi" });
   if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:loc,region:state||"US",rating:rating,slope:slope,par:par,source:"golfcourseapi",createdAt:fsTimestamp()}).catch(function(){});
