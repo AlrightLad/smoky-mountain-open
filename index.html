@@ -720,7 +720,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.4.0 — ACTIVITY & RANGE UPDATE
+   PARBAUGHS v5.5.0 — SCOREKEEPER & COURSE API
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -1218,6 +1218,13 @@ function updateProfileBar() {
   }
   
   if (p) {
+    // Ensure photo cache is checked with Firebase UID
+    if (currentUser && !photoCache["member:" + p.id] && photoCache["member:" + currentUser.uid]) {
+      photoCache["member:" + p.id] = photoCache["member:" + currentUser.uid];
+    }
+    if (currentUser && !photoCache["member:" + currentUser.uid] && photoCache["member:" + p.id]) {
+      photoCache["member:" + currentUser.uid] = photoCache["member:" + p.id];
+    }
     avatarEl.innerHTML = Router.getAvatar(p);
   } else {
     var initial = name.charAt(0).toUpperCase();
@@ -1679,6 +1686,7 @@ function preloadMemberPhotos() {
           }
         });
         pbLog("[Members] Cached", Object.keys(fbMemberCache).length, "member profiles");
+        updateProfileBar();
         if (Router.getPage() === "home" || Router.getPage() === "members") Router.go(Router.getPage());
       });
     });
@@ -4307,7 +4315,11 @@ function renderMemberDetailWithData(p) {
   var isBeta = PB.getPlayers().indexOf(p) < 30;
 
   // Banner
-  h += '<div class="pd-banner"><div class="pd-av" onclick="uploadMemberPhoto(\'' + pid + '\')" style="border-color:' + frameColor + '">' + Router.getAvatar(p) + '<div class="pd-edit"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2" style="vertical-align:middle"><path d="M11 2l3 3-8 8H3v-3z"/></svg></div></div>';
+  var isOwnProfile = currentUser && (pid === currentUser.uid || (currentProfile && pid === currentProfile.claimedFrom));
+  var canEditPhoto = isOwnProfile || (currentProfile && currentProfile.role === "commissioner");
+  h += '<div class="pd-banner"><div class="pd-av"' + (canEditPhoto ? ' onclick="uploadMemberPhoto(\'' + pid + '\')"' : '') + ' style="border-color:' + frameColor + '">' + Router.getAvatar(p);
+  if (canEditPhoto) h += '<div class="pd-edit"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2" style="vertical-align:middle"><path d="M11 2l3 3-8 8H3v-3z"/></svg></div>';
+  h += '</div>';
   h += '<div class="pd-name">' + (p.username || p.name) + '</div>';
   if (p.username && p.name && p.username !== p.name) h += '<div style="font-size:11px;color:var(--muted);margin-top:1px">' + p.name + '</div>';
 
@@ -5116,6 +5128,13 @@ function handleEditPhoto(pid, input) {
 }
 
 function uploadMemberPhoto(pid) {
+  // Only allow uploading your own photo (or Commissioner can upload anyone's)
+  var isComm = currentProfile && currentProfile.role === "commissioner";
+  var isOwnProfile = currentUser && (pid === currentUser.uid || (currentProfile && pid === currentProfile.claimedFrom));
+  if (!isOwnProfile && !isComm) {
+    Router.toast("You can only change your own photo");
+    return;
+  }
   var input = document.createElement("input");
   input.type = "file";
   input.accept = "image/*";
@@ -5137,6 +5156,7 @@ function uploadMemberPhoto(pid) {
         // Save to Firestore photos collection (visible to all members)
         savePhoto("member", pid, compressed).then(function(ok) {
           Router.toast(ok ? "Photo updated!" : "Photo saved locally");
+          updateProfileBar();
           Router.go("members", { id: pid });
         });
       });
@@ -7263,18 +7283,9 @@ function _searchGcApiForDirectory(query) {
   var cacheKey = "dir_" + query.toLowerCase();
   if (_gcSearchCache[cacheKey]) { _renderDirApiResults(_gcSearchCache[cacheKey], apiEl); return; }
   
-  var apiUrl = "https://api.golfcourseapi.com/v1/courses/search?q=" + encodeURIComponent(query);
-  var functionUrl = localStorage.getItem("golfcourse_fn_url");
-  var fetchUrl, fetchHeaders;
-  if (functionUrl) {
-    fetchUrl = functionUrl + "?q=" + encodeURIComponent(query) + "&key=" + encodeURIComponent(apiKey);
-    fetchHeaders = {};
-  } else {
-    fetchUrl = "https://corsproxy.io/?" + encodeURIComponent(apiUrl);
-    fetchHeaders = { "x-api-key": apiKey };
-  }
+  var fetchUrl = "https://us-central1-parbaughs.cloudfunctions.net/searchCourses?q=" + encodeURIComponent(query) + "&key=" + encodeURIComponent(apiKey);
   
-  fetch(fetchUrl, { headers: fetchHeaders })
+  fetch(fetchUrl)
   .then(function(res) { if (!res.ok) throw new Error(res.status); return res.json(); })
   .then(function(data) {
     var courses = Array.isArray(data) ? data : (data.courses || data.results || data.data || data.items || []);
@@ -7400,21 +7411,10 @@ function _searchGcApi(query, containerId, onSelect) {
     return;
   }
   
-  // Option 1: Firebase Cloud Function (set this after deploying)
-  var functionUrl = localStorage.getItem("golfcourse_fn_url");
-  // Option 2: CORS proxy fallback
-  var apiUrl = "https://api.golfcourseapi.com/v1/courses/search?q=" + encodeURIComponent(query);
+  // Firebase Cloud Function proxy
+  var fetchUrl = "https://us-central1-parbaughs.cloudfunctions.net/searchCourses?q=" + encodeURIComponent(query) + "&key=" + encodeURIComponent(apiKey);
   
-  var fetchUrl, fetchHeaders;
-  if (functionUrl) {
-    fetchUrl = functionUrl + "?q=" + encodeURIComponent(query) + "&key=" + encodeURIComponent(apiKey);
-    fetchHeaders = {};
-  } else {
-    fetchUrl = "https://corsproxy.io/?" + encodeURIComponent(apiUrl);
-    fetchHeaders = { "x-api-key": apiKey };
-  }
-  
-  fetch(fetchUrl, { headers: fetchHeaders })
+  fetch(fetchUrl)
   .then(function(res) { if (!res.ok) throw new Error(res.status); return res.json(); })
   .then(function(data) {
     var courses = Array.isArray(data) ? data : (data.courses || data.results || data.data || data.items || []);
@@ -10049,12 +10049,43 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.4.0 <span style="color:var(--muted);font-weight:400">← v5.3.0</span></div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.5.0 <span style="color:var(--muted);font-weight:400">← v5.4.0</span></div></div>';
 
-  // v5.4.0 — Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">v5.4.0 — Activity & Range Update</span></div>';
+  // v5.5.0 — Current Release
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">v5.5.0 — Scorekeeper & Course API</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 6, 2026</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
+  var v550 = [
+    {item: "GolfCourseAPI integration — search 30,000+ courses from any course field", tag: "NEW"},
+    {item: "Firebase Cloud Function proxy for secure, CORS-free API access", tag: "NEW"},
+    {item: "Unified course search — local results + online results + manual add in one flow", tag: "NEW"},
+    {item: "Course Directory search/filter bar", tag: "NEW"},
+    {item: "Scorekeeper system — Commissioner assigns one scorekeeper per course", tag: "NEW"},
+    {item: "Score locking — Finish Round locks all inputs except Commissioner", tag: "NEW"},
+    {item: "Unlock Round — Commissioner can re-open locked scores for corrections", tag: "NEW"},
+    {item: "Unfinished round reminder on home page for Commissioner", tag: "NEW"},
+    {item: "Profile photos locked to self-only — no one can change another user's photo", tag: "IMPROVED"},
+    {item: "Edit icon only shows on your own profile", tag: "IMPROVED"},
+    {item: "Header avatar now syncs correctly after photo upload and login", tag: "FIXED"},
+    {item: "Comment reply toggle — tap Reply again to close the input", tag: "FIXED"},
+    {item: "Parbaugh Round sync icon redesigned", tag: "FIXED"},
+    {item: "Pull-to-refresh no longer interferes with form inputs on mobile", tag: "FIXED"},
+    {item: "Paste button added for mobile-friendly text input", tag: "NEW"},
+    {item: "Players can only log rounds and records as themselves", tag: "IMPROVED"},
+    {item: "API key shared via Firestore — all members can search courses automatically", tag: "NEW"}
+  ];
+  v550.forEach(function(r) {
+    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
+    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
+    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
+    h += '<span>' + r.item + '</span></div>';
+  });
+  h += '</div></div></div>';
+
+  // v5.4.0 — Previous Release
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--muted)">v5.4.0 — Activity & Range Update</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 6, 2026</div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--muted);line-height:1.8">';
   var v540 = [
     {item: "Activity tab replaces Rounds — toggle between Rounds and Range views", tag: "NEW"},
     {item: "Range Session system — timer, drill selector, XP, and practice insights", tag: "NEW"},
@@ -10096,9 +10127,9 @@ Router.register("caddynotes", function() {
     {item: "Semantic versioning adopted (major.minor.patch)", tag: "IMPROVED"}
   ];
   v540.forEach(function(r) {
-    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
-    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
-    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
+    var tagColor = r.tag === "NEW" ? "rgba(78,201,122,.5)" : r.tag === "FIXED" ? "rgba(201,168,76,.5)" : "rgba(96,165,250,.5)";
+    h += '<div style="padding:3px 0;display:flex;gap:8px;align-items:flex-start">';
+    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
     h += '<span>' + r.item + '</span></div>';
   });
   h += '</div></div></div>';
@@ -10165,6 +10196,10 @@ Router.register("caddynotes", function() {
     "Notification bell with deep linking",
     "Who's Online with live round broadcasting",
     "Commissioner admin panel",
+    "Scorekeeper assignment per course with permission tiers",
+    "Score locking and unlocking by Commissioner",
+    "GolfCourseAPI integration — search 30,000+ courses worldwide",
+    "Unified course search across all pages (local + online + manual add)",
     "Scramble team management",
     "Ace wall",
     "Season recap and yearly awards ceremony",
@@ -10196,7 +10231,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.4.0 · 11,760+ lines · 353 functions</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.5.0 · 12,300+ lines · 370+ functions</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
