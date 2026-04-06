@@ -8637,9 +8637,10 @@ function renderChatMessages(messages) {
     
     ch += '<div class="card" style="margin-bottom:6px"><div style="padding:10px 14px">';
     // Header
+    var isSystem = msg.authorId === "system";
     ch += '<div style="display:flex;gap:10px">';
-    ch += '<div class="c-av">' + (m ? Router.getAvatar(m) : "") + '</div>';
-    ch += '<div style="flex:1"><div class="chat-author">' + escHtml(msg.authorName||"Anon") + (mLvl ? ' <span style="font-size:8px;color:var(--gold);font-weight:600">LV' + mLvl.level + '</span>' : '') + '</div>';
+    ch += '<div class="c-av">' + (isSystem ? '⛳' : (m ? Router.getAvatar(m) : '')) + '</div>';
+    ch += '<div style="flex:1"><div class="chat-author"' + (isSystem ? ' style="color:var(--birdie)"' : '') + '>' + escHtml(msg.authorName||"Anon") + (mLvl && !isSystem ? ' <span style="font-size:8px;color:var(--gold);font-weight:600">LV' + mLvl.level + '</span>' : '') + '</div>';
     ch += '<div class="chat-text">' + escHtml(msg.text) + '</div>';
     if (msg.createdAt && msg.createdAt.toDate) {
       var _d = msg.createdAt.toDate();
