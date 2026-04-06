@@ -32,10 +32,8 @@ select{-webkit-appearance:none;appearance:none}
 button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
 
 /* ===== PULL TO REFRESH ===== */
-.ptr-indicator{position:fixed;top:-50px;left:50%;transform:translateX(-50%);width:36px;height:36px;border-radius:50%;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;z-index:150;transition:top .2s ease,transform .3s ease;box-shadow:0 2px 12px rgba(0,0,0,.3)}
-.ptr-indicator.pulling{top:12px}
-.ptr-indicator.refreshing{top:12px;animation:spin .8s linear infinite}
-.ptr-indicator svg{color:var(--gold);transition:transform .2s}
+.ptr-indicator{position:fixed;top:-44px;left:50%;transform:translateX(-50%);width:34px;height:34px;border-radius:50%;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;z-index:150;opacity:0;transition:top .15s ease;box-shadow:0 2px 12px rgba(0,0,0,.4)}
+.ptr-indicator svg{color:var(--gold)}
 @keyframes spin{from{transform:translateX(-50%) rotate(0deg)}to{transform:translateX(-50%) rotate(360deg)}}
 
 :root{--bg:#0e1118;--bg2:#131722;--bg3:#1a1f2c;--bg4:#212738;--gold:#c9a84c;--gold2:#a68b3a;--gold3:#dfc06a;--green:#1a2840;--green2:#253a58;--cream:#eae8e0;--muted:#7a7e8a;--muted2:#484d5c;--red:#d4604e;--birdie:#4ec97a;--card:#121620;--border:#1e2333;--radius:6px}
@@ -451,7 +449,7 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 .ach-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;text-align:center;transition:border-color .15s}
 .ach-card:hover{border-color:rgba(201,168,76,.15)}
 .ach-card.locked{opacity:.35}
-.ach-icon{font-size:20px;margin-bottom:4px;letter-spacing:2px}
+.ach-icon{display:flex;align-items:center;justify-content:center;margin-bottom:4px;color:var(--gold)}
 .ach-name{font-size:11px;font-weight:700;color:var(--cream);letter-spacing:.2px}
 .ach-desc{font-size:9px;color:var(--muted);margin-top:2px;line-height:1.3}
 .ach-xp{font-size:9px;color:var(--gold);font-weight:600;margin-top:4px}
@@ -2237,36 +2235,36 @@ var PB = (function() {
     var achievements = [];
 
     // --- ROUND MILESTONES ---
-    if (rounds.length >= 1) achievements.push({id:"first_blood",name:"First Blood",desc:"Log your first round",icon:"▲",xp:100,cat:"milestone"});
-    if (rounds.length >= 5) achievements.push({id:"getting_started",name:"Getting Started",desc:"Log 5 rounds",icon:"▲",xp:50,cat:"milestone"});
-    if (rounds.length >= 10) achievements.push({id:"regular",name:"Regular",desc:"Log 10 rounds",icon:"◆",xp:100,cat:"milestone"});
-    if (rounds.length >= 25) achievements.push({id:"grinder",name:"Grinder",desc:"Log 25 rounds",icon:"◆◆",xp:250,cat:"milestone"});
-    if (rounds.length >= 50) achievements.push({id:"veteran",name:"Veteran",desc:"Log 50 rounds",icon:"★",xp:500,cat:"milestone"});
-    if (rounds.length >= 100) achievements.push({id:"centurion",name:"Centurion",desc:"Log 100 rounds",icon:"★★",xp:1000,cat:"milestone"});
+    if (rounds.length >= 1) achievements.push({id:"first_blood",name:"First Blood",desc:"Log your first round",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"milestone"});
+    if (rounds.length >= 5) achievements.push({id:"getting_started",name:"Getting Started",desc:"Log 5 rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"milestone"});
+    if (rounds.length >= 10) achievements.push({id:"regular",name:"Regular",desc:"Log 10 rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"milestone"});
+    if (rounds.length >= 25) achievements.push({id:"grinder",name:"Grinder",desc:"Log 25 rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='7' r='1.5' fill='currentColor'/></svg>",xp:250,cat:"milestone"});
+    if (rounds.length >= 50) achievements.push({id:"veteran",name:"Veteran",desc:"Log 50 rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"milestone"});
+    if (rounds.length >= 100) achievements.push({id:"centurion",name:"Centurion",desc:"Log 100 rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:1000,cat:"milestone"});
 
     // --- SCORE ACHIEVEMENTS ---
-    if (rounds.some(function(r){return r.score<=120})) achievements.push({id:"sub120",name:"Breaking In",desc:"Break 120",icon:"▲",xp:50,cat:"score"});
-    if (rounds.some(function(r){return r.score<100})) achievements.push({id:"sub100",name:"Double Digits",desc:"Break 100",icon:"▲▲",xp:100,cat:"score"});
-    if (rounds.some(function(r){return r.score<90})) achievements.push({id:"sub90",name:"Sub-90 Club",desc:"Shoot under 90",icon:"◆",xp:200,cat:"score"});
-    if (rounds.some(function(r){return r.score<85})) achievements.push({id:"sub85",name:"Mid-80s",desc:"Shoot under 85",icon:"◆◆",xp:300,cat:"score"});
-    if (rounds.some(function(r){return r.score<80})) achievements.push({id:"sub80",name:"Sharpshooter",desc:"Shoot under 80",icon:"★",xp:500,cat:"score"});
-    if (rounds.some(function(r){return r.score<75})) achievements.push({id:"sub75",name:"Near Scratch",desc:"Shoot under 75",icon:"★★",xp:750,cat:"score"});
-    if (rounds.some(function(r){return r.score<70})) achievements.push({id:"sub70",name:"Tour Ready",desc:"Shoot under 70",icon:"★★★",xp:1000,cat:"score"});
-    if (rounds.some(function(r){return r.score===Number(r.rating)})) achievements.push({id:"course_rating",name:"Par for the Course",desc:"Shoot exactly the course rating",icon:"◆",xp:200,cat:"score"});
+    if (rounds.some(function(r){return r.score<=120})) achievements.push({id:"sub120",name:"Breaking In",desc:"Break 120",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"score"});
+    if (rounds.some(function(r){return r.score<100})) achievements.push({id:"sub100",name:"Double Digits",desc:"Break 100",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v4M6 7h4' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"score"});
+    if (rounds.some(function(r){return r.score<90})) achievements.push({id:"sub90",name:"Sub-90 Club",desc:"Shoot under 90",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:200,cat:"score"});
+    if (rounds.some(function(r){return r.score<85})) achievements.push({id:"sub85",name:"Mid-80s",desc:"Shoot under 85",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='7' r='1.5' fill='currentColor'/></svg>",xp:300,cat:"score"});
+    if (rounds.some(function(r){return r.score<80})) achievements.push({id:"sub80",name:"Sharpshooter",desc:"Shoot under 80",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"score"});
+    if (rounds.some(function(r){return r.score<75})) achievements.push({id:"sub75",name:"Near Scratch",desc:"Shoot under 75",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:750,cat:"score"});
+    if (rounds.some(function(r){return r.score<70})) achievements.push({id:"sub70",name:"Tour Ready",desc:"Shoot under 70",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:1000,cat:"score"});
+    if (rounds.some(function(r){return r.score===Number(r.rating)})) achievements.push({id:"course_rating",name:"Par for the Course",desc:"Shoot exactly the course rating",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:200,cat:"score"});
 
     // --- COURSE EXPLORATION ---
     var uniqueCourses = {}; rounds.forEach(function(r){uniqueCourses[r.course]=1});
     var courseCount = Object.keys(uniqueCourses).length;
-    if (courseCount >= 3) achievements.push({id:"sampler",name:"Course Sampler",desc:"Play 3 different courses",icon:"▲",xp:50,cat:"explore"});
-    if (courseCount >= 5) achievements.push({id:"explorer",name:"Explorer",desc:"Play 5 different courses",icon:"◆",xp:100,cat:"explore"});
-    if (courseCount >= 10) achievements.push({id:"collector",name:"Course Collector",desc:"Play 10 different courses",icon:"◆◆",xp:200,cat:"explore"});
-    if (courseCount >= 25) achievements.push({id:"nomad",name:"Nomad",desc:"Play 25 different courses",icon:"★",xp:500,cat:"explore"});
+    if (courseCount >= 3) achievements.push({id:"sampler",name:"Course Sampler",desc:"Play 3 different courses",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"explore"});
+    if (courseCount >= 5) achievements.push({id:"explorer",name:"Explorer",desc:"Play 5 different courses",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"explore"});
+    if (courseCount >= 10) achievements.push({id:"collector",name:"Course Collector",desc:"Play 10 different courses",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='7' r='1.5' fill='currentColor'/></svg>",xp:200,cat:"explore"});
+    if (courseCount >= 25) achievements.push({id:"nomad",name:"Nomad",desc:"Play 25 different courses",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"explore"});
 
     var states = {}; rounds.forEach(function(r){var c=getCourseByName(r.course);if(c&&c.region)states[c.region]=1});
     var stateCount = Object.keys(states).length;
-    if (stateCount >= 2) achievements.push({id:"traveler2",name:"State Hopper",desc:"Play courses in 2 states",icon:"▲",xp:75,cat:"explore"});
-    if (stateCount >= 3) achievements.push({id:"traveler",name:"Globe Trotter",desc:"Play in 3+ states",icon:"◆",xp:150,cat:"explore"});
-    if (stateCount >= 5) achievements.push({id:"roadwarrior",name:"Road Warrior",desc:"Play in 5+ states",icon:"★",xp:300,cat:"explore"});
+    if (stateCount >= 2) achievements.push({id:"traveler2",name:"State Hopper",desc:"Play courses in 2 states",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:75,cat:"explore"});
+    if (stateCount >= 3) achievements.push({id:"traveler",name:"Globe Trotter",desc:"Play in 3+ states",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"explore"});
+    if (stateCount >= 5) achievements.push({id:"roadwarrior",name:"Road Warrior",desc:"Play in 5+ states",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:300,cat:"explore"});
 
     // --- COMPETITIVE ---
     var totalH2Hwins = 0;
@@ -2276,79 +2274,79 @@ var PB = (function() {
       var oppR=getPlayerRounds(opp.id);
       rounds.forEach(function(r){var m=oppR.find(function(o){return o.course===r.course&&o.date===r.date});if(m&&r.score<m.score)totalH2Hwins++});
     });
-    if (totalH2Hwins >= 1) achievements.push({id:"first_win",name:"First Win",desc:"Win an H2H matchup",icon:"▲",xp:50,cat:"compete"});
-    if (totalH2Hwins >= 5) achievements.push({id:"rival",name:"Rival",desc:"Win 5 H2H matchups",icon:"◆",xp:100,cat:"compete"});
-    if (totalH2Hwins >= 10) achievements.push({id:"nemesis",name:"Nemesis",desc:"Win 10 H2H matchups",icon:"◆◆",xp:200,cat:"compete"});
-    if (totalH2Hwins >= 25) achievements.push({id:"dominator",name:"Dominator",desc:"Win 25 H2H matchups",icon:"★",xp:500,cat:"compete"});
+    if (totalH2Hwins >= 1) achievements.push({id:"first_win",name:"First Win",desc:"Win an H2H matchup",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"compete"});
+    if (totalH2Hwins >= 5) achievements.push({id:"rival",name:"Rival",desc:"Win 5 H2H matchups",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"compete"});
+    if (totalH2Hwins >= 10) achievements.push({id:"nemesis",name:"Nemesis",desc:"Win 10 H2H matchups",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='7' r='1.5' fill='currentColor'/></svg>",xp:200,cat:"compete"});
+    if (totalH2Hwins >= 25) achievements.push({id:"dominator",name:"Dominator",desc:"Win 25 H2H matchups",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"compete"});
 
-    if (player && player.wins >= 1) achievements.push({id:"champion",name:"Champion",desc:"Win an event",icon:"★",xp:500,cat:"compete"});
-    if (player && player.wins >= 3) achievements.push({id:"dynasty",name:"Dynasty",desc:"Win 3 events",icon:"★★",xp:1000,cat:"compete"});
+    if (player && player.wins >= 1) achievements.push({id:"champion",name:"Champion",desc:"Win an event",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"compete"});
+    if (player && player.wins >= 3) achievements.push({id:"dynasty",name:"Dynasty",desc:"Win 3 events",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:1000,cat:"compete"});
 
     // --- IMPROVEMENT ---
     if (rounds.length >= 5) {
       var first5=Math.round(rounds.slice(0,5).reduce(function(a,r){return a+r.score},0)/5);
       var last5=Math.round(rounds.slice(-5).reduce(function(a,r){return a+r.score},0)/5);
-      if (last5<first5-3) achievements.push({id:"improving",name:"On The Rise",desc:"Average improved by 3+",icon:"▲",xp:100,cat:"growth"});
-      if (last5<first5-8) achievements.push({id:"transformed",name:"Transformed",desc:"Average improved by 8+",icon:"◆",xp:250,cat:"growth"});
-      if (last5<first5-15) achievements.push({id:"metamorphosis",name:"Metamorphosis",desc:"Average improved by 15+",icon:"★",xp:500,cat:"growth"});
+      if (last5<first5-3) achievements.push({id:"improving",name:"On The Rise",desc:"Average improved by 3+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"growth"});
+      if (last5<first5-8) achievements.push({id:"transformed",name:"Transformed",desc:"Average improved by 8+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:250,cat:"growth"});
+      if (last5<first5-15) achievements.push({id:"metamorphosis",name:"Metamorphosis",desc:"Average improved by 15+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"growth"});
     }
     if (rounds.length >= 3) {
       var avg=Math.round(rounds.reduce(function(a,r){return a+r.score},0)/rounds.length);
-      if (rounds.some(function(r){return r.score<avg-10})) achievements.push({id:"sandbagger",name:"Sandbagger",desc:"Beat average by 10+",icon:"◆",xp:150,cat:"growth"});
+      if (rounds.some(function(r){return r.score<avg-10})) achievements.push({id:"sandbagger",name:"Sandbagger",desc:"Beat average by 10+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"growth"});
     }
 
     // --- SPECIAL ---
     var rec = getRecords();
-    if (rec.holeInOnes&&rec.holeInOnes.some(function(a){return a.by===(player?player.name:"")})) achievements.push({id:"ace",name:"Ace",desc:"Make a hole-in-one",icon:"★★★",xp:1000,cat:"special"});
-    if (player && player.founding) achievements.push({id:"og",name:"The Original Four",desc:"Founding member",icon:"★",xp:0,cat:"special"});
-    if (player && getPlayers().indexOf(player) < 30) achievements.push({id:"beta",name:"Beta Tester",desc:"Among the first 30 members",icon:"◆",xp:0,cat:"special"});
+    if (rec.holeInOnes&&rec.holeInOnes.some(function(a){return a.by===(player?player.name:"")})) achievements.push({id:"ace",name:"Ace",desc:"Make a hole-in-one",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:1000,cat:"special"});
+    if (player && player.founding) achievements.push({id:"og",name:"The Original Four",desc:"Founding member",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"special"});
+    if (player && getPlayers().indexOf(player) < 30) achievements.push({id:"beta",name:"Beta Tester",desc:"Among the first 30 members",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:0,cat:"special"});
 
     // --- PLAY NOW SPECIFIC ---
     var playNowRounds = rounds.filter(function(r){return r.holeScores});
-    if (playNowRounds.length >= 1) achievements.push({id:"live_scorer",name:"Live Scorer",desc:"Complete a Play Now round",icon:"▲",xp:50,cat:"milestone"});
-    if (playNowRounds.length >= 10) achievements.push({id:"dedicated",name:"Dedicated",desc:"10 Play Now rounds",icon:"◆",xp:150,cat:"milestone"});
+    if (playNowRounds.length >= 1) achievements.push({id:"live_scorer",name:"Live Scorer",desc:"Complete a Play Now round",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"milestone"});
+    if (playNowRounds.length >= 10) achievements.push({id:"dedicated",name:"Dedicated",desc:"10 Play Now rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"milestone"});
 
     // --- SCRAMBLE CAPTAIN ---
     var teams = getScrambleTeams();
     var isCaptain = teams.some(function(t){return t.captain === pid});
-    if (isCaptain) achievements.push({id:"captain",name:"Captain",desc:"Named team captain",icon:"◆",xp:100,cat:"compete"});
+    if (isCaptain) achievements.push({id:"captain",name:"Captain",desc:"Named team captain",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"compete"});
 
     // --- ATTESTATION ---
     var attestedRounds = rounds.filter(function(r){return r.attestedBy});
-    if (attestedRounds.length >= 1) achievements.push({id:"attested",name:"Verified",desc:"Have a score attested",icon:"▲",xp:50,cat:"milestone"});
-    if (attestedRounds.length >= 10) achievements.push({id:"honest_game",name:"Honest Game",desc:"10 attested rounds",icon:"◆",xp:150,cat:"milestone"});
+    if (attestedRounds.length >= 1) achievements.push({id:"attested",name:"Verified",desc:"Have a score attested",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"milestone"});
+    if (attestedRounds.length >= 10) achievements.push({id:"honest_game",name:"Honest Game",desc:"10 attested rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"milestone"});
 
     // --- CONSISTENCY ---
     var coursePlays = {};
     rounds.forEach(function(r){coursePlays[r.course]=(coursePlays[r.course]||0)+1});
     var maxPlays = Math.max.apply(null, Object.values(coursePlays).concat([0]));
-    if (maxPlays >= 5) achievements.push({id:"home_course",name:"Home Course Hero",desc:"Play same course 5 times",icon:"▲",xp:75,cat:"milestone"});
-    if (maxPlays >= 10) achievements.push({id:"local_legend",name:"Local Legend",desc:"Play same course 10 times",icon:"◆",xp:150,cat:"milestone"});
-    if (maxPlays >= 25) achievements.push({id:"resident",name:"Resident Pro",desc:"Play same course 25 times",icon:"★",xp:300,cat:"milestone"});
+    if (maxPlays >= 5) achievements.push({id:"home_course",name:"Home Course Hero",desc:"Play same course 5 times",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:75,cat:"milestone"});
+    if (maxPlays >= 10) achievements.push({id:"local_legend",name:"Local Legend",desc:"Play same course 10 times",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"milestone"});
+    if (maxPlays >= 25) achievements.push({id:"resident",name:"Resident Pro",desc:"Play same course 25 times",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:300,cat:"milestone"});
 
     // --- LEVEL ACHIEVEMENTS ---
-    if (lvl.level >= 5) achievements.push({id:"lvl5",name:"Level 5",desc:"Reach Weekend Warrior",icon:"◆",xp:0,cat:"level"});
-    if (lvl.level >= 10) achievements.push({id:"lvl10",name:"Level 10",desc:"Reach Range Rat",icon:"◆",xp:0,cat:"level"});
-    if (lvl.level >= 25) achievements.push({id:"lvl25",name:"Level 25",desc:"Reach Course Regular",icon:"◆◆",xp:0,cat:"level"});
-    if (lvl.level >= 50) achievements.push({id:"lvl50",name:"Level 50",desc:"Reach Eagle Eye",icon:"★",xp:0,cat:"level"});
-    if (lvl.level >= 75) achievements.push({id:"lvl75",name:"Level 75",desc:"Reach The Professor",icon:"★★",xp:0,cat:"level"});
-    if (lvl.level >= 100) achievements.push({id:"lvl100",name:"Level 100",desc:"Reach G.O.A.T.",icon:"★★★",xp:0,cat:"level"});
+    if (lvl.level >= 5) achievements.push({id:"lvl5",name:"Level 5",desc:"Reach Weekend Warrior",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:0,cat:"level"});
+    if (lvl.level >= 10) achievements.push({id:"lvl10",name:"Level 10",desc:"Reach Range Rat",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:0,cat:"level"});
+    if (lvl.level >= 25) achievements.push({id:"lvl25",name:"Level 25",desc:"Reach Course Regular",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='7' r='1.5' fill='currentColor'/></svg>",xp:0,cat:"level"});
+    if (lvl.level >= 50) achievements.push({id:"lvl50",name:"Level 50",desc:"Reach Eagle Eye",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"level"});
+    if (lvl.level >= 75) achievements.push({id:"lvl75",name:"Level 75",desc:"Reach The Professor",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"level"});
+    if (lvl.level >= 100) achievements.push({id:"lvl100",name:"Level 100",desc:"Reach G.O.A.T.",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:0,cat:"level"});
 
     // --- BLUNDERS (fun shame achievements) ---
-    if (rounds.some(function(r){return r.score>=120})) achievements.push({id:"blow120",name:"The Blow-Up",desc:"Shoot 120 or higher",icon:"💥",xp:25,cat:"blunder",title:"The Blow-Up Artist"});
-    if (rounds.some(function(r){return r.score>=130})) achievements.push({id:"blow130",name:"Cart Path Warrior",desc:"Shoot 130 or higher",icon:"🛒",xp:25,cat:"blunder",title:"Cart Path Warrior"});
-    if (rounds.some(function(r){return r.score>=140})) achievements.push({id:"blow140",name:"Lost in the Woods",desc:"Shoot 140 or higher",icon:"🌲",xp:25,cat:"blunder",title:"Lost in the Woods"});
+    if (rounds.some(function(r){return r.score>=120})) achievements.push({id:"blow120",name:"The Blow-Up",desc:"Shoot 120 or higher",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l1 4 4-1-3 3 3 3-4-1-1 4-1-4-4 1 3-3-3-3 4 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:25,cat:"blunder",title:"The Blow-Up Artist"});
+    if (rounds.some(function(r){return r.score>=130})) achievements.push({id:"blow130",name:"Cart Path Warrior",desc:"Shoot 130 or higher",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='6' cy='14' r='1' fill='currentColor'/><circle cx='12' cy='14' r='1' fill='currentColor'/><path d='M1 1h2l2 9h8l2-6H5' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:25,cat:"blunder",title:"Cart Path Warrior"});
+    if (rounds.some(function(r){return r.score>=140})) achievements.push({id:"blow140",name:"Lost in the Woods",desc:"Shoot 140 or higher",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L4 7h2L3 12h10L10 7h2L8 1zM7 12h2v3H7z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:25,cat:"blunder",title:"Lost in the Woods"});
     if (rounds.length >= 2) {
       var scores = rounds.map(function(r){return r.score}).sort(function(a,b){return a-b});
-      if (scores[scores.length-1] - scores[0] >= 20) achievements.push({id:"roller_coaster",name:"Roller Coaster",desc:"20+ stroke difference between best and worst round",icon:"🎢",xp:50,cat:"blunder",title:"The Roller Coaster"});
+      if (scores[scores.length-1] - scores[0] >= 20) achievements.push({id:"roller_coaster",name:"Roller Coaster",desc:"20+ stroke difference between best and worst round",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 12c2-8 4-8 6 0s4 0 6-4' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"blunder",title:"The Roller Coaster"});
     }
     if (rounds.length >= 3) {
       var last3 = rounds.slice(-3);
       var allWorse = last3.every(function(r,i){return i===0 || r.score > last3[i-1].score});
-      if (allWorse && last3.length === 3) achievements.push({id:"downhill",name:"Going Downhill",desc:"3 rounds in a row getting worse",icon:"📉",xp:25,cat:"blunder",title:"Mr. Downhill"});
+      if (allWorse && last3.length === 3) achievements.push({id:"downhill",name:"Going Downhill",desc:"3 rounds in a row getting worse",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 3l5 4 3-2 6 7' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M12 8l3 4h-4z' fill='currentColor'/></svg>",xp:25,cat:"blunder",title:"Mr. Downhill"});
     }
-    if (rounds.filter(function(r){return r.score>=110}).length >= 5) achievements.push({id:"thick_skin",name:"Thick Skin",desc:"Log 5 rounds of 110+",icon:"🛡",xp:50,cat:"blunder",title:"Thick Skinned"});
-    if (rounds.length >= 10 && !rounds.some(function(r){return r.score<100})) achievements.push({id:"triple_club",name:"Triple Digit Club",desc:"10 rounds without breaking 100",icon:"💯",xp:50,cat:"blunder",title:"Triple Digit King"});
+    if (rounds.filter(function(r){return r.score>=110}).length >= 5) achievements.push({id:"thick_skin",name:"Thick Skin",desc:"Log 5 rounds of 110+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M6 8l2 2 3-4' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"blunder",title:"Thick Skinned"});
+    if (rounds.length >= 10 && !rounds.some(function(r){return r.score<100})) achievements.push({id:"triple_club",name:"Triple Digit Club",desc:"10 rounds without breaking 100",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><text x='8' y='12' text-anchor='middle' font-size='10' font-weight='700' fill='currentColor'>100</text></svg>",xp:50,cat:"blunder",title:"Triple Digit King"});
 
     // --- DEDICATION & SOCIAL ---
     if (rounds.length >= 3) {
@@ -2359,19 +2357,19 @@ var PB = (function() {
         var diff = (d2-d1)/(1000*60*60*24);
         if (diff <= 7) { streak++; maxStreak = Math.max(maxStreak, streak); } else { streak = 1; }
       }
-      if (maxStreak >= 3) achievements.push({id:"hot_streak",name:"Hot Streak",desc:"Play 3 weeks in a row",icon:"🔥",xp:100,cat:"milestone",title:"On Fire"});
-      if (maxStreak >= 6) achievements.push({id:"iron_man_streak",name:"Iron Man",desc:"Play 6 weeks in a row",icon:"⚡",xp:200,cat:"milestone",title:"The Iron Man"});
+      if (maxStreak >= 3) achievements.push({id:"hot_streak",name:"Hot Streak",desc:"Play 3 weeks in a row",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1C6 4 4 5 4 8a4 4 0 008 0c0-2-1-3-2-4-.5 1-1 2-2 1 0-2 0-3 0-4z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"milestone",title:"On Fire"});
+      if (maxStreak >= 6) achievements.push({id:"iron_man_streak",name:"Iron Man",desc:"Play 6 weeks in a row",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M9 1L4 9h4l-1 6 6-8H9l1-6z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:200,cat:"milestone",title:"The Iron Man"});
     }
 
     // --- PARBAUGH ROUND ACHIEVEMENTS ---
     var parbaughRounds = rounds.filter(function(r){return r.syncedRound});
-    if (parbaughRounds.length >= 1) achievements.push({id:"first_parbaugh",name:"First Parbaugh Round",desc:"Complete a Parbaugh Round",icon:"🤝",xp:75,cat:"milestone"});
-    if (parbaughRounds.length >= 5) achievements.push({id:"parbaugh_regular",name:"Parbaugh Regular",desc:"5 Parbaugh Rounds",icon:"🤝",xp:150,cat:"milestone",title:"Team Player"});
-    if (parbaughRounds.length >= 25) achievements.push({id:"parbaugh_veteran",name:"Parbaugh Veteran",desc:"25 Parbaugh Rounds",icon:"🤝",xp:500,cat:"milestone",title:"The Glue Guy"});
+    if (parbaughRounds.length >= 1) achievements.push({id:"first_parbaugh",name:"First Parbaugh Round",desc:"Complete a Parbaugh Round",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:75,cat:"milestone"});
+    if (parbaughRounds.length >= 5) achievements.push({id:"parbaugh_regular",name:"Parbaugh Regular",desc:"5 Parbaugh Rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:150,cat:"milestone",title:"Team Player"});
+    if (parbaughRounds.length >= 25) achievements.push({id:"parbaugh_veteran",name:"Parbaugh Veteran",desc:"25 Parbaugh Rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"milestone",title:"The Glue Guy"});
 
     // --- UNIQUE SPECIAL BADGES ---
-    if (player && player.email === "jopinksalot@msn.com") achievements.push({id:"boss_wife",name:"The Boss's Wife",desc:"The one who really runs things",icon:"👑",xp:0,cat:"special",title:"The Boss's Wife",badge:"boss_wife"});
-    if (player && player.role === "commissioner") achievements.push({id:"the_commish",name:"The Commissioner",desc:"Running the show",icon:"🏛",xp:0,cat:"special",title:"The Commissioner",badge:"commissioner"});
+    if (player && player.email === "jopinksalot@msn.com") achievements.push({id:"boss_wife",name:"The Boss's Wife",desc:"The one who really runs things",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M2 12h12L13 5l-3 3-2-4-2 4-3-3z' fill='none' stroke='currentColor' stroke-width='1.2'/><rect x='2' y='12' width='12' height='2' rx='1' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"special",title:"The Boss's Wife",badge:"boss_wife"});
+    if (player && player.role === "commissioner") achievements.push({id:"the_commish",name:"The Commissioner",desc:"Running the show",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l6 4H2zM3 6v7M6 6v7M10 6v7M13 6v7M1 13h14M1 14h14' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"special",title:"The Commissioner",badge:"commissioner"});
 
     // --- EVENT PARTICIPATION BADGES ---
     // Each event a player participates in earns them a unique badge
@@ -2406,10 +2404,10 @@ var PB = (function() {
         }
       }
     });
-    if (eventCount >= 1) achievements.push({id:"event_goer",name:"Event Goer",desc:"Participate in an event",icon:"🎪",xp:50,cat:"milestone"});
-    if (eventCount >= 3) achievements.push({id:"event_regular",name:"Event Regular",desc:"Participate in 3 events",icon:"🎪",xp:150,cat:"milestone",title:"Event Regular"});
-    if (eventCount >= 5) achievements.push({id:"road_dog",name:"Road Dog",desc:"Participate in 5 events",icon:"🚗",xp:300,cat:"milestone",title:"Road Dog"});
-    if (eventCount >= 10) achievements.push({id:"tour_life",name:"Tour Life",desc:"Participate in 10 events",icon:"✈",xp:500,cat:"milestone",title:"Tour Life"});
+    if (eventCount >= 1) achievements.push({id:"event_goer",name:"Event Goer",desc:"Participate in an event",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M2 14h12M3 14V7M13 14V7M8 2L3 7h10z' fill='none' stroke='currentColor' stroke-width='1'/><path d='M8 2v5' stroke='currentColor' stroke-width='1'/></svg>",xp:50,cat:"milestone"});
+    if (eventCount >= 3) achievements.push({id:"event_regular",name:"Event Regular",desc:"Participate in 3 events",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M2 14h12M3 14V7M13 14V7M8 2L3 7h10z' fill='none' stroke='currentColor' stroke-width='1'/><path d='M8 2v5' stroke='currentColor' stroke-width='1'/></svg>",xp:150,cat:"milestone",title:"Event Regular"});
+    if (eventCount >= 5) achievements.push({id:"road_dog",name:"Road Dog",desc:"Participate in 5 events",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><rect x='1' y='7' width='14' height='5' rx='2' fill='none' stroke='currentColor' stroke-width='1'/><path d='M3 7l2-3h6l2 3' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='4' cy='12' r='1.2' fill='currentColor'/><circle cx='12' cy='12' r='1.2' fill='currentColor'/></svg>",xp:300,cat:"milestone",title:"Road Dog"});
+    if (eventCount >= 10) achievements.push({id:"tour_life",name:"Tour Life",desc:"Participate in 10 events",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 2l2 5h5l-1 1-4 0 0 4 2 1H5l2-1 0-4-4 0-1-1h5z' fill='none' stroke='currentColor' stroke-width='.8'/></svg>",xp:500,cat:"milestone",title:"Tour Life"});
 
     return achievements;
   }
@@ -2783,7 +2781,7 @@ Router.register("home", function() {
   }
   
   if (xpToNext <= 200 && myLevel.level > 1) {
-    motivationCards.push({icon:"⚡", title: xpToNext + " XP to Level " + (myLevel.level+1), sub:"One solid round could get you there. New title unlocks every 5 levels.", cta:"View Trophy Room →", page:"trophyroom"});
+    motivationCards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M9 1L4 9h4l-1 6 6-8H9l1-6z' fill='none' stroke='currentColor' stroke-width='1'/></svg>", title: xpToNext + " XP to Level " + (myLevel.level+1), sub:"One solid round could get you there. New title unlocks every 5 levels.", cta:"View Trophy Room →", page:"trophyroom"});
   }
   
   if (myRounds.length >= 3 && myRounds.length < 10) {
@@ -2877,7 +2875,7 @@ Router.register("home", function() {
     });
   } else {
     h += '<div class="empty" style="padding:28px"><div style="width:52px;height:52px;border-radius:12px;margin:0 auto 12px;overflow:hidden;opacity:.5"><img src="watermark.jpg" style="width:100%;height:100%;object-fit:cover"></div>';
-    h += '<div class="empty-text">Nothing in the feed yet</div>';
+    h += '<div class="empty-text">Nothing in the clubhouse yet</div>';
     h += '<div style="font-size:10px;color:var(--muted2);margin-top:4px;letter-spacing:.3px">Log a round, add a member, or create an event</div></div>';
   }
   h += '</div></div>';
@@ -2904,7 +2902,7 @@ Router.register("home", function() {
     {p:"scramble",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><path d='M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'/></svg>",l:"Teams"},
     {p:"aces",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><path d='M5 3v18l7-3 7 3V3H5z'/><circle cx='12' cy='10' r='2'/></svg>",l:"Aces"},
     {p:"calendar",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><rect x='3' y='4' width='18' height='18' rx='2'/><path d='M16 2v4M8 2v4M3 10h18'/></svg>",l:"Calendar"},
-    {p:"chat",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><path d='M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z'/></svg>",l:"Feed"}
+    {p:"chat",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><path d='M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z'/></svg>",l:"Clubhouse"}
   ];
   secondaryLinks.forEach(function(lnk) {
     h += '<div class="ql" onclick="Router.go(\'' + lnk.p + '\')"><div class="ql-icon" style="color:var(--gold)">' + lnk.icon + '</div><div class="ql-label">' + lnk.l + '</div></div>';
@@ -2951,7 +2949,7 @@ Router.register("home", function() {
   h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="Router.go(\'settings\')">Settings</span></div>';
 
   h += '<div style="text-align:center;padding:4px 16px 0">';
-  h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="Router.go(\'caddynotes\')">📋 The Caddy Notes</span></div>';
+  h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="Router.go(\'caddynotes\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12" style="vertical-align:middle"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg> The Caddy Notes</span></div>';
 
   document.querySelector('[data-page="home"]').innerHTML = h;
 });
@@ -5211,8 +5209,8 @@ Router.register("standings", function() {
 
   // Season Recap & Awards links
   h += '<div class="section" style="padding:0 16px 16px;display:flex;gap:8px">';
-  h += '<button class="btn full outline" onclick="Router.go(\'seasonrecap\',{year:' + year + '})" style="flex:1">📊 Season Recap</button>';
-  h += '<button class="btn full outline" onclick="Router.go(\'awards\',{year:' + year + '})" style="flex:1">🏆 Awards Night</button>';
+  h += '<button class="btn full outline" onclick="Router.go(\'seasonrecap\',{year:' + year + '})" style="flex:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle"><path d="M18 20V10M12 20V4M6 20v-6"/></svg> Season Recap</button>';
+  h += '<button class="btn full outline" onclick="Router.go(\'awards\',{year:' + year + '})" style="flex:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle"><path d="M6 9H4a2 2 0 01-2-2V5h4M18 9h2a2 2 0 002-2V5h-4M4 5h16v4a6 6 0 01-6 6h-4a6 6 0 01-6-6V5z"/><path d="M12 15v3M8 21h8"/></svg> Awards Night</button>';
   h += '</div>';
   
   document.querySelector('[data-page="standings"]').innerHTML = h;
@@ -5365,7 +5363,7 @@ function renderTripCreate() {
   h += '</div>';
 
   // AI Tournament Generator button (gated — needs API key)
-  h += '<div class="form-section"><div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border:1px dashed var(--border);border-radius:var(--radius);opacity:.5;margin-bottom:12px"><span>🤖</span><span style="font-size:12px;color:var(--muted)">AI Tournament Generator</span><span style="font-size:9px;background:rgba(201,168,76,.1);color:var(--gold);padding:2px 8px;border-radius:4px;font-weight:600">COMING SOON</span></div></div>';
+  h += '<div class="form-section"><div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border:1px dashed var(--border);border-radius:var(--radius);opacity:.5;margin-bottom:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16" style="color:var(--muted)"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="8.5" cy="16" r="1.5"/><circle cx="15.5" cy="16" r="1.5"/><path d="M12 2v4M8 6h8"/></svg><span style="font-size:12px;color:var(--muted)">AI Tournament Generator</span><span style="font-size:9px;background:rgba(201,168,76,.1);color:var(--gold);padding:2px 8px;border-radius:4px;font-weight:600">COMING SOON</span></div></div>';
   
   // Step 4: Smart Tournament Generator
   h += '<div class="form-section"><div class="form-title">Tournament Format</div>';
@@ -6530,7 +6528,7 @@ Router.register("teetimes", function() {
   var h = '<div class="sh"><h2>Tee Times</h2><button class="btn-sm green" onclick="Router.go(\'tee-create\')">+ Post</button></div>';
 
   if (!upcoming.length) {
-    h += '<div class="section"><div class="card"><div class="empty"><div class="empty-icon">🏌️</div><div class="empty-text">No upcoming tee times. Be the first to post one!</div></div></div></div>';
+    h += '<div class="section"><div class="card"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><circle cx="12" cy="5" r="2"/><path d="M12 7v4l3 5M12 11l-3 5M8 21h8"/><path d="M16 3l2 4"/></svg></div><div class="empty-text">No upcoming tee times. Be the first to post one!</div></div></div></div>';
   }
   upcoming.forEach(function(t) { h += '<div class="section">' + renderTeeCard(t) + '</div>'; });
 
@@ -6790,7 +6788,29 @@ Router.register("chat", function() {
   upcomingEvents = upcomingEvents.slice(0, 5);
   
   // Header
-  h += '<div class="sh"><h2>Clubhouse</h2><button class="btn-sm outline" onclick="Router.go(\'calendar\')" style="font-size:10px">📅 Full Calendar</button></div>';
+  h += '<div class="sh"><h2>Clubhouse</h2><button class="btn-sm outline" onclick="toggleClubhouseCal()" id="calToggleBtn" style="font-size:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Calendar</button></div>';
+  
+  // Inline expandable calendar
+  h += '<div id="clubhouseCal" style="display:none;padding:0 16px 12px;transition:max-height .3s ease">';
+  
+  var monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var dayLabels = ["S","M","T","W","T","F","S"];
+  
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
+  h += '<div onclick="clubCalPrev()" style="cursor:pointer;padding:6px 10px;color:var(--muted);font-size:16px">‹</div>';
+  h += '<div id="clubCalTitle" style="font-size:13px;font-weight:600;color:var(--gold)">' + monthNames[calMonth] + ' ' + calYear + '</div>';
+  h += '<div onclick="clubCalNext()" style="cursor:pointer;padding:6px 10px;color:var(--muted);font-size:16px">›</div></div>';
+  
+  h += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;margin-bottom:4px">';
+  dayLabels.forEach(function(d) { h += '<div style="font-size:9px;color:var(--muted2);padding:4px 0">' + d + '</div>'; });
+  h += '</div>';
+  
+  h += '<div id="clubCalGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center">';
+  h += renderClubCalGrid(calYear, calMonth, todayStr, upcomingEvents);
+  h += '</div>';
+  
+  h += '<div id="clubCalEvents" style="margin-top:8px"></div>';
+  h += '</div>';
   
   // Upcoming events strip
   if (upcomingEvents.length) {
@@ -6842,8 +6862,118 @@ Router.register("chat", function() {
   }
 });
 
+var clubCalOpen = false;
+var clubCalSelectedDate = null;
+
+function toggleClubhouseCal() {
+  clubCalOpen = !clubCalOpen;
+  var el = document.getElementById("clubhouseCal");
+  var btn = document.getElementById("calToggleBtn");
+  if (el) {
+    el.style.display = clubCalOpen ? "block" : "none";
+  }
+  if (btn) {
+    btn.innerHTML = clubCalOpen ? "✕ Close" : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Calendar';
+  }
+}
+
+function renderClubCalGrid(year, month, todayStr, events) {
+  var firstDay = new Date(year, month, 1).getDay();
+  var daysInMonth = new Date(year, month + 1, 0).getDate();
+  
+  // Build event dates set
+  var eventDates = {};
+  if (events) events.forEach(function(e) { eventDates[e.date] = e; });
+  liveTeeTimes.forEach(function(t) { if (t.status !== "cancelled") eventDates[t.date] = {type:"tee",title:t.courseName,time:t.time}; });
+  PB.getTrips().forEach(function(trip) {
+    if (trip.startDate) {
+      var sd = new Date(trip.startDate + "T12:00:00");
+      var ed = trip.endDate ? new Date(trip.endDate + "T12:00:00") : sd;
+      for (var dt = new Date(sd); dt <= ed; dt.setDate(dt.getDate() + 1)) {
+        var ds = dt.getFullYear() + "-" + String(dt.getMonth()+1).padStart(2,"0") + "-" + String(dt.getDate()).padStart(2,"0");
+        eventDates[ds] = {type:"trip",title:trip.name,time:""};
+      }
+    }
+  });
+  
+  var h = '';
+  for (var i = 0; i < firstDay; i++) h += '<div style="padding:8px;font-size:12px"></div>';
+  for (var d = 1; d <= daysInMonth; d++) {
+    var dateStr = year + "-" + String(month + 1).padStart(2,"0") + "-" + String(d).padStart(2,"0");
+    var isToday = dateStr === todayStr;
+    var isSelected = dateStr === clubCalSelectedDate;
+    var hasEvent = eventDates[dateStr];
+    var bg = isSelected ? "var(--gold)" : isToday ? "rgba(201,168,76,.15)" : "transparent";
+    var color = isSelected ? "var(--bg)" : isToday ? "var(--gold)" : "var(--cream)";
+    var dotHtml = hasEvent ? '<div style="width:4px;height:4px;border-radius:50%;background:' + (hasEvent.type === "trip" ? "var(--gold)" : "var(--birdie)") + ';margin:1px auto 0"></div>' : '';
+    h += '<div onclick="selectClubCalDay(\'' + dateStr + '\')" style="padding:6px 0;font-size:12px;font-weight:' + (isToday ? "700" : "400") + ';color:' + color + ';background:' + bg + ';border-radius:6px;cursor:pointer;line-height:1">' + d + dotHtml + '</div>';
+  }
+  return h;
+}
+
+function selectClubCalDay(dateStr) {
+  clubCalSelectedDate = (clubCalSelectedDate === dateStr) ? null : dateStr;
+  refreshClubCal();
+}
+
+function clubCalPrev() {
+  calMonth--;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  clubCalSelectedDate = null;
+  refreshClubCal();
+}
+
+function clubCalNext() {
+  calMonth++;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  clubCalSelectedDate = null;
+  refreshClubCal();
+}
+
+function refreshClubCal() {
+  var monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var now = new Date();
+  var todayStr = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0") + "-" + String(now.getDate()).padStart(2,"0");
+  
+  var titleEl = document.getElementById("clubCalTitle");
+  if (titleEl) titleEl.textContent = monthNames[calMonth] + " " + calYear;
+  
+  var gridEl = document.getElementById("clubCalGrid");
+  if (gridEl) gridEl.innerHTML = renderClubCalGrid(calYear, calMonth, todayStr, []);
+  
+  // Show selected day events
+  var eventsEl = document.getElementById("clubCalEvents");
+  if (eventsEl) {
+    if (clubCalSelectedDate) {
+      var dayEvents = [];
+      liveTeeTimes.forEach(function(t) { if (t.date === clubCalSelectedDate && t.status !== "cancelled") dayEvents.push({type:"tee",title:t.courseName||"Tee Time",time:t.time||""}); });
+      PB.getTrips().forEach(function(trip) {
+        if (trip.startDate && trip.startDate <= clubCalSelectedDate && (!trip.endDate || trip.endDate >= clubCalSelectedDate)) {
+          dayEvents.push({type:"trip",title:trip.name,time:""});
+        }
+      });
+      
+      if (dayEvents.length) {
+        var eh = '';
+        dayEvents.forEach(function(ev) {
+          var dotColor = ev.type === "trip" ? "var(--gold)" : "var(--birdie)";
+          eh += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0"><div style="width:6px;height:6px;border-radius:50%;background:' + dotColor + ';flex-shrink:0"></div>';
+          eh += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
+          if (ev.time) eh += '<div style="font-size:10px;color:var(--muted)">' + ev.time + '</div>';
+          eh += '</div></div>';
+        });
+        eventsEl.innerHTML = eh;
+      } else {
+        eventsEl.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:4px 0">Nothing scheduled</div>';
+      }
+    } else {
+      eventsEl.innerHTML = '';
+    }
+  }
+}
+
 function renderChatMessages(messages) {
-  if (!messages.length) return '<div class="card"><div class="empty"><div class="empty-icon">💬</div><div class="empty-text">No messages yet. Start the trash talk.</div></div></div>';
+  if (!messages.length) return '<div class="card"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div class="empty-text">No messages yet. Start the trash talk.</div></div></div>';
   
   var ch = '';
   messages.forEach(function(msg) {
@@ -7026,7 +7156,7 @@ Router.register("dms", function() {
     });
     var dh = '';
     if (!filtered.length) {
-      dh = '<div class="section"><div class="empty"><div class="empty-icon">💬</div><div class="empty-text">No other members yet</div></div></div>';
+      dh = '<div class="section"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div class="empty-text">No other members yet</div></div></div>';
     }
     filtered.forEach(function(m) {
       var convoId = getDmConvoId(currentUser.uid, m.id);
@@ -7091,7 +7221,7 @@ Router.register("dm-thread", function(params) {
     dmListenerUnsub = db.collection("dms").doc(cid).collection("messages").orderBy("createdAt","asc").onSnapshot(function(snap) {
       var msgs = []; snap.forEach(function(doc){msgs.push(doc.data())});
       var c = document.getElementById("dmMessages"); if (!c) return;
-      if (!msgs.length) { c.innerHTML = '<div class="empty" style="padding-top:60px"><div class="empty-icon">👋</div><div class="empty-text">Start the conversation</div></div>'; return; }
+      if (!msgs.length) { c.innerHTML = '<div class="empty" style="padding-top:60px"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg></div><div class="empty-text">Start the conversation</div></div>'; return; }
       var mh = "";
       msgs.forEach(function(msg) {
         var mine = msg.authorId === currentUser.uid;
@@ -7860,68 +7990,68 @@ function renderTrophyRoom(p) {
 // All possible achievements (for showing locked state)
 function getAllPossibleAchievements() {
   return [
-    {id:"first_blood",name:"First Blood",desc:"Log your first round",icon:"▲",xp:100,cat:"milestone"},
-    {id:"getting_started",name:"Getting Started",desc:"Log 5 rounds",icon:"▲",xp:50,cat:"milestone"},
-    {id:"regular",name:"Regular",desc:"Log 10 rounds",icon:"◆",xp:100,cat:"milestone"},
-    {id:"grinder",name:"Grinder",desc:"Log 25 rounds",icon:"◆◆",xp:250,cat:"milestone"},
-    {id:"veteran",name:"Veteran",desc:"Log 50 rounds",icon:"★",xp:500,cat:"milestone"},
-    {id:"centurion",name:"Centurion",desc:"Log 100 rounds",icon:"★★",xp:1000,cat:"milestone"},
-    {id:"live_scorer",name:"Live Scorer",desc:"Complete a Play Now round",icon:"▲",xp:50,cat:"milestone"},
-    {id:"dedicated",name:"Dedicated",desc:"10 Play Now rounds",icon:"◆",xp:150,cat:"milestone"},
-    {id:"attested",name:"Verified",desc:"Have a score attested",icon:"▲",xp:50,cat:"milestone"},
-    {id:"honest_game",name:"Honest Game",desc:"10 attested rounds",icon:"◆",xp:150,cat:"milestone"},
-    {id:"home_course",name:"Home Course Hero",desc:"Play same course 5 times",icon:"▲",xp:75,cat:"milestone"},
-    {id:"local_legend",name:"Local Legend",desc:"Play same course 10 times",icon:"◆",xp:150,cat:"milestone"},
-    {id:"resident",name:"Resident Pro",desc:"Play same course 25 times",icon:"★",xp:300,cat:"milestone"},
-    {id:"sub120",name:"Breaking In",desc:"Break 120",icon:"▲",xp:50,cat:"score"},
-    {id:"sub100",name:"Double Digits",desc:"Break 100",icon:"▲▲",xp:100,cat:"score"},
-    {id:"sub90",name:"Sub-90 Club",desc:"Shoot under 90",icon:"◆",xp:200,cat:"score"},
-    {id:"sub85",name:"Mid-80s",desc:"Shoot under 85",icon:"◆◆",xp:300,cat:"score"},
-    {id:"sub80",name:"Sharpshooter",desc:"Shoot under 80",icon:"★",xp:500,cat:"score"},
-    {id:"sub75",name:"Near Scratch",desc:"Shoot under 75",icon:"★★",xp:750,cat:"score"},
-    {id:"sub70",name:"Tour Ready",desc:"Shoot under 70",icon:"★★★",xp:1000,cat:"score"},
-    {id:"course_rating",name:"Par for the Course",desc:"Shoot exactly the course rating",icon:"◆",xp:200,cat:"score"},
-    {id:"sampler",name:"Course Sampler",desc:"Play 3 different courses",icon:"▲",xp:50,cat:"explore"},
-    {id:"explorer",name:"Explorer",desc:"Play 5 different courses",icon:"◆",xp:100,cat:"explore"},
-    {id:"collector",name:"Course Collector",desc:"Play 10 different courses",icon:"◆◆",xp:200,cat:"explore"},
-    {id:"nomad",name:"Nomad",desc:"Play 25 different courses",icon:"★",xp:500,cat:"explore"},
-    {id:"traveler2",name:"State Hopper",desc:"Play courses in 2 states",icon:"▲",xp:75,cat:"explore"},
-    {id:"traveler",name:"Globe Trotter",desc:"Play in 3+ states",icon:"◆",xp:150,cat:"explore"},
-    {id:"roadwarrior",name:"Road Warrior",desc:"Play in 5+ states",icon:"★",xp:300,cat:"explore"},
-    {id:"first_win",name:"First Win",desc:"Win an H2H matchup",icon:"▲",xp:50,cat:"compete"},
-    {id:"rival",name:"Rival",desc:"Win 5 H2H matchups",icon:"◆",xp:100,cat:"compete"},
-    {id:"nemesis",name:"Nemesis",desc:"Win 10 H2H matchups",icon:"◆◆",xp:200,cat:"compete"},
-    {id:"dominator",name:"Dominator",desc:"Win 25 H2H matchups",icon:"★",xp:500,cat:"compete"},
-    {id:"champion",name:"Champion",desc:"Win an event",icon:"★",xp:500,cat:"compete"},
-    {id:"dynasty",name:"Dynasty",desc:"Win 3 events",icon:"★★",xp:1000,cat:"compete"},
-    {id:"captain",name:"Captain",desc:"Named team captain",icon:"◆",xp:100,cat:"compete"},
-    {id:"improving",name:"On The Rise",desc:"Average improved by 3+",icon:"▲",xp:100,cat:"growth"},
-    {id:"transformed",name:"Transformed",desc:"Average improved by 8+",icon:"◆",xp:250,cat:"growth"},
-    {id:"metamorphosis",name:"Metamorphosis",desc:"Average improved by 15+",icon:"★",xp:500,cat:"growth"},
-    {id:"sandbagger",name:"Sandbagger",desc:"Beat average by 10+",icon:"◆",xp:150,cat:"growth"},
-    {id:"ace",name:"Ace",desc:"Make a hole-in-one",icon:"★★★",xp:1000,cat:"special"},
-    {id:"og",name:"The Original Four",desc:"Founding member",icon:"★",xp:0,cat:"special"},
-    {id:"beta",name:"Beta Tester",desc:"Among the first 30 members",icon:"◆",xp:0,cat:"special"},
-    {id:"lvl5",name:"Level 5",desc:"Reach Weekend Warrior",icon:"◆",xp:0,cat:"level"},
-    {id:"lvl10",name:"Level 10",desc:"Reach Range Rat",icon:"◆",xp:0,cat:"level"},
-    {id:"lvl25",name:"Level 25",desc:"Reach Course Regular",icon:"◆◆",xp:0,cat:"level"},
-    {id:"lvl50",name:"Level 50",desc:"Reach Eagle Eye",icon:"★",xp:0,cat:"level"},
-    {id:"lvl75",name:"Level 75",desc:"Reach The Professor",icon:"★★",xp:0,cat:"level"},
-    {id:"lvl100",name:"Level 100",desc:"Reach G.O.A.T.",icon:"★★★",xp:0,cat:"level"},
-    {id:"blow120",name:"The Blow-Up",desc:"Shoot 120 or higher",icon:"💥",xp:25,cat:"blunder"},
-    {id:"blow130",name:"Cart Path Warrior",desc:"Shoot 130 or higher",icon:"🛒",xp:25,cat:"blunder"},
-    {id:"blow140",name:"Lost in the Woods",desc:"Shoot 140 or higher",icon:"🌲",xp:25,cat:"blunder"},
-    {id:"roller_coaster",name:"Roller Coaster",desc:"20+ stroke swing between best and worst",icon:"🎢",xp:50,cat:"blunder"},
-    {id:"downhill",name:"Going Downhill",desc:"3 rounds in a row getting worse",icon:"📉",xp:25,cat:"blunder"},
-    {id:"thick_skin",name:"Thick Skin",desc:"Log 5 rounds of 110+",icon:"🛡",xp:50,cat:"blunder"},
-    {id:"triple_club",name:"Triple Digit Club",desc:"10 rounds without breaking 100",icon:"💯",xp:50,cat:"blunder"},
-    {id:"hot_streak",name:"Hot Streak",desc:"Play 3 weeks in a row",icon:"🔥",xp:100,cat:"milestone"},
-    {id:"iron_man_streak",name:"Iron Man",desc:"Play 6 weeks in a row",icon:"⚡",xp:200,cat:"milestone"},
-    {id:"first_parbaugh",name:"First Parbaugh Round",desc:"Complete a Parbaugh Round",icon:"🤝",xp:75,cat:"milestone"},
-    {id:"parbaugh_regular",name:"Parbaugh Regular",desc:"5 Parbaugh Rounds",icon:"🤝",xp:150,cat:"milestone"},
-    {id:"parbaugh_veteran",name:"Parbaugh Veteran",desc:"25 Parbaugh Rounds",icon:"🤝",xp:500,cat:"milestone"},
-    {id:"boss_wife",name:"The Boss's Wife",desc:"The one who really runs things",icon:"👑",xp:0,cat:"special"},
-    {id:"the_commish",name:"The Commissioner",desc:"Running the show",icon:"🏛",xp:0,cat:"special"}
+    {id:"first_blood",name:"First Blood",desc:"Log your first round",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"milestone"},
+    {id:"getting_started",name:"Getting Started",desc:"Log 5 rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"milestone"},
+    {id:"regular",name:"Regular",desc:"Log 10 rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"milestone"},
+    {id:"grinder",name:"Grinder",desc:"Log 25 rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='7' r='1.5' fill='currentColor'/></svg>",xp:250,cat:"milestone"},
+    {id:"veteran",name:"Veteran",desc:"Log 50 rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"milestone"},
+    {id:"centurion",name:"Centurion",desc:"Log 100 rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:1000,cat:"milestone"},
+    {id:"live_scorer",name:"Live Scorer",desc:"Complete a Play Now round",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"milestone"},
+    {id:"dedicated",name:"Dedicated",desc:"10 Play Now rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"milestone"},
+    {id:"attested",name:"Verified",desc:"Have a score attested",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"milestone"},
+    {id:"honest_game",name:"Honest Game",desc:"10 attested rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"milestone"},
+    {id:"home_course",name:"Home Course Hero",desc:"Play same course 5 times",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:75,cat:"milestone"},
+    {id:"local_legend",name:"Local Legend",desc:"Play same course 10 times",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"milestone"},
+    {id:"resident",name:"Resident Pro",desc:"Play same course 25 times",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:300,cat:"milestone"},
+    {id:"sub120",name:"Breaking In",desc:"Break 120",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"score"},
+    {id:"sub100",name:"Double Digits",desc:"Break 100",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v4M6 7h4' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"score"},
+    {id:"sub90",name:"Sub-90 Club",desc:"Shoot under 90",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:200,cat:"score"},
+    {id:"sub85",name:"Mid-80s",desc:"Shoot under 85",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='7' r='1.5' fill='currentColor'/></svg>",xp:300,cat:"score"},
+    {id:"sub80",name:"Sharpshooter",desc:"Shoot under 80",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"score"},
+    {id:"sub75",name:"Near Scratch",desc:"Shoot under 75",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:750,cat:"score"},
+    {id:"sub70",name:"Tour Ready",desc:"Shoot under 70",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:1000,cat:"score"},
+    {id:"course_rating",name:"Par for the Course",desc:"Shoot exactly the course rating",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:200,cat:"score"},
+    {id:"sampler",name:"Course Sampler",desc:"Play 3 different courses",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"explore"},
+    {id:"explorer",name:"Explorer",desc:"Play 5 different courses",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"explore"},
+    {id:"collector",name:"Course Collector",desc:"Play 10 different courses",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='7' r='1.5' fill='currentColor'/></svg>",xp:200,cat:"explore"},
+    {id:"nomad",name:"Nomad",desc:"Play 25 different courses",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"explore"},
+    {id:"traveler2",name:"State Hopper",desc:"Play courses in 2 states",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:75,cat:"explore"},
+    {id:"traveler",name:"Globe Trotter",desc:"Play in 3+ states",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"explore"},
+    {id:"roadwarrior",name:"Road Warrior",desc:"Play in 5+ states",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:300,cat:"explore"},
+    {id:"first_win",name:"First Win",desc:"Win an H2H matchup",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"compete"},
+    {id:"rival",name:"Rival",desc:"Win 5 H2H matchups",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"compete"},
+    {id:"nemesis",name:"Nemesis",desc:"Win 10 H2H matchups",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='7' r='1.5' fill='currentColor'/></svg>",xp:200,cat:"compete"},
+    {id:"dominator",name:"Dominator",desc:"Win 25 H2H matchups",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"compete"},
+    {id:"champion",name:"Champion",desc:"Win an event",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"compete"},
+    {id:"dynasty",name:"Dynasty",desc:"Win 3 events",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:1000,cat:"compete"},
+    {id:"captain",name:"Captain",desc:"Named team captain",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"compete"},
+    {id:"improving",name:"On The Rise",desc:"Average improved by 3+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"growth"},
+    {id:"transformed",name:"Transformed",desc:"Average improved by 8+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:250,cat:"growth"},
+    {id:"metamorphosis",name:"Metamorphosis",desc:"Average improved by 15+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"growth"},
+    {id:"sandbagger",name:"Sandbagger",desc:"Beat average by 10+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"growth"},
+    {id:"ace",name:"Ace",desc:"Make a hole-in-one",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:1000,cat:"special"},
+    {id:"og",name:"The Original Four",desc:"Founding member",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"special"},
+    {id:"beta",name:"Beta Tester",desc:"Among the first 30 members",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:0,cat:"special"},
+    {id:"lvl5",name:"Level 5",desc:"Reach Weekend Warrior",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:0,cat:"level"},
+    {id:"lvl10",name:"Level 10",desc:"Reach Range Rat",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:0,cat:"level"},
+    {id:"lvl25",name:"Level 25",desc:"Reach Course Regular",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='7' r='1.5' fill='currentColor'/></svg>",xp:0,cat:"level"},
+    {id:"lvl50",name:"Level 50",desc:"Reach Eagle Eye",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"level"},
+    {id:"lvl75",name:"Level 75",desc:"Reach The Professor",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"level"},
+    {id:"lvl100",name:"Level 100",desc:"Reach G.O.A.T.",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:0,cat:"level"},
+    {id:"blow120",name:"The Blow-Up",desc:"Shoot 120 or higher",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l1 4 4-1-3 3 3 3-4-1-1 4-1-4-4 1 3-3-3-3 4 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:25,cat:"blunder"},
+    {id:"blow130",name:"Cart Path Warrior",desc:"Shoot 130 or higher",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='6' cy='14' r='1' fill='currentColor'/><circle cx='12' cy='14' r='1' fill='currentColor'/><path d='M1 1h2l2 9h8l2-6H5' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:25,cat:"blunder"},
+    {id:"blow140",name:"Lost in the Woods",desc:"Shoot 140 or higher",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L4 7h2L3 12h10L10 7h2L8 1zM7 12h2v3H7z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:25,cat:"blunder"},
+    {id:"roller_coaster",name:"Roller Coaster",desc:"20+ stroke swing between best and worst",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 12c2-8 4-8 6 0s4 0 6-4' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"blunder"},
+    {id:"downhill",name:"Going Downhill",desc:"3 rounds in a row getting worse",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 3l5 4 3-2 6 7' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M12 8l3 4h-4z' fill='currentColor'/></svg>",xp:25,cat:"blunder"},
+    {id:"thick_skin",name:"Thick Skin",desc:"Log 5 rounds of 110+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M6 8l2 2 3-4' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"blunder"},
+    {id:"triple_club",name:"Triple Digit Club",desc:"10 rounds without breaking 100",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><text x='8' y='12' text-anchor='middle' font-size='10' font-weight='700' fill='currentColor'>100</text></svg>",xp:50,cat:"blunder"},
+    {id:"hot_streak",name:"Hot Streak",desc:"Play 3 weeks in a row",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1C6 4 4 5 4 8a4 4 0 008 0c0-2-1-3-2-4-.5 1-1 2-2 1 0-2 0-3 0-4z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"milestone"},
+    {id:"iron_man_streak",name:"Iron Man",desc:"Play 6 weeks in a row",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M9 1L4 9h4l-1 6 6-8H9l1-6z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:200,cat:"milestone"},
+    {id:"first_parbaugh",name:"First Parbaugh Round",desc:"Complete a Parbaugh Round",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:75,cat:"milestone"},
+    {id:"parbaugh_regular",name:"Parbaugh Regular",desc:"5 Parbaugh Rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:150,cat:"milestone"},
+    {id:"parbaugh_veteran",name:"Parbaugh Veteran",desc:"25 Parbaugh Rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"milestone"},
+    {id:"boss_wife",name:"The Boss's Wife",desc:"The one who really runs things",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M2 12h12L13 5l-3 3-2-4-2 4-3-3z' fill='none' stroke='currentColor' stroke-width='1.2'/><rect x='2' y='12' width='12' height='2' rx='1' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"special"},
+    {id:"the_commish",name:"The Commissioner",desc:"Running the show",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l6 4H2zM3 6v7M6 6v7M10 6v7M13 6v7M1 13h14M1 14h14' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"special"}
   ];
 }
 
@@ -7974,7 +8104,7 @@ Router.register("partygames", function() {
       if (!games.length) { el.innerHTML = '<div class="section"><div style="font-size:11px;color:var(--muted);text-align:center;padding:12px">No active games. Start one below!</div></div>'; return; }
       var gh = '<div class="section"><div class="sec-head"><span class="sec-title">Active Games</span></div>';
       games.forEach(function(g) {
-        var game = PARTY_GAMES.find(function(pg) { return pg.id === g.gameType; }) || { icon:"🎮", name:g.gameType };
+        var game = PARTY_GAMES.find(function(pg) { return pg.id === g.gameType; }) || { icon:"<svg viewBox='0 0 16 16' width='14' height='14'><rect x='1' y='4' width='14' height='8' rx='3' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='5' cy='8' r='1' fill='currentColor'/><path d='M10 6.5v3M8.5 8h3' stroke='currentColor' stroke-width='1'/></svg>", name:g.gameType };
         gh += '<div class="card"><div class="card-body">';
         gh += '<div style="display:flex;justify-content:space-between;align-items:center">';
         gh += '<div><div style="font-size:14px;font-weight:600">' + game.icon + ' ' + game.name + '</div>';
@@ -8323,7 +8453,7 @@ function renderNotifPanel() {
   var el = document.getElementById("notifList");
   if (!el) return;
   if (!liveNotifications.length) {
-    el.innerHTML = '<div class="empty" style="padding:40px 16px"><div class="empty-icon">🔔</div><div class="empty-text">All caught up</div><div style="font-size:10px;color:var(--muted2);margin-top:4px">You\'ll see likes, comments, messages, and tee times here</div></div>';
+    el.innerHTML = '<div class="empty" style="padding:40px 16px"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div><div class="empty-text">All caught up</div><div style="font-size:10px;color:var(--muted2);margin-top:4px">You\'ll see likes, comments, messages, and tee times here</div></div>';
     return;
   }
   var h = '';
@@ -8863,7 +8993,7 @@ Router.register("seasonrecap", function(params) {
   // Best single round
   var bestRound = null;
   allRounds.forEach(function(r) { if (r.score && (!bestRound || r.score < bestRound.score)) bestRound = r; });
-  if (bestRound) awards.push({icon:"🔥", title:"Low Round of the Season", winner: bestRound.playerName, detail: bestRound.score + " at " + bestRound.course});
+  if (bestRound) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1C6 4 4 5 4 8a4 4 0 008 0c0-2-1-3-2-4-.5 1-1 2-2 1 0-2 0-3 0-4z' fill='none' stroke='currentColor' stroke-width='1'/></svg>", title:"Low Round of the Season", winner: bestRound.playerName, detail: bestRound.score + " at " + bestRound.course});
   
   // Most rounds played
   var roundCounts = {};
@@ -9070,7 +9200,7 @@ Router.register("awards", function(params) {
   });
   
   if (!ceremonyAwards.length) {
-    h += '<div class="card" style="margin:16px"><div class="empty" style="padding:32px"><div class="empty-icon">🏌️</div><div class="empty-text">No season data yet</div>';
+    h += '<div class="card" style="margin:16px"><div class="empty" style="padding:32px"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><circle cx="12" cy="5" r="2"/><path d="M12 7v4l3 5M12 11l-3 5M8 21h8"/><path d="M16 3l2 4"/></svg></div><div class="empty-text">No season data yet</div>';
     h += '<div style="font-size:10px;color:var(--muted2);margin-top:4px">Log rounds during the season (Mar—Sep) to unlock awards</div></div></div>';
   }
   
@@ -9308,20 +9438,14 @@ function updateConnBar() {
 }
 
 function initConnStatus() {
-  // Insert connection bar at the top of the home page
   if (!db) return;
   
-  // Monitor Firestore connectivity via a simple write test
-  var connRef = db.collection("presence");
-  // Use the existing sync status text
-  var origSyncText = document.getElementById("syncStatusText");
-  if (origSyncText) {
-    // Listen for online/offline
-    window.addEventListener("online", function() { connStatus = "live"; updateConnBar(); if(origSyncText) origSyncText.textContent = "Live"; });
-    window.addEventListener("offline", function() { connStatus = "offline"; updateConnBar(); if(origSyncText) origSyncText.textContent = "Offline"; });
-    if (navigator.onLine) { connStatus = "live"; if(origSyncText) origSyncText.textContent = "Live"; }
-    else { connStatus = "offline"; if(origSyncText) origSyncText.textContent = "Offline"; }
-  }
+  window.addEventListener("online", function() { setSyncStatus("online"); });
+  window.addEventListener("offline", function() { setSyncStatus("offline"); });
+  
+  // Set initial state
+  if (navigator.onLine) { setSyncStatus("online"); }
+  else { setSyncStatus("offline"); }
 }
 
 
@@ -9411,7 +9535,7 @@ var contextualEmptyStates = {
   },
   chat: {
     icon: "💬",
-    text: "The feed is quiet",
+    text: "The clubhouse is quiet",
     sub: "Be the first to talk trash. Someone has to.",
     action: null
   },
@@ -9442,37 +9566,49 @@ function renderContextualEmpty(type) {
 (function() {
   var startY = 0;
   var pulling = false;
-  var threshold = 80;
+  var triggered = false;
+  var threshold = 45;
   var indicator = null;
   
   document.addEventListener("touchstart", function(e) {
-    if (window.scrollY === 0 && e.touches.length === 1) {
+    if (window.scrollY <= 0 && e.touches.length === 1) {
       startY = e.touches[0].clientY;
       pulling = true;
+      triggered = false;
       indicator = document.getElementById("ptrIndicator");
     }
   }, { passive: true });
   
   document.addEventListener("touchmove", function(e) {
-    if (!pulling || !indicator) return;
+    if (!pulling || !indicator || triggered) return;
     var diff = e.touches[0].clientY - startY;
-    if (diff > 0 && diff < 150 && window.scrollY === 0) {
+    if (diff > 0 && window.scrollY <= 0) {
       var progress = Math.min(diff / threshold, 1);
-      indicator.style.top = (-50 + (62 * progress)) + "px";
-      indicator.querySelector("svg").style.transform = "rotate(" + (progress * 180) + "deg)";
+      indicator.style.top = (-44 + (56 * progress)) + "px";
+      indicator.style.opacity = progress;
+      indicator.querySelector("svg").style.transform = "rotate(" + (progress * 360) + "deg)";
+      
+      if (progress >= 1 && !triggered) {
+        triggered = true;
+        indicator.style.top = "14px";
+        indicator.style.opacity = "1";
+        indicator.querySelector("svg").style.animation = "spin .6s linear infinite";
+        // Haptic feedback if available
+        if (navigator.vibrate) navigator.vibrate(15);
+        setTimeout(function() { window.location.reload(); }, 400);
+      }
+    } else if (diff <= 0) {
+      pulling = false;
+      indicator.style.top = "-44px";
+      indicator.style.opacity = "0";
     }
   }, { passive: true });
   
   document.addEventListener("touchend", function() {
-    if (!pulling || !indicator) return;
-    var currentTop = parseFloat(indicator.style.top) || -50;
-    if (currentTop >= 10) {
-      indicator.classList.add("refreshing");
-      indicator.style.top = "12px";
-      setTimeout(function() { window.location.reload(); }, 600);
-    } else {
-      indicator.style.top = "-50px";
-    }
+    if (!pulling || !indicator || triggered) { pulling = false; return; }
+    indicator.style.top = "-44px";
+    indicator.style.opacity = "0";
+    indicator.querySelector("svg").style.transform = "rotate(0deg)";
     pulling = false;
   }, { passive: true });
 })();
