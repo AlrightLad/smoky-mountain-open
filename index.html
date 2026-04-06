@@ -678,6 +678,7 @@ function genId() { return Date.now().toString(36) + Math.random().toString(36).s
 
 // ========== AUTH FUNCTIONS ==========
 var currentUser = null, currentProfile = null;
+var fbMemberCache = {}; // Firebase member profiles keyed by UID
 
 function showLogin() { document.getElementById("loginForm").classList.remove("hidden"); document.getElementById("registerForm").classList.add("hidden"); document.getElementById("forgotForm").classList.add("hidden"); clearErrors(); }
 function showRegister() { 
@@ -1430,21 +1431,23 @@ function preloadMemberPhotos() {
       db.collection("members").get().then(function(mSnap) {
         mSnap.forEach(function(mDoc) {
           var m = mDoc.data();
+          // Cache member profile for achievement/XP lookups
+          fbMemberCache[m.id] = m;
+          if (m.claimedFrom) fbMemberCache[m.claimedFrom] = m;
+          
           var fbPhoto = photoCache["member:" + m.id];
           var localPhoto = m.claimedFrom ? photoCache["member:" + m.claimedFrom] : null;
-          // If we have a photo under one key, also store under the other
           if (fbPhoto && m.claimedFrom && !localPhoto) {
             photoCache["member:" + m.claimedFrom] = fbPhoto;
           }
           if (localPhoto && !fbPhoto) {
             photoCache["member:" + m.id] = localPhoto;
           }
-          // Also check if the member doc has a photoUrl field
           if (m.photoUrl && !photoCache["member:" + m.id]) {
             photoCache["member:" + m.id] = m.photoUrl;
           }
         });
-        // Re-render current page to show photos
+        console.log("[Members] Cached", Object.keys(fbMemberCache).length, "member profiles");
         if (Router.getPage() === "home" || Router.getPage() === "members") Router.go(Router.getPage());
       });
     });
@@ -2232,7 +2235,8 @@ var PB = (function() {
     if (!pid) return 0;
     var rounds = getPlayerRounds(pid);
     var player = getPlayer(pid);
-    // If local lookup fails, try currentProfile or claimedFrom matching
+    // Resolve from Firebase cache, currentProfile, or claimedFrom
+    if (!player && typeof fbMemberCache !== "undefined" && fbMemberCache[pid]) player = fbMemberCache[pid];
     if (!player && currentProfile && currentProfile.id === pid) player = currentProfile;
     if (!player) {
       var all = getPlayers();
@@ -2301,13 +2305,91 @@ var PB = (function() {
       if (c.reviews) c.reviews.forEach(function(r) { if (r.by === (player?player.name:"")) xp += 25; });
     });
 
+    // Achievement XP — calculated from the same conditions, not from getAchievements (avoids circular call)
+    // Round milestones
+    if (rounds.length >= 1) xp += 100;
+    if (rounds.length >= 5) xp += 50;
+    if (rounds.length >= 10) xp += 100;
+    if (rounds.length >= 25) xp += 250;
+    if (rounds.length >= 50) xp += 500;
+    if (rounds.length >= 100) xp += 1000;
+    if (rounds.length >= 200) xp += 2000;
+    if (rounds.length >= 500) xp += 5000;
+    // Score achievements
+    if (rounds.some(function(r){return r.score<=120})) xp += 50;
+    if (rounds.some(function(r){return r.score<100})) xp += 100;
+    if (rounds.some(function(r){return r.score<90})) xp += 200;
+    if (rounds.some(function(r){return r.score<85})) xp += 300;
+    if (rounds.some(function(r){return r.score<80})) xp += 500;
+    if (rounds.some(function(r){return r.score<75})) xp += 750;
+    if (rounds.some(function(r){return r.score<70})) xp += 1000;
+    // Explore achievements
+    var achCourseCount = Object.keys(seenCourses).length;
+    if (achCourseCount >= 3) xp += 50;
+    if (achCourseCount >= 5) xp += 100;
+    if (achCourseCount >= 10) xp += 200;
+    if (achCourseCount >= 25) xp += 500;
+    if (achCourseCount >= 50) xp += 1000;
+    var achStateCount = Object.keys(seenStates).length;
+    if (achStateCount >= 2) xp += 75;
+    if (achStateCount >= 3) xp += 150;
+    if (achStateCount >= 5) xp += 300;
+    if (achStateCount >= 8) xp += 500;
+    // Play Now rounds
+    var playNowRounds = rounds.filter(function(r){return r.holeScores});
+    if (playNowRounds.length >= 1) xp += 50;
+    if (playNowRounds.length >= 10) xp += 150;
+    // Attested rounds
+    var attestedRounds = rounds.filter(function(r){return r.attestedBy});
+    if (attestedRounds.length >= 1) xp += 50;
+    if (attestedRounds.length >= 10) xp += 150;
+    // Home course
+    var coursePlays = {};
+    rounds.forEach(function(r){coursePlays[r.course]=(coursePlays[r.course]||0)+1});
+    var maxPlays = Math.max.apply(null, Object.values(coursePlays).concat([0]));
+    if (maxPlays >= 5) xp += 75;
+    if (maxPlays >= 10) xp += 150;
+    if (maxPlays >= 25) xp += 300;
+    // Streaks
+    if (rounds.length >= 3) {
+      var weekSet = {};
+      rounds.forEach(function(r){if(r.date){var d=new Date(r.date+"T12:00:00");var wk=d.getFullYear()+"-"+Math.floor((d.getTime()-new Date(d.getFullYear(),0,1).getTime())/604800000);weekSet[wk]=1;}});
+      var weeks = Object.keys(weekSet).sort();
+      var maxStreak = 1, curStreak = 1;
+      for (var si = 1; si < weeks.length; si++) {
+        var prev = weeks[si-1].split("-"), curr = weeks[si].split("-");
+        if (parseInt(curr[0]) === parseInt(prev[0]) && parseInt(curr[1]) === parseInt(prev[1]) + 1) { curStreak++; if (curStreak > maxStreak) maxStreak = curStreak; }
+        else curStreak = 1;
+      }
+      if (maxStreak >= 3) xp += 100;
+      if (maxStreak >= 6) xp += 200;
+    }
+    // Back to back days
+    if (rounds.length >= 2) {
+      var sortedDates = rounds.map(function(r){return r.date}).filter(Boolean).sort();
+      for (var di = 1; di < sortedDates.length; di++) {
+        var d1 = new Date(sortedDates[di-1]+"T12:00:00"), d2 = new Date(sortedDates[di]+"T12:00:00");
+        if ((d2-d1) <= 86400000) { xp += 75; break; }
+      }
+    }
+    // Social
+    var chatCount = 0;
+    try { if (typeof liveChat !== "undefined") chatCount = liveChat.filter(function(m){return m.authorId===pid}).length; } catch(e){}
+    if (chatCount >= 1) xp += 25;
+    if (chatCount >= 25) xp += 75;
+    if (chatCount >= 100) xp += 200;
+    // Invites
+    if (player && player.invitesUsed >= 1) xp += 100;
+    if (player && player.invitesUsed >= 3) xp += 250;
+
     return xp;
   }
 
   function getAchievements(pid) {
     var rounds = getPlayerRounds(pid);
     var player = getPlayer(pid);
-    // If local lookup fails, try currentProfile or claimedFrom matching
+    // Resolve from Firebase cache, currentProfile, or claimedFrom
+    if (!player && typeof fbMemberCache !== "undefined" && fbMemberCache[pid]) player = fbMemberCache[pid];
     if (!player && currentProfile && currentProfile.id === pid) player = currentProfile;
     if (!player) {
       var all = getPlayers();
@@ -2508,6 +2590,126 @@ var PB = (function() {
     var chatPosts = 0;
     try { if (liveChat) chatPosts = liveChat.filter(function(m){return m.authorId === pid}).length; } catch(e){}
     if (chatPosts >= 1) achievements.push({id:"first_post",name:"First Post",desc:"Send a message in the Clubhouse",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M14 10a2 2 0 01-2 2H6l-3 3V4a2 2 0 012-2h7a2 2 0 012 2z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:25,cat:"milestone"});
+
+    // --- GOLF CULTURE & HOLE-BY-HOLE ACHIEVEMENTS ---
+    var hasHoleScores = rounds.some(function(r){return r.holeScores && r.holeScores.length});
+    if (hasHoleScores) {
+      var allHoleScores = [];
+      var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+      var totalBirdies = 0, totalEagles = 0, totalPars = 0, totalDoubles = 0, totalTriples = 0;
+      var birdieStreak = 0, maxBirdieStreak = 0;
+      var parStreak = 0, maxParStreak = 0;
+      
+      rounds.forEach(function(r) {
+        if (!r.holeScores) return;
+        r.holeScores.forEach(function(s, i) {
+          if (s === "" || s === null || s === undefined) return;
+          var score = parseInt(s);
+          var par = defaultPar[i] || 4;
+          var diff = score - par;
+          
+          if (diff <= -2) { totalEagles++; birdieStreak++; }
+          else if (diff === -1) { totalBirdies++; birdieStreak++; }
+          else if (diff === 0) { totalPars++; birdieStreak = 0; parStreak++; }
+          else if (diff === 2) { totalDoubles++; birdieStreak = 0; parStreak = 0; }
+          else if (diff >= 3) { totalTriples++; birdieStreak = 0; parStreak = 0; }
+          else { birdieStreak = 0; parStreak = 0; }
+          
+          if (birdieStreak > maxBirdieStreak) maxBirdieStreak = birdieStreak;
+          if (parStreak > maxParStreak) maxParStreak = parStreak;
+        });
+      });
+      
+      // Birdie achievements
+      if (totalBirdies >= 1) achievements.push({id:"first_birdie",name:"Tweet Tweet",desc:"Make your first birdie",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='8' r='1' fill='currentColor'/></svg>",xp:50,cat:"score"});
+      if (totalBirdies >= 10) achievements.push({id:"birdie_machine",name:"Birdie Machine",desc:"10 career birdies",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='8' r='2' fill='currentColor'/></svg>",xp:150,cat:"score",title:"Birdie Machine"});
+      if (totalBirdies >= 50) achievements.push({id:"birdie_king",name:"Birdie King",desc:"50 career birdies",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='currentColor' opacity='.2'/><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='8' cy='8' r='2' fill='currentColor'/></svg>",xp:500,cat:"score",title:"Birdie King"});
+      
+      // Eagle
+      if (totalEagles >= 1) achievements.push({id:"eagle_eye",name:"Eagle!",desc:"Make your first eagle",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='8' r='3' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='8' cy='8' r='1' fill='currentColor'/></svg>",xp:200,cat:"score",title:"Eagle Eye"});
+      
+      // Par streaks
+      if (maxParStreak >= 5) achievements.push({id:"steady_eddie",name:"Steady Eddie",desc:"5 pars in a row",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h14' stroke='currentColor' stroke-width='2'/></svg>",xp:100,cat:"score"});
+      if (maxParStreak >= 9) achievements.push({id:"par_machine",name:"Par Machine",desc:"9 pars in a row (full side)",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h14' stroke='currentColor' stroke-width='2'/><circle cx='4' cy='8' r='1' fill='currentColor'/><circle cx='8' cy='8' r='1' fill='currentColor'/><circle cx='12' cy='8' r='1' fill='currentColor'/></svg>",xp:300,cat:"score",title:"Par Machine"});
+      
+      // Birdie streaks
+      if (maxBirdieStreak >= 2) achievements.push({id:"b2b_birdies",name:"Back to Back Birdies",desc:"2 birdies in a row",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='5' cy='8' r='4' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='11' cy='8' r='4' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:150,cat:"score"});
+      if (maxBirdieStreak >= 3) achievements.push({id:"birdie_streak3",name:"Hat Trick",desc:"3 birdies in a row",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='3' cy='8' r='3' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='8' cy='8' r='3' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='13' cy='8' r='3' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"score",title:"Hat Trick"});
+      
+      // Bogey-free
+      var hasBogeyFreeRound = rounds.some(function(r) {
+        if (!r.holeScores || r.holeScores.filter(function(s){return s!==""}).length < 18) return false;
+        return !r.holeScores.some(function(s,i) { return s !== "" && parseInt(s) > (defaultPar[i]||4); });
+      });
+      if (hasBogeyFreeRound) achievements.push({id:"bogey_free",name:"Bogey Free",desc:"Complete 18 holes without a bogey",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:1000,cat:"score",title:"Bogey Free"});
+      
+      // Double trouble
+      if (totalDoubles >= 20) achievements.push({id:"double_trouble",name:"Double Trouble",desc:"20 career double bogeys",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l1 4 4-1-3 3 3 3-4-1-1 4-1-4-4 1 3-3-3-3 4 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:50,cat:"blunder",title:"Double Trouble"});
+      
+      // Snowman (score an 8 on a hole)
+      var hasSnowman = false;
+      rounds.forEach(function(r) { if (r.holeScores) r.holeScores.forEach(function(s) { if (parseInt(s) >= 8) hasSnowman = true; }); });
+      if (hasSnowman) achievements.push({id:"snowman",name:"Snowman",desc:"Score an 8 or worse on a single hole",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='8' cy='12' r='4' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:25,cat:"blunder",title:"The Snowman"});
+    }
+    
+    // --- FAMOUS COURSE ACHIEVEMENTS ---
+    var coursesPlayed = {};
+    rounds.forEach(function(r) { coursesPlayed[r.course] = 1; });
+    
+    if (coursesPlayed["Pinehurst No. 2"]) achievements.push({id:"pinehurst",name:"Pinehurst Pilgrim",desc:"Play Pinehurst No. 2",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:200,cat:"explore",title:"Pinehurst Pilgrim"});
+    if (coursesPlayed["Tobacco Road Golf Club"]) achievements.push({id:"tobacco_rd",name:"Road Warrior",desc:"Survive Tobacco Road",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"explore"});
+    if (coursesPlayed["The Omni Homestead - Cascades"]) achievements.push({id:"cascades",name:"Mountain Golf",desc:"Play The Cascades at Homestead",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 14l5-10 3 5 4-7 2 12z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:150,cat:"explore"});
+    if (coursesPlayed["Primland - Highland Course"]) achievements.push({id:"primland",name:"Highland Fling",desc:"Play Primland Highland Course",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 14l5-10 3 5 4-7 2 12z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:150,cat:"explore"});
+    if (coursesPlayed["Kingsmill Resort - River Course"]) achievements.push({id:"kingsmill",name:"River Rat",desc:"Play Kingsmill River Course",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8c3-3 5 3 8 0s4 3 6 0' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"explore"});
+    if (coursesPlayed["Sequoyah National"]) achievements.push({id:"sequoyah",name:"Smoky Mountain Legend",desc:"Play Sequoyah National",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 14l5-10 3 5 4-7 2 12z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"explore"});
+    
+    // Check for courses with slope 140+
+    var playedTough = rounds.some(function(r) {
+      var c = getCourseByName(r.course);
+      return c && c.slope >= 140;
+    });
+    if (playedTough) achievements.push({id:"beast_mode",name:"Beast Mode",desc:"Play a course with 140+ slope",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M6 8l2 2 3-4' fill='none' stroke='currentColor' stroke-width='1.5'/></svg>",xp:150,cat:"score",title:"Beast Mode"});
+    
+    // --- GOLF SAYINGS / FUN ACHIEVEMENTS ---
+    // "Grip it and rip it" — play 3 rounds in one week
+    if (rounds.length >= 3) {
+      var weekRounds = {};
+      rounds.forEach(function(r) {
+        if (!r.date) return;
+        var d = new Date(r.date + "T12:00:00");
+        var weekKey = d.getFullYear() + "-W" + Math.floor((d.getTime() - new Date(d.getFullYear(),0,1).getTime()) / 604800000);
+        weekRounds[weekKey] = (weekRounds[weekKey]||0) + 1;
+      });
+      if (Object.values(weekRounds).some(function(c){return c >= 3})) {
+        achievements.push({id:"grip_rip",name:"Grip It & Rip It",desc:"Play 3 rounds in one week",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M9 1L4 9h4l-1 6 6-8H9l1-6z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"milestone",title:"Grip It & Rip It"});
+      }
+    }
+    
+    // "19th hole" — post in the Clubhouse after logging a round on the same day
+    // (simplified: has both rounds and chat posts)
+    if (chatPosts >= 1 && rounds.length >= 1) {
+      achievements.push({id:"19th_hole",name:"The 19th Hole",desc:"Talk trash and play golf",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M2 12h12M7 12V3M7 3l5 3-5 3' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='12' cy='12' r='2' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:50,cat:"milestone"});
+    }
+    
+    // "Sunday Best" — play a round on a Sunday
+    var sundayRound = rounds.some(function(r) { return r.date && new Date(r.date+"T12:00:00").getDay() === 0; });
+    if (sundayRound) achievements.push({id:"sunday_best",name:"Sunday Best",desc:"Play a round on Sunday",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='4' r='3' fill='none' stroke='currentColor' stroke-width='1'/><path d='M4 14c0-2.2 1.8-4 4-4s4 1.8 4 4' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:50,cat:"milestone"});
+    
+    // "The Comeback Kid" — improve score by 10+ strokes between two rounds at the same course
+    if (rounds.length >= 2) {
+      var courseScores = {};
+      rounds.forEach(function(r) {
+        if (!courseScores[r.course]) courseScores[r.course] = [];
+        courseScores[r.course].push(r.score);
+      });
+      var hasComeback = Object.values(courseScores).some(function(scores) {
+        if (scores.length < 2) return false;
+        return Math.max.apply(null,scores) - Math.min.apply(null,scores) >= 10;
+      });
+      if (hasComeback) achievements.push({id:"comeback_kid",name:"The Comeback Kid",desc:"Improve by 10+ strokes at the same course",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 12l5-4 3 2 6-7' fill='none' stroke='currentColor' stroke-width='1.5'/><path d='M12 1l3 2-3 2' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:150,cat:"growth",title:"Comeback Kid"});
+    }
+
+    // --- SOCIAL ACHIEVEMENTS (continued) ---
     if (chatPosts >= 25) achievements.push({id:"trash_talker",name:"Trash Talker",desc:"25 messages in the Clubhouse",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M14 10a2 2 0 01-2 2H6l-3 3V4a2 2 0 012-2h7a2 2 0 012 2z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M6 6h4M6 8h2' stroke='currentColor' stroke-width='1'/></svg>",xp:75,cat:"milestone",title:"Trash Talker"});
     if (chatPosts >= 100) achievements.push({id:"motormouth",name:"Motor Mouth",desc:"100 messages in the Clubhouse",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M14 10a2 2 0 01-2 2H6l-3 3V4a2 2 0 012-2h7a2 2 0 012 2z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M14 10a2 2 0 01-2 2H6l-3 3V4a2 2 0 012-2h7a2 2 0 012 2z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:200,cat:"milestone",title:"Motor Mouth"});
 
@@ -2566,8 +2768,20 @@ var PB = (function() {
     if (totalTeamWins >= 5) achievements.push({id:"squad_goals",name:"Squad Goals",desc:"Win 5 scramble matches",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:200,cat:"compete",title:"Squad Goals"});
 
     // --- INVITE ACHIEVEMENT ---
-    if (player && player.invitesUsed >= 1) achievements.push({id:"recruiter",name:"Recruiter",desc:"Invite a new member",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M12 3v4M10 5h4' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"special",title:"The Recruiter"});
-    if (player && player.invitesUsed >= 3) achievements.push({id:"ambassador",name:"Ambassador",desc:"Use all 3 invites",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:250,cat:"special",title:"Ambassador"});
+    var inviteCount = player ? (player.invitesUsed || 0) : 0;
+    // Commissioner who has created invites — check role as fallback since invitesUsed wasn't tracked before
+    if (player && player.role === "commissioner" && inviteCount < 3) {
+      // Count from members who have invitedBy matching this user's UID
+      var recruited = getPlayers().filter(function(p) { return p.invitedBy === pid || (player.claimedFrom && p.invitedBy === player.claimedFrom); });
+      if (recruited.length > inviteCount) inviteCount = recruited.length;
+      // Also check fbMemberCache
+      if (typeof fbMemberCache !== "undefined") {
+        var fbRecruited = Object.values(fbMemberCache).filter(function(m) { return m.invitedBy === pid; });
+        if (fbRecruited.length > inviteCount) inviteCount = fbRecruited.length;
+      }
+    }
+    if (player && inviteCount >= 1) achievements.push({id:"recruiter",name:"Recruiter",desc:"Invite a new member",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M12 3v4M10 5h4' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"special",title:"The Recruiter"});
+    if (player && inviteCount >= 3) achievements.push({id:"ambassador",name:"Ambassador",desc:"Use all 3 invites",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:250,cat:"special",title:"Ambassador"});
 
     return achievements;
   }
@@ -4299,19 +4513,26 @@ function uploadMemberPhoto(pid) {
   input.onchange = function() {
     var file = input.files[0];
     if (!file) return;
+    if (file.size > 10 * 1024 * 1024) { Router.toast("Photo too large (max 10MB)"); return; }
     Router.toast("Compressing...");
     var reader = new FileReader();
     reader.onload = function(e) {
       compressPhoto(e.target.result, 50, 200, function(compressed) {
         // Save locally
         PB.updatePlayer(pid, { photo: compressed });
+        // Also cache under claimedFrom if applicable
+        if (currentProfile && currentProfile.claimedFrom) {
+          photoCache["member:" + currentProfile.claimedFrom] = compressed;
+        }
+        photoCache["member:" + pid] = compressed;
         // Save to Firestore photos collection (visible to all members)
         savePhoto("member", pid, compressed).then(function(ok) {
-          Router.toast(ok ? "Photo synced to all members!" : "Photo saved locally");
+          Router.toast(ok ? "Photo updated!" : "Photo saved locally");
           Router.go("members", { id: pid });
         });
       });
     };
+    reader.onerror = function() { Router.toast("Failed to read photo"); };
     reader.readAsDataURL(file);
   };
   input.click();
@@ -4415,7 +4636,7 @@ function generateInviteFromMembers() {
   
   db.collection("invites").doc(code).set({ code:code, createdBy:currentUser.uid, createdByName:currentProfile.name||currentProfile.username, usedBy:null, status:"active", createdAt:fsTimestamp() })
     .then(function() {
-      if (!isComm) { db.collection("members").doc(currentUser.uid).update({invitesUsed:firebase.firestore.FieldValue.increment(1)}); currentProfile.invitesUsed = (currentProfile.invitesUsed||0)+1; }
+      db.collection("members").doc(currentUser.uid).update({invitesUsed:firebase.firestore.FieldValue.increment(1)}); currentProfile.invitesUsed = (currentProfile.invitesUsed||0)+1;
       document.getElementById("memberInviteResult").innerHTML = '<div class="invite-code"><div class="code">' + code + '</div><div class="hint">Share this code with the new member</div></div>';
       Router.toast("Invite created!");
     });
@@ -7550,7 +7771,7 @@ function generateInvite() {
   for (var i=0;i<8;i++) code += chars.charAt(Math.floor(Math.random()*chars.length));
   db.collection("invites").doc(code).set(createInviteDoc(code))
     .then(function() {
-      if (!isComm) { db.collection("members").doc(currentUser.uid).update({invitesUsed:firebase.firestore.FieldValue.increment(1)}); currentProfile.invitesUsed = (currentProfile.invitesUsed||0)+1; }
+      db.collection("members").doc(currentUser.uid).update({invitesUsed:firebase.firestore.FieldValue.increment(1)}); currentProfile.invitesUsed = (currentProfile.invitesUsed||0)+1;
       document.getElementById("generatedInvite").innerHTML = '<div class="invite-code"><div class="code">' + code + '</div><div class="hint">Share this with the new member · Expires in ' + INVITE_EXPIRY_DAYS + ' days</div></div>';
       Router.toast("Invite created!");
     });
@@ -8695,9 +8916,25 @@ var notifPanelOpen = false;
 
 function toggleNotifPanel() {
   notifPanelOpen = !notifPanelOpen;
-  document.getElementById("notifPanel").classList.toggle("open", notifPanelOpen);
-  document.getElementById("notifOverlay").classList.toggle("open", notifPanelOpen);
-  if (notifPanelOpen) renderNotifPanel();
+  var panel = document.getElementById("notifPanel");
+  var overlay = document.getElementById("notifOverlay");
+  if (panel) panel.classList.toggle("open", notifPanelOpen);
+  if (overlay) overlay.classList.toggle("open", notifPanelOpen);
+  if (notifPanelOpen) {
+    renderNotifPanel();
+  } else {
+    // Failsafe: force close state
+    if (panel) panel.classList.remove("open");
+    if (overlay) overlay.classList.remove("open");
+  }
+}
+
+function closeNotifPanel() {
+  notifPanelOpen = false;
+  var panel = document.getElementById("notifPanel");
+  var overlay = document.getElementById("notifOverlay");
+  if (panel) panel.classList.remove("open");
+  if (overlay) overlay.classList.remove("open");
 }
 
 function renderNotifPanel() {
@@ -8738,7 +8975,7 @@ function handleNotifClick(notifId, linkPage) {
   if (notifId && db) {
     db.collection("notifications").doc(notifId).update({ read: true }).catch(function(){});
   }
-  toggleNotifPanel();
+  closeNotifPanel();
   if (linkPage) Router.go(linkPage);
 }
 
@@ -9689,6 +9926,8 @@ function renderRipBanner() {
 // Hook into Router.go to show/hide the banner on non-playnow pages
 var _origRouterGo = Router.go;
 Router.go = function(page, params) {
+  // Always close notification panel when navigating
+  closeNotifPanel();
   _origRouterGo(page, params);
   if (page !== "playnow" && liveState.active) {
     setTimeout(renderRipBanner, 50);
