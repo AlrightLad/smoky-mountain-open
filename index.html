@@ -2199,10 +2199,10 @@ var PB = (function() {
   };
 
   function xpForLevel(level) {
-    // Exponential curve: each level takes more XP
-    // Level 1=0, Level 2=500, Level 10=~15000, Level 25=~120000, Level 50=~600000, Level 100=~5M
+    // Progressive curve: Level 100 ~30K XP, reachable in ~1 year of active play
+    // No level cap — players can keep going past 100
     if (level <= 1) return 0;
-    return Math.floor(200 * Math.pow(level - 1, 1.8));
+    return Math.floor(120 * Math.pow(level - 1, 1.2));
   }
 
   function getPlayerLevel(pid) {
@@ -2232,7 +2232,19 @@ var PB = (function() {
     if (!pid) return 0;
     var rounds = getPlayerRounds(pid);
     var player = getPlayer(pid);
+    // If local lookup fails, try currentProfile or claimedFrom matching
+    if (!player && currentProfile && currentProfile.id === pid) player = currentProfile;
+    if (!player) {
+      var all = getPlayers();
+      for (var xi = 0; xi < all.length; xi++) {
+        if (all[xi].claimedFrom === pid || all[xi].id === pid) { player = all[xi]; break; }
+      }
+    }
     if (!player) return 0;
+    // Also check rounds under claimedFrom
+    if (!rounds.length && player.claimedFrom) {
+      rounds = getPlayerRounds(player.claimedFrom);
+    }
     var xp = 0;
 
     // Rounds XP
@@ -2295,6 +2307,18 @@ var PB = (function() {
   function getAchievements(pid) {
     var rounds = getPlayerRounds(pid);
     var player = getPlayer(pid);
+    // If local lookup fails, try currentProfile or claimedFrom matching
+    if (!player && currentProfile && currentProfile.id === pid) player = currentProfile;
+    if (!player) {
+      var all = getPlayers();
+      for (var pi = 0; pi < all.length; pi++) {
+        if (all[pi].claimedFrom === pid || all[pi].id === pid) { player = all[pi]; break; }
+      }
+    }
+    // Also check rounds under claimedFrom if none found under Firebase UID
+    if (!rounds.length && player && player.claimedFrom) {
+      rounds = getPlayerRounds(player.claimedFrom);
+    }
     var xp = getPlayerXP(pid);
     var lvl = getPlayerLevel(pid);
     var achievements = [];
@@ -2363,8 +2387,14 @@ var PB = (function() {
     // --- SPECIAL ---
     var rec = getRecords();
     if (rec.holeInOnes&&rec.holeInOnes.some(function(a){return a.by===(player?player.name:"")})) achievements.push({id:"ace",name:"Ace",desc:"Make a hole-in-one",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:1000,cat:"special"});
-    if (player && player.founding) achievements.push({id:"og",name:"The Original Four",desc:"Founding member",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"special"});
-    if (player && getPlayers().indexOf(player) < 30) achievements.push({id:"beta",name:"Beta Tester",desc:"Among the first 30 members",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:0,cat:"special"});
+    if (player && (player.founding || player.isFoundingFour)) achievements.push({id:"og",name:"The Original Four",desc:"Founding member",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"special"});
+    // Beta tester — all current members are in the first 30
+    var playerIdx = -1;
+    var allPlayers = getPlayers();
+    for (var bi = 0; bi < allPlayers.length; bi++) {
+      if (allPlayers[bi].id === pid || (player && allPlayers[bi].id === player.claimedFrom) || allPlayers[bi].claimedFrom === pid) { playerIdx = bi; break; }
+    }
+    if (player && (playerIdx < 30 || allPlayers.length < 30)) achievements.push({id:"beta",name:"Beta Tester",desc:"Among the first 30 members",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:0,cat:"special"});
 
     // --- PLAY NOW SPECIFIC ---
     var playNowRounds = rounds.filter(function(r){return r.holeScores});
@@ -2473,6 +2503,71 @@ var PB = (function() {
     if (eventCount >= 3) achievements.push({id:"event_regular",name:"Event Regular",desc:"Participate in 3 events",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M2 14h12M3 14V7M13 14V7M8 2L3 7h10z' fill='none' stroke='currentColor' stroke-width='1'/><path d='M8 2v5' stroke='currentColor' stroke-width='1'/></svg>",xp:150,cat:"milestone",title:"Event Regular"});
     if (eventCount >= 5) achievements.push({id:"road_dog",name:"Road Dog",desc:"Participate in 5 events",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><rect x='1' y='7' width='14' height='5' rx='2' fill='none' stroke='currentColor' stroke-width='1'/><path d='M3 7l2-3h6l2 3' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='4' cy='12' r='1.2' fill='currentColor'/><circle cx='12' cy='12' r='1.2' fill='currentColor'/></svg>",xp:300,cat:"milestone",title:"Road Dog"});
     if (eventCount >= 10) achievements.push({id:"tour_life",name:"Tour Life",desc:"Participate in 10 events",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 2l2 5h5l-1 1-4 0 0 4 2 1H5l2-1 0-4-4 0-1-1h5z' fill='none' stroke='currentColor' stroke-width='.8'/></svg>",xp:500,cat:"milestone",title:"Tour Life"});
+
+    // --- SOCIAL ACHIEVEMENTS ---
+    var chatPosts = 0;
+    try { if (liveChat) chatPosts = liveChat.filter(function(m){return m.authorId === pid}).length; } catch(e){}
+    if (chatPosts >= 1) achievements.push({id:"first_post",name:"First Post",desc:"Send a message in the Clubhouse",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M14 10a2 2 0 01-2 2H6l-3 3V4a2 2 0 012-2h7a2 2 0 012 2z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:25,cat:"milestone"});
+    if (chatPosts >= 25) achievements.push({id:"trash_talker",name:"Trash Talker",desc:"25 messages in the Clubhouse",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M14 10a2 2 0 01-2 2H6l-3 3V4a2 2 0 012-2h7a2 2 0 012 2z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M6 6h4M6 8h2' stroke='currentColor' stroke-width='1'/></svg>",xp:75,cat:"milestone",title:"Trash Talker"});
+    if (chatPosts >= 100) achievements.push({id:"motormouth",name:"Motor Mouth",desc:"100 messages in the Clubhouse",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M14 10a2 2 0 01-2 2H6l-3 3V4a2 2 0 012-2h7a2 2 0 012 2z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M14 10a2 2 0 01-2 2H6l-3 3V4a2 2 0 012-2h7a2 2 0 012 2z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:200,cat:"milestone",title:"Motor Mouth"});
+
+    // --- WEEKEND / TIME ACHIEVEMENTS ---
+    var weekendRounds = rounds.filter(function(r) { var d = new Date(r.date + "T12:00:00"); return d.getDay() === 0 || d.getDay() === 6; });
+    if (weekendRounds.length >= 10) achievements.push({id:"weekend_warrior_ach",name:"Weekend Warrior",desc:"10 weekend rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M6 8l2 2 3-4' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"milestone",title:"Weekend Warrior"});
+    var weekdayRounds = rounds.filter(function(r) { var d = new Date(r.date + "T12:00:00"); return d.getDay() >= 1 && d.getDay() <= 5; });
+    if (weekdayRounds.length >= 10) achievements.push({id:"hooky",name:"Playing Hooky",desc:"10 weekday rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:150,cat:"milestone",title:"Playing Hooky"});
+
+    // --- CONSISTENCY ACHIEVEMENTS ---
+    if (rounds.length >= 5) {
+      var last5scores = rounds.slice(-5).map(function(r){return r.score});
+      var range5 = Math.max.apply(null, last5scores) - Math.min.apply(null, last5scores);
+      if (range5 <= 5) achievements.push({id:"mr_consistent",name:"Mr. Consistent",desc:"Last 5 rounds within 5 strokes",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h14' stroke='currentColor' stroke-width='1.5'/><circle cx='4' cy='8' r='1.5' fill='currentColor'/><circle cx='8' cy='8' r='1.5' fill='currentColor'/><circle cx='12' cy='8' r='1.5' fill='currentColor'/></svg>",xp:200,cat:"growth",title:"Mr. Consistent"});
+    }
+
+    // --- BIRDIE / SCORE PATTERN ACHIEVEMENTS ---
+    if (rounds.some(function(r){ return r.holeScores && r.holeScores.some(function(s,i){ var par = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5]; return s !== "" && parseInt(s) === 1; }); })) {
+      achievements.push({id:"holed_out",name:"Holed Out",desc:"Score a 1 on any hole",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='8' r='2' fill='currentColor'/></svg>",xp:500,cat:"special"});
+    }
+
+    // --- ROUND COUNT MILESTONES (extended) ---
+    if (rounds.length >= 200) achievements.push({id:"lifer",name:"Lifer",desc:"Log 200 rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:2000,cat:"milestone",title:"The Lifer"});
+    if (rounds.length >= 500) achievements.push({id:"legend",name:"Living Legend",desc:"Log 500 rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:5000,cat:"milestone",title:"Living Legend"});
+
+    // --- COURSE EXPLORATION (extended) ---
+    if (courseCount >= 50) achievements.push({id:"cartographer",name:"Cartographer",desc:"Play 50 different courses",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:1000,cat:"explore",title:"The Cartographer"});
+    if (stateCount >= 8) achievements.push({id:"interstate",name:"Interstate",desc:"Play in 8+ states",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:500,cat:"explore",title:"Interstate"});
+
+    // --- BACK TO BACK ---
+    if (rounds.length >= 2) {
+      var sortedByDate = rounds.slice().sort(function(a,b){return a.date>b.date?1:-1});
+      var backToBack = false;
+      for (var bi = 1; bi < sortedByDate.length; bi++) {
+        var d1 = new Date(sortedByDate[bi-1].date+"T12:00:00");
+        var d2 = new Date(sortedByDate[bi].date+"T12:00:00");
+        if ((d2 - d1) <= 86400000) { backToBack = true; break; }
+      }
+      if (backToBack) achievements.push({id:"b2b",name:"Back to Back",desc:"Play rounds on consecutive days",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M3 8h10M8 3v10' stroke='currentColor' stroke-width='1.5'/></svg>",xp:75,cat:"milestone"});
+    }
+
+    // --- DAWN PATROL (early season) ---
+    var marchRounds = rounds.filter(function(r){ return r.date && r.date.substring(5,7) === "03"; });
+    if (marchRounds.length >= 1) achievements.push({id:"dawn_patrol",name:"Dawn Patrol",desc:"Play a round in March",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='4' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 4v4l3 2' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:50,cat:"milestone"});
+
+    // --- SEASON FINISHER ---
+    var septRounds = rounds.filter(function(r){ return r.date && r.date.substring(5,7) === "09"; });
+    if (septRounds.length >= 1) achievements.push({id:"closer",name:"The Closer",desc:"Play a round in September",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 6v4' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='12' r='.8' fill='currentColor'/></svg>",xp:50,cat:"milestone"});
+
+    // --- SCRAMBLE ACHIEVEMENTS ---
+    var scrambleTeams = getScrambleTeams();
+    var myTeams = scrambleTeams.filter(function(t){return t.members && t.members.indexOf(pid) !== -1});
+    if (myTeams.length >= 1) achievements.push({id:"team_player",name:"Drafted",desc:"Join a scramble team",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"compete"});
+    var totalTeamWins = 0;
+    myTeams.forEach(function(t){ if(t.matches) t.matches.forEach(function(m){if(m.result==="win")totalTeamWins++;}); });
+    if (totalTeamWins >= 5) achievements.push({id:"squad_goals",name:"Squad Goals",desc:"Win 5 scramble matches",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:200,cat:"compete",title:"Squad Goals"});
+
+    // --- INVITE ACHIEVEMENT ---
+    if (player && player.invitesUsed >= 1) achievements.push({id:"recruiter",name:"Recruiter",desc:"Invite a new member",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M12 3v4M10 5h4' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"special",title:"The Recruiter"});
+    if (player && player.invitesUsed >= 3) achievements.push({id:"ambassador",name:"Ambassador",desc:"Use all 3 invites",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:250,cat:"special",title:"Ambassador"});
 
     return achievements;
   }
@@ -8189,7 +8284,25 @@ function getAllPossibleAchievements() {
     {id:"parbaugh_regular",name:"Parbaugh Regular",desc:"5 Parbaugh Rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:150,cat:"milestone"},
     {id:"parbaugh_veteran",name:"Parbaugh Veteran",desc:"25 Parbaugh Rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"milestone"},
     {id:"boss_wife",name:"The Boss's Wife",desc:"The one who really runs things",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M2 12h12L13 5l-3 3-2-4-2 4-3-3z' fill='none' stroke='currentColor' stroke-width='1.2'/><rect x='2' y='12' width='12' height='2' rx='1' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"special"},
-    {id:"the_commish",name:"The Commissioner",desc:"Running the show",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l6 4H2zM3 6v7M6 6v7M10 6v7M13 6v7M1 13h14M1 14h14' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"special"}
+    {id:"the_commish",name:"The Commissioner",desc:"Running the show",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l6 4H2zM3 6v7M6 6v7M10 6v7M13 6v7M1 13h14M1 14h14' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:0,cat:"special"},
+    {id:"first_post",name:"First Post",desc:"Send a message in the Clubhouse",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M14 10a2 2 0 01-2 2H6l-3 3V4a2 2 0 012-2h7a2 2 0 012 2z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:25,cat:"milestone"},
+    {id:"trash_talker",name:"Trash Talker",desc:"25 messages in the Clubhouse",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M14 10a2 2 0 01-2 2H6l-3 3V4a2 2 0 012-2h7a2 2 0 012 2z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M6 6h4M6 8h2' stroke='currentColor' stroke-width='1'/></svg>",xp:75,cat:"milestone"},
+    {id:"motormouth",name:"Motor Mouth",desc:"100 messages in the Clubhouse",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M14 10a2 2 0 01-2 2H6l-3 3V4a2 2 0 012-2h7a2 2 0 012 2z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M14 10a2 2 0 01-2 2H6l-3 3V4a2 2 0 012-2h7a2 2 0 012 2z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:200,cat:"milestone"},
+    {id:"weekend_warrior_ach",name:"Weekend Warrior",desc:"10 weekend rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M6 8l2 2 3-4' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"milestone"},
+    {id:"hooky",name:"Playing Hooky",desc:"10 weekday rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:150,cat:"milestone"},
+    {id:"mr_consistent",name:"Mr. Consistent",desc:"Last 5 rounds within 5 strokes",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h14' stroke='currentColor' stroke-width='1.5'/><circle cx='4' cy='8' r='1.5' fill='currentColor'/><circle cx='8' cy='8' r='1.5' fill='currentColor'/><circle cx='12' cy='8' r='1.5' fill='currentColor'/></svg>",xp:200,cat:"growth"},
+    {id:"holed_out",name:"Holed Out",desc:"Score a 1 on any hole",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='8' r='2' fill='currentColor'/></svg>",xp:500,cat:"special"},
+    {id:"lifer",name:"Lifer",desc:"Log 200 rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:2000,cat:"milestone"},
+    {id:"legend",name:"Living Legend",desc:"Log 500 rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:5000,cat:"milestone"},
+    {id:"cartographer",name:"Cartographer",desc:"Play 50 different courses",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:1000,cat:"explore"},
+    {id:"interstate",name:"Interstate",desc:"Play in 8+ states",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:500,cat:"explore"},
+    {id:"b2b",name:"Back to Back",desc:"Play rounds on consecutive days",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M3 8h10M8 3v10' stroke='currentColor' stroke-width='1.5'/></svg>",xp:75,cat:"milestone"},
+    {id:"dawn_patrol",name:"Dawn Patrol",desc:"Play a round in March",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='4' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 4v4l3 2' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:50,cat:"milestone"},
+    {id:"closer",name:"The Closer",desc:"Play a round in September",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 6v4' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='12' r='.8' fill='currentColor'/></svg>",xp:50,cat:"milestone"},
+    {id:"team_player",name:"Drafted",desc:"Join a scramble team",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"compete"},
+    {id:"squad_goals",name:"Squad Goals",desc:"Win 5 scramble matches",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:200,cat:"compete"},
+    {id:"recruiter",name:"Recruiter",desc:"Invite a new member",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M12 3v4M10 5h4' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"special"},
+    {id:"ambassador",name:"Ambassador",desc:"Use all 3 invites",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:250,cat:"special"}
   ];
 }
 
