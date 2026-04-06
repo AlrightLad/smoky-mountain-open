@@ -501,6 +501,13 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 .notif-item.unread{background:rgba(201,168,76,.04);border-left:3px solid var(--gold)}
 .notif-time{font-size:9px;color:var(--muted2);margin-top:4px}
 
+/* ===== HOME PAGE CONTENT WRAPPER ===== */
+.home-wrap{padding:0 16px}
+.home-wrap .card{margin-left:0;margin-right:0}
+.home-wrap .section{padding-left:0;padding-right:0}
+.home-wrap .sec-head{padding-left:0;padding-right:0}
+.home-wrap .qlinks{padding-left:0;padding-right:0}
+
 /* ===== UTILITY CLASSES ===== */
 .flex{display:flex}.flex-col{display:flex;flex-direction:column}.flex-between{display:flex;justify-content:space-between;align-items:center}.flex-center{display:flex;align-items:center;justify-content:center}
 .gap-4{gap:4px}.gap-6{gap:6px}.gap-8{gap:8px}.gap-12{gap:12px}
@@ -551,6 +558,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
   .course-banner{margin:0 24px}
   .home-actions,.motivation-wrap{margin-left:24px!important;margin-right:24px!important}
   .section{padding-left:24px;padding-right:24px}
+  .home-wrap{padding:0 24px}
 }
 @media (min-width: 1024px) {
   body{max-width:1100px}
@@ -573,6 +581,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
   .empty{padding:32px 32px}
   .home-actions,.motivation-wrap{margin-left:32px!important;margin-right:32px!important}
   .section{padding-left:32px;padding-right:32px}
+  .home-wrap{padding:0 32px}
 }
 </style>
 </head>
@@ -3256,10 +3265,11 @@ Router.register("home", function() {
   h += '<h1>THE PARBAUGHS</h1><div class="est">Est. 2026 · York, PA</div></div>';
 
   // 0. Who's Online
+  h += '<div class="home-wrap">';
   h += '<div id="onlineSection"></div>';
 
   // Quick Actions
-  h += '<div class="home-actions" style="display:flex;gap:8px;margin:0 16px 16px">';
+  h += '<div style="display:flex;gap:8px;margin-bottom:16px">';
   h += '<button class="btn full green" onclick="Router.go(\'playnow\')" style="flex:1;font-size:11px;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg> Play Now</button>';
   h += '<button class="btn full outline" onclick="Router.go(\'tee-create\')" style="flex:1;font-size:11px;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Post Tee Time</button>';
   h += '</div>';
@@ -3309,7 +3319,7 @@ Router.register("home", function() {
   var dayIndex = Math.floor(Date.now() / 86400000) % motivationCards.length;
   var mCard = motivationCards[dayIndex];
   
-  h += '<div class="motivation-wrap" style="margin:0 16px 12px"><div onclick="Router.go(\'' + mCard.page + '\')" style="background:linear-gradient(135deg,rgba(201,168,76,.06),rgba(201,168,76,.02));border:1px solid rgba(201,168,76,.12);border-radius:var(--radius);padding:14px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
+  h += '<div style="margin-bottom:12px"><div onclick="Router.go(\'' + mCard.page + '\')" style="background:linear-gradient(135deg,rgba(201,168,76,.06),rgba(201,168,76,.02));border:1px solid rgba(201,168,76,.12);border-radius:var(--radius);padding:14px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
   h += '<div style="display:flex;align-items:flex-start;gap:12px">';
   h += '<div style="font-size:24px;flex-shrink:0;margin-top:2px">' + mCard.icon + '</div>';
   h += '<div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--cream)">' + mCard.title + '</div>';
@@ -3442,7 +3452,7 @@ Router.register("home", function() {
       var diffStr = diff === 0 ? "E" : (diff > 0 ? "+" + diff : "" + diff);
       var diffColor = diff < 0 ? "var(--birdie)" : diff > 0 ? "var(--red)" : "var(--cream)";
       
-      h += '<div class="card" style="margin:0 16px 8px;padding:14px 16px;' + (lr.isMe ? 'border-left:3px solid var(--gold)' : '') + '" onclick="' + (lr.isMe ? "Router.go(\'playnow\')" : "") + '">';
+      h += '<div class="card" style="padding:14px 16px;' + (lr.isMe ? 'border-left:3px solid var(--gold)' : '') + '" onclick="' + (lr.isMe ? "Router.go(\'playnow\')" : "") + '">';
       h += '<div style="display:flex;justify-content:space-between;align-items:center">';
       h += '<div><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><div style="width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse-dot 2s infinite"></div><span style="font-size:12px;font-weight:700;color:var(--cream)">' + escHtml(lr.name) + '</span></div>';
       h += '<div style="font-size:11px;color:var(--muted)">' + escHtml(lr.course) + ' · Hole ' + lr.hole + '</div></div>';
@@ -3463,15 +3473,17 @@ Router.register("home", function() {
     });
   } else {
     // Nothing live — show encouragement
-    h += '<div class="card" style="margin:0 16px;padding:20px 16px;text-align:center">';
+    h += '<div class="card" style="padding:20px 16px;text-align:center">';
     h += '<div style="color:var(--muted);margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24" style="color:var(--muted2)"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div>';
     h += '<div style="font-size:12px;color:var(--muted)">No active rounds right now</div>';
     h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;cursor:pointer" onclick="Router.go(\'playnow\')">Start a round →</div>';
     h += '</div>';
   }
-  h += '<div style="margin:8px 16px 0"><button class="btn full outline" onclick="Router.go(\'standings\')" style="font-size:11px;padding:10px">Season Standings</button></div>';
+  h += '<div style="margin-top:8px"><button class="btn full outline" onclick="Router.go(\'standings\')" style="font-size:11px;padding:10px">Season Standings</button></div>';
   h += '</div>';
 
+  h += '</div>'; // close home-wrap
+  
   // Footer links
   h += '<div style="text-align:center;padding:8px 16px 4px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap">';
   h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="Router.go(\'merch\')">Merch</span>';
@@ -7223,14 +7235,15 @@ function renderTeeCard(t, isPast, isCancelled) {
   return h;
 }
 
-Router.register("tee-create", function() {
+Router.register("tee-create", function(params) {
   var courses = PB.getCourses();
+  var prefillDate = (params && params.date) ? params.date : "";
   var h = '<div class="sh"><h2>Post Tee Time</h2><button class="back" onclick="Router.go(\'teetimes\')">← Back</button></div>';
   h += '<div class="form-section">';
   h += '<div class="ff"><label class="ff-label">Course</label><select id="teeCourse" class="ff-input">';
   courses.forEach(function(c) { h += '<option value="' + c.id + '">' + c.name + '</option>'; });
   h += '</select></div>';
-  h += '<div class="ff"><label class="ff-label">Date</label><input type="date" id="teeDate" class="ff-input" min="' + new Date().toISOString().split("T")[0] + '"></div>';
+  h += '<div class="ff"><label class="ff-label">Date</label><input type="date" id="teeDate" class="ff-input" min="' + new Date().toISOString().split("T")[0] + '" value="' + prefillDate + '"></div>';
   h += '<div class="ff"><label class="ff-label">Tee Time</label><input type="time" id="teeTime" class="ff-input"></div>';
   h += '<div class="ff"><label class="ff-label">Spots</label><select id="teeSpots" class="ff-input"><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option><option value="5">5+</option></select></div>';
   h += '<div class="ff"><label class="ff-label">Message (optional)</label><input type="text" id="teeMessage" class="ff-input" placeholder="Let\'s get after it" maxlength="100"></div>';
@@ -7557,8 +7570,14 @@ function refreshClubCal() {
         }
       });
       
+      var eh = '';
+      // Show selected date header
+      var selDate = new Date(clubCalSelectedDate + "T12:00:00");
+      var dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+      var monNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      eh += '<div style="font-size:11px;font-weight:600;color:var(--cream);margin-bottom:6px">' + dayNames[selDate.getDay()] + ', ' + monNames[selDate.getMonth()] + ' ' + selDate.getDate() + '</div>';
+      
       if (dayEvents.length) {
-        var eh = '';
         dayEvents.forEach(function(ev) {
           var dotColor = ev.type === "trip" ? "var(--gold)" : "var(--birdie)";
           eh += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0"><div style="width:6px;height:6px;border-radius:50%;background:' + dotColor + ';flex-shrink:0"></div>';
@@ -7566,10 +7585,16 @@ function refreshClubCal() {
           if (ev.time) eh += '<div style="font-size:10px;color:var(--muted)">' + ev.time + '</div>';
           eh += '</div></div>';
         });
-        eventsEl.innerHTML = eh;
       } else {
-        eventsEl.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:4px 0">Nothing scheduled</div>';
+        eh += '<div style="font-size:11px;color:var(--muted);padding:4px 0">Nothing scheduled</div>';
       }
+      
+      // Quick action buttons for the selected date
+      eh += '<div style="display:flex;gap:6px;margin-top:8px">';
+      eh += '<button class="btn-sm green" style="flex:1;font-size:10px" onclick="Router.go(\'tee-create\',{date:\'' + clubCalSelectedDate + '\'})">+ Tee Time</button>';
+      eh += '</div>';
+      
+      eventsEl.innerHTML = eh;
     } else {
       eventsEl.innerHTML = '';
     }
@@ -7601,10 +7626,10 @@ function renderChatMessages(messages) {
     
     // Like + Comment bar
     ch += '<div style="display:flex;gap:14px;margin-top:8px;padding-top:6px;border-top:1px solid var(--border)">';
-    ch += '<span style="font-size:11px;cursor:pointer;color:' + (iLiked ? 'var(--gold)' : 'var(--muted)') + '" onclick="toggleLike(\'' + msg._docId + '\')">' + (iLiked ? '♥' : '♡') + ' ' + (likeCount || '') + '</span>';
-    ch += '<span style="font-size:11px;cursor:pointer;color:var(--muted)" onclick="showCommentInput(\'' + msg._docId + '\')">💬 ' + (comments.length || '') + '</span>';
+    ch += '<span style="font-size:11px;cursor:pointer;color:' + (iLiked ? 'var(--gold)' : 'var(--muted)') + ';padding:4px 0" onclick="event.stopPropagation();toggleLike(\'' + msg._docId + '\')">' + (iLiked ? '♥' : '♡') + ' ' + (likeCount || '') + '</span>';
+    ch += '<span style="font-size:11px;cursor:pointer;color:var(--muted);padding:4px 0" onclick="event.stopPropagation();showCommentInput(\'' + msg._docId + '\')">💬 ' + (comments.length || '') + '</span>';
     if (isCommissioner || isMine) {
-      ch += '<span style="font-size:11px;cursor:pointer;color:var(--muted2);margin-left:auto" onclick="deleteChat(\'' + msg._docId + '\')">🗑</span>';
+      ch += '<span id="del-' + msg._docId + '" style="font-size:11px;cursor:pointer;color:var(--muted2);margin-left:auto;padding:4px 0" onclick="event.stopPropagation();confirmDelete(this,\'' + msg._docId + '\')">✕</span>';
     }
     ch += '</div>';
     
@@ -7617,7 +7642,7 @@ function renderChatMessages(messages) {
         ch += '<span style="color:var(--gold);font-weight:600;flex-shrink:0">' + escHtml(c.name||"Anon") + '</span>';
         ch += '<span style="color:var(--cream);flex:1">' + escHtml(c.text) + '</span>';
         if (canDeleteComment) {
-          ch += '<span style="color:var(--muted2);cursor:pointer;font-size:10px;flex-shrink:0;padding:0 2px" onclick="deleteComment(\'' + msg._docId + '\',' + ci + ')">✕</span>';
+          ch += '<span style="color:var(--muted2);cursor:pointer;font-size:10px;flex-shrink:0;padding:2px 4px" onclick="event.stopPropagation();confirmDeleteComment(this,\'' + msg._docId + '\',' + ci + ')">✕</span>';
         }
         ch += '</div>';
       });
@@ -7722,6 +7747,33 @@ function submitComment(docId) {
   }).then(function() {
     if (input) input.value = "";
   });
+}
+
+function confirmDelete(el, docId) {
+  if (el.dataset.armed === "true") {
+    deleteChat(docId);
+    return;
+  }
+  el.dataset.armed = "true";
+  el.innerHTML = '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="#e53935" stroke-width="1.5"><path d="M2 4h12M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1M6 7v5M10 7v5"/><path d="M3 4l1 10a1 1 0 001 1h6a1 1 0 001-1l1-10"/></svg>';
+  el.style.color = "#e53935";
+  // Reset after 3 seconds if not tapped
+  setTimeout(function() { 
+    if (el) { el.dataset.armed = "false"; el.textContent = "✕"; el.style.color = "var(--muted2)"; }
+  }, 3000);
+}
+
+function confirmDeleteComment(el, docId, commentIndex) {
+  if (el.dataset.armed === "true") {
+    deleteComment(docId, commentIndex);
+    return;
+  }
+  el.dataset.armed = "true";
+  el.innerHTML = '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="#e53935" stroke-width="1.5"><path d="M2 4h12M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1M6 7v5M10 7v5"/><path d="M3 4l1 10a1 1 0 001 1h6a1 1 0 001-1l1-10"/></svg>';
+  el.style.color = "#e53935";
+  setTimeout(function() {
+    if (el) { el.dataset.armed = "false"; el.textContent = "✕"; el.style.color = "var(--muted2)"; }
+  }, 3000);
 }
 
 function deleteComment(docId, commentIndex) {
