@@ -1923,6 +1923,7 @@ var PB = (function() {
       if (data.tee) existingByName.tee = data.tee;
       if (data.yards) existingByName.yards = data.yards;
       if (data.holes && data.holes.length) existingByName.holes = data.holes;
+      if (data.allTees && data.allTees.length) existingByName.allTees = data.allTees;
       if (data.source) existingByName.source = data.source;
       save();
       return existingByName;
@@ -1938,6 +1939,7 @@ var PB = (function() {
     if (data.tee) c.tee = data.tee;
     if (data.yards) c.yards = data.yards;
     if (data.holes && data.holes.length) c.holes = data.holes;
+    if (data.allTees && data.allTees.length) c.allTees = data.allTees;
     if (data.source) c.source = data.source;
     state.courses.push(c);
     save();
@@ -6956,6 +6958,23 @@ Router.register("rounds", function(params) {
   Router.go("activity");
 });
 
+function shareRoundCard(roundId) {
+  var rounds = PB.getRounds();
+  var round = rounds.find(function(r) { return r.id === roundId; });
+  if (!round) return;
+  var diff = round.score - (round.rating || 72);
+  var label = diff === 0 ? "Even" : (diff > 0 ? "+" + diff : diff);
+  var text = round.playerName + " shot " + round.score + " (" + label + ") at " + round.course + " on " + round.date + " — The Parbaughs";
+  
+  if (navigator.share) {
+    navigator.share({ title: "Parbaugh Round", text: text, url: "https://alrightlad.github.io/smoky-mountain-open/" }).catch(function(){});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() { Router.toast("Copied to clipboard"); }).catch(function() { Router.toast("Copy failed"); });
+  } else {
+    Router.toast("Share not supported on this device");
+  }
+}
+
 function renderRoundDetail(roundId) {
   var rounds = PB.getRounds();
   var round = rounds.find(function(r) { return r.id === roundId; });
@@ -7006,6 +7025,38 @@ function renderRoundDetail(roundId) {
     h += '<div class="card"><div style="border-radius:var(--radius);overflow:hidden"><img alt="" src="' + round.scorecardPhoto + '" style="width:100%;display:block"></div></div>';
     h += '</div>';
   }
+
+  // Share card
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Share</span></div>';
+  h += '<div id="shareCard" style="background:linear-gradient(145deg,#0e1118,#1a1e2a);border:1px solid rgba(201,168,76,.25);border-radius:12px;padding:20px;position:relative;overflow:hidden">';
+  // Watermark
+  h += '<div style="position:absolute;top:12px;right:14px;font-family:Playfair Display,serif;font-size:10px;color:rgba(201,168,76,.3);letter-spacing:2px;text-transform:uppercase">The Parbaughs</div>';
+  // Player + Score
+  h += '<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">';
+  if (player) h += '<div style="width:50px;height:50px;border-radius:50%;overflow:hidden;border:2px solid rgba(201,168,76,.4);flex-shrink:0">' + Router.getAvatar(player) + '</div>';
+  h += '<div style="flex:1"><div style="font-size:16px;font-weight:700;color:#e8dcc8">' + escHtml(round.playerName) + '</div>';
+  h += '<div style="font-size:11px;color:rgba(201,168,76,.7);margin-top:2px">' + escHtml(round.course) + '</div></div>';
+  h += '<div style="text-align:right"><div style="font-size:36px;font-weight:800;color:#c9a84c;line-height:1">' + round.score + '</div>';
+  var shareLabel = diff === 0 ? "E" : (diff > 0 ? "+" + diff : diff);
+  var shareColor = diff < 0 ? "#4ec97a" : diff === 0 ? "#c9a84c" : "#d4604e";
+  h += '<div style="font-size:11px;color:' + shareColor + ';font-weight:600">' + shareLabel + '</div></div></div>';
+  // Details bar
+  h += '<div style="display:flex;justify-content:space-between;padding:10px 12px;background:rgba(201,168,76,.06);border-radius:8px;border:1px solid rgba(201,168,76,.1)">';
+  h += '<div style="text-align:center"><div style="font-size:16px;font-weight:700;color:#e8dcc8">' + round.score + '</div><div style="font-size:8px;color:rgba(201,168,76,.5);text-transform:uppercase;letter-spacing:1px">Score</div></div>';
+  h += '<div style="text-align:center"><div style="font-size:16px;font-weight:700;color:#e8dcc8">' + (round.rating||72) + '</div><div style="font-size:8px;color:rgba(201,168,76,.5);text-transform:uppercase;letter-spacing:1px">Rating</div></div>';
+  h += '<div style="text-align:center"><div style="font-size:16px;font-weight:700;color:#e8dcc8">' + (round.slope||113) + '</div><div style="font-size:8px;color:rgba(201,168,76,.5);text-transform:uppercase;letter-spacing:1px">Slope</div></div>';
+  h += '<div style="text-align:center"><div style="font-size:16px;font-weight:700;color:#e8dcc8">' + round.date + '</div><div style="font-size:8px;color:rgba(201,168,76,.5);text-transform:uppercase;letter-spacing:1px">Date</div></div>';
+  h += '</div>';
+  if (round.format && round.format !== "stroke") {
+    h += '<div style="text-align:center;margin-top:8px;font-size:10px;color:rgba(201,168,76,.5)">' + round.format.charAt(0).toUpperCase() + round.format.slice(1) + ' format</div>';
+  }
+  // Footer
+  h += '<div style="text-align:center;margin-top:12px;font-family:Playfair Display,serif;font-size:9px;color:rgba(201,168,76,.25);letter-spacing:3px;text-transform:uppercase">Est. 2026 · York, PA</div>';
+  h += '</div>';
+  h += '<div style="text-align:center;margin-top:8px">';
+  h += '<button class="btn-sm green" style="margin-right:6px" onclick="shareRoundCard(\'' + roundId + '\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12" style="vertical-align:middle;margin-right:4px"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share</button>';
+  h += '<div style="font-size:10px;color:var(--muted2);margin-top:6px">or screenshot the card above</div>';
+  h += '</div></div>';
 
   // Delete round
   h += '<div class="section">';
@@ -7198,7 +7249,18 @@ function _extractTeeData(c) {
   var t = (c.tees && c.tees.male) || [];
   var w = t.find(function(x){return x.tee_name && x.tee_name.indexOf("White")>-1}) || t.find(function(x){return x.tee_name && x.tee_name.indexOf("Silver")>-1}) || t[1] || t[0] || {};
   var holes = (w.holes || []).map(function(h){ return {par:h.par, yardage:h.yardage, handicap:h.handicap}; });
-  return { rating: w.course_rating || 0, slope: w.slope_rating || 0, par: w.par_total || 0, tee: w.tee_name || "", yards: w.total_yards || 0, holes: holes };
+  // All tees for storage
+  var allTees = t.map(function(tee) {
+    return {
+      name: tee.tee_name || "Unknown",
+      rating: tee.course_rating || 0,
+      slope: tee.slope_rating || 0,
+      par: tee.par_total || 0,
+      yards: tee.total_yards || 0,
+      holes: (tee.holes || []).map(function(h){ return {par:h.par, yardage:h.yardage, handicap:h.handicap}; })
+    };
+  });
+  return { rating: w.course_rating || 0, slope: w.slope_rating || 0, par: w.par_total || 0, tee: w.tee_name || "", yards: w.total_yards || 0, holes: holes, allTees: allTees };
 }
 
 function importDirApiCourse(idx) {
@@ -7217,8 +7279,8 @@ function importDirApiCourse(idx) {
   var td = _extractTeeData(c);
   var lat = (c.location && c.location.latitude) || 0;
   var lng = (c.location && c.location.longitude) || 0;
-  var course = PB.addCourse({ name: name, loc: loc, region: st || "US", rating: td.rating || 72, slope: td.slope || 113, par: td.par || 72, tee: td.tee, yards: td.yards, holes: td.holes, lat: lat, lng: lng, source: "golfcourseapi" });
-  if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:loc,region:st||"US",rating:td.rating||72,slope:td.slope||113,par:td.par||72,tee:td.tee,yards:td.yards,holes:td.holes,lat:lat,lng:lng,source:"golfcourseapi",createdAt:fsTimestamp()}).catch(function(){});
+  var course = PB.addCourse({ name: name, loc: loc, region: st || "US", rating: td.rating || 72, slope: td.slope || 113, par: td.par || 72, tee: td.tee, yards: td.yards, holes: td.holes, allTees: td.allTees, lat: lat, lng: lng, source: "golfcourseapi" });
+  if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:loc,region:st||"US",rating:td.rating||72,slope:td.slope||113,par:td.par||72,tee:td.tee,yards:td.yards,holes:td.holes,allTees:td.allTees,lat:lat,lng:lng,source:"golfcourseapi",createdAt:fsTimestamp()}).catch(function(){});
   Router.toast(name + " imported");
   Router.go("courses");
 }
@@ -7359,8 +7421,8 @@ function importAndSelectCourse(idx, containerId) {
   var lat = (c.location && c.location.latitude) || 0;
   var lng = (c.location && c.location.longitude) || 0;
   
-  var course = PB.addCourse({ name: name, loc: loc, region: state || "US", rating: rating, slope: slope, par: par, tee: td.tee, yards: td.yards, holes: td.holes, lat: lat, lng: lng, source: "golfcourseapi" });
-  if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:loc,region:state||"US",rating:rating,slope:slope,par:par,tee:td.tee,yards:td.yards,holes:td.holes,lat:lat,lng:lng,source:"golfcourseapi",createdAt:fsTimestamp()}).catch(function(){});
+  var course = PB.addCourse({ name: name, loc: loc, region: state || "US", rating: rating, slope: slope, par: par, tee: td.tee, yards: td.yards, holes: td.holes, allTees: td.allTees, lat: lat, lng: lng, source: "golfcourseapi" });
+  if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:loc,region:state||"US",rating:rating,slope:slope,par:par,tee:td.tee,yards:td.yards,holes:td.holes,allTees:td.allTees,lat:lat,lng:lng,source:"golfcourseapi",createdAt:fsTimestamp()}).catch(function(){});
   
   Router.toast(name + " imported");
   // Fill the course input field
@@ -7435,56 +7497,26 @@ function renderCourseDetail(courseId) {
   }
   h += '<button class="btn-sm outline" style="margin-top:8px" onclick="uploadCoursePhoto(\'' + courseId + '\')">Upload photo</button></div>';
 
-  // Hole-by-hole scorecard
-  if (c.holes && c.holes.length === 18) {
+  // All tees overview
+  if (c.allTees && c.allTees.length > 0) {
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Tees</span></div>';
+    h += '<div style="padding:0 16px 8px">';
+    c.allTees.forEach(function(tee, ti) {
+      var isDefault = tee.name === c.tee;
+      h += '<div class="card" style="margin-bottom:6px;cursor:pointer;border-color:' + (isDefault ? 'var(--gold)' : 'var(--border)') + '" onclick="showTeeScorecard(\'' + courseId + '\',' + ti + ')">';
+      h += '<div class="card-body" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px">';
+      h += '<div><div style="font-size:12px;font-weight:600;color:' + (isDefault ? 'var(--gold)' : 'var(--cream)') + '">' + escHtml(tee.name) + (isDefault ? ' <span style="font-size:9px;color:var(--muted)">(default)</span>' : '') + '</div>';
+      h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + (tee.yards ? tee.yards.toLocaleString() + ' yds' : '') + ' · Par ' + (tee.par||72) + ' · Rating ' + (tee.rating||'—') + ' · Slope ' + (tee.slope||'—') + '</div></div>';
+      h += '<svg viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" width="14" height="14"><path d="M9 18l6-6-6-6"/></svg>';
+      h += '</div></div>';
+    });
+    h += '</div></div>';
+  }
+
+  // Scorecard section with tee selector
+  if ((c.allTees && c.allTees.length > 0) || (c.holes && c.holes.length === 18)) {
     h += '<div class="section"><div class="sec-head"><span class="sec-title">Scorecard</span></div>';
-    h += '<div style="overflow-x:auto;padding:0 16px 12px">';
-    // Front 9
-    h += '<table style="width:100%;border-collapse:collapse;font-size:10px;margin-bottom:8px">';
-    h += '<tr style="color:var(--gold);font-weight:700"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg3)">Hole</td>';
-    for (var hi=1;hi<=9;hi++) h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg3);text-align:center">' + hi + '</td>';
-    h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg3);text-align:center;font-weight:700">Out</td></tr>';
-    h += '<tr style="color:var(--cream)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Par</td>';
-    var frontPar = 0;
-    for (var hi=0;hi<9;hi++) { var p = c.holes[hi].par; frontPar += p; h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg2);text-align:center">' + p + '</td>'; }
-    h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-weight:700">' + frontPar + '</td></tr>';
-    if (c.holes[0].yardage) {
-      h += '<tr style="color:var(--muted)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Yds</td>';
-      var frontYds = 0;
-      for (var hi=0;hi<9;hi++) { var y = c.holes[hi].yardage; frontYds += y; h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-size:9px">' + y + '</td>'; }
-      h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-weight:700;font-size:9px">' + frontYds + '</td></tr>';
-    }
-    if (c.holes[0].handicap) {
-      h += '<tr style="color:var(--muted2)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Hcp</td>';
-      for (var hi=0;hi<9;hi++) { h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-size:9px">' + c.holes[hi].handicap + '</td>'; }
-      h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2)"></td></tr>';
-    }
-    h += '</table>';
-    // Back 9
-    h += '<table style="width:100%;border-collapse:collapse;font-size:10px">';
-    h += '<tr style="color:var(--gold);font-weight:700"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg3)">Hole</td>';
-    for (var hi=10;hi<=18;hi++) h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg3);text-align:center">' + hi + '</td>';
-    h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg3);text-align:center;font-weight:700">In</td></tr>';
-    h += '<tr style="color:var(--cream)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Par</td>';
-    var backPar = 0;
-    for (var hi=9;hi<18;hi++) { var p = c.holes[hi].par; backPar += p; h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg2);text-align:center">' + p + '</td>'; }
-    h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-weight:700">' + backPar + '</td></tr>';
-    if (c.holes[9].yardage) {
-      h += '<tr style="color:var(--muted)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Yds</td>';
-      var backYds = 0;
-      for (var hi=9;hi<18;hi++) { var y = c.holes[hi].yardage; backYds += y; h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-size:9px">' + y + '</td>'; }
-      h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-weight:700;font-size:9px">' + backYds + '</td></tr>';
-    }
-    if (c.holes[9].handicap) {
-      h += '<tr style="color:var(--muted2)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Hcp</td>';
-      for (var hi=9;hi<18;hi++) { h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-size:9px">' + c.holes[hi].handicap + '</td>'; }
-      h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2)"></td></tr>';
-    }
-    h += '</table>';
-    // Totals
-    h += '<div style="text-align:center;margin-top:6px;font-size:11px;color:var(--gold);font-weight:600">Total: Par ' + (frontPar+backPar);
-    if (c.holes[0].yardage) h += ' · ' + (frontYds+backYds).toLocaleString() + ' yards';
-    h += '</div>';
+    h += '<div id="courseScorecardArea">';
     h += '</div></div>';
   }
 
@@ -7535,6 +7567,12 @@ function renderCourseDetail(courseId) {
   h += '<button class="btn full outline" onclick="document.getElementById(\'review-form-' + courseId + '\').style.display=\'block\';this.style.display=\'none\'">+ Write review</button></div>';
 
   document.querySelector('[data-page="courses"]').innerHTML = h;
+  // Auto-render default tee scorecard
+  if (c.allTees && c.allTees.length > 0) {
+    var defaultIdx = c.allTees.findIndex(function(t){ return t.name === c.tee; });
+    if (defaultIdx === -1) defaultIdx = 0;
+    showTeeScorecard(courseId, defaultIdx);
+  }
 }
 
 function promptAddCourse() {
@@ -7568,6 +7606,65 @@ function submitAddCourse() {
     par: document.getElementById("ac-par").value || "72"
   });
   if (c) { Router.toast(name + " added!"); Router.go("courses", { id: c.id }); }
+}
+
+function showTeeScorecard(courseId, teeIdx) {
+  var c = PB.getCourse(courseId) || PB.getCourseByName(courseId);
+  if (!c || !c.allTees || !c.allTees[teeIdx]) return;
+  var tee = c.allTees[teeIdx];
+  var holes = tee.holes || [];
+  var area = document.getElementById("courseScorecardArea");
+  if (!area) return;
+
+  var h = '<div style="padding:0 16px 4px;font-size:12px;font-weight:600;color:var(--gold)">' + escHtml(tee.name) + ' <span style="font-size:10px;color:var(--muted);font-weight:400">' + (tee.yards ? tee.yards.toLocaleString() + ' yds · ' : '') + 'Rating ' + (tee.rating||'—') + ' · Slope ' + (tee.slope||'—') + '</span></div>';
+
+  if (holes.length === 18) {
+    h += '<div style="overflow-x:auto;padding:0 16px 12px">';
+    // Front 9
+    h += '<table style="width:100%;border-collapse:collapse;font-size:10px;margin-bottom:8px">';
+    h += '<tr style="color:var(--gold);font-weight:700"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg3)">Hole</td>';
+    for (var i=1;i<=9;i++) h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg3);text-align:center">' + i + '</td>';
+    h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg3);text-align:center;font-weight:700">Out</td></tr>';
+    h += '<tr style="color:var(--cream)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Par</td>';
+    var fp = 0; for (var i=0;i<9;i++) { var p=holes[i].par; fp+=p; h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg2);text-align:center">' + p + '</td>'; }
+    h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-weight:700">' + fp + '</td></tr>';
+    if (holes[0].yardage) {
+      h += '<tr style="color:var(--muted)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Yds</td>';
+      var fy = 0; for (var i=0;i<9;i++) { var y=holes[i].yardage; fy+=y; h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-size:9px">' + y + '</td>'; }
+      h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-weight:700;font-size:9px">' + fy + '</td></tr>';
+    }
+    if (holes[0].handicap) {
+      h += '<tr style="color:var(--muted2)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Hcp</td>';
+      for (var i=0;i<9;i++) h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-size:9px">' + holes[i].handicap + '</td>';
+      h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2)"></td></tr>';
+    }
+    h += '</table>';
+    // Back 9
+    h += '<table style="width:100%;border-collapse:collapse;font-size:10px">';
+    h += '<tr style="color:var(--gold);font-weight:700"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg3)">Hole</td>';
+    for (var i=10;i<=18;i++) h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg3);text-align:center">' + i + '</td>';
+    h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg3);text-align:center;font-weight:700">In</td></tr>';
+    h += '<tr style="color:var(--cream)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Par</td>';
+    var bp = 0; for (var i=9;i<18;i++) { var p=holes[i].par; bp+=p; h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg2);text-align:center">' + p + '</td>'; }
+    h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-weight:700">' + bp + '</td></tr>';
+    if (holes[9].yardage) {
+      h += '<tr style="color:var(--muted)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Yds</td>';
+      var by = 0; for (var i=9;i<18;i++) { var y=holes[i].yardage; by+=y; h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-size:9px">' + y + '</td>'; }
+      h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-weight:700;font-size:9px">' + by + '</td></tr>';
+    }
+    if (holes[9].handicap) {
+      h += '<tr style="color:var(--muted2)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Hcp</td>';
+      for (var i=9;i<18;i++) h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-size:9px">' + holes[i].handicap + '</td>';
+      h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2)"></td></tr>';
+    }
+    h += '</table>';
+    h += '<div style="text-align:center;margin-top:6px;font-size:11px;color:var(--gold);font-weight:600">Total: Par ' + (fp+bp);
+    if (holes[0].yardage) h += ' · ' + (fy+by).toLocaleString() + ' yards';
+    h += '</div></div>';
+  } else {
+    h += '<div style="padding:4px 16px;font-size:11px;color:var(--muted2)">No hole-by-hole data available for this tee</div>';
+  }
+  area.innerHTML = h;
 }
 
 function uploadCoursePhoto(courseId) {
