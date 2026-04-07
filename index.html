@@ -830,7 +830,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.7.45 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
+   PARBAUGHS v5.7.50 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -1317,6 +1317,8 @@ if (firebaseAvailable && auth) {
     if (user) {
       db.collection("members").doc(user.uid).get().then(function(doc) {
         currentProfile = doc.exists ? doc.data() : { id:user.uid, name:user.displayName||"Member", role:"member" };
+        // Restore share count from Firestore so achievements persist across sessions/devices
+        window._pbShareCount = (currentProfile.shareCount || 0);
         enterApp();
       }).catch(function() {
         currentProfile = { id:user.uid, name:user.displayName||"Member", role:"member" };
@@ -1509,8 +1511,8 @@ function syncRound(r) { if (!db||syncStatus==="offline") return; var d=JSON.pars
 function syncCourse(c) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(c)); d.updatedAt=fsTimestamp(); delete d.photo; db.collection("courses").doc(c.id).set(d,{merge:true}).catch(function(){}); }
 function syncTrip(t) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(t)); d.updatedAt=fsTimestamp(); if(d.photos){delete d.photos;} db.collection("trips").doc(t.id).set(d,{merge:true}).catch(function(){}); }
 
-// Pull trip settings (scorekeeper, finished status) from Firestore on startup
-// Trips are hardcoded in seed but settings like scorekeeper only live in Firestore
+// Pull trip settings (scorekeeper, finished, miniWinners, bonusWinners) from Firestore on startup
+// Trips are hardcoded in seed but settings only live in Firestore
 function syncTripsFromFirestore() {
   if (!db) return;
   var localTrips = PB.getTrips();
@@ -1533,12 +1535,35 @@ function syncTripsFromFirestore() {
           }
         });
       }
-      // Merge remote mini-game/bonus winners if any
-      if (remote.miniGames) trip.miniGames = remote.miniGames;
+      // Pull miniWinners and bonusWinners from Firestore
+      if (remote.miniWinners) {
+        Object.keys(remote.miniWinners).forEach(function(k) {
+          PB.setMiniWinnerSilent(k, remote.miniWinners[k]);
+        });
+      }
+      if (remote.bonusWinners) {
+        Object.keys(remote.bonusWinners).forEach(function(k) {
+          PB.setBonusWinnerSilent(k, remote.bonusWinners[k]);
+        });
+      }
       pbLog("[Sync] Trip settings loaded from Firestore:", trip.id);
       // Refresh scorecard if user is on it
       if (Router.getPage() === "scorecard") Router.go("scorecard", Router.getParams(), true);
     }).catch(function(e) { pbWarn("[Sync] Trip load failed:", e.message); });
+
+    // Also pull FIR/GIR data from tripscores collection
+    db.collection("tripscores").where("tripId", "==", trip.id).get().then(function(snap) {
+      snap.forEach(function(doc) {
+        var d = doc.data();
+        if (!d.fir && !d.gir) return; // no FIR/GIR data on this doc
+        if (!PB.getState().firGir) PB.getState().firGir = {};
+        var key = d.tripId + ":" + d.courseKey + ":" + d.playerId;
+        PB.getState().firGir[key] = {
+          fir: d.fir || Array(18).fill(false),
+          gir: d.gir || Array(18).fill(false)
+        };
+      });
+    }).catch(function() {});
   });
 }
 
@@ -1573,13 +1598,12 @@ function startRoundsListener() {
   }, function(err) { pbWarn("[RoundsListener]", err.message); });
 }
 
-// ---- Custom drills: Firestore only, localStorage as cache ----
+// ---- Custom drills: Firestore only ----
 function loadCustomDrillsFromFirestore() {
   if (!db) return;
   db.collection("config").doc("customDrills").get().then(function(doc) {
     if (doc.exists && doc.data().drills && doc.data().drills.length) {
       customDrills = doc.data().drills;
-      localStorage.setItem("pb_custom_drills", JSON.stringify(customDrills));
     }
   }).catch(function() {});
 }
@@ -1628,6 +1652,21 @@ function syncTripScore(tripId, courseKey, playerId, scores) {
     updatedAt: fsTimestamp(),
     updatedBy: currentUser ? currentUser.uid : "local"
   }, { merge: true }).catch(function(e) { pbWarn("[Sync] Trip score failed:", e.message); });
+}
+
+// Sync FIR/GIR data to Firestore — stored on the tripscores doc alongside scores
+function syncFirGir(tripId, courseKey, playerId) {
+  if (!db || syncStatus === "offline") return;
+  var fg = PB.getFirGir(tripId, courseKey, playerId);
+  var docId = tripId + "_" + courseKey + "_" + playerId;
+  db.collection("tripscores").doc(docId).set({
+    tripId: tripId,
+    courseKey: courseKey,
+    playerId: playerId,
+    fir: fg.fir,
+    gir: fg.gir,
+    updatedAt: fsTimestamp()
+  }, { merge: true }).catch(function(e) { pbWarn("[Sync] FIR/GIR sync failed:", e.message); });
 }
 
 // In-place score input handler — saves score without re-rendering the whole scorecard
@@ -2106,7 +2145,6 @@ function compressPhoto(dataUrl, maxKB, maxDim, callback) {
 }
 
 var PB = (function() {
-  var STORAGE_KEY = "parbaughs-v3";
   var state = null;
 
   /* ---------- DEFAULT DATA ---------- */
@@ -2184,37 +2222,19 @@ var PB = (function() {
   }
 
   /* ---------- PERSISTENCE ---------- */
-  // localStorage stores ONLY active trip scoring session data.
-  // rounds, courses, trips, players, scramble teams — Firestore + in-memory only.
+  // All data is Firestore-authoritative. localStorage is not used for user data.
   // Firestore offline persistence (IndexedDB via enablePersistence) handles offline resilience.
   function load() {
-    var d = createDefault(); // always start from clean in-memory defaults
-    try {
-      var raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        var saved = JSON.parse(raw);
-        // Only restore trip scoring session data — nothing else belongs here
-        if (saved.scores) d.scores = saved.scores;
-        if (saved.miniWinners) d.miniWinners = saved.miniWinners;
-        if (saved.bonusWinners) d.bonusWinners = saved.bonusWinners;
-        if (saved.firGir) d.firGir = saved.firGir;
-      }
-    } catch(e) {}
-    state = d;
+    // Always start from clean in-memory defaults.
+    // Firestore sync functions fill in real data after auth resolves.
+    state = createDefault();
     return state;
   }
 
   function save() {
-    // Only persist active trip scoring state — everything else is Firestore authoritative
-    var toSave = {
-      scores: state.scores,
-      miniWinners: state.miniWinners,
-      bonusWinners: state.bonusWinners,
-      firGir: state.firGir || {},
-      version: state.version,
-      _saved: Date.now()
-    };
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)); } catch(e) {}
+    // No-op — Firestore is the single source of truth.
+    // All data writes go directly to Firestore via sync functions.
+    // localStorage is not used for user data.
   }
 
   function exportBackup() {
@@ -2231,8 +2251,6 @@ var PB = (function() {
 
   function reset() {
     state = createDefault();
-    localStorage.removeItem(STORAGE_KEY);
-    save();
   }
 
   /* ---------- PLAYER OPS ---------- */
@@ -2508,9 +2526,32 @@ var PB = (function() {
   }
 
   function getMiniWinner(id) { return state.miniWinners[id] || ""; }
-  function setMiniWinner(id, pid) { state.miniWinners[id] = pid; save(); }
+  function setMiniWinner(id, pid) {
+    state.miniWinners[id] = pid;
+    save();
+    // Sync to Firestore — miniWinners live on the trip doc
+    if (db) {
+      var trips = state.trips;
+      trips.forEach(function(tr) {
+        if (tr.miniGames && tr.miniGames.some(function(g) { return g.i === id; })) {
+          db.collection("trips").doc(tr.id).update({ miniWinners: state.miniWinners }).catch(function(){});
+        }
+      });
+    }
+  }
   function getBonusWinner(id) { return state.bonusWinners[id] || ""; }
-  function setBonusWinner(id, pid) { state.bonusWinners[id] = pid; save(); }
+  function setBonusWinner(id, pid) {
+    state.bonusWinners[id] = pid;
+    save();
+    if (db) {
+      var trips = state.trips;
+      trips.forEach(function(tr) {
+        if (tr.bonusAwards && tr.bonusAwards.some(function(b) { return b.i === id; })) {
+          db.collection("trips").doc(tr.id).update({ bonusWinners: state.bonusWinners }).catch(function(){});
+        }
+      });
+    }
+  }
 
   /* ---------- FIR/GIR TRACKING ---------- */
   function getFirGir(tripId, courseKey, playerId) {
@@ -2525,6 +2566,7 @@ var PB = (function() {
     if (!state.firGir[key]) state.firGir[key] = { fir: Array(18).fill(false), gir: Array(18).fill(false) };
     state.firGir[key].fir[hole] = val;
     save();
+    syncFirGir(tripId, courseKey, playerId);
   }
 
   function setGir(tripId, courseKey, playerId, hole, val) {
@@ -2533,6 +2575,7 @@ var PB = (function() {
     if (!state.firGir[key]) state.firGir[key] = { fir: Array(18).fill(false), gir: Array(18).fill(false) };
     state.firGir[key].gir[hole] = val;
     save();
+    syncFirGir(tripId, courseKey, playerId);
   }
 
   function getFirGirTotals(tripId, courseKey, playerId) {
@@ -3631,8 +3674,8 @@ var PB = (function() {
     var _2026rounds = rounds.filter(function(r){return r.date && r.date.startsWith("2026");});
     if (_2026rounds.length >= 5) achievements.push({id:"founding_season",name:"Founding Season",desc:"Log 5 rounds in the founding 2026 season",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"special",title:"Founding Season"});
 
-    // Share achievements — tracked in localStorage
-    var shareCount = parseInt(localStorage.getItem("pb_share_count") || "0");
+    // Share achievements — count persisted in Firestore member doc (shareCount field)
+    var shareCount = window._pbShareCount || 0;
     if (shareCount >= 1)   achievements.push({id:"share_1",  name:"First Take",             desc:"Share your first scorecard", icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='12' cy='3' r='1.5'/><circle cx='12' cy='13' r='1.5'/><circle cx='4' cy='8' r='1.5'/><path d='M5.5 7l5-3M5.5 9l5 3'/></svg>", xp:50,  cat:"social"});
     if (shareCount >= 5)   achievements.push({id:"share_5",  name:"Posting Season",         desc:"Share 5 scorecards",          icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='12' cy='3' r='1.5'/><circle cx='12' cy='13' r='1.5'/><circle cx='4' cy='8' r='1.5'/><path d='M5.5 7l5-3M5.5 9l5 3'/></svg>", xp:100, cat:"social"});
     if (shareCount >= 10)  achievements.push({id:"share_10", name:"Content Creator",        desc:"Share 10 scorecards",         icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='12' cy='3' r='1.5'/><circle cx='12' cy='13' r='1.5'/><circle cx='4' cy='8' r='1.5'/><path d='M5.5 7l5-3M5.5 9l5 3'/></svg>", xp:200, cat:"social", title:"Content Creator"});
@@ -3878,7 +3921,10 @@ var PB = (function() {
     addNotification:addNotification, getNotifications:getNotifications, markNotificationRead:markNotificationRead, getUnreadCount:getUnreadCount,
     getSeasonStandings:getSeasonStandings,
     addPost:addPost, getPlayerPosts:getPlayerPosts,
-    exportBackup:exportBackup, importBackup:importBackup, reset:reset, save:save, load:load, setScoreSilent:setScoreSilent
+    exportBackup:exportBackup, importBackup:importBackup, reset:reset, save:save, load:load, setScoreSilent:setScoreSilent,
+    setMiniWinnerSilent:function(id,pid){state.miniWinners[id]=pid;},
+    setBonusWinnerSilent:function(id,pid){state.bonusWinners[id]=pid;},
+    getState:function(){return state;}
   };
 })();
 
@@ -3886,21 +3932,22 @@ var Router = (function() {
   var current = { page: "home", params: {} };
   var pages = {};
   var _skipHistoryPush = false;
-  var _navDepth = 0; // how many pushState navigations deep we are this session
+  // Explicit nav stack — always knows exactly where back() should go
+  // Scales to any depth: Home→Members→Profile→EditProfile→back→back→back works correctly
+  var _navStack = [];
 
-  // Wire up browser back/forward button
+  // Browser back/forward button — keep our stack in sync
   window.addEventListener("popstate", function(e) {
-    _navDepth = Math.max(0, _navDepth - 1);
+    if (_navStack.length > 0) _navStack.pop();
     var state = e.state;
+    _skipHistoryPush = true;
     if (state && state.page) {
-      _skipHistoryPush = true;
       go(state.page, state.params || {});
-      _skipHistoryPush = false;
     } else {
-      _skipHistoryPush = true;
+      _navStack = [];
       go("home", {});
-      _skipHistoryPush = false;
     }
+    _skipHistoryPush = false;
   });
 
   function register(name, renderFn) {
@@ -3909,17 +3956,18 @@ var Router = (function() {
 
   function go(page, params, replaceState) {
     var prev = current.page;
+    var prevParams = current.params;
     current = { page: page, params: params || {} };
 
-    // Push/replace browser history so back button works.
-    // URL stays fixed — hash changes caused PWA reloads on iOS.
+    // Push/replace browser history. URL stays fixed — hash changes caused PWA reloads on iOS.
     if (!_skipHistoryPush) {
       var state = { page: page, params: params || {} };
       if (replaceState || prev === page) {
         history.replaceState(state, "", window.location.pathname);
       } else {
+        // Push previous location onto our explicit stack before navigating forward
+        _navStack.push({ page: prev, params: prevParams });
         history.pushState(state, "", window.location.pathname);
-        _navDepth++;
       }
     }
 
@@ -4029,10 +4077,14 @@ var Router = (function() {
   }
 
   function back(fallback) {
-    // Use browser history if we've navigated forward at least once this session
-    if (_navDepth > 0) {
-      _navDepth--;
+    // Pop our explicit stack — always goes to the exact page we came from
+    if (_navStack.length > 0) {
+      var prev = _navStack.pop();
+      // Keep browser history in sync without adding a new entry
+      _skipHistoryPush = true;
       history.back();
+      go(prev.page, prev.params);
+      _skipHistoryPush = false;
     } else {
       go(fallback || "home", {});
     }
@@ -4150,10 +4202,19 @@ Router.register("home", function() {
   var motivationCards = [];
   
   // Unfinished round reminder — show if any trip course has scores but isn't finished
-  if (currentProfile && currentProfile.role === "commissioner") {
+  // Show to all trip members, not just commissioner
+  var myUidForBanner = currentUser ? currentUser.uid : null;
+  var myClaimedFrom = currentProfile ? currentProfile.claimedFrom : null;
+  if (myUidForBanner) {
     var allTrips = PB.getTrips();
     allTrips.forEach(function(tr) {
       if (!tr.courses) return;
+      // Only show if this user is a member of the trip
+      var isTripMember = tr.members && (
+        tr.members.indexOf(myUidForBanner) !== -1 ||
+        (myClaimedFrom && tr.members.indexOf(myClaimedFrom) !== -1)
+      );
+      if (!isTripMember && currentProfile && currentProfile.role !== "commissioner") return;
       tr.courses.forEach(function(crs) {
         if (crs.finished) return;
         // Check if any scores exist for this course
@@ -6492,22 +6553,13 @@ var liveState = {
 // ── liveState crash recovery ──────────────────────────────────────────────
 // If the phone restarts or browser crashes mid-round, we restore from this.
 // Stored under a separate key — never mixed with PB state.
-var LS_LIVE_KEY = "pb-live";
 
 function saveLiveState() {
-  try { localStorage.setItem(LS_LIVE_KEY, JSON.stringify(liveState)); } catch(e) {}
+  // No-op — live round state is broadcast via syncrounds collection in Firestore.
 }
 
 function loadLiveState() {
-  try {
-    var raw = localStorage.getItem(LS_LIVE_KEY);
-    if (!raw) return;
-    var saved = JSON.parse(raw);
-    if (saved && saved.active) {
-      liveState = saved;
-      pbLog("[Live] Recovered in-progress round at hole", liveState.currentHole + 1);
-    }
-  } catch(e) {}
+  // No-op — live round state comes from Firestore syncrounds collection.
 }
 
 function clearLiveState() {
@@ -6521,7 +6573,7 @@ function clearLiveState() {
   liveState.fir = Array(18).fill(false);
   liveState.gir = Array(18).fill(false);
   liveState.putts = Array(18).fill("");
-  try { localStorage.removeItem(LS_LIVE_KEY); } catch(e) {}
+
 }
 // ─────────────────────────────────────────────────────────────────────────
 
@@ -7100,7 +7152,7 @@ function adjustLiveScore(delta) {
     if (newVal >= 1 && newVal <= 15) liveState.scores[hole] = newVal;
   }
   updatePresence(); // broadcast to watchers
-  saveLiveState();  // crash recovery — save in-progress scores to localStorage
+  saveLiveState();  // no-op — live state is in Firestore syncrounds
   Router.go("playnow");
   setTimeout(function() {
     var el = document.getElementById("liveScoreNum");
@@ -9185,11 +9237,21 @@ Router.register("records", function() {
   // 7. Member averages — use all known members (fbMemberCache has everyone)
   var avgContent = '';
   var allRounds = PB.getRounds();
-  // Merge state.players + fbMemberCache, deduplicated
+  // Build set of seed IDs that have been claimed by a Firestore member
+  var claimedSeedIds = {};
+  if (typeof fbMemberCache !== "undefined") {
+    Object.values(fbMemberCache).forEach(function(m) {
+      if (m.claimedFrom) claimedSeedIds[m.claimedFrom] = true;
+    });
+  }
   var seenAvgIds = {};
   var allMembersForAvg = [];
+  // Add seed players only if not already claimed by a Firestore account
   PB.getPlayers().forEach(function(p) {
-    if (!seenAvgIds[p.id]) { seenAvgIds[p.id] = true; allMembersForAvg.push({id:p.id, name:p.name, claimedFrom:null}); }
+    if (!claimedSeedIds[p.id] && !seenAvgIds[p.id]) {
+      seenAvgIds[p.id] = true;
+      allMembersForAvg.push({id:p.id, name:p.name, claimedFrom:null});
+    }
   });
   if (typeof fbMemberCache !== "undefined") {
     Object.values(fbMemberCache).forEach(function(m) {
@@ -9481,7 +9543,7 @@ var DRILL_LIBRARY = [
   {id:"driver_70", name:"Driver Block at 70%", cat:"general", desc:"Driver at 70% effort for control", equip:"Driver", howTo:"Hit drivers at 70% effort focusing on center contact and a controlled fade or straight ball. No swing-for-the-fences. Track fairway accuracy mentally."}
 ];
 var DRILL_CATS = {path:"Path & Plane",extension:"Extension & Posture",short:"Short Game",general:"Full Swing",custom:"My Drills"};
-var customDrills = JSON.parse(localStorage.getItem("pb_custom_drills")||"[]");
+var customDrills = []; // loaded from Firestore via loadCustomDrillsFromFirestore()
 
 function startRangeSessionListener() {
   if (!db) return;
@@ -9610,7 +9672,6 @@ function addCustomDrill() {
   var desc = prompt("Short description (optional):", "");
   var drill = {id: "custom_" + Date.now(), name: name.trim(), cat: "custom", desc: desc || ""};
   customDrills.push(drill);
-  localStorage.setItem("pb_custom_drills", JSON.stringify(customDrills)); // local cache
   saveCustomDrillsToFirestore();
   renderDrillChips();
   Router.toast("Drill added!");
@@ -11674,10 +11735,10 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.45</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.50</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.45</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.50</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -11793,7 +11854,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.45</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.50</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
@@ -13544,8 +13605,14 @@ function captureShareCard() {
         if (!blob) { Router.toast("Couldn't generate image"); return; }
 
         // ── Track share count + check achievements ──────────────────────
-        var shareCount = parseInt(localStorage.getItem("pb_share_count") || "0") + 1;
-        localStorage.setItem("pb_share_count", shareCount);
+        // Persist to Firestore member doc so it survives across sessions and devices
+        var shareCount = (window._pbShareCount || 0) + 1;
+        window._pbShareCount = shareCount;
+        if (db && currentUser) {
+          db.collection("members").doc(currentUser.uid).update({
+            shareCount: firebase.firestore.FieldValue.increment(1)
+          }).catch(function(){});
+        }
         var shareMilestones = {1:"share_1", 5:"share_5", 10:"share_10", 25:"share_25", 50:"share_50", 100:"share_100"};
         if (shareMilestones[shareCount]) {
           var achId = shareMilestones[shareCount];
@@ -14645,10 +14712,9 @@ enterApp = function() {
     if (!db || !currentUser || !currentProfile) return;
     var profComplete = currentProfile.bio && currentProfile.range && currentProfile.homeCourse;
     if (profComplete) return;
-    // Only send once — check if we already sent this notification
-    var sentKey = "pb_profile_notif_" + currentUser.uid;
-    if (localStorage.getItem(sentKey)) return;
-    localStorage.setItem(sentKey, "1");
+    // Only send once per session — in-memory dedup (notification already persisted in Firestore)
+    if (window._sentProfileNotif) return;
+    window._sentProfileNotif = true;
     sendNotification(currentUser.uid, {
       type: "profile_reminder",
       title: "Complete Your Profile",
