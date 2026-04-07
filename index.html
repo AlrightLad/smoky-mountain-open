@@ -11259,20 +11259,24 @@ Router.register("caddynotes", function() {
   var currentNotes = [
     {item: "Firestore is now the sole source of truth — rounds, courses, and scramble teams no longer live in localStorage, eliminating sync conflicts", tag: "IMPROVED"},
     {item: "Round crash recovery — if your phone restarts or browser closes mid-round, your scores are fully restored when you reopen the app", tag: "NEW"},
-    {item: "Rounds are now saved to Firestore immediately when you finish — no more missing rounds after logging out and back in", tag: "FIXED"},
-    {item: "Manual round submissions (+ Log round) now also sync to Firestore correctly", tag: "FIXED"},
-    {item: "Play Now stats (FIR, GIR, putts, hole scores) are now fully preserved in Firestore", tag: "FIXED"},
+    {item: "Rounds now save to Firestore the moment you finish — no more missing rounds after logging out and back in", tag: "FIXED"},
+    {item: "Manual round submissions (+ Log round) now sync to Firestore correctly", tag: "FIXED"},
+    {item: "Play Now stats (FIR, GIR, putts, hole scores) now fully preserved in Firestore", tag: "FIXED"},
     {item: "Player name now resolves correctly on rounds rather than showing a raw ID", tag: "FIXED"},
-    {item: "Level badge now appears as a pill on the bottom-right corner of your avatar, visible everywhere", tag: "NEW"},
-    {item: "Title (e.g. Weekend Warrior) now shows next to your name in the profile bar", tag: "NEW"},
-    {item: "Range streak shows as a flame icon + week count next to your XP bar when active", tag: "NEW"},
-    {item: "Home page cleaned up — Champions and Live Spotlight sections only appear when there is actual content", tag: "IMPROVED"},
-    {item: "Explore grid merged into a single section — no more duplicate Play and Explore rows", tag: "IMPROVED"},
+    {item: "Profile border (frame color) now appears on every avatar across the entire app — member list, chat, DMs, scramble teams, online strip, rivalry cards, and more", tag: "NEW"},
+    {item: "Achievement badges removed from the member list — border color communicates the same identity signal more cleanly", tag: "IMPROVED"},
+    {item: "Level badge now sits as a pill on the bottom-right corner of your avatar everywhere it appears", tag: "NEW"},
+    {item: "Profile bar updated — level on avatar border, range streak replaces title text below name", tag: "IMPROVED"},
+    {item: "Feature Requests now visible in the Admin Panel — view all submissions, mark as Reviewing, Done, or Declined", tag: "NEW"},
+    {item: "Notification bell bug fixed — tapping the bell in messages then closing it no longer blocks the nav bar", tag: "FIXED"},
+    {item: "Past Events section added to the Events page — collapses by default, most recent first, shows champion badge", tag: "NEW"},
+    {item: "Quick action buttons on home page expanded to four — Play Now, Range, Tee Time, Games all in one row", tag: "IMPROVED"},
+    {item: "Explore section on home page stripped to essentials — Sync Round, Teams, Courses only. Everything else is already in the nav", tag: "IMPROVED"},
+    {item: "Home page Champions and Live Spotlight sections now auto-hide when there is nothing to show", tag: "IMPROVED"},
     {item: "Achievement celebration upgraded — slide-up card with icon, name, and XP when you unlock something", tag: "IMPROVED"},
     {item: "All range achievements now appear as locked in the Trophy Room before you earn them", tag: "FIXED"},
     {item: "Member averages now shows all 17 members, not just the founding four", tag: "FIXED"},
-    {item: "Double Duty achievement fixed — was being pushed twice due to duplicate calculation block", tag: "FIXED"},
-    {item: "getAllPossibleAchievements converted to a singleton — no longer rebuilt from scratch on every trophy room view", tag: "IMPROVED"}
+    {item: "Double Duty achievement no longer counted twice", tag: "FIXED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
