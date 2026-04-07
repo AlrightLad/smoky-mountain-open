@@ -827,7 +827,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.7.37 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
+   PARBAUGHS v5.7.39 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -1074,21 +1074,22 @@ function doRegister() {
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError("regError", "Enter a valid email"); return; }
   var pwErr = validatePassword(pw); if (pwErr) { showError("regError", pwErr); return; }
 
-  var inviteRef = db.collection("invites").doc(invite);
+  var inviteRef = db.collection("invites").doc(invite); // still needed for the usedBy update after registration
   var isFoundingCode = (invite === "FOUNDING-FOUR");
-  var validatePromise = isFoundingCode
-    ? checkFoundingCodeAvailability().then(function(ok) { return ok ? { valid:true, founding:true } : { valid:false, reason:"FOUNDING-FOUR fully used (4/4)" }; })
-    : inviteRef.get().then(function(doc) {
-        if (!doc.exists) return { valid:false, reason:"Invite code not found" };
-        var d = doc.data();
-        if (d.status === "used") return { valid:false, reason:"Invite already used" };
-        if (d.status === "revoked") return { valid:false, reason:"Invite revoked" };
-        if (d.expiresAt) {
-          var exp = d.expiresAt.toDate ? d.expiresAt.toDate() : new Date(d.expiresAt);
-          if (new Date() > exp) return { valid:false, reason:"Invite code has expired. Ask for a new one." };
-        }
-        return { valid:true, createdBy:d.createdBy };
-      });
+
+  // Validate invite via Cloud Function — keeps Firestore rules locked to isAuth()
+  var validatePromise = fetch("https://us-central1-parbaughs.cloudfunctions.net/validateInvite", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code: invite })
+  }).then(function(res) {
+    if (!res.ok) throw new Error("Network error");
+    return res.json();
+  }).then(function(data) {
+    return data; // {valid, reason, founding, createdBy}
+  }).catch(function() {
+    return { valid: false, reason: "Could not validate invite. Check your connection and try again." };
+  });
 
   validatePromise.then(function(inv) {
     if (!inv.valid) { showError("regError", inv.reason); return Promise.reject("invalid"); }
@@ -4022,9 +4023,19 @@ var Router = (function() {
     input.click();
   }
 
+  function back(fallback) {
+    // Use browser history if available, otherwise fall back to specified page
+    if (history.length > 1 && window.location.hash) {
+      history.back();
+    } else {
+      go(fallback || "home", {});
+    }
+  }
+
   return {
     register: register,
     go: go,
+    back: back,
     getPage: getPage,
     getParams: getParams,
     toast: toast,
@@ -4350,7 +4361,7 @@ function showRivalryDetail(p1id, p2id) {
   });
   matches.sort(function(a,b) { return b.date > a.date ? 1 : -1; });
 
-  var h = '<div class="sh"><h2>' + escHtml(p1.name) + ' vs ' + escHtml(p2.name) + '</h2><button class="back" onclick="Router.go(\'home\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>' + escHtml(p1.name) + ' vs ' + escHtml(p2.name) + '</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
   
   // Big score display
   h += '<div style="text-align:center;padding:20px">';
@@ -4405,7 +4416,7 @@ function doRestore() {
    PAGE: SETTINGS
    ================================================ */
 Router.register("settings", function() {
-  var h = '<div class="sh"><h2>Settings</h2><button class="back" onclick="Router.go(\'home\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>Settings</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
 
   // Account section
   h += '<div class="form-section"><div class="form-title">Account</div>';
@@ -4472,7 +4483,7 @@ Router.register("settings", function() {
    PAGE: MERCH
    ================================================ */
 Router.register("merch", function() {
-  var h = '<div class="sh"><h2>Merch</h2><button class="back" onclick="Router.go(\'home\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>Merch</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
 
   h += '<div style="text-align:center;padding:20px 16px"><div style="width:60px;height:60px;border-radius:14px;margin:0 auto 12px;overflow:hidden"><img alt="" src="watermark.jpg" style="width:100%;height:100%;object-fit:cover"></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">Parbaughs Collection</div>';
@@ -4504,7 +4515,7 @@ Router.register("merch", function() {
    PAGE: RULES
    ================================================ */
 Router.register("rules", function() {
-  var h = '<div class="sh"><h2>Rules</h2><button class="back" onclick="Router.go(\'home\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>Rules</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
 
   // Parbaugh house rules
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Parbaugh house rules</span></div>';
@@ -4706,7 +4717,7 @@ function renderMemberDetailWithData(p) {
     return '<div class="section"><div class="sec-head" onclick="toggleSection(\'ps-' + id + '\')" style="cursor:pointer"><span class="sec-title">' + title + '</span><span class="sec-link" id="ps-' + id + '-toggle" style="display:inline-flex;transition:transform .2s' + (startOpen ? ';transform:rotate(90deg)' : '') + '">' + chevronSvg + '</span></div><div id="ps-' + id + '"' + (startOpen ? '' : ' style="display:none"') + '>' + content + '</div></div>';
   }
 
-  var h = '<div class="sh"><h2>' + p.name + '</h2><button class="back" onclick="Router.go(\'members\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>' + p.name + '</h2><button class="back" onclick="Router.back(\'members\')">← Back</button></div>';
 
   // Get achievements and level early for frame/title
   var achievements = [];
@@ -5638,7 +5649,7 @@ function renderAddMemberForm() {
   var isComm = currentProfile && currentProfile.role === "commissioner";
   var invitesLeft = isComm ? "∞" : ((currentProfile.maxInvites||3) - (currentProfile.invitesUsed||0));
   
-  var h = '<div class="sh"><h2>Invite Member</h2><button class="back" onclick="Router.go(\'members\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>Invite Member</h2><button class="back" onclick="Router.back(\'members\')">← Back</button></div>';
   
   h += '<div class="form-section">';
   h += '<div style="text-align:center;margin-bottom:16px;padding:12px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.12);border-radius:var(--radius)">';
@@ -5821,7 +5832,7 @@ Router.register("scramble", function(params) {
 
 function renderTeamList() {
   var teams = PB.getScrambleTeams();
-  var h = '<div class="sh"><h2>Scramble teams</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.go(\'records\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'scramble\',{create:true})">+ New team</button></div></div>';
+  var h = '<div class="sh"><h2>Scramble teams</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'records\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'scramble\',{create:true})">+ New team</button></div></div>';
 
   if (teams.length) {
     if (teams.length >= 2) {
@@ -5890,7 +5901,7 @@ function renderTeamList() {
 
 function renderCreateTeam() {
   var players = PB.getPlayers();
-  var h = '<div class="sh"><h2>Create team</h2><button class="back" onclick="Router.go(\'scramble\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>Create team</h2><button class="back" onclick="Router.back(\'scramble\')">← Back</button></div>';
 
   h += '<div class="form-section"><div class="form-title">Team info</div>';
   h += formField("Team name", "st-name", "", "text", "e.g. Zach & Kayvan");
@@ -6000,7 +6011,7 @@ function renderTeamDetail(teamId) {
   var _myId = currentProfile && (currentProfile.claimedFrom || currentProfile.id);
   var isCaptainHere = currentProfile && team.captain && (_myId === team.captain || currentProfile.id === team.captain);
   var renameBtn = isCaptainHere ? '<button class="btn-sm outline" style="font-size:10px" onclick="renameScrambleTeam(\'' + team.id + '\')">Rename</button>' : '';
-  var h = '<div class="sh"><h2>' + escHtml(team.name) + '</h2><div style="display:flex;gap:6px">' + renameBtn + '<button class="back" onclick="Router.go(\'scramble\')">← Back</button></div></div>';
+  var h = '<div class="sh"><h2>' + escHtml(team.name) + '</h2><div style="display:flex;gap:6px">' + renameBtn + '<button class="back" onclick="Router.back(\'scramble\')">← Back</button></div></div>';
 
   // Team header — all avatars gold border, captain gets label
   h += '<div class="pd-banner" style="padding-bottom:16px">';
@@ -6103,7 +6114,7 @@ function renderLogMatch() {
   var teams = PB.getScrambleTeams();
   if (teams.length < 2) { Router.toast("Need at least 2 teams"); Router.go("scramble"); return; }
 
-  var h = '<div class="sh"><h2>Log match</h2><button class="back" onclick="Router.go(\'scramble\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>Log match</h2><button class="back" onclick="Router.back(\'scramble\')">← Back</button></div>';
 
   h += '<div class="form-section"><div class="form-title">Match details</div>';
 
@@ -6239,7 +6250,7 @@ function renderAceList() {
   var aces = rec.holeInOnes || [];
   var courses = PB.getCourses();
 
-  var h = '<div class="sh"><h2>Ace wall</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.go(\'records\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'aces\',{add:true})">+ Log ace</button></div></div>';
+  var h = '<div class="sh"><h2>Ace wall</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'records\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'aces\',{add:true})">+ Log ace</button></div></div>';
 
   if (aces.length) {
     h += '<div style="text-align:center;padding:8px 16px 16px"><div style="font-size:48px;font-weight:800;color:var(--gold)">' + aces.length + '</div>';
@@ -6307,7 +6318,7 @@ function renderAceDetail(idx) {
   var isDirectory = courses.some(function(c) { return c.name === ace.course; });
   var player = PB.getPlayers().find(function(p) { return p.name === ace.by; });
 
-  var h = '<div class="sh"><h2>Hole-in-one</h2><button class="back" onclick="Router.go(\'aces\')">← Ace wall</button></div>';
+  var h = '<div class="sh"><h2>Hole-in-one</h2><button class="back" onclick="Router.back(\'aces\')">← Ace wall</button></div>';
 
   // Hero photo
   if (ace.photo) {
@@ -6355,7 +6366,7 @@ function renderAceDetail(idx) {
 }
 
 function renderAddAce() {
-  var h = '<div class="sh"><h2>Log a hole-in-one</h2><button class="back" onclick="Router.go(\'aces\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>Log a hole-in-one</h2><button class="back" onclick="Router.back(\'aces\')">← Back</button></div>';
 
   h += '<div style="text-align:center;padding:16px"><div style="font-family:Playfair Display,serif;font-size:24px;color:var(--gold)">Hole in One</div><div style="font-size:14px;color:var(--gold);font-weight:600;margin-top:4px">Congratulations!</div></div>';
 
@@ -6508,7 +6519,7 @@ Router.register("playnow", function(params) {
 });
 
 function renderPlaySetup() {
-  var h = '<div class="sh"><h2>Play now</h2><button class="back" onclick="Router.go(\'rounds\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>Play now</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
 
   h += '<div style="text-align:center;padding:16px"><div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">Start a round</div><div style="font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.3px">Score hole by hole as you play</div>';
   h += '<div style="margin-top:10px"><span style="font-size:11px;color:var(--gold);cursor:pointer;text-decoration:underline" onclick="Router.go(\'scramble-live\')">Or start a Scramble Round →</span></div></div>';
@@ -7192,7 +7203,7 @@ Router.register("standings", function() {
   var month = now.getMonth();
   var inSeason = month >= 2 && month <= 8;
 
-  var h = '<div class="sh"><h2>Season</h2><button class="back" onclick="Router.go(\'records\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>Season</h2><button class="back" onclick="Router.back(\'records\')">← Back</button></div>';
 
   h += '<div style="text-align:center;padding:20px 16px 24px;background:linear-gradient(180deg,#111520,var(--bg));border-bottom:1px solid var(--border)">';
   h += '<div style="font-family:Playfair Display,serif;font-size:28px;color:var(--gold);font-weight:700">' + year + ' Parbaugh Season</div>';
@@ -7287,7 +7298,7 @@ function renderChallengeList() {
     });
   } catch(e) {}
 
-  var h = '<div class="sh"><h2>Challenges</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.go(\'records\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'challenges\',{create:true})">+ New</button></div></div>';
+  var h = '<div class="sh"><h2>Challenges</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'records\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'challenges\',{create:true})">+ New</button></div></div>';
 
   if (challenges.length) {
     challenges.sort(function(a,b){return (b.ts||0)-(a.ts||0)});
@@ -7315,7 +7326,7 @@ function renderChallengeList() {
 
 function renderCreateChallenge() {
   var players = PB.getPlayers();
-  var h = '<div class="sh"><h2>New challenge</h2><button class="back" onclick="Router.go(\'challenges\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>New challenge</h2><button class="back" onclick="Router.back(\'challenges\')">← Back</button></div>';
 
   h += '<div class="form-section"><div class="form-title">Challenge details</div>';
   h += '<div class="ff"><label class="ff-label">From</label><select class="ff-input" id="ch-from">';
@@ -7436,7 +7447,7 @@ function renderTripCreate() {
   tripCreateState = { members: [], courses: [] };
   var allPlayers = PB.getPlayers();
 
-  var h = '<div class="sh"><h2>Create event</h2><button class="back" onclick="Router.go(\'trips\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>Create event</h2><button class="back" onclick="Router.back(\'trips\')">← Back</button></div>';
 
   // Step 1: Basic info
   h += '<div class="form-section"><div class="form-title">Event details</div>';
@@ -7782,7 +7793,7 @@ Router.register("scorecard", function(params) {
   // Start live score listener for this trip
   startTripScoreListener(trip.id);
 
-  var h = '<div class="sh"><h2>' + trip.name + '</h2><button class="back" onclick="Router.go(\'trips\')">← Trips</button></div>';
+  var h = '<div class="sh"><h2>' + trip.name + '</h2><button class="back" onclick="Router.back(\'trips\')">← Trips</button></div>';
 
   // Live indicator
   h += '<div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:6px;font-size:10px;color:var(--birdie);background:rgba(78,201,122,.05);border-bottom:1px solid var(--border)">';
@@ -8168,7 +8179,7 @@ function renderRoundDetail(roundId) {
   var diff = round.score - (round.rating || 72);
   var player = PB.getPlayer(round.player);
 
-  var h = '<div class="sh"><h2>Round detail</h2><button class="back" onclick="Router.go(\'rounds\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>Round detail</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
 
   // Round header
   h += '<div class="pd-banner" style="padding-bottom:12px">';
@@ -8316,7 +8327,7 @@ Router.register("courses", function(params) {
   if (params.add) { renderAddCourseForm(); return; }
   if (params.id) { renderCourseDetail(params.id); return; }
   var courses = PB.getCourses();
-  var h = '<div class="sh"><h2>Course directory</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.go(\'records\')">← Back</button><button class="btn-sm green" onclick="promptAddCourse()">+ Add</button></div></div>';
+  var h = '<div class="sh"><h2>Course directory</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'records\')">← Back</button><button class="btn-sm green" onclick="promptAddCourse()">+ Add</button></div></div>';
   
   // Search filter
   h += '<div style="padding:0 16px 10px"><input type="text" class="ff-input" id="dir-search" placeholder="Search courses..." style="font-size:12px" oninput="filterCourseDirectory(this.value)"></div>';
@@ -8668,7 +8679,7 @@ function renderCourseDetail(courseId) {
   if (!c) { Router.go("courses"); return; }
   var roundsHere = PB.getCourseRounds(c.name);
 
-  var h = '<div class="sh"><h2>' + c.name + '</h2><button class="back" onclick="Router.go(\'courses\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>' + c.name + '</h2><button class="back" onclick="Router.back(\'courses\')">← Back</button></div>';
 
   var coursePhotoSrc = photoCache["course:" + courseId] || c.photo || "";
   if (coursePhotoSrc && coursePhotoSrc !== COURSE_DEFAULT_IMG) {
@@ -8803,7 +8814,7 @@ function promptAddCourse() {
 }
 
 function renderAddCourseForm() {
-  var h = '<div class="sh"><h2>Add course</h2><button class="back" onclick="Router.go(\'courses\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>Add course</h2><button class="back" onclick="Router.back(\'courses\')">← Back</button></div>';
   h += '<div class="form-section"><div class="form-title">New course</div>';
   h += formField("Course name", "ac-name", "", "text", "e.g. Pebble Beach");
   h += formField("Location", "ac-loc", "", "text", "e.g. Pebble Beach, CA");
@@ -11050,7 +11061,7 @@ function generateInvite() {
 // ========== COMMISSIONER ADMIN PANEL ==========
 Router.register("admin", function() {
   if (!currentProfile || currentProfile.role !== "commissioner") {
-    var h = '<div class="sh"><h2>Access Denied</h2><button class="back" onclick="Router.go(\'home\')">← Back</button></div>';
+    var h = '<div class="sh"><h2>Access Denied</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
     h += '<div class="section"><div class="card"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg></div><div class="empty-text">Commissioner access only</div></div></div></div>';
     document.querySelector('[data-page="admin"]').innerHTML = h;
     return;
@@ -11561,7 +11572,7 @@ function bulkGenerateInvites() {
 
 // ========== FAQ PAGE ==========
 Router.register("faq", function() {
-  var h = '<div class="sh"><h2>FAQ</h2><button class="back" onclick="Router.go(\'home\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>FAQ</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
   
   var faqs = [
     { q: "How do I join the Parbaughs?", a: "You need an invite code from an existing member. They can generate one from the Members page. Enter the code when creating your account." },
@@ -11641,15 +11652,15 @@ function openFeatureRequest() {
 
 // ========== THE CADDY NOTES ==========
 Router.register("caddynotes", function() {
-  var h = '<div class="sh"><h2>The Caddy Notes</h2><button class="back" onclick="Router.go(\'home\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>The Caddy Notes</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
 
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.37</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.39</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.37</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.39</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · SMO Week</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -11765,7 +11776,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.37</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.39</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
@@ -12099,7 +12110,7 @@ var PARTY_GAMES = [
 ];
 
 Router.register("partygames", function() {
-  var h = '<div class="sh"><h2>Party Games</h2><button class="back" onclick="Router.go(\'home\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>Party Games</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
   
   var inRound = liveState.active;
   
@@ -12269,7 +12280,7 @@ Router.register("syncround", function(params) {
 });
 
 function renderSyncRoundSetup() {
-  var h = '<div class="sh"><h2>Parbaugh Round</h2><button class="back" onclick="Router.go(\'rounds\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>Parbaugh Round</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
   h += '<div style="text-align:center;padding:20px 16px"><div style="font-size:11px;color:var(--muted);line-height:1.6">Play together on one shared scorecard. Everyone sees scores update in real-time. Counts as one round for each player — no double XP.</div></div>';
   
   // Start new Parbaugh Round
@@ -12689,7 +12700,7 @@ startNotificationListener = function() {
 // ========== AI TOURNAMENT GENERATOR ==========
 function showAITournamentGenerator() {
   var members = PB.getPlayers();
-  var h = '<div class="sh"><h2>AI Tournament Builder</h2><button class="back" onclick="Router.go(\'trips\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>AI Tournament Builder</h2><button class="back" onclick="Router.back(\'trips\')">← Back</button></div>';
   
   h += '<div style="text-align:center;padding:20px 16px">';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">AI Tournament Generator</div>';
@@ -12881,7 +12892,7 @@ Router.register("scramble-live", function() {
 
 function renderScrambleLiveSetup() {
   var teams = PB.getScrambleTeams();
-  var h = '<div class="sh"><h2>Scramble Round</h2><button class="back" onclick="Router.go(\'rounds\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>Scramble Round</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
   
   h += '<div style="text-align:center;padding:16px"><div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">Live Scramble Scoring</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">Score hole by hole as a team</div></div>';
@@ -13864,7 +13875,7 @@ function renderWatchRound() {
   if (!el) return;
 
   if (!member || !member.liveRound || !member.liveRound.course) {
-    el.innerHTML = '<div class="sh"><h2>Watch Round</h2><button class="back" onclick="Router.go(\'home\')">← Back</button></div><div style="padding:40px 16px;text-align:center;font-size:12px;color:var(--muted)">This player has finished their round or is no longer active.</div>';
+    el.innerHTML = '<div class="sh"><h2>Watch Round</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div><div style="padding:40px 16px;text-align:center;font-size:12px;color:var(--muted)">This player has finished their round or is no longer active.</div>';
     return;
   }
 
