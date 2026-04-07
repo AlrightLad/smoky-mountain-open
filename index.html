@@ -827,7 +827,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.7.34 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
+   PARBAUGHS v5.7.37 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -902,6 +902,25 @@ function checkFoundingCodeAvailability() {
   return db.collection("members").where("isFoundingFour", "==", true).get().then(function(s) { return s.size < FOUNDING_CODE_MAX_USES; }).catch(function() { return true; });
 }
 function escHtml(s) { if (!s) return ""; var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+// Dismiss mobile keyboard by blurring the active input
+function pbDismissKeyboard() {
+  if (document.activeElement && typeof document.activeElement.blur === "function") {
+    document.activeElement.blur();
+  }
+}
+
+// Global tap-outside handler: dismiss keyboard when tapping non-input areas on mobile
+document.addEventListener("touchend", function(e) {
+  var tag = e.target.tagName;
+  if (tag !== "INPUT" && tag !== "TEXTAREA" && tag !== "SELECT") {
+    var ae = document.activeElement;
+    if (ae && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA")) {
+      // Small delay so the tap's onclick fires first (e.g. selecting a search result)
+      setTimeout(function() { ae.blur(); }, 50);
+    }
+  }
+}, { passive: true });
 function fsTimestamp() { return (typeof firebase !== "undefined" && firebase.firestore) ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString(); }
 function genId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 6); }
 
@@ -1316,6 +1335,7 @@ function enterApp() {
   preloadMemberPhotos();
   syncCoursesFromFirestore();
   syncScrambleTeamsFromFirestore();
+  syncTripsFromFirestore();
   loadRoundsFromFirestore();
   loadCustomDrillsFromFirestore();
   loadLiveState(); // restore any in-progress round that survived a crash or page reload
@@ -1485,6 +1505,39 @@ function syncRound(r) { if (!db||syncStatus==="offline") return; var d=JSON.pars
 function syncCourse(c) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(c)); d.updatedAt=fsTimestamp(); delete d.photo; db.collection("courses").doc(c.id).set(d,{merge:true}).catch(function(){}); }
 function syncTrip(t) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(t)); d.updatedAt=fsTimestamp(); if(d.photos){delete d.photos;} db.collection("trips").doc(t.id).set(d,{merge:true}).catch(function(){}); }
 
+// Pull trip settings (scorekeeper, finished status) from Firestore on startup
+// Trips are hardcoded in seed but settings like scorekeeper only live in Firestore
+function syncTripsFromFirestore() {
+  if (!db) return;
+  var localTrips = PB.getTrips();
+  if (!localTrips || !localTrips.length) return;
+  localTrips.forEach(function(trip) {
+    db.collection("trips").doc(trip.id).get().then(function(doc) {
+      if (!doc.exists) {
+        // First time — push local trip to Firestore
+        syncTrip(trip);
+        return;
+      }
+      var remote = doc.data();
+      // Merge remote course settings (scorekeeper, finished) into local trip
+      if (remote.courses && Array.isArray(remote.courses)) {
+        remote.courses.forEach(function(rc) {
+          var lc = trip.courses.find(function(c) { return c.key === rc.key; });
+          if (lc) {
+            if (rc.scorekeeper !== undefined) lc.scorekeeper = rc.scorekeeper;
+            if (rc.finished !== undefined) lc.finished = rc.finished;
+          }
+        });
+      }
+      // Merge remote mini-game/bonus winners if any
+      if (remote.miniGames) trip.miniGames = remote.miniGames;
+      pbLog("[Sync] Trip settings loaded from Firestore:", trip.id);
+      // Refresh scorecard if user is on it
+      if (Router.getPage() === "scorecard") Router.go("scorecard", Router.getParams(), true);
+    }).catch(function(e) { pbWarn("[Sync] Trip load failed:", e.message); });
+  });
+}
+
 function syncScrambleTeam(team) {
   if (!db || syncStatus === "offline") return;
   var d = JSON.parse(JSON.stringify(team));
@@ -1573,7 +1626,55 @@ function syncTripScore(tripId, courseKey, playerId, scores) {
   }, { merge: true }).catch(function(e) { pbWarn("[Sync] Trip score failed:", e.message); });
 }
 
-// Listen for live trip score updates from other devices
+// In-place score input handler — saves score without re-rendering the whole scorecard
+// This prevents other input values being wiped on each keystroke
+function tripScoreInput(el, tripId, courseKey, playerId, hole, par) {
+  var raw = el.value === "" ? "" : Math.max(1, Math.min(15, parseInt(el.value) || 0));
+  if (raw !== "" && raw !== el.value) el.value = raw; // clamp display value
+  PB.setScore(tripId, courseKey, playerId, hole, raw);
+
+  // Update cell colour class
+  el.className = el.className.replace(/\b(eagle|birdie|par|bogey|dbl|blow)\b/g, "");
+  if (raw !== "") {
+    var diff = raw - par;
+    var cls = diff <= -2 ? "eagle" : diff === -1 ? "birdie" : diff === 0 ? "par" : diff === 1 ? "bogey" : diff === 2 ? "dbl" : "blow";
+    el.classList.add(cls);
+  }
+
+  // Update OUT / IN / TOT totals in-place without re-rendering
+  var trip = PB.getTrip(tripId);
+  if (!trip) return;
+  var iS = (courseKey === "scramble" || (trip.courses.find(function(c) { return c.key === courseKey; }) || {}).s);
+  var players = iS ? ["team"] : trip.members.map(function(id) { return PB.getPlayer(id); }).filter(Boolean).map(function(p) { return p.id; });
+
+  // Find the scorecard table and update totals rows
+  var rows = document.querySelectorAll(".pbsc-totals");
+  if (rows.length) {
+    rows.forEach(function(row) {
+      var cells = row.querySelectorAll("td");
+      var label = cells[0] ? cells[0].textContent : "";
+      players.forEach(function(pid, idx) {
+        var cell = cells[2 + idx];
+        if (!cell) return;
+        if (label === "OUT") cell.textContent = PB.getTripTotal(tripId, courseKey, pid, 0, 9) || "—";
+        else if (label === "IN") cell.textContent = PB.getTripTotal(tripId, courseKey, pid, 9, 18) || "—";
+        else if (label === "TOT") cell.textContent = PB.getTripTotal(tripId, courseKey, pid, 0, 18) || "—";
+      });
+    });
+  } else {
+    // Fallback: totals rows not found, do a targeted re-render of just the scorecard section
+    var sc = document.getElementById("pbTripScorecard");
+    if (sc) {
+      var trip2 = PB.getTrip(tripId);
+      if (trip2) {
+        var players2 = trip2.members.map(function(id) { return PB.getPlayer(id); }).filter(Boolean);
+        sc.innerHTML = renderTripScorecard(trip2, players2);
+      }
+    }
+  }
+}
+
+
 var tripScoreListener = null;
 function startTripScoreListener(tripId) {
   if (!db) return;
@@ -1964,7 +2065,7 @@ function preloadMemberPhotos() {
         });
         pbLog("[Members] Cached", Object.keys(fbMemberCache).length, "member profiles");
         updateProfileBar();
-        if (Router.getPage() === "home" || Router.getPage() === "members") Router.go(Router.getPage());
+        if (Router.getPage() === "home" || Router.getPage() === "members") Router.go(Router.getPage(), Router.getParams(), true);
       });
     });
 }
@@ -3780,13 +3881,42 @@ var PB = (function() {
 var Router = (function() {
   var current = { page: "home", params: {} };
   var pages = {};
+  var _skipHistoryPush = false;
+
+  // Wire up browser back/forward button
+  window.addEventListener("popstate", function(e) {
+    var state = e.state;
+    if (state && state.page) {
+      _skipHistoryPush = true;
+      go(state.page, state.params || {});
+      _skipHistoryPush = false;
+    } else {
+      _skipHistoryPush = true;
+      go("home", {});
+      _skipHistoryPush = false;
+    }
+  });
 
   function register(name, renderFn) {
     pages[name] = renderFn;
   }
 
-  function go(page, params) {
+  function go(page, params, replaceState) {
+    var prev = current.page;
     current = { page: page, params: params || {} };
+
+    // Push/replace browser history so back button works
+    if (!_skipHistoryPush) {
+      var state = { page: page, params: params || {} };
+      var hash = "#" + page;
+      // Replace rather than push if: same page re-render, or caller asked for replace
+      if (replaceState || prev === page) {
+        history.replaceState(state, "", hash);
+      } else {
+        history.pushState(state, "", hash);
+      }
+    }
+
     renderNav();
     var containers = document.querySelectorAll("#mainApp [data-page]");
     containers.forEach(function(el) { el.classList.add("hidden"); });
@@ -7766,7 +7896,7 @@ function renderTripScorecard(trip, tripPlayers) {
   var tid = trip.id;
   for (var i = 0; i < 18; i++) {
     if (i === 9) {
-      h += '<tr class="sr"><td>OUT</td><td>' + c.p.slice(0, 9).reduce(function(a, b) { return a + b; }, 0) + '</td>';
+      h += '<tr class="sr pbsc-totals"><td>OUT</td><td>' + c.p.slice(0, 9).reduce(function(a, b) { return a + b; }, 0) + '</td>';
       if (iS) h += '<td>' + (PB.getTripTotal(tid, c.key, "team", 0, 9) || "—") + '</td>';
       else tripPlayers.forEach(function(p) { h += '<td>' + (PB.getTripTotal(tid, c.key, p.id, 0, 9) || "—") + '</td>'; });
       h += '</tr>';
@@ -7776,25 +7906,25 @@ function renderTripScorecard(trip, tripPlayers) {
     if (iS) {
       var v = PB.getScores(tid, c.key, "team")[i] || "";
       var canEdit = canEditCell("team");
-      h += '<td><input type="number" inputmode="numeric" class="s w ' + scoreClass(v, pa) + '" value="' + (v || "") + '"' + (canEdit ? '' : ' disabled style="opacity:.5"') + ' onchange="PB.setScore(\'' + tid + "','" + c.key + "','team'," + i + ',this.value===\"\"?\"\":Math.max(1,Math.min(15,parseInt(this.value)||0)));Router.go(\'scorecard\',{tripId:\'' + tid + '\'})" onfocus="this.select()"></td>';
+      h += '<td><input type="number" inputmode="numeric" class="s w ' + scoreClass(v, pa) + '" value="' + (v || "") + '"' + (canEdit ? '' : ' disabled style="opacity:.5"') + ' onchange="tripScoreInput(this,\'' + tid + "','" + c.key + "','team'," + i + ',' + pa + ')" onfocus="this.select()"></td>';
     } else {
       tripPlayers.forEach(function(p) {
         var v = PB.getScores(tid, c.key, p.id)[i] || "";
         var canEdit = canEditCell(p.id);
-        h += '<td><input type="number" inputmode="numeric" class="s ' + scoreClass(v, pa) + '" value="' + (v || "") + '"' + (canEdit ? '' : ' disabled style="opacity:.5"') + ' onchange="PB.setScore(\'' + tid + "','" + c.key + "','" + p.id + "'," + i + ',this.value===\"\"?\"\":Math.max(1,Math.min(15,parseInt(this.value)||0)));Router.go(\'scorecard\',{tripId:\'' + tid + '\'})" onfocus="this.select()"></td>';
+        h += '<td><input type="number" inputmode="numeric" class="s ' + scoreClass(v, pa) + '" value="' + (v || "") + '"' + (canEdit ? '' : ' disabled style="opacity:.5"') + ' onchange="tripScoreInput(this,\'' + tid + "','" + c.key + "','" + p.id + "'," + i + ',' + pa + ')" onfocus="this.select()"></td>';
       });
     }
     h += '</tr>';
   }
 
   // IN
-  h += '<tr class="sr"><td>IN</td><td>' + c.p.slice(9).reduce(function(a, b) { return a + b; }, 0) + '</td>';
+  h += '<tr class="sr pbsc-totals"><td>IN</td><td>' + c.p.slice(9).reduce(function(a, b) { return a + b; }, 0) + '</td>';
   if (iS) h += '<td>' + (PB.getTripTotal(tid, c.key, "team", 9, 18) || "—") + '</td>';
   else tripPlayers.forEach(function(p) { h += '<td>' + (PB.getTripTotal(tid, c.key, p.id, 9, 18) || "—") + '</td>'; });
   h += '</tr>';
 
   // TOTAL
-  h += '<tr class="ttr"><td>TOT</td><td>' + pT + '</td>';
+  h += '<tr class="ttr pbsc-totals"><td>TOT</td><td>' + pT + '</td>';
   if (iS) h += '<td>' + (PB.getTripTotal(tid, c.key, "team", 0, 18) || "—") + '</td>';
   else tripPlayers.forEach(function(p) { h += '<td>' + (PB.getTripTotal(tid, c.key, p.id, 0, 18) || "—") + '</td>'; });
   h += '</tr>';
@@ -8367,7 +8497,7 @@ function courseSearchWithApi(val, containerId, onSelect, onQuickAdd) {
   if (results.length) {
     h += '<div class="sr-section">Your courses</div>';
     results.forEach(function(c) {
-      h += '<div class="sr-item" onclick="' + onSelect(c) + '">';
+      h += '<div class="sr-item" onclick="' + onSelect(c) + ';pbDismissKeyboard()">';
       h += '<div><div class="sr-name">' + escHtml(c.name) + '</div><div class="sr-meta">' + escHtml(c.loc||"") + (c.rating && c.rating !== 72 ? ' · ' + c.rating + '/' + c.slope : '') + (c.par ? ' · Par ' + c.par : '') + '</div></div>';
       h += '<span class="sr-badge local">Select</span></div>';
     });
@@ -8382,7 +8512,7 @@ function courseSearchWithApi(val, containerId, onSelect, onQuickAdd) {
   
   // Quick add at bottom
   if (!exactMatch) {
-    h += '<div class="sr-item" onclick="' + onQuickAdd(val) + '">';
+    h += '<div class="sr-item" onclick="' + onQuickAdd(val) + ';pbDismissKeyboard()">';
     h += '<div><div class="sr-name" style="color:var(--gold)">+ Add "' + escHtml(val) + '"</div><div class="sr-meta">Not in results? Add manually</div></div>';
     h += '<span class="sr-badge add">+ Add</span></div>';
   }
@@ -8447,7 +8577,7 @@ function _renderApiResults(courses, apiContainer, containerId, onSelect, query) 
     var slope = td.slope || "";
     var rating = td.rating || "";
     
-    h += '<div class="sr-item" onclick="importAndSelectCourse(' + idx + ',\'' + containerId + '\')">';
+    h += '<div class="sr-item" onclick="importAndSelectCourse(' + idx + ',\'' + containerId + '\');pbDismissKeyboard()">';
     h += '<div><div class="sr-name">' + escHtml(name) + '</div>';
     h += '<div class="sr-meta">' + escHtml(loc) + (rating ? ' · ' + rating + '/' + slope : '') + (par ? ' · Par ' + par : '') + '</div></div>';
     h += '<span class="sr-badge import">+ Import</span></div>';
@@ -9110,7 +9240,7 @@ function startTeeTimeListener() {
   window._teeTimeUnsub = db.collection("teetimes").orderBy("date","asc").onSnapshot(function(snap) {
     liveTeeTimes = [];
     snap.forEach(function(doc) { liveTeeTimes.push(Object.assign({_id:doc.id}, doc.data())); });
-    if (Router.getPage() === "teetimes") Router.go("teetimes");
+    if (Router.getPage() === "teetimes") Router.go("teetimes", Router.getParams(), true);
   });
 }
 
@@ -9332,7 +9462,7 @@ function startRangeSessionListener() {
   window._rangeUnsub = db.collection("rangeSessions").orderBy("startedAt","desc").limit(100).onSnapshot(function(snap) {
     liveRangeSessions = [];
     snap.forEach(function(doc) { liveRangeSessions.push(Object.assign({_id:doc.id}, doc.data())); });
-    if (Router.getPage() === "activity" && rangeActiveView === "range") Router.go("activity");
+    if (Router.getPage() === "activity" && rangeActiveView === "range") Router.go("activity", Router.getParams(), true);
   });
 }
 
@@ -9859,7 +9989,7 @@ function startEventListener() {
   window._eventUnsub = db.collection("events").onSnapshot(function(snap) {
     liveEvents = [];
     snap.forEach(function(doc) { liveEvents.push(Object.assign({_id:doc.id}, doc.data())); });
-    if (Router.getPage() === "calendar") Router.go("calendar");
+    if (Router.getPage() === "calendar") Router.go("calendar", Router.getParams(), true);
   });
 }
 
@@ -11516,10 +11646,10 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.34</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.37</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.34</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.37</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · SMO Week</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -11635,7 +11765,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.34</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.37</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
