@@ -149,7 +149,7 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
 .member-row{display:flex;align-items:center;gap:14px;padding:14px 16px;cursor:pointer;transition:background .15s}
 .member-row:hover{background:var(--bg3)}
 .member-row:active{background:var(--bg3)}
-.m-av{position:relative;width:48px;height:48px;border-radius:50%;background:var(--bg3);border:2px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--gold);font-weight:700;flex-shrink:0}
+.m-av{position:relative;width:48px;height:48px;border-radius:50%;background:var(--bg3);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--gold);font-weight:700;flex-shrink:0}
 .m-av img{width:100%;height:100%;object-fit:cover}
 .m-info{flex:1;min-width:0}
 .m-name{font-size:14px;font-weight:600}
@@ -613,9 +613,93 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
   .section{padding-left:32px;padding-right:32px}
   .home-wrap{padding:0 32px}
 }
+/* ── SHARE CARD TEMPLATE ─────────────────────────────────────────────── */
+#pbShareTemplate{position:absolute;left:-9999px;top:0;width:1080px;height:1080px;background:#070b10;font-family:-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;box-sizing:border-box;overflow:hidden;color:#fff}
+.pbs-inner{width:1080px;height:1080px;padding:40px 56px 36px;box-sizing:border-box;display:flex;flex-direction:column}
+/* header — logo + brand on same row */
+.pbs-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid rgba(201,168,76,.14)}
+.pbs-logo{width:52px;height:52px;border-radius:12px;overflow:hidden;flex-shrink:0}
+.pbs-logo img{width:100%;height:100%;object-fit:cover;display:block}
+.pbs-brand-center{text-align:center;flex:1;padding:0 16px}
+.pbs-brand-name{font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:700;color:#c9a84c;letter-spacing:2px}
+.pbs-brand-sub{font-size:10px;color:#3d4a5c;letter-spacing:4px;margin-top:2px;text-transform:uppercase}
+.pbs-header-spacer{width:52px;flex-shrink:0}
+/* score row — player left, score right */
+.pbs-scorerow{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;padding-bottom:22px;border-bottom:1px solid rgba(255,255,255,.06)}
+.pbs-player-block{display:flex;flex-direction:column;justify-content:center}
+.pbs-name{font-size:44px;font-weight:700;color:#fff;line-height:1.1;letter-spacing:-.5px}
+.pbs-course{font-size:18px;color:#5a6478;margin-top:6px;line-height:1.3}
+.pbs-tee-info{font-size:15px;color:#3d4a5c;margin-top:4px}
+.pbs-score-block{text-align:right;flex-shrink:0}
+.pbs-num{font-size:108px;font-weight:800;color:#fff;line-height:1;letter-spacing:-4px}
+.pbs-diff{font-size:24px;font-weight:700;margin-top:4px;text-align:right}
+.pbs-diff-pos{color:#c9a84c}
+.pbs-diff-neg{color:#3db87a}
+.pbs-diff-even{color:#c9a84c}
+/* stats */
+.pbs-stats{display:flex;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.pbs-stat{flex:1;text-align:center}
+.pbs-stat+.pbs-stat{border-left:1px solid rgba(255,255,255,.05)}
+.pbs-stat-val{font-size:26px;font-weight:700;color:#fff}
+.pbs-stat-lbl{font-size:11px;color:#3d4a5c;letter-spacing:1.5px;margin-top:2px;text-transform:uppercase}
+/* quip */
+.pbs-quip{font-style:italic;font-size:15px;color:#a8864a;text-align:center;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.07);line-height:1.55}
+/* scorecard */
+.pbs-sc{flex:1;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.pbs-join{text-align:center;font-size:12px;color:#2e3a4a;margin-top:12px;letter-spacing:.5px}
+.pbs-nine{display:flex;gap:3px;align-items:stretch}
+.pbs-cell{flex:1;min-width:0;background:rgba(255,255,255,.038);border-radius:4px;display:flex;flex-direction:column;align-items:center;padding:8px 3px 10px;min-height:82px;overflow:hidden}
+.pbs-hn{font-size:10px;font-weight:600;color:rgba(201,168,76,.6);width:100%;text-align:center;padding-bottom:5px;margin-bottom:4px;border-bottom:1px solid rgba(255,255,255,.1)}
+.pbs-sw{flex:1;display:flex;align-items:center;justify-content:center}
+.pbs-sn{font-size:22px;font-weight:700;color:#fff;line-height:1;display:flex;align-items:center;justify-content:center;width:42px;height:42px}
+/* symbol styles are applied inline via buildScorecardHTML */
+.pbs-tot{width:76px;flex-shrink:0;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.pbs-tot-lbl{font-size:9px;color:#c9a84c;letter-spacing:1px;text-transform:uppercase}
+.pbs-tot-val{font-size:32px;font-weight:800}
+.pbs-tot-pos{color:#fff}
+.pbs-tot-neg{color:#fff}
+.pbs-tot-even{color:#fff}
 </style>
+<!-- html2canvas for share card image generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!-- Playfair Display for share card brand heading -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+<!-- ── SHARE CARD TEMPLATE (hidden, captured by html2canvas) ── -->
+<div id="pbShareTemplate" aria-hidden="true">
+  <div class="pbs-inner">
+    <!-- Header: logo left, brand center, spacer right -->
+    <div class="pbs-header">
+      <div class="pbs-logo"><img id="pbs-logo-img" src="logo.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+      <div class="pbs-brand-center">
+        <div class="pbs-brand-name">The Parbaughs</div>
+        <div class="pbs-brand-sub">Members Only</div>
+      </div>
+      <div class="pbs-header-spacer"></div>
+    </div>
+    <!-- Score row: player/course left, score right -->
+    <div class="pbs-scorerow">
+      <div class="pbs-player-block">
+        <div class="pbs-name" id="pbs-player-name">—</div>
+        <div class="pbs-course" id="pbs-course">—</div>
+        <div class="pbs-tee-info" id="pbs-tee-info" style="display:none"></div>
+      </div>
+      <div class="pbs-score-block">
+        <div class="pbs-num" id="pbs-score">—</div>
+        <div class="pbs-diff" id="pbs-diff">—</div>
+      </div>
+    </div>
+    <!-- Stats -->
+    <div class="pbs-stats" id="pbs-stats-row"></div>
+    <!-- AI quip -->
+    <div class="pbs-quip" id="pbs-quip"></div>
+    <!-- Scorecard -->
+    <div class="pbs-sc" id="pbs-scorecard"></div>
+    <div class="pbs-join">Invite only &middot; Ask a Parbaugh to get in</div>
+  </div>
+</div>
 
 <!-- ============ AUTH SCREEN ============ -->
 <div id="authScreen" class="auth-screen">
@@ -668,7 +752,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 <div id="mainApp" class="hidden">
   <div id="profileBar" style="display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:var(--bg);border-bottom:1px solid var(--border)">
     <div id="profileBarLeft" style="display:flex;align-items:center;gap:8px;cursor:pointer" onclick="goToMyProfile()">
-      <div id="profileBarAvatar" style="width:28px;height:28px;border-radius:50%;overflow:hidden;background:var(--bg3);display:flex;align-items:center;justify-content:center;position:relative"></div>
+      <div id="profileBarAvatar" style="width:28px;height:28px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;position:relative"></div>
       <div id="profileBarRight" style="font-size:12px;color:var(--muted)"></div>
     </div>
     <div style="display:flex;align-items:center;gap:14px">
@@ -736,7 +820,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.7.7 — FIRESTORE AUTHORITY + LIVESTATE CRASH RECOVERY
+   PARBAUGHS v5.7.19 — HTML2CANVAS SHARE CARD + BADGE FIXES + 1080 CANVAS + ACTIVITY FEED + RECORDS CLEANUP
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -1222,6 +1306,9 @@ function enterApp() {
   Router.go("home");
 }
 
+// Set share card logo src once DOM is ready
+// logo.jpg loaded via direct src attr in template
+
 function updateProfileBar() {
   var avatarEl = document.getElementById("profileBarAvatar");
   var rightEl = document.getElementById("profileBarRight");
@@ -1265,9 +1352,7 @@ function updateProfileBar() {
     badgeEl.id = "profileBarLevelBadge";
     badgeEl.style.cssText = "position:absolute;bottom:-4px;right:-4px;background:var(--gold);color:#0d1117;font-size:8px;font-weight:800;border-radius:8px;padding:1px 4px;border:2px solid var(--bg);line-height:1.3;min-width:14px;text-align:center;white-space:nowrap;z-index:2";
     badgeEl.textContent = lvlInfo.level;
-    avatarEl.parentNode.appendChild(badgeEl);
-    avatarEl.style.position = "relative";
-    avatarEl.parentNode.style.position = "relative";
+    avatarEl.appendChild(badgeEl); // inside avatarEl which already has position:relative
   }
 
   // XP bar values
@@ -2560,8 +2645,25 @@ var PB = (function() {
 
   /* ---------- ACTIVITY FEED ---------- */
   function getActivity(limit) {
-    if (!state.activity) state.activity = [];
-    return state.activity.slice().sort(function(a,b){return(b.ts||0)-(a.ts||0)}).slice(0, limit || 15);
+    var items = [];
+    // Build from rounds already loaded from Firestore
+    state.rounds.forEach(function(r) {
+      items.push({type:"round", playerName:r.playerName||r.player, course:r.course, score:r.score, date:r.date, ts:r.timestamp||0, roundId:r.id, player:r.player});
+    });
+    // Merge in-memory activity items (member joins, reviews, posts) that aren't rounds
+    if (state.activity) {
+      state.activity.forEach(function(a) {
+        if (a.type !== "round") items.push(a);
+      });
+    }
+    // Range sessions from live listener
+    if (typeof liveRangeSessions !== "undefined") {
+      liveRangeSessions.forEach(function(s) {
+        if (s.visibility === "private") return;
+        items.push({type:"range", playerName:s.playerName||s.playerId, durationMin:s.durationMin||0, sessionXP:s.sessionXP||0, date:s.date, ts:s.startedAt ? new Date(s.startedAt).getTime() : 0});
+      });
+    }
+    return items.sort(function(a,b){return(b.ts||0)-(a.ts||0)}).slice(0, limit || 20);
   }
 
   /* ---------- ACHIEVEMENTS & XP SYSTEM ---------- */
@@ -3307,6 +3409,90 @@ var PB = (function() {
     var dialedSessions = _rangeS.filter(function(s){return s.feel===3;});
     if (dialedSessions.length >= 3) achievements.push({id:"dialed_feel",name:"Dialed",desc:"Rate 3 sessions as Dialed",icon:_rangeSVG,xp:75,cat:"range",title:"Dialed"});
 
+    // ===== NEW ACHIEVEMENTS =====
+    // Eagle — score 2 under par or better on any hole
+    if (rounds.some(function(r){
+      if (!r.holeScores) return false;
+      var par = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+      return r.holeScores.some(function(s,i){ return s !== "" && parseInt(s) <= (par[i] - 2) && par[i] >= 4; });
+    })) achievements.push({id:"eagle_eye",name:"Eagle Eye",desc:"Score an eagle or better on any hole",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='8' r='3' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='8' cy='8' r='.8' fill='currentColor'/></svg>",xp:400,cat:"score",title:"Eagle Eye"});
+
+    // Birdie Machine — 3+ birdies in one round
+    if (rounds.some(function(r){
+      if (!r.holeScores) return false;
+      var par = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+      var birdies = r.holeScores.filter(function(s,i){ return s !== "" && parseInt(s) === par[i] - 1; }).length;
+      return birdies >= 3;
+    })) achievements.push({id:"birdie_machine",name:"Birdie Machine",desc:"Score 3 birdies in a single round",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 2a5 5 0 100 10A5 5 0 008 2z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M5 7l2 2 4-4' stroke='currentColor' stroke-width='1.2'/></svg>",xp:300,cat:"score",title:"Birdie Machine"});
+
+    // Bogey Free — full round with no score above par on any hole
+    if (rounds.some(function(r){
+      if (!r.holeScores || r.holeScores.filter(function(s){return s !== "";}).length < 18) return false;
+      var par = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+      return !r.holeScores.some(function(s,i){ return s !== "" && parseInt(s) > par[i]; });
+    })) achievements.push({id:"bogey_free",name:"Bogey Free",desc:"Complete an 18-hole round with no bogeys",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M5 8l2 2 4-4' stroke='currentColor' stroke-width='1.5'/></svg>",xp:600,cat:"score",title:"Bogey Free"});
+
+    // Flip Flop — improve 10+ strokes over previous round at same course
+    if (rounds.length >= 2) {
+      var _courseMap = {};
+      rounds.slice().sort(function(a,b){return a.date>b.date?1:-1}).forEach(function(r) {
+        if (_courseMap[r.course] !== undefined) {
+          if (_courseMap[r.course] - r.score >= 10) achievements.push({id:"flip_flop",name:"Flip Flop",desc:"Improve 10+ strokes over your previous round at same course",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 12l5-7 3 4 3-6 3 5' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"growth",title:"The Flip Flop"});
+        }
+        _courseMap[r.course] = r.score;
+      });
+    }
+
+    // Trophy Shelf — earn 15+ achievements
+    if (achievements.length >= 15) achievements.push({id:"trophy_shelf",name:"Trophy Shelf",desc:"Earn 15 achievements",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M3 13h10M4 7h8M5 7V4a1 1 0 012-2h2a1 1 0 012 2v3M4 13v-2a4 4 0 018 0v2' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:250,cat:"milestone",title:"Trophy Shelf"});
+    if (achievements.length >= 25) achievements.push({id:"achievement_hunter",name:"Achievement Hunter",desc:"Earn 25 achievements",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"milestone",title:"Achievement Hunter"});
+
+    // Two rounds same day
+    var _dateCounts = {};
+    rounds.forEach(function(r){if(r.date) _dateCounts[r.date]=(_dateCounts[r.date]||0)+1;});
+    if (Object.values(_dateCounts).some(function(c){return c>=2;})) {
+      achievements.push({id:"two_a_day",name:"Two-A-Day",desc:"Log two rounds on the same day",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='5' cy='8' r='4' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='11' cy='8' r='4' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"milestone"});
+    }
+
+    // SMO Triple Crown — play all 4 SMO courses
+    var smoCourses = ["Sequoyah National","Springdale Resort","Maggie Valley","Connestee Falls"];
+    var _playedCourses = {};
+    rounds.forEach(function(r){if(r.course)_playedCourses[r.course.split(" ")[0]]=1;});
+    var smoPlayed = smoCourses.filter(function(c){return _playedCourses[c.split(" ")[0]];}).length;
+    if (smoPlayed >= 4) achievements.push({id:"triple_crown",name:"SMO Triple Crown",desc:"Play all four Smoky Mountain Open courses",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 14l5-10 3 5 4-7 2 12z' fill='none' stroke='currentColor' stroke-width='1'/><path d='M3 14h10' stroke='currentColor' stroke-width='1'/></svg>",xp:300,cat:"explore",title:"SMO Legend"});
+
+    // All In — round + range + party game in same week
+    var _weekActivity = {};
+    rounds.forEach(function(r){if(r.date){var d=new Date(r.date+"T12:00:00");var wk=d.getFullYear()+"-"+Math.floor(d.getDate()/7);_weekActivity[wk]=_weekActivity[wk]||{};_weekActivity[wk].round=1;}});
+    _rangeS.forEach(function(s){if(s.date){var d=new Date(s.date+"T12:00:00");var wk=d.getFullYear()+"-"+Math.floor(d.getDate()/7);_weekActivity[wk]=_weekActivity[wk]||{};_weekActivity[wk].range=1;}});
+    if (Object.values(_weekActivity).some(function(w){return w.round&&w.range;})) {
+      achievements.push({id:"all_in",name:"All In",desc:"Log a round and a range session in the same week",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:75,cat:"milestone",title:"All In"});
+    }
+
+    // Deep Clean — 18-hole round where every score is par or better
+    if (rounds.some(function(r){
+      if (!r.holeScores || r.holeScores.filter(function(s){return s !== "";}).length < 18) return false;
+      var par = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+      return r.holeScores.every(function(s,i){ return s === "" || parseInt(s) <= par[i]; });
+    })) achievements.push({id:"clean_card",name:"Clean Card",desc:"Complete an 18-hole round with no scores over par",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><rect x='3' y='2' width='10' height='12' rx='1' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M5 7l2 2 4-4' stroke='currentColor' stroke-width='1.2'/></svg>",xp:500,cat:"score",title:"Clean Card"});
+
+    // Overcorrection — score 15+ strokes worse than personal best (blunder)
+    if (rounds.length >= 2) {
+      var _pb = Math.min.apply(null, rounds.map(function(r){return r.score;}));
+      if (rounds.some(function(r){return r.score >= _pb + 15;})) {
+        achievements.push({id:"overcorrection",name:"The Overcorrection",desc:"Shoot 15+ strokes worse than your personal best",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 5l5 4 3-3 6 8' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M13 8l3 5h-4z' fill='currentColor'/></svg>",xp:30,cat:"blunder",title:"The Overcorrection"});
+      }
+    }
+
+    // Founding Season — 5+ rounds in 2026
+    var _2026rounds = rounds.filter(function(r){return r.date && r.date.startsWith("2026");});
+    if (_2026rounds.length >= 5) achievements.push({id:"founding_season",name:"Founding Season",desc:"Log 5 rounds in the founding 2026 season",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"special",title:"Founding Season"});
+
+    // Range + Round Deep Dive — range session 30+ min + 3 drills + focus note
+    if (_rangeS.some(function(s){return (s.durationMin||0)>=30 && s.drills && s.drills.length>=3 && s.focus && s.focus.trim();})) {
+      achievements.push({id:"deep_dive",name:"The Deep Dive",desc:"30+ min range session with 3 drills and a focus note",icon:_rangeSVG,xp:125,cat:"range",title:"The Deep Dive"});
+    }
+
     // ===== INFER earnedAt DATES =====
     var sortedRounds = rounds.slice().sort(function(a,b){return (a.date||"")>(b.date||"")?1:-1});
     var sortedRange = _rangeS.slice().sort(function(a,b){return (a.date||"")>(b.date||"")?1:-1});
@@ -3884,39 +4070,9 @@ Router.register("home", function() {
     h += '</div></div>';
   }
 
-  // 3. Activity feed — always shows
-  var activity = PB.getActivity(10);
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Activity feed</span></div>';
-  h += '<div class="card">';
-  if (activity.length) {
-    activity.forEach(function(a) {
-      h += '<div class="feed-row">';
-      if (a.type === "round") {
-        var comm = PB.generateRoundCommentary({score:a.score,rating:72,slope:113});
-        var quip = comm.roasts.length ? comm.roasts[0] : (comm.highlights.length ? comm.highlights[0] : "");
-        h += '<div class="feed-left"><div class="feed-name">' + a.playerName + ' posted a round</div><div class="feed-course">' + a.course + ' · ' + a.score + '</div>';
-        if (quip) h += '<div class="feed-quip">' + quip + '</div>';
-        h += '</div>';
-        h += '<div class="feed-right"><div class="feed-score">' + a.score + '</div><div class="feed-date">' + (a.date||"") + '</div></div>';
-      } else if (a.type === "member_joined") {
-        h += '<div class="feed-left"><div class="feed-name">' + a.name + ' joined the Parbaughs</div>';
-        if (a.referredBy) h += '<div class="feed-course">Referred by ' + a.referredBy + '</div>';
-        h += '</div><div class="feed-right"><div class="feed-date">' + (a.date||"") + '</div></div>';
-      } else if (a.type === "review") {
-        h += '<div class="feed-left"><div class="feed-name">' + (a.by||"Someone") + ' reviewed ' + (a.course||"a course") + '</div><div class="feed-course">' + (a.rating||"") + '/5</div></div>';
-        h += '<div class="feed-right"><div class="feed-date">' + (a.date||"") + '</div></div>';
-      } else if (a.type === "tournament_created") {
-        h += '<div class="feed-left"><div class="feed-name">New event: ' + (a.name||"") + '</div><div class="feed-course">' + (a.dates||"") + '</div></div>';
-        h += '<div class="feed-right"><div class="feed-date">' + (a.date||"") + '</div></div>';
-      }
-      h += '</div>';
-    });
-  } else {
-    h += '<div class="empty" style="padding:28px"><div style="width:52px;height:52px;border-radius:12px;margin:0 auto 12px;overflow:hidden;opacity:.5"><img alt="" src="watermark.jpg" style="width:100%;height:100%;object-fit:cover"></div>';
-    h += '<div class="empty-text">Nothing in the clubhouse yet</div>';
-    h += '<div style="font-size:10px;color:var(--muted2);margin-top:4px;letter-spacing:.3px">Log a round, add a member, or create an event</div></div>';
-  }
-  h += '</div></div>';
+  // 3. Activity feed — async load from Firestore
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Activity feed</span><span class="sec-link" onclick="Router.go(\'activity\')">See all &rarr;</span></div>';
+  h += '<div id="homeActivityFeed"><div class="card"><div style="padding:20px;text-align:center;font-size:11px;color:var(--muted)">Loading...</div></div></div>';
 
   // Shortcuts — only items NOT in the top nav (nav already has Members, Events, Activity, Records, Clubhouse, Tee Times)
   h += '<div style="display:flex;gap:8px;margin-bottom:8px">';
@@ -3998,6 +4154,8 @@ Router.register("home", function() {
   document.querySelector('[data-page="home"]').innerHTML = h;
   // Re-render online section since the div was just recreated
   if (typeof renderOnlineSection === "function") renderOnlineSection();
+  // Load activity feed async from Firestore
+  loadHomeActivityFeed();
 });
 
 function showRivalryDetail(p1id, p2id) {
@@ -4099,18 +4257,6 @@ Router.register("settings", function() {
     h += '<div style="margin-bottom:12px"><button class="btn full green" onclick="Router.go(\'admin\')">Admin Panel</button></div>';
     h += '<div style="font-size:10px;color:var(--muted);margin-top:-6px;margin-bottom:12px">Manage member invite quotas, view all codes, bulk generate</div>';
     h += '</div>';
-    
-    // API integrations
-    var savedKey = localStorage.getItem("golfcourse_api_key") || "";
-    h += '<div class="form-section"><div class="form-title" style="color:var(--gold)">API Integrations</div>';
-    h += '<div class="card"><div class="card-body">';
-    h += '<div style="font-size:12px;font-weight:600;margin-bottom:6px">GolfCourseAPI.com</div>';
-    h += '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">Free API key for searching 30,000+ courses. Sign up at <span style="color:var(--gold);cursor:pointer" onclick="window.open(\'https://golfcourseapi.com\',\'_blank\')">golfcourseapi.com</span> and paste your key below.</div>';
-    h += '<div style="display:flex;gap:6px"><input type="text" class="ff-input" id="gcapi-key" value="' + escHtml(savedKey) + '" placeholder="Paste API key..." style="flex:1;font-size:12px;-webkit-user-select:text;user-select:text" onkeydown="if(event.key===\'Enter\')saveGolfApiKey()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">';
-    h += '<button class="btn-sm outline" onclick="pasteApiKey()" style="font-size:9px;white-space:nowrap">Paste</button>';
-    h += '<button class="btn-sm green" onclick="saveGolfApiKey()" style="font-size:10px">Save</button></div>';
-    if (savedKey) h += '<div style="font-size:9px;color:var(--birdie);margin-top:4px"><svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg> Key saved</div>';
-    h += '</div></div></div>';
   }
 
   // Data management
@@ -4334,9 +4480,8 @@ function renderMemberListHtml(players, h) {
     var achs = []; try { achs = PB.getAchievements(p.id) || []; } catch(e) {}
     var fc = playerFrameColor(p);
     h += '<div class="card" onclick="Router.go(\'members\',{id:\'' + p.id + '\'})">';
-    h += '<div class="member-row"><div class="m-av" style="border-color:' + fc + ';position:relative">' + Router.getAvatar(p);
-    // Level badge bottom-right of avatar
-    h += '<div style="position:absolute;bottom:-4px;right:-4px;background:var(--gold);color:#0d1117;font-size:7px;font-weight:800;border-radius:6px;padding:1px 3px;border:1.5px solid var(--bg);line-height:1.3;min-width:12px;text-align:center;z-index:2">' + (plvl.level||1) + '</div>';
+    h += '<div class="member-row"><div class="m-av" style="border-color:' + fc + '">' + Router.getAvatar(p);
+    h += '<div style="position:absolute;bottom:-3px;right:-3px;background:var(--gold);color:#0d1117;font-size:7px;font-weight:800;border-radius:6px;padding:1px 3px;border:1.5px solid var(--bg);line-height:1.3;min-width:12px;text-align:center;z-index:2;pointer-events:none">' + (plvl.level||1) + '</div>';
     h += '</div><div class="m-info">';
     h += '<div class="m-name">' + escHtml(p.username || p.name) + '</div>';
     if (p.equippedTitle && p.equippedTitle !== "Member" && p.equippedTitle !== "Rookie") h += '<div class="m-nick">' + escHtml(p.equippedTitle) + '</div>';
@@ -5640,6 +5785,25 @@ function submitCreateTeam() {
   if (team) { syncScrambleTeam(team); Router.toast("Team created!"); Router.go("scramble", { id: team.id }); }
 }
 
+function renameScrambleTeam(teamId) {
+  var teams = PB.getScrambleTeams();
+  var team = teams.find(function(t) { return t.id === teamId; });
+  if (!team) return;
+  var newName = prompt("Rename team:", team.name);
+  if (!newName || !newName.trim() || newName.trim() === team.name) return;
+  team.name = newName.trim();
+  // Sync to Firestore
+  if (db) {
+    db.collection("scrambleTeams").doc(teamId).update({ name: team.name }).then(function() {
+      Router.toast("Team renamed!");
+      Router.go("scramble", { id: teamId });
+    }).catch(function() { Router.toast("Saved locally"); Router.go("scramble", { id: teamId }); });
+  } else {
+    Router.toast("Team renamed!");
+    Router.go("scramble", { id: teamId });
+  }
+}
+
 function renderTeamDetail(teamId) {
   var teams = PB.getScrambleTeams();
   var team = teams.find(function(t) { return t.id === teamId; });
@@ -5651,7 +5815,7 @@ function renderTeamDetail(teamId) {
   var scored = matches.filter(function(m){return m.score;}).sort(function(a,b){return a.score-b.score;});
   var coursePar = 72;
 
-  var h = '<div class="sh"><h2>' + escHtml(team.name) + '</h2><button class="back" onclick="Router.go(\'scramble\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>' + escHtml(team.name) + '</h2><div style="display:flex;gap:6px"><button class="btn-sm outline" style="font-size:10px" onclick="renameScrambleTeam(\'' + team.id + '\')">Rename</button><button class="back" onclick="Router.go(\'scramble\')">← Back</button></div></div>';
 
   // Team header — all avatars gold border, captain gets label
   h += '<div class="pd-banner" style="padding-bottom:16px">';
@@ -5686,8 +5850,13 @@ function renderTeamDetail(teamId) {
       h += '<div style="width:28px;height:28px;border-radius:50%;background:' + medal + '15;border:1.5px solid ' + medal + ';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:' + medal + '">' + (idx+1) + '</div>';
       h += '<div><div style="font-size:13px;font-weight:600;color:var(--cream)">' + m.score + '</div>';
       h += '<div style="font-size:10px;color:var(--muted)">' + escHtml(m.course || "Unknown course") + (m.date ? ' · ' + m.date : '') + '</div></div></div>';
+      h += '<div style="display:flex;align-items:center;gap:8px">';
       h += '<div style="font-size:14px;font-weight:700;color:' + (diff <= 0 ? 'var(--birdie)' : 'var(--red)') + '">' + (diff > 0 ? '+' : '') + diff + '</div>';
-      h += '</div></div>';
+      var safeTeam = escHtml(team.name || '');
+      var safeCourse = escHtml(m.course || '');
+      var safeFormat = escHtml(m.format || 'Scramble');
+      h += '<button class="btn-sm outline" style="font-size:9px;padding:4px 8px" onclick="showScrambleShareCard(\'' + safeTeam.replace(/'/g,"\\'") + '\',' + m.score + ',\'' + safeCourse.replace(/'/g,"\\'") + '\',\'' + safeFormat.replace(/'/g,"\\'") + '\')">Share</button>';
+      h += '</div></div></div>';
     });
   } else {
     h += '<div class="card"><div class="empty"><div class="empty-text">No rounds played yet</div></div></div>';
@@ -6479,6 +6648,7 @@ function startLiveRound() {
     course: course,
     courseId: courseId || (courseData ? courseData.id : ""),
     tee: teeName || (courseData ? (courseData.tee || "") : ""),
+    yards: (teeData && teeData.yards) ? teeData.yards : (courseData ? (courseData.yards || 0) : 0),
     rating: parseFloat(document.getElementById("pn-rating").value) || 72,
     slope: parseInt(document.getElementById("pn-slope").value) || 113,
     par: coursePar,
@@ -6816,7 +6986,7 @@ function finishLiveRound() {
   shareText += "\nparbaughs.golf";
 
   // Show share card modal
-  showShareCard(totalScore, diffStr, liveState.course, playerName, firCount, firHoles, girCount, completed, totalPutts, shareText, round.id);
+  showShareCard(totalScore, diffStr, liveState.course, playerName, firCount, firHoles, girCount, completed, totalPutts, shareText, round.id, liveState.scores.slice(), liveState.holes || [], liveState.tee || "", liveState.yards || 0);
 }
 
 function showFinishOptions() {
@@ -7636,7 +7806,7 @@ function renderTripLB(trip, tripPlayers) {
   var sorted = tripPlayers.slice().sort(function(a, b) { return PB.getTripPoints(tid, b.id) - PB.getTripPoints(tid, a.id); });
   var md = ["1st", "2nd", "3rd", ""];
 
-  h += '<div class="lbs"><div class="lb-title">Overall standings</div>';
+  h += '<div class="lbs"><div class="lb-title" style="display:flex;justify-content:space-between;align-items:center">Overall standings<button class="btn-sm outline" style="font-size:9px;padding:4px 10px" onclick="showEventShareCard(' + JSON.stringify(trip.name) + ',' + JSON.stringify(sorted.map(function(p){return {name:p.name,pts:PB.getTripPoints(tid,p.id)}})) + ')">Share</button></div>';
   sorted.forEach(function(p, i) {
     var tot = PB.getTripPoints(tid, p.id);
     var stbl = 0; trip.courses.forEach(function(c) { if (!c.s) stbl += PB.getTripStableford(tid, c.key, p.id); });
@@ -8654,25 +8824,24 @@ Router.register("records", function() {
     return '<div class="hof-card"><div class="hof-title" onclick="toggleSection(\'rec-' + id + '\')" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center"><span>' + title + '</span><span id="rec-' + id + '-toggle" style="font-size:12px;color:var(--muted);display:inline-flex;transition:transform .2s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="transition:transform .2s;color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg></span></div><div id="rec-' + id + '" style="display:none">' + content + '</div></div>';
   }
 
-  // 1. Event Champions — ALWAYS VISIBLE, they earned it
+  // 1. Event Champions — collapsible hofCard matching all other sections
   var trips = PB.getTrips();
   if (trips.length) {
-    h += '<div class="section"><div class="sec-head"><span class="sec-title">Event champions</span></div>';
+    var champContent = '';
     trips.forEach(function(t) {
       var champ = t.champion ? PB.getPlayer(t.champion) : null;
       var champName = champ ? (champ.username || champ.name) : "TBD";
       var isChamp = !!t.champion;
-      h += '<div class="card" style="' + (isChamp ? 'border-color:rgba(201,168,76,.2);background:linear-gradient(135deg,#1a1e30,var(--card))' : '') + '">';
-      h += '<div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center">';
-      h += '<div><div style="font-family:Playfair Display,serif;font-size:15px;font-weight:700;color:var(--gold)">' + t.name + '</div>';
-      h += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + (t.dates||"") + ' · ' + (t.location||"") + '</div></div>';
-      h += '<div style="text-align:right"><div style="font-size:14px;font-weight:700;color:' + (isChamp ? 'var(--gold)' : 'var(--muted)') + '">' + champName + '</div></div>';
-      h += '</div></div>';
+      champContent += '<div class="hof-row" style="padding:6px 0;' + (isChamp ? 'border-bottom:1px solid rgba(201,168,76,.08)' : '') + '">';
+      champContent += '<div><span class="hof-label">' + escHtml(t.name) + '</span>';
+      champContent += '<div style="font-size:9px;color:var(--muted2);margin-top:1px">' + escHtml(t.dates||"") + ' · ' + escHtml(t.location||"") + '</div></div>';
+      champContent += '<span class="hof-val" style="color:' + (isChamp ? 'var(--gold)' : 'var(--muted)') + '">' + escHtml(champName) + '</span>';
+      champContent += '</div>';
     });
-    h += '</div>';
+    h += hofCard("champions", "Event champions", champContent);
   }
 
-  // 2. All-time records
+  // 2. All-time records — with inline Log a record
   var recContent = '';
   if (rounds.length) {
     var best = rounds.reduce(function(a, b) { return a.score < b.score ? a : b; });
@@ -8688,24 +8857,25 @@ Router.register("records", function() {
   recContent += '<div class="hof-row" onclick="Router.go(\'aces\')" style="cursor:pointer"><span class="hof-label">Hole-in-ones</span><span class="hof-val" style="color:var(--gold)">' + (rec.holeInOnes && rec.holeInOnes.length ? rec.holeInOnes.length + ' → View Ace Wall' : 'View Ace Wall →') + '</span></div>';
   h += hofCard("alltime", "All-time records", recContent);
 
-  // Log record button
-  h += '<div style="padding:0 16px 8px"><button class="btn full outline" onclick="showAddRecord()">+ Log a record</button></div>';
-  h += '<div id="add-record-form" style="display:none;padding:0 16px 16px"><div class="card"><div class="card-body">';
-  h += '<div class="ff"><label class="ff-label">Record type</label><select class="ff-input" id="rec-type"><option value="longestDrive">Longest drive</option><option value="longestPutt">Longest putt</option><option value="longestHoleOut">Longest hole out</option><option value="chipIn">Chip-in</option></select></div>';
-  h += '<div class="ff"><label class="ff-label">Player</label><select class="ff-input" id="rec-player">';
+  // Log record — hofCard style, consistent with all other sections
+  var logContent = '<div style="padding:4px 0">';
+  logContent += '<div class="ff"><label class="ff-label">Record type</label><select class="ff-input" id="rec-type"><option value="longestDrive">Longest drive</option><option value="longestPutt">Longest putt</option><option value="longestHoleOut">Longest hole out</option><option value="chipIn">Chip-in</option></select></div>';
+  logContent += '<div class="ff"><label class="ff-label">Player</label><select class="ff-input" id="rec-player">';
   var recPlayer = currentUser ? PB.getPlayer(currentUser.uid) : null;
   var recLocal = PB.getPlayers().find(function(p) { return currentProfile && (p.id === currentProfile.claimedFrom || p.name === currentProfile.name); });
   var recAs = recPlayer || recLocal;
   if (recAs) {
-    h += '<option value="' + recAs.name + '">' + recAs.name + '</option>';
+    logContent += '<option value="' + escHtml(recAs.name) + '">' + escHtml(recAs.name) + '</option>';
   } else {
-    players.forEach(function(p) { h += '<option value="' + p.name + '">' + p.name + '</option>'; });
+    players.forEach(function(p) { logContent += '<option value="' + escHtml(p.name) + '">' + escHtml(p.name) + '</option>'; });
   }
-  h += '</select></div>';
-  h += '<div class="ff"><label class="ff-label">Distance (yds or ft)</label><input class="ff-input" id="rec-distance" type="number" placeholder="e.g. 285"></div>';
-  h += '<div class="ff"><label class="ff-label">Club used</label><input class="ff-input" id="rec-club" placeholder="e.g. 7 iron"></div>';
-  h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="rec-course" placeholder="Course name"></div>';
-  h += '<button class="btn full green" onclick="submitRecord()">Save record</button></div></div></div>';
+  logContent += '</select></div>';
+  logContent += '<div class="ff"><label class="ff-label">Distance (yds or ft)</label><input class="ff-input" id="rec-distance" type="number" placeholder="e.g. 285"></div>';
+  logContent += '<div class="ff"><label class="ff-label">Club used</label><input class="ff-input" id="rec-club" placeholder="e.g. 7 iron"></div>';
+  logContent += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="rec-course" placeholder="Course name"></div>';
+  logContent += '<button class="btn full green" style="margin-top:4px" onclick="submitRecord()">Save record</button>';
+  logContent += '</div>';
+  h += hofCard("logrecord", "Log a record", logContent);
 
   // 3. Head-to-head records
   var h2hContent = '';
@@ -9228,6 +9398,8 @@ function endRangeSession() {
   var isPrivate = rangeSessionPrivate;
 
   var h = '<div class="sh"><h2>Session Complete</h2></div>';
+  // Store state for share card
+  _rangeReviewState = { elapsed: elapsed, mins: mins, xp: xp, drillNames: drillNames, focus: activeRangeFocus, feel: rangeFeel };
 
   // Time hero
   h += '<div style="text-align:center;padding:28px 16px 20px;border-bottom:1px solid var(--border)">';
@@ -9267,6 +9439,7 @@ function endRangeSession() {
   // Actions
   h += '<div style="padding:0 16px 28px;display:flex;flex-direction:column;gap:8px">';
   h += '<button class="btn full green" style="padding:14px;font-size:14px;font-weight:700" onclick="saveRangeSession(' + mins + ',' + elapsed + ')">Save Session</button>';
+  h += '<button class="btn full outline" style="padding:12px;font-size:12px" onclick="showRangeShareCard()">Share Session</button>';
   h += '<button class="btn full outline" style="padding:12px;font-size:12px" onclick="discardRangeSession()">Discard</button>';
   h += '</div>';
 
@@ -9384,8 +9557,14 @@ function renderActivityRounds() {
     rounds.slice().reverse().slice(0, 25).forEach(function(r) {
       var c = PB.generateRoundCommentary(r);
       var quip = c.roasts.length ? c.roasts[0] : (c.highlights.length ? c.highlights[0] : "");
-      h += '<div class="card" onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer"><div class="round-card"><div class="rc-top"><div><div class="rc-course">' + r.course + '</div><div class="rc-date">' + r.date + ' · ' + r.playerName + (r.format && r.format !== 'stroke' ? ' · ' + r.format : '') + '</div></div>';
-      h += '<div class="rc-score">' + r.score + '</div></div>';
+      var diffR = r.score - (r.rating || 72);
+      var diffStrR = diffR === 0 ? "E" : (diffR > 0 ? "+" + diffR : "" + diffR);
+      var safeCourseR = (r.course||"").replace(/'/g,"\\'");
+      var safeNameR = (r.playerName||"").replace(/'/g,"\\'");
+      h += '<div class="card"><div class="round-card"><div class="rc-top"><div onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer;flex:1"><div class="rc-course">' + escHtml(r.course) + '</div><div class="rc-date">' + r.date + ' · ' + escHtml(r.playerName||"") + (r.format && r.format !== 'stroke' ? ' · ' + r.format : '') + '</div></div>';
+      h += '<div style="display:flex;align-items:center;gap:8px"><div class="rc-score">' + r.score + '</div>';
+      h += '<button class="btn-sm outline" style="font-size:9px;padding:4px 8px;flex-shrink:0" onclick="event.stopPropagation();showRoundShareCard(' + r.score + ',\'' + diffStrR + '\',\'' + safeCourseR + '\',\'' + safeNameR + '\',[],[])">Share</button>';
+      h += '</div></div>';
       if (quip) h += '<div class="rc-quip">' + quip + '</div>';
       h += '</div></div>';
     });
@@ -10704,6 +10883,18 @@ Router.register("admin", function() {
   h += '<div id="adminFeatureRequests"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
   h += '</div>';
 
+  // API Integration — commissioner only
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">API Integration</span></div>';
+  var savedApiKey = localStorage.getItem("golfcourse_api_key") || "";
+  h += '<div class="card"><div class="card-body">';
+  h += '<div style="font-size:12px;font-weight:600;margin-bottom:4px">GolfCourseAPI.com</div>';
+  h += '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">Powers the 30,000+ course search for all members. Key is stored in Firestore and loads for everyone automatically.</div>';
+  h += '<div style="display:flex;gap:6px"><input type="text" class="ff-input" id="gcapi-key" value="' + escHtml(savedApiKey) + '" placeholder="Paste API key..." style="flex:1;font-size:12px;-webkit-user-select:text;user-select:text" onkeydown="if(event.key===\'Enter\')saveGolfApiKey()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">';
+  h += '<button class="btn-sm outline" onclick="pasteApiKey()" style="font-size:9px;white-space:nowrap">Paste</button>';
+  h += '<button class="btn-sm green" onclick="saveGolfApiKey()" style="font-size:10px">Save</button></div>';
+  if (savedApiKey) h += '<div style="font-size:9px;color:var(--birdie);margin-top:4px"><svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg> Active</div>';
+  h += '</div></div></div>';
+
   // Course Management
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Course Management</span></div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Remove duplicate or incorrectly added courses. API-imported courses are preferred.</div>';
@@ -11250,13 +11441,27 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.7</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.19</div></div>';
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.7</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "Share card redesigned — logo in header, tee name + yardage displayed, cleaner layout, single Members Only branding. html2canvas captures real HTML/CSS for Instagram-quality output", tag: "IMPROVED"},
+    {item: "Level badge no longer overlaps name in the profile bar — was positioning relative to the wrong container", tag: "FIXED"},
+    {item: "Level badge artifact inside profile photo border fixed — removed overflow:hidden from avatar containers so badges correctly sit outside the circle", tag: "FIXED"},
+    {item: "Share scorecard as image — after finishing a round, Save scorecard image draws all 9 or 18 holes on a color-coded canvas and shares via the native share sheet or downloads as PNG", tag: "NEW"},
+    {item: "Scorecard canvas color codes every hole: gold for eagle, green for birdie, dark blue for par, red for bogey, dark red for double+", tag: "NEW"},
+    {item: "Firestore-backed activity feed — home page feed now loads real historical rounds, range sessions, tee times, and Parbaugh Rounds from Firestore, not just current-session events", tag: "IMPROVED"},
+    {item: "Every feed item is tappable and navigates to the relevant page — rounds, range, tee times, or Parbaugh Round", tag: "NEW"},
+    {item: "Live items (in-progress Parbaugh Rounds, today's tee times) pulse green and show a LIVE badge", tag: "NEW"},
+    {item: "API key management moved out of Settings — only visible and editable from the Admin Panel", tag: "IMPROVED"},
+    {item: "Activity feed now shows real historical data — all past rounds and range sessions load from Firestore, not just current session events", tag: "IMPROVED"},
+    {item: "Range sessions now appear in the activity feed alongside rounds", tag: "NEW"},
+    {item: "Scramble teams can now be renamed from the team detail page", tag: "NEW"},
+    {item: "Records page cleaned up — Event Champions and Log a Record now match the same collapsible card style as all other sections", tag: "IMPROVED"},
+    {item: "13 new achievements added: Eagle Eye, Birdie Machine, Bogey Free, Clean Card, Flip Flop, Trophy Shelf, Achievement Hunter, Two-A-Day, SMO Triple Crown, All In, The Overcorrection, Founding Season, The Deep Dive", tag: "NEW"},
     {item: "Firestore is now the sole source of truth — rounds, courses, and scramble teams no longer live in localStorage, eliminating sync conflicts", tag: "IMPROVED"},
     {item: "Round crash recovery — if your phone restarts or browser closes mid-round, your scores are fully restored when you reopen the app", tag: "NEW"},
     {item: "Rounds now save to Firestore the moment you finish — no more missing rounds after logging out and back in", tag: "FIXED"},
@@ -11379,7 +11584,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.7</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.19</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
@@ -11672,7 +11877,20 @@ function getAllPossibleAchievements() {
     {id:"focused_practice",name:"Intentional",desc:"Log a range session with a focus note",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:25,cat:"range"},
     {id:"student_of_game",name:"Student of the Game",desc:"5 range sessions with a focus note",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"range"},
     {id:"tape_study",name:"Tape Study",desc:"Leave notes on 3 range sessions",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:50,cat:"range"},
-    {id:"dialed_feel",name:"Dialed",desc:"Rate 3 sessions as Dialed",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:75,cat:"range"}
+    {id:"dialed_feel",name:"Dialed",desc:"Rate 3 sessions as Dialed",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:75,cat:"range"},
+    {id:"deep_dive",name:"The Deep Dive",desc:"30+ min session with 3 drills and a focus note",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:125,cat:"range"},
+    {id:"eagle_eye",name:"Eagle Eye",desc:"Score an eagle or better on any hole",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='8' r='3' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='8' cy='8' r='.8' fill='currentColor'/></svg>",xp:400,cat:"score"},
+    {id:"birdie_machine",name:"Birdie Machine",desc:"Score 3 birdies in a single round",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 2a5 5 0 100 10A5 5 0 008 2z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M5 7l2 2 4-4' stroke='currentColor' stroke-width='1.2'/></svg>",xp:300,cat:"score"},
+    {id:"bogey_free",name:"Bogey Free",desc:"Complete an 18-hole round with no bogeys",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M5 8l2 2 4-4' stroke='currentColor' stroke-width='1.5'/></svg>",xp:600,cat:"score"},
+    {id:"clean_card",name:"Clean Card",desc:"Complete an 18-hole round with no scores over par",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><rect x='3' y='2' width='10' height='12' rx='1' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M5 7l2 2 4-4' stroke='currentColor' stroke-width='1.2'/></svg>",xp:500,cat:"score"},
+    {id:"flip_flop",name:"Flip Flop",desc:"Improve 10+ strokes over previous round at same course",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 12l5-7 3 4 3-6 3 5' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"growth"},
+    {id:"trophy_shelf",name:"Trophy Shelf",desc:"Earn 15 achievements",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M3 13h10M4 7h8M5 7V4a1 1 0 012-2h2a1 1 0 012 2v3M4 13v-2a4 4 0 018 0v2' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:250,cat:"milestone"},
+    {id:"achievement_hunter",name:"Achievement Hunter",desc:"Earn 25 achievements",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"milestone"},
+    {id:"two_a_day",name:"Two-A-Day",desc:"Log two rounds on the same day",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='5' cy='8' r='4' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='11' cy='8' r='4' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"milestone"},
+    {id:"triple_crown",name:"SMO Triple Crown",desc:"Play all four Smoky Mountain Open courses",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 14l5-10 3 5 4-7 2 12z' fill='none' stroke='currentColor' stroke-width='1'/><path d='M3 14h10' stroke='currentColor' stroke-width='1'/></svg>",xp:300,cat:"explore"},
+    {id:"all_in",name:"All In",desc:"Log a round and a range session in the same week",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:75,cat:"milestone"},
+    {id:"overcorrection",name:"The Overcorrection",desc:"Shoot 15+ strokes worse than your personal best",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 5l5 4 3-3 6 8' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M13 8l3 5h-4z' fill='currentColor'/></svg>",xp:30,cat:"blunder"},
+    {id:"founding_season",name:"Founding Season",desc:"Log 5 rounds in the founding 2026 season",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"special"}
   ];
   return _ALL_ACHIEVEMENTS;
 }
@@ -12907,70 +13125,438 @@ Router.register("awards", function(params) {
 });
 
 // ========== SHARE ROUND CARD ==========
-function showShareCard(score, diffStr, course, playerName, fir, firHoles, gir, holes, putts, shareText, roundId) {
-  // Remove any existing modal
+function showShareCard(score, diffStr, course, playerName, fir, firHoles, gir, holes, putts, shareText, roundId, holeScores, holesData, teeName, teeYards) {
+  holeScores = holeScores || [];
+  holesData  = holesData  || [];
+  var defaultPars = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+  var comm = PB.generateRoundCommentary({score:score, rating:72, slope:113});
+  var quip = comm.roasts.length ? comm.roasts[0] : (comm.highlights.length ? comm.highlights[0] : "");
+
+  // ── Populate the hidden template ──────────────────────────────
+  document.getElementById("pbs-player-name").textContent = playerName || "—";
+  document.getElementById("pbs-course").textContent      = course     || "—";
+
+  // Tee + yards subtitle
+  var teeEl = document.getElementById("pbs-tee-info");
+  if (teeEl) {
+    var teeStr = [teeName, teeYards ? teeYards.toLocaleString() + " yds" : ""].filter(Boolean).join(" · ");
+    teeEl.textContent = teeStr;
+    teeEl.style.display = teeStr ? "" : "none";
+  }
+
+  document.getElementById("pbs-score").textContent       = score;
+
+  var diffEl = document.getElementById("pbs-diff");
+  diffEl.textContent = diffStr || "";
+  diffEl.className   = "pbs-diff " + (diffStr && diffStr.charAt(0) === "+" ? "pbs-diff-pos" : diffStr === "E" ? "pbs-diff-even" : "pbs-diff-neg");
+
+  // Stats
+  var statsEl = document.getElementById("pbs-stats-row");
+  var statsHTML = "";
+  if (firHoles > 0) statsHTML += '<div class="pbs-stat"><div class="pbs-stat-val">' + fir + "/" + firHoles + "</div><div class=\"pbs-stat-lbl\">FIR</div></div>";
+  statsHTML += '<div class="pbs-stat"><div class="pbs-stat-val">' + gir + "/" + (holes||18) + "</div><div class=\"pbs-stat-lbl\">GIR</div></div>";
+  if (putts > 0) statsHTML += '<div class="pbs-stat"><div class="pbs-stat-val">' + putts + "</div><div class=\"pbs-stat-lbl\">Putts</div></div>";
+  statsEl.innerHTML = statsHTML;
+
+  // Quip
+  document.getElementById("pbs-quip").textContent = quip ? "\u201C" + quip + "\u201D" : "";
+
+  // Scorecard
+  var scEl = document.getElementById("pbs-scorecard");
+  var played = holeScores.filter(function(s){return s !== "" && s !== undefined;}).length;
+  if (played > 0) {
+    scEl.innerHTML = buildScorecardHTML(holeScores, holesData, defaultPars, played);
+  } else {
+    scEl.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,.3);font-size:16px;padding:20px 0">No hole-by-hole data — log with Play Now to see your scorecard here</div>';
+  }
+
+  // ── Show modal with preview ────────────────────────────────────
   var existing = document.getElementById("shareCardModal");
   if (existing) existing.remove();
-  
-  var diffColor = diffStr.charAt(0) === "+" ? "var(--red)" : diffStr === "E" ? "var(--gold)" : "var(--birdie)";
-  
+
   var modal = document.createElement("div");
   modal.id = "shareCardModal";
-  modal.style.cssText = "position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;padding:20px";
-  
-  var h = '<div style="position:fixed;inset:0;background:rgba(0,0,0,.6)" onclick="closeShareCard()"></div>';
-  h += '<div style="position:relative;width:100%;max-width:320px;background:linear-gradient(135deg,#111520,#0e1118);border:1px solid rgba(201,168,76,.2);border-radius:16px;overflow:hidden">';
-  
-  // Card header
-  h += '<div style="padding:20px 20px 16px;text-align:center;border-bottom:1px solid rgba(201,168,76,.08)">';
-  h += '<div style="font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;font-weight:600">Round Complete</div>';
-  h += '<div style="font-family:Playfair Display,serif;font-size:52px;color:var(--cream);font-weight:700;margin:8px 0 4px">' + score + '</div>';
-  h += '<div style="font-size:16px;font-weight:700;color:' + diffColor + '">' + diffStr + '</div>';
-  h += '<div style="font-size:12px;color:var(--muted);margin-top:6px">' + escHtml(course) + '</div>';
-  h += '<div style="font-size:11px;color:var(--muted2);margin-top:2px">' + escHtml(playerName) + '</div></div>';
-  
-  // Stats row
-  h += '<div style="display:flex;padding:14px 20px;gap:4px">';
-  if (firHoles > 0) h += '<div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:700;color:var(--cream)">' + fir + '/' + firHoles + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">FIR</div></div>';
-  h += '<div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:700;color:var(--cream)">' + gir + '/' + holes + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">GIR</div></div>';
-  if (putts > 0) h += '<div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:700;color:var(--cream)">' + putts + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">Putts</div></div>';
+  modal.style.cssText = "position:fixed;inset:0;z-index:300;overflow-y:auto;display:flex;align-items:flex-start;justify-content:center;padding:20px;padding-top:40px";
+
+  var diffColor = diffStr && diffStr.charAt(0) === "+" ? "var(--red)" : diffStr === "E" ? "var(--gold)" : "var(--birdie)";
+  var h = '<div style="position:fixed;inset:0;background:rgba(0,0,0,.75)" onclick="closeShareCard()"></div>';
+  h += '<div style="position:relative;width:100%;max-width:340px">';
+  // Preview — scaled down from 1080 to 340 (31.5%)
+  h += '<div id="pbsPreviewWrap" style="width:100%;border-radius:12px;overflow:hidden;background:#090d14;box-shadow:0 8px 40px rgba(0,0,0,.7);margin-bottom:12px">';
+  h += '<div style="transform:scale(0.315);transform-origin:top left;width:1080px;height:1080px;pointer-events:none" id="pbsPreviewInner"></div>';
   h += '</div>';
-  
-  // Party game results placeholder — loads async
-  h += '<div id="shareCardGames"></div>';
-  
-  // Buttons
-  h += '<div style="padding:4px 20px 20px;display:flex;flex-direction:column;gap:8px">';
-  h += '<button class="btn full green" onclick="copyShareText()" style="font-size:12px">Copy to share</button>';
+  h += '<div style="display:flex;flex-direction:column;gap:8px">';
+  h += '<button class="btn full green" onclick="captureShareCard()" style="font-size:13px;padding:13px">Save scorecard image</button>';
   h += '<button class="btn full outline" onclick="closeShareCard()" style="font-size:12px">Done</button>';
-  h += '</div>';
-  
-  // Hidden text area for copy
-  h += '<textarea id="shareCardText" style="position:absolute;left:-9999px">' + escHtml(shareText) + '</textarea>';
-  
-  h += '</div>';
+  h += '</div></div>';
+
   modal.innerHTML = h;
   document.body.appendChild(modal);
-  
-  // Load party games from this round
+
+  // Set preview wrap height to match 31.5% of 1080
+  var wrap = document.getElementById("pbsPreviewWrap");
+  if (wrap) wrap.style.height = Math.round(1080 * 0.315) + "px";
+
+  // Clone the template into the preview
+  var previewInner = document.getElementById("pbsPreviewInner");
+  var template = document.getElementById("pbShareTemplate");
+  if (previewInner && template) {
+    previewInner.innerHTML = template.innerHTML;
+  }
+
+  // Party games
   if (db) {
     var today = new Date().toISOString().split("T")[0];
     db.collection("partygames").where("roundDate","==",today).where("status","==","completed").get().then(function(snap) {
-      var el = document.getElementById("shareCardGames");
-      if (!el || snap.empty) return;
-      var gh = '<div style="padding:0 20px 10px;border-top:1px solid rgba(201,168,76,.08);padding-top:12px">';
-      gh += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Party Games</div>';
+      if (snap.empty) return;
+      var qEl = document.getElementById("pbs-quip");
+      if (!qEl) return;
+      var gameLines = "";
       snap.forEach(function(doc) {
         var g = doc.data();
-        var game = PARTY_GAMES.find(function(pg){return pg.id === g.gameType}) || {icon:"?",name:g.gameType};
-        gh += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:11px">';
-        gh += '<span style="color:var(--muted)">' + game.icon + ' ' + game.name + '</span>';
-        gh += '<span style="color:var(--gold);font-weight:600">' + escHtml(g.winnerName || "TBD") + '</span></div>';
+        var game = PARTY_GAMES.find(function(pg){return pg.id===g.gameType})||{name:g.gameType};
+        gameLines += "\n" + game.name + ": " + escHtml(g.winnerName||"TBD");
       });
-      gh += '</div>';
-      el.innerHTML = gh;
+      if (gameLines && qEl.textContent) qEl.textContent += gameLines;
     }).catch(function(){});
   }
+}
+
+function buildScorecardHTML(holeScores, holesData, defaultPars, played) {
+  function getPar(i) {
+    if (holesData && holesData[i] && holesData[i].par) return holesData[i].par;
+    return defaultPars[i] || 4;
+  }
+
+  // Fully explicit fixed dimensions on every div — zero overflow possible
+  var W = 'rgba(255,255,255,.9)';
+  var F = 'display:flex;align-items:center;justify-content:center;';
+  function sym(score, par) {
+    var n = parseInt(score), d = n - par;
+    var lg = '<span style="font-size:22px;font-weight:700;color:#fff;line-height:1">' + n + '</span>';
+    var sm = '<span style="font-size:18px;font-weight:700;color:#fff;line-height:1">' + n + '</span>';
+    // Every outer shape is exactly 50×50, inner shape exactly 34×34
+    // The gap between rings = (50 - 34) / 2 - border = 8 - 1.8 = 6.2px visual gap
+    var outer50c = F + 'width:50px;height:50px;border-radius:50%;border:1.8px solid ' + W + ';flex-shrink:0';
+    var outer50s = F + 'width:50px;height:50px;border-radius:3px;border:1.8px solid ' + W + ';flex-shrink:0';
+    var inner34c = F + 'width:34px;height:34px;border-radius:50%;border:1.8px solid ' + W;
+    var inner34s = F + 'width:34px;height:34px;border-radius:2px;border:1.8px solid ' + W;
+    var single40c = F + 'width:40px;height:40px;border-radius:50%;border:1.8px solid ' + W + ';flex-shrink:0';
+    var single40s = F + 'width:40px;height:40px;border-radius:3px;border:1.8px solid ' + W + ';flex-shrink:0';
+    if (d <= -2) // Eagle: 50px outer circle → 34px inner circle
+      return '<div style="' + outer50c + '"><div style="' + inner34c + '">' + sm + '</div></div>';
+    if (d === -1) // Birdie: 40px single circle
+      return '<div style="' + single40c + '">' + lg + '</div>';
+    if (d === 0) // Par: bare number
+      return lg;
+    if (d === 1) // Bogey: 40px single square
+      return '<div style="' + single40s + '">' + lg + '</div>';
+    // Double+: 50px outer square → 34px inner square
+    return '<div style="' + outer50s + '"><div style="' + inner34s + '">' + sm + '</div></div>';
+  }
+
+  function nineHTML(start) {
+    var html = '<div class="pbs-nine">';
+    var total = 0, totalPar = 0;
+    for (var i = 0; i < 9; i++) {
+      var hi = start + i, s = holeScores[hi], par = getPar(hi);
+      var hasScore = s !== "" && s !== undefined;
+      if (hasScore) { total += parseInt(s); totalPar += par; }
+      html += '<div class="pbs-cell"><div class="pbs-hn">' + (hi + 1) + '</div>';
+      html += '<div class="pbs-sw">' + (hasScore ? sym(s, par) : "") + '</div></div>';
+    }
+    var over = total - totalPar, tc = over > 0 ? "pbs-tot-pos" : over < 0 ? "pbs-tot-neg" : "pbs-tot-even";
+    html += '<div class="pbs-tot"><div class="pbs-tot-lbl">' + (start===0?"F9":"B9") + '</div><div class="pbs-tot-val ' + tc + '">' + (total||"—") + '</div></div></div>';
+    return html;
+  }
+  var html = nineHTML(0);
+  if (played > 9) html += nineHTML(9);
+  return html;
+}
+
+function captureShareCard() {
+  var template = document.getElementById("pbShareTemplate");
+  if (!template || typeof html2canvas === "undefined") {
+    Router.toast("Share not available — try updating the app");
+    return;
+  }
+  Router.toast("Generating image...");
+  // Briefly make visible at its actual size so html2canvas can capture it
+  template.style.left = "-1080px";
+  template.style.visibility = "visible";
+
+  document.fonts.ready.then(function() {
+    html2canvas(template.querySelector(".pbs-inner") || template, {
+      scale: 1,
+      width: 1080,
+      height: 1080,
+      backgroundColor: "#090d14",
+      useCORS: false,
+      logging: false,
+      allowTaint: true
+    }).then(function(canvas) {
+      template.style.left = "-9999px";
+      template.style.visibility = "";
+      canvas.toBlob(function(blob) {
+        if (!blob) { Router.toast("Couldn't generate image"); return; }
+        var file = new File([blob], "parbaughs-scorecard.png", {type:"image/png"});
+        if (navigator.share && navigator.canShare && navigator.canShare({files:[file]})) {
+          navigator.share({files:[file], title:"The Parbaughs Scorecard"})
+            .catch(function(){ downloadScorecardImage(blob); });
+        } else {
+          downloadScorecardImage(blob);
+        }
+      }, "image/png");
+    }).catch(function(e) {
+      template.style.left = "-9999px";
+      template.style.visibility = "";
+      console.error("html2canvas error:", e);
+      Router.toast("Couldn't generate image");
+    });
+  });
+}
+function showRoundShareCard(score, diffStr, course, playerName, holeScores, holesData) {
+  holeScores = holeScores || [];
+  holesData = holesData || [];
+  var comm = PB.generateRoundCommentary({score:score, rating:72, slope:113});
+  var quip = comm.roasts.length ? comm.roasts[0] : (comm.highlights.length ? comm.highlights[0] : "");
+  var shareText = playerName + " shot " + score + " (" + diffStr + ") at " + course + "\nparbaughs.golf";
+  showShareCard(score, diffStr, course, playerName, 0, 0, 0, 18, 0, shareText, null, holeScores, holesData);
+}
+
+// ── Generic share image modal — used by all contexts ─────────────────────────
+var _rangeReviewState = {}; // Set by endRangeSession()
+
+function showShareImageModal(drawFn, filename) {
+  var existing = document.getElementById("shareCardModal");
+  if (existing) existing.remove();
+  var modal = document.createElement("div");
+  modal.id = "shareCardModal";
+  modal.style.cssText = "position:fixed;inset:0;z-index:300;overflow-y:auto;display:flex;align-items:flex-start;justify-content:center;padding:20px;padding-top:40px";
+  modal.innerHTML = '<div style="position:fixed;inset:0;background:rgba(0,0,0,.7)" onclick="closeShareCard()"></div>'
+    + '<div style="position:relative;width:100%;max-width:320px">'
+    + '<canvas id="genericShareCanvas" style="width:100%;border-radius:12px;display:block;box-shadow:0 8px 32px rgba(0,0,0,.6)"></canvas>'
+    + '<div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">'
+    + '<button class="btn full green" onclick="shareGenericCanvas(\'' + (filename||'parbaughs.png') + '\')" style="font-size:13px">Save as image</button>'
+    + '<button class="btn full outline" onclick="closeShareCard()" style="font-size:12px">Done</button>'
+    + '</div></div>';
+  document.body.appendChild(modal);
+  setTimeout(function() { drawFn(document.getElementById("genericShareCanvas")); }, 60);
+}
+
+function shareGenericCanvas(filename) {
+  var canvas = document.getElementById("genericShareCanvas");
+  if (!canvas) return;
+  canvas.toBlob(function(blob) {
+    if (!blob) return;
+    var file = new File([blob], filename, {type:"image/png"});
+    if (navigator.share && navigator.canShare && navigator.canShare({files:[file]})) {
+      navigator.share({files:[file], title:"The Parbaughs"}).catch(function(){ downloadScorecardImage(blob); });
+    } else { downloadScorecardImage(blob); }
+  }, "image/png");
+}
+
+// ── Range session share card ──────────────────────────────────────────────────
+function showRangeShareCard() {
+  var s = _rangeReviewState;
+  showShareImageModal(function(canvas) {
+    drawRangeCanvas(canvas, s.elapsed||0, s.xp||0, s.drillNames||[], s.focus||"", s.feel||0);
+  }, "parbaughs-range.png");
+}
+
+function drawRangeCanvas(canvas, elapsed, xp, drillNames, focus, feel) {
+  var S = 1080;
+  canvas.width = S; canvas.height = S;
+  canvas.style.width = "100%"; canvas.style.height = "auto";
+  var ctx = canvas.getContext("2d");
+
+  var BG="#0d1117", GOLD="#c9a84c", CREAM="#eae8e0", MUTED="#6b7280", BORDER="rgba(201,168,76,.18)", PINK="#f472b6";
+  ctx.fillStyle = BG; ctx.fillRect(0, 0, S, S);
+  var grad = ctx.createLinearGradient(0,0,S,S);
+  grad.addColorStop(0,"rgba(244,114,182,.06)"); grad.addColorStop(1,"rgba(0,0,0,0)");
+  ctx.fillStyle = grad; ctx.fillRect(0,0,S,S);
+  ctx.strokeStyle = BORDER; ctx.lineWidth = 3;
+  ctx.strokeRect(24, 24, S-48, S-48);
+
+  // Brand
+  ctx.fillStyle = GOLD; ctx.font = "700 22px 'Helvetica Neue',Arial,sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("THE PARBAUGHS", S/2, 80);
+  ctx.fillStyle = PINK; ctx.font = "600 18px 'Helvetica Neue',Arial,sans-serif";
+  ctx.fillText("RANGE SESSION", S/2, 112);
+
+  ctx.strokeStyle = BORDER; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(80, 130); ctx.lineTo(S-80, 130); ctx.stroke();
+
+  // Time
+  var mins = Math.round(elapsed/60); if (mins < 1) mins = 1;
+  var m = Math.floor(mins); var secs = elapsed - m*60;
+  var timeStr = m + ":" + (secs < 10 ? "0" : "") + secs;
+  ctx.fillStyle = GOLD; ctx.font = "800 160px 'Helvetica Neue',Arial,sans-serif";
+  ctx.textAlign = "center"; ctx.fillText(timeStr, S/2, 320);
+  ctx.fillStyle = MUTED; ctx.font = "500 24px 'Helvetica Neue',Arial,sans-serif";
+  ctx.fillText("time on range", S/2, 360);
+
+  // XP
+  if (xp) {
+    ctx.fillStyle = GOLD; ctx.font = "700 44px 'Helvetica Neue',Arial,sans-serif";
+    ctx.fillText("+" + xp + " XP", S/2, 430);
+  }
+
+  // Focus
+  if (focus) {
+    ctx.fillStyle = CREAM; ctx.font = "600 28px 'Helvetica Neue',Arial,sans-serif";
+    ctx.fillText("Focus: " + focus, S/2, 500);
+  }
+
+  // Feel
+  var feelLabel = ["","Rough","Solid","Dialed"][feel] || "";
+  var feelColor = [MUTED,"#f87171",CREAM,GOLD][feel] || MUTED;
+  if (feelLabel) {
+    ctx.fillStyle = feelColor; ctx.font = "600 24px 'Helvetica Neue',Arial,sans-serif";
+    ctx.fillText(feelLabel, S/2, 548);
+  }
+
+  // Drills
+  if (drillNames.length) {
+    var dy = 610;
+    ctx.fillStyle = MUTED; ctx.font = "500 17px 'Helvetica Neue',Arial,sans-serif";
+    ctx.fillText("DRILLS WORKED", S/2, dy);
+    drillNames.slice(0,5).forEach(function(n) {
+      dy += 40;
+      ctx.fillStyle = CREAM; ctx.font = "400 22px 'Helvetica Neue',Arial,sans-serif";
+      ctx.fillText(n, S/2, dy);
+    });
+  }
+
+  // Footer
+  ctx.fillStyle = "rgba(201,168,76,.3)"; ctx.fillRect(80, S-56, S-160, 1);
+  ctx.fillStyle = GOLD; ctx.font = "600 18px 'Helvetica Neue',Arial,sans-serif";
+  ctx.fillText("parbaughs.golf", S/2, S-32);
+}
+
+// ── Scramble round share card ─────────────────────────────────────────────────
+function showScrambleShareCard(teamName, score, course, format) {
+  showShareImageModal(function(canvas) {
+    drawScrambleCanvas(canvas, teamName, score, course, format);
+  }, "parbaughs-scramble.png");
+}
+
+function drawScrambleCanvas(canvas, teamName, score, course, format) {
+  var S = 1080;
+  canvas.width = S; canvas.height = S;
+  canvas.style.width = "100%"; canvas.style.height = "auto";
+  var ctx = canvas.getContext("2d");
+  var BG="#0d1117", GOLD="#c9a84c", CREAM="#eae8e0", MUTED="#6b7280", BORDER="rgba(201,168,76,.18)";
+  var par = 72; var diff = score - par;
+  var diffStr = diff === 0 ? "E" : (diff > 0 ? "+" + diff : "" + diff);
+  var diffColor = diff > 0 ? "#f87171" : diff < 0 ? "#4ade80" : GOLD;
+  ctx.fillStyle = BG; ctx.fillRect(0,0,S,S);
+  var grad = ctx.createLinearGradient(0,0,S,S);
+  grad.addColorStop(0,"rgba(201,168,76,.05)"); grad.addColorStop(1,"rgba(0,0,0,0)");
+  ctx.fillStyle = grad; ctx.fillRect(0,0,S,S);
+  ctx.strokeStyle = BORDER; ctx.lineWidth = 3; ctx.strokeRect(24,24,S-48,S-48);
+
+  ctx.fillStyle = GOLD; ctx.font = "700 22px 'Helvetica Neue',Arial,sans-serif"; ctx.textAlign = "center";
+  ctx.fillText("THE PARBAUGHS", S/2, 80);
+  ctx.fillStyle = MUTED; ctx.font = "600 18px 'Helvetica Neue',Arial,sans-serif";
+  ctx.fillText("SCRAMBLE", S/2, 112);
+  ctx.strokeStyle = BORDER; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(80,130); ctx.lineTo(S-80,130); ctx.stroke();
+
+  ctx.fillStyle = CREAM; ctx.font = "800 160px 'Helvetica Neue',Arial,sans-serif"; ctx.textAlign = "center";
+  ctx.fillText(score, S/2, 320);
+  ctx.fillStyle = diffColor; ctx.font = "700 48px 'Helvetica Neue',Arial,sans-serif";
+  ctx.fillText(diffStr, S/2, 386);
+  ctx.fillStyle = CREAM; ctx.font = "600 32px 'Helvetica Neue',Arial,sans-serif";
+  ctx.fillText(teamName || "Team", S/2, 456);
+  ctx.fillStyle = MUTED; ctx.font = "400 22px 'Helvetica Neue',Arial,sans-serif";
+  var cText = (course||"").length > 32 ? (course||"").substring(0,32)+"…" : (course||"");
+  ctx.fillText(cText, S/2, 496);
+  if (format) { ctx.fillStyle = GOLD; ctx.font = "500 18px 'Helvetica Neue',Arial,sans-serif"; ctx.fillText(format.toUpperCase(), S/2, 536); }
+
+  ctx.fillStyle = "rgba(201,168,76,.3)"; ctx.fillRect(80,S-56,S-160,1);
+  ctx.fillStyle = GOLD; ctx.font = "600 18px 'Helvetica Neue',Arial,sans-serif";
+  ctx.fillText("parbaughs.golf", S/2, S-32);
+}
+
+// ── Event leaderboard share card ──────────────────────────────────────────────
+function showEventShareCard(eventName, standings) {
+  showShareImageModal(function(canvas) {
+    drawEventCanvas(canvas, eventName, standings);
+  }, "parbaughs-event.png");
+}
+
+function drawEventCanvas(canvas, eventName, standings) {
+  var S = 1080;
+  canvas.width = S; canvas.height = S;
+  canvas.style.width = "100%"; canvas.style.height = "auto";
+  var ctx = canvas.getContext("2d");
+  var BG="#0d1117", GOLD="#c9a84c", CREAM="#eae8e0", MUTED="#6b7280", BORDER="rgba(201,168,76,.18)";
+  ctx.fillStyle = BG; ctx.fillRect(0,0,S,S);
+  var grad = ctx.createLinearGradient(0,0,S,S);
+  grad.addColorStop(0,"rgba(201,168,76,.05)"); grad.addColorStop(1,"rgba(0,0,0,0)");
+  ctx.fillStyle = grad; ctx.fillRect(0,0,S,S);
+  ctx.strokeStyle = BORDER; ctx.lineWidth = 3; ctx.strokeRect(24,24,S-48,S-48);
+
+  ctx.fillStyle = GOLD; ctx.font = "700 22px 'Helvetica Neue',Arial,sans-serif"; ctx.textAlign = "center";
+  ctx.fillText("THE PARBAUGHS", S/2, 80);
+  ctx.strokeStyle = BORDER; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(80,100); ctx.lineTo(S-80,100); ctx.stroke();
+
+  // Event name
+  ctx.fillStyle = CREAM; ctx.font = "700 46px 'Helvetica Neue',Arial,sans-serif";
+  var eName = (eventName||"Event").length > 24 ? (eventName||"Event").substring(0,24)+"…" : (eventName||"Event");
+  ctx.fillText(eName, S/2, 178);
+
+  // Standings
+  var medals = ["🥇","🥈","🥉"];
+  var medalColors = [GOLD,"#C0C0C0","#CD7F32",MUTED,MUTED,MUTED];
+  var sy = 260;
+  (standings || []).slice(0,6).forEach(function(s, i) {
+    var isWinner = i === 0;
+    var rowH = isWinner ? 112 : 80;
+    var pad = 48;
+    ctx.fillStyle = isWinner ? "rgba(201,168,76,.08)" : "rgba(255,255,255,.02)";
+    roundRectFill(ctx, pad, sy, S - pad*2, rowH - 8, 8);
+    if (isWinner) {
+      ctx.strokeStyle = "rgba(201,168,76,.2)"; ctx.lineWidth = 1;
+      roundRectStroke(ctx, pad, sy, S - pad*2, rowH - 8, 8);
+    }
+    ctx.fillStyle = medalColors[i] || MUTED;
+    ctx.font = (isWinner ? "800" : "600") + " " + (isWinner ? 36 : 26) + "px 'Helvetica Neue',Arial,sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText((i+1)+".", pad + 24, sy + (isWinner ? 44 : 32));
+    ctx.fillStyle = isWinner ? CREAM : "#9ba3c4";
+    ctx.font = (isWinner ? "700" : "500") + " " + (isWinner ? 34 : 26) + "px 'Helvetica Neue',Arial,sans-serif";
+    ctx.fillText(s.name||"", pad + 80, sy + (isWinner ? 44 : 32));
+    ctx.fillStyle = medalColors[i] || MUTED;
+    ctx.font = (isWinner ? "800" : "700") + " " + (isWinner ? 38 : 28) + "px 'Helvetica Neue',Arial,sans-serif";
+    ctx.textAlign = "right";
+    ctx.fillText((s.pts||0) + " pts", S - pad - 24, sy + (isWinner ? 44 : 32));
+    sy += rowH;
+  });
+
+  ctx.fillStyle = "rgba(201,168,76,.3)"; ctx.fillRect(80,S-56,S-160,1);
+  ctx.fillStyle = GOLD; ctx.font = "600 18px 'Helvetica Neue',Arial,sans-serif"; ctx.textAlign = "center";
+  ctx.fillText("parbaughs.golf", S/2, S-32);
+}
+
+function roundRectFill(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath(); ctx.fill();
+}
+function roundRectStroke(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath(); ctx.stroke();
 }
 
 function copyShareText() {
@@ -13247,6 +13833,102 @@ function startPresenceSystem() {
     });
     renderOnlineSection();
   }, function(err) { pbWarn("[Presence] error:", err.message); });
+}
+
+// ========== FIRESTORE ACTIVITY FEED ==========
+function renderFeedItem(a) {
+  var h = '<div class="feed-row" onclick="' + (a.dest || '') + '" style="' + (a.dest ? 'cursor:pointer' : '') + '">';
+  if (a.live) h += '<div style="width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse-dot 2s infinite;flex-shrink:0;margin-top:6px"></div>';
+  h += '<div class="feed-left">';
+  h += '<div class="feed-name">' + escHtml(a.name) + '</div>';
+  if (a.sub) h += '<div class="feed-course">' + escHtml(a.sub) + '</div>';
+  if (a.quip) h += '<div class="feed-quip">' + a.quip + '</div>';
+  h += '</div>';
+  h += '<div class="feed-right">';
+  if (a.score) h += '<div class="feed-score">' + a.score + '</div>';
+  if (a.date) h += '<div class="feed-date">' + a.date + '</div>';
+  if (a.live) h += '<div style="font-size:9px;color:#4ade80;font-weight:600">LIVE</div>';
+  h += '</div></div>';
+  return h;
+}
+
+function loadHomeActivityFeed() {
+  var el = document.getElementById("homeActivityFeed");
+  if (!el || !db) {
+    // Fallback to in-memory data
+    if (el) renderHomeActivityFromMemory(el);
+    return;
+  }
+  var items = [];
+  var pending = 0;
+  function tryRender() {
+    if (pending > 0) return;
+    if (!items.length) {
+      el.innerHTML = '<div class="card"><div class="empty" style="padding:24px"><div class="empty-text">Nothing yet</div><div style="font-size:10px;color:var(--muted2);margin-top:4px">Log a round, hit the range, or post a tee time</div></div></div>';
+      return;
+    }
+    items.sort(function(a,b){return (b.ts||0)-(a.ts||0)});
+    var h = '<div class="card">';
+    items.slice(0, 12).forEach(function(a) { h += renderFeedItem(a); });
+    h += '</div>';
+    el.innerHTML = h;
+  }
+
+  // 1. Recent rounds from Firestore
+  pending++;
+  db.collection("rounds").orderBy("createdAt","desc").limit(10).get().then(function(snap) {
+    snap.forEach(function(doc) {
+      var r = doc.data();
+      var comm = PB.generateRoundCommentary({score:r.score,rating:r.rating||72,slope:r.slope||113,player:r.player});
+      var quip = comm.roasts.length ? comm.roasts[0] : (comm.highlights.length ? comm.highlights[0] : "");
+      items.push({type:"round", name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + " · " + r.score, quip:quip, score:r.score, date:r.date||"", ts:r.createdAt ? r.createdAt.toMillis() : 0, dest:"Router.go('rounds')"});
+    });
+    pending--; tryRender();
+  }).catch(function() {
+    // orderBy may need index — fall back to state.rounds
+    PB.getRounds().slice().reverse().slice(0,10).forEach(function(r) {
+      var comm = PB.generateRoundCommentary({score:r.score,rating:r.rating||72,slope:r.slope||113,player:r.player});
+      var quip = comm.roasts.length ? comm.roasts[0] : (comm.highlights.length ? comm.highlights[0] : "");
+      items.push({type:"round", name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + " · " + r.score, quip:quip, score:r.score, date:r.date||"", ts:r.timestamp||0, dest:"Router.go('rounds')"});
+    });
+    pending--; tryRender();
+  });
+
+  // 2. Range sessions from live listener
+  pending++;
+  if (typeof liveRangeSessions !== "undefined") {
+    liveRangeSessions.filter(function(s){return s.visibility !== "private";}).slice(0,8).forEach(function(s) {
+      var name = s.playerName || s.playerId || "A Parbaugh";
+      var sub = (s.durationMin ? s.durationMin + " min" : "") + (s.focus ? " · " + s.focus : "");
+      items.push({type:"range", name:name + " hit the range", sub:sub||"Range session", date:s.date||"", ts:s.startedAt ? new Date(s.startedAt).getTime() : 0, dest:"Router.go('range')"});
+    });
+  }
+  pending--; tryRender();
+
+  // 3. Tee times — upcoming and recent
+  pending++;
+  db.collection("teetimes").orderBy("createdAt","desc").limit(6).get().then(function(snap) {
+    var today = new Date().toISOString().split("T")[0];
+    snap.forEach(function(doc) {
+      var t = doc.data();
+      var isToday = t.date === today;
+      var isFuture = t.date > today;
+      var accepted = t.responses ? Object.keys(t.responses).filter(function(k){return t.responses[k]==="accepted";}).length : 0;
+      items.push({type:"tee_time", name:(t.postedByName||"Someone") + " posted a tee time", sub:(t.courseName||"Tee time") + " · " + (t.date||"") + (t.time ? " at " + t.time : "") + " · " + accepted + " going", date:t.date||"", ts:t.createdAt ? t.createdAt.toMillis() : 0, live:isToday, dest:"Router.go('teetimes')"});
+    });
+    pending--; tryRender();
+  }).catch(function() { pending--; tryRender(); });
+
+  // 4. Active/recent Parbaugh Rounds
+  pending++;
+  db.collection("syncrounds").orderBy("createdAt","desc").limit(5).get().then(function(snap) {
+    snap.forEach(function(doc) {
+      var r = doc.data();
+      var isLive = r.status !== "completed";
+      items.push({type:"syncround", name:(r.createdByName||"A Parbaugh") + (isLive ? " is playing a Parbaugh Round" : " finished a Parbaugh Round"), sub:(r.courseName||"") + (r.format ? " · " + r.format : ""), date:"", ts:r.createdAt ? r.createdAt.toMillis() : 0, live:isLive, dest:"Router.go('syncround')"});
+    });
+    pending--; tryRender();
+  }).catch(function() { pending--; tryRender(); });
 }
 
 function renderOnlineSection() {
