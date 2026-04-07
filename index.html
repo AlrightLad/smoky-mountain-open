@@ -734,7 +734,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.6.8 — LIVE ROUND SPECTATOR VIEW
+   PARBAUGHS v5.7.0 — ABANDON/DISCARD FIXES + SCRAMBLE TEAMS + COURSE SYNC
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -1310,21 +1310,15 @@ function seedFirestore() {
 function syncCoursesFromFirestore() {
   if (!db) return;
   db.collection("courses").get().then(function(snap) {
-    var added = 0;
+    var fsCourses = [];
     snap.forEach(function(doc) {
       var c = doc.data();
-      if (!c.name) return;
-      var existing = PB.getCourseByName(c.name);
-      if (!existing) {
-        PB.addCourse(c);
-        added++;
-      } else {
-        // Enrich existing with Firestore data if richer
-        if (c.allTees && c.allTees.length && (!existing.allTees || !existing.allTees.length)) PB.addCourse(c);
-        if (c.holes && c.holes.length && (!existing.holes || !existing.holes.length)) PB.addCourse(c);
-      }
+      if (c && c.name) fsCourses.push(c);
     });
-    if (added > 0) pbLog("[Sync] Imported", added, "courses from Firestore");
+    if (fsCourses.length > 0) {
+      PB.setCoursesFromFirestore(fsCourses);
+      pbLog("[Sync] Loaded", fsCourses.length, "courses from Firestore");
+    }
   }).catch(function(err) { pbWarn("[Sync] Course sync failed:", err.message); });
 }
 
@@ -2056,6 +2050,17 @@ var PB = (function() {
     var c = getCourse(id);
     if (!c) return;
     Object.keys(updates).forEach(function(k) { c[k] = updates[k]; });
+    save();
+  }
+
+  function setCoursesFromFirestore(fsCourses) {
+    if (!fsCourses || !fsCourses.length) return;
+    // Firestore is authoritative — replace state.courses entirely
+    // Preserve any local-only courses (quickAdd that haven't synced) as a safety net
+    var fsIds = {};
+    fsCourses.forEach(function(c) { if (c.id) fsIds[c.id] = true; });
+    var localOnly = state.courses.filter(function(c) { return c.id && !fsIds[c.id] && c.quickAdd; });
+    state.courses = fsCourses.concat(localOnly);
     save();
   }
 
@@ -3402,7 +3407,7 @@ var PB = (function() {
   /* ---------- PUBLIC API ---------- */
   return {
     getPlayer:getPlayer, getPlayers:getPlayers, addPlayer:addPlayer, updatePlayer:updatePlayer, removePlayer:removePlayer,
-    getCourse:getCourse, getCourses:getCourses, getCourseByName:getCourseByName, addCourse:addCourse, updateCourse:updateCourse, addCourseReview:addCourseReview, searchCourses:searchCourses,
+    getCourse:getCourse, getCourses:getCourses, getCourseByName:getCourseByName, addCourse:addCourse, updateCourse:updateCourse, setCoursesFromFirestore:setCoursesFromFirestore, addCourseReview:addCourseReview, searchCourses:searchCourses,
     getRounds:getRounds, getPlayerRounds:getPlayerRounds, getCourseRounds:getCourseRounds, addRound:addRound, deleteRound:deleteRound, setRoundsFromFirestore:setRoundsFromFirestore,
     getTrips:getTrips, getTrip:getTrip, addTrip:addTrip, updateTrip:updateTrip, addTripPhoto:addTripPhoto,
     getScores:getScores, setScore:setScore,
@@ -5390,27 +5395,55 @@ function renderTeamList() {
   var h = '<div class="sh"><h2>Scramble teams</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.go(\'records\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'scramble\',{create:true})">+ New team</button></div></div>';
 
   if (teams.length) {
-    // Quick action
     if (teams.length >= 2) {
       h += '<div style="padding:0 16px 12px"><button class="btn full outline" onclick="Router.go(\'scramble\',{match:true})">Log a match</button></div>';
     }
-
     teams.forEach(function(team) {
-      var wins = team.matches ? team.matches.filter(function(m) { return m.result === "win"; }).length : 0;
-      var losses = team.matches ? team.matches.filter(function(m) { return m.result === "loss"; }).length : 0;
       var members = team.members.map(function(id) { return PB.getPlayer(id); }).filter(Boolean);
+      var captain = team.captain ? PB.getPlayer(team.captain) : null;
+      var scored = (team.matches || []).filter(function(m){return m.score;}).sort(function(a,b){return a.score-b.score;});
+      var best = scored.length ? scored[0].score : null;
+      var last3 = (team.matches||[]).slice(-3).reverse();
 
       h += '<div class="card" onclick="Router.go(\'scramble\',{id:\'' + team.id + '\'})" style="cursor:pointer">';
       h += '<div style="padding:14px 16px">';
-      h += '<div style="display:flex;justify-content:space-between;align-items:center">';
-      h += '<div><div style="display:flex;align-items:center;gap:8px"><div style="font-size:15px;font-weight:700;color:var(--gold)">' + team.name + '</div><span class="badge" style="font-size:9px">' + members.length + '-man</span></div>';
-      h += '<div style="display:flex;gap:6px;margin-top:6px">';
+      h += '<div style="display:flex;justify-content:space-between;align-items:flex-start">';
+
+      // Left — name, avatars, captain
+      h += '<div>';
+      h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
+      h += '<div style="font-size:15px;font-weight:700;color:var(--gold)">' + escHtml(team.name) + '</div>';
+      h += '<span class="badge" style="font-size:9px">' + members.length + '-man</span></div>';
+      h += '<div style="display:flex;gap:6px;margin-bottom:6px">';
       members.forEach(function(p) {
-        h += '<div class="h2h-av" style="width:28px;height:28px">' + Router.getAvatar(p) + '</div>';
+        var isCap = captain && p.id === team.captain;
+        h += '<div class="h2h-av" style="width:28px;height:28px;' + (isCap ? 'border:2px solid var(--gold)' : '') + '">' + Router.getAvatar(p) + '</div>';
       });
-      h += '</div></div>';
-      h += '<div style="text-align:right"><div style="font-size:22px;font-weight:800;color:var(--gold)">' + wins + '-' + losses + '</div>';
-      h += '<div style="font-size:10px;color:var(--muted)">W-L</div></div>';
+      h += '</div>';
+      if (captain) h += '<div style="font-size:10px;color:var(--muted)">Captain: <span style="color:var(--gold);font-weight:600">' + escHtml(captain.name) + '</span></div>';
+      h += '</div>';
+
+      // Right — best score + last 3
+      h += '<div style="text-align:right">';
+      if (best !== null) {
+        var bestDiff = best - 72;
+        h += '<div style="font-size:28px;font-weight:800;color:var(--gold);line-height:1">' + best + '</div>';
+        h += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">Best score</div>';
+        if (last3.filter(function(m){return m.score;}).length) {
+          h += '<div style="font-size:10px;color:var(--muted2)">';
+          last3.filter(function(m){return m.score;}).forEach(function(m,i) {
+            var d = m.score - 72;
+            var c = d <= 0 ? 'var(--birdie)' : 'var(--red)';
+            h += '<span style="color:' + c + ';margin-left:' + (i?4:0) + 'px">' + m.score + '</span>';
+          });
+          h += '<div style="font-size:9px;color:var(--muted2);margin-top:1px">Last ' + last3.filter(function(m){return m.score;}).length + '</div>';
+          h += '</div>';
+        }
+      } else {
+        h += '<div style="font-size:12px;color:var(--muted2);margin-top:4px">No rounds</div>';
+      }
+      h += '</div>';
+
       h += '</div></div></div>';
     });
   } else {
@@ -5503,16 +5536,19 @@ function renderTeamDetail(teamId) {
   var members = team.members.map(function(id) { return PB.getPlayer(id); }).filter(Boolean);
   var matches = team.matches || [];
   var captain = team.captain ? (PB.getPlayer(team.captain) || {name:team.captain}) : null;
+  var scored = matches.filter(function(m){return m.score;}).sort(function(a,b){return a.score-b.score;});
+  var coursePar = 72;
 
-  var h = '<div class="sh"><h2>' + team.name + '</h2><button class="back" onclick="Router.go(\'scramble\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>' + escHtml(team.name) + '</h2><button class="back" onclick="Router.go(\'scramble\')">← Back</button></div>';
 
-  // Team header with captain badge
+  // Team header — avatars with captain gold border + badge
   h += '<div class="pd-banner" style="padding-bottom:16px">';
   h += '<div style="display:flex;justify-content:center;gap:12px;margin-bottom:12px">';
   members.forEach(function(p) {
-    var isCaptain = captain && (p.id === team.captain || p.name === team.captain);
-    h += '<div style="text-align:center"><div class="pd-av" style="width:60px;height:60px;font-size:24px;border-width:2px;cursor:default;' + (isCaptain ? 'border-color:var(--gold)' : '') + '">' + Router.getAvatar(p) + '</div>';
-    h += '<div style="font-size:12px;font-weight:600;margin-top:4px">' + p.name + '</div>';
+    var isCaptain = captain && (p.id === team.captain);
+    h += '<div style="text-align:center">';
+    h += '<div class="pd-av" style="width:60px;height:60px;font-size:24px;cursor:default;' + (isCaptain ? 'border:2px solid var(--gold)' : 'border:2px solid var(--border)') + '">' + Router.getAvatar(p) + '</div>';
+    h += '<div style="font-size:12px;font-weight:600;margin-top:4px">' + escHtml(p.name) + '</div>';
     if (isCaptain) h += '<div style="font-size:8px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:700">Captain</div>';
     h += '</div>';
   });
@@ -5521,16 +5557,16 @@ function renderTeamDetail(teamId) {
 
   // Top 3 scores
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Best rounds</span></div>';
-  var scoredMatches = matches.filter(function(m){return m.score}).sort(function(a,b){return a.score - b.score}).slice(0, 3);
-  if (scoredMatches.length) {
-    scoredMatches.forEach(function(m, idx) {
+  if (scored.length) {
+    scored.slice(0,3).forEach(function(m, idx) {
       var medal = idx === 0 ? 'var(--gold)' : idx === 1 ? '#C0C0C0' : '#CD7F32';
+      var diff = m.score - coursePar;
       h += '<div class="card" style="margin-bottom:6px"><div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center">';
-      h += '<div style="display:flex;align-items:center;gap:10px"><div style="width:28px;height:28px;border-radius:50%;background:' + medal + '15;border:1.5px solid ' + medal + ';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:' + medal + '">' + (idx+1) + '</div>';
+      h += '<div style="display:flex;align-items:center;gap:10px">';
+      h += '<div style="width:28px;height:28px;border-radius:50%;background:' + medal + '15;border:1.5px solid ' + medal + ';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:' + medal + '">' + (idx+1) + '</div>';
       h += '<div><div style="font-size:13px;font-weight:600;color:var(--cream)">' + m.score + '</div>';
-      h += '<div style="font-size:10px;color:var(--muted)">' + (m.course || "Unknown course") + (m.date ? ' · ' + m.date : '') + '</div></div></div>';
-      var diff = m.score - 72;
-      h += '<div style="font-size:14px;font-weight:700;color:' + (diff <= 0 ? 'var(--birdie)' : 'var(--red)') + '">' + (diff >= 0 ? '+' : '') + diff + '</div>';
+      h += '<div style="font-size:10px;color:var(--muted)">' + escHtml(m.course || "Unknown course") + (m.date ? ' · ' + m.date : '') + '</div></div></div>';
+      h += '<div style="font-size:14px;font-weight:700;color:' + (diff <= 0 ? 'var(--birdie)' : 'var(--red)') + '">' + (diff > 0 ? '+' : '') + diff + '</div>';
       h += '</div></div>';
     });
   } else {
@@ -5538,29 +5574,50 @@ function renderTeamDetail(teamId) {
   }
   h += '</div>';
 
-  // Team favorite course
-  var courseCounts = {};
-  matches.forEach(function(m) { if (m.course) courseCounts[m.course] = (courseCounts[m.course]||0) + 1; });
-  var favCourse = Object.keys(courseCounts).sort(function(a,b){return courseCounts[b]-courseCounts[a]})[0] || null;
+  // Team stats — best, worst, avg, courses played, team handicap
+  var coursesPlayed = {};
+  matches.forEach(function(m){ if (m.course) coursesPlayed[m.course] = 1; });
+  var uniqueCourses = Object.keys(coursesPlayed).length;
+  var favCourse = Object.keys(coursesPlayed).sort(function(a,b){
+    return matches.filter(function(m){return m.course===b;}).length - matches.filter(function(m){return m.course===a;}).length;
+  })[0] || null;
+  var bestScore = scored.length ? scored[0].score : null;
+  var worstScore = scored.length ? scored[scored.length-1].score : null;
+  var avgScore = scored.length ? Math.round(scored.reduce(function(a,m){return a+m.score;},0) / scored.length) : null;
+
+  // Team handicap: best 3 differentials × 0.96 (same concept as individual GHIN)
+  var teamHdcp = null;
+  if (scored.length >= 3) {
+    var diffs = scored.map(function(m){ return (113/113) * (m.score - coursePar); });
+    var best3 = diffs.slice(0,3);
+    teamHdcp = Math.round((best3.reduce(function(a,b){return a+b;},0) / best3.length) * 0.96 * 10) / 10;
+  }
+
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Team stats</span></div>';
   h += '<div class="hof-card">';
   h += '<div class="hof-row"><span class="hof-label">Rounds played</span><span class="hof-val">' + matches.length + '</span></div>';
-  h += '<div class="hof-row"><span class="hof-label">Team favorite</span><span class="hof-val">' + (favCourse || '—') + '</span></div>';
-  var bestScore = scoredMatches.length ? scoredMatches[0].score : null;
-  h += '<div class="hof-row"><span class="hof-label">Best score</span><span class="hof-val">' + (bestScore || '—') + '</span></div>';
-  var avgScore = scoredMatches.length ? Math.round(scoredMatches.reduce(function(a,m){return a+m.score},0) / scoredMatches.length) : null;
-  h += '<div class="hof-row"><span class="hof-label">Average score</span><span class="hof-val">' + (avgScore || '—') + '</span></div>';
+  h += '<div class="hof-row"><span class="hof-label">Courses played</span><span class="hof-val">' + (uniqueCourses || '—') + '</span></div>';
+  if (favCourse) h += '<div class="hof-row"><span class="hof-label">Favorite course</span><span class="hof-val">' + escHtml(favCourse) + '</span></div>';
+  if (bestScore) h += '<div class="hof-row"><span class="hof-label">Best score</span><span class="hof-val" style="color:var(--birdie)">' + bestScore + '</span></div>';
+  if (worstScore && worstScore !== bestScore) h += '<div class="hof-row"><span class="hof-label">Worst score</span><span class="hof-val" style="color:var(--red)">' + worstScore + '</span></div>';
+  if (avgScore) h += '<div class="hof-row"><span class="hof-label">Average score</span><span class="hof-val">' + avgScore + '</span></div>';
+  if (teamHdcp !== null) h += '<div class="hof-row"><span class="hof-label">Team handicap</span><span class="hof-val" style="color:var(--gold)">' + teamHdcp + '</span></div>';
   h += '</div></div>';
 
-  // Round history
+  // Round history — color-coded +/- vs par
   if (matches.length) {
     h += '<div class="section"><div class="sec-head"><span class="sec-title">Round history</span></div>';
     matches.slice().reverse().forEach(function(m) {
+      var diff = m.score ? m.score - coursePar : null;
+      var diffColor = diff === null ? 'var(--muted)' : diff <= 0 ? 'var(--birdie)' : diff <= 4 ? 'var(--gold)' : 'var(--red)';
+      var diffStr = diff === null ? '—' : (diff > 0 ? '+' : '') + diff;
       h += '<div class="card" style="margin-bottom:6px"><div style="padding:10px 16px;display:flex;justify-content:space-between;align-items:center">';
-      h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + (m.course || "Unknown") + '</div>';
+      h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(m.course || "Unknown") + '</div>';
       h += '<div style="font-size:10px;color:var(--muted)">' + (m.date || "") + '</div></div>';
-      if (m.score) h += '<div style="font-size:16px;font-weight:700;color:var(--gold)">' + m.score + '</div>';
-      h += '</div></div>';
+      h += '<div style="text-align:right">';
+      if (m.score) h += '<div style="font-size:18px;font-weight:700;color:var(--gold)">' + m.score + '</div>';
+      h += '<div style="font-size:11px;font-weight:600;color:' + diffColor + '">' + diffStr + '</div>';
+      h += '</div></div></div>';
     });
     h += '</div>';
   }
@@ -8740,10 +8797,32 @@ function formatRangeTime(totalSeconds) {
 }
 
 function startRangeSession() {
-  activeRangeStart = null; // Timer doesn't start yet
+  activeRangeStart = null;
   activeRangeDrills = [];
   activeRangeFocus = "";
   Router.go("range");
+}
+
+function _clearRangeState() {
+  if (activeRangeTimer) { clearInterval(activeRangeTimer); activeRangeTimer = null; }
+  activeRangeStart = null;
+  activeRangeDrills = [];
+  activeRangeFocus = "";
+  rangeSessionNotes = "";
+  rangeFeel = 0;
+  rangeSessionPrivate = false;
+}
+
+function abandonRangeSession() {
+  if (!confirm("End session without saving?")) return;
+  _clearRangeState();
+  rangeActiveView = "range";
+  Router.go("activity");
+}
+
+function discardRangeSession() {
+  _clearRangeState();
+  Router.go("activity");
 }
 
 function beginRangeTimer() {
@@ -8866,7 +8945,7 @@ function endRangeSession() {
   // Actions
   h += '<div style="padding:0 16px 28px;display:flex;flex-direction:column;gap:8px">';
   h += '<button class="btn full green" style="padding:14px;font-size:14px;font-weight:700" onclick="saveRangeSession(' + mins + ',' + elapsed + ')">Save Session</button>';
-  h += '<button class="btn full outline" style="padding:12px;font-size:12px" onclick="activeRangeStart=null;rangeSessionNotes=\'\';rangeSessionPrivate=false;Router.go(\'activity\')">Discard</button>';
+  h += '<button class="btn full outline" style="padding:12px;font-size:12px" onclick="discardRangeSession()">Discard</button>';
   h += '</div>';
 
   document.querySelector('[data-page="range"]').innerHTML = h;
@@ -9158,7 +9237,7 @@ Router.register("range", function() {
   var allDrills = DRILL_LIBRARY.concat(customDrills);
 
   h += '<div style="display:flex;justify-content:flex-end;padding:12px 16px 0">';
-  h += '<button class="btn-sm" onclick="if(confirm(\'End session without saving?\''+ '){if(activeRangeTimer){clearInterval(activeRangeTimer);activeRangeTimer=null;}activeRangeStart=null;activeRangeDrills=[];activeRangeFocus=\'\';rangeSessionNotes=\'\';rangeActiveView=\'range\';Router.go(\'activity\')}" style="font-size:10px;color:var(--muted);background:transparent;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer">Abandon</button>';
+  h += '<button onclick="abandonRangeSession()" style="font-size:10px;color:var(--muted);background:transparent;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer">Abandon</button>';
   h += '</div>';
 
   // Timer — dominant
@@ -10704,7 +10783,7 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.6.8</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.0</div></div>';
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New</span></div>';
@@ -10808,7 +10887,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.6.8</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.0</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
