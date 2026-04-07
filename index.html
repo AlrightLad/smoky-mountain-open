@@ -734,7 +734,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.7.0 — ABANDON/DISCARD FIXES + SCRAMBLE TEAMS + COURSE SYNC
+   PARBAUGHS v5.7.3 — 2-MAN TEAM ROUNDS + W-L FIX + CADDY EMOJI
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -3138,9 +3138,28 @@ var PB = (function() {
     var scrambleTeams = getScrambleTeams();
     var myTeams = scrambleTeams.filter(function(t){return t.members && t.members.indexOf(pid) !== -1});
     if (myTeams.length >= 1) achievements.push({id:"team_player",name:"Drafted",desc:"Join a scramble team",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"compete"});
+    if (myTeams.length >= 2) achievements.push({id:"multi_team",name:"Free Agent",desc:"Join 2 different scramble teams",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='5' cy='5' r='2.5' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='11' cy='5' r='2.5' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M1 13c0-2.2 1.8-4 4-4M7 13c0-2.2 1.8-4 4-4' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:75,cat:"compete"});
     var totalTeamWins = 0;
-    myTeams.forEach(function(t){ if(t.matches) t.matches.forEach(function(m){if(m.result==="win")totalTeamWins++;}); });
+    var totalTeamMatches = 0;
+    myTeams.forEach(function(t){ if(t.matches) t.matches.forEach(function(m){totalTeamMatches++;if(m.result==="win")totalTeamWins++;}); });
+    var totalTeamRounds = 0;
+    myTeams.forEach(function(t){ if(t.matches) totalTeamRounds += t.matches.filter(function(m){return m.score;}).length; });
+    if (totalTeamRounds >= 1) achievements.push({id:"scramble_debut",name:"Scramble Debut",desc:"Play in your first scramble round",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2 5h5l-4 3 1.5 5L8 11l-4.5 3L5 9 1 6h5z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:75,cat:"compete"});
+    if (totalTeamWins >= 1) achievements.push({id:"first_win",name:"First W",desc:"Win your first scramble match",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M4 2h8l-1 6H5L4 2z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M6 8l2 6M10 8l-2 6' stroke='currentColor' stroke-width='1.2'/><path d='M3 14h10' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"compete"});
     if (totalTeamWins >= 5) achievements.push({id:"squad_goals",name:"Squad Goals",desc:"Win 5 scramble matches",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:200,cat:"compete",title:"Squad Goals"});
+    // Scramble under-par achievement
+    var anyTeamUnderPar = false;
+    myTeams.forEach(function(t){ if(t.matches) t.matches.forEach(function(m){if(m.score&&m.score<72)anyTeamUnderPar=true;}); });
+    if (anyTeamUnderPar) achievements.push({id:"team_under_par",name:"Under the Radar",desc:"Team shoots under par in scramble",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 2a6 6 0 100 12A6 6 0 008 2z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M5 8l2 2 4-4' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"compete",title:"Under the Radar"});
+    // Scramble courses variety
+    var scrambleCourses = {};
+    myTeams.forEach(function(t){ if(t.matches) t.matches.forEach(function(m){if(m.course)scrambleCourses[m.course]=1;}); });
+    if (Object.keys(scrambleCourses).length >= 3) achievements.push({id:"road_warriors",name:"Road Warriors",desc:"Play scramble at 3 different courses",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M2 14L8 2l6 12' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4.5 10h7' stroke='currentColor' stroke-width='1.2'/></svg>",xp:125,cat:"compete",title:"Road Warriors"});
+    // Captain achievement
+    var captainTeams = myTeams.filter(function(t){ return t.captain === pid; });
+    var captainRounds = 0;
+    captainTeams.forEach(function(t){ if(t.matches) captainRounds += t.matches.filter(function(m){return m.score;}).length; });
+    if (captainRounds >= 1) achievements.push({id:"captain_obvious",name:"Captain",desc:"Lead your team as captain",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l1.8 3.6L14 5.5l-3 2.9.7 4.1L8 10.4 4.3 12.5l.7-4.1-3-2.9 4.2-.9z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"compete",title:"The Captain"});
 
     // --- INVITE ACHIEVEMENT ---
     var inviteCount = player ? (player.invitesUsed || 0) : 0;
@@ -3198,6 +3217,20 @@ var PB = (function() {
     // Dawn Patrol / Night Owl (based on startedAt hour)
     if (_rangeS.some(function(s){if(!s.startedAt)return false;var h=new Date(s.startedAt).getHours();return h<8})) achievements.push({id:"range_dawn",name:"Dawn Patrol",desc:"Range session before 8am",icon:_rangeSVG,xp:50,cat:"range"});
     if (_rangeS.some(function(s){if(!s.startedAt)return false;var h=new Date(s.startedAt).getHours();return h>=20})) achievements.push({id:"range_night_owl",name:"Night Owl",desc:"Range session after 8pm",icon:_rangeSVG,xp:50,cat:"range"});
+    if (_rangeS.some(function(s){if(!s.startedAt)return false;var h=new Date(s.startedAt).getHours();return h>=22})) achievements.push({id:"range_night_shift",name:"Night Shift",desc:"Range session after 10pm — post-work grind",icon:_rangeSVG,xp:75,cat:"range",title:"Night Shift"});
+    // Focused practice — sessions with a focus field
+    var focusedSessions = _rangeS.filter(function(s){return s.focus && s.focus.trim().length > 0;});
+    if (focusedSessions.length >= 1) achievements.push({id:"focused_practice",name:"Intentional",desc:"Log a range session with a focus note",icon:_rangeSVG,xp:25,cat:"range"});
+    if (focusedSessions.length >= 5) achievements.push({id:"student_of_game",name:"Student of the Game",desc:"5 sessions with a focus note",icon:_rangeSVG,xp:100,cat:"range",title:"Student of the Game"});
+    // Pre-round warmup — range session same day as round, before it (round date = session date is enough)
+    var _rDates={};_rangeS.forEach(function(s){if(s.date)_rDates[s.date]=1});
+    if (rounds.some(function(r){return r.date&&_rDates[r.date]})) achievements.push({id:"double_duty",name:"Double Duty",desc:"Range session + round same day",icon:_rangeSVG,xp:100,cat:"range",title:"Double Duty"});
+    // Sessions with notes
+    var notedSessions = _rangeS.filter(function(s){return s.notes && s.notes.trim().length > 0;});
+    if (notedSessions.length >= 3) achievements.push({id:"tape_study",name:"Tape Study",desc:"Leave notes on 3 range sessions",icon:_rangeSVG,xp:50,cat:"range"});
+    // Dialed feel — 3 sessions rated 'Dialed' (feel=3)
+    var dialedSessions = _rangeS.filter(function(s){return s.feel===3;});
+    if (dialedSessions.length >= 3) achievements.push({id:"dialed_feel",name:"Dialed",desc:"Rate 3 sessions as Dialed",icon:_rangeSVG,xp:75,cat:"range",title:"Dialed"});
 
     // ===== INFER earnedAt DATES =====
     var sortedRounds = rounds.slice().sort(function(a,b){return (a.date||"")>(b.date||"")?1:-1});
@@ -4352,7 +4385,7 @@ function renderMemberDetailWithData(p) {
     });
     h += '</div>';
   }
-  h += '<div style="font-size:12px;color:var(--gold);margin-top:4px;font-weight:600;letter-spacing:.3px;cursor:pointer" onclick="document.getElementById(\'title-picker\').style.display=document.getElementById(\'title-picker\').style.display===\'none\'?\'block\':\'none\'">' + activeTitle + ' <span style="font-size:9px;color:var(--muted)">▼</span></div>';
+  h += '<div style="font-size:12px;color:var(--gold);margin-top:4px;font-weight:600;letter-spacing:.3px;cursor:pointer" onclick="document.getElementById(\'title-picker\').style.display=document.getElementById(\'title-picker\').style.display===\'none\'?\'block\':\'none\'">' + activeTitle + ' <span style="font-size:9px;color:var(--muted)"><svg viewBox="0 0 10 6" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l4 4 4-4"/></svg></span></div>';
 
   // Inline title picker
   h += '<div id="title-picker" style="display:none;margin-top:8px;text-align:left;max-width:320px;margin-left:auto;margin-right:auto">';
@@ -4848,7 +4881,7 @@ function renderMemberEditForm(p) {
   });
   h += '</div>';
 
-  h += '<div class="form-section"><div class="form-title" onclick="toggleSection(\'edit-clubs\')" style="cursor:pointer">Club distances (yards) <span id="edit-clubs-toggle" style="font-size:12px;color:var(--muted)">▼</span></div>';
+  h += '<div class="form-section"><div class="form-title" onclick="toggleSection(\'edit-clubs\')" style="cursor:pointer">Club distances (yards) <span id="edit-clubs-toggle" style="font-size:12px;color:var(--muted)"><svg viewBox="0 0 10 6" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l4 4 4-4"/></svg></span></div>';
   h += '<div id="edit-clubs">';
   Object.keys(clubLabels).forEach(function(k) {
     h += formField(clubLabels[k], "edit-club-" + k, (p.clubs && p.clubs[k]) || "", "number", "0");
@@ -5386,6 +5419,7 @@ function toggleBadge(pid, badgeId) {
 Router.register("scramble", function(params) {
   if (params.create) { renderCreateTeam(); return; }
   if (params.match) { renderLogMatch(); return; }
+  if (params.teamround) { renderLogTeamRound(params.teamround); return; }
   if (params.id) { renderTeamDetail(params.id); return; }
   renderTeamList();
 });
@@ -5423,10 +5457,15 @@ function renderTeamList() {
       if (captain) h += '<div style="font-size:10px;color:var(--muted)">Captain: <span style="color:var(--gold);font-weight:600">' + escHtml(captain.name) + '</span></div>';
       h += '</div>';
 
-      // Right — best score + last 3
+      // Right — W-L only for 2-man with H2H games, otherwise best score
+      var h2h = (team.matches || []).filter(function(m) { return m.result === 'win' || m.result === 'loss' || m.result === 'tie'; });
       h += '<div style="text-align:right">';
-      if (best !== null) {
-        var bestDiff = best - 72;
+      if (members.length === 2 && h2h.length > 0) {
+        var wins = h2h.filter(function(m) { return m.result === "win"; }).length;
+        var losses = h2h.filter(function(m) { return m.result === "loss"; }).length;
+        h += '<div style="font-size:28px;font-weight:800;color:var(--gold);line-height:1">' + wins + '-' + losses + '</div>';
+        h += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">W-L</div>';
+      } else if (best !== null) {
         h += '<div style="font-size:28px;font-weight:800;color:var(--gold);line-height:1">' + best + '</div>';
         h += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">Best score</div>';
         if (last3.filter(function(m){return m.score;}).length) {
@@ -5541,13 +5580,13 @@ function renderTeamDetail(teamId) {
 
   var h = '<div class="sh"><h2>' + escHtml(team.name) + '</h2><button class="back" onclick="Router.go(\'scramble\')">← Back</button></div>';
 
-  // Team header — avatars with captain gold border + badge
+  // Team header — all avatars gold border, captain gets label
   h += '<div class="pd-banner" style="padding-bottom:16px">';
   h += '<div style="display:flex;justify-content:center;gap:12px;margin-bottom:12px">';
   members.forEach(function(p) {
     var isCaptain = captain && (p.id === team.captain);
     h += '<div style="text-align:center">';
-    h += '<div class="pd-av" style="width:60px;height:60px;font-size:24px;cursor:default;' + (isCaptain ? 'border:2px solid var(--gold)' : 'border:2px solid var(--border)') + '">' + Router.getAvatar(p) + '</div>';
+    h += '<div class="pd-av" style="width:60px;height:60px;font-size:24px;cursor:default;border:2px solid var(--gold)">' + Router.getAvatar(p) + '</div>';
     h += '<div style="font-size:12px;font-weight:600;margin-top:4px">' + escHtml(p.name) + '</div>';
     if (isCaptain) h += '<div style="font-size:8px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:700">Captain</div>';
     h += '</div>';
@@ -5555,7 +5594,15 @@ function renderTeamDetail(teamId) {
   h += '</div>';
   h += '<div style="font-size:13px;color:var(--muted)">' + team.size + '-man scramble</div></div>';
 
-  // Top 3 scores
+  // Action buttons — log round always available, H2H match only for 2-man with another 2-man team
+  var allTeams = PB.getScrambleTeams();
+  var other2man = allTeams.filter(function(t){ return t.id !== team.id && (t.size||t.members.length) === 2; });
+  h += '<div style="padding:0 16px 16px;display:flex;gap:8px">';
+  h += '<button class="btn full green" style="flex:1" onclick="Router.go(\'scramble\',{teamround:\'' + team.id + '\'})">Log team round</button>';
+  if (members.length === 2 && other2man.length > 0) {
+    h += '<button class="btn full outline" style="flex:1" onclick="Router.go(\'scramble\',{match:true})">Log H2H match</button>';
+  }
+  h += '</div>';
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Best rounds</span></div>';
   if (scored.length) {
     scored.slice(0,3).forEach(function(m, idx) {
@@ -5597,11 +5644,11 @@ function renderTeamDetail(teamId) {
   h += '<div class="hof-card">';
   h += '<div class="hof-row"><span class="hof-label">Rounds played</span><span class="hof-val">' + matches.length + '</span></div>';
   h += '<div class="hof-row"><span class="hof-label">Courses played</span><span class="hof-val">' + (uniqueCourses || '—') + '</span></div>';
-  if (favCourse) h += '<div class="hof-row"><span class="hof-label">Favorite course</span><span class="hof-val">' + escHtml(favCourse) + '</span></div>';
-  if (bestScore) h += '<div class="hof-row"><span class="hof-label">Best score</span><span class="hof-val" style="color:var(--birdie)">' + bestScore + '</span></div>';
-  if (worstScore && worstScore !== bestScore) h += '<div class="hof-row"><span class="hof-label">Worst score</span><span class="hof-val" style="color:var(--red)">' + worstScore + '</span></div>';
-  if (avgScore) h += '<div class="hof-row"><span class="hof-label">Average score</span><span class="hof-val">' + avgScore + '</span></div>';
-  if (teamHdcp !== null) h += '<div class="hof-row"><span class="hof-label">Team handicap</span><span class="hof-val" style="color:var(--gold)">' + teamHdcp + '</span></div>';
+  h += '<div class="hof-row"><span class="hof-label">Favorite course</span><span class="hof-val">' + escHtml(favCourse || '—') + '</span></div>';
+  h += '<div class="hof-row"><span class="hof-label">Best score</span><span class="hof-val"' + (bestScore ? ' style="color:var(--birdie)"' : '') + '>' + (bestScore || '—') + '</span></div>';
+  h += '<div class="hof-row"><span class="hof-label">Worst score</span><span class="hof-val"' + (worstScore && worstScore !== bestScore ? ' style="color:var(--red)"' : '') + '>' + (worstScore && worstScore !== bestScore ? worstScore : '—') + '</span></div>';
+  h += '<div class="hof-row"><span class="hof-label">Average score</span><span class="hof-val">' + (avgScore || '—') + '</span></div>';
+  h += '<div class="hof-row"><span class="hof-label">Team handicap</span><span class="hof-val"' + (teamHdcp !== null ? ' style="color:var(--gold)"' : '') + '>' + (teamHdcp !== null ? teamHdcp : '—') + '</span></div>';
   h += '</div></div>';
 
   // Round history — color-coded +/- vs par
@@ -5691,6 +5738,37 @@ function submitLogMatch() {
 
   Router.toast("Match logged! " + (score1 < score2 ? t1.name + " wins!" : score2 < score1 ? t2.name + " wins!" : "Tie!"));
   Router.go("scramble");
+}
+
+// ---- Log a team round (no opponent required) ----
+function renderLogTeamRound(teamId) {
+  var teams = PB.getScrambleTeams();
+  var team = teams.find(function(t){ return t.id === teamId; });
+  if (!team) { Router.go("scramble"); return; }
+
+  var h = '<div class="sh"><h2>Log team round</h2><button class="back" onclick="Router.go(\'scramble\',{id:\'' + teamId + '\'})">← Back</button></div>';
+  h += '<div class="form-section">';
+  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:14px">Track a round you played together — no opponent needed. Counts toward your team\'s best score and round history.</div>';
+  h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="tr-course" placeholder="Start typing..." autocomplete="off" oninput="showRoundCourseSearch(this)"><div id="search-round-course" class="search-results"></div></div>';
+  h += '<div class="ff"><label class="ff-label">Team score</label><input type="number" class="ff-input" id="tr-score" placeholder="e.g. 68" min="40" max="120"></div>';
+  h += formField("Date", "tr-date", new Date().toISOString().split("T")[0], "date");
+  h += '<button class="btn full green" onclick="submitLogTeamRound(\'' + teamId + '\')">Save round</button>';
+  h += '</div>';
+  document.querySelector('[data-page="scramble"]').innerHTML = h;
+}
+
+function submitLogTeamRound(teamId) {
+  var course = document.getElementById("tr-course").value.trim();
+  var score = parseInt(document.getElementById("tr-score").value);
+  var date = document.getElementById("tr-date").value;
+  if (!course) { Router.toast("Enter a course"); return; }
+  if (!score || score < 40 || score > 120) { Router.toast("Enter a valid score (40–120)"); return; }
+  // Log without opponent/result — pure team round for tracking
+  PB.addScrambleMatch(teamId, { course: course, score: score, date: date, opponent: null, result: null });
+  var team = PB.getScrambleTeams().find(function(t){ return t.id === teamId; });
+  syncScrambleTeam(team);
+  Router.toast("Round saved!");
+  Router.go("scramble", { id: teamId });
 }
 
 /* ================================================
@@ -7550,12 +7628,12 @@ function renderRoundDetail(roundId) {
     h += '<div class="section"><div class="sec-head"><span class="sec-title">Parbaugh commentary</span></div>';
     if (commentary.highlights.length) {
       commentary.highlights.forEach(function(hl) {
-        h += '<div class="card"><div class="card-body" style="display:flex;gap:10px;align-items:flex-start"><span style="font-size:18px;flex-shrink:0">▲</span><div style="font-size:13px;color:var(--birdie);line-height:1.4">' + hl + '</div></div></div>';
+        h += '<div class="card"><div class="card-body" style="display:flex;gap:10px;align-items:flex-start"><span style="flex-shrink:0;margin-top:2px"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="var(--birdie)" stroke-width="2"><path d="M8 13V3M3 8l5-5 5 5"/></svg></span><div style="font-size:13px;color:var(--birdie);line-height:1.4">' + hl + '</div></div></div>';
       });
     }
     if (commentary.roasts.length) {
       commentary.roasts.forEach(function(r) {
-        h += '<div class="card"><div class="card-body" style="display:flex;gap:10px;align-items:flex-start"><span style="font-size:18px;flex-shrink:0">▼</span><div style="font-size:13px;color:var(--red);line-height:1.4">' + r + '</div></div></div>';
+        h += '<div class="card"><div class="card-body" style="display:flex;gap:10px;align-items:flex-start"><span style="flex-shrink:0;margin-top:2px"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="var(--red)" stroke-width="2"><path d="M8 3v10M3 8l5 5 5-5"/></svg></span><div style="font-size:13px;color:var(--red);line-height:1.4">' + r + '</div></div></div>';
       });
     }
     h += '</div>';
@@ -7660,7 +7738,7 @@ function quickAddCourseForRound(name) {
 
 function showRoundCommentary(round) {
   var c = PB.generateRoundCommentary(round);
-  var msg = c.roasts.length ? "" + c.roasts[0] : c.highlights.length ? "▲ " + c.highlights[0] : "Round logged!";
+  var msg = c.roasts.length ? c.roasts[0] : c.highlights.length ? c.highlights[0] : "Round logged!";
   Router.toast(msg);
   Router.go("rounds");
 }
@@ -8065,29 +8143,63 @@ function renderCourseDetail(courseId) {
     h += '</div></div>';
   }
 
-  // Course records
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Course records</span></div>';
-  if (roundsHere.length) {
-    var bestSolo = roundsHere.reduce(function(a, b) { return a.score < b.score ? a : b; });
-    h += '<div class="hof-card" style="margin:0 0 8px"><div class="hof-row"><span class="hof-label">Best solo score</span><span class="hof-val">' + bestSolo.score + ' — ' + bestSolo.playerName + '</span></div>';
-  } else {
-    h += '<div class="hof-card" style="margin:0 0 8px"><div class="hof-row"><span class="hof-label">Best solo score</span><span class="hof-val">—</span></div>';
+  // Course leaderboard — top 3 per format category
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Leaderboard</span></div>';
+
+  function renderLeaderboardCategory(label, entries) {
+    // entries: [{name, score, date}] already sorted low→high, max 3
+    var lh = '<div style="margin-bottom:14px">';
+    lh += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600;padding:0 16px;margin-bottom:6px">' + label + '</div>';
+    if (!entries.length) {
+      lh += '<div style="padding:0 16px;font-size:11px;color:var(--muted2)">No rounds yet</div>';
+    } else {
+      entries.forEach(function(e, idx) {
+        var medal = idx === 0 ? 'var(--gold)' : idx === 1 ? '#C0C0C0' : '#CD7F32';
+        var diff = e.score - (e.par || 72);
+        var diffStr = diff === 0 ? 'E' : (diff > 0 ? '+' : '') + diff;
+        var diffColor = diff <= 0 ? 'var(--birdie)' : diff <= 5 ? 'var(--gold)' : 'var(--red)';
+        lh += '<div style="display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:1px solid var(--border2)">';
+        lh += '<div style="width:22px;height:22px;border-radius:50%;background:' + medal + '18;border:1.5px solid ' + medal + ';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:' + medal + ';flex-shrink:0">' + (idx+1) + '</div>';
+        lh += '<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(e.name) + '</div>';
+        lh += '<div style="font-size:9px;color:var(--muted)">' + (e.date || '') + '</div></div>';
+        lh += '<div style="text-align:right;flex-shrink:0"><div style="font-size:16px;font-weight:700;color:var(--gold)">' + e.score + '</div>';
+        lh += '<div style="font-size:10px;font-weight:600;color:' + diffColor + '">' + diffStr + '</div></div>';
+        lh += '</div>';
+      });
+    }
+    lh += '</div>';
+    return lh;
   }
-  // Best scramble at this course by team size
+
+  // Solo (all non-scramble formats combined — stroke, parbaugh, stableford, etc.)
+  var soloEntries = roundsHere
+    .filter(function(r){ return r.format !== 'scramble'; })
+    .sort(function(a,b){ return a.score - b.score; })
+    .slice(0,3)
+    .map(function(r){ return {name: r.playerName || r.player, score: r.score, date: r.date, par: c.par}; });
+  h += renderLeaderboardCategory('Solo', soloEntries);
+
+  // Scramble by team size
   var teams = PB.getScrambleTeams();
-  var scrambleBests = {2:null,3:null,4:null};
-  teams.forEach(function(t) {
-    var sz = t.members ? t.members.length : (t.size || 2);
-    (t.matches || []).forEach(function(m) {
-      if (m.course === c.name && m.score && (!scrambleBests[sz] || m.score < scrambleBests[sz].score)) {
-        scrambleBests[sz] = { score: m.score, team: t.name };
-      }
+  [2,3,4].forEach(function(sz) {
+    var entries = [];
+    teams.filter(function(t){ return (t.size||t.members.length) === sz; }).forEach(function(t) {
+      (t.matches||[]).filter(function(m){ return m.course === c.name && m.score; }).forEach(function(m) {
+        entries.push({name: t.name, score: m.score, date: m.date, par: c.par});
+      });
     });
+    entries.sort(function(a,b){ return a.score - b.score; });
+    // Deduplicate — keep only the best score per team
+    var seen = {};
+    entries = entries.filter(function(e) {
+      if (seen[e.name]) return false;
+      seen[e.name] = true;
+      return true;
+    }).slice(0,3);
+    h += renderLeaderboardCategory(sz + '-Man Scramble', entries);
   });
-  h += '<div class="hof-row"><span class="hof-label">Best 2-man scramble</span><span class="hof-val">' + (scrambleBests[2] ? scrambleBests[2].score + ' — ' + scrambleBests[2].team : "—") + '</span></div>';
-  h += '<div class="hof-row"><span class="hof-label">Best 3-man scramble</span><span class="hof-val">' + (scrambleBests[3] ? scrambleBests[3].score + ' — ' + scrambleBests[3].team : "—") + '</span></div>';
-  h += '<div class="hof-row"><span class="hof-label">Best 4-man scramble</span><span class="hof-val">' + (scrambleBests[4] ? scrambleBests[4].score + ' — ' + scrambleBests[4].team : "—") + '</span></div>';
-  h += '</div></div>';
+
+  h += '</div>';
 
   if (roundsHere.length) {
     h += '<div class="section"><div class="sec-head"><span class="sec-title">Parbaugh scores</span></div>';
@@ -9082,7 +9194,7 @@ function renderActivityRange() {
     h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:2px 0">';
     h += '<div><div style="font-size:12px;font-weight:600;color:#f472b6">Session in progress</div>';
     h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">Tap to return</div></div>';
-    h += '<div style="font-size:9px;color:#f472b6;animation:pulse 2s infinite">● LIVE</div>';
+    h += '<div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:#f472b6;animation:pulse-dot 2s infinite"></div><span style="font-size:9px;color:#f472b6;font-weight:700">LIVE</span></div>';
     h += '</div></div></div>';
   }
 
@@ -9816,7 +9928,7 @@ function renderChatMessages(messages) {
     // Header
     var isSystem = msg.authorId === "system";
     ch += '<div style="display:flex;gap:10px">';
-    ch += '<div class="c-av">' + (isSystem ? '⛳' : (m ? Router.getAvatar(m) : '')) + '</div>';
+    ch += '<div class="c-av" style="background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center">' + (isSystem ? '⛳' : (m ? Router.getAvatar(m) : '')) + '</div>';
     ch += '<div style="flex:1"><div class="chat-author"' + (isSystem ? ' style="color:var(--birdie)"' : '') + '>' + escHtml(msg.authorName||"Anon") + (mLvl && !isSystem ? ' <span style="font-size:8px;color:var(--gold);font-weight:600">LV' + mLvl.level + '</span>' : '') + '</div>';
     ch += '<div class="chat-text">' + escHtml(msg.text) + '</div>';
     if (msg.createdAt && msg.createdAt.toDate) {
@@ -10783,7 +10895,7 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.0</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.3</div></div>';
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New</span></div>';
@@ -10887,7 +10999,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.0</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.3</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
@@ -12591,7 +12703,7 @@ function renderWatchRound() {
       }
       if (sc !== "") nineTotal += parseInt(sc);
       row += '<div style="font-size:12px;font-weight:700;color:' + color + ';background:' + bg + ';border:1px solid ' + border + ';border-radius:4px;padding:5px 2px;min-height:28px;display:flex;align-items:center;justify-content:center">';
-      row += sc !== "" ? sc : (isActive ? '▶' : '·');
+      row += sc !== "" ? sc : (isActive ? '<svg viewBox="0 0 8 10" width="8" height="10" fill="currentColor"><polygon points="0,0 8,5 0,10"/></svg>' : '<span style="color:var(--border)">·</span>');
       row += '</div>';
     }
     var totalColor = nineTotal === ninePar ? "var(--cream)" : nineTotal < ninePar ? "var(--birdie)" : "var(--red)";
