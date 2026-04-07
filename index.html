@@ -325,7 +325,18 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* SEARCH RESULTS */
-.search-results{position:relative;z-index:10}
+.search-results{position:relative;z-index:10;max-height:320px;overflow-y:auto;border-radius:0 0 8px 8px}
+.search-results:not(:empty){border:1px solid var(--border);border-top:none;background:var(--bg2)}
+.sr-section{font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;font-weight:700;padding:8px 12px 4px}
+.sr-item{padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sr-item:active{background:rgba(201,168,76,.06)}
+.sr-item:last-child{border-bottom:none}
+.sr-name{font-size:12px;font-weight:600;color:var(--cream)}
+.sr-meta{font-size:10px;color:var(--muted);margin-top:2px}
+.sr-badge{font-size:9px;font-weight:600;white-space:nowrap;padding:3px 8px;border-radius:4px}
+.sr-badge.local{color:var(--birdie);background:rgba(78,201,122,.1)}
+.sr-badge.import{color:var(--gold);background:rgba(201,168,76,.1)}
+.sr-badge.add{color:var(--muted);background:var(--bg3)}
 .search-item{padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-top:none;cursor:pointer;font-size:13px;transition:background .1s}
 .search-item:first-child{border-top:1px solid var(--border);border-radius:0 0 0 0}
 .search-item:last-child{border-radius:0 0 8px 8px}
@@ -720,7 +731,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.5.0 — SCOREKEEPER & COURSE API
+   PARBAUGHS v5.6.1 — SCOREKEEPER & COURSE API
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -5397,48 +5408,69 @@ function renderTeamDetail(teamId) {
   if (!team) { Router.go("scramble"); return; }
 
   var members = team.members.map(function(id) { return PB.getPlayer(id); }).filter(Boolean);
-  var wins = team.matches ? team.matches.filter(function(m) { return m.result === "win"; }).length : 0;
-  var losses = team.matches ? team.matches.filter(function(m) { return m.result === "loss"; }).length : 0;
   var matches = team.matches || [];
+  var captain = team.captain ? (PB.getPlayer(team.captain) || {name:team.captain}) : null;
 
   var h = '<div class="sh"><h2>' + team.name + '</h2><button class="back" onclick="Router.go(\'scramble\')">← Back</button></div>';
 
-  // Team header
+  // Team header with captain badge
   h += '<div class="pd-banner" style="padding-bottom:16px">';
   h += '<div style="display:flex;justify-content:center;gap:12px;margin-bottom:12px">';
   members.forEach(function(p) {
-    h += '<div style="text-align:center"><div class="pd-av" style="width:60px;height:60px;font-size:24px;border-width:2px;cursor:default">' + Router.getAvatar(p) + '</div>';
-    h += '<div style="font-size:12px;font-weight:600;margin-top:4px">' + p.name + '</div></div>';
+    var isCaptain = captain && (p.id === team.captain || p.name === team.captain);
+    h += '<div style="text-align:center"><div class="pd-av" style="width:60px;height:60px;font-size:24px;border-width:2px;cursor:default;' + (isCaptain ? 'border-color:var(--gold)' : '') + '">' + Router.getAvatar(p) + '</div>';
+    h += '<div style="font-size:12px;font-weight:600;margin-top:4px">' + p.name + '</div>';
+    if (isCaptain) h += '<div style="font-size:8px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:700">Captain</div>';
+    h += '</div>';
   });
   h += '</div>';
-  h += '<div style="font-size:36px;font-weight:800;color:var(--gold)">' + wins + ' — ' + losses + '</div>';
-  h += '<div style="font-size:11px;color:var(--muted)">Overall record</div></div>';
+  h += '<div style="font-size:13px;color:var(--muted)">' + team.size + '-man scramble</div></div>';
 
-  // Stats
-  h += '<div class="stats-grid">';
-  h += statBox(wins, "Wins");
-  h += statBox(losses, "Losses");
-  var bestScore = matches.length ? Math.min.apply(null, matches.filter(function(m){return m.score}).map(function(m){return m.score})) : null;
-  h += statBox(bestScore || "—", "Best score");
-  h += '</div>';
-
-  // Match history
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Match history</span></div>';
-  if (matches.length) {
-    matches.slice().reverse().forEach(function(m) {
-      var isWin = m.result === "win";
-      h += '<div class="card"><div style="padding:12px 16px">';
-      h += '<div style="display:flex;justify-content:space-between;align-items:center">';
-      h += '<div><div style="font-size:13px;font-weight:600">' + (m.opponent || "Unknown") + '</div>';
-      h += '<div style="font-size:11px;color:var(--muted)">' + (m.course || "") + ' · ' + (m.date || "") + '</div></div>';
-      h += '<div style="text-align:right"><div style="font-size:18px;font-weight:800;color:' + (isWin ? "var(--birdie)" : "var(--red)") + '">' + (isWin ? "W" : "L") + '</div>';
-      if (m.score) h += '<div style="font-size:11px;color:var(--muted)">' + m.score + '</div>';
-      h += '</div></div></div></div>';
+  // Top 3 scores
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Best rounds</span></div>';
+  var scoredMatches = matches.filter(function(m){return m.score}).sort(function(a,b){return a.score - b.score}).slice(0, 3);
+  if (scoredMatches.length) {
+    scoredMatches.forEach(function(m, idx) {
+      var medal = idx === 0 ? 'var(--gold)' : idx === 1 ? '#C0C0C0' : '#CD7F32';
+      h += '<div class="card" style="margin-bottom:6px"><div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center">';
+      h += '<div style="display:flex;align-items:center;gap:10px"><div style="width:28px;height:28px;border-radius:50%;background:' + medal + '15;border:1.5px solid ' + medal + ';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:' + medal + '">' + (idx+1) + '</div>';
+      h += '<div><div style="font-size:13px;font-weight:600;color:var(--cream)">' + m.score + '</div>';
+      h += '<div style="font-size:10px;color:var(--muted)">' + (m.course || "Unknown course") + (m.date ? ' · ' + m.date : '') + '</div></div></div>';
+      var diff = m.score - 72;
+      h += '<div style="font-size:14px;font-weight:700;color:' + (diff <= 0 ? 'var(--birdie)' : 'var(--red)') + '">' + (diff >= 0 ? '+' : '') + diff + '</div>';
+      h += '</div></div>';
     });
   } else {
-    h += '<div class="card"><div class="empty"><div class="empty-text">No matches yet</div></div></div>';
+    h += '<div class="card"><div class="empty"><div class="empty-text">No rounds played yet</div></div></div>';
   }
   h += '</div>';
+
+  // Team favorite course
+  var courseCounts = {};
+  matches.forEach(function(m) { if (m.course) courseCounts[m.course] = (courseCounts[m.course]||0) + 1; });
+  var favCourse = Object.keys(courseCounts).sort(function(a,b){return courseCounts[b]-courseCounts[a]})[0] || null;
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Team stats</span></div>';
+  h += '<div class="hof-card">';
+  h += '<div class="hof-row"><span class="hof-label">Rounds played</span><span class="hof-val">' + matches.length + '</span></div>';
+  h += '<div class="hof-row"><span class="hof-label">Team favorite</span><span class="hof-val">' + (favCourse || '—') + '</span></div>';
+  var bestScore = scoredMatches.length ? scoredMatches[0].score : null;
+  h += '<div class="hof-row"><span class="hof-label">Best score</span><span class="hof-val">' + (bestScore || '—') + '</span></div>';
+  var avgScore = scoredMatches.length ? Math.round(scoredMatches.reduce(function(a,m){return a+m.score},0) / scoredMatches.length) : null;
+  h += '<div class="hof-row"><span class="hof-label">Average score</span><span class="hof-val">' + (avgScore || '—') + '</span></div>';
+  h += '</div></div>';
+
+  // Round history
+  if (matches.length) {
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Round history</span></div>';
+    matches.slice().reverse().forEach(function(m) {
+      h += '<div class="card" style="margin-bottom:6px"><div style="padding:10px 16px;display:flex;justify-content:space-between;align-items:center">';
+      h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + (m.course || "Unknown") + '</div>';
+      h += '<div style="font-size:10px;color:var(--muted)">' + (m.date || "") + '</div></div>';
+      if (m.score) h += '<div style="font-size:16px;font-weight:700;color:var(--gold)">' + m.score + '</div>';
+      h += '</div></div>';
+    });
+    h += '</div>';
+  }
 
   document.querySelector('[data-page="scramble"]').innerHTML = h;
 }
@@ -5802,7 +5834,7 @@ function renderPlaySetup() {
   }
   h += '<div class="ff"><label class="ff-label">Playing as</label><div class="ff-input" style="background:var(--bg4);color:var(--gold);font-weight:600">' + escHtml(playAs.name) + '</div><input type="hidden" id="pn-player" value="' + playAs.id + '"></div>';
 
-  h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="pn-course" placeholder="Start typing to search..." oninput="showPlayCourseSearch(this)"><div id="search-pn-course" class="search-results"></div></div>';
+  h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="pn-course" placeholder="Search courses..." autocomplete="off" oninput="showPlayCourseSearch(this)"><div id="search-pn-course" class="search-results"></div></div>';
   h += '<input type="hidden" id="pn-rating" value=""><input type="hidden" id="pn-slope" value="">';
 
   h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="pn-format"><option value="stroke">Stroke play</option><option value="parbaugh">Parbaugh Stroke Play (handicap-adjusted)</option><option value="stableford">Stableford</option><option value="match">Match play</option><option value="scramble">Scramble</option><option value="bestball">Best ball</option><option value="skins">Skins</option></select></div>';
@@ -7333,28 +7365,29 @@ function courseSearchWithApi(val, containerId, onSelect, onQuickAdd) {
   if (!container) return;
   if (!val || val.length < 2) { container.innerHTML = ""; return; }
   
-  // Render local results immediately
+  // Render local results with section label
   var h = '';
   if (results.length) {
+    h += '<div class="sr-section">Your courses</div>';
     results.forEach(function(c) {
-      h += '<div class="search-item" onclick="' + onSelect(c) + '">';
-      h += escHtml(c.name) + ' <span style="color:var(--muted);font-size:10px">' + escHtml(c.loc) + ' · ' + c.rating + '/' + c.slope + '</span></div>';
+      h += '<div class="sr-item" onclick="' + onSelect(c) + '">';
+      h += '<div><div class="sr-name">' + escHtml(c.name) + '</div><div class="sr-meta">' + escHtml(c.loc||"") + (c.rating && c.rating !== 72 ? ' · ' + c.rating + '/' + c.slope : '') + (c.par ? ' · Par ' + c.par : '') + '</div></div>';
+      h += '<span class="sr-badge local">Select</span></div>';
     });
   }
   
-  // Always show quick add at bottom
-  var exactMatch = results.some(function(c) { return c.name.toLowerCase() === val.toLowerCase(); });
-  if (!exactMatch) {
-    h += '<div class="search-item" style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border)" onclick="' + onQuickAdd(val) + '">';
-    h += '<div><div style="font-size:12px;color:var(--cream)">' + escHtml(val) + '</div><div style="font-size:10px;color:var(--muted);margin-top:1px">Not in directory — tap to add manually</div></div>';
-    h += '<div style="font-size:10px;color:var(--gold);font-weight:600;white-space:nowrap">+ Add</div></div>';
-  }
-  
   // API search placeholder
+  var exactMatch = results.some(function(c) { return c.name.toLowerCase() === val.toLowerCase(); });
   var apiKey = localStorage.getItem("golfcourse_api_key");
   if (apiKey && !exactMatch) {
-    h += '<div id="' + containerId + '-api" style="border-top:1px solid var(--border);padding-top:4px">';
-    h += '<div style="font-size:9px;color:var(--muted2);padding:6px 12px">Searching online...</div></div>';
+    h += '<div id="' + containerId + '-api"><div class="sr-section" style="color:var(--muted2)">Searching online...</div></div>';
+  }
+  
+  // Quick add at bottom
+  if (!exactMatch) {
+    h += '<div class="sr-item" onclick="' + onQuickAdd(val) + '">';
+    h += '<div><div class="sr-name" style="color:var(--gold)">+ Add "' + escHtml(val) + '"</div><div class="sr-meta">Not in results? Add manually</div></div>';
+    h += '<span class="sr-badge add">+ Add</span></div>';
   }
   container.innerHTML = h;
   
@@ -7403,10 +7436,10 @@ function _renderApiResults(courses, apiContainer, containerId, onSelect, query) 
     return !PB.getCourseByName(name);
   });
   if (!filtered.length) {
-    apiContainer.innerHTML = '<div style="font-size:9px;color:var(--muted2);padding:4px 12px">No online results</div>';
+    apiContainer.innerHTML = '<div style="font-size:9px;color:var(--muted2);padding:6px 12px">No online results</div>';
     return;
   }
-  var h = '<div style="font-size:9px;color:var(--gold);padding:4px 12px;text-transform:uppercase;letter-spacing:.5px">Online Results</div>';
+  var h = '<div class="sr-section">Online results</div>';
   filtered.forEach(function(c, idx) {
     var name = c.course_name || c.club_name || c.name || c.courseName || "Unknown";
     var city = (c.location && typeof c.location === "object" ? c.location.city : c.city) || "";
@@ -7417,10 +7450,10 @@ function _renderApiResults(courses, apiContainer, containerId, onSelect, query) 
     var slope = td.slope || "";
     var rating = td.rating || "";
     
-    h += '<div class="search-item" style="display:flex;justify-content:space-between;align-items:center" onclick="importAndSelectCourse(' + idx + ',\'' + containerId + '\')">';
-    h += '<div style="flex:1"><div style="font-size:12px;color:var(--cream)">' + escHtml(name) + '</div>';
-    h += '<div style="font-size:10px;color:var(--muted);margin-top:1px">' + escHtml(loc) + (par ? ' · Par ' + par : '') + (rating ? ' · ' + rating + '/' + slope : '') + '</div></div>';
-    h += '<div style="font-size:9px;color:var(--birdie);font-weight:600;white-space:nowrap">Import</div></div>';
+    h += '<div class="sr-item" onclick="importAndSelectCourse(' + idx + ',\'' + containerId + '\')">';
+    h += '<div><div class="sr-name">' + escHtml(name) + '</div>';
+    h += '<div class="sr-meta">' + escHtml(loc) + (rating ? ' · ' + rating + '/' + slope : '') + (par ? ' · Par ' + par : '') + '</div></div>';
+    h += '<span class="sr-badge import">+ Import</span></div>';
   });
   apiContainer.innerHTML = h;
 }
@@ -8472,7 +8505,7 @@ function renderActivityRounds() {
   } else {
     h += '<div class="ff-input" style="background:var(--bg4);color:var(--gold);font-weight:600">' + escHtml(roundAs.name) + '</div><input type="hidden" id="rf-player" value="' + roundAs.id + '"></div>';
   }
-  h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="rf-course" placeholder="Start typing to search courses..." oninput="showRoundCourseSearch(this)"><div id="search-round-course" class="search-results"></div></div>';
+  h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="rf-course" placeholder="Search courses..." autocomplete="off" oninput="showRoundCourseSearch(this)"><div id="search-round-course" class="search-results"></div></div>';
   h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="rf-format"><option value="stroke">Stroke play</option><option value="parbaugh">Parbaugh Stroke Play</option><option value="stableford">Modified Stableford</option><option value="scramble">Scramble (2-man)</option><option value="scramble4">Scramble (4-man)</option><option value="bestball">Best ball</option><option value="alternate">Alternate shot</option><option value="skins">Skins</option><option value="match">Match play</option></select></div>';
   h += '<div class="ff-row" style="grid-template-columns:1fr 1fr">';
   h += '<div class="ff"><label class="ff-label">Score</label><input type="number" inputmode="numeric" class="ff-input" id="rf-score" placeholder="85" style="min-width:0"></div>';
@@ -10177,30 +10210,28 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.5.0</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.6.1</div></div>';
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Search 30,000+ golf courses from any course field in the app", tag: "NEW"},
-    {item: "Import courses with real ratings, slope, par, and tee data", tag: "NEW"},
+    {item: "Full-screen course search — tap to search 30,000+ courses with ratings and tee data inline", tag: "NEW"},
+    {item: "Import courses with real ratings, slope, par, yardage, and hole-by-hole scorecard", tag: "NEW"},
+    {item: "Course detail page shows all available tees — tap any tee to view its full scorecard", tag: "NEW"},
+    {item: "Share card — every completed round gets a branded scorecard you can share or screenshot", tag: "NEW"},
+    {item: "Scramble team pages redesigned — top 3 scores, team stats, captain badge, round history", tag: "NEW"},
+    {item: "Courses sync across all devices — import on one, see it everywhere", tag: "NEW"},
     {item: "Scorekeeper system — one person handles scores per round", tag: "NEW"},
     {item: "Score locking — finish a round to lock scores, Commissioner can unlock", tag: "NEW"},
     {item: "Activity tab with Rounds and Range views", tag: "NEW"},
-    {item: "Range Session timer with drills, XP, and practice insights", tag: "NEW"},
-    {item: "Comment replies — tap Reply to @mention someone", tag: "NEW"},
-    {item: "Comment likes with hearts", tag: "NEW"},
-    {item: "Calendar shows course name and tee time for each trip day", tag: "NEW"},
-    {item: "Profile photos can only be changed by the account owner", tag: "IMPROVED"},
-    {item: "Players can only log rounds as themselves", tag: "IMPROVED"},
-    {item: "Course directory is now clean — search and import only", tag: "IMPROVED"},
-    {item: "Consistent icon design across the entire app", tag: "IMPROVED"},
-    {item: "Pull-to-refresh works better on mobile", tag: "FIXED"},
-    {item: "Reply toggle — tap again to close the comment input", tag: "FIXED"},
-    {item: "Profile edit icon only appears on your own profile", tag: "FIXED"},
-    {item: "Header photo syncs correctly after upload", tag: "FIXED"}
+    {item: "SMO courses verified with real API data — accurate pars, ratings, and slopes", tag: "IMPROVED"},
+    {item: "Invite count updates live when generating codes", tag: "IMPROVED"},
+    {item: "Badges, titles, and photos can only be changed by the account owner", tag: "IMPROVED"},
+    {item: "FIR and GIR buttons no longer scroll the page to the top", tag: "FIXED"},
+    {item: "FAQ page answers now open and close properly", tag: "FIXED"},
+    {item: "Snapshot listeners cleaned up — no more memory leaks during long sessions", tag: "FIXED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
@@ -10244,9 +10275,12 @@ Router.register("caddynotes", function() {
     "Commissioner admin panel",
     "Scorekeeper assignment per course with permission tiers",
     "Score locking and unlocking by Commissioner",
+    "Full-screen course search overlay with instant results",
     "GolfCourseAPI integration — search 30,000+ courses worldwide",
-    "Unified course search across all pages (local + online + manual add)",
-    "Scramble team management",
+    "Course detail pages with all tees and hole-by-hole scorecards",
+    "Share card — branded scorecard on every completed round",
+    "Courses sync across all devices automatically",
+    "Scramble team management with captain, top scores, and team stats",
     "Ace wall",
     "Season recap and yearly awards ceremony",
     "Pull-to-refresh (smart — doesn't trigger in scrollable containers)",
@@ -10277,7 +10311,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.5.0</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.6.1</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
