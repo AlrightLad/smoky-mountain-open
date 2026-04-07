@@ -734,7 +734,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.7.3 — 2-MAN TEAM ROUNDS + W-L FIX + CADDY EMOJI
+   PARBAUGHS v5.7.5 — ALL MEMBERS AVERAGES + ACHIEVEMENT LISTENER + RANGE LOCKS
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -1213,6 +1213,8 @@ function enterApp() {
   syncScrambleTeamsFromFirestore();
   loadRoundsFromFirestore();
   loadCustomDrillsFromFirestore();
+  // Check for newly earned achievements after data loads (deferred)
+  setTimeout(checkAndAwardNewAchievements, 4000);
   setTimeout(function() { updateProfileBar(); }, 100);
   Router.go("home");
 }
@@ -2050,6 +2052,11 @@ var PB = (function() {
     var c = getCourse(id);
     if (!c) return;
     Object.keys(updates).forEach(function(k) { c[k] = updates[k]; });
+    save();
+  }
+
+  function deleteCourse(id) {
+    state.courses = state.courses.filter(function(c) { return c.id !== id; });
     save();
   }
 
@@ -3145,7 +3152,7 @@ var PB = (function() {
     var totalTeamRounds = 0;
     myTeams.forEach(function(t){ if(t.matches) totalTeamRounds += t.matches.filter(function(m){return m.score;}).length; });
     if (totalTeamRounds >= 1) achievements.push({id:"scramble_debut",name:"Scramble Debut",desc:"Play in your first scramble round",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2 5h5l-4 3 1.5 5L8 11l-4.5 3L5 9 1 6h5z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:75,cat:"compete"});
-    if (totalTeamWins >= 1) achievements.push({id:"first_win",name:"First W",desc:"Win your first scramble match",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M4 2h8l-1 6H5L4 2z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M6 8l2 6M10 8l-2 6' stroke='currentColor' stroke-width='1.2'/><path d='M3 14h10' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"compete"});
+    if (totalTeamWins >= 1) achievements.push({id:"scramble_first_win",name:"First W",desc:"Win your first scramble match",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M4 2h8l-1 6H5L4 2z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M6 8l2 6M10 8l-2 6' stroke='currentColor' stroke-width='1.2'/><path d='M3 14h10' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"compete"});
     if (totalTeamWins >= 5) achievements.push({id:"squad_goals",name:"Squad Goals",desc:"Win 5 scramble matches",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:200,cat:"compete",title:"Squad Goals"});
     // Scramble under-par achievement
     var anyTeamUnderPar = false;
@@ -3217,18 +3224,15 @@ var PB = (function() {
     // Dawn Patrol / Night Owl (based on startedAt hour)
     if (_rangeS.some(function(s){if(!s.startedAt)return false;var h=new Date(s.startedAt).getHours();return h<8})) achievements.push({id:"range_dawn",name:"Dawn Patrol",desc:"Range session before 8am",icon:_rangeSVG,xp:50,cat:"range"});
     if (_rangeS.some(function(s){if(!s.startedAt)return false;var h=new Date(s.startedAt).getHours();return h>=20})) achievements.push({id:"range_night_owl",name:"Night Owl",desc:"Range session after 8pm",icon:_rangeSVG,xp:50,cat:"range"});
-    if (_rangeS.some(function(s){if(!s.startedAt)return false;var h=new Date(s.startedAt).getHours();return h>=22})) achievements.push({id:"range_night_shift",name:"Night Shift",desc:"Range session after 10pm — post-work grind",icon:_rangeSVG,xp:75,cat:"range",title:"Night Shift"});
-    // Focused practice — sessions with a focus field
+    if (_rangeS.some(function(s){if(!s.startedAt)return false;var dt=new Date(s.startedAt);var h=dt.getHours();var m=dt.getMinutes();return h>18||(h===18&&m>=30)})) achievements.push({id:"range_night_shift",name:"Night Shift",desc:"Range session after 6:30pm",icon:_rangeSVG,xp:75,cat:"range",title:"Night Shift"});
+    // Focused practice
     var focusedSessions = _rangeS.filter(function(s){return s.focus && s.focus.trim().length > 0;});
     if (focusedSessions.length >= 1) achievements.push({id:"focused_practice",name:"Intentional",desc:"Log a range session with a focus note",icon:_rangeSVG,xp:25,cat:"range"});
     if (focusedSessions.length >= 5) achievements.push({id:"student_of_game",name:"Student of the Game",desc:"5 sessions with a focus note",icon:_rangeSVG,xp:100,cat:"range",title:"Student of the Game"});
-    // Pre-round warmup — range session same day as round, before it (round date = session date is enough)
-    var _rDates={};_rangeS.forEach(function(s){if(s.date)_rDates[s.date]=1});
-    if (rounds.some(function(r){return r.date&&_rDates[r.date]})) achievements.push({id:"double_duty",name:"Double Duty",desc:"Range session + round same day",icon:_rangeSVG,xp:100,cat:"range",title:"Double Duty"});
     // Sessions with notes
     var notedSessions = _rangeS.filter(function(s){return s.notes && s.notes.trim().length > 0;});
     if (notedSessions.length >= 3) achievements.push({id:"tape_study",name:"Tape Study",desc:"Leave notes on 3 range sessions",icon:_rangeSVG,xp:50,cat:"range"});
-    // Dialed feel — 3 sessions rated 'Dialed' (feel=3)
+    // Dialed feel
     var dialedSessions = _rangeS.filter(function(s){return s.feel===3;});
     if (dialedSessions.length >= 3) achievements.push({id:"dialed_feel",name:"Dialed",desc:"Rate 3 sessions as Dialed",icon:_rangeSVG,xp:75,cat:"range",title:"Dialed"});
 
@@ -3276,7 +3280,15 @@ var PB = (function() {
       coachs_orders: firstRangeWhere(function(s){return s.drills&&s.drills.length>=4}),
       custom_built: firstRangeWhere(function(s){return s.drills&&s.drills.some(function(d){return d.indexOf("custom_")===0})}),
       // Special
-      founding: playerCreated, beta: playerCreated, commissioner_ach: playerCreated
+      founding: playerCreated, beta: playerCreated, commissioner_ach: playerCreated,
+      // Scramble/team
+      multi_team: null, scramble_debut: firstRangeWhere(function(){ return false; }),
+      scramble_first_win: null, team_under_par: null, road_warriors: null,
+      captain_obvious: null,
+      // Range — new
+      range_night_shift: firstRangeWhere(function(s){ if(!s.startedAt)return false; var dt=new Date(s.startedAt); return dt.getHours()>18||(dt.getHours()===18&&dt.getMinutes()>=30); }),
+      focused_practice: firstRangeWhere(function(s){ return s.focus&&s.focus.trim().length>0; }),
+      student_of_game: null, tape_study: null, dialed_feel: null
     };
     
     achievements.forEach(function(ach) {
@@ -3440,7 +3452,7 @@ var PB = (function() {
   /* ---------- PUBLIC API ---------- */
   return {
     getPlayer:getPlayer, getPlayers:getPlayers, addPlayer:addPlayer, updatePlayer:updatePlayer, removePlayer:removePlayer,
-    getCourse:getCourse, getCourses:getCourses, getCourseByName:getCourseByName, addCourse:addCourse, updateCourse:updateCourse, setCoursesFromFirestore:setCoursesFromFirestore, addCourseReview:addCourseReview, searchCourses:searchCourses,
+    getCourse:getCourse, getCourses:getCourses, getCourseByName:getCourseByName, addCourse:addCourse, updateCourse:updateCourse, deleteCourse:deleteCourse, setCoursesFromFirestore:setCoursesFromFirestore, addCourseReview:addCourseReview, searchCourses:searchCourses,
     getRounds:getRounds, getPlayerRounds:getPlayerRounds, getCourseRounds:getCourseRounds, addRound:addRound, deleteRound:deleteRound, setRoundsFromFirestore:setRoundsFromFirestore,
     getTrips:getTrips, getTrip:getTrip, addTrip:addTrip, updateTrip:updateTrip, addTripPhoto:addTripPhoto,
     getScores:getScores, setScore:setScore,
@@ -6664,6 +6676,7 @@ function finishLiveRound() {
   liveState.active = false;
   updatePresence._force = true;
   updatePresence(); // clear liveRound from presence so watchers see round ended
+  setTimeout(checkAndAwardNewAchievements, 1500); // check for newly unlocked achievements
 
   var commentary = PB.generateRoundCommentary(round);
   var msg = commentary.roasts.length ? commentary.roasts[0] : (commentary.highlights.length ? commentary.highlights[0] : "Round complete!");
@@ -8590,12 +8603,28 @@ Router.register("records", function() {
   else hcapContent = '<div class="hof-row"><span class="hof-label">No handicaps yet</span><span class="hof-val">Log 3+ rounds</span></div>';
   h += hofCard("hcap", "Handicap leaderboard", hcapContent);
 
-  // 7. Member averages
+  // 7. Member averages — use all known members (fbMemberCache has everyone)
   var avgContent = '';
-  players.forEach(function(p) {
-    var r = PB.getPlayerRounds(p.id);
+  var allRounds = PB.getRounds();
+  // Merge state.players + fbMemberCache, deduplicated
+  var seenAvgIds = {};
+  var allMembersForAvg = [];
+  PB.getPlayers().forEach(function(p) {
+    if (!seenAvgIds[p.id]) { seenAvgIds[p.id] = true; allMembersForAvg.push({id:p.id, name:p.name, claimedFrom:null}); }
+  });
+  if (typeof fbMemberCache !== "undefined") {
+    Object.values(fbMemberCache).forEach(function(m) {
+      if (m.id && !seenAvgIds[m.id]) {
+        seenAvgIds[m.id] = true;
+        allMembersForAvg.push({id:m.id, name:m.name||m.username||"Member", claimedFrom:m.claimedFrom||null});
+      }
+    });
+  }
+  allMembersForAvg.sort(function(a,b){ return a.name.localeCompare(b.name); });
+  allMembersForAvg.forEach(function(p) {
+    var r = allRounds.filter(function(rd){ return rd.player === p.id || (p.claimedFrom && rd.player === p.claimedFrom); });
     var avg = r.length ? Math.round(r.reduce(function(a, x) { return a + x.score; }, 0) / r.length) : "—";
-    avgContent += '<div class="hof-row"><span class="hof-label">' + p.name + '</span><span class="hof-val">' + avg + (r.length ? ' (' + r.length + ')' : '') + '</span></div>';
+    avgContent += '<div class="hof-row"><span class="hof-label">' + escHtml(p.name) + '</span><span class="hof-val">' + avg + (r.length ? ' (' + r.length + ')' : '') + '</span></div>';
   });
   h += hofCard("avg", "Member averages", avgContent);
 
@@ -9105,6 +9134,7 @@ function saveRangeSession(mins, totalSec) {
   rangeSessionNotes = "";
   rangeSessionPrivate = false;
   Router.toast(isPrivate ? "Private session saved" : "Session saved! +" + xp + " XP");
+  setTimeout(checkAndAwardNewAchievements, 1500); // check for newly unlocked achievements
   rangeActiveView = "range";
   Router.go("activity");
 }
@@ -10487,6 +10517,13 @@ Router.register("admin", function() {
   h += '<div id="bulkResult"></div>';
   h += '</div></div></div>';
 
+  // Course Management
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Course Management</span></div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Remove duplicate or incorrectly added courses. API-imported courses are preferred.</div>';
+  h += '<button class="btn full outline" style="margin-bottom:10px" onclick="loadAdminCourses()">Load course list</button>';
+  h += '<div id="adminCourseList"></div>';
+  h += '</div>';
+
   document.querySelector('[data-page="admin"]').innerHTML = h;
 
   loadAdminReports();
@@ -10780,6 +10817,71 @@ function revokeInviteAdmin(code) {
   });
 }
 
+// ---- Course Management (admin) ----
+function loadAdminCourses() {
+  var el = document.getElementById("adminCourseList");
+  if (!el) return;
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>Loading courses...</div>';
+
+  if (!db) { el.innerHTML = '<div style="font-size:11px;color:var(--muted)">Requires Firebase</div>'; return; }
+
+  db.collection("courses").get().then(function(snap) {
+    var courses = [];
+    snap.forEach(function(doc) { courses.push(Object.assign({_fsId: doc.id}, doc.data())); });
+
+    // Sort by name
+    courses.sort(function(a,b) { return (a.name||"").localeCompare(b.name||""); });
+
+    // Flag duplicates — same name (case-insensitive)
+    var nameCounts = {};
+    courses.forEach(function(c) { var n=(c.name||"").toLowerCase(); nameCounts[n]=(nameCounts[n]||0)+1; });
+
+    var h = '<div style="font-size:11px;color:var(--muted);margin-bottom:8px">' + courses.length + ' courses in Firestore</div>';
+
+    var dupCount = courses.filter(function(c){ return nameCounts[(c.name||"").toLowerCase()]>1; }).length;
+    if (dupCount > 0) {
+      h += '<div style="padding:8px 12px;background:rgba(212,96,78,.1);border:1px solid rgba(212,96,78,.2);border-radius:6px;font-size:11px;color:var(--red);margin-bottom:10px">';
+      h += dupCount + ' duplicate name' + (dupCount>1?'s':'') + ' detected — keep the API-imported version, remove the rest.';
+      h += '</div>';
+    }
+
+    courses.forEach(function(c) {
+      var isDup = nameCounts[(c.name||"").toLowerCase()] > 1;
+      var isApi = c.source === "golfcourseapi";
+      var isQuick = c.quickAdd;
+      var hasHoles = c.holes && c.holes.length === 18;
+      var tagColor = isApi ? 'var(--birdie)' : isQuick ? 'var(--red)' : 'var(--muted)';
+      var tagLabel = isApi ? 'API' : isQuick ? 'Manual' : 'Unknown';
+
+      h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--border2);' + (isDup ? 'background:rgba(212,96,78,.05)' : '') + '">';
+      h += '<div style="min-width:0;flex:1">';
+      h += '<div style="font-size:12px;font-weight:600;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(c.name||"Unknown") + (isDup ? ' <span style="font-size:9px;color:var(--red);font-weight:700">DUP</span>' : '') + '</div>';
+      h += '<div style="font-size:9px;color:var(--muted);margin-top:2px">';
+      h += '<span style="color:' + tagColor + ';font-weight:600">' + tagLabel + '</span>';
+      h += (c.loc ? ' · ' + escHtml(c.loc) : '');
+      h += (c.rating ? ' · ' + c.rating + '/' + (c.slope||'—') : '');
+      h += (hasHoles ? ' · Scorecard' : ' · No scorecard');
+      h += '</div></div>';
+      h += '<button onclick="adminDeleteCourse(\'' + c._fsId + '\',\'' + (c.name||'').replace(/'/g,"\\'") + '\')" style="flex-shrink:0;margin-left:8px;padding:4px 10px;font-size:10px;border-radius:4px;border:1px solid rgba(212,96,78,.4);background:rgba(212,96,78,.1);color:var(--red);cursor:pointer">Remove</button>';
+      h += '</div>';
+    });
+
+    el.innerHTML = h || '<div style="font-size:11px;color:var(--muted)">No courses found</div>';
+  }).catch(function(err) {
+    var el2 = document.getElementById("adminCourseList");
+    if (el2) el2.innerHTML = '<div style="font-size:11px;color:var(--red)">Error: ' + escHtml(err.message) + '</div>';
+  });
+}
+
+function adminDeleteCourse(fsId, name) {
+  if (!db || !confirm('Remove "' + name + '" from the course directory? This cannot be undone.')) return;
+  PB.deleteCourse(fsId);
+  db.collection("courses").doc(fsId).delete().then(function() {
+    Router.toast('"' + name + '" removed');
+    loadAdminCourses();
+  }).catch(function(err) { Router.toast("Error: " + err.message); });
+}
+
 function bulkGenerateInvites() {
   if (!db || !currentUser) return;
   var count = parseInt(document.getElementById("bulkCount").value) || 5;
@@ -10895,7 +10997,7 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.3</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.5</div></div>';
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New</span></div>';
@@ -10999,7 +11101,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.3</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.5</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
@@ -11208,6 +11310,14 @@ function getAllPossibleAchievements() {
     {id:"champion",name:"Champion",desc:"Win an event",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"compete"},
     {id:"dynasty",name:"Dynasty",desc:"Win 3 events",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:1000,cat:"compete"},
     {id:"captain",name:"Captain",desc:"Named team captain",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"compete"},
+    {id:"team_player",name:"Drafted",desc:"Join a scramble team",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"compete"},
+    {id:"multi_team",name:"Free Agent",desc:"Join 2 different scramble teams",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='5' cy='5' r='2.5' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='11' cy='5' r='2.5' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M1 13c0-2.2 1.8-4 4-4M7 13c0-2.2 1.8-4 4-4' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:75,cat:"compete"},
+    {id:"scramble_debut",name:"Scramble Debut",desc:"Play in your first scramble round",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2 5h5l-4 3 1.5 5L8 11l-4.5 3L5 9 1 6h5z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:75,cat:"compete"},
+    {id:"scramble_first_win",name:"First W",desc:"Win your first scramble match",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M4 2h8l-1 6H5L4 2z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M6 8l2 6M10 8l-2 6' stroke='currentColor' stroke-width='1.2'/><path d='M3 14h10' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"compete"},
+    {id:"squad_goals",name:"Squad Goals",desc:"Win 5 scramble matches",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:200,cat:"compete"},
+    {id:"team_under_par",name:"Under the Radar",desc:"Team shoots under par in scramble",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 2a6 6 0 100 12A6 6 0 008 2z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M5 8l2 2 4-4' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"compete"},
+    {id:"road_warriors",name:"Road Warriors",desc:"Play scramble at 3 different courses",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M2 14L8 2l6 12' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4.5 10h7' stroke='currentColor' stroke-width='1.2'/></svg>",xp:125,cat:"compete"},
+    {id:"captain_obvious",name:"Captain",desc:"Lead your team as captain",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l1.8 3.6L14 5.5l-3 2.9.7 4.1L8 10.4 4.3 12.5l.7-4.1-3-2.9 4.2-.9z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"compete"},
     {id:"improving",name:"On The Rise",desc:"Average improved by 3+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"growth"},
     {id:"transformed",name:"Transformed",desc:"Average improved by 8+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:250,cat:"growth"},
     {id:"metamorphosis",name:"Metamorphosis",desc:"Average improved by 15+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"growth"},
@@ -11255,7 +11365,34 @@ function getAllPossibleAchievements() {
     {id:"team_player",name:"Drafted",desc:"Join a scramble team",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"compete"},
     {id:"squad_goals",name:"Squad Goals",desc:"Win 5 scramble matches",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:200,cat:"compete"},
     {id:"recruiter",name:"Recruiter",desc:"Invite a new member",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M12 3v4M10 5h4' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"special"},
-    {id:"ambassador",name:"Ambassador",desc:"Use all 3 invites",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:250,cat:"special"}
+    {id:"ambassador",name:"Ambassador",desc:"Use all 3 invites",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:250,cat:"special"},
+    {id:"first_swing",name:"First Swing",desc:"Log your first range session",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:50,cat:"range"},
+    {id:"range_rat",name:"Range Rat",desc:"10 range sessions",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"range"},
+    {id:"creature_habit",name:"Creature of Habit",desc:"25 range sessions",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:200,cat:"range"},
+    {id:"iron_sharpener",name:"Iron Sharpener",desc:"50 range sessions",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:400,cat:"range"},
+    {id:"range_resident",name:"Range Resident",desc:"100 range sessions",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:750,cat:"range"},
+    {id:"two_peat",name:"Two-Peat",desc:"2-week range streak",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:50,cat:"range"},
+    {id:"hot_streak",name:"Hot Streak",desc:"4-week range streak",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"range"},
+    {id:"dialed_in",name:"Dialed In",desc:"8-week range streak",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:250,cat:"range"},
+    {id:"relentless",name:"Relentless",desc:"12-week range streak",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"range"},
+    {id:"bucket_buster",name:"Bucket Buster",desc:"5 total hours on the range",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:75,cat:"range"},
+    {id:"sweat_equity",name:"Sweat Equity",desc:"25 total hours on the range",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:200,cat:"range"},
+    {id:"ten_k_hours",name:"10,000 Hours",desc:"100 total hours on the range",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:750,cat:"range"},
+    {id:"locked_in",name:"Locked In",desc:"60+ minute range session",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"range"},
+    {id:"marathon_man",name:"Marathon Man",desc:"90+ minute range session",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:200,cat:"range"},
+    {id:"lab_work",name:"Lab Work",desc:"Use 3+ drills in one session",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:50,cat:"range"},
+    {id:"coachs_orders",name:"Coach's Orders",desc:"Complete a session with 4 drills",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:75,cat:"range"},
+    {id:"specialist",name:"Specialist",desc:"Use the same drill in 10 sessions",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:75,cat:"range"},
+    {id:"well_rounded",name:"Well-Rounded",desc:"Use drills from every category",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"range"},
+    {id:"custom_built",name:"Custom Built",desc:"Create and use a custom drill",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:50,cat:"range"},
+    {id:"double_duty",name:"Double Duty",desc:"Range session + round same day",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"range"},
+    {id:"range_dawn",name:"Dawn Patrol",desc:"Range session before 8am",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:50,cat:"range"},
+    {id:"range_night_owl",name:"Night Owl",desc:"Range session after 8pm",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:50,cat:"range"},
+    {id:"range_night_shift",name:"Night Shift",desc:"Range session after 6:30pm",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:75,cat:"range"},
+    {id:"focused_practice",name:"Intentional",desc:"Log a range session with a focus note",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:25,cat:"range"},
+    {id:"student_of_game",name:"Student of the Game",desc:"5 range sessions with a focus note",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"range"},
+    {id:"tape_study",name:"Tape Study",desc:"Leave notes on 3 range sessions",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:50,cat:"range"},
+    {id:"dialed_feel",name:"Dialed",desc:"Rate 3 sessions as Dialed",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:75,cat:"range"}
   ];
 }
 
@@ -12737,6 +12874,50 @@ function hookWatchRoundRefresh() {
   if (Router.getPage() === "watchround" && _watchRoundUid) {
     renderWatchRound();
   }
+}
+
+// ========== ACHIEVEMENT DETECTION + XP AWARD SYSTEM ==========
+// Compares currently earned achievements against what's stored in Firestore.
+// New unlocks trigger a notification and update the stored list.
+function checkAndAwardNewAchievements() {
+  if (!currentUser || !db) return;
+  var uid = currentUser.uid;
+  var currentAchs = PB.getAchievements(uid);
+  var currentIds = currentAchs.map(function(a) { return a.id; });
+
+  db.collection("members").doc(uid).get().then(function(doc) {
+    if (!doc.exists) return;
+    var stored = doc.data().earnedAchievements || [];
+    var newlyEarned = currentIds.filter(function(id) { return stored.indexOf(id) === -1; });
+
+    if (newlyEarned.length > 0) {
+      // Show notification for each new achievement (staggered)
+      newlyEarned.forEach(function(id, i) {
+        var ach = currentAchs.find(function(a) { return a.id === id; });
+        if (!ach) return;
+        setTimeout(function() {
+          Router.toast(ach.name + ' unlocked! +' + ach.xp + ' XP');
+          // Push a notification so it appears in the bell
+          if (db && currentUser) {
+            db.collection("notifications").add({
+              toUid: currentUser.uid,
+              type: "achievement",
+              title: "Achievement unlocked: " + ach.name,
+              body: ach.desc + " (+" + ach.xp + " XP)",
+              icon: ach.icon,
+              createdAt: fsTimestamp(),
+              read: false
+            }).catch(function(){});
+          }
+        }, i * 1800);
+      });
+      // Update stored list in Firestore
+      db.collection("members").doc(uid).update({ earnedAchievements: currentIds }).catch(function(){});
+    } else if (stored.length === 0 && currentIds.length > 0) {
+      // First time — silently store without notifying (retroactive)
+      db.collection("members").doc(uid).update({ earnedAchievements: currentIds }).catch(function(){});
+    }
+  }).catch(function() {});
 }
 
 function startPresenceSystem() {
