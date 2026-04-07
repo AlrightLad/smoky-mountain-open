@@ -161,7 +161,7 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
 .pd-banner{text-align:center;padding:20px 16px 16px}
 .pd-av{position:relative;width:86px;height:86px;border-radius:50%;background:var(--bg3);border:2px solid var(--gold2);display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--gold);font-weight:700;margin:0 auto 10px;cursor:pointer}
 .pd-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-.pd-edit{position:absolute;bottom:-4px;right:-4px;width:26px;height:26px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid var(--bg);color:var(--bg);z-index:2}
+.pd-edit{position:absolute;bottom:-4px;left:-4px;width:26px;height:26px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid var(--bg);color:var(--bg);z-index:2}
 .pd-name{font-family:"Playfair Display",serif;font-size:22px;font-weight:700}
 .pd-nick{font-size:12px;color:var(--gold);margin-top:3px;letter-spacing:.3px}
 .pd-range{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.2px}
@@ -504,6 +504,8 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 /* ===== SCORE POP ANIMATION ===== */
 @keyframes scorePop{0%{transform:scale(1)}30%{transform:scale(1.15)}100%{transform:scale(1)}}
 .score-pop{animation:scorePop .2s ease}
+@keyframes achSlideUp{0%{transform:translateY(100%);opacity:0}15%{transform:translateY(0);opacity:1}75%{transform:translateY(0);opacity:1}100%{transform:translateY(100%);opacity:0}}
+.ach-celebrate{position:fixed;bottom:0;left:0;right:0;z-index:9999;padding:0 16px 32px;pointer-events:none;animation:achSlideUp 4s ease forwards}
 
 /* ===== ROUND IN PROGRESS BANNER ===== */
 .rip-banner{position:sticky;top:0;z-index:60;background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.06));border-bottom:1px solid rgba(201,168,76,.2);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -734,7 +736,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.7.5 — ALL MEMBERS AVERAGES + ACHIEVEMENT LISTENER + RANGE LOCKS
+   PARBAUGHS v5.7.7 — FIRESTORE AUTHORITY + LIVESTATE CRASH RECOVERY
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -1213,6 +1215,7 @@ function enterApp() {
   syncScrambleTeamsFromFirestore();
   loadRoundsFromFirestore();
   loadCustomDrillsFromFirestore();
+  loadLiveState(); // restore any in-progress round that survived a crash or page reload
   // Check for newly earned achievements after data loads (deferred)
   setTimeout(checkAndAwardNewAchievements, 4000);
   setTimeout(function() { updateProfileBar(); }, 100);
@@ -1249,9 +1252,65 @@ function updateProfileBar() {
     var initial = name.charAt(0).toUpperCase();
     avatarEl.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700;font-size:12px;background:var(--bg3);border-radius:50%">' + initial + '</div>';
   }
+
+  var lvlInfo = currentUser ? PB.getPlayerLevel(currentUser.uid) : null;
+  if (!lvlInfo && currentProfile && currentProfile.claimedFrom) lvlInfo = PB.getPlayerLevel(currentProfile.claimedFrom);
   
-  rightEl.innerHTML = 'Hi, <span style="color:var(--gold);font-weight:600">' + escHtml(name) + '</span>';
-  pbLog("[ProfileBar] Updated for:", name);
+  // Level badge — circular pill at bottom-right of avatar
+  var existingBadge = document.getElementById("profileBarLevelBadge");
+  if (existingBadge) existingBadge.remove();
+  if (lvlInfo) {
+    var badgeEl = document.createElement("div");
+    badgeEl.id = "profileBarLevelBadge";
+    badgeEl.style.cssText = "position:absolute;bottom:-4px;right:-4px;background:var(--gold);color:#0d1117;font-size:8px;font-weight:800;border-radius:8px;padding:1px 4px;border:2px solid var(--bg);line-height:1.3;min-width:14px;text-align:center;white-space:nowrap;z-index:2";
+    badgeEl.textContent = lvlInfo.level;
+    avatarEl.parentNode.appendChild(badgeEl);
+    avatarEl.style.position = "relative";
+    avatarEl.parentNode.style.position = "relative";
+  }
+
+  // XP bar values
+  var xpInLevel = lvlInfo ? (lvlInfo.xp - lvlInfo.currentLevelXp) : 0;
+  var xpNeededForLevel = lvlInfo ? (lvlInfo.nextLevelXp - lvlInfo.currentLevelXp) : 100;
+  var xpPct = xpNeededForLevel > 0 ? Math.min(100, Math.round((xpInLevel / xpNeededForLevel) * 100)) : 100;
+
+  // Title (level name)
+  var titleText = lvlInfo ? lvlInfo.name : "";
+
+  // Range streak for current user
+  var streakCount = 0;
+  if (currentUser && typeof liveRangeSessions !== "undefined" && liveRangeSessions.length) {
+    var uid = currentUser.uid;
+    var mySessions = liveRangeSessions.filter(function(s){ return s.playerId === uid; });
+    var weekSet = {};
+    mySessions.forEach(function(s) {
+      if (!s.date) return;
+      var d = new Date(s.date + "T12:00:00");
+      d.setDate(d.getDate() - d.getDay());
+      weekSet[d.toISOString().split("T")[0]] = true;
+    });
+    var checkDate = new Date(); checkDate.setDate(checkDate.getDate() - checkDate.getDay());
+    for (var _si = 0; _si < 52; _si++) {
+      var wk = checkDate.toISOString().split("T")[0];
+      if (weekSet[wk]) { streakCount++; checkDate.setDate(checkDate.getDate() - 7); } else break;
+    }
+  }
+
+  var streakHtml = streakCount >= 2
+    ? '<span style="display:flex;align-items:center;gap:2px;font-size:9px;color:#f97316;font-weight:700"><svg viewBox="0 0 16 16" width="9" height="9" fill="#f97316"><path d="M8 1C6 4 4 5 4 8a4 4 0 008 0c0-2-1-3-2-4-.5 1-1 2-2 1 0-2 0-3 0-4z"/></svg>' + streakCount + 'wk</span>'
+    : '';
+
+  rightEl.innerHTML = '<div style="display:flex;align-items:center;gap:4px">'
+    + '<span style="font-size:12px;color:var(--muted)">Hi, <span style="color:var(--gold);font-weight:600">' + escHtml(name) + '</span></span>'
+    + (titleText ? '<span style="font-size:9px;color:var(--muted2);letter-spacing:.2px">· ' + escHtml(titleText) + '</span>' : '')
+    + '</div>';
+
+  if (lvlInfo) {
+    rightEl.innerHTML += '<div style="display:flex;align-items:center;gap:6px;margin-top:3px">'
+      + '<div style="width:72px;height:2px;background:var(--border);border-radius:1px"><div style="width:' + xpPct + '%;height:100%;background:var(--gold);border-radius:1px;transition:width .3s"></div></div>'
+      + streakHtml
+      + '</div>';
+  }
 }
 
 function goToMyProfile() {
@@ -1904,21 +1963,37 @@ var PB = (function() {
   }
 
   /* ---------- PERSISTENCE ---------- */
+  // localStorage stores ONLY active trip scoring session data.
+  // rounds, courses, trips, players, scramble teams — Firestore + in-memory only.
+  // Firestore offline persistence (IndexedDB via enablePersistence) handles offline resilience.
   function load() {
+    var d = createDefault(); // always start from clean in-memory defaults
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
-        var d = JSON.parse(raw);
-        if (d.version >= 3) { state = d; return d; }
+        var saved = JSON.parse(raw);
+        // Only restore trip scoring session data — nothing else belongs here
+        if (saved.scores) d.scores = saved.scores;
+        if (saved.miniWinners) d.miniWinners = saved.miniWinners;
+        if (saved.bonusWinners) d.bonusWinners = saved.bonusWinners;
+        if (saved.firGir) d.firGir = saved.firGir;
       }
     } catch(e) {}
-    state = createDefault();
+    state = d;
     return state;
   }
 
   function save() {
-    state._saved = Date.now();
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+    // Only persist active trip scoring state — everything else is Firestore authoritative
+    var toSave = {
+      scores: state.scores,
+      miniWinners: state.miniWinners,
+      bonusWinners: state.bonusWinners,
+      firGir: state.firGir || {},
+      version: state.version,
+      _saved: Date.now()
+    };
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)); } catch(e) {}
   }
 
   function exportBackup() {
@@ -2027,7 +2102,7 @@ var PB = (function() {
       if (data.holes && data.holes.length) existingByName.holes = data.holes;
       if (data.allTees && data.allTees.length) existingByName.allTees = data.allTees;
       if (data.source) existingByName.source = data.source;
-      save();
+      // No save() — courses are Firestore-authoritative
       return existingByName;
     }
     var id = data.name.toLowerCase().replace(/[^a-z0-9]/g, "").substring(0, 20);
@@ -2044,7 +2119,7 @@ var PB = (function() {
     if (data.allTees && data.allTees.length) c.allTees = data.allTees;
     if (data.source) c.source = data.source;
     state.courses.push(c);
-    save();
+    // No save() — courses are Firestore-authoritative
     return c;
   }
 
@@ -2052,23 +2127,17 @@ var PB = (function() {
     var c = getCourse(id);
     if (!c) return;
     Object.keys(updates).forEach(function(k) { c[k] = updates[k]; });
-    save();
+    // No save() — courses are Firestore-authoritative
   }
 
   function deleteCourse(id) {
     state.courses = state.courses.filter(function(c) { return c.id !== id; });
-    save();
+    // No save() — courses are Firestore-authoritative
   }
 
   function setCoursesFromFirestore(fsCourses) {
-    if (!fsCourses || !fsCourses.length) return;
-    // Firestore is authoritative — replace state.courses entirely
-    // Preserve any local-only courses (quickAdd that haven't synced) as a safety net
-    var fsIds = {};
-    fsCourses.forEach(function(c) { if (c.id) fsIds[c.id] = true; });
-    var localOnly = state.courses.filter(function(c) { return c.id && !fsIds[c.id] && c.quickAdd; });
-    state.courses = fsCourses.concat(localOnly);
-    save();
+    state.courses = fsCourses && fsCourses.length ? fsCourses : [];
+    // No save() — courses are Firestore-authoritative, never localStorage
   }
 
   function addCourseReview(courseId, review) {
@@ -2078,7 +2147,7 @@ var PB = (function() {
     c.reviews.push(review);
     if (!state.activity) state.activity = [];
     state.activity.push({type:"review",course:c.name,by:review.by,rating:review.rating,date:review.date,ts:Date.now()});
-    save();
+    // No save() — activity is derived, not persisted
   }
 
   /* ---------- ROUND OPS ---------- */
@@ -2110,7 +2179,7 @@ var PB = (function() {
     var r = {
       id: Date.now().toString(36),
       player: data.player,
-      playerName: p ? p.name : data.player,
+      playerName: data.playerName || (p ? p.name : data.player),
       course: data.course,
       score: parseInt(data.score),
       date: data.date,
@@ -2123,26 +2192,27 @@ var PB = (function() {
       scorecardPhoto: data.scorecardPhoto || "",
       timestamp: Date.now()
     };
+    // Preserve Play Now fields when present
+    if (data.holeScores) r.holeScores = data.holeScores;
+    if (data.holesPlayed) r.holesPlayed = data.holesPlayed;
+    if (data.firData) r.firData = data.firData;
+    if (data.girData) r.girData = data.girData;
+    if (data.puttsData) r.puttsData = data.puttsData;
     state.rounds.push(r);
-    if (!state.activity) state.activity = [];
-    state.activity.push({type:"round",playerName:r.playerName,course:r.course,score:r.score,date:r.date,ts:Date.now()});
-    save();
+    // No save() — rounds are Firestore-authoritative, never localStorage
     return r;
   }
 
   function deleteRound(id) {
     state.rounds = state.rounds.filter(function(r) { return r.id !== id; });
-    save();
+    // No save() — rounds are Firestore-authoritative
   }
 
   function setRoundsFromFirestore(fsRounds) {
-    if (!fsRounds || !fsRounds.length) return;
-    // Firestore is authoritative — replace state, preserve any local-only rounds not yet synced
-    var fsIds = {};
-    fsRounds.forEach(function(r) { if (r.id) fsIds[r.id] = true; });
-    var localOnly = state.rounds.filter(function(r) { return r.id && !fsIds[r.id]; });
-    state.rounds = fsRounds.concat(localOnly);
-    save();
+    // Firestore is the sole source of truth for rounds.
+    // No localStorage merging — rounds never live in localStorage.
+    state.rounds = fsRounds && fsRounds.length ? fsRounds : [];
+    // Do NOT call save() — rounds are not persisted to localStorage
   }
 
   /* ---------- TRIP OPS ---------- */
@@ -2266,7 +2336,7 @@ var PB = (function() {
       matches: []
     };
     state.scrambleTeams.push(team);
-    save();
+    // No save() — scramble teams are Firestore-authoritative
     return team;
   }
 
@@ -2274,19 +2344,27 @@ var PB = (function() {
     // Merges a team from Firestore without triggering a write-back
     if (!state.scrambleTeams) state.scrambleTeams = [];
     var exists = state.scrambleTeams.find(function(t) { return t.id === data.id; });
-    if (!exists) { state.scrambleTeams.push(data); save(); }
+    if (!exists) { state.scrambleTeams.push(data); } // No save() — Firestore-authoritative
   }
 
   function addScrambleMatch(teamId, match) {
     var team = state.scrambleTeams.find(function(t) { return t.id === teamId; });
     if (!team) return;
     team.matches.push(match);
-    save();
+    // No save() — scramble teams are Firestore-authoritative
   }
 
   /* ---------- RECORDS ---------- */
   function getRecords() { return state.records; }
-  function setRecord(key, val) { state.records[key] = val; save(); }
+  function setRecord(key, val) {
+    if (!state.records) state.records = {};
+    state.records[key] = val;
+    // Sync to Firestore immediately
+    if (typeof db !== 'undefined' && db && typeof currentUser !== 'undefined' && currentUser) {
+      var recData = {}; recData[key] = val;
+      db.collection('records').doc('global').set(recData, { merge: true }).catch(function(){});
+    }
+  }
 
   /* ---------- CALCULATIONS ---------- */
   function calcStableford(score, par) {
@@ -3522,7 +3600,7 @@ var Router = (function() {
     var el = document.getElementById("toast");
     el.textContent = msg;
     el.classList.add("show");
-    setTimeout(function() { el.classList.remove("show"); }, 3200);
+    setTimeout(function() { el.classList.remove("show"); }, 2200);
   }
 
   var STOCK_AVATARS = ["stock_profile_gold.jpg","stock_profile_green.jpg","stock_profile_navy.jpg","stock_profile_charcoal.jpg","stock_profile_red.jpg","stock_profile_teal.jpg"];
@@ -3750,9 +3828,16 @@ Router.register("home", function() {
     motivationCards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M3 2v12'/><path d='M3 2l9 3.5L3 9'/></svg>", title:"The course is calling", sub:"Every round earns XP, builds your handicap, and pushes you up the standings.", cta:"Play Now →", page:"playnow"});
   }
   
-  // Pick one randomly (or cycle daily based on date)
-  var dayIndex = Math.floor(Date.now() / 86400000) % motivationCards.length;
-  var mCard = motivationCards[dayIndex];
+  // Always show the most relevant card (first = highest priority)
+  // Use a stable per-user daily rotation only when multiple cards exist
+  var mCard;
+  if (motivationCards.length === 1) {
+    mCard = motivationCards[0];
+  } else {
+    var userSeed = currentUser ? currentUser.uid.charCodeAt(0) : 0;
+    var dayIndex = (Math.floor(Date.now() / 86400000) + userSeed) % motivationCards.length;
+    mCard = motivationCards[dayIndex];
+  }
   
   h += '<div style="margin-bottom:12px"><div onclick="Router.go(\'' + mCard.page + '\')" style="background:linear-gradient(135deg,rgba(201,168,76,.06),rgba(201,168,76,.02));border:1px solid rgba(201,168,76,.12);border-radius:var(--radius);padding:14px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
   h += '<div style="display:flex;align-items:flex-start;gap:12px">';
@@ -3762,21 +3847,18 @@ Router.register("home", function() {
   h += '<div style="font-size:11px;color:var(--gold);font-weight:600;margin-top:8px">' + mCard.cta + '</div>';
   h += '</div></div></div></div>';
 
-  // 1. Champions
+  // 1. Champions — only show when there are actual champions
   var pastTournaments = tournaments.filter(function(t) { return t.champion; });
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Champions</span><span class="sec-link" onclick="Router.go(\'records\')">All records →</span></div>';
   if (pastTournaments.length) {
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Champions</span><span class="sec-link" onclick="Router.go(\'records\')">All records →</span></div>';
     h += '<div class="card">';
     pastTournaments.forEach(function(t) {
       var champ = PB.getPlayer(t.champion);
-      h += '<div class="champ-row"><div class="champ-medal" style="color:var(--gold)"><svg viewBox="0 0 16 16" width="10" height="10" fill="var(--gold)" stroke="none"><path d="M8 2l4 6-4 6-4-6z"/></svg></div><div class="champ-info"><div class="champ-tournament">' + t.name + '</div>';
-      h += '<div class="champ-winner">' + (champ ? champ.name : t.champion) + '</div></div></div>';
+      h += '<div class="champ-row"><div class="champ-medal" style="color:var(--gold)"><svg viewBox="0 0 16 16" width="10" height="10" fill="var(--gold)" stroke="none"><path d="M8 2l4 6-4 6-4-6z"/></svg></div><div class="champ-info"><div class="champ-tournament">' + escHtml(t.name) + '</div>';
+      h += '<div class="champ-winner">' + escHtml(champ ? champ.name : t.champion) + '</div></div></div>';
     });
-    h += '</div>';
-  } else {
-    h += '<div class="card"><div class="empty"><div class="empty-icon" style="font-size:16px;color:var(--gold);letter-spacing:2px">— — —</div><div class="empty-text">First champion crowned at SMO 2026</div></div></div>';
+    h += '</div></div>';
   }
-  h += '</div>';
 
   // 2. Next event
   var nextTournament = tournaments.find(function(t) { return t.status === "upcoming"; });
@@ -3826,37 +3908,26 @@ Router.register("home", function() {
   }
   h += '</div></div>';
 
-  // 4. Quick links — organized by priority
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Play</span></div>';
-  h += '<div class="qlinks" style="grid-template-columns:repeat(2,1fr)">';
-  var primaryLinks = [
-    {p:"syncround",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='22' height='22'><path d='M21 3v6h-6'/><path d='M3 21v-6h6'/><path d='M21 9A9 9 0 006.3 5.3L3 9'/><path d='M3 15a9 9 0 0014.7 3.7L21 15'/></svg>",l:"Parbaugh Round"},
-    {p:"partygames",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='22' height='22'><circle cx='12' cy='12' r='10'/><path d='M8 14s1.5 2 4 2 4-2 4-2'/><circle cx='9' cy='9' r='1' fill='currentColor'/><circle cx='15' cy='9' r='1' fill='currentColor'/></svg>",l:"Party Games"}
-  ];
-  primaryLinks.forEach(function(lnk) {
-    h += '<div class="ql" onclick="Router.go(\'' + lnk.p + '\')"><div class="ql-icon" style="color:var(--gold)">' + lnk.icon + '</div><div class="ql-label">' + lnk.l + '</div></div>';
-  });
-  h += '</div></div>';
-
+  // 4. Explore — single merged grid
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Explore</span></div>';
   h += '<div class="qlinks" style="grid-template-columns:repeat(4,1fr)">';
-  var secondaryLinks = [
+  var exploreLinks = [
+    {p:"syncround",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><path d='M21 3v6h-6'/><path d='M3 21v-6h6'/><path d='M21 9A9 9 0 006.3 5.3L3 9'/><path d='M3 15a9 9 0 0014.7 3.7L21 15'/></svg>",l:"Sync Round"},
     {p:"members",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><path d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'/></svg>",l:"Members"},
     {p:"trips",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><path d='M4 21V4'/><path d='M4 4l9 3v10l-9-3z'/><path d='M13 7l7-2v10l-7 2'/></svg>",l:"Events"},
     {p:"rounds",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><circle cx='12' cy='8' r='5'/><path d='M12 13v8'/><path d='M8 21h8'/></svg>",l:"Rounds"},
     {p:"courses",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><path d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'/><circle cx='12' cy='10' r='2.5'/></svg>",l:"Courses"},
     {p:"scramble",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><path d='M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'/></svg>",l:"Teams"},
-    {p:"aces",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><path d='M5 3v18l7-3 7 3V3H5z'/><circle cx='12' cy='10' r='2'/></svg>",l:"Aces"},
+    {p:"partygames",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><circle cx='12' cy='12' r='10'/><path d='M8 14s1.5 2 4 2 4-2 4-2'/><circle cx='9' cy='9' r='1' fill='currentColor'/><circle cx='15' cy='9' r='1' fill='currentColor'/></svg>",l:"Games"},
     {p:"calendar",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><rect x='3' y='4' width='18' height='18' rx='2'/><path d='M16 2v4M8 2v4M3 10h18'/></svg>",l:"Calendar"},
     {p:"chat",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><path d='M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z'/></svg>",l:"Clubhouse"}
   ];
-  secondaryLinks.forEach(function(lnk) {
+  exploreLinks.forEach(function(lnk) {
     h += '<div class="ql" onclick="Router.go(\'' + lnk.p + '\')"><div class="ql-icon" style="color:var(--gold)">' + lnk.icon + '</div><div class="ql-label">' + lnk.l + '</div></div>';
   });
   h += '</div></div>';
 
-  // 5. Live Spotlight — shows active games, live rounds, events in progress
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Live Spotlight</span></div>';
+  // 5. Live Spotlight — only shows when something is actually live
   
   var liveRounds = [];
   // Check own live round
@@ -3879,16 +3950,15 @@ Router.register("home", function() {
   var todayStr = new Date().getFullYear() + "-" + String(new Date().getMonth()+1).padStart(2,"0") + "-" + String(new Date().getDate()).padStart(2,"0");
   var todayTees = liveTeeTimes.filter(function(t) { return t.date === todayStr && t.status !== "cancelled"; });
   
-  if (liveRounds.length) {
+  if (liveRounds.length || todayTees.length) {
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Live Spotlight</span></div>';
     liveRounds.forEach(function(lr) {
       var holePars = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
-      var parThru = 0;
-      for (var pi = 0; pi < lr.thru; pi++) parThru += holePars[pi];
+      var parThru = 0; for (var pi=0;pi<lr.thru;pi++) parThru += holePars[pi];
       var diff = lr.thru > 0 ? lr.score - parThru : 0;
       var diffStr = lr.thru === 0 ? "—" : diff === 0 ? "E" : (diff > 0 ? "+" + diff : "" + diff);
       var diffColor = diff < 0 ? "var(--birdie)" : diff > 0 ? "var(--red)" : "var(--cream)";
       var clickAction = lr.isMe ? "Router.go('playnow')" : (lr.uid ? "Router.go('watchround',{uid:'" + lr.uid + "'})" : "");
-
       h += '<div class="card" style="padding:14px 16px;' + (lr.isMe ? 'border-left:3px solid var(--gold)' : 'border-left:3px solid #4ade80;cursor:pointer') + '" onclick="' + clickAction + '">';
       h += '<div style="display:flex;justify-content:space-between;align-items:center">';
       h += '<div><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><div style="width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse-dot 2s infinite"></div><span style="font-size:12px;font-weight:700;color:var(--cream)">' + escHtml(lr.name) + '</span>' + (!lr.isMe ? '<span style="font-size:9px;color:var(--muted2);background:var(--bg3);padding:1px 6px;border-radius:8px;border:1px solid var(--border)">LIVE</span>' : '') + '</div>';
@@ -3898,27 +3968,17 @@ Router.register("home", function() {
       if (!lr.isMe) h += '<div style="font-size:9px;color:var(--gold);font-weight:600">Watch →</div>';
       h += '</div></div></div>';
     });
-  } else if (todayTees.length) {
-    // No active rounds but tee times today
     todayTees.forEach(function(t) {
       var accepted = t.responses ? Object.keys(t.responses).filter(function(k){return t.responses[k]==="accepted"}).length : 0;
-      h += '<div class="card" style="margin:0 16px 8px;padding:14px 16px" onclick="Router.go(\'teetimes\')">';
+      h += '<div class="card" style="padding:14px 16px;cursor:pointer" onclick="Router.go(\'teetimes\')">';
       h += '<div style="display:flex;justify-content:space-between;align-items:center">';
       h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(t.courseName || "Tee Time") + '</div>';
       h += '<div style="font-size:11px;color:var(--muted)">Today at ' + (t.time || "TBD") + '</div></div>';
       h += '<div style="font-size:11px;color:var(--gold)">' + accepted + ' going</div>';
       h += '</div></div>';
     });
-  } else {
-    // Nothing live — show encouragement
-    h += '<div class="card" style="padding:20px 16px;text-align:center">';
-    h += '<div style="color:var(--muted);margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24" style="color:var(--muted2)"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg></div>';
-    h += '<div style="font-size:12px;color:var(--muted)">No active rounds right now</div>';
-    h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;cursor:pointer" onclick="Router.go(\'playnow\')">Start a round →</div>';
     h += '</div>';
   }
-  h += '<div style="margin-top:8px"><button class="btn full outline" onclick="Router.go(\'standings\')" style="font-size:11px;padding:10px">Season Standings</button></div>';
-  h += '</div>';
 
   h += '</div>'; // close home-wrap
   
@@ -4345,6 +4405,8 @@ function renderMemberDetailWithData(p) {
   var canEditPhoto = isOwnProfile;
   h += '<div class="pd-banner"><div class="pd-av"' + (canEditPhoto ? ' onclick="uploadMemberPhoto(\'' + pid + '\')"' : '') + ' style="border-color:' + frameColor + '">' + Router.getAvatar(p);
   if (canEditPhoto) h += '<div class="pd-edit"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2" style="vertical-align:middle"><path d="M11 2l3 3-8 8H3v-3z"/></svg></div>';
+  // Level badge — bottom-right of avatar, separate from pencil (pencil moved to bottom-left)
+  h += '<div style="position:absolute;bottom:-5px;right:-5px;background:var(--gold);color:#0d1117;font-size:8px;font-weight:800;border-radius:8px;padding:2px 5px;border:2px solid var(--bg);line-height:1.2;min-width:16px;text-align:center;z-index:3">' + lvl.level + '</div>';
   h += '</div>';
   h += '<div class="pd-name">' + (p.username || p.name) + '</div>';
   if (p.username && p.name && p.username !== p.name) h += '<div style="font-size:11px;color:var(--muted);margin-top:1px">' + p.name + '</div>';
@@ -6050,6 +6112,42 @@ var liveState = {
   putts: Array(18).fill("")
 };
 
+// ── liveState crash recovery ──────────────────────────────────────────────
+// If the phone restarts or browser crashes mid-round, we restore from this.
+// Stored under a separate key — never mixed with PB state.
+var LS_LIVE_KEY = "pb-live";
+
+function saveLiveState() {
+  try { localStorage.setItem(LS_LIVE_KEY, JSON.stringify(liveState)); } catch(e) {}
+}
+
+function loadLiveState() {
+  try {
+    var raw = localStorage.getItem(LS_LIVE_KEY);
+    if (!raw) return;
+    var saved = JSON.parse(raw);
+    if (saved && saved.active) {
+      liveState = saved;
+      pbLog("[Live] Recovered in-progress round at hole", liveState.currentHole + 1);
+    }
+  } catch(e) {}
+}
+
+function clearLiveState() {
+  liveState.active = false;
+  liveState.player = null;
+  liveState.course = null;
+  liveState.courseData = null;
+  liveState.startTime = null;
+  liveState.currentHole = 0;
+  liveState.scores = Array(18).fill("");
+  liveState.fir = Array(18).fill(false);
+  liveState.gir = Array(18).fill(false);
+  liveState.putts = Array(18).fill("");
+  try { localStorage.removeItem(LS_LIVE_KEY); } catch(e) {}
+}
+// ─────────────────────────────────────────────────────────────────────────
+
 Router.register("playnow", function(params) {
   if (params.setup) { renderPlaySetup(); return; }
   if (liveState.active) { renderLiveScoring(); return; }
@@ -6397,6 +6495,7 @@ function startLiveRound() {
   };
 
   Router.toast("Let's go!");
+  saveLiveState(); // persist round start immediately for crash recovery
   Router.go("playnow");
 }
 
@@ -6461,7 +6560,7 @@ function renderLiveScoring() {
     var isCurrent = d === hole;
     var dotColor = isCurrent ? 'var(--gold)' : scored ? 'var(--birdie)' : 'var(--border)';
     var dotBg = isCurrent ? 'rgba(201,168,76,.18)' : scored ? 'rgba(78,201,122,.1)' : 'transparent';
-    h += '<div onclick="liveState.currentHole=' + d + ';Router.go(\'playnow\')" style="min-width:32px;height:32px;border-radius:16px;border:1.5px solid ' + dotColor + ';background:' + dotBg + ';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:' + dotColor + ';cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent">' + (d+1) + '</div>';
+    h += '<div onclick="liveNavJump(' + d + ')" style="min-width:32px;height:32px;border-radius:16px;border:1.5px solid ' + dotColor + ';background:' + dotBg + ';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:' + dotColor + ';cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent">' + (d+1) + '</div>';
   }
   h += '</div>';
 
@@ -6582,7 +6681,7 @@ function renderLiveScoring() {
   h += '<div id="quit-confirm" style="display:none;margin-bottom:8px;padding:12px;background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);border-radius:var(--radius);text-align:center">';
   h += '<div style="font-size:12px;color:var(--red);margin-bottom:8px">Quit this round? Scores will be lost.</div>';
   h += '<div style="display:flex;gap:8px"><button class="btn outline" style="flex:1;font-size:11px" onclick="document.getElementById(\'quit-confirm\').style.display=\'none\'">Cancel</button>';
-  h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(212,96,78,.15);color:var(--red)" onclick="liveState.active=false;updatePresence._force=true;updatePresence();Router.go(\'rounds\')">Quit</button></div></div>';
+  h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(212,96,78,.15);color:var(--red)" onclick="clearLiveState();updatePresence._force=true;updatePresence();Router.go(\'rounds\')">Quit</button></div></div>';
   h += '<button class="btn full" style="background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);color:var(--red);font-size:11px;margin-bottom:80px" onclick="document.getElementById(\'quit-confirm\').style.display=\'block\'">Quit round</button>';
 
   h += '</div>';
@@ -6600,10 +6699,10 @@ function renderLiveScoring() {
   // Sticky bottom nav — always reachable
   h += '<div style="position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--bg2);border-top:1px solid var(--border);padding:8px 12px;display:flex;gap:8px">';
   if (hole > 0) {
-    h += '<button class="btn outline" style="flex:0 0 80px;padding:14px 0;font-size:12px" onclick="liveState.currentHole--;Router.go(\'playnow\')">← Prev</button>';
+    h += '<button class="btn outline" style="flex:0 0 80px;padding:14px 0;font-size:12px" onclick="liveNavPrev()">← Prev</button>';
   }
   if (hole < 17) {
-    h += '<button class="btn green" style="flex:1;padding:14px 0;font-size:14px;font-weight:700" onclick="if(liveState.scores[' + hole + ']===\'\'){Router.toast(\'Enter a score\');return;}liveState.currentHole++;Router.go(\'playnow\')">Next hole →</button>';
+    h += '<button class="btn green" style="flex:1;padding:14px 0;font-size:14px;font-weight:700" onclick="liveNavNext(' + hole + ')">Next hole →</button>';
   } else {
     h += '<button class="btn green" style="flex:1;padding:14px 0;font-size:14px;font-weight:700" onclick="showFinishOptions()">Finish round</button>';
   }
@@ -6623,6 +6722,7 @@ function adjustLiveScore(delta) {
     if (newVal >= 1 && newVal <= 15) liveState.scores[hole] = newVal;
   }
   updatePresence(); // broadcast to watchers
+  saveLiveState();  // crash recovery — save in-progress scores to localStorage
   Router.go("playnow");
   setTimeout(function() {
     var el = document.getElementById("liveScoreNum");
@@ -6630,11 +6730,31 @@ function adjustLiveScore(delta) {
   }, 20);
 }
 
+function liveNavNext(hole) {
+  if (liveState.scores[hole] === "") { Router.toast("Enter a score"); return; }
+  liveState.currentHole++;
+  saveLiveState();
+  Router.go("playnow");
+}
+
+function liveNavPrev() {
+  liveState.currentHole--;
+  saveLiveState();
+  Router.go("playnow");
+}
+
+function liveNavJump(hole) {
+  liveState.currentHole = hole;
+  saveLiveState();
+  Router.go("playnow");
+}
+
 function cyclePutts(hole) {
   var current = liveState.putts[hole];
   if (!current) liveState.putts[hole] = 1;
   else if (current >= 4) liveState.putts[hole] = "";
   else liveState.putts[hole] = current + 1;
+  saveLiveState(); // persist putt count for crash recovery
   Router.go("playnow");
 }
 
@@ -6645,8 +6765,10 @@ function finishLiveRound() {
   if (completed < 9) { Router.toast("Play at least 9 holes"); return; }
 
   // Save as a local round
+  var _pName = currentProfile ? (currentProfile.name || currentProfile.username || liveState.player) : liveState.player;
   var round = PB.addRound({
     player: liveState.player,
+    playerName: _pName,
     course: liveState.course,
     score: totalScore,
     date: new Date().toISOString().split("T")[0],
@@ -6659,6 +6781,8 @@ function finishLiveRound() {
     girData: liveState.gir.slice(),
     puttsData: liveState.putts.slice()
   });
+  // Sync to Firestore immediately — critical for cross-device visibility and loadRoundsFromFirestore
+  syncRound(round);
 
   // Calculate stats
   var firCount = 0, girCount = 0, totalPutts = 0;
@@ -6674,6 +6798,7 @@ function finishLiveRound() {
   for (var j = 0; j < completed; j++) { if (defaultPar[j] !== 3) firHoles++; }
 
   liveState.active = false;
+  clearLiveState(); // remove crash recovery data — round committed to Firestore
   updatePresence._force = true;
   updatePresence(); // clear liveRound from presence so watchers see round ended
   setTimeout(checkAndAwardNewAchievements, 1500); // check for newly unlocked achievements
@@ -7719,11 +7844,13 @@ function submitRound() {
     reader.onload = function(e) {
       addRoundData.scorecardPhoto = e.target.result;
       var round = PB.addRound(addRoundData);
+      syncRound(round);
       showRoundCommentary(round);
     };
     reader.readAsDataURL(photoInput.files[0]);
   } else {
     var round = PB.addRound(addRoundData);
+    syncRound(round);
     showRoundCommentary(round);
   }
 }
@@ -8339,6 +8466,7 @@ function showTeeScorecard(courseId, teeIdx) {
 
 function togglePlayNowFirGir(wrapper, hole, type) {
   liveState[type][hole] = !liveState[type][hole];
+  saveLiveState(); // persist stat change for crash recovery
   var val = liveState[type][hole];
   var el = wrapper.querySelector("div");
   if (!el) return;
@@ -10997,33 +11125,54 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.5</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.7</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.7</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "Firestore is now the sole source of truth — rounds, courses, and scramble teams no longer live in localStorage, eliminating sync conflicts", tag: "IMPROVED"},
+    {item: "Round crash recovery — if your phone restarts or browser closes mid-round, your scores are fully restored when you reopen the app", tag: "NEW"},
+    {item: "Rounds are now saved to Firestore immediately when you finish — no more missing rounds after logging out and back in", tag: "FIXED"},
+    {item: "Manual round submissions (+ Log round) now also sync to Firestore correctly", tag: "FIXED"},
+    {item: "Play Now stats (FIR, GIR, putts, hole scores) are now fully preserved in Firestore", tag: "FIXED"},
+    {item: "Player name now resolves correctly on rounds rather than showing a raw ID", tag: "FIXED"},
+    {item: "Level badge now appears as a pill on the bottom-right corner of your avatar, visible everywhere", tag: "NEW"},
+    {item: "Title (e.g. Weekend Warrior) now shows next to your name in the profile bar", tag: "NEW"},
+    {item: "Range streak shows as a flame icon + week count next to your XP bar when active", tag: "NEW"},
+    {item: "Home page cleaned up — Champions and Live Spotlight sections only appear when there is actual content", tag: "IMPROVED"},
+    {item: "Explore grid merged into a single section — no more duplicate Play and Explore rows", tag: "IMPROVED"},
+    {item: "Achievement celebration upgraded — slide-up card with icon, name, and XP when you unlock something", tag: "IMPROVED"},
+    {item: "All range achievements now appear as locked in the Trophy Room before you earn them", tag: "FIXED"},
+    {item: "Member averages now shows all 17 members, not just the founding four", tag: "FIXED"},
+    {item: "Double Duty achievement fixed — was being pushed twice due to duplicate calculation block", tag: "FIXED"},
+    {item: "getAllPossibleAchievements converted to a singleton — no longer rebuilt from scratch on every trophy room view", tag: "IMPROVED"}
+  ];
+  currentNotes.forEach(function(r) {
+    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
+    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
+    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
+    h += '<span>' + r.item + '</span></div>';
+  });
+  h += '</div></div></div>';
+
+  // Previous Release
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.7.6 · April 2026</span></div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
+  var prevNotes = [
     {item: "Live round following — tap any active round in the Live Spotlight to watch hole-by-hole in real time", tag: "NEW"},
-    {item: "Full live scorecard on the Watch page — every hole color-coded (eagle gold, birdie green, bogey red) as scores are entered", tag: "NEW"},
+    {item: "Full live scorecard on the Watch page — every hole color-coded as scores are entered", tag: "NEW"},
     {item: "Scores broadcast instantly when a player enters them — no refresh needed for spectators", tag: "NEW"},
-    {item: "Watch page clears automatically when the round ends or the player quits", tag: "NEW"},
-    {item: "Live Spotlight cards now show a LIVE badge and Watch arrow for other members' rounds", tag: "IMPROVED"},
-    {item: "Par-adjusted score display in Live Spotlight — shows E/+2/-1 based on actual hole pars, not estimated", tag: "IMPROVED"},
-    {item: "Rounds now load from the server on every login — every device sees the same data", tag: "IMPROVED"},
-    {item: "New rounds posted by any member appear without refreshing", tag: "IMPROVED"},
-    {item: "Custom range drills saved to the server — visible on all devices", tag: "IMPROVED"},
     {item: "Play Now now shows a tee selector after picking a course", tag: "NEW"},
     {item: "Scoring screen shows yardage and hole handicap index for every hole", tag: "NEW"},
-    {item: "Parbaugh format shows your stroke allocation per hole in real time", tag: "NEW"},
-    {item: "Score stepper rebuilt — full-width minus/plus bar, sticky Next Hole button", tag: "NEW"},
-    {item: "Scramble teams sync across all devices automatically", tag: "FIXED"},
     {item: "Range session redesigned — Setup, Active, and Review phases with focus field and notes", tag: "NEW"},
     {item: "Scramble team creation built into Play Now", tag: "NEW"},
     {item: "Full-screen course search — 30,000+ courses with ratings and tee data", tag: "NEW"},
+    {item: "Scramble teams sync across all devices automatically", tag: "FIXED"},
     {item: "Snapshot listeners cleaned up — no more memory leaks", tag: "FIXED"}
   ];
-  currentNotes.forEach(function(r) {
+  prevNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
     h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
     h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
@@ -11101,7 +11250,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.5</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.7</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
@@ -11273,8 +11422,10 @@ function renderTrophyAchGrid(pid, unlockedOnly) {
 }
 
 // All possible achievements (for showing locked state)
+var _ALL_ACHIEVEMENTS = null;
 function getAllPossibleAchievements() {
-  return [
+  if (_ALL_ACHIEVEMENTS) return _ALL_ACHIEVEMENTS;
+  _ALL_ACHIEVEMENTS = [
     {id:"first_blood",name:"First Blood",desc:"Log your first round",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"milestone"},
     {id:"getting_started",name:"Getting Started",desc:"Log 5 rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"milestone"},
     {id:"regular",name:"Regular",desc:"Log 10 rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"milestone"},
@@ -11394,6 +11545,7 @@ function getAllPossibleAchievements() {
     {id:"tape_study",name:"Tape Study",desc:"Leave notes on 3 range sessions",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:50,cat:"range"},
     {id:"dialed_feel",name:"Dialed",desc:"Rate 3 sessions as Dialed",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v6M5 8h6' stroke='currentColor' stroke-width='1'/></svg>",xp:75,cat:"range"}
   ];
+  return _ALL_ACHIEVEMENTS;
 }
 
 
@@ -12876,9 +13028,28 @@ function hookWatchRoundRefresh() {
   }
 }
 
+function showAchievementCelebration(ach) {
+  // Remove any existing celebration
+  var existing = document.getElementById("achCelebration");
+  if (existing) existing.remove();
+
+  var el = document.createElement("div");
+  el.id = "achCelebration";
+  el.className = "ach-celebrate";
+  el.innerHTML = '<div style="background:linear-gradient(135deg,rgba(201,168,76,.18),rgba(201,168,76,.08));border:1.5px solid rgba(201,168,76,.4);border-radius:16px;padding:16px 20px;display:flex;align-items:center;gap:14px;backdrop-filter:blur(8px)">'
+    + '<div style="width:44px;height:44px;border-radius:12px;background:rgba(201,168,76,.15);border:1.5px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--gold)">' + ach.icon + '</div>'
+    + '<div style="flex:1;min-width:0">'
+    + '<div style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:3px">Achievement Unlocked</div>'
+    + '<div style="font-size:15px;font-weight:700;color:var(--cream)">' + escHtml(ach.name) + '</div>'
+    + '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + escHtml(ach.desc) + '</div>'
+    + '</div>'
+    + '<div style="font-size:13px;font-weight:800;color:var(--gold);flex-shrink:0">+' + ach.xp + ' XP</div>'
+    + '</div>';
+  document.body.appendChild(el);
+  setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 4200);
+}
+
 // ========== ACHIEVEMENT DETECTION + XP AWARD SYSTEM ==========
-// Compares currently earned achievements against what's stored in Firestore.
-// New unlocks trigger a notification and update the stored list.
 function checkAndAwardNewAchievements() {
   if (!currentUser || !db) return;
   var uid = currentUser.uid;
@@ -12891,13 +13062,12 @@ function checkAndAwardNewAchievements() {
     var newlyEarned = currentIds.filter(function(id) { return stored.indexOf(id) === -1; });
 
     if (newlyEarned.length > 0) {
-      // Show notification for each new achievement (staggered)
       newlyEarned.forEach(function(id, i) {
         var ach = currentAchs.find(function(a) { return a.id === id; });
         if (!ach) return;
         setTimeout(function() {
-          Router.toast(ach.name + ' unlocked! +' + ach.xp + ' XP');
-          // Push a notification so it appears in the bell
+          showAchievementCelebration(ach);
+          // Also push a notification to the bell
           if (db && currentUser) {
             db.collection("notifications").add({
               toUid: currentUser.uid,
@@ -12909,12 +13079,11 @@ function checkAndAwardNewAchievements() {
               read: false
             }).catch(function(){});
           }
-        }, i * 1800);
+        }, i * 4500);
       });
-      // Update stored list in Firestore
       db.collection("members").doc(uid).update({ earnedAchievements: currentIds }).catch(function(){});
     } else if (stored.length === 0 && currentIds.length > 0) {
-      // First time — silently store without notifying (retroactive)
+      // First run — store silently, no celebrations for retroactive achievements
       db.collection("members").doc(uid).update({ earnedAchievements: currentIds }).catch(function(){});
     }
   }).catch(function() {});
