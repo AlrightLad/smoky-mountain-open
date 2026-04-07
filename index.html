@@ -1920,6 +1920,9 @@ var PB = (function() {
       if (data.website) existingByName.website = data.website;
       if (data.lat) existingByName.lat = data.lat;
       if (data.lng) existingByName.lng = data.lng;
+      if (data.tee) existingByName.tee = data.tee;
+      if (data.yards) existingByName.yards = data.yards;
+      if (data.holes && data.holes.length) existingByName.holes = data.holes;
       if (data.source) existingByName.source = data.source;
       save();
       return existingByName;
@@ -1932,6 +1935,9 @@ var PB = (function() {
     if (data.website) c.website = data.website;
     if (data.lat) c.lat = data.lat;
     if (data.lng) c.lng = data.lng;
+    if (data.tee) c.tee = data.tee;
+    if (data.yards) c.yards = data.yards;
+    if (data.holes && data.holes.length) c.holes = data.holes;
     if (data.source) c.source = data.source;
     state.courses.push(c);
     save();
@@ -3428,7 +3434,8 @@ function sendNotification(toUserId, notif) {
 }
 function startNotificationListener() {
   if (!db || !currentUser) return;
-  db.collection("notifications").where("toUserId","==",currentUser.uid).where("read","==",false).limit(20)
+  if (window._notifUnsub) window._notifUnsub();
+  window._notifUnsub = db.collection("notifications").where("toUserId","==",currentUser.uid).where("read","==",false).limit(20)
     .onSnapshot(function(snap) {
       liveNotifications = [];
       snap.forEach(function(doc) { liveNotifications.push(Object.assign({_id:doc.id}, doc.data())); });
@@ -7190,7 +7197,8 @@ var _dirApiFiltered = [];
 function _extractTeeData(c) {
   var t = (c.tees && c.tees.male) || [];
   var w = t.find(function(x){return x.tee_name && x.tee_name.indexOf("White")>-1}) || t.find(function(x){return x.tee_name && x.tee_name.indexOf("Silver")>-1}) || t[1] || t[0] || {};
-  return { rating: w.course_rating || 0, slope: w.slope_rating || 0, par: w.par_total || 0, tee: w.tee_name || "", yards: w.total_yards || 0 };
+  var holes = (w.holes || []).map(function(h){ return {par:h.par, yardage:h.yardage, handicap:h.handicap}; });
+  return { rating: w.course_rating || 0, slope: w.slope_rating || 0, par: w.par_total || 0, tee: w.tee_name || "", yards: w.total_yards || 0, holes: holes };
 }
 
 function importDirApiCourse(idx) {
@@ -7209,8 +7217,8 @@ function importDirApiCourse(idx) {
   var td = _extractTeeData(c);
   var lat = (c.location && c.location.latitude) || 0;
   var lng = (c.location && c.location.longitude) || 0;
-  var course = PB.addCourse({ name: name, loc: loc, region: st || "US", rating: td.rating || 72, slope: td.slope || 113, par: td.par || 72, lat: lat, lng: lng, source: "golfcourseapi" });
-  if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:loc,region:st||"US",rating:td.rating||72,slope:td.slope||113,par:td.par||72,tee:td.tee,yards:td.yards,lat:lat,lng:lng,source:"golfcourseapi",createdAt:fsTimestamp()}).catch(function(){});
+  var course = PB.addCourse({ name: name, loc: loc, region: st || "US", rating: td.rating || 72, slope: td.slope || 113, par: td.par || 72, tee: td.tee, yards: td.yards, holes: td.holes, lat: lat, lng: lng, source: "golfcourseapi" });
+  if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:loc,region:st||"US",rating:td.rating||72,slope:td.slope||113,par:td.par||72,tee:td.tee,yards:td.yards,holes:td.holes,lat:lat,lng:lng,source:"golfcourseapi",createdAt:fsTimestamp()}).catch(function(){});
   Router.toast(name + " imported");
   Router.go("courses");
 }
@@ -7351,8 +7359,8 @@ function importAndSelectCourse(idx, containerId) {
   var lat = (c.location && c.location.latitude) || 0;
   var lng = (c.location && c.location.longitude) || 0;
   
-  var course = PB.addCourse({ name: name, loc: loc, region: state || "US", rating: rating, slope: slope, par: par, lat: lat, lng: lng, source: "golfcourseapi" });
-  if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:loc,region:state||"US",rating:rating,slope:slope,par:par,tee:td.tee,yards:td.yards,lat:lat,lng:lng,source:"golfcourseapi",createdAt:fsTimestamp()}).catch(function(){});
+  var course = PB.addCourse({ name: name, loc: loc, region: state || "US", rating: rating, slope: slope, par: par, tee: td.tee, yards: td.yards, holes: td.holes, lat: lat, lng: lng, source: "golfcourseapi" });
+  if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:loc,region:state||"US",rating:rating,slope:slope,par:par,tee:td.tee,yards:td.yards,holes:td.holes,lat:lat,lng:lng,source:"golfcourseapi",createdAt:fsTimestamp()}).catch(function(){});
   
   Router.toast(name + " imported");
   // Fill the course input field
@@ -7418,7 +7426,67 @@ function renderCourseDetail(courseId) {
     h += '<div style="height:100px;margin:0 16px;border-radius:var(--radius);background:linear-gradient(135deg,var(--bg3),var(--bg2));display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="var(--muted2)" stroke-width="1" width="36" height="36"><circle cx="12" cy="12" r="3"/><path d="M5 21l3-3 4 4 4-5 3 3"/><rect x="2" y="3" width="20" height="16" rx="2"/></svg></div>';
   }
   h += '<div class="section"><div class="c-detail-info">' + c.loc + ' · Rating: ' + c.rating + ' · Slope: ' + c.slope + ' · Par: ' + c.par + '</div>';
-  h += '<button class="btn-sm outline" onclick="uploadCoursePhoto(\'' + courseId + '\')">Upload photo</button></div>';
+  if (c.tee || c.yards) {
+    h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">';
+    if (c.tee) h += c.tee + ' Tees';
+    if (c.tee && c.yards) h += ' · ';
+    if (c.yards) h += c.yards.toLocaleString() + ' yards';
+    h += '</div>';
+  }
+  h += '<button class="btn-sm outline" style="margin-top:8px" onclick="uploadCoursePhoto(\'' + courseId + '\')">Upload photo</button></div>';
+
+  // Hole-by-hole scorecard
+  if (c.holes && c.holes.length === 18) {
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Scorecard</span></div>';
+    h += '<div style="overflow-x:auto;padding:0 16px 12px">';
+    // Front 9
+    h += '<table style="width:100%;border-collapse:collapse;font-size:10px;margin-bottom:8px">';
+    h += '<tr style="color:var(--gold);font-weight:700"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg3)">Hole</td>';
+    for (var hi=1;hi<=9;hi++) h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg3);text-align:center">' + hi + '</td>';
+    h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg3);text-align:center;font-weight:700">Out</td></tr>';
+    h += '<tr style="color:var(--cream)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Par</td>';
+    var frontPar = 0;
+    for (var hi=0;hi<9;hi++) { var p = c.holes[hi].par; frontPar += p; h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg2);text-align:center">' + p + '</td>'; }
+    h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-weight:700">' + frontPar + '</td></tr>';
+    if (c.holes[0].yardage) {
+      h += '<tr style="color:var(--muted)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Yds</td>';
+      var frontYds = 0;
+      for (var hi=0;hi<9;hi++) { var y = c.holes[hi].yardage; frontYds += y; h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-size:9px">' + y + '</td>'; }
+      h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-weight:700;font-size:9px">' + frontYds + '</td></tr>';
+    }
+    if (c.holes[0].handicap) {
+      h += '<tr style="color:var(--muted2)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Hcp</td>';
+      for (var hi=0;hi<9;hi++) { h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-size:9px">' + c.holes[hi].handicap + '</td>'; }
+      h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2)"></td></tr>';
+    }
+    h += '</table>';
+    // Back 9
+    h += '<table style="width:100%;border-collapse:collapse;font-size:10px">';
+    h += '<tr style="color:var(--gold);font-weight:700"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg3)">Hole</td>';
+    for (var hi=10;hi<=18;hi++) h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg3);text-align:center">' + hi + '</td>';
+    h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg3);text-align:center;font-weight:700">In</td></tr>';
+    h += '<tr style="color:var(--cream)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Par</td>';
+    var backPar = 0;
+    for (var hi=9;hi<18;hi++) { var p = c.holes[hi].par; backPar += p; h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg2);text-align:center">' + p + '</td>'; }
+    h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-weight:700">' + backPar + '</td></tr>';
+    if (c.holes[9].yardage) {
+      h += '<tr style="color:var(--muted)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Yds</td>';
+      var backYds = 0;
+      for (var hi=9;hi<18;hi++) { var y = c.holes[hi].yardage; backYds += y; h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-size:9px">' + y + '</td>'; }
+      h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-weight:700;font-size:9px">' + backYds + '</td></tr>';
+    }
+    if (c.holes[9].handicap) {
+      h += '<tr style="color:var(--muted2)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Hcp</td>';
+      for (var hi=9;hi<18;hi++) { h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg2);text-align:center;font-size:9px">' + c.holes[hi].handicap + '</td>'; }
+      h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2)"></td></tr>';
+    }
+    h += '</table>';
+    // Totals
+    h += '<div style="text-align:center;margin-top:6px;font-size:11px;color:var(--gold);font-weight:600">Total: Par ' + (frontPar+backPar);
+    if (c.holes[0].yardage) h += ' · ' + (frontYds+backYds).toLocaleString() + ' yards';
+    h += '</div>';
+    h += '</div></div>';
+  }
 
   // Course records
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Course records</span></div>';
@@ -7788,7 +7856,8 @@ var liveTeeTimes = [];
 
 function startTeeTimeListener() {
   if (!db) return;
-  db.collection("teetimes").orderBy("date","asc").onSnapshot(function(snap) {
+  if (window._teeTimeUnsub) window._teeTimeUnsub();
+  window._teeTimeUnsub = db.collection("teetimes").orderBy("date","asc").onSnapshot(function(snap) {
     liveTeeTimes = [];
     snap.forEach(function(doc) { liveTeeTimes.push(Object.assign({_id:doc.id}, doc.data())); });
     if (Router.getPage() === "teetimes") Router.go("teetimes");
@@ -8008,7 +8077,8 @@ var customDrills = JSON.parse(localStorage.getItem("pb_custom_drills")||"[]");
 
 function startRangeSessionListener() {
   if (!db) return;
-  db.collection("rangeSessions").orderBy("startedAt","desc").limit(100).onSnapshot(function(snap) {
+  if (window._rangeUnsub) window._rangeUnsub();
+  window._rangeUnsub = db.collection("rangeSessions").orderBy("startedAt","desc").limit(100).onSnapshot(function(snap) {
     liveRangeSessions = [];
     snap.forEach(function(doc) { liveRangeSessions.push(Object.assign({_id:doc.id}, doc.data())); });
     if (Router.getPage() === "activity" && rangeActiveView === "range") Router.go("activity");
@@ -8435,7 +8505,8 @@ Router.register("range", function() {
 
 function startEventListener() {
   if (!db) return;
-  db.collection("events").onSnapshot(function(snap) {
+  if (window._eventUnsub) window._eventUnsub();
+  window._eventUnsub = db.collection("events").onSnapshot(function(snap) {
     liveEvents = [];
     snap.forEach(function(doc) { liveEvents.push(Object.assign({_id:doc.id}, doc.data())); });
     if (Router.getPage() === "calendar") Router.go("calendar");
@@ -8590,7 +8661,8 @@ Router.register("chat", function() {
 
   // Start listener
   if (db) {
-    db.collection("chat").orderBy("createdAt","desc").limit(50).onSnapshot(function(snap) {
+    if (window._chatFeedUnsub) window._chatFeedUnsub();
+    window._chatFeedUnsub = db.collection("chat").orderBy("createdAt","desc").limit(50).onSnapshot(function(snap) {
       liveChat = [];
       snap.forEach(function(doc){ liveChat.push(Object.assign({_docId:doc.id}, doc.data())); });
       // Keep newest-first order (no reverse)
@@ -10847,6 +10919,7 @@ var dmUnreadListener = null;
 
 function startDmUnreadListener() {
   if (!db || !currentUser) return;
+  if (dmUnreadListener) dmUnreadListener();
   // Listen to all DM conversations where we're a participant
   dmUnreadListener = db.collection("dms")
     .where("participants", "array-contains", currentUser.uid)
@@ -11663,7 +11736,8 @@ function startPresenceSystem() {
   });
   
   // Listen to presence — 10 min window (matches 5 min heartbeat with buffer)
-  db.collection("presence").onSnapshot(function(snap) {
+  if (window._presenceUnsub) window._presenceUnsub();
+  window._presenceUnsub = db.collection("presence").onSnapshot(function(snap) {
     onlineMembers = {};
     var now = new Date();
     snap.forEach(function(doc) {
