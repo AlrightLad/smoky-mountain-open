@@ -820,7 +820,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.7.26 — HTML2CANVAS SHARE CARD + BADGE FIXES + 1080 CANVAS + ACTIVITY FEED + RECORDS CLEANUP
+   PARBAUGHS v5.7.31 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -1917,7 +1917,20 @@ function preloadMemberPhotos() {
             fbMemberCache[m.claimedFrom] = m;
             playerIdMap[m.id] = m.claimedFrom; // Firebase UID → local ID
           }
-          
+
+          // ── Sync Firestore name back into PB seed state ──────────────
+          // Firestore is source of truth for display names — update the
+          // local seed player record so PB.getPlayer() always returns the
+          // real name, not the hardcoded founding-member fallback.
+          var localId = m.claimedFrom || m.id;
+          var seedPlayer = PB.getPlayer(localId);
+          if (seedPlayer && m.name && seedPlayer.name !== m.name) {
+            seedPlayer.name = m.name;
+          }
+          if (seedPlayer && m.username && seedPlayer.username !== m.username) {
+            seedPlayer.username = m.username;
+          }
+
           var fbPhoto = photoCache["member:" + m.id];
           var localPhoto = m.claimedFrom ? photoCache["member:" + m.claimedFrom] : null;
           if (fbPhoto && m.claimedFrom && !localPhoto) {
@@ -1974,7 +1987,7 @@ var PB = (function() {
 
   /* ---------- DEFAULT DATA ---------- */
   var DEFAULT_PLAYERS = [
-    {id:"zach",name:"Zach Parbaugh",username:"TheCommissioner",title:"The Original Four · Commissioner",range:"88-96",bio:"Founded the Parbaughs. Tracks stats like his life depends on it.",emoji:"",photo:"",homeCourse:"Briarwood East",favoriteCourse:"Royal Manchester Golf Links",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:18.8,equippedTitle:"The Original Four · Commissioner",
+    {id:"zach",name:"Mr Parbaugh",username:"TheCommissioner",title:"The Original Four · Commissioner",range:"88-96",bio:"Founded the Parbaughs. Tracks stats like his life depends on it.",emoji:"",photo:"",homeCourse:"Briarwood East",favoriteCourse:"Royal Manchester Golf Links",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:18.8,equippedTitle:"The Original Four · Commissioner",
      clubs:{driver:"270",three_wood:"250",five_wood:"230",four_iron:"215",five_iron:"210",six_iron:"200",seven_iron:"190",eight_iron:"180",nine_iron:"165",pw:"140",gw:"120",sw:"110",lw:"95",putter:""},
      bag:{driver:"TaylorMade Qi4D Driver",irons:"Callaway Quantum Max OS 5-PW",wedges:"Cleveland RTX 6 ZipCore 52/56",putter:"",bag_brand:"",accessories:"",fav_ball:""},
      funnyFacts:["Bought custom-fit irons before breaking 85","Owns more golf trackers than golf shirts","Will quote his handicap unprompted"]},
@@ -2040,7 +2053,7 @@ var PB = (function() {
       miniWinners: mini,
       bonusWinners: bonus,
       rounds: [],
-      scrambleTeams: [{id:"smo_scramble",name:"SMO Squad",members:["zach","kayvan","kiyan","nick"],captain:"zach",size:4,matches:[]}],
+      scrambleTeams: [{id:"smo_scramble",name:"The Parbaughs",members:["zach","kayvan","kiyan","nick"],captain:"zach",size:4,matches:[]}],
       records: { longestDrive: null, holeInOnes: [] },
       version: 3
     };
@@ -5795,7 +5808,8 @@ function renameScrambleTeam(teamId) {
   var teams = PB.getScrambleTeams();
   var team = teams.find(function(t) { return t.id === teamId; });
   if (!team) return;
-  if (!currentProfile || currentProfile.id !== team.captain) {
+  var myId = currentProfile && (currentProfile.claimedFrom || currentProfile.id);
+  if (!currentProfile || (myId !== team.captain && currentProfile.id !== team.captain)) {
     Router.toast("Only the team captain can rename this team");
     return;
   }
@@ -5825,7 +5839,8 @@ function renderTeamDetail(teamId) {
   var scored = matches.filter(function(m){return m.score;}).sort(function(a,b){return a.score-b.score;});
   var coursePar = 72;
 
-  var isCaptainHere = currentProfile && team.captain && currentProfile.id === team.captain;
+  var _myId = currentProfile && (currentProfile.claimedFrom || currentProfile.id);
+  var isCaptainHere = currentProfile && team.captain && (_myId === team.captain || currentProfile.id === team.captain);
   var renameBtn = isCaptainHere ? '<button class="btn-sm outline" style="font-size:10px" onclick="renameScrambleTeam(\'' + team.id + '\')">Rename</button>' : '';
   var h = '<div class="sh"><h2>' + escHtml(team.name) + '</h2><div style="display:flex;gap:6px">' + renameBtn + '<button class="back" onclick="Router.go(\'scramble\')">← Back</button></div></div>';
 
@@ -7830,8 +7845,14 @@ function renderTripLB(trip, tripPlayers) {
   // Round breakdown
   h += '<div class="lbs"><div class="lb-title">Round breakdown</div>';
   var st = PB.getTripTotal(tid, "scramble", "team", 0, 18);
-  var scrambleTeamName = "SMO Squad";
-  h += '<div class="rc"><div class="rh">Sequoyah National · Scramble</div><div class="rc-body"><div style="font-size:11px;color:var(--gold);margin-bottom:4px">' + scrambleTeamName + ' — Zach, Kayvan, Kiyan, Nick</div>Team score: ' + (st || "—") + (st > 0 ? " (" + (st - 72 >= 0 ? "+" : "") + (st - 72) + ")" : "") + '</div></div>';
+  var scrambleTeam = PB.getScrambleTeams().find(function(t) { return t.id === "smo_scramble"; }) || {};
+  var scrambleTeamName = scrambleTeam.name || "The Parbaughs";
+  var scrambleMemberNames = (scrambleTeam.members || ["zach","kayvan","kiyan","nick"]).map(function(id) {
+    var fb = (typeof fbMemberCache !== "undefined") && (fbMemberCache[id] || null);
+    if (fb) return PB.getDisplayName(fb);
+    var p = PB.getPlayer(id); return p ? PB.getDisplayName(p) : id;
+  }).join(", ");
+  h += '<div class="rc"><div class="rh">Sequoyah National · Scramble</div><div class="rc-body"><div style="font-size:11px;color:var(--gold);margin-bottom:4px">' + scrambleTeamName + ' — ' + scrambleMemberNames + '</div>Team score: ' + (st || "—") + (st > 0 ? " (" + (st - 72 >= 0 ? "+" : "") + (st - 72) + ")" : "") + '</div></div>';
   trip.courses.forEach(function(c) {
     if (c.s) return;
     h += '<div class="rc"><div class="rh">' + c.d + ' · ' + c.n + ' · ' + c.f + '</div>';
@@ -11455,47 +11476,23 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.26</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.31</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.7</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.31</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Share card redesigned — logo in header, tee name + yardage displayed, cleaner layout, single Members Only branding. html2canvas captures real HTML/CSS for Instagram-quality output", tag: "IMPROVED"},
-    {item: "Level badge no longer overlaps name in the profile bar — was positioning relative to the wrong container", tag: "FIXED"},
-    {item: "Level badge artifact inside profile photo border fixed — removed overflow:hidden from avatar containers so badges correctly sit outside the circle", tag: "FIXED"},
-    {item: "Share scorecard as image — after finishing a round, Save scorecard image draws all 9 or 18 holes on a color-coded canvas and shares via the native share sheet or downloads as PNG", tag: "NEW"},
-    {item: "Scorecard canvas color codes every hole: gold for eagle, green for birdie, dark blue for par, red for bogey, dark red for double+", tag: "NEW"},
-    {item: "Firestore-backed activity feed — home page feed now loads real historical rounds, range sessions, tee times, and Parbaugh Rounds from Firestore, not just current-session events", tag: "IMPROVED"},
-    {item: "Every feed item is tappable and navigates to the relevant page — rounds, range, tee times, or Parbaugh Round", tag: "NEW"},
-    {item: "Live items (in-progress Parbaugh Rounds, today's tee times) pulse green and show a LIVE badge", tag: "NEW"},
-    {item: "API key management moved out of Settings — only visible and editable from the Admin Panel", tag: "IMPROVED"},
-    {item: "Activity feed now shows real historical data — all past rounds and range sessions load from Firestore, not just current session events", tag: "IMPROVED"},
-    {item: "Range sessions now appear in the activity feed alongside rounds", tag: "NEW"},
-    {item: "Scramble teams can now be renamed from the team detail page", tag: "NEW"},
-    {item: "Records page cleaned up — Event Champions and Log a Record now match the same collapsible card style as all other sections", tag: "IMPROVED"},
-    {item: "13 new achievements added: Eagle Eye, Birdie Machine, Bogey Free, Clean Card, Flip Flop, Trophy Shelf, Achievement Hunter, Two-A-Day, SMO Triple Crown, All In, The Overcorrection, Founding Season, The Deep Dive", tag: "NEW"},
-    {item: "Firestore is now the sole source of truth — rounds, courses, and scramble teams no longer live in localStorage, eliminating sync conflicts", tag: "IMPROVED"},
-    {item: "Round crash recovery — if your phone restarts or browser closes mid-round, your scores are fully restored when you reopen the app", tag: "NEW"},
-    {item: "Rounds now save to Firestore the moment you finish — no more missing rounds after logging out and back in", tag: "FIXED"},
-    {item: "Manual round submissions (+ Log round) now sync to Firestore correctly", tag: "FIXED"},
-    {item: "Play Now stats (FIR, GIR, putts, hole scores) now fully preserved in Firestore", tag: "FIXED"},
-    {item: "Player name now resolves correctly on rounds rather than showing a raw ID", tag: "FIXED"},
-    {item: "Profile border (frame color) now appears on every avatar across the entire app — member list, chat, DMs, scramble teams, online strip, rivalry cards, and more", tag: "NEW"},
-    {item: "Achievement badges removed from the member list — border color communicates the same identity signal more cleanly", tag: "IMPROVED"},
-    {item: "Level badge now sits as a pill on the bottom-right corner of your avatar everywhere it appears", tag: "NEW"},
-    {item: "Profile bar updated — level on avatar border, range streak replaces title text below name", tag: "IMPROVED"},
-    {item: "Feature Requests now visible in the Admin Panel — view all submissions, mark as Reviewing, Done, or Declined", tag: "NEW"},
-    {item: "Notification bell bug fixed — tapping the bell in messages then closing it no longer blocks the nav bar", tag: "FIXED"},
-    {item: "Past Events section added to the Events page — collapses by default, most recent first, shows champion badge", tag: "NEW"},
-    {item: "Quick action buttons on home page expanded to four — Play Now, Range, Tee Time, Games all in one row", tag: "IMPROVED"},
-    {item: "Explore section on home page stripped to essentials — Sync Round, Teams, Courses only. Everything else is already in the nav", tag: "IMPROVED"},
-    {item: "Home page Champions and Live Spotlight sections now auto-hide when there is nothing to show", tag: "IMPROVED"},
-    {item: "Achievement celebration upgraded — slide-up card with icon, name, and XP when you unlock something", tag: "IMPROVED"},
-    {item: "All range achievements now appear as locked in the Trophy Room before you earn them", tag: "FIXED"},
-    {item: "Member averages now shows all 17 members, not just the founding four", tag: "FIXED"},
-    {item: "Double Duty achievement no longer counted twice", tag: "FIXED"}
+    {item: "Share card rebuilt with HTML/CSS + html2canvas — real fonts, proper golf scoring symbols (circle = birdie, double circle = eagle, square = bogey, double square = double bogey+), no canvas math", tag: "NEW"},
+    {item: "Parbaughs logo embedded in share card header — fully self-contained in index.html, no external file needed", tag: "IMPROVED"},
+    {item: "Tee name and yardage shown on share card — Blue Tees · 6,604 yds pulled from Play Now tee selection", tag: "NEW"},
+    {item: "Share card modal redesigned — clearer header, explicit Skip button, no accidental dismiss, reassurance that rounds are always reshareble from history", tag: "IMPROVED"},
+    {item: "Previous rounds reshare from Round History — Share button on every round card opens the full share card modal", tag: "NEW"},
+    {item: "Share card totals changed to white — red scores discouraged sharing, neutral white lets the round speak for itself", tag: "IMPROVED"},
+    {item: "Scramble team rename is now Firestore-first — name only updates locally after Firestore confirms, and refreshing no longer reverts the name", tag: "FIXED"},
+    {item: "Team rename button only visible to the team captain — enforced in UI and JS", tag: "IMPROVED"},
+    {item: "Firestore rules documented — full ruleset covering all 22 collections with role-based access control", tag: "NEW"},
+    {item: "Test tee time cleared from activity feed via console", tag: "FIXED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
@@ -11598,7 +11595,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.26</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.31</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
