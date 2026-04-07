@@ -827,7 +827,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.7.39 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
+   PARBAUGHS v5.7.41 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -3906,15 +3906,14 @@ var Router = (function() {
     var prev = current.page;
     current = { page: page, params: params || {} };
 
-    // Push/replace browser history so back button works
+    // Push/replace browser history so back button works.
+    // We store state only — URL stays fixed to avoid PWA reload on hash change.
     if (!_skipHistoryPush) {
       var state = { page: page, params: params || {} };
-      var hash = "#" + page;
-      // Replace rather than push if: same page re-render, or caller asked for replace
       if (replaceState || prev === page) {
-        history.replaceState(state, "", hash);
+        history.replaceState(state, "", window.location.pathname);
       } else {
-        history.pushState(state, "", hash);
+        history.pushState(state, "", window.location.pathname);
       }
     }
 
@@ -4574,7 +4573,7 @@ Router.register("rules", function() {
 
   // USGA link
   h += '<div style="padding:16px;text-align:center">';
-  h += '<a href="https://rules.usga.org/" target="_blank" rel="noopener" style="font-size:12px;color:var(--gold);text-decoration:none;letter-spacing:.3px">Official USGA Rules of Golf →</a>';
+  h += '<a href="https://www.usga.org/rules/rules-and-clarifications/rules-and-clarifications.html" target="_blank" rel="noopener" style="font-size:12px;color:var(--gold);text-decoration:none;letter-spacing:.3px">Official USGA Rules of Golf →</a>';
   h += '</div>';
 
   // GHIN Handicap explanation
@@ -9362,7 +9361,7 @@ function renderTeeCard(t, isPast, isCancelled) {
 Router.register("tee-create", function(params) {
   var courses = PB.getCourses();
   var prefillDate = (params && params.date) ? params.date : "";
-  var h = '<div class="sh"><h2>Post Tee Time</h2><button class="back" onclick="Router.go(\'teetimes\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>Post Tee Time</h2><button class="back" onclick="Router.back(\'teetimes\')">← Back</button></div>';
   h += '<div class="form-section">';
   h += '<div class="ff"><label class="ff-label">Course</label><select id="teeCourse" class="ff-input">';
   courses.forEach(function(c) { h += '<option value="' + c.id + '">' + c.name + '</option>'; });
@@ -9902,7 +9901,7 @@ Router.register("range", function() {
 
   // ===== STATE 1: PRE-SESSION SETUP =====
   if (!activeRangeStart) {
-    h += '<div class="sh"><h2>Range Setup</h2><button class="back" onclick="rangeActiveView=\'range\';Router.go(\'activity\')">← Back</button></div>';
+    h += '<div class="sh"><h2>Range Setup</h2><button class="back" onclick="rangeActiveView=\'range\';Router.back(\'activity\')">← Back</button></div>';
 
     // Intent field
     h += '<div style="padding:16px 16px 0">';
@@ -11657,23 +11656,23 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.39</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.41</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.39</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · SMO Week</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.41</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Finish Round button moved to bottom of each course scorecard — clearly labeled Lock [Course] Scores so intent is unambiguous", tag: "IMPROVED"},
-    {item: "Score locking UI redesigned — shows a green locked banner with Unlock option for Commissioner, and a note that only Commissioner can edit after locking", tag: "IMPROVED"},
-    {item: "Firestore security rules updated — all 22 collections covered, score sync now works across all devices in real time", tag: "FIXED"},
-    {item: "Share card symbols fixed for all scoring types — hole-in-one, birdie, par, bogey, double bogey, triple bogey, and blowup scores all contained in 54px wrapper, no overflow", tag: "FIXED"},
-    {item: "Share achievements added — First Take (1), Posting Season (5), Content Creator (10), The Brand (25), Parbaugh Propagandist (50), The Chronicler (100)", tag: "NEW"},
-    {item: "Firestore display names synced into PB seed state — founding members show their actual display name on page load, not the hardcoded fallback", tag: "FIXED"},
-    {item: "Event leaderboard team name pulls from live Firestore state — The Parbaughs shows correctly in Round breakdown", tag: "FIXED"},
-    {item: "Scramble team captain check uses claimedFrom — founding members can now rename their team without permission errors", tag: "FIXED"},
-    {item: "Share card: white nine totals, gold +TO PAR, divider under hole numbers, invite-only tagline at bottom", tag: "IMPROVED"},
-    {item: "Logo embedded as base64 in HTML — no external file dependency, renders on all devices and in html2canvas", tag: "FIXED"}
+    {item: "Browser back button now works everywhere — navigate Home → Play Now → Back returns to Home correctly across all pages", tag: "FIXED"},
+    {item: "Range and Tee Time buttons from home page fixed — URL no longer changes on navigation so PWA reload on hash change is eliminated", tag: "FIXED"},
+    {item: "All 31 in-app ← Back buttons updated to use history — back always returns to wherever you came from, not a hardcoded destination", tag: "IMPROVED"},
+    {item: "Mobile keyboard now dismisses when selecting a course from search results or tapping outside any input field", tag: "FIXED"},
+    {item: "Invite code validation moved to Cloud Function — Firestore invites rule stays locked to authenticated users only", tag: "IMPROVED"},
+    {item: "Score locking: Lock button moved to bottom of each course scorecard, labeled with course name, Commissioner-only unlock", tag: "IMPROVED"},
+    {item: "Scorekeeper and finished status now persist after refresh — synced from Firestore on startup", tag: "FIXED"},
+    {item: "Trip scorecard score input no longer re-renders full page on each entry — totals update in-place", tag: "FIXED"},
+    {item: "Security headers added — X-Content-Type-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy", tag: "IMPROVED"},
+    {item: "Password reset from login screen improved — email validation, loading state, specific error messages", tag: "IMPROVED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
@@ -11776,7 +11775,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.39</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.41</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
