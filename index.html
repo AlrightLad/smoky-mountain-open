@@ -537,7 +537,7 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 .notif-time{font-size:9px;color:var(--muted2);margin-top:4px}
 
 /* ===== HOME PAGE CONTENT WRAPPER ===== */
-.home-wrap{padding:0 16px}
+.home-wrap{padding:16px 16px 0}
 .home-wrap .card{margin-left:0;margin-right:0}
 .home-wrap .section{padding-left:0;padding-right:0}
 .home-wrap .sec-head{padding-left:0;padding-right:0}
@@ -771,6 +771,9 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22" style="color:var(--muted)"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         <div id="dmBadge" style="display:none;position:absolute;top:-2px;right:-2px;min-width:16px;height:16px;padding:0 4px;background:#e53935;border-radius:8px;font-size:9px;font-weight:700;color:#fff;align-items:center;justify-content:center;border:2px solid var(--bg)"></div>
       </div>
+      <div style="cursor:pointer;padding:4px" onclick="Router.go('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22" style="color:var(--muted)"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      </div>
     </div>
   </div>
   <div class="nav" id="nav"></div>
@@ -827,7 +830,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.7.42 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
+   PARBAUGHS v5.7.44 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -4091,6 +4094,27 @@ var ROUND_GRACE_HOURS = 48;
    PAGE: HOME
    ================================================ */
 
+// Shared footer links rendered at the bottom of every main tab page
+function renderPageFooter() {
+  var d = "·";
+  var s = "font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px";
+  var sm = "font-size:11px;color:var(--muted2)";
+  return '<div style="text-align:center;padding:20px 16px 8px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap">' +
+    '<span style="' + s + '" onclick="Router.go(\'merch\')">Merch</span>' +
+    '<span style="' + sm + '">' + d + '</span>' +
+    '<span style="' + s + '" onclick="Router.go(\'rules\')">Rules</span>' +
+    '<span style="' + sm + '">' + d + '</span>' +
+    '<span style="' + s + '" onclick="Router.go(\'faq\')">FAQ</span>' +
+    '<span style="' + sm + '">' + d + '</span>' +
+    '<span style="' + s + '" onclick="openFeatureRequest()">Feature Request</span>' +
+    '<span style="' + sm + '">' + d + '</span>' +
+    '<span style="' + s + '" onclick="Router.go(\'settings\')">Settings</span>' +
+    '</div>' +
+    '<div style="text-align:center;padding:2px 16px 16px">' +
+    '<span style="' + s + '" onclick="Router.go(\'caddynotes\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12" style="vertical-align:middle"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg> The Caddy Notes</span>' +
+    '</div>';
+}
+
 Router.register("home", function() {
   var players = PB.getPlayers();
   var tournaments = PB.getTrips();
@@ -4108,8 +4132,8 @@ Router.register("home", function() {
   h += '<div class="home-wrap">';
   h += '<div id="onlineSection"></div>';
 
-  // Quick Actions — 4 buttons, Games replaces the old Explore grid entirely
-  h += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px">';
+  // Quick Actions — 4 buttons
+  h += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:16px 0">';
   h += '<button class="btn full green" onclick="Router.go(\'playnow\')" style="font-size:10px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg>Play Now</button>';
   h += '<button class="btn full outline" onclick="startRangeSession()" style="font-size:10px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Range</button>';
   h += '<button class="btn full outline" onclick="Router.go(\'tee-create\')" style="font-size:10px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Tee Time</button>';
@@ -4327,22 +4351,9 @@ Router.register("home", function() {
 
   h += '</div>'; // close home-wrap
   
-  // Footer links
-  h += '<div style="text-align:center;padding:8px 16px 4px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap">';
-  h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="Router.go(\'merch\')">Merch</span>';
-  h += '<span style="font-size:11px;color:var(--muted2)">·</span>';
-  h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="Router.go(\'rules\')">Rules</span>';
-  h += '<span style="font-size:11px;color:var(--muted2)">·</span>';
-  h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="Router.go(\'faq\')">FAQ</span>';
-  h += '<span style="font-size:11px;color:var(--muted2)">·</span>';
-  h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="openFeatureRequest()">Feature Request</span>';
-  h += '<span style="font-size:11px;color:var(--muted2)">·</span>';
-  h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="Router.go(\'settings\')">Settings</span></div>';
+  h += renderPageFooter();
 
-  h += '<div style="text-align:center;padding:4px 16px 0">';
-  h += '<span style="font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px" onclick="Router.go(\'caddynotes\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12" style="vertical-align:middle"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg> The Caddy Notes</span></div>';
-
-  document.querySelector('[data-page="home"]').innerHTML = h;
+    document.querySelector('[data-page="home"]').innerHTML = h;
   // Re-render online section since the div was just recreated
   if (typeof renderOnlineSection === "function") renderOnlineSection();
   // Load activity feed async from Firestore
@@ -5682,6 +5693,7 @@ function renderAddMemberForm() {
     h += '<button class="btn full outline" onclick="submitAddMember()">Add Locally</button>';
   }
   h += '</div>';
+  h += renderPageFooter();
   document.querySelector('[data-page="members"]').innerHTML = h;
 }
 
@@ -7434,6 +7446,7 @@ Router.register("trips", function(params) {
     h += '</div>';
   }
 
+  h += renderPageFooter();
   document.querySelector('[data-page="trips"]').innerHTML = h;
 });
 
@@ -9196,6 +9209,7 @@ Router.register("records", function() {
   });
   h += hofCard("avg", "Member averages", avgContent);
 
+  h += renderPageFooter();
   document.querySelector('[data-page="records"]').innerHTML = h;
 });
 
@@ -9287,6 +9301,7 @@ Router.register("teetimes", function() {
     h += '</div>';
   }
   
+  h += renderPageFooter();
   document.querySelector('[data-page="teetimes"]').innerHTML = h;
 });
 
@@ -9731,6 +9746,7 @@ Router.register("activity", function() {
   } else {
     h += renderActivityRange();
   }
+  h += renderPageFooter();
   document.querySelector('[data-page="activity"]').innerHTML = h;
 });
 
@@ -11660,10 +11676,10 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.42</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.44</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.42</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.44</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -11779,7 +11795,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.42</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.44</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
