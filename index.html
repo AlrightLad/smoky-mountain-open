@@ -830,7 +830,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.7.55 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
+   PARBAUGHS v5.7.57 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -2108,7 +2108,8 @@ function preloadMemberPhotos() {
         });
         pbLog("[Members] Cached", Object.keys(fbMemberCache).length, "member profiles");
         updateProfileBar();
-        if (Router.getPage() === "home" || Router.getPage() === "members") Router.go(Router.getPage(), Router.getParams(), true);
+        // Only re-render home page for avatar updates — members page fetches fresh from Firestore on its own
+        if (Router.getPage() === "home") Router.go("home", Router.getParams(), true);
       });
     });
 }
@@ -4691,9 +4692,12 @@ function renderMemberList() {
     db.collection("members").get().then(function(snap) {
       var fbMembers = [];
       var claimedFromIds = [];
+      var seenDocIds = {}; // dedup by Firestore doc ID — prevents double-render artifacts
       snap.forEach(function(doc) { 
+        if (seenDocIds[doc.id]) return;
+        seenDocIds[doc.id] = true;
         var d = doc.data();
-        d.id = d.id || doc.id; // Ensure id is set
+        d.id = d.id || doc.id;
         fbMembers.push(d); 
         if (d.claimedFrom) claimedFromIds.push(d.claimedFrom);
       });
@@ -4705,12 +4709,20 @@ function renderMemberList() {
         return claimedFromIds.indexOf(p.id) === -1;
       });
       
-      // Add Firebase members not already in filtered list
+      // Add Firebase members — deduplicate by claimedFrom (keep the one with a username = real auth account)
       var filteredIds = filtered.map(function(p) { return p.id; });
+      var seenClaimedFrom = {};
+      // First pass: mark which claimedFrom values have a real account (has username)
       fbMembers.forEach(function(fm) {
-        if (filteredIds.indexOf(fm.id) === -1 && fm.role !== "removed") {
-          filtered.push(fm);
-        }
+        if (fm.claimedFrom && fm.username) seenClaimedFrom[fm.claimedFrom] = fm.id;
+      });
+      fbMembers.forEach(function(fm) {
+        if (fm.role === "removed") return;
+        if (filteredIds.indexOf(fm.id) !== -1) return;
+        // Skip stub docs: has claimedFrom but no username, AND a real account exists for that claimedFrom
+        if (fm.claimedFrom && !fm.username && seenClaimedFrom[fm.claimedFrom]) return;
+        filtered.push(fm);
+        filteredIds.push(fm.id);
       });
       
       pbLog("[Members] Final list:", filtered.length, filtered.map(function(p){return p.name||p.username}).join(", "));
@@ -9257,8 +9269,15 @@ Router.register("records", function() {
     }
   });
   if (typeof fbMemberCache !== "undefined") {
+    // Build set of claimedFrom values that have a real account (has username)
+    var realAccounts = {};
+    Object.values(fbMemberCache).forEach(function(m) {
+      if (m.claimedFrom && m.username) realAccounts[m.claimedFrom] = true;
+    });
     Object.values(fbMemberCache).forEach(function(m) {
       if (m.id && !seenAvgIds[m.id]) {
+        // Skip stub docs (no username) if a real account exists for same claimedFrom
+        if (m.claimedFrom && !m.username && realAccounts[m.claimedFrom]) return;
         seenAvgIds[m.id] = true;
         allMembersForAvg.push({id:m.id, name:m.name||m.username||"Member", claimedFrom:m.claimedFrom||null});
       }
@@ -11738,10 +11757,10 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.55</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.57</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.55</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.57</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -11857,7 +11876,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.55</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.57</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
