@@ -411,6 +411,8 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 .activity-toggle button.active{background:var(--gold);color:var(--bg)}
 .range-timer-display{text-align:center;padding:32px 16px}
 .range-timer-time{font-size:48px;font-weight:800;color:var(--gold);font-family:'Playfair Display',serif;letter-spacing:2px}
+.range-timer-display--active{text-align:center;padding:52px 16px 40px}
+.range-timer-time--active{font-size:80px;font-weight:800;color:var(--gold);font-family:'Playfair Display',serif;letter-spacing:4px;line-height:1}
 .range-timer-label{font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
 .drill-chip{display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;font-size:11px;color:var(--cream);cursor:pointer;transition:all .15s;margin:3px}
 .drill-chip:hover{border-color:var(--gold)}
@@ -731,7 +733,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.6.1 — SCOREKEEPER & COURSE API
+   PARBAUGHS v5.6.3 — INLINE SCRAMBLE TEAM + RANGE UI REDESIGN
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -5303,12 +5305,9 @@ function renderTeamList() {
     }
 
     teams.forEach(function(team) {
-      var matches = team.matches || [];
-      var scoredMatches = matches.filter(function(m){return m.score}).sort(function(a,b){return a.score - b.score});
-      var bestScore = scoredMatches.length ? scoredMatches[0].score : null;
-      var last3 = matches.filter(function(m){return m.score}).slice(-3).map(function(m){return m.score});
+      var wins = team.matches ? team.matches.filter(function(m) { return m.result === "win"; }).length : 0;
+      var losses = team.matches ? team.matches.filter(function(m) { return m.result === "loss"; }).length : 0;
       var members = team.members.map(function(id) { return PB.getPlayer(id); }).filter(Boolean);
-      var captain = team.captain ? (PB.getPlayer(team.captain) || {name:team.captain}) : null;
 
       h += '<div class="card" onclick="Router.go(\'scramble\',{id:\'' + team.id + '\'})" style="cursor:pointer">';
       h += '<div style="padding:14px 16px">';
@@ -5318,13 +5317,10 @@ function renderTeamList() {
       members.forEach(function(p) {
         h += '<div class="h2h-av" style="width:28px;height:28px">' + Router.getAvatar(p) + '</div>';
       });
-      h += '</div>';
-      if (captain) h += '<div style="font-size:9px;color:var(--muted);margin-top:4px">Captain: ' + escHtml(captain.name) + '</div>';
-      h += '</div>';
-      h += '<div style="text-align:right"><div style="font-size:28px;font-weight:800;color:var(--gold)">' + (bestScore || '—') + '</div>';
-      h += '<div style="font-size:9px;color:var(--muted)">' + (bestScore ? 'Best score' : 'No rounds') + '</div>';
-      if (last3.length) h += '<div style="font-size:10px;color:var(--muted2);margin-top:3px">' + last3.join(' · ') + '</div>';
-      h += '</div></div></div></div>';
+      h += '</div></div>';
+      h += '<div style="text-align:right"><div style="font-size:22px;font-weight:800;color:var(--gold)">' + wins + '-' + losses + '</div>';
+      h += '<div style="font-size:10px;color:var(--muted)">W-L</div></div>';
+      h += '</div></div></div>';
     });
   } else {
     h += '<div class="card"><div class="empty"><div class="empty-icon" style="font-size:14px;color:var(--muted)">—</div><div class="empty-text">No scramble teams yet</div>';
@@ -5455,44 +5451,13 @@ function renderTeamDetail(teamId) {
   var courseCounts = {};
   matches.forEach(function(m) { if (m.course) courseCounts[m.course] = (courseCounts[m.course]||0) + 1; });
   var favCourse = Object.keys(courseCounts).sort(function(a,b){return courseCounts[b]-courseCounts[a]})[0] || null;
-  var coursesPlayed = Object.keys(courseCounts).length;
-  var bestScore = scoredMatches.length ? scoredMatches[0].score : null;
-  var worstScore = scoredMatches.length ? scoredMatches[scoredMatches.length-1].score : null;
-  var avgScore = scoredMatches.length ? Math.round(scoredMatches.reduce(function(a,m){return a+m.score},0) / scoredMatches.length) : null;
-  // Team handicap: average of best 3 differentials (score - 72) × 0.96
-  var teamHandicap = null;
-  if (scoredMatches.length >= 3) {
-    var best3 = scoredMatches.slice(0,3).map(function(m){return m.score - 72});
-    teamHandicap = Math.round((best3.reduce(function(a,b){return a+b},0) / 3) * 0.96 * 10) / 10;
-  } else if (scoredMatches.length > 0) {
-    teamHandicap = Math.round((scoredMatches[0].score - 72) * 0.96 * 10) / 10;
-  }
-
-  // Last 3 rounds
-  var last3 = matches.filter(function(m){return m.score}).slice(-3).reverse();
-  if (last3.length) {
-    h += '<div class="section"><div class="sec-head"><span class="sec-title">Last 3 rounds</span></div>';
-    last3.forEach(function(m) {
-      var diff = m.score - 72;
-      var diffColor = diff <= 0 ? 'var(--birdie)' : diff <= 5 ? 'var(--gold)' : 'var(--red)';
-      h += '<div class="card" style="margin-bottom:6px"><div style="padding:10px 16px;display:flex;justify-content:space-between;align-items:center">';
-      h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + (m.course || "Unknown") + '</div>';
-      h += '<div style="font-size:10px;color:var(--muted)">' + (m.date || "") + '</div></div>';
-      h += '<div style="text-align:right"><div style="font-size:18px;font-weight:700;color:var(--gold)">' + m.score + '</div>';
-      h += '<div style="font-size:10px;color:' + diffColor + '">' + (diff >= 0 ? '+' : '') + diff + '</div></div>';
-      h += '</div></div>';
-    });
-    h += '</div>';
-  }
-
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Team stats</span></div>';
   h += '<div class="hof-card">';
-  h += '<div class="hof-row"><span class="hof-label">Team handicap</span><span class="hof-val" style="color:var(--gold)">' + (teamHandicap !== null ? teamHandicap : '—') + '</span></div>';
   h += '<div class="hof-row"><span class="hof-label">Rounds played</span><span class="hof-val">' + matches.length + '</span></div>';
-  h += '<div class="hof-row"><span class="hof-label">Courses played together</span><span class="hof-val">' + coursesPlayed + '</span></div>';
   h += '<div class="hof-row"><span class="hof-label">Team favorite</span><span class="hof-val">' + (favCourse || '—') + '</span></div>';
+  var bestScore = scoredMatches.length ? scoredMatches[0].score : null;
   h += '<div class="hof-row"><span class="hof-label">Best score</span><span class="hof-val">' + (bestScore || '—') + '</span></div>';
-  h += '<div class="hof-row"><span class="hof-label">Worst score</span><span class="hof-val">' + (worstScore || '—') + '</span></div>';
+  var avgScore = scoredMatches.length ? Math.round(scoredMatches.reduce(function(a,m){return a+m.score},0) / scoredMatches.length) : null;
   h += '<div class="hof-row"><span class="hof-label">Average score</span><span class="hof-val">' + (avgScore || '—') + '</span></div>';
   h += '</div></div>';
 
@@ -5874,12 +5839,181 @@ function renderPlaySetup() {
   h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="pn-course" placeholder="Search courses..." autocomplete="off" oninput="showPlayCourseSearch(this)"><div id="search-pn-course" class="search-results"></div></div>';
   h += '<input type="hidden" id="pn-rating" value=""><input type="hidden" id="pn-slope" value="">';
 
-  h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="pn-format"><option value="stroke">Stroke play</option><option value="parbaugh">Parbaugh Stroke Play (handicap-adjusted)</option><option value="stableford">Stableford</option><option value="match">Match play</option><option value="scramble">Scramble</option><option value="bestball">Best ball</option><option value="skins">Skins</option></select></div>';
+  h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="pn-format" onchange="onPlayFormatChange()"><option value="stroke">Stroke play</option><option value="parbaugh">Parbaugh Stroke Play (handicap-adjusted)</option><option value="stableford">Stableford</option><option value="match">Match play</option><option value="scramble">Scramble</option><option value="bestball">Best ball</option><option value="skins">Skins</option></select></div>';
+  h += '<div id="pn-scramble-team-section"></div>';
 
   h += '<button class="btn full green" onclick="startLiveRound()" style="margin-top:8px">Tee it up</button>';
   h += '</div>';
 
   document.querySelector('[data-page="playnow"]').innerHTML = h;
+}
+
+// ---- Play Now: inline scramble team creation ----
+var pnScrambleSelected = [];
+var pnScrambleTeamSize = 2;
+
+function onPlayFormatChange() {
+  var fmt = document.getElementById("pn-format");
+  var sec = document.getElementById("pn-scramble-team-section");
+  if (!fmt || !sec) return;
+  if (fmt.value === "scramble") {
+    renderPnScrambleTeamSelector();
+  } else {
+    sec.innerHTML = "";
+  }
+}
+
+function renderPnScrambleTeamSelector() {
+  var sec = document.getElementById("pn-scramble-team-section");
+  if (!sec) return;
+  var myId = currentUser ? currentUser.uid : null;
+  var myPlayer = myId ? PB.getPlayer(myId) : null;
+  var myLocalPlayer = PB.getPlayers().find(function(p) { return currentProfile && (p.id === currentProfile.claimedFrom || p.name === currentProfile.name); });
+  var playAs = myPlayer || myLocalPlayer;
+  var myPid = playAs ? playAs.id : null;
+
+  var teams = PB.getScrambleTeams();
+  var myTeams = myPid ? teams.filter(function(t) { return t.members && t.members.indexOf(myPid) !== -1; }) : [];
+  var selectedId = (document.getElementById("pn-scramble-team-id") || {}).value || "";
+
+  var h = '<div style="border-top:1px solid var(--border);padding-top:14px;margin-top:8px">';
+  h += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:0 0 10px;font-weight:600">Scramble team</div>';
+
+  if (myTeams.length > 0) {
+    myTeams.forEach(function(t) {
+      var mates = t.members.map(function(mid) { var p = PB.getPlayer(mid); return p ? p.name : mid; }).join(", ");
+      var sel = t.id === selectedId;
+      h += '<div onclick="pnSelectTeam(\'' + t.id + '\')" id="pn-team-row-' + t.id + '" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;border:1.5px solid ' + (sel ? 'var(--gold)' : 'var(--border)') + ';border-radius:8px;padding:10px 12px;margin-bottom:6px;background:' + (sel ? 'rgba(201,168,76,.07)' : 'transparent') + '">';
+      h += '<div><div style="font-size:13px;font-weight:600">' + escHtml(t.name) + '</div>';
+      h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(mates) + '</div></div>';
+      h += '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;color:var(--muted)">' + t.size + '-man</span>';
+      h += '<div style="width:16px;height:16px;border-radius:8px;border:1.5px solid ' + (sel ? 'var(--gold)' : 'var(--border)') + ';background:' + (sel ? 'var(--gold)' : 'transparent') + ';display:flex;align-items:center;justify-content:center">' + (sel ? '<svg viewBox="0 0 10 10" width="8" height="8" fill="none" stroke="white" stroke-width="2"><path d="M2 5l2 2 4-4"/></svg>' : '') + '</div></div></div>';
+    });
+  } else {
+    h += '<div style="font-size:11px;color:var(--muted);padding:4px 0 10px">No teams yet — create one below.</div>';
+  }
+
+  h += '<div id="pn-create-team-toggle-wrap" style="margin-top:4px"><button class="btn-sm" onclick="pnToggleCreateTeam()" style="width:100%;padding:9px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer">+ Create new team</button></div>';
+  h += '<div id="pn-create-team-form" style="display:none"></div>';
+  h += '<input type="hidden" id="pn-scramble-team-id" value="' + escHtml(selectedId) + '">';
+  h += '</div>';
+
+  sec.innerHTML = h;
+}
+
+function pnSelectTeam(teamId) {
+  var hidden = document.getElementById("pn-scramble-team-id");
+  if (hidden) hidden.value = teamId;
+  var teams = PB.getScrambleTeams();
+  teams.forEach(function(t) {
+    var row = document.getElementById("pn-team-row-" + t.id);
+    if (!row) return;
+    var sel = t.id === teamId;
+    row.style.border = "1.5px solid " + (sel ? "var(--gold)" : "var(--border)");
+    row.style.background = sel ? "rgba(201,168,76,.07)" : "transparent";
+    var check = row.querySelector("div[style*='border-radius:8px']");
+    if (check) {
+      check.style.borderColor = sel ? "var(--gold)" : "var(--border)";
+      check.style.background = sel ? "var(--gold)" : "transparent";
+      check.innerHTML = sel ? '<svg viewBox="0 0 10 10" width="8" height="8" fill="none" stroke="white" stroke-width="2"><path d="M2 5l2 2 4-4"/></svg>' : "";
+    }
+  });
+}
+
+function pnToggleCreateTeam() {
+  var form = document.getElementById("pn-create-team-form");
+  if (!form) return;
+  if (form.style.display === "none") {
+    pnScrambleSelected = [];
+    pnScrambleTeamSize = 2;
+    pnRenderCreateTeamForm();
+    form.style.display = "";
+  } else {
+    form.style.display = "none";
+    pnScrambleSelected = [];
+  }
+}
+
+function pnRenderCreateTeamForm() {
+  var form = document.getElementById("pn-create-team-form");
+  if (!form) return;
+  var players = PB.getPlayers();
+  var myId = currentUser ? currentUser.uid : null;
+  var myPlayer = myId ? PB.getPlayer(myId) : null;
+  var myLocalPlayer = PB.getPlayers().find(function(p) { return currentProfile && (p.id === currentProfile.claimedFrom || p.name === currentProfile.name); });
+  var playAs = myPlayer || myLocalPlayer;
+  var myPid = playAs ? playAs.id : null;
+
+  var h = '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:8px">';
+  h += '<div style="font-size:12px;font-weight:600;color:var(--cream);margin-bottom:12px">New team</div>';
+
+  h += '<div class="ff" style="margin-bottom:10px"><label class="ff-label" style="font-size:10px">Team name</label><input class="ff-input" id="pn-new-team-name" placeholder="e.g. The Bogey Boys" autocomplete="off"></div>';
+
+  h += '<div style="margin-bottom:12px"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Team size</div><div style="display:flex;gap:6px">';
+  [2,3,4].forEach(function(n) {
+    var a = pnScrambleTeamSize === n;
+    h += '<button onclick="pnSetTeamSize(' + n + ')" style="flex:1;padding:8px;border-radius:6px;border:1.5px solid ' + (a ? 'var(--gold)' : 'var(--border)') + ';background:' + (a ? 'rgba(201,168,76,.12)' : 'transparent') + ';color:' + (a ? 'var(--gold)' : 'var(--muted)') + ';font-size:12px;font-weight:600;cursor:pointer">' + n + '-man</button>';
+  });
+  h += '</div></div>';
+
+  h += '<div style="margin-bottom:10px"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Members <span style="color:' + (pnScrambleSelected.length === pnScrambleTeamSize ? 'var(--birdie)' : 'var(--muted)') + '">(' + pnScrambleSelected.length + '/' + pnScrambleTeamSize + ')</span></div>';
+  players.forEach(function(p) {
+    var isSelf = p.id === myPid;
+    var inTeam = pnScrambleSelected.indexOf(p.id) !== -1;
+    h += '<div onclick="pnToggleMember(\'' + p.id + '\')" id="pn-m-' + p.id + '" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:6px;border:1px solid ' + (inTeam ? 'var(--gold)' : 'var(--border)') + ';background:' + (inTeam ? 'rgba(201,168,76,.07)' : 'transparent') + ';margin-bottom:4px">';
+    h += '<div style="font-size:12px;color:var(--cream)">' + escHtml(p.name) + (isSelf ? ' <span style="font-size:9px;color:var(--gold)">(you)</span>' : '') + '</div>';
+    h += '<div style="width:16px;height:16px;border-radius:8px;border:1.5px solid ' + (inTeam ? 'var(--gold)' : 'var(--border)') + ';background:' + (inTeam ? 'var(--gold)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;flex-shrink:0">' + (inTeam ? '<svg viewBox="0 0 10 10" width="8" height="8" fill="none" stroke="white" stroke-width="2"><path d="M2 5l2 2 4-4"/></svg>' : '') + '</div>';
+    h += '</div>';
+  });
+  h += '</div>';
+
+  if (pnScrambleSelected.length > 0) {
+    h += '<div class="ff" style="margin-bottom:12px"><label class="ff-label" style="font-size:10px">Captain (hits last every shot)</label><select class="ff-input" id="pn-new-team-captain">';
+    pnScrambleSelected.forEach(function(pid) {
+      var p = PB.getPlayer(pid);
+      h += '<option value="' + pid + '">' + escHtml(p ? p.name : pid) + '</option>';
+    });
+    h += '</select></div>';
+  }
+
+  h += '<div style="display:flex;gap:8px;margin-top:4px">';
+  h += '<button class="btn full green" onclick="pnSaveNewTeam()" style="flex:1;font-size:12px;padding:9px">Save &amp; use this team</button>';
+  h += '<button onclick="pnToggleCreateTeam()" style="padding:9px 14px;font-size:11px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer">Cancel</button>';
+  h += '</div></div>';
+
+  form.innerHTML = h;
+}
+
+function pnSetTeamSize(n) {
+  pnScrambleTeamSize = n;
+  pnScrambleSelected = [];
+  pnRenderCreateTeamForm();
+}
+
+function pnToggleMember(pid) {
+  var idx = pnScrambleSelected.indexOf(pid);
+  if (idx === -1) {
+    if (pnScrambleSelected.length >= pnScrambleTeamSize) { Router.toast("Max " + pnScrambleTeamSize + " members for this team"); return; }
+    pnScrambleSelected.push(pid);
+  } else {
+    pnScrambleSelected.splice(idx, 1);
+  }
+  pnRenderCreateTeamForm();
+}
+
+function pnSaveNewTeam() {
+  var nameEl = document.getElementById("pn-new-team-name");
+  var name = nameEl ? nameEl.value.trim() : "";
+  var captainEl = document.getElementById("pn-new-team-captain");
+  var captain = captainEl ? captainEl.value : (pnScrambleSelected[0] || "");
+  if (!name) { Router.toast("Enter a team name"); return; }
+  if (pnScrambleSelected.length !== pnScrambleTeamSize) { Router.toast("Select exactly " + pnScrambleTeamSize + " members"); return; }
+  var team = PB.addScrambleTeam({ name: name, members: pnScrambleSelected.slice(), captain: captain, size: pnScrambleTeamSize });
+  if (!team) { Router.toast("Could not create team"); return; }
+  pnScrambleSelected = [];
+  Router.toast("Team created!");
+  renderPnScrambleTeamSelector();
+  pnSelectTeam(team.id);
 }
 
 function showPlayCourseSearch(input) {
@@ -5927,13 +6061,22 @@ function startLiveRound() {
   var course = document.getElementById("pn-course").value;
   if (!course) { Router.toast("Select a course"); return; }
 
+  var fmt = document.getElementById("pn-format").value;
+  var scrambleTeamId = "";
+  if (fmt === "scramble") {
+    var teamEl = document.getElementById("pn-scramble-team-id");
+    scrambleTeamId = teamEl ? teamEl.value : "";
+    if (!scrambleTeamId) { Router.toast("Select or create a scramble team first"); return; }
+  }
+
   liveState = {
     active: true,
     player: player,
     course: course,
     rating: parseFloat(document.getElementById("pn-rating").value) || 72,
     slope: parseInt(document.getElementById("pn-slope").value) || 113,
-    format: document.getElementById("pn-format").value,
+    format: fmt,
+    scrambleTeamId: scrambleTeamId,
     startTime: Date.now(),
     currentHole: 0,
     scores: Array(18).fill(""),
@@ -8291,6 +8434,7 @@ var activeRangeDrills = [];
 var activeRangeFocus = "";
 var rangeActiveView = "rounds"; // "rounds" or "range"
 var rangeSessionPrivate = false;
+var rangeSessionNotes = "";
 
 var DRILL_LIBRARY = [
   {id:"headcover_trap", name:"Headcover Trap", cat:"path", desc:"Tuck headcover under trail arm to fix over-the-top", equip:"Headcover", howTo:"Place headcover under your right armpit (for righties). Make swings keeping it pinned — if it falls, your trail elbow is flying out and causing an over-the-top path."},
@@ -8427,29 +8571,55 @@ function endRangeSession() {
   var elapsed = Math.floor((Date.now() - activeRangeStart) / 1000);
   var mins = Math.round(elapsed / 60);
   if (mins < 1) mins = 1;
-  // Show end summary
   if (activeRangeTimer) { clearInterval(activeRangeTimer); activeRangeTimer = null; }
   var allDrills = DRILL_LIBRARY.concat(customDrills);
-  var drillNames = activeRangeDrills.map(function(did) { var d = allDrills.find(function(x){return x.id===did}); return d ? d.name : did; });
+  var drillNames = activeRangeDrills.map(function(did) { var d = allDrills.find(function(x){return x.id===did;}); return d ? d.name : did; });
   var xp = getRangeSessionXP({durationMin: mins, drills: activeRangeDrills});
+  var isPrivate = rangeSessionPrivate;
 
   var h = '<div class="sh"><h2>Session Complete</h2></div>';
-  h += '<div class="range-timer-display"><div class="range-timer-time">' + formatRangeTime(elapsed) + '</div>';
-  h += '<div class="range-timer-label">' + mins + ' minutes on the range</div></div>';
+
+  // Time hero
+  h += '<div style="text-align:center;padding:28px 16px 20px;border-bottom:1px solid var(--border)">';
+  h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">Time on range</div>';
+  h += '<div style="font-family:Playfair Display,serif;font-size:60px;font-weight:800;color:var(--gold);letter-spacing:3px;line-height:1">' + formatRangeTime(elapsed) + '</div>';
+  h += '<div style="font-size:12px;color:var(--muted);margin-top:8px">' + mins + ' minute' + (mins !== 1 ? 's' : '') + (activeRangeFocus ? ' · <span style="color:var(--cream)">' + escHtml(activeRangeFocus) + '</span>' : '') + '</div>';
+  if (!isPrivate) h += '<div style="margin-top:10px;font-size:14px;font-weight:700;color:var(--gold)">+' + xp + ' XP</div>';
+  h += '</div>';
+
+  // Drills checklist
   if (drillNames.length) {
-    h += '<div style="padding:0 16px 12px;text-align:center"><div style="font-size:10px;color:var(--muted);margin-bottom:6px">Drills worked</div>';
-    drillNames.forEach(function(n) { h += '<span class="drill-chip selected" style="cursor:default">' + escHtml(n) + '</span>'; });
+    h += '<div style="padding:16px 16px 0">';
+    h += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Drills worked</div>';
+    drillNames.forEach(function(n) {
+      h += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border2)">';
+      h += '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="var(--birdie)" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg>';
+      h += '<span style="font-size:12px;color:var(--cream)">' + escHtml(n) + '</span></div>';
+    });
     h += '</div>';
   }
-  h += '<div style="padding:0 16px 16px"><div style="font-size:11px;color:var(--muted);margin-bottom:8px;text-align:center">How did it feel?</div>';
+
+  // How it felt
+  h += '<div style="padding:16px">';
+  h += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">How did it feel?</div>';
   h += '<div style="display:flex;gap:8px" id="feelBtns">';
   h += '<button class="feel-btn" onclick="selectRangeFeel(1,this)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--red)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 15s1-2 4-2 4 2 4 2"/><circle cx="9" cy="9" r="1" fill="var(--red)"/><circle cx="15" cy="9" r="1" fill="var(--red)"/></svg><br><span style="font-size:10px">Rough</span></button>';
   h += '<button class="feel-btn" onclick="selectRangeFeel(2,this)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--cream)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14h8"/><circle cx="9" cy="9" r="1" fill="var(--cream)"/><circle cx="15" cy="9" r="1" fill="var(--cream)"/></svg><br><span style="font-size:10px">Solid</span></button>';
   h += '<button class="feel-btn" onclick="selectRangeFeel(3,this)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--gold)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="var(--gold)"/><circle cx="15" cy="9" r="1" fill="var(--gold)"/></svg><br><span style="font-size:10px">Dialed</span></button>';
+  h += '</div>';
+
+  // Notes
+  h += '<div style="margin-top:14px">';
+  h += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">Notes <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></div>';
+  h += '<textarea id="rangeNotesInput" placeholder="What clicked? What needs work next time?" oninput="rangeSessionNotes=this.value" style="width:100%;box-sizing:border-box;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--cream);font-size:12px;padding:10px;line-height:1.5;resize:none;height:70px;font-family:Inter,sans-serif">' + escHtml(rangeSessionNotes) + '</textarea>';
   h += '</div></div>';
-  h += '<div style="text-align:center;padding:0 16px 8px"><div style="font-size:18px;font-weight:700;color:var(--gold)">+' + xp + ' XP</div></div>';
-  h += '<div class="section"><button class="btn full green" onclick="saveRangeSession(' + mins + ',' + elapsed + ')">Save Session</button>';
-  h += '<button class="btn full outline" style="margin-top:8px" onclick="activeRangeStart=null;Router.go(\'activity\')">Discard</button></div>';
+
+  // Actions
+  h += '<div style="padding:0 16px 28px;display:flex;flex-direction:column;gap:8px">';
+  h += '<button class="btn full green" style="padding:14px;font-size:14px;font-weight:700" onclick="saveRangeSession(' + mins + ',' + elapsed + ')">Save Session</button>';
+  h += '<button class="btn full outline" style="padding:12px;font-size:12px" onclick="activeRangeStart=null;rangeSessionNotes=\'\';rangeSessionPrivate=false;Router.go(\'activity\')">Discard</button>';
+  h += '</div>';
+
   document.querySelector('[data-page="range"]').innerHTML = h;
 }
 
@@ -8475,6 +8645,7 @@ function saveRangeSession(mins, totalSec) {
     drills: activeRangeDrills.slice(),
     feel: rangeFeel || 2,
     focus: activeRangeFocus,
+    notes: rangeSessionNotes || "",
     visibility: isPrivate ? "private" : "public"
   };
   syncRangeSession(session);
@@ -8489,7 +8660,9 @@ function saveRangeSession(mins, totalSec) {
   }
   activeRangeStart = null;
   activeRangeDrills = [];
+  activeRangeFocus = "";
   rangeFeel = 0;
+  rangeSessionNotes = "";
   rangeSessionPrivate = false;
   Router.toast(isPrivate ? "Private session saved" : "Session saved! +" + xp + " XP");
   rangeActiveView = "range";
@@ -8681,61 +8854,96 @@ function calcRangeStreak(sessions) {
 Router.register("range", function() {
   var h = '';
 
-  // ===== SETUP MODE (timer not started yet) =====
+  // ===== STATE 1: PRE-SESSION SETUP =====
   if (!activeRangeStart) {
     h += '<div class="sh"><h2>Range Setup</h2><button class="back" onclick="rangeActiveView=\'range\';Router.go(\'activity\')">← Back</button></div>';
 
-    h += '<div style="text-align:center;padding:16px"><div style="font-size:13px;color:var(--cream);font-weight:600">Pick your drills, then start.</div>';
-    h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">Phone goes away once the timer starts.</div></div>';
+    // Intent field
+    h += '<div style="padding:16px 16px 0">';
+    h += '<div style="font-family:Playfair Display,serif;font-size:17px;color:var(--gold);margin-bottom:2px">What are you working on?</div>';
+    h += '<div style="font-size:10px;color:var(--muted);margin-bottom:10px">Optional — helps track your focus over time</div>';
+    h += '<input class="ff-input" id="rangeFocusInput" placeholder="e.g. Driver path, wedge distance, putting..." autocomplete="off" value="' + escHtml(activeRangeFocus) + '" oninput="activeRangeFocus=this.value" style="margin-bottom:0">';
+    h += '</div>';
 
-    // Drill selector
-    h += '<div class="section"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
-    h += '<div style="font-size:11px;font-weight:600;color:var(--cream)">Select drills <span style="font-size:10px;color:var(--muted);font-weight:400">(optional)</span></div>';
-    h += '<div style="display:flex;align-items:center;gap:8px"><span id="rangeDrillCount" style="font-size:10px;color:var(--muted)">' + activeRangeDrills.length + '/4 selected</span>';
-    h += '<button class="btn-sm outline" style="font-size:9px;padding:4px 8px" onclick="addCustomDrill()">+ Custom</button></div></div>';
-    h += '<div id="rangeDrillChips"></div></div>';
+    // Drill selector — collapsible
+    h += '<div class="section" style="margin-top:14px">';
+    h += '<div onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding-bottom:6px;border-bottom:1px solid var(--border);margin-bottom:10px">';
+    h += '<div style="font-size:12px;font-weight:600;color:var(--cream)">Drills <span style="font-size:10px;color:var(--muted);font-weight:400">(optional · max 4)</span></div>';
+    h += '<div style="display:flex;align-items:center;gap:8px"><span id="rangeDrillCount" style="font-size:10px;color:' + (activeRangeDrills.length > 0 ? 'var(--gold)' : 'var(--muted)') + ';font-weight:' + (activeRangeDrills.length > 0 ? '600' : '400') + '">' + (activeRangeDrills.length > 0 ? activeRangeDrills.length + ' selected' : 'none') + '</span>';
+    h += '<button class="btn-sm outline" style="font-size:9px;padding:4px 8px" onclick="event.stopPropagation();addCustomDrill()">+ Custom</button>';
+    h += '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg></div></div>';
+    h += '<div' + (activeRangeDrills.length === 0 ? ' style="display:none"' : '') + '>';
+    h += '<div id="rangeDrillChips"></div>';
+    h += '</div></div>';
 
     // Visibility toggle
-    h += '<div style="padding:0 16px 8px;display:flex;align-items:center;justify-content:space-between">';
-    h += '<div><div style="font-size:11px;font-weight:600;color:var(--cream)">Visibility</div>';
-    h += '<div style="font-size:9px;color:var(--muted);margin-top:1px">' + (rangeSessionPrivate ? 'Private — no XP, not on calendar' : 'Public — earns XP, shows on calendar') + '</div></div>';
+    h += '<div style="padding:0 16px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);margin-bottom:0">';
+    h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">Visibility</div>';
+    h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + (rangeSessionPrivate ? 'Private — no XP, not on calendar' : 'Public — earns XP, shows on calendar') + '</div></div>';
     h += '<button id="rangeVisBtn" onclick="rangeSessionPrivate=!rangeSessionPrivate;Router.go(\'range\')" style="background:' + (rangeSessionPrivate ? 'rgba(212,96,78,.15)' : 'rgba(78,201,122,.1)') + ';border:1px solid ' + (rangeSessionPrivate ? 'rgba(212,96,78,.3)' : 'rgba(78,201,122,.2)') + ';color:' + (rangeSessionPrivate ? 'var(--red)' : 'var(--birdie)') + ';font:600 10px/1 Inter,sans-serif;padding:6px 12px;border-radius:4px;cursor:pointer">' + (rangeSessionPrivate ? '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg> Private' : '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><circle cx="8" cy="8" r="6"/><path d="M8 5v6M5 8h6"/></svg> Public') + '</button>';
     h += '</div>';
 
-    // Start button
-    h += '<div class="section"><button class="btn full green" style="font-size:14px;padding:14px" onclick="beginRangeTimer()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg> Start Session</button></div>';
+    // Start button — big, prominent
+    h += '<div style="padding:20px 16px 24px"><button class="btn full green" style="font-size:16px;padding:18px;letter-spacing:.5px;font-weight:700" onclick="beginRangeTimer()">';
+    h += '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:8px"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg>';
+    h += 'Start Session</button>';
+    if (activeRangeFocus || activeRangeDrills.length > 0) {
+      h += '<div style="text-align:center;margin-top:10px"><span style="font-size:10px;color:var(--muted);cursor:pointer;text-decoration:underline" onclick="activeRangeFocus=\'\';activeRangeDrills=[];rangeSessionPrivate=false;Router.go(\'range\')">Reset</span></div>';
+    }
+    h += '</div>';
 
     document.querySelector('[data-page="range"]').innerHTML = h;
-    setTimeout(renderDrillChips, 50);
+    setTimeout(function() {
+      var drillSection = document.querySelector('#rangeDrillChips');
+      if (drillSection) {
+        // Show drill section if drills already selected
+        if (activeRangeDrills.length > 0) drillSection.parentElement.style.display = 'block';
+        renderDrillChips();
+      }
+    }, 50);
     return;
   }
 
-  // ===== ACTIVE MODE (timer running) =====
-  h += '<div class="sh"><h2>On the Range</h2><button class="back" onclick="rangeActiveView=\'range\';Router.go(\'activity\')">← Back</button></div>';
-
-  // Timer
+  // ===== STATE 2: ACTIVE SESSION (timer dominant) =====
   var elapsed = Math.floor((Date.now() - activeRangeStart) / 1000);
-  h += '<div class="range-timer-display"><div class="range-timer-time" id="rangeTimerDisplay">' + formatRangeTime(elapsed) + '</div>';
-  h += '<div class="range-timer-label">Session time</div></div>';
+  var allDrills = DRILL_LIBRARY.concat(customDrills);
 
-  // Selected drills summary
+  h += '<div style="display:flex;justify-content:flex-end;padding:12px 16px 0">';
+  h += '<button class="btn-sm" onclick="if(confirm(\'End session without saving?\''+ '){if(activeRangeTimer){clearInterval(activeRangeTimer);activeRangeTimer=null;}activeRangeStart=null;activeRangeDrills=[];activeRangeFocus=\'\';rangeSessionNotes=\'\';rangeActiveView=\'range\';Router.go(\'activity\')}" style="font-size:10px;color:var(--muted);background:transparent;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer">Abandon</button>';
+  h += '</div>';
+
+  // Timer — dominant
+  h += '<div class="range-timer-display--active">';
+  h += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px">Session time</div>';
+  h += '<div class="range-timer-time--active" id="rangeTimerDisplay">' + formatRangeTime(elapsed) + '</div>';
+  if (activeRangeFocus) {
+    h += '<div style="font-size:12px;color:var(--cream);margin-top:14px;font-style:italic">"' + escHtml(activeRangeFocus) + '"</div>';
+  }
+  h += '</div>';
+
+  // Drills strip — compact reference, no interaction needed during session
   if (activeRangeDrills.length) {
-    var allDrills = DRILL_LIBRARY.concat(customDrills);
-    h += '<div style="text-align:center;padding:0 16px 12px">';
-    h += '<div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">Today\'s drills</div>';
+    h += '<div style="text-align:center;padding:0 16px 24px;border-bottom:1px solid var(--border)">';
+    h += '<div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Today\'s drills</div>';
+    h += '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px">';
     activeRangeDrills.forEach(function(did) {
-      var d = allDrills.find(function(x){return x.id===did});
-      if (d) h += '<span class="drill-chip selected" style="cursor:default">' + escHtml(d.name) + '</span>';
+      var d = allDrills.find(function(x){return x.id===did;});
+      if (d) h += '<span style="font-size:11px;color:var(--gold);background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);border-radius:20px;padding:5px 12px">' + escHtml(d.name) + '</span>';
     });
-    h += '</div>';
+    h += '</div></div>';
+  } else {
+    h += '<div style="height:24px"></div>';
   }
 
-  // End session button
-  h += '<div class="section"><button class="btn full" style="background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.3);color:#f472b6;font-weight:700" onclick="endRangeSession()">End Session</button></div>';
+  // End session — prominent but not competing with timer
+  h += '<div style="padding:28px 20px 24px">';
+  h += '<button class="btn full" style="background:rgba(201,168,76,.12);border:1.5px solid rgba(201,168,76,.4);color:var(--gold);font-size:14px;font-weight:700;padding:16px;letter-spacing:.5px" onclick="endRangeSession()">';
+  h += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:8px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>';
+  h += 'End Session</button>';
+  h += '</div>';
 
   document.querySelector('[data-page="range"]').innerHTML = h;
 
-  // Start timer interval
   if (activeRangeTimer) clearInterval(activeRangeTimer);
   activeRangeTimer = setInterval(tickRangeTimer, 1000);
 });
@@ -10247,27 +10455,31 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.6.1</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.6.3</div></div>';
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "Range session redesigned — three distinct phases: Setup, Active, and Review", tag: "NEW"},
+    {item: "Active session timer is now full-screen dominant — 80px clock you can read at a glance", tag: "NEW"},
+    {item: "Range setup now has a focus field: tell us what you're working on before you start", tag: "NEW"},
+    {item: "Drill picker is now collapsible — stays out of the way unless you want it", tag: "NEW"},
+    {item: "Post-session review includes a notes field — jot down what clicked or what needs work", tag: "NEW"},
+    {item: "Session notes saved alongside drills, feel rating, and duration", tag: "NEW"},
+    {item: "Scramble team selection now built into Play Now — pick your team before teeing off without leaving the setup screen", tag: "NEW"},
+    {item: "Create a new scramble team inline on Play Now — name, size, members, and captain all in one flow", tag: "NEW"},
     {item: "Full-screen course search — tap to search 30,000+ courses with ratings and tee data inline", tag: "NEW"},
     {item: "Import courses with real ratings, slope, par, yardage, and hole-by-hole scorecard", tag: "NEW"},
     {item: "Course detail page shows all available tees — tap any tee to view its full scorecard", tag: "NEW"},
     {item: "Share card — every completed round gets a branded scorecard you can share or screenshot", tag: "NEW"},
     {item: "Scramble team pages redesigned — top 3 scores, team stats, captain badge, round history", tag: "NEW"},
     {item: "Courses sync across all devices — import on one, see it everywhere", tag: "NEW"},
-    {item: "Scorekeeper system — one person handles scores per round", tag: "NEW"},
-    {item: "Score locking — finish a round to lock scores, Commissioner can unlock", tag: "NEW"},
-    {item: "Activity tab with Rounds and Range views", tag: "NEW"},
+    {item: "Scorekeeper system and score locking by Commissioner", tag: "NEW"},
     {item: "SMO courses verified with real API data — accurate pars, ratings, and slopes", tag: "IMPROVED"},
-    {item: "Invite count updates live when generating codes", tag: "IMPROVED"},
     {item: "Badges, titles, and photos can only be changed by the account owner", tag: "IMPROVED"},
     {item: "FIR and GIR buttons no longer scroll the page to the top", tag: "FIXED"},
-    {item: "FAQ page answers now open and close properly", tag: "FIXED"},
     {item: "Snapshot listeners cleaned up — no more memory leaks during long sessions", tag: "FIXED"}
   ];
   currentNotes.forEach(function(r) {
@@ -10348,7 +10560,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.6.1</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.6.3</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
