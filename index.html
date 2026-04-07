@@ -5303,9 +5303,12 @@ function renderTeamList() {
     }
 
     teams.forEach(function(team) {
-      var wins = team.matches ? team.matches.filter(function(m) { return m.result === "win"; }).length : 0;
-      var losses = team.matches ? team.matches.filter(function(m) { return m.result === "loss"; }).length : 0;
+      var matches = team.matches || [];
+      var scoredMatches = matches.filter(function(m){return m.score}).sort(function(a,b){return a.score - b.score});
+      var bestScore = scoredMatches.length ? scoredMatches[0].score : null;
+      var last3 = matches.filter(function(m){return m.score}).slice(-3).map(function(m){return m.score});
       var members = team.members.map(function(id) { return PB.getPlayer(id); }).filter(Boolean);
+      var captain = team.captain ? (PB.getPlayer(team.captain) || {name:team.captain}) : null;
 
       h += '<div class="card" onclick="Router.go(\'scramble\',{id:\'' + team.id + '\'})" style="cursor:pointer">';
       h += '<div style="padding:14px 16px">';
@@ -5315,10 +5318,13 @@ function renderTeamList() {
       members.forEach(function(p) {
         h += '<div class="h2h-av" style="width:28px;height:28px">' + Router.getAvatar(p) + '</div>';
       });
-      h += '</div></div>';
-      h += '<div style="text-align:right"><div style="font-size:22px;font-weight:800;color:var(--gold)">' + wins + '-' + losses + '</div>';
-      h += '<div style="font-size:10px;color:var(--muted)">W-L</div></div>';
-      h += '</div></div></div>';
+      h += '</div>';
+      if (captain) h += '<div style="font-size:9px;color:var(--muted);margin-top:4px">Captain: ' + escHtml(captain.name) + '</div>';
+      h += '</div>';
+      h += '<div style="text-align:right"><div style="font-size:28px;font-weight:800;color:var(--gold)">' + (bestScore || '—') + '</div>';
+      h += '<div style="font-size:9px;color:var(--muted)">' + (bestScore ? 'Best score' : 'No rounds') + '</div>';
+      if (last3.length) h += '<div style="font-size:10px;color:var(--muted2);margin-top:3px">' + last3.join(' · ') + '</div>';
+      h += '</div></div></div></div>';
     });
   } else {
     h += '<div class="card"><div class="empty"><div class="empty-icon" style="font-size:14px;color:var(--muted)">—</div><div class="empty-text">No scramble teams yet</div>';
@@ -5449,13 +5455,44 @@ function renderTeamDetail(teamId) {
   var courseCounts = {};
   matches.forEach(function(m) { if (m.course) courseCounts[m.course] = (courseCounts[m.course]||0) + 1; });
   var favCourse = Object.keys(courseCounts).sort(function(a,b){return courseCounts[b]-courseCounts[a]})[0] || null;
+  var coursesPlayed = Object.keys(courseCounts).length;
+  var bestScore = scoredMatches.length ? scoredMatches[0].score : null;
+  var worstScore = scoredMatches.length ? scoredMatches[scoredMatches.length-1].score : null;
+  var avgScore = scoredMatches.length ? Math.round(scoredMatches.reduce(function(a,m){return a+m.score},0) / scoredMatches.length) : null;
+  // Team handicap: average of best 3 differentials (score - 72) × 0.96
+  var teamHandicap = null;
+  if (scoredMatches.length >= 3) {
+    var best3 = scoredMatches.slice(0,3).map(function(m){return m.score - 72});
+    teamHandicap = Math.round((best3.reduce(function(a,b){return a+b},0) / 3) * 0.96 * 10) / 10;
+  } else if (scoredMatches.length > 0) {
+    teamHandicap = Math.round((scoredMatches[0].score - 72) * 0.96 * 10) / 10;
+  }
+
+  // Last 3 rounds
+  var last3 = matches.filter(function(m){return m.score}).slice(-3).reverse();
+  if (last3.length) {
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Last 3 rounds</span></div>';
+    last3.forEach(function(m) {
+      var diff = m.score - 72;
+      var diffColor = diff <= 0 ? 'var(--birdie)' : diff <= 5 ? 'var(--gold)' : 'var(--red)';
+      h += '<div class="card" style="margin-bottom:6px"><div style="padding:10px 16px;display:flex;justify-content:space-between;align-items:center">';
+      h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + (m.course || "Unknown") + '</div>';
+      h += '<div style="font-size:10px;color:var(--muted)">' + (m.date || "") + '</div></div>';
+      h += '<div style="text-align:right"><div style="font-size:18px;font-weight:700;color:var(--gold)">' + m.score + '</div>';
+      h += '<div style="font-size:10px;color:' + diffColor + '">' + (diff >= 0 ? '+' : '') + diff + '</div></div>';
+      h += '</div></div>';
+    });
+    h += '</div>';
+  }
+
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Team stats</span></div>';
   h += '<div class="hof-card">';
+  h += '<div class="hof-row"><span class="hof-label">Team handicap</span><span class="hof-val" style="color:var(--gold)">' + (teamHandicap !== null ? teamHandicap : '—') + '</span></div>';
   h += '<div class="hof-row"><span class="hof-label">Rounds played</span><span class="hof-val">' + matches.length + '</span></div>';
+  h += '<div class="hof-row"><span class="hof-label">Courses played together</span><span class="hof-val">' + coursesPlayed + '</span></div>';
   h += '<div class="hof-row"><span class="hof-label">Team favorite</span><span class="hof-val">' + (favCourse || '—') + '</span></div>';
-  var bestScore = scoredMatches.length ? scoredMatches[0].score : null;
   h += '<div class="hof-row"><span class="hof-label">Best score</span><span class="hof-val">' + (bestScore || '—') + '</span></div>';
-  var avgScore = scoredMatches.length ? Math.round(scoredMatches.reduce(function(a,m){return a+m.score},0) / scoredMatches.length) : null;
+  h += '<div class="hof-row"><span class="hof-label">Worst score</span><span class="hof-val">' + (worstScore || '—') + '</span></div>';
   h += '<div class="hof-row"><span class="hof-label">Average score</span><span class="hof-val">' + (avgScore || '—') + '</span></div>';
   h += '</div></div>';
 
