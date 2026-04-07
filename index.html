@@ -820,7 +820,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.7.25 — HTML2CANVAS SHARE CARD + BADGE FIXES + 1080 CANVAS + ACTIVITY FEED + RECORDS CLEANUP
+   PARBAUGHS v5.7.26 — HTML2CANVAS SHARE CARD + BADGE FIXES + 1080 CANVAS + ACTIVITY FEED + RECORDS CLEANUP
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -1523,10 +1523,16 @@ function syncScrambleTeamsFromFirestore() {
       var t = doc.data();
       remoteIds[t.id] = true;
       if (!t.id || !t.name) return;
-      var exists = local.find(function(lt) { return lt.id === t.id; });
-      if (!exists) { PB.addScrambleTeamFromFirestore(t); merged++; }
+      var existing = local.find(function(lt) { return lt.id === t.id; });
+      if (!existing) {
+        PB.addScrambleTeamFromFirestore(t); merged++;
+      } else if (existing.name !== t.name) {
+        // Firestore is authoritative for name — overwrite local
+        existing.name = t.name;
+        merged++;
+      }
     });
-    // Push any local teams that aren't in Firestore yet (e.g. SMO Squad or offline-created teams)
+    // Push any local teams that aren't in Firestore yet
     local.forEach(function(t) {
       if (!remoteIds[t.id]) { syncScrambleTeam(t); }
     });
@@ -11449,7 +11455,7 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.25</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.26</div></div>';
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.7</span></div>';
@@ -11592,7 +11598,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.25</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.26</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
