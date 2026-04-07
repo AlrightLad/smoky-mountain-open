@@ -5074,7 +5074,7 @@ function renderAddMemberForm() {
   
   h += '<div class="form-section">';
   h += '<div style="text-align:center;margin-bottom:16px;padding:12px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.12);border-radius:var(--radius)">';
-  h += '<div style="font-size:11px;color:var(--gold);font-weight:600">Invites remaining: ' + invitesLeft + '</div>';
+  h += '<div id="inviteCountDisplay" style="font-size:11px;color:var(--gold);font-weight:600">Invites remaining: ' + invitesLeft + '</div>';
   h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">New member will receive an invite code to create their account</div>';
   h += '</div>';
   
@@ -5113,9 +5113,19 @@ function generateInviteFromMembers() {
   
   db.collection("invites").doc(code).set({ code:code, createdBy:currentUser.uid, createdByName:currentProfile.name||currentProfile.username, usedBy:null, status:"active", createdAt:fsTimestamp() })
     .then(function() {
-      db.collection("members").doc(currentUser.uid).update({invitesUsed:firebase.firestore.FieldValue.increment(1)}); currentProfile.invitesUsed = (currentProfile.invitesUsed||0)+1;
+      return db.collection("members").doc(currentUser.uid).update({invitesUsed:firebase.firestore.FieldValue.increment(1)});
+    })
+    .then(function() {
+      currentProfile.invitesUsed = (currentProfile.invitesUsed||0)+1;
+      var newLeft = isComm ? "∞" : ((currentProfile.maxInvites||3) - (currentProfile.invitesUsed||0));
+      var countEl = document.getElementById("inviteCountDisplay");
+      if (countEl) countEl.textContent = "Invites remaining: " + newLeft;
       document.getElementById("memberInviteResult").innerHTML = '<div class="invite-code"><div class="code">' + code + '</div><div class="hint">Share this code with the new member</div></div>';
       Router.toast("Invite created!");
+    })
+    .catch(function(err) {
+      pbWarn("[Invite] Error:", err);
+      Router.toast("Failed to create invite");
     });
 }
 
@@ -7162,9 +7172,10 @@ function _renderDirApiResults(courses, el, query) {
     var city = (c.location && typeof c.location === "object" ? c.location.city : c.city) || "";
     var state = (c.location && typeof c.location === "object" ? c.location.state : c.state) || c.province || c.region || "";
     var loc = [city, state].filter(Boolean).join(", ");
-    var par = c.par || "";
-    var rating = c.course_rating || c.courseRating || c.rating || "";
-    var slope = c.slope_rating || c.slopeRating || c.slope || "";
+    var td = _extractTeeData(c);
+    var par = td.par || "";
+    var rating = td.rating || "";
+    var slope = td.slope || "";
     h += '<div class="card" style="margin:0 16px 6px;cursor:pointer" onclick="importDirApiCourse(' + idx + ')">';
     h += '<div class="card-body" style="display:flex;justify-content:space-between;align-items:center">';
     h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(name) + '</div>';
@@ -7176,6 +7187,12 @@ function _renderDirApiResults(courses, el, query) {
 }
 
 var _dirApiFiltered = [];
+function _extractTeeData(c) {
+  var t = (c.tees && c.tees.male) || [];
+  var w = t.find(function(x){return x.tee_name && x.tee_name.indexOf("White")>-1}) || t.find(function(x){return x.tee_name && x.tee_name.indexOf("Silver")>-1}) || t[1] || t[0] || {};
+  return { rating: w.course_rating || 0, slope: w.slope_rating || 0, par: w.par_total || 0, tee: w.tee_name || "", yards: w.total_yards || 0 };
+}
+
 function importDirApiCourse(idx) {
   var cacheKeys = Object.keys(_gcSearchCache).filter(function(k){return k.indexOf("dir_")===0});
   var lastResults = cacheKeys.length ? _gcSearchCache[cacheKeys[cacheKeys.length - 1]] : [];
@@ -7187,10 +7204,13 @@ function importDirApiCourse(idx) {
   if (!c) return;
   var name = c.course_name || c.club_name || c.name || c.courseName || "Unknown";
   var city = (c.location && typeof c.location === "object" ? c.location.city : c.city) || "";
-  var state = (c.location && typeof c.location === "object" ? c.location.state : c.state) || c.province || c.region || "";
-  var loc = [city, state].filter(Boolean).join(", ");
-  var course = PB.addCourse({ name: name, loc: loc, region: state || "US", rating: parseFloat(c.course_rating||c.courseRating||c.rating)||72, slope: parseInt(c.slope_rating||c.slopeRating||c.slope)||113, par: parseInt(c.par)||72, source: "golfcourseapi" });
-  if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:loc,region:state||"US",rating:parseFloat(c.course_rating||c.courseRating||c.rating)||72,slope:parseInt(c.slope_rating||c.slopeRating||c.slope)||113,par:parseInt(c.par)||72,source:"golfcourseapi",createdAt:fsTimestamp()}).catch(function(){});
+  var st = (c.location && typeof c.location === "object" ? c.location.state : c.state) || c.province || c.region || "";
+  var loc = [city, st].filter(Boolean).join(", ");
+  var td = _extractTeeData(c);
+  var lat = (c.location && c.location.latitude) || 0;
+  var lng = (c.location && c.location.longitude) || 0;
+  var course = PB.addCourse({ name: name, loc: loc, region: st || "US", rating: td.rating || 72, slope: td.slope || 113, par: td.par || 72, lat: lat, lng: lng, source: "golfcourseapi" });
+  if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:loc,region:st||"US",rating:td.rating||72,slope:td.slope||113,par:td.par||72,tee:td.tee,yards:td.yards,lat:lat,lng:lng,source:"golfcourseapi",createdAt:fsTimestamp()}).catch(function(){});
   Router.toast(name + " imported");
   Router.go("courses");
 }
@@ -7295,9 +7315,10 @@ function _renderApiResults(courses, apiContainer, containerId, onSelect, query) 
     var city = (c.location && typeof c.location === "object" ? c.location.city : c.city) || "";
     var state = (c.location && typeof c.location === "object" ? c.location.state : c.state) || c.province || c.region || "";
     var loc = [city, state].filter(Boolean).join(", ");
-    var par = c.par || "";
-    var slope = c.slope_rating || c.slopeRating || c.slope || "";
-    var rating = c.course_rating || c.courseRating || c.rating || "";
+    var td = _extractTeeData(c);
+    var par = td.par || "";
+    var slope = td.slope || "";
+    var rating = td.rating || "";
     
     h += '<div class="search-item" style="display:flex;justify-content:space-between;align-items:center" onclick="importAndSelectCourse(' + idx + ',\'' + containerId + '\')">';
     h += '<div style="flex:1"><div style="font-size:12px;color:var(--cream)">' + escHtml(name) + '</div>';
@@ -7323,12 +7344,15 @@ function importAndSelectCourse(idx, containerId) {
   var city = (c.location && typeof c.location === "object" ? c.location.city : c.city) || "";
   var state = (c.location && typeof c.location === "object" ? c.location.state : c.state) || c.province || c.region || "";
   var loc = [city, state].filter(Boolean).join(", ");
-  var par = parseInt(c.par) || 72;
-  var rating = parseFloat(c.course_rating || c.courseRating || c.rating) || 72.0;
-  var slope = parseInt(c.slope_rating || c.slopeRating || c.slope) || 113;
+  var td = _extractTeeData(c);
+  var par = td.par || 72;
+  var rating = td.rating || 72.0;
+  var slope = td.slope || 113;
+  var lat = (c.location && c.location.latitude) || 0;
+  var lng = (c.location && c.location.longitude) || 0;
   
-  var course = PB.addCourse({ name: name, loc: loc, region: state || "US", rating: rating, slope: slope, par: par, source: "golfcourseapi" });
-  if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:loc,region:state||"US",rating:rating,slope:slope,par:par,source:"golfcourseapi",createdAt:fsTimestamp()}).catch(function(){});
+  var course = PB.addCourse({ name: name, loc: loc, region: state || "US", rating: rating, slope: slope, par: par, lat: lat, lng: lng, source: "golfcourseapi" });
+  if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:loc,region:state||"US",rating:rating,slope:slope,par:par,tee:td.tee,yards:td.yards,lat:lat,lng:lng,source:"golfcourseapi",createdAt:fsTimestamp()}).catch(function(){});
   
   Router.toast(name + " imported");
   // Fill the course input field
@@ -7390,6 +7414,8 @@ function renderCourseDetail(courseId) {
   var coursePhotoSrc = photoCache["course:" + courseId] || c.photo || "";
   if (coursePhotoSrc && coursePhotoSrc !== COURSE_DEFAULT_IMG) {
     h += '<div class="course-banner"><img alt="" src="' + coursePhotoSrc + '" onerror="this.parentElement.style.display=\'none\'"></div>';
+  } else {
+    h += '<div style="height:100px;margin:0 16px;border-radius:var(--radius);background:linear-gradient(135deg,var(--bg3),var(--bg2));display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="var(--muted2)" stroke-width="1" width="36" height="36"><circle cx="12" cy="12" r="3"/><path d="M5 21l3-3 4 4 4-5 3 3"/><rect x="2" y="3" width="20" height="16" rx="2"/></svg></div>';
   }
   h += '<div class="section"><div class="c-detail-info">' + c.loc + ' · Rating: ' + c.rating + ' · Slope: ' + c.slope + ' · Par: ' + c.par + '</div>';
   h += '<button class="btn-sm outline" onclick="uploadCoursePhoto(\'' + courseId + '\')">Upload photo</button></div>';
@@ -9454,9 +9480,16 @@ function generateInvite() {
   for (var i=0;i<8;i++) code += chars.charAt(Math.floor(Math.random()*chars.length));
   db.collection("invites").doc(code).set(createInviteDoc(code))
     .then(function() {
-      db.collection("members").doc(currentUser.uid).update({invitesUsed:firebase.firestore.FieldValue.increment(1)}); currentProfile.invitesUsed = (currentProfile.invitesUsed||0)+1;
+      return db.collection("members").doc(currentUser.uid).update({invitesUsed:firebase.firestore.FieldValue.increment(1)});
+    })
+    .then(function() {
+      currentProfile.invitesUsed = (currentProfile.invitesUsed||0)+1;
       document.getElementById("generatedInvite").innerHTML = '<div class="invite-code"><div class="code">' + code + '</div><div class="hint">Share this with the new member · Expires in ' + INVITE_EXPIRY_DAYS + ' days</div></div>';
       Router.toast("Invite created!");
+    })
+    .catch(function(err) {
+      pbWarn("[Invite] Error:", err);
+      Router.toast("Failed to create invite");
     });
 }
 
