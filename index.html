@@ -715,6 +715,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
   <div data-page="seasonrecap" class="hidden"></div>
   <div data-page="awards" class="hidden"></div>
   <div data-page="scramble-live" class="hidden"></div>
+  <div data-page="watchround" class="hidden"></div>
   <div class="footer">The Parbaughs · Est. 2026 · <span id="connDot" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#4ade80;margin:0 4px;vertical-align:middle"></span><span id="syncStatusText">Connecting...</span></div>
   <div class="notif-overlay" id="notifOverlay" onclick="closeNotifPanel()"></div>
   <div class="notif-panel" id="notifPanel">
@@ -733,7 +734,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.6.3 — INLINE SCRAMBLE TEAM + RANGE UI REDESIGN
+   PARBAUGHS v5.6.8 — LIVE ROUND SPECTATOR VIEW
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -1209,7 +1210,9 @@ function enterApp() {
   initSync();
   preloadMemberPhotos();
   syncCoursesFromFirestore();
-  // Delay profile bar update to ensure DOM is ready
+  syncScrambleTeamsFromFirestore();
+  loadRoundsFromFirestore();
+  loadCustomDrillsFromFirestore();
   setTimeout(function() { updateProfileBar(); }, 100);
   Router.go("home");
 }
@@ -1329,6 +1332,74 @@ function syncMember(m) { if (!db||syncStatus==="offline") return; var d=JSON.par
 function syncRound(r) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(r)); d.createdAt=fsTimestamp(); db.collection("rounds").doc(r.id||genId()).set(d,{merge:true}).catch(function(){}); }
 function syncCourse(c) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(c)); d.updatedAt=fsTimestamp(); delete d.photo; db.collection("courses").doc(c.id).set(d,{merge:true}).catch(function(){}); }
 function syncTrip(t) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(t)); d.updatedAt=fsTimestamp(); if(d.photos){delete d.photos;} db.collection("trips").doc(t.id).set(d,{merge:true}).catch(function(){}); }
+
+function syncScrambleTeam(team) {
+  if (!db || syncStatus === "offline") return;
+  var d = JSON.parse(JSON.stringify(team));
+  d.updatedAt = fsTimestamp();
+  db.collection("scrambleTeams").doc(team.id).set(d, {merge: true}).catch(function(err) { pbWarn("[Sync] scrambleTeam write failed:", err.message); });
+}
+
+// ---- Rounds: Firestore is source of truth ----
+var _roundsListener = null;
+function loadRoundsFromFirestore() {
+  if (!db) return;
+  db.collection("rounds").orderBy("date", "desc").limit(500).get().then(function(snap) {
+    var fsRounds = [];
+    snap.forEach(function(doc) { var d = doc.data(); if (d && d.id) fsRounds.push(d); });
+    if (fsRounds.length > 0) {
+      PB.setRoundsFromFirestore(fsRounds);
+      pbLog("[Sync] Loaded", fsRounds.length, "rounds from Firestore");
+    }
+  }).catch(function(err) { pbWarn("[Sync] rounds load failed:", err.message); });
+}
+
+function startRoundsListener() {
+  if (!db) return;
+  if (_roundsListener) _roundsListener();
+  _roundsListener = db.collection("rounds").orderBy("date", "desc").limit(500).onSnapshot(function(snap) {
+    var fsRounds = [];
+    snap.forEach(function(doc) { var d = doc.data(); if (d && d.id) fsRounds.push(d); });
+    if (fsRounds.length > 0) PB.setRoundsFromFirestore(fsRounds);
+  }, function(err) { pbWarn("[RoundsListener]", err.message); });
+}
+
+// ---- Custom drills: Firestore only, localStorage as cache ----
+function loadCustomDrillsFromFirestore() {
+  if (!db) return;
+  db.collection("config").doc("customDrills").get().then(function(doc) {
+    if (doc.exists && doc.data().drills && doc.data().drills.length) {
+      customDrills = doc.data().drills;
+      localStorage.setItem("pb_custom_drills", JSON.stringify(customDrills));
+    }
+  }).catch(function() {});
+}
+
+function saveCustomDrillsToFirestore() {
+  if (!db) return;
+  db.collection("config").doc("customDrills").set({drills: customDrills}).catch(function() {});
+}
+
+function syncScrambleTeamsFromFirestore() {
+  if (!db) return;
+  db.collection("scrambleTeams").get().then(function(snap) {
+    var local = PB.getScrambleTeams();
+    var remoteIds = {};
+    var merged = 0;
+    snap.forEach(function(doc) {
+      var t = doc.data();
+      remoteIds[t.id] = true;
+      if (!t.id || !t.name) return;
+      var exists = local.find(function(lt) { return lt.id === t.id; });
+      if (!exists) { PB.addScrambleTeamFromFirestore(t); merged++; }
+    });
+    // Push any local teams that aren't in Firestore yet (e.g. SMO Squad or offline-created teams)
+    local.forEach(function(t) {
+      if (!remoteIds[t.id]) { syncScrambleTeam(t); }
+    });
+    if (merged > 0) pbLog("[Sync] Merged", merged, "scramble teams from Firestore");
+  }).catch(function(err) { pbWarn("[Sync] scrambleTeams read failed:", err.message); });
+}
 
 // Trip score sync — pushes individual scores to Firestore for live viewing
 function syncTripScore(tripId, courseKey, playerId, scores) {
@@ -2052,6 +2123,16 @@ var PB = (function() {
     save();
   }
 
+  function setRoundsFromFirestore(fsRounds) {
+    if (!fsRounds || !fsRounds.length) return;
+    // Firestore is authoritative — replace state, preserve any local-only rounds not yet synced
+    var fsIds = {};
+    fsRounds.forEach(function(r) { if (r.id) fsIds[r.id] = true; });
+    var localOnly = state.rounds.filter(function(r) { return r.id && !fsIds[r.id]; });
+    state.rounds = fsRounds.concat(localOnly);
+    save();
+  }
+
   /* ---------- TRIP OPS ---------- */
   function getTrips() { return state.trips; }
   function getTrip(id) { return state.trips.find(function(t) { return t.id === id; }); }
@@ -2175,6 +2256,13 @@ var PB = (function() {
     state.scrambleTeams.push(team);
     save();
     return team;
+  }
+
+  function addScrambleTeamFromFirestore(data) {
+    // Merges a team from Firestore without triggering a write-back
+    if (!state.scrambleTeams) state.scrambleTeams = [];
+    var exists = state.scrambleTeams.find(function(t) { return t.id === data.id; });
+    if (!exists) { state.scrambleTeams.push(data); save(); }
   }
 
   function addScrambleMatch(teamId, match) {
@@ -3315,12 +3403,12 @@ var PB = (function() {
   return {
     getPlayer:getPlayer, getPlayers:getPlayers, addPlayer:addPlayer, updatePlayer:updatePlayer, removePlayer:removePlayer,
     getCourse:getCourse, getCourses:getCourses, getCourseByName:getCourseByName, addCourse:addCourse, updateCourse:updateCourse, addCourseReview:addCourseReview, searchCourses:searchCourses,
-    getRounds:getRounds, getPlayerRounds:getPlayerRounds, getCourseRounds:getCourseRounds, addRound:addRound, deleteRound:deleteRound,
+    getRounds:getRounds, getPlayerRounds:getPlayerRounds, getCourseRounds:getCourseRounds, addRound:addRound, deleteRound:deleteRound, setRoundsFromFirestore:setRoundsFromFirestore,
     getTrips:getTrips, getTrip:getTrip, addTrip:addTrip, updateTrip:updateTrip, addTripPhoto:addTripPhoto,
     getScores:getScores, setScore:setScore,
     getFirGir:getFirGir, setFir:setFir, setGir:setGir, getFirGirTotals:getFirGirTotals,
     getMiniWinner:getMiniWinner, setMiniWinner:setMiniWinner, getBonusWinner:getBonusWinner, setBonusWinner:setBonusWinner,
-    getScrambleTeams:getScrambleTeams, addScrambleTeam:addScrambleTeam, addScrambleMatch:addScrambleMatch,
+    getScrambleTeams:getScrambleTeams, addScrambleTeam:addScrambleTeam, addScrambleTeamFromFirestore:addScrambleTeamFromFirestore, addScrambleMatch:addScrambleMatch,
     getRecords:getRecords, setRecord:setRecord,
     calcStableford:calcStableford, calcHandicap:calcHandicap,
     getPlayerAvg:getPlayerAvg, getPlayerBest:getPlayerBest, getDisplayName:getDisplayName, getUniqueCourses:getUniqueCourses,
@@ -3364,7 +3452,7 @@ var Router = (function() {
 
   function renderNav() {
     var tabs = [
-      { p: "home", l: "Home", match: ["home"] },
+      { p: "home", l: "Home", match: ["home","watchround"] },
       { p: "teetimes", l: "Tee Times", match: ["teetimes","tee-create"] },
       { p: "members", l: "Members", match: ["members","profile-edit"] },
       { p: "trips", l: "Events", match: ["trips","scorecard"] },
@@ -3726,14 +3814,14 @@ Router.register("home", function() {
     var myName = currentProfile ? (currentProfile.name || currentProfile.username) : "You";
     var myThru = liveState.scores.filter(function(s){return s!==""}).length;
     var myScore = liveState.scores.filter(function(s){return s!==""}).reduce(function(a,b){return a+parseInt(b)},0);
-    liveRounds.push({name: myName, course: liveState.course, hole: liveState.currentHole + 1, thru: myThru, score: myScore, isMe: true});
+    liveRounds.push({uid: currentUser ? currentUser.uid : null, name: myName, course: liveState.course, hole: liveState.currentHole + 1, thru: myThru, score: myScore, isMe: true});
   }
   // Check other members' live rounds from presence
   Object.keys(onlineMembers).forEach(function(uid) {
-    if (currentUser && uid === currentUser.uid) return; // skip self, already added
+    if (currentUser && uid === currentUser.uid) return;
     var m = onlineMembers[uid];
     if (m.liveRound && m.liveRound.course && m.liveRound.thru > 0) {
-      liveRounds.push({name: m.name || "Member", course: m.liveRound.course, hole: m.liveRound.hole || 0, thru: m.liveRound.thru || 0, score: m.liveRound.score || 0, isMe: false});
+      liveRounds.push({uid: uid, name: m.name || "Member", course: m.liveRound.course, hole: m.liveRound.hole || 0, thru: m.liveRound.thru || 0, score: m.liveRound.score || 0, isMe: false});
     }
   });
   
@@ -3742,20 +3830,23 @@ Router.register("home", function() {
   var todayTees = liveTeeTimes.filter(function(t) { return t.date === todayStr && t.status !== "cancelled"; });
   
   if (liveRounds.length) {
-    // Show live rounds
     liveRounds.forEach(function(lr) {
-      var parEst = 72;
-      var diff = lr.thru > 0 ? lr.score - Math.round(parEst * lr.thru / 18) : 0;
-      var diffStr = diff === 0 ? "E" : (diff > 0 ? "+" + diff : "" + diff);
+      var holePars = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+      var parThru = 0;
+      for (var pi = 0; pi < lr.thru; pi++) parThru += holePars[pi];
+      var diff = lr.thru > 0 ? lr.score - parThru : 0;
+      var diffStr = lr.thru === 0 ? "—" : diff === 0 ? "E" : (diff > 0 ? "+" + diff : "" + diff);
       var diffColor = diff < 0 ? "var(--birdie)" : diff > 0 ? "var(--red)" : "var(--cream)";
-      
-      h += '<div class="card" style="padding:14px 16px;' + (lr.isMe ? 'border-left:3px solid var(--gold)' : '') + '" onclick="' + (lr.isMe ? "Router.go(\'playnow\')" : "") + '">';
+      var clickAction = lr.isMe ? "Router.go('playnow')" : (lr.uid ? "Router.go('watchround',{uid:'" + lr.uid + "'})" : "");
+
+      h += '<div class="card" style="padding:14px 16px;' + (lr.isMe ? 'border-left:3px solid var(--gold)' : 'border-left:3px solid #4ade80;cursor:pointer') + '" onclick="' + clickAction + '">';
       h += '<div style="display:flex;justify-content:space-between;align-items:center">';
-      h += '<div><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><div style="width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse-dot 2s infinite"></div><span style="font-size:12px;font-weight:700;color:var(--cream)">' + escHtml(lr.name) + '</span></div>';
-      h += '<div style="font-size:11px;color:var(--muted)">' + escHtml(lr.course) + ' · Hole ' + lr.hole + '</div></div>';
-      h += '<div style="text-align:right"><div style="font-size:22px;font-weight:800;color:' + diffColor + '">' + diffStr + '</div>';
-      h += '<div style="font-size:9px;color:var(--muted)">Thru ' + lr.thru + '</div></div>';
-      h += '</div></div>';
+      h += '<div><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><div style="width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse-dot 2s infinite"></div><span style="font-size:12px;font-weight:700;color:var(--cream)">' + escHtml(lr.name) + '</span>' + (!lr.isMe ? '<span style="font-size:9px;color:var(--muted2);background:var(--bg3);padding:1px 6px;border-radius:8px;border:1px solid var(--border)">LIVE</span>' : '') + '</div>';
+      h += '<div style="font-size:11px;color:var(--muted)">' + escHtml(lr.course) + ' · Hole ' + lr.hole + (lr.thru > 0 ? ' · Thru ' + lr.thru : '') + '</div></div>';
+      h += '<div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px">';
+      h += '<div style="font-size:22px;font-weight:800;color:' + diffColor + '">' + diffStr + '</div>';
+      if (!lr.isMe) h += '<div style="font-size:9px;color:var(--gold);font-weight:600">Watch →</div>';
+      h += '</div></div></div>';
     });
   } else if (todayTees.length) {
     // No active rounds but tee times today
@@ -5401,7 +5492,7 @@ function submitCreateTeam() {
   if (scrambleSelected.length !== scrambleTeamSize) { Router.toast("Select exactly " + scrambleTeamSize + " members"); return; }
   var team = PB.addScrambleTeam({ name: name, members: scrambleSelected.slice(), size: scrambleTeamSize });
   scrambleSelected = [];
-  if (team) { Router.toast("Team created!"); Router.go("scramble", { id: team.id }); }
+  if (team) { syncScrambleTeam(team); Router.toast("Team created!"); Router.go("scramble", { id: team.id }); }
 }
 
 function renderTeamDetail(teamId) {
@@ -5837,7 +5928,8 @@ function renderPlaySetup() {
   h += '<div class="ff"><label class="ff-label">Playing as</label><div class="ff-input" style="background:var(--bg4);color:var(--gold);font-weight:600">' + escHtml(playAs.name) + '</div><input type="hidden" id="pn-player" value="' + playAs.id + '"></div>';
 
   h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="pn-course" placeholder="Search courses..." autocomplete="off" oninput="showPlayCourseSearch(this)"><div id="search-pn-course" class="search-results"></div></div>';
-  h += '<input type="hidden" id="pn-rating" value=""><input type="hidden" id="pn-slope" value="">';
+  h += '<input type="hidden" id="pn-rating" value=""><input type="hidden" id="pn-slope" value=""><input type="hidden" id="pn-course-id" value=""><input type="hidden" id="pn-tee-name" value="">';
+  h += '<div id="pn-tee-section"></div>';
 
   h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="pn-format" onchange="onPlayFormatChange()"><option value="stroke">Stroke play</option><option value="parbaugh">Parbaugh Stroke Play (handicap-adjusted)</option><option value="stableford">Stableford</option><option value="match">Match play</option><option value="scramble">Scramble</option><option value="bestball">Best ball</option><option value="skins">Skins</option></select></div>';
   h += '<div id="pn-scramble-team-section"></div>';
@@ -6010,6 +6102,7 @@ function pnSaveNewTeam() {
   if (pnScrambleSelected.length !== pnScrambleTeamSize) { Router.toast("Select exactly " + pnScrambleTeamSize + " members"); return; }
   var team = PB.addScrambleTeam({ name: name, members: pnScrambleSelected.slice(), captain: captain, size: pnScrambleTeamSize });
   if (!team) { Router.toast("Could not create team"); return; }
+  syncScrambleTeam(team);
   pnScrambleSelected = [];
   Router.toast("Team created!");
   renderPnScrambleTeamSelector();
@@ -6018,9 +6111,59 @@ function pnSaveNewTeam() {
 
 function showPlayCourseSearch(input) {
   courseSearchWithApi(input.value.trim(), "search-pn-course",
-    function(c) { return "document.getElementById('pn-course').value='" + c.name.replace(/'/g, "\\'") + "';document.getElementById('pn-rating').value='" + c.rating + "';document.getElementById('pn-slope').value='" + c.slope + "';document.getElementById('search-pn-course').innerHTML=''"; },
+    function(c) { return "pnSelectCourse('" + c.id.replace(/'/g,"\\'") + "','" + c.name.replace(/'/g,"\\'") + "'," + (c.rating||72) + "," + (c.slope||113) + ")"; },
     function(val) { return "quickAddCourse('" + val.replace(/'/g, "\\'") + "')"; }
   );
+}
+
+function pnSelectCourse(courseId, courseName, rating, slope) {
+  var ci = document.getElementById("pn-course"); if (ci) ci.value = courseName;
+  var ri = document.getElementById("pn-rating"); if (ri) ri.value = rating;
+  var si = document.getElementById("pn-slope"); if (si) si.value = slope;
+  var cii = document.getElementById("pn-course-id"); if (cii) cii.value = courseId;
+  var ti = document.getElementById("pn-tee-name"); if (ti) ti.value = "";
+  var sr = document.getElementById("search-pn-course"); if (sr) sr.innerHTML = "";
+  renderPnTeeSelector(courseId);
+}
+
+function renderPnTeeSelector(courseId) {
+  var sec = document.getElementById("pn-tee-section");
+  if (!sec) return;
+  var course = PB.getCourse(courseId);
+  if (!course || !course.allTees || !course.allTees.length) { sec.innerHTML = ""; return; }
+  var currentTee = (document.getElementById("pn-tee-name") || {}).value || course.tee || (course.allTees[0] && course.allTees[0].name) || "";
+  // Auto-set hidden fields for default tee if not yet set
+  if (!(document.getElementById("pn-tee-name") || {}).value) {
+    var defTee = course.allTees.find(function(t) { return t.name === course.tee; }) || course.allTees[0];
+    if (defTee) {
+      var ti = document.getElementById("pn-tee-name"); if (ti) { ti.value = defTee.name; currentTee = defTee.name; }
+      var ri = document.getElementById("pn-rating"); if (ri && defTee.rating) ri.value = defTee.rating;
+      var si = document.getElementById("pn-slope"); if (si && defTee.slope) si.value = defTee.slope;
+    }
+  }
+  var h = '<div class="ff"><label class="ff-label">Tee</label><div style="display:flex;flex-wrap:wrap;gap:6px;padding:2px 0">';
+  course.allTees.forEach(function(tee) {
+    var sel = tee.name === currentTee;
+    var info = [tee.yards ? tee.yards + " yds" : "", tee.rating && tee.slope ? tee.rating + "/" + tee.slope : ""].filter(Boolean).join(" · ");
+    h += '<div onclick="pnSelectTee(\'' + courseId.replace(/'/g,"\\'") + '\',\'' + (tee.name||"").replace(/'/g,"\\'") + '\')" ';
+    h += 'style="cursor:pointer;padding:8px 14px;border-radius:8px;border:1.5px solid ' + (sel ? "var(--gold)" : "var(--border)") + ';background:' + (sel ? "rgba(201,168,76,.1)" : "transparent") + ';-webkit-tap-highlight-color:transparent">';
+    h += '<div style="font-size:13px;font-weight:600;color:' + (sel ? "var(--gold)" : "var(--cream)") + '">' + escHtml(tee.name || "") + '</div>';
+    if (info) h += '<div style="font-size:9px;color:var(--muted);margin-top:2px">' + escHtml(info) + '</div>';
+    h += '</div>';
+  });
+  h += '</div></div>';
+  sec.innerHTML = h;
+}
+
+function pnSelectTee(courseId, teeName) {
+  var course = PB.getCourse(courseId);
+  if (!course || !course.allTees) return;
+  var tee = course.allTees.find(function(t) { return t.name === teeName; });
+  if (!tee) return;
+  var ti = document.getElementById("pn-tee-name"); if (ti) ti.value = teeName;
+  var ri = document.getElementById("pn-rating"); if (ri && tee.rating) ri.value = tee.rating;
+  var si = document.getElementById("pn-slope"); if (si && tee.slope) si.value = tee.slope;
+  renderPnTeeSelector(courseId);
 }
 
 function quickAddCourse(name) {
@@ -6069,12 +6212,33 @@ function startLiveRound() {
     if (!scrambleTeamId) { Router.toast("Select or create a scramble team first"); return; }
   }
 
+  // Resolve course data for hole-by-hole display
+  var courseIdEl = document.getElementById("pn-course-id");
+  var courseId = courseIdEl ? courseIdEl.value : "";
+  var teeNameEl = document.getElementById("pn-tee-name");
+  var teeName = teeNameEl ? teeNameEl.value : "";
+  var courseData = courseId ? PB.getCourse(courseId) : PB.getCourseByName(course);
+  var holes = [];
+  var coursePar = 72;
+  if (courseData) {
+    coursePar = courseData.par || 72;
+    var teeData = null;
+    if (teeName && courseData.allTees) teeData = courseData.allTees.find(function(t) { return t.name === teeName; });
+    if (!teeData && courseData.allTees && courseData.allTees.length) teeData = courseData.allTees.find(function(t) { return t.name === courseData.tee; }) || courseData.allTees[0];
+    if (teeData && teeData.holes && teeData.holes.length) holes = teeData.holes;
+    else if (courseData.holes && courseData.holes.length) holes = courseData.holes;
+  }
+
   liveState = {
     active: true,
     player: player,
     course: course,
+    courseId: courseId || (courseData ? courseData.id : ""),
+    tee: teeName || (courseData ? (courseData.tee || "") : ""),
     rating: parseFloat(document.getElementById("pn-rating").value) || 72,
     slope: parseInt(document.getElementById("pn-slope").value) || 113,
+    par: coursePar,
+    holes: holes,
     format: fmt,
     scrambleTeamId: scrambleTeamId,
     startTime: Date.now(),
@@ -6089,23 +6253,51 @@ function startLiveRound() {
   Router.go("playnow");
 }
 
+function getStrokesOnHole(handicapIndex, rating, slope, par, holeHdcp) {
+  if (!handicapIndex || !holeHdcp) return 0;
+  var courseHdcp = Math.round(handicapIndex * (slope / 113) + (rating - par));
+  courseHdcp = Math.max(0, Math.min(courseHdcp, 54));
+  if (courseHdcp <= 0) return 0;
+  if (courseHdcp <= 18) return holeHdcp <= courseHdcp ? 1 : 0;
+  return 1 + (holeHdcp <= (courseHdcp - 18) ? 1 : 0); // double-stroke holes
+}
+
 function renderLiveScoring() {
   var hole = liveState.currentHole;
   var player = PB.getPlayer(liveState.player);
   var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
-  var par = defaultPar[hole] || 4;
+
+  // Resolve hole data from liveState or fallback
+  var holeData = (liveState.holes && liveState.holes[hole]) || null;
+  var par = (holeData && holeData.par) ? holeData.par : (defaultPar[hole] || 4);
+  var yardage = holeData ? (holeData.yardage || holeData.yards || 0) : 0;
+  var holeHdcp = holeData ? (holeData.handicap || holeData.hdcp || 0) : 0;
   var isPar3 = par === 3;
+
+  // Parbaugh stroke allocation for this hole
+  var strokesOnHole = 0;
+  if (liveState.format === "parbaugh" && player) {
+    var playerRounds = PB.getPlayerRounds(player.id);
+    var playerHandicap = PB.calcHandicap(playerRounds);
+    if (playerHandicap !== null) {
+      strokesOnHole = getStrokesOnHole(playerHandicap, liveState.rating, liveState.slope, liveState.par || 72, holeHdcp);
+    }
+  }
+  var netPar = par + strokesOnHole;
 
   // Calculate running total
   var totalSoFar = 0, holesPlayed = 0;
   liveState.scores.forEach(function(s) { if (s !== "") { totalSoFar += parseInt(s); holesPlayed++; } });
   var parSoFar = 0;
-  for (var pi = 0; pi < holesPlayed; pi++) parSoFar += defaultPar[pi] || 4;
+  for (var pi = 0; pi < holesPlayed; pi++) {
+    var hd = liveState.holes && liveState.holes[pi];
+    parSoFar += (hd && hd.par) ? hd.par : (defaultPar[pi] || 4);
+  }
 
   var h = '';
 
   // Top bar with course name and running score
-  h += '<div style="padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">';
+  h += '<div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">';
   h += '<div><div style="font-size:13px;font-weight:600">' + liveState.course + '</div>';
   h += '<div style="font-size:10px;color:var(--muted);margin-top:1px">' + (player ? player.name : '') + ' · ' + liveState.format + '</div></div>';
   h += '<div style="text-align:right"><div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:var(--gold)">' + (totalSoFar || "—") + '</div>';
@@ -6115,82 +6307,100 @@ function renderLiveScoring() {
   }
   h += '</div></div>';
 
-  // Hole selector dots
-  h += '<div style="padding:10px 16px;display:flex;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none">';
+  // Hole selector — bigger tap targets
+  h += '<div style="padding:8px 12px;display:flex;gap:3px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none">';
   for (var d = 0; d < 18; d++) {
     var scored = liveState.scores[d] !== "";
     var isCurrent = d === hole;
     var dotColor = isCurrent ? 'var(--gold)' : scored ? 'var(--birdie)' : 'var(--border)';
-    var dotBg = isCurrent ? 'rgba(201,168,76,.15)' : scored ? 'rgba(78,201,122,.08)' : 'transparent';
-    h += '<div onclick="liveState.currentHole=' + d + ';Router.go(\'playnow\')" style="min-width:24px;height:24px;border-radius:12px;border:1.5px solid ' + dotColor + ';background:' + dotBg + ';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:' + dotColor + ';cursor:pointer;flex-shrink:0">' + (d+1) + '</div>';
+    var dotBg = isCurrent ? 'rgba(201,168,76,.18)' : scored ? 'rgba(78,201,122,.1)' : 'transparent';
+    h += '<div onclick="liveState.currentHole=' + d + ';Router.go(\'playnow\')" style="min-width:32px;height:32px;border-radius:16px;border:1.5px solid ' + dotColor + ';background:' + dotBg + ';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:' + dotColor + ';cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent">' + (d+1) + '</div>';
   }
   h += '</div>';
 
-  // Current hole card
-  h += '<div style="padding:20px 16px">';
-  h += '<div style="text-align:center;margin-bottom:20px">';
-  h += '<div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px">Hole ' + (hole+1) + '</div>';
-  h += '<div style="font-family:Playfair Display,serif;font-size:48px;font-weight:700;color:var(--cream);margin-top:4px">Par ' + par + '</div>';
-  h += '</div>';
+  // Hole header — 18 Birdies style
+  h += '<div style="padding:12px 16px 0">';
 
-  // Score input - big buttons
+  // Hole info card
+  h += '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:14px">';
+  // Top row: hole number + tee label
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">';
+  h += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:2px">Hole ' + (hole+1) + '</div>';
+  if (liveState.tee) h += '<div style="font-size:9px;color:var(--muted2);background:var(--bg2);padding:2px 8px;border-radius:10px;border:1px solid var(--border)">' + escHtml(liveState.tee) + '</div>';
+  h += '</div>';
+  // Stats row: Par / Yardage / Hdcp
+  h += '<div style="display:flex;align-items:center;gap:0">';
+  h += '<div style="flex:1;text-align:center;border-right:1px solid var(--border)">';
+  h += '<div style="font-family:Playfair Display,serif;font-size:36px;font-weight:700;color:var(--cream);line-height:1">' + par + '</div>';
+  h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px">Par</div>';
+  h += '</div>';
+  if (yardage) {
+    h += '<div style="flex:1;text-align:center;border-right:1px solid var(--border)">';
+    h += '<div style="font-size:24px;font-weight:700;color:var(--cream);line-height:1">' + yardage + '</div>';
+    h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px">Yards</div>';
+    h += '</div>';
+  }
+  if (holeHdcp) {
+    h += '<div style="flex:1;text-align:center">';
+    h += '<div style="font-size:24px;font-weight:700;color:var(--cream);line-height:1">' + holeHdcp + '</div>';
+    h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px">Hdcp</div>';
+    h += '</div>';
+  }
+  h += '</div>';
+  // Parbaugh stroke indicator
+  if (liveState.format === "parbaugh" && holeHdcp) {
+    if (strokesOnHole > 0) {
+      h += '<div style="margin-top:10px;padding:6px 10px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);border-radius:6px;display:flex;align-items:center;justify-content:space-between">';
+      h += '<span style="font-size:11px;color:var(--gold);font-weight:600">+' + strokesOnHole + ' stroke' + (strokesOnHole > 1 ? 's' : '') + ' · Net par ' + netPar + '</span>';
+      h += '<span style="font-size:9px;color:var(--muted)">Parbaugh</span></div>';
+    } else {
+      h += '<div style="margin-top:10px;padding:6px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:space-between">';
+      h += '<span style="font-size:11px;color:var(--muted)">No stroke · Net par ' + netPar + '</span>';
+      h += '<span style="font-size:9px;color:var(--muted)">Parbaugh</span></div>';
+    }
+  }
+  h += '</div>'; // end hole info card
+
+  // Score stepper — full width row, huge tap targets
   var currentScore = liveState.scores[hole];
-  h += '<div style="text-align:center;margin-bottom:20px">';
-  h += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Score</div>';
-  h += '<div style="display:flex;justify-content:center;align-items:center;gap:16px">';
-  h += '<div onclick="adjustLiveScore(-1)" style="width:52px;height:52px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--muted);cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent">−</div>';
-  h += '<div id="liveScoreNum" style="font-family:Playfair Display,serif;font-size:48px;font-weight:700;color:var(--gold);min-width:60px;text-align:center">' + (currentScore || "—") + '</div>';
-  h += '<div onclick="adjustLiveScore(1)" style="width:52px;height:52px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--muted);cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent">+</div>';
-  h += '</div>';
-
-  // Score label
+  h += '<div style="margin-bottom:18px">';
+  h += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;text-align:center;margin-bottom:8px">Score</div>';
+  h += '<div style="display:flex;align-items:stretch;gap:0;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;height:76px">';
+  h += '<div onclick="adjustLiveScore(-1)" style="flex:1;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:300;color:var(--muted);cursor:pointer;background:var(--bg3);-webkit-tap-highlight-color:transparent;user-select:none;border-right:1px solid var(--border)">−</div>';
+  h += '<div id="liveScoreNum" style="flex:1.2;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg2)">';
+  h += '<div style="font-family:Playfair Display,serif;font-size:46px;font-weight:700;color:var(--gold);line-height:1">' + (currentScore || "—") + '</div>';
   if (currentScore !== "") {
     var scoreDiff = parseInt(currentScore) - par;
     var labels = {"-3":"Albatross","-2":"Eagle","-1":"Birdie","0":"Par","1":"Bogey","2":"Double","3":"Triple"};
     var label = labels[scoreDiff.toString()] || (scoreDiff > 0 ? '+' + scoreDiff : scoreDiff);
-    var labelColor = scoreDiff < 0 ? 'var(--birdie)' : scoreDiff === 0 ? 'var(--cream)' : 'var(--red)';
-    h += '<div style="font-size:12px;color:' + labelColor + ';margin-top:6px;font-weight:600;letter-spacing:.5px">' + label + '</div>';
+    var labelColor = scoreDiff < 0 ? 'var(--birdie)' : scoreDiff === 0 ? 'var(--muted)' : 'var(--red)';
+    h += '<div style="font-size:10px;color:' + labelColor + ';font-weight:600;margin-top:2px;letter-spacing:.3px">' + label + '</div>';
   }
   h += '</div>';
+  h += '<div onclick="adjustLiveScore(1)" style="flex:1;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:300;color:var(--muted);cursor:pointer;background:var(--bg3);-webkit-tap-highlight-color:transparent;user-select:none;border-left:1px solid var(--border)">+</div>';
+  h += '</div>';
+  h += '</div>';
 
-  // FIR / GIR / Putts
-  h += '<div style="display:flex;justify-content:center;gap:16px;margin-bottom:24px">';
+  // FIR / GIR / Putts — bigger, full-label buttons
+  h += '<div style="display:flex;gap:8px;margin-bottom:20px">';
   if (!isPar3) {
-    h += '<div onclick="togglePlayNowFirGir(this,' + hole + ',\'fir\')" style="text-align:center;cursor:pointer">';
-    h += '<div style="width:48px;height:48px;border-radius:10px;border:1.5px solid ' + (liveState.fir[hole] ? 'var(--birdie)' : 'var(--border)') + ';background:' + (liveState.fir[hole] ? 'rgba(78,201,122,.12)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;font-size:14px;color:' + (liveState.fir[hole] ? 'var(--birdie)' : 'var(--muted2)') + ';margin:0 auto 4px">' + (liveState.fir[hole] ? '•' : '') + '</div>';
-    h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">FIR</div></div>';
+    var firActive = liveState.fir[hole];
+    h += '<div onclick="togglePlayNowFirGir(this,' + hole + ',\'fir\')" style="flex:1;height:60px;border-radius:10px;border:1.5px solid ' + (firActive ? 'var(--birdie)' : 'var(--border)') + ';background:' + (firActive ? 'rgba(78,201,122,.12)' : 'var(--bg3)') + ';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
+    h += '<div style="font-size:16px;font-weight:700;color:' + (firActive ? 'var(--birdie)' : 'var(--muted)') + '">FIR</div>';
+    h += '<div style="font-size:9px;color:' + (firActive ? 'var(--birdie)' : 'var(--muted2)') + ';letter-spacing:.3px">' + (firActive ? 'Hit' : 'Missed') + '</div>';
+    h += '</div>';
   }
-  h += '<div onclick="togglePlayNowFirGir(this,' + hole + ',\'gir\')" style="text-align:center;cursor:pointer">';
-  h += '<div style="width:48px;height:48px;border-radius:10px;border:1.5px solid ' + (liveState.gir[hole] ? 'var(--gold)' : 'var(--border)') + ';background:' + (liveState.gir[hole] ? 'rgba(201,168,76,.12)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;font-size:14px;color:' + (liveState.gir[hole] ? 'var(--gold)' : 'var(--muted2)') + ';margin:0 auto 4px">' + (liveState.gir[hole] ? '•' : '') + '</div>';
-  h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">GIR</div></div>';
+  var girActive = liveState.gir[hole];
+  h += '<div onclick="togglePlayNowFirGir(this,' + hole + ',\'gir\')" style="flex:1;height:60px;border-radius:10px;border:1.5px solid ' + (girActive ? 'var(--gold)' : 'var(--border)') + ';background:' + (girActive ? 'rgba(201,168,76,.12)' : 'var(--bg3)') + ';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
+  h += '<div style="font-size:16px;font-weight:700;color:' + (girActive ? 'var(--gold)' : 'var(--muted)') + '">GIR</div>';
+  h += '<div style="font-size:9px;color:' + (girActive ? 'var(--gold)' : 'var(--muted2)') + ';letter-spacing:.3px">' + (girActive ? 'Hit' : 'Missed') + '</div>';
+  h += '</div>';
 
-  // Putts
   var puttVal = liveState.putts[hole];
-  h += '<div style="text-align:center">';
-  h += '<div onclick="cyclePutts(' + hole + ')" style="width:48px;height:48px;border-radius:10px;border:1.5px solid ' + (puttVal ? 'var(--cream)' : 'var(--border)') + ';background:' + (puttVal ? 'rgba(234,232,224,.06)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--cream);margin:0 auto 4px;cursor:pointer">' + (puttVal || '') + '</div>';
-  h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Putts</div></div>';
+  h += '<div onclick="cyclePutts(' + hole + ')" style="flex:1;height:60px;border-radius:10px;border:1.5px solid ' + (puttVal ? 'var(--cream)' : 'var(--border)') + ';background:' + (puttVal ? 'rgba(234,232,224,.06)' : 'var(--bg3)') + ';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
+  h += '<div style="font-size:20px;font-weight:700;color:' + (puttVal ? 'var(--cream)' : 'var(--muted)') + '">' + (puttVal || '—') + '</div>';
+  h += '<div style="font-size:9px;color:var(--muted2);letter-spacing:.3px">Putts</div>';
   h += '</div>';
-
-  // Navigation
-  h += '<div style="display:flex;gap:8px">';
-  if (hole > 0) {
-    h += '<button class="btn outline" style="flex:1" onclick="liveState.currentHole--;Router.go(\'playnow\')">Previous</button>';
-  }
-  if (hole < 17) {
-    h += '<button class="btn green" style="flex:1" onclick="if(liveState.scores[' + hole + ']===\'\'){Router.toast(\'Enter a score\');return;}liveState.currentHole++;Router.go(\'playnow\')">Next hole</button>';
-  } else {
-    h += '<button class="btn green" style="flex:1" onclick="showFinishOptions()">Finish round</button>';
-  }
-  h += '</div>';
-
-  // Finish options (visibility before publishing)
-  h += '<div id="finish-options" style="display:none;margin-top:12px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)">';
-  h += '<div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Publish round</div>';
-  h += '<div style="display:flex;gap:8px;margin-bottom:10px">';
-  h += '<div onclick="document.getElementById(\'vis-public\').style.borderColor=\'var(--gold)\';document.getElementById(\'vis-private\').style.borderColor=\'var(--border)\';liveState.visibility=\'public\'" id="vis-public" style="flex:1;padding:10px;text-align:center;border:2px solid var(--gold);border-radius:var(--radius);cursor:pointer;background:rgba(201,168,76,.06)"><div style="font-size:12px;font-weight:600;color:var(--cream)">Public</div><div style="font-size:9px;color:var(--muted);margin-top:2px">Shows in activity feed</div></div>';
-  h += '<div onclick="document.getElementById(\'vis-private\').style.borderColor=\'var(--gold)\';document.getElementById(\'vis-public\').style.borderColor=\'var(--border)\';liveState.visibility=\'private\'" id="vis-private" style="flex:1;padding:10px;text-align:center;border:2px solid var(--border);border-radius:var(--radius);cursor:pointer"><div style="font-size:12px;font-weight:600;color:var(--cream)">Private</div><div style="font-size:9px;color:var(--muted);margin-top:2px">Only on your profile</div></div>';
-  h += '</div>';
-  h += '<button class="btn full green" onclick="finishLiveRound()">Confirm & save</button>';
   h += '</div>';
 
   // Turn summary (show at hole 9)
@@ -6198,24 +6408,58 @@ function renderLiveScoring() {
     var front = 0, frontCount = 0, back = 0, backCount = 0;
     for (var ti = 0; ti < 9; ti++) { if (liveState.scores[ti] !== "") { front += parseInt(liveState.scores[ti]); frontCount++; } }
     for (var bi = 9; bi < 18; bi++) { if (liveState.scores[bi] !== "") { back += parseInt(liveState.scores[bi]); backCount++; } }
+    var frontPar = 0, backPar = 0;
+    for (var fpi = 0; fpi < 9; fpi++) { var fhd = liveState.holes && liveState.holes[fpi]; frontPar += (fhd && fhd.par) ? fhd.par : (defaultPar[fpi] || 4); }
+    for (var bpi = 9; bpi < 18; bpi++) { var bhd = liveState.holes && liveState.holes[bpi]; backPar += (bhd && bhd.par) ? bhd.par : (defaultPar[bpi] || 4); }
     if (frontCount > 0) {
-      h += '<div style="margin-top:16px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);display:flex;justify-content:space-around;text-align:center">';
-      h += '<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Front</div><div style="font-family:Playfair Display,serif;font-size:20px;color:var(--gold)">' + front + '</div></div>';
-      if (backCount > 0) h += '<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Back</div><div style="font-family:Playfair Display,serif;font-size:20px;color:var(--gold)">' + back + '</div></div>';
-      h += '<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Total</div><div style="font-family:Playfair Display,serif;font-size:20px;color:var(--gold)">' + totalSoFar + '</div></div>';
+      var frontDiff = front - frontPar;
+      var backDiff = back - backPar;
+      h += '<div style="margin-bottom:16px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);display:flex;justify-content:space-around;text-align:center">';
+      h += '<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Front</div>';
+      h += '<div style="font-family:Playfair Display,serif;font-size:20px;color:var(--gold)">' + front + '</div>';
+      h += '<div style="font-size:9px;color:' + (frontDiff > 0 ? 'var(--red)' : frontDiff < 0 ? 'var(--birdie)' : 'var(--muted)') + '">' + (frontDiff > 0 ? '+' : '') + frontDiff + '</div></div>';
+      if (backCount > 0) {
+        h += '<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Back</div>';
+        h += '<div style="font-family:Playfair Display,serif;font-size:20px;color:var(--gold)">' + back + '</div>';
+        h += '<div style="font-size:9px;color:' + (backDiff > 0 ? 'var(--red)' : backDiff < 0 ? 'var(--birdie)' : 'var(--muted)') + '">' + (backDiff > 0 ? '+' : '') + backDiff + '</div></div>';
+      }
+      var totalDiff = totalSoFar - parSoFar;
+      h += '<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Total</div>';
+      h += '<div style="font-family:Playfair Display,serif;font-size:20px;color:var(--gold)">' + totalSoFar + '</div>';
+      h += '<div style="font-size:9px;color:' + (totalDiff > 0 ? 'var(--red)' : totalDiff < 0 ? 'var(--birdie)' : 'var(--muted)') + '">' + (totalDiff > 0 ? '+' : '') + totalDiff + '</div></div>';
       h += '</div>';
     }
   }
 
-  h += '</div>';
-
-  // Quit button
-  h += '<div style="padding:0 16px 16px">';
+  // Quit confirm panel
   h += '<div id="quit-confirm" style="display:none;margin-bottom:8px;padding:12px;background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);border-radius:var(--radius);text-align:center">';
   h += '<div style="font-size:12px;color:var(--red);margin-bottom:8px">Quit this round? Scores will be lost.</div>';
   h += '<div style="display:flex;gap:8px"><button class="btn outline" style="flex:1;font-size:11px" onclick="document.getElementById(\'quit-confirm\').style.display=\'none\'">Cancel</button>';
-  h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(212,96,78,.15);color:var(--red)" onclick="liveState.active=false;Router.go(\'rounds\')">Quit</button></div></div>';
-  h += '<button class="btn full" style="background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);color:var(--red);font-size:11px" onclick="document.getElementById(\'quit-confirm\').style.display=\'block\'">Quit round</button>';
+  h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(212,96,78,.15);color:var(--red)" onclick="liveState.active=false;updatePresence._force=true;updatePresence();Router.go(\'rounds\')">Quit</button></div></div>';
+  h += '<button class="btn full" style="background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);color:var(--red);font-size:11px;margin-bottom:80px" onclick="document.getElementById(\'quit-confirm\').style.display=\'block\'">Quit round</button>';
+
+  h += '</div>';
+
+  // Finish options panel (before submit)
+  h += '<div id="finish-options" style="display:none;position:fixed;bottom:56px;left:0;right:0;z-index:200;padding:12px 16px;background:var(--bg2);border-top:1px solid var(--border)">';
+  h += '<div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Publish round</div>';
+  h += '<div style="display:flex;gap:8px;margin-bottom:10px">';
+  h += '<div onclick="document.getElementById(\'vis-public\').style.borderColor=\'var(--gold)\';document.getElementById(\'vis-private\').style.borderColor=\'var(--border)\';liveState.visibility=\'public\'" id="vis-public" style="flex:1;padding:10px;text-align:center;border:2px solid var(--gold);border-radius:var(--radius);cursor:pointer;background:rgba(201,168,76,.06)"><div style="font-size:12px;font-weight:600;color:var(--cream)">Public</div><div style="font-size:9px;color:var(--muted);margin-top:2px">Shows in activity feed</div></div>';
+  h += '<div onclick="document.getElementById(\'vis-private\').style.borderColor=\'var(--gold)\';document.getElementById(\'vis-public\').style.borderColor=\'var(--border)\';liveState.visibility=\'private\'" id="vis-private" style="flex:1;padding:10px;text-align:center;border:2px solid var(--border);border-radius:var(--radius);cursor:pointer"><div style="font-size:12px;font-weight:600;color:var(--cream)">Private</div><div style="font-size:9px;color:var(--muted);margin-top:2px">Only on your profile</div></div>';
+  h += '</div>';
+  h += '<button class="btn full green" onclick="finishLiveRound()">Confirm &amp; save</button>';
+  h += '</div>';
+
+  // Sticky bottom nav — always reachable
+  h += '<div style="position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--bg2);border-top:1px solid var(--border);padding:8px 12px;display:flex;gap:8px">';
+  if (hole > 0) {
+    h += '<button class="btn outline" style="flex:0 0 80px;padding:14px 0;font-size:12px" onclick="liveState.currentHole--;Router.go(\'playnow\')">← Prev</button>';
+  }
+  if (hole < 17) {
+    h += '<button class="btn green" style="flex:1;padding:14px 0;font-size:14px;font-weight:700" onclick="if(liveState.scores[' + hole + ']===\'\'){Router.toast(\'Enter a score\');return;}liveState.currentHole++;Router.go(\'playnow\')">Next hole →</button>';
+  } else {
+    h += '<button class="btn green" style="flex:1;padding:14px 0;font-size:14px;font-weight:700" onclick="showFinishOptions()">Finish round</button>';
+  }
   h += '</div>';
 
   document.querySelector('[data-page="playnow"]').innerHTML = h;
@@ -6226,13 +6470,13 @@ function adjustLiveScore(delta) {
   var current = liveState.scores[hole];
   if (current === "") {
     var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
-    liveState.scores[hole] = defaultPar[hole] || 4;
+    liveState.scores[hole] = (liveState.holes && liveState.holes[hole] && liveState.holes[hole].par) || defaultPar[hole] || 4;
   } else {
     var newVal = parseInt(current) + delta;
     if (newVal >= 1 && newVal <= 15) liveState.scores[hole] = newVal;
   }
+  updatePresence(); // broadcast to watchers
   Router.go("playnow");
-  // Trigger pop animation
   setTimeout(function() {
     var el = document.getElementById("liveScoreNum");
     if (el) { el.classList.remove("score-pop"); void el.offsetWidth; el.classList.add("score-pop"); }
@@ -6283,6 +6527,8 @@ function finishLiveRound() {
   for (var j = 0; j < completed; j++) { if (defaultPar[j] !== 3) firHoles++; }
 
   liveState.active = false;
+  updatePresence._force = true;
+  updatePresence(); // clear liveRound from presence so watchers see round ended
 
   var commentary = PB.generateRoundCommentary(round);
   var msg = commentary.roasts.length ? commentary.roasts[0] : (commentary.highlights.length ? commentary.highlights[0] : "Round complete!");
@@ -7668,20 +7914,22 @@ function importAndSelectCourse(idx, containerId) {
   // Fill the course input field
   var container = document.getElementById(containerId);
   if (container) container.innerHTML = "";
-  // Try to fill common input fields
-  var inputs = [
-    {course:"pn-course",rating:"pn-rating",slope:"pn-slope"},
-    {course:"rf-course",rating:"rf-rating",slope:"rf-slope"},
-    {course:"sync-course",rating:"sync-rating",slope:"sync-slope"}
-  ];
-  inputs.forEach(function(ids) {
-    var ci = document.getElementById(ids.course);
-    if (ci) { ci.value = name; }
-    var ri = document.getElementById(ids.rating);
-    if (ri && !ri.value) ri.value = rating;
-    var si = document.getElementById(ids.slope);
-    if (si && !si.value) si.value = slope;
-  });
+  // Trigger full course selection (sets ID + tee selector) if on Play Now
+  if (course && document.getElementById("pn-course")) {
+    pnSelectCourse(course.id, name, rating, slope);
+  } else {
+    // Fallback: fill common input fields
+    var inputs = [
+      {course:"pn-course",rating:"pn-rating",slope:"pn-slope"},
+      {course:"rf-course",rating:"rf-rating",slope:"rf-slope"},
+      {course:"sync-course",rating:"sync-rating",slope:"sync-slope"}
+    ];
+    inputs.forEach(function(ids) {
+      var ci = document.getElementById(ids.course); if (ci) ci.value = name;
+      var ri = document.getElementById(ids.rating); if (ri && !ri.value) ri.value = rating;
+      var si = document.getElementById(ids.slope); if (si && !si.value) si.value = slope;
+    });
+  }
 }
 function pasteApiKey() {
   if (navigator.clipboard && navigator.clipboard.readText) {
@@ -8561,7 +8809,8 @@ function addCustomDrill() {
   var desc = prompt("Short description (optional):", "");
   var drill = {id: "custom_" + Date.now(), name: name.trim(), cat: "custom", desc: desc || ""};
   customDrills.push(drill);
-  localStorage.setItem("pb_custom_drills", JSON.stringify(customDrills));
+  localStorage.setItem("pb_custom_drills", JSON.stringify(customDrills)); // local cache
+  saveCustomDrillsToFirestore();
   renderDrillChips();
   Router.toast("Drill added!");
 }
@@ -10455,32 +10704,31 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.6.3</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.6.8</div></div>';
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Range session redesigned — three distinct phases: Setup, Active, and Review", tag: "NEW"},
-    {item: "Active session timer is now full-screen dominant — 80px clock you can read at a glance", tag: "NEW"},
-    {item: "Range setup now has a focus field: tell us what you're working on before you start", tag: "NEW"},
-    {item: "Drill picker is now collapsible — stays out of the way unless you want it", tag: "NEW"},
-    {item: "Post-session review includes a notes field — jot down what clicked or what needs work", tag: "NEW"},
-    {item: "Session notes saved alongside drills, feel rating, and duration", tag: "NEW"},
-    {item: "Scramble team selection now built into Play Now — pick your team before teeing off without leaving the setup screen", tag: "NEW"},
-    {item: "Create a new scramble team inline on Play Now — name, size, members, and captain all in one flow", tag: "NEW"},
-    {item: "Full-screen course search — tap to search 30,000+ courses with ratings and tee data inline", tag: "NEW"},
-    {item: "Import courses with real ratings, slope, par, yardage, and hole-by-hole scorecard", tag: "NEW"},
-    {item: "Course detail page shows all available tees — tap any tee to view its full scorecard", tag: "NEW"},
-    {item: "Share card — every completed round gets a branded scorecard you can share or screenshot", tag: "NEW"},
-    {item: "Scramble team pages redesigned — top 3 scores, team stats, captain badge, round history", tag: "NEW"},
-    {item: "Courses sync across all devices — import on one, see it everywhere", tag: "NEW"},
-    {item: "Scorekeeper system and score locking by Commissioner", tag: "NEW"},
-    {item: "SMO courses verified with real API data — accurate pars, ratings, and slopes", tag: "IMPROVED"},
-    {item: "Badges, titles, and photos can only be changed by the account owner", tag: "IMPROVED"},
-    {item: "FIR and GIR buttons no longer scroll the page to the top", tag: "FIXED"},
-    {item: "Snapshot listeners cleaned up — no more memory leaks during long sessions", tag: "FIXED"}
+    {item: "Live round following — tap any active round in the Live Spotlight to watch hole-by-hole in real time", tag: "NEW"},
+    {item: "Full live scorecard on the Watch page — every hole color-coded (eagle gold, birdie green, bogey red) as scores are entered", tag: "NEW"},
+    {item: "Scores broadcast instantly when a player enters them — no refresh needed for spectators", tag: "NEW"},
+    {item: "Watch page clears automatically when the round ends or the player quits", tag: "NEW"},
+    {item: "Live Spotlight cards now show a LIVE badge and Watch arrow for other members' rounds", tag: "IMPROVED"},
+    {item: "Par-adjusted score display in Live Spotlight — shows E/+2/-1 based on actual hole pars, not estimated", tag: "IMPROVED"},
+    {item: "Rounds now load from the server on every login — every device sees the same data", tag: "IMPROVED"},
+    {item: "New rounds posted by any member appear without refreshing", tag: "IMPROVED"},
+    {item: "Custom range drills saved to the server — visible on all devices", tag: "IMPROVED"},
+    {item: "Play Now now shows a tee selector after picking a course", tag: "NEW"},
+    {item: "Scoring screen shows yardage and hole handicap index for every hole", tag: "NEW"},
+    {item: "Parbaugh format shows your stroke allocation per hole in real time", tag: "NEW"},
+    {item: "Score stepper rebuilt — full-width minus/plus bar, sticky Next Hole button", tag: "NEW"},
+    {item: "Scramble teams sync across all devices automatically", tag: "FIXED"},
+    {item: "Range session redesigned — Setup, Active, and Review phases with focus field and notes", tag: "NEW"},
+    {item: "Scramble team creation built into Play Now", tag: "NEW"},
+    {item: "Full-screen course search — 30,000+ courses with ratings and tee data", tag: "NEW"},
+    {item: "Snapshot listeners cleaned up — no more memory leaks", tag: "FIXED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
@@ -10560,7 +10808,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.6.3</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.6.8</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
@@ -12152,22 +12400,152 @@ function updatePresence() {
     online: true
   };
   if (liveState.active) {
+    var scored = liveState.scores.filter(function(s){return s!==""});
     presenceData.liveRound = {
       course: liveState.course || "",
       hole: (liveState.currentHole || 0) + 1,
-      score: liveState.scores.filter(function(s){return s!==""}).reduce(function(a,b){return a+parseInt(b)},0),
-      thru: liveState.scores.filter(function(s){return s!==""}).length,
-      startTime: liveState.startTime || null
+      score: scored.reduce(function(a,b){return a+parseInt(b)},0),
+      thru: scored.length,
+      startTime: liveState.startTime || null,
+      format: liveState.format || "stroke",
+      tee: liveState.tee || "",
+      holeScores: liveState.scores.slice(),
+      holePars: liveState.holes && liveState.holes.length
+        ? liveState.holes.map(function(h){return h.par||4;})
+        : [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5]
     };
   } else {
     presenceData.liveRound = null;
   }
   // Skip redundant writes — only write if state changed or forced heartbeat
-  var sig = (presenceData.name||"") + "|" + (liveState.active ? liveState.currentHole + ":" + liveState.scores.filter(function(s){return s!==""}).length : "idle");
+  var sig = (presenceData.name||"") + "|" + (liveState.active ? liveState.currentHole + ":" + liveState.scores.filter(function(s){return s!==""}).length + ":" + liveState.scores.filter(function(s){return s!==""}).reduce(function(a,b){return a+parseInt(b)},0) : "idle");
   if (updatePresence._lastSig === sig && !updatePresence._force) return;
   updatePresence._lastSig = sig;
   updatePresence._force = false;
   db.collection("presence").doc(currentUser.uid).set(presenceData, { merge: true }).catch(function(){});
+}
+
+// ========== WATCH ROUND (spectator live view) ==========
+var _watchRoundUid = null;
+
+Router.register("watchround", function(params) {
+  _watchRoundUid = params && params.uid ? params.uid : null;
+  if (!_watchRoundUid) { Router.go("home"); return; }
+  renderWatchRound();
+});
+
+function renderWatchRound() {
+  var uid = _watchRoundUid;
+  var member = onlineMembers[uid];
+  var el = document.querySelector('[data-page="watchround"]');
+  if (!el) return;
+
+  if (!member || !member.liveRound || !member.liveRound.course) {
+    el.innerHTML = '<div class="sh"><h2>Watch Round</h2><button class="back" onclick="Router.go(\'home\')">← Back</button></div><div style="padding:40px 16px;text-align:center;font-size:12px;color:var(--muted)">This player has finished their round or is no longer active.</div>';
+    return;
+  }
+
+  var lr = member.liveRound;
+  var name = member.name || "Player";
+  var scores = lr.holeScores || Array(18).fill("");
+  var pars = lr.holePars || [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+  var currentHole = (lr.hole || 1) - 1; // 0-indexed
+  var thru = lr.thru || 0;
+  var totalScore = scores.filter(function(s){return s!==""}).reduce(function(a,b){return a+parseInt(b)},0);
+  var parThru = 0; for (var i=0;i<thru;i++) parThru += pars[i]||4;
+  var diff = thru > 0 ? totalScore - parThru : 0;
+  var diffStr = thru === 0 ? "—" : diff === 0 ? "E" : (diff > 0 ? "+" + diff : "" + diff);
+  var diffColor = diff < 0 ? "var(--birdie)" : diff > 0 ? "var(--red)" : "var(--muted)";
+
+  var h = '<div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">';
+  h += '<div><button class="back" onclick="Router.go(\'home\')" style="margin-bottom:4px">← Back</button><div style="font-size:13px;font-weight:600">' + escHtml(name) + '</div>';
+  h += '<div style="font-size:10px;color:var(--muted);margin-top:1px">' + escHtml(lr.course) + (lr.tee ? ' · ' + escHtml(lr.tee) : '') + ' · ' + escHtml(lr.format || "stroke") + '</div></div>';
+  h += '<div style="text-align:right"><div style="font-family:Playfair Display,serif;font-size:26px;font-weight:700;color:' + diffColor + '">' + diffStr + '</div>';
+  h += '<div style="font-size:9px;color:var(--muted)">' + (thru > 0 ? 'Thru ' + thru : 'Not started') + '</div>';
+  h += '<div style="display:flex;align-items:center;gap:4px;justify-content:flex-end;margin-top:2px"><div style="width:5px;height:5px;border-radius:50%;background:#4ade80;animation:pulse-dot 2s infinite"></div><span style="font-size:9px;color:#4ade80;font-weight:600">LIVE</span></div>';
+  h += '</div></div>';
+
+  // Current hole indicator
+  if (thru < 18) {
+    h += '<div style="padding:8px 16px;background:rgba(201,168,76,.06);border-bottom:1px solid var(--border);font-size:11px;color:var(--gold);text-align:center">';
+    h += '<svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="2" fill="currentColor"/></svg>';
+    h += 'Currently on hole ' + (currentHole + 1) + ' · Par ' + (pars[currentHole] || 4);
+    h += '</div>';
+  }
+
+  // Scorecard — front 9
+  h += '<div style="padding:14px 16px 0">';
+  h += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Scorecard</div>';
+
+  function renderNine(startHole, label) {
+    var nineTotal = 0, ninePar = 0;
+    var row = '<div style="margin-bottom:12px">';
+    row += '<div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">' + label + '</div>';
+    row += '<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:2px;text-align:center">';
+    // Hole numbers header
+    for (var hh = startHole; hh < startHole + 9; hh++) {
+      row += '<div style="font-size:8px;color:var(--muted2);padding:2px 0">' + (hh+1) + '</div>';
+    }
+    row += '<div style="font-size:8px;color:var(--muted2);padding:2px 0">TOT</div>';
+    // Par row
+    for (var ph = startHole; ph < startHole + 9; ph++) {
+      var p = pars[ph] || 4;
+      ninePar += p;
+      row += '<div style="font-size:8px;color:var(--muted);padding:2px 0">' + p + '</div>';
+    }
+    row += '<div style="font-size:8px;color:var(--muted);padding:2px 0">' + ninePar + '</div>';
+    // Score row
+    for (var sh = startHole; sh < startHole + 9; sh++) {
+      var sc = scores[sh];
+      var isActive = sh === currentHole && thru <= sh;
+      var par = pars[sh] || 4;
+      var d = sc !== "" ? parseInt(sc) - par : null;
+      var bg = "transparent", color = "var(--cream)", border = "transparent";
+      if (isActive) { border = "var(--gold)"; color = "var(--gold)"; }
+      else if (sc === "") { color = "var(--muted2)"; }
+      else if (d !== null) {
+        if (d <= -2) { bg = "rgba(201,168,76,.25)"; color = "var(--gold)"; }
+        else if (d === -1) { bg = "rgba(78,201,122,.2)"; color = "var(--birdie)"; }
+        else if (d === 0) { color = "var(--cream)"; }
+        else if (d === 1) { bg = "rgba(212,96,78,.15)"; color = "var(--red)"; }
+        else { bg = "rgba(212,96,78,.3)"; color = "var(--red)"; }
+      }
+      if (sc !== "") nineTotal += parseInt(sc);
+      row += '<div style="font-size:12px;font-weight:700;color:' + color + ';background:' + bg + ';border:1px solid ' + border + ';border-radius:4px;padding:5px 2px;min-height:28px;display:flex;align-items:center;justify-content:center">';
+      row += sc !== "" ? sc : (isActive ? '▶' : '·');
+      row += '</div>';
+    }
+    var totalColor = nineTotal === ninePar ? "var(--cream)" : nineTotal < ninePar ? "var(--birdie)" : "var(--red)";
+    row += '<div style="font-size:12px;font-weight:700;color:' + totalColor + ';background:var(--bg3);border-radius:4px;padding:5px 2px;min-height:28px;display:flex;align-items:center;justify-content:center">' + (nineTotal > 0 ? nineTotal : '—') + '</div>';
+    row += '</div></div>';
+    return row;
+  }
+
+  h += renderNine(0, "Front 9");
+  h += renderNine(9, "Back 9");
+
+  // Total row
+  var grandPar = pars.reduce(function(a,b){return a+(b||4)},0);
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg3);border-radius:8px;margin-top:4px">';
+  h += '<span style="font-size:11px;color:var(--muted)">Total · Par ' + grandPar + '</span>';
+  h += '<span style="font-size:18px;font-weight:700;color:' + diffColor + '">' + (thru > 0 ? totalScore : "—") + ' (' + diffStr + ')</span>';
+  h += '</div>';
+
+  h += '</div>'; // end padding div
+
+  // Refresh hint
+  h += '<div style="padding:16px;text-align:center;font-size:10px;color:var(--muted2)">Updates automatically as scores are entered</div>';
+
+  el.innerHTML = h;
+}
+
+// Re-render watch page when presence updates
+var _origRenderOnline = null;
+function hookWatchRoundRefresh() {
+  // Called after presence listener fires — if watching a round, re-render it
+  if (Router.getPage() === "watchround" && _watchRoundUid) {
+    renderWatchRound();
+  }
 }
 
 function startPresenceSystem() {
@@ -12202,6 +12580,7 @@ function startPresenceSystem() {
 }
 
 function renderOnlineSection() {
+  hookWatchRoundRefresh(); // keep live watch page in sync when presence updates
   var el = document.getElementById("onlineSection");
   if (!el) return;
   
