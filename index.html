@@ -827,7 +827,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.7.41 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
+   PARBAUGHS v5.7.42 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -3883,9 +3883,11 @@ var Router = (function() {
   var current = { page: "home", params: {} };
   var pages = {};
   var _skipHistoryPush = false;
+  var _navDepth = 0; // how many pushState navigations deep we are this session
 
   // Wire up browser back/forward button
   window.addEventListener("popstate", function(e) {
+    _navDepth = Math.max(0, _navDepth - 1);
     var state = e.state;
     if (state && state.page) {
       _skipHistoryPush = true;
@@ -3907,13 +3909,14 @@ var Router = (function() {
     current = { page: page, params: params || {} };
 
     // Push/replace browser history so back button works.
-    // We store state only — URL stays fixed to avoid PWA reload on hash change.
+    // URL stays fixed — hash changes caused PWA reloads on iOS.
     if (!_skipHistoryPush) {
       var state = { page: page, params: params || {} };
       if (replaceState || prev === page) {
         history.replaceState(state, "", window.location.pathname);
       } else {
         history.pushState(state, "", window.location.pathname);
+        _navDepth++;
       }
     }
 
@@ -4023,8 +4026,9 @@ var Router = (function() {
   }
 
   function back(fallback) {
-    // Use browser history if available, otherwise fall back to specified page
-    if (history.length > 1 && window.location.hash) {
+    // Use browser history if we've navigated forward at least once this session
+    if (_navDepth > 0) {
+      _navDepth--;
       history.back();
     } else {
       go(fallback || "home", {});
@@ -11656,10 +11660,10 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.41</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.42</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.41</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.42</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -11775,7 +11779,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.41</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.42</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
