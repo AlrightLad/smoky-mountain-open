@@ -1195,6 +1195,7 @@ function enterApp() {
   PB.load();
   initSync();
   preloadMemberPhotos();
+  syncCoursesFromFirestore();
   // Delay profile bar update to ensure DOM is ready
   setTimeout(function() { updateProfileBar(); }, 100);
   Router.go("home");
@@ -1290,6 +1291,27 @@ function seedFirestore() {
 }
 
 // Dual-write helpers — text data only, photos go to photos collection
+function syncCoursesFromFirestore() {
+  if (!db) return;
+  db.collection("courses").get().then(function(snap) {
+    var added = 0;
+    snap.forEach(function(doc) {
+      var c = doc.data();
+      if (!c.name) return;
+      var existing = PB.getCourseByName(c.name);
+      if (!existing) {
+        PB.addCourse(c);
+        added++;
+      } else {
+        // Enrich existing with Firestore data if richer
+        if (c.allTees && c.allTees.length && (!existing.allTees || !existing.allTees.length)) PB.addCourse(c);
+        if (c.holes && c.holes.length && (!existing.holes || !existing.holes.length)) PB.addCourse(c);
+      }
+    });
+    if (added > 0) pbLog("[Sync] Imported", added, "courses from Firestore");
+  }).catch(function(err) { pbWarn("[Sync] Course sync failed:", err.message); });
+}
+
 function syncMember(m) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(m)); d.updatedAt=fsTimestamp(); delete d.photo; db.collection("members").doc(m.id).set(d,{merge:true}).catch(function(){}); }
 function syncRound(r) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(r)); d.createdAt=fsTimestamp(); db.collection("rounds").doc(r.id||genId()).set(d,{merge:true}).catch(function(){}); }
 function syncCourse(c) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(c)); d.updatedAt=fsTimestamp(); delete d.photo; db.collection("courses").doc(c.id).set(d,{merge:true}).catch(function(){}); }
@@ -1795,7 +1817,7 @@ var PB = (function() {
       miniWinners: mini,
       bonusWinners: bonus,
       rounds: [],
-      scrambleTeams: [],
+      scrambleTeams: [{id:"smo_scramble",name:"SMO Squad",members:["zach","kayvan","kiyan","nick"],captain:"zach",size:4,matches:[]}],
       records: { longestDrive: null, holeInOnes: [] },
       version: 3
     };
@@ -5204,6 +5226,8 @@ function selectStockAvatar(pid, src) {
 }
 
 function equipTitle(pid, titleName) {
+  var isOwn = currentUser && (pid === currentUser.uid || (currentProfile && pid === currentProfile.claimedFrom));
+  if (!isOwn) { Router.toast("You can only change your own title"); return; }
   PB.updatePlayer(pid, { equippedTitle: titleName });
   if (currentProfile && currentProfile.claimedFrom) PB.updatePlayer(currentProfile.claimedFrom, { equippedTitle: titleName });
   if (db && currentUser) {
@@ -5214,6 +5238,8 @@ function equipTitle(pid, titleName) {
 }
 
 function toggleBadge(pid, badgeId) {
+  var isOwn = currentUser && (pid === currentUser.uid || (currentProfile && pid === currentProfile.claimedFrom));
+  if (!isOwn) { Router.toast("You can only change your own badges"); return; }
   var p = PB.getPlayer(pid);
   // Also check currentProfile and fbMemberCache
   if (!p && currentProfile && currentProfile.id === pid) p = currentProfile;
@@ -5918,11 +5944,11 @@ function renderLiveScoring() {
   // FIR / GIR / Putts
   h += '<div style="display:flex;justify-content:center;gap:16px;margin-bottom:24px">';
   if (!isPar3) {
-    h += '<div onclick="liveState.fir[' + hole + ']=!liveState.fir[' + hole + '];Router.go(\'playnow\')" style="text-align:center;cursor:pointer">';
+    h += '<div onclick="togglePlayNowFirGir(this,' + hole + ',\'fir\')" style="text-align:center;cursor:pointer">';
     h += '<div style="width:48px;height:48px;border-radius:10px;border:1.5px solid ' + (liveState.fir[hole] ? 'var(--birdie)' : 'var(--border)') + ';background:' + (liveState.fir[hole] ? 'rgba(78,201,122,.12)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;font-size:14px;color:' + (liveState.fir[hole] ? 'var(--birdie)' : 'var(--muted2)') + ';margin:0 auto 4px">' + (liveState.fir[hole] ? '•' : '') + '</div>';
     h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">FIR</div></div>';
   }
-  h += '<div onclick="liveState.gir[' + hole + ']=!liveState.gir[' + hole + '];Router.go(\'playnow\')" style="text-align:center;cursor:pointer">';
+  h += '<div onclick="togglePlayNowFirGir(this,' + hole + ',\'gir\')" style="text-align:center;cursor:pointer">';
   h += '<div style="width:48px;height:48px;border-radius:10px;border:1.5px solid ' + (liveState.gir[hole] ? 'var(--gold)' : 'var(--border)') + ';background:' + (liveState.gir[hole] ? 'rgba(201,168,76,.12)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;font-size:14px;color:' + (liveState.gir[hole] ? 'var(--gold)' : 'var(--muted2)') + ';margin:0 auto 4px">' + (liveState.gir[hole] ? '•' : '') + '</div>';
   h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">GIR</div></div>';
 
@@ -6796,7 +6822,7 @@ function renderTripScorecard(trip, tripPlayers) {
           h += '<td style="padding:2px;position:static"><div style="width:18px;height:18px;margin:auto;font-size:8px;color:var(--muted2);display:flex;align-items:center;justify-content:center">—</div></td>';
         } else {
           var firVal = fg.fir[fi];
-          h += '<td style="padding:2px;position:static"><div onclick="PB.setFir(\'' + tid + "','" + c.key + "','" + p.id + "'," + fi + ',' + !firVal + ');Router.go(\'scorecard\',{tripId:\'' + tid + '\'})" style="width:18px;height:18px;border-radius:3px;border:1px solid ' + (firVal ? 'var(--birdie)' : 'var(--border)') + ';background:' + (firVal ? 'rgba(78,201,122,.15)' : 'transparent') + ';margin:auto;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--birdie)">' + (firVal ? '•' : '') + '</div></td>';
+          h += '<td style="padding:2px;position:static"><div onclick="toggleFirGirBtn(this,\'' + tid + "','" + c.key + "','" + p.id + "'," + fi + ',' + !firVal + ",\"fir\")" + '" style="width:18px;height:18px;border-radius:3px;border:1px solid ' + (firVal ? 'var(--birdie)' : 'var(--border)') + ';background:' + (firVal ? 'rgba(78,201,122,.15)' : 'transparent') + ';margin:auto;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--birdie)">' + (firVal ? '•' : '') + '</div></td>';
         }
       }
       h += '</tr>';
@@ -6804,7 +6830,7 @@ function renderTripScorecard(trip, tripPlayers) {
       h += '<tr style="background:var(--bg)"><td style="font-size:8px;padding:4px;color:var(--muted);position:static">GIR</td>';
       for (var gi = 0; gi < 18; gi++) {
         var girVal = fg.gir[gi];
-        h += '<td style="padding:2px;position:static"><div onclick="PB.setGir(\'' + tid + "','" + c.key + "','" + p.id + "'," + gi + ',' + !girVal + ');Router.go(\'scorecard\',{tripId:\'' + tid + '\'})" style="width:18px;height:18px;border-radius:3px;border:1px solid ' + (girVal ? 'var(--gold)' : 'var(--border)') + ';background:' + (girVal ? 'rgba(201,168,76,.15)' : 'transparent') + ';margin:auto;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--gold)">' + (girVal ? '•' : '') + '</div></td>';
+        h += '<td style="padding:2px;position:static"><div onclick="toggleFirGirBtn(this,\'' + tid + "','" + c.key + "','" + p.id + "'," + gi + ',' + !girVal + ",\"gir\")" + '" style="width:18px;height:18px;border-radius:3px;border:1px solid ' + (girVal ? 'var(--gold)' : 'var(--border)') + ';background:' + (girVal ? 'rgba(201,168,76,.15)' : 'transparent') + ';margin:auto;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--gold)">' + (girVal ? '•' : '') + '</div></td>';
       }
       h += '</tr></tbody></table></div></div>';
     });
@@ -6838,7 +6864,8 @@ function renderTripLB(trip, tripPlayers) {
   // Round breakdown
   h += '<div class="lbs"><div class="lb-title">Round breakdown</div>';
   var st = PB.getTripTotal(tid, "scramble", "team", 0, 18);
-  h += '<div class="rc"><div class="rh">Sequoyah National · Scramble</div><div class="rc-body">Team: ' + (st || "—") + (st > 0 ? " (" + (st - 72 >= 0 ? "+" : "") + (st - 72) + ")" : "") + '</div></div>';
+  var scrambleTeamName = "SMO Squad";
+  h += '<div class="rc"><div class="rh">Sequoyah National · Scramble</div><div class="rc-body"><div style="font-size:11px;color:var(--gold);margin-bottom:4px">' + scrambleTeamName + ' — Zach, Kayvan, Kiyan, Nick</div>Team score: ' + (st || "—") + (st > 0 ? " (" + (st - 72 >= 0 ? "+" : "") + (st - 72) + ")" : "") + '</div></div>';
   trip.courses.forEach(function(c) {
     if (c.s) return;
     h += '<div class="rc"><div class="rh">' + c.d + ' · ' + c.n + ' · ' + c.f + '</div>';
@@ -7665,6 +7692,49 @@ function showTeeScorecard(courseId, teeIdx) {
     h += '<div style="padding:4px 16px;font-size:11px;color:var(--muted2)">No hole-by-hole data available for this tee</div>';
   }
   area.innerHTML = h;
+}
+
+function togglePlayNowFirGir(wrapper, hole, type) {
+  liveState[type][hole] = !liveState[type][hole];
+  var val = liveState[type][hole];
+  var el = wrapper.querySelector("div");
+  if (!el) return;
+  var color = type === "fir" ? "var(--birdie)" : "var(--gold)";
+  var bgOn = type === "fir" ? "rgba(78,201,122,.12)" : "rgba(201,168,76,.12)";
+  if (val) {
+    el.style.borderColor = color;
+    el.style.background = bgOn;
+    el.style.color = color;
+    el.innerHTML = "•";
+  } else {
+    el.style.borderColor = "var(--border)";
+    el.style.background = "transparent";
+    el.style.color = "var(--muted2)";
+    el.innerHTML = "";
+  }
+}
+
+function toggleFirGirBtn(el, tripId, courseKey, playerId, hole, newVal, type) {
+  if (type === "fir") {
+    PB.setFir(tripId, courseKey, playerId, hole, newVal);
+  } else {
+    PB.setGir(tripId, courseKey, playerId, hole, newVal);
+  }
+  // Toggle visual state in-place
+  var color = type === "fir" ? "var(--birdie)" : "var(--gold)";
+  var bgOn = type === "fir" ? "rgba(78,201,122,.15)" : "rgba(201,168,76,.15)";
+  if (newVal) {
+    el.style.borderColor = color;
+    el.style.background = bgOn;
+    el.innerHTML = "•";
+  } else {
+    el.style.borderColor = "var(--border)";
+    el.style.background = "transparent";
+    el.innerHTML = "";
+  }
+  // Flip the onclick for next tap
+  var nextVal = !newVal;
+  el.setAttribute("onclick", "toggleFirGirBtn(this,'" + tripId + "','" + courseKey + "','" + playerId + "'," + hole + "," + nextVal + ",'" + type + "')");
 }
 
 function uploadCoursePhoto(courseId) {
