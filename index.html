@@ -522,9 +522,9 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 /* ===== NOTIFICATION PANEL ===== */
 .sh .back{font-size:11px;min-height:36px;padding:6px 14px;white-space:nowrap}
 @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
-.notif-panel{position:fixed;top:0;right:0;width:min(320px,90vw);height:100vh;height:100dvh;background:var(--bg);border-left:1px solid var(--border);z-index:200;transform:translateX(100%);transition:transform .2s ease;overflow-y:auto}
-.notif-panel.open{transform:translateX(0)}
-.notif-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;opacity:0;pointer-events:none;transition:opacity .2s}
+.notif-panel{position:fixed;top:0;right:0;width:min(320px,90vw);height:100vh;height:100dvh;background:var(--bg);border-left:1px solid var(--border);z-index:200;transform:translateX(100%);transition:transform .2s ease;overflow-y:auto;pointer-events:none}
+.notif-panel.open{transform:translateX(0);pointer-events:auto}
+.notif-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:199;opacity:0;pointer-events:none;transition:opacity .2s}
 .notif-overlay.open{opacity:1;pointer-events:auto}
 .notif-item{padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
 .notif-item:active{background:var(--bg2)}
@@ -1248,6 +1248,7 @@ function updateProfileBar() {
       photoCache["member:" + currentUser.uid] = photoCache["member:" + p.id];
     }
     avatarEl.innerHTML = Router.getAvatar(p);
+    avatarEl.style.border = '2px solid ' + playerFrameColor(p);
   } else {
     var initial = name.charAt(0).toUpperCase();
     avatarEl.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700;font-size:12px;background:var(--bg3);border-radius:50%">' + initial + '</div>';
@@ -1274,10 +1275,7 @@ function updateProfileBar() {
   var xpNeededForLevel = lvlInfo ? (lvlInfo.nextLevelXp - lvlInfo.currentLevelXp) : 100;
   var xpPct = xpNeededForLevel > 0 ? Math.min(100, Math.round((xpInLevel / xpNeededForLevel) * 100)) : 100;
 
-  // Title (level name)
-  var titleText = lvlInfo ? lvlInfo.name : "";
-
-  // Range streak for current user
+  // Title and streak
   var streakCount = 0;
   if (currentUser && typeof liveRangeSessions !== "undefined" && liveRangeSessions.length) {
     var uid = currentUser.uid;
@@ -1296,20 +1294,15 @@ function updateProfileBar() {
     }
   }
 
-  var streakHtml = streakCount >= 2
-    ? '<span style="display:flex;align-items:center;gap:2px;font-size:9px;color:#f97316;font-weight:700"><svg viewBox="0 0 16 16" width="9" height="9" fill="#f97316"><path d="M8 1C6 4 4 5 4 8a4 4 0 008 0c0-2-1-3-2-4-.5 1-1 2-2 1 0-2 0-3 0-4z"/></svg>' + streakCount + 'wk</span>'
-    : '';
-
   rightEl.innerHTML = '<div style="display:flex;align-items:center;gap:4px">'
     + '<span style="font-size:12px;color:var(--muted)">Hi, <span style="color:var(--gold);font-weight:600">' + escHtml(name) + '</span></span>'
-    + (titleText ? '<span style="font-size:9px;color:var(--muted2);letter-spacing:.2px">· ' + escHtml(titleText) + '</span>' : '')
     + '</div>';
 
   if (lvlInfo) {
-    rightEl.innerHTML += '<div style="display:flex;align-items:center;gap:6px;margin-top:3px">'
-      + '<div style="width:72px;height:2px;background:var(--border);border-radius:1px"><div style="width:' + xpPct + '%;height:100%;background:var(--gold);border-radius:1px;transition:width .3s"></div></div>'
-      + streakHtml
-      + '</div>';
+    var streakRow = streakCount >= 2
+      ? '<span style="display:flex;align-items:center;gap:2px;font-size:9px;color:#f97316;font-weight:700"><svg viewBox="0 0 16 16" width="9" height="9" fill="#f97316"><path d="M8 1C6 4 4 5 4 8a4 4 0 008 0c0-2-1-3-2-4-.5 1-1 2-2 1 0-2 0-3 0-4z"/></svg>' + streakCount + ' wk streak</span>'
+      : '<div style="width:72px;height:2px;background:var(--border);border-radius:1px"><div style="width:' + xpPct + '%;height:100%;background:var(--gold);border-radius:1px;transition:width .3s"></div></div>';
+    rightEl.innerHTML += '<div style="display:flex;align-items:center;gap:6px;margin-top:3px">' + streakRow + '</div>';
   }
 }
 
@@ -3677,6 +3670,22 @@ var Router = (function() {
   };
 })();
 
+// ── GLOBAL UTILITY: profile border color ────────────────────────────────────
+// Single source of truth for avatar frame colors. Call anywhere you render
+// a player avatar. Matches the logic on the profile page exactly.
+function playerFrameColor(p) {
+  if (!p) return 'var(--border)';
+  var pid = p.id || p.uid || '';
+  var achs = [];
+  try { if (pid) achs = PB.getAchievements(pid) || []; } catch(e) {}
+  if (achs.some(function(a){return a.id==="champion"})) return 'var(--gold)';
+  if (achs.some(function(a){return a.id==="sub80"}))    return 'var(--birdie)';
+  if (achs.some(function(a){return a.id==="sub90"}))    return 'rgba(201,168,76,.5)';
+  if (p.founding || p.isFoundingFour)                   return 'var(--gold2)';
+  return 'var(--border)';
+}
+// ────────────────────────────────────────────────────────────────────────────
+
 
 // ========== NOTIFICATION SYSTEM ==========
 var liveNotifications = [];
@@ -3722,11 +3731,12 @@ Router.register("home", function() {
   h += '<div class="home-wrap">';
   h += '<div id="onlineSection"></div>';
 
-  // Quick Actions
-  h += '<div style="display:flex;gap:8px;margin-bottom:16px">';
-  h += '<button class="btn full green" onclick="Router.go(\'playnow\')" style="flex:1;font-size:11px;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg> Play Now</button>';
-  h += '<button class="btn full outline" onclick="startRangeSession()" style="flex:1;font-size:11px;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Hit the Range</button>';
-  h += '<button class="btn full outline" onclick="Router.go(\'tee-create\')" style="flex:1;font-size:11px;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Post Tee Time</button>';
+  // Quick Actions — 4 buttons, Games replaces the old Explore grid entirely
+  h += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px">';
+  h += '<button class="btn full green" onclick="Router.go(\'playnow\')" style="font-size:10px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg>Play Now</button>';
+  h += '<button class="btn full outline" onclick="startRangeSession()" style="font-size:10px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Range</button>';
+  h += '<button class="btn full outline" onclick="Router.go(\'tee-create\')" style="font-size:10px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Tee Time</button>';
+  h += '<button class="btn full outline" onclick="Router.go(\'partygames\')" style="font-size:10px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/></svg>Games</button>';
   h += '</div>';
 
   // Motivation card — dynamic based on player state
@@ -3908,24 +3918,12 @@ Router.register("home", function() {
   }
   h += '</div></div>';
 
-  // 4. Explore — single merged grid
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Explore</span></div>';
-  h += '<div class="qlinks" style="grid-template-columns:repeat(4,1fr)">';
-  var exploreLinks = [
-    {p:"syncround",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><path d='M21 3v6h-6'/><path d='M3 21v-6h6'/><path d='M21 9A9 9 0 006.3 5.3L3 9'/><path d='M3 15a9 9 0 0014.7 3.7L21 15'/></svg>",l:"Sync Round"},
-    {p:"members",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><path d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'/></svg>",l:"Members"},
-    {p:"trips",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><path d='M4 21V4'/><path d='M4 4l9 3v10l-9-3z'/><path d='M13 7l7-2v10l-7 2'/></svg>",l:"Events"},
-    {p:"rounds",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><circle cx='12' cy='8' r='5'/><path d='M12 13v8'/><path d='M8 21h8'/></svg>",l:"Rounds"},
-    {p:"courses",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><path d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'/><circle cx='12' cy='10' r='2.5'/></svg>",l:"Courses"},
-    {p:"scramble",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><path d='M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'/></svg>",l:"Teams"},
-    {p:"partygames",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><circle cx='12' cy='12' r='10'/><path d='M8 14s1.5 2 4 2 4-2 4-2'/><circle cx='9' cy='9' r='1' fill='currentColor'/><circle cx='15' cy='9' r='1' fill='currentColor'/></svg>",l:"Games"},
-    {p:"calendar",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><rect x='3' y='4' width='18' height='18' rx='2'/><path d='M16 2v4M8 2v4M3 10h18'/></svg>",l:"Calendar"},
-    {p:"chat",icon:"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' width='20' height='20'><path d='M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z'/></svg>",l:"Clubhouse"}
-  ];
-  exploreLinks.forEach(function(lnk) {
-    h += '<div class="ql" onclick="Router.go(\'' + lnk.p + '\')"><div class="ql-icon" style="color:var(--gold)">' + lnk.icon + '</div><div class="ql-label">' + lnk.l + '</div></div>';
-  });
-  h += '</div></div>';
+  // Shortcuts — only items NOT in the top nav (nav already has Members, Events, Activity, Records, Clubhouse, Tee Times)
+  h += '<div style="display:flex;gap:8px;margin-bottom:8px">';
+  h += '<div class="ql" style="flex:1" onclick="Router.go(\'syncround\')"><div class="ql-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M21 3v6h-6"/><path d="M3 21v-6h6"/><path d="M21 9A9 9 0 006.3 5.3L3 9"/><path d="M3 15a9 9 0 0014.7 3.7L21 15"/></svg></div><div class="ql-label">Sync Round</div></div>';
+  h += '<div class="ql" style="flex:1" onclick="Router.go(\'scramble\')"><div class="ql-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div><div class="ql-label">Teams</div></div>';
+  h += '<div class="ql" style="flex:1" onclick="Router.go(\'courses\')"><div class="ql-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="10" r="2.5"/></svg></div><div class="ql-label">Courses</div></div>';
+  h += '</div>';
 
   // 5. Live Spotlight — only shows when something is actually live
   
@@ -4022,9 +4020,9 @@ function showRivalryDetail(p1id, p2id) {
   // Big score display
   h += '<div style="text-align:center;padding:20px">';
   h += '<div class="rivalry-vs">';
-  h += '<div class="rv-player"><div class="rv-av" style="width:56px;height:56px;font-size:22px">' + Router.getAvatar(p1) + '</div><div class="rv-name">' + escHtml(p1.name) + '</div></div>';
+  h += '<div class="rv-player"><div class="rv-av" style="width:56px;height:56px;font-size:22px;border-color:' + playerFrameColor(p1) + '">' + Router.getAvatar(p1) + '</div><div class="rv-name">' + escHtml(p1.name) + '</div></div>';
   h += '<div class="rv-x">vs</div>';
-  h += '<div class="rv-player"><div class="rv-av" style="width:56px;height:56px;font-size:22px">' + Router.getAvatar(p2) + '</div><div class="rv-name">' + escHtml(p2.name) + '</div></div>';
+  h += '<div class="rv-player"><div class="rv-av" style="width:56px;height:56px;font-size:22px;border-color:' + playerFrameColor(p2) + '">' + Router.getAvatar(p2) + '</div><div class="rv-name">' + escHtml(p2.name) + '</div></div>';
   h += '</div>';
   h += '<div class="rv-score" style="margin-top:12px">' + h2h.p1wins + ' — ' + h2h.p2wins + '</div>';
   h += '<div class="rv-label">' + (h2h.ties > 0 ? h2h.ties + ' ties' : 'Head-to-head record') + '</div>';
@@ -4333,9 +4331,14 @@ function renderMemberListHtml(players, h) {
     var hcap = PB.calcHandicap(rounds) || (p.manualHandicap || p.handicap || null);
     var plvl = {level:1};
     try { plvl = PB.getPlayerLevel(p.id) || {level:1}; } catch(e) {}
+    var achs = []; try { achs = PB.getAchievements(p.id) || []; } catch(e) {}
+    var fc = playerFrameColor(p);
     h += '<div class="card" onclick="Router.go(\'members\',{id:\'' + p.id + '\'})">';
-    h += '<div class="member-row"><div class="m-av">' + Router.getAvatar(p) + '</div><div class="m-info">';
-    h += '<div class="m-name">' + escHtml(p.username || p.name) + ' <span style="font-size:9px;color:var(--gold);font-weight:600">LV' + (plvl.level || 1) + '</span></div>';
+    h += '<div class="member-row"><div class="m-av" style="border-color:' + fc + ';position:relative">' + Router.getAvatar(p);
+    // Level badge bottom-right of avatar
+    h += '<div style="position:absolute;bottom:-4px;right:-4px;background:var(--gold);color:#0d1117;font-size:7px;font-weight:800;border-radius:6px;padding:1px 3px;border:1.5px solid var(--bg);line-height:1.3;min-width:12px;text-align:center;z-index:2">' + (plvl.level||1) + '</div>';
+    h += '</div><div class="m-info">';
+    h += '<div class="m-name">' + escHtml(p.username || p.name) + '</div>';
     if (p.equippedTitle && p.equippedTitle !== "Member" && p.equippedTitle !== "Rookie") h += '<div class="m-nick">' + escHtml(p.equippedTitle) + '</div>';
     else if (p.role === "commissioner") h += '<div class="m-nick">Commissioner</div>';
     else if (p.role === "suspended") h += '<div class="m-nick" style="color:var(--red)">Suspended</div>';
@@ -4390,11 +4393,7 @@ function renderMemberDetailWithData(p) {
   try { lvl = PB.getPlayerLevel(pid) || lvl; } catch(e) {}
 
   // Determine profile frame based on achievements
-  var frameColor = 'var(--border)';
-  if (achievements.some(function(a){return a.id==="champion"})) frameColor = 'var(--gold)';
-  else if (achievements.some(function(a){return a.id==="sub80"})) frameColor = 'var(--birdie)';
-  else if (achievements.some(function(a){return a.id==="sub90"})) frameColor = 'rgba(201,168,76,.5)';
-  else if (p.founding) frameColor = 'var(--gold2)';
+  var frameColor = playerFrameColor(p);
 
   // Active title (equipped or default)
   var activeTitle = p.equippedTitle || p.title || "Member";
@@ -4697,7 +4696,7 @@ function renderMemberDetailWithData(p) {
     var h2h = calcH2H(pid, opp.id);
     var record = h2h.p1wins + ' — ' + h2h.p2wins + (h2h.ties ? ' — ' + h2h.ties + 'T' : '');
     var color = h2h.p1wins > h2h.p2wins ? 'var(--birdie)' : h2h.p2wins > h2h.p1wins ? 'var(--red)' : 'var(--gold)';
-    h2hContent += '<div class="h2h-row"><div class="h2h-left"><div class="h2h-av">' + Router.getAvatar(opp) + '</div><span class="h2h-name">' + opp.name + '</span></div><span class="h2h-record" style="color:' + color + '">' + record + '</span></div>';
+    h2hContent += '<div class="h2h-row"><div class="h2h-left"><div class="h2h-av" style="border-color:' + playerFrameColor(opp) + '">' + Router.getAvatar(opp) + '</div><span class="h2h-name">' + opp.name + '</span></div><span class="h2h-record" style="color:' + color + '">' + record + '</span></div>';
   });
   h += profSection("h2h-" + pid, "Head to head", h2hContent, false);
 
@@ -5525,7 +5524,7 @@ function renderTeamList() {
       h += '<div style="display:flex;gap:6px;margin-bottom:6px">';
       members.forEach(function(p) {
         var isCap = captain && p.id === team.captain;
-        h += '<div class="h2h-av" style="width:28px;height:28px;' + (isCap ? 'border:2px solid var(--gold)' : '') + '">' + Router.getAvatar(p) + '</div>';
+        h += '<div class="h2h-av" style="width:28px;height:28px;border:2px solid ' + (isCap ? 'var(--gold)' : playerFrameColor(p)) + '">' + Router.getAvatar(p) + '</div>';
       });
       h += '</div>';
       if (captain) h += '<div style="font-size:10px;color:var(--muted)">Captain: <span style="color:var(--gold);font-weight:600">' + escHtml(captain.name) + '</span></div>';
@@ -5660,7 +5659,7 @@ function renderTeamDetail(teamId) {
   members.forEach(function(p) {
     var isCaptain = captain && (p.id === team.captain);
     h += '<div style="text-align:center">';
-    h += '<div class="pd-av" style="width:60px;height:60px;font-size:24px;cursor:default;border:2px solid var(--gold)">' + Router.getAvatar(p) + '</div>';
+    h += '<div class="pd-av" style="width:60px;height:60px;font-size:24px;cursor:default;border:2px solid ' + playerFrameColor(p) + '">' + Router.getAvatar(p) + '</div>';
     h += '<div style="font-size:12px;font-weight:600;margin-top:4px">' + escHtml(p.name) + '</div>';
     if (isCaptain) h += '<div style="font-size:8px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:700">Captain</div>';
     h += '</div>';
@@ -7010,19 +7009,73 @@ var tripCreateState = { members: [], courses: [] };
 Router.register("trips", function(params) {
   if (params.create) { renderTripCreate(); return; }
   var trips = PB.getTrips();
-  var h = '<div class="sh"><h2>Events</h2><button class="btn-sm green" onclick="Router.go(\'trips\',{create:true})">+ New event</button></div>';
-  trips.forEach(function(t) {
-    var memberAvatars = t.members.slice(0, 4).map(function(id) { var p = PB.getPlayer(id); return p ? '<div class="h2h-av" style="width:24px;height:24px;margin-left:-6px;border:1.5px solid var(--bg)">' + Router.getAvatar(p) + '</div>' : ''; }).join('');
-    h += '<div class="card" onclick="Router.go(\'scorecard\',{tripId:\'' + t.id + '\'})">';
-    h += '<div class="trip-row"><div class="trip-info"><div class="trip-name">' + t.name + '</div>';
-    h += '<div class="trip-detail">' + t.dates + ' · ' + t.location + '</div>';
-    h += '<div style="display:flex;align-items:center;margin-top:6px">' + memberAvatars + '<span style="font-size:11px;color:var(--muted);margin-left:8px">' + t.members.length + ' members · ' + t.courses.length + ' rounds</span></div>';
-    h += '</div>';
-    var badge = t.champion ? '<span class="badge gld">' + (PB.getPlayer(t.champion) || {name:t.champion}).name + '</span>' : t.status === "upcoming" ? '<span class="badge">Upcoming</span>' : '<span class="badge">Completed</span>';
-    h += '<div>' + badge + '</div></div></div>';
+  var today = new Date().toISOString().split("T")[0];
+
+  // Split trips into active/upcoming vs past
+  var activeTrips = trips.filter(function(t) {
+    return t.status === "upcoming" || t.status === "active" || (t.endDate && t.endDate >= today);
   });
+  var pastTrips = trips.filter(function(t) {
+    return !activeTrips.find(function(a) { return a.id === t.id; });
+  }).reverse(); // most recent first
+
+  var h = '<div class="sh"><h2>Events</h2><button class="btn-sm green" onclick="Router.go(\'trips\',{create:true})">+ New event</button></div>';
+
+  function tripCard(t) {
+    var memberAvatars = (t.members || []).slice(0, 4).map(function(id) {
+      var p = PB.getPlayer(id) || (typeof fbMemberCache !== "undefined" && fbMemberCache[id]);
+      return p ? '<div class="h2h-av" style="width:24px;height:24px;margin-left:-6px;border:1.5px solid var(--bg)">' + Router.getAvatar(p) + '</div>' : '';
+    }).join('');
+    var winner = t.champion ? (PB.getPlayer(t.champion) || (typeof fbMemberCache !== "undefined" && fbMemberCache[t.champion]) || {name: t.champion}) : null;
+    var card = '<div class="card" onclick="Router.go(\'scorecard\',{tripId:\'' + t.id + '\'})">';
+    card += '<div class="trip-row"><div class="trip-info">';
+    card += '<div class="trip-name">' + escHtml(t.name) + '</div>';
+    card += '<div class="trip-detail">' + escHtml(t.dates) + ' · ' + escHtml(t.location) + '</div>';
+    if ((t.members || []).length) {
+      card += '<div style="display:flex;align-items:center;margin-top:6px">' + memberAvatars;
+      card += '<span style="font-size:11px;color:var(--muted);margin-left:8px">' + t.members.length + ' members · ' + (t.courses || []).length + ' rounds</span></div>';
+    }
+    card += '</div>';
+    var badge = winner
+      ? '<div style="text-align:right"><span class="badge gld" style="font-size:9px">' + escHtml(winner.name || winner.username) + '</span><div style="font-size:9px;color:var(--gold);margin-top:4px;letter-spacing:.3px">Champion</div></div>'
+      : t.status === "upcoming"
+        ? '<span class="badge">Upcoming</span>'
+        : '<span class="badge">Active</span>';
+    card += '<div>' + badge + '</div></div></div>';
+    return card;
+  }
+
+  // Active / upcoming events
+  if (activeTrips.length) {
+    activeTrips.forEach(function(t) { h += tripCard(t); });
+  } else {
+    h += '<div class="card"><div class="empty" style="padding:24px"><div class="empty-text">No upcoming events</div>';
+    h += '<div style="font-size:10px;color:var(--muted2);margin-top:4px">Create one to get the group planning</div></div></div>';
+  }
+
+  // Past events — collapsible, collapsed by default
+  if (pastTrips.length) {
+    h += '<div style="padding:8px 16px 0">';
+    h += '<div id="pastEventsToggle" onclick="togglePastEvents()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:10px 0;border-top:1px solid var(--border)">';
+    h += '<span style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.8px">Past Events (' + pastTrips.length + ')</span>';
+    h += '<svg id="pastEventsChevron" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>';
+    h += '</div></div>';
+    h += '<div id="pastEventsList" style="display:none">';
+    pastTrips.forEach(function(t) { h += tripCard(t); });
+    h += '</div>';
+  }
+
   document.querySelector('[data-page="trips"]').innerHTML = h;
 });
+
+function togglePastEvents() {
+  var list = document.getElementById("pastEventsList");
+  var chevron = document.getElementById("pastEventsChevron");
+  if (!list) return;
+  var isOpen = list.style.display !== "none";
+  list.style.display = isOpen ? "none" : "block";
+  if (chevron) chevron.style.transform = isOpen ? "" : "rotate(180deg)";
+}
 
 function renderTripCreate() {
   tripCreateState = { members: [], courses: [] };
@@ -7044,7 +7097,7 @@ function renderTripCreate() {
   h += '<div id="tc-members">';
   allPlayers.forEach(function(p) {
     h += '<div class="h2h-row" style="cursor:pointer" onclick="toggleTripMember(\'' + p.id + '\')">';
-    h += '<div class="h2h-left"><div class="h2h-av">' + Router.getAvatar(p) + '</div><span class="h2h-name">' + p.name + '</span>';
+    h += '<div class="h2h-left"><div class="h2h-av" style="border-color:' + playerFrameColor(p) + '">' + Router.getAvatar(p) + '</div><span class="h2h-name">' + p.name + '</span>';
     if (p.founding) h += '<span style="font-size:9px;color:var(--gold);margin-left:6px"></span>';
     h += '</div>';
     h += '<div id="tc-check-' + p.id + '" style="width:22px;height:22px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--birdie)"></div>';
@@ -10086,7 +10139,7 @@ function renderChatMessages(messages) {
     // Header
     var isSystem = msg.authorId === "system";
     ch += '<div style="display:flex;gap:10px">';
-    ch += '<div class="c-av" style="background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center">' + (isSystem ? '⛳' : (m ? Router.getAvatar(m) : '')) + '</div>';
+    ch += '<div class="c-av" style="background:var(--bg3);border:1px solid ' + (isSystem ? 'var(--border)' : (m ? playerFrameColor(m) : 'var(--border)')) + ';display:flex;align-items:center;justify-content:center">' + (isSystem ? '⛳' : (m ? Router.getAvatar(m) : '')) + '</div>';
     ch += '<div style="flex:1"><div class="chat-author"' + (isSystem ? ' style="color:var(--birdie)"' : '') + '>' + escHtml(msg.authorName||"Anon") + (mLvl && !isSystem ? ' <span style="font-size:8px;color:var(--gold);font-weight:600">LV' + mLvl.level + '</span>' : '') + '</div>';
     ch += '<div class="chat-text">' + escHtml(msg.text) + '</div>';
     if (msg.createdAt && msg.createdAt.toDate) {
@@ -10424,7 +10477,7 @@ Router.register("dms", function() {
       var convoId = getDmConvoId(currentUser.uid, m.id);
       var last = dmConversations[convoId];
       dh += '<div class="dm-list-item" onclick="Router.go(\'dm-thread\',{partner:\'' + m.id + '\'})">';
-      dh += '<div class="m-av">' + Router.getAvatar(m) + '</div>';
+      dh += '<div class="m-av" style="border-color:' + playerFrameColor(m) + '">' + Router.getAvatar(m) + '</div>';
       dh += '<div class="m-info"><div class="m-name">' + escHtml(m.name || m.username || m.id) + '</div>';
       dh += '<div style="font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (last ? escHtml(last.text) : "Start a conversation") + '</div>';
       dh += '</div></div>';
@@ -10499,8 +10552,9 @@ Router.register("dm-thread", function(params) {
   function setHeader(name, partner) {
     var hdr = document.getElementById("dmThreadHeader");
     if (!hdr) return;
+    var partnerFC = partner ? playerFrameColor(partner) : 'var(--border)';
     var av = partner ? Router.getAvatar(partner) : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg3);border-radius:50%;color:var(--gold);font-weight:700;font-size:12px">' + (name||"?").charAt(0).toUpperCase() + '</div>';
-    hdr.innerHTML = '<div style="display:flex;align-items:center;gap:8px"><div class="m-av" style="width:28px;height:28px;font-size:10px">' + av + '</div><h2 style="font-size:16px">' + escHtml(name) + '</h2></div><button class="back" onclick="Router.go(\'dms\')">← Back</button>';
+    hdr.innerHTML = '<div style="display:flex;align-items:center;gap:8px"><div class="m-av" style="width:28px;height:28px;font-size:10px;border-color:' + partnerFC + '">' + av + '</div><h2 style="font-size:16px">' + escHtml(name) + '</h2></div><button class="back" onclick="Router.go(\'dms\')">← Back</button>';
     var inp = document.getElementById("dmInput");
     if (inp) inp.placeholder = "Message " + name + "...";
   }
@@ -10645,6 +10699,11 @@ Router.register("admin", function() {
   h += '<div id="bulkResult"></div>';
   h += '</div></div></div>';
 
+  // Feature Requests
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Feature Requests</span></div>';
+  h += '<div id="adminFeatureRequests"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
+  h += '</div>';
+
   // Course Management
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Course Management</span></div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Remove duplicate or incorrectly added courses. API-imported courses are preferred.</div>';
@@ -10657,7 +10716,73 @@ Router.register("admin", function() {
   loadAdminReports();
   loadAdminMemberList();
   loadAdminInviteList();
+  loadAdminFeatureRequests();
 });
+
+function loadAdminFeatureRequests() {
+  var el = document.getElementById("adminFeatureRequests");
+  if (!el || !db) { if (el) el.innerHTML = '<div style="font-size:11px;color:var(--muted)">Requires Firebase</div>'; return; }
+  db.collection("feature_requests").orderBy("createdAt", "desc").limit(30).get().then(function(snap) {
+    if (snap.empty) {
+      el.innerHTML = '<div class="card"><div class="card-body" style="text-align:center"><div style="font-size:11px;color:var(--muted)">No requests yet</div></div></div>';
+      return;
+    }
+    var h = '';
+    snap.forEach(function(doc) {
+      var r = Object.assign({_id: doc.id}, doc.data());
+      var ts = r.createdAt && r.createdAt.toDate ? r.createdAt.toDate() : null;
+      var dateStr = ts ? (["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][ts.getMonth()] + " " + ts.getDate()) : "";
+      var statusColors = {new:"var(--birdie)", reviewing:"var(--gold)", done:"var(--muted)", declined:"var(--red)"};
+      var statusColor = statusColors[r.status] || "var(--muted)";
+      h += '<div class="card"><div class="card-body">';
+      h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">';
+      h += '<div style="flex:1">';
+      h += '<div style="font-size:12px;font-weight:600;color:var(--cream);line-height:1.4">' + escHtml(r.request || "") + '</div>';
+      h += '<div style="font-size:10px;color:var(--muted);margin-top:4px">' + escHtml(r.fromName || "Member") + (dateStr ? ' · ' + dateStr : '') + '</div>';
+      h += '</div>';
+      h += '<span style="font-size:8px;font-weight:700;color:' + statusColor + ';background:' + statusColor + '18;padding:2px 7px;border-radius:4px;letter-spacing:.5px;white-space:nowrap;flex-shrink:0">' + (r.status || "new").toUpperCase() + '</span>';
+      h += '</div>';
+      h += '<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">';
+      h += '<button class="btn-sm outline" style="font-size:9px" onclick="setFeatureRequestStatus(\'' + r._id + '\',\'reviewing\')">Mark reviewing</button>';
+      h += '<button class="btn-sm outline" style="font-size:9px;color:var(--birdie);border-color:var(--birdie)" onclick="setFeatureRequestStatus(\'' + r._id + '\',\'done\')">Mark done</button>';
+      h += '<button class="btn-sm outline" style="font-size:9px;color:var(--muted2)" onclick="setFeatureRequestStatus(\'' + r._id + '\',\'declined\')">Decline</button>';
+      h += '</div>';
+      h += '</div></div>';
+    });
+    el.innerHTML = h;
+  }).catch(function(e) {
+    // orderBy might fail without an index — fall back to unordered
+    db.collection("feature_requests").limit(30).get().then(function(snap2) {
+      if (snap2.empty) { el.innerHTML = '<div class="card"><div class="card-body" style="text-align:center"><div style="font-size:11px;color:var(--muted)">No requests yet</div></div></div>'; return; }
+      var h = '';
+      snap2.forEach(function(doc) {
+        var r = Object.assign({_id: doc.id}, doc.data());
+        var statusColors = {new:"var(--birdie)", reviewing:"var(--gold)", done:"var(--muted)", declined:"var(--red)"};
+        var statusColor = statusColors[r.status] || "var(--muted)";
+        h += '<div class="card"><div class="card-body">';
+        h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">';
+        h += '<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(r.request || "") + '</div>';
+        h += '<div style="font-size:10px;color:var(--muted);margin-top:4px">' + escHtml(r.fromName || "Member") + '</div></div>';
+        h += '<span style="font-size:8px;font-weight:700;color:' + statusColor + ';background:' + statusColor + '18;padding:2px 7px;border-radius:4px;letter-spacing:.5px;white-space:nowrap;flex-shrink:0">' + (r.status || "new").toUpperCase() + '</span>';
+        h += '</div>';
+        h += '<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">';
+        h += '<button class="btn-sm outline" style="font-size:9px" onclick="setFeatureRequestStatus(\'' + r._id + '\',\'reviewing\')">Mark reviewing</button>';
+        h += '<button class="btn-sm outline" style="font-size:9px;color:var(--birdie);border-color:var(--birdie)" onclick="setFeatureRequestStatus(\'' + r._id + '\',\'done\')">Mark done</button>';
+        h += '<button class="btn-sm outline" style="font-size:9px;color:var(--muted2)" onclick="setFeatureRequestStatus(\'' + r._id + '\',\'declined\')">Decline</button>';
+        h += '</div></div></div>';
+      });
+      el.innerHTML = h;
+    }).catch(function() { el.innerHTML = '<div style="font-size:11px;color:var(--muted)">Could not load requests</div>'; });
+  });
+}
+
+function setFeatureRequestStatus(id, status) {
+  if (!db) return;
+  db.collection("feature_requests").doc(id).update({ status: status }).then(function() {
+    Router.toast("Marked " + status);
+    loadAdminFeatureRequests();
+  }).catch(function() { Router.toast("Failed to update"); });
+}
 
 function loadAdminReports() {
   if (!db) { document.getElementById("adminReports").innerHTML = '<div style="font-size:11px;color:var(--muted)">Requires Firebase</div>'; return; }
@@ -11998,8 +12123,8 @@ function openNotifPanel() {
   notifPanelOpen = true;
   var panel = document.getElementById("notifPanel");
   var overlay = document.getElementById("notifOverlay");
-  if (panel) panel.classList.add("open");
-  if (overlay) overlay.classList.add("open");
+  if (panel) { panel.classList.add("open"); panel.style.pointerEvents = "auto"; }
+  if (overlay) { overlay.classList.add("open"); overlay.style.pointerEvents = "auto"; }
   renderNotifPanel();
 }
 
@@ -12007,8 +12132,8 @@ function closeNotifPanel() {
   notifPanelOpen = false;
   var panel = document.getElementById("notifPanel");
   var overlay = document.getElementById("notifOverlay");
-  if (panel) panel.classList.remove("open");
-  if (overlay) overlay.classList.remove("open");
+  if (panel) { panel.classList.remove("open"); panel.style.pointerEvents = "none"; }
+  if (overlay) { overlay.classList.remove("open"); overlay.style.pointerEvents = "none"; }
 }
 
 function toggleNotifPanel() {
@@ -13171,24 +13296,30 @@ function renderOnlineSection() {
     
     var name = (p ? (p.name || p.username) : null) || data.name || "Member";
     var isMe = currentUser && uid === currentUser.uid;
-    
+    var lvlForOnline = PB.getPlayerLevel(uid);
+    var lvlNum = lvlForOnline ? lvlForOnline.level : null;
+    var onlineFC = p ? playerFrameColor(p) : (isMe ? 'var(--gold)' : 'rgba(74,222,128,.4)');
+
     // Try to get photo directly from cache using Firebase UID
     var directPhoto = photoCache["member:" + uid];
-    
+
     h += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0" onclick="Router.go(\'members\',{id:\'' + uid + '\'})">';
-    h += '<div style="position:relative;width:40px;height:40px;border-radius:50%;overflow:hidden;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid ' + (isMe ? 'var(--gold)' : 'rgba(74,222,128,.4)') + ';cursor:pointer">';
-    
+    h += '<div style="position:relative;width:40px;height:40px;flex-shrink:0">';
+    h += '<div style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid ' + onlineFC + ';cursor:pointer">';
+
     if (directPhoto) {
-      // We found a photo cached directly under the Firebase UID
       h += '<img alt="" src="' + directPhoto + '" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">';
     } else if (avatarPlayer) {
       h += Router.getAvatar(avatarPlayer);
     } else {
       h += '<span style="color:var(--gold);font-weight:700">' + name.charAt(0).toUpperCase() + '</span>';
     }
-    
+
     h += '</div>';
-    h += '<div style="font-size:9px;color:' + (isMe ? 'var(--gold)' : 'var(--muted)') + ';max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center">' + escHtml(name) + '</div>';
+    // Level badge on avatar bottom-right
+    if (lvlNum) h += '<div style="position:absolute;bottom:-3px;right:-3px;background:var(--gold);color:#0d1117;font-size:7px;font-weight:800;border-radius:6px;padding:1px 3px;border:1.5px solid var(--bg);line-height:1.3;min-width:12px;text-align:center;z-index:2">' + lvlNum + '</div>';
+    h += '</div>';
+    h += '<div style="font-size:9px;color:' + (isMe ? 'var(--gold)' : 'var(--muted)') + ';max-width:44px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center">' + escHtml(name) + '</div>';
     h += '</div>';
   });
   
