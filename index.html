@@ -830,7 +830,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.7.64 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
+   PARBAUGHS v5.7.66 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -6725,6 +6725,7 @@ function renderPlaySetup() {
   h += '<div id="pn-tee-section"></div>';
 
   h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="pn-format" onchange="onPlayFormatChange()"><option value="stroke">Stroke play</option><option value="parbaugh">Parbaugh Stroke Play (handicap-adjusted)</option><option value="stableford">Stableford</option><option value="match">Match play</option><option value="scramble">Scramble</option><option value="bestball">Best ball</option><option value="skins">Skins</option></select></div>';
+  h += '<div class="ff"><label class="ff-label">Holes</label><select class="ff-input" id="pn-holes"><option value="18">18 holes</option><option value="front9">Front 9 (holes 1–9)</option><option value="back9">Back 9 (holes 10–18)</option></select></div>';
   h += '<div id="pn-scramble-team-section"></div>';
 
   h += '<button class="btn full green" onclick="startLiveRound()" style="margin-top:8px">Tee it up</button>';
@@ -7022,6 +7023,11 @@ function startLiveRound() {
     else if (courseData.holes && courseData.holes.length) holes = courseData.holes;
   }
 
+  var holesEl = document.getElementById("pn-holes");
+  var holesMode = holesEl ? holesEl.value : "18"; // "18", "front9", "back9"
+  var startHole = holesMode === "back9" ? 9 : 0;
+  var maxHoles = holesMode === "18" ? 18 : 9;
+
   liveState = {
     active: true,
     player: player,
@@ -7034,9 +7040,11 @@ function startLiveRound() {
     par: coursePar,
     holes: holes,
     format: fmt,
+    holesMode: holesMode,
     scrambleTeamId: scrambleTeamId,
     startTime: Date.now(),
-    currentHole: 0,
+    currentHole: startHole,
+    maxHoles: maxHoles,
     scores: Array(18).fill(""),
     fir: Array(18).fill(false),
     gir: Array(18).fill(false),
@@ -7250,7 +7258,8 @@ function renderLiveScoring() {
   if (hole > 0) {
     h += '<button class="btn outline" style="flex:0 0 80px;padding:14px 0;font-size:12px" onclick="liveNavPrev()">← Prev</button>';
   }
-  if (hole < 17) {
+  var lastHole = liveState.holesMode === "front9" ? 8 : 17;
+  if (hole < lastHole) {
     h += '<button class="btn green" style="flex:1;padding:14px 0;font-size:14px;font-weight:700" onclick="liveNavNext(' + hole + ')">Next hole →</button>';
   } else {
     h += '<button class="btn green" style="flex:1;padding:14px 0;font-size:14px;font-weight:700" onclick="showFinishOptions()">Finish round</button>';
@@ -7308,8 +7317,12 @@ function cyclePutts(hole) {
 }
 
 function finishLiveRound() {
+  var startHole = liveState.holesMode === "back9" ? 9 : 0;
+  var endHole = liveState.holesMode === "front9" ? 9 : 18;
   var totalScore = 0, completed = 0;
-  liveState.scores.forEach(function(s) { if (s !== "") { totalScore += parseInt(s); completed++; } });
+  for (var hi = startHole; hi < endHole; hi++) {
+    if (liveState.scores[hi] !== "") { totalScore += parseInt(liveState.scores[hi]); completed++; }
+  }
 
   if (completed < 9) { Router.toast("Play at least 9 holes"); return; }
 
@@ -7321,7 +7334,7 @@ function finishLiveRound() {
     course: liveState.course,
     score: totalScore,
     date: new Date().toISOString().split("T")[0],
-    rating: liveState.rating,
+    rating: completed <= 9 ? (liveState.rating || 72) / 2 : (liveState.rating || 72),
     slope: liveState.slope,
     format: liveState.format,
     holesPlayed: completed,
@@ -11891,10 +11904,10 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.64</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.66</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.64</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.66</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -12010,7 +12023,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.64</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.66</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
@@ -12522,6 +12535,7 @@ function renderSyncRoundSetup() {
   h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="sync-course" placeholder="Start typing..." oninput="showSyncCourseSearch(this)"><div id="search-sync-course" class="search-results"></div></div>';
   h += '<input type="hidden" id="sync-rating" value=""><input type="hidden" id="sync-slope" value="">';
   h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="sync-format"><option value="stroke">Stroke play</option><option value="parbaugh">Parbaugh Stroke Play (handicap-adjusted)</option><option value="stableford">Stableford</option><option value="scramble">Scramble</option><option value="bestball">Best Ball</option><option value="match">Match Play</option><option value="skins">Skins</option></select></div>';
+  h += '<div class="ff"><label class="ff-label">Holes</label><select class="ff-input" id="sync-holes"><option value="18">18 holes</option><option value="front9">Front 9 (holes 1–9)</option><option value="back9">Back 9 (holes 10–18)</option></select></div>';
   h += '<button class="btn full green" onclick="createSyncRound()">Create Parbaugh Round</button>';
   h += '</div>';
   
@@ -12569,6 +12583,9 @@ function createSyncRound() {
   var format = document.getElementById("sync-format").value;
   var rating = parseFloat(document.getElementById("sync-rating").value) || 72;
   var slope = parseInt(document.getElementById("sync-slope").value) || 113;
+  var holesEl = document.getElementById("sync-holes");
+  var holesMode = holesEl ? holesEl.value : "18"; // "18", "front9", "back9"
+  var startHole = holesMode === "back9" ? 9 : 0;
   
   var myId = currentUser.uid;
   var myName = currentProfile ? PB.getDisplayName(currentProfile) : "Unknown";
@@ -12580,9 +12597,10 @@ function createSyncRound() {
     rating: rating,
     slope: slope,
     format: format,
+    holesMode: holesMode,
     status: "active",
     players: players,
-    currentHole: 0,
+    currentHole: startHole,
     createdBy: myId,
     createdByName: myName,
     createdAt: fsTimestamp()
@@ -12730,38 +12748,54 @@ function finishSyncRound(roundId) {
     var data = doc.data();
     var players = data.players || {};
     
-    // Create individual rounds for each player
+    // Create individual rounds for each player — minimum 9 holes required
+    var holesMode = data.holesMode || "18";
+    var startHole = holesMode === "back9" ? 9 : 0;
+    var endHole = holesMode === "front9" ? 9 : 18;
     var playerIds = [];
+    var skipped = [];
     Object.keys(players).forEach(function(pid) {
       var p = players[pid];
       var scores = p.scores || [];
-      var total = scores.reduce(function(a, v) { return a + (parseInt(v) || 0); }, 0);
-      if (total > 0) {
-        var round = {
-          id: genId(),
-          player: pid,
-          playerId: pid,
-          playerName: p.name,
-          course: data.courseName,
-          score: total,
-          holeScores: scores,
-          date: new Date().toISOString().split("T")[0],
-          rating: data.rating || 72,
-          slope: data.slope || 113,
-          format: data.format,
-          visibility: "public",
-          syncedRound: true,
-          syncRoundId: roundId
-        };
-        // Save to Firestore
-        db.collection("rounds").doc(round.id).set(Object.assign({}, round, { createdAt: fsTimestamp() }));
-        // Save to local PB if the player is local
-        var localPlayer = PB.getPlayer(pid);
-        if (localPlayer) PB.addRound(round);
-        playerIds.push(pid);
+      // Count scored holes within the selected range only
+      var holesPlayed = 0, total = 0;
+      for (var hi = startHole; hi < endHole; hi++) {
+        var s = scores[hi];
+        if (s !== "" && s !== null && s !== undefined) { holesPlayed++; total += parseInt(s) || 0; }
       }
+      if (holesPlayed < 9) { skipped.push(p.name || pid); return; }
+      var is9 = holesPlayed <= 9;
+      var round = {
+        id: genId(),
+        player: pid,
+        playerId: pid,
+        playerName: p.name,
+        course: data.courseName,
+        score: total,
+        holeScores: scores.slice(startHole, endHole),
+        holesPlayed: holesPlayed,
+        holesMode: holesMode,
+        date: new Date().toISOString().split("T")[0],
+        rating: is9 ? (data.rating || 72) / 2 : (data.rating || 72),
+        slope: data.slope || 113,
+        format: data.format,
+        visibility: "public",
+        syncedRound: true,
+        syncRoundId: roundId
+      };
+      db.collection("rounds").doc(round.id).set(Object.assign({}, round, { createdAt: fsTimestamp() }));
+      var localPlayer = PB.getPlayer(pid);
+      if (localPlayer) PB.addRound(round);
+      playerIds.push(pid);
     });
-    // Persist updated stats for all players after a short delay
+    
+    if (playerIds.length === 0) {
+      Router.toast("Need at least 9 holes scored per player");
+      return Promise.reject("not enough holes");
+    }
+    if (skipped.length) Router.toast(skipped.join(", ") + " skipped — need 9+ holes");
+    
+    // Persist updated stats for all saved players
     setTimeout(function() {
       playerIds.forEach(function(pid) { persistPlayerStats(pid); });
     }, 2000);
@@ -12772,8 +12806,11 @@ function finishSyncRound(roundId) {
     if (syncRoundListener) { syncRoundListener(); syncRoundListener = null; }
     Router.toast("Round finished! Scores saved.");
     Router.go("rounds");
+  }).catch(function(e) {
+    if (e !== "not enough holes") pbWarn("[SyncRound] finish failed:", e);
   });
 }
+
 
 
 
