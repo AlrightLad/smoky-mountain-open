@@ -830,7 +830,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 
 <script>
 /* ================================================
-   PARBAUGHS v5.7.60 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
+   PARBAUGHS v5.7.64 — SHARE CARD REDESIGN · GOLF SYMBOLS · LOGO · FIRESTORE RULES · TEAM RENAME SYNC
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
@@ -1318,9 +1318,20 @@ if (firebaseAvailable && auth) {
     if (user) {
       db.collection("members").doc(user.uid).get().then(function(doc) {
         currentProfile = doc.exists ? doc.data() : { id:user.uid, name:user.displayName||"Member", role:"member" };
-        // Restore share count from Firestore so achievements persist across sessions/devices
         window._pbShareCount = (currentProfile.shareCount || 0);
         enterApp();
+        // Start real-time profile listener — keeps currentProfile in sync across devices/sessions
+        db.collection("members").doc(user.uid).onSnapshot(function(snap) {
+          if (!snap.exists) return;
+          currentProfile = snap.data();
+          window._pbShareCount = (currentProfile.shareCount || 0);
+          updateProfileBar();
+          // Re-render current page if it depends on profile data
+          var pg = Router.getPage();
+          if (pg === "home" || pg === "members" || pg === "settings") {
+            Router.go(pg, Router.getParams(), true);
+          }
+        }, function() {}); // silent catch — offline is fine
       }).catch(function() {
         currentProfile = { id:user.uid, name:user.displayName||"Member", role:"member" };
         enterApp();
@@ -1344,6 +1355,7 @@ function enterApp() {
   syncScrambleTeamsFromFirestore();
   syncTripsFromFirestore();
   loadRoundsFromFirestore();
+  startRoundsListener(); // real-time listener keeps rounds in sync across devices
   loadCustomDrillsFromFirestore();
   loadLiveState(); // restore any in-progress round that survived a crash or page reload
   // Check for newly earned achievements after data loads (deferred)
@@ -1509,6 +1521,41 @@ function syncCoursesFromFirestore() {
 
 function syncMember(m) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(m)); d.updatedAt=fsTimestamp(); delete d.photo; db.collection("members").doc(m.id).set(d,{merge:true}).catch(function(){}); }
 function syncRound(r) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(r)); d.createdAt=fsTimestamp(); db.collection("rounds").doc(r.id||genId()).set(d,{merge:true}).catch(function(){}); }
+
+// Compute and persist player stats to Firestore member doc after any round change.
+// This ensures handicap, XP, level, avg, and best are always current even if rounds fail to load.
+function persistPlayerStats(pid) {
+  if (!db || !pid) return;
+  // Resolve Firestore doc ID — may differ from seed/claimedFrom ID
+  var docId = pid;
+  if (currentUser && (pid === currentUser.uid || pid === (currentProfile && currentProfile.claimedFrom))) {
+    docId = currentUser.uid;
+  } else if (typeof fbMemberCache !== "undefined" && fbMemberCache[pid] && fbMemberCache[pid].id) {
+    docId = fbMemberCache[pid].id;
+  }
+  var rounds = PB.getPlayerRounds(pid);
+  if (!rounds.length && typeof fbMemberCache !== "undefined") {
+    var cached = fbMemberCache[pid];
+    if (cached && cached.claimedFrom) rounds = PB.getPlayerRounds(cached.claimedFrom);
+  }
+  var publicRounds = rounds.filter(function(r){return r.visibility !== "private";});
+  var handicap = PB.calcHandicap(rounds); // handicap uses all rounds incl private
+  var avg = publicRounds.length ? Math.round(publicRounds.reduce(function(a,r){return a+r.score;},0)/publicRounds.length) : null;
+  var best = publicRounds.length ? Math.min.apply(null, publicRounds.map(function(r){return r.score;})) : null;
+  var xp = PB.getPlayerXP(pid);
+  var level = PB.getPlayerLevel(pid);
+  var stats = {
+    handicap: handicap !== null ? handicap : null,
+    avgScore: avg,
+    bestRound: best,
+    roundCount: rounds.length,
+    xp: xp,
+    level: level.level,
+    updatedAt: fsTimestamp()
+  };
+  db.collection("members").doc(docId).update(stats).catch(function(){});
+  pbLog("[Stats] Persisted stats for", docId, "handicap:", handicap, "xp:", xp);
+}
 function syncCourse(c) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(c)); d.updatedAt=fsTimestamp(); delete d.photo; db.collection("courses").doc(c.id).set(d,{merge:true}).catch(function(){}); }
 function syncTrip(t) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(t)); d.updatedAt=fsTimestamp(); if(d.photos){delete d.photos;} db.collection("trips").doc(t.id).set(d,{merge:true}).catch(function(){}); }
 
@@ -1595,7 +1642,14 @@ function startRoundsListener() {
   _roundsListener = db.collection("rounds").orderBy("date", "desc").limit(500).onSnapshot(function(snap) {
     var fsRounds = [];
     snap.forEach(function(doc) { var d = doc.data(); if (d && d.id) fsRounds.push(d); });
-    if (fsRounds.length > 0) PB.setRoundsFromFirestore(fsRounds);
+    if (fsRounds.length > 0) {
+      PB.setRoundsFromFirestore(fsRounds);
+      // Re-render pages that display round data
+      var pg = Router.getPage();
+      if (pg === "rounds" || pg === "records" || pg === "activity" || pg === "standings" || pg === "home") {
+        Router.go(pg, Router.getParams(), true);
+      }
+    }
   }, function(err) { pbWarn("[RoundsListener]", err.message); });
 }
 
@@ -2418,7 +2472,7 @@ var PB = (function() {
   function addRound(data) {
     var p = getPlayer(data.player);
     var r = {
-      id: Date.now().toString(36),
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
       player: data.player,
       playerName: data.playerName || (p ? p.name : data.player),
       course: data.course,
@@ -2431,7 +2485,8 @@ var PB = (function() {
       highlights: data.highlights || [],
       blunders: data.blunders || [],
       scorecardPhoto: data.scorecardPhoto || "",
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      visibility: data.visibility || "public"
     };
     // Preserve Play Now fields when present
     if (data.holeScores) r.holeScores = data.holeScores;
@@ -2594,7 +2649,7 @@ var PB = (function() {
   function addScrambleTeam(data) {
     if (!state.scrambleTeams) state.scrambleTeams = [];
     var team = {
-      id: Date.now().toString(36),
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
       name: data.name,
       members: data.members,
       captain: data.captain || data.members[0],
@@ -2690,8 +2745,12 @@ var PB = (function() {
   }
 
   function getPlayerAvg(pid) {
-    var r = getPlayerRounds(pid);
-    return r.length ? Math.round(r.reduce(function(a, x) { return a + x.score; }, 0) / r.length) : null;
+    var r = getPlayerRounds(pid).filter(function(rd){return rd.visibility !== "private";});
+    if (r.length) return Math.round(r.reduce(function(a, x) { return a + x.score; }, 0) / r.length);
+    // Fallback to Firestore-persisted value when rounds not yet loaded
+    var p = getPlayer(pid);
+    var cached = (typeof fbMemberCache !== "undefined") && (fbMemberCache[pid] || (p && p.claimedFrom && fbMemberCache[p.claimedFrom]));
+    return (cached && cached.avgScore) ? cached.avgScore : null;
   }
 
   function getDisplayName(p) {
@@ -2703,9 +2762,14 @@ var PB = (function() {
   }
 
   function getPlayerBest(pid) {
-    var r = getPlayerRounds(pid);
-    return r.length ? Math.min.apply(null, r.map(function(x) { return x.score; })) : null;
+    var r = getPlayerRounds(pid).filter(function(rd){return rd.visibility !== "private";});
+    if (r.length) return Math.min.apply(null, r.map(function(x) { return x.score; }));
+    // Fallback to Firestore-persisted value when rounds not yet loaded
+    var p = getPlayer(pid);
+    var cached = (typeof fbMemberCache !== "undefined") && (fbMemberCache[pid] || (p && p.claimedFrom && fbMemberCache[p.claimedFrom]));
+    return (cached && cached.bestRound) ? cached.bestRound : null;
   }
+
 
   function getUniqueCourses(pid) {
     var r = getPlayerRounds(pid);
@@ -3757,7 +3821,7 @@ var PB = (function() {
   function createChallenge(fromId, toId, courseId, stakes) {
     if (!state.challenges) state.challenges = [];
     var challenge = {
-      id: Date.now().toString(36),
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
       from: fromId,
       to: toId,
       course: courseId,
@@ -3874,7 +3938,7 @@ var PB = (function() {
     if (!p) return null;
     if (!p.posts) p.posts = [];
     var newPost = {
-      id: Date.now().toString(36),
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
       type: post.type || "text", // text, photo, round, h2h
       text: post.text || "",
       photo: post.photo || "",
@@ -4762,7 +4826,7 @@ function renderMemberListHtml(players, h) {
     if (p.role === "removed") return;
     var avg = PB.getPlayerAvg(p.id);
     var rounds = PB.getPlayerRounds(p.id);
-    var hcap = PB.calcHandicap(rounds) || (p.manualHandicap || p.handicap || null);
+    var hcap = PB.calcHandicap(rounds) || (p.manualHandicap || p.handicap || p.handicapIndex || null);
     var plvl = {level:1};
     try { plvl = PB.getPlayerLevel(p.id) || {level:1}; } catch(e) {}
     var achs = []; try { achs = PB.getAchievements(p.id) || []; } catch(e) {}
@@ -5081,11 +5145,14 @@ function renderMemberDetailWithData(p) {
 
   // === TEAMS (collapsible) ===
   var teams = PB.getScrambleTeams();
-  // Match team membership by UID or by claimedFrom seed ID
+  // Match team membership by UID, claimedFrom seed ID, or username
   var pClaimedFrom = p.claimedFrom || null;
+  var pUsername = p.username || null;
   var playerTeams = teams.filter(function(t) {
+    if (!t.members) return false;
     return t.members.indexOf(pid) !== -1 ||
-           (pClaimedFrom && t.members.indexOf(pClaimedFrom) !== -1);
+           (pClaimedFrom && t.members.indexOf(pClaimedFrom) !== -1) ||
+           (pUsername && t.members.indexOf(pUsername) !== -1);
   });
   var teamContent = '';
   if (playerTeams.length) {
@@ -5494,6 +5561,32 @@ function doSaveMemberEdit(pid, updates) {
   var nameChanged = oldName && updates.name && oldName !== updates.name;
   var usernameChanged = oldUsername && updates.username && oldUsername !== updates.username;
 
+  // Determine the correct Firestore doc ID to write to
+  // Could be editing own profile (pid = uid) or commissioner editing another member
+  // Also handles founding members whose Firestore doc ID differs from their seed ID
+  function getFirestoreDocId() {
+    if (currentUser && pid === currentUser.uid) return currentUser.uid;
+    // Check fbMemberCache for the Firestore UID that claimedFrom matches pid
+    if (typeof fbMemberCache !== "undefined") {
+      var cached = fbMemberCache[pid];
+      if (cached && cached.id) return cached.id;
+    }
+    return pid; // fallback
+  }
+
+  function writeToFirestore(finalUpdates) {
+    if (!db) return;
+    var docId = getFirestoreDocId();
+    var fsUpdates = Object.assign({}, finalUpdates, { updatedAt: fsTimestamp() });
+    db.collection("members").doc(docId).set(fsUpdates, { merge: true }).then(function() {
+      // Keep currentProfile in sync if this is the logged-in user
+      if (currentUser && (docId === currentUser.uid || pid === currentUser.uid)) {
+        currentProfile = Object.assign(currentProfile || {}, fsUpdates);
+      }
+      pbLog("[Profile] Saved to Firestore:", docId);
+    }).catch(function(e) { pbWarn("[Profile] Firestore save failed:", e.message); });
+  }
+
   var bagInput = document.getElementById("edit-bagphoto");
   if (bagInput && bagInput.files && bagInput.files[0]) {
     var reader = new FileReader();
@@ -5508,6 +5601,7 @@ function doSaveMemberEdit(pid, updates) {
         canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
         updates.bagPhoto = canvas.toDataURL("image/jpeg", 0.7);
         PB.updatePlayer(pid, updates);
+        writeToFirestore(updates);
         if (nameChanged) propagateNameChange(pid, oldName, updates.name);
         Router.toast("Profile saved!");
         Router.go("members", { id: pid });
@@ -5517,14 +5611,7 @@ function doSaveMemberEdit(pid, updates) {
     reader.readAsDataURL(bagInput.files[0]);
   } else {
     PB.updatePlayer(pid, updates);
-    // Also save to Firestore
-    if (db && currentUser && pid === currentUser.uid) {
-      updates.updatedAt = fsTimestamp();
-      db.collection("members").doc(pid).set(updates, { merge: true }).then(function() {
-        currentProfile = Object.assign(currentProfile || {}, updates);
-      });
-    }
-    syncMember(Object.assign({id:pid}, updates));
+    writeToFirestore(updates);
     if (nameChanged) propagateNameChange(pid, oldName, updates.name);
     Router.toast("Profile saved!");
     Router.go("members", { id: pid });
@@ -7241,10 +7328,14 @@ function finishLiveRound() {
     holeScores: liveState.scores.slice(),
     firData: liveState.fir.slice(),
     girData: liveState.gir.slice(),
-    puttsData: liveState.putts.slice()
+    puttsData: liveState.putts.slice(),
+    visibility: liveState.visibility || "public"
   });
   // Sync to Firestore immediately — critical for cross-device visibility and loadRoundsFromFirestore
   syncRound(round);
+
+  // Persist computed stats back to member doc so they're always available even if rounds don't load
+  setTimeout(function() { persistPlayerStats(liveState.player); }, 2000);
 
   // Calculate stats
   var firCount = 0, girCount = 0, totalPutts = 0;
@@ -8356,7 +8447,7 @@ function renderRoundDetail(roundId) {
   h += '<div id="del-confirm" style="display:none;margin-bottom:8px;padding:12px;background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);border-radius:var(--radius);text-align:center">';
   h += '<div style="font-size:12px;color:var(--red);margin-bottom:8px">Delete this round?</div>';
   h += '<div style="display:flex;gap:8px"><button class="btn outline" style="flex:1;font-size:11px" onclick="document.getElementById(\'del-confirm\').style.display=\'none\'">Cancel</button>';
-  h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(212,96,78,.15);color:var(--red)" onclick="PB.deleteRound(\'' + roundId + '\');Router.toast(\'Round deleted\');Router.go(\'rounds\')">Delete</button></div></div>';
+  h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(212,96,78,.15);color:var(--red)" onclick="(function(){PB.deleteRound(\'' + roundId + '\');if(db)db.collection(\'rounds\').doc(\'' + roundId + '\').delete().catch(function(){});setTimeout(function(){persistPlayerStats(currentUser?currentUser.uid:null);},1500);Router.toast(\'Round deleted\');Router.go(\'rounds\');})()">Delete</button></div></div>';
   h += '<button class="btn full" style="background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);color:var(--red)" onclick="document.getElementById(\'del-confirm\').style.display=\'block\'">Delete round</button></div>';
 
   document.querySelector('[data-page="rounds"]').innerHTML = h;
@@ -8380,12 +8471,14 @@ function submitRound() {
       addRoundData.scorecardPhoto = e.target.result;
       var round = PB.addRound(addRoundData);
       syncRound(round);
+      setTimeout(function() { persistPlayerStats(player); }, 2000);
       showRoundCommentary(round);
     };
     reader.readAsDataURL(photoInput.files[0]);
   } else {
     var round = PB.addRound(addRoundData);
     syncRound(round);
+    setTimeout(function() { persistPlayerStats(player); }, 2000);
     showRoundCommentary(round);
   }
 }
@@ -9085,7 +9178,7 @@ function submitCourseReview(courseId) {
    PAGE: RECORDS
    ================================================ */
 Router.register("records", function() {
-  var rounds = PB.getRounds();
+  var rounds = PB.getRounds().filter(function(r){return r.visibility !== "private";});
   var players = PB.getPlayers();
   var rec = PB.getRecords();
 
@@ -9258,17 +9351,35 @@ Router.register("records", function() {
   }
   h += hofCard("courses", "Best scores by course", courseContent);
 
-  // 6. Handicap leaderboard
+  // 6. Handicap leaderboard — uses computed handicap from rounds, falls back to Firestore-persisted value
   var hcapContent = '';
-  var hcaps = players.map(function(p) { return { name: p.name, hcap: PB.calcHandicap(PB.getPlayerRounds(p.id)) }; })
-    .filter(function(x) { return x.hcap !== null; }).sort(function(a, b) { return a.hcap - b.hcap; });
-  if (hcaps.length) { hcaps.forEach(function(x) { hcapContent += '<div class="hof-row"><span class="hof-label">' + x.name + '</span><span class="hof-val">' + x.hcap + '</span></div>'; }); }
+  var allKnownPlayers = players.slice();
+  if (typeof fbMemberCache !== "undefined") {
+    Object.values(fbMemberCache).forEach(function(m) {
+      if (m.id && !allKnownPlayers.find(function(p){return p.id===m.id||p.id===m.claimedFrom;})) {
+        allKnownPlayers.push(m);
+      }
+    });
+  }
+  var hcapsSeen = {};
+  var hcaps = allKnownPlayers.map(function(p) {
+    var key = p.claimedFrom || p.id;
+    if (hcapsSeen[key]) return null;
+    hcapsSeen[key] = true;
+    var computed = PB.calcHandicap(PB.getPlayerRounds(p.id)) ||
+                   (p.claimedFrom ? PB.calcHandicap(PB.getPlayerRounds(p.claimedFrom)) : null);
+    var stored = p.handicap || p.manualHandicap || null;
+    var hcap = computed !== null ? computed : stored;
+    if (hcap === null) return null;
+    return { name: p.name || p.username, hcap: hcap };
+  }).filter(Boolean).sort(function(a, b) { return a.hcap - b.hcap; });
+  if (hcaps.length) { hcaps.forEach(function(x) { hcapContent += '<div class="hof-row"><span class="hof-label">' + escHtml(x.name) + '</span><span class="hof-val">' + x.hcap + '</span></div>'; }); }
   else hcapContent = '<div class="hof-row"><span class="hof-label">No handicaps yet</span><span class="hof-val">Log 3+ rounds</span></div>';
   h += hofCard("hcap", "Handicap leaderboard", hcapContent);
 
   // 7. Member averages — use all known members (fbMemberCache has everyone)
   var avgContent = '';
-  var allRounds = PB.getRounds();
+  var allRounds = PB.getRounds().filter(function(r){return r.visibility !== "private";});
   // Build set of seed IDs that have been claimed by a Firestore member
   var claimedSeedIds = {};
   if (typeof fbMemberCache !== "undefined") {
@@ -11780,10 +11891,10 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.60</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.64</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.60</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.64</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -11899,7 +12010,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.60</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.64</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
@@ -12620,6 +12731,7 @@ function finishSyncRound(roundId) {
     var players = data.players || {};
     
     // Create individual rounds for each player
+    var playerIds = [];
     Object.keys(players).forEach(function(pid) {
       var p = players[pid];
       var scores = p.scores || [];
@@ -12637,6 +12749,7 @@ function finishSyncRound(roundId) {
           rating: data.rating || 72,
           slope: data.slope || 113,
           format: data.format,
+          visibility: "public",
           syncedRound: true,
           syncRoundId: roundId
         };
@@ -12645,8 +12758,13 @@ function finishSyncRound(roundId) {
         // Save to local PB if the player is local
         var localPlayer = PB.getPlayer(pid);
         if (localPlayer) PB.addRound(round);
+        playerIds.push(pid);
       }
     });
+    // Persist updated stats for all players after a short delay
+    setTimeout(function() {
+      playerIds.forEach(function(pid) { persistPlayerStats(pid); });
+    }, 2000);
     
     // Mark Parbaugh Round as completed
     return db.collection("syncrounds").doc(roundId).update({ status: "completed", completedAt: fsTimestamp() });
