@@ -927,6 +927,7 @@ document.addEventListener("touchend", function(e) {
 }, { passive: true });
 function fsTimestamp() { return (typeof firebase !== "undefined" && firebase.firestore) ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString(); }
 function genId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 6); }
+function localDateStr(d) { d = d || new Date(); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
 
 // ========== AUTH FUNCTIONS ==========
 var currentUser = null, currentProfile = null;
@@ -1556,9 +1557,10 @@ function persistPlayerStats(pid) {
     if (cached && cached.claimedFrom) rounds = PB.getPlayerRounds(cached.claimedFrom);
   }
   var publicRounds = rounds.filter(function(r){return r.visibility !== "private";});
+  var full18public = publicRounds.filter(function(r){return !r.holesPlayed || r.holesPlayed >= 18;});
   var handicap = PB.calcHandicap(rounds); // handicap uses all rounds incl private
-  var avg = publicRounds.length ? Math.round(publicRounds.reduce(function(a,r){return a+r.score;},0)/publicRounds.length) : null;
-  var best = publicRounds.length ? Math.min.apply(null, publicRounds.map(function(r){return r.score;})) : null;
+  var avg = full18public.length ? Math.round(full18public.reduce(function(a,r){return a+r.score;},0)/full18public.length) : null;
+  var best = full18public.length ? Math.min.apply(null, full18public.map(function(r){return r.score;})) : null;
   var xp = PB.getPlayerXP(pid);
   var level = PB.getPlayerLevel(pid);
   var stats = {
@@ -2272,10 +2274,10 @@ var PB = (function() {
      clubs:{driver:"270",three_wood:"250",five_wood:"230",four_iron:"215",five_iron:"210",six_iron:"200",seven_iron:"190",eight_iron:"180",nine_iron:"165",pw:"140",gw:"120",sw:"110",lw:"95",putter:""},
      bag:{driver:"TaylorMade Qi4D Driver",irons:"Callaway Quantum Max OS 5-PW",wedges:"Cleveland RTX 6 ZipCore 52/56",putter:"",bag_brand:"",accessories:"",fav_ball:""},
      funnyFacts:["Bought custom-fit irons before breaking 85","Owns more golf trackers than golf shirts","Will quote his handicap unprompted"]},
-    {id:"kayvan",name:"Kayvan",username:"Kayvan",title:"The Original Four",range:"102-115",bio:"",emoji:"",photo:"",homeCourse:"Pleasant Valley Golf Club",favoriteCourse:"Royal Manchester Golf Links",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,equippedTitle:"The Original Four",
+    {id:"kayvan",name:"Kayvan",username:"Kayvan",title:"The Original Four",range:"102-115",bio:"",emoji:"",photo:"",homeCourse:"Pleasant Valley Golf Club",favoriteCourse:"Royal Manchester Golf Links",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:25,equippedTitle:"The Original Four",
      clubs:{driver:"210",five_wood:"180",four_hybrid:"170",five_iron:"150",six_iron:"140",seven_iron:"130",eight_iron:"120",nine_iron:"110",pw:"100",gw:"90",putter:""},
      bag:{},funnyFacts:[]},
-    {id:"kiyan",name:"Kiyan",username:"Kiyan",title:"The Original Four",range:"91-104",bio:"",emoji:"",photo:"",homeCourse:"Pleasant Valley Golf Club",favoriteCourse:"Westminster National",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,equippedTitle:"The Original Four",
+    {id:"kiyan",name:"Kiyan",username:"Kiyan",title:"The Original Four",range:"91-104",bio:"",emoji:"",photo:"",homeCourse:"Pleasant Valley Golf Club",favoriteCourse:"Westminster National",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:25,equippedTitle:"The Original Four",
      clubs:{},bag:{},funnyFacts:[]},
     {id:"nick",name:"Nick",username:"Nick",title:"The Original Four",range:"115-120",bio:"",emoji:"",photo:"",homeCourse:"Honey Run Golf Club",favoriteCourse:"Honey Run Golf Club",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:40,equippedTitle:"The Original Four",
      clubs:{},bag:{},funnyFacts:[]}
@@ -2394,7 +2396,7 @@ var PB = (function() {
       bagPhoto: "",
       founding: false,
       referredBy: referredBy || null,
-      joinDate: new Date().toISOString().split("T")[0],
+      joinDate: localDateStr(),
       trips: 0,
       wins: 0,
       manualHandicap: null,
@@ -2419,7 +2421,7 @@ var PB = (function() {
     };
     state.players.push(p);
     if (!state.activity) state.activity = [];
-    state.activity.push({type:"member_joined",name:name,referredBy:referredBy||"",date:new Date().toISOString().split("T")[0],ts:Date.now()});
+    state.activity.push({type:"member_joined",name:name,referredBy:referredBy||"",date:localDateStr(),ts:Date.now()});
     save();
     return p;
   }
@@ -2592,7 +2594,7 @@ var PB = (function() {
     state.trips.push(t);
     state.scores[t.id] = {};
     if (!state.activity) state.activity = [];
-    state.activity.push({type:"trip_created",name:t.name,dates:t.dates,ts:Date.now(),date:new Date().toISOString().split("T")[0]});
+    state.activity.push({type:"trip_created",name:t.name,dates:t.dates,ts:Date.now(),date:localDateStr()});
     save();
     return t;
   }
@@ -2607,7 +2609,7 @@ var PB = (function() {
   function addTripPhoto(tripId, photoData) {
     var t = getTrip(tripId);
     if (!t) return;
-    t.photos.push({ data: photoData, date: new Date().toISOString().split("T")[0], id: Date.now().toString(36) });
+    t.photos.push({ data: photoData, date: localDateStr(), id: Date.now().toString(36) });
     save();
   }
 
@@ -2808,7 +2810,7 @@ var PB = (function() {
   }
 
   function getPlayerAvg(pid) {
-    var r = getPlayerRounds(pid).filter(function(rd){return rd.visibility !== "private";});
+    var r = getPlayerRounds(pid).filter(function(rd){return rd.visibility !== "private" && (!rd.holesPlayed || rd.holesPlayed >= 18);});
     if (r.length) return Math.round(r.reduce(function(a, x) { return a + x.score; }, 0) / r.length);
     // Fallback to Firestore-persisted value when rounds not yet loaded
     var p = getPlayer(pid);
@@ -2825,7 +2827,7 @@ var PB = (function() {
   }
 
   function getPlayerBest(pid) {
-    var r = getPlayerRounds(pid).filter(function(rd){return rd.visibility !== "private";});
+    var r = getPlayerRounds(pid).filter(function(rd){return rd.visibility !== "private" && (!rd.holesPlayed || rd.holesPlayed >= 18);});
     if (r.length) return Math.min.apply(null, r.map(function(x) { return x.score; }));
     // Fallback to Firestore-persisted value when rounds not yet loaded
     var p = getPlayer(pid);
@@ -3895,7 +3897,7 @@ var PB = (function() {
       course: courseId,
       stakes: stakes || "",
       status: "pending", // pending, accepted, declined, completed
-      created: new Date().toISOString().split("T")[0],
+      created: localDateStr(),
       result: null
     };
     state.challenges.push(challenge);
@@ -3922,7 +3924,7 @@ var PB = (function() {
     notif.id = Date.now().toString(36);
     notif.read = false;
     notif.ts = Date.now();
-    notif.date = new Date().toISOString().split("T")[0];
+    notif.date = localDateStr();
     state.notifications[pid].push(notif);
     save();
   }
@@ -3956,10 +3958,11 @@ var PB = (function() {
     var standings = players.map(function(p) {
       var allRounds = getPlayerRounds(p.id);
       var rounds = allRounds.filter(function(r) {
-        return r.date >= seasonStart && r.date <= seasonEnd && r.visibility !== "private";
+        return r.date >= seasonStart && r.date <= seasonEnd && r.visibility !== "private" && (!r.holesPlayed || r.holesPlayed >= 18);
       });
       if (!rounds.length) return null;
-      var hcap = p.manualHandicap || calcHandicap(allRounds) || 36;
+      var ghinHcap = calcHandicap(allRounds);
+      var hcap = (ghinHcap !== null && allRounds.length >= 3) ? ghinHcap : (p.manualHandicap || ghinHcap || 36);
       var points = 0;
       var bestSoFar = 999;
       var seenCourses = {};
@@ -4013,7 +4016,7 @@ var PB = (function() {
       roundId: post.roundId || null,
       visibility: post.visibility || "public",
       ts: Date.now(),
-      date: new Date().toISOString().split("T")[0]
+      date: localDateStr()
     };
     p.posts.unshift(newPost);
     if (newPost.visibility === "public") {
@@ -4420,7 +4423,7 @@ Router.register("home", function() {
   var myUidForBanner = currentUser ? currentUser.uid : null;
   var myClaimedFrom = currentProfile ? currentProfile.claimedFrom : null;
   if (myUidForBanner) {
-    var todayStr = new Date().toISOString().split("T")[0];
+    var todayStr = localDateStr();
     var allTrips2 = PB.getTrips();
     allTrips2.forEach(function(tr) {
       if (!tr.courses || !tr.startDate || !tr.endDate) return;
@@ -4604,7 +4607,6 @@ function showRivalryDetail(p1id, p2id) {
 
   // Reuse the standings page container for this detail view
   document.querySelector('[data-page="standings"]').innerHTML = h;
-  Router.go("standings");
 }
 
 function doCopy() {
@@ -4939,7 +4941,8 @@ function renderMemberDetailWithData(p) {
   var rounds = PB.getPlayerRounds(pid);
   var avg = PB.getPlayerAvg(pid);
   var best = PB.getPlayerBest(pid);
-  var hcap = PB.calcHandicap(rounds) || (p.manualHandicap ? p.manualHandicap : null);
+  var ghinHcap = PB.calcHandicap(rounds);
+  var hcap = (ghinHcap !== null && rounds.length >= 3) ? ghinHcap : (p.manualHandicap || ghinHcap || null);
   var unique = PB.getUniqueCourses(pid);
   var clubLabels = {driver:"Driver",three_wood:"3 Wood",four_wood:"4 Wood",five_wood:"5 Wood",seven_wood:"7 Wood",nine_wood:"9 Wood",two_hybrid:"2 Hybrid",three_hybrid:"3 Hybrid",four_hybrid:"4 Hybrid",five_hybrid:"5 Hybrid",six_hybrid:"6 Hybrid",two_iron:"2 Iron",three_iron:"3 Iron",four_iron:"4 Iron",five_iron:"5 Iron",six_iron:"6 Iron",seven_iron:"7 Iron",eight_iron:"8 Iron",nine_iron:"9 Iron",pw:"PW",aw:"AW (48-50)",gw:"GW (50-52)",gap52:"52°",sw:"SW (54-56)",gap56:"56°",gap58:"58°",lw:"LW (60°)",gap64:"64°",putter:"Putter"};
 
@@ -6424,7 +6427,7 @@ function renderLogMatch() {
   h += '<div class="ff"><label class="ff-label">Team 2 score</label><input type="number" class="ff-input" id="lm-score2" placeholder="72"></div>';
   h += '</div>';
 
-  h += formField("Date", "lm-date", new Date().toISOString().split("T")[0], "date");
+  h += formField("Date", "lm-date", localDateStr(), "date");
 
   h += '<button class="btn full green" onclick="submitLogMatch()">Log match</button></div>';
 
@@ -6480,7 +6483,7 @@ function renderLogTeamRound(teamId) {
   h += '<div style="font-size:11px;color:var(--muted);margin-bottom:14px">Track a round you played together — no opponent needed. Counts toward your team\'s best score and round history.</div>';
   h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="tr-course" placeholder="Start typing..." autocomplete="off" oninput="showRoundCourseSearch(this)"><div id="search-round-course" class="search-results"></div></div>';
   h += '<div class="ff"><label class="ff-label">Team score</label><input type="number" class="ff-input" id="tr-score" placeholder="e.g. 68" min="40" max="120"></div>';
-  h += formField("Date", "tr-date", new Date().toISOString().split("T")[0], "date");
+  h += formField("Date", "tr-date", localDateStr(), "date");
   h += '<button class="btn full green" onclick="submitLogTeamRound(\'' + teamId + '\')">Save round</button>';
   h += '</div>';
   document.querySelector('[data-page="scramble"]').innerHTML = h;
@@ -6671,7 +6674,7 @@ function renderAddAce() {
   h += formField("Distance (yds)", "ace-distance", "", "number", "e.g. 155");
   h += '</div>';
   h += formField("Club used", "ace-club", "", "text", "e.g. 7 iron");
-  h += formField("Date", "ace-date", new Date().toISOString().split("T")[0], "date");
+  h += formField("Date", "ace-date", localDateStr(), "date");
   h += '</div>';
 
   h += '<div class="form-section"><div class="form-title">The story</div>';
@@ -7474,7 +7477,7 @@ function finishLiveRound() {
     playerName: _pName,
     course: liveState.course,
     score: totalScore,
-    date: new Date().toISOString().split("T")[0],
+    date: localDateStr(),
     rating: completed <= 9 ? (liveState.rating || 72) / 2 : (liveState.rating || 72),
     slope: liveState.slope,
     format: liveState.format,
@@ -7725,7 +7728,7 @@ var tripCreateState = { members: [], courses: [] };
 Router.register("trips", function(params) {
   if (params.create) { renderTripCreate(); return; }
   var trips = PB.getTrips();
-  var today = new Date().toISOString().split("T")[0];
+  var today = localDateStr();
 
   // Split trips into active/upcoming vs past
   var activeTrips = trips.filter(function(t) {
@@ -8801,8 +8804,29 @@ function quickAddCourseForRound(name) {
 function showRoundCommentary(round) {
   var c = PB.generateRoundCommentary(round);
   var msg = c.roasts.length ? c.roasts[0] : c.highlights.length ? c.highlights[0] : "Round logged!";
-  Router.toast(msg);
-  Router.go("rounds");
+
+  // If the round has hole-by-hole data, show the share card
+  if (round.holeScores && round.holeScores.some(function(s){ return s !== "" && s !== undefined; })) {
+    var diff = Math.round((round.score - (round.rating || 72)) * 10) / 10;
+    var diffStr = diff > 0 ? "+" + diff : diff === 0 ? "E" : "" + diff;
+    var playerName = round.playerName || (currentProfile ? (currentProfile.name || currentProfile.username) : "A Parbaugh");
+    var course = PB.getCourseByName(round.course);
+    var firCount = 0, girCount = 0, totalPutts = 0, firHoles = 0;
+    var completed = round.holeScores.filter(function(s){ return s !== "" && s !== undefined; }).length;
+    var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+    for (var i = 0; i < completed; i++) {
+      var par = (course && course.holes && course.holes[i]) ? course.holes[i].par : defaultPar[i] || 4;
+      if (par !== 3 && round.firData && round.firData[i]) firCount++;
+      if (par !== 3) firHoles++;
+      if (round.girData && round.girData[i]) girCount++;
+      if (round.puttsData && round.puttsData[i]) totalPutts += round.puttsData[i];
+    }
+    var shareText = playerName + " shot " + round.score + " (" + diffStr + ") at " + round.course + "\nThe Parbaughs";
+    showShareCard(round.score, diffStr, round.course, playerName, firCount, firHoles, girCount, completed, totalPutts, shareText, round.id, round.holeScores, course ? course.holes : [], round.tee || (course ? course.tee : "") || "", round.yards || (course ? course.yards : 0) || 0);
+  } else {
+    Router.toast(msg);
+    Router.go("rounds");
+  }
 }
 
 /* ================================================
@@ -9490,7 +9514,7 @@ function submitCourseReview(courseId) {
   var text = document.getElementById("rev-text").value;
   if (!text) { Router.toast("Write something!"); return; }
   var reviewerName = currentProfile ? (currentProfile.name || currentProfile.username || "A Parbaugh") : "A Parbaugh";
-  var review = { rating:rating, text:text, by:reviewerName, date:new Date().toISOString().split("T")[0] };
+  var review = { rating:rating, text:text, by:reviewerName, date:localDateStr() };
   PB.addCourseReview(courseId, review);
   // Persist review to Firestore
   var course = PB.getCourse(courseId);
@@ -9778,7 +9802,7 @@ function submitRecord() {
   var club = document.getElementById("rec-club").value;
   var course = document.getElementById("rec-course").value;
   var rec = PB.getRecords();
-  var entry = { by: player, distance: distance, club: club, course: course, date: new Date().toISOString().split("T")[0] };
+  var entry = { by: player, distance: distance, club: club, course: course, date: localDateStr() };
 
   if (type === "longestDrive") {
     if (!rec.longestDrive || parseInt(distance) > parseInt(rec.longestDrive.distance)) {
@@ -9826,7 +9850,7 @@ function startTeeTimeListener() {
 }
 
 Router.register("teetimes", function() {
-  var now = new Date().toISOString().split("T")[0];
+  var now = localDateStr();
   var threeDaysAgo = new Date(Date.now() - 3 * 86400000).toISOString().split("T")[0];
   
   var upcoming = liveTeeTimes.filter(function(t) { return t.date >= now && t.status !== "cancelled"; });
@@ -9938,7 +9962,7 @@ Router.register("tee-create", function(params) {
   h += '<div class="ff"><label class="ff-label">Course</label><select id="teeCourse" class="ff-input">';
   courses.forEach(function(c) { h += '<option value="' + c.id + '">' + c.name + '</option>'; });
   h += '</select></div>';
-  h += '<div class="ff"><label class="ff-label">Date</label><input type="date" id="teeDate" class="ff-input" min="' + new Date().toISOString().split("T")[0] + '" value="' + prefillDate + '"></div>';
+  h += '<div class="ff"><label class="ff-label">Date</label><input type="date" id="teeDate" class="ff-input" min="' + localDateStr() + '" value="' + prefillDate + '"></div>';
   h += '<div class="ff"><label class="ff-label">Tee Time</label><input type="time" id="teeTime" class="ff-input"></div>';
   h += '<div class="ff"><label class="ff-label">Spots</label><select id="teeSpots" class="ff-input"><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option><option value="5">5+</option></select></div>';
   h += '<div class="ff"><label class="ff-label">Message (optional)</label><input type="text" id="teeMessage" class="ff-input" placeholder="Let\'s get after it" maxlength="100"></div>';
@@ -9984,7 +10008,7 @@ function rsvpTeeTime(teeId, response) {
 function cancelTeeTime(teeId) {
   if (!confirm("Cancel this tee time?")) return;
   var tee = liveTeeTimes.find(function(t){return t._id===teeId});
-  db.collection("teetimes").doc(teeId).update({status:"cancelled", cancelledAt: new Date().toISOString().split("T")[0]}).then(function() {
+  db.collection("teetimes").doc(teeId).update({status:"cancelled", cancelledAt: localDateStr()}).then(function() {
     Router.toast("Cancelled");
     if (tee && tee.responses) {
       var ids = Object.keys(tee.responses).filter(function(k){return(tee.responses[k]==="accepted"||tee.responses[k]==="maybe")&&k!==(currentUser?currentUser.uid:"")});
@@ -10244,7 +10268,7 @@ function saveRangeSession(mins, totalSec) {
     id: genId(),
     playerId: currentUser ? currentUser.uid : "local",
     playerName: currentProfile ? PB.getDisplayName(currentProfile) : "You",
-    date: new Date().toISOString().split("T")[0],
+    date: localDateStr(),
     startedAt: new Date(activeRangeStart).toISOString(),
     endedAt: new Date().toISOString(),
     durationMin: mins,
@@ -10334,7 +10358,7 @@ function renderActivityRounds() {
   h += '<div class="ff"><label class="ff-label">Holes</label><select class="ff-input" id="rf-holes" onchange="renderLogHoleGrid()"><option value="18">18 holes</option><option value="front9">Front 9</option><option value="back9">Back 9</option></select></div>';
   h += '</div>';
   h += '<div class="ff-row" style="grid-template-columns:1fr 1fr">';
-  h += '<div class="ff"><label class="ff-label">Date</label><input type="date" class="ff-input" id="rf-date" value="' + new Date().toISOString().split("T")[0] + '" style="min-width:0"></div>';
+  h += '<div class="ff"><label class="ff-label">Date</label><input type="date" class="ff-input" id="rf-date" value="' + localDateStr() + '" style="min-width:0"></div>';
   h += '<div class="ff"><label class="ff-label">Score (auto)</label><input type="number" inputmode="numeric" class="ff-input" id="rf-score" placeholder="auto" style="min-width:0;background:var(--bg4);color:var(--gold)" readonly></div>';
   h += '</div><div class="ff-row" style="grid-template-columns:1fr 1fr">';
   h += '<div class="ff"><label class="ff-label">Rating</label><input type="number" step="0.1" class="ff-input" id="rf-rating" placeholder="auto" style="min-width:0"></div>';
@@ -10818,7 +10842,9 @@ function renderClubCalGrid(year, month, todayStr, events) {
   PB.getRounds().forEach(function(r) {
     if (!r.date) return;
     var p = PB.getPlayer(r.player); var pN = p?(p.name||p.username||""):"";
-    addEv(r.date, {type:"round", title:r.course||"Round", player:pN, score:r.score});
+    var courseObj = PB.getCourseByName(r.course);
+    var teeName = r.tee || (courseObj ? courseObj.tee : "") || "";
+    addEv(r.date, {type:"round", title:r.course||"Round", player:pN, score:r.score, roundId:r.id, tee:teeName, holesPlayed:r.holesPlayed||18, holesMode:r.holesMode||"18"});
   });
   liveRangeSessions.forEach(function(s) {
     if (!s.date) return;
@@ -11020,7 +11046,12 @@ function refreshClubCal() {
           eh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(course) + '</div>';
           group.forEach(function(r) {
             var scoreColor = r.score <= 72 ? "var(--birdie)" : r.score >= 100 ? "var(--red)" : "var(--cream)";
-            eh += '<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px"><span style="color:var(--muted)">' + escHtml(r.player) + '</span><span style="font-weight:600;color:' + scoreColor + '">' + (r.score || "—") + '</span></div>';
+            var is9h = r.holesPlayed && r.holesPlayed <= 9;
+            var hLabel = is9h ? (r.holesMode === "back9" ? " · Back 9" : " · Front 9") : "";
+            var tLabel = r.tee ? r.tee + " Tees" : "";
+            var meta = [tLabel, hLabel.replace(" · ","")].filter(Boolean).join(" · ");
+            var clickAttr = r.roundId ? ' style="cursor:pointer" onclick="Router.go(\'rounds\',{roundId:\'' + r.roundId + '\'})"' : '';
+            eh += '<div' + clickAttr + ' style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px' + (r.roundId ? ';cursor:pointer' : '') + '"><div><span style="color:var(--muted)">' + escHtml(r.player) + '</span>' + (meta ? '<span style="color:var(--muted2);font-size:9px"> · ' + meta + '</span>' : '') + '</div><span style="font-weight:600;color:' + scoreColor + '">' + (r.score || "—") + '</span></div>';
           });
           eh += '</div>';
         });
@@ -12816,7 +12847,7 @@ function startPartyGame(gameType) {
     createdBy: currentUser.uid,
     createdByName: currentProfile ? PB.getDisplayName(currentProfile) : "Unknown",
     course: liveState.course || "",
-    roundDate: new Date().toISOString().split("T")[0],
+    roundDate: localDateStr(),
     winner: null,
     createdAt: fsTimestamp()
   }).then(function() {
@@ -13126,7 +13157,7 @@ function finishSyncRound(roundId) {
         holeScores: scores.slice(startHole, endHole),
         holesPlayed: holesPlayed,
         holesMode: holesMode,
-        date: new Date().toISOString().split("T")[0],
+        date: localDateStr(),
         rating: is9 ? (data.rating || 72) / 2 : (data.rating || 72),
         slope: data.slope || 113,
         format: data.format,
@@ -13647,7 +13678,7 @@ function finishScrambleLive() {
   // Log the match for the team
   var match = {
     id: Date.now().toString(36),
-    date: new Date().toISOString().split("T")[0],
+    date: localDateStr(),
     course: s.course,
     score: total,
     holes: played,
@@ -14014,7 +14045,7 @@ function showShareCard(score, diffStr, course, playerName, fir, firHoles, gir, h
 
   var modal = document.createElement("div");
   modal.id = "shareCardModal";
-  modal.style.cssText = "position:fixed;inset:0;z-index:300;overflow-y:auto;display:flex;align-items:flex-start;justify-content:center;padding:16px;padding-top:32px";
+  modal.style.cssText = "position:fixed;inset:0;z-index:300;overflow-y:auto;display:flex;align-items:flex-start;justify-content:center;padding:16px;padding-top:32px;background:rgba(0,0,0,.92)";
 
   var h = '';
   // No outside-tap dismiss — user must choose explicitly
@@ -14063,7 +14094,7 @@ function showShareCard(score, diffStr, course, playerName, fir, firHoles, gir, h
 
   // Party games
   if (db) {
-    var today = new Date().toISOString().split("T")[0];
+    var today = localDateStr();
     db.collection("partygames").where("roundDate","==",today).where("status","==","completed").get().then(function(snap) {
       if (snap.empty) return;
       var qEl = document.getElementById("pbs-quip");
@@ -14085,42 +14116,54 @@ function buildScorecardHTML(holeScores, holesData, defaultPars, played) {
     return defaultPars[i] || 4;
   }
 
-  // Every symbol wrapped in a 54×54 fixed container — cells stay uniform,
-  // nothing overflows regardless of symbol type or score value
+  // Determine which nines have data
+  var front9count = 0, back9count = 0;
+  for (var fi = 0; fi < 9; fi++) { if (holeScores[fi] !== "" && holeScores[fi] !== undefined) front9count++; }
+  for (var bi = 9; bi < 18; bi++) { if (holeScores[bi] !== "" && holeScores[bi] !== undefined) back9count++; }
+
+  // Fixed-size container for each score symbol — prevents overflow
   var W = 'rgba(255,255,255,.88)';
   var F = 'display:flex;align-items:center;justify-content:center;';
-  var WRAP = F + 'width:54px;height:54px;flex-shrink:0';
+
   function num(n, size) { return '<span style="font-size:' + size + 'px;font-weight:700;color:#fff;line-height:1">' + n + '</span>'; }
+
   function sym(score, par) {
     var n = parseInt(score), d = n - par;
+    // Font size scales down for 2+ digit scores to prevent overflow
+    var baseSize = n >= 10 ? 16 : 20;
+    var smallSize = n >= 10 ? 12 : 14;
     var shape;
     if (d <= -2) {
-      // Hole-in-one / Eagle: double circle — outer 48px, inner 32px
-      shape = '<div style="' + F + 'width:48px;height:48px;border-radius:50%;border:1.8px solid ' + W + '">'
-            + '<div style="' + F + 'width:32px;height:32px;border-radius:50%;border:1.8px solid ' + W + '">' + num(n, d <= -3 ? 14 : 16) + '</div></div>';
+      // Eagle+: double circle
+      shape = '<div style="' + F + 'width:46px;height:46px;border-radius:50%;border:2px solid ' + W + '">'
+            + '<div style="' + F + 'width:30px;height:30px;border-radius:50%;border:2px solid ' + W + '">' + num(n, smallSize) + '</div></div>';
     } else if (d === -1) {
-      // Birdie: single circle 40px
-      shape = '<div style="' + F + 'width:40px;height:40px;border-radius:50%;border:1.8px solid ' + W + '">' + num(n, 20) + '</div>';
+      // Birdie: single circle
+      shape = '<div style="' + F + 'width:38px;height:38px;border-radius:50%;border:2px solid ' + W + '">' + num(n, baseSize) + '</div>';
     } else if (d === 0) {
       // Par: bare number
-      shape = num(n, 22);
+      shape = num(n, baseSize + 2);
     } else if (d === 1) {
-      // Bogey: single square 40px
-      shape = '<div style="' + F + 'width:40px;height:40px;border-radius:3px;border:1.8px solid ' + W + '">' + num(n, 20) + '</div>';
+      // Bogey: single square
+      shape = '<div style="' + F + 'width:38px;height:38px;border-radius:3px;border:2px solid ' + W + '">' + num(n, baseSize) + '</div>';
     } else if (d === 2) {
-      // Double bogey: double square — outer 48px, inner 32px
-      shape = '<div style="' + F + 'width:48px;height:48px;border-radius:3px;border:1.8px solid ' + W + '">'
-            + '<div style="' + F + 'width:32px;height:32px;border-radius:2px;border:1.8px solid ' + W + '">' + num(n, 16) + '</div></div>';
+      // Double bogey: double square
+      shape = '<div style="' + F + 'width:46px;height:46px;border-radius:3px;border:2px solid ' + W + '">'
+            + '<div style="' + F + 'width:30px;height:30px;border-radius:2px;border:2px solid ' + W + '">' + num(n, smallSize) + '</div></div>';
     } else {
-      // Triple bogey+: double square with muted outer ring, smaller font for big numbers
-      var fontSize = n >= 10 ? 13 : 15;
-      shape = '<div style="' + F + 'width:48px;height:48px;border-radius:3px;border:1.8px solid rgba(255,255,255,.5)">'
-            + '<div style="' + F + 'width:32px;height:32px;border-radius:2px;border:1.8px solid rgba(255,255,255,.5)">' + num(n, fontSize) + '</div></div>';
+      // Triple+: double square muted
+      var ts = n >= 10 ? 11 : 13;
+      shape = '<div style="' + F + 'width:46px;height:46px;border-radius:3px;border:2px solid rgba(255,255,255,.45)">'
+            + '<div style="' + F + 'width:30px;height:30px;border-radius:2px;border:2px solid rgba(255,255,255,.45)">' + num(n, ts) + '</div></div>';
     }
-    return '<div style="' + WRAP + '">' + shape + '</div>';
+    return '<div style="' + F + 'width:54px;height:54px;flex-shrink:0;overflow:visible">' + shape + '</div>';
   }
 
-  function nineHTML(start) {
+  function nineHTML(start, label) {
+    var count = 0;
+    for (var ci = start; ci < start + 9; ci++) { if (holeScores[ci] !== "" && holeScores[ci] !== undefined) count++; }
+    if (count === 0) return "";
+
     var html = '<div class="pbs-nine">';
     var total = 0, totalPar = 0;
     for (var i = 0; i < 9; i++) {
@@ -14131,11 +14174,13 @@ function buildScorecardHTML(holeScores, holesData, defaultPars, played) {
       html += '<div class="pbs-sw">' + (hasScore ? sym(s, par) : "") + '</div></div>';
     }
     var over = total - totalPar, tc = over > 0 ? "pbs-tot-pos" : over < 0 ? "pbs-tot-neg" : "pbs-tot-even";
-    html += '<div class="pbs-tot"><div class="pbs-tot-lbl">' + (start===0?"F9":"B9") + '</div><div class="pbs-tot-val ' + tc + '">' + (total||"—") + '</div></div></div>';
+    html += '<div class="pbs-tot"><div class="pbs-tot-lbl">' + label + '</div><div class="pbs-tot-val ' + tc + '">' + (total||"—") + '</div></div></div>';
     return html;
   }
-  var html = nineHTML(0);
-  if (played > 9) html += nineHTML(9);
+
+  var html = "";
+  if (front9count > 0) html += nineHTML(0, "F9");
+  if (back9count > 0) html += nineHTML(9, "B9");
   return html;
 }
 
@@ -14777,19 +14822,21 @@ function loadHomeActivityFeed() {
     snap.forEach(function(doc) {
       var r = doc.data();
       var rid = doc.id;
-      var comm = PB.generateRoundCommentary({score:r.score,rating:r.rating||72,slope:r.slope||113,player:r.player});
+      var comm = PB.generateRoundCommentary({score:r.score,rating:r.rating||72,slope:r.slope||113,player:r.player,holesPlayed:r.holesPlayed||18});
       var quip = comm.roasts.length ? comm.roasts[0] : (comm.highlights.length ? comm.highlights[0] : "");
-      var holeLabel = r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? " · Back 9" : " · Front 9") : " · 18 holes";
-      items.push({type:"round", name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + " · " + r.score + holeLabel, quip:quip, score:r.score, date:r.date||"", ts:r.createdAt ? r.createdAt.toMillis() : 0, dest:"Router.go('rounds',{roundId:'" + rid + "'})"});
+      var holeLabel = r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? " · Back 9" : " · Front 9") : "";
+      var teeLabel = r.tee ? " · " + r.tee : "";
+      items.push({type:"round", name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + teeLabel + " · " + r.score + holeLabel, quip:quip, score:r.score, date:r.date||"", ts:r.createdAt ? r.createdAt.toMillis() : 0, dest:"Router.go('rounds',{roundId:'" + rid + "'})"});
     });
     pending--; tryRender();
   }).catch(function() {
     // orderBy may need index — fall back to state.rounds
     PB.getRounds().slice().reverse().slice(0,10).forEach(function(r) {
-      var comm = PB.generateRoundCommentary({score:r.score,rating:r.rating||72,slope:r.slope||113,player:r.player});
+      var comm = PB.generateRoundCommentary({score:r.score,rating:r.rating||72,slope:r.slope||113,player:r.player,holesPlayed:r.holesPlayed||18});
       var quip = comm.roasts.length ? comm.roasts[0] : (comm.highlights.length ? comm.highlights[0] : "");
-      var holeLabel = r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? " · Back 9" : " · Front 9") : " · 18 holes";
-      items.push({type:"round", name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + " · " + r.score + holeLabel, quip:quip, score:r.score, date:r.date||"", ts:r.timestamp||0, dest:"Router.go('rounds',{roundId:'" + r.id + "'})"});
+      var holeLabel = r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? " · Back 9" : " · Front 9") : "";
+      var teeLabel = r.tee ? " · " + r.tee : "";
+      items.push({type:"round", name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + teeLabel + " · " + r.score + holeLabel, quip:quip, score:r.score, date:r.date||"", ts:r.timestamp||0, dest:"Router.go('rounds',{roundId:'" + r.id + "'})"});
     });
     pending--; tryRender();
   });
@@ -14808,7 +14855,7 @@ function loadHomeActivityFeed() {
   // 3. Tee times — upcoming and recent
   pending++;
   db.collection("teetimes").orderBy("createdAt","desc").limit(6).get().then(function(snap) {
-    var today = new Date().toISOString().split("T")[0];
+    var today = localDateStr();
     snap.forEach(function(doc) {
       var t = doc.data();
       var isToday = t.date === today;
