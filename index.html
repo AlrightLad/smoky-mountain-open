@@ -8539,7 +8539,9 @@ function renderRoundDetail(roundId) {
   h += '<div class="pd-nick">' + round.course + '</div>';
   h += '<div style="font-size:40px;font-weight:800;color:var(--gold);margin-top:8px">' + round.score + '</div>';
   h += '<div class="pd-range">' + (diff >= 0 ? "+" : "") + diff + ' vs course rating (' + round.rating + ')</div>';
-  h += '<div class="pd-range">' + round.date + ' · Slope: ' + round.slope + (round.tee ? ' · ' + round.tee + ' Tees' : '') + (round.holesPlayed && round.holesPlayed <= 9 ? ' · ' + (round.holesMode === "back9" ? 'Back 9' : 'Front 9') : '') + (round.format && round.format !== 'stroke' ? ' · ' + round.format.charAt(0).toUpperCase() + round.format.slice(1) : '') + '</div>';
+  var courseObj = PB.getCourseByName(round.course);
+  var roundTee = round.tee || (courseObj ? courseObj.tee : "") || "";
+  h += '<div class="pd-range">' + round.date + ' · Slope: ' + round.slope + (roundTee ? ' · ' + roundTee + ' Tees' : '') + (round.holesPlayed && round.holesPlayed <= 9 ? ' · ' + (round.holesMode === "back9" ? 'Back 9' : 'Front 9') : '') + (round.format && round.format !== 'stroke' ? ' · ' + round.format.charAt(0).toUpperCase() + round.format.slice(1) : '') + '</div>';
   h += '</div>';
 
   // Stats
@@ -9271,7 +9273,8 @@ function renderCourseDetail(courseId) {
     roundsHere.slice().reverse().forEach(function(r) {
       var is9h = r.holesPlayed && r.holesPlayed <= 9;
       var holeLabel = is9h ? (r.holesMode === "back9" ? " · Back 9" : " · Front 9") : "";
-      h += '<div class="card" onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer"><div class="round-card"><div class="rc-top"><div><div class="rc-course">' + escHtml(r.playerName) + '</div><div class="rc-date">' + r.date + (r.tee ? ' · ' + r.tee + ' Tees' : '') + holeLabel + '</div></div>';
+      var teeName = r.tee || c.tee || "";
+      h += '<div class="card" onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer"><div class="round-card"><div class="rc-top"><div><div class="rc-course">' + escHtml(r.playerName) + '</div><div class="rc-date">' + r.date + (teeName ? ' · ' + teeName + ' Tees' : '') + holeLabel + '</div></div>';
       h += '<div class="rc-score">' + r.score + '</div></div></div></div>';
     });
     h += '</div>';
@@ -10351,7 +10354,9 @@ function renderActivityRounds() {
       var diffStrR = diffR === 0 ? "E" : (diffR > 0 ? "+" + diffR : "" + diffR);
       var safeCourseR = (r.course||"").replace(/'/g,"\\'");
       var safeNameR = (r.playerName||"").replace(/'/g,"\\'");
-      h += '<div class="card"><div class="round-card"><div class="rc-top"><div onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer;flex:1"><div class="rc-course">' + escHtml(r.course) + '</div><div class="rc-date">' + r.date + ' · ' + escHtml(r.playerName||"") + (r.tee ? ' · ' + r.tee : '') + (r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? ' · Back 9' : ' · Front 9') : '') + (r.format && r.format !== 'stroke' ? ' · ' + r.format : '') + '</div></div>';
+      var histCourse = PB.getCourseByName(r.course);
+      var histTee = r.tee || (histCourse ? histCourse.tee : "") || "";
+      h += '<div class="card"><div class="round-card"><div class="rc-top"><div onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer;flex:1"><div class="rc-course">' + escHtml(r.course) + '</div><div class="rc-date">' + r.date + ' · ' + escHtml(r.playerName||"") + (histTee ? ' · ' + histTee : '') + (r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? ' · Back 9' : ' · Front 9') : '') + (r.format && r.format !== 'stroke' ? ' · ' + r.format : '') + '</div></div>';
       h += '<div style="display:flex;align-items:center;gap:8px"><div class="rc-score">' + r.score + '</div>';
       var safeTeeR = (r.tee||"").replace(/'/g,"\\'");
       var safeYardsR = r.yards || 0;
@@ -12233,23 +12238,33 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.7.66</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.8.0</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.7.66</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.8.0</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Post-SMO Bugfix</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Browser back button now works everywhere — navigate Home → Play Now → Back returns to Home correctly across all pages", tag: "FIXED"},
-    {item: "Range and Tee Time buttons from home page fixed — URL no longer changes on navigation so PWA reload on hash change is eliminated", tag: "FIXED"},
-    {item: "All 31 in-app ← Back buttons updated to use history — back always returns to wherever you came from, not a hardcoded destination", tag: "IMPROVED"},
-    {item: "Mobile keyboard now dismisses when selecting a course from search results or tapping outside any input field", tag: "FIXED"},
-    {item: "Invite code validation moved to Cloud Function — Firestore invites rule stays locked to authenticated users only", tag: "IMPROVED"},
-    {item: "Score locking: Lock button moved to bottom of each course scorecard, labeled with course name, Commissioner-only unlock", tag: "IMPROVED"},
-    {item: "Scorekeeper and finished status now persist after refresh — synced from Firestore on startup", tag: "FIXED"},
-    {item: "Trip scorecard score input no longer re-renders full page on each entry — totals update in-place", tag: "FIXED"},
-    {item: "Security headers added — X-Content-Type-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy", tag: "IMPROVED"},
-    {item: "Password reset from login screen improved — email validation, loading state, specific error messages", tag: "IMPROVED"}
+    {item: "Log a Round redesigned — hole-by-hole entry is now the primary input with score, FIR, GIR, and putts per hole", tag: "NEW"},
+    {item: "Log a Round 9/18 hole selector — choose Front 9, Back 9, or full 18. Grid adapts to show only relevant holes", tag: "NEW"},
+    {item: "Solo Play Now rounds now persist to Firestore — visible in live feed to other members, survive device changes", tag: "NEW"},
+    {item: "Course photo carousel — upload multiple photos per course, swipe through with dot navigation", tag: "NEW"},
+    {item: "Course reviews persist to Firestore — reviews survive page refresh via dedicated course_reviews collection", tag: "NEW"},
+    {item: "Active solo rounds appear in Activity feed — see who\'s playing in real time", tag: "NEW"},
+    {item: "Share buttons on Last 3 Rounds in profile — share any recent round directly from your profile", tag: "NEW"},
+    {item: "Courses Played section on member profiles — shows all courses with play count and best 18-hole score", tag: "NEW"},
+    {item: "Floating point score diff fixed — +9.799999999997 is now +9.8 everywhere", tag: "FIXED"},
+    {item: "Share card scorecard no longer empty — scores captured before state clears", tag: "FIXED"},
+    {item: "Score achievements (sub-120 through sub-70) now require 18 holes — 9-hole rounds no longer trigger false milestones", tag: "FIXED"},
+    {item: "Blunder achievements (120+, 130+, 140+) also filtered to 18-hole only", tag: "FIXED"},
+    {item: "Commentary generator adjusts for 9-hole rounds — no more \"Sub-80 club\" for a 44 on 9 holes", tag: "FIXED"},
+    {item: "XP curve rebalanced — level 24 after 1 round is fixed, now uses steeper progression", tag: "FIXED"},
+    {item: "9-hole hole selector now shows correct 9 holes instead of all 18", tag: "FIXED"},
+    {item: "Review author name uses your display name instead of hardcoded \"Zach\"", tag: "FIXED"},
+    {item: "Parbaugh Scores on course page show tee name and 9/18 hole label, clickable to round detail", tag: "IMPROVED"},
+    {item: "Round detail and round history show tee name and 9-hole label", tag: "IMPROVED"},
+    {item: "Parbaugh Round discard button — cleanly exit a sync round without saving", tag: "IMPROVED"},
+    {item: "Banner notification sits below nav bar instead of overlapping", tag: "FIXED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
@@ -12260,19 +12275,19 @@ Router.register("caddynotes", function() {
   h += '</div></div></div>';
 
   // Previous Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.7.6 · April 2026</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.7.66 · April 2026</span></div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var prevNotes = [
-    {item: "Live round following — tap any active round in the Live Spotlight to watch hole-by-hole in real time", tag: "NEW"},
-    {item: "Full live scorecard on the Watch page — every hole color-coded as scores are entered", tag: "NEW"},
-    {item: "Scores broadcast instantly when a player enters them — no refresh needed for spectators", tag: "NEW"},
-    {item: "Play Now now shows a tee selector after picking a course", tag: "NEW"},
-    {item: "Scoring screen shows yardage and hole handicap index for every hole", tag: "NEW"},
-    {item: "Range session redesigned — Setup, Active, and Review phases with focus field and notes", tag: "NEW"},
-    {item: "Scramble team creation built into Play Now", tag: "NEW"},
-    {item: "Full-screen course search — 30,000+ courses with ratings and tee data", tag: "NEW"},
-    {item: "Scramble teams sync across all devices automatically", tag: "FIXED"},
-    {item: "Snapshot listeners cleaned up — no more memory leaks", tag: "FIXED"}
+    {item: "Browser back button now works everywhere — navigate Home → Play Now → Back returns to Home correctly across all pages", tag: "FIXED"},
+    {item: "Range and Tee Time buttons from home page fixed — URL no longer changes on navigation so PWA reload on hash change is eliminated", tag: "FIXED"},
+    {item: "All 31 in-app ← Back buttons updated to use history — back always returns to wherever you came from, not a hardcoded destination", tag: "IMPROVED"},
+    {item: "Mobile keyboard now dismisses when selecting a course from search results or tapping outside any input field", tag: "FIXED"},
+    {item: "Invite code validation moved to Cloud Function — Firestore invites rule stays locked to authenticated users only", tag: "IMPROVED"},
+    {item: "Score locking: Lock button moved to bottom of each course scorecard, labeled with course name, Commissioner-only unlock", tag: "IMPROVED"},
+    {item: "Scorekeeper and finished status now persist after refresh — synced from Firestore on startup", tag: "FIXED"},
+    {item: "Trip scorecard score input no longer re-renders full page on each entry — totals update in-place", tag: "FIXED"},
+    {item: "Security headers added — X-Content-Type-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy", tag: "IMPROVED"},
+    {item: "Password reset from login screen improved — email validation, loading state, specific error messages", tag: "IMPROVED"}
   ];
   prevNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
