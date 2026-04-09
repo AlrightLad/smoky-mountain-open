@@ -4648,9 +4648,29 @@ function showRivalryDetail(p1id, p2id) {
   var p1rounds = PB.getPlayerRounds(p1id);
   var p2rounds = PB.getPlayerRounds(p2id);
   var matches = [];
+  var matchedKeys = {};
   p1rounds.forEach(function(r1) {
     var match = p2rounds.find(function(r2) { return r2.course === r1.course && r2.date === r1.date; });
-    if (match) matches.push({ date: r1.date, course: r1.course, p1score: r1.score, p2score: match.score, winner: r1.score < match.score ? p1id : match.score < r1.score ? p2id : "tie" });
+    if (match) {
+      matchedKeys[r1.course + "|" + r1.date] = true;
+      matches.push({ date: r1.date, course: r1.course, p1score: r1.score, p2score: match.score, winner: r1.score < match.score ? p1id : match.score < r1.score ? p2id : "tie" });
+    }
+  });
+  // Also include trip scorecard rounds
+  PB.getTrips().forEach(function(tr) {
+    if (!tr.courses) return;
+    tr.courses.forEach(function(crs) {
+      var s1 = PB.getScores(tr.id, crs.key, p1id);
+      var s2 = PB.getScores(tr.id, crs.key, p2id);
+      if (!s1 || !s1.length || !s2 || !s2.length) return;
+      var t1=0,t2=0,h1c=0,h2c=0;
+      s1.forEach(function(v){if(v!==""&&v!==null&&v!==undefined){t1+=parseInt(v)||0;h1c++;}});
+      s2.forEach(function(v){if(v!==""&&v!==null&&v!==undefined){t2+=parseInt(v)||0;h2c++;}});
+      if(h1c===0||h2c===0||h1c!==h2c) return;
+      var key = (crs.n||crs.key)+"|"+(crs.d||tr.startDate||"");
+      if(matchedKeys[key]) return;
+      matches.push({date:crs.d||tr.startDate||"",course:crs.n||crs.key,p1score:t1,p2score:t2,winner:t1<t2?p1id:t1>t2?p2id:"tie"});
+    });
   });
   matches.sort(function(a,b) { return b.date > a.date ? 1 : -1; });
 
@@ -6647,8 +6667,9 @@ function submitLogTeamRound(teamId) {
 function calcH2H(pid1, pid2) {
   var rounds = PB.getRounds();
   var p1wins = 0, p2wins = 0, ties = 0;
+  var counted = {}; // dedup key: course+date
 
-  // Find rounds where both players played the same course on the same date
+  // 1) Regular rounds — same course, same date
   var p1rounds = rounds.filter(function(r) { return r.player === pid1; });
   var p2rounds = rounds.filter(function(r) { return r.player === pid2; });
 
@@ -6657,10 +6678,35 @@ function calcH2H(pid1, pid2) {
       return r2.course === r1.course && r2.date === r1.date;
     });
     if (match) {
+      var key = r1.course + "|" + r1.date;
+      counted[key] = true;
       if (r1.score < match.score) p1wins++;
       else if (r1.score > match.score) p2wins++;
       else ties++;
     }
+  });
+
+  // 2) Trip scorecard rounds — both players scored on the same trip course
+  var trips = PB.getTrips();
+  trips.forEach(function(tr) {
+    if (!tr.courses) return;
+    tr.courses.forEach(function(crs) {
+      var s1 = PB.getScores(tr.id, crs.key, pid1);
+      var s2 = PB.getScores(tr.id, crs.key, pid2);
+      if (!s1 || !s1.length || !s2 || !s2.length) return;
+      // Calculate totals (skip empty holes)
+      var t1 = 0, t2 = 0, h1 = 0, h2 = 0;
+      s1.forEach(function(v) { if (v !== "" && v !== null && v !== undefined) { t1 += parseInt(v) || 0; h1++; } });
+      s2.forEach(function(v) { if (v !== "" && v !== null && v !== undefined) { t2 += parseInt(v) || 0; h2++; } });
+      if (h1 === 0 || h2 === 0) return; // No scores
+      if (h1 !== h2) return; // Different hole counts — not comparable
+      // Dedup against regular rounds
+      var key = (crs.n || crs.key) + "|" + (crs.d || tr.startDate || "");
+      if (counted[key]) return;
+      if (t1 < t2) p1wins++;
+      else if (t1 > t2) p2wins++;
+      else ties++;
+    });
   });
 
   return { p1wins: p1wins, p2wins: p2wins, ties: ties };
@@ -12507,31 +12553,52 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.10.0</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.11.0</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.10.0</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Integrity & Polish</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.11.0</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · H2H & DM Overhaul</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "Head-to-head now includes trip scorecard rounds — SMO matches finally count", tag: "FIXED"},
+    {item: "H2H profile section only shows opponents you\'ve actually played against", tag: "IMPROVED"},
+    {item: "H2H rows are tappable — tap to open full rivalry detail with match history", tag: "NEW"},
+    {item: "Rivalry detail match history includes trip scorecard rounds", tag: "FIXED"},
+    {item: "DM list infinite re-render loop fixed — no more flashing on hover/desktop", tag: "FIXED"},
+    {item: "DM thread layout overhauled — messages scroll, input pinned at bottom, nav stays clickable", tag: "FIXED"},
+    {item: "Birdie Machine false positives eliminated — no more counting without verified course pars", tag: "FIXED"},
+    {item: "Bogey-free achievement requires verified par data (no guessing)", tag: "FIXED"},
+    {item: "Self-challenge blocked — you can\'t pick yourself in the Challenge dropdown", tag: "FIXED"},
+    {item: "Challenge opponent routing fixed — Issue Challenge from rivalry page pre-selects the opponent", tag: "FIXED"},
+    {item: "Finalization bar day filter restored — only today\'s trip course shows on home page", tag: "FIXED"}
+  ];
+  currentNotes.forEach(function(r) {
+    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
+    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
+    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
+    h += '<span>' + r.item + '</span></div>';
+  });
+  h += '</div></div></div>';
+
+  // v5.10.0
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.10.0 · April 2026 · Integrity & Polish</span></div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
+  var v5100Notes = [
     {item: "DMs fixed — Firestore security rules now cover the messages subcollection", tag: "FIXED"},
     {item: "Clubhouse calendar shows active trips with \"Happening now\" badge", tag: "FIXED"},
-    {item: "Home page finalization bar — robust click handler, shows all unfinished courses during trip", tag: "FIXED"},
+    {item: "Home page finalization bar — robust click handler for trip courses", tag: "FIXED"},
     {item: "All-Time Records splits Best 18-Hole and Best 9-Hole into side-by-side cards", tag: "NEW"},
     {item: "Course Directory shows stacked F9 / B9 / 18 average scores", tag: "NEW"},
     {item: "Courses This Season section added to Season Standings page", tag: "NEW"},
-    {item: "Home page \"Next Event\" card shows ● Live label when trip is active", tag: "IMPROVED"},
-    {item: "Achievement audit — birdie streaks now reset between rounds (was falsely awarding Hat Trick)", tag: "FIXED"},
-    {item: "Achievements use actual course pars instead of hardcoded defaults", tag: "FIXED"},
-    {item: "Share scorecard counts 1 per round — re-downloading won't inflate your share count", tag: "FIXED"},
-    {item: "AI commentary now factors in your handicap — a 40-cap shooting their number gets respect, not roasted", tag: "IMPROVED"},
-    {item: "9-hole share card — condensed single-row layout with larger cells and fonts", tag: "IMPROVED"},
-    {item: "Share card logo swapped from 127KB base64 blob to lightweight logo.jpg", tag: "IMPROVED"},
-    {item: "Nav bar is now scrollable on mobile with 11px minimum font (was 9px crushed)", tag: "IMPROVED"},
-    {item: "DM timestamps bumped to 11px for readability", tag: "IMPROVED"},
-    {item: "Rounds now save per-hole par data for future achievement accuracy", tag: "NEW"}
+    {item: "Home page Next Event card shows Live label when trip is active", tag: "IMPROVED"},
+    {item: "Achievement audit — birdie streaks now reset between rounds", tag: "FIXED"},
+    {item: "Share scorecard counts 1 per round — no more inflation", tag: "FIXED"},
+    {item: "AI commentary factors in handicap — high-caps get fair treatment", tag: "IMPROVED"},
+    {item: "9-hole share card condensed layout with larger cells", tag: "IMPROVED"},
+    {item: "Nav bar scrollable on mobile with 11px minimum font", tag: "IMPROVED"},
+    {item: "Rounds now save per-hole par data for achievement accuracy", tag: "NEW"}
   ];
-  currentNotes.forEach(function(r) {
+  v5100Notes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
     h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
     h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
