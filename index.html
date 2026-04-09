@@ -3958,7 +3958,7 @@ var PB = (function() {
     var standings = players.map(function(p) {
       var allRounds = getPlayerRounds(p.id);
       var rounds = allRounds.filter(function(r) {
-        return r.date >= seasonStart && r.date <= seasonEnd && r.visibility !== "private" && (!r.holesPlayed || r.holesPlayed >= 18);
+        return r.date >= seasonStart && r.date <= seasonEnd && r.visibility !== "private";
       });
       if (!rounds.length) return null;
       var ghinHcap = calcHandicap(allRounds);
@@ -3970,20 +3970,24 @@ var PB = (function() {
         var coursePar = 72;
         var c = getCourseByName(r.course);
         if (c && c.par) coursePar = c.par;
-        var expected = coursePar + hcap;
+        var is9h = r.holesPlayed && r.holesPlayed <= 9;
+        // For 9-hole rounds, halve the expected score
+        var expected = is9h ? (coursePar / 2) + (hcap / 2) : coursePar + hcap;
         var diff = r.score - expected;
         var roundPts = Math.max(10, 100 - (diff * 5));
-        // Personal best bonus
-        if (r.score < bestSoFar) { roundPts += 50; bestSoFar = r.score; }
-        else if (bestSoFar === 999) bestSoFar = r.score;
+        // Personal best bonus — only compare like-for-like (18 vs 18)
+        if (!is9h && r.score < bestSoFar) { roundPts += 50; bestSoFar = r.score; }
+        else if (!is9h && bestSoFar === 999) bestSoFar = r.score;
         // New course bonus
         if (!seenCourses[r.course]) { roundPts += 25; seenCourses[r.course] = 1; }
         // Attested bonus
         if (r.attestedBy) roundPts += 15;
         points += Math.round(roundPts);
       });
-      var avg = Math.round(rounds.reduce(function(a,r){return a+r.score},0) / rounds.length * 10) / 10;
-      var best = Math.min.apply(null, rounds.map(function(r){return r.score}));
+      // Avg and best only from 18-hole rounds
+      var full18 = rounds.filter(function(r){return !r.holesPlayed || r.holesPlayed >= 18;});
+      var avg = full18.length ? Math.round(full18.reduce(function(a,r){return a+r.score},0) / full18.length * 10) / 10 : null;
+      var best = full18.length ? Math.min.apply(null, full18.map(function(r){return r.score})) : null;
       var uniqueCourses = {};
       rounds.forEach(function(r) { uniqueCourses[r.course] = 1; });
       var courseNames = Object.keys(uniqueCourses);
@@ -9854,7 +9858,8 @@ Router.register("teetimes", function() {
   var threeDaysAgo = new Date(Date.now() - 3 * 86400000).toISOString().split("T")[0];
   
   var upcoming = liveTeeTimes.filter(function(t) { return t.date >= now && t.status !== "cancelled"; });
-  var past = liveTeeTimes.filter(function(t) { return (t.date < now || t.status === "completed") && t.status !== "cancelled"; }).slice(0,5);
+  var pastLimit = Math.max(3, 10 - upcoming.length);
+  var past = liveTeeTimes.filter(function(t) { return (t.date < now || t.status === "completed") && t.status !== "cancelled"; }).slice(0, pastLimit);
   var recentlyCancelled = liveTeeTimes.filter(function(t) { 
     return t.status === "cancelled" && t.cancelledAt && t.cancelledAt >= threeDaysAgo;
   });
@@ -10371,7 +10376,7 @@ function renderActivityRounds() {
   // History
   if (rounds.length) {
     h += '<div class="section"><div class="sec-head"><span class="sec-title">Round history</span><span class="sec-link">' + rounds.length + ' total</span></div>';
-    rounds.slice().reverse().slice(0, 25).forEach(function(r) {
+    rounds.slice().sort(function(a,b){return (b.date||"")>(a.date||"")?1:(b.date||"")<(a.date||"")?-1:0;}).slice(0, 10).forEach(function(r) {
       var c = PB.generateRoundCommentary(r);
       var quip = c.roasts.length ? c.roasts[0] : (c.highlights.length ? c.highlights[0] : "");
       var diffR = Math.round((r.score - (r.rating || 72)) * 10) / 10;
@@ -11041,7 +11046,9 @@ function refreshClubCal() {
         });
         Object.keys(courseGroups).forEach(function(course) {
           var group = courseGroups[course];
-          eh += '<div style="background:var(--bg3);border-left:3px solid #a78bfa;border-radius:4px;padding:10px 12px;margin-bottom:6px">';
+          // If single round, make the whole box clickable
+          var boxClick = group.length === 1 && group[0].roundId ? ' onclick="Router.go(\'rounds\',{roundId:\'' + group[0].roundId + '\'})" style="background:var(--bg3);border-left:3px solid #a78bfa;border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer"' : ' style="background:var(--bg3);border-left:3px solid #a78bfa;border-radius:4px;padding:10px 12px;margin-bottom:6px"';
+          eh += '<div' + boxClick + '>';
           eh += '<div style="font-size:8px;color:#a78bfa;font-weight:700;letter-spacing:.5px;margin-bottom:3px">ROUND' + (group.length > 1 ? 'S' : '') + '</div>';
           eh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(course) + '</div>';
           group.forEach(function(r) {
@@ -11050,8 +11057,9 @@ function refreshClubCal() {
             var hLabel = is9h ? (r.holesMode === "back9" ? " · Back 9" : " · Front 9") : "";
             var tLabel = r.tee ? r.tee + " Tees" : "";
             var meta = [tLabel, hLabel.replace(" · ","")].filter(Boolean).join(" · ");
-            var clickAttr = r.roundId ? ' style="cursor:pointer" onclick="Router.go(\'rounds\',{roundId:\'' + r.roundId + '\'})"' : '';
-            eh += '<div' + clickAttr + ' style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px' + (r.roundId ? ';cursor:pointer' : '') + '"><div><span style="color:var(--muted)">' + escHtml(r.player) + '</span>' + (meta ? '<span style="color:var(--muted2);font-size:9px"> · ' + meta + '</span>' : '') + '</div><span style="font-weight:600;color:' + scoreColor + '">' + (r.score || "—") + '</span></div>';
+            // Individual row click only when multiple rounds grouped
+            var rowClick = group.length > 1 && r.roundId ? ' onclick="event.stopPropagation();Router.go(\'rounds\',{roundId:\'' + r.roundId + '\'})" style="cursor:pointer;display:flex;justify-content:space-between;padding:3px 0;font-size:11px"' : ' style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px"';
+            eh += '<div' + rowClick + '><div><span style="color:var(--muted)">' + escHtml(r.player) + '</span>' + (meta ? '<span style="color:var(--muted2);font-size:9px"> · ' + meta + '</span>' : '') + '</div><span style="font-weight:600;color:' + scoreColor + '">' + (r.score || "—") + '</span></div>';
           });
           eh += '</div>';
         });
@@ -12269,33 +12277,18 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.8.0</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.8.2</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.8.0</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Post-SMO Bugfix</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.8.2</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Post-SMO Bugfix III</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Log a Round redesigned — hole-by-hole entry is now the primary input with score, FIR, GIR, and putts per hole", tag: "NEW"},
-    {item: "Log a Round 9/18 hole selector — choose Front 9, Back 9, or full 18. Grid adapts to show only relevant holes", tag: "NEW"},
-    {item: "Solo Play Now rounds now persist to Firestore — visible in live feed to other members, survive device changes", tag: "NEW"},
-    {item: "Course photo carousel — upload multiple photos per course, swipe through with dot navigation", tag: "NEW"},
-    {item: "Course reviews persist to Firestore — reviews survive page refresh via dedicated course_reviews collection", tag: "NEW"},
-    {item: "Active solo rounds appear in Activity feed — see who\'s playing in real time", tag: "NEW"},
-    {item: "Share buttons on Last 3 Rounds in profile — share any recent round directly from your profile", tag: "NEW"},
-    {item: "Courses Played section on member profiles — shows all courses with play count and best 18-hole score", tag: "NEW"},
-    {item: "Floating point score diff fixed — +9.799999999997 is now +9.8 everywhere", tag: "FIXED"},
-    {item: "Share card scorecard no longer empty — scores captured before state clears", tag: "FIXED"},
-    {item: "Score achievements (sub-120 through sub-70) now require 18 holes — 9-hole rounds no longer trigger false milestones", tag: "FIXED"},
-    {item: "Blunder achievements (120+, 130+, 140+) also filtered to 18-hole only", tag: "FIXED"},
-    {item: "Commentary generator adjusts for 9-hole rounds — no more \"Sub-80 club\" for a 44 on 9 holes", tag: "FIXED"},
-    {item: "XP curve rebalanced — level 24 after 1 round is fixed, now uses steeper progression", tag: "FIXED"},
-    {item: "9-hole hole selector now shows correct 9 holes instead of all 18", tag: "FIXED"},
-    {item: "Review author name uses your display name instead of hardcoded \"Zach\"", tag: "FIXED"},
-    {item: "Parbaugh Scores on course page show tee name and 9/18 hole label, clickable to round detail", tag: "IMPROVED"},
-    {item: "Round detail and round history show tee name and 9-hole label", tag: "IMPROVED"},
-    {item: "Parbaugh Round discard button — cleanly exit a sync round without saving", tag: "IMPROVED"},
-    {item: "Banner notification sits below nav bar instead of overlapping", tag: "FIXED"}
+    {item: "9-hole rounds now count toward season standings — points calculated with halved par/handicap expectations, avg/best display uses 18-hole rounds only", tag: "FIXED"},
+    {item: "Awards Night and Season Recap back buttons fixed — no longer creates a navigation loop with Standings page", tag: "FIXED"},
+    {item: "Round history sorted newest-first by date and capped at 10 entries for cleaner display", tag: "IMPROVED"},
+    {item: "Calendar round boxes are fully clickable — tap anywhere in the purple box to view round details, not just the player name", tag: "FIXED"},
+    {item: "Tee times limited to last 10 — past tee times capped to keep the page clean", tag: "IMPROVED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
@@ -12306,19 +12299,20 @@ Router.register("caddynotes", function() {
   h += '</div></div></div>';
 
   // Previous Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.7.66 · April 2026</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.8.1 · April 2026 · Post-SMO Bugfix II</span></div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var prevNotes = [
-    {item: "Browser back button now works everywhere — navigate Home → Play Now → Back returns to Home correctly across all pages", tag: "FIXED"},
-    {item: "Range and Tee Time buttons from home page fixed — URL no longer changes on navigation so PWA reload on hash change is eliminated", tag: "FIXED"},
-    {item: "All 31 in-app ← Back buttons updated to use history — back always returns to wherever you came from, not a hardcoded destination", tag: "IMPROVED"},
-    {item: "Mobile keyboard now dismisses when selecting a course from search results or tapping outside any input field", tag: "FIXED"},
-    {item: "Invite code validation moved to Cloud Function — Firestore invites rule stays locked to authenticated users only", tag: "IMPROVED"},
-    {item: "Score locking: Lock button moved to bottom of each course scorecard, labeled with course name, Commissioner-only unlock", tag: "IMPROVED"},
-    {item: "Scorekeeper and finished status now persist after refresh — synced from Firestore on startup", tag: "FIXED"},
-    {item: "Trip scorecard score input no longer re-renders full page on each entry — totals update in-place", tag: "FIXED"},
-    {item: "Security headers added — X-Content-Type-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy", tag: "IMPROVED"},
-    {item: "Password reset from login screen improved — email validation, loading state, specific error messages", tag: "IMPROVED"}
+    {item: "All dates now use local timezone — no more next-day round dates", tag: "FIXED"},
+    {item: "Manual handicap transitions to GHIN after 3 rounds", tag: "NEW"},
+    {item: "H2H detail standings loop fixed", tag: "FIXED"},
+    {item: "Share card dark overlay and 9-hole scorecard support", tag: "FIXED"},
+    {item: "Golf scoring symbols no longer overflow for double-digit scores", tag: "FIXED"},
+    {item: "Log a Round shows share card with scorecard after submission", tag: "NEW"},
+    {item: "Calendar rounds show tee name and 9/18 label", tag: "IMPROVED"},
+    {item: "Home feed tee info and consistent commentary", tag: "FIXED"},
+    {item: "9-hole excluded from avg/best everywhere", tag: "FIXED"},
+    {item: "Tee fallback to course default for historical rounds", tag: "IMPROVED"},
+    {item: "Kiyan/Kayvan starter handicaps set to 25", tag: "IMPROVED"}
   ];
   prevNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
@@ -13737,7 +13731,7 @@ Router.register("seasonrecap", function(params) {
     });
   });
   
-  var h = '<div class="sh"><h2>' + year + ' Recap</h2><button class="back" onclick="Router.go(\'standings\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>' + year + ' Recap</h2><button class="back" onclick="Router.back(\'standings\')">← Back</button></div>';
   
   h += '<div style="text-align:center;padding:24px 16px;background:linear-gradient(180deg,#111520,var(--bg));border-bottom:1px solid var(--border)">';
   h += '';
@@ -13874,7 +13868,7 @@ Router.register("awards", function(params) {
   var season = PB.getSeasonStandings(year);
   var players = PB.getPlayers();
   
-  var h = '<div class="sh"><h2>Awards Night</h2><button class="back" onclick="Router.go(\'standings\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>Awards Night</h2><button class="back" onclick="Router.back(\'standings\')">← Back</button></div>';
   
   h += '<div style="text-align:center;padding:30px 16px 24px;background:linear-gradient(180deg,#0d1118,#111520,var(--bg));border-bottom:1px solid rgba(201,168,76,.15)">';
   h += '';
