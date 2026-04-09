@@ -513,7 +513,7 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 .ach-celebrate{position:fixed;bottom:0;left:0;right:0;z-index:9999;padding:0 16px 32px;pointer-events:none;animation:achSlideUp 4s ease forwards}
 
 /* ===== ROUND IN PROGRESS BANNER ===== */
-.rip-banner{position:sticky;top:0;z-index:60;background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.06));border-bottom:1px solid rgba(201,168,76,.2);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.rip-banner{position:sticky;top:42px;z-index:45;background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.06));border-bottom:1px solid rgba(201,168,76,.2);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .rip-banner:active{background:rgba(201,168,76,.15)}
 .rip-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;animation:pulse-dot 2s infinite;flex-shrink:0}
 
@@ -2930,10 +2930,10 @@ var PB = (function() {
   };
 
   function xpForLevel(level) {
-    // Progressive curve: Level 100 ~30K XP, reachable in ~1 year of active play
+    // Progressive curve: Level 100 ~100K XP, reachable in ~1 year of active play
     // No level cap — players can keep going past 100
     if (level <= 1) return 0;
-    return Math.floor(120 * Math.pow(level - 1, 1.2));
+    return Math.floor(200 * Math.pow(level - 1, 1.65));
   }
 
   function getPlayerLevel(pid) {
@@ -5075,8 +5075,16 @@ function renderMemberDetailWithData(p) {
     last3.forEach(function(r) {
       var c = PB.generateRoundCommentary(r);
       var quip = c.roasts.length ? c.roasts[0] : (c.highlights.length ? c.highlights[0] : "");
-      last3Content += '<div class="card"><div class="round-card"><div class="rc-top"><div><div class="rc-course">' + r.course + '</div><div class="rc-date">' + r.date + (r.format && r.format !== "stroke" ? ' · ' + r.format : '') + '</div></div>';
-      last3Content += '<div class="rc-score">' + r.score + '</div></div>';
+      var diffR = Math.round((r.score - (r.rating || 72)) * 10) / 10;
+      var diffStrR = diffR === 0 ? "E" : (diffR > 0 ? "+" + diffR : "" + diffR);
+      var safeCourse = (r.course||"").replace(/'/g,"\\'");
+      var safeName = (r.playerName||"").replace(/'/g,"\\'");
+      var safeTee = (r.tee||"").replace(/'/g,"\\'");
+      var safeYards = r.yards || 0;
+      last3Content += '<div class="card"><div class="round-card"><div class="rc-top"><div onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer;flex:1"><div class="rc-course">' + escHtml(r.course) + '</div><div class="rc-date">' + r.date + (r.format && r.format !== "stroke" ? ' · ' + r.format : '') + '</div></div>';
+      last3Content += '<div style="display:flex;align-items:center;gap:8px"><div class="rc-score">' + r.score + '</div>';
+      last3Content += '<button class="btn-sm outline" style="font-size:9px;padding:4px 8px;flex-shrink:0" onclick="event.stopPropagation();showRoundShareCard(' + r.score + ',\'' + diffStrR + '\',\'' + safeCourse + '\',\'' + safeName + '\',[],[],\'' + safeTee + '\',' + safeYards + ')">Share</button>';
+      last3Content += '</div></div>';
       if (quip) last3Content += '<div class="rc-quip">' + quip + '</div>';
       last3Content += '</div></div>';
     });
@@ -5084,6 +5092,28 @@ function renderMemberDetailWithData(p) {
     last3Content = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No rounds logged yet</div>';
   }
   h += profSection("last3-" + pid, "Last 3 rounds", last3Content, true);
+
+  // === COURSES PLAYED (collapsible, open by default) ===
+  var coursesContent = '';
+  if (rounds.length) {
+    var courseMap = {};
+    rounds.forEach(function(r) {
+      if (!r.course) return;
+      if (!courseMap[r.course]) courseMap[r.course] = { name: r.course, best18: null, best9: null, count: 0 };
+      courseMap[r.course].count++;
+      var is18 = !r.holesPlayed || r.holesPlayed >= 18;
+      if (is18 && (courseMap[r.course].best18 === null || r.score < courseMap[r.course].best18)) courseMap[r.course].best18 = r.score;
+      if (!is18 && (courseMap[r.course].best9 === null || r.score < courseMap[r.course].best9)) courseMap[r.course].best9 = r.score;
+    });
+    var courseList = Object.values(courseMap).sort(function(a, b) { return b.count - a.count; });
+    courseList.forEach(function(c) {
+      var bestLabel = c.best18 !== null ? c.best18 : (c.best9 !== null ? c.best9 + ' (9h)' : '—');
+      coursesContent += '<div class="club-row"><span class="club-name">' + escHtml(c.name) + ' <span style="color:var(--muted);font-size:9px">(' + c.count + 'x)</span></span><span class="club-yd">Best: ' + bestLabel + '</span></div>';
+    });
+  } else {
+    coursesContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No courses played yet</div>';
+  }
+  h += profSection("courses-" + pid, "Courses played", coursesContent, false);
 
   // === WHAT'S IN THE BAG (collapsible) ===
   var bagContent = '';
@@ -6674,11 +6704,48 @@ var liveState = {
 // Stored under a separate key — never mixed with PB state.
 
 function saveLiveState() {
-  // No-op — live round state is broadcast via syncrounds collection in Firestore.
+  if (!liveState.active) return;
+  // Local crash recovery
+  try {
+    localStorage.setItem("pb_liveState", JSON.stringify(liveState));
+  } catch(e) { /* quota or private browsing */ }
+  // Firestore persistence — makes round visible to other members and survives device changes
+  if (db && currentUser && liveState.visibility !== "private") {
+    var scored = liveState.scores.filter(function(s){return s!==""});
+    db.collection("liverounds").doc(currentUser.uid).set({
+      playerId: currentUser.uid,
+      playerName: currentProfile ? (currentProfile.name || currentProfile.username) : "Member",
+      course: liveState.course || "",
+      courseId: liveState.courseId || "",
+      format: liveState.format || "stroke",
+      holesMode: liveState.holesMode || "18",
+      tee: liveState.tee || "",
+      currentHole: liveState.currentHole || 0,
+      scores: liveState.scores,
+      fir: liveState.fir,
+      gir: liveState.gir,
+      putts: liveState.putts,
+      rating: liveState.rating || 72,
+      slope: liveState.slope || 113,
+      par: liveState.par || 72,
+      thru: scored.length,
+      totalScore: scored.reduce(function(a,b){return a+parseInt(b)},0),
+      startTime: liveState.startTime || null,
+      status: "active",
+      updatedAt: fsTimestamp()
+    }, { merge: true }).catch(function(e) { pbWarn("[LiveRound] save failed:", e.message); });
+  }
 }
 
 function loadLiveState() {
-  // No-op — live round state comes from Firestore syncrounds collection.
+  try {
+    var saved = localStorage.getItem("pb_liveState");
+    if (!saved) return;
+    var parsed = JSON.parse(saved);
+    if (parsed && parsed.active) {
+      Object.assign(liveState, parsed);
+    }
+  } catch(e) { /* corrupt data, ignore */ }
 }
 
 function clearLiveState() {
@@ -6692,7 +6759,11 @@ function clearLiveState() {
   liveState.fir = Array(18).fill(false);
   liveState.gir = Array(18).fill(false);
   liveState.putts = Array(18).fill("");
-
+  try { localStorage.removeItem("pb_liveState"); } catch(e) {}
+  // Clear Firestore live round
+  if (db && currentUser) {
+    db.collection("liverounds").doc(currentUser.uid).update({ status: "completed", updatedAt: fsTimestamp() }).catch(function(){});
+  }
 }
 // ─────────────────────────────────────────────────────────────────────────
 
@@ -7111,8 +7182,10 @@ function renderLiveScoring() {
   h += '</div></div>';
 
   // Hole selector — bigger tap targets
+  var selectorStart = liveState.holesMode === "back9" ? 9 : 0;
+  var selectorEnd = liveState.holesMode === "18" ? 18 : (liveState.holesMode === "back9" ? 18 : 9);
   h += '<div style="padding:8px 12px;display:flex;gap:3px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none">';
-  for (var d = 0; d < 18; d++) {
+  for (var d = selectorStart; d < selectorEnd; d++) {
     var scored = liveState.scores[d] !== "";
     var isCurrent = d === hole;
     var dotColor = isCurrent ? 'var(--gold)' : scored ? 'var(--birdie)' : 'var(--border)';
@@ -7338,6 +7411,7 @@ function finishLiveRound() {
     slope: liveState.slope,
     format: liveState.format,
     holesPlayed: completed,
+    holesMode: liveState.holesMode || "18",
     holeScores: liveState.scores.slice(),
     firData: liveState.fir.slice(),
     girData: liveState.gir.slice(),
@@ -8359,10 +8433,10 @@ function shareRoundCard(roundId) {
   var rounds = PB.getRounds();
   var round = rounds.find(function(r) { return r.id === roundId; });
   if (!round) return;
-  var diff = round.score - (round.rating || 72);
+  var diff = Math.round((round.score - (round.rating || 72)) * 10) / 10;
   var label = diff === 0 ? "Even" : (diff > 0 ? "+" + diff : diff);
   var text = round.playerName + " shot " + round.score + " (" + label + ") at " + round.course + " on " + round.date + " — The Parbaughs";
-  
+
   if (navigator.share) {
     navigator.share({ title: "Parbaugh Round", text: text, url: "https://alrightlad.github.io/smoky-mountain-open/" }).catch(function(){});
   } else if (navigator.clipboard) {
@@ -8378,7 +8452,7 @@ function renderRoundDetail(roundId) {
   if (!round) { Router.go("rounds"); return; }
 
   var commentary = PB.generateRoundCommentary(round);
-  var diff = round.score - (round.rating || 72);
+  var diff = Math.round((round.score - (round.rating || 72)) * 10) / 10;
   var player = PB.getPlayer(round.player);
 
   var h = '<div class="sh"><h2>Round detail</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
@@ -8953,8 +9027,9 @@ function renderCourseDetail(courseId) {
   }
 
   // Solo (all non-scramble formats combined — stroke, parbaugh, stableford, etc.)
+  // Only full 18-hole rounds count for leaderboards
   var soloEntries = roundsHere
-    .filter(function(r){ return r.format !== 'scramble'; })
+    .filter(function(r){ return r.format !== 'scramble' && (!r.holesPlayed || r.holesPlayed >= 18); })
     .sort(function(a,b){ return a.score - b.score; })
     .slice(0,3)
     .map(function(r){ return {name: r.playerName || r.player, score: r.score, date: r.date, par: c.par}; });
@@ -9342,7 +9417,7 @@ Router.register("records", function() {
   var coursesWithData = courses.filter(function(c) { return PB.getCourseRounds(c.name).length > 0 || teams.some(function(t){return(t.matches||[]).some(function(m){return m.course===c.name})}); });
   if (coursesWithData.length) {
     coursesWithData.forEach(function(c) {
-      var cr = PB.getCourseRounds(c.name);
+      var cr = PB.getCourseRounds(c.name).filter(function(r){ return !r.holesPlayed || r.holesPlayed >= 18; });
       var bestSolo = cr.length ? cr.reduce(function(a, b) { return a.score < b.score ? a : b; }) : null;
       var scrambleBests = {};
       teams.forEach(function(t) {
@@ -10018,7 +10093,7 @@ function renderActivityRounds() {
     rounds.slice().reverse().slice(0, 25).forEach(function(r) {
       var c = PB.generateRoundCommentary(r);
       var quip = c.roasts.length ? c.roasts[0] : (c.highlights.length ? c.highlights[0] : "");
-      var diffR = r.score - (r.rating || 72);
+      var diffR = Math.round((r.score - (r.rating || 72)) * 10) / 10;
       var diffStrR = diffR === 0 ? "E" : (diffR > 0 ? "+" + diffR : "" + diffR);
       var safeCourseR = (r.course||"").replace(/'/g,"\\'");
       var safeNameR = (r.playerName||"").replace(/'/g,"\\'");
@@ -12663,9 +12738,11 @@ function renderSyncRoundLive(round) {
   var totals = {};
   playerIds.forEach(function(pid) { totals[pid] = 0; });
   var parTotal = 0;
+  var syncStartHole = round.holesMode === "back9" ? 9 : 0;
+  var syncEndHole = round.holesMode === "front9" ? 9 : 18;
   
-  for (var i = 0; i < 18; i++) {
-    if (i === 9) {
+  for (var i = syncStartHole; i < syncEndHole; i++) {
+    if (i === 9 && syncStartHole === 0) {
       // OUT row
       h += '<tr class="sr"><td>OUT</td><td>' + defaultPar.slice(0,9).reduce(function(a,b){return a+b},0) + '</td>';
       playerIds.forEach(function(pid) {
@@ -12698,13 +12775,15 @@ function renderSyncRoundLive(round) {
     h += '</tr>';
   }
   
-  // IN row
-  h += '<tr class="sr"><td>IN</td><td>' + defaultPar.slice(9).reduce(function(a,b){return a+b},0) + '</td>';
-  playerIds.forEach(function(pid) {
-    var back = 0; for (var f=9;f<18;f++) { var v=parseInt(players[pid].scores[f]); if(!isNaN(v)) back+=v; }
-    h += '<td>' + (back||"—") + '</td>';
-  });
-  h += '</tr>';
+  // IN row — only for 18-hole rounds
+  if (syncEndHole === 18 && syncStartHole === 0) {
+    h += '<tr class="sr"><td>IN</td><td>' + defaultPar.slice(9).reduce(function(a,b){return a+b},0) + '</td>';
+    playerIds.forEach(function(pid) {
+      var back = 0; for (var f=9;f<18;f++) { var v=parseInt(players[pid].scores[f]); if(!isNaN(v)) back+=v; }
+      h += '<td>' + (back||"—") + '</td>';
+    });
+    h += '</tr>';
+  }
   
   // TOTAL row
   h += '<tr class="ttr"><td>TOT</td><td>' + parTotal + '</td>';
@@ -12713,9 +12792,12 @@ function renderSyncRoundLive(round) {
   });
   h += '</tr></tbody></table></div>';
   
-  // Finish button
+  // Finish & Discard buttons
   if (round.createdBy === myId || (currentProfile && currentProfile.role === "commissioner")) {
-    h += '<div class="section"><button class="btn full" style="background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);color:var(--red)" onclick="finishSyncRound(\'' + round._id + '\')">Finish Round</button></div>';
+    h += '<div class="section" style="display:flex;gap:8px">';
+    h += '<button class="btn full" style="flex:1;background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);color:var(--red)" onclick="finishSyncRound(\'' + round._id + '\')">Finish Round</button>';
+    h += '<button class="btn full" style="flex:1;background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);color:var(--red);opacity:.7" onclick="discardSyncRound(\'' + round._id + '\')">Discard</button>';
+    h += '</div>';
   }
   h += '<div style="text-align:center;padding:8px;font-size:10px;color:var(--muted2)">Scores sync live across all devices</div>';
   
@@ -12809,6 +12891,16 @@ function finishSyncRound(roundId) {
   }).catch(function(e) {
     if (e !== "not enough holes") pbWarn("[SyncRound] finish failed:", e);
   });
+}
+
+function discardSyncRound(roundId) {
+  if (!confirm("Discard this Parbaugh Round? No scores will be saved.")) return;
+  if (!db) return;
+  db.collection("syncrounds").doc(roundId).update({ status: "discarded", completedAt: fsTimestamp() }).then(function() {
+    if (syncRoundListener) { syncRoundListener(); syncRoundListener = null; }
+    Router.toast("Round discarded.");
+    Router.go("home");
+  }).catch(function(e) { Router.toast("Failed: " + e.message); });
 }
 
 
@@ -13823,9 +13915,11 @@ function captureShareCard() {
         var file = new File([blob], "parbaughs-scorecard.png", {type:"image/png"});
         if (navigator.share && navigator.canShare && navigator.canShare({files:[file]})) {
           navigator.share({files:[file], title:"The Parbaughs Scorecard"})
-            .catch(function(){ downloadScorecardImage(blob); });
+            .then(function() { showShareSuccess(); })
+            .catch(function(){ downloadScorecardImage(blob); showShareSuccess(); });
         } else {
           downloadScorecardImage(blob);
+          showShareSuccess();
         }
       }, "image/png");
     }).catch(function(e) {
@@ -14103,6 +14197,17 @@ function closeShareCard() {
   var modal = document.getElementById("shareCardModal");
   if (modal) modal.remove();
   Router.go("rounds");
+}
+
+function showShareSuccess() {
+  var modal = document.getElementById("shareCardModal");
+  if (!modal) return;
+  modal.innerHTML = '<div style="position:relative;width:100%;max-width:360px;text-align:center;padding-top:120px">' +
+    '<div style="font-size:48px;margin-bottom:16px">✓</div>' +
+    '<div style="font-size:22px;font-weight:700;color:var(--gold);margin-bottom:8px">SUCCESS</div>' +
+    '<div style="font-size:12px;color:var(--muted);margin-bottom:24px">Scorecard saved! Share it everywhere.</div>' +
+    '<button class="btn full green" onclick="closeShareCard()" style="max-width:280px;margin:0 auto">Done</button>' +
+    '</div>';
 }
 
 
@@ -14402,9 +14507,11 @@ function loadHomeActivityFeed() {
   db.collection("rounds").orderBy("createdAt","desc").limit(10).get().then(function(snap) {
     snap.forEach(function(doc) {
       var r = doc.data();
+      var rid = doc.id;
       var comm = PB.generateRoundCommentary({score:r.score,rating:r.rating||72,slope:r.slope||113,player:r.player});
       var quip = comm.roasts.length ? comm.roasts[0] : (comm.highlights.length ? comm.highlights[0] : "");
-      items.push({type:"round", name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + " · " + r.score, quip:quip, score:r.score, date:r.date||"", ts:r.createdAt ? r.createdAt.toMillis() : 0, dest:"Router.go('rounds')"});
+      var holeLabel = r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? " · Back 9" : " · Front 9") : " · 18 holes";
+      items.push({type:"round", name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + " · " + r.score + holeLabel, quip:quip, score:r.score, date:r.date||"", ts:r.createdAt ? r.createdAt.toMillis() : 0, dest:"Router.go('rounds',{roundId:'" + rid + "'})"});
     });
     pending--; tryRender();
   }).catch(function() {
@@ -14412,7 +14519,8 @@ function loadHomeActivityFeed() {
     PB.getRounds().slice().reverse().slice(0,10).forEach(function(r) {
       var comm = PB.generateRoundCommentary({score:r.score,rating:r.rating||72,slope:r.slope||113,player:r.player});
       var quip = comm.roasts.length ? comm.roasts[0] : (comm.highlights.length ? comm.highlights[0] : "");
-      items.push({type:"round", name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + " · " + r.score, quip:quip, score:r.score, date:r.date||"", ts:r.timestamp||0, dest:"Router.go('rounds')"});
+      var holeLabel = r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? " · Back 9" : " · Front 9") : " · 18 holes";
+      items.push({type:"round", name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + " · " + r.score + holeLabel, quip:quip, score:r.score, date:r.date||"", ts:r.timestamp||0, dest:"Router.go('rounds',{roundId:'" + r.id + "'})"});
     });
     pending--; tryRender();
   });
@@ -14447,8 +14555,24 @@ function loadHomeActivityFeed() {
   db.collection("syncrounds").orderBy("createdAt","desc").limit(5).get().then(function(snap) {
     snap.forEach(function(doc) {
       var r = doc.data();
-      var isLive = r.status !== "completed";
-      items.push({type:"syncround", name:(r.createdByName||"A Parbaugh") + (isLive ? " is playing a Parbaugh Round" : " finished a Parbaugh Round"), sub:(r.courseName||"") + (r.format ? " · " + r.format : ""), date:"", ts:r.createdAt ? r.createdAt.toMillis() : 0, live:isLive, dest:"Router.go('syncround')"});
+      if (r.status === "discarded") return; // skip discarded rounds
+      var isLive = r.status === "active";
+      var dest = isLive ? "Router.go('syncround',{roundId:'" + doc.id + "'})" : "";
+      items.push({type:"syncround", name:(r.createdByName||"A Parbaugh") + (isLive ? " is playing a Parbaugh Round" : " finished a Parbaugh Round"), sub:(r.courseName||"") + (r.format ? " · " + r.format : "") + (isLive ? " · Tap to join" : ""), date:"", ts:r.createdAt ? r.createdAt.toMillis() : 0, live:isLive, dest:dest});
+    });
+    pending--; tryRender();
+  }).catch(function() { pending--; tryRender(); });
+
+  // 5. Active solo live rounds from Firestore
+  pending++;
+  db.collection("liverounds").where("status","==","active").limit(8).get().then(function(snap) {
+    snap.forEach(function(doc) {
+      var lr = doc.data();
+      if (currentUser && doc.id === currentUser.uid) return; // skip own
+      var thru = lr.thru || 0;
+      if (thru < 1) return;
+      var scoreTxt = lr.totalScore ? lr.totalScore + " thru " + thru : "thru " + thru;
+      items.push({type:"liveround", name:(lr.playerName||"A Parbaugh") + " is playing", sub:(lr.course||"") + " · " + scoreTxt, date:"", ts:lr.updatedAt ? lr.updatedAt.toMillis() : Date.now(), live:true, dest:""});
     });
     pending--; tryRender();
   }).catch(function() { pending--; tryRender(); });
