@@ -8616,17 +8616,8 @@ function renderRoundDetail(roundId) {
 }
 
 function toggleLogHoleByHole() {
-  var sec = document.getElementById("rf-hbh-section");
-  var btn = document.getElementById("rf-hbh-toggle");
-  if (!sec) return;
-  if (sec.style.display === "none") {
-    sec.style.display = "block";
-    btn.textContent = "▾ Hide hole-by-hole scores";
-    renderLogHoleGrid();
-  } else {
-    sec.style.display = "none";
-    btn.textContent = "▸ Enter hole-by-hole scores (optional)";
-  }
+  // Legacy — grid is always visible now
+  renderLogHoleGrid();
 }
 
 function renderLogHoleGrid() {
@@ -8636,38 +8627,43 @@ function renderLogHoleGrid() {
   var course = courseName ? PB.getCourseByName(courseName) : null;
   var holes = course && course.holes ? course.holes : [];
   var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+  var holesMode = document.getElementById("rf-holes") ? document.getElementById("rf-holes").value : "18";
+  var showFront = holesMode === "18" || holesMode === "front9";
+  var showBack = holesMode === "18" || holesMode === "back9";
 
-  var h = '<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Fill in what you remember — blank holes are OK</div>';
+  var h = '<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Enter your score for each hole</div>';
 
-  // Front 9
-  h += '<div style="overflow-x:auto;margin-bottom:8px"><table class="sc-table" style="font-size:10px;width:100%"><tr><td class="sc-lbl">Hole</td>';
-  for (var i = 1; i <= 9; i++) h += '<td class="sc-hdr">' + i + '</td>';
-  h += '</tr><tr><td class="sc-lbl">Par</td>';
-  for (var i = 0; i < 9; i++) { var p = holes.length > i ? (holes[i].par || defaultPar[i]) : defaultPar[i]; h += '<td class="sc-par">' + p + '</td>'; }
-  h += '</tr><tr><td class="sc-lbl">Score</td>';
-  for (var i = 0; i < 9; i++) h += '<td><input type="number" inputmode="numeric" class="rf-hole-score" data-hole="' + i + '" style="width:28px;padding:4px 2px;text-align:center;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--cream);font-size:11px" oninput="updateLogTotal()"></td>';
-  h += '</tr><tr><td class="sc-lbl">FIR</td>';
-  for (var i = 0; i < 9; i++) { var isPar3 = (holes.length > i ? (holes[i].par || defaultPar[i]) : defaultPar[i]) === 3; h += '<td>' + (isPar3 ? '<span style="color:var(--muted2);font-size:9px">—</span>' : '<input type="checkbox" class="rf-hole-fir" data-hole="' + i + '" style="width:14px;height:14px">') + '</td>'; }
-  h += '</tr><tr><td class="sc-lbl">GIR</td>';
-  for (var i = 0; i < 9; i++) h += '<td><input type="checkbox" class="rf-hole-gir" data-hole="' + i + '" style="width:14px;height:14px"></td>';
-  h += '</tr><tr><td class="sc-lbl">Putts</td>';
-  for (var i = 0; i < 9; i++) h += '<td><input type="number" inputmode="numeric" class="rf-hole-putts" data-hole="' + i + '" style="width:28px;padding:4px 2px;text-align:center;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--cream);font-size:11px"></td>';
-  h += '</tr></table></div>';
+  if (showFront) {
+    h += '<div style="overflow-x:auto;margin-bottom:8px"><table class="sc-table" style="font-size:10px;width:100%"><tr><td class="sc-lbl">Hole</td>';
+    for (var i = 1; i <= 9; i++) h += '<td class="sc-hdr">' + i + '</td>';
+    h += '</tr><tr><td class="sc-lbl">Par</td>';
+    for (var i = 0; i < 9; i++) { var p = holes.length > i ? (holes[i].par || defaultPar[i]) : defaultPar[i]; h += '<td class="sc-par">' + p + '</td>'; }
+    h += '</tr><tr><td class="sc-lbl">Score</td>';
+    for (var i = 0; i < 9; i++) h += '<td><input type="number" inputmode="numeric" class="rf-hole-score" data-hole="' + i + '" style="width:28px;padding:4px 2px;text-align:center;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--cream);font-size:11px" oninput="updateLogTotal()"></td>';
+    h += '</tr><tr><td class="sc-lbl">FIR</td>';
+    for (var i = 0; i < 9; i++) { var isPar3 = (holes.length > i ? (holes[i].par || defaultPar[i]) : defaultPar[i]) === 3; h += '<td>' + (isPar3 ? '<span style="color:var(--muted2);font-size:9px">—</span>' : '<input type="checkbox" class="rf-hole-fir" data-hole="' + i + '" style="width:14px;height:14px">') + '</td>'; }
+    h += '</tr><tr><td class="sc-lbl">GIR</td>';
+    for (var i = 0; i < 9; i++) h += '<td><input type="checkbox" class="rf-hole-gir" data-hole="' + i + '" style="width:14px;height:14px"></td>';
+    h += '</tr><tr><td class="sc-lbl">Putts</td>';
+    for (var i = 0; i < 9; i++) h += '<td><input type="number" inputmode="numeric" class="rf-hole-putts" data-hole="' + i + '" style="width:28px;padding:4px 2px;text-align:center;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--cream);font-size:11px"></td>';
+    h += '</tr></table></div>';
+  }
 
-  // Back 9
-  h += '<div style="overflow-x:auto;margin-bottom:8px"><table class="sc-table" style="font-size:10px;width:100%"><tr><td class="sc-lbl">Hole</td>';
-  for (var i = 10; i <= 18; i++) h += '<td class="sc-hdr">' + i + '</td>';
-  h += '</tr><tr><td class="sc-lbl">Par</td>';
-  for (var i = 9; i < 18; i++) { var p = holes.length > i ? (holes[i].par || defaultPar[i]) : defaultPar[i]; h += '<td class="sc-par">' + p + '</td>'; }
-  h += '</tr><tr><td class="sc-lbl">Score</td>';
-  for (var i = 9; i < 18; i++) h += '<td><input type="number" inputmode="numeric" class="rf-hole-score" data-hole="' + i + '" style="width:28px;padding:4px 2px;text-align:center;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--cream);font-size:11px" oninput="updateLogTotal()"></td>';
-  h += '</tr><tr><td class="sc-lbl">FIR</td>';
-  for (var i = 9; i < 18; i++) { var isPar3 = (holes.length > i ? (holes[i].par || defaultPar[i]) : defaultPar[i]) === 3; h += '<td>' + (isPar3 ? '<span style="color:var(--muted2);font-size:9px">—</span>' : '<input type="checkbox" class="rf-hole-fir" data-hole="' + i + '" style="width:14px;height:14px">') + '</td>'; }
-  h += '</tr><tr><td class="sc-lbl">GIR</td>';
-  for (var i = 9; i < 18; i++) h += '<td><input type="checkbox" class="rf-hole-gir" data-hole="' + i + '" style="width:14px;height:14px"></td>';
-  h += '</tr><tr><td class="sc-lbl">Putts</td>';
-  for (var i = 9; i < 18; i++) h += '<td><input type="number" inputmode="numeric" class="rf-hole-putts" data-hole="' + i + '" style="width:28px;padding:4px 2px;text-align:center;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--cream);font-size:11px"></td>';
-  h += '</tr></table></div>';
+  if (showBack) {
+    h += '<div style="overflow-x:auto;margin-bottom:8px"><table class="sc-table" style="font-size:10px;width:100%"><tr><td class="sc-lbl">Hole</td>';
+    for (var i = 10; i <= 18; i++) h += '<td class="sc-hdr">' + i + '</td>';
+    h += '</tr><tr><td class="sc-lbl">Par</td>';
+    for (var i = 9; i < 18; i++) { var p = holes.length > i ? (holes[i].par || defaultPar[i]) : defaultPar[i]; h += '<td class="sc-par">' + p + '</td>'; }
+    h += '</tr><tr><td class="sc-lbl">Score</td>';
+    for (var i = 9; i < 18; i++) h += '<td><input type="number" inputmode="numeric" class="rf-hole-score" data-hole="' + i + '" style="width:28px;padding:4px 2px;text-align:center;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--cream);font-size:11px" oninput="updateLogTotal()"></td>';
+    h += '</tr><tr><td class="sc-lbl">FIR</td>';
+    for (var i = 9; i < 18; i++) { var isPar3 = (holes.length > i ? (holes[i].par || defaultPar[i]) : defaultPar[i]) === 3; h += '<td>' + (isPar3 ? '<span style="color:var(--muted2);font-size:9px">—</span>' : '<input type="checkbox" class="rf-hole-fir" data-hole="' + i + '" style="width:14px;height:14px">') + '</td>'; }
+    h += '</tr><tr><td class="sc-lbl">GIR</td>';
+    for (var i = 9; i < 18; i++) h += '<td><input type="checkbox" class="rf-hole-gir" data-hole="' + i + '" style="width:14px;height:14px"></td>';
+    h += '</tr><tr><td class="sc-lbl">Putts</td>';
+    for (var i = 9; i < 18; i++) h += '<td><input type="number" inputmode="numeric" class="rf-hole-putts" data-hole="' + i + '" style="width:28px;padding:4px 2px;text-align:center;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--cream);font-size:11px"></td>';
+    h += '</tr></table></div>';
+  }
   h += '<div id="rf-hbh-total" style="font-size:12px;color:var(--gold);text-align:center;margin-bottom:8px"></div>';
 
   sec.innerHTML = h;
@@ -8715,30 +8711,50 @@ function submitRound() {
   var player = document.getElementById("rf-player").value;
   var courseName = document.getElementById("rf-course").value;
   if (!courseName) { Router.toast("Pick a course"); return; }
-  var score = parseInt(document.getElementById("rf-score").value);
-  if (!score || score < 40 || score > 200) { Router.toast("Enter a valid score"); return; }
+
+  // Hole-by-hole data is required
+  var hbhData = getLogHoleData();
+  if (!hbhData) { Router.toast("Enter your hole-by-hole scores"); return; }
+
+  var filledScores = hbhData.holeScores.filter(function(s) { return s !== ""; });
+  if (filledScores.length < 9) { Router.toast("Enter at least 9 holes"); return; }
+
+  // Compute score from holes
+  var score = 0;
+  filledScores.forEach(function(s) { score += parseInt(s) || 0; });
+
   var course = PB.getCourseByName(courseName);
+  var holesMode = document.getElementById("rf-holes") ? document.getElementById("rf-holes").value : "18";
+  var is9hole = holesMode === "front9" || holesMode === "back9";
   var rating = parseFloat(document.getElementById("rf-rating").value) || (course ? course.rating : 72);
   var slope = parseInt(document.getElementById("rf-slope").value) || (course ? course.slope : 113);
+
+  // Halve rating for 9-hole rounds
+  if (is9hole && rating > 50) rating = rating / 2;
+
   var photoInput = document.getElementById("rf-photo");
-  var addRoundData = { player:player, course:courseName, score:score, date:document.getElementById("rf-date").value, rating:rating, slope:slope, format:document.getElementById("rf-format").value, playerName: currentProfile ? (currentProfile.name || currentProfile.username) : "A Parbaugh" };
+  var addRoundData = {
+    player: player,
+    course: courseName,
+    score: score,
+    date: document.getElementById("rf-date").value,
+    rating: rating,
+    slope: slope,
+    format: document.getElementById("rf-format").value,
+    playerName: currentProfile ? (currentProfile.name || currentProfile.username) : "A Parbaugh",
+    holesPlayed: filledScores.length,
+    holesMode: holesMode,
+    holeScores: hbhData.holeScores,
+    firData: hbhData.firData,
+    girData: hbhData.girData,
+    puttsData: hbhData.puttsData,
+    visibility: "public"
+  };
 
   // Add tee info from course if available
   if (course) {
     addRoundData.tee = course.tee || "";
     addRoundData.yards = course.yards || 0;
-  }
-
-  // Include hole-by-hole data if entered
-  var hbhData = getLogHoleData();
-  if (hbhData) {
-    addRoundData.holeScores = hbhData.holeScores;
-    addRoundData.firData = hbhData.firData;
-    addRoundData.girData = hbhData.girData;
-    addRoundData.puttsData = hbhData.puttsData;
-    // Determine holesPlayed from filled scores
-    var filled = hbhData.holeScores.filter(function(s) { return s !== ""; });
-    addRoundData.holesPlayed = filled.length;
   }
 
   if (photoInput && photoInput.files && photoInput.files[0]) {
@@ -9255,7 +9271,7 @@ function renderCourseDetail(courseId) {
     roundsHere.slice().reverse().forEach(function(r) {
       var is9h = r.holesPlayed && r.holesPlayed <= 9;
       var holeLabel = is9h ? (r.holesMode === "back9" ? " · Back 9" : " · Front 9") : "";
-      h += '<div class="card" onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer"><div class="round-card"><div class="rc-top"><div><div class="rc-course">' + escHtml(r.playerName) + '</div><div class="rc-date">' + r.date + holeLabel + '</div></div>';
+      h += '<div class="card" onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer"><div class="round-card"><div class="rc-top"><div><div class="rc-course">' + escHtml(r.playerName) + '</div><div class="rc-date">' + r.date + (r.tee ? ' · ' + r.tee + ' Tees' : '') + holeLabel + '</div></div>';
       h += '<div class="rc-score">' + r.score + '</div></div></div></div>';
     });
     h += '</div>';
@@ -10281,6 +10297,10 @@ Router.register("activity", function() {
   }
   h += renderPageFooter();
   document.querySelector('[data-page="activity"]').innerHTML = h;
+  // Auto-render hole-by-hole grid for Log a Round
+  if (rangeActiveView === "rounds") {
+    setTimeout(renderLogHoleGrid, 50);
+  }
 });
 
 function renderActivityRounds() {
@@ -10305,18 +10325,20 @@ function renderActivityRounds() {
   } else {
     h += '<div class="ff-input" style="background:var(--bg4);color:var(--gold);font-weight:600">' + escHtml(roundAs.name) + '</div><input type="hidden" id="rf-player" value="' + roundAs.id + '"></div>';
   }
-  h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="rf-course" placeholder="Search courses..." autocomplete="off" oninput="showRoundCourseSearch(this)"><div id="search-round-course" class="search-results"></div></div>';
-  h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="rf-format"><option value="stroke">Stroke play</option><option value="parbaugh">Parbaugh Stroke Play</option><option value="stableford">Modified Stableford</option><option value="scramble">Scramble (2-man)</option><option value="scramble4">Scramble (4-man)</option><option value="bestball">Best ball</option><option value="alternate">Alternate shot</option><option value="skins">Skins</option><option value="match">Match play</option></select></div>';
+  h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="rf-course" placeholder="Search courses..." autocomplete="off" oninput="showRoundCourseSearch(this);renderLogHoleGrid()"><div id="search-round-course" class="search-results"></div></div>';
   h += '<div class="ff-row" style="grid-template-columns:1fr 1fr">';
-  h += '<div class="ff"><label class="ff-label">Score</label><input type="number" inputmode="numeric" class="ff-input" id="rf-score" placeholder="85" style="min-width:0"></div>';
+  h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="rf-format"><option value="stroke">Stroke play</option><option value="parbaugh">Parbaugh Stroke Play</option><option value="stableford">Modified Stableford</option><option value="scramble">Scramble (2-man)</option><option value="scramble4">Scramble (4-man)</option><option value="bestball">Best ball</option><option value="alternate">Alternate shot</option><option value="skins">Skins</option><option value="match">Match play</option></select></div>';
+  h += '<div class="ff"><label class="ff-label">Holes</label><select class="ff-input" id="rf-holes" onchange="renderLogHoleGrid()"><option value="18">18 holes</option><option value="front9">Front 9</option><option value="back9">Back 9</option></select></div>';
+  h += '</div>';
+  h += '<div class="ff-row" style="grid-template-columns:1fr 1fr">';
   h += '<div class="ff"><label class="ff-label">Date</label><input type="date" class="ff-input" id="rf-date" value="' + new Date().toISOString().split("T")[0] + '" style="min-width:0"></div>';
+  h += '<div class="ff"><label class="ff-label">Score (auto)</label><input type="number" inputmode="numeric" class="ff-input" id="rf-score" placeholder="auto" style="min-width:0;background:var(--bg4);color:var(--gold)" readonly></div>';
   h += '</div><div class="ff-row" style="grid-template-columns:1fr 1fr">';
   h += '<div class="ff"><label class="ff-label">Rating</label><input type="number" step="0.1" class="ff-input" id="rf-rating" placeholder="auto" style="min-width:0"></div>';
   h += '<div class="ff"><label class="ff-label">Slope</label><input type="number" class="ff-input" id="rf-slope" placeholder="auto" style="min-width:0"></div>';
   h += '</div>';
+  h += '<div id="rf-hbh-section" style="margin-top:4px"></div>';
   h += '<div class="ff"><label class="ff-label">Scorecard photo (optional)</label><input type="file" accept="image/*" id="rf-photo" style="color:var(--muted);font-size:12px"></div>';
-  h += '<div style="margin:10px 0"><button class="btn-sm outline" style="width:100%" id="rf-hbh-toggle" onclick="toggleLogHoleByHole()">▸ Enter hole-by-hole scores (optional)</button></div>';
-  h += '<div id="rf-hbh-section" style="display:none"></div>';
   h += '<button class="btn full green" onclick="submitRound()">+ Log round</button></div>';
 
   // History
