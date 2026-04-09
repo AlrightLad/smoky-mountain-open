@@ -1461,7 +1461,18 @@ function goToMyProfile() {
 function exitApp() {
   document.getElementById("authScreen").classList.remove("hidden");
   document.getElementById("mainApp").classList.add("hidden");
-  showLogin();
+  // Check for invite code in URL params — auto-fill and show register form
+  var urlParams = new URLSearchParams(window.location.search);
+  var inviteParam = urlParams.get("invite");
+  if (inviteParam) {
+    showRegister();
+    var inviteField = document.getElementById("regInvite");
+    if (inviteField) inviteField.value = inviteParam.toUpperCase();
+    // Clean URL without reload
+    if (window.history.replaceState) window.history.replaceState({}, "", window.location.pathname + window.location.hash);
+  } else {
+    showLogin();
+  }
 }
 
 // ========== SYNC STATUS ==========
@@ -5996,29 +6007,56 @@ function renderAddMemberForm() {
 }
 
 function generateInviteFromMembers() {
-  if (!db || !currentUser || !currentProfile) { Router.toast("Not ready"); return; }
+  if (!db || !currentUser || !currentProfile) { Router.toast("Not ready — try refreshing"); return; }
   var isComm = currentProfile.role === "commissioner";
   if (!isComm && (currentProfile.invitesUsed||0) >= (currentProfile.maxInvites||3)) { Router.toast("No invites remaining"); return; }
   
   var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; var code = "PB-";
   for (var i=0;i<8;i++) code += chars.charAt(Math.floor(Math.random()*chars.length));
   var memberDocId = currentProfile.docId || currentUser.uid;
+  var inviteLink = "https://alrightlad.github.io/smoky-mountain-open/?invite=" + code;
+  
+  // Show loading state
+  var resultEl = document.getElementById("memberInviteResult");
+  if (resultEl) resultEl.innerHTML = '<div style="text-align:center;padding:12px;font-size:11px;color:var(--muted)">Generating...</div>';
   
   db.collection("invites").doc(code).set({ code:code, createdBy:currentUser.uid, createdByName:currentProfile.name||currentProfile.username, usedBy:null, status:"active", createdAt:fsTimestamp() })
     .then(function() {
-      // Try to increment invitesUsed — non-blocking if it fails
       db.collection("members").doc(memberDocId).update({invitesUsed:firebase.firestore.FieldValue.increment(1)}).catch(function(){});
       currentProfile.invitesUsed = (currentProfile.invitesUsed||0)+1;
       var newLeft = isComm ? "∞" : ((currentProfile.maxInvites||3) - (currentProfile.invitesUsed||0));
       var countEl = document.getElementById("inviteCountDisplay");
       if (countEl) countEl.textContent = "Invites remaining: " + newLeft;
-      document.getElementById("memberInviteResult").innerHTML = '<div class="invite-code"><div class="code">' + code + '</div><div class="hint">Share this code with the new member</div></div>';
+      if (resultEl) {
+        resultEl.innerHTML = '<div class="invite-code">'
+          + '<div class="code">' + code + '</div>'
+          + '<div style="margin:10px 0 6px"><input type="text" readonly value="' + inviteLink + '" id="inviteLinkField" style="width:100%;font-size:10px;padding:8px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--cream);text-align:center;font-family:monospace" onclick="this.select()"></div>'
+          + '<button class="btn full outline" onclick="copyInviteLink()" style="font-size:11px;padding:10px;margin-top:4px" id="copyInviteBtn">Copy invite link</button>'
+          + '<div class="hint" style="margin-top:8px">Send this link — the code auto-fills when they open it</div>'
+          + '</div>';
+      }
       Router.toast("Invite created!");
     })
     .catch(function(err) {
       pbWarn("[Invite] Error:", err);
-      Router.toast("Failed to create invite — check permissions");
+      if (resultEl) resultEl.innerHTML = '<div style="padding:12px;font-size:11px;color:var(--red);text-align:center">Failed: ' + (err.message || "Permission denied. Ask the Commissioner to check Firestore rules for the invites collection.") + '</div>';
+      Router.toast("Failed to create invite");
     });
+}
+
+function copyInviteLink() {
+  var field = document.getElementById("inviteLinkField");
+  if (!field) return;
+  field.select();
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(field.value).then(function() {
+      var btn = document.getElementById("copyInviteBtn");
+      if (btn) { btn.textContent = "✓ Copied!"; setTimeout(function(){ btn.textContent = "Copy invite link"; }, 2000); }
+    }).catch(function() { document.execCommand("copy"); Router.toast("Copied!"); });
+  } else {
+    document.execCommand("copy");
+    Router.toast("Copied!");
+  }
 }
 
 function submitAddMember() {
@@ -11645,22 +11683,35 @@ function isInviteExpired(invite) {
 }
 
 function generateInvite() {
-  if (!db || !currentUser || !currentProfile) { Router.toast("Not ready"); return; }
+  if (!db || !currentUser || !currentProfile) { Router.toast("Not ready — try refreshing"); return; }
   var isComm = currentProfile.role === "commissioner";
   if (!isComm && (currentProfile.invitesUsed||0) >= (currentProfile.maxInvites||3)) { Router.toast("No invites remaining"); return; }
   var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; var code = "PB-";
   for (var i=0;i<8;i++) code += chars.charAt(Math.floor(Math.random()*chars.length));
   var memberDocId = currentProfile.docId || currentUser.uid;
+  var inviteLink = "https://alrightlad.github.io/smoky-mountain-open/?invite=" + code;
+
+  var resultEl = document.getElementById("generatedInvite");
+  if (resultEl) resultEl.innerHTML = '<div style="text-align:center;padding:12px;font-size:11px;color:var(--muted)">Generating...</div>';
+
   db.collection("invites").doc(code).set(createInviteDoc(code))
     .then(function() {
       db.collection("members").doc(memberDocId).update({invitesUsed:firebase.firestore.FieldValue.increment(1)}).catch(function(){});
       currentProfile.invitesUsed = (currentProfile.invitesUsed||0)+1;
-      document.getElementById("generatedInvite").innerHTML = '<div class="invite-code"><div class="code">' + code + '</div><div class="hint">Share this with the new member · Expires in ' + INVITE_EXPIRY_DAYS + ' days</div></div>';
+      if (resultEl) {
+        resultEl.innerHTML = '<div class="invite-code">'
+          + '<div class="code">' + code + '</div>'
+          + '<div style="margin:10px 0 6px"><input type="text" readonly value="' + inviteLink + '" id="inviteLinkField" style="width:100%;font-size:10px;padding:8px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--cream);text-align:center;font-family:monospace" onclick="this.select()"></div>'
+          + '<button class="btn full outline" onclick="copyInviteLink()" style="font-size:11px;padding:10px;margin-top:4px" id="copyInviteBtn">Copy invite link</button>'
+          + '<div class="hint" style="margin-top:8px">Send this link — code auto-fills · Expires in ' + INVITE_EXPIRY_DAYS + ' days</div>'
+          + '</div>';
+      }
       Router.toast("Invite created!");
     })
     .catch(function(err) {
       pbWarn("[Invite] Error:", err);
-      Router.toast("Failed to create invite — check permissions");
+      if (resultEl) resultEl.innerHTML = '<div style="padding:12px;font-size:11px;color:var(--red);text-align:center">Failed: ' + (err.message || "Permission denied") + '</div>';
+      Router.toast("Failed to create invite");
     });
 }
 
@@ -12271,15 +12322,17 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Share Card & Feed Overhaul</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Scorecard preview now embedded directly in Round Detail — everyone can see and review cards without extra windows", tag: "NEW"},
-    {item: "Save image & share button right under the scorecard preview — one tap to download", tag: "NEW"},
-    {item: "After logging a round, you're taken straight to the round detail page with your scorecard ready to share", tag: "IMPROVED"},
-    {item: "Share buttons on home page and round history navigate to round detail instead of opening overlays", tag: "IMPROVED"},
+    {item: "Invite links — generate a shareable URL that auto-fills the invite code when opened", tag: "NEW"},
+    {item: "Copy invite link button with one-tap clipboard copy", tag: "NEW"},
+    {item: "Scorecard preview embedded directly in Round Detail — visible to all members", tag: "NEW"},
+    {item: "Save image & share button right under the scorecard preview", tag: "NEW"},
+    {item: "After logging a round, taken straight to round detail with scorecard ready", tag: "IMPROVED"},
+    {item: "Share buttons navigate to round detail instead of opening overlays", tag: "IMPROVED"},
     {item: "Activity feed capped at 5 items with scroll — cleaner home page", tag: "IMPROVED"},
     {item: "Activity feed dates no longer wrap — quip text clamped to 2 lines", tag: "FIXED"},
     {item: "Activity feed shows tee played from with course default fallback", tag: "FIXED"},
-    {item: "Invite creation fixed for all members — no longer fails on member doc update", tag: "FIXED"},
-    {item: "Courses Played on profiles now finds rounds by username fallback", tag: "FIXED"},
+    {item: "Invite creation shows actual error message on failure instead of generic toast", tag: "FIXED"},
+    {item: "Courses Played on profiles finds rounds by username fallback", tag: "FIXED"},
     {item: "FIR/GIR/putts stats correctly calculated for Back 9 rounds", tag: "FIXED"}
   ];
   currentNotes.forEach(function(r) {
