@@ -439,8 +439,9 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 /* ===== DIRECT MESSAGES ===== */
 .dm-list-item{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s}
 .dm-list-item:hover,.dm-list-item:active{background:var(--bg3)}
-.dm-thread{display:flex;flex-direction:column;height:calc(100vh - 120px);height:calc(100dvh - 120px);max-height:calc(100dvh - 120px);overflow:hidden}
-.dm-messages{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px}
+.dm-page-wrap{display:flex;flex-direction:column;height:calc(100vh - 90px);height:calc(100dvh - 90px);overflow:hidden}
+.dm-thread{display:flex;flex-direction:column;height:calc(100vh - 110px);height:calc(100dvh - 110px);overflow:hidden;position:relative}
+.dm-messages{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px;min-height:0}
 .dm-bubble-row{display:flex;margin-bottom:8px}
 .dm-bubble-row.mine{justify-content:flex-end}
 .dm-bubble-row.theirs{justify-content:flex-start}
@@ -448,10 +449,10 @@ input.s.db{background:rgba(212,96,78,.08);border:1px solid rgba(212,96,78,.2);co
 .dm-bubble-row.mine .dm-bubble{background:var(--gold);color:var(--bg);border-bottom-right-radius:4px}
 .dm-bubble-row.theirs .dm-bubble{background:var(--bg3);color:var(--cream);border-bottom-left-radius:4px}
 .dm-bubble .dm-bubble-time{font-size:11px;margin-top:3px;opacity:.5}
-.dm-input-area{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border);background:var(--bg)}
-.dm-input-area input{flex:1;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;color:var(--cream);font-size:13px;outline:none;font-family:'Inter',sans-serif}
+.dm-input-area{display:flex;gap:8px;padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--border);background:var(--bg);flex-shrink:0;z-index:5}
+.dm-input-area input{flex:1;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;color:var(--cream);font-size:14px;outline:none;font-family:'Inter',sans-serif;min-width:0}
 .dm-input-area input:focus{border-color:var(--gold)}
-.dm-input-area button{padding:10px 16px;background:var(--gold);color:var(--bg);border:none;border-radius:20px;font:700 12px 'Inter',sans-serif;cursor:pointer}
+.dm-input-area button{padding:10px 18px;background:var(--gold);color:var(--bg);border:none;border-radius:20px;font:700 13px 'Inter',sans-serif;cursor:pointer;flex-shrink:0;white-space:nowrap}
 
 /* ===== INVITE CODE ===== */
 .invite-code{background:var(--bg3);border:2px dashed rgba(201,168,76,.25);border-radius:var(--radius);padding:16px;text-align:center;margin:12px 0}
@@ -3538,20 +3539,24 @@ var PB = (function() {
         // Reset streaks at start of each round — streaks must be within a single round
         var birdieStreak = 0;
         var parStreak = 0;
-        // Try to get actual course pars: holePars on round > course holes data > default
+        // Try to get actual course pars: holePars on round > course holes data
+        // CRITICAL: Do NOT fall back to default pars — they cause false birdies/eagles
         var coursePars = null;
         if (r.holePars && r.holePars.length) {
           coursePars = r.holePars;
         } else if (r.course) {
           var courseObj = PB.getCourses().find(function(c){ return c.name === r.course; });
-          if (courseObj && courseObj.holes && courseObj.holes.length >= 18) {
-            coursePars = courseObj.holes.map(function(h){ return h.par || 4; });
+          if (courseObj && courseObj.holes && courseObj.holes.length >= 9) {
+            coursePars = courseObj.holes.map(function(h){ return h.par || 0; });
           }
         }
         r.holeScores.forEach(function(s, i) {
           if (s === "" || s === null || s === undefined) return;
           var score = parseInt(s);
-          var par = (coursePars && coursePars[i]) ? coursePars[i] : (defaultPar[i] || 4);
+          if (isNaN(score) || score <= 0) return;
+          // Only count birdie/eagle/par if we have VERIFIED par for this hole
+          var par = coursePars ? coursePars[i] : 0;
+          if (!par || par <= 0) return; // Skip — no verified par data, can't determine relative score
           var diff = score - par;
           
           if (diff <= -2) { totalEagles++; birdieStreak++; }
@@ -3582,13 +3587,14 @@ var PB = (function() {
       if (maxBirdieStreak >= 2) achievements.push({id:"b2b_birdies",name:"Back to Back Birdies",desc:"2 birdies in a row",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='5' cy='8' r='4' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='11' cy='8' r='4' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:150,cat:"score"});
       if (maxBirdieStreak >= 3) achievements.push({id:"birdie_streak3",name:"Hat Trick",desc:"3 birdies in a row",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='3' cy='8' r='3' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='8' cy='8' r='3' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='13' cy='8' r='3' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"score",title:"Hat Trick"});
       
-      // Bogey-free
+      // Bogey-free — only count if we have verified course pars
       var hasBogeyFreeRound = rounds.some(function(r) {
         if (!r.holeScores || r.holeScores.filter(function(s){return s!==""}).length < 18) return false;
         var cp = null;
         if (r.holePars && r.holePars.length) cp = r.holePars;
-        else if (r.course) { var co = PB.getCourses().find(function(c){return c.name===r.course;}); if (co && co.holes && co.holes.length>=18) cp = co.holes.map(function(h){return h.par||4;}); }
-        return !r.holeScores.some(function(s,i) { return s !== "" && parseInt(s) > ((cp && cp[i]) ? cp[i] : (defaultPar[i]||4)); });
+        else if (r.course) { var co = PB.getCourses().find(function(c){return c.name===r.course;}); if (co && co.holes && co.holes.length>=18) cp = co.holes.map(function(h){return h.par||0;}); }
+        if (!cp) return false; // No verified pars — can't determine bogey-free
+        return !r.holeScores.some(function(s,i) { var p = cp[i]; return s !== "" && p > 0 && parseInt(s) > p; });
       });
       if (hasBogeyFreeRound) achievements.push({id:"bogey_free",name:"Bogey Free",desc:"Complete 18 holes without a bogey",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:1000,cat:"score",title:"Bogey Free"});
       
@@ -4515,6 +4521,9 @@ Router.register("home", function() {
       var todayDay = dayNames[new Date().getDay()];
       tr.courses.forEach(function(crs) {
         if (crs.finished) return;
+        // Only show courses scheduled for today (handles "Friday AM" / "Friday PM" etc.)
+        var courseDay = (crs.d || "").split(" ")[0];
+        if (courseDay && courseDay !== todayDay) return;
         var tid = escHtml(tr.id);
         var ck = escHtml(crs.key);
         h += '<div data-trip-id="' + tid + '" data-course-key="' + ck + '" onclick="Router.go(\'scorecard\',{tripId:this.getAttribute(\'data-trip-id\'),course:this.getAttribute(\'data-course-key\')})" style="margin-bottom:8px;padding:12px 16px;background:linear-gradient(135deg,rgba(78,201,122,.06),rgba(78,201,122,.02));border:1px solid rgba(78,201,122,.15);border-radius:var(--radius);cursor:pointer;-webkit-tap-highlight-color:rgba(78,201,122,.15)">';
@@ -5373,14 +5382,21 @@ function renderMemberDetailWithData(p) {
 
   // === HEAD TO HEAD (collapsible) ===
   var h2hContent = '';
+  var h2hHasMatches = false;
   PB.getPlayers().forEach(function(opp) {
     if (opp.id === pid) return;
     var h2h = calcH2H(pid, opp.id);
+    var total = h2h.p1wins + h2h.p2wins + h2h.ties;
+    if (total === 0) return; // Skip opponents with no shared rounds
+    h2hHasMatches = true;
     var record = h2h.p1wins + ' — ' + h2h.p2wins + (h2h.ties ? ' — ' + h2h.ties + 'T' : '');
     var color = h2h.p1wins > h2h.p2wins ? 'var(--birdie)' : h2h.p2wins > h2h.p1wins ? 'var(--red)' : 'var(--gold)';
-    h2hContent += '<div class="h2h-row"><div class="h2h-left"><div class="h2h-av" style="border-color:' + playerFrameColor(opp) + '">' + Router.getAvatar(opp) + '</div><span class="h2h-name">' + opp.name + '</span></div><span class="h2h-record" style="color:' + color + '">' + record + '</span></div>';
+    h2hContent += '<div class="h2h-row" style="cursor:pointer" onclick="showRivalryDetail(\'' + pid + '\',\'' + opp.id + '\')"><div class="h2h-left"><div class="h2h-av" style="border-color:' + playerFrameColor(opp) + '">' + Router.getAvatar(opp) + '</div><span class="h2h-name">' + opp.name + '</span></div><span class="h2h-record" style="color:' + color + '">' + record + '</span></div>';
   });
-  h += profSection("h2h-" + pid, "Head to head", h2hContent, false);
+  if (!h2hHasMatches) {
+    h2hContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No head-to-head matches yet. Play the same course on the same day as another member!</div>';
+  }
+  h += profSection("h2h-" + pid, "Head to head", h2hContent, h2hHasMatches);
 
   // === ALL ROUNDS (collapsible) ===
   if (rounds.length > 3) {
@@ -7788,7 +7804,7 @@ Router.register("standings", function() {
    ================================================ */
 
 Router.register("challenges", function(params) {
-  if (params && params.create) { renderCreateChallenge(); return; }
+  if (params && (params.create || params.opponent)) { renderCreateChallenge(params.opponent); return; }
   renderChallengeList();
 });
 
@@ -7829,16 +7845,20 @@ function renderChallengeList() {
   document.querySelector('[data-page="challenges"]').innerHTML = h;
 }
 
-function renderCreateChallenge() {
+function renderCreateChallenge(presetOpponent) {
   var players = PB.getPlayers();
+  var myUid = currentUser ? currentUser.uid : null;
   var h = '<div class="sh"><h2>New challenge</h2><button class="back" onclick="Router.back(\'challenges\')">← Back</button></div>';
 
   h += '<div class="form-section"><div class="form-title">Challenge details</div>';
   h += '<div class="ff"><label class="ff-label">From</label><select class="ff-input" id="ch-from">';
-  players.forEach(function(p) { h += '<option value="' + p.id + '">' + (p.username||p.name) + '</option>'; });
+  players.forEach(function(p) { h += '<option value="' + p.id + '"' + (p.id === myUid ? ' selected' : '') + '>' + (p.username||p.name) + '</option>'; });
   h += '</select></div>';
   h += '<div class="ff"><label class="ff-label">Challenge</label><select class="ff-input" id="ch-to">';
-  players.forEach(function(p,i) { h += '<option value="' + p.id + '"' + (i===1?' selected':'') + '>' + (p.username||p.name) + '</option>'; });
+  players.forEach(function(p) {
+    if (p.id === myUid) return; // Can't challenge yourself
+    h += '<option value="' + p.id + '"' + (p.id === presetOpponent ? ' selected' : '') + '>' + (p.username||p.name) + '</option>';
+  });
   h += '</select></div>';
   h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="ch-course" placeholder="Start typing..." oninput="showChallengeCourseSearch(this)"><div id="search-ch-course" class="search-results"></div></div>';
   h += '<div class="ff"><label class="ff-label">Stakes (optional)</label><input class="ff-input" id="ch-stakes" placeholder="e.g. Loser buys drinks"></div>';
@@ -11634,6 +11654,7 @@ function getDmConvoId(a,b){return [a,b].sort().join("_")}
 function formatDmTime(date){var now=new Date(),diff=now-date;if(diff<60000)return "now";if(diff<3600000)return Math.floor(diff/60000)+"m";if(diff<86400000)return Math.floor(diff/3600000)+"h";return(date.getMonth()+1)+"/"+date.getDate();}
 
 Router.register("dms", function() {
+  window._dmPreviewsLoaded = false;
   var h = '<div class="sh"><h2>Messages</h2><button class="back" onclick="Router.go(\'home\')">← Home</button></div>';
   
   if (!currentUser) {
@@ -11674,18 +11695,24 @@ Router.register("dms", function() {
       dh += '<div class="dm-list-item" onclick="Router.go(\'dm-thread\',{partner:\'' + m.id + '\'})">';
       dh += '<div class="m-av" style="border-color:' + playerFrameColor(m) + '">' + Router.getAvatar(m) + '</div>';
       dh += '<div class="m-info"><div class="m-name">' + escHtml(m.name || m.username || m.id) + '</div>';
-      dh += '<div style="font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (last ? escHtml(last.text) : "Start a conversation") + '</div>';
+      dh += '<div id="dm-preview-' + escHtml(m.id) + '" style="font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (last ? escHtml(last.text) : "Start a conversation") + '</div>';
       dh += '</div></div>';
     });
     var el = document.getElementById("dmMemberList");
     if (el) el.innerHTML = dh;
     
-    // Load previews
-    if (db) {
+    // Load previews — update in-place, do NOT re-render the list
+    if (db && !window._dmPreviewsLoaded) {
+      window._dmPreviewsLoaded = true;
       filtered.forEach(function(m) {
         var cid = getDmConvoId(currentUser.uid, m.id);
         db.collection("dms").doc(cid).collection("messages").orderBy("createdAt","desc").limit(1).get().then(function(snap) {
-          if (!snap.empty) { dmConversations[cid] = { text: snap.docs[0].data().text }; if (Router.getPage()==="dms") renderDmList(members); }
+          if (!snap.empty) {
+            var text = snap.docs[0].data().text;
+            dmConversations[cid] = { text: text };
+            var previewEl = document.getElementById("dm-preview-" + m.id);
+            if (previewEl) previewEl.textContent = text;
+          }
         });
       });
     }
@@ -11716,8 +11743,8 @@ Router.register("dm-thread", function(params) {
   
   // Render immediately with loading state — don't wait for anything async
   var threadEl = document.querySelector('[data-page="dm-thread"]');
-  threadEl.innerHTML = '<div class="sh" id="dmThreadHeader"><h2 style="font-size:16px">Message</h2><button class="back" onclick="Router.go(\'dms\')">← Back</button></div>' +
-    '<div class="dm-thread"><div id="dmMessages" class="dm-messages"><div class="loading"><div class="spinner"></div>Loading...</div></div>' +
+  threadEl.innerHTML = '<div class="dm-page-wrap"><div class="sh" id="dmThreadHeader" style="flex-shrink:0"><h2 style="font-size:16px">Message</h2><button class="back" onclick="Router.go(\'dms\')">← Back</button></div>' +
+    '<div id="dmMessages" class="dm-messages"><div class="loading"><div class="spinner"></div>Loading...</div></div>' +
     '<div class="dm-input-area"><input type="text" id="dmInput" placeholder="Message..." onkeydown="if(event.key===\'Enter\')sendDM()"><button onclick="sendDM()">Send</button></div></div>';
   
   // Start message listener immediately
