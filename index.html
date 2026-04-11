@@ -2086,11 +2086,20 @@ function finalizeAttestedRound(docId, data, overridden) {
     // Determine date from trip course day mapping
     var roundDate = localDateStr();
     if (trip.startDate && course.d) {
-      var dayMap = { "Thursday": 0, "Friday": 1, "Friday AM": 1, "Friday PM": 1, "Saturday": 2, "Sunday": 3, "Monday": 0, "Tuesday": 1, "Wednesday": 2 };
-      var offset = dayMap[course.d] !== undefined ? dayMap[course.d] : 0;
+      // Dynamically compute date from trip start date and course day label
       var sd = new Date(trip.startDate + "T12:00:00");
-      sd.setDate(sd.getDate() + offset);
-      roundDate = sd.toISOString().slice(0, 10);
+      var startDow = sd.getDay(); // 0=Sun, 1=Mon, ... 6=Sat
+      var dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+      // Extract the base day name from labels like "Friday AM", "Friday PM"
+      var courseDayName = course.d.replace(/ AM| PM/g, "");
+      var targetDow = dayNames.indexOf(courseDayName);
+      if (targetDow !== -1) {
+        var offset = targetDow - startDow;
+        if (offset < 0) offset += 7; // wrap around week
+        var rd = new Date(sd);
+        rd.setDate(rd.getDate() + offset);
+        roundDate = rd.toISOString().slice(0, 10);
+      }
     }
     
     var membersToLog = trip.members || [];
@@ -9250,14 +9259,16 @@ Router.register("courses", function(params) {
     // Compute stacked averages: front 9, back 9, full 18
     var f9scores = [], b9scores = [], full18scores = [];
     roundsHere.forEach(function(r) {
+      if (r.format === "scramble" || r.format === "scramble4") return; // Skip scramble team scores
       var is9 = r.holesPlayed && r.holesPlayed <= 9;
       if (!is9 && r.score) {
         full18scores.push(r.score);
         // Derive front/back from hole-by-hole if available
-        if (r.scores && r.scores.length >= 18) {
+        var hScores = r.holeScores || r.scores || [];
+        if (hScores.length >= 18) {
           var fs = 0, bs = 0;
-          for (var si = 0; si < 9; si++) fs += (r.scores[si] || 0);
-          for (var si2 = 9; si2 < 18; si2++) bs += (r.scores[si2] || 0);
+          for (var si = 0; si < 9; si++) fs += (parseInt(hScores[si]) || 0);
+          for (var si2 = 9; si2 < 18; si2++) bs += (parseInt(hScores[si2]) || 0);
           if (fs > 0) f9scores.push(fs);
           if (bs > 0) b9scores.push(bs);
         }
@@ -15446,7 +15457,7 @@ function loadHomeActivityFeed() {
       return;
     }
     items.sort(function(a,b){return (b.ts||0)-(a.ts||0)});
-    var h = '<div class="card" style="overflow-y:auto;-webkit-overflow-scrolling:touch">';
+    var h = '<div class="card" style="max-height:600px;overflow-y:auto;-webkit-overflow-scrolling:touch">';
     items.forEach(function(a) { h += renderFeedItem(a); });
     h += '</div>';
     el.innerHTML = h;
