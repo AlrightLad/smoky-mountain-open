@@ -2032,22 +2032,61 @@ function attestMyScore(tripId, courseKey) {
   
   if (!confirm("I attest that the scores on this scorecard are accurate and complete.")) return;
   
-  var field = "attestations." + currentUser.uid;
-  var update = {};
-  update[field + ".attested"] = true;
-  update[field + ".attestedAt"] = fsTimestamp();
+  // Find matching attestation key — may be stored under UID, claimedFrom, or seed ID
+  var myUid = currentUser.uid;
+  var myClaimed = currentProfile ? currentProfile.claimedFrom : null;
+  var myName = currentProfile ? (currentProfile.name || currentProfile.username) : null;
   
-  db.collection("attestations").doc(docId).update(update).then(function() {
-    Router.toast("Score attested");
-    // Check if all players have attested
-    return db.collection("attestations").doc(docId).get();
+  // Read current attestation to find our entry
+  db.collection("attestations").doc(docId).get().then(function(doc) {
+    if (!doc.exists) { Router.toast("Attestation not found"); return; }
+    var attestData = doc.data();
+    var attestations = attestData.attestations || {};
+    
+    // Find which key matches this user
+    var matchKey = null;
+    if (attestations[myUid]) matchKey = myUid;
+    else if (myClaimed && attestations[myClaimed]) matchKey = myClaimed;
+    else {
+      // Match by name as last resort
+      Object.keys(attestations).forEach(function(k) {
+        if (attestations[k].name && myName && attestations[k].name.toLowerCase() === myName.toLowerCase()) matchKey = k;
+      });
+    }
+    
+    if (!matchKey) {
+      // No matching entry — add one under our UID
+      matchKey = myUid;
+    }
+    
+    var field = "attestations." + matchKey;
+    var update = {};
+    update[field + ".attested"] = true;
+    update[field + ".attestedAt"] = fsTimestamp();
+    if (!attestations[matchKey] || !attestations[matchKey].name) {
+      update[field + ".name"] = myName || "Member";
+    }
+    
+    return db.collection("attestations").doc(docId).update(update).then(function() {
+      Router.toast("Score attested");
+      return db.collection("attestations").doc(docId).get();
+    });
   }).then(function(doc) {
-    if (!doc.exists) return;
+    if (!doc || !doc.exists) return;
     var data = doc.data();
-    var allAttested = Object.keys(data.attestations).every(function(pid) { return data.attestations[pid].attested; });
+    // Check allAttested — deduplicate by name to handle UID/seed ID mismatches
+    var seenNames = {};
+    var allAttested = true;
+    Object.keys(data.attestations).forEach(function(pid) {
+      var a = data.attestations[pid];
+      if (!a.name) return;
+      var nl = a.name.toLowerCase();
+      if (seenNames[nl]) { if (a.attested) seenNames[nl].attested = true; return; }
+      seenNames[nl] = a;
+    });
+    Object.values(seenNames).forEach(function(a) { if (!a.attested) allAttested = false; });
     
     if (allAttested) {
-      // All players attested — finalize and post results
       finalizeAttestedRound(docId, data);
     }
   }).catch(function(e) { Router.toast("Failed: " + e.message); });
@@ -2154,6 +2193,10 @@ function finalizeAttestedRound(docId, data, overridden) {
         // Check we haven't already logged this round
         var existing = PB.getPlayerRounds(pid).find(function(r) { return r.course === courseName && r.date === roundDate; });
         if (existing) return;
+        // Get FIR/GIR data from trip scoring
+        var fg = PB.getFirGir(data.tripId, data.courseKey, pid);
+        var firArr = fg && fg.fir && fg.fir.some(function(v){return v;}) ? fg.fir : null;
+        var girArr = fg && fg.gir && fg.gir.some(function(v){return v;}) ? fg.gir : null;
         var round = PB.addRound({
           player: pid,
           playerName: p.name || p.username,
@@ -2168,6 +2211,8 @@ function finalizeAttestedRound(docId, data, overridden) {
           holesPlayed: holesPlayed,
           holeScores: scores,
           holePars: coursePars.length ? coursePars : undefined,
+          firData: firArr || undefined,
+          girData: girArr || undefined,
           notes: "Event: " + (trip.name || "Trip"),
           visibility: "public"
         });
@@ -8616,6 +8661,7 @@ Router.register("trips", function(params) {
 
   // Split trips into active/upcoming vs past
   var activeTrips = trips.filter(function(t) {
+    if (t.status === "closed") return false; // Closed events go to past
     return t.status === "upcoming" || t.status === "active" || (t.endDate && t.endDate >= today);
   });
   var pastTrips = trips.filter(function(t) {
@@ -9033,12 +9079,17 @@ Router.register("scorecard", function(params) {
 
   var h = '<div class="sh"><h2>' + trip.name + '</h2><button class="back" onclick="Router.back(\'trips\')">← Trips</button></div>';
 
-  // Live indicator
-  h += '<div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:6px;font-size:10px;color:var(--birdie);background:rgba(78,201,122,.05);border-bottom:1px solid var(--border)">';
-  h += '<div style="width:6px;height:6px;border-radius:50%;background:var(--birdie);animation:pulse 2s infinite"></div>Live scoring — updates sync across all devices</div>';
+  // Live indicator (only for active events)
+  if (trip.status !== "closed") {
+    h += '<div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:6px;font-size:10px;color:var(--birdie);background:rgba(78,201,122,.05);border-bottom:1px solid var(--border)">';
+    h += '<div style="width:6px;height:6px;border-radius:50%;background:var(--birdie);animation:pulse 2s infinite"></div>Live scoring — updates sync across all devices</div>';
+  } else {
+    h += '<div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:6px;font-size:10px;color:var(--gold);background:rgba(201,168,76,.05);border-bottom:1px solid var(--border)">';
+    h += '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h8v3L8 8l4 3v3H4v-3l4-3L4 5z"/></svg> Event closed — scores are final</div>';
+  }
 
-  // Commissioner controls: Start announcement only (Finish Round moved to bottom of scorecard)
-  if (currentProfile && currentProfile.role === "commissioner") {
+  // Commissioner controls (only for active events)
+  if (currentProfile && currentProfile.role === "commissioner" && trip.status !== "closed") {
     var currentCourse = trip.courses.find(function(x) { return x.key === scState.courseKey; }) || trip.courses[0];
     h += '<div style="display:flex;gap:6px;padding:8px 16px">';
     h += '<button class="btn-sm green" style="flex:1;font-size:9px" onclick="announceEventStart(\'' + trip.id + '\',\'' + escHtml(currentCourse.n).replace(/'/g,"\\'") + '\')"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M2 6v4l3 1V5L2 6zM5 5l7-3v12l-7-3"/><path d="M13 7h2M13 9h2"/></svg> Announce Start</button>';
@@ -9294,7 +9345,114 @@ function renderTripLB(trip, tripPlayers) {
     });
     h += '</div>';
   }
+  
+  // Close Event button (commissioner only, not already closed)
+  if (currentProfile && currentProfile.role === "commissioner" && trip.status !== "closed") {
+    h += '<div style="padding:16px"><button class="btn full outline" style="color:var(--red);border-color:var(--red)" onclick="closeEvent(\'' + tid + '\')"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M4 2h8v3L8 8l4 3v3H4v-3l4-3L4 5z"/></svg> Close Event and Post Results</button></div>';
+  }
+  
+  // If closed — show final results banner
+  if (trip.status === "closed" && trip.champion) {
+    var champPlayer = PB.getPlayer(trip.champion) || (typeof fbMemberCache !== "undefined" && fbMemberCache[trip.champion]);
+    var champName = champPlayer ? (champPlayer.name || champPlayer.username) : "Champion";
+    h += '<div style="padding:16px;text-align:center;background:linear-gradient(180deg,rgba(201,168,76,.08),transparent);border:1px solid rgba(201,168,76,.15);border-radius:var(--radius);margin:0 16px 16px">';
+    h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Event Complete</div>';
+    h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--gold)">' + escHtml(champName) + '</div>';
+    h += '<div style="font-size:11px;color:var(--cream);margin-top:4px">Champion of ' + escHtml(trip.name) + '</div>';
+    if (trip.finalStandings) {
+      h += '<div style="margin-top:10px;font-size:11px;color:var(--muted)">';
+      trip.finalStandings.forEach(function(s, i) {
+        var placeLabels = ["1st","2nd","3rd","4th","5th","6th"];
+        h += '<div style="padding:2px 0;color:' + (i === 0 ? 'var(--gold)' : 'var(--cream)') + '">' + (placeLabels[i]||"") + ' ' + escHtml(s.name) + ' — ' + s.points + ' pts</div>';
+      });
+      h += '</div>';
+    }
+    h += '</div>';
+  }
+  
   return h;
+}
+
+function closeEvent(tripId) {
+  if (!currentProfile || currentProfile.role !== "commissioner") return;
+  var trip = PB.getTrip(tripId);
+  if (!trip) return;
+  
+  var tripPlayers = trip.members.map(function(id) { return PB.getPlayer(id); }).filter(Boolean);
+  var sorted = tripPlayers.slice().sort(function(a, b) { return PB.getTripPoints(tripId, b.id) - PB.getTripPoints(tripId, a.id); });
+  
+  if (!sorted.length) { Router.toast("No players with scores"); return; }
+  
+  var winner = sorted[0];
+  var winnerPts = PB.getTripPoints(tripId, winner.id);
+  
+  // Tie-breaker: if top 2 have same total points, compare stableford, then total strokes
+  if (sorted.length >= 2 && PB.getTripPoints(tripId, sorted[1].id) === winnerPts) {
+    var s1stbl = 0, s2stbl = 0, s1strokes = 0, s2strokes = 0;
+    trip.courses.forEach(function(c) {
+      if (c.s) return;
+      s1stbl += PB.getTripStableford(tripId, c.key, sorted[0].id);
+      s2stbl += PB.getTripStableford(tripId, c.key, sorted[1].id);
+      s1strokes += PB.getTripTotal(tripId, c.key, sorted[0].id, 0, 18);
+      s2strokes += PB.getTripTotal(tripId, c.key, sorted[1].id, 0, 18);
+    });
+    if (s2stbl > s1stbl) { var tmp = sorted[0]; sorted[0] = sorted[1]; sorted[1] = tmp; winner = sorted[0]; }
+    else if (s2stbl === s1stbl && s2strokes < s1strokes) { var tmp2 = sorted[0]; sorted[0] = sorted[1]; sorted[1] = tmp2; winner = sorted[0]; }
+  }
+  
+  var finalStandings = sorted.map(function(p, i) {
+    return { pid: p.id, name: p.name || p.username, points: PB.getTripPoints(tripId, p.id), place: i + 1 };
+  });
+  
+  if (!confirm("Close " + trip.name + " and crown " + winner.name + " as champion with " + winnerPts + " points?")) return;
+  
+  // Update trip doc
+  trip.status = "closed";
+  trip.champion = winner.id;
+  trip.finalStandings = finalStandings;
+  PB.save();
+  
+  if (db) {
+    db.collection("trips").doc(tripId).update({
+      status: "closed",
+      champion: winner.id,
+      finalStandings: finalStandings,
+      closedAt: fsTimestamp()
+    }).catch(function(e) { console.error("Close event error:", e); });
+    
+    // Increment winner's wins
+    var winnerDocId = winner.id;
+    db.collection("members").doc(winnerDocId).update({
+      wins: firebase.firestore.FieldValue.increment(1)
+    }).catch(function() {
+      // Try claimedFrom
+      if (winner.claimedFrom) {
+        db.collection("members").doc(winner.claimedFrom).update({
+          wins: firebase.firestore.FieldValue.increment(1)
+        }).catch(function(){});
+      }
+    });
+    
+    // Post to activity feed
+    var resultsText = trip.name + " has concluded!\n\nChampion: " + winner.name + " (" + winnerPts + " pts)\n\nFinal standings:\n";
+    finalStandings.forEach(function(s, i) {
+      resultsText += (i + 1) + ". " + s.name + " — " + s.points + " pts\n";
+    });
+    db.collection("chat").add({
+      id: genId(),
+      text: resultsText,
+      user: "The Parbaughs",
+      system: true,
+      timestamp: Date.now(),
+      createdAt: fsTimestamp()
+    }).catch(function(){});
+  }
+  
+  // Update local player wins
+  if (winner) winner.wins = (winner.wins || 0) + 1;
+  
+  Router.toast(winner.name + " wins " + trip.name + "!");
+  Router.go("scorecard", { tripId: tripId });
 }
 
 function renderTripPhotos(trip) {
@@ -9510,8 +9668,15 @@ function renderLogHoleGrid() {
   if (!sec) return;
   var courseName = document.getElementById("rf-course") ? document.getElementById("rf-course").value : "";
   var course = courseName ? PB.getCourseByName(courseName) : null;
-  var holes = course && course.holes ? course.holes : [];
-  var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+  
+  // Don't show grid until a valid course is selected
+  if (!course || !course.holes || !course.holes.length) {
+    sec.innerHTML = courseName ? '<div style="font-size:11px;color:var(--muted);padding:8px 0">Course not found in database — enter total score manually</div>' : '';
+    return;
+  }
+  
+  var holes = course.holes;
+  var defaultPar = course.holes.map(function(h){return h.par||4;});
   var holesMode = document.getElementById("rf-holes") ? document.getElementById("rf-holes").value : "18";
   var showFront = holesMode === "18" || holesMode === "front9";
   var showBack = holesMode === "18" || holesMode === "back9";
@@ -10655,7 +10820,7 @@ Router.register("records", function() {
   var coursesWithData = courses.filter(function(c) { return PB.getCourseRounds(c.name).length > 0 || teams.some(function(t){return(t.matches||[]).some(function(m){return m.course===c.name})}); });
   if (coursesWithData.length) {
     coursesWithData.forEach(function(c) {
-      var cr = PB.getCourseRounds(c.name).filter(function(r){ return !r.holesPlayed || r.holesPlayed >= 18; });
+      var cr = PB.getCourseRounds(c.name).filter(function(r){ return (!r.holesPlayed || r.holesPlayed >= 18) && r.format !== "scramble" && r.format !== "scramble4"; });
       var bestSolo = cr.length ? cr.reduce(function(a, b) { return a.score < b.score ? a : b; }) : null;
       var scrambleBests = {};
       teams.forEach(function(t) {
@@ -10745,7 +10910,7 @@ Router.register("records", function() {
   }
   allMembersForAvg.sort(function(a,b){ return a.name.localeCompare(b.name); });
   allMembersForAvg.forEach(function(p) {
-    var r = allRounds.filter(function(rd){ return rd.player === p.id || (p.claimedFrom && rd.player === p.claimedFrom); });
+    var r = allRounds.filter(function(rd){ return (rd.player === p.id || (p.claimedFrom && rd.player === p.claimedFrom)) && rd.format !== "scramble" && rd.format !== "scramble4" && (!rd.holesPlayed || rd.holesPlayed >= 18); });
     var avg = r.length ? Math.round(r.reduce(function(a, x) { return a + x.score; }, 0) / r.length) : "—";
     avgContent += '<div class="hof-row"><span class="hof-label">' + escHtml(p.name) + '</span><span class="hof-val">' + avg + (r.length ? ' (' + r.length + ')' : '') + '</span></div>';
   });
@@ -13302,27 +13467,21 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.14.4</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.15.1</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.14.4</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Scramble Team Matches + Fixes</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.15.1</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Event Close, Attestation Fix, Data Integrity</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Scramble vs Scramble matches — any same-size teams can challenge each other (2v2, 3v3, 4v4)", tag: "NEW"},
-    {item: "Challenge button on team detail page — auto-filters to same-size opponents", tag: "NEW"},
-    {item: "Match history shown on team detail page with W-L-T record and scores", tag: "NEW"},
-    {item: "W-L record shown on team list and profile for all team sizes", tag: "IMPROVED"},
-    {item: "Team 2 dropdown auto-filters to same-size teams when Team 1 changes", tag: "IMPROVED"},
-    {item: "Best Round iOS emoji fixed — replaced arrow character with SVG icon", tag: "FIXED"},
-    {item: "Team rounds count on profile now includes rounds from rounds collection (Sequoyah scramble shows correctly)", tag: "FIXED"},
-    {item: "Duplicate team names blocked — cannot create or rename a team to an existing name", tag: "NEW"},
-    {item: "Profile Teams section shows best score on top, W-L record underneath", tag: "FIXED"},
-    {item: "Members page shows member count in header", tag: "NEW"},
-    {item: "Members search bar — filter by name or username instantly", tag: "NEW"},
-    {item: "Members sort controls — Level (default), Rounds, Handicap, A-Z — founders always pinned on top with gold star", tag: "NEW"},
-    {item: "Founders section visually separated from other members with divider", tag: "IMPROVED"},
-    {item: "Attestation deduplicates by player name — no more blank or duplicate rows for scramble courses", tag: "FIXED"}
+    {item: "Close Event — commissioner can finalize an event, crown champion, post results to feed, and lock scoring", tag: "NEW"},
+    {item: "Closed events show final results banner with champion and standings, move to Previous Events", tag: "NEW"},
+    {item: "Attestation ID resolution — players can attest regardless of UID/seed ID mismatch, auto-lock works on full attestation", tag: "FIXED"},
+    {item: "FIR/GIR data now copies from event scoring to round docs — shareable scorecards show correct stats", tag: "FIXED"},
+    {item: "Season recap/awards variance calculations exclude scramble and 9-hole rounds", tag: "FIXED"},
+    {item: "Records page: best scores by course excludes scramble, member averages excludes scramble and 9-hole", tag: "FIXED"},
+    {item: "Scorecard grid on Log a Round only appears after selecting a valid course from API", tag: "IMPROVED"},
+    {item: "FAQ: What are score differentials? — explains WHS formula", tag: "NEW"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
@@ -13332,17 +13491,15 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  // v5.13.0
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.13.0 · April 2026 · Scramble Isolation, H2H, Graph Redesign</span></div>';
+  // v5.14.x
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.14.x · April 2026 · Scramble Matches, Members Redesign</span></div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
-  var v5130Notes = [
-    {item: "Full scramble isolation across all stats, achievements, standings, and records", tag: "AUDIT"},
-    {item: "H2H resolves all player IDs and uses fuzzy course matching", tag: "FIXED"},
-    {item: "Handicap graph redesigned with gradient fill, value labels, round counts per month", tag: "IMPROVED"},
-    {item: "Activity feed groups scramble into single team entry", tag: "IMPROVED"},
-    {item: "Score differentials collapsible, Commissioner title fixed, emojis removed", tag: "FIXED"}
+  var prevNotes = [
+    {item: "Scramble vs Scramble team matches (2v2, 3v3, 4v4) with W-L tracking", tag: "NEW"},
+    {item: "Members page: search bar, sort controls (Level/Rounds/Handicap/A-Z), founders pinned with gold star", tag: "NEW"},
+    {item: "Commissioner title, duplicate team names, emoji removal, share card team name", tag: "FIXED"}
   ];
-  v5130Notes.forEach(function(r) {
+  prevNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : r.tag === "AUDIT" ? "var(--red)" : "var(--muted)";
     h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
     h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
@@ -13420,7 +13577,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.14.4</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.15.1</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
@@ -14758,6 +14915,7 @@ Router.register("seasonrecap", function(params) {
       }
     });
   });
+  var indivRounds = allRounds.filter(function(r){ return r.format !== "scramble" && r.format !== "scramble4" && (!r.holesPlayed || r.holesPlayed >= 18); });
   
   var h = '<div class="sh"><h2>' + year + ' Recap</h2><button class="back" onclick="Router.back(\'standings\')">← Back</button></div>';
   
@@ -14796,9 +14954,9 @@ Router.register("seasonrecap", function(params) {
   
   var awards = [];
   
-  // Best single round
+  // Best single round (individual only)
   var bestRound = null;
-  allRounds.forEach(function(r) { if (r.score && (!bestRound || r.score < bestRound.score)) bestRound = r; });
+  indivRounds.forEach(function(r) { if (r.score && (!bestRound || r.score < bestRound.score)) bestRound = r; });
   if (bestRound) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1C6 4 4 5 4 8a4 4 0 008 0c0-2-1-3-2-4-.5 1-1 2-2 1 0-2 0-3 0-4z' fill='none' stroke='currentColor' stroke-width='1'/></svg>", title:"Low Round of the Season", winner: bestRound.playerName, detail: bestRound.score + " at " + bestRound.course});
   
   // Most rounds played
@@ -14837,10 +14995,10 @@ Router.register("seasonrecap", function(params) {
   var roadWarriors = Object.entries(courseCounts).map(function(e){return [e[0], Object.keys(e[1]).length]}).sort(function(a,b){return b[1]-a[1]});
   if (roadWarriors.length) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M2 3l4 1 4-1 4 1v10l-4-1-4 1-4-1z'/><path d='M6 4v10M10 3v10'/></svg>", title:"Road Warrior", winner: roadWarriors[0][0], detail: roadWarriors[0][1] + " different courses"});
   
-  // Consistency king (lowest std dev)
+  // Consistency king (lowest std dev — individual 18-hole rounds only)
   var consistencyData = [];
   players.forEach(function(p) {
-    var pr = allRounds.filter(function(r){return r.playerId === p.id});
+    var pr = indivRounds.filter(function(r){return r.playerId === p.id});
     if (pr.length >= 3) {
       var avg = pr.reduce(function(a,r){return a+r.score},0) / pr.length;
       var variance = pr.reduce(function(a,r){return a + Math.pow(r.score-avg,2)},0) / pr.length;
@@ -14916,6 +15074,7 @@ Router.register("awards", function(params) {
       }
     });
   });
+  var indivAwardRounds = allRounds.filter(function(r){ return r.format !== "scramble" && r.format !== "scramble4" && (!r.holesPlayed || r.holesPlayed >= 18); });
   
   var ceremonyAwards = [];
   
@@ -14966,10 +15125,10 @@ Router.register("awards", function(params) {
   var explorers = Object.entries(exploreCounts).map(function(e){return [e[0], Object.keys(e[1]).length]}).sort(function(a,b){return b[1]-a[1]});
   if (explorers.length) ceremonyAwards.push({icon: "", title: "Explorer Award", winner: explorers[0][0], detail: explorers[0][1] + " courses played", tier: "silver"});
   
-  // 7. Consistency Award
+  // 7. Consistency Award (individual 18-hole rounds only)
   var conData = [];
   players.forEach(function(p) {
-    var pr = allRounds.filter(function(r){return r.playerId === p.id});
+    var pr = indivAwardRounds.filter(function(r){return r.playerId === p.id});
     if (pr.length >= 3) {
       var avg = pr.reduce(function(a,r){return a+r.score},0) / pr.length;
       var variance = pr.reduce(function(a,r){return a + Math.pow(r.score-avg,2)},0) / pr.length;
@@ -15090,9 +15249,9 @@ function populateShareTemplateForRound(round) {
 
   var statsEl = document.getElementById("pbs-stats-row");
   var statsHTML = "";
-  if (firHoles > 0) statsHTML += '<div class="pbs-stat"><div class="pbs-stat-val">' + firCount + "/" + firHoles + '</div><div class="pbs-stat-lbl">FIR</div></div>';
-  if (completed > 0) statsHTML += '<div class="pbs-stat"><div class="pbs-stat-val">' + girCount + "/" + completed + '</div><div class="pbs-stat-lbl">GIR</div></div>';
-  if (totalPutts > 0) statsHTML += '<div class="pbs-stat"><div class="pbs-stat-val">' + totalPutts + '</div><div class="pbs-stat-lbl">Putts</div></div>';
+  if (firHoles > 0 && firCount > 0) statsHTML += '<div class="pbs-stat"><div class="pbs-stat-val">' + firCount + "/" + firHoles + '</div><div class="pbs-stat-lbl">FIR</div></div>';
+  if (completed > 0 && girCount > 0) statsHTML += '<div class="pbs-stat"><div class="pbs-stat-val">' + girCount + "/" + completed + '</div><div class="pbs-stat-lbl">GIR</div></div>';
+  if (totalPutts > 0 && round.puttsData && round.puttsData.some(function(p){return p > 0;})) statsHTML += '<div class="pbs-stat"><div class="pbs-stat-val">' + totalPutts + '</div><div class="pbs-stat-lbl">Putts</div></div>';
   statsEl.innerHTML = statsHTML;
 
   document.getElementById("pbs-quip").textContent = quip ? "\u201C" + quip + "\u201D" : "";
@@ -15136,8 +15295,8 @@ function showShareCard(score, diffStr, course, playerName, fir, firHoles, gir, h
   // Stats
   var statsEl = document.getElementById("pbs-stats-row");
   var statsHTML = "";
-  if (firHoles > 0) statsHTML += '<div class="pbs-stat"><div class="pbs-stat-val">' + fir + "/" + firHoles + "</div><div class=\"pbs-stat-lbl\">FIR</div></div>";
-  statsHTML += '<div class="pbs-stat"><div class="pbs-stat-val">' + gir + "/" + (holes||18) + "</div><div class=\"pbs-stat-lbl\">GIR</div></div>";
+  if (firHoles > 0 && fir > 0) statsHTML += '<div class="pbs-stat"><div class="pbs-stat-val">' + fir + "/" + firHoles + "</div><div class=\"pbs-stat-lbl\">FIR</div></div>";
+  if ((holes||18) > 0 && gir > 0) statsHTML += '<div class="pbs-stat"><div class="pbs-stat-val">' + gir + "/" + (holes||18) + "</div><div class=\"pbs-stat-lbl\">GIR</div></div>";
   if (putts > 0) statsHTML += '<div class="pbs-stat"><div class="pbs-stat-val">' + putts + "</div><div class=\"pbs-stat-lbl\">Putts</div></div>";
   statsEl.innerHTML = statsHTML;
 
