@@ -2488,16 +2488,16 @@ var PB = (function() {
 
   /* ---------- DEFAULT DATA ---------- */
   var DEFAULT_PLAYERS = [
-    {id:"zach",name:"Mr Parbaugh",username:"TheCommissioner",title:"The Original Four · Commissioner",range:"88-96",bio:"Founded the Parbaughs. Tracks stats like his life depends on it.",emoji:"",photo:"",homeCourse:"Briarwood East",favoriteCourse:"Royal Manchester Golf Links",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:18.8,equippedTitle:"The Original Four · Commissioner",
+    {id:"zach",name:"Mr Parbaugh",username:"TheCommissioner",title:"The Original Four · Commissioner",range:"88-96",bio:"Founded the Parbaughs. Tracks stats like his life depends on it.",emoji:"",photo:"",homeCourse:"Briarwood East",favoriteCourse:"Royal Manchester Golf Links",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:null,equippedTitle:"The Original Four · Commissioner",
      clubs:{driver:"270",three_wood:"250",five_wood:"230",four_iron:"215",five_iron:"210",six_iron:"200",seven_iron:"190",eight_iron:"180",nine_iron:"165",pw:"140",gw:"120",sw:"110",lw:"95",putter:""},
      bag:{driver:"TaylorMade Qi4D Driver",irons:"Callaway Quantum Max OS 5-PW",wedges:"Cleveland RTX 6 ZipCore 52/56",putter:"",bag_brand:"",accessories:"",fav_ball:""},
      funnyFacts:["Bought custom-fit irons before breaking 85","Owns more golf trackers than golf shirts","Will quote his handicap unprompted"]},
-    {id:"kayvan",name:"Kayvan",username:"Kayvan",title:"The Original Four",range:"102-115",bio:"",emoji:"",photo:"",homeCourse:"Pleasant Valley Golf Club",favoriteCourse:"Royal Manchester Golf Links",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:25,equippedTitle:"The Original Four",
+    {id:"kayvan",name:"Kayvan",username:"Kayvan",title:"The Original Four",range:"102-115",bio:"",emoji:"",photo:"",homeCourse:"Pleasant Valley Golf Club",favoriteCourse:"Royal Manchester Golf Links",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:null,equippedTitle:"The Original Four",
      clubs:{driver:"210",five_wood:"180",four_hybrid:"170",five_iron:"150",six_iron:"140",seven_iron:"130",eight_iron:"120",nine_iron:"110",pw:"100",gw:"90",putter:""},
      bag:{},funnyFacts:[]},
-    {id:"kiyan",name:"Kiyan",username:"Kiyan",title:"The Original Four",range:"91-104",bio:"",emoji:"",photo:"",homeCourse:"Pleasant Valley Golf Club",favoriteCourse:"Westminster National",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:25,equippedTitle:"The Original Four",
+    {id:"kiyan",name:"Kiyan",username:"Kiyan",title:"The Original Four",range:"91-104",bio:"",emoji:"",photo:"",homeCourse:"Pleasant Valley Golf Club",favoriteCourse:"Westminster National",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:null,equippedTitle:"The Original Four",
      clubs:{},bag:{},funnyFacts:[]},
-    {id:"nick",name:"Nick",username:"Nick",title:"The Original Four",range:"115-120",bio:"",emoji:"",photo:"",homeCourse:"Honey Run Golf Club",favoriteCourse:"Honey Run Golf Club",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:40,equippedTitle:"The Original Four",
+    {id:"nick",name:"Nick",username:"Nick",title:"The Original Four",range:"115-120",bio:"",emoji:"",photo:"",homeCourse:"Honey Run Golf Club",favoriteCourse:"Honey Run Golf Club",bagPhoto:"",founding:true,referredBy:null,trips:1,wins:0,manualHandicap:null,equippedTitle:"The Original Four",
      clubs:{},bag:{},funnyFacts:[]}
   ];
 
@@ -3183,7 +3183,7 @@ var PB = (function() {
       playerHcap = calcHandicap(pRounds);
       if (!playerHcap) {
         var pl = getPlayer(round.player);
-        if (pl) playerHcap = pl.manualHandicap || pl.handicap || pl.handicapIndex || null;
+        if (pl) playerHcap = pl.handicap || pl.handicapIndex || null;
       }
     }
 
@@ -4292,7 +4292,7 @@ var PB = (function() {
       });
       if (!rounds.length) return null;
       var ghinHcap = calcHandicap(allRounds);
-      var hcap = (ghinHcap !== null && allRounds.length >= 3) ? ghinHcap : (p.manualHandicap || ghinHcap || 36);
+      var hcap = ghinHcap !== null ? ghinHcap : 36; // WHS default for unestablished
       var points = 0;
       var bestSoFar = 999;
       var seenCourses = {};
@@ -5254,7 +5254,7 @@ function renderMemberListHtml(players, h) {
     if (p.role === "removed") return;
     var avg = PB.getPlayerAvg(p.id);
     var rounds = PB.getPlayerRounds(p.id);
-    var hcap = PB.calcHandicap(rounds) || (p.manualHandicap || p.handicap || p.handicapIndex || null);
+    var hcap = PB.calcHandicap(rounds); // GHIN only — no manual fallback for display
     var plvl = {level:1};
     try { plvl = PB.getPlayerLevel(p.id) || {level:1}; } catch(e) {}
     var achs = []; try { achs = PB.getAchievements(p.id) || []; } catch(e) {}
@@ -5300,7 +5300,7 @@ function renderMemberDetailWithData(p) {
   var avg = PB.getPlayerAvg(pid);
   var best = PB.getPlayerBest(pid);
   var ghinHcap = PB.calcHandicap(rounds);
-  var hcap = (ghinHcap !== null && rounds.length >= 3) ? ghinHcap : (p.manualHandicap || ghinHcap || null);
+  var hcap = ghinHcap; // Only show GHIN-calculated handicap — manual handicap is for reference only
   var unique = PB.getUniqueCourses(pid);
   var clubLabels = {driver:"Driver",three_wood:"3 Wood",four_wood:"4 Wood",five_wood:"5 Wood",seven_wood:"7 Wood",nine_wood:"9 Wood",two_hybrid:"2 Hybrid",three_hybrid:"3 Hybrid",four_hybrid:"4 Hybrid",five_hybrid:"5 Hybrid",six_hybrid:"6 Hybrid",two_iron:"2 Iron",three_iron:"3 Iron",four_iron:"4 Iron",five_iron:"5 Iron",six_iron:"6 Iron",seven_iron:"7 Iron",eight_iron:"8 Iron",nine_iron:"9 Iron",pw:"PW",aw:"AW (48-50)",gw:"GW (50-52)",gap52:"52°",sw:"SW (54-56)",gap56:"56°",gap58:"58°",lw:"LW (60°)",gap64:"64°",putter:"Putter"};
 
@@ -8580,7 +8580,7 @@ function generateFairPairings(memberIds, style) {
   var players = memberIds.map(function(id) {
     var p = PB.getPlayer(id);
     var rounds = PB.getPlayerRounds(id);
-    var hcap = PB.calcHandicap(rounds) || (p ? (p.manualHandicap || 20) : 20);
+    var hcap = PB.calcHandicap(rounds) || 20; // Default 20 for unestablished handicaps
     return { id: id, name: p ? p.name : id, handicap: hcap };
   }).sort(function(a, b) { return a.handicap - b.handicap; });
   
@@ -10339,7 +10339,7 @@ Router.register("records", function() {
     hcapsSeen[key] = true;
     var computed = PB.calcHandicap(PB.getPlayerRounds(p.id)) ||
                    (p.claimedFrom ? PB.calcHandicap(PB.getPlayerRounds(p.claimedFrom)) : null);
-    var stored = p.handicap || p.manualHandicap || null;
+    var stored = p.handicap || null;
     var hcap = computed !== null ? computed : stored;
     if (hcap === null) return null;
     return { name: p.name || p.username, hcap: hcap };
@@ -12922,7 +12922,8 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Share Card & Format Labels</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Shareable scorecard now shows format label — Scramble, Stableford, Front 9, Back 9 displayed on tee info line", tag: "NEW"}
+    {item: "Shareable scorecard now shows format label — Scramble, Stableford, Front 9, Back 9 displayed on tee info line", tag: "NEW"},
+    {item: "Handicap display no longer falls back to manual/seed handicap — only shows GHIN-calculated value from actual rounds", tag: "FIXED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
@@ -14169,7 +14170,7 @@ function generateAITournament() {
   var playerInfo = aiSelectedPlayers.map(function(pid) {
     var p = PB.getPlayer(pid);
     if (!p) return pid;
-    var hcap = p.manualHandicap || PB.calcHandicap(PB.getPlayerRounds(pid)) || "unknown";
+    var hcap = PB.calcHandicap(PB.getPlayerRounds(pid)) || "unknown";
     return (p.name||p.username) + " (HCP: " + hcap + ")";
   }).join(", ");
   
