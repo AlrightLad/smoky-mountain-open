@@ -3366,22 +3366,23 @@ var PB = (function() {
       if (c && c.region && !seenStates[c.region]) { xp += 150; seenStates[c.region] = 1; }
     });
 
-    // Personal best bonus
-    if (rounds.length >= 2) {
-      var sorted = rounds.slice().sort(function(a,b){return new Date(a.date)-new Date(b.date)});
+    // Personal best bonus (individual rounds only — scramble team scores don't count)
+    var indivForPB = rounds.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4";});
+    if (indivForPB.length >= 2) {
+      var sorted = indivForPB.slice().sort(function(a,b){return new Date(a.date)-new Date(b.date)});
       var bestSoFar = sorted[0].score;
       for (var i = 1; i < sorted.length; i++) {
         if (sorted[i].score < bestSoFar) { xp += 200; bestSoFar = sorted[i].score; }
       }
     }
 
-    // H2H wins
+    // H2H wins (individual rounds only)
     var players = getPlayers();
     players.forEach(function(opp) {
       if (opp.id === pid) return;
       var oppRounds = getPlayerRounds(opp.id);
-      rounds.forEach(function(r) {
-        var match = oppRounds.find(function(o){return o.course===r.course&&o.date===r.date});
+      rounds.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4";}).forEach(function(r) {
+        var match = oppRounds.find(function(o){return o.course===r.course&&o.date===r.date&&o.format!=="scramble"&&o.format!=="scramble4"});
         if (match && r.score < match.score) xp += 50;
       });
     });
@@ -3691,28 +3692,40 @@ var PB = (function() {
     if (full18rounds.some(function(r){return r.score>=120})) achievements.push({id:"blow120",name:"The Blow-Up",desc:"Shoot 120 or higher (18 holes)",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l1 4 4-1-3 3 3 3-4-1-1 4-1-4-4 1 3-3-3-3 4 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:25,cat:"blunder",title:"The Blow-Up Artist"});
     if (full18rounds.some(function(r){return r.score>=130})) achievements.push({id:"blow130",name:"Cart Path Warrior",desc:"Shoot 130 or higher (18 holes)",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='6' cy='14' r='1' fill='currentColor'/><circle cx='12' cy='14' r='1' fill='currentColor'/><path d='M1 1h2l2 9h8l2-6H5' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:25,cat:"blunder",title:"Cart Path Warrior"});
     if (full18rounds.some(function(r){return r.score>=140})) achievements.push({id:"blow140",name:"Lost in the Woods",desc:"Shoot 140 or higher (18 holes)",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L4 7h2L3 12h10L10 7h2L8 1zM7 12h2v3H7z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:25,cat:"blunder",title:"Lost in the Woods"});
-    if (rounds.length >= 2) {
-      var scores = rounds.map(function(r){return r.score}).sort(function(a,b){return a-b});
+    if (indivRounds.length >= 2) {
+      var scores = indivRounds.map(function(r){return r.score}).sort(function(a,b){return a-b});
       if (scores[scores.length-1] - scores[0] >= 20) achievements.push({id:"roller_coaster",name:"Roller Coaster",desc:"20+ stroke difference between best and worst round",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 12c2-8 4-8 6 0s4 0 6-4' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"blunder",title:"The Roller Coaster"});
     }
-    if (rounds.length >= 3) {
-      var last3 = rounds.slice(-3);
+    if (indivRounds.length >= 3) {
+      var last3 = indivRounds.slice(-3);
       var allWorse = last3.every(function(r,i){return i===0 || r.score > last3[i-1].score});
       if (allWorse && last3.length === 3) achievements.push({id:"downhill",name:"Going Downhill",desc:"3 rounds in a row getting worse",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 3l5 4 3-2 6 7' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M12 8l3 4h-4z' fill='currentColor'/></svg>",xp:25,cat:"blunder",title:"Mr. Downhill"});
     }
-    if (rounds.filter(function(r){return r.score>=110}).length >= 5) achievements.push({id:"thick_skin",name:"Thick Skin",desc:"Log 5 rounds of 110+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M6 8l2 2 3-4' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"blunder",title:"Thick Skinned"});
-    if (rounds.length >= 10 && !rounds.some(function(r){return r.score<100})) achievements.push({id:"triple_club",name:"Triple Digit Club",desc:"10 rounds without breaking 100",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><text x='8' y='12' text-anchor='middle' font-size='10' font-weight='700' fill='currentColor'>100</text></svg>",xp:50,cat:"blunder",title:"Triple Digit King"});
+    if (indivRounds.filter(function(r){return r.score>=110}).length >= 5) achievements.push({id:"thick_skin",name:"Thick Skin",desc:"Log 5 rounds of 110+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M6 8l2 2 3-4' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"blunder",title:"Thick Skinned"});
+    if (indivRounds.length >= 10 && !indivRounds.some(function(r){return r.score<100})) achievements.push({id:"triple_club",name:"Triple Digit Club",desc:"10 rounds without breaking 100",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><text x='8' y='12' text-anchor='middle' font-size='10' font-weight='700' fill='currentColor'>100</text></svg>",xp:50,cat:"blunder",title:"Triple Digit King"});
 
     // --- DEDICATION & SOCIAL ---
-    if (rounds.length >= 3) {
-      var dates = rounds.map(function(r){return r.date}).sort();
+    // Hot Streak: play at least once per week across 3+ distinct calendar weeks
+    if (indivRounds.length >= 3) {
+      var weekSet = {};
+      indivRounds.forEach(function(r) {
+        if (!r.date) return;
+        var d = new Date(r.date + "T12:00:00");
+        var jan1 = new Date(d.getFullYear(), 0, 1);
+        var weekNum = d.getFullYear() + "-W" + Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+        weekSet[weekNum] = true;
+      });
+      var weeks = Object.keys(weekSet).sort();
       var streak = 1, maxStreak = 1;
-      for (var si=1;si<dates.length;si++) {
-        var d1=new Date(dates[si-1]),d2=new Date(dates[si]);
-        var diff = (d2-d1)/(1000*60*60*24);
-        if (diff <= 7) { streak++; maxStreak = Math.max(maxStreak, streak); } else { streak = 1; }
+      for (var si = 1; si < weeks.length; si++) {
+        // Parse week numbers and check consecutive
+        var parts1 = weeks[si-1].split("-W"), parts2 = weeks[si].split("-W");
+        var y1 = parseInt(parts1[0]), w1 = parseInt(parts1[1]);
+        var y2 = parseInt(parts2[0]), w2 = parseInt(parts2[1]);
+        var consecutive = (y1 === y2 && w2 === w1 + 1) || (y2 === y1 + 1 && w1 >= 51 && w2 <= 2);
+        if (consecutive) { streak++; maxStreak = Math.max(maxStreak, streak); } else { streak = 1; }
       }
-      if (maxStreak >= 3) achievements.push({id:"hot_streak",name:"Hot Streak",desc:"Play 3 weeks in a row",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1C6 4 4 5 4 8a4 4 0 008 0c0-2-1-3-2-4-.5 1-1 2-2 1 0-2 0-3 0-4z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"milestone",title:"On Fire"});
+      if (maxStreak >= 3) achievements.push({id:"weekly_streak",name:"Hot Streak",desc:"Play 3 weeks in a row",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1C6 4 4 5 4 8a4 4 0 008 0c0-2-1-3-2-4-.5 1-1 2-2 1 0-2 0-3 0-4z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"milestone",title:"On Fire"});
       if (maxStreak >= 6) achievements.push({id:"iron_man_streak",name:"Iron Man",desc:"Play 6 weeks in a row",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M9 1L4 9h4l-1 6 6-8H9l1-6z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:200,cat:"milestone",title:"The Iron Man"});
     }
 
@@ -4021,7 +4034,7 @@ var PB = (function() {
     // Streaks
     var _rStreak = typeof calcRangeStreak !== "undefined" ? calcRangeStreak(_rangeS) : 0;
     if (_rStreak >= 2) achievements.push({id:"two_peat",name:"Two-Peat",desc:"2-week range streak",icon:_rangeSVG,xp:50,cat:"range"});
-    if (_rStreak >= 4) achievements.push({id:"hot_streak",name:"Hot Streak",desc:"4-week range streak",icon:_rangeSVG,xp:100,cat:"range",title:"Hot Streak"});
+    if (_rStreak >= 4) achievements.push({id:"range_hot_streak",name:"Range Hot Streak",desc:"4-week range streak",icon:_rangeSVG,xp:100,cat:"range",title:"Range Hot Streak"});
     if (_rStreak >= 8) achievements.push({id:"dialed_in",name:"Dialed In",desc:"8-week range streak",icon:_rangeSVG,xp:250,cat:"range",title:"Dialed In"});
     if (_rStreak >= 12) achievements.push({id:"relentless",name:"Relentless",desc:"12-week range streak",icon:_rangeSVG,xp:500,cat:"range",title:"Relentless"});
     // Volume
@@ -4061,33 +4074,10 @@ var PB = (function() {
     var dialedSessions = _rangeS.filter(function(s){return s.feel===3;});
     if (dialedSessions.length >= 3) achievements.push({id:"dialed_feel",name:"Dialed",desc:"Rate 3 sessions as Dialed",icon:_rangeSVG,xp:75,cat:"range",title:"Dialed"});
 
-    // ===== NEW ACHIEVEMENTS =====
-    // Eagle — score 2 under par or better on any hole
-    if (rounds.some(function(r){
-      if (!r.holeScores) return false;
-      var par = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
-      return r.holeScores.some(function(s,i){ return s !== "" && parseInt(s) <= (par[i] - 2) && par[i] >= 4; });
-    })) achievements.push({id:"eagle_eye",name:"Eagle Eye",desc:"Score an eagle or better on any hole",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='8' r='3' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='8' cy='8' r='.8' fill='currentColor'/></svg>",xp:400,cat:"score",title:"Eagle Eye"});
-
-    // Birdie Machine — 3+ birdies in one round
-    if (rounds.some(function(r){
-      if (!r.holeScores) return false;
-      var par = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
-      var birdies = r.holeScores.filter(function(s,i){ return s !== "" && parseInt(s) === par[i] - 1; }).length;
-      return birdies >= 3;
-    })) achievements.push({id:"birdie_machine",name:"Birdie Machine",desc:"Score 3 birdies in a single round",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 2a5 5 0 100 10A5 5 0 008 2z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M5 7l2 2 4-4' stroke='currentColor' stroke-width='1.2'/></svg>",xp:300,cat:"score",title:"Birdie Machine"});
-
-    // Bogey Free — full round with no score above par on any hole
-    if (rounds.some(function(r){
-      if (!r.holeScores || r.holeScores.filter(function(s){return s !== "";}).length < 18) return false;
-      var par = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
-      return !r.holeScores.some(function(s,i){ return s !== "" && parseInt(s) > par[i]; });
-    })) achievements.push({id:"bogey_free",name:"Bogey Free",desc:"Complete an 18-hole round with no bogeys",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='8' r='6' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M5 8l2 2 4-4' stroke='currentColor' stroke-width='1.5'/></svg>",xp:600,cat:"score",title:"Bogey Free"});
-
-    // Flip Flop — improve 10+ strokes over previous round at same course
-    if (rounds.length >= 2) {
+    // ===== COURSE-SPECIFIC & IMPROVEMENT ACHIEVEMENTS ===== — improve 10+ strokes over previous round at same course
+    if (indivRounds.length >= 2) {
       var _courseMap = {};
-      rounds.slice().sort(function(a,b){return a.date>b.date?1:-1}).forEach(function(r) {
+      indivRounds.slice().sort(function(a,b){return a.date>b.date?1:-1}).forEach(function(r) {
         if (_courseMap[r.course] !== undefined) {
           if (_courseMap[r.course] - r.score >= 10) achievements.push({id:"flip_flop",name:"Flip Flop",desc:"Improve 10+ strokes over your previous round at same course",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 12l5-7 3 4 3-6 3 5' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"growth",title:"The Flip Flop"});
         }
@@ -4099,9 +4089,9 @@ var PB = (function() {
     if (achievements.length >= 15) achievements.push({id:"trophy_shelf",name:"Trophy Shelf",desc:"Earn 15 achievements",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M3 13h10M4 7h8M5 7V4a1 1 0 012-2h2a1 1 0 012 2v3M4 13v-2a4 4 0 018 0v2' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:250,cat:"milestone",title:"Trophy Shelf"});
     if (achievements.length >= 25) achievements.push({id:"achievement_hunter",name:"Achievement Hunter",desc:"Earn 25 achievements",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"milestone",title:"Achievement Hunter"});
 
-    // Two rounds same day
+    // Two rounds same day (exclude scramble — playing scramble + individual same day isn't "two-a-day")
     var _dateCounts = {};
-    rounds.forEach(function(r){if(r.date) _dateCounts[r.date]=(_dateCounts[r.date]||0)+1;});
+    indivRounds.forEach(function(r){if(r.date) _dateCounts[r.date]=(_dateCounts[r.date]||0)+1;});
     if (Object.values(_dateCounts).some(function(c){return c>=2;})) {
       achievements.push({id:"two_a_day",name:"Two-A-Day",desc:"Log two rounds on the same day",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='5' cy='8' r='4' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='11' cy='8' r='4' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"milestone"});
     }
@@ -4121,17 +4111,19 @@ var PB = (function() {
       achievements.push({id:"all_in",name:"All In",desc:"Log a round and a range session in the same week",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:75,cat:"milestone",title:"All In"});
     }
 
-    // Deep Clean — 18-hole round where every score is par or better
-    if (rounds.some(function(r){
+    // Deep Clean — 18-hole individual round where every score is par or better (verified pars only)
+    if (indivHoleRounds.some(function(r){
       if (!r.holeScores || r.holeScores.filter(function(s){return s !== "";}).length < 18) return false;
-      var par = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
-      return r.holeScores.every(function(s,i){ return s === "" || parseInt(s) <= par[i]; });
+      var cp = r.holePars || null;
+      if (!cp && r.course) { var co = PB.getCourses().find(function(c){return c.name===r.course;}); if (co && co.holes && co.holes.length>=18) cp = co.holes.map(function(h){return h.par||0;}); }
+      if (!cp) return false;
+      return r.holeScores.every(function(s,i){ return s === "" || !cp[i] || parseInt(s) <= cp[i]; });
     })) achievements.push({id:"clean_card",name:"Clean Card",desc:"Complete an 18-hole round with no scores over par",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><rect x='3' y='2' width='10' height='12' rx='1' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M5 7l2 2 4-4' stroke='currentColor' stroke-width='1.2'/></svg>",xp:500,cat:"score",title:"Clean Card"});
 
-    // Overcorrection — score 15+ strokes worse than personal best (blunder)
-    if (rounds.length >= 2) {
-      var _pb = Math.min.apply(null, rounds.map(function(r){return r.score;}));
-      if (rounds.some(function(r){return r.score >= _pb + 15;})) {
+    // Overcorrection — score 15+ strokes worse than personal best (exclude scramble)
+    if (indivRounds.length >= 2) {
+      var _pb = Math.min.apply(null, indivRounds.map(function(r){return r.score;}));
+      if (indivRounds.some(function(r){return r.score >= _pb + 15;})) {
         achievements.push({id:"overcorrection",name:"The Overcorrection",desc:"Shoot 15+ strokes worse than your personal best",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 5l5 4 3-3 6 8' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M13 8l3 5h-4z' fill='currentColor'/></svg>",xp:30,cat:"blunder",title:"The Overcorrection"});
       }
     }
@@ -4296,7 +4288,9 @@ var PB = (function() {
       var points = 0;
       var bestSoFar = 999;
       var seenCourses = {};
-      rounds.forEach(function(r) {
+      // Only individual rounds earn season points (scramble is team play)
+      var seasonIndiv = rounds.filter(function(r){ return r.format !== "scramble" && r.format !== "scramble4"; });
+      seasonIndiv.forEach(function(r) {
         var coursePar = 72;
         var c = getCourseByName(r.course);
         if (c && c.par) coursePar = c.par;
@@ -4384,7 +4378,7 @@ var PB = (function() {
     getScrambleTeams:getScrambleTeams, addScrambleTeam:addScrambleTeam, addScrambleTeamFromFirestore:addScrambleTeamFromFirestore, addScrambleMatch:addScrambleMatch,
     getRecords:getRecords, setRecord:setRecord,
     calcStableford:calcStableford, calcHandicap:calcHandicap, getHandicapDetails:getHandicapDetails,
-    getPlayerAvg:getPlayerAvg, getPlayerBest:getPlayerBest, getDisplayName:getDisplayName, getUniqueCourses:getUniqueCourses,
+    getPlayerAvg:getPlayerAvg, getPlayerBest:getPlayerBest, getDisplayName:getDisplayName, getUniqueCourses:getUniqueCourses, normCourseName:normCourseName,
     getTripStableford:getTripStableford, getTripTotal:getTripTotal,
     getMiniPoints:getMiniPoints, getBonusPoints:getBonusPoints, getTripPoints:getTripPoints,
     daysUntil:daysUntil, generateRoundCommentary:generateRoundCommentary, getActivity:getActivity, getAchievements:getAchievements, getPlayerXP:getPlayerXP, getPlayerLevel:getPlayerLevel,
@@ -7028,9 +7022,9 @@ function calcH2H(pid1, pid2) {
   var p1wins = 0, p2wins = 0, ties = 0;
   var counted = {}; // dedup key: course+date
 
-  // 1) Regular rounds — same course, same date
-  var p1rounds = rounds.filter(function(r) { return r.player === pid1; });
-  var p2rounds = rounds.filter(function(r) { return r.player === pid2; });
+  // 1) Regular rounds — same course, same date (individual only, no scramble)
+  var p1rounds = rounds.filter(function(r) { return r.player === pid1 && r.format !== "scramble" && r.format !== "scramble4"; });
+  var p2rounds = rounds.filter(function(r) { return r.player === pid2 && r.format !== "scramble" && r.format !== "scramble4"; });
 
   p1rounds.forEach(function(r1) {
     var match = p2rounds.find(function(r2) {
@@ -8164,21 +8158,27 @@ Router.register("standings", function() {
   h += '<div class="club-row"><span class="club-name">Season winner</span><span class="club-yd">Earns title + unique profile photo</span></div>';
   h += '</div></div>';
 
-  // Courses this season
+  // Courses this season — individual rounds only (no scramble)
   var seasonStart = year + '-03-01';
   var seasonEnd = year + '-09-30';
   var seasonRounds = PB.getRounds().filter(function(r){
-    return r.visibility !== "private" && r.date >= seasonStart && r.date <= seasonEnd;
+    return r.visibility !== "private" && r.date >= seasonStart && r.date <= seasonEnd && r.format !== "scramble" && r.format !== "scramble4";
   });
   var seasonCourseMap = {};
   seasonRounds.forEach(function(r){
     if (!r.course) return;
-    if (!seasonCourseMap[r.course]) seasonCourseMap[r.course] = {name: r.course, rounds: 0, best: null, players: {}};
+    if (!seasonCourseMap[r.course]) seasonCourseMap[r.course] = {name: r.course, rounds: 0, best18: null, best18player: null, best9: null, best9player: null, best9mode: null, players: {}};
     seasonCourseMap[r.course].rounds++;
     if (r.playerName) seasonCourseMap[r.course].players[r.playerName] = 1;
     var is18 = !r.holesPlayed || r.holesPlayed >= 18;
-    if (is18 && r.score && (seasonCourseMap[r.course].best === null || r.score < seasonCourseMap[r.course].best)) {
-      seasonCourseMap[r.course].best = r.score;
+    if (is18 && r.score && (seasonCourseMap[r.course].best18 === null || r.score < seasonCourseMap[r.course].best18)) {
+      seasonCourseMap[r.course].best18 = r.score;
+      seasonCourseMap[r.course].best18player = r.playerName || "Unknown";
+    }
+    if (!is18 && r.score && (seasonCourseMap[r.course].best9 === null || r.score < seasonCourseMap[r.course].best9)) {
+      seasonCourseMap[r.course].best9 = r.score;
+      seasonCourseMap[r.course].best9player = r.playerName || "Unknown";
+      seasonCourseMap[r.course].best9mode = r.holesMode === "back9" ? "B9" : "F9";
     }
   });
   var seasonCourseList = Object.values(seasonCourseMap).sort(function(a,b){return b.rounds - a.rounds;});
@@ -8186,7 +8186,11 @@ Router.register("standings", function() {
   if (seasonCourseList.length) {
     seasonCourseList.forEach(function(c){
       var playerCount = Object.keys(c.players).length;
-      scContent += '<div class="club-row"><span class="club-name">' + escHtml(c.name) + ' <span style="color:var(--muted);font-size:9px">(' + c.rounds + ' rds · ' + playerCount + ' player' + (playerCount !== 1 ? 's' : '') + ')</span></span><span class="club-yd">' + (c.best ? 'Best: ' + c.best : '—') + '</span></div>';
+      var bestParts = [];
+      if (c.best18) bestParts.push(c.best18 + ' (' + escHtml(c.best18player) + ')');
+      if (c.best9) bestParts.push(c.best9 + ' ' + c.best9mode + ' (' + escHtml(c.best9player) + ')');
+      var bestLabel = bestParts.length ? bestParts.join(' · ') : '—';
+      scContent += '<div class="club-row"><span class="club-name">' + escHtml(c.name) + ' <span style="color:var(--muted);font-size:9px">(' + c.rounds + ' rds · ' + playerCount + ' player' + (playerCount !== 1 ? 's' : '') + ')</span></span><span class="club-yd" style="font-size:11px">' + bestLabel + '</span></div>';
     });
   } else {
     scContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No courses played this season</div>';
@@ -9856,17 +9860,32 @@ function renderCourseDetail(courseId) {
     .map(function(r){ return {name: r.playerName || r.player, score: r.score, date: r.date, par: c.par}; });
   h += renderLeaderboardCategory('Solo', soloEntries);
 
-  // Scramble by team size
+  // Scramble by team size — pull from both team.matches AND rounds collection
   var teams = PB.getScrambleTeams();
   [2,3,4].forEach(function(sz) {
     var entries = [];
+    var entryKeys = {};
+    // From team matches
     teams.filter(function(t){ return (t.size||t.members.length) === sz; }).forEach(function(t) {
-      (t.matches||[]).filter(function(m){ return m.course === c.name && m.score; }).forEach(function(m) {
-        entries.push({name: t.name, score: m.score, date: m.date, par: c.par});
+      (t.matches||[]).filter(function(m){ return m.course && PB.normCourseName(m.course) === PB.normCourseName(c.name) && m.score; }).forEach(function(m) {
+        var key = t.name + "|" + m.date;
+        if (!entryKeys[key]) { entries.push({name: t.name, score: m.score, date: m.date, par: c.par}); entryKeys[key] = true; }
       });
     });
+    // From rounds collection (scramble rounds on this course)
+    var scrambleRounds = roundsHere.filter(function(r){ return (sz === 4 && (r.format === "scramble4" || r.format === "scramble")) || (sz === 2 && r.format === "scramble"); });
+    // Group by date to avoid duplicates
+    var scrambleDates = {};
+    scrambleRounds.forEach(function(r) {
+      if (!scrambleDates[r.date] || r.score < scrambleDates[r.date].score) scrambleDates[r.date] = r;
+    });
+    Object.values(scrambleDates).forEach(function(r) {
+      var teamForRound = teams.find(function(t){ return (t.size||t.members.length) === sz && t.members.indexOf(r.player) !== -1; });
+      var teamName = teamForRound ? teamForRound.name : "Team";
+      var key = teamName + "|" + r.date;
+      if (!entryKeys[key]) { entries.push({name: teamName, score: r.score, date: r.date, par: c.par}); entryKeys[key] = true; }
+    });
     entries.sort(function(a,b){ return a.score - b.score; });
-    // Deduplicate — keep only the best score per team
     var seen = {};
     entries = entries.filter(function(e) {
       if (seen[e.name]) return false;
@@ -9879,15 +9898,39 @@ function renderCourseDetail(courseId) {
   h += '</div>';
 
   if (roundsHere.length) {
-    h += '<div class="section"><div class="sec-head"><span class="sec-title">Parbaugh scores</span></div>';
-    roundsHere.slice().reverse().forEach(function(r) {
-      var is9h = r.holesPlayed && r.holesPlayed <= 9;
-      var holeLabel = is9h ? (r.holesMode === "back9" ? " · Back 9" : " · Front 9") : "";
-      var teeName = r.tee || c.tee || "";
-      h += '<div class="card" onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer"><div class="round-card"><div class="rc-top"><div><div class="rc-course">' + escHtml(r.playerName) + '</div><div class="rc-date">' + r.date + (teeName ? ' · ' + teeName + ' Tees' : '') + holeLabel + '</div></div>';
-      h += '<div class="rc-score">' + r.score + '</div></div></div></div>';
-    });
-    h += '</div>';
+    var soloRounds = roundsHere.filter(function(r){ return r.format !== "scramble" && r.format !== "scramble4"; });
+    var scrambleRounds = roundsHere.filter(function(r){ return r.format === "scramble" || r.format === "scramble4"; });
+    
+    if (soloRounds.length) {
+      h += '<div class="section"><div class="sec-head"><span class="sec-title">Individual scores</span></div>';
+      soloRounds.slice().reverse().forEach(function(r) {
+        var is9h = r.holesPlayed && r.holesPlayed <= 9;
+        var holeLabel = is9h ? (r.holesMode === "back9" ? " · Back 9" : " · Front 9") : "";
+        var teeName = r.tee || c.tee || "";
+        var fmtLabel = r.format && r.format !== "stroke" ? " · " + r.format.charAt(0).toUpperCase() + r.format.slice(1) : "";
+        h += '<div class="card" onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer"><div class="round-card"><div class="rc-top"><div><div class="rc-course">' + escHtml(r.playerName) + '</div><div class="rc-date">' + r.date + (teeName ? ' · ' + teeName + ' Tees' : '') + holeLabel + fmtLabel + '</div></div>';
+        h += '<div class="rc-score">' + r.score + '</div></div></div></div>';
+      });
+      h += '</div>';
+    }
+    
+    if (scrambleRounds.length) {
+      // Group scramble by date (team played together)
+      var scrambleDates = {};
+      scrambleRounds.forEach(function(r) { if (!scrambleDates[r.date]) scrambleDates[r.date] = []; scrambleDates[r.date].push(r); });
+      h += '<div class="section"><div class="sec-head"><span class="sec-title">Scramble scores</span></div>';
+      Object.keys(scrambleDates).sort().reverse().forEach(function(dt) {
+        var group = scrambleDates[dt];
+        var score = group[0].score;
+        var teamObj = PB.getScrambleTeams().find(function(t){ return group.some(function(r){ return t.members.indexOf(r.player) !== -1; }); });
+        var teamName = teamObj ? teamObj.name : "Team Scramble";
+        var memberNames = group.map(function(r){ return r.playerName; }).join(", ");
+        var teeName = group[0].tee || c.tee || "";
+        h += '<div class="card"><div class="round-card"><div class="rc-top"><div><div class="rc-course" style="color:var(--gold)">' + escHtml(teamName) + '</div><div class="rc-date" style="font-size:10px">' + escHtml(memberNames) + '</div><div class="rc-date">' + dt + (teeName ? ' · ' + teeName + ' Tees' : '') + ' · Scramble</div></div>';
+        h += '<div class="rc-score">' + score + '</div></div></div></div>';
+      });
+      h += '</div>';
+    }
   }
 
   // Reviews
@@ -10196,8 +10239,8 @@ Router.register("records", function() {
   // 2. All-time records — with inline Log a record
   var recContent = '';
   if (rounds.length) {
-    var full18 = rounds.filter(function(r){return !r.holesPlayed || r.holesPlayed >= 18;});
-    var nine = rounds.filter(function(r){return r.holesPlayed && r.holesPlayed <= 9;});
+    var full18 = rounds.filter(function(r){return (!r.holesPlayed || r.holesPlayed >= 18) && r.format !== "scramble" && r.format !== "scramble4";});
+    var nine = rounds.filter(function(r){return r.holesPlayed && r.holesPlayed <= 9 && r.format !== "scramble" && r.format !== "scramble4";});
     var best18 = full18.length ? full18.reduce(function(a, b) { return a.score < b.score ? a : b; }) : null;
     var best9 = nine.length ? nine.reduce(function(a, b) { return a.score < b.score ? a : b; }) : null;
     recContent += '<div style="display:flex;gap:8px;margin-bottom:6px">';
@@ -10982,7 +11025,8 @@ function renderActivityRounds() {
   // History
   if (rounds.length) {
     h += '<div class="section"><div class="sec-head"><span class="sec-title">Round history</span><span class="sec-link">' + rounds.length + ' total</span></div>';
-    rounds.slice().sort(function(a,b){return (b.date||"")>(a.date||"")?1:(b.date||"")<(a.date||"")?-1:0;}).slice(0, 10).forEach(function(r) {
+    h += '<div style="max-height:500px;overflow-y:auto;-webkit-overflow-scrolling:touch">';
+    rounds.slice().sort(function(a,b){return (b.date||"")>(a.date||"")?1:(b.date||"")<(a.date||"")?-1:0;}).forEach(function(r) {
       var c = PB.generateRoundCommentary(r);
       var quip = c.roasts.length ? c.roasts[0] : (c.highlights.length ? c.highlights[0] : "");
       var diffR = Math.round((r.score - (r.rating || 72)) * 10) / 10;
@@ -11000,7 +11044,7 @@ function renderActivityRounds() {
       if (quip) h += '<div class="rc-quip">' + quip + '</div>';
       h += '</div></div>';
     });
-    h += '</div>';
+    h += '</div></div>';
   }
   return h;
 }
@@ -12915,17 +12959,42 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.12.3</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.12.4</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.12.3</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Share Card & Format Labels</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.12.4</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Achievement Integrity Audit</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Shareable scorecard now shows format label — Scramble, Stableford, Front 9, Back 9 displayed on tee info line", tag: "NEW"},
-    {item: "Handicap display no longer falls back to manual/seed handicap — only shows GHIN-calculated value from actual rounds", tag: "FIXED"}
+    {item: "Full scramble isolation audit — scramble team scores excluded from: season standings points, season courses, XP personal best bonus, H2H wins, All-time records, score differentials, all individual achievements", tag: "AUDIT"},
+    {item: "Season Courses section excludes scramble and shows who shot the best score at each course", tag: "IMPROVED"},
+    {item: "Course detail page: Individual Scores and Scramble Scores shown as separate sections — scramble shows team name in gold with member names underneath", tag: "IMPROVED"},
+    {item: "Removed 3 duplicate achievements (Eagle Eye, Birdie Machine, Bogey Free) that used hardcoded pars", tag: "FIXED"},
+    {item: "7 blunder achievements now exclude scramble (Roller Coaster, Overcorrection, etc)", tag: "FIXED"},
+    {item: "Hot Streak checks distinct calendar weeks — 3 rounds in one trip week no longer qualifies", tag: "FIXED"},
+    {item: "Range Hot Streak given unique ID — no longer conflicts with round-playing streak", tag: "FIXED"},
+    {item: "Manual handicap removed from all seed data and display fallbacks", tag: "FIXED"},
+    {item: "All-time records Best 18 Holes excludes scramble", tag: "FIXED"},
+    {item: "Activity page round history scrollable in fixed 500px window", tag: "IMPROVED"},
+    {item: "Course detail scramble leaderboard reads from rounds collection with fuzzy name matching", tag: "FIXED"},
+    {item: "Shareable scorecard shows format label (Scramble, Stableford, Front 9, Back 9)", tag: "NEW"}
   ];
   currentNotes.forEach(function(r) {
+    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
+    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
+    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
+    h += '<span>' + r.item + '</span></div>';
+  });
+  h += '</div></div></div>';
+
+  // v5.12.3
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.12.3 · April 2026 · Share Card & Format Labels</span></div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
+  var v5123Notes = [
+    {item: "Shareable scorecard shows format label (Scramble, Stableford, etc)", tag: "NEW"},
+    {item: "Handicap display no longer falls back to manual/seed handicap", tag: "FIXED"}
+  ];
+  v5123Notes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
     h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
     h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
