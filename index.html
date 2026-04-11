@@ -1732,7 +1732,7 @@ function startRoundsListener() {
     snap.forEach(function(doc) { var d = doc.data(); if (d && d.id) fsRounds.push(d); });
     if (fsRounds.length > 0) {
       PB.setRoundsFromFirestore(fsRounds);
-      // Re-render pages that display round data
+      if (window._suppressRoundsRerender) return; // Skip re-render for like/comment updates
       var pg = Router.getPage();
       if (pg === "rounds" || pg === "records" || pg === "activity" || pg === "standings" || pg === "home") {
         Router.go(pg, Router.getParams(), true);
@@ -5838,7 +5838,7 @@ function buildHandicapGraph(rounds, pid) {
     var totalRounds = graphData.reduce(function(a,g){return a+g.roundCount},0);
     // Build a differentials bar chart from the actual rounds
     var diffs = [];
-    sorted.forEach(function(r) {
+    sorted.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4";}).forEach(function(r) {
       if (!r.rating || !r.slope) return;
       var diff = Math.round((113 / r.slope) * (r.score - r.rating) * 10) / 10;
       diffs.push({ diff: diff, course: r.course, score: r.score });
@@ -5852,24 +5852,27 @@ function buildHandicapGraph(rounds, pid) {
       var diffRange = maxDiff - minDiff || 1;
       
       result += '<div style="padding:4px 0 8px">';
-      result += '<div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px;padding:0 4px">Round differentials · Lowest used for handicap</div>';
+      result += '<div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:10px;padding:0 4px">Round differentials · Lowest used for handicap</div>';
       diffs.forEach(function(d, idx) {
-        var barWidth = Math.max(15, ((d.diff - minDiff) / diffRange) * 80 + 20);
-        var isUsed = idx === 0; // WHS uses best differential(s)
+        var barWidth = Math.max(15, ((d.diff - minDiff) / diffRange) * 60 + 20);
+        var isUsed = idx === 0;
         var barColor = isUsed ? 'var(--gold)' : 'rgba(255,255,255,.08)';
         var textColor = isUsed ? 'var(--gold)' : 'var(--muted)';
-        result += '<div style="display:flex;align-items:center;gap:8px;padding:3px 4px">';
-        result += '<div style="flex:1;min-width:0;font-size:10px;color:' + textColor + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(d.course) + ' · ' + d.score + '</div>';
-        result += '<div style="width:' + barWidth + '%;height:6px;border-radius:3px;background:' + barColor + ';flex-shrink:0;transition:width .3s"></div>';
-        result += '<div style="font-size:11px;font-weight:600;color:' + textColor + ';width:36px;text-align:right;flex-shrink:0">' + d.diff.toFixed(1) + '</div>';
-        result += '</div>';
+        var diffColor = isUsed ? 'var(--gold)' : 'rgba(255,255,255,.4)';
+        // Stack: course name on top, bar + value below
+        result += '<div style="padding:5px 4px">';
+        result += '<div style="font-size:11px;color:' + textColor + ';margin-bottom:3px;font-weight:' + (isUsed ? '600' : '400') + '">' + escHtml(d.course) + ' · ' + d.score + '</div>';
+        result += '<div style="display:flex;align-items:center;gap:8px">';
+        result += '<div style="flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.04);overflow:hidden"><div style="width:' + barWidth + '%;height:100%;border-radius:3px;background:' + barColor + '"></div></div>';
+        result += '<div style="font-size:12px;font-weight:700;color:' + diffColor + ';width:40px;text-align:right;flex-shrink:0">' + d.diff.toFixed(1) + '</div>';
+        result += '</div></div>';
       });
       result += '</div>';
     }
     
     // Stats row
     result += '<div style="display:flex;justify-content:center;gap:20px;padding:6px 0;font-size:10px;color:var(--muted2)">';
-    result += '<div>' + totalRounds + ' qualifying round' + (totalRounds !== 1 ? 's' : '') + '</div>';
+    result += '<div>' + diffs.length + ' qualifying round' + (diffs.length !== 1 ? 's' : '') + '</div>';
     result += '<div style="color:var(--birdie)">↓ Lower differential = better</div>';
     result += '</div>';
     result += '<div style="text-align:center;font-size:10px;color:var(--muted);padding-top:4px">Graph builds as you play across multiple months</div>';
@@ -10009,15 +10012,16 @@ function renderCourseDetail(courseId) {
         var is9h = r.holesPlayed && r.holesPlayed <= 9;
         var holeLabel = is9h ? (r.holesMode === "back9" ? " · Back 9" : " · Front 9") : "";
         var teeName = r.tee || c.tee || "";
+        var teeDisplay = teeName ? " · " + teeName + (/tees$/i.test(teeName) ? "" : " Tees") : "";
         var fmtLabel = r.format && r.format !== "stroke" ? " · " + r.format.charAt(0).toUpperCase() + r.format.slice(1) : "";
-        h += '<div class="card" onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer"><div class="round-card"><div class="rc-top"><div><div class="rc-course">' + escHtml(r.playerName) + '</div><div class="rc-date">' + r.date + (teeName ? ' · ' + teeName + ' Tees' : '') + holeLabel + fmtLabel + '</div></div>';
+        var clickHandler = r.id ? " onclick=\"Router.go('rounds',{roundId:'" + r.id + "'})\" style=\"cursor:pointer\"" : "";
+        h += '<div class="card"' + clickHandler + '><div class="round-card"><div class="rc-top"><div><div class="rc-course">' + escHtml(r.playerName) + '</div><div class="rc-date">' + r.date + teeDisplay + holeLabel + fmtLabel + '</div></div>';
         h += '<div class="rc-score">' + r.score + '</div></div></div></div>';
       });
       h += '</div>';
     }
     
     if (scrambleRounds.length) {
-      // Group scramble by date (team played together)
       var scrambleDates = {};
       scrambleRounds.forEach(function(r) { if (!scrambleDates[r.date]) scrambleDates[r.date] = []; scrambleDates[r.date].push(r); });
       h += '<div class="section"><div class="sec-head"><span class="sec-title">Scramble scores</span></div>';
@@ -10028,7 +10032,9 @@ function renderCourseDetail(courseId) {
         var teamName = teamObj ? teamObj.name : "Team Scramble";
         var memberNames = group.map(function(r){ return r.playerName; }).join(", ");
         var teeName = group[0].tee || c.tee || "";
-        h += '<div class="card"><div class="round-card"><div class="rc-top"><div><div class="rc-course" style="color:var(--gold)">' + escHtml(teamName) + '</div><div class="rc-date" style="font-size:10px">' + escHtml(memberNames) + '</div><div class="rc-date">' + dt + (teeName ? ' · ' + teeName + ' Tees' : '') + ' · Scramble</div></div>';
+        var teeDisplay = teeName ? " · " + teeName + (/tees$/i.test(teeName) ? "" : " Tees") : "";
+        var clickHandler = group[0].id ? " onclick=\"Router.go('rounds',{roundId:'" + group[0].id + "'})\" style=\"cursor:pointer\"" : "";
+        h += '<div class="card"' + clickHandler + '><div class="round-card"><div class="rc-top"><div><div class="rc-course" style="color:var(--gold)">' + escHtml(teamName) + '</div><div class="rc-date" style="font-size:10px">' + escHtml(memberNames) + '</div><div class="rc-date">' + dt + teeDisplay + ' · Scramble</div></div>';
         h += '<div class="rc-score">' + score + '</div></div></div></div>';
       });
       h += '</div>';
@@ -11171,7 +11177,9 @@ function renderActivityRounds() {
       } else {
         var g = item.group;
         h += '<div class="card"><div class="round-card"><div class="rc-top"><div style="flex:1"><div class="rc-course" style="color:var(--gold)">' + escHtml(g.teamName) + ' · Scramble</div><div class="rc-date">' + escHtml(g.course) + ' · ' + g.date + (g.tee ? ' · ' + g.tee : '') + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">' + g.players.join(", ") + '</div></div>';
-        h += '<div class="rc-score">' + g.score + '</div></div></div></div>';
+        h += '<div style="display:flex;align-items:center;gap:8px"><div class="rc-score">' + g.score + '</div>';
+        h += '<button class="btn-sm outline" style="font-size:9px;padding:4px 8px;flex-shrink:0" onclick="event.stopPropagation();showRoundShareCard(\'' + g.id + '\')">Share</button>';
+        h += '</div></div></div></div>';
       }
     });
     h += '</div></div>';
@@ -13107,7 +13115,13 @@ Router.register("caddynotes", function() {
     {item: "Last 3 Rounds properly sorts by date (newest first) — was taking last 3 from unsorted array", tag: "FIXED"},
     {item: "H2H section skips self using all player ID aliases (Firebase UID, seed ID, claimedFrom) — no more seeing yourself as opponent", tag: "FIXED"},
     {item: "Activity page round history groups scramble into single team entry with team name and member list, sorts by timestamp", tag: "IMPROVED"},
-    {item: "Handicap single-month view shows differentials breakdown with horizontal bars — best differential highlighted in gold, with note that graph builds across months", tag: "IMPROVED"}
+    {item: "Handicap single-month view shows differentials breakdown with horizontal bars — best differential highlighted in gold, with note that graph builds across months", tag: "IMPROVED"},
+    {item: "Liking a round in the activity feed no longer refreshes the page — UI updates in-place", tag: "FIXED"},
+    {item: "Handicap differentials chart: stacked layout (course name above bar) for readability on mobile, scramble excluded", tag: "FIXED"},
+    {item: "Scramble entries in activity page history now have a Share button", tag: "NEW"},
+    {item: "Course detail Individual and Scramble scores are now clickable — opens round detail", tag: "FIXED"},
+    {item: "Fixed 'Silver Tees Tees' — tee label no longer double-appends 'Tees'", tag: "FIXED"},
+    {item: "Caddy Notes trimmed to current + previous version only", tag: "IMPROVED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
@@ -13129,163 +13143,6 @@ Router.register("caddynotes", function() {
   ];
   v5124Notes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : r.tag === "AUDIT" ? "var(--red)" : "var(--muted)";
-    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
-    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
-    h += '<span>' + r.item + '</span></div>';
-  });
-  h += '</div></div></div>';
-
-  // v5.12.3
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.12.3 · April 2026 · Share Card & Format Labels</span></div>';
-  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
-  var v5123Notes = [
-    {item: "Shareable scorecard shows format label (Scramble, Stableford, etc)", tag: "NEW"},
-    {item: "Handicap display no longer falls back to manual/seed handicap", tag: "FIXED"}
-  ];
-  v5123Notes.forEach(function(r) {
-    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
-    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
-    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
-    h += '<span>' + r.item + '</span></div>';
-  });
-  h += '</div></div></div>';
-
-  // v5.12.2
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.12.2 · April 2026 · WHS 9-Hole Pairing & Par Audit</span></div>';
-  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
-  var v5122Notes = [
-    {item: "WHS 9-hole pairing — two 9-hole rounds combine into one differential per GHIN rules", tag: "NEW"},
-    {item: "Handicap Tracker redesigned with differentials table and pairing status", tag: "IMPROVED"},
-    {item: "Springdale pars corrected — 6 holes verified against 18Birdies", tag: "FIXED"},
-    {item: "Scorecard symbols use round.holePars as primary par source", tag: "FIXED"},
-    {item: "Course directory fuzzy name matching", tag: "FIXED"},
-    {item: "Scramble team reads from rounds collection", tag: "FIXED"},
-    {item: "Motivation card only shows 18-hole best", tag: "FIXED"}
-  ];
-  v5122Notes.forEach(function(r) {
-    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
-    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
-    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
-    h += '<span>' + r.item + '</span></div>';
-  });
-  h += '</div></div></div>';
-
-  // v5.12.1
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.12.1 · April 2026 · Achievement Audit</span></div>';
-  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
-  var v5121Notes = [
-    {item: "Scramble excluded from ALL individual stats — handicap, avg, best, achievements", tag: "FIXED"},
-    {item: "Best Round tappable → opens scorecard", tag: "NEW"},
-    {item: "Courses Played shows format labels (Front 9/Back 9/Scramble)", tag: "IMPROVED"},
-    {item: "Activity feed: likes, comments, time-ago, scrollable", tag: "NEW"},
-    {item: "Login accepts username or email", tag: "NEW"},
-    {item: "Scorecard cell coloring class mismatch fixed", tag: "FIXED"}
-  ];
-  v5121Notes.forEach(function(r) {
-    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
-    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
-    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
-    h += '<span>' + r.item + '</span></div>';
-  });
-  h += '</div></div></div>';
-
-  // v5.12.0
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.12.0 · April 2026 · Event Scoring</span></div>';
-  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
-  var v5120Notes = [
-    {item: "Event rounds create actual round docs on finalization — XP, achievements, handicap all work", tag: "NEW"},
-    {item: "Scramble rounds logged per participant with 150 bonus XP", tag: "NEW"},
-    {item: "Event achievements require actual scores, not just trip membership", tag: "FIXED"},
-    {item: "Log a Round scorecard updates on course selection", tag: "FIXED"},
-    {item: "Share card logo gold P fallback", tag: "FIXED"},
-    {item: "Invite link shows confirmation banner", tag: "IMPROVED"}
-  ];
-  v5120Notes.forEach(function(r) {
-    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
-    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
-    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
-    h += '<span>' + r.item + '</span></div>';
-  });
-  h += '</div></div></div>';
-
-  // v5.11.0
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.11.0 · April 2026 · H2H & DM Overhaul</span></div>';
-  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
-  var v5110Notes = [
-    {item: "Head-to-head now includes trip scorecard rounds", tag: "FIXED"},
-    {item: "H2H profile section only shows opponents with actual matches, tappable rows", tag: "IMPROVED"},
-    {item: "DM list infinite re-render loop fixed — no more flashing", tag: "FIXED"},
-    {item: "DM thread layout overhauled — input pinned, messages scroll, nav works", tag: "FIXED"},
-    {item: "Birdie Machine false positives eliminated — verified pars only", tag: "FIXED"},
-    {item: "Self-challenge blocked in UI", tag: "FIXED"},
-    {item: "Finalization bar day filter restored", tag: "FIXED"}
-  ];
-  v5110Notes.forEach(function(r) {
-    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
-    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
-    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
-    h += '<span>' + r.item + '</span></div>';
-  });
-  h += '</div></div></div>';
-
-  // v5.10.0
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.10.0 · April 2026 · Integrity & Polish</span></div>';
-  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
-  var v5100Notes = [
-    {item: "DMs fixed — Firestore security rules now cover the messages subcollection", tag: "FIXED"},
-    {item: "Clubhouse calendar shows active trips with \"Happening now\" badge", tag: "FIXED"},
-    {item: "Home page finalization bar — robust click handler for trip courses", tag: "FIXED"},
-    {item: "All-Time Records splits Best 18-Hole and Best 9-Hole into side-by-side cards", tag: "NEW"},
-    {item: "Course Directory shows stacked F9 / B9 / 18 average scores", tag: "NEW"},
-    {item: "Courses This Season section added to Season Standings page", tag: "NEW"},
-    {item: "Home page Next Event card shows Live label when trip is active", tag: "IMPROVED"},
-    {item: "Achievement audit — birdie streaks now reset between rounds", tag: "FIXED"},
-    {item: "Share scorecard counts 1 per round — no more inflation", tag: "FIXED"},
-    {item: "AI commentary factors in handicap — high-caps get fair treatment", tag: "IMPROVED"},
-    {item: "9-hole share card condensed layout with larger cells", tag: "IMPROVED"},
-    {item: "Nav bar scrollable on mobile with 11px minimum font", tag: "IMPROVED"},
-    {item: "Rounds now save per-hole par data for achievement accuracy", tag: "NEW"}
-  ];
-  v5100Notes.forEach(function(r) {
-    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
-    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
-    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
-    h += '<span>' + r.item + '</span></div>';
-  });
-  h += '</div></div></div>';
-
-  // Previous Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.9.1 · April 2026 · Invite Fix</span></div>';
-  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
-  var prevNotes = [
-    {item: "Generated invite codes now stay visible — Firestore profile sync was wiping the result before you could see it", tag: "FIXED"},
-    {item: "Member doc update deferred 1.5s after invite creation so the UI renders first", tag: "FIXED"},
-    {item: "Invite code + link persists through page re-renders via stored state", tag: "FIXED"}
-  ];
-  prevNotes.forEach(function(r) {
-    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
-    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
-    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
-    h += '<span>' + r.item + '</span></div>';
-  });
-  h += '</div></div></div>';
-
-  // v5.9.0
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.9.0 · April 2026 · Share Card & Feed Overhaul</span></div>';
-  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
-  var v590Notes = [
-    {item: "Invite links — shareable URL that auto-fills the invite code", tag: "NEW"},
-    {item: "Copy invite link button with one-tap clipboard copy", tag: "NEW"},
-    {item: "Scorecard preview embedded directly in Round Detail", tag: "NEW"},
-    {item: "Save image & share button under the scorecard preview", tag: "NEW"},
-    {item: "After logging a round, taken straight to round detail with scorecard ready", tag: "IMPROVED"},
-    {item: "Activity feed capped at 5 items with scroll", tag: "IMPROVED"},
-    {item: "Activity feed dates fixed, tee info with course fallback", tag: "FIXED"},
-    {item: "Courses Played on profiles finds rounds by username fallback", tag: "FIXED"},
-    {item: "FIR/GIR/putts stats correctly calculated for Back 9 rounds", tag: "FIXED"}
-  ];
-  v590Notes.forEach(function(r) {
-    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
     h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
     h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
     h += '<span>' + r.item + '</span></div>';
@@ -13362,7 +13219,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.7.66</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.12.5</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
@@ -16013,14 +15870,14 @@ function feedTimeAgo(ts) {
 function likeFeedRound(roundId, el) {
   if (!db || !currentUser) { Router.toast("Sign in to like"); return; }
   var uid = currentUser.uid;
+  window._suppressRoundsRerender = true; // Don't re-render on this Firestore update
   db.collection("rounds").doc(roundId).get().then(function(doc) {
-    if (!doc.exists) return;
+    if (!doc.exists) { window._suppressRoundsRerender = false; return; }
     var likes = doc.data().likes || [];
     var idx = likes.indexOf(uid);
     if (idx !== -1) likes.splice(idx, 1);
     else likes.push(uid);
     return db.collection("rounds").doc(roundId).update({ likes: likes }).then(function() {
-      // Update UI in-place
       var isLiked = likes.indexOf(uid) !== -1;
       if (el) {
         el.className = "feed-action" + (isLiked ? " active" : "");
@@ -16029,8 +15886,9 @@ function likeFeedRound(roundId, el) {
         var span = el.querySelector("span");
         if (span) span.textContent = likes.length || "";
       }
+      setTimeout(function() { window._suppressRoundsRerender = false; }, 2000);
     });
-  }).catch(function() { Router.toast("Could not like round"); });
+  }).catch(function() { window._suppressRoundsRerender = false; Router.toast("Could not like round"); });
 }
 
 function toggleFeedComments(roundId) {
