@@ -130,6 +130,18 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
 .feed-quip{font-size:11px;color:var(--gold2);margin-top:4px;font-style:italic;line-height:1.3}
 .feed-score{font-family:"Playfair Display",serif;font-size:20px;font-weight:700;color:var(--gold);text-align:right}
 .feed-date{font-size:10px;color:var(--muted);text-align:right;letter-spacing:.3px}
+.feed-actions{display:flex;align-items:center;gap:16px;margin-top:6px;padding-top:6px;border-top:1px solid var(--border)}
+.feed-action{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .15s}
+.feed-action:hover,.feed-action.active{color:var(--gold)}
+.feed-action svg{flex-shrink:0}
+.feed-comments{margin-top:8px;padding-top:6px;border-top:1px solid var(--border)}
+.feed-comment{display:flex;gap:8px;padding:4px 0;font-size:11px}
+.feed-comment-name{font-weight:600;color:var(--cream);flex-shrink:0}
+.feed-comment-text{color:var(--muted);line-height:1.3}
+.feed-comment-input{display:flex;gap:6px;margin-top:6px}
+.feed-comment-input input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:6px 8px;font-size:11px;color:var(--cream);outline:none}
+.feed-comment-input input:focus{border-color:var(--gold)}
+.feed-comment-input button{background:var(--gold);color:var(--bg);border:none;border-radius:4px;padding:4px 10px;font-size:10px;font-weight:600;cursor:pointer}
 
 /* QUICK LINKS */
 .qlinks{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:0 16px}
@@ -1613,8 +1625,9 @@ function persistPlayerStats(pid) {
     if (cached && cached.claimedFrom) rounds = PB.getPlayerRounds(cached.claimedFrom);
   }
   var publicRounds = rounds.filter(function(r){return r.visibility !== "private";});
-  var full18public = publicRounds.filter(function(r){return !r.holesPlayed || r.holesPlayed >= 18;});
-  var handicap = PB.calcHandicap(rounds); // handicap uses all rounds incl private
+  var individualPublic = publicRounds.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4";});
+  var full18public = individualPublic.filter(function(r){return !r.holesPlayed || r.holesPlayed >= 18;});
+  var handicap = PB.calcHandicap(rounds); // calcHandicap internally excludes scramble
   var avg = full18public.length ? Math.round(full18public.reduce(function(a,r){return a+r.score;},0)/full18public.length) : null;
   var best = full18public.length ? Math.min.apply(null, full18public.map(function(r){return r.score;})) : null;
   var xp = PB.getPlayerXP(pid);
@@ -1806,13 +1819,10 @@ function tripScoreInput(el, tripId, courseKey, playerId, hole, par) {
   if (raw !== "" && raw !== el.value) el.value = raw; // clamp display value
   PB.setScore(tripId, courseKey, playerId, hole, raw);
 
-  // Update cell colour class
-  el.className = el.className.replace(/\b(eagle|birdie|par|bogey|dbl|blow)\b/g, "");
-  if (raw !== "") {
-    var diff = raw - par;
-    var cls = diff <= -2 ? "eagle" : diff === -1 ? "birdie" : diff === 0 ? "par" : diff === 1 ? "bogey" : diff === 2 ? "dbl" : "blow";
-    el.classList.add(cls);
-  }
+  // Update cell colour class — use scoreClass() for consistency with initial render
+  el.className = el.className.replace(/\b(ea|bi|bo|db|eagle|birdie|par|bogey|dbl|blow)\b/g, "").trim();
+  var cls = scoreClass(raw, par);
+  if (cls) el.classList.add(cls);
 
   // Update OUT / IN / TOT totals in-place without re-rendering
   var trip = PB.getTrip(tripId);
@@ -2219,12 +2229,26 @@ function renderAttestationStatus(tripId, courseKey) {
           ah += '<div style="font-size:11px;color:var(--muted);margin-bottom:8px"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2" style="vertical-align:middle"><path d="M4 2h8v3L8 8l4 3v3H4v-3l4-3L4 5z"/></svg> Waiting for all players to attest</div>';
         }
         
-        // Show each player's attestation status
+        // Show each player's attestation status — filter to only players with actual scores
         var attestations = data.attestations || {};
         var allAttested = true;
+        var trip = PB.getTrip(tripId);
+        var course = trip ? trip.courses.find(function(cx) { return cx.key === courseKey; }) : null;
+        
         Object.keys(attestations).forEach(function(pid) {
           var a = attestations[pid];
-          var status = a.attested ? '<span style="color:var(--birdie)">Attested</span>' : '<span style="color:var(--red)"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2" style="vertical-align:middle"><path d="M4 2h8v3L8 8l4 3v3H4v-3l4-3L4 5z"/></svg> Pending</span>';
+          // Skip players without actual scores on this course
+          if (trip && course && !course.s) {
+            var scores = PB.getScores(tripId, courseKey, pid);
+            if (!scores || !scores.some(function(s) { return s !== "" && s !== null && s !== undefined; })) return;
+          }
+          var status;
+          if (data.status === "overridden" || data.status === "complete") {
+            // Round is finalized — show clean status
+            status = a.attested ? '<span style="color:var(--birdie)">Attested</span>' : '<span style="color:var(--muted)">Finalized</span>';
+          } else {
+            status = a.attested ? '<span style="color:var(--birdie)">Attested</span>' : '<span style="color:var(--red)"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2" style="vertical-align:middle"><path d="M4 2h8v3L8 8l4 3v3H4v-3l4-3L4 5z"/></svg> Pending</span>';
+          }
           ah += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)">';
           ah += '<span style="font-size:12px">' + escHtml(a.name) + '</span>';
           ah += '<span style="font-size:10px;font-weight:600">' + status + '</span></div>';
@@ -2971,10 +2995,14 @@ var PB = (function() {
     // 4. Average the selected differentials
     // 5. Multiply by 0.96 (96% adjustment per WHS)
     // 6. Round to one decimal
-    if (!rounds || rounds.length < 3) return null;
+    // Exclude scramble rounds — team scores don't reflect individual ability
+    var eligible = (rounds || []).filter(function(r) {
+      return r.format !== "scramble" && r.format !== "scramble4";
+    });
+    if (eligible.length < 3) return null;
     
     // Sort by date descending, take most recent 20
-    var recent = rounds.slice().sort(function(a,b) { return new Date(b.date) - new Date(a.date); }).slice(0, 20);
+    var recent = eligible.slice().sort(function(a,b) { return new Date(b.date) - new Date(a.date); }).slice(0, 20);
     
     // Calculate score differentials
     var diffs = recent.map(function(r) {
@@ -3337,8 +3365,8 @@ var PB = (function() {
     if (rounds.length >= 100) xp += 1000;
     if (rounds.length >= 200) xp += 2000;
     if (rounds.length >= 500) xp += 5000;
-    // Score achievements — only full 18-hole rounds count
-    var full18 = rounds.filter(function(r){return !r.holesPlayed || r.holesPlayed >= 18;});
+    // Score achievements — only full 18-hole individual rounds count (no scramble)
+    var full18 = rounds.filter(function(r){return (!r.holesPlayed || r.holesPlayed >= 18) && r.format !== "scramble" && r.format !== "scramble4";});
     if (full18.some(function(r){return r.score<=120})) xp += 50;
     if (full18.some(function(r){return r.score<100})) xp += 100;
     if (full18.some(function(r){return r.score<90})) xp += 200;
@@ -3495,7 +3523,7 @@ var PB = (function() {
     if (rounds.length >= 100) achievements.push({id:"centurion",name:"Centurion",desc:"Log 100 rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:1000,cat:"milestone"});
 
     // --- SCORE ACHIEVEMENTS --- (only full 18-hole rounds count)
-    var full18rounds = rounds.filter(function(r){return !r.holesPlayed || r.holesPlayed >= 18;});
+    var full18rounds = rounds.filter(function(r){return (!r.holesPlayed || r.holesPlayed >= 18) && r.format !== "scramble" && r.format !== "scramble4";});
     if (full18rounds.some(function(r){return r.score<=120})) achievements.push({id:"sub120",name:"Breaking In",desc:"Break 120 (18 holes)",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:50,cat:"score"});
     if (full18rounds.some(function(r){return r.score<100})) achievements.push({id:"sub100",name:"Double Digits",desc:"Break 100 (18 holes)",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M8 5v4M6 7h4' stroke='currentColor' stroke-width='1'/></svg>",xp:100,cat:"score"});
     if (full18rounds.some(function(r){return r.score<90})) achievements.push({id:"sub90",name:"Sub-90 Club",desc:"Shoot under 90 (18 holes)",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:200,cat:"score"});
@@ -3535,17 +3563,18 @@ var PB = (function() {
     if (player && player.wins >= 1) achievements.push({id:"champion",name:"Champion",desc:"Win an event",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"compete"});
     if (player && player.wins >= 3) achievements.push({id:"dynasty",name:"Dynasty",desc:"Win 3 events",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:1000,cat:"compete"});
 
-    // --- IMPROVEMENT ---
-    if (rounds.length >= 5) {
-      var first5=Math.round(rounds.slice(0,5).reduce(function(a,r){return a+r.score},0)/5);
-      var last5=Math.round(rounds.slice(-5).reduce(function(a,r){return a+r.score},0)/5);
+    // --- IMPROVEMENT --- (exclude scramble — team scores would skew averages)
+    var indivRounds = rounds.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4";});
+    if (indivRounds.length >= 5) {
+      var first5=Math.round(indivRounds.slice(0,5).reduce(function(a,r){return a+r.score},0)/5);
+      var last5=Math.round(indivRounds.slice(-5).reduce(function(a,r){return a+r.score},0)/5);
       if (last5<first5-3) achievements.push({id:"improving",name:"On The Rise",desc:"Average improved by 3+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1L2 4v4c0 3.3 2.6 6.4 6 7 3.4-.6 6-3.7 6-7V4L8 1z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:100,cat:"growth"});
       if (last5<first5-8) achievements.push({id:"transformed",name:"Transformed",desc:"Average improved by 8+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:250,cat:"growth"});
       if (last5<first5-15) achievements.push({id:"metamorphosis",name:"Metamorphosis",desc:"Average improved by 15+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"growth"});
     }
-    if (rounds.length >= 3) {
-      var avg=Math.round(rounds.reduce(function(a,r){return a+r.score},0)/rounds.length);
-      if (rounds.some(function(r){return r.score<avg-10})) achievements.push({id:"sandbagger",name:"Sandbagger",desc:"Beat average by 10+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"growth"});
+    if (indivRounds.length >= 3) {
+      var avg=Math.round(indivRounds.reduce(function(a,r){return a+r.score},0)/indivRounds.length);
+      if (indivRounds.some(function(r){return r.score<avg-10})) achievements.push({id:"sandbagger",name:"Sandbagger",desc:"Beat average by 10+",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:150,cat:"growth"});
     }
 
     // --- SPECIAL ---
@@ -4238,8 +4267,8 @@ var PB = (function() {
         if (r.attestedBy) roundPts += 15;
         points += Math.round(roundPts);
       });
-      // Avg and best only from 18-hole rounds
-      var full18 = rounds.filter(function(r){return !r.holesPlayed || r.holesPlayed >= 18;});
+      // Avg and best only from 18-hole individual rounds (no scramble)
+      var full18 = rounds.filter(function(r){return (!r.holesPlayed || r.holesPlayed >= 18) && r.format !== "scramble" && r.format !== "scramble4";});
       var avg = full18.length ? Math.round(full18.reduce(function(a,r){return a+r.score},0) / full18.length * 10) / 10 : null;
       var best = full18.length ? Math.min.apply(null, full18.map(function(r){return r.score})) : null;
       var uniqueCourses = {};
@@ -15369,18 +15398,35 @@ function startPresenceSystem() {
 
 // ========== FIRESTORE ACTIVITY FEED ==========
 function renderFeedItem(a) {
-  var h = '<div class="feed-row" onclick="' + (a.dest || '') + '" style="' + (a.dest ? 'cursor:pointer' : '') + '">';
-  if (a.live) h += '<div style="width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse-dot 2s infinite;flex-shrink:0;margin-top:6px"></div>';
-  h += '<div class="feed-left" style="min-width:0;flex:1">';
-  h += '<div class="feed-name">' + escHtml(a.name) + '</div>';
-  if (a.sub) h += '<div class="feed-course" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(a.sub) + '</div>';
-  if (a.quip) h += '<div class="feed-quip" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">' + a.quip + '</div>';
+  var h = '<div class="feed-row" style="display:block;padding:12px 16px">';
+  var topRow = '<div style="display:flex;align-items:flex-start;gap:10px"' + (a.dest ? ' onclick="' + a.dest + '" style="cursor:pointer"' : '') + '>';
+  if (a.live) topRow += '<div style="width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse-dot 2s infinite;flex-shrink:0;margin-top:8px"></div>';
+  topRow += '<div class="feed-left" style="min-width:0;flex:1">';
+  topRow += '<div class="feed-name">' + escHtml(a.name) + '</div>';
+  if (a.sub) topRow += '<div class="feed-course" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(a.sub) + '</div>';
+  if (a.quip) topRow += '<div class="feed-quip" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">' + a.quip + '</div>';
+  topRow += '</div>';
+  topRow += '<div class="feed-right" style="flex-shrink:0;min-width:60px;text-align:right">';
+  if (a.score) topRow += '<div class="feed-score">' + a.score + '</div>';
+  if (a.date) topRow += '<div class="feed-date" style="white-space:nowrap">' + a.date + '</div>';
+  if (a.live) topRow += '<div style="font-size:9px;color:#4ade80;font-weight:600">LIVE</div>';
+  topRow += '</div></div>';
+  h += topRow;
+
+  // Like/comment actions for rounds
+  if (a.type === "round" && a.roundId) {
+    var likeCount = a.likeCount || 0;
+    var commentCount = a.commentCount || 0;
+    var isLiked = a.isLiked || false;
+    h += '<div class="feed-actions">';
+    h += '<div class="feed-action' + (isLiked ? ' active' : '') + '" onclick="event.stopPropagation();likeFeedRound(\'' + a.roundId + '\',this)"><svg viewBox="0 0 16 16" width="14" height="14" fill="' + (isLiked ? 'var(--gold)' : 'none') + '" stroke="currentColor" stroke-width="1.2"><path d="M8 14s-5.5-3.5-5.5-7A2.5 2.5 0 018 4.5 2.5 2.5 0 0113.5 7C13.5 10.5 8 14 8 14z"/></svg><span>' + (likeCount || '') + '</span></div>';
+    h += '<div class="feed-action" onclick="event.stopPropagation();toggleFeedComments(\'' + a.roundId + '\')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 3h12v8H5l-3 3V3z"/></svg><span>' + (commentCount || '') + '</span></div>';
+    h += '<div class="feed-action" style="margin-left:auto;font-size:10px;color:var(--muted2)">' + (a.timeAgo || '') + '</div>';
+    h += '</div>';
+    h += '<div id="feedComments_' + a.roundId + '" class="feed-comments" style="display:none"></div>';
+  }
+
   h += '</div>';
-  h += '<div class="feed-right" style="flex-shrink:0;min-width:60px;text-align:right">';
-  if (a.score) h += '<div class="feed-score">' + a.score + '</div>';
-  if (a.date) h += '<div class="feed-date" style="white-space:nowrap">' + a.date + '</div>';
-  if (a.live) h += '<div style="font-size:9px;color:#4ade80;font-weight:600">LIVE</div>';
-  h += '</div></div>';
   return h;
 }
 
@@ -15400,16 +15446,15 @@ function loadHomeActivityFeed() {
       return;
     }
     items.sort(function(a,b){return (b.ts||0)-(a.ts||0)});
-    var shown = items.slice(0, 5);
-    var h = '<div class="card" style="max-height:420px;overflow-y:auto">';
-    shown.forEach(function(a) { h += renderFeedItem(a); });
+    var h = '<div class="card" style="overflow-y:auto;-webkit-overflow-scrolling:touch">';
+    items.forEach(function(a) { h += renderFeedItem(a); });
     h += '</div>';
     el.innerHTML = h;
   }
 
   // 1. Recent rounds from Firestore
   pending++;
-  db.collection("rounds").orderBy("createdAt","desc").limit(10).get().then(function(snap) {
+  db.collection("rounds").orderBy("createdAt","desc").limit(30).get().then(function(snap) {
     snap.forEach(function(doc) {
       var r = doc.data();
       var rid = doc.id;
@@ -15418,18 +15463,22 @@ function loadHomeActivityFeed() {
       var holeLabel = r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? " · Back 9" : " · Front 9") : "";
       var feedCourse = r.course ? PB.getCourseByName(r.course) : null;
       var teeLabel = r.tee ? " · " + r.tee : (feedCourse && feedCourse.tee ? " · " + feedCourse.tee : "");
-      items.push({type:"round", name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + teeLabel + " · " + r.score + holeLabel, quip:quip, score:r.score, date:r.date||"", ts:r.createdAt ? r.createdAt.toMillis() : 0, dest:"Router.go('rounds',{roundId:'" + rid + "'})"});
+      var likes = r.likes || [];
+      var comments = r.comments || [];
+      var isLiked = currentUser ? likes.indexOf(currentUser.uid) !== -1 : false;
+      var timeAgo = feedTimeAgo(r.createdAt ? r.createdAt.toMillis() : 0);
+      items.push({type:"round", roundId:rid, name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + teeLabel + " · " + r.score + holeLabel, quip:quip, score:r.score, date:r.date||"", ts:r.createdAt ? r.createdAt.toMillis() : 0, dest:"Router.go('rounds',{roundId:'" + rid + "'})", likeCount:likes.length, commentCount:comments.length, isLiked:isLiked, timeAgo:timeAgo});
     });
     pending--; tryRender();
   }).catch(function() {
     // orderBy may need index — fall back to state.rounds
-    PB.getRounds().slice().reverse().slice(0,10).forEach(function(r) {
+    PB.getRounds().slice().reverse().slice(0,30).forEach(function(r) {
       var comm = PB.generateRoundCommentary({score:r.score,rating:r.rating||72,slope:r.slope||113,player:r.player,holesPlayed:r.holesPlayed||18});
       var quip = comm.roasts.length ? comm.roasts[0] : (comm.highlights.length ? comm.highlights[0] : "");
       var holeLabel = r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? " · Back 9" : " · Front 9") : "";
       var feedCourse2 = r.course ? PB.getCourseByName(r.course) : null;
       var teeLabel = r.tee ? " · " + r.tee : (feedCourse2 && feedCourse2.tee ? " · " + feedCourse2.tee : "");
-      items.push({type:"round", name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + teeLabel + " · " + r.score + holeLabel, quip:quip, score:r.score, date:r.date||"", ts:r.timestamp||0, dest:"Router.go('rounds',{roundId:'" + r.id + "'})"});
+      items.push({type:"round", roundId:r.id, name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + teeLabel + " · " + r.score + holeLabel, quip:quip, score:r.score, date:r.date||"", ts:r.timestamp||0, dest:"Router.go('rounds',{roundId:'" + r.id + "'})", likeCount:(r.likes||[]).length, commentCount:(r.comments||[]).length, isLiked:currentUser?(r.likes||[]).indexOf(currentUser.uid)!==-1:false, timeAgo:feedTimeAgo(r.timestamp||0)});
     });
     pending--; tryRender();
   });
@@ -15447,7 +15496,7 @@ function loadHomeActivityFeed() {
 
   // 3. Tee times — upcoming and recent
   pending++;
-  db.collection("teetimes").orderBy("createdAt","desc").limit(6).get().then(function(snap) {
+  db.collection("teetimes").orderBy("createdAt","desc").limit(15).get().then(function(snap) {
     var today = localDateStr();
     snap.forEach(function(doc) {
       var t = doc.data();
@@ -15461,7 +15510,7 @@ function loadHomeActivityFeed() {
 
   // 4. Active/recent Parbaugh Rounds
   pending++;
-  db.collection("syncrounds").orderBy("createdAt","desc").limit(5).get().then(function(snap) {
+  db.collection("syncrounds").orderBy("createdAt","desc").limit(15).get().then(function(snap) {
     snap.forEach(function(doc) {
       var r = doc.data();
       if (r.status === "discarded") return; // skip discarded rounds
@@ -15485,6 +15534,91 @@ function loadHomeActivityFeed() {
     });
     pending--; tryRender();
   }).catch(function() { pending--; tryRender(); });
+}
+
+function feedTimeAgo(ts) {
+  if (!ts) return "";
+  var diff = Date.now() - ts;
+  var mins = Math.floor(diff / 60000);
+  if (mins < 1) return "now";
+  if (mins < 60) return mins + "m";
+  var hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + "h";
+  var days = Math.floor(hrs / 24);
+  if (days < 7) return days + "d";
+  var weeks = Math.floor(days / 7);
+  return weeks + "w";
+}
+
+function likeFeedRound(roundId, el) {
+  if (!db || !currentUser) { Router.toast("Sign in to like"); return; }
+  var uid = currentUser.uid;
+  db.collection("rounds").doc(roundId).get().then(function(doc) {
+    if (!doc.exists) return;
+    var likes = doc.data().likes || [];
+    var idx = likes.indexOf(uid);
+    if (idx !== -1) likes.splice(idx, 1);
+    else likes.push(uid);
+    return db.collection("rounds").doc(roundId).update({ likes: likes }).then(function() {
+      // Update UI in-place
+      var isLiked = likes.indexOf(uid) !== -1;
+      if (el) {
+        el.className = "feed-action" + (isLiked ? " active" : "");
+        var svg = el.querySelector("svg");
+        if (svg) svg.setAttribute("fill", isLiked ? "var(--gold)" : "none");
+        var span = el.querySelector("span");
+        if (span) span.textContent = likes.length || "";
+      }
+    });
+  }).catch(function() { Router.toast("Could not like round"); });
+}
+
+function toggleFeedComments(roundId) {
+  var el = document.getElementById("feedComments_" + roundId);
+  if (!el) return;
+  if (el.style.display !== "none") { el.style.display = "none"; return; }
+  el.style.display = "block";
+  el.innerHTML = '<div style="text-align:center;padding:8px;font-size:10px;color:var(--muted)">Loading...</div>';
+  db.collection("rounds").doc(roundId).get().then(function(doc) {
+    if (!doc.exists) { el.innerHTML = ""; return; }
+    var comments = doc.data().comments || [];
+    var h = "";
+    comments.forEach(function(c) {
+      h += '<div class="feed-comment"><span class="feed-comment-name">' + escHtml(c.name || "Parbaugh") + '</span><span class="feed-comment-text">' + escHtml(c.text) + '</span></div>';
+    });
+    if (!comments.length) h += '<div style="font-size:10px;color:var(--muted2);padding:4px 0">No comments yet</div>';
+    h += '<div class="feed-comment-input"><input type="text" id="feedCmtInput_' + roundId + '" placeholder="Add a comment..." onkeydown="if(event.key===\'Enter\')submitFeedComment(\'' + roundId + '\')"><button onclick="submitFeedComment(\'' + roundId + '\')">Post</button></div>';
+    el.innerHTML = h;
+    var input = document.getElementById("feedCmtInput_" + roundId);
+    if (input) input.focus();
+  }).catch(function() { el.innerHTML = '<div style="font-size:10px;color:var(--red);padding:4px">Failed to load</div>'; });
+}
+
+function submitFeedComment(roundId) {
+  var input = document.getElementById("feedCmtInput_" + roundId);
+  if (!input || !input.value.trim()) return;
+  if (!db || !currentUser) { Router.toast("Sign in to comment"); return; }
+  var text = input.value.trim();
+  var name = currentProfile ? (currentProfile.name || currentProfile.username) : "Parbaugh";
+  input.value = "";
+  db.collection("rounds").doc(roundId).get().then(function(doc) {
+    if (!doc.exists) return;
+    var comments = doc.data().comments || [];
+    comments.push({ uid: currentUser.uid, name: name, text: text, at: new Date().toISOString() });
+    return db.collection("rounds").doc(roundId).update({ comments: comments });
+  }).then(function() {
+    toggleFeedComments(roundId); // close
+    setTimeout(function() { toggleFeedComments(roundId); }, 50); // reopen with new comment
+    // Update comment count in the action bar
+    var actionEl = document.querySelector('#feedComments_' + roundId).previousElementSibling;
+    if (actionEl) {
+      var cmtBtn = actionEl.querySelectorAll('.feed-action')[1];
+      if (cmtBtn) {
+        var span = cmtBtn.querySelector('span');
+        if (span) span.textContent = parseInt(span.textContent || 0) + 1;
+      }
+    }
+  }).catch(function() { Router.toast("Failed to post comment"); });
 }
 
 function renderOnlineSection() {
