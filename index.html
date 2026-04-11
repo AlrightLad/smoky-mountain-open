@@ -1662,6 +1662,11 @@ function syncTripsFromFirestore() {
         return;
       }
       var remote = doc.data();
+      // Pull event closure state from Firestore (authoritative)
+      if (remote.status) trip.status = remote.status;
+      if (remote.champion) trip.champion = remote.champion;
+      if (remote.finalStandings) trip.finalStandings = remote.finalStandings;
+      if (remote.closedAt) trip.closedAt = remote.closedAt;
       // Merge remote course settings (scorekeeper, finished) into local trip
       if (remote.courses && Array.isArray(remote.courses)) {
         remote.courses.forEach(function(rc) {
@@ -1684,6 +1689,7 @@ function syncTripsFromFirestore() {
         });
       }
       pbLog("[Sync] Trip settings loaded from Firestore:", trip.id);
+      PB.save(); // Persist merged state (including closed status)
       // Refresh scorecard if user is on it
       if (Router.getPage() === "scorecard") Router.go("scorecard", Router.getParams(), true);
     }).catch(function(e) { pbWarn("[Sync] Trip load failed:", e.message); });
@@ -4846,21 +4852,37 @@ Router.register("home", function() {
     });
   }
 
-  // 1. Champions — only show when there are actual champions
+  // 1. Event Results — show standings when available, just winner name otherwise
   var pastTournaments = tournaments.filter(function(t) { return t.champion; });
   if (pastTournaments.length) {
-    h += '<div class="section"><div class="sec-head"><span class="sec-title">Champions</span><span class="sec-link" onclick="Router.go(\'records\')">All records →</span></div>';
-    h += '<div class="card">';
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Event results</span><span class="sec-link" onclick="Router.go(\'records\')">All records →</span></div>';
     pastTournaments.forEach(function(t) {
       var champ = PB.getPlayer(t.champion);
-      h += '<div class="champ-row"><div class="champ-medal" style="color:var(--gold)"><svg viewBox="0 0 16 16" width="10" height="10" fill="var(--gold)" stroke="none"><path d="M8 2l4 6-4 6-4-6z"/></svg></div><div class="champ-info"><div class="champ-tournament">' + escHtml(t.name) + '</div>';
-      h += '<div class="champ-winner">' + escHtml(champ ? champ.name : t.champion) + '</div></div></div>';
+      var champName = champ ? champ.name : t.champion;
+      h += '<div class="card" onclick="Router.go(\'scorecard\',{tripId:\'' + t.id + '\'})" style="cursor:pointer"><div style="padding:14px 16px">';
+      h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">';
+      h += '<div><div style="font-size:14px;font-weight:700;color:var(--cream)">' + escHtml(t.name) + '</div>';
+      h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(t.dates || "") + ' · ' + escHtml(t.location || "") + '</div></div>';
+      h += '<div style="font-size:9px;color:var(--gold);background:rgba(201,168,76,.1);padding:3px 8px;border-radius:8px;font-weight:600">FINAL</div></div>';
+      if (t.finalStandings && t.finalStandings.length) {
+        var placeLabels = ["1st","2nd","3rd","4th","5th","6th"];
+        t.finalStandings.forEach(function(s, i) {
+          var isWinner = i === 0;
+          h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;' + (i < t.finalStandings.length - 1 ? 'border-bottom:1px solid var(--border);' : '') + '">';
+          h += '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;color:' + (isWinner ? 'var(--gold)' : 'var(--muted)') + ';width:24px;font-weight:600">' + (placeLabels[i]||"") + '</span>';
+          h += '<span style="font-size:12px;color:' + (isWinner ? 'var(--gold)' : 'var(--cream)') + ';font-weight:' + (isWinner ? '700' : '400') + '">' + escHtml(s.name) + '</span></div>';
+          h += '<span style="font-size:12px;font-weight:600;color:' + (isWinner ? 'var(--gold)' : 'var(--muted)') + '">' + s.points + ' pts</span></div>';
+        });
+      } else {
+        h += '<div style="font-size:12px;color:var(--gold);font-weight:600">Champion: ' + escHtml(champName) + '</div>';
+      }
+      h += '</div></div>';
     });
-    h += '</div></div>';
+    h += '</div>';
   }
 
-  // 2. Next event
-  var nextTournament = tournaments.find(function(t) { return t.status === "upcoming"; });
+  // 2. Next event (skip closed events)
+  var nextTournament = tournaments.find(function(t) { return t.status !== "closed" && !t.champion; });
   if (nextTournament) {
     var days = PB.daysUntil(nextTournament.startDate);
     var isLiveEvent = days <= 0 && days >= -4;
@@ -5603,7 +5625,28 @@ function renderMemberDetailWithData(p) {
     {name:"The Original Four · Commissioner",req:"Be The Commissioner",unlocked:p.founding&&(p.role==="commissioner"||pid==="zach"||p.username==="TheCommissioner")},
     {name:"Beta Tester",req:"First 30 members",unlocked:isBeta}
   ];
-  var combined = allTitles.concat(aTitles).concat(sTitles);
+  // Event-specific champion titles
+  var eventTitles = [];
+  PB.getTrips().forEach(function(t) {
+    if (!t.champion) return;
+    var isChamp = t.champion === pid || (p.claimedFrom && t.champion === p.claimedFrom);
+    if (!isChamp) {
+      // Check reverse — champion might be UID and pid is seed, or vice versa
+      var champPlayer = PB.getPlayer(t.champion);
+      if (champPlayer && (champPlayer.claimedFrom === pid || champPlayer.id === p.claimedFrom)) isChamp = true;
+    }
+    var funnyNames = {
+      "smo": "King of the Smokies",
+      "smoky": "King of the Smokies",
+      "mountain": "King of the Smokies"
+    };
+    var eventTitle = null;
+    var nameLower = (t.name || "").toLowerCase();
+    Object.keys(funnyNames).forEach(function(k) { if (nameLower.indexOf(k) !== -1 && !eventTitle) eventTitle = funnyNames[k]; });
+    if (!eventTitle) eventTitle = t.name + " Champion";
+    eventTitles.push({name: eventTitle, req: "Win " + t.name, unlocked: isChamp});
+  });
+  var combined = allTitles.concat(aTitles).concat(sTitles).concat(eventTitles);
   h += '<div style="max-height:240px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius);background:var(--card)">';
   combined.forEach(function(t) {
     var isEquipped = activeTitle === t.name;
@@ -9424,17 +9467,19 @@ function closeEvent(tripId) {
       closedAt: fsTimestamp()
     }).catch(function(e) { console.error("Close event error:", e); });
     
-    // Increment winner's wins
-    var winnerDocId = winner.id;
-    db.collection("members").doc(winnerDocId).update({
-      wins: firebase.firestore.FieldValue.increment(1)
-    }).catch(function() {
-      // Try claimedFrom
-      if (winner.claimedFrom) {
-        db.collection("members").doc(winner.claimedFrom).update({
-          wins: firebase.firestore.FieldValue.increment(1)
-        }).catch(function(){});
-      }
+    // Increment winner's wins — try UID first, then claimedFrom, then seed ID
+    var winnerIds = [winner.id];
+    if (winner.claimedFrom && winnerIds.indexOf(winner.claimedFrom) === -1) winnerIds.push(winner.claimedFrom);
+    if (typeof fbMemberCache !== "undefined") {
+      Object.keys(fbMemberCache).forEach(function(k) {
+        var m = fbMemberCache[k];
+        if ((m.claimedFrom === winner.id || m.id === winner.id || k === winner.id) && winnerIds.indexOf(k) === -1) winnerIds.push(k);
+      });
+    }
+    winnerIds.forEach(function(wid) {
+      db.collection("members").doc(wid).update({
+        wins: firebase.firestore.FieldValue.increment(1)
+      }).catch(function(){});
     });
     
     // Post to activity feed
@@ -9445,7 +9490,8 @@ function closeEvent(tripId) {
     db.collection("chat").add({
       id: genId(),
       text: resultsText,
-      user: "The Parbaughs",
+      authorId: "system",
+      authorName: "The Caddy",
       system: true,
       timestamp: Date.now(),
       createdAt: fsTimestamp()
@@ -13471,10 +13517,10 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.15.2</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.15.4</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.15.2</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.15.4</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Event Close, Attestation Fix, Data Integrity</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -13581,7 +13627,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.15.2</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.15.4</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
