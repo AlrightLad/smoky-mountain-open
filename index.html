@@ -5560,7 +5560,7 @@ function renderMemberDetailWithData(p) {
   // === LAST 3 ROUNDS (collapsible, open by default) ===
   var last3Content = '';
   if (rounds.length) {
-    var last3 = rounds.slice(-3).reverse();
+    var last3 = rounds.slice().sort(function(a,b){ return (b.date||"") > (a.date||"") ? 1 : (b.date||"") < (a.date||"") ? -1 : 0; }).slice(0, 3);
     last3.forEach(function(r) {
       var c = PB.generateRoundCommentary(r);
       var quip = c.roasts.length ? c.roasts[0] : (c.highlights.length ? c.highlights[0] : "");
@@ -5780,18 +5780,16 @@ function buildHandicapGraph(rounds, pid) {
   var d = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
 
   while (d <= now) {
-    months.push({ year: d.getFullYear(), month: d.getMonth(), label: ["J","F","M","A","M","J","J","A","S","O","N","D"][d.getMonth()], rounds: [] });
+    months.push({ year: d.getFullYear(), month: d.getMonth(), label: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()], rounds: [] });
     d.setMonth(d.getMonth() + 1);
   }
 
-  // Assign rounds to months
   sorted.forEach(function(r) {
     var rd = new Date(r.date);
     var m = months.find(function(mo) { return mo.year === rd.getFullYear() && mo.month === rd.getMonth(); });
     if (m) m.rounds.push(r);
   });
 
-  // Calculate running handicap per month with season inactivity rule
   var lastHcap = null;
   var inactiveMonths = 0;
   var needsReactivation = false;
@@ -5799,16 +5797,12 @@ function buildHandicapGraph(rounds, pid) {
   var graphData = [];
 
   months.forEach(function(m) {
-    var isSeason = m.month >= 2 && m.month <= 8; // Mar-Sep
+    var isSeason = m.month >= 2 && m.month <= 8;
     if (m.rounds.length > 0) {
       if (needsReactivation) {
         reactivationRounds += m.rounds.length;
-        if (reactivationRounds >= 3) {
-          needsReactivation = false;
-          reactivationRounds = 0;
-        }
+        if (reactivationRounds >= 3) { needsReactivation = false; reactivationRounds = 0; }
       }
-      // Recalculate handicap from all rounds up to this month
       var roundsToDate = sorted.filter(function(r) {
         var rd = new Date(r.date);
         return rd <= new Date(m.year, m.month + 1, 0);
@@ -5817,88 +5811,120 @@ function buildHandicapGraph(rounds, pid) {
       inactiveMonths = 0;
     } else {
       if (isSeason) inactiveMonths++;
-      if (isSeason && inactiveMonths >= 3 && !needsReactivation) {
-        needsReactivation = true;
-        reactivationRounds = 0;
-      }
+      if (isSeason && inactiveMonths >= 3 && !needsReactivation) { needsReactivation = true; reactivationRounds = 0; }
     }
-    graphData.push({ label: m.label, hcap: needsReactivation ? null : lastHcap, inactive: needsReactivation });
+    graphData.push({ label: m.label, hcap: needsReactivation ? null : lastHcap, inactive: needsReactivation, roundCount: m.rounds.length });
   });
 
-  // Only show last 12 months max
   if (graphData.length > 12) graphData = graphData.slice(-12);
 
-  // Build SVG graph
   var validPts = graphData.filter(function(g) { return g.hcap !== null; });
   if (!validPts.length) return '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">Not enough data for graph</div>';
 
+  // Single data point — show clean stat card instead of lonely dot graph
+  if (validPts.length === 1) {
+    var singleHcap = validPts[0].hcap;
+    var result = '<div style="text-align:center;padding:6px 0 12px">';
+    result += '<div style="display:flex;justify-content:center;gap:16px;font-size:10px;color:var(--muted2)">';
+    result += '<div>Based on ' + graphData.reduce(function(a,g){return a+g.roundCount},0) + ' round' + (graphData.reduce(function(a,g){return a+g.roundCount},0) !== 1 ? 's' : '') + '</div>';
+    result += '<div style="color:var(--birdie)">↓ Lower is better</div></div></div>';
+    return result;
+  }
+
   var minH = Math.floor(Math.min.apply(null, validPts.map(function(g) { return g.hcap; })) - 2);
   var maxH = Math.ceil(Math.max.apply(null, validPts.map(function(g) { return g.hcap; })) + 2);
-  if (maxH - minH < 4) { minH -= 2; maxH += 2; }
+  if (maxH - minH < 5) { minH -= 2; maxH += 3; }
   var range = maxH - minH;
 
-  var svgW = 300, svgH = 120, padL = 30, padR = 10, padT = 10, padB = 22;
+  var svgW = 320, svgH = 150, padL = 32, padR = 14, padT = 22, padB = 28;
   var chartW = svgW - padL - padR, chartH = svgH - padT - padB;
+  var gradId = "hcapGrad_" + pid;
 
   var svg = '<svg viewBox="0 0 ' + svgW + ' ' + svgH + '" style="width:100%;height:auto;display:block">';
 
-  // Grid lines
+  // Gradient definition for area fill
+  svg += '<defs><linearGradient id="' + gradId + '" x1="0" y1="0" x2="0" y2="1">';
+  svg += '<stop offset="0%" stop-color="rgba(201,168,76,.25)"/>';
+  svg += '<stop offset="100%" stop-color="rgba(201,168,76,0)"/>';
+  svg += '</linearGradient></defs>';
+
+  // Dashed grid lines + Y-axis labels
   var gridSteps = 4;
   for (var g = 0; g <= gridSteps; g++) {
     var gy = padT + (chartH / gridSteps) * g;
     var val = maxH - (range / gridSteps) * g;
-    svg += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (svgW - padR) + '" y2="' + gy + '" stroke="rgba(34,40,34,.5)" stroke-width=".5"/>';
-    svg += '<text x="' + (padL - 4) + '" y="' + (gy + 3) + '" text-anchor="end" fill="rgba(122,125,117,.6)" font-size="7" font-family="Inter">' + val.toFixed(0) + '</text>';
+    svg += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (svgW - padR) + '" y2="' + gy + '" stroke="rgba(255,255,255,.06)" stroke-width=".5" stroke-dasharray="3,3"/>';
+    svg += '<text x="' + (padL - 5) + '" y="' + (gy + 3) + '" text-anchor="end" fill="rgba(255,255,255,.25)" font-size="7.5" font-weight="500">' + val.toFixed(0) + '</text>';
   }
 
   // Month labels
   graphData.forEach(function(pt, i) {
     var x = padL + (chartW / (graphData.length - 1 || 1)) * i;
-    svg += '<text x="' + x + '" y="' + (svgH - 4) + '" text-anchor="middle" fill="rgba(122,125,117,.6)" font-size="7" font-family="Inter">' + pt.label + '</text>';
+    var isActive = pt.hcap !== null;
+    svg += '<text x="' + x + '" y="' + (svgH - 6) + '" text-anchor="middle" fill="' + (isActive ? 'rgba(255,255,255,.35)' : 'rgba(255,255,255,.12)') + '" font-size="7" font-weight="500">' + pt.label + '</text>';
   });
 
-  // Line path
-  var points = [];
+  // Build coordinate arrays
+  var coords = [];
   graphData.forEach(function(pt, i) {
     if (pt.hcap === null) return;
     var x = padL + (chartW / (graphData.length - 1 || 1)) * i;
     var y = padT + chartH - ((pt.hcap - minH) / range) * chartH;
-    points.push(x + ',' + y);
+    coords.push({ x: x, y: y, hcap: pt.hcap, label: pt.label, inactive: pt.inactive, isLast: false });
   });
+  if (coords.length) coords[coords.length - 1].isLast = true;
 
-  if (points.length > 1) {
-    svg += '<polyline points="' + points.join(' ') + '" fill="none" stroke="rgba(201,168,76,.7)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>';
+  // Area fill (gradient under line)
+  if (coords.length > 1) {
+    var areaPath = 'M' + coords[0].x + ',' + coords[0].y;
+    for (var ai = 1; ai < coords.length; ai++) areaPath += 'L' + coords[ai].x + ',' + coords[ai].y;
+    areaPath += 'L' + coords[coords.length-1].x + ',' + (padT + chartH) + 'L' + coords[0].x + ',' + (padT + chartH) + 'Z';
+    svg += '<path d="' + areaPath + '" fill="url(#' + gradId + ')"/>';
   }
 
-  // Dots
-  graphData.forEach(function(pt, i) {
-    if (pt.hcap === null) return;
-    var x = padL + (chartW / (graphData.length - 1 || 1)) * i;
-    var y = padT + chartH - ((pt.hcap - minH) / range) * chartH;
-    svg += '<circle cx="' + x + '" cy="' + y + '" r="2.5" fill="' + (pt.inactive ? 'var(--red)' : 'var(--gold)') + '"/>';
-  });
+  // Line path
+  if (coords.length > 1) {
+    var linePath = 'M' + coords[0].x + ',' + coords[0].y;
+    for (var li = 1; li < coords.length; li++) linePath += 'L' + coords[li].x + ',' + coords[li].y;
+    svg += '<path d="' + linePath + '" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+  }
 
-  // Inactive markers
-  graphData.forEach(function(pt, i) {
-    if (!pt.inactive) return;
-    var x = padL + (chartW / (graphData.length - 1 || 1)) * i;
-    svg += '<text x="' + x + '" y="' + (padT + 8) + '" text-anchor="middle" fill="var(--red)" font-size="6" font-family="Inter">!</text>';
+  // Dots with value labels
+  coords.forEach(function(pt) {
+    var dotR = pt.isLast ? 4 : 3;
+    var dotColor = pt.inactive ? 'var(--red)' : 'var(--gold)';
+    // Glow ring on current month
+    if (pt.isLast) {
+      svg += '<circle cx="' + pt.x + '" cy="' + pt.y + '" r="8" fill="rgba(201,168,76,.12)" stroke="none"/>';
+    }
+    svg += '<circle cx="' + pt.x + '" cy="' + pt.y + '" r="' + dotR + '" fill="' + dotColor + '" stroke="var(--bg)" stroke-width="1.5"/>';
+    // Value label above dot
+    svg += '<text x="' + pt.x + '" y="' + (pt.y - 8) + '" text-anchor="middle" fill="' + (pt.isLast ? 'var(--gold)' : 'rgba(255,255,255,.5)') + '" font-size="' + (pt.isLast ? '8' : '7') + '" font-weight="' + (pt.isLast ? '700' : '500') + '">' + pt.hcap.toFixed(1) + '</text>';
   });
 
   svg += '</svg>';
 
-  var result = '<div style="padding:8px 0">' + svg + '</div>';
+  var result = '<div style="padding:4px 0 0">' + svg + '</div>';
 
-  // Current status
+  // Compact legend
+  result += '<div style="display:flex;justify-content:center;gap:16px;padding:2px 12px 8px;font-size:9px;color:var(--muted2)">';
+  result += '<span>● Index over time</span>';
+  result += '<span style="color:var(--birdie)">↓ Lower = better</span>';
+  var totalGraphRounds = graphData.reduce(function(a,g){return a+g.roundCount},0);
+  result += '<span>' + totalGraphRounds + ' round' + (totalGraphRounds !== 1 ? 's' : '') + '</span>';
+  result += '</div>';
+
+  // Trend status
   var currentHcap = graphData[graphData.length - 1];
   if (currentHcap.inactive) {
-    result += '<div style="padding:8px 12px;background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);border-radius:var(--radius);font-size:11px;color:var(--red);margin-top:4px">Inactive — log 3 rounds to reactivate handicap</div>';
+    result += '<div style="padding:8px 12px;background:rgba(212,96,78,.06);border:1px solid rgba(212,96,78,.15);border-radius:var(--radius);font-size:11px;color:var(--red);margin-top:2px">Inactive — log 3 rounds to reactivate handicap</div>';
   } else if (validPts.length >= 2) {
     var first = validPts[0].hcap, last = validPts[validPts.length - 1].hcap;
     var diff = last - first;
-    var trend = diff < -1 ? 'Trending down (improving)' : diff > 1 ? 'Trending up' : 'Holding steady';
+    var trend = diff < -1 ? '↓ Improving' : diff > 1 ? '↑ Rising' : '→ Steady';
     var trendColor = diff < -1 ? 'var(--birdie)' : diff > 1 ? 'var(--red)' : 'var(--gold)';
-    result += '<div style="text-align:center;font-size:11px;color:' + trendColor + ';margin-top:4px;letter-spacing:.3px">' + trend + '</div>';
+    var trendDiff = diff < 0 ? diff.toFixed(1) : '+' + diff.toFixed(1);
+    result += '<div style="text-align:center;font-size:11px;color:' + trendColor + ';letter-spacing:.3px">' + trend + ' <span style="font-weight:600">(' + trendDiff + ')</span></div>';
   }
 
   return result;
@@ -9898,7 +9924,13 @@ function renderCourseDetail(courseId) {
       });
     });
     // From rounds collection (scramble rounds on this course)
-    var scrambleRounds = roundsHere.filter(function(r){ return (sz === 4 && (r.format === "scramble4" || r.format === "scramble")) || (sz === 2 && r.format === "scramble"); });
+    // From rounds collection — only match rounds whose player belongs to a team of THIS size
+    var scrambleRounds = roundsHere.filter(function(r){ 
+      if (r.format !== "scramble" && r.format !== "scramble4") return false;
+      // Find the team this player belongs to and check size
+      var playerTeam = teams.find(function(t){ return (t.size||t.members.length) === sz && t.members.indexOf(r.player) !== -1; });
+      return !!playerTeam;
+    });
     // Group by date to avoid duplicates
     var scrambleDates = {};
     scrambleRounds.forEach(function(r) {
@@ -12995,7 +13027,11 @@ Router.register("caddynotes", function() {
     {item: "H2H uses fuzzy course name matching and excludes scramble from both rounds and trip scorecards", tag: "FIXED"},
     {item: "Season Courses excludes scramble, shows who shot the best score, and displays both 18-hole and 9-hole bests", tag: "IMPROVED"},
     {item: "Activity feed groups scramble rounds into a single team entry instead of 4 individual posts — shows team name and member list", tag: "IMPROVED"},
-    {item: "Home activity feed shows ~4 items visible with scroll for the rest — cleaner home page", tag: "IMPROVED"}
+    {item: "Home activity feed shows ~4 items visible with scroll for the rest — cleaner home page", tag: "IMPROVED"},
+    {item: "Handicap graph uses 3-letter month labels (Apr not A) and includes a legend showing what dots, lines, and direction mean", tag: "IMPROVED"},
+    {item: "Handicap graph redesigned — gold gradient fill under line, value labels on each dot, glow ring on current month, dashed grid, single-point shows clean stat instead of lonely dot, trend with +/- delta", tag: "IMPROVED"},
+    {item: "Scramble leaderboard on course detail now checks actual team size — 4-man team only shows on 4-man board, not 2-man", tag: "FIXED"},
+    {item: "Last 3 Rounds properly sorts by date (newest first) — was taking last 3 from unsorted array", tag: "FIXED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
