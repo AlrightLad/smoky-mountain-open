@@ -7022,16 +7022,40 @@ function calcH2H(pid1, pid2) {
   var p1wins = 0, p2wins = 0, ties = 0;
   var counted = {}; // dedup key: course+date
 
+  // Resolve all possible IDs for each player (Firebase UID + seed ID + claimedFrom)
+  function resolveIds(pid) {
+    var ids = [pid];
+    var p = PB.getPlayer(pid);
+    if (p && p.claimedFrom && ids.indexOf(p.claimedFrom) === -1) ids.push(p.claimedFrom);
+    // Check if this pid IS a claimedFrom for someone else
+    PB.getPlayers().forEach(function(pl) {
+      if (pl.claimedFrom === pid && ids.indexOf(pl.id) === -1) ids.push(pl.id);
+    });
+    // Check Firebase member cache
+    if (typeof fbMemberCache !== "undefined") {
+      Object.keys(fbMemberCache).forEach(function(k) {
+        var m = fbMemberCache[k];
+        if ((m.claimedFrom === pid || m.id === pid) && ids.indexOf(k) === -1) ids.push(k);
+        if (k === pid && m.claimedFrom && ids.indexOf(m.claimedFrom) === -1) ids.push(m.claimedFrom);
+      });
+    }
+    return ids;
+  }
+
+  var p1ids = resolveIds(pid1);
+  var p2ids = resolveIds(pid2);
+
   // 1) Regular rounds — same course, same date (individual only, no scramble)
-  var p1rounds = rounds.filter(function(r) { return r.player === pid1 && r.format !== "scramble" && r.format !== "scramble4"; });
-  var p2rounds = rounds.filter(function(r) { return r.player === pid2 && r.format !== "scramble" && r.format !== "scramble4"; });
+  var p1rounds = rounds.filter(function(r) { return p1ids.indexOf(r.player) !== -1 && r.format !== "scramble" && r.format !== "scramble4"; });
+  var p2rounds = rounds.filter(function(r) { return p2ids.indexOf(r.player) !== -1 && r.format !== "scramble" && r.format !== "scramble4"; });
 
   p1rounds.forEach(function(r1) {
     var match = p2rounds.find(function(r2) {
-      return r2.course === r1.course && r2.date === r1.date;
+      return r2.date === r1.date && PB.normCourseName(r2.course) === PB.normCourseName(r1.course);
     });
     if (match) {
-      var key = r1.course + "|" + r1.date;
+      var key = PB.normCourseName(r1.course) + "|" + r1.date;
+      if (counted[key]) return;
       counted[key] = true;
       if (r1.score < match.score) p1wins++;
       else if (r1.score > match.score) p2wins++;
@@ -7039,23 +7063,24 @@ function calcH2H(pid1, pid2) {
     }
   });
 
-  // 2) Trip scorecard rounds — both players scored on the same trip course
+  // 2) Trip scorecard rounds — both players scored on the same trip course (exclude scramble)
   var trips = PB.getTrips();
   trips.forEach(function(tr) {
     if (!tr.courses) return;
     tr.courses.forEach(function(crs) {
-      var s1 = PB.getScores(tr.id, crs.key, pid1);
-      var s2 = PB.getScores(tr.id, crs.key, pid2);
+      if (crs.s) return; // Skip scramble courses
+      // Try all possible IDs for each player
+      var s1 = null, s2 = null;
+      p1ids.forEach(function(id) { if (!s1 || !s1.length) s1 = PB.getScores(tr.id, crs.key, id); });
+      p2ids.forEach(function(id) { if (!s2 || !s2.length) s2 = PB.getScores(tr.id, crs.key, id); });
       if (!s1 || !s1.length || !s2 || !s2.length) return;
-      // Calculate totals (skip empty holes)
       var t1 = 0, t2 = 0, h1 = 0, h2 = 0;
       s1.forEach(function(v) { if (v !== "" && v !== null && v !== undefined) { t1 += parseInt(v) || 0; h1++; } });
       s2.forEach(function(v) { if (v !== "" && v !== null && v !== undefined) { t2 += parseInt(v) || 0; h2++; } });
-      if (h1 === 0 || h2 === 0) return; // No scores
-      if (h1 !== h2) return; // Different hole counts — not comparable
-      // Dedup against regular rounds
-      var key = (crs.n || crs.key) + "|" + (crs.d || tr.startDate || "");
+      if (h1 === 0 || h2 === 0 || h1 !== h2) return;
+      var key = PB.normCourseName(crs.n || crs.key) + "|" + (crs.d || tr.startDate || "");
       if (counted[key]) return;
+      counted[key] = true;
       if (t1 < t2) p1wins++;
       else if (t1 > t2) p2wins++;
       else ties++;
@@ -12959,28 +12984,39 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.12.4</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.12.5</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.12.4</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Achievement Integrity Audit</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.12.5</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · H2H Fix & Season Standings</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Full scramble isolation audit — scramble team scores excluded from: season standings points, season courses, XP personal best bonus, H2H wins, All-time records, score differentials, all individual achievements", tag: "AUDIT"},
-    {item: "Season Courses section excludes scramble and shows who shot the best score at each course", tag: "IMPROVED"},
-    {item: "Course detail page: Individual Scores and Scramble Scores shown as separate sections — scramble shows team name in gold with member names underneath", tag: "IMPROVED"},
-    {item: "Removed 3 duplicate achievements (Eagle Eye, Birdie Machine, Bogey Free) that used hardcoded pars", tag: "FIXED"},
-    {item: "7 blunder achievements now exclude scramble (Roller Coaster, Overcorrection, etc)", tag: "FIXED"},
-    {item: "Hot Streak checks distinct calendar weeks — 3 rounds in one trip week no longer qualifies", tag: "FIXED"},
-    {item: "Range Hot Streak given unique ID — no longer conflicts with round-playing streak", tag: "FIXED"},
-    {item: "Manual handicap removed from all seed data and display fallbacks", tag: "FIXED"},
-    {item: "All-time records Best 18 Holes excludes scramble", tag: "FIXED"},
-    {item: "Activity page round history scrollable in fixed 500px window", tag: "IMPROVED"},
-    {item: "Course detail scramble leaderboard reads from rounds collection with fuzzy name matching", tag: "FIXED"},
-    {item: "Shareable scorecard shows format label (Scramble, Stableford, Front 9, Back 9)", tag: "NEW"}
+    {item: "Head-to-Head now resolves all player IDs (Firebase UID, seed ID, claimedFrom) — matches show correctly on profiles", tag: "FIXED"},
+    {item: "H2H uses fuzzy course name matching and excludes scramble from both rounds and trip scorecards", tag: "FIXED"},
+    {item: "Season Courses excludes scramble, shows who shot the best score, and displays both 18-hole and 9-hole bests", tag: "IMPROVED"},
+    {item: "Activity feed groups scramble rounds into a single team entry instead of 4 individual posts — shows team name and member list", tag: "IMPROVED"},
+    {item: "Home activity feed shows ~4 items visible with scroll for the rest — cleaner home page", tag: "IMPROVED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
+    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
+    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
+    h += '<span>' + r.item + '</span></div>';
+  });
+  h += '</div></div></div>';
+
+  // v5.12.4
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.12.4 · April 2026 · Achievement & Scramble Audit</span></div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
+  var v5124Notes = [
+    {item: "Full scramble isolation audit across all systems", tag: "AUDIT"},
+    {item: "Duplicate achievements removed, 7+ blunder achievements exclude scramble", tag: "FIXED"},
+    {item: "Hot Streak checks distinct calendar weeks", tag: "FIXED"},
+    {item: "Course detail: separate Individual and Scramble score sections", tag: "IMPROVED"},
+    {item: "Manual handicap fully removed", tag: "FIXED"}
+  ];
+  v5124Notes.forEach(function(r) {
+    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : r.tag === "AUDIT" ? "var(--red)" : "var(--muted)";
     h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
     h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
     h += '<span>' + r.item + '</span></div>';
@@ -15735,7 +15771,7 @@ function loadHomeActivityFeed() {
       return;
     }
     items.sort(function(a,b){return (b.ts||0)-(a.ts||0)});
-    var h = '<div class="card" style="max-height:600px;overflow-y:auto;-webkit-overflow-scrolling:touch">';
+    var h = '<div class="card" style="max-height:420px;overflow-y:auto;-webkit-overflow-scrolling:touch">';
     items.forEach(function(a) { h += renderFeedItem(a); });
     h += '</div>';
     el.innerHTML = h;
@@ -15744,19 +15780,42 @@ function loadHomeActivityFeed() {
   // 1. Recent rounds from Firestore
   pending++;
   db.collection("rounds").orderBy("createdAt","desc").limit(30).get().then(function(snap) {
+    var scrambleGroups = {}; // Group scramble by course+date
     snap.forEach(function(doc) {
       var r = doc.data();
       var rid = doc.id;
+      var isScramble = r.format === "scramble" || r.format === "scramble4";
+      
+      if (isScramble) {
+        // Group scramble rounds into one feed entry
+        var groupKey = (r.course||"") + "|" + (r.date||"");
+        if (!scrambleGroups[groupKey]) {
+          scrambleGroups[groupKey] = { course: r.course, date: r.date, score: r.score, tee: r.tee, players: [], ts: r.createdAt ? r.createdAt.toMillis() : 0, rid: rid, likes: r.likes || [], comments: r.comments || [] };
+        }
+        scrambleGroups[groupKey].players.push(r.playerName || "Parbaugh");
+        return;
+      }
+      
       var comm = PB.generateRoundCommentary({score:r.score,rating:r.rating||72,slope:r.slope||113,player:r.player,holesPlayed:r.holesPlayed||18});
       var quip = comm.roasts.length ? comm.roasts[0] : (comm.highlights.length ? comm.highlights[0] : "");
       var holeLabel = r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? " · Back 9" : " · Front 9") : "";
       var feedCourse = r.course ? PB.getCourseByName(r.course) : null;
       var teeLabel = r.tee ? " · " + r.tee : (feedCourse && feedCourse.tee ? " · " + feedCourse.tee : "");
+      var fmtLabel = r.format && r.format !== "stroke" ? " · " + r.format.charAt(0).toUpperCase() + r.format.slice(1) : "";
       var likes = r.likes || [];
       var comments = r.comments || [];
       var isLiked = currentUser ? likes.indexOf(currentUser.uid) !== -1 : false;
       var timeAgo = feedTimeAgo(r.createdAt ? r.createdAt.toMillis() : 0);
-      items.push({type:"round", roundId:rid, name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + teeLabel + " · " + r.score + holeLabel, quip:quip, score:r.score, date:r.date||"", ts:r.createdAt ? r.createdAt.toMillis() : 0, dest:"Router.go('rounds',{roundId:'" + rid + "'})", likeCount:likes.length, commentCount:comments.length, isLiked:isLiked, timeAgo:timeAgo});
+      items.push({type:"round", roundId:rid, name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + teeLabel + " · " + r.score + holeLabel + fmtLabel, quip:quip, score:r.score, date:r.date||"", ts:r.createdAt ? r.createdAt.toMillis() : 0, dest:"Router.go('rounds',{roundId:'" + rid + "'})", likeCount:likes.length, commentCount:comments.length, isLiked:isLiked, timeAgo:timeAgo});
+    });
+    // Add grouped scramble entries
+    Object.values(scrambleGroups).forEach(function(g) {
+      var teamObj = PB.getScrambleTeams().find(function(t){ return g.players.some(function(pn){ return t.members.some(function(mid){ var mp = PB.getPlayer(mid); return mp && mp.name === pn; }); }); });
+      var teamName = teamObj ? teamObj.name : "Scramble Team";
+      var playerList = g.players.join(", ");
+      var teeLabel = g.tee ? " · " + g.tee : "";
+      var isLiked = currentUser ? g.likes.indexOf(currentUser.uid) !== -1 : false;
+      items.push({type:"round", roundId:g.rid, name:teamName + " posted a scramble", sub:(g.course||"") + teeLabel + " · " + g.score + " · Scramble", quip:playerList, score:g.score, date:g.date||"", ts:g.ts, dest:"Router.go('rounds',{roundId:'" + g.rid + "'})", likeCount:g.likes.length, commentCount:g.comments.length, isLiked:isLiked, timeAgo:feedTimeAgo(g.ts)});
     });
     pending--; tryRender();
   }).catch(function() {
