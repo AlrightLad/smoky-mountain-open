@@ -2659,7 +2659,18 @@ var PB = (function() {
   /* ---------- COURSE OPS ---------- */
   function getCourse(id) { return state.courses.find(function(c) { return c.id === id; }); }
   function getCourses() { return state.courses; }
-  function getCourseByName(name) { return state.courses.find(function(c) { return c.name === name; }); }
+  function getCourseByName(name) { 
+    if (!name) return null;
+    var exact = state.courses.find(function(c) { return c.name === name; });
+    if (exact) return exact;
+    // Fuzzy match: normalize by stripping common suffixes
+    var norm = normCourseName(name);
+    return state.courses.find(function(c) { return normCourseName(c.name) === norm; });
+  }
+  
+  function normCourseName(n) {
+    return (n || "").toLowerCase().replace(/\b(golf|club|course|resort|country|cc|gc|g\.c\.|c\.c\.)\b/gi, "").replace(/\s+/g, " ").trim();
+  }
 
   function addCourse(data) {
     // Dedup: if course with same name exists, enrich it instead of duplicating
@@ -2762,7 +2773,10 @@ var PB = (function() {
     }
     return rounds;
   }
-  function getCourseRounds(courseName) { return state.rounds.filter(function(r) { return r.course === courseName; }); }
+  function getCourseRounds(courseName) { 
+    var norm = normCourseName(courseName);
+    return state.rounds.filter(function(r) { return r.course === courseName || normCourseName(r.course) === norm; }); 
+  }
 
   function addRound(data) {
     var p = getPlayer(data.player);
@@ -4700,9 +4714,9 @@ Router.register("home", function() {
   }
   
   if (myRounds.length >= 3 && myRounds.length < 10) {
-    var indivRounds = myRounds.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4";});
-    var best = indivRounds.length ? Math.min.apply(null, indivRounds.map(function(r){return r.score||999})) : null;
-    if (best) motivationCards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='8' r='6'/><circle cx='8' cy='8' r='3'/><circle cx='8' cy='8' r='.8' fill='currentColor'/></svg>", title:"Your best: " + best, sub:"Can you beat it? Every round that ties or beats your PR earns a 50-point bonus.", cta:"Play Now →", page:"playnow"});
+    var full18indiv = myRounds.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4" && (!r.holesPlayed || r.holesPlayed >= 18);});
+    var best18 = full18indiv.length ? Math.min.apply(null, full18indiv.map(function(r){return r.score||999})) : null;
+    if (best18) motivationCards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='8' r='6'/><circle cx='8' cy='8' r='3'/><circle cx='8' cy='8' r='.8' fill='currentColor'/></svg>", title:"Your best: " + best18, sub:"Can you beat it? Every round that ties or beats your PR earns a 50-point bonus.", cta:"Play Now →", page:"playnow"});
   }
   
   var now = new Date();
@@ -6784,7 +6798,22 @@ function renderTeamDetail(teamId) {
   if (!team) { Router.go("scramble"); return; }
 
   var members = team.members.map(function(id) { return PB.getPlayer(id); }).filter(Boolean);
-  var matches = team.matches || [];
+  var matches = (team.matches || []).slice();
+  // Also pull scramble rounds from the rounds collection that match this team's members
+  var memberIds = team.members;
+  var roundsCol = PB.getRounds().filter(function(r) {
+    return (r.format === "scramble" || r.format === "scramble4") && memberIds.indexOf(r.player) !== -1;
+  });
+  // Deduplicate — don't add a round that's already in matches (by course+date)
+  var matchKeys = {};
+  matches.forEach(function(m) { matchKeys[(m.course||"") + "|" + (m.date||"")] = true; });
+  roundsCol.forEach(function(r) {
+    var key = (r.course||"") + "|" + (r.date||"");
+    if (!matchKeys[key]) {
+      matches.push({ course: r.course, date: r.date, score: r.score, format: r.format });
+      matchKeys[key] = true;
+    }
+  });
   var captain = team.captain ? (PB.getPlayer(team.captain) || {name:team.captain}) : null;
   var scored = matches.filter(function(m){return m.score;}).sort(function(a,b){return a.score-b.score;});
   var coursePar = 72;
@@ -12886,23 +12915,36 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.12.2</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.12.3</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.12.2</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · WHS 9-Hole Pairing & Par Audit</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.12.3</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Share Card & Format Labels</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "WHS 9-hole pairing — two 9-hole rounds combine chronologically into one handicap differential per official GHIN rules", tag: "NEW"},
-    {item: "Unpaired 9-hole rounds show \'Awaiting pairing\' badge in Handicap Tracker", tag: "NEW"},
-    {item: "Handicap Tracker redesigned — hero number, differentials table, paired/unpaired status, trend graph", tag: "IMPROVED"},
-    {item: "9-hole rounds excluded from handicap unless paired (was incorrectly counted as 18-hole score)", tag: "FIXED"},
-    {item: "Springdale Resort pars corrected — 6 holes were wrong, verified against 18Birdies (holes 2,5,10,11,16,18)", tag: "FIXED"},
-    {item: "Springdale rating/slope corrected to White tees: 70.3/126 per 18Birdies", tag: "FIXED"},
-    {item: "Scorecard symbols now use round.holePars as primary par source — never falls back to generic defaults for event rounds", tag: "FIXED"},
-    {item: "Full SMO par audit: Sequoyah ✅, Maggie Valley ✅, Springdale ✅ (fixed), Connestee ✅ (verified at course)", tag: "AUDIT"}
+    {item: "Shareable scorecard now shows format label — Scramble, Stableford, Front 9, Back 9 displayed on tee info line", tag: "NEW"}
   ];
   currentNotes.forEach(function(r) {
+    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
+    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
+    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
+    h += '<span>' + r.item + '</span></div>';
+  });
+  h += '</div></div></div>';
+
+  // v5.12.2
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.12.2 · April 2026 · WHS 9-Hole Pairing & Par Audit</span></div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
+  var v5122Notes = [
+    {item: "WHS 9-hole pairing — two 9-hole rounds combine into one differential per GHIN rules", tag: "NEW"},
+    {item: "Handicap Tracker redesigned with differentials table and pairing status", tag: "IMPROVED"},
+    {item: "Springdale pars corrected — 6 holes verified against 18Birdies", tag: "FIXED"},
+    {item: "Scorecard symbols use round.holePars as primary par source", tag: "FIXED"},
+    {item: "Course directory fuzzy name matching", tag: "FIXED"},
+    {item: "Scramble team reads from rounds collection", tag: "FIXED"},
+    {item: "Motivation card only shows 18-hole best", tag: "FIXED"}
+  ];
+  v5122Notes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
     h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
     h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
@@ -14739,7 +14781,15 @@ function populateShareTemplateForRound(round) {
   document.getElementById("pbs-course").textContent = round.course || "—";
   var teeEl = document.getElementById("pbs-tee-info");
   if (teeEl) {
-    var teeStr = [teeName, teeYards ? teeYards.toLocaleString() + " yds" : ""].filter(Boolean).join(" · ");
+    var teeParts = [teeName, teeYards ? teeYards.toLocaleString() + " yds" : ""];
+    if (round.format && round.format !== "stroke") {
+      var fmtLabel = round.format === "scramble" ? "Scramble" : round.format === "scramble4" ? "4-Man Scramble" : round.format.charAt(0).toUpperCase() + round.format.slice(1);
+      teeParts.push(fmtLabel);
+    }
+    if (round.holesPlayed && round.holesPlayed <= 9) {
+      teeParts.push(round.holesMode === "back9" ? "Back 9" : "Front 9");
+    }
+    var teeStr = teeParts.filter(Boolean).join(" · ");
     teeEl.textContent = teeStr;
     teeEl.style.display = teeStr ? "" : "none";
   }
