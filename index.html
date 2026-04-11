@@ -14613,10 +14613,16 @@ function populateShareTemplateForRound(round) {
   var diffStr = diff > 0 ? "+" + diff : diff === 0 ? "E" : "" + diff;
   var playerName = round.playerName || (currentProfile ? (currentProfile.name || currentProfile.username) : "A Parbaugh");
   var holeScores = round.holeScores || [];
-  var holesData = course && course.holes ? course.holes : [];
+  // Par source priority: round.holePars > course.holes > defaultPars
+  var holesData = [];
+  if (round.holePars && round.holePars.length) {
+    holesData = round.holePars.map(function(p) { return { par: p }; });
+  } else if (course && course.holes && course.holes.length) {
+    holesData = course.holes;
+  }
   var teeName = round.tee || (course ? course.tee : "") || "";
   var teeYards = round.yards || (course ? course.yards : 0) || 0;
-  var defaultPars = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+  var defaultPars = round.holePars || [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
 
   // Compute FIR/GIR/putts
   var firCount = 0, girCount = 0, totalPutts = 0, firHoles = 0, completed = 0;
