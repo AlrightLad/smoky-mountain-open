@@ -5245,28 +5245,144 @@ function renderMemberList() {
 }
 
 function renderMemberListHtml(players, h) {
-  players.forEach(function(p) {
-    if (p.role === "removed") return;
+  var totalCount = players.filter(function(p){return p.role !== "removed";}).length;
+  
+  // Header with count
+  h = '<div class="sh"><h2>Members <span style="font-size:14px;color:var(--muted);font-weight:400">' + totalCount + '</span></h2></div>';
+  
+  // Search bar
+  h += '<div style="padding:0 16px 12px"><input type="text" id="memberSearch" class="ff-input" placeholder="Search members..." oninput="filterMemberList()" style="background:var(--bg3);border:1px solid var(--border);font-size:13px;padding:10px 14px"></div>';
+  
+  // Sort controls
+  h += '<div style="padding:0 16px 12px;display:flex;gap:6px;flex-wrap:wrap">';
+  var sorts = [
+    {key:"level",label:"Level"},
+    {key:"rounds",label:"Rounds"},
+    {key:"handicap",label:"Handicap"},
+    {key:"alpha",label:"A-Z"}
+  ];
+  sorts.forEach(function(s) {
+    var isActive = (s.key === "level"); // default sort
+    h += '<button class="btn-sm ' + (isActive ? 'green' : 'outline') + '" id="sort-' + s.key + '" style="font-size:10px;padding:4px 10px" onclick="sortMemberList(\'' + s.key + '\')">' + s.label + '</button>';
+  });
+  h += '</div>';
+  
+  // Member list container
+  h += '<div id="memberListContainer">';
+  
+  // Sort: founding members first, then by level
+  var sortedPlayers = players.filter(function(p){return p.role !== "removed";}).slice();
+  sortedPlayers.sort(function(a, b) {
+    var aFounder = a.founding || a.isFoundingFour ? 1 : 0;
+    var bFounder = b.founding || b.isFoundingFour ? 1 : 0;
+    if (aFounder !== bFounder) return bFounder - aFounder;
+    var aLvl = 1, bLvl = 1;
+    try { aLvl = (PB.getPlayerLevel(a.id) || {level:1}).level; } catch(e) {}
+    try { bLvl = (PB.getPlayerLevel(b.id) || {level:1}).level; } catch(e) {}
+    return bLvl - aLvl;
+  });
+  
+  h += buildMemberCards(sortedPlayers);
+  h += '</div>';
+  
+  h += '<div class="section">' + renderInviteMemberButton() + '</div>';
+  document.querySelector('[data-page="members"]').innerHTML = h;
+  
+  // Store players for search/sort
+  window._memberListPlayers = sortedPlayers;
+  window._memberListSort = "level";
+}
+
+function buildMemberCards(players) {
+  var h = '';
+  var lastWasFounder = false;
+  players.forEach(function(p, idx) {
+    var isFounder = p.founding || p.isFoundingFour;
+    // Divider between founders and rest
+    if (lastWasFounder && !isFounder) {
+      h += '<div style="padding:4px 16px 8px;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;border-top:1px solid var(--border);margin-top:4px;padding-top:12px">Members</div>';
+    }
+    lastWasFounder = isFounder;
+    
     var avg = PB.getPlayerAvg(p.id);
     var rounds = PB.getPlayerRounds(p.id);
-    var hcap = PB.calcHandicap(rounds); // GHIN only — no manual fallback for display
+    var hcap = PB.calcHandicap(rounds);
     var plvl = {level:1};
     try { plvl = PB.getPlayerLevel(p.id) || {level:1}; } catch(e) {}
-    var achs = []; try { achs = PB.getAchievements(p.id) || []; } catch(e) {}
     var fc = playerFrameColor(p);
-    h += '<div class="card" onclick="Router.go(\'members\',{id:\'' + p.id + '\'})">';
+    
+    h += '<div class="card member-card" data-name="' + escHtml((p.name||"").toLowerCase() + " " + (p.username||"").toLowerCase()) + '" onclick="Router.go(\'members\',{id:\'' + p.id + '\'})">';
     h += '<div class="member-row"><div class="m-av" style="border-color:' + fc + '">' + Router.getAvatar(p);
     h += '<div style="position:absolute;bottom:-3px;right:-3px;background:var(--gold);color:#0d1117;font-size:7px;font-weight:800;border-radius:6px;padding:1px 3px;border:1.5px solid var(--bg);line-height:1.3;min-width:12px;text-align:center;z-index:2;pointer-events:none">' + (plvl.level||1) + '</div>';
     h += '</div><div class="m-info">';
-    h += '<div class="m-name">' + escHtml(p.username || p.name) + '</div>';
+    h += '<div class="m-name">' + escHtml(p.username || p.name);
+    if (isFounder) h += ' <svg viewBox="0 0 12 12" width="10" height="10" style="vertical-align:middle;margin-left:2px"><path d="M6 1l1.5 3 3.5.5-2.5 2.5.6 3.5L6 9l-3.1 1.5.6-3.5L1 4.5 4.5 4z" fill="var(--gold)" stroke="none"/></svg>';
+    h += '</div>';
     if (p.equippedTitle && p.equippedTitle !== "Member" && p.equippedTitle !== "Rookie") h += '<div class="m-nick">' + escHtml(p.equippedTitle) + '</div>';
     else if (p.role === "commissioner") h += '<div class="m-nick">Commissioner</div>';
     else if (p.role === "suspended") h += '<div class="m-nick" style="color:var(--red)">Suspended</div>';
-    h += '<div class="m-stats">' + (hcap !== null ? 'HCP: ' + hcap + ' · ' : '') + (avg ? 'Avg: ' + avg + ' · ' : '') + rounds.length + ' rounds</div>';
-    h += '</div><div class="m-arrow">›</div></div></div>';
+    h += '<div class="m-stats">' + (hcap !== null ? 'HCP ' + hcap + ' · ' : '') + (avg ? 'Avg ' + avg + ' · ' : '') + rounds.length + ' rds</div>';
+    h += '</div><div class="m-arrow">></div></div></div>';
   });
-  h += '<div class="section">' + renderInviteMemberButton() + '</div>';
-  document.querySelector('[data-page="members"]').innerHTML = h;
+  return h;
+}
+
+function filterMemberList() {
+  var query = (document.getElementById("memberSearch").value || "").toLowerCase().trim();
+  var cards = document.querySelectorAll(".member-card");
+  cards.forEach(function(card) {
+    var name = card.getAttribute("data-name") || "";
+    card.style.display = !query || name.indexOf(query) !== -1 ? "" : "none";
+  });
+}
+
+function sortMemberList(key) {
+  var players = window._memberListPlayers;
+  if (!players) return;
+  window._memberListSort = key;
+  
+  // Update button states
+  ["level","rounds","handicap","alpha"].forEach(function(k) {
+    var btn = document.getElementById("sort-" + k);
+    if (btn) btn.className = "btn-sm " + (k === key ? "green" : "outline");
+  });
+  
+  var sorted = players.slice();
+  sorted.sort(function(a, b) {
+    // Founders always first
+    var aF = a.founding || a.isFoundingFour ? 1 : 0;
+    var bF = b.founding || b.isFoundingFour ? 1 : 0;
+    if (aF !== bF) return bF - aF;
+    
+    if (key === "level") {
+      var aL = 1, bL = 1;
+      try { aL = (PB.getPlayerLevel(a.id)||{level:1}).level; } catch(e) {}
+      try { bL = (PB.getPlayerLevel(b.id)||{level:1}).level; } catch(e) {}
+      return bL - aL;
+    }
+    if (key === "rounds") {
+      return PB.getPlayerRounds(b.id).length - PB.getPlayerRounds(a.id).length;
+    }
+    if (key === "handicap") {
+      var aH = PB.calcHandicap(PB.getPlayerRounds(a.id));
+      var bH = PB.calcHandicap(PB.getPlayerRounds(b.id));
+      if (aH === null && bH === null) return 0;
+      if (aH === null) return 1;
+      if (bH === null) return -1;
+      return aH - bH; // lower handicap first
+    }
+    if (key === "alpha") {
+      return (a.name||"").localeCompare(b.name||"");
+    }
+    return 0;
+  });
+  
+  var container = document.getElementById("memberListContainer");
+  if (container) container.innerHTML = buildMemberCards(sorted);
+  
+  // Re-apply search filter
+  var query = (document.getElementById("memberSearch").value || "").trim();
+  if (query) filterMemberList();
 }
 
 function renderMemberDetail(pid) {
@@ -13169,10 +13285,10 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.14.2</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.14.3</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.14.2</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.14.3</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Scramble Team Matches + Fixes</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -13184,7 +13300,11 @@ Router.register("caddynotes", function() {
     {item: "Best Round iOS emoji fixed — replaced arrow character with SVG icon", tag: "FIXED"},
     {item: "Team rounds count on profile now includes rounds from rounds collection (Sequoyah scramble shows correctly)", tag: "FIXED"},
     {item: "Duplicate team names blocked — cannot create or rename a team to an existing name", tag: "NEW"},
-    {item: "Profile Teams section shows best score on top, W-L record underneath", tag: "FIXED"}
+    {item: "Profile Teams section shows best score on top, W-L record underneath", tag: "FIXED"},
+    {item: "Members page shows member count in header", tag: "NEW"},
+    {item: "Members search bar — filter by name or username instantly", tag: "NEW"},
+    {item: "Members sort controls — Level (default), Rounds, Handicap, A-Z — founders always pinned on top with gold star", tag: "NEW"},
+    {item: "Founders section visually separated from other members with divider", tag: "IMPROVED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
@@ -13282,7 +13402,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.14.2</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.14.3</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
