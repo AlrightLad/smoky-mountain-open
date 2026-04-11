@@ -3676,7 +3676,9 @@ var PB = (function() {
     if (totalH2Hwins >= 10) achievements.push({id:"nemesis",name:"Nemesis",desc:"Win 10 H2H matchups",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='7' r='1.5' fill='currentColor'/></svg>",xp:200,cat:"compete"});
     if (totalH2Hwins >= 25) achievements.push({id:"dominator",name:"Dominator",desc:"Win 25 H2H matchups",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"compete"});
 
-    if (player && player.wins >= 1) achievements.push({id:"champion",name:"Champion",desc:"Win an event",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"compete"});
+    // Event champion — check wins field OR trip champion IDs
+    var achEventWins = (player && player.wins >= 1) || getTrips().some(function(t){ return t.champion && (t.champion === pid || (player && player.claimedFrom && t.champion === player.claimedFrom)); });
+    if (achEventWins) achievements.push({id:"champion",name:"Champion",desc:"Win an event",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"compete"});
     if (player && player.wins >= 3) achievements.push({id:"dynasty",name:"Dynasty",desc:"Win 3 events",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:1000,cat:"compete"});
 
     // --- IMPROVEMENT --- (exclude scramble — team scores would skew averages)
@@ -4855,7 +4857,7 @@ Router.register("home", function() {
   // 1. Event Results — show standings when available, just winner name otherwise
   var pastTournaments = tournaments.filter(function(t) { return t.champion; });
   if (pastTournaments.length) {
-    h += '<div class="section"><div class="sec-head"><span class="sec-title">Event results</span><span class="sec-link" onclick="Router.go(\'records\')">All records →</span></div>';
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Event results</span><span class="sec-link" onclick="Router.go(\'trips\',{create:true})">Start New Event</span></div>';
     pastTournaments.forEach(function(t) {
       var champ = PB.getPlayer(t.champion);
       var champName = champ ? champ.name : t.champion;
@@ -5621,8 +5623,8 @@ function renderMemberDetailWithData(p) {
     {name:"Metamorphosis",req:"Average improved 15+",unlocked:achievements.some(function(a){return a.id==="metamorphosis"})}
   ];
   var sTitles = [
-    {name:"The Original Four",req:"Founding member",unlocked:!!p.founding},
-    {name:"The Original Four · Commissioner",req:"Be The Commissioner",unlocked:p.founding&&(p.role==="commissioner"||pid==="zach"||p.username==="TheCommissioner")},
+    {name:"The Original Four",req:"Founding member",unlocked:!!(p.founding || p.isFoundingFour || (p.badges && p.badges.indexOf("founder") !== -1))},
+    {name:"The Original Four · Commissioner",req:"Be The Commissioner",unlocked:(p.founding || p.isFoundingFour) && (p.role==="commissioner"||pid==="zach"||p.username==="TheCommissioner")},
     {name:"Beta Tester",req:"First 30 members",unlocked:isBeta}
   ];
   // Event-specific champion titles
@@ -5707,7 +5709,9 @@ function renderMemberDetailWithData(p) {
   }
   h += statBox(rounds.length, "Rounds");
   h += statBox(unique, "Courses");
-  h += statBox(p.wins || 0, "Event wins");
+  var ewIds = [pid]; if (p.claimedFrom) ewIds.push(p.claimedFrom);
+  var eventWinsCount = PB.getTrips().filter(function(t){ return t.champion && ewIds.indexOf(t.champion) !== -1; }).length;
+  h += statBox(eventWinsCount || p.wins || 0, "Event wins");
   h += '</div>';
 
   // === HANDICAP TRACKER (collapsible, open by default) ===
@@ -5969,9 +5973,19 @@ function renderMemberDetailWithData(p) {
   // === ACCOLADES (collapsible) ===
   var accoladeContent = '';
   var accolades = [];
-  // Event wins
+  // Event wins — check all player ID aliases against champion
+  var myAccIds = [pid];
+  if (p.claimedFrom && myAccIds.indexOf(p.claimedFrom) === -1) myAccIds.push(p.claimedFrom);
+  PB.getPlayers().forEach(function(pl) { if (pl.claimedFrom === pid && myAccIds.indexOf(pl.id) === -1) myAccIds.push(pl.id); });
+  if (typeof fbMemberCache !== "undefined") {
+    Object.keys(fbMemberCache).forEach(function(k) {
+      var m = fbMemberCache[k];
+      if ((m.claimedFrom === pid || k === pid) && myAccIds.indexOf(k) === -1) myAccIds.push(k);
+      if (k === pid && m.claimedFrom && myAccIds.indexOf(m.claimedFrom) === -1) myAccIds.push(m.claimedFrom);
+    });
+  }
   PB.getTrips().forEach(function(t) {
-    if (t.champion === pid) accolades.push({type:"Event champion", detail: t.name});
+    if (t.champion && myAccIds.indexOf(t.champion) !== -1) accolades.push({type:"Event champion", detail: t.name});
   });
   // Records held
   var rec = PB.getRecords();
@@ -6025,10 +6039,12 @@ function renderMemberDetailWithData(p) {
 
   // === ALL ROUNDS (collapsible) ===
   if (rounds.length > 3) {
-    var allContent = '';
-    rounds.slice().reverse().forEach(function(r) {
-      allContent += '<div class="club-row" style="padding:10px 12px"><span class="club-name">' + r.course + ' · ' + r.date + '</span><span class="club-yd">' + r.score + '</span></div>';
+    var allContent = '<div style="max-height:500px;overflow-y:auto;-webkit-overflow-scrolling:touch">';
+    rounds.slice().sort(function(a,b){ return (b.date||"") > (a.date||"") ? 1 : (b.date||"") < (a.date||"") ? -1 : 0; }).forEach(function(r) {
+      var fmtLabel = r.format && r.format !== "stroke" ? " · " + r.format.charAt(0).toUpperCase() + r.format.slice(1) : "";
+      allContent += '<div class="club-row" style="padding:10px 12px;cursor:pointer" onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})"><span class="club-name">' + escHtml(r.course) + ' · ' + r.date + fmtLabel + '</span><span class="club-yd">' + r.score + '</span></div>';
     });
+    allContent += '</div>';
     h += profSection("allrounds-" + pid, "All rounds (" + rounds.length + ")", allContent, false);
   }
 
@@ -13517,10 +13533,10 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.15.4</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.15.6</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.15.4</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.15.6</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Event Close, Attestation Fix, Data Integrity</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -13627,7 +13643,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.15.4</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.15.6</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
