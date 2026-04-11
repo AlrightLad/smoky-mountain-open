@@ -2239,22 +2239,40 @@ function renderAttestationStatus(tripId, courseKey) {
           ah += '<div style="font-size:11px;color:var(--muted);margin-bottom:8px"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2" style="vertical-align:middle"><path d="M4 2h8v3L8 8l4 3v3H4v-3l4-3L4 5z"/></svg> Waiting for all players to attest</div>';
         }
         
-        // Show each player's attestation status — filter to only players with actual scores
+        // Show each player's attestation status — deduplicate by name, skip empty
         var attestations = data.attestations || {};
         var allAttested = true;
         var trip = PB.getTrip(tripId);
         var course = trip ? trip.courses.find(function(cx) { return cx.key === courseKey; }) : null;
+        var seenNames = {};
         
         Object.keys(attestations).forEach(function(pid) {
           var a = attestations[pid];
-          // Skip players without actual scores on this course
+          // Skip entries with no name
+          if (!a.name || !a.name.trim()) return;
+          // Deduplicate by name (same person may appear under UID + seed ID)
+          var nameLower = a.name.trim().toLowerCase();
+          if (seenNames[nameLower]) {
+            // Keep the attested one if either is attested
+            if (a.attested) seenNames[nameLower].attested = true;
+            return;
+          }
+          seenNames[nameLower] = a;
+          // For non-scramble: skip players without actual scores on this course
           if (trip && course && !course.s) {
             var scores = PB.getScores(tripId, courseKey, pid);
-            if (!scores || !scores.some(function(s) { return s !== "" && s !== null && s !== undefined; })) return;
+            if (!scores || !scores.some(function(s) { return s !== "" && s !== null && s !== undefined; })) {
+              delete seenNames[nameLower];
+              return;
+            }
           }
+          if (!a.attested) allAttested = false;
+        });
+        
+        Object.keys(seenNames).forEach(function(nameLower) {
+          var a = seenNames[nameLower];
           var status;
           if (data.status === "overridden" || data.status === "complete") {
-            // Round is finalized — show clean status
             status = a.attested ? '<span style="color:var(--birdie)">Attested</span>' : '<span style="color:var(--muted)">Finalized</span>';
           } else {
             status = a.attested ? '<span style="color:var(--birdie)">Attested</span>' : '<span style="color:var(--red)"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2" style="vertical-align:middle"><path d="M4 2h8v3L8 8l4 3v3H4v-3l4-3L4 5z"/></svg> Pending</span>';
@@ -2262,7 +2280,6 @@ function renderAttestationStatus(tripId, courseKey) {
           ah += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)">';
           ah += '<span style="font-size:12px">' + escHtml(a.name) + '</span>';
           ah += '<span style="font-size:10px;font-weight:600">' + status + '</span></div>';
-          if (!a.attested) allAttested = false;
         });
         
         // Action buttons
@@ -13285,10 +13302,10 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.14.3</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.14.4</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.14.3</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.14.4</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Scramble Team Matches + Fixes</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -13304,7 +13321,8 @@ Router.register("caddynotes", function() {
     {item: "Members page shows member count in header", tag: "NEW"},
     {item: "Members search bar — filter by name or username instantly", tag: "NEW"},
     {item: "Members sort controls — Level (default), Rounds, Handicap, A-Z — founders always pinned on top with gold star", tag: "NEW"},
-    {item: "Founders section visually separated from other members with divider", tag: "IMPROVED"}
+    {item: "Founders section visually separated from other members with divider", tag: "IMPROVED"},
+    {item: "Attestation deduplicates by player name — no more blank or duplicate rows for scramble courses", tag: "FIXED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
@@ -13402,7 +13420,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.14.3</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.14.4</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
