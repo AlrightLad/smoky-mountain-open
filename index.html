@@ -3048,7 +3048,7 @@ var PB = (function() {
   }
 
   function getPlayerAvg(pid) {
-    var r = getPlayerRounds(pid).filter(function(rd){return rd.visibility !== "private" && (!rd.holesPlayed || rd.holesPlayed >= 18);});
+    var r = getPlayerRounds(pid).filter(function(rd){return rd.visibility !== "private" && rd.format !== "scramble" && rd.format !== "scramble4" && (!rd.holesPlayed || rd.holesPlayed >= 18);});
     if (r.length) return Math.round(r.reduce(function(a, x) { return a + x.score; }, 0) / r.length);
     // Fallback to Firestore-persisted value when rounds not yet loaded
     var p = getPlayer(pid);
@@ -3065,12 +3065,15 @@ var PB = (function() {
   }
 
   function getPlayerBest(pid) {
-    var r = getPlayerRounds(pid).filter(function(rd){return rd.visibility !== "private" && (!rd.holesPlayed || rd.holesPlayed >= 18);});
-    if (r.length) return Math.min.apply(null, r.map(function(x) { return x.score; }));
+    var r = getPlayerRounds(pid).filter(function(rd){return rd.visibility !== "private" && rd.format !== "scramble" && rd.format !== "scramble4" && (!rd.holesPlayed || rd.holesPlayed >= 18);});
+    if (r.length) {
+      var bestRound = r.reduce(function(best, x) { return x.score < best.score ? x : best; }, r[0]);
+      return { score: bestRound.score, roundId: bestRound.id };
+    }
     // Fallback to Firestore-persisted value when rounds not yet loaded
     var p = getPlayer(pid);
     var cached = (typeof fbMemberCache !== "undefined") && (fbMemberCache[pid] || (p && p.claimedFrom && fbMemberCache[p.claimedFrom]));
-    return (cached && cached.bestRound) ? cached.bestRound : null;
+    return (cached && cached.bestRound) ? { score: cached.bestRound, roundId: null } : null;
   }
 
 
@@ -3740,15 +3743,16 @@ var PB = (function() {
     if (chatPosts >= 1) achievements.push({id:"first_post",name:"First Post",desc:"Send a message in the Clubhouse",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M14 10a2 2 0 01-2 2H6l-3 3V4a2 2 0 012-2h7a2 2 0 012 2z' fill='none' stroke='currentColor' stroke-width='1.2'/></svg>",xp:25,cat:"milestone"});
 
     // --- GOLF CULTURE & HOLE-BY-HOLE ACHIEVEMENTS ---
-    var hasHoleScores = rounds.some(function(r){return r.holeScores && r.holeScores.length});
+    // Exclude scramble — team birdies/eagles aren't individual achievements
+    var indivHoleRounds = rounds.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4";});
+    var hasHoleScores = indivHoleRounds.some(function(r){return r.holeScores && r.holeScores.length});
     if (hasHoleScores) {
       var allHoleScores = [];
-      var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
       var totalBirdies = 0, totalEagles = 0, totalPars = 0, totalDoubles = 0, totalTriples = 0;
       var maxBirdieStreak = 0;
       var maxParStreak = 0;
       
-      rounds.forEach(function(r) {
+      indivHoleRounds.forEach(function(r) {
         if (!r.holeScores) return;
         // Reset streaks at start of each round — streaks must be within a single round
         var birdieStreak = 0;
@@ -3801,8 +3805,8 @@ var PB = (function() {
       if (maxBirdieStreak >= 2) achievements.push({id:"b2b_birdies",name:"Back to Back Birdies",desc:"2 birdies in a row",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='5' cy='8' r='4' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='11' cy='8' r='4' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:150,cat:"score"});
       if (maxBirdieStreak >= 3) achievements.push({id:"birdie_streak3",name:"Hat Trick",desc:"3 birdies in a row",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='3' cy='8' r='3' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='8' cy='8' r='3' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='13' cy='8' r='3' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"score",title:"Hat Trick"});
       
-      // Bogey-free — only count if we have verified course pars
-      var hasBogeyFreeRound = rounds.some(function(r) {
+      // Bogey-free — only count if we have verified course pars (exclude scramble)
+      var hasBogeyFreeRound = indivHoleRounds.some(function(r) {
         if (!r.holeScores || r.holeScores.filter(function(s){return s!==""}).length < 18) return false;
         var cp = null;
         if (r.holePars && r.holePars.length) cp = r.holePars;
@@ -3812,12 +3816,12 @@ var PB = (function() {
       });
       if (hasBogeyFreeRound) achievements.push({id:"bogey_free",name:"Bogey Free",desc:"Complete 18 holes without a bogey",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5'/></svg>",xp:1000,cat:"score",title:"Bogey Free"});
       
-      // Double trouble
+      // Double trouble (exclude scramble)
       if (totalDoubles >= 20) achievements.push({id:"double_trouble",name:"Double Trouble",desc:"20 career double bogeys",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l1 4 4-1-3 3 3 3-4-1-1 4-1-4-4 1 3-3-3-3 4 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:50,cat:"blunder",title:"Double Trouble"});
       
-      // Snowman (score an 8 on a hole)
+      // Snowman (score an 8 on a hole) — exclude scramble
       var hasSnowman = false;
-      rounds.forEach(function(r) { if (r.holeScores) r.holeScores.forEach(function(s) { if (parseInt(s) >= 8) hasSnowman = true; }); });
+      indivHoleRounds.forEach(function(r) { if (r.holeScores) r.holeScores.forEach(function(s) { if (parseInt(s) >= 8) hasSnowman = true; }); });
       if (hasSnowman) achievements.push({id:"snowman",name:"Snowman",desc:"Score an 8 or worse on a single hole",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><circle cx='8' cy='5' r='3' fill='none' stroke='currentColor' stroke-width='1'/><circle cx='8' cy='12' r='4' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:25,cat:"blunder",title:"The Snowman"});
     }
     
@@ -4676,8 +4680,9 @@ Router.register("home", function() {
   }
   
   if (myRounds.length >= 3 && myRounds.length < 10) {
-    var best = Math.min.apply(null, myRounds.map(function(r){return r.score||999}));
-    motivationCards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='8' r='6'/><circle cx='8' cy='8' r='3'/><circle cx='8' cy='8' r='.8' fill='currentColor'/></svg>", title:"Your best: " + best, sub:"Can you beat it? Every round that ties or beats your PR earns a 50-point bonus.", cta:"Play Now →", page:"playnow"});
+    var indivRounds = myRounds.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4";});
+    var best = indivRounds.length ? Math.min.apply(null, indivRounds.map(function(r){return r.score||999})) : null;
+    if (best) motivationCards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='8' r='6'/><circle cx='8' cy='8' r='3'/><circle cx='8' cy='8' r='.8' fill='currentColor'/></svg>", title:"Your best: " + best, sub:"Can you beat it? Every round that ties or beats your PR earns a 50-point bonus.", cta:"Play Now →", page:"playnow"});
   }
   
   var now = new Date();
@@ -5443,7 +5448,13 @@ function renderMemberDetailWithData(p) {
   h += '<div class="stats-grid">';
   h += statBox(hcap !== null ? hcap : "—", "Handicap");
   h += statBox(avg || "—", "Avg score");
-  h += statBox(best || "—", "Best round");
+  var bestScore = best ? best.score : "—";
+  var bestRoundId = best ? best.roundId : null;
+  if (bestRoundId) {
+    h += '<div class="stat-box" style="cursor:pointer" onclick="Router.go(\'rounds\',{roundId:\'' + bestRoundId + '\'})"><div class="stat-val" style="color:var(--birdie)">' + bestScore + '</div><div class="stat-label">Best round ↗</div></div>';
+  } else {
+    h += statBox(bestScore, "Best round");
+  }
   h += statBox(rounds.length, "Rounds");
   h += statBox(unique, "Courses");
   h += statBox(p.wins || 0, "Event wins");
@@ -5489,16 +5500,41 @@ function renderMemberDetailWithData(p) {
     var courseMap = {};
     rounds.forEach(function(r) {
       if (!r.course) return;
-      if (!courseMap[r.course]) courseMap[r.course] = { name: r.course, best18: null, best9: null, count: 0 };
+      if (!courseMap[r.course]) courseMap[r.course] = { name: r.course, best18: null, best9: null, best9mode: null, bestScramble: null, count: 0, bestRoundId: null, best9RoundId: null };
       courseMap[r.course].count++;
-      var is18 = !r.holesPlayed || r.holesPlayed >= 18;
-      if (is18 && (courseMap[r.course].best18 === null || r.score < courseMap[r.course].best18)) courseMap[r.course].best18 = r.score;
-      if (!is18 && (courseMap[r.course].best9 === null || r.score < courseMap[r.course].best9)) courseMap[r.course].best9 = r.score;
+      var isScramble = r.format === "scramble" || r.format === "scramble4";
+      var is9 = r.holesPlayed && r.holesPlayed <= 9;
+      if (isScramble) {
+        if (courseMap[r.course].bestScramble === null || r.score < courseMap[r.course].bestScramble) courseMap[r.course].bestScramble = r.score;
+      } else if (is9) {
+        if (courseMap[r.course].best9 === null || r.score < courseMap[r.course].best9) {
+          courseMap[r.course].best9 = r.score;
+          courseMap[r.course].best9mode = r.holesMode === "back9" ? "Back 9" : "Front 9";
+          courseMap[r.course].best9RoundId = r.id;
+        }
+      } else {
+        if (courseMap[r.course].best18 === null || r.score < courseMap[r.course].best18) {
+          courseMap[r.course].best18 = r.score;
+          courseMap[r.course].bestRoundId = r.id;
+        }
+      }
     });
     var courseList = Object.values(courseMap).sort(function(a, b) { return b.count - a.count; });
     courseList.forEach(function(c) {
-      var bestLabel = c.best18 !== null ? c.best18 : (c.best9 !== null ? c.best9 + ' (9h)' : '—');
-      coursesContent += '<div class="club-row"><span class="club-name">' + escHtml(c.name) + ' <span style="color:var(--muted);font-size:9px">(' + c.count + 'x)</span></span><span class="club-yd">Best: ' + bestLabel + '</span></div>';
+      var lines = [];
+      if (c.best18 !== null) {
+        var click18 = c.bestRoundId ? ' style="cursor:pointer;color:var(--gold)" onclick="Router.go(\'rounds\',{roundId:\'' + c.bestRoundId + '\'})"' : ' style="color:var(--gold)"';
+        lines.push('<span' + click18 + '>Best: ' + c.best18 + '</span>');
+      }
+      if (c.best9 !== null) {
+        var click9 = c.best9RoundId ? ' style="cursor:pointer;color:var(--gold)" onclick="Router.go(\'rounds\',{roundId:\'' + c.best9RoundId + '\'})"' : ' style="color:var(--gold)"';
+        lines.push('<span' + click9 + '>Best: ' + c.best9 + ' <span style="color:var(--muted);font-size:9px">(' + (c.best9mode || '9h') + ')</span></span>');
+      }
+      if (c.bestScramble !== null) {
+        lines.push('<span style="color:var(--muted)">Scramble: ' + c.bestScramble + '</span>');
+      }
+      if (!lines.length) lines.push('<span style="color:var(--muted)">—</span>');
+      coursesContent += '<div class="club-row" style="flex-wrap:wrap;gap:2px"><span class="club-name">' + escHtml(c.name) + ' <span style="color:var(--muted);font-size:9px">(' + c.count + 'x)</span></span><span class="club-yd" style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;font-size:11px">' + lines.join('') + '</span></div>';
     });
   } else {
     coursesContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No courses played yet</div>';
@@ -12770,25 +12806,46 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.12.0</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.12.1</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.12.0</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Event Scoring & Fixes</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.12.1</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Achievement Audit & Profile Polish</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Event rounds now create actual round docs on finalization — XP, achievements, handicap, and H2H all work", tag: "NEW"},
-    {item: "Scramble rounds logged for each participant with team score on finalization", tag: "NEW"},
-    {item: "Event rounds award 150 bonus XP per round", tag: "NEW"},
-    {item: "Login now accepts username or email — no more \"Login failed\" for username entries", tag: "NEW"},
-    {item: "Invite link shows green confirmation banner with pre-applied code for new users", tag: "IMPROVED"},
-    {item: "Event achievements require actual scores — trip membership alone no longer counts", tag: "FIXED"},
-    {item: "Attestation only shows players who have scores on that course (no more blank entries)", tag: "FIXED"},
-    {item: "Course Directory shows best scores instead of averages for F9/B9/18", tag: "IMPROVED"},
-    {item: "Log a Round scorecard now updates pars and FIR when you select a course", tag: "FIXED"},
-    {item: "Share card logo shows gold P fallback when logo.jpg not found", tag: "FIXED"}
+    {item: "Scramble rounds fully excluded from ALL individual stats — handicap, avg, best round, achievements, improvement tracking", tag: "FIXED"},
+    {item: "Birdie/eagle/bogey-free achievements now exclude scramble team scores — only individual rounds count", tag: "FIXED"},
+    {item: "Best Round stat is tappable — opens the actual scorecard for that round", tag: "NEW"},
+    {item: "Courses Played section shows format labels: individual best, 9-hole mode (Front 9/Back 9), and scramble best separately", tag: "IMPROVED"},
+    {item: "Course Directory F9/B9/18 now reads hole-by-hole data correctly and excludes scramble", tag: "FIXED"},
+    {item: "Event round date calculation fixed — dynamically computes from trip start date and course day", tag: "FIXED"},
+    {item: "Attestation display filters to scored players even on pre-existing docs, shows \'Finalized\' instead of \'Pending\' after override", tag: "FIXED"},
+    {item: "Activity feed: likes, comments, time-ago timestamps, 600px scrollable window", tag: "NEW"},
+    {item: "Login accepts username or email", tag: "NEW"},
+    {item: "Scorecard cell coloring fixed — proper golf symbols on edit", tag: "FIXED"},
+    {item: "Stableford points row updates in real-time", tag: "FIXED"},
+    {item: "FIR/GIR toggles fixed on trip scorecard", tag: "FIXED"}
   ];
   currentNotes.forEach(function(r) {
+    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
+    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
+    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
+    h += '<span>' + r.item + '</span></div>';
+  });
+  h += '</div></div></div>';
+
+  // v5.12.0
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.12.0 · April 2026 · Event Scoring</span></div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
+  var v5120Notes = [
+    {item: "Event rounds create actual round docs on finalization — XP, achievements, handicap all work", tag: "NEW"},
+    {item: "Scramble rounds logged per participant with 150 bonus XP", tag: "NEW"},
+    {item: "Event achievements require actual scores, not just trip membership", tag: "FIXED"},
+    {item: "Log a Round scorecard updates on course selection", tag: "FIXED"},
+    {item: "Share card logo gold P fallback", tag: "FIXED"},
+    {item: "Invite link shows confirmation banner", tag: "IMPROVED"}
+  ];
+  v5120Notes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
     h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
     h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
@@ -13003,7 +13060,7 @@ function renderTrophyRoom(p) {
   h += '<div class="stat-box" id="trophyFilterBtn" onclick="toggleTrophyFilter(\'' + pid + '\')" style="cursor:pointer;border:1px solid var(--border);transition:border-color .15s"><div class="stat-val" style="font-size:18px">' + achievements.length + '</div><div class="stat-label">Unlocked</div></div>';
   h += '<div class="stat-box"><div class="stat-val" style="font-size:18px">' + rounds.length + '</div><div class="stat-label">Rounds</div></div>';
   var best = PB.getPlayerBest(pid);
-  h += '<div class="stat-box"><div class="stat-val" style="font-size:18px">' + (best || "—") + '</div><div class="stat-label">Best</div></div>';
+  h += '<div class="stat-box"><div class="stat-val" style="font-size:18px">' + (best ? best.score : "—") + '</div><div class="stat-label">Best</div></div>';
   var unique = PB.getUniqueCourses(pid);
   h += '<div class="stat-box"><div class="stat-val" style="font-size:18px">' + unique + '</div><div class="stat-label">Courses</div></div>';
   h += '</div>';
