@@ -5480,7 +5480,7 @@ function renderMemberDetailWithData(p) {
   var bestScore = best ? best.score : "—";
   var bestRoundId = best ? best.roundId : null;
   if (bestRoundId) {
-    h += '<div class="stat-box" style="cursor:pointer" onclick="Router.go(\'rounds\',{roundId:\'' + bestRoundId + '\'})"><div class="stat-val" style="color:var(--birdie)">' + bestScore + '</div><div class="stat-label">Best round ↗</div></div>';
+    h += '<div class="stat-box" style="cursor:pointer" onclick="Router.go(\'rounds\',{roundId:\'' + bestRoundId + '\'})"><div class="stat-val" style="color:var(--birdie)">' + bestScore + '</div><div class="stat-label">Best round <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div></div>';
   } else {
     h += statBox(bestScore, "Best round");
   }
@@ -5704,12 +5704,41 @@ function renderMemberDetailWithData(p) {
   var teamContent = '';
   if (playerTeams.length) {
     playerTeams.forEach(function(t) {
-      var matches = t.matches || [];
+      var matches = (t.matches || []).slice();
+      // Also count scramble rounds from rounds collection
+      var memberIds = t.members;
+      var roundsCol = PB.getRounds().filter(function(r) {
+        return (r.format === "scramble" || r.format === "scramble4") && memberIds.indexOf(r.player) !== -1;
+      });
+      var matchKeys = {};
+      matches.forEach(function(m) { matchKeys[(m.course||"") + "|" + (m.date||"")] = true; });
+      roundsCol.forEach(function(r) {
+        var key = (r.course||"") + "|" + (r.date||"");
+        if (!matchKeys[key]) { matches.push({ course: r.course, date: r.date, score: r.score, format: r.format }); matchKeys[key] = true; }
+      });
+      // Deduplicate by course+date (scramble rounds are per-player, count as 1 team round)
+      var uniqueRounds = {};
+      matches.forEach(function(m) { if (m.course && m.date) uniqueRounds[(m.course||"") + "|" + (m.date||"")] = m; });
+      var teamRoundCount = Object.keys(uniqueRounds).length;
+      
       var bestScore = null;
       matches.forEach(function(m){ if (m.score && (bestScore === null || m.score < bestScore)) bestScore = m.score; });
+      var h2hMatches = matches.filter(function(m){ return m.result === "win" || m.result === "loss" || m.result === "tie"; });
+      var wins = h2hMatches.filter(function(m){ return m.result === "win"; }).length;
+      var losses = h2hMatches.filter(function(m){ return m.result === "loss"; }).length;
       var mates = t.members.filter(function(id){return id !== pid && id !== pClaimedFrom}).map(function(id){var p=PB.getPlayer(id);return p?p.name:id}).join(", ");
-      var rightLabel = bestScore ? 'Best: ' + bestScore : matches.length + ' rd' + (matches.length !== 1 ? 's' : '');
-      teamContent += '<div class="h2h-row" onclick="Router.go(\'scramble\',{id:\'' + t.id + '\'})" style="cursor:pointer"><div><div style="font-size:13px;font-weight:600">' + t.name + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">w/ ' + mates + '</div></div><div style="font-size:13px;font-weight:600;color:var(--gold)">' + rightLabel + '</div></div>';
+      
+      var rightHTML = '';
+      if (h2hMatches.length) {
+        rightHTML = '';
+        if (bestScore) rightHTML += '<div style="font-size:16px;font-weight:700;color:var(--gold)">' + bestScore + '</div>';
+        rightHTML += '<div style="font-size:10px;color:var(--muted)">' + wins + '-' + losses + ' W-L</div>';
+      } else if (bestScore) {
+        rightHTML = '<div style="font-size:13px;font-weight:600;color:var(--gold)">Best: ' + bestScore + '</div>';
+      } else {
+        rightHTML = '<div style="font-size:10px;color:var(--muted2)">' + teamRoundCount + ' rd' + (teamRoundCount !== 1 ? 's' : '') + '</div>';
+      }
+      teamContent += '<div class="h2h-row" onclick="Router.go(\'scramble\',{id:\'' + t.id + '\'})" style="cursor:pointer"><div><div style="font-size:13px;font-weight:600">' + t.name + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">w/ ' + mates + '</div></div><div style="text-align:right">' + rightHTML + '</div></div>';
     });
   } else {
     teamContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">Not on any teams yet</div>';
@@ -6660,7 +6689,7 @@ function toggleBadge(pid, badgeId) {
 
 Router.register("scramble", function(params) {
   if (params.create) { renderCreateTeam(); return; }
-  if (params.match) { renderLogMatch(); return; }
+  if (params.match) { renderLogMatch(params.challenger || null); return; }
   if (params.teamround) { renderLogTeamRound(params.teamround); return; }
   if (params.id) { renderTeamDetail(params.id); return; }
   renderTeamList();
@@ -6699,14 +6728,15 @@ function renderTeamList() {
       if (captain) h += '<div style="font-size:10px;color:var(--muted)">Captain: <span style="color:var(--gold);font-weight:600">' + escHtml(captain.name) + '</span></div>';
       h += '</div>';
 
-      // Right — W-L only for 2-man with H2H games, otherwise best score
+      // Right — W-L if team has H2H matches, otherwise best score
       var h2h = (team.matches || []).filter(function(m) { return m.result === 'win' || m.result === 'loss' || m.result === 'tie'; });
       h += '<div style="text-align:right">';
-      if (members.length === 2 && h2h.length > 0) {
+      if (h2h.length > 0) {
         var wins = h2h.filter(function(m) { return m.result === "win"; }).length;
         var losses = h2h.filter(function(m) { return m.result === "loss"; }).length;
         h += '<div style="font-size:28px;font-weight:800;color:var(--gold);line-height:1">' + wins + '-' + losses + '</div>';
         h += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">W-L</div>';
+        if (best !== null) h += '<div style="font-size:10px;color:var(--muted2)">Best: ' + best + '</div>';
       } else if (best !== null) {
         h += '<div style="font-size:28px;font-weight:800;color:var(--gold);line-height:1">' + best + '</div>';
         h += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">Best score</div>';
@@ -6801,8 +6831,11 @@ function toggleScrambleMember(pid) {
 }
 
 function submitCreateTeam() {
-  var name = document.getElementById("st-name").value;
+  var name = document.getElementById("st-name").value.trim();
   if (!name) { Router.toast("Enter a team name"); return; }
+  // Check for duplicate team names
+  var existing = PB.getScrambleTeams().find(function(t){ return t.name.toLowerCase() === name.toLowerCase(); });
+  if (existing) { Router.toast("A team named '" + name + "' already exists"); return; }
   if (scrambleSelected.length !== scrambleTeamSize) { Router.toast("Select exactly " + scrambleTeamSize + " members"); return; }
   var team = PB.addScrambleTeam({ name: name, members: scrambleSelected.slice(), size: scrambleTeamSize });
   scrambleSelected = [];
@@ -6821,6 +6854,9 @@ function renameScrambleTeam(teamId) {
   var newName = prompt("Rename team:", team.name);
   if (!newName || !newName.trim() || newName.trim() === team.name) return;
   newName = newName.trim();
+  // Check for duplicate team names
+  var dupTeam = teams.find(function(t){ return t.id !== teamId && t.name.toLowerCase() === newName.toLowerCase(); });
+  if (dupTeam) { Router.toast("A team named '" + newName + "' already exists"); return; }
   if (!db) { Router.toast("No connection — try again when online"); return; }
   // Firestore-first: write to Firestore, then update local state on success
   db.collection("scrambleTeams").doc(teamId).set({ name: newName }, { merge: true }).then(function() {
@@ -6878,13 +6914,13 @@ function renderTeamDetail(teamId) {
   h += '</div>';
   h += '<div style="font-size:13px;color:var(--muted)">' + team.size + '-man scramble</div></div>';
 
-  // Action buttons — log round always available, H2H match only for 2-man with another 2-man team
+  // Action buttons — log round + challenge for any team with same-size opponents
   var allTeams = PB.getScrambleTeams();
-  var other2man = allTeams.filter(function(t){ return t.id !== team.id && (t.size||t.members.length) === 2; });
+  var sameSize = allTeams.filter(function(t){ return t.id !== team.id && (t.size||t.members.length) === (team.size||members.length); });
   h += '<div style="padding:0 16px 16px;display:flex;gap:8px">';
   h += '<button class="btn full green" style="flex:1" onclick="Router.go(\'scramble\',{teamround:\'' + team.id + '\'})">Log team round</button>';
-  if (members.length === 2 && other2man.length > 0) {
-    h += '<button class="btn full outline" style="flex:1" onclick="Router.go(\'scramble\',{match:true})">Log H2H match</button>';
+  if (sameSize.length > 0) {
+    h += '<button class="btn full outline" style="flex:1" onclick="Router.go(\'scramble\',{match:true,challenger:\'' + team.id + '\'})">Challenge a team</button>';
   }
   h += '</div>';
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Best rounds</span></div>';
@@ -6938,7 +6974,29 @@ function renderTeamDetail(teamId) {
   h += '<div class="hof-row"><span class="hof-label">Worst score</span><span class="hof-val"' + (worstScore && worstScore !== bestScore ? ' style="color:var(--red)"' : '') + '>' + (worstScore && worstScore !== bestScore ? worstScore : '—') + '</span></div>';
   h += '<div class="hof-row"><span class="hof-label">Average score</span><span class="hof-val">' + (avgScore || '—') + '</span></div>';
   h += '<div class="hof-row"><span class="hof-label">Team handicap</span><span class="hof-val"' + (teamHdcp !== null ? ' style="color:var(--gold)"' : '') + '>' + (teamHdcp !== null ? teamHdcp : '—') + '</span></div>';
+  // W-L record from matches
+  var h2hMatches = matches.filter(function(m){ return m.result === "win" || m.result === "loss" || m.result === "tie"; });
+  var teamWins = h2hMatches.filter(function(m){ return m.result === "win"; }).length;
+  var teamLosses = h2hMatches.filter(function(m){ return m.result === "loss"; }).length;
+  var teamTies = h2hMatches.filter(function(m){ return m.result === "tie"; }).length;
+  h += '<div class="hof-row"><span class="hof-label">Match record (W-L' + (teamTies ? '-T' : '') + ')</span><span class="hof-val" style="color:var(--gold);font-weight:700">' + (h2hMatches.length ? teamWins + '-' + teamLosses + (teamTies ? '-' + teamTies : '') : '—') + '</span></div>';
   h += '</div></div>';
+
+  // Match history — vs other teams
+  if (h2hMatches.length) {
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Match history</span></div>';
+    h2hMatches.slice().reverse().forEach(function(m) {
+      var resultColor = m.result === "win" ? "var(--birdie)" : m.result === "loss" ? "var(--red)" : "var(--gold)";
+      var resultLabel = m.result === "win" ? "WIN" : m.result === "loss" ? "LOSS" : "TIE";
+      h += '<div class="card" style="margin-bottom:6px"><div style="padding:10px 16px;display:flex;justify-content:space-between;align-items:center">';
+      h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">vs ' + escHtml(m.opponent || "Unknown") + '</div>';
+      h += '<div style="font-size:10px;color:var(--muted)">' + escHtml(m.course || "") + ' · ' + (m.date || "") + '</div></div>';
+      h += '<div style="text-align:right"><div style="font-size:14px;font-weight:700;color:var(--cream)">' + m.score + ' - ' + (m.opponentScore || '?') + '</div>';
+      h += '<div style="font-size:10px;font-weight:700;color:' + resultColor + '">' + resultLabel + '</div></div>';
+      h += '</div></div>';
+    });
+    h += '</div>';
+  }
 
   // Round history — color-coded +/- vs par
   if (matches.length) {
@@ -6961,34 +7019,74 @@ function renderTeamDetail(teamId) {
   document.querySelector('[data-page="scramble"]').innerHTML = h;
 }
 
-function renderLogMatch() {
+function renderLogMatch(challengerId) {
   var teams = PB.getScrambleTeams();
-  if (teams.length < 2) { Router.toast("Need at least 2 teams"); Router.go("scramble"); return; }
+  var challenger = challengerId ? teams.find(function(t){ return t.id === challengerId; }) : null;
+  var teamSize = challenger ? (challenger.size || challenger.members.length) : 0;
+  
+  // Filter to same-size teams if challenger specified
+  var availableTeams = teamSize ? teams.filter(function(t){ return (t.size||t.members.length) === teamSize; }) : teams;
+  var opponentTeams = teamSize ? availableTeams.filter(function(t){ return t.id !== challengerId; }) : teams;
+  
+  if (availableTeams.length < 2) { Router.toast("Need at least 2 teams of the same size"); Router.go("scramble"); return; }
 
-  var h = '<div class="sh"><h2>Log match</h2><button class="back" onclick="Router.back(\'scramble\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>' + (challenger ? challenger.name + ' vs ...' : 'Log match') + '</h2><button class="back" onclick="Router.back(\'scramble\')">← Back</button></div>';
 
-  h += '<div class="form-section"><div class="form-title">Match details</div>';
+  h += '<div class="form-section"><div class="form-title">' + (teamSize ? teamSize + '-man scramble match' : 'Match details') + '</div>';
 
-  h += '<div class="ff"><label class="ff-label">Team 1</label><select class="ff-input" id="lm-team1">';
-  teams.forEach(function(t) { h += '<option value="' + t.id + '">' + t.name + '</option>'; });
+  h += '<div class="ff"><label class="ff-label">Team 1</label><select class="ff-input" id="lm-team1" onchange="updateMatchTeam2Options()">';
+  availableTeams.forEach(function(t) { h += '<option value="' + t.id + '"' + (challenger && t.id === challengerId ? ' selected' : '') + '>' + t.name + ' (' + (t.size||t.members.length) + '-man)</option>'; });
   h += '</select></div>';
 
   h += '<div class="ff"><label class="ff-label">Team 2</label><select class="ff-input" id="lm-team2">';
-  teams.forEach(function(t, i) { h += '<option value="' + t.id + '"' + (i === 1 ? " selected" : "") + '>' + t.name + '</option>'; });
+  var defaultOpp = opponentTeams.length ? opponentTeams[0] : null;
+  opponentTeams.forEach(function(t, i) { h += '<option value="' + t.id + '"' + (i === 0 ? ' selected' : '') + '>' + t.name + '</option>'; });
   h += '</select></div>';
 
-  h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="lm-course" placeholder="Start typing..." oninput="showRoundCourseSearch(this)"><div id="search-round-course" class="search-results"></div></div>';
+  h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="lm-course" placeholder="Search courses..." autocomplete="off" oninput="showRoundCourseSearch(this)"><div id="search-round-course" class="search-results"></div></div>';
 
   h += '<div class="ff-row">';
-  h += '<div class="ff"><label class="ff-label">Team 1 score</label><input type="number" class="ff-input" id="lm-score1" placeholder="68"></div>';
-  h += '<div class="ff"><label class="ff-label">Team 2 score</label><input type="number" class="ff-input" id="lm-score2" placeholder="72"></div>';
+  h += '<div class="ff"><label class="ff-label">Team 1 score</label><input type="number" inputmode="numeric" class="ff-input" id="lm-score1" placeholder="72"></div>';
+  h += '<div class="ff"><label class="ff-label">Team 2 score</label><input type="number" inputmode="numeric" class="ff-input" id="lm-score2" placeholder="72"></div>';
   h += '</div>';
 
   h += formField("Date", "lm-date", localDateStr(), "date");
 
-  h += '<button class="btn full green" onclick="submitLogMatch()">Log match</button></div>';
+  h += '<button class="btn full green" onclick="submitLogMatch()">Log match result</button></div>';
+
+  // Past matches between these teams
+  if (challenger && defaultOpp) {
+    var pastMatches = (challenger.matches || []).filter(function(m){ return m.opponent === defaultOpp.name; });
+    if (pastMatches.length) {
+      h += '<div class="section"><div class="sec-head"><span class="sec-title">Match history vs ' + escHtml(defaultOpp.name) + '</span></div>';
+      pastMatches.slice().reverse().forEach(function(m) {
+        var resultColor = m.result === "win" ? "var(--birdie)" : m.result === "loss" ? "var(--red)" : "var(--gold)";
+        var resultLabel = m.result === "win" ? "W" : m.result === "loss" ? "L" : "T";
+        h += '<div class="card" style="margin-bottom:4px"><div style="padding:8px 14px;display:flex;justify-content:space-between;align-items:center;font-size:11px">';
+        h += '<div><span style="color:var(--cream);font-weight:600">' + escHtml(m.course || "—") + '</span><span style="color:var(--muted);margin-left:6px">' + (m.date || "") + '</span></div>';
+        h += '<div style="display:flex;align-items:center;gap:8px"><span style="color:var(--cream)">' + m.score + ' - ' + m.opponentScore + '</span><span style="font-weight:700;color:' + resultColor + ';width:16px;text-align:center">' + resultLabel + '</span></div>';
+        h += '</div></div>';
+      });
+      h += '</div>';
+    }
+  }
 
   document.querySelector('[data-page="scramble"]').innerHTML = h;
+}
+
+function updateMatchTeam2Options() {
+  var t1id = document.getElementById("lm-team1").value;
+  var teams = PB.getScrambleTeams();
+  var t1 = teams.find(function(t){ return t.id === t1id; });
+  var size = t1 ? (t1.size || t1.members.length) : 0;
+  var sel = document.getElementById("lm-team2");
+  if (!sel) return;
+  sel.innerHTML = "";
+  teams.filter(function(t){ return t.id !== t1id && (t.size||t.members.length) === size; }).forEach(function(t) {
+    var opt = document.createElement("option");
+    opt.value = t.id; opt.textContent = t.name;
+    sel.appendChild(opt);
+  });
 }
 
 function submitLogMatch() {
@@ -13071,39 +13169,22 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.13.0</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.14.2</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.13.0</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Scramble Isolation, H2H, Graph Redesign</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.14.2</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Scramble Team Matches + Fixes</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Head-to-Head now resolves all player IDs (Firebase UID, seed ID, claimedFrom) — matches show correctly on profiles", tag: "FIXED"},
-    {item: "H2H uses fuzzy course name matching and excludes scramble from both rounds and trip scorecards", tag: "FIXED"},
-    {item: "Season Courses excludes scramble, shows who shot the best score, and displays both 18-hole and 9-hole bests", tag: "IMPROVED"},
-    {item: "Activity feed groups scramble rounds into a single team entry instead of 4 individual posts — shows team name and member list", tag: "IMPROVED"},
-    {item: "Home activity feed shows ~4 items visible with scroll for the rest — cleaner home page", tag: "IMPROVED"},
-    {item: "Handicap graph uses 3-letter month labels (Apr not A) and includes a legend showing what dots, lines, and direction mean", tag: "IMPROVED"},
-    {item: "Handicap graph redesigned — gold gradient fill under line, value labels on each dot, glow ring on current month, dashed grid, single-point shows clean stat instead of lonely dot, trend with +/- delta", tag: "IMPROVED"},
-    {item: "Scramble leaderboard on course detail now checks actual team size — 4-man team only shows on 4-man board, not 2-man", tag: "FIXED"},
-    {item: "Last 3 Rounds properly sorts by date (newest first) — was taking last 3 from unsorted array", tag: "FIXED"},
-    {item: "H2H section skips self using all player ID aliases (Firebase UID, seed ID, claimedFrom) — no more seeing yourself as opponent", tag: "FIXED"},
-    {item: "Activity page round history groups scramble into single team entry with team name and member list, sorts by timestamp", tag: "IMPROVED"},
-    {item: "Handicap single-month view shows differentials breakdown with horizontal bars — best differential highlighted in gold, with note that graph builds across months", tag: "IMPROVED"},
-    {item: "Liking a round in the activity feed no longer refreshes the page — UI updates in-place", tag: "FIXED"},
-    {item: "Handicap differentials chart: stacked layout (course name above bar) for readability on mobile, scramble excluded", tag: "FIXED"},
-    {item: "Scramble entries in activity page history now have a Share button", tag: "NEW"},
-    {item: "Course detail Individual and Scramble scores are now clickable — opens round detail", tag: "FIXED"},
-    {item: "Fixed 'Silver Tees Tees' — tee label no longer double-appends 'Tees'", tag: "FIXED"},
-    {item: "Caddy Notes trimmed to current + previous version only", tag: "IMPROVED"},
-    {item: "Score differentials and round differentials are now collapsible dropdowns — pending rounds always visible", tag: "IMPROVED"},
-    {item: "Emojis removed — medal emojis replaced with #1/#2/#3, checkmarks replaced with SVG icons", tag: "FIXED"},
-    {item: "Team display on profile shows best score instead of 0-0 W-L record", tag: "FIXED"},
-    {item: "Scramble share card shows team name first with player names underneath instead of individual player name", tag: "IMPROVED"},
-    {item: "Commissioner title fixed — no longer shows Locked for Mr Parbaugh (checks role + username, not hardcoded ID)", tag: "FIXED"},
-    {item: "FAQ added: What are score differentials? — explains the WHS formula and why they matter", tag: "NEW"},
-    {item: "Handicap graph shows round count per month below month labels (e.g. '3 rds')", tag: "IMPROVED"},
-    {item: "Removed redundant round differentials bar chart — Score Differentials table is the single source of truth", tag: "IMPROVED"}
+    {item: "Scramble vs Scramble matches — any same-size teams can challenge each other (2v2, 3v3, 4v4)", tag: "NEW"},
+    {item: "Challenge button on team detail page — auto-filters to same-size opponents", tag: "NEW"},
+    {item: "Match history shown on team detail page with W-L-T record and scores", tag: "NEW"},
+    {item: "W-L record shown on team list and profile for all team sizes", tag: "IMPROVED"},
+    {item: "Team 2 dropdown auto-filters to same-size teams when Team 1 changes", tag: "IMPROVED"},
+    {item: "Best Round iOS emoji fixed — replaced arrow character with SVG icon", tag: "FIXED"},
+    {item: "Team rounds count on profile now includes rounds from rounds collection (Sequoyah scramble shows correctly)", tag: "FIXED"},
+    {item: "Duplicate team names blocked — cannot create or rename a team to an existing name", tag: "NEW"},
+    {item: "Profile Teams section shows best score on top, W-L record underneath", tag: "FIXED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
@@ -13113,17 +13194,17 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  // v5.12.4
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.12.4 · April 2026 · Achievement & Scramble Audit</span></div>';
+  // v5.13.0
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.13.0 · April 2026 · Scramble Isolation, H2H, Graph Redesign</span></div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
-  var v5124Notes = [
-    {item: "Full scramble isolation audit across all systems", tag: "AUDIT"},
-    {item: "Duplicate achievements removed, 7+ blunder achievements exclude scramble", tag: "FIXED"},
-    {item: "Hot Streak checks distinct calendar weeks", tag: "FIXED"},
-    {item: "Course detail: separate Individual and Scramble score sections", tag: "IMPROVED"},
-    {item: "Manual handicap fully removed", tag: "FIXED"}
+  var v5130Notes = [
+    {item: "Full scramble isolation across all stats, achievements, standings, and records", tag: "AUDIT"},
+    {item: "H2H resolves all player IDs and uses fuzzy course matching", tag: "FIXED"},
+    {item: "Handicap graph redesigned with gradient fill, value labels, round counts per month", tag: "IMPROVED"},
+    {item: "Activity feed groups scramble into single team entry", tag: "IMPROVED"},
+    {item: "Score differentials collapsible, Commissioner title fixed, emojis removed", tag: "FIXED"}
   ];
-  v5124Notes.forEach(function(r) {
+  v5130Notes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : r.tag === "AUDIT" ? "var(--red)" : "var(--muted)";
     h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
     h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
@@ -13201,7 +13282,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.13.0</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.14.2</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
