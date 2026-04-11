@@ -2994,57 +2994,77 @@ var PB = (function() {
   }
 
   function calcHandicap(rounds) {
-    // GHIN / World Handicap System formula
-    // 1. Calculate Score Differential for each round: (113 / Slope) × (Score - Rating)
-    // 2. Use most recent 20 rounds
-    // 3. Select best differentials based on count:
-    //    3 rounds=lowest 1, 4=lowest 1, 5=lowest 1, 6=lowest 2, 
-    //    7-8=lowest 2, 9-10=lowest 3, 11-12=lowest 4, 13-14=lowest 5,
-    //    15-16=lowest 6, 17-18=lowest 7, 19=lowest 8, 20=lowest 8
-    // 4. Average the selected differentials
-    // 5. Multiply by 0.96 (96% adjustment per WHS)
-    // 6. Round to one decimal
-    // Exclude scramble rounds — team scores don't reflect individual ability
-    var eligible = (rounds || []).filter(function(r) {
-      return r.format !== "scramble" && r.format !== "scramble4";
-    });
-    if (eligible.length < 3) return null;
+    // GHIN / World Handicap System formula with 9-hole pairing
+    // 1. Score Differential: (113 / Slope) × (Score - Rating)
+    // 2. Use most recent 20 differentials
+    // 3. Select best differentials based on count (GHIN table)
+    // 4. Average × 0.96, cap at 54.0
+    //
+    // WHS 9-HOLE PAIRING:
+    // - Two 9-hole scores are combined chronologically to form one 18-hole differential
+    // - Combined rating = sum of two 9-hole ratings (or 2× single if same course)
+    // - Combined slope = average of the two 9-hole slopes
+    // - Unpaired 9-hole rounds do NOT contribute until paired
+    var details = getHandicapDetails(rounds);
+    if (details.differentials.length < 3) return null;
     
-    // Sort by date descending, take most recent 20
-    var recent = eligible.slice().sort(function(a,b) { return new Date(b.date) - new Date(a.date); }).slice(0, 20);
-    
-    // Calculate score differentials
-    var diffs = recent.map(function(r) {
-      var rating = parseFloat(r.rating) || 72;
-      var slope = parseInt(r.slope) || 113;
-      return (113 / slope) * (r.score - rating);
-    });
-    
-    // Sort differentials lowest first
-    var sorted = diffs.slice().sort(function(a, b) { return a - b; });
-    
-    // GHIN selection table
+    var sorted = details.differentials.slice().sort(function(a, b) { return a.diff - b.diff; });
     var n = sorted.length;
-    var use;
-    if (n <= 5) use = 1;
-    else if (n <= 8) use = 2;
-    else if (n <= 10) use = 3;
-    else if (n <= 12) use = 4;
-    else if (n <= 14) use = 5;
-    else if (n <= 16) use = 6;
-    else if (n <= 18) use = 7;
-    else use = 8;
+    var use = n <= 5 ? 1 : n <= 8 ? 2 : n <= 10 ? 3 : n <= 12 ? 4 : n <= 14 ? 5 : n <= 16 ? 6 : n <= 18 ? 7 : 8;
     
     var best = sorted.slice(0, use);
-    var avg = best.reduce(function(a, b) { return a + b; }, 0) / best.length;
-    
-    // Apply 0.96 multiplier (WHS standard)
-    var handicap = avg * 0.96;
-    
-    // Cap at 54.0 (max GHIN handicap)
-    handicap = Math.min(54.0, handicap);
-    
+    var avg = best.reduce(function(a, b) { return a + b.diff; }, 0) / best.length;
+    var handicap = Math.min(54.0, avg * 0.96);
     return Math.round(handicap * 10) / 10;
+  }
+
+  // Returns detailed handicap breakdown including 9-hole pairing info
+  function getHandicapDetails(rounds) {
+    var result = { differentials: [], paired9s: [], unpaired9: null, eligible18: [] };
+    var indiv = (rounds || []).filter(function(r) {
+      return r.format !== "scramble" && r.format !== "scramble4";
+    });
+    
+    // Separate 18-hole and 9-hole rounds
+    var full18 = indiv.filter(function(r) { return !r.holesPlayed || r.holesPlayed >= 18; });
+    var nine = indiv.filter(function(r) { return r.holesPlayed && r.holesPlayed < 18; });
+    
+    // 18-hole differentials
+    full18.forEach(function(r) {
+      var rating = parseFloat(r.rating) || 72;
+      var slope = parseInt(r.slope) || 113;
+      var diff = (113 / slope) * (r.score - rating);
+      result.differentials.push({ diff: diff, date: r.date, type: "18", rounds: [r] });
+      result.eligible18.push(r);
+    });
+    
+    // 9-hole pairing — sort by date ascending, pair chronologically
+    nine.sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
+    for (var i = 0; i < nine.length - 1; i += 2) {
+      var r1 = nine[i], r2 = nine[i + 1];
+      var combinedScore = r1.score + r2.score;
+      // WHS: combined rating = sum of 9-hole ratings; combined slope = average
+      var rating1 = parseFloat(r1.rating) || 36;
+      var rating2 = parseFloat(r2.rating) || 36;
+      var slope1 = parseInt(r1.slope) || 113;
+      var slope2 = parseInt(r2.slope) || 113;
+      var combinedRating = rating1 + rating2;
+      var combinedSlope = Math.round((slope1 + slope2) / 2);
+      var diff = (113 / combinedSlope) * (combinedScore - combinedRating);
+      var pairDate = r2.date > r1.date ? r2.date : r1.date; // use later date
+      result.differentials.push({ diff: diff, date: pairDate, type: "9+9", rounds: [r1, r2], combinedScore: combinedScore });
+      result.paired9s.push({ r1: r1, r2: r2, diff: diff, combinedScore: combinedScore });
+    }
+    // Unpaired leftover
+    if (nine.length % 2 === 1) {
+      result.unpaired9 = nine[nine.length - 1];
+    }
+    
+    // Sort all differentials by date descending, take most recent 20
+    result.differentials.sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+    result.differentials = result.differentials.slice(0, 20);
+    
+    return result;
   }
 
   function getPlayerAvg(pid) {
@@ -4349,7 +4369,7 @@ var PB = (function() {
     getMiniWinner:getMiniWinner, setMiniWinner:setMiniWinner, getBonusWinner:getBonusWinner, setBonusWinner:setBonusWinner,
     getScrambleTeams:getScrambleTeams, addScrambleTeam:addScrambleTeam, addScrambleTeamFromFirestore:addScrambleTeamFromFirestore, addScrambleMatch:addScrambleMatch,
     getRecords:getRecords, setRecord:setRecord,
-    calcStableford:calcStableford, calcHandicap:calcHandicap,
+    calcStableford:calcStableford, calcHandicap:calcHandicap, getHandicapDetails:getHandicapDetails,
     getPlayerAvg:getPlayerAvg, getPlayerBest:getPlayerBest, getDisplayName:getDisplayName, getUniqueCourses:getUniqueCourses,
     getTripStableford:getTripStableford, getTripTotal:getTripTotal,
     getMiniPoints:getMiniPoints, getBonusPoints:getBonusPoints, getTripPoints:getTripPoints,
@@ -5462,12 +5482,42 @@ function renderMemberDetailWithData(p) {
 
   // === HANDICAP TRACKER (collapsible, open by default) ===
   var hcapContent = '';
-  if (rounds.length >= 3) {
+  var hcapDetails = PB.getHandicapDetails(rounds);
+  var totalDiffs = hcapDetails.differentials.length;
+  
+  if (totalDiffs >= 3) {
     hcapContent += buildHandicapGraph(rounds, pid);
+  } else if (totalDiffs > 0) {
+    hcapContent += '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">' + (3 - totalDiffs) + ' more qualifying round' + (3 - totalDiffs !== 1 ? 's' : '') + ' needed for handicap</div>';
   } else {
-    hcapContent += '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">Log ' + (3 - rounds.length) + ' more round' + (3 - rounds.length !== 1 ? 's' : '') + ' to activate handicap tracking</div>';
+    var indivCount = rounds.filter(function(r){return r.format!=="scramble"&&r.format!=="scramble4"}).length;
+    hcapContent += '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">Log ' + Math.max(0, 3 - indivCount) + ' more individual round' + (3 - indivCount !== 1 ? 's' : '') + ' to activate handicap tracking</div>';
   }
-  h += profSection("hcap-" + pid, "Handicap tracker", hcapContent, rounds.length >= 3);
+  
+  // 9-hole pairing status
+  if (hcapDetails.paired9s.length || hcapDetails.unpaired9) {
+    hcapContent += '<div style="padding:8px 12px;border-top:1px solid var(--border)">';
+    hcapContent += '<div style="font-size:10px;font-weight:600;color:var(--gold);letter-spacing:.5px;margin-bottom:6px">9-HOLE PAIRINGS (WHS)</div>';
+    hcapDetails.paired9s.forEach(function(pair) {
+      var r1Label = (pair.r1.course || "9 holes") + " (" + (pair.r1.holesMode === "back9" ? "B9" : "F9") + ": " + pair.r1.score + ")";
+      var r2Label = (pair.r2.course || "9 holes") + " (" + (pair.r2.holesMode === "back9" ? "B9" : "F9") + ": " + pair.r2.score + ")";
+      hcapContent += '<div style="font-size:11px;color:var(--cream);padding:4px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between">';
+      hcapContent += '<div style="min-width:0;flex:1"><div>' + escHtml(r1Label) + '</div><div style="color:var(--muted);font-size:10px">+ ' + escHtml(r2Label) + '</div></div>';
+      hcapContent += '<div style="text-align:right;flex-shrink:0"><div style="font-weight:600">' + pair.combinedScore + '</div><div style="font-size:10px;color:var(--birdie)">Diff: ' + pair.diff.toFixed(1) + '</div></div>';
+      hcapContent += '</div>';
+    });
+    if (hcapDetails.unpaired9) {
+      var u = hcapDetails.unpaired9;
+      var uLabel = (u.course || "9 holes") + " (" + (u.holesMode === "back9" ? "Back 9" : "Front 9") + ": " + u.score + ")";
+      hcapContent += '<div style="font-size:11px;padding:6px 0;display:flex;justify-content:space-between;align-items:center">';
+      hcapContent += '<span style="color:var(--muted)">' + escHtml(uLabel) + '</span>';
+      hcapContent += '<span style="font-size:9px;font-weight:600;color:var(--gold);background:rgba(201,168,76,.1);padding:3px 8px;border-radius:10px">Awaiting pairing</span>';
+      hcapContent += '</div>';
+    }
+    hcapContent += '</div>';
+  }
+  
+  h += profSection("hcap-" + pid, "Handicap tracker", hcapContent, totalDiffs >= 3 || hcapDetails.unpaired9 !== null);
 
   // === LAST 3 ROUNDS (collapsible, open by default) ===
   var last3Content = '';
