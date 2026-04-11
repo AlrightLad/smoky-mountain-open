@@ -701,6 +701,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
     <div class="pbs-scorerow">
       <div class="pbs-player-block">
         <div class="pbs-name" id="pbs-player-name">—</div>
+        <div id="pbs-team-members" style="display:none;font-size:16px;color:#5a6478;margin-top:4px"></div>
         <div class="pbs-course" id="pbs-course">—</div>
         <div class="pbs-tee-info" id="pbs-tee-info" style="display:none"></div>
       </div>
@@ -5421,7 +5422,7 @@ function renderMemberDetailWithData(p) {
   ];
   var sTitles = [
     {name:"The Original Four",req:"Founding member",unlocked:!!p.founding},
-    {name:"The Original Four · Commissioner",req:"Be The Commissioner",unlocked:p.founding&&pid==="zach"},
+    {name:"The Original Four · Commissioner",req:"Be The Commissioner",unlocked:p.founding&&(p.role==="commissioner"||pid==="zach"||p.username==="TheCommissioner")},
     {name:"Beta Tester",req:"First 30 members",unlocked:isBeta}
   ];
   var combined = allTitles.concat(aTitles).concat(sTitles);
@@ -5511,9 +5512,11 @@ function renderMemberDetailWithData(p) {
     hcapContent += buildHandicapGraph(rounds, pid);
   }
   
-  // Differentials table
+  // Differentials table (collapsible)
   if (totalDiffs > 0) {
-    hcapContent += '<div style="padding:8px 12px 4px"><div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:6px">SCORE DIFFERENTIALS</div>';
+    var diffToggleId = "diffTable_" + pid;
+    hcapContent += '<div style="padding:8px 12px 4px"><div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center" onclick="var el=document.getElementById(\'' + diffToggleId + '\');el.style.display=el.style.display===\'none\'?\'block\':\'none\'">SCORE DIFFERENTIALS (' + hcapDetails.differentials.length + ')<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12" style="color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg></div>';
+    hcapContent += '<div id="' + diffToggleId + '" style="display:none">';
     hcapDetails.differentials.forEach(function(d, idx) {
       var roundInfo = "";
       if (d.type === "18") {
@@ -5533,10 +5536,10 @@ function renderMemberDetailWithData(p) {
       hcapContent += '<div style="flex-shrink:0;font-weight:600;color:' + diffColor + ';min-width:40px;text-align:right">' + d.diff.toFixed(1) + '</div>';
       hcapContent += '</div>';
     });
-    hcapContent += '</div>';
+    hcapContent += '</div></div>';
   }
   
-  // Unpaired 9-hole round
+  // Unpaired 9-hole round (always visible)
   if (hcapDetails.unpaired9) {
     var u = hcapDetails.unpaired9;
     var uMode = u.holesMode === "back9" ? "Back 9" : "Front 9";
@@ -5701,10 +5704,12 @@ function renderMemberDetailWithData(p) {
   var teamContent = '';
   if (playerTeams.length) {
     playerTeams.forEach(function(t) {
-      var w = (t.matches || []).filter(function(m){return m.result==="win"}).length;
-      var l = (t.matches || []).filter(function(m){return m.result==="loss"}).length;
-      var mates = t.members.filter(function(id){return id !== pid}).map(function(id){var p=PB.getPlayer(id);return p?p.name:id}).join(", ");
-      teamContent += '<div class="h2h-row" onclick="Router.go(\'scramble\',{id:\'' + t.id + '\'})" style="cursor:pointer"><div><div style="font-size:13px;font-weight:600">' + t.name + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">w/ ' + mates + '</div></div><div style="font-size:14px;font-weight:700;color:var(--gold)">' + w + '-' + l + '</div></div>';
+      var matches = t.matches || [];
+      var bestScore = null;
+      matches.forEach(function(m){ if (m.score && (bestScore === null || m.score < bestScore)) bestScore = m.score; });
+      var mates = t.members.filter(function(id){return id !== pid && id !== pClaimedFrom}).map(function(id){var p=PB.getPlayer(id);return p?p.name:id}).join(", ");
+      var rightLabel = bestScore ? 'Best: ' + bestScore : matches.length + ' rd' + (matches.length !== 1 ? 's' : '');
+      teamContent += '<div class="h2h-row" onclick="Router.go(\'scramble\',{id:\'' + t.id + '\'})" style="cursor:pointer"><div><div style="font-size:13px;font-weight:600">' + t.name + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">w/ ' + mates + '</div></div><div style="font-size:13px;font-weight:600;color:var(--gold)">' + rightLabel + '</div></div>';
     });
   } else {
     teamContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">Not on any teams yet</div>';
@@ -5833,49 +5838,14 @@ function buildHandicapGraph(rounds, pid) {
   var validPts = graphData.filter(function(g) { return g.hcap !== null; });
   if (!validPts.length) return '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">Not enough data for graph</div>';
 
-  // Single data point — show differentials breakdown instead of lonely dot
+  // Single data point — show clean stats (differentials detail is in collapsible table below)
   if (validPts.length === 1) {
-    var totalRounds = graphData.reduce(function(a,g){return a+g.roundCount},0);
-    // Build a differentials bar chart from the actual rounds
-    var diffs = [];
-    sorted.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4";}).forEach(function(r) {
-      if (!r.rating || !r.slope) return;
-      var diff = Math.round((113 / r.slope) * (r.score - r.rating) * 10) / 10;
-      diffs.push({ diff: diff, course: r.course, score: r.score });
-    });
-    diffs.sort(function(a,b){ return a.diff - b.diff; }); // best first
-    
-    var result = '';
-    if (diffs.length) {
-      var maxDiff = Math.max.apply(null, diffs.map(function(d){return d.diff}));
-      var minDiff = Math.min.apply(null, diffs.map(function(d){return d.diff}));
-      var diffRange = maxDiff - minDiff || 1;
-      
-      result += '<div style="padding:4px 0 8px">';
-      result += '<div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:10px;padding:0 4px">Round differentials · Lowest used for handicap</div>';
-      diffs.forEach(function(d, idx) {
-        var barWidth = Math.max(15, ((d.diff - minDiff) / diffRange) * 60 + 20);
-        var isUsed = idx === 0;
-        var barColor = isUsed ? 'var(--gold)' : 'rgba(255,255,255,.08)';
-        var textColor = isUsed ? 'var(--gold)' : 'var(--muted)';
-        var diffColor = isUsed ? 'var(--gold)' : 'rgba(255,255,255,.4)';
-        // Stack: course name on top, bar + value below
-        result += '<div style="padding:5px 4px">';
-        result += '<div style="font-size:11px;color:' + textColor + ';margin-bottom:3px;font-weight:' + (isUsed ? '600' : '400') + '">' + escHtml(d.course) + ' · ' + d.score + '</div>';
-        result += '<div style="display:flex;align-items:center;gap:8px">';
-        result += '<div style="flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.04);overflow:hidden"><div style="width:' + barWidth + '%;height:100%;border-radius:3px;background:' + barColor + '"></div></div>';
-        result += '<div style="font-size:12px;font-weight:700;color:' + diffColor + ';width:40px;text-align:right;flex-shrink:0">' + d.diff.toFixed(1) + '</div>';
-        result += '</div></div>';
-      });
-      result += '</div>';
-    }
-    
-    // Stats row
-    result += '<div style="display:flex;justify-content:center;gap:20px;padding:6px 0;font-size:10px;color:var(--muted2)">';
-    result += '<div>' + diffs.length + ' qualifying round' + (diffs.length !== 1 ? 's' : '') + '</div>';
-    result += '<div style="color:var(--birdie)">↓ Lower differential = better</div>';
+    var indivSorted = sorted.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4" && r.rating && r.slope;});
+    var result = '<div style="display:flex;justify-content:center;gap:20px;padding:8px 0;font-size:10px;color:var(--muted2)">';
+    result += '<div>' + indivSorted.length + ' qualifying round' + (indivSorted.length !== 1 ? 's' : '') + '</div>';
+    result += '<div style="color:var(--birdie)">Tap Score Differentials below for details</div>';
     result += '</div>';
-    result += '<div style="text-align:center;font-size:10px;color:var(--muted);padding-top:4px">Graph builds as you play across multiple months</div>';
+    result += '<div style="text-align:center;font-size:10px;color:var(--muted);padding:4px 0 8px">Trend graph builds as you play across multiple months</div>';
     return result;
   }
 
@@ -5884,7 +5854,7 @@ function buildHandicapGraph(rounds, pid) {
   if (maxH - minH < 5) { minH -= 2; maxH += 3; }
   var range = maxH - minH;
 
-  var svgW = 320, svgH = 150, padL = 32, padR = 14, padT = 22, padB = 28;
+  var svgW = 320, svgH = 165, padL = 32, padR = 14, padT = 22, padB = 40;
   var chartW = svgW - padL - padR, chartH = svgH - padT - padB;
   var gradId = "hcapGrad_" + pid;
 
@@ -5905,11 +5875,14 @@ function buildHandicapGraph(rounds, pid) {
     svg += '<text x="' + (padL - 5) + '" y="' + (gy + 3) + '" text-anchor="end" fill="rgba(255,255,255,.25)" font-size="7.5" font-weight="500">' + val.toFixed(0) + '</text>';
   }
 
-  // Month labels
+  // Month labels + round count
   graphData.forEach(function(pt, i) {
     var x = padL + (chartW / (graphData.length - 1 || 1)) * i;
     var isActive = pt.hcap !== null;
-    svg += '<text x="' + x + '" y="' + (svgH - 6) + '" text-anchor="middle" fill="' + (isActive ? 'rgba(255,255,255,.35)' : 'rgba(255,255,255,.12)') + '" font-size="7" font-weight="500">' + pt.label + '</text>';
+    svg += '<text x="' + x + '" y="' + (svgH - 16) + '" text-anchor="middle" fill="' + (isActive ? 'rgba(255,255,255,.35)' : 'rgba(255,255,255,.12)') + '" font-size="7" font-weight="500">' + pt.label + '</text>';
+    if (pt.roundCount > 0) {
+      svg += '<text x="' + x + '" y="' + (svgH - 6) + '" text-anchor="middle" fill="rgba(201,168,76,.4)" font-size="6" font-weight="500">' + pt.roundCount + ' rd' + (pt.roundCount !== 1 ? 's' : '') + '</text>';
+    }
   });
 
   // Build coordinate arrays
@@ -6563,7 +6536,7 @@ function copyInviteLink() {
   if (navigator.clipboard) {
     navigator.clipboard.writeText(field.value).then(function() {
       var btn = document.getElementById("copyInviteBtn");
-      if (btn) { btn.textContent = "✓ Copied!"; setTimeout(function(){ btn.textContent = "Copy invite link"; }, 2000); }
+      if (btn) { btn.textContent = "Copied!"; setTimeout(function(){ btn.textContent = "Copy invite link"; }, 2000); }
     }).catch(function() { document.execCommand("copy"); Router.toast("Copied!"); });
   } else {
     document.execCommand("copy");
@@ -13027,7 +13000,8 @@ Router.register("faq", function() {
     { q: "How do I invite someone?", a: "Go to Members → Invite New Member → Generate Invite Code. Share the code with the person. You have a limited number of invites — ask the Commissioner if you need more." },
     { q: "What does the Commissioner do?", a: "The Commissioner manages the league — creating events, moderating the feed, suspending members for violations, managing invite quotas, and posting official results." },
     { q: "How do I report a member?", a: "Tap their profile → Report. Choose a reason and add details. The report goes directly to the Commissioner for review." },
-    { q: "I found a bug or have a feature idea!", a: "Tap Feature Request at the bottom of the home page to send your idea directly to the Commissioner." }
+    { q: "I found a bug or have a feature idea!", a: "Tap Feature Request at the bottom of the home page to send your idea directly to the Commissioner." },
+    { q: "What are score differentials?", a: "A score differential normalizes your round against course difficulty. The formula is (113 / Slope) x (Score - Rating). A 102 at a hard course (slope 140) produces a lower differential than a 95 at an easy course (slope 100). Your handicap index is the average of your best differentials — it measures your potential, not your average. Lower differentials = better golf. The number of differentials used depends on how many rounds you have: 3-5 rounds uses your best 1, 6-8 uses best 2, and so on up to best 8 of 20." }
   ];
   
   faqs.forEach(function(faq, i) {
@@ -13097,11 +13071,11 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.12.5</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.13.0</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.12.5</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · H2H Fix & Season Standings</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.13.0</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Scramble Isolation, H2H, Graph Redesign</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
     {item: "Head-to-Head now resolves all player IDs (Firebase UID, seed ID, claimedFrom) — matches show correctly on profiles", tag: "FIXED"},
@@ -13121,7 +13095,15 @@ Router.register("caddynotes", function() {
     {item: "Scramble entries in activity page history now have a Share button", tag: "NEW"},
     {item: "Course detail Individual and Scramble scores are now clickable — opens round detail", tag: "FIXED"},
     {item: "Fixed 'Silver Tees Tees' — tee label no longer double-appends 'Tees'", tag: "FIXED"},
-    {item: "Caddy Notes trimmed to current + previous version only", tag: "IMPROVED"}
+    {item: "Caddy Notes trimmed to current + previous version only", tag: "IMPROVED"},
+    {item: "Score differentials and round differentials are now collapsible dropdowns — pending rounds always visible", tag: "IMPROVED"},
+    {item: "Emojis removed — medal emojis replaced with #1/#2/#3, checkmarks replaced with SVG icons", tag: "FIXED"},
+    {item: "Team display on profile shows best score instead of 0-0 W-L record", tag: "FIXED"},
+    {item: "Scramble share card shows team name first with player names underneath instead of individual player name", tag: "IMPROVED"},
+    {item: "Commissioner title fixed — no longer shows Locked for Mr Parbaugh (checks role + username, not hardcoded ID)", tag: "FIXED"},
+    {item: "FAQ added: What are score differentials? — explains the WHS formula and why they matter", tag: "NEW"},
+    {item: "Handicap graph shows round count per month below month labels (e.g. '3 rds')", tag: "IMPROVED"},
+    {item: "Removed redundant round differentials bar chart — Score Differentials table is the single source of truth", tag: "IMPROVED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
@@ -13219,7 +13201,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.12.5</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.13.0</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
@@ -14852,7 +14834,21 @@ function populateShareTemplateForRound(round) {
   var quip = comm.roasts.length ? comm.roasts[0] : (comm.highlights.length ? comm.highlights[0] : "");
 
   // Populate hidden template elements
-  document.getElementById("pbs-player-name").textContent = playerName || "—";
+  var isScramble = round.format === "scramble" || round.format === "scramble4";
+  var teamMembersEl = document.getElementById("pbs-team-members");
+  if (isScramble) {
+    // Find team and show team name + members
+    var allRounds = PB.getRounds().filter(function(r){ return r.course === round.course && r.date === round.date && (r.format === "scramble" || r.format === "scramble4"); });
+    var memberNames = allRounds.map(function(r){ return r.playerName; }).filter(Boolean);
+    if (memberNames.indexOf(playerName) === -1) memberNames.unshift(playerName);
+    var teamObj = PB.getScrambleTeams().find(function(t){ return memberNames.some(function(pn){ return t.members.some(function(mid){ var mp = PB.getPlayer(mid); return mp && mp.name === pn; }); }); });
+    var teamName = teamObj ? teamObj.name : "Scramble Team";
+    document.getElementById("pbs-player-name").textContent = teamName;
+    if (teamMembersEl) { teamMembersEl.textContent = memberNames.join(", "); teamMembersEl.style.display = ""; }
+  } else {
+    document.getElementById("pbs-player-name").textContent = playerName || "—";
+    if (teamMembersEl) { teamMembersEl.textContent = ""; teamMembersEl.style.display = "none"; }
+  }
   document.getElementById("pbs-course").textContent = round.course || "—";
   var teeEl = document.getElementById("pbs-tee-info");
   if (teeEl) {
@@ -15354,7 +15350,7 @@ function drawEventCanvas(canvas, eventName, standings) {
   ctx.fillText(eName, S/2, 178);
 
   // Standings
-  var medals = ["🥇","🥈","🥉"];
+  var medals = ["#1","#2","#3"];
   var medalColors = [GOLD,"#C0C0C0","#CD7F32",MUTED,MUTED,MUTED];
   var sy = 260;
   (standings || []).slice(0,6).forEach(function(s, i) {
@@ -15430,7 +15426,7 @@ function showShareSuccess() {
   var modal = document.getElementById("shareCardModal");
   if (!modal) return;
   modal.innerHTML = '<div style="position:relative;width:100%;max-width:360px;text-align:center;padding-top:120px">' +
-    '<div style="font-size:48px;margin-bottom:16px">✓</div>' +
+    '<div style="margin-bottom:16px"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="var(--birdie)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/></svg></div>' +
     '<div style="font-size:22px;font-weight:700;color:var(--gold);margin-bottom:8px">SUCCESS</div>' +
     '<div style="font-size:12px;color:var(--muted);margin-bottom:24px">Scorecard saved! Share it everywhere.</div>' +
     '<button class="btn full green" onclick="closeShareCard()" style="max-width:280px;margin:0 auto">Done</button>' +
