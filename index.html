@@ -5484,40 +5484,70 @@ function renderMemberDetailWithData(p) {
   var hcapContent = '';
   var hcapDetails = PB.getHandicapDetails(rounds);
   var totalDiffs = hcapDetails.differentials.length;
+  var hasData = totalDiffs > 0 || hcapDetails.unpaired9;
   
-  if (totalDiffs >= 3) {
-    hcapContent += buildHandicapGraph(rounds, pid);
+  // Current handicap hero
+  if (hcap !== null) {
+    hcapContent += '<div style="text-align:center;padding:16px 12px 12px">';
+    hcapContent += '<div style="font-family:Playfair Display,serif;font-size:42px;font-weight:700;color:var(--gold)">' + hcap + '</div>';
+    hcapContent += '<div style="font-size:10px;color:var(--muted);letter-spacing:.5px;margin-top:2px">WHS HANDICAP INDEX</div>';
+    hcapContent += '</div>';
   } else if (totalDiffs > 0) {
-    hcapContent += '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">' + (3 - totalDiffs) + ' more qualifying round' + (3 - totalDiffs !== 1 ? 's' : '') + ' needed for handicap</div>';
-  } else {
-    var indivCount = rounds.filter(function(r){return r.format!=="scramble"&&r.format!=="scramble4"}).length;
-    hcapContent += '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">Log ' + Math.max(0, 3 - indivCount) + ' more individual round' + (3 - indivCount !== 1 ? 's' : '') + ' to activate handicap tracking</div>';
-  }
-  
-  // 9-hole pairing status
-  if (hcapDetails.paired9s.length || hcapDetails.unpaired9) {
-    hcapContent += '<div style="padding:8px 12px;border-top:1px solid var(--border)">';
-    hcapContent += '<div style="font-size:10px;font-weight:600;color:var(--gold);letter-spacing:.5px;margin-bottom:6px">9-HOLE PAIRINGS (WHS)</div>';
-    hcapDetails.paired9s.forEach(function(pair) {
-      var r1Label = (pair.r1.course || "9 holes") + " (" + (pair.r1.holesMode === "back9" ? "B9" : "F9") + ": " + pair.r1.score + ")";
-      var r2Label = (pair.r2.course || "9 holes") + " (" + (pair.r2.holesMode === "back9" ? "B9" : "F9") + ": " + pair.r2.score + ")";
-      hcapContent += '<div style="font-size:11px;color:var(--cream);padding:4px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between">';
-      hcapContent += '<div style="min-width:0;flex:1"><div>' + escHtml(r1Label) + '</div><div style="color:var(--muted);font-size:10px">+ ' + escHtml(r2Label) + '</div></div>';
-      hcapContent += '<div style="text-align:right;flex-shrink:0"><div style="font-weight:600">' + pair.combinedScore + '</div><div style="font-size:10px;color:var(--birdie)">Diff: ' + pair.diff.toFixed(1) + '</div></div>';
-      hcapContent += '</div>';
-    });
-    if (hcapDetails.unpaired9) {
-      var u = hcapDetails.unpaired9;
-      var uLabel = (u.course || "9 holes") + " (" + (u.holesMode === "back9" ? "Back 9" : "Front 9") + ": " + u.score + ")";
-      hcapContent += '<div style="font-size:11px;padding:6px 0;display:flex;justify-content:space-between;align-items:center">';
-      hcapContent += '<span style="color:var(--muted)">' + escHtml(uLabel) + '</span>';
-      hcapContent += '<span style="font-size:9px;font-weight:600;color:var(--gold);background:rgba(201,168,76,.1);padding:3px 8px;border-radius:10px">Awaiting pairing</span>';
-      hcapContent += '</div>';
-    }
+    hcapContent += '<div style="text-align:center;padding:14px 12px 10px">';
+    hcapContent += '<div style="font-size:13px;color:var(--muted)">' + (3 - totalDiffs) + ' more qualifying round' + (3 - totalDiffs !== 1 ? 's' : '') + ' to establish handicap</div>';
     hcapContent += '</div>';
   }
   
-  h += profSection("hcap-" + pid, "Handicap tracker", hcapContent, totalDiffs >= 3 || hcapDetails.unpaired9 !== null);
+  // Graph (only when 3+ differentials)
+  if (totalDiffs >= 3) {
+    hcapContent += buildHandicapGraph(rounds, pid);
+  }
+  
+  // Differentials table
+  if (totalDiffs > 0) {
+    hcapContent += '<div style="padding:8px 12px 4px"><div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:6px">SCORE DIFFERENTIALS</div>';
+    hcapDetails.differentials.forEach(function(d, idx) {
+      var roundInfo = "";
+      if (d.type === "18") {
+        var r = d.rounds[0];
+        roundInfo = escHtml(r.course || "") + " · " + r.score;
+      } else if (d.type === "9+9") {
+        var r1 = d.rounds[0], r2 = d.rounds[1];
+        var m1 = r1.holesMode === "back9" ? "B9" : "F9";
+        var m2 = r2.holesMode === "back9" ? "B9" : "F9";
+        roundInfo = escHtml(r1.course || "") + " " + m1 + " + " + escHtml(r2.course || "") + " " + m2 + " · " + d.combinedScore;
+      }
+      var diffColor = d.diff < 15 ? "var(--birdie)" : d.diff < 25 ? "var(--gold)" : "var(--red)";
+      hcapContent += '<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:11px">';
+      hcapContent += '<div style="display:flex;align-items:center;gap:6px;min-width:0;flex:1">';
+      if (d.type === "9+9") hcapContent += '<span style="font-size:8px;background:rgba(201,168,76,.12);color:var(--gold);padding:2px 5px;border-radius:3px;flex-shrink:0">9+9</span>';
+      hcapContent += '<span style="color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + roundInfo + '</span></div>';
+      hcapContent += '<div style="flex-shrink:0;font-weight:600;color:' + diffColor + ';min-width:40px;text-align:right">' + d.diff.toFixed(1) + '</div>';
+      hcapContent += '</div>';
+    });
+    hcapContent += '</div>';
+  }
+  
+  // Unpaired 9-hole round
+  if (hcapDetails.unpaired9) {
+    var u = hcapDetails.unpaired9;
+    var uMode = u.holesMode === "back9" ? "Back 9" : "Front 9";
+    hcapContent += '<div style="padding:8px 12px 12px;border-top:1px solid var(--border)">';
+    hcapContent += '<div style="display:flex;justify-content:space-between;align-items:center">';
+    hcapContent += '<div style="font-size:11px;color:var(--muted)">' + escHtml(u.course || "9 holes") + ' · ' + uMode + ' · ' + u.score + '</div>';
+    hcapContent += '<span style="font-size:9px;font-weight:600;color:var(--gold);background:rgba(201,168,76,.1);padding:3px 8px;border-radius:10px;white-space:nowrap">Awaiting pairing</span>';
+    hcapContent += '</div>';
+    hcapContent += '<div style="font-size:9px;color:var(--muted2);margin-top:3px">Per WHS rules, two 9-hole rounds combine into one differential</div>';
+    hcapContent += '</div>';
+  }
+  
+  // Empty state
+  if (!hasData) {
+    var indivCount = rounds.filter(function(r){return r.format!=="scramble"&&r.format!=="scramble4"}).length;
+    hcapContent += '<div style="padding:16px 12px;font-size:12px;color:var(--muted);text-align:center">Log ' + Math.max(1, 3 - indivCount) + ' more individual round' + (3 - indivCount !== 1 ? 's' : '') + ' to start tracking your handicap</div>';
+  }
+  
+  h += profSection("hcap-" + pid, "Handicap tracker", hcapContent, hasData);
 
   // === LAST 3 ROUNDS (collapsible, open by default) ===
   var last3Content = '';
@@ -12856,27 +12886,42 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.12.1</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.12.2</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.12.1</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Achievement Audit & Profile Polish</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.12.2</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · WHS 9-Hole Pairing & Par Audit</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Scramble rounds fully excluded from ALL individual stats — handicap, avg, best round, achievements, improvement tracking", tag: "FIXED"},
-    {item: "Birdie/eagle/bogey-free achievements now exclude scramble team scores — only individual rounds count", tag: "FIXED"},
-    {item: "Best Round stat is tappable — opens the actual scorecard for that round", tag: "NEW"},
-    {item: "Courses Played section shows format labels: individual best, 9-hole mode (Front 9/Back 9), and scramble best separately", tag: "IMPROVED"},
-    {item: "Course Directory F9/B9/18 now reads hole-by-hole data correctly and excludes scramble", tag: "FIXED"},
-    {item: "Event round date calculation fixed — dynamically computes from trip start date and course day", tag: "FIXED"},
-    {item: "Attestation display filters to scored players even on pre-existing docs, shows \'Finalized\' instead of \'Pending\' after override", tag: "FIXED"},
-    {item: "Activity feed: likes, comments, time-ago timestamps, 600px scrollable window", tag: "NEW"},
-    {item: "Login accepts username or email", tag: "NEW"},
-    {item: "Scorecard cell coloring fixed — proper golf symbols on edit", tag: "FIXED"},
-    {item: "Stableford points row updates in real-time", tag: "FIXED"},
-    {item: "FIR/GIR toggles fixed on trip scorecard", tag: "FIXED"}
+    {item: "WHS 9-hole pairing — two 9-hole rounds combine chronologically into one handicap differential per official GHIN rules", tag: "NEW"},
+    {item: "Unpaired 9-hole rounds show \'Awaiting pairing\' badge in Handicap Tracker", tag: "NEW"},
+    {item: "Handicap Tracker redesigned — hero number, differentials table, paired/unpaired status, trend graph", tag: "IMPROVED"},
+    {item: "9-hole rounds excluded from handicap unless paired (was incorrectly counted as 18-hole score)", tag: "FIXED"},
+    {item: "Springdale Resort pars corrected — 6 holes were wrong, verified against 18Birdies (holes 2,5,10,11,16,18)", tag: "FIXED"},
+    {item: "Springdale rating/slope corrected to White tees: 70.3/126 per 18Birdies", tag: "FIXED"},
+    {item: "Scorecard symbols now use round.holePars as primary par source — never falls back to generic defaults for event rounds", tag: "FIXED"},
+    {item: "Full SMO par audit: Sequoyah ✅, Maggie Valley ✅, Springdale ✅ (fixed), Connestee ✅ (verified at course)", tag: "AUDIT"}
   ];
   currentNotes.forEach(function(r) {
+    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
+    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
+    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
+    h += '<span>' + r.item + '</span></div>';
+  });
+  h += '</div></div></div>';
+
+  // v5.12.1
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.12.1 · April 2026 · Achievement Audit</span></div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
+  var v5121Notes = [
+    {item: "Scramble excluded from ALL individual stats — handicap, avg, best, achievements", tag: "FIXED"},
+    {item: "Best Round tappable → opens scorecard", tag: "NEW"},
+    {item: "Courses Played shows format labels (Front 9/Back 9/Scramble)", tag: "IMPROVED"},
+    {item: "Activity feed: likes, comments, time-ago, scrollable", tag: "NEW"},
+    {item: "Login accepts username or email", tag: "NEW"},
+    {item: "Scorecard cell coloring class mismatch fixed", tag: "FIXED"}
+  ];
+  v5121Notes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
     h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
     h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
