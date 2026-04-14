@@ -11,6 +11,7 @@
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="X-XSS-Protection" content="1; mode=block">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*.googleapis.com https://*.gstatic.com https://*.firebaseio.com https://*.cloudfunctions.net; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com https://*.gstatic.com https://*.firebaseio.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.googleapis.com https://*.gstatic.com https://alrightlad.github.io; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.cloudfunctions.net https://api.golfcourseapi.com wss://*.firebaseio.com; font-src 'self' https://fonts.gstatic.com;">
 <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
 <meta property="og:title" content="The Parbaughs">
 <meta property="og:description" content="Golf league platform · Est. 2026 · York, PA">
@@ -12109,13 +12110,15 @@ function startEventListener() {
 Router.register("calendar", function() {
   var monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   var dayLabels = ["S","M","T","W","T","F","S"];
+  var dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  var monNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var today = new Date();
   var todayStr = today.getFullYear() + "-" + String(today.getMonth()+1).padStart(2,"0") + "-" + String(today.getDate()).padStart(2,"0");
+  var _myUid = currentUser ? currentUser.uid : null;
 
-  var h = '<div class="cal-month-header"><button class="cal-nav-btn" onclick="calPrev()">‹</button>';
+  var h = '<div class="cal-month-header"><button class="cal-nav-btn" onclick="calPrev()">\u2039</button>';
   h += '<div class="cal-month-title">' + monthNames[calMonth] + ' ' + calYear + '</div>';
-  h += '<button class="cal-nav-btn" onclick="calNext()">›</button></div>';
-
+  h += '<button class="cal-nav-btn" onclick="calNext()">\u203A</button></div>';
   h += '<div class="cal-weekdays">'; dayLabels.forEach(function(d){h += '<div class="cal-weekday">'+d+'</div>';}); h += '</div>';
 
   var firstDay = new Date(calYear, calMonth, 1).getDay();
@@ -12123,152 +12126,184 @@ Router.register("calendar", function() {
 
   // Build event map
   var eventMap = {};
-  liveTeeTimes.forEach(function(t) { if(t.status==="cancelled")return; var d=t.date; if(!eventMap[d])eventMap[d]=[]; eventMap[d].push({type:"tee",title:t.courseName||"Tee Time",time:t.time,dest:"Router.go('teetimes')"}); });
+  function addEv(date, ev) { if (!eventMap[date]) eventMap[date] = []; eventMap[date].push(ev); }
+  liveTeeTimes.forEach(function(t) {
+    if (t.status==="cancelled") return;
+    var accepted = t.responses ? Object.keys(t.responses).filter(function(k){return t.responses[k]==="accepted"}) : [];
+    var names = []; accepted.forEach(function(uid) { var m = PB.getPlayer(uid); if(m) names.push(m.name||m.username||"Member"); });
+    addEv(t.date, {type:"tee", title:t.courseName||"Tee Time", time:t.time||"", spots:t.spots||4, accepted:accepted.length, players:names});
+  });
   PB.getTrips().forEach(function(trip) {
-    if (trip.startDate) { var sd = new Date(trip.startDate+"T12:00:00"); var ed = trip.endDate ? new Date(trip.endDate+"T12:00:00") : sd;
-      for (var d = new Date(sd); d <= ed; d.setDate(d.getDate()+1)) { var ds = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); if(!eventMap[ds])eventMap[ds]=[]; eventMap[ds].push({type:"trip",title:trip.name,time:trip.champion?"Champion: "+(PB.getPlayer(trip.champion)||{}).name:"",dest:"Router.go('scorecard',{tripId:'"+trip.id+"'})"}); }
+    if (!trip.startDate) return;
+    var sd = new Date(trip.startDate+"T12:00:00"), ed = trip.endDate ? new Date(trip.endDate+"T12:00:00") : sd;
+    var mN = []; if(trip.members) trip.members.forEach(function(uid){var m=PB.getPlayer(uid);if(m)mN.push(m.name||m.username||"Member");});
+    var shortDays = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    for (var dt=new Date(sd); dt<=ed; dt.setDate(dt.getDate()+1)) {
+      var ds=dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0");
+      var _sd2=new Date(trip.startDate+"T12:00:00"),_ed2=trip.endDate?new Date(trip.endDate+"T12:00:00"):_sd2;
+      var _fmtDates=monNames[_sd2.getMonth()]+" "+_sd2.getDate()+(trip.endDate&&trip.endDate!==trip.startDate?"\u2013"+(_ed2.getMonth()===_sd2.getMonth()?_ed2.getDate():monNames[_ed2.getMonth()]+" "+_ed2.getDate())+", "+_ed2.getFullYear():", "+_sd2.getFullYear());
+      var dayOfWeek = dayNames[dt.getDay()];
+      var dayCourses = (trip.courses||[]).filter(function(c) {
+        var cd = c.d || ""; return cd.toLowerCase().indexOf(dayOfWeek.toLowerCase()) === 0 || cd.toLowerCase().indexOf(shortDays[dt.getDay()].toLowerCase()) === 0;
+      });
+      addEv(ds, {type:"event", title:trip.name, location:trip.location||"", dates:_fmtDates, tripId:trip.id, players:mN, dayCourses:dayCourses, champion:trip.champion?(PB.getPlayer(trip.champion)||{}).name:""});
     }
   });
-  // Add rounds
   PB.getRounds().forEach(function(r) {
-    if (!r.date || r.visibility === "private") return;
-    var d = r.date;
-    if (!eventMap[d]) eventMap[d] = [];
-    var isScramble = r.format === "scramble" || r.format === "scramble4";
-    eventMap[d].push({type:"round",title:(r.playerName||"Parbaugh") + (isScramble?" (Scramble)":"") + " — " + r.score,time:r.course||"",dest:r.id?"Router.go('rounds',{roundId:'"+r.id+"'})":""});
+    if (!r.date) return;
+    var p = PB.getPlayer(r.player); var pN = p?(p.name||p.username||""):"";
+    addEv(r.date, {type:"round", title:r.course||"Round", player:pN, score:r.score, roundId:r.id, tee:r.tee||"", holesPlayed:r.holesPlayed||18, holesMode:r.holesMode||"18", format:r.format||""});
   });
-  // Add range sessions
   if (typeof liveRangeSessions !== "undefined") {
-    liveRangeSessions.filter(function(s){return s.visibility!=="private"}).forEach(function(s) {
-      var d = s.date;
-      if (!d || !eventMap) return;
-      if (!eventMap[d]) eventMap[d] = [];
-      eventMap[d].push({type:"range",title:(s.playerName||"Parbaugh") + " — Range" + (s.durationMin?" ("+s.durationMin+" min)":""),time:s.focus||"",dest:s._id?"Router.go('range-detail',{sessionId:'"+s._id+"'})":""});
+    liveRangeSessions.forEach(function(s) {
+      if (!s.date || (s.visibility==="private" && s.playerId!==_myUid)) return;
+      addEv(s.date, {type:"range", title:"Range Session", player:s.playerName||"", duration:s.durationMin||0, sessionId:s._id||""});
     });
   }
-  liveEvents.forEach(function(ev) { var d=ev.date; if(!eventMap[d])eventMap[d]=[]; eventMap[d].push({type:ev.type||"social",title:ev.title,time:ev.time||"",dest:""}); });
 
+  // Render grid with multi-colored dots
   h += '<div class="cal-grid">';
   for (var i=0;i<firstDay;i++) h += '<div class="cal-day empty"></div>';
   for (var d=1;d<=daysInMonth;d++) {
-    var dateStr = calYear+"-"+String(calMonth+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
-    var evts = eventMap[dateStr]||[];
-    var cls = "cal-day";
-    if (dateStr===todayStr) cls += " today";
-    if (dateStr===calSelectedDate) cls += " selected";
-    if (evts.length) { if(evts.some(function(e){return e.type==="trip"})) cls+=" has-trip"; else if(evts.some(function(e){return e.type==="tee"})) cls+=" has-tee"; else if(evts.some(function(e){return e.type==="range"})) cls+=" has-range"; else if(evts.some(function(e){return e.type==="round"})) cls+=" has-round"; else cls+=" has-event"; }
-    h += '<div class="'+cls+'" onclick="selectCalDay(\''+dateStr+'\')">'+d+'</div>';
+    var ds=calYear+"-"+String(calMonth+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+    var isT=ds===todayStr,isS=ds===calSelectedDate;
+    var evs=eventMap[ds]||[];
+    var bg=isS?"var(--gold)":"transparent";
+    var cl=isS?"var(--bg)":isT?"var(--gold)":"var(--cream)";
+    var dots=[];
+    if(isT&&!isS) dots.push("#4ade80");
+    var ht={};
+    evs.forEach(function(ev){if(ev.type==="event"&&!ht.e){dots.push("var(--gold)");ht.e=1;}if(ev.type==="tee"&&!ht.t){dots.push("#60a5fa");ht.t=1;}if(ev.type==="round"&&!ht.r){dots.push("#a78bfa");ht.r=1;}if(ev.type==="range"&&!ht.rng){dots.push("#f472b6");ht.rng=1;}});
+    var dH='';
+    if(dots.length===1)dH='<div style="width:4px;height:4px;border-radius:50%;background:'+dots[0]+';margin:1px auto 0"></div>';
+    else if(dots.length>1){dH='<div style="display:flex;justify-content:center;gap:2px;margin-top:1px">';dots.slice(0,3).forEach(function(c){dH+='<div style="width:3px;height:3px;border-radius:50%;background:'+c+'"></div>';});dH+='</div>';}
+    h+='<div onclick="selectCalDay(\''+ds+'\')" style="padding:6px 0;font-size:12px;font-weight:'+(isT?"700":"400")+';color:'+cl+';background:'+bg+';border-radius:6px;cursor:pointer;line-height:1;text-align:center;position:relative">'+d+dH+'</div>';
   }
   h += '</div>';
 
+  // Day detail
   if (calSelectedDate && eventMap[calSelectedDate]) {
+    var dayEvs = eventMap[calSelectedDate];
     var selDate = new Date(calSelectedDate + "T12:00:00");
-    var dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-    var monNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     h += '<div style="padding:12px 16px 4px;font-size:14px;font-weight:700;color:var(--cream)">' + dayNames[selDate.getDay()] + ', ' + monNames[selDate.getMonth()] + ' ' + selDate.getDate() + '</div>';
-    h += '<div style="padding:4px 16px 12px">';
-    
-    var evts = eventMap[calSelectedDate];
-    // Render events/trips first
-    evts.filter(function(e){return e.type==="trip"}).forEach(function(ev) {
-      var clickAttr = ev.dest ? ' onclick="'+ev.dest+'" style="cursor:pointer"' : '';
-      h += '<div style="border-left:3px solid var(--gold);background:var(--bg2);border-radius:var(--radius);padding:12px 16px;margin-bottom:8px"'+clickAttr+'>';
-      h += '<div style="font-size:9px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Event</div>';
-      h += '<div style="font-size:14px;font-weight:700;color:var(--cream)">' + escHtml(ev.title) + '</div>';
-      if (ev.time) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + escHtml(ev.time) + '</div>';
-      if (ev.location) h += '<div style="font-size:11px;color:var(--muted)">' + escHtml(ev.location) + '</div>';
-      if (ev.members) h += '<div style="font-size:10px;color:var(--muted);margin-top:4px">' + ev.members + ' attending</div>';
+    h += '<div style="padding:4px 16px 8px">';
+    var teeEvs = dayEvs.filter(function(e){return e.type==="tee"});
+    var eventEvs = dayEvs.filter(function(e){return e.type==="event"});
+    var roundEvs = dayEvs.filter(function(e){return e.type==="round"});
+    var rangeEvs = dayEvs.filter(function(e){return e.type==="range"});
+
+    // Events
+    var seenTitles = {};
+    eventEvs.forEach(function(ev) {
+      if (seenTitles[ev.title]) return; seenTitles[ev.title] = true;
+      var _ck = (ev.dayCourses&&ev.dayCourses.length&&ev.dayCourses[0].key)?ev.dayCourses[0].key:"";
+      var _cl = ev.tripId ? "Router.go(\'scorecard\',{tripId:\'"+ev.tripId+"\'" + (_ck?",course:\'"+_ck+"\'":"") + "})" : "";
+      h += '<div style="background:var(--bg3);border-left:3px solid var(--gold);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="'+_cl+'">';
+      h += '<div style="font-size:8px;color:var(--gold);font-weight:700;letter-spacing:.5px;margin-bottom:3px">EVENT</div>';
+      h += '<div style="font-size:13px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
+      if (ev.location) h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(ev.location) + '</div>';
+      if (ev.dates) h += '<div style="font-size:10px;color:var(--muted)">' + ev.dates + '</div>';
+      if (ev.players&&ev.players.length) h += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + ev.players.length + ' attending: ' + ev.players.join(", ") + '</div>';
+      if (ev.champion) h += '<div style="font-size:10px;color:var(--gold);margin-top:3px">Champion: ' + escHtml(ev.champion) + '</div>';
+      if (ev.dayCourses&&ev.dayCourses.length) {
+        ev.dayCourses.forEach(function(dc) {
+          h += '<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);display:flex;align-items:center;gap:6px">';
+          h += '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="#60a5fa" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg>';
+          h += '<span style="font-size:11px;color:#60a5fa;font-weight:600">' + escHtml(dc.n||"Course") + '</span>';
+          if (dc.f) h += '<span style="font-size:9px;color:var(--muted2)"> \u00b7 ' + escHtml(dc.f) + '</span>';
+          h += '</div>';
+        });
+      } else {
+        h += '<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);font-size:10px;color:var(--muted)"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="var(--muted)" stroke-width="1.5" style="vertical-align:middle"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg> No round scheduled \u2014 travel or rest day</div>';
+      }
       h += '</div>';
     });
-    
-    // Group rounds by course
-    var roundsByCourse = {};
-    evts.filter(function(e){return e.type==="round"}).forEach(function(ev) {
-      var course = ev.time || "Unknown Course"; // course stored in time field
-      if (!roundsByCourse[course]) roundsByCourse[course] = [];
-      roundsByCourse[course].push(ev);
-    });
-    Object.keys(roundsByCourse).forEach(function(course) {
-      var rounds = roundsByCourse[course];
-      h += '<div style="border-left:3px solid var(--cream);background:var(--bg2);border-radius:var(--radius);padding:12px 16px;margin-bottom:8px">';
-      h += '<div style="font-size:9px;font-weight:700;color:var(--cream);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Rounds</div>';
-      h += '<div style="font-size:14px;font-weight:700;color:var(--cream);margin-bottom:6px">' + escHtml(course) + '</div>';
-      rounds.forEach(function(r) {
-        var parts = r.title.split(" — ");
-        var name = parts[0] || "";
-        var score = parts[1] || "";
-        var clickAttr = r.dest ? ' onclick="'+r.dest+'" style="cursor:pointer"' : '';
-        h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)"'+clickAttr+'>';
-        h += '<span style="font-size:12px;color:var(--cream)">' + escHtml(name) + '</span>';
-        h += '<span style="font-size:14px;font-weight:700;color:var(--gold)">' + escHtml(score) + '</span></div>';
+
+    // Tee times (only standalone)
+    if (!eventEvs.length) {
+      teeEvs.forEach(function(ev) {
+        h += '<div style="background:var(--bg3);border-left:3px solid #60a5fa;border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="Router.go(\'teetimes\')">';
+        h += '<div style="font-size:8px;color:#60a5fa;font-weight:700;letter-spacing:.5px;margin-bottom:3px">TEE TIME</div>';
+        h += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
+        if (ev.time) h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + ev.time + '</div>';
+        if (ev.players&&ev.players.length) h += '<div style="font-size:10px;color:#60a5fa;margin-top:3px">' + ev.accepted + '/' + ev.spots + ' going: ' + ev.players.join(", ") + '</div>';
+        h += '</div>';
       });
+    }
+
+    // Rounds grouped by course
+    if (roundEvs.length) {
+      var cg = {};
+      roundEvs.forEach(function(ev) { if (!cg[ev.title]) cg[ev.title] = []; cg[ev.title].push(ev); });
+      Object.keys(cg).forEach(function(course) {
+        var group = cg[course];
+        var boxClick = group.length===1&&group[0].roundId ? ' onclick="Router.go(\'rounds\',{roundId:\''+group[0].roundId+'\'})"' : '';
+        h += '<div style="background:var(--bg3);border-left:3px solid #a78bfa;border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer"'+boxClick+'>';
+        h += '<div style="font-size:8px;color:#a78bfa;font-weight:700;letter-spacing:.5px;margin-bottom:3px">ROUND' + (group.length>1?"S":"") + '</div>';
+        h += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(course) + '</div>';
+        group.forEach(function(r) {
+          var sc = r.score<=72?"var(--birdie)":r.score>=100?"var(--red)":"var(--cream)";
+          var is9h = r.holesPlayed&&r.holesPlayed<=9;
+          var hL = is9h ? (r.holesMode==="back9"?" \u00b7 Back 9":" \u00b7 Front 9") : "";
+          var tL = r.tee ? r.tee + " Tees" : "";
+          var meta = [tL, hL.replace(" \u00b7 ","")].filter(Boolean).join(" \u00b7 ");
+          var isScramble = r.format==="scramble"||r.format==="scramble4";
+          var rowClick = group.length>1&&r.roundId ? ' onclick="event.stopPropagation();Router.go(\'rounds\',{roundId:\''+r.roundId+'\'})" style="cursor:pointer;display:flex;justify-content:space-between;padding:3px 0;font-size:11px"' : ' style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px"';
+          h += '<div'+rowClick+'><div><span style="color:var(--muted)">' + escHtml(r.player) + (isScramble?" (Scramble)":"") + '</span>' + (meta?'<span style="color:var(--muted2);font-size:9px"> \u00b7 '+meta+'</span>':'') + '</div><span style="font-weight:600;color:'+sc+'">' + (r.score||"\u2014") + '</span></div>';
+        });
+        h += '</div>';
+      });
+    }
+
+    // Range
+    rangeEvs.forEach(function(ev) {
+      var rDest = ev.sessionId ? "Router.go(\'range-detail\',{sessionId:\'"+ev.sessionId+"\'})" : "Router.go(\'range\')";
+      h += '<div style="background:var(--bg3);border-left:3px solid #f472b6;border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="'+rDest+'">';
+      h += '<div style="font-size:8px;color:#f472b6;font-weight:700;letter-spacing:.5px;margin-bottom:3px">RANGE SESSION</div>';
+      h += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + (ev.duration||0) + ' min</div>';
+      if (ev.player) h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(ev.player) + '</div>';
       h += '</div>';
     });
-    
-    // Tee times
-    evts.filter(function(e){return e.type==="tee"}).forEach(function(ev) {
-      var clickAttr = ev.dest ? ' onclick="'+ev.dest+'" style="cursor:pointer"' : '';
-      h += '<div style="border-left:3px solid #5b9bd5;background:var(--bg2);border-radius:var(--radius);padding:12px 16px;margin-bottom:8px"'+clickAttr+'>';
-      h += '<div style="font-size:9px;font-weight:700;color:#5b9bd5;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Tee Time</div>';
-      h += '<div style="font-size:13px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
-      if (ev.time) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + escHtml(ev.time) + '</div>';
-      h += '</div>';
-    });
-    
-    // Range sessions
-    evts.filter(function(e){return e.type==="range"}).forEach(function(ev) {
-      var clickAttr = ev.dest ? ' onclick="'+ev.dest+'" style="cursor:pointer"' : '';
-      h += '<div style="border-left:3px solid #e879a8;background:var(--bg2);border-radius:var(--radius);padding:12px 16px;margin-bottom:8px"'+clickAttr+'>';
-      h += '<div style="font-size:9px;font-weight:700;color:#e879a8;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Range</div>';
-      h += '<div style="font-size:13px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
-      if (ev.time) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + escHtml(ev.time) + '</div>';
-      h += '</div>';
-    });
-    
+
+    if (!dayEvs.length) h += '<div style="font-size:11px;color:var(--muted);padding:4px 0">Nothing scheduled</div>';
+
+    // Legend
+    h += '<div style="display:flex;gap:10px;margin-top:8px;font-size:9px;color:var(--muted2)">';
+    h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#60a5fa;vertical-align:middle;margin-right:3px"></span>Tee Time</span>';
+    h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold);vertical-align:middle;margin-right:3px"></span>Event</span>';
+    h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#a78bfa;vertical-align:middle;margin-right:3px"></span>Round</span>';
+    h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#f472b6;vertical-align:middle;margin-right:3px"></span>Range</span>';
+    h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#4ade80;vertical-align:middle;margin-right:3px"></span>Today</span>';
+    h += '</div>';
+    h += '<div style="display:flex;gap:6px;margin-top:8px">';
+    h += '<button class="btn-sm green" style="flex:1;font-size:10px" onclick="Router.go(\'tee-create\')">+ Tee Time</button>';
+    h += '<button class="btn-sm outline" style="flex:1;font-size:10px" onclick="Router.go(\'trips\',{create:true})">+ Event</button>';
+    h += '<button class="btn-sm outline" style="flex:1;font-size:10px;color:#f472b6;border-color:rgba(244,114,182,.3)" onclick="Router.go(\'range\')"><svg viewBox="0 0 16 16" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg> Range</button>';
+    h += '</div>';
     h += '</div>';
   }
 
-  // Legend
-  h += '<div style="display:flex;gap:12px;justify-content:center;padding:4px 16px 8px;font-size:9px;color:var(--muted)">';
-  h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#5b9bd5;vertical-align:middle;margin-right:3px"></span>Tee Time</span>';
-  h += '<span><span style="display:inline-block;width:8px;height:3px;border-radius:2px;background:var(--gold);vertical-align:middle;margin-right:3px"></span>Event</span>';
-  h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--cream);vertical-align:middle;margin-right:3px"></span>Round</span>';
-  h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#e879a8;vertical-align:middle;margin-right:3px"></span>Range</span>';
-  h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#4ec97a;vertical-align:middle;margin-right:3px"></span>Today</span>';
-  h += '</div>';
-
   h += '<div class="section"><button class="btn full green" onclick="Router.go(\'tee-create\')">Post a Tee Time</button></div>';
 
-  // Upcoming events strip
-  var now = new Date();
+  // Upcoming events
   var upcomingEvents = [];
-  liveTeeTimes.forEach(function(t) {
-    if (t.status === "cancelled" || t.date < todayStr) return;
-    upcomingEvents.push({date:t.date, title:t.courseName||"Tee Time", time:t.time||"", type:"tee", spots:t.spots||4, responses:t.responses||{}});
-  });
-  PB.getTrips().forEach(function(trip) {
-    if (trip.startDate && (trip.startDate >= todayStr || (trip.endDate && trip.endDate >= todayStr))) {
-      upcomingEvents.push({date:trip.startDate >= todayStr ? trip.startDate : todayStr, title:trip.name, time:trip.startDate <= todayStr ? "Happening now" : "", type:"trip", tripId:trip.id});
-    }
-  });
-  upcomingEvents.sort(function(a,b){return a.date > b.date ? 1 : -1;});
-  
+  liveTeeTimes.forEach(function(t) { if (t.status==="cancelled"||t.date<todayStr) return; upcomingEvents.push({date:t.date,title:t.courseName||"Tee Time",time:t.time||"",type:"tee"}); });
+  PB.getTrips().forEach(function(trip) { if (trip.startDate&&(trip.startDate>=todayStr||(trip.endDate&&trip.endDate>=todayStr))) upcomingEvents.push({date:trip.startDate>=todayStr?trip.startDate:todayStr,title:trip.name,time:trip.startDate<=todayStr?"Happening now":"",type:"trip",tripId:trip.id}); });
+  upcomingEvents.sort(function(a,b){return a.date>b.date?1:-1;});
   if (upcomingEvents.length) {
     h += '<div style="padding:8px 16px"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Coming Up</div>';
     h += '<div style="display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px">';
     upcomingEvents.slice(0,5).forEach(function(ev) {
-      var dateObj = new Date(ev.date + "T12:00:00");
-      var mons = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-      var dayDiff = Math.ceil((dateObj - now) / 86400000);
-      var dayLabel = dayDiff === 0 ? "Today" : dayDiff === 1 ? "Tomorrow" : mons[dateObj.getMonth()] + " " + dateObj.getDate();
-      var dotColor = ev.type === "trip" ? "var(--gold)" : "var(--birdie)";
-      var accepted = ev.responses ? Object.keys(ev.responses).filter(function(k){return ev.responses[k]==="accepted"}).length : 0;
-      var clickAction = ev.type === "trip" && ev.tripId ? "Router.go('scorecard',{tripId:'" + ev.tripId + "'})" : "Router.go('teetimes')";
-      h += '<div onclick="' + clickAction + '" style="flex-shrink:0;min-width:130px;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer">';
-      h += '<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px"><div style="width:5px;height:5px;border-radius:50%;background:' + dotColor + '"></div>';
-      h += '<span style="font-size:9px;color:var(--gold);font-weight:600">' + dayLabel + '</span></div>';
-      h += '<div style="font-size:11px;font-weight:600;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(ev.title) + '</div>';
-      if (ev.time) h += '<div style="font-size:9px;color:var(--muted);margin-top:2px">' + ev.time + (ev.spots ? ' · ' + accepted + '/' + ev.spots : '') + '</div>';
+      var dateObj = new Date(ev.date+"T12:00:00");
+      var dayDiff = Math.ceil((dateObj-today)/86400000);
+      var dayLabel = dayDiff===0?"Today":dayDiff===1?"Tomorrow":monNames[dateObj.getMonth()]+" "+dateObj.getDate();
+      var dotColor = ev.type==="trip"?"var(--gold)":"#60a5fa";
+      var clickAction = ev.type==="trip"&&ev.tripId ? "Router.go(\'scorecard\',{tripId:\'"+ev.tripId+"\'})" : "Router.go(\'teetimes\')";
+      h += '<div onclick="'+clickAction+'" style="flex-shrink:0;min-width:130px;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer">';
+      h += '<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px"><div style="width:5px;height:5px;border-radius:50%;background:'+dotColor+'"></div>';
+      h += '<span style="font-size:9px;color:var(--gold);font-weight:600">'+dayLabel+'</span></div>';
+      h += '<div style="font-size:11px;font-weight:600;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escHtml(ev.title)+'</div>';
+      if (ev.time) h += '<div style="font-size:9px;color:var(--muted);margin-top:2px">'+ev.time+'</div>';
       h += '</div>';
     });
     h += '</div></div>';
@@ -12281,23 +12316,20 @@ Router.register("calendar", function() {
   h += '<input class="ff-input" id="calChatInput" placeholder="Discuss scheduling..." style="flex:1;margin:0;font-size:12px;padding:9px 14px;border-radius:20px" onkeydown="if(event.key===\'Enter\')sendCalChat()">';
   h += '<button style="background:var(--gold);border:none;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0" onclick="sendCalChat()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--bg)" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>';
   h += '</div>';
-
   document.querySelector('[data-page="calendar"]').innerHTML = h;
 
-  // Load scheduling chat from separate collection
   if (db) {
     db.collection("scheduling_chat").orderBy("createdAt","desc").limit(20).get().then(function(snap) {
       var feed = document.getElementById("calChatFeed");
       if (!feed) return;
-      if (snap.empty) { feed.innerHTML = '<div style="text-align:center;font-size:10px;color:var(--muted);padding:20px">No messages yet — coordinate tee times here</div>'; return; }
+      if (snap.empty) { feed.innerHTML = '<div style="text-align:center;font-size:10px;color:var(--muted);padding:20px">No messages yet \u2014 coordinate tee times here</div>'; return; }
       var ch = '';
       snap.forEach(function(doc) {
         var msg = doc.data();
-        var isSystem = !!msg.system;
-        var author = isSystem ? "The Caddy" : (msg.authorName || msg.user || "Member");
+        var author = msg.authorName || "Member";
         var ts = msg.createdAt ? feedTimeAgo(msg.createdAt.toMillis()) : "";
         ch += '<div style="padding:6px 0;border-bottom:1px solid var(--border)">';
-        ch += '<div style="display:flex;justify-content:space-between"><span style="font-size:10px;font-weight:600;color:' + (isSystem ? 'var(--birdie)' : 'var(--gold)') + '">' + escHtml(author) + '</span>';
+        ch += '<div style="display:flex;justify-content:space-between"><span style="font-size:10px;font-weight:600;color:var(--gold)">' + escHtml(author) + '</span>';
         ch += '<span style="font-size:9px;color:var(--muted2)">' + ts + '</span></div>';
         ch += '<div style="font-size:11px;color:var(--cream);margin-top:2px">' + escHtml(msg.text || "") + '</div></div>';
       });
@@ -12325,7 +12357,6 @@ function sendCalChat() {
     Router.go("calendar");
   }).catch(function(e) { Router.toast("Send failed: " + e.message); });
 }
-
 
 // ========== TRASH TALK FEED ==========
 var liveChat = [];
@@ -14171,10 +14202,10 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.19.3</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.20.0</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.19.3</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.20.0</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Firestore-First Migration, Security, Error Logging</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -14285,7 +14316,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.19.3</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.20.0</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
