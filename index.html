@@ -861,14 +861,36 @@ window.onerror = function(msg, url, line, col, error) {
         line: line,
         col: col,
         stack: error ? String(error.stack).substring(0, 500) : "",
-        userAgent: navigator.userAgent.substring(0, 100),
+        userAgent: navigator.userAgent.substring(0, 150),
         page: typeof Router !== "undefined" ? Router.getPage() : "unknown",
-        timestamp: new Date().toISOString()
+        userId: (typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : "anonymous",
+        userName: (typeof currentProfile !== "undefined" && currentProfile) ? (currentProfile.name || currentProfile.username || "") : "",
+        timestamp: new Date().toISOString(),
+        resolved: false
       }).catch(function(){});
     }
   } catch(e) {}
   return false;
 };
+
+// Catch unhandled promise rejections
+window.addEventListener("unhandledrejection", function(event) {
+  try {
+    if (typeof db !== "undefined" && db) {
+      var msg = event.reason ? (event.reason.message || String(event.reason)) : "Unhandled promise rejection";
+      db.collection("errors").add({
+        message: msg.substring(0, 300),
+        stack: event.reason && event.reason.stack ? String(event.reason.stack).substring(0, 500) : "",
+        type: "unhandledrejection",
+        userAgent: navigator.userAgent.substring(0, 150),
+        page: typeof Router !== "undefined" ? Router.getPage() : "unknown",
+        userId: (typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : "anonymous",
+        timestamp: new Date().toISOString(),
+        resolved: false
+      }).catch(function(){});
+    }
+  } catch(e) {}
+});
 
 // ========== FIREBASE INIT ==========
 var PHOTO_MAX_KB = 80; // Target max photo size in KB after compression
@@ -1105,6 +1127,13 @@ function doFirebaseLogin(email, pw, btn) {
 }
 
 function doRegister() {
+  // Rate limit: max 3 attempts per 10 minutes
+  if (!window._regAttempts) window._regAttempts = [];
+  var now = Date.now();
+  window._regAttempts = window._regAttempts.filter(function(t) { return now - t < 600000; });
+  if (window._regAttempts.length >= 3) { showError("regError", "Too many attempts. Please wait 10 minutes."); return; }
+  window._regAttempts.push(now);
+
   var invite = document.getElementById("regInvite").value.trim().toUpperCase();
   var username = document.getElementById("regUsername").value.trim();
   var email = document.getElementById("regEmail").value.trim();
@@ -1152,7 +1181,11 @@ function doRegister() {
       pbWarn("[Auth] Username check failed, proceeding:", e);
       return auth.createUserWithEmailAndPassword(email, pw);
     }).then(function(cred) {
-      return cred.user.updateProfile({ displayName:username }).then(function() { return cred.user; });
+      return cred.user.updateProfile({ displayName:username }).then(function() {
+        // Send email verification
+        cred.user.sendEmailVerification().catch(function(e) { pbWarn("[Auth] Email verification send failed:", e); });
+        return cred.user;
+      });
     }).then(function(user) {
       // First founding member becomes Commissioner, rest are members
       var isFirstFounder = isFoundingCode;
@@ -2661,9 +2694,69 @@ var PB = (function() {
     state = createDefault();
   }
 
-  /* ---------- PLAYER OPS ---------- */
-  function getPlayer(id) { return state.players.find(function(p) { return p.id === id; }); }
-  function getPlayers() { return state.players; }
+  /* ---------- PLAYER OPS (Firestore-first) ---------- */
+  function getPlayer(id) {
+    if (!id) return null;
+    // 1. Check Firestore cache first (authoritative)
+    if (typeof fbMemberCache !== "undefined") {
+      if (fbMemberCache[id]) return fbMemberCache[id];
+      // Reverse lookup: id might be a seed ID that was claimed
+      var keys = Object.keys(fbMemberCache);
+      for (var ki = 0; ki < keys.length; ki++) {
+        var m = fbMemberCache[keys[ki]];
+        if (m.claimedFrom === id) return m;
+      }
+    }
+    // 2. Fall back to local seed data (offline or pre-Firestore load)
+    var local = state.players.find(function(p) { return p.id === id; });
+    if (local) return local;
+    // 3. Check currentProfile as last resort
+    if (typeof currentProfile !== "undefined" && currentProfile && currentProfile.id === id) return currentProfile;
+    return null;
+  }
+  
+  function getPlayers() {
+    // Merge Firestore members (authoritative) with unclaimed local members
+    if (typeof fbMemberCache === "undefined" || !Object.keys(fbMemberCache).length) return state.players;
+    var merged = [];
+    var seenIds = {};
+    var claimedSeedIds = {};
+    // First: add all Firestore members (deduplicated)
+    Object.keys(fbMemberCache).forEach(function(key) {
+      var m = fbMemberCache[key];
+      if (!m || !m.id || m.role === "removed") return;
+      if (m.claimedFrom) claimedSeedIds[m.claimedFrom] = true;
+      // Only add once per unique ID (fbMemberCache stores both uid and claimedFrom keys)
+      if (seenIds[m.id]) return;
+      seenIds[m.id] = true;
+      merged.push(m);
+    });
+    // Second: add local seed players that haven't been claimed
+    state.players.forEach(function(p) {
+      if (seenIds[p.id] || claimedSeedIds[p.id]) return;
+      seenIds[p.id] = true;
+      merged.push(p);
+    });
+    return merged;
+  }
+
+  // Get all known IDs for a player (Firebase UID, seed ID, claimedFrom chain)
+  function getAllPlayerIds(pid) {
+    var ids = [pid];
+    var p = getPlayer(pid);
+    if (p && p.claimedFrom && ids.indexOf(p.claimedFrom) === -1) ids.push(p.claimedFrom);
+    if (p && p.id && ids.indexOf(p.id) === -1) ids.push(p.id);
+    // Check reverse: is this pid someone else's claimedFrom?
+    if (typeof fbMemberCache !== "undefined") {
+      Object.keys(fbMemberCache).forEach(function(k) {
+        var m = fbMemberCache[k];
+        if (m.claimedFrom === pid && ids.indexOf(m.id) === -1) ids.push(m.id);
+        if (m.claimedFrom === pid && ids.indexOf(k) === -1) ids.push(k);
+        if (k === pid && m.claimedFrom && ids.indexOf(m.claimedFrom) === -1) ids.push(m.claimedFrom);
+      });
+    }
+    return ids;
+  }
 
   function addPlayer(name, referredBy) {
     var id = name.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -4449,7 +4542,7 @@ var PB = (function() {
     getScrambleTeams:getScrambleTeams, addScrambleTeam:addScrambleTeam, addScrambleTeamFromFirestore:addScrambleTeamFromFirestore, addScrambleMatch:addScrambleMatch,
     getRecords:getRecords, setRecord:setRecord,
     calcStableford:calcStableford, calcHandicap:calcHandicap, getHandicapDetails:getHandicapDetails,
-    getPlayerAvg:getPlayerAvg, getPlayerBest:getPlayerBest, getDisplayName:getDisplayName, getUniqueCourses:getUniqueCourses, normCourseName:normCourseName,
+    getPlayerAvg:getPlayerAvg, getPlayerBest:getPlayerBest, getDisplayName:getDisplayName, getUniqueCourses:getUniqueCourses, normCourseName:normCourseName, getAllPlayerIds:getAllPlayerIds,
     getTripStableford:getTripStableford, getTripTotal:getTripTotal,
     getMiniPoints:getMiniPoints, getBonusPoints:getBonusPoints, getTripPoints:getTripPoints,
     daysUntil:daysUntil, generateRoundCommentary:generateRoundCommentary, getActivity:getActivity, getAchievements:getAchievements, getPlayerXP:getPlayerXP, getPlayerLevel:getPlayerLevel,
@@ -12996,6 +13089,11 @@ Router.register("admin", function() {
   h += '<div id="adminFeatureRequests"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
   h += '</div>';
 
+  // Error Log
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Error Log</span></div>';
+  h += '<div id="adminErrorLog"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
+  h += '</div>';
+
   // API Integration — commissioner only
   h += '<div class="section"><div class="sec-head"><span class="sec-title">API Integration</span></div>';
   var savedApiKey = localStorage.getItem("golfcourse_api_key") || "";
@@ -13021,6 +13119,7 @@ Router.register("admin", function() {
   loadAdminMemberList();
   loadAdminInviteList();
   loadAdminFeatureRequests();
+  loadAdminErrorLog();
 });
 
 function loadAdminFeatureRequests() {
@@ -13086,6 +13185,54 @@ function setFeatureRequestStatus(id, status) {
     Router.toast("Marked " + status);
     loadAdminFeatureRequests();
   }).catch(function() { Router.toast("Failed to update"); });
+}
+
+function loadAdminErrorLog() {
+  var el = document.getElementById("adminErrorLog");
+  if (!el || !db) { if (el) el.innerHTML = '<div style="font-size:11px;color:var(--muted)">Requires Firebase</div>'; return; }
+  db.collection("errors").orderBy("timestamp", "desc").limit(20).get().then(function(snap) {
+    if (snap.empty) {
+      el.innerHTML = '<div class="card"><div class="card-body" style="text-align:center"><div style="font-size:11px;color:var(--birdie)">No errors logged</div></div></div>';
+      return;
+    }
+    var h = '';
+    snap.forEach(function(doc) {
+      var e = doc.data();
+      var isResolved = e.resolved;
+      var timeStr = e.timestamp ? new Date(e.timestamp).toLocaleString() : "Unknown";
+      var shortMsg = (e.message || "").substring(0, 80);
+      var shortStack = (e.stack || "").substring(0, 120);
+      h += '<div class="card" style="margin-bottom:4px;opacity:' + (isResolved ? '.5' : '1') + '"><div class="card-body" style="padding:8px 12px">';
+      h += '<div style="display:flex;justify-content:space-between;align-items:flex-start">';
+      h += '<div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;color:var(--red);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(shortMsg) + '</div>';
+      h += '<div style="font-size:9px;color:var(--muted);margin-top:2px">' + escHtml(timeStr) + ' · ' + escHtml(e.page || "?") + ' · ' + escHtml(e.userName || e.userId || "anon") + '</div>';
+      if (shortStack) h += '<div style="font-size:8px;color:var(--muted2);margin-top:2px;font-family:monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(shortStack) + '</div>';
+      h += '</div>';
+      if (!isResolved) {
+        h += '<button class="btn-sm outline" style="font-size:8px;padding:2px 6px;flex-shrink:0;margin-left:6px" onclick="resolveError(\'' + doc.id + '\')">Resolve</button>';
+      }
+      h += '</div></div></div>';
+    });
+    h += '<div style="padding:8px;text-align:center"><button class="btn-sm outline" style="font-size:9px" onclick="clearResolvedErrors()">Clear resolved</button></div>';
+    el.innerHTML = h;
+  }).catch(function() { el.innerHTML = '<div style="font-size:11px;color:var(--muted)">Could not load errors</div>'; });
+}
+
+function resolveError(errorId) {
+  if (!db) return;
+  db.collection("errors").doc(errorId).update({ resolved: true }).then(function() {
+    Router.toast("Marked resolved");
+    loadAdminErrorLog();
+  });
+}
+
+function clearResolvedErrors() {
+  if (!db) return;
+  db.collection("errors").where("resolved", "==", true).get().then(function(snap) {
+    var batch = db.batch();
+    snap.forEach(function(doc) { batch.delete(doc.ref); });
+    return batch.commit();
+  }).then(function() { Router.toast("Cleared"); loadAdminErrorLog(); });
 }
 
 function loadAdminReports() {
@@ -13559,18 +13706,20 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.16.0</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Session 1: Critical Fixes</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Firestore-First Migration, Security, Error Logging</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Player identification broadened — members who registered via invite (like Jordyn) can now Play Now and Log Rounds", tag: "FIXED"},
-    {item: "AI commentary no longer references scramble scores — average and personal best use individual rounds only", tag: "FIXED"},
-    {item: "DM list sorts by most recent message on every visit — conversations with newest messages float to top", tag: "FIXED"},
-    {item: "Handicap trend graph shows even with 1 month of data — gold dot on reference line with value label", tag: "IMPROVED"},
-    {item: "Range session taps on home feed navigate to player profile instead of Range startup page", tag: "FIXED"},
-    {item: "All Rounds section: sorted newest first, scrollable 500px window, each round clickable", tag: "IMPROVED"},
-    {item: "Original Four title checks founding flag, isFoundingFour, and badges array — works for all founding members", tag: "FIXED"},
-    {item: "Event Results on home page shows full standings with placement and points, link changed to Start New Event", tag: "IMPROVED"},
-    {item: "Logo.jpg case fixed for GitHub Pages (case-sensitive)", tag: "FIXED"}
+    {item: "Firestore-first data layer — getPlayer() and getPlayers() now read from Firestore as primary source, local seed data is fallback only", tag: "NEW"},
+    {item: "getAllPlayerIds() utility replaces inline ID resolution hacks — single function for all player lookups", tag: "NEW"},
+    {item: "Player identification broadened — members like Jordyn who registered via invite can now Play Now and Log Rounds", tag: "FIXED"},
+    {item: "AI commentary excludes scramble — average and personal best use individual rounds only", tag: "FIXED"},
+    {item: "DM list sorts by most recent message on every visit", tag: "FIXED"},
+    {item: "Handicap graph shows with 1 month of data — gold dot on reference line", tag: "IMPROVED"},
+    {item: "Range session taps navigate to player profile", tag: "FIXED"},
+    {item: "Email verification sent on registration", tag: "NEW"},
+    {item: "Registration rate limited — 3 attempts per 10 minutes", tag: "NEW"},
+    {item: "Global error logging — all uncaught errors and promise rejections logged to Firestore with user context", tag: "NEW"},
+    {item: "Error log viewer in Admin Panel — resolve and clear errors", tag: "NEW"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
