@@ -47,12 +47,12 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
 
 /* NAV */
 .nav{display:none}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--bg);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:stretch;padding:0 0 env(safe-area-inset-bottom,0);height:56px}
-.bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--muted);font-size:9px;font-weight:500;letter-spacing:.3px;padding:6px 0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .15s}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--bg);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:stretch;padding:4px 0 calc(env(safe-area-inset-bottom,8px) + 4px);height:auto;min-height:56px}
+.bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--muted);font-size:9px;font-weight:500;letter-spacing:.3px;padding:8px 0 4px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .15s}
 .bottom-nav button.a{color:var(--gold)}
 .bottom-nav button.a svg{stroke:var(--gold)}
 .bottom-nav button svg{width:22px;height:22px;stroke:var(--muted);fill:none;stroke-width:1.5;transition:stroke .15s}
-#mainApp{padding-bottom:70px}
+#mainApp{padding-bottom:90px}
 .nav::-webkit-scrollbar{display:none}
 /* OLD NAV */ .nav button{flex:0 0 auto;padding:14px 10px;background:0 0;color:var(--muted2);border:none;border-bottom:2px solid transparent;font:600 11px/1 'Inter',sans-serif;cursor:pointer;white-space:nowrap;text-transform:uppercase;letter-spacing:.6px;transition:color .1s,border-color .1s;text-align:center;touch-action:manipulation;-webkit-tap-highlight-color:rgba(201,168,76,.1);min-height:44px}
 /* OLD NAV */ .nav button:hover{color:var(--cream)}
@@ -3056,7 +3056,15 @@ var PB = (function() {
 
   /* ---------- SCORECARD OPS ---------- */
   function getScores(tripId, courseKey, playerId) {
-    return state.scores[tripId] && state.scores[tripId][courseKey] && state.scores[tripId][courseKey][playerId] || [];
+    if (!state.scores[tripId] || !state.scores[tripId][courseKey]) return [];
+    // Direct match first
+    if (state.scores[tripId][courseKey][playerId]) return state.scores[tripId][courseKey][playerId];
+    // Check all known aliases for this player
+    var aliases = getAllPlayerIds(playerId);
+    for (var ai = 0; ai < aliases.length; ai++) {
+      if (state.scores[tripId][courseKey][aliases[ai]]) return state.scores[tripId][courseKey][aliases[ai]];
+    }
+    return [];
   }
 
   function setScore(tripId, courseKey, playerId, hole, val) {
@@ -3120,7 +3128,14 @@ var PB = (function() {
   function getFirGir(tripId, courseKey, playerId) {
     if (!state.firGir) state.firGir = {};
     var key = tripId + ":" + courseKey + ":" + playerId;
-    return state.firGir[key] || { fir: Array(18).fill(false), gir: Array(18).fill(false) };
+    if (state.firGir[key]) return state.firGir[key];
+    // Check aliases
+    var aliases = getAllPlayerIds(playerId);
+    for (var ai = 0; ai < aliases.length; ai++) {
+      var aKey = tripId + ":" + courseKey + ":" + aliases[ai];
+      if (state.firGir[aKey]) return state.firGir[aKey];
+    }
+    return { fir: Array(18).fill(false), gir: Array(18).fill(false) };
   }
 
   function setFir(tripId, courseKey, playerId, hole, val) {
@@ -11439,7 +11454,7 @@ Router.register("range-detail", function(params) {
     // Stats grid
     h += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin:0 16px;border-radius:var(--radius);overflow:hidden">';
     h += '<div style="background:var(--bg2);padding:16px;text-align:center"><div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:var(--gold)">' + (s.durationMin || "—") + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">MINUTES</div></div>';
-    h += '<div style="background:var(--bg2);padding:16px;text-align:center"><div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:var(--birdie)">' + (s.sessionXP || 0) + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">XP EARNED</div></div>';
+    h += '<div style="background:var(--bg2);padding:16px;text-align:center"><div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:var(--birdie)">' + getRangeSessionXP(s) + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">XP EARNED</div></div>';
     var drillCount = s.drills ? s.drills.length : 0;
     h += '<div style="background:var(--bg2);padding:16px;text-align:center"><div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:var(--cream)">' + drillCount + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">DRILLS</div></div>';
     h += '</div>';
@@ -11518,8 +11533,12 @@ function syncRangeSession(s) {
 
 function getRangeSessionXP(session) {
   var mins = (session.durationMin || 0);
-  var xp = Math.min(Math.floor(mins / 30) * 25, 100);
-  if (session.drills && session.drills.length >= 3) xp += 10;
+  // Base XP: 25 per 15 minutes, cap at 150
+  var xp = Math.min(Math.floor(mins / 15) * 25, 150);
+  // Drill bonus: 10 per drill completed
+  if (session.drills && session.drills.length) xp += session.drills.length * 10;
+  // Focus bonus: +15 if a focus area was set
+  if (session.focus) xp += 15;
   return xp;
 }
 
@@ -12175,9 +12194,9 @@ Router.register("calendar", function() {
 
   document.querySelector('[data-page="calendar"]').innerHTML = h;
 
-  // Load scheduling chat from Firestore
+  // Load scheduling chat from separate collection
   if (db) {
-    db.collection("chat").orderBy("createdAt","desc").limit(20).get().then(function(snap) {
+    db.collection("scheduling_chat").orderBy("createdAt","desc").limit(20).get().then(function(snap) {
       var feed = document.getElementById("calChatFeed");
       if (!feed) return;
       if (snap.empty) { feed.innerHTML = '<div style="text-align:center;font-size:10px;color:var(--muted);padding:20px">No messages yet — coordinate tee times here</div>'; return; }
@@ -12206,7 +12225,7 @@ function sendCalChat() {
   if (!input || !input.value.trim() || !db || !currentUser) return;
   var text = input.value.trim();
   input.value = "";
-  db.collection("chat").add({
+  db.collection("scheduling_chat").add({
     id: genId(),
     text: text,
     authorId: currentUser.uid,
@@ -14062,10 +14081,10 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.18.7</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.19.0</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.18.7</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.19.0</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Firestore-First Migration, Security, Error Logging</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -14176,7 +14195,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.18.7</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.19.0</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
@@ -16846,10 +16865,15 @@ function loadHomeActivityFeed() {
     snap.forEach(function(doc) {
       var msg = doc.data();
       var isSystem = !!msg.system;
+      var text = msg.text || "";
+      // Skip range session system messages — we already show the actual session item
+      if (isSystem && text.indexOf("range session") !== -1) return;
+      // Skip attestation messages — redundant with round posts
+      if (isSystem && text.indexOf("scoring is complete") !== -1) return;
       var dest = "";
       if (msg.linkType === "event" && msg.tripId) dest = "Router.go('scorecard',{tripId:'" + msg.tripId + "'})";
       else if (msg.linkType === "round" && msg.roundId) dest = "Router.go('rounds',{roundId:'" + msg.roundId + "'})";
-      items.push({type:"chat", name:(msg.system ? "The Caddy" : msg.authorName || msg.user || "Member"), sub:msg.text || "", ts:msg.createdAt ? msg.createdAt.toMillis() : (msg.timestamp || 0), system:isSystem, dest:dest});
+      items.push({type:"chat", name:(msg.system ? "The Caddy" : msg.authorName || msg.user || "Member"), sub:text, ts:msg.createdAt ? msg.createdAt.toMillis() : (msg.timestamp || 0), system:isSystem, dest:dest});
     });
     pending--; tryRender();
   }).catch(function() { pending--; tryRender(); });
