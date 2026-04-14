@@ -46,12 +46,18 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
 .hidden{display:none!important}
 
 /* NAV */
-.nav{display:flex;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;background:var(--bg);scrollbar-width:none;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.nav{display:none}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--bg);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:stretch;padding:0 0 env(safe-area-inset-bottom,0);height:56px}
+.bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--muted);font-size:9px;font-weight:500;letter-spacing:.3px;padding:6px 0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .15s}
+.bottom-nav button.a{color:var(--gold)}
+.bottom-nav button.a svg{stroke:var(--gold)}
+.bottom-nav button svg{width:22px;height:22px;stroke:var(--muted);fill:none;stroke-width:1.5;transition:stroke .15s}
+#mainApp{padding-bottom:70px}
 .nav::-webkit-scrollbar{display:none}
-.nav button{flex:0 0 auto;padding:14px 10px;background:0 0;color:var(--muted2);border:none;border-bottom:2px solid transparent;font:600 11px/1 'Inter',sans-serif;cursor:pointer;white-space:nowrap;text-transform:uppercase;letter-spacing:.6px;transition:color .1s,border-color .1s;text-align:center;touch-action:manipulation;-webkit-tap-highlight-color:rgba(201,168,76,.1);min-height:44px}
-.nav button:hover{color:var(--cream)}
-.nav button.a{color:var(--gold);border-bottom-color:var(--gold);background:rgba(201,168,76,.08)}
-.nav button.a:hover{color:var(--gold3)}
+/* OLD NAV */ .nav button{flex:0 0 auto;padding:14px 10px;background:0 0;color:var(--muted2);border:none;border-bottom:2px solid transparent;font:600 11px/1 'Inter',sans-serif;cursor:pointer;white-space:nowrap;text-transform:uppercase;letter-spacing:.6px;transition:color .1s,border-color .1s;text-align:center;touch-action:manipulation;-webkit-tap-highlight-color:rgba(201,168,76,.1);min-height:44px}
+/* OLD NAV */ .nav button:hover{color:var(--cream)}
+/* OLD NAV */ .nav button.a{color:var(--gold);border-bottom-color:var(--gold);background:rgba(201,168,76,.08)}
+/* OLD NAV */ .nav button.a:hover{color:var(--gold3)}
 
 /* HERO */
 .hero{padding:36px 20px 22px;text-align:center;background:linear-gradient(180deg,#111520,var(--bg));border-bottom:1px solid var(--border)}
@@ -771,7 +777,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 <!-- ============ MAIN APP ============ -->
 <div class="ptr-indicator" id="ptrIndicator"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M4 4v5h5"/><path d="M20 9A8.1 8.1 0 005.3 6.7L4 9"/><path d="M20 20v-5h-5"/><path d="M4 15a8.1 8.1 0 0014.7 2.3L20 15"/></svg></div>
 <div id="mainApp" class="hidden">
-  <div id="profileBar" style="display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:var(--bg);border-bottom:1px solid var(--border)">
+  <div id="profileBar" style="position:sticky;top:0;z-index:90;display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:var(--bg);border-bottom:1px solid var(--border)">
     <div id="profileBarLeft" style="display:flex;align-items:center;gap:8px;cursor:pointer" onclick="goToMyProfile()">
       <div id="profileBarAvatar" style="width:28px;height:28px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;position:relative"></div>
       <div id="profileBarRight" style="font-size:12px;color:var(--muted)"></div>
@@ -784,6 +790,9 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
       <div id="dmInbox" style="position:relative;cursor:pointer;padding:4px" onclick="closeNotifPanel();Router.go('dms')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22" style="color:var(--muted)"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         <div id="dmBadge" style="display:none;position:absolute;top:-2px;right:-2px;min-width:16px;height:16px;padding:0 4px;background:#e53935;border-radius:8px;font-size:9px;font-weight:700;color:#fff;align-items:center;justify-content:center;border:2px solid var(--bg)"></div>
+      </div>
+      <div style="cursor:pointer;padding:4px" onclick="Router.go('calendar')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22" style="color:var(--muted)"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       </div>
       <div style="cursor:pointer;padding:4px" onclick="Router.go('settings')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22" style="color:var(--muted)"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
@@ -826,7 +835,20 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
   <div data-page="awards" class="hidden"></div>
   <div data-page="scramble-live" class="hidden"></div>
   <div data-page="watchround" class="hidden"></div>
-  <div class="footer">The Parbaughs · Est. 2026 · <span id="connDot" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#4ade80;margin:0 4px;vertical-align:middle"></span><span id="syncStatusText">Connecting...</span></div>
+  <div data-page="feed" class="hidden"></div>
+  <div data-page="more" class="hidden"></div>
+  <div data-page="range-detail" class="hidden"></div>
+  
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav" id="bottomNav">
+    <button onclick="Router.go('home')"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></button>
+    <button onclick="Router.go('activity')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg><span>Play</span></button>
+    <button onclick="Router.go('courses')"><svg viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg><span>Courses</span></button>
+    <button onclick="Router.go('trips')"><svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 010-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 000-5C17 4 17 7 17 7"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg><span>Events</span></button>
+    <button onclick="Router.go('more')"><svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg><span>More</span></button>
+  </div>
+  
+  <div class="footer" style="margin-bottom:56px">The Parbaughs · Est. 2026 · <span id="connDot" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#4ade80;margin:0 4px;vertical-align:middle"></span><span id="syncStatusText">Connecting...</span></div>
   <div class="notif-overlay" id="notifOverlay" onclick="closeNotifPanel()"></div>
   <div class="notif-panel" id="notifPanel">
     <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg);z-index:5">
@@ -1946,7 +1968,10 @@ function announceEventStart(tripId, courseName) {
     id: genId(),
     text: "Live scoring started for " + courseName + "! Watch the scorecard update in real-time.",
     authorId: "system",
-    authorName: "Parbaughs",
+    authorName: "The Caddy",
+    system: true,
+    tripId: tripId,
+    linkType: "event",
     createdAt: fsTimestamp()
   });
 }
@@ -1959,7 +1984,10 @@ function announceEventEnd(tripId, courseName, results) {
     id: genId(),
     text: msg,
     authorId: "system",
-    authorName: "Parbaughs",
+    authorName: "The Caddy",
+    system: true,
+    tripId: tripId,
+    linkType: "event",
     createdAt: fsTimestamp()
   });
 }
@@ -2038,7 +2066,10 @@ function finishTripRound(tripId, courseKey) {
       id: genId(),
       text: course.n + " scoring is complete. All players must attest their scores.",
       authorId: "system",
-      authorName: "Parbaughs",
+      authorName: "The Caddy",
+      system: true,
+      tripId: tripId,
+      linkType: "event",
       createdAt: fsTimestamp()
     });
     Router.toast("Attestation started! Players must confirm their scores.");
@@ -4626,21 +4657,22 @@ var Router = (function() {
   function getParams() { return current.params; }
 
   function renderNav() {
+    var nav = document.getElementById("bottomNav");
+    if (!nav) return;
     var tabs = [
-      { p: "home", l: "Home", match: ["home","watchround"] },
-      { p: "teetimes", l: "Tee Times", match: ["teetimes","tee-create"] },
-      { p: "members", l: "Members", match: ["members","profile-edit"] },
-      { p: "trips", l: "Events", match: ["trips","scorecard"] },
-      { p: "activity", l: "Activity", match: ["activity","rounds","playnow","range"] },
-      { p: "records", l: "Records", match: ["records","aces","scramble","courses","standings","challenges"] },
-      { p: "chat", l: "Clubhouse", match: ["chat","dms","dm-thread"] }
+      { match: ["home","watchround","standings","seasonrecap","awards","feed"] },
+      { match: ["activity","rounds","playnow","range","scramble-live","syncround"] },
+      { match: ["courses"] },
+      { match: ["trips","scorecard","teetimes","tee-create","partygames"] },
+      { match: ["more","members","profile-edit","records","aces","scramble","challenges","trophyroom","rules","merch"] }
     ];
-    var h = "";
-    tabs.forEach(function(t) {
-      var active = t.match.indexOf(current.page) !== -1;
-      h += '<button class="' + (active ? "a" : "") + '" onclick="Router.go(\'' + t.p + '\')">' + t.l + '</button>';
+    var buttons = nav.querySelectorAll("button");
+    tabs.forEach(function(t, i) {
+      if (buttons[i]) {
+        if (t.match.indexOf(current.page) !== -1) buttons[i].classList.add("a");
+        else buttons[i].classList.remove("a");
+      }
     });
-    document.getElementById("nav").innerHTML = h;
   }
 
   function toast(msg) {
@@ -4999,15 +5031,27 @@ Router.register("home", function() {
     h += '</div></div>';
   }
 
-  // 3. Activity feed — async load from Firestore
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Activity feed</span><span class="sec-link" onclick="Router.go(\'activity\')">See all &rarr;</span></div>';
+  // Season standings shortcut
+  h += '<div class="card" style="margin:0 0 8px;cursor:pointer" onclick="Router.go(\'standings\')">';
+  h += '<div style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between">';
+  h += '<div style="display:flex;align-items:center;gap:10px"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M8 6l4-4 4 4"/><path d="M12 2v10.3"/><path d="M20 21H4l2-7h12z"/></svg>';
+  h += '<span style="font-size:13px;font-weight:600;color:var(--cream)">Season Standings</span></div>';
+  h += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--muted)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>';
+  h += '</div></div>';
+
+  // 3. Combined feed — rounds, range, trash talk
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Activity feed</span></div>';
+  h += '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">';
+  h += '<input class="ff-input" id="homeChatInput" placeholder="Say something..." style="flex:1;margin:0;font-size:12px;padding:9px 14px;border-radius:20px" onkeydown="if(event.key===\'Enter\')sendHomeChat()">';
+  h += '<button style="background:var(--gold);border:none;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0" onclick="sendHomeChat()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--bg)" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>';
+  h += '</div>';
   h += '<div id="homeActivityFeed"><div class="card"><div style="padding:20px;text-align:center;font-size:11px;color:var(--muted)">Loading...</div></div></div>';
 
-  // Shortcuts — only items NOT in the top nav (nav already has Members, Events, Activity, Records, Clubhouse, Tee Times)
+  // Quick actions
   h += '<div style="display:flex;gap:8px;margin-bottom:8px">';
+  h += '<div class="ql" style="flex:1" onclick="Router.go(\'teetimes\')"><div class="ql-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="ql-label">Tee Times</div></div>';
+  h += '<div class="ql" style="flex:1" onclick="Router.go(\'records\')"><div class="ql-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div><div class="ql-label">Records</div></div>';
   h += '<div class="ql" style="flex:1" onclick="Router.go(\'syncround\')"><div class="ql-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M21 3v6h-6"/><path d="M3 21v-6h6"/><path d="M21 9A9 9 0 006.3 5.3L3 9"/><path d="M3 15a9 9 0 0014.7 3.7L21 15"/></svg></div><div class="ql-label">Sync Round</div></div>';
-  h += '<div class="ql" style="flex:1" onclick="Router.go(\'scramble\')"><div class="ql-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div><div class="ql-label">Teams</div></div>';
-  h += '<div class="ql" style="flex:1" onclick="Router.go(\'courses\')"><div class="ql-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="10" r="2.5"/></svg></div><div class="ql-label">Courses</div></div>';
   h += '</div>';
 
   // 5. Live Spotlight — only shows when something is actually live
@@ -6106,7 +6150,7 @@ function renderMemberDetailWithData(p) {
   } else {
     accoladeContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No accolades yet</div>';
   }
-  h += profSection("accolades-" + pid, "Accolades", accoladeContent, false);
+  h += profSection("accolades-" + pid, "Accolades" + (accolades.length ? " (" + accolades.length + ")" : ""), accoladeContent, false);
 
   // === HEAD TO HEAD (collapsible) ===
   var h2hContent = '';
@@ -9618,6 +9662,8 @@ function closeEvent(tripId) {
       authorId: "system",
       authorName: "The Caddy",
       system: true,
+      tripId: tripId,
+      linkType: "event",
       timestamp: Date.now(),
       createdAt: fsTimestamp()
     }).catch(function(){});
@@ -11368,6 +11414,92 @@ var DRILL_LIBRARY = [
 var DRILL_CATS = {path:"Path & Plane",extension:"Extension & Posture",short:"Short Game",general:"Full Swing",custom:"My Drills"};
 var customDrills = []; // loaded from Firestore via loadCustomDrillsFromFirestore()
 
+// ========== RANGE SESSION DETAIL (read-only) ==========
+Router.register("range-detail", function(params) {
+  var sessionId = params ? params.sessionId : null;
+  var h = '<div class="sh"><h2>Range Session</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
+  
+  if (!sessionId) {
+    h += '<div class="section"><div class="empty"><div class="empty-text">Session not found</div></div></div>';
+    document.querySelector('[data-page="range-detail"]').innerHTML = h;
+    return;
+  }
+  
+  // Try local cache first
+  var session = liveRangeSessions.find(function(s) { return s._id === sessionId || s.id === sessionId; });
+  
+  function renderSession(s) {
+    var player = PB.getPlayer(s.playerId);
+    var playerName = s.playerName || (player ? player.name : "A Parbaugh");
+    
+    h += '<div style="text-align:center;padding:20px 16px;background:linear-gradient(180deg,rgba(201,168,76,.06),transparent)">';
+    h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--gold)">' + escHtml(playerName) + '</div>';
+    h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">' + escHtml(s.date || "") + '</div></div>';
+    
+    // Stats grid
+    h += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin:0 16px;border-radius:var(--radius);overflow:hidden">';
+    h += '<div style="background:var(--bg2);padding:16px;text-align:center"><div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:var(--gold)">' + (s.durationMin || "—") + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">MINUTES</div></div>';
+    h += '<div style="background:var(--bg2);padding:16px;text-align:center"><div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:var(--birdie)">' + (s.sessionXP || 0) + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">XP EARNED</div></div>';
+    var drillCount = s.drills ? s.drills.length : 0;
+    h += '<div style="background:var(--bg2);padding:16px;text-align:center"><div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:var(--cream)">' + drillCount + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">DRILLS</div></div>';
+    h += '</div>';
+    
+    // Focus
+    if (s.focus) {
+      h += '<div class="card" style="margin:12px 16px"><div style="padding:12px 16px"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Focus Area</div>';
+      h += '<div style="font-size:13px;color:var(--cream);font-weight:500">' + escHtml(s.focus) + '</div></div></div>';
+    }
+    
+    // Drills
+    if (s.drills && s.drills.length) {
+      h += '<div class="card" style="margin:0 16px 12px"><div style="padding:12px 16px"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Drills Completed</div>';
+      s.drills.forEach(function(d) {
+        var drillName = typeof d === "string" ? d : (d.name || d.drill || "Drill");
+        var drillDur = typeof d === "object" && d.duration ? d.duration + " min" : "";
+        h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">';
+        h += '<span style="font-size:12px;color:var(--cream)">' + escHtml(drillName) + '</span>';
+        if (drillDur) h += '<span style="font-size:10px;color:var(--muted)">' + drillDur + '</span>';
+        h += '</div>';
+      });
+      h += '</div></div>';
+    }
+    
+    // Notes
+    if (s.notes) {
+      h += '<div class="card" style="margin:0 16px 12px"><div style="padding:12px 16px"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Notes</div>';
+      h += '<div style="font-size:12px;color:var(--cream);line-height:1.5">' + escHtml(s.notes) + '</div></div></div>';
+    }
+    
+    // Feel
+    if (s.feel) {
+      var feelLabels = {1: "Rough", 2: "Meh", 3: "Solid", 4: "Great", 5: "On Fire"};
+      h += '<div style="text-align:center;padding:12px;font-size:11px;color:var(--muted)">Session feel: <span style="color:var(--gold);font-weight:600">' + (feelLabels[s.feel] || s.feel) + '</span></div>';
+    }
+    
+    // Link to player profile
+    if (s.playerId) {
+      h += '<div style="padding:0 16px 16px"><button class="btn full outline" onclick="Router.go(\'members\',{id:\'' + s.playerId + '\'})">View ' + escHtml(playerName) + '\'s Profile</button></div>';
+    }
+    
+    document.querySelector('[data-page="range-detail"]').innerHTML = h;
+  }
+  
+  if (session) {
+    renderSession(session);
+  } else if (db) {
+    // Load from Firestore
+    h += '<div class="loading"><div class="spinner"></div>Loading session...</div>';
+    document.querySelector('[data-page="range-detail"]').innerHTML = h;
+    db.collection("rangeSessions").doc(sessionId).get().then(function(doc) {
+      if (doc.exists) {
+        renderSession(doc.data());
+      } else {
+        document.querySelector('[data-page="range-detail"]').innerHTML = '<div class="sh"><h2>Range Session</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div><div class="section"><div class="empty"><div class="empty-text">Session not found</div></div></div>';
+      }
+    });
+  }
+});
+
 function startRangeSessionListener() {
   if (!db) return;
   if (window._rangeUnsub) window._rangeUnsub();
@@ -11997,16 +12129,232 @@ Router.register("calendar", function() {
   }
 
   h += '<div class="section"><button class="btn full green" onclick="Router.go(\'tee-create\')">Post a Tee Time</button></div>';
+
+  // Upcoming events strip
+  var now = new Date();
+  var upcomingEvents = [];
+  liveTeeTimes.forEach(function(t) {
+    if (t.status === "cancelled" || t.date < todayStr) return;
+    upcomingEvents.push({date:t.date, title:t.courseName||"Tee Time", time:t.time||"", type:"tee", spots:t.spots||4, responses:t.responses||{}});
+  });
+  PB.getTrips().forEach(function(trip) {
+    if (trip.startDate && (trip.startDate >= todayStr || (trip.endDate && trip.endDate >= todayStr))) {
+      upcomingEvents.push({date:trip.startDate >= todayStr ? trip.startDate : todayStr, title:trip.name, time:trip.startDate <= todayStr ? "Happening now" : "", type:"trip", tripId:trip.id});
+    }
+  });
+  upcomingEvents.sort(function(a,b){return a.date > b.date ? 1 : -1;});
+  
+  if (upcomingEvents.length) {
+    h += '<div style="padding:8px 16px"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Coming Up</div>';
+    h += '<div style="display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px">';
+    upcomingEvents.slice(0,5).forEach(function(ev) {
+      var dateObj = new Date(ev.date + "T12:00:00");
+      var mons = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      var dayDiff = Math.ceil((dateObj - now) / 86400000);
+      var dayLabel = dayDiff === 0 ? "Today" : dayDiff === 1 ? "Tomorrow" : mons[dateObj.getMonth()] + " " + dateObj.getDate();
+      var dotColor = ev.type === "trip" ? "var(--gold)" : "var(--birdie)";
+      var accepted = ev.responses ? Object.keys(ev.responses).filter(function(k){return ev.responses[k]==="accepted"}).length : 0;
+      var clickAction = ev.type === "trip" && ev.tripId ? "Router.go('scorecard',{tripId:'" + ev.tripId + "'})" : "Router.go('teetimes')";
+      h += '<div onclick="' + clickAction + '" style="flex-shrink:0;min-width:130px;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer">';
+      h += '<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px"><div style="width:5px;height:5px;border-radius:50%;background:' + dotColor + '"></div>';
+      h += '<span style="font-size:9px;color:var(--gold);font-weight:600">' + dayLabel + '</span></div>';
+      h += '<div style="font-size:11px;font-weight:600;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(ev.title) + '</div>';
+      if (ev.time) h += '<div style="font-size:9px;color:var(--muted);margin-top:2px">' + ev.time + (ev.spots ? ' · ' + accepted + '/' + ev.spots : '') + '</div>';
+      h += '</div>';
+    });
+    h += '</div></div>';
+  }
+
+  // Scheduling chat
+  h += '<div style="padding:8px 16px"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Scheduling Chat</div></div>';
+  h += '<div id="calChatFeed" style="max-height:300px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px"><div style="text-align:center;font-size:10px;color:var(--muted);padding:20px">Loading...</div></div>';
+  h += '<div style="display:flex;gap:8px;padding:8px 16px;border-top:1px solid var(--border)">';
+  h += '<input class="ff-input" id="calChatInput" placeholder="Discuss scheduling..." style="flex:1;margin:0;font-size:12px;padding:9px 14px;border-radius:20px" onkeydown="if(event.key===\'Enter\')sendCalChat()">';
+  h += '<button style="background:var(--gold);border:none;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0" onclick="sendCalChat()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--bg)" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>';
+  h += '</div>';
+
   document.querySelector('[data-page="calendar"]').innerHTML = h;
+
+  // Load scheduling chat from Firestore
+  if (db) {
+    db.collection("chat").orderBy("createdAt","desc").limit(20).get().then(function(snap) {
+      var feed = document.getElementById("calChatFeed");
+      if (!feed) return;
+      if (snap.empty) { feed.innerHTML = '<div style="text-align:center;font-size:10px;color:var(--muted);padding:20px">No messages yet — coordinate tee times here</div>'; return; }
+      var ch = '';
+      snap.forEach(function(doc) {
+        var msg = doc.data();
+        var isSystem = !!msg.system;
+        var author = isSystem ? "The Caddy" : (msg.authorName || msg.user || "Member");
+        var ts = msg.createdAt ? feedTimeAgo(msg.createdAt.toMillis()) : "";
+        ch += '<div style="padding:6px 0;border-bottom:1px solid var(--border)">';
+        ch += '<div style="display:flex;justify-content:space-between"><span style="font-size:10px;font-weight:600;color:' + (isSystem ? 'var(--birdie)' : 'var(--gold)') + '">' + escHtml(author) + '</span>';
+        ch += '<span style="font-size:9px;color:var(--muted2)">' + ts + '</span></div>';
+        ch += '<div style="font-size:11px;color:var(--cream);margin-top:2px">' + escHtml(msg.text || "") + '</div></div>';
+      });
+      feed.innerHTML = ch;
+    });
+  }
 });
 
 function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}calSelectedDate=null;Router.go("calendar");}
 function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}calSelectedDate=null;Router.go("calendar");}
 function selectCalDay(ds){calSelectedDate=(calSelectedDate===ds)?null:ds;Router.go("calendar");}
 
+function sendCalChat() {
+  var input = document.getElementById("calChatInput");
+  if (!input || !input.value.trim() || !db || !currentUser) return;
+  var text = input.value.trim();
+  input.value = "";
+  db.collection("chat").add({
+    id: genId(),
+    text: text,
+    authorId: currentUser.uid,
+    authorName: currentProfile ? PB.getDisplayName(currentProfile) : "Member",
+    createdAt: fsTimestamp()
+  }).then(function() {
+    Router.go("calendar");
+  }).catch(function(e) { Router.toast("Send failed: " + e.message); });
+}
+
 
 // ========== TRASH TALK FEED ==========
 var liveChat = [];
+
+// ========== MORE PAGE ==========
+Router.register("more", function() {
+  var h = '<div class="sh"><h2>More</h2></div>';
+  var links = [
+    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 20h5v-2a3 3 0 00-4-4H6a3 3 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>', label:"Members", page:"members"},
+    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>', label:"Challenges", page:"challenges"},
+    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>', label:"Scramble Teams", page:"scramble"},
+    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22V2"/><path d="M12 2l8 4-8 4"/><circle cx="12" cy="22" r="2"/></svg>', label:"Tee Times", page:"teetimes"}
+  ];
+  h += '<div style="padding:8px 16px">';
+  links.forEach(function(l) {
+    h += '<div class="card" style="margin-bottom:6px;cursor:pointer" onclick="Router.go(\'' + l.page + '\')">';
+    h += '<div style="padding:14px 16px;display:flex;align-items:center;gap:14px">';
+    h += '<div style="color:var(--muted);flex-shrink:0">' + l.icon + '</div>';
+    h += '<div style="font-size:14px;font-weight:500;color:var(--cream)">' + l.label + '</div>';
+    h += '<div style="margin-left:auto;color:var(--muted2)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>';
+    h += '</div></div>';
+  });
+  h += '</div>';
+  document.querySelector('[data-page="more"]').innerHTML = h;
+});
+
+// ========== COMBINED FEED ==========
+Router.register("feed", function() {
+  var h = '<div class="sh"><h2>Feed</h2></div>';
+  
+  // Chat input at top
+  h += '<div style="padding:8px 16px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center">';
+  h += '<input class="ff-input" id="feedChatInput" placeholder="Say something..." style="flex:1;margin:0;font-size:13px;padding:10px 14px;border-radius:20px" onkeydown="if(event.key===\'Enter\')sendFeedChat()">';
+  h += '<button style="background:var(--gold);border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0" onclick="sendFeedChat()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--bg)" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>';
+  h += '</div>';
+  
+  h += '<div id="feedStream"><div class="loading"><div class="spinner"></div>Loading feed...</div></div>';
+  document.querySelector('[data-page="feed"]').innerHTML = h;
+  
+  // Load all feed items: rounds, range, chat
+  var items = [];
+  var pending = 3;
+  
+  function tryRender() {
+    if (pending > 0) return;
+    items.sort(function(a, b) { return b.ts - a.ts; });
+    var fh = '';
+    if (!items.length) {
+      fh = '<div class="card" style="margin:16px"><div class="empty" style="padding:32px"><div class="empty-text">No activity yet</div></div></div>';
+    }
+    items.slice(0, 60).forEach(function(item) {
+      if (item.type === "chat") {
+        var isSystem = item.system;
+        fh += '<div class="card" style="margin:4px 16px;border-left:3px solid ' + (isSystem ? 'var(--birdie)' : 'var(--border)') + '">';
+        fh += '<div style="padding:10px 14px"><div style="display:flex;justify-content:space-between;align-items:flex-start">';
+        fh += '<div style="font-size:11px;font-weight:700;color:' + (isSystem ? 'var(--birdie)' : 'var(--gold)') + '">' + escHtml(item.author) + '</div>';
+        fh += '<span style="font-size:9px;color:var(--muted2)">' + feedTimeAgo(item.ts) + '</span></div>';
+        fh += '<div style="font-size:12px;color:var(--cream);margin-top:4px;line-height:1.5;white-space:pre-wrap">' + escHtml(item.text) + '</div>';
+        fh += '</div></div>';
+      } else if (item.type === "round") {
+        fh += '<div class="card" style="margin:4px 16px;cursor:pointer" onclick="' + item.dest + '">';
+        fh += '<div style="padding:10px 14px"><div style="display:flex;justify-content:space-between;align-items:flex-start">';
+        fh += '<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(item.name) + '</div>';
+        fh += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + escHtml(item.sub) + '</div>';
+        if (item.quip) fh += '<div style="font-size:11px;color:var(--gold);font-style:italic;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">' + escHtml(item.quip) + '</div>';
+        fh += '</div>';
+        fh += '<div style="text-align:right;flex-shrink:0;margin-left:12px"><div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:var(--gold)">' + item.score + '</div>';
+        fh += '<div style="font-size:9px;color:var(--muted)">' + (item.date || "") + '</div></div>';
+        fh += '</div></div></div>';
+      } else if (item.type === "range") {
+        fh += '<div class="card" style="margin:4px 16px;cursor:pointer" onclick="' + item.dest + '">';
+        fh += '<div style="padding:10px 14px"><div style="display:flex;justify-content:space-between;align-items:center">';
+        fh += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(item.name) + '</div>';
+        fh += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + escHtml(item.sub) + '</div></div>';
+        fh += '<span style="font-size:9px;color:var(--muted2)">' + feedTimeAgo(item.ts) + '</span>';
+        fh += '</div></div></div>';
+      }
+    });
+    var el = document.getElementById("feedStream");
+    if (el) el.innerHTML = fh;
+  }
+  
+  // 1. Rounds
+  if (db) {
+    db.collection("rounds").where("visibility", "==", "public").orderBy("createdAt", "desc").limit(40).get().then(function(snap) {
+      snap.forEach(function(doc) {
+        var r = doc.data();
+        var rid = doc.id;
+        var isScramble = r.format === "scramble" || r.format === "scramble4";
+        var comm = PB.generateRoundCommentary({score:r.score,rating:r.rating||72,slope:r.slope||113,player:r.player,holesPlayed:r.holesPlayed||18});
+        var quip = isScramble ? "" : (comm.roasts.length ? comm.roasts[0] : (comm.highlights.length ? comm.highlights[0] : ""));
+        var holeLabel = r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? " · Back 9" : " · Front 9") : "";
+        var fmtLabel = r.format && r.format !== "stroke" ? " · " + r.format.charAt(0).toUpperCase() + r.format.slice(1) : "";
+        var teeLabel = r.tee ? " · " + r.tee : "";
+        items.push({type:"round", name:(r.playerName||"A Parbaugh") + (isScramble ? " (Scramble)" : ""), sub:(r.course||"") + teeLabel + " · " + r.score + holeLabel + fmtLabel, quip:quip, score:r.score, date:r.date||"", ts:r.createdAt ? r.createdAt.toMillis() : 0, dest:"Router.go('rounds',{roundId:'" + rid + "'})"});
+      });
+      pending--; tryRender();
+    }).catch(function() { pending--; tryRender(); });
+  } else { pending--; }
+  
+  // 2. Range sessions
+  if (typeof liveRangeSessions !== "undefined" && liveRangeSessions.length) {
+    liveRangeSessions.filter(function(s){return s.visibility !== "private";}).slice(0,10).forEach(function(s) {
+      var name = s.playerName || s.playerId || "A Parbaugh";
+      var sub = (s.durationMin ? s.durationMin + " min" : "") + (s.focus ? " · " + s.focus : "") || "Range session";
+      var playerDest = s.playerId ? "Router.go('members',{id:'" + s.playerId + "'})" : "Router.go('range')";
+      items.push({type:"range", name:name + " hit the range", sub:sub, ts:s.startedAt ? new Date(s.startedAt).getTime() : 0, dest:playerDest});
+    });
+  }
+  pending--;
+  
+  // 3. Chat messages
+  if (db) {
+    db.collection("chat").orderBy("createdAt", "desc").limit(30).get().then(function(snap) {
+      snap.forEach(function(doc) {
+        var msg = doc.data();
+        items.push({type:"chat", author:(msg.system ? "The Caddy" : msg.authorName || msg.user || "Member"), text:msg.text || "", ts:msg.createdAt ? msg.createdAt.toMillis() : (msg.timestamp || 0), system:!!msg.system});
+      });
+      pending--; tryRender();
+    }).catch(function() { pending--; tryRender(); });
+  } else { pending--; }
+});
+
+function sendFeedChat() {
+  var input = document.getElementById("feedChatInput");
+  if (!input || !input.value.trim() || !db || !currentUser) return;
+  var text = input.value.trim();
+  input.value = "";
+  db.collection("chat").add({
+    id: genId(),
+    text: text,
+    authorId: currentUser.uid,
+    authorName: currentProfile ? PB.getDisplayName(currentProfile) : "Anon",
+    createdAt: fsTimestamp()
+  }).then(function() {
+    Router.go("feed"); // Refresh feed
+  }).catch(function(e) { Router.toast("Send failed: " + e.message); });
+}
 
 Router.register("chat", function() {
   var h = '';
@@ -12491,7 +12839,7 @@ function renderChatMessages(messages) {
     var isSystem = msg.authorId === "system";
     ch += '<div style="display:flex;gap:10px">';
     ch += '<div class="c-av" style="background:var(--bg3);border:1px solid ' + (isSystem ? 'var(--border)' : (m ? playerFrameColor(m) : 'var(--border)')) + ';display:flex;align-items:center;justify-content:center">' + (isSystem ? '⛳' : (m ? Router.getAvatar(m) : '')) + '</div>';
-    ch += '<div style="flex:1"><div class="chat-author"' + (isSystem ? ' style="color:var(--birdie)"' : '') + '>' + escHtml(msg.authorName||"Anon") + (mLvl && !isSystem ? ' <span style="font-size:8px;color:var(--gold);font-weight:600">LV' + mLvl.level + '</span>' : '') + '</div>';
+    ch += '<div style="flex:1"><div class="chat-author"' + (isSystem ? ' style="color:var(--birdie)"' : '') + '>' + escHtml((msg.system ? "The Caddy" : msg.authorName || msg.user || "Member")) + (mLvl && !isSystem ? ' <span style="font-size:8px;color:var(--gold);font-weight:600">LV' + mLvl.level + '</span>' : '') + '</div>';
     ch += '<div class="chat-text">' + escHtml(msg.text) + '</div>';
     if (msg.createdAt && msg.createdAt.toDate) {
       var _d = msg.createdAt.toDate();
@@ -13714,10 +14062,10 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.16.3</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.18.7</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.16.3</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.18.7</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Firestore-First Migration, Security, Error Logging</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -13828,7 +14176,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.16.3</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.18.7</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
@@ -16317,6 +16665,21 @@ function startPresenceSystem() {
 
 // ========== FIRESTORE ACTIVITY FEED ==========
 function renderFeedItem(a) {
+  var timeLabel = a.ts ? feedTimeAgo(a.ts) : "";
+  
+  // Chat messages — compact styling
+  if (a.type === "chat") {
+    var chatColor = a.system ? "var(--birdie)" : "var(--gold)";
+    var clickAttr = a.dest ? ' onclick="' + a.dest + '" style="cursor:pointer"' : '';
+    var h = '<div style="padding:8px 16px;border-left:2px solid ' + (a.system ? 'var(--birdie)' : 'rgba(201,168,76,.2)') + ';margin:2px 0"' + clickAttr + '>';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center">';
+    h += '<span style="font-size:10px;font-weight:600;color:' + chatColor + '">' + escHtml(a.name) + '</span>';
+    h += '<span style="font-size:9px;color:var(--muted2)">' + timeLabel + '</span></div>';
+    h += '<div style="font-size:11px;color:var(--cream);margin-top:2px;line-height:1.4;white-space:pre-wrap">' + escHtml(a.sub) + '</div>';
+    h += '</div>';
+    return h;
+  }
+  
   var h = '<div class="feed-row" style="display:block;padding:12px 16px">';
   var topRow = '<div style="display:flex;align-items:flex-start;gap:10px"' + (a.dest ? ' onclick="' + a.dest + '" style="cursor:pointer"' : '') + '>';
   if (a.live) topRow += '<div style="width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse-dot 2s infinite;flex-shrink:0;margin-top:8px"></div>';
@@ -16327,7 +16690,7 @@ function renderFeedItem(a) {
   topRow += '</div>';
   topRow += '<div class="feed-right" style="flex-shrink:0;min-width:60px;text-align:right">';
   if (a.score) topRow += '<div class="feed-score">' + a.score + '</div>';
-  if (a.date) topRow += '<div class="feed-date" style="white-space:nowrap">' + a.date + '</div>';
+  topRow += '<div class="feed-date" style="white-space:nowrap">' + timeLabel + '</div>';
   if (a.live) topRow += '<div style="font-size:9px;color:#4ade80;font-weight:600">LIVE</div>';
   topRow += '</div></div>';
   h += topRow;
@@ -16340,7 +16703,6 @@ function renderFeedItem(a) {
     h += '<div class="feed-actions">';
     h += '<div class="feed-action' + (isLiked ? ' active' : '') + '" onclick="event.stopPropagation();likeFeedRound(\'' + a.roundId + '\',this)"><svg viewBox="0 0 16 16" width="14" height="14" fill="' + (isLiked ? 'var(--gold)' : 'none') + '" stroke="currentColor" stroke-width="1.2"><path d="M8 14s-5.5-3.5-5.5-7A2.5 2.5 0 018 4.5 2.5 2.5 0 0113.5 7C13.5 10.5 8 14 8 14z"/></svg><span>' + (likeCount || '') + '</span></div>';
     h += '<div class="feed-action" onclick="event.stopPropagation();toggleFeedComments(\'' + a.roundId + '\')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 3h12v8H5l-3 3V3z"/></svg><span>' + (commentCount || '') + '</span></div>';
-    h += '<div class="feed-action" style="margin-left:auto;font-size:10px;color:var(--muted2)">' + (a.timeAgo || '') + '</div>';
     h += '</div>';
     h += '<div id="feedComments_' + a.roundId + '" class="feed-comments" style="display:none"></div>';
   }
@@ -16431,8 +16793,8 @@ function loadHomeActivityFeed() {
     liveRangeSessions.filter(function(s){return s.visibility !== "private";}).slice(0,8).forEach(function(s) {
       var name = s.playerName || s.playerId || "A Parbaugh";
       var sub = (s.durationMin ? s.durationMin + " min" : "") + (s.focus ? " · " + s.focus : "");
-      var playerDest = s.playerId ? "Router.go('members',{id:'" + s.playerId + "'})" : "Router.go('range')";
-      items.push({type:"range", name:name + " hit the range", sub:sub||"Range session", date:s.date||"", ts:s.startedAt ? new Date(s.startedAt).getTime() : 0, dest:playerDest});
+      var sessionDest = s._id ? "Router.go('range-detail',{sessionId:'" + s._id + "'})" : (s.playerId ? "Router.go('members',{id:'" + s.playerId + "'})" : "Router.go('range')");
+      items.push({type:"range", name:name + " hit the range", sub:sub||"Range session", date:s.date||"", ts:s.startedAt ? new Date(s.startedAt).getTime() : 0, dest:sessionDest});
     });
   }
   pending--; tryRender();
@@ -16477,6 +16839,36 @@ function loadHomeActivityFeed() {
     });
     pending--; tryRender();
   }).catch(function() { pending--; tryRender(); });
+
+  // 6. Trash talk / chat messages
+  pending++;
+  db.collection("chat").orderBy("createdAt", "desc").limit(20).get().then(function(snap) {
+    snap.forEach(function(doc) {
+      var msg = doc.data();
+      var isSystem = !!msg.system;
+      var dest = "";
+      if (msg.linkType === "event" && msg.tripId) dest = "Router.go('scorecard',{tripId:'" + msg.tripId + "'})";
+      else if (msg.linkType === "round" && msg.roundId) dest = "Router.go('rounds',{roundId:'" + msg.roundId + "'})";
+      items.push({type:"chat", name:(msg.system ? "The Caddy" : msg.authorName || msg.user || "Member"), sub:msg.text || "", ts:msg.createdAt ? msg.createdAt.toMillis() : (msg.timestamp || 0), system:isSystem, dest:dest});
+    });
+    pending--; tryRender();
+  }).catch(function() { pending--; tryRender(); });
+}
+
+function sendHomeChat() {
+  var input = document.getElementById("homeChatInput");
+  if (!input || !input.value.trim() || !db || !currentUser) return;
+  var text = input.value.trim();
+  input.value = "";
+  db.collection("chat").add({
+    id: genId(),
+    text: text,
+    authorId: currentUser.uid,
+    authorName: currentProfile ? PB.getDisplayName(currentProfile) : "Anon",
+    createdAt: fsTimestamp()
+  }).then(function() {
+    loadHomeActivityFeed(); // Refresh
+  }).catch(function(e) { Router.toast("Send failed: " + e.message); });
 }
 
 function feedTimeAgo(ts) {
