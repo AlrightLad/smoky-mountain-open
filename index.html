@@ -3353,8 +3353,8 @@ var PB = (function() {
     // Calculate diff relative to expected score (handicap-adjusted), not raw course rating
     var diff;
     if (playerHcap !== null && playerHcap > 0) {
-      // Course handicap = index * (slope / 113)
-      var courseHcap = is9hole ? Math.round(playerHcap * (slope / 113) / 2) : Math.round(playerHcap * (slope / 113));
+      // Course handicap — full 18-hole value since we're comparing doubled 9-hole score against doubled rating
+      var courseHcap = Math.round(playerHcap * (slope / 113));
       var expectedScore = effectiveRating + courseHcap;
       diff = effectiveScore - expectedScore;
     } else {
@@ -3408,20 +3408,26 @@ var PB = (function() {
       else highlights.push("You survived Sequoyah. That alone deserves a trophy.");
     }
 
-    // Improvement tracking (individual 18-hole rounds only — no scramble, no 9-hole)
+    // Improvement tracking — compare like-for-like (9-hole vs 9-hole, 18-hole vs 18-hole)
     var myIds = round.player ? getAllPlayerIds(round.player) : [round.player];
-    var playerRounds = state.rounds.filter(function(r) { return myIds.indexOf(r.player) !== -1 && r.format !== "scramble" && r.format !== "scramble4" && (!r.holesPlayed || r.holesPlayed >= 18); });
+    var playerRounds;
+    if (is9hole) {
+      playerRounds = state.rounds.filter(function(r) { return myIds.indexOf(r.player) !== -1 && r.format !== "scramble" && r.format !== "scramble4" && r.holesPlayed && r.holesPlayed <= 9; });
+    } else {
+      playerRounds = state.rounds.filter(function(r) { return myIds.indexOf(r.player) !== -1 && r.format !== "scramble" && r.format !== "scramble4" && (!r.holesPlayed || r.holesPlayed >= 18); });
+    }
     if (playerRounds.length >= 3) {
       var lastThree = playerRounds.slice(-3);
       var avgLast3 = Math.round(lastThree.reduce(function(a, r) { return a + r.score; }, 0) / 3);
-      if (score < avgLast3 - 5) highlights.push("That's " + (avgLast3 - score) + " strokes better than your recent average. Trending up.");
-      if (score > avgLast3 + 10) roasts.push("That's " + (score - avgLast3) + " strokes worse than your recent average. What happened out there?");
+      var holeLabel = is9hole ? " for 9 holes" : "";
+      if (score < avgLast3 - 3) highlights.push("That's " + (avgLast3 - score) + " strokes better than your recent average" + holeLabel + ". Trending up.");
+      if (score > avgLast3 + (is9hole ? 5 : 10)) roasts.push("That's " + (score - avgLast3) + " strokes worse than your recent average" + holeLabel + ". What happened out there?");
     }
 
-    // Personal best detection (individual 18-hole only)
+    // Personal best detection — same like-for-like comparison
     if (playerRounds.length > 1) {
       var prevBest = Math.min.apply(null, playerRounds.slice(0, -1).map(function(r) { return r.score; }));
-      if (score < prevBest) highlights.push("NEW PERSONAL BEST. Previous was " + prevBest + ". The grind is paying off.");
+      if (score < prevBest) highlights.push("NEW PERSONAL BEST" + (is9hole ? " (9 holes)" : "") + ". Previous was " + prevBest + ". The grind is paying off.");
     }
 
     return { highlights: highlights, roasts: roasts };
@@ -13708,10 +13714,10 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.16.2</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.16.3</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.16.2</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.16.3</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Firestore-First Migration, Security, Error Logging</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -13822,7 +13828,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.16.2</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.16.3</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
