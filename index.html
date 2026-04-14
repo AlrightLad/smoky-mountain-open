@@ -3341,7 +3341,8 @@ var PB = (function() {
     // Look up player handicap for relative commentary
     var playerHcap = null;
     if (round.player) {
-      var pRounds = state.rounds.filter(function(r){ return r.player === round.player; });
+      var hcapIds = getAllPlayerIds(round.player);
+      var pRounds = state.rounds.filter(function(r){ return hcapIds.indexOf(r.player) !== -1 && r.format !== "scramble" && r.format !== "scramble4"; });
       playerHcap = calcHandicap(pRounds);
       if (!playerHcap) {
         var pl = getPlayer(round.player);
@@ -3407,8 +3408,9 @@ var PB = (function() {
       else highlights.push("You survived Sequoyah. That alone deserves a trophy.");
     }
 
-    // Improvement tracking (individual rounds only — no scramble)
-    var playerRounds = state.rounds.filter(function(r) { return r.player === round.player && r.format !== "scramble" && r.format !== "scramble4"; });
+    // Improvement tracking (individual rounds only — no scramble, resolve all player IDs)
+    var myIds = round.player ? getAllPlayerIds(round.player) : [round.player];
+    var playerRounds = state.rounds.filter(function(r) { return myIds.indexOf(r.player) !== -1 && r.format !== "scramble" && r.format !== "scramble4"; });
     if (playerRounds.length >= 3) {
       var lastThree = playerRounds.slice(-3);
       var avgLast3 = Math.round(lastThree.reduce(function(a, r) { return a + r.score; }, 0) / 3);
@@ -6197,25 +6199,14 @@ function buildHandicapGraph(rounds, pid) {
   var validPts = graphData.filter(function(g) { return g.hcap !== null; });
   if (!validPts.length) return '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">Not enough data for graph</div>';
 
-  // Single data point — show dot on reference line with value
+  // Single data point — clean text, graph builds with more months
   if (validPts.length === 1) {
-    var singleVal = validPts[0].hcap;
-    var singleLabel = validPts[0].label;
     var totalRds = graphData.reduce(function(a,g){return a+g.roundCount},0);
-    var gradId1 = "hcapGrad1_" + pid;
-    var svg1 = '<svg viewBox="0 0 320 80" style="width:100%;height:auto;display:block">';
-    svg1 += '<defs><linearGradient id="' + gradId1 + '" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(201,168,76,0)"/><stop offset="50%" stop-color="rgba(201,168,76,.3)"/><stop offset="100%" stop-color="rgba(201,168,76,0)"/></linearGradient></defs>';
-    svg1 += '<line x1="40" y1="40" x2="280" y2="40" stroke="url(#' + gradId1 + ')" stroke-width="1.5" stroke-dasharray="4,3"/>';
-    svg1 += '<circle cx="160" cy="40" r="8" fill="rgba(201,168,76,.12)"/>';
-    svg1 += '<circle cx="160" cy="40" r="4" fill="var(--gold)" stroke="var(--bg)" stroke-width="1.5"/>';
-    svg1 += '<text x="160" y="28" text-anchor="middle" fill="var(--gold)" font-size="10" font-weight="700">' + singleVal.toFixed(1) + '</text>';
-    svg1 += '<text x="160" y="60" text-anchor="middle" fill="rgba(255,255,255,.3)" font-size="8">' + singleLabel + '</text>';
-    svg1 += '</svg>';
-    var result = '<div style="padding:8px 0">' + svg1 + '</div>';
-    result += '<div style="display:flex;justify-content:center;gap:16px;padding:2px 0 8px;font-size:9px;color:var(--muted2)">';
-    result += '<span>' + totalRds + ' round' + (totalRds !== 1 ? 's' : '') + '</span>';
-    result += '<span style="color:var(--birdie)">Trend line grows each month</span>';
+    var result = '<div style="display:flex;justify-content:center;gap:20px;padding:8px 0;font-size:10px;color:var(--muted2)">';
+    result += '<div>' + totalRds + ' qualifying round' + (totalRds !== 1 ? 's' : '') + '</div>';
+    result += '<div style="color:var(--birdie)">Tap Score Differentials below for details</div>';
     result += '</div>';
+    result += '<div style="text-align:center;font-size:10px;color:var(--muted);padding:4px 0 8px">Trend graph builds as you play across multiple months</div>';
     return result;
   }
 
@@ -12793,8 +12784,6 @@ function getDmConvoId(a,b){return [a,b].sort().join("_")}
 function formatDmTime(date){var now=new Date(),diff=now-date;if(diff<60000)return "now";if(diff<3600000)return Math.floor(diff/60000)+"m";if(diff<86400000)return Math.floor(diff/3600000)+"h";return(date.getMonth()+1)+"/"+date.getDate();}
 
 Router.register("dms", function() {
-  window._dmPreviewsLoaded = false;
-  dmConversations = {}; // Reset cache to force fresh load + sort
   var h = '<div class="sh"><h2>Messages</h2><button class="back" onclick="Router.go(\'home\')">← Home</button></div>';
   
   if (!currentUser) {
@@ -12825,51 +12814,68 @@ Router.register("dms", function() {
       seen[key] = true;
       return true;
     });
-    var dh = '';
+    
     if (!filtered.length) {
-      dh = '<div class="section"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div class="empty-text">No other members yet</div></div></div>';
+      var el = document.getElementById("dmMemberList");
+      if (el) el.innerHTML = '<div class="section"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div class="empty-text">No other members yet</div></div></div>';
+      return;
     }
+    
+    // Load all previews FIRST, then sort and render once
+    if (!db) { renderSortedDms(filtered, {}); return; }
+    var previewData = {};
+    var loaded = 0;
+    var total = filtered.length;
+    
     filtered.forEach(function(m) {
-      var convoId = getDmConvoId(currentUser.uid, m.id);
-      var last = dmConversations[convoId];
+      var cid = getDmConvoId(myUid, m.id);
+      db.collection("dms").doc(cid).collection("messages").orderBy("createdAt","desc").limit(1).get().then(function(snap) {
+        if (!snap.empty) {
+          var msg = snap.docs[0].data();
+          var ts = msg.createdAt ? (msg.createdAt.toMillis ? msg.createdAt.toMillis() : msg.createdAt) : 0;
+          previewData[m.id] = { text: msg.text || "", time: ts, senderId: msg.senderId || "" };
+        }
+        loaded++;
+        if (loaded >= total) renderSortedDms(filtered, previewData);
+      }).catch(function() {
+        loaded++;
+        if (loaded >= total) renderSortedDms(filtered, previewData);
+      });
+    });
+  };
+  
+  function renderSortedDms(members, previews) {
+    // Sort: conversations with messages by recency, no-message members at bottom alphabetically
+    members.sort(function(a, b) {
+      var pa = previews[a.id];
+      var pb = previews[b.id];
+      var ta = pa ? pa.time : 0;
+      var tb = pb ? pb.time : 0;
+      if (ta || tb) return tb - ta; // Both or one have messages — sort by time
+      return (a.name || "").localeCompare(b.name || ""); // Neither has messages — alphabetical
+    });
+    
+    var dh = '';
+    members.forEach(function(m) {
+      var preview = previews[m.id];
+      var previewText = preview ? escHtml(preview.text) : '<span style="color:var(--muted2)">Start a conversation</span>';
+      var timeLabel = preview && preview.time ? '<span style="font-size:9px;color:var(--muted);flex-shrink:0">' + feedTimeAgo(preview.time) + '</span>' : '';
       dh += '<div class="dm-list-item" onclick="Router.go(\'dm-thread\',{partner:\'' + m.id + '\'})">';
       dh += '<div class="m-av" style="border-color:' + playerFrameColor(m) + '">' + Router.getAvatar(m) + '</div>';
-      dh += '<div class="m-info"><div class="m-name">' + escHtml(m.name || m.username || m.id) + '</div>';
-      dh += '<div id="dm-preview-' + escHtml(m.id) + '" style="font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (last ? escHtml(last.text) : "Start a conversation") + '</div>';
+      dh += '<div class="m-info" style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:6px">';
+      dh += '<div class="m-name" style="flex:1">' + escHtml(m.name || m.username || m.id) + '</div>' + timeLabel + '</div>';
+      dh += '<div style="font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px">' + previewText + '</div>';
       dh += '</div></div>';
     });
     var el = document.getElementById("dmMemberList");
     if (el) el.innerHTML = dh;
-    
-    // Load previews — update in-place, do NOT re-render the list
-    if (db && !window._dmPreviewsLoaded) {
-      window._dmPreviewsLoaded = true;
-      filtered.forEach(function(m) {
-        var cid = getDmConvoId(currentUser.uid, m.id);
-        db.collection("dms").doc(cid).collection("messages").orderBy("createdAt","desc").limit(1).get().then(function(snap) {
-          if (!snap.empty) {
-            var text = snap.docs[0].data().text;
-            dmConversations[cid] = { text: text };
-            var previewEl = document.getElementById("dm-preview-" + m.id);
-            if (previewEl) previewEl.textContent = text;
-          }
-        });
-      });
-    }
-  };
+  }
   
-  // Try Firebase first, fall back to local
+  // Load members from Firestore
   if (db) {
     db.collection("members").get().then(function(snap) {
       var members = [];
       snap.forEach(function(doc) { members.push(doc.data()); });
-      // Merge with local — skip locals that have been claimed by a Firebase account
-      var localPlayers = PB.getPlayers();
-      var fbIds = members.map(function(m) { return m.id; });
-      var fbClaimedFromIds = members.map(function(m) { return m.claimedFrom; }).filter(Boolean);
-      localPlayers.forEach(function(lp) { 
-        if (fbIds.indexOf(lp.id) === -1 && fbClaimedFromIds.indexOf(lp.id) === -1) members.push(lp); 
-      });
       renderDmList(members);
     }).catch(function() { renderDmList(PB.getPlayers()); });
   } else {
@@ -13702,10 +13708,10 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.16.0</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.16.1</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.16.0</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.16.1</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Firestore-First Migration, Security, Error Logging</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -13816,7 +13822,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.16.0</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.16.1</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
