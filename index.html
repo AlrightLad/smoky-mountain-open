@@ -3314,8 +3314,8 @@ var PB = (function() {
       else highlights.push("You survived Sequoyah. That alone deserves a trophy.");
     }
 
-    // Improvement tracking
-    var playerRounds = state.rounds.filter(function(r) { return r.player === round.player; });
+    // Improvement tracking (individual rounds only — no scramble)
+    var playerRounds = state.rounds.filter(function(r) { return r.player === round.player && r.format !== "scramble" && r.format !== "scramble4"; });
     if (playerRounds.length >= 3) {
       var lastThree = playerRounds.slice(-3);
       var avgLast3 = Math.round(lastThree.reduce(function(a, r) { return a + r.score; }, 0) / 3);
@@ -3323,7 +3323,7 @@ var PB = (function() {
       if (score > avgLast3 + 10) roasts.push("That's " + (score - avgLast3) + " strokes worse than your recent average. What happened out there?");
     }
 
-    // Personal best detection
+    // Personal best detection (individual only)
     if (playerRounds.length > 1) {
       var prevBest = Math.min.apply(null, playerRounds.slice(0, -1).map(function(r) { return r.score; }));
       if (score < prevBest) highlights.push("NEW PERSONAL BEST. Previous was " + prevBest + ". The grind is paying off.");
@@ -6104,14 +6104,25 @@ function buildHandicapGraph(rounds, pid) {
   var validPts = graphData.filter(function(g) { return g.hcap !== null; });
   if (!validPts.length) return '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">Not enough data for graph</div>';
 
-  // Single data point — show clean stats (differentials detail is in collapsible table below)
+  // Single data point — show dot on reference line with value
   if (validPts.length === 1) {
-    var indivSorted = sorted.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4" && r.rating && r.slope;});
-    var result = '<div style="display:flex;justify-content:center;gap:20px;padding:8px 0;font-size:10px;color:var(--muted2)">';
-    result += '<div>' + indivSorted.length + ' qualifying round' + (indivSorted.length !== 1 ? 's' : '') + '</div>';
-    result += '<div style="color:var(--birdie)">Tap Score Differentials below for details</div>';
+    var singleVal = validPts[0].hcap;
+    var singleLabel = validPts[0].label;
+    var totalRds = graphData.reduce(function(a,g){return a+g.roundCount},0);
+    var gradId1 = "hcapGrad1_" + pid;
+    var svg1 = '<svg viewBox="0 0 320 80" style="width:100%;height:auto;display:block">';
+    svg1 += '<defs><linearGradient id="' + gradId1 + '" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(201,168,76,0)"/><stop offset="50%" stop-color="rgba(201,168,76,.3)"/><stop offset="100%" stop-color="rgba(201,168,76,0)"/></linearGradient></defs>';
+    svg1 += '<line x1="40" y1="40" x2="280" y2="40" stroke="url(#' + gradId1 + ')" stroke-width="1.5" stroke-dasharray="4,3"/>';
+    svg1 += '<circle cx="160" cy="40" r="8" fill="rgba(201,168,76,.12)"/>';
+    svg1 += '<circle cx="160" cy="40" r="4" fill="var(--gold)" stroke="var(--bg)" stroke-width="1.5"/>';
+    svg1 += '<text x="160" y="28" text-anchor="middle" fill="var(--gold)" font-size="10" font-weight="700">' + singleVal.toFixed(1) + '</text>';
+    svg1 += '<text x="160" y="60" text-anchor="middle" fill="rgba(255,255,255,.3)" font-size="8">' + singleLabel + '</text>';
+    svg1 += '</svg>';
+    var result = '<div style="padding:8px 0">' + svg1 + '</div>';
+    result += '<div style="display:flex;justify-content:center;gap:16px;padding:2px 0 8px;font-size:9px;color:var(--muted2)">';
+    result += '<span>' + totalRds + ' round' + (totalRds !== 1 ? 's' : '') + '</span>';
+    result += '<span style="color:var(--birdie)">Trend line grows each month</span>';
     result += '</div>';
-    result += '<div style="text-align:center;font-size:10px;color:var(--muted);padding:4px 0 8px">Trend graph builds as you play across multiple months</div>';
     return result;
   }
 
@@ -7794,9 +7805,17 @@ function renderPlaySetup() {
   h += '<div style="margin-top:10px"><span style="font-size:11px;color:var(--gold);cursor:pointer;text-decoration:underline" onclick="Router.go(\'scramble-live\')">Or start a Scramble Round →</span></div></div>';
 
   h += '<div class="form-section">';
-  // Player is always the current user — locked
+  // Player is always the current user — try multiple identification methods
   var myPlayer = currentUser ? PB.getPlayer(currentUser.uid) : null;
-  var myLocalPlayer = PB.getPlayers().find(function(p) { return currentProfile && (p.id === currentProfile.claimedFrom || p.name === currentProfile.name); });
+  var myLocalPlayer = PB.getPlayers().find(function(p) { return currentProfile && (p.id === currentProfile.claimedFrom || p.name === currentProfile.name || p.id === currentProfile.id); });
+  // Also check Firebase member cache
+  if (!myPlayer && !myLocalPlayer && currentUser && typeof fbMemberCache !== "undefined" && fbMemberCache[currentUser.uid]) {
+    myLocalPlayer = fbMemberCache[currentUser.uid];
+  }
+  // Last resort: use currentProfile itself if it has a name
+  if (!myPlayer && !myLocalPlayer && currentProfile && currentProfile.name) {
+    myLocalPlayer = currentProfile;
+  }
   var playAs = myPlayer || myLocalPlayer;
   if (!playAs) {
     h += '<div style="padding:20px;text-align:center;font-size:12px;color:var(--red)">Could not identify your player profile. Please contact the Commissioner.</div>';
@@ -11542,7 +11561,9 @@ function renderActivityRounds() {
   h += '<div class="form-section"><div class="form-title">Log a round</div>';
   h += '<div class="ff"><label class="ff-label">Player</label>';
   var myRoundPlayer = currentUser ? PB.getPlayer(currentUser.uid) : null;
-  var myRoundLocal = PB.getPlayers().find(function(p) { return currentProfile && (p.id === currentProfile.claimedFrom || p.name === currentProfile.name); });
+  var myRoundLocal = PB.getPlayers().find(function(p) { return currentProfile && (p.id === currentProfile.claimedFrom || p.name === currentProfile.name || p.id === currentProfile.id); });
+  if (!myRoundPlayer && !myRoundLocal && currentUser && typeof fbMemberCache !== "undefined" && fbMemberCache[currentUser.uid]) myRoundLocal = fbMemberCache[currentUser.uid];
+  if (!myRoundPlayer && !myRoundLocal && currentProfile && currentProfile.name) myRoundLocal = currentProfile;
   var roundAs = myRoundPlayer || myRoundLocal;
   if (!roundAs) {
     h += '<div style="font-size:12px;color:var(--red)">Could not identify your player profile.</div></div>';
@@ -12680,6 +12701,7 @@ function formatDmTime(date){var now=new Date(),diff=now-date;if(diff<60000)retur
 
 Router.register("dms", function() {
   window._dmPreviewsLoaded = false;
+  dmConversations = {}; // Reset cache to force fresh load + sort
   var h = '<div class="sh"><h2>Messages</h2><button class="back" onclick="Router.go(\'home\')">← Home</button></div>';
   
   if (!currentUser) {
@@ -13533,21 +13555,22 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.15.6</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.16.0</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.15.6</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Event Close, Attestation Fix, Data Integrity</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.16.0</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Session 1: Critical Fixes</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Close Event — commissioner can finalize an event, crown champion, post results to feed, and lock scoring", tag: "NEW"},
-    {item: "Closed events show final results banner with champion and standings, move to Previous Events", tag: "NEW"},
-    {item: "Attestation ID resolution — players can attest regardless of UID/seed ID mismatch, auto-lock works on full attestation", tag: "FIXED"},
-    {item: "FIR/GIR data now copies from event scoring to round docs — shareable scorecards show correct stats", tag: "FIXED"},
-    {item: "Season recap/awards variance calculations exclude scramble and 9-hole rounds", tag: "FIXED"},
-    {item: "Records page: best scores by course excludes scramble, member averages excludes scramble and 9-hole", tag: "FIXED"},
-    {item: "Scorecard grid on Log a Round only appears after selecting a valid course from API", tag: "IMPROVED"},
-    {item: "FAQ: What are score differentials? — explains WHS formula", tag: "NEW"}
+    {item: "Player identification broadened — members who registered via invite (like Jordyn) can now Play Now and Log Rounds", tag: "FIXED"},
+    {item: "AI commentary no longer references scramble scores — average and personal best use individual rounds only", tag: "FIXED"},
+    {item: "DM list sorts by most recent message on every visit — conversations with newest messages float to top", tag: "FIXED"},
+    {item: "Handicap trend graph shows even with 1 month of data — gold dot on reference line with value label", tag: "IMPROVED"},
+    {item: "Range session taps on home feed navigate to player profile instead of Range startup page", tag: "FIXED"},
+    {item: "All Rounds section: sorted newest first, scrollable 500px window, each round clickable", tag: "IMPROVED"},
+    {item: "Original Four title checks founding flag, isFoundingFour, and badges array — works for all founding members", tag: "FIXED"},
+    {item: "Event Results on home page shows full standings with placement and points, link changed to Start New Event", tag: "IMPROVED"},
+    {item: "Logo.jpg case fixed for GitHub Pages (case-sensitive)", tag: "FIXED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : "var(--muted)";
@@ -13557,13 +13580,14 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  // v5.14.x
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.14.x · April 2026 · Scramble Matches, Members Redesign</span></div>';
+  // v5.15.x
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.15.x · April 2026 · Event Close, Data Integrity, Members Redesign</span></div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var prevNotes = [
-    {item: "Scramble vs Scramble team matches (2v2, 3v3, 4v4) with W-L tracking", tag: "NEW"},
-    {item: "Members page: search bar, sort controls (Level/Rounds/Handicap/A-Z), founders pinned with gold star", tag: "NEW"},
-    {item: "Commissioner title, duplicate team names, emoji removal, share card team name", tag: "FIXED"}
+    {item: "Close Event system — crown champion, post standings, lock scoring", tag: "NEW"},
+    {item: "Scramble team matches (2v2, 3v3, 4v4) with W-L tracking", tag: "NEW"},
+    {item: "Members page: search, sort, founders pinned with gold star", tag: "NEW"},
+    {item: "Attestation ID resolution, FIR/GIR copy to round docs, scramble isolation across all stats", tag: "FIXED"}
   ];
   prevNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "#60a5fa" : r.tag === "AUDIT" ? "var(--red)" : "var(--muted)";
@@ -13643,7 +13667,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.15.6</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.16.0</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
@@ -16246,7 +16270,8 @@ function loadHomeActivityFeed() {
     liveRangeSessions.filter(function(s){return s.visibility !== "private";}).slice(0,8).forEach(function(s) {
       var name = s.playerName || s.playerId || "A Parbaugh";
       var sub = (s.durationMin ? s.durationMin + " min" : "") + (s.focus ? " · " + s.focus : "");
-      items.push({type:"range", name:name + " hit the range", sub:sub||"Range session", date:s.date||"", ts:s.startedAt ? new Date(s.startedAt).getTime() : 0, dest:"Router.go('range')"});
+      var playerDest = s.playerId ? "Router.go('members',{id:'" + s.playerId + "'})" : "Router.go('range')";
+      items.push({type:"range", name:name + " hit the range", sub:sub||"Range session", date:s.date||"", ts:s.startedAt ? new Date(s.startedAt).getTime() : 0, dest:playerDest});
     });
   }
   pending--; tryRender();
