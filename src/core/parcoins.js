@@ -40,8 +40,10 @@ var _parcoinAwarded = {};
  * @param {string} [dedupKey] - optional dedup key to prevent double-award
  */
 function awardCoins(uid, amount, reason, label, dedupKey) {
-  if (!uid || !amount || amount <= 0 || !db) return;
+  if (!uid || !amount || !db) return;
   amount = Math.round(amount);
+  // Only positive amounts through awardCoins — use deductCoins for negative
+  if (amount <= 0) { pbWarn("[ParCoin] awardCoins called with non-positive amount:", amount, "— use deductCoins() for deductions"); return; }
 
   // Dedup: if this exact award was already given this session, skip
   if (dedupKey) {
@@ -50,13 +52,13 @@ function awardCoins(uid, amount, reason, label, dedupKey) {
     _parcoinAwarded[dk] = true;
   }
 
-  // Increment balance atomically (prevents minting — only increment, never set)
+  // Increment balance atomically
   db.collection("members").doc(uid).update({
     parcoins: firebase.firestore.FieldValue.increment(amount),
     parcoinsLifetime: firebase.firestore.FieldValue.increment(amount)
   }).catch(function(err) { pbWarn("[ParCoin] Balance update failed:", err.message); });
 
-  // Write transaction log
+  // Write transaction log (positive = earned)
   db.collection("parcoin_transactions").add({
     uid: uid,
     amount: amount,
@@ -72,6 +74,50 @@ function awardCoins(uid, amount, reason, label, dedupKey) {
   }
 
   pbLog("[ParCoin] Awarded", amount, "to", uid, "for", reason);
+}
+
+/**
+ * Deduct ParCoins from a user (for wager escrow, bounty posts, trash talk, etc.)
+ * Validates balance BEFORE deducting. Returns false if insufficient funds.
+ * @param {string} uid - Firestore user ID
+ * @param {number} amount - coins to deduct (positive integer — will be subtracted)
+ * @param {string} reason - machine-readable reason key
+ * @param {string} label - human-readable description
+ * @returns {boolean} true if deduction succeeded
+ */
+function deductCoins(uid, amount, reason, label) {
+  if (!uid || !amount || amount <= 0 || !db) return false;
+  amount = Math.round(amount);
+
+  // Validate balance — reject if insufficient
+  var balance = getParCoinBalance(uid);
+  if (balance < amount) {
+    pbWarn("[ParCoin] Insufficient balance for deduction:", uid, "has", balance, "needs", amount);
+    Router.toast("Not enough ParCoins (have " + balance + ", need " + amount + ")");
+    return false;
+  }
+
+  // Atomically decrement balance
+  db.collection("members").doc(uid).update({
+    parcoins: firebase.firestore.FieldValue.increment(-amount)
+  }).catch(function(err) { pbWarn("[ParCoin] Deduction failed:", err.message); });
+
+  // Write transaction log (negative = spent)
+  db.collection("parcoin_transactions").add({
+    uid: uid,
+    amount: -amount,
+    reason: reason,
+    label: label,
+    createdAt: fsTimestamp()
+  }).catch(function(err) { pbWarn("[ParCoin] Transaction log failed:", err.message); });
+
+  // Update local profile cache
+  if (currentProfile && (uid === (currentUser ? currentUser.uid : null))) {
+    currentProfile.parcoins = (currentProfile.parcoins || 0) - amount;
+  }
+
+  pbLog("[ParCoin] Deducted", amount, "from", uid, "for", reason);
+  return true;
 }
 
 /**

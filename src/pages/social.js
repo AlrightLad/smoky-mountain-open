@@ -49,9 +49,9 @@ function _executeSocialAction(actionKey, targetUid, action, cooldownKey) {
   var target = PB.getPlayer(targetUid);
   var targetName = target ? (target.name || target.username) : "a member";
 
-  // Deduct coins
+  // Deduct coins (sink — coins destroyed, not transferred)
   if (action.cost > 0) {
-    awardCoins(uid, -action.cost, "social_" + actionKey, action.label + " on " + targetName);
+    if (!deductCoins(uid, action.cost, "social_" + actionKey, action.label + " on " + targetName)) return;
   }
 
   // Log the action (for cooldowns)

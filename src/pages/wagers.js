@@ -235,10 +235,10 @@ function submitWager() {
   var myName = currentProfile ? (currentProfile.name || currentProfile.username) : "Challenger";
   var oppName = opponent ? (opponent.name || opponent.username) : "Opponent";
 
-  // Escrow: deduct coins from challenger
-  awardCoins(currentUser.uid, -totalCost, "wager_escrow", "Wager escrow: " + WAGER_TYPES[type].label + " vs " + oppName, "escrow_" + Date.now());
+  // Escrow: deduct coins from challenger — MUST succeed before creating wager
+  if (!deductCoins(currentUser.uid, totalCost, "wager_escrow", "Wager escrow: " + WAGER_TYPES[type].label + " vs " + oppName)) return;
 
-  // Create wager doc
+  // Create wager doc (with escrow tracking)
   db.collection("wagers").add({
     fromUid: currentUser.uid,
     fromName: myName,
@@ -249,6 +249,8 @@ function submitWager() {
     course: course,
     visibility: visibility,
     status: "pending",
+    escrowFrom: totalCost,
+    escrowTo: 0,
     createdAt: fsTimestamp()
   }).then(function(docRef) {
     // Notify opponent
@@ -277,12 +279,10 @@ function acceptWager(wagerId) {
     var w = doc.data();
     if (w.status !== "pending" || w.toUid !== currentUser.uid) { Router.toast("Can't accept this wager"); return; }
     var totalCost = w.type === "nassau" ? w.amount * 3 : w.amount;
-    var balance = getParCoinBalance(currentUser.uid);
-    if (totalCost > balance) { Router.toast("Not enough coins (need " + totalCost + ", have " + balance + ")"); return; }
-    // Escrow: deduct coins from accepter
-    awardCoins(currentUser.uid, -totalCost, "wager_escrow", "Wager escrow: " + (WAGER_TYPES[w.type] || {label:w.type}).label + " vs " + w.fromName);
-    // Update wager status
-    db.collection("wagers").doc(wagerId).update({ status: "accepted", acceptedAt: fsTimestamp() }).then(function() {
+    // Escrow: deduct coins from accepter — MUST succeed
+    if (!deductCoins(currentUser.uid, totalCost, "wager_escrow", "Wager escrow: " + (WAGER_TYPES[w.type] || {label:w.type}).label + " vs " + w.fromName)) return;
+    // Update wager status with escrow tracking
+    db.collection("wagers").doc(wagerId).update({ status: "accepted", escrowTo: totalCost, acceptedAt: fsTimestamp() }).then(function() {
       sendNotification(w.fromUid, {
         type: "wager_accepted",
         title: (currentProfile ? currentProfile.name : "Your opponent") + " accepted your wager!",

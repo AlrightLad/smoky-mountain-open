@@ -186,8 +186,8 @@ function submitBounty() {
     bountyData.targetHole = hole;
   }
 
-  // Deduct coins
-  awardCoins(currentUser.uid, -pot, "bounty_post", "Posted bounty at " + course);
+  // Deduct coins — MUST succeed before creating bounty
+  if (!deductCoins(currentUser.uid, pot, "bounty_post", "Posted bounty at " + course)) return;
 
   db.collection("bounties").add(bountyData).then(function() {
     db.collection("chat").add({
