@@ -89,8 +89,58 @@ Router.register("seasonrecap", function(params) {
     courseCounts[r.playerName][r.course] = 1;
   });
   var roadWarriors = Object.entries(courseCounts).map(function(e){return [e[0], Object.keys(e[1]).length]}).sort(function(a,b){return b[1]-a[1]});
-  if (roadWarriors.length) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M2 3l4 1 4-1 4 1v10l-4-1-4 1-4-1z'/><path d='M6 4v10M10 3v10'/></svg>", title:"Road Warrior", winner: roadWarriors[0][0], detail: roadWarriors[0][1] + " different courses"});
-  
+  if (roadWarriors.length) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M2 3l4 1 4-1 4 1v10l-4-1-4 1-4-1z'/><path d='M6 4v10M10 3v10'/></svg>", title:"Road Warrior", winner: roadWarriors[0][0], detail: roadWarriors[0][1] + " different courses", coins: 75});
+
+  // Course Specialist (best avg at most-played course)
+  var courseSpecData = [];
+  players.forEach(function(p) {
+    var pr = indivRounds.filter(function(r){return r.playerId === p.id});
+    var courseMap = {};
+    pr.forEach(function(r) { if (!courseMap[r.course]) courseMap[r.course] = []; courseMap[r.course].push(r.score); });
+    var best = null;
+    Object.keys(courseMap).forEach(function(c) {
+      if (courseMap[c].length >= 2) {
+        var avg = courseMap[c].reduce(function(a,b){return a+b},0) / courseMap[c].length;
+        if (!best || avg < best.avg) best = {course:c, avg:avg, count:courseMap[c].length};
+      }
+    });
+    if (best) courseSpecData.push({name:p.name||p.username, course:best.course, avg:Math.round(best.avg*10)/10, count:best.count});
+  });
+  courseSpecData.sort(function(a,b){return a.avg-b.avg});
+  if (courseSpecData.length) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M4 15l8-12'/><path d='M4 3l8 4-8 4V3z'/></svg>", title:"Course Specialist", winner: courseSpecData[0].name, detail: courseSpecData[0].avg + " avg at " + courseSpecData[0].course + " (" + courseSpecData[0].count + " rounds)", coins: 100});
+
+  // Rivalry Winner (best H2H record among players with 2+ H2H rounds)
+  var h2hData = [];
+  var pList = players.filter(function(p) { return allRounds.some(function(r){return r.playerId===p.id}); });
+  pList.forEach(function(p) {
+    var wins = 0, total = 0;
+    pList.forEach(function(opp) {
+      if (opp.id === p.id) return;
+      // Find rounds on same course + same date
+      var myR = allRounds.filter(function(r){return r.playerId===p.id});
+      myR.forEach(function(r) {
+        var oppR = allRounds.find(function(o){return o.playerId===opp.id && o.course===r.course && o.date===r.date});
+        if (oppR) { total++; if (r.score < oppR.score) wins++; }
+      });
+    });
+    if (total >= 2) h2hData.push({name:p.name||p.username, wins:wins, total:total, pct:Math.round(wins/total*100)});
+  });
+  h2hData.sort(function(a,b){return b.pct-a.pct||b.wins-a.wins});
+  if (h2hData.length) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M13 10V3L4 14h7v7l9-11h-7z'/></svg>", title:"Rivalry Winner", winner: h2hData[0].name, detail: h2hData[0].wins + " wins in " + h2hData[0].total + " H2H matches (" + h2hData[0].pct + "%)", coins: 100});
+
+  // Iron Will (most range sessions)
+  if (typeof liveRangeSessions !== "undefined" && liveRangeSessions.length) {
+    var rangeByPlayer = {};
+    liveRangeSessions.forEach(function(s) {
+      if (s.date && s.date >= season.seasonStart && s.date <= season.seasonEnd) {
+        var pn = s.playerName || "Unknown";
+        rangeByPlayer[pn] = (rangeByPlayer[pn]||0) + 1;
+      }
+    });
+    var topRange = Object.entries(rangeByPlayer).sort(function(a,b){return b[1]-a[1]});
+    if (topRange.length) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='8' r='6'/><path d='M8 5v3l2 1.5'/></svg>", title:"Iron Will", winner: topRange[0][0], detail: topRange[0][1] + " range sessions", coins: 75});
+  }
+
   // Consistency king (lowest std dev — individual 18-hole rounds only)
   var consistencyData = [];
   players.forEach(function(p) {

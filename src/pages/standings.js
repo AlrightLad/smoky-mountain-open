@@ -74,15 +74,47 @@ Router.register("standings", function(params) {
 
   h += '<div class="section"><div class="sec-head" onclick="toggleSection(\'season-rules\')" style="cursor:pointer"><span class="sec-title">Season rules</span><span class="sec-link" id="season-rules-toggle" style="display:inline-flex;transition:transform .2s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="transition:transform .2s;color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg></span></div>';
   h += '<div id="season-rules" style="display:none">';
-  h += '<div class="club-row"><span class="club-name">Season window</span><span class="club-yd">March 1 — September 30</span></div>';
+  h += '<div class="club-row"><span class="club-name">Seasons</span><span class="club-yd">Spring (Mar\u2013May), Summer (Jun\u2013Aug), Fall (Sep\u2013Nov)</span></div>';
+  h += '<div class="club-row"><span class="club-name">Off-season</span><span class="club-yd">Dec\u2013Feb: rounds count for handicap, no season points</span></div>';
   h += '<div class="club-row"><span class="club-name">Ranking method</span><span class="club-yd">Season point system</span></div>';
   h += '<div class="club-row"><span class="club-name">Base rules</span><span class="club-yd">USGA rules apply</span></div>';
   h += '<div class="club-row"><span class="club-name">Breakfast balls</span><span class="club-yd">2 per round (1 front, 1 back)</span></div>';
   h += '<div class="club-row"><span class="club-name">Honor system</span><span class="club-yd">Scouts honor — attested scores earn 150 XP</span></div>';
   h += '<div class="club-row"><span class="club-name">Inactivity</span><span class="club-yd">3 months = 3 rounds to reactivate</span></div>';
   h += '<div class="club-row"><span class="club-name">Eligible rounds</span><span class="club-yd">Public rounds only</span></div>';
-  h += '<div class="club-row"><span class="club-name">Season winner</span><span class="club-yd">Earns title + unique profile photo</span></div>';
+  h += '<div class="club-row"><span class="club-name">Season winner</span><span class="club-yd">Earns title + Champion Red theme + ParCoins</span></div>';
   h += '</div></div>';
+
+  // Season archive — past season champions
+  var archiveContent = '';
+  var archiveSeasons = [];
+  var curYear = new Date().getFullYear();
+  for (var ay = curYear; ay >= 2026; ay--) {
+    PB.SEASON_CONFIG.forEach(function(cfg) {
+      var sEnd = ay + cfg.end;
+      if (localDateStr() > sEnd) {
+        try {
+          var ss = PB.getSeasonStandings(ay, cfg.key);
+          if (ss.standings.length) {
+            var isInaugural = ay === 2026 && cfg.key === "spring";
+            archiveSeasons.push({label: cfg.label + " " + ay, champ: ss.standings[0].name || ss.standings[0].username, pts: ss.standings[0].points, rounds: ss.standings.reduce(function(a,s){return a+s.rounds},0), inaugural: isInaugural});
+          }
+        } catch(e) {}
+      }
+    });
+  }
+  if (archiveSeasons.length) {
+    archiveContent = '';
+    archiveSeasons.forEach(function(as) {
+      archiveContent += '<div class="card" style="margin-bottom:4px"><div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center">';
+      archiveContent += '<div><div style="font-size:13px;font-weight:600;color:var(--cream)">' + escHtml(as.label) + (as.inaugural ? ' <span style="font-size:8px;color:var(--gold);font-weight:700;letter-spacing:.5px">INAUGURAL</span>' : '') + '</div>';
+      archiveContent += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + as.rounds + ' total rounds</div></div>';
+      archiveContent += '<div style="text-align:right"><div style="font-size:13px;font-weight:700;color:var(--gold)">' + escHtml(as.champ) + '</div>';
+      archiveContent += '<div style="font-size:9px;color:var(--muted)">' + as.pts + ' pts</div></div>';
+      archiveContent += '</div></div>';
+    });
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Season Archive</span></div>' + archiveContent + '</div>';
+  }
 
   // Courses this season — individual rounds only (no scramble)
   var seasonStart = year + '-03-01';

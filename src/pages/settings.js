@@ -23,14 +23,34 @@ Router.register("settings", function() {
   try { if (!currentProfile || !currentProfile.theme) { var ls = localStorage.getItem('pb_theme'); if (ls && THEMES[ls]) currentTheme = ls; } } catch(e){}
   h += '<div class="form-section"><div class="form-title">Theme</div>';
   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
-  // Check if current user is a champion (won any event)
+  // Check if current user is a champion (won any event or season)
   var isChampion = false;
   if (currentUser) {
     var myChampIds = [currentUser.uid];
     if (currentProfile && currentProfile.claimedFrom) myChampIds.push(currentProfile.claimedFrom);
+    // Check trip/event champions
     PB.getTrips().forEach(function(t) {
       if (t.champion && myChampIds.indexOf(t.champion) !== -1) isChampion = true;
     });
+    // Check season champions — top of any completed season standings
+    if (!isChampion && currentProfile) {
+      var _checkSeasons = [
+        {y:2026,k:"spring"},{y:2026,k:"summer"},{y:2026,k:"fall"},
+        {y:2025,k:"spring"},{y:2025,k:"summer"},{y:2025,k:"fall"}
+      ];
+      _checkSeasons.forEach(function(sk) {
+        try {
+          var ss = PB.getSeasonStandings(sk.y, sk.k);
+          var now = new Date(); var todayStr = localDateStr(now);
+          // Only count completed seasons
+          if (todayStr > ss.seasonEnd && ss.standings.length) {
+            if (myChampIds.indexOf(ss.standings[0].id) !== -1) isChampion = true;
+          }
+        } catch(e){}
+      });
+    }
+    // Check Firestore flag (set by admin or auto on season end)
+    if (!isChampion && currentProfile && currentProfile.isChampion) isChampion = true;
   }
   Object.keys(THEMES).forEach(function(tid) {
     var t = THEMES[tid];
@@ -45,7 +65,7 @@ Router.register("settings", function() {
       h += '</div>';
       h += '<div style="font-size:12px;font-weight:600;color:var(--muted2)">' + t.label + '</div>';
       h += '<div style="font-size:9px;color:var(--muted2);margin-top:2px">' + t.desc + '</div>';
-      h += '<div style="font-size:8px;color:var(--muted2);margin-top:4px;font-weight:700;letter-spacing:.5px;display:flex;align-items:center;gap:4px"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg> WIN AN EVENT TO UNLOCK</div>';
+      h += '<div style="font-size:8px;color:var(--muted2);margin-top:4px;font-weight:700;letter-spacing:.5px;display:flex;align-items:center;gap:4px"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg> WIN A SEASON OR EVENT TO UNLOCK</div>';
       h += '</div>';
     } else {
       h += '<div onclick="saveTheme(\'' + tid + '\');Router.go(\'settings\',{},true)" style="cursor:pointer;padding:12px;border-radius:var(--radius-lg);border:2px solid ' + (isActive ? 'var(--gold)' : 'var(--border)') + ';background:' + (isActive ? 'rgba(var(--gold-rgb),.08)' : 'var(--card)') + ';transition:border-color .15s">';
