@@ -5,13 +5,15 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.38.4</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.38.5</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.38.4</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Health Check: Ring Migration, ParCoin Fix, Full Audit</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.38.5</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Ring Glow Fix, Profile Avatar Fix, Full Audit</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "CRITICAL: Ring glow was invisible on ALL avatars — overflow:hidden was clipping box-shadow. Removed overflow:hidden from renderAvatar()", tag: "FIXED"},
+    {item: "Profile page hero avatar now shows BOTH the theme ring glow AND the depth shadow together (were overriding each other)", tag: "FIXED"},
     {item: "EVERY avatar in the app now uses renderAvatar() — rings, glows, and animations show identically everywhere", tag: "FIXED"},
     {item: "Migrated 17 avatar instances across 10 files: home leaderboard, member list, profile, chat, DMs, rounds, scramble, trips, tee times, aces, online section", tag: "FIXED"},
     {item: "CRITICAL: Fixed calcRoundCoins() calls using old signature — rounds now correctly award 50/25 coins per new economy", tag: "FIXED"},
@@ -199,7 +201,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.38.4</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.38.5</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });

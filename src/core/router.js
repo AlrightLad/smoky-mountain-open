@@ -301,7 +301,8 @@ function renderAvatar(p, size, clickToProfile) {
   var pid = p ? (p.id || '') : '';
   var click = clickToProfile && pid ? ' onclick="event.stopPropagation();Router.go(\'members\',{id:\'' + pid + '\'})"' : '';
   var cursor = clickToProfile && pid ? 'cursor:pointer;' : '';
-  return '<div style="width:' + size + 'px;height:' + size + 'px;min-width:' + size + 'px;border-radius:50%;overflow:hidden;' + ringStyle + ';' + cursor + 'flex-shrink:0"' + click + '>' + avatarInner + '</div>';
+  // NO overflow:hidden — that clips box-shadow (ring glow). Image clipped by its own border-radius:inherit in getAvatar().
+  return '<div style="width:' + size + 'px;height:' + size + 'px;min-width:' + size + 'px;border-radius:50%;' + ringStyle + ';' + cursor + 'flex-shrink:0"' + click + '>' + avatarInner + '</div>';
 }
 
 // renderUsername(player, extraStyle) → HTML string

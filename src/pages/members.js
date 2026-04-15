@@ -281,8 +281,13 @@ function renderMemberDetailWithData(p) {
   h += '</div>';
   // Avatar + name block
   h += '<div style="text-align:center;padding-bottom:16px">';
-  var _profRingStyle = typeof playerRingStyle === "function" ? playerRingStyle(p) : "border:3px solid " + frameColor;
-  h += '<div class="pd-av" style="width:96px;height:96px;font-size:38px;' + _profRingStyle + ';margin:0 auto 12px;box-shadow:0 4px 20px rgba(0,0,0,.3)"' + (canEditPhoto ? ' onclick="uploadMemberPhoto(\'' + pid + '\')"' : '') + '>' + Router.getAvatar(p);
+  var _profColor = playerFrameColor(p);
+  var _profGlow = typeof playerRingShadow === "function" ? playerRingShadow(p) : "";
+  var _profAnim = typeof playerRingClass === "function" ? playerRingClass(p) : "";
+  var _profAnimMap = {'ring-pulse-gold':'ringPulse 2s ease-in-out infinite','ring-diamond-sparkle':'ringShimmer 2.5s ease-in-out infinite','ring-rainbow-shift':'ringRainbow 3s linear infinite','ring-neon-green':'ringNeonGreen 1.8s ease-in-out infinite','ring-crimson-ember':'ringEmber 1.5s ease-in-out infinite'};
+  var _profAnimCss = _profAnim && _profAnimMap[_profAnim] ? ';animation:' + _profAnimMap[_profAnim] : '';
+  var _profShadowCombined = (_profGlow ? _profGlow + ',' : '') + '0 4px 20px rgba(0,0,0,.3)';
+  h += '<div class="pd-av" style="width:96px;height:96px;font-size:38px;border:3px solid ' + _profColor + ';box-shadow:' + _profShadowCombined + _profAnimCss + ';margin:0 auto 12px"' + (canEditPhoto ? ' onclick="uploadMemberPhoto(\'' + pid + '\')"' : '') + '>' + Router.getAvatar(p);
   if (canEditPhoto) h += '<div class="pd-edit"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2" style="vertical-align:middle"><path d="M11 2l3 3-8 8H3v-3z"/></svg></div>';
   h += '<div style="position:absolute;bottom:-4px;right:-4px;background:var(--gold);color:var(--bg);font-size:9px;font-weight:800;border-radius:10px;padding:2px 7px;border:2px solid var(--bg);line-height:1.3;min-width:18px;text-align:center;z-index:3">' + lvl.level + '</div>';
   h += '</div>';
