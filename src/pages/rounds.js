@@ -275,21 +275,33 @@ function submitRound() {
     addRoundData.yards = course.yards || 0;
   }
 
+  function _afterRoundSubmit(round) {
+    syncRound(round);
+    setTimeout(function() { persistPlayerStats(player); }, 2000);
+    // ── ParCoin: award coins for logging a round ──
+    if (currentUser && addRoundData.format !== "scramble" && addRoundData.format !== "scramble4") {
+      var hcap = PB.calcHandicap(PB.getPlayerRounds(currentUser.uid));
+      var coins = calcRoundCoins(score, rating, slope, hcap);
+      awardCoins(currentUser.uid, coins, "round_complete", "Logged round at " + courseName + " (" + score + ")", "round_" + round.id);
+      if (filledScores.length >= 18) {
+        var prevBest = PB.getPlayerBest(currentUser.uid);
+        if (prevBest && prevBest.score && score < prevBest.score) {
+          awardCoins(currentUser.uid, PARCOIN_RATES.personal_best, "personal_best", "New personal best: " + score, "pb_" + round.id);
+        }
+      }
+    }
+    showRoundCommentary(round);
+  }
+
   if (photoInput && photoInput.files && photoInput.files[0]) {
     var reader = new FileReader();
     reader.onload = function(e) {
       addRoundData.scorecardPhoto = e.target.result;
-      var round = PB.addRound(addRoundData);
-      syncRound(round);
-      setTimeout(function() { persistPlayerStats(player); }, 2000);
-      showRoundCommentary(round);
+      _afterRoundSubmit(PB.addRound(addRoundData));
     };
     reader.readAsDataURL(photoInput.files[0]);
   } else {
-    var round = PB.addRound(addRoundData);
-    syncRound(round);
-    setTimeout(function() { persistPlayerStats(player); }, 2000);
-    showRoundCommentary(round);
+    _afterRoundSubmit(PB.addRound(addRoundData));
   }
 }
 

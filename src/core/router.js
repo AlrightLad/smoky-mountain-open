@@ -1347,6 +1347,11 @@ function checkAndAwardNewAchievements() {
               read: false
             }).catch(function(){});
           }
+          // ── ParCoin: award coins for achievement unlock ──
+          if (currentUser) {
+            var achCoins = calcAchievementCoins(ach.xp || 50);
+            awardCoins(currentUser.uid, achCoins, "achievement", "Unlocked: " + ach.name, "ach_" + id);
+          }
         }, i * 4500);
       });
       db.collection("members").doc(uid).update({ earnedAchievements: currentIds }).catch(function(){});
@@ -2162,6 +2167,8 @@ var _origEnterApp = enterApp;
 enterApp = function() {
   _origEnterApp();
   initFirebaseListeners();
+  // ── ParCoin: daily login streak coins ──
+  setTimeout(awardDailyLogin, 2000);
   // Check profile completion — send one-time reminder notification
   setTimeout(function() {
     if (!db || !currentUser || !currentProfile) return;
