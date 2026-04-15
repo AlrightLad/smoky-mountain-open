@@ -172,6 +172,91 @@ These are hardcoded hex values, NOT CSS variables. They must be identical everyw
 - Pink `var(--pink)` = Tee Time
 - Green `var(--live)` = Today indicator
 
+## ParCoin Economy Design
+
+ParCoins have ZERO real-world cash value. Purely cosmetic and social. No gambling license required.
+
+### Design Principles
+- PLAYING GOLF is the primary earning method. Period.
+- Range sessions count — a guy hitting balls before work is engaged
+- A new player with 0 rounds should have almost nothing
+- After 1 year of active play, a player should NOT have been able to buy everything. There must always be something to aspire to.
+- The economy must support 3+ years of engagement without hyperinflation
+- Earning should feel incentivizing, not unobtainable
+
+### Player Tiers (Realistic)
+- Casual: 1-2 rounds/month, maybe 1 range session
+- Active: 2 rounds/month + 1-2 range sessions/week
+- Dedicated: 4 rounds/month + 2-3 range sessions/week
+
+### Earning Sources (coins IN)
+| Action | Coins | Frequency Cap |
+|--------|-------|---------------|
+| Complete a round (18H) | 50 base, +25 if attested | No cap |
+| Complete a round (9H) | 25 base, +10 if attested | No cap |
+| Range session (30+ min) | 10 | 1 per day |
+| Attest someone's round | 5 | No cap |
+| Daily login | 1 | 1 per day, no streak bonus |
+| Post tee time that fills (3+) | 15 | No cap |
+| Personal best (18H) | 100 | When achieved |
+| Personal best (9H) | 50 | When achieved |
+| Win an event/tournament | 500 | When achieved |
+| Season champion | 1000 | Once per season |
+| Achievement unlock (play-based) | 25-50 | When achieved |
+| Achievement unlock (social/misc) | 10 | When achieved |
+| Invite friend who joins | 200 | Per invite |
+| New member welcome bonus | 25 | Once ever |
+
+### Earning Targets
+- Casual (~2 rounds, 1 range/month): ~175 coins/month — Can afford 1 basic cosmetic per month
+- Active (~2 rounds, 4-6 range sessions/month): ~300 coins/month — Can afford 1 mid-tier item every 1-2 months
+- Dedicated (~4 rounds, 10 range sessions/month): ~550 coins/month — Can afford 1 premium item every 2-3 months
+
+### The Feel (Progression Timeline)
+- After your first round ever: ~75 coins (round + achievements) — browse the shop
+- After 1 month active play: ~300 coins — first real cosmetic
+- After 3 months: ~900 coins — eyeing animated rings
+- After 6 months: ~1800 coins — premium item + coins for trash talk
+- After 1 year: ~3600 coins lifetime — collection built, still stuff to want. Gold Member (10,000 lifetime) is 2+ years away.
+
+### Spending Sinks (coins OUT)
+| Category | Price Range | Examples |
+|----------|-------------|---------|
+| Basic cosmetics | 100-200 | Static rings, simple banners |
+| Mid-tier cosmetics | 300-500 | Card themes, name effects, titles |
+| Premium cosmetics | 750-1500 | Animated rings, premium banners |
+| Ultra-premium | 2000-3000 | Diamond Sparkle, legendary items |
+| Trash talk actions | 30-75 | Victory Lap, Spotlight of Shame |
+| Bounties | 50-200 | Course bounties, score bounties |
+| Wagers | 25-500 | Player-set amounts |
+| Power-ups | 150-200 | Double XP, Handicap Shield |
+| Flex items | 500-1000 | Sponsor a Hole, Name a Tournament |
+| Seasonal exclusives | 300-750 | Limited edition, never return |
+
+### Price Tier Ladder
+| Tier | Price | Active Player Time to Earn |
+|------|-------|---------------------------|
+| Basic | 100-200 coins | ~1 month |
+| Mid-tier | 300-500 coins | 1-2 months |
+| Premium | 750-1500 coins | 3-4 months |
+| Ultra-premium | 2000-3000 coins | 6-8 months |
+
+### Coin Flow Rules (CRITICAL)
+The ONLY way new coins enter the economy is through the earning sources table above. Every other transaction is a transfer or a sink.
+
+- **Wagers:** Players can ONLY wager coins they currently have. Coins escrowed on acceptance, winner takes both. Cancelled = refund both. Zero new coins created.
+- **Bounties:** Poster must have the coins. Deducted when posted. Claimer receives them on fulfillment. Zero new coins created.
+- **Trash talk (Spotlight of Shame, Victory Lap, etc):** Coins deducted from spender's balance. Pure sink.
+- **Shop purchases:** Coins deducted. Pure sink.
+
+### Anti-Inflation Rules
+- NO signup bonus above 25 coins
+- NO daily login streak multipliers
+- NO bulk coin giveaways
+- NO earning coins from purely passive actions
+- Social/misc achievement coins capped at 10 each
+- If average player balance exceeds 2000 coins, introduce new high-value sinks before adding new earn sources
+
 ## Key Members
 
 | Name | Role | Notes |

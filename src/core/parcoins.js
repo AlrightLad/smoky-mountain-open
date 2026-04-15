@@ -5,23 +5,27 @@
    Transaction log in parcoin_transactions collection.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-// ── Earn rates ──
-// PRINCIPLE: Playing golf is 5-10x more rewarding than passive login.
-// Login-only: ~14/week. Casual (1 round): ~65/week. Active: ~145/week. Grinder: ~250+/week.
+// ── Earn rates (v5.37.10 — matches CLAUDE.md ParCoin Economy Design) ──
+// PRINCIPLE: PLAYING GOLF is the primary earning method. Period.
+// Casual (~2 rounds/month, 1 range): ~175/month. Active: ~300/month. Dedicated: ~550/month.
 var PARCOIN_RATES = {
-  round_complete_base:     25,   // minimum for any completed round
-  round_complete_max:      75,   // max for a great round vs handicap
-  range_session_base:      10,   // minimum for a range session
-  range_session_max:       20,   // max for a long focused session
-  attest_round:            10,   // attesting someone else's scores
-  tee_time_filled:         15,   // posting a tee time that fills all spots
-  daily_login_base:        1,    // day 1 of a streak
-  daily_login_max:         3,    // day 3+ of a streak (trickle, not a strategy)
-  achievement_unlock_min:  25,   // small achievements
-  achievement_unlock_max:  100,  // major achievements
+  round_18h_base:          50,   // 18-hole round base
+  round_18h_attested:      25,   // bonus if round is attested
+  round_9h_base:           25,   // 9-hole round base
+  round_9h_attested:       10,   // bonus if 9-hole round attested
+  range_session:           10,   // 30+ min range session (1 per day cap)
+  attest_round:            5,    // attesting someone else's scores
+  tee_time_filled:         15,   // posting a tee time that fills 3+ spots
+  daily_login:             1,    // 1 per day, no streak bonus
+  achievement_play:        25,   // play-based achievements (25-50 based on XP)
+  achievement_play_max:    50,   // major play achievements
+  achievement_social:      10,   // social/misc achievements (capped at 10)
   event_win:               500,  // winning a trip/event
-  personal_best:           150,  // new personal best 18-hole score
-  invite_joined:           250   // invitee completes registration
+  season_champion:         1000, // season champion bonus
+  personal_best_18h:       100,  // new personal best 18-hole score
+  personal_best_9h:        50,   // new personal best 9-hole score
+  invite_joined:           200,  // invitee completes registration
+  new_member_welcome:      25    // one-time welcome bonus for new members
 };
 
 // ── Dedup cache (prevents double-awarding in same session) ──
@@ -72,59 +76,43 @@ function awardCoins(uid, amount, reason, label, dedupKey) {
 
 /**
  * Calculate coins earned for completing a round.
- * 25 base + up to 50 bonus based on score vs handicap.
- * Playing to your handicap = 50 coins. Beating it = up to 75. Worse = 25-40.
+ * 18H: 50 base (+25 if attested). 9H: 25 base (+10 if attested).
+ * Simple flat rate — every round earns the same base. Attestation is the bonus.
  */
-function calcRoundCoins(score, rating, slope, handicap) {
-  var base = PARCOIN_RATES.round_complete_base;
-  if (!score || !rating) return base;
-
-  // Course handicap from index
-  var courseHcap = handicap !== null && handicap !== undefined ? Math.round(handicap * (slope || 113) / 113) : null;
-  if (courseHcap === null) return base + 20; // no handicap yet, give middle value
-
-  var expected = rating + courseHcap;
-  var diff = score - expected; // negative = better than expected
-
-  if (diff <= -5) return PARCOIN_RATES.round_complete_max;       // 75 — crushed it
-  if (diff <= -2) return 65;                                      // great round
-  if (diff <= 0)  return 50;                                      // played to handicap
-  if (diff <= 3)  return 40;                                      // close to expected
-  if (diff <= 6)  return 30;                                      // off day
-  return base;                                                    // 25 — rough day, still earned it
+function calcRoundCoins(is9hole, isAttested) {
+  if (is9hole) {
+    return PARCOIN_RATES.round_9h_base + (isAttested ? PARCOIN_RATES.round_9h_attested : 0);
+  }
+  return PARCOIN_RATES.round_18h_base + (isAttested ? PARCOIN_RATES.round_18h_attested : 0);
 }
 
 /**
  * Calculate coins earned for a range session.
- * 10 base + bonus for duration (up to 5) + bonus for drills (up to 5).
+ * Flat 10 coins for 30+ minutes. Capped at 1 per day (enforced by caller).
  */
-function calcRangeCoins(durationMinutes, drillCount) {
-  var base = PARCOIN_RATES.range_session_base;
-  var durationBonus = Math.min(5, Math.floor((durationMinutes || 0) / 12)); // 1 per 12 min, max 5
-  var drillBonus = Math.min(5, (drillCount || 0) * 2); // 2 per drill, max 5
-  return Math.min(PARCOIN_RATES.range_session_max, base + durationBonus + drillBonus);
+function calcRangeCoins(durationMinutes) {
+  if ((durationMinutes || 0) < 30) return 0; // must be 30+ min
+  return PARCOIN_RATES.range_session;
 }
 
 /**
- * Calculate daily login streak coins.
- * 1 coin on day 1, scaling to 3 on day 3+. Intentionally low —
- * login is a trickle to keep you opening the app, not a primary earn source.
- * Playing a single round earns 8-25x more than a daily login.
+ * Daily login coins. Flat 1 coin per day, no streak bonus.
+ * Playing a single round earns 50x more than a daily login.
  */
-function calcStreakCoins(streakDays) {
-  if (!streakDays || streakDays < 1) return PARCOIN_RATES.daily_login_base;
-  if (streakDays >= 3) return PARCOIN_RATES.daily_login_max;
-  return Math.min(PARCOIN_RATES.daily_login_max, streakDays); // 1, 2, 3
+function calcStreakCoins() {
+  return PARCOIN_RATES.daily_login;
 }
 
 /**
- * Calculate achievement unlock coins based on XP value.
- * Achievements worth 25-50 XP → 25 coins. 100+ XP → 50-100 coins.
+ * Achievement coins: play-based 25-50, social/misc capped at 10.
+ * @param {number} achievementXP - XP value of the achievement
+ * @param {boolean} isSocial - true for social/misc achievements
  */
-function calcAchievementCoins(achievementXP) {
-  if (!achievementXP || achievementXP <= 50) return PARCOIN_RATES.achievement_unlock_min;
-  if (achievementXP >= 200) return PARCOIN_RATES.achievement_unlock_max;
-  return Math.round(25 + (achievementXP - 50) * 0.5);
+function calcAchievementCoins(achievementXP, isSocial) {
+  if (isSocial) return PARCOIN_RATES.achievement_social;
+  if (!achievementXP || achievementXP <= 50) return PARCOIN_RATES.achievement_play;
+  if (achievementXP >= 200) return PARCOIN_RATES.achievement_play_max;
+  return Math.round(25 + (achievementXP - 50) * (25 / 150)); // linear 25-50 over 50-200 XP
 }
 
 /**
@@ -170,21 +158,12 @@ function awardDailyLogin() {
     var lastLogin = data.lastLoginDate || "";
     if (lastLogin === today) return; // already awarded today
 
-    // Calculate streak
-    var yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    var yesterdayStr = localDateStr(yesterday);
-    var streak = (lastLogin === yesterdayStr) ? ((data.loginStreak || 0) + 1) : 1;
-    var coins = calcStreakCoins(streak);
-
-    // Update login tracking
+    // Flat 1 coin per day, no streak bonus
     db.collection("members").doc(uid).update({
-      lastLoginDate: today,
-      loginStreak: streak
+      lastLoginDate: today
     }).catch(function(){});
 
-    // Award coins
-    awardCoins(uid, coins, "daily_login", "Daily login (day " + streak + ")", "login_" + today);
+    awardCoins(uid, PARCOIN_RATES.daily_login, "daily_login", "Daily login", "login_" + today);
   }).catch(function(){});
 }
 
