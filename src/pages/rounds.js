@@ -363,6 +363,7 @@ function _showStoryPrompt(round) {
   h += '<div style="padding:0 16px">';
   h += '<div class="ff"><label class="ff-label">Tell the story of this round (optional)</label>';
   h += '<textarea class="ff-input" id="story-text" rows="3" placeholder="The highlight of the day was... / I was cruising until hole 7... / First time breaking 100!"></textarea></div>';
+  h += '<div class="ff"><label class="ff-label">Add a photo (optional)</label><input type="file" accept="image/*" id="story-photo" style="font-size:11px;color:var(--muted)"></div>';
   h += '<div style="display:flex;gap:8px">';
   h += '<button class="btn full green" style="flex:1" onclick="submitRoundStory(\'' + round.id + '\')">Post Story</button>';
   h += '<button class="btn full outline" style="flex:1" onclick="Router.go(\'rounds\',{roundId:\'' + round.id + '\'})">Skip</button>';
@@ -373,19 +374,25 @@ function _showStoryPrompt(round) {
 function submitRoundStory(roundId) {
   var text = (document.getElementById("story-text") || {}).value || "";
   if (!text.trim()) { Router.go("rounds", {roundId: roundId}); return; }
-  if (db && roundId) {
-    db.collection("rounds").doc(roundId).update({ story: text.trim() }).catch(function(){});
-    // Also post to chat feed as a story
-    if (currentUser) {
-      var name = currentProfile ? (currentProfile.name || currentProfile.username) : "A Parbaugh";
-      db.collection("chat").add({
-        id: genId(), text: name + " on their round: \"" + text.trim().substring(0, 200) + "\"",
-        authorId: currentUser.uid, authorName: name, createdAt: fsTimestamp(),
-        roundId: roundId, isStory: true
-      }).catch(function(){});
+  var photoInput = document.getElementById("story-photo");
+
+  function _doSubmit(photoData) {
+    if (db && roundId) {
+      var update = { story: text.trim() };
+      if (photoData) update.storyPhoto = photoData;
+      db.collection("rounds").doc(roundId).update(update).catch(function(){});
     }
+    Router.toast("Story posted!");
+    Router.go("rounds", {roundId: roundId});
   }
-  Router.toast("Story posted!");
-  Router.go("rounds", {roundId: roundId});
+
+  if (photoInput && photoInput.files && photoInput.files[0]) {
+    Router.toast("Saving story...");
+    var reader = new FileReader();
+    reader.onload = function(e) { compressPhoto(e.target.result, PHOTO_MAX_KB, 600, function(c) { _doSubmit(c); }); };
+    reader.readAsDataURL(photoInput.files[0]);
+    return;
+  }
+  _doSubmit(null);
 }
 

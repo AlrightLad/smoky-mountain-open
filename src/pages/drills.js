@@ -47,6 +47,8 @@ function filterDrills(cat) {
     h += '<div style="display:flex;justify-content:space-between;align-items:flex-start">';
     h += '<div style="flex:1"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">';
     h += '<span style="font-size:8px;font-weight:700;color:' + catColor + ';background:' + catColor + '15;padding:2px 6px;border-radius:3px;letter-spacing:.5px;text-transform:uppercase">' + catName + '</span>';
+    if (d.diff) h += '<span style="font-size:8px;color:var(--muted2);text-transform:capitalize">' + d.diff + '</span>';
+    if (d.dur) h += '<span style="font-size:8px;color:var(--muted2)">' + d.dur + ' min</span>';
     if (d.equip && d.equip !== "None") h += '<span style="font-size:8px;color:var(--muted2)">' + escHtml(d.equip) + '</span>';
     h += '</div>';
     h += '<div style="font-size:14px;font-weight:700;color:var(--cream)">' + escHtml(d.name) + '</div>';

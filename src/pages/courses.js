@@ -636,6 +636,13 @@ function renderCourseDetail(courseId) {
     h += ' <span style="font-size:11px;font-weight:600;color:var(--cream)">' + escHtml(r.by || "Member") + '</span></div>';
     h += '<span style="font-size:9px;color:var(--muted2)">' + (r.date || "") + '</span></div>';
     h += '<div style="font-size:12px;color:var(--cream);line-height:1.5">' + escHtml(r.text || "") + '</div>';
+    if (r.photo) h += '<div style="margin-top:6px;border-radius:var(--radius);overflow:hidden;max-height:160px"><img alt="" src="' + r.photo + '" style="width:100%;display:block;object-fit:cover"></div>';
+    // Helpful voting
+    var helpfulCount = (r.helpful || []).length;
+    var isHelpful = currentUser && (r.helpful || []).indexOf(currentUser.uid) !== -1;
+    h += '<div style="display:flex;gap:12px;margin-top:6px;font-size:10px;color:var(--muted2)">';
+    h += '<span style="cursor:pointer;' + (isHelpful ? 'color:var(--birdie);font-weight:600' : '') + '" onclick="event.stopPropagation();voteReviewHelpful(\'' + courseId + '\',' + reviews.indexOf(r) + ')"><svg viewBox="0 0 16 16" width="11" height="11" fill="' + (isHelpful ? 'var(--birdie)' : 'none') + '" stroke="currentColor" stroke-width="1.3" style="vertical-align:middle"><path d="M2 8l5 5 7-9"/></svg> Helpful' + (helpfulCount ? ' (' + helpfulCount + ')' : '') + '</span>';
+    h += '</div>';
     h += '</div></div>';
   });
 
@@ -651,6 +658,7 @@ function renderCourseDetail(courseId) {
   for (var sti = 1; sti <= 5; sti++) h += '<span onclick="setReviewStars(' + sti + ')" style="font-size:24px;cursor:pointer;color:var(--bg3)" data-star="' + sti + '">\u2605</span>';
   h += '</div><input type="hidden" id="rev-rating" value="5"></div>';
   h += '<div class="ff"><label class="ff-label">Review</label><textarea class="ff-input" id="rev-text" rows="3" placeholder="What did you think of this course?"></textarea></div>';
+  h += '<div class="ff"><label class="ff-label">Photo (optional)</label><input type="file" accept="image/*" id="rev-photo" style="font-size:11px;color:var(--muted)"></div>';
   h += '<button class="btn full green" onclick="submitCourseReview(\'' + courseId + '\')">Submit Review</button></div>';
   if (hasPlayedHere) {
     h += '<button class="btn full outline" onclick="document.getElementById(\'review-form-' + courseId + '\').style.display=\'block\';this.style.display=\'none\'">+ Write a Review</button>';
@@ -856,25 +864,46 @@ function submitCourseReview(courseId) {
   var text = document.getElementById("rev-text").value;
   if (!text) { Router.toast("Write something!"); return; }
   var reviewerName = currentProfile ? (currentProfile.name || currentProfile.username || "A Parbaugh") : "A Parbaugh";
-  var review = { rating:rating, text:text, by:reviewerName, date:localDateStr() };
-  PB.addCourseReview(courseId, review);
-  // Persist review to Firestore
-  var course = PB.getCourse(courseId);
-  if (course) syncCourse(course);
-  // Also save to dedicated reviews collection for reliability
-  if (db) {
-    db.collection("course_reviews").add({
-      courseId: courseId,
-      courseName: course ? course.name : "",
-      rating: rating,
-      text: text,
-      by: reviewerName,
-      userId: currentUser ? currentUser.uid : "",
-      createdAt: fsTimestamp()
-    }).catch(function(e) { pbWarn("[Review] Firestore save failed:", e.message); });
+  var photoInput = document.getElementById("rev-photo");
+
+  function _saveReview(photoData) {
+    var review = { rating:rating, text:text, by:reviewerName, date:localDateStr(), helpful:[] };
+    if (photoData) review.photo = photoData;
+    PB.addCourseReview(courseId, review);
+    var course = PB.getCourse(courseId);
+    if (course) syncCourse(course);
+    if (db) {
+      var revDoc = { courseId:courseId, courseName:course?course.name:"", rating:rating, text:text, by:reviewerName, userId:currentUser?currentUser.uid:"", helpful:[], createdAt:fsTimestamp() };
+      if (photoData) revDoc.photo = photoData;
+      db.collection("course_reviews").add(revDoc).catch(function(e) { pbWarn("[Review] Firestore save failed:", e.message); });
+    }
+    Router.toast("Review added!");
+    Router.go("courses", { id: courseId });
   }
-  Router.toast("Review added!");
-  Router.go("courses", { id: courseId });
+
+  // Handle optional photo
+  if (photoInput && photoInput.files && photoInput.files[0]) {
+    Router.toast("Saving review...");
+    var reader = new FileReader();
+    reader.onload = function(e) { compressPhoto(e.target.result, PHOTO_MAX_KB, 600, function(c) { _saveReview(c); }); };
+    reader.readAsDataURL(photoInput.files[0]);
+    return;
+  }
+  _saveReview(null);
+}
+
+function voteReviewHelpful(courseId, reviewIdx) {
+  if (!currentUser || !db) return;
+  var c = PB.getCourse(courseId);
+  if (!c || !c.reviews || !c.reviews[reviewIdx]) return;
+  var review = c.reviews[reviewIdx];
+  if (!review.helpful) review.helpful = [];
+  var uid = currentUser.uid;
+  var idx = review.helpful.indexOf(uid);
+  if (idx !== -1) review.helpful.splice(idx, 1);
+  else review.helpful.push(uid);
+  syncCourse(c);
+  Router.go("courses", { id: courseId }, true);
 }
 
 function setReviewStars(n) {
