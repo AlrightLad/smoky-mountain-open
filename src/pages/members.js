@@ -260,31 +260,33 @@ function renderMemberDetailWithData(p) {
     return '<div class="section"><div class="sec-head" onclick="toggleSection(\'ps-' + id + '\')" style="cursor:pointer"><span class="sec-title">' + title + '</span><span class="sec-link" id="ps-' + id + '-toggle" style="display:inline-flex;transition:transform .2s' + (startOpen ? ';transform:rotate(90deg)' : '') + '">' + chevronSvg + '</span></div><div id="ps-' + id + '"' + (startOpen ? '' : ' style="display:none"') + '>' + content + '</div></div>';
   }
 
-  var h = '<div class="sh"><h2>' + p.name + '</h2><button class="back" onclick="Router.go(\'members\')">← Members</button></div>';
-
   // Get achievements and level early for frame/title
   var achievements = [];
   try { achievements = PB.getAchievements(pid) || []; } catch(e) {}
   var lvl = {level:1,name:"Rookie",xp:0,currentLevelXp:0,nextLevelXp:500};
   try { lvl = PB.getPlayerLevel(pid) || lvl; } catch(e) {}
-
-  // Determine profile frame based on achievements
   var frameColor = playerFrameColor(p);
-
-  // Active title (equipped or default)
   var activeTitle = p.equippedTitle || p.title || "Member";
   var isBeta = PB.getPlayers().indexOf(p) < 30;
-
-  // Banner
   var isOwnProfile = currentUser && (pid === currentUser.uid || (currentProfile && pid === currentProfile.claimedFrom));
   var canEditPhoto = isOwnProfile;
-  h += '<div class="pd-banner"><div class="pd-av"' + (canEditPhoto ? ' onclick="uploadMemberPhoto(\'' + pid + '\')"' : '') + ' style="border-color:' + frameColor + '">' + Router.getAvatar(p);
-  if (canEditPhoto) h += '<div class="pd-edit"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2" style="vertical-align:middle"><path d="M11 2l3 3-8 8H3v-3z"/></svg></div>';
-  // Level badge — bottom-right of avatar, separate from pencil (pencil moved to bottom-left)
-  h += '<div style="position:absolute;bottom:-5px;right:-5px;background:var(--gold);color:var(--bg);font-size:8px;font-weight:800;border-radius:8px;padding:2px 5px;border:2px solid var(--bg);line-height:1.2;min-width:16px;text-align:center;z-index:3">' + lvl.level + '</div>';
+
+  // ── HERO BANNER ──
+  var h = '<div style="position:relative;background:linear-gradient(180deg,var(--grad-hero) 0%,var(--bg) 100%);padding:16px 16px 0;border-bottom:1px solid var(--border)">';
+  // Back + Edit buttons
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">';
+  h += '<button class="back" onclick="Router.go(\'members\')" style="padding:6px 10px;min-height:40px">← Members</button>';
+  if (isOwnProfile) h += '<button class="btn-sm green" onclick="Router.go(\'members\',{edit:\'' + pid + '\'})">Edit profile</button>';
+  else if (currentUser && currentUser.uid !== pid) h += '<button class="btn-sm outline" style="font-size:9px;color:var(--muted)" onclick="reportMember(\'' + pid + '\')">Report</button>';
   h += '</div>';
-  h += '<div class="pd-name">' + (p.username || p.name) + '</div>';
-  if (p.username && p.name && p.username !== p.name) h += '<div style="font-size:11px;color:var(--muted);margin-top:1px">' + p.name + '</div>';
+  // Avatar + name block
+  h += '<div style="text-align:center;padding-bottom:16px">';
+  h += '<div class="pd-av" style="width:96px;height:96px;font-size:38px;border-color:' + frameColor + ';border-width:3px;margin:0 auto 12px;box-shadow:0 4px 20px rgba(0,0,0,.3)"' + (canEditPhoto ? ' onclick="uploadMemberPhoto(\'' + pid + '\')"' : '') + '>' + Router.getAvatar(p);
+  if (canEditPhoto) h += '<div class="pd-edit"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2" style="vertical-align:middle"><path d="M11 2l3 3-8 8H3v-3z"/></svg></div>';
+  h += '<div style="position:absolute;bottom:-4px;right:-4px;background:var(--gold);color:var(--bg);font-size:9px;font-weight:800;border-radius:10px;padding:2px 7px;border:2px solid var(--bg);line-height:1.3;min-width:18px;text-align:center;z-index:3">' + lvl.level + '</div>';
+  h += '</div>';
+  h += '<div class="pd-name" style="font-size:24px">' + (p.username || p.name) + '</div>';
+  if (p.username && p.name && p.username !== p.name) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + p.name + '</div>';
 
   // Display badges (max 3, player-selected)
   var allBadges = [];
@@ -314,30 +316,68 @@ function renderMemberDetailWithData(p) {
   var displayBadges = p.displayBadges || allBadges.slice(0, 3).map(function(b){return b.id});
   var shownBadges = allBadges.filter(function(b){return displayBadges.indexOf(b.id) !== -1}).slice(0, 3);
 
+  // Title
+  h += '<div style="font-size:12px;color:var(--gold);margin-top:6px;font-weight:600;letter-spacing:.5px">' + activeTitle + '</div>';
+
+  // Badges row
   if (shownBadges.length) {
-    h += '<div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:6px">';
+    h += '<div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:8px">';
     shownBadges.forEach(function(b) {
-      h += '<span style="font-size:9px;padding:3px 8px;background:' + b.bg + ';border:1px solid ' + b.border + ';border-radius:10px;color:' + b.color + ';font-weight:600;letter-spacing:.5px">' + b.label + '</span>';
+      h += '<span style="font-size:8px;padding:3px 10px;background:' + b.bg + ';border:1px solid ' + b.border + ';border-radius:var(--radius-full);color:' + b.color + ';font-weight:700;letter-spacing:.5px">' + b.label + '</span>';
     });
     h += '</div>';
   }
 
-  // Badge picker (tap to manage)
-  if (allBadges.length > 0) {
-    h += '<div style="margin-top:4px"><span style="font-size:9px;color:var(--muted2);cursor:pointer;letter-spacing:.3px" onclick="document.getElementById(\'badge-picker\').style.display=document.getElementById(\'badge-picker\').style.display===\'none\'?\'block\':\'none\'">Edit badges (' + shownBadges.length + '/3)</span></div>';
-    h += '<div id="badge-picker" style="display:none;margin-top:6px;max-width:300px;margin-left:auto;margin-right:auto;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);text-align:left">';
-    allBadges.forEach(function(b) {
-      var isOn = displayBadges.indexOf(b.id) !== -1;
-      h += '<div onclick="toggleBadge(\'' + pid + '\',\'' + b.id + '\')" style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center">';
-      h += '<span style="font-size:11px;font-weight:600;color:' + (isOn ? b.color : 'var(--muted2)') + '">' + b.label + '</span>';
-      h += '<span style="font-size:10px;color:' + (isOn ? 'var(--gold)' : 'var(--muted2)') + '">' + (isOn ? 'ON' : 'OFF') + '</span></div>';
-    });
-    h += '</div>';
-  }
-  h += '<div style="font-size:12px;color:var(--gold);margin-top:4px;font-weight:600;letter-spacing:.3px;cursor:pointer" onclick="document.getElementById(\'title-picker\').style.display=document.getElementById(\'title-picker\').style.display===\'none\'?\'block\':\'none\'">' + activeTitle + ' <span style="font-size:9px;color:var(--muted)"><svg viewBox="0 0 10 6" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1l4 4 4-4"/></svg></span></div>';
+  // Bio + meta
+  if (p.bio) h += '<div class="pd-bio" style="margin-top:10px">' + p.bio + '</div>';
+  var metaParts = [];
+  if (p.homeCourse) metaParts.push(p.homeCourse);
+  if (p.range) metaParts.push(p.range);
+  var joinDate = p.joinDate || "2026";
+  metaParts.push('Since ' + joinDate);
+  h += '<div style="font-size:10px;color:var(--muted2);margin-top:6px">' + metaParts.join(' · ') + '</div>';
+  h += '</div></div>'; // close text-align:center + hero banner
 
-  // Inline title picker
-  h += '<div id="title-picker" style="display:none;margin-top:8px;text-align:left;max-width:320px;margin-left:auto;margin-right:auto">';
+  // ── XP LEVEL BAR (compact) ──
+  var pct = Math.min(100, Math.round(((lvl.xp - lvl.currentLevelXp) / Math.max(1, lvl.nextLevelXp - lvl.currentLevelXp)) * 100));
+  h += '<div style="padding:0 16px 12px;cursor:pointer" onclick="Router.go(\'trophyroom\',{id:\'' + pid + '\'})">';
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">';
+  h += '<div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.3px">Lv. ' + lvl.level + ' · ' + lvl.name + '</div>';
+  h += '<div style="font-size:10px;color:var(--muted)">' + lvl.xp.toLocaleString() + ' XP <span style="font-size:9px;color:var(--muted2)">→ Trophies</span></div></div>';
+  h += '<div style="height:4px;background:var(--bg3);border-radius:2px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:2px;transition:width .4s"></div></div>';
+  h += '</div>';
+
+  // ── STAT GRID ──
+  h += '<div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">';
+  h += statBox(hcap !== null ? hcap : "—", "Handicap");
+  h += statBox(avg || "—", "Avg Score");
+  var bestScore = best ? best.score : "—";
+  var bestRoundId = best ? best.roundId : null;
+  if (bestRoundId) {
+    h += '<div class="stat-box" style="cursor:pointer" onclick="Router.go(\'rounds\',{roundId:\'' + bestRoundId + '\'})"><div class="stat-val" data-count="' + bestScore + '" style="color:var(--birdie)">' + bestScore + '</div><div class="stat-label">Best <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div></div>';
+  } else {
+    h += statBox(bestScore, "Best");
+  }
+  h += statBox(rounds.length, "Rounds");
+  h += statBox(unique, "Courses");
+  var ewIds = [pid]; if (p.claimedFrom) ewIds.push(p.claimedFrom);
+  var eventWinsCount = PB.getTrips().filter(function(t){ return t.champion && ewIds.indexOf(t.champion) !== -1; }).length;
+  h += statBox(eventWinsCount || p.wins || 0, "Wins");
+  h += '</div>';
+
+  // ── PROFILE TABS ──
+  h += '<div class="toggle-bar" id="profile-tabs">';
+  h += '<button class="a" onclick="document.querySelectorAll(\'[data-ptab]\').forEach(function(e){e.style.display=\'none\'});document.getElementById(\'ptab-overview\').style.display=\'block\';document.querySelectorAll(\'#profile-tabs button\').forEach(function(b){b.className=\'\'});this.className=\'a\'">Overview</button>';
+  h += '<button onclick="document.querySelectorAll(\'[data-ptab]\').forEach(function(e){e.style.display=\'none\'});document.getElementById(\'ptab-stats\').style.display=\'block\';document.querySelectorAll(\'#profile-tabs button\').forEach(function(b){b.className=\'\'});this.className=\'a\'">Stats</button>';
+  h += '<button onclick="document.querySelectorAll(\'[data-ptab]\').forEach(function(e){e.style.display=\'none\'});document.getElementById(\'ptab-gear\').style.display=\'block\';document.querySelectorAll(\'#profile-tabs button\').forEach(function(b){b.className=\'\'});this.className=\'a\'">Gear</button>';
+  h += '<button onclick="document.querySelectorAll(\'[data-ptab]\').forEach(function(e){e.style.display=\'none\'});document.getElementById(\'ptab-social\').style.display=\'block\';document.querySelectorAll(\'#profile-tabs button\').forEach(function(b){b.className=\'\'});this.className=\'a\'">Social</button>';
+  h += '</div>';
+
+  // ═══ TAB: OVERVIEW (last rounds, courses, achievements) ═══
+  h += '<div id="ptab-overview" data-ptab>';
+
+  // Title picker (hidden by default)
+  h += '<div id="title-picker" style="display:none;text-align:left;max-width:320px;margin:8px auto">';
   var allTitles = [
     {name:"Rookie",req:"Default",unlocked:true},
     {name:"Weekend Warrior",req:"Level 5",unlocked:lvl.level>=5},
@@ -419,53 +459,6 @@ function renderMemberDetailWithData(p) {
     }
   });
   h += '</div></div>';
-  if (p.range) h += '<div class="pd-range">Typical range: ' + p.range + '</div>';
-  if (p.homeCourse) h += '<div class="pd-range">Home course: ' + p.homeCourse + '</div>';
-  if (p.favoriteCourse) h += '<div class="pd-range">Favorite course: ' + p.favoriteCourse + '</div>';
-  if (p.referredBy) h += '<div class="pd-range">Referred by: ' + p.referredBy + '</div>';
-  if (p.bio) h += '<div class="pd-bio">' + p.bio + '</div>';
-  var joinDate = p.joinDate || "2026";
-  h += '<div style="font-size:10px;color:var(--muted2);margin-top:6px;letter-spacing:1px">MEMBER SINCE ' + joinDate + '</div>';
-  h += '<div style="margin-top:12px;display:flex;gap:8px;justify-content:center">';
-  // Edit button — only for own profile or commissioner
-  var isOwnProfile = currentUser && currentUser.uid === pid;
-  if (isOwnProfile) {
-    h += '<button class="btn-sm green" onclick="Router.go(\'members\',{edit:\'' + pid + '\'})">Edit profile</button>';
-  }
-  // Report button (not for self)
-  if (currentUser && currentUser.uid !== pid) {
-    h += '<button class="btn-sm outline" style="font-size:9px;color:var(--muted)" onclick="reportMember(\'' + pid + '\')">Report</button>';
-  }
-  h += '</div></div>';
-
-  // XP and Level bar — tap to open trophy room
-  var lvl = PB.getPlayerLevel(pid);
-  h += '<div style="padding:0 16px 14px;cursor:pointer" onclick="Router.go(\'trophyroom\',{id:\'' + pid + '\'})">';
-  h += '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">';
-  h += '<div style="font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.3px">Level ' + lvl.level + ' · ' + lvl.name + ' <span style="font-size:9px;color:var(--muted)">→ Trophy Room</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted)">' + lvl.xp.toLocaleString() + ' XP</div></div>';
-  var pct = Math.min(100, Math.round(((lvl.xp - lvl.currentLevelXp) / Math.max(1, lvl.nextLevelXp - lvl.currentLevelXp)) * 100));
-  h += '<div style="height:5px;background:var(--bg3);border-radius:3px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:3px;transition:width .3s"></div></div>';
-  h += '<div style="font-size:9px;color:var(--muted2);margin-top:3px;text-align:right">' + (lvl.nextLevelXp - lvl.xp).toLocaleString() + ' XP to Level ' + (lvl.level + 1) + '</div>';
-  h += '</div>';
-
-  // Stats grid — always visible
-  h += '<div class="stats-grid">';
-  h += statBox(hcap !== null ? hcap : "—", "Handicap");
-  h += statBox(avg || "—", "Avg score");
-  var bestScore = best ? best.score : "—";
-  var bestRoundId = best ? best.roundId : null;
-  if (bestRoundId) {
-    h += '<div class="stat-box" style="cursor:pointer" onclick="Router.go(\'rounds\',{roundId:\'' + bestRoundId + '\'})"><div class="stat-val" style="color:var(--birdie)">' + bestScore + '</div><div class="stat-label">Best round <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div></div>';
-  } else {
-    h += statBox(bestScore, "Best round");
-  }
-  h += statBox(rounds.length, "Rounds");
-  h += statBox(unique, "Courses");
-  var ewIds = [pid]; if (p.claimedFrom) ewIds.push(p.claimedFrom);
-  var eventWinsCount = PB.getTrips().filter(function(t){ return t.champion && ewIds.indexOf(t.champion) !== -1; }).length;
-  h += statBox(eventWinsCount || p.wins || 0, "Event wins");
-  h += '</div>';
 
   // === HANDICAP TRACKER (collapsible, open by default) ===
   var hcapContent = '';
@@ -609,6 +602,10 @@ function renderMemberDetailWithData(p) {
     coursesContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No courses played yet</div>';
   }
   h += profSection("courses-" + pid, "Courses played", coursesContent, true);
+  h += '</div>'; // close ptab-overview
+
+  // ═══ TAB: GEAR (bag, clubs, known for) ═══
+  h += '<div id="ptab-gear" data-ptab style="display:none">';
 
   // === WHAT'S IN THE BAG (collapsible) ===
   var bagContent = '';
@@ -639,6 +636,10 @@ function renderMemberDetailWithData(p) {
     p.funnyFacts.forEach(function(f) { factsContent += '<div class="fact-item">• ' + f + '</div>'; });
     h += profSection("facts-" + pid, "Known for", factsContent, false);
   }
+  h += '</div>'; // close ptab-gear
+
+  // ═══ TAB: STATS (achievements, accolades, all rounds) ═══
+  h += '<div id="ptab-stats" data-ptab style="display:none">';
 
   // === ACHIEVEMENTS (collapsible) ===
   var achieveContent = '';
@@ -667,8 +668,6 @@ function renderMemberDetailWithData(p) {
     achieveContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No achievements yet — log rounds to unlock</div>';
   }
   h += profSection("achieve-" + pid, "Achievements (" + achievements.length + ")", achieveContent, false);
-
-  // === TEAMS (collapsible) ===
   var teams = PB.getScrambleTeams();
   // Match team membership by UID, claimedFrom seed ID, or username
   var pClaimedFrom = p.claimedFrom || null;
@@ -759,6 +758,10 @@ function renderMemberDetailWithData(p) {
     accoladeContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No accolades yet</div>';
   }
   h += profSection("accolades-" + pid, "Accolades" + (accolades.length ? " (" + accolades.length + ")" : ""), accoladeContent, false);
+  h += '</div>'; // close ptab-stats
+
+  // ═══ TAB: SOCIAL (H2H, all rounds) ═══
+  h += '<div id="ptab-social" data-ptab style="display:none">';
 
   // === HEAD TO HEAD (collapsible) ===
   var h2hContent = '';
@@ -800,8 +803,10 @@ function renderMemberDetailWithData(p) {
     allContent += '</div>';
     h += profSection("allrounds-" + pid, "All rounds (" + rounds.length + ")", allContent, false);
   }
+  h += '</div>'; // close ptab-social
 
   document.querySelector('[data-page="members"]').innerHTML = h;
+  setTimeout(initCountAnimations, 50);
 }
 
 /* Handicap graph builder */
