@@ -169,7 +169,16 @@ function submitTeeTime() {
   var timeStr = hr + ":" + timeParts[1] + " " + ampm;
   var tee = { courseId:courseId, courseName:course?course.name:courseId, date:date, time:timeStr, spots:spots, message:message, visibility:visibility, status:"open", official:false, createdBy:currentUser?currentUser.uid:"anon", createdByName:currentProfile?(currentProfile.name||currentProfile.username):"Anon", responses:{}, createdAt:fsTimestamp() };
   if (currentUser) tee.responses[currentUser.uid] = "accepted";
-  db.collection("teetimes").add(tee).then(function() { Router.toast("Tee time posted!"); Router.go("teetimes"); }).catch(function(e) { Router.toast("Failed: " + e.message); });
+  db.collection("teetimes").add(tee).then(function() {
+    Router.toast("Tee time posted!");
+    // Notify all members about the new tee time
+    var _teeCreatorName = currentProfile ? (currentProfile.name||currentProfile.username) : "A Parbaugh";
+    PB.getPlayers().forEach(function(p) {
+      if (p.id === (currentUser ? currentUser.uid : "") || p.role === "removed") return;
+      sendNotification(p.id, { type: "tee_posted", title: "New Tee Time", message: _teeCreatorName + " posted: " + (course?course.name:"") + " · " + date + " · " + timeStr, page: "teetimes" });
+    });
+    Router.go("teetimes");
+  }).catch(function(e) { Router.toast("Failed: " + e.message); });
 }
 
 function rsvpTeeTime(teeId, response) {

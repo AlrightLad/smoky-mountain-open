@@ -291,6 +291,21 @@ function submitRound() {
         }
       }
     }
+    // Notify other members about this round (rival posted a round)
+    if (currentUser && round.visibility !== "private") {
+      var _roundPlayerName = currentProfile ? (currentProfile.name || currentProfile.username) : "A Parbaugh";
+      PB.getPlayers().forEach(function(p) {
+        var pUid = p.id;
+        if (pUid === currentUser.uid) return;
+        if (p.role === "removed") return;
+        sendNotification(pUid, {
+          type: "round_posted",
+          title: _roundPlayerName + " posted a round",
+          message: (round.score || "") + " at " + (round.course || "a course"),
+          page: "feed"
+        });
+      });
+    }
     // Check if any wagers or bounties can be resolved with this round
     setTimeout(function() {
       if (typeof checkWagerResolution === "function") checkWagerResolution(round);
