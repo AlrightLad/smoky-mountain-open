@@ -114,6 +114,8 @@ service cloud.firestore {
     match /notifications/{notifId} { allow read: if isAuth() && resource.data.toUid == uid(); allow create: if isAuth(); allow update, delete: if isAuth() && resource.data.toUid == uid(); }
     match /invites/{inviteId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isCommissioner(); }
     match /config/{docId} { allow read: if isAuth(); allow write: if isCommissioner(); }
+    match /parcoin_transactions/{txnId} { allow read: if isAuth() && resource.data.uid == uid(); allow create: if isAuth(); allow update, delete: if false; }
+    match /pendingPush/{pushId} { allow create: if isAuth(); allow read, update, delete: if false; }
     // Catch-all for other collections
     match /{collection}/{docId} { allow read: if isAuth(); allow write: if isAuth(); }
   }
