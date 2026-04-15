@@ -1458,13 +1458,8 @@ function propagateNameChange(uid, oldName, newName) {
 }
 
 function handleEditPhoto(pid, input) {
-  var file = input.files[0]; if (!file) return;
-  Router.handlePhotoUpload(function(dataUrl) {
-    PB.updatePlayer(pid, { photo: dataUrl });
-    Router.toast("Photo updated!");
-    Router.go("members", { edit: pid });
-  }, 200, 200, 0.7);
-  // Trigger the already-created input
+  // Legacy wrapper — redirect to the proper upload function
+  uploadMemberPhoto(pid);
 }
 
 function uploadMemberPhoto(pid) {
@@ -1484,16 +1479,27 @@ function uploadMemberPhoto(pid) {
     Router.toast("Compressing...");
     var reader = new FileReader();
     reader.onload = function(e) {
-      compressPhoto(e.target.result, 50, 200, function(compressed) {
-        // Save locally
-        PB.updatePlayer(pid, { photo: compressed });
-        // Also cache under claimedFrom if applicable
+      compressPhoto(e.target.result, PHOTO_MAX_KB, 200, function(compressed) {
+        // Cache locally under ALL known IDs for this player
+        PB.updatePlayer(pid, { photo: compressed, stockAvatar: "" });
+        photoCache["member:" + pid] = compressed;
         if (currentProfile && currentProfile.claimedFrom) {
           photoCache["member:" + currentProfile.claimedFrom] = compressed;
+          PB.updatePlayer(currentProfile.claimedFrom, { photo: compressed, stockAvatar: "" });
         }
-        photoCache["member:" + pid] = compressed;
+        if (currentUser && currentUser.uid !== pid) {
+          photoCache["member:" + currentUser.uid] = compressed;
+        }
         // Save to Firestore photos collection (visible to all members)
         savePhoto("member", pid, compressed).then(function(ok) {
+          // Also write hasPhoto flag to member doc so it survives cache miss
+          if (ok && db && currentUser) {
+            db.collection("members").doc(currentUser.uid).update({
+              hasPhoto: true,
+              stockAvatar: "",
+              updatedAt: fsTimestamp()
+            }).catch(function() {});
+          }
           Router.toast(ok ? "Photo updated!" : "Photo saved locally");
           updateProfileBar();
           Router.go("members", { id: pid });
@@ -1708,7 +1714,24 @@ function selectStockAvatar(pid, src) {
   var isOwn = currentUser && (pid === currentUser.uid || (currentProfile && pid === currentProfile.claimedFrom));
   if (!isOwn) { Router.toast("You can only change your own avatar"); return; }
   PB.updatePlayer(pid, { stockAvatar: src, photo: "" });
+  // Clear custom photo from cache so stock avatar shows
+  delete photoCache["member:" + pid];
+  if (currentProfile && currentProfile.claimedFrom) {
+    delete photoCache["member:" + currentProfile.claimedFrom];
+    PB.updatePlayer(currentProfile.claimedFrom, { stockAvatar: src, photo: "" });
+  }
+  if (currentUser) delete photoCache["member:" + currentUser.uid];
+  // Delete the photo doc from Firestore (cleans up old upload)
+  if (db && currentUser) {
+    db.collection("photos").doc("member_" + currentUser.uid).delete().catch(function() {});
+    db.collection("members").doc(currentUser.uid).update({
+      stockAvatar: src,
+      hasPhoto: false,
+      updatedAt: fsTimestamp()
+    }).catch(function() {});
+  }
   Router.toast("Avatar updated");
+  updateProfileBar();
   Router.go("members", { edit: pid });
 }
 

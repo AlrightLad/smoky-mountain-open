@@ -20,8 +20,12 @@ var COSMETICS_CATALOG = [
   {id:"border_birdie",     cat:"border", name:"Birdie Green",      price:125, desc:"Glowing green for under-par energy", css:"3px solid #4ade80",  preview:"#4ade80"},
   {id:"border_ice",        cat:"border", name:"Ice Blue",          price:150, desc:"Cool arctic blue edge",              css:"3px solid #38bdf8",    preview:"#38bdf8"},
   {id:"border_champ_red",  cat:"border", name:"Championship Red",  price:200, desc:"Bold crimson — champion vibes",      css:"3px solid #d4243c",   preview:"#d4243c"},
-  {id:"border_pulse_gold", cat:"border", name:"Pulse Gold",        price:500, desc:"Animated golden pulse glow",          css:"3px solid #c9a84c",   preview:"#c9a84c"},
-  {id:"border_shimmer",    cat:"border", name:"Diamond Sparkle",   price:1000,desc:"Premium animated diamond ring",       css:"3px solid #b9f2ff",   preview:"#b9f2ff"},
+  {id:"border_flame",      cat:"border", name:"Flame Ring",         price:175, desc:"Warm camo-paired flame glow",           css:"3px solid #d4943c",   preview:"#d4943c"},
+  {id:"border_neon_green", cat:"border", name:"Neon Green",         price:300, desc:"Electric neon green edge",             css:"3px solid #39ff14",   preview:"#39ff14"},
+  {id:"border_crimson_ember",cat:"border",name:"Crimson Ember",     price:300, desc:"Smoldering red-orange ember ring",     css:"3px solid #cc3300",   preview:"#cc3300"},
+  {id:"border_pulse_gold", cat:"border", name:"Pulse Gold",        price:500, desc:"Animated golden pulse glow",            css:"3px solid #c9a84c",   preview:"#c9a84c"},
+  {id:"border_rainbow_shift",cat:"border",name:"Rainbow Shift",    price:750, desc:"Color-cycling animated ring",           css:"3px solid #ff6b6b",   preview:"#ff6b6b"},
+  {id:"border_shimmer",    cat:"border", name:"Diamond Sparkle",   price:1000,desc:"Premium animated diamond ring",         css:"3px solid #b9f2ff",   preview:"#b9f2ff"},
 
   // ── PROFILE BANNERS (gradient behind avatar on profile) ──
   {id:"banner_default",    cat:"banner", name:"Theme Default",     price:0,   desc:"Uses your active theme gradient — free for all",  css:"linear-gradient(180deg,var(--grad-hero),var(--bg))", preview:"var(--gold)"},
@@ -57,13 +61,44 @@ var COSMETICS_CATALOG = [
   {id:"card_gold",         cat:"card", name:"Gold Standard",      price:200, desc:"Gold accent for the elite",                css:"border-left:3px solid #c9a84c",    preview:"#c9a84c"},
   {id:"card_stealth",      cat:"card", name:"Stealth Mode",       price:175, desc:"Dark charcoal accent — subtle flex",       css:"border-left:3px solid #374151",    preview:"#555555"},
   {id:"card_birdie",       cat:"card", name:"Birdie Green",       price:125, desc:"Green accent for under-par energy",        css:"border-left:3px solid #22c55e",    preview:"#22c55e"},
-  {id:"card_sunset",       cat:"card", name:"Sunset Strip",       price:175, desc:"Warm amber accent on your rounds",         css:"border-left:3px solid #f97316",    preview:"#f97316"}
+  {id:"card_sunset",       cat:"card", name:"Sunset Strip",       price:175, desc:"Warm amber accent on your rounds",         css:"border-left:3px solid #f97316",    preview:"#f97316"},
+  {id:"card_gold_foil",    cat:"card", name:"Gold Foil",          price:250, desc:"Luxe gold accent — premium feel",         css:"border-left:3px solid #c9a84c",    preview:"#c9a84c"},
+  {id:"card_birdie_streak",cat:"card", name:"Birdie Streak",      price:175, desc:"Electric green streak for under-par runs", css:"border-left:3px solid #22d65e",    preview:"#22d65e"},
+  {id:"card_dark_carbon",  cat:"card", name:"Dark Carbon",        price:200, desc:"Matte dark fiber accent — sleek and stealthy", css:"border-left:3px solid #1a1a1a", preview:"#444444"},
+  {id:"card_vintage",      cat:"card", name:"Vintage Parchment",  price:150, desc:"Aged tan accent — old-school scorecard vibes", css:"border-left:3px solid #c4a97d",preview:"#c4a97d"},
+  {id:"card_augusta",      cat:"card", name:"Augusta Green",      price:200, desc:"Deep Masters green on your rounds",        css:"border-left:3px solid #006633",    preview:"#006633"},
+  {id:"card_neon_night",   cat:"card", name:"Neon Night",         price:175, desc:"Glowing pink neon highlight",              css:"border-left:3px solid #ff00ff",    preview:"#ff00ff"},
+
+  // ── NAME EFFECTS (visual flair on your display name) ──
+  {id:"name_gold_shimmer", cat:"name", name:"Gold Shimmer",        price:200, desc:"Subtle gold glow on your name",    css:"text-shadow:0 0 8px rgba(201,168,76,.6)", preview:"#c9a84c"},
+  {id:"name_rainbow",      cat:"name", name:"Rainbow Gradient",    price:350, desc:"Multicolor gradient text",          css:"background:linear-gradient(90deg,#ff6b6b,#ffd93d,#6bcb77,#4d96ff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent", preview:"#ff6b6b"},
+  {id:"name_glow_green",   cat:"name", name:"Glowing Green",       price:200, desc:"Bright green aura on your name",    css:"text-shadow:0 0 10px rgba(74,222,128,.7)", preview:"#4ade80"},
+  {id:"name_fire_text",    cat:"name", name:"Fire Text",           price:250, desc:"Orange-red fire glow effect",       css:"text-shadow:0 0 8px rgba(239,68,68,.6),0 0 16px rgba(249,115,22,.3)", preview:"#ef4444"},
+  {id:"name_ice_text",     cat:"name", name:"Ice Text",            price:250, desc:"Cool icy blue glow effect",         css:"text-shadow:0 0 8px rgba(56,189,248,.6),0 0 16px rgba(186,230,253,.3)", preview:"#38bdf8"},
+  {id:"name_shadow_depth", cat:"name", name:"Shadow Depth",        price:175, desc:"Deep shadow for a 3D carved look",  css:"text-shadow:2px 2px 4px rgba(0,0,0,.5)", preview:"#666666"},
+
+  // ── TITLES (display below your name on profile and feed) ──
+  {id:"title_grinder",       cat:"title", name:"Grinder",            price:150, desc:"For the player who never stops working",          css:"", preview:"var(--gold)"},
+  {id:"title_sharpshooter",  cat:"title", name:"Sharpshooter",       price:200, desc:"Precision approach game — deadly accurate",       css:"", preview:"var(--gold)"},
+  {id:"title_road_warrior",  cat:"title", name:"Road Warrior",        price:175, desc:"Plays everywhere — never the same course twice",  css:"", preview:"var(--gold)"},
+  {id:"title_hot_streak",    cat:"title", name:"Hot Streak",          price:200, desc:"On fire lately — rounds keep getting better",     css:"", preview:"#ef4444"},
+  {id:"title_sandbagger",    cat:"title", name:"Sandbagger",          price:250, desc:"Handicap says 25, plays like a 15. We see you.", css:"", preview:"var(--gold)"},
+  {id:"title_course_legend", cat:"title", name:"Course Legend",       price:300, desc:"Owns a course — everyone knows your name there", css:"", preview:"var(--gold)"},
+  {id:"title_early_bird",    cat:"title", name:"Early Bird",          price:125, desc:"First tee time, every time",                     css:"", preview:"#fbbf24"},
+  {id:"title_night_owl",     cat:"title", name:"Night Owl",           price:125, desc:"Twilight rounds are your specialty",              css:"", preview:"#818cf8"},
+  {id:"title_iron_will",     cat:"title", name:"Iron Will",           price:200, desc:"Bounces back from every bad hole",                css:"", preview:"#6b7280"},
+  {id:"title_big_spender",   cat:"title", name:"Big Spender",         price:500, desc:"ParCoins flow like water from your wallet",       css:"", preview:"var(--gold)"},
+  {id:"title_the_ace",       cat:"title", name:"The Ace",             price:0,   desc:"Reserved — awarded for a hole-in-one",            css:"", preview:"#FFD700", reserved:true},
+  {id:"title_founding_four", cat:"title", name:"The Original Four",   price:0,   desc:"Reserved — founding members only",                css:"", preview:"var(--gold)", reserved:true},
+  {id:"title_commissioner",  cat:"title", name:"The Commissioner",    price:0,   desc:"Reserved — league commissioner only",             css:"", preview:"var(--gold)", reserved:true}
 ];
 
 var COSMETIC_CATS = {
-  border: {label: "Profile Borders", icon: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/></svg>'},
-  banner: {label: "Profile Banners", icon: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 8h20"/></svg>'},
-  card:   {label: "Card Themes",     icon: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>'}
+  border: {label: "Rings",    icon: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/></svg>'},
+  banner: {label: "Banners",  icon: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 8h20"/></svg>'},
+  card:   {label: "Cards",    icon: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>'},
+  name:   {label: "Names",    icon: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>'},
+  title:  {label: "Titles",   icon: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 15l-2 5h4l-2-5z"/><path d="M6.5 10L12 3l5.5 7h-11z"/></svg>'}
 };
 
 var _shopCat = "border";
@@ -108,12 +143,18 @@ Router.register("shop", function() {
       h += '<div style="height:32px;border-radius:var(--radius);background:' + item.css + ';margin-bottom:8px"></div>';
     } else if (item.cat === "card") {
       h += '<div style="height:32px;border-radius:var(--radius);background:var(--bg3);margin-bottom:8px;' + item.css + '"></div>';
+    } else if (item.cat === "name") {
+      h += '<div style="padding:6px 0 8px;font-size:15px;font-weight:700;' + item.css + '">YourName</div>';
+    } else if (item.cat === "title") {
+      h += '<div style="padding:8px 0;display:flex;flex-direction:column;align-items:center;gap:2px"><div style="font-size:13px;font-weight:700;color:var(--cream)">Player</div><div style="font-size:10px;color:' + item.preview + ';font-style:italic">' + item.name + '</div></div>';
     }
 
     h += '<div style="font-size:12px;font-weight:700;color:var(--cream)">' + item.name + '</div>';
     h += '<div style="font-size:9px;color:var(--muted);margin-top:2px;line-height:1.3">' + item.desc + '</div>';
 
-    if (isOwned && equipped) {
+    if (item.reserved) {
+      h += '<div style="margin-top:8px;font-size:9px;font-weight:600;color:var(--muted2);letter-spacing:.5px;padding:6px;background:var(--bg3);border-radius:var(--radius)">RESERVED</div>';
+    } else if (isOwned && equipped) {
       h += '<div style="margin-top:8px;font-size:9px;font-weight:700;color:var(--gold);letter-spacing:.5px;padding:6px;background:rgba(var(--gold-rgb),.08);border-radius:var(--radius)">EQUIPPED</div>';
     } else if (isOwned) {
       h += '<button class="btn-sm green" onclick="equipCosmetic(\'' + item.id + '\',\'' + item.cat + '\')" style="margin-top:8px;width:100%;font-size:10px;padding:8px">Equip</button>';
@@ -166,14 +207,24 @@ function purchaseCosmetic(itemId) {
 function equipCosmetic(itemId, cat) {
   if (!currentUser || !db) return;
   var equipped = (currentProfile && currentProfile.equippedCosmetics) || {};
+  var item = COSMETICS_CATALOG.find(function(c) { return c.id === itemId; });
   if (equipped[cat] === itemId) {
     // Unequip
     equipped[cat] = null;
   } else {
     equipped[cat] = itemId;
   }
-  db.collection("members").doc(currentUser.uid).set({ equippedCosmetics: equipped }, { merge: true }).catch(function(){});
-  if (currentProfile) currentProfile.equippedCosmetics = equipped;
+  var updates = { equippedCosmetics: equipped };
+  // For titles, also write to equippedTitle field for backward compat
+  if (cat === "title" && item) {
+    updates.equippedTitle = equipped[cat] ? item.name : (currentProfile.title || "Member");
+  }
+  db.collection("members").doc(currentUser.uid).set(updates, { merge: true }).catch(function(){});
+  if (currentProfile) {
+    currentProfile.equippedCosmetics = equipped;
+    if (cat === "title" && item) currentProfile.equippedTitle = equipped[cat] ? item.name : (currentProfile.title || "Member");
+  }
   Router.toast(equipped[cat] ? "Equipped!" : "Unequipped");
+  updateProfileBar();
   Router.go("shop", {}, true);
 }

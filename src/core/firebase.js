@@ -853,7 +853,7 @@ function compressPhoto(dataUrl, maxKB, maxDim, callback) {
     canvas.height = h;
     var ctx = canvas.getContext("2d");
     ctx.drawImage(img, 0, 0, w, h);
-    
+
     // Try progressively lower quality until under maxKB
     var quality = 0.7;
     var result = canvas.toDataURL("image/jpeg", quality);
@@ -863,6 +863,10 @@ function compressPhoto(dataUrl, maxKB, maxDim, callback) {
     }
     pbLog("[Photo] Compressed to", Math.round(result.length / 1370), "KB at quality", quality.toFixed(1));
     callback(result);
+  };
+  img.onerror = function() {
+    pbWarn("[Photo] Failed to load image for compression");
+    Router.toast("Could not process image — try a different photo");
   };
   img.src = dataUrl;
 }

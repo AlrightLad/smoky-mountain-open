@@ -5,13 +5,32 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.37.2</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.37.4</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.37.2</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · FAQ Rebuild, Onboarding Upgrade, UI Polish, Texture Fix</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.37.4</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Photo Fix, Calendar Overhaul, Data Audit</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "Cosmetics Shop expanded to 75 items across 5 categories — rings, banners, card themes, name effects, and titles", tag: "NEW"},
+    {item: "NEW: Name Effects — 6 visual styles for your display name (Gold Shimmer, Rainbow Gradient, Fire Text, more)", tag: "NEW"},
+    {item: "NEW: Purchasable Titles — 10 buyable titles plus reserved titles for commissioner and founding four", tag: "NEW"},
+    {item: "New rings: Flame, Neon Green, Crimson Ember, Rainbow Shift (animated, 750 coins)", tag: "NEW"},
+    {item: "New card themes: Gold Foil, Birdie Streak, Dark Carbon, Vintage Parchment, Augusta Green, Neon Night", tag: "NEW"},
+    {item: "Profile photo uploads fixed — photos now persist correctly across sessions and sync to all views", tag: "FIXED"},
+    {item: "Photo compression improved with error handling — unsupported formats show a clear message instead of failing silently", tag: "FIXED"},
+    {item: "Switching to a stock avatar now properly clears your old custom photo", tag: "FIXED"},
+    {item: "Calendar completely rebuilt — Airbnb-style date range picker with smooth month animations", tag: "NEW"},
+    {item: "Tap once for a date, tap again for a range — colored band shows your selection with start and end circles", tag: "NEW"},
+    {item: "Multi-day events render as spanning gold bars across the calendar grid", tag: "NEW"},
+    {item: "Calendar dots updated: gold=event, green=round, blue=range, pink=tee time — up to 4 dots per day", tag: "IMPROVED"},
+    {item: "Month navigation slides smoothly with animation — no page refreshes on any interaction", tag: "IMPROVED"},
+    {item: "All calendar date cells are now 44px minimum for reliable touch targets", tag: "FIXED"},
+    {item: "Today indicator is now a subtle ring instead of a solid background — visible even when selected", tag: "IMPROVED"},
+    {item: "Full data audit completed — every round, course, member, handicap, and balance verified", tag: "NEW"},
+    {item: "Hole dots now render correctly on 5 previously broken rounds — par data backfilled from verified sources", tag: "FIXED"},
+    {item: "Handicap index now persists correctly for all members with rounds", tag: "FIXED"},
+    {item: "Player averages and best scores now sync to profiles automatically", tag: "FIXED"},
     {item: "FAQ completely rewritten — 28 questions across 7 categories covering every feature with navigation directions", tag: "NEW"},
     {item: "Onboarding upgraded to 5 screens: Welcome, Logging Rounds, Seasons & Events, ParCoins, and Your Legacy", tag: "IMPROVED"},
     {item: "Theme textures NOW actually loading — root cause was Vite stripping body::before CSS rules", tag: "FIXED"},
@@ -79,7 +98,7 @@ Router.register("caddynotes", function() {
     "Live hole-by-hole scoring (Play Now) with FIR, GIR, putts",
     "Parbaugh Round — real-time shared scorecard",
     "ParCoins in-game currency with 9 earning triggers",
-    "Cosmetics Shop — 28 items (borders, banners, card themes)",
+    "Cosmetics Shop — 70+ items (rings, banners, cards, name effects, titles)",
     "Wager Matches — 6 types including Nassau and Beat Their Score",
     "Bounty Board — coin bounties on scores and birdies",
     "Trash Talk — Spotlight of Shame, Victory Lap, Demand a Rematch",
@@ -131,7 +150,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.37.2</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.37.4</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
