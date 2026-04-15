@@ -113,14 +113,8 @@ export default defineConfig({
             // Remove any crossorigin attributes
             html = html.replace(/ crossorigin/g, '');
             // Inject CSS as inline style tag right before </head>
-            // Also inject textures.css RAW — Vite's CSS processor strips body::before rules
-            var texturesCss = '';
-            try {
-              texturesCss = readFileSync(resolve('src/styles/textures.css'), 'utf-8');
-              // Fix paths: replace /textures/ with the base path + textures/
-              texturesCss = texturesCss.replace(/url\('\/textures\//g, "url('/smoky-mountain-open/textures/");
-            } catch(e) {}
-            html = html.replace('</head>', '<style>' + cssCode + '</style>\n<style>' + texturesCss + '</style>\n</head>');
+            // Textures are now handled by a real DOM div (#textureOverlay) + theme.js
+            html = html.replace('</head>', '<style>' + cssCode + '</style>\n</head>');
             bundle[key].source = html;
           }
         });
