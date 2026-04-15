@@ -334,19 +334,23 @@ function doRegister() {
             avgScore: null, bestRound: null, handicap: null,
             manualHandicap: claimedPlayer.manualHandicap || null,
             wins: 0, trips: 0,
+            leagues: ["the-parbaughs"], activeLeague: "the-parbaughs",
             createdAt: fsTimestamp()
           };
           pbLog("[Auth] Claiming existing profile:", claimId, "→", user.uid);
         } else {
           // NEW profile — create from scratch
+          // Determine league from invite (all existing invites have leagueId:"the-parbaughs")
+          var _invLeague = inv.leagueId || "the-parbaughs";
           profile = {
             id:user.uid, email:email, username:username.toLowerCase(), name:username,
             nick:"", bio:"", range:"", photo:null, emoji:"", clubs:{}, facts:[],
-            xp:0, level:1, badges:isFoundingCode ? ["founder"] : [], 
+            xp:0, level:1, badges:isFoundingCode ? ["founder"] : [],
             role:assignedRole,
-            invitedBy:inv.createdBy||"founding", invitesUsed:0, 
+            invitedBy:inv.createdBy||"founding", invitesUsed:0,
             maxInvites: assignedRole === "commissioner" ? 999 : 3,
             isFoundingFour:isFoundingCode, avgScore:null, bestRound:null, handicap:null,
+            leagues:[_invLeague], activeLeague:_invLeague,
             createdAt:fsTimestamp()
           };
         }
