@@ -1446,7 +1446,7 @@ function renderFeedItem(a) {
       h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">';
       h += '<span style="font-size:10px;font-weight:700;color:var(--birdie)">' + escHtml(a.name) + '</span>';
       h += '<span style="font-size:9px;color:var(--muted2)">' + timeLabel + '</span></div>';
-      h += '<div style="font-size:12px;color:var(--cream);line-height:1.5">' + escHtml(a.sub) + '</div>';
+      h += '<div style="font-size:12px;color:var(--cream);line-height:1.7;white-space:pre-line">' + escHtml(a.sub) + '</div>';
       h += '</div>';
       return h;
     }

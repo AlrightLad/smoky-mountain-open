@@ -15,13 +15,15 @@ function applyTheme(themeId) {
   } else {
     document.documentElement.setAttribute("data-theme", themeId);
   }
+  var t = THEMES[themeId || "classic"];
   // Update mobile browser chrome color
   var meta = document.querySelector('meta[name="theme-color"]');
-  if (meta && THEMES[themeId]) meta.setAttribute("content", THEMES[themeId].meta);
+  if (meta && t) meta.setAttribute("content", t.meta);
   else if (meta) meta.setAttribute("content", "#0e1118");
+  // Set html background color for the theme (body is transparent so texture shows through)
+  document.documentElement.style.background = t ? t.meta : "#0e1118";
   // Apply texture to the overlay div (real DOM element, not pseudo-element)
   var overlay = document.getElementById("textureOverlay");
-  var t = THEMES[themeId || "classic"];
   if (overlay && t && t.texture) {
     overlay.style.backgroundImage = "url('textures/" + t.texture + "')";
     overlay.style.opacity = String(t.texOp);

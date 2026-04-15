@@ -7,7 +7,8 @@
 
 /* ── Reset ── */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--cream);min-height:100vh;min-height:100dvh;max-width:680px;margin:0 auto;overflow-x:hidden;-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
+html{background:var(--bg)}
+body{font-family:'Inter',sans-serif;background:transparent;color:var(--cream);min-height:100vh;min-height:100dvh;max-width:680px;margin:0 auto;overflow-x:hidden;-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 input[type=number]{-moz-appearance:textfield}
 input[type=date]{-webkit-appearance:none;appearance:none;min-width:0;font-size:14px}
