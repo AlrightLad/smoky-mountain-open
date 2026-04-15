@@ -5,16 +5,18 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.24.1</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.25.0</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.24.1</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · 7 Bug Fixes, Architecture Upgrade, Theme Textures</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.25.0</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Performance, PWA Install, Bug Fixes, Architecture</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "All 8 premium theme textures now active — subtle background patterns on every page, hero sections, and event cards", tag: "NEW"},
-    {item: "App rebuilt with modern build system — faster loads, better caching, ready for future features", tag: "IMPROVED"},
-    {item: "Each page is now its own module — faster development, quicker updates, fewer bugs", tag: "IMPROVED"},
+    {item: "Install The Parbaughs to your home screen — works like a native app with its own icon and splash screen", tag: "NEW"},
+    {item: "Offline support — cached pages and images load even with spotty reception on the course", tag: "NEW"},
+    {item: "Theme textures now load up to 39% faster with next-gen image format (WebP with automatic fallback)", tag: "IMPROVED"},
+    {item: "Pages load on demand — only the home screen loads first, everything else loads in the background", tag: "IMPROVED"},
+    {item: "All 8 premium theme textures now active — subtle background patterns on every page", tag: "NEW"},
     {item: "Course directory now shows true average scores instead of personal bests", tag: "FIXED"},
     {item: "Events now show as Happening Now in the calendar even without an end date", tag: "FIXED"},
     {item: "Lock Scores button on event scorecards now responds reliably on iPhone", tag: "FIXED"},
