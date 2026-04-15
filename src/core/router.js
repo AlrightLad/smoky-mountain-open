@@ -192,10 +192,88 @@ function playerFrameColor(p) {
 
 // ========== NOTIFICATION SYSTEM ==========
 var liveNotifications = [];
+
+// ── FCM Push Notifications ──
+var _fcmToken = null;
+// VAPID key — get from Firebase Console → Cloud Messaging → Web push certificates
+// Set this in Firestore config/push_config.vapidKey or replace this placeholder
+var FCM_VAPID_KEY = null;
+
+function initPushNotifications() {
+  if (!firebase.messaging || !currentUser || !db) return;
+  // Load VAPID key from Firestore config if not set
+  if (!FCM_VAPID_KEY) {
+    db.collection("config").doc("push_config").get().then(function(doc) {
+      if (doc.exists && doc.data().vapidKey) {
+        FCM_VAPID_KEY = doc.data().vapidKey;
+        _requestFcmPermission();
+      } else {
+        pbLog("[FCM] No VAPID key configured — push notifications disabled. Set config/push_config.vapidKey in Firestore.");
+      }
+    }).catch(function() {});
+    return;
+  }
+  _requestFcmPermission();
+}
+
+function _requestFcmPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'granted') {
+    _getFcmToken();
+  } else if (Notification.permission !== 'denied') {
+    // Don't auto-prompt — let the user opt in from settings or onboarding
+    pbLog("[FCM] Permission not yet requested — waiting for user opt-in");
+  }
+}
+
+function requestPushPermission() {
+  if (!('Notification' in window)) { Router.toast("Notifications not supported on this device"); return; }
+  Notification.requestPermission().then(function(permission) {
+    if (permission === 'granted') {
+      _getFcmToken();
+      Router.toast("Notifications enabled!");
+    } else {
+      Router.toast("Notifications blocked — check browser settings");
+    }
+  });
+}
+
+function _getFcmToken() {
+  if (!firebase.messaging || !FCM_VAPID_KEY) return;
+  try {
+    var messaging = firebase.messaging();
+    messaging.getToken({ vapidKey: FCM_VAPID_KEY, serviceWorkerRegistration: navigator.serviceWorker ? navigator.serviceWorker.ready : undefined })
+      .then(function(token) {
+        if (token && token !== _fcmToken) {
+          _fcmToken = token;
+          pbLog("[FCM] Token acquired");
+          // Store token in member doc
+          if (db && currentUser) {
+            db.collection("members").doc(currentUser.uid).set({ fcmToken: token, fcmUpdatedAt: fsTimestamp() }, { merge: true }).catch(function(){});
+          }
+        }
+      }).catch(function(err) { pbWarn("[FCM] Token error:", err.message); });
+
+    // Foreground message handler — show as toast
+    messaging.onMessage(function(payload) {
+      var data = payload.notification || payload.data || {};
+      Router.toast(data.body || data.title || "New notification");
+    });
+  } catch(e) { pbWarn("[FCM] Init error:", e.message); }
+}
+
 function sendNotification(toUserId, notif) {
   if (!db) return;
   notif.toUserId = toUserId; notif.read = false; notif.createdAt = fsTimestamp();
   db.collection("notifications").add(notif).catch(function(){});
+  // Queue push notification for delivery via Cloud Function
+  db.collection("pendingPush").add({
+    toUserId: toUserId,
+    title: notif.title || "The Parbaughs",
+    body: notif.message || "",
+    data: { type: notif.type || "general", page: notif.page || "" },
+    createdAt: fsTimestamp()
+  }).catch(function(){});
 }
 function startNotificationListener() {
   if (!db || !currentUser) return;
@@ -1986,6 +2064,7 @@ function initFirebaseListeners() {
   startDmUnreadListener();
   startPresenceSystem();
   initConnStatus();
+  initPushNotifications();
   cleanupCorruptedProfiles();
   // Load shared API keys from Firestore
   if (db) {

@@ -62,6 +62,23 @@ Router.register("settings", function() {
   });
   h += '</div></div>';
 
+  // Push notifications
+  h += '<div class="form-section"><div class="form-title">Notifications</div>';
+  var permState = ('Notification' in window) ? Notification.permission : 'unsupported';
+  if (permState === 'granted') {
+    h += '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(var(--birdie-rgb),.06);border:1px solid rgba(var(--birdie-rgb),.15);border-radius:var(--radius)">';
+    h += '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="var(--birdie)" stroke-width="1.5"><path d="M4 8l3 3 5-6"/></svg>';
+    h += '<span style="font-size:12px;color:var(--birdie);font-weight:600">Push notifications enabled</span></div>';
+  } else if (permState === 'denied') {
+    h += '<div style="padding:10px 12px;background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);border-radius:var(--radius);font-size:11px;color:var(--muted)">Notifications blocked — update in your browser or device settings</div>';
+  } else if (permState === 'unsupported') {
+    h += '<div style="padding:10px 12px;font-size:11px;color:var(--muted)">Push notifications are not supported on this browser</div>';
+  } else {
+    h += '<button class="btn full green" onclick="requestPushPermission()" style="display:flex;align-items:center;justify-content:center;gap:8px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg> Enable push notifications</button>';
+    h += '<div style="font-size:10px;color:var(--muted);margin-top:6px;text-align:center">Get notified about DMs, tee times, event results, and achievements</div>';
+  }
+  h += '</div>';
+
   // Invite management
   if (currentProfile && (currentProfile.role === "commissioner" || (currentProfile.invitesUsed||0) < (currentProfile.maxInvites||3))) {
     h += '<div class="form-section"><div class="form-title">Invites</div>';
