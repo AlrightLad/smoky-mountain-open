@@ -117,6 +117,9 @@ Do NOT redeploy `searchCourses` unless explicitly modifying it — it has CORS a
 
 ## Multi-League Architecture
 
+### Growth Policy
+Multi-league membership is unlimited and free for all users during the growth phase. Do not gate league count behind a paywall until the platform has 1000+ users. The goal is maximum league creation and joining to drive organic growth. Monetization of multi-league (Pro: 3 leagues, League+: unlimited) comes in Phase 4.
+
 ### Data Scoping
 | Scope | Collections | Behavior |
 |-------|-------------|----------|
