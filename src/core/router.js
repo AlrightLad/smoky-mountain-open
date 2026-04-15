@@ -1449,8 +1449,8 @@ function renderFeedItem(a) {
   if (a.live) h += '<div style="width:6px;height:6px;border-radius:50%;background:var(--live);animation:pulse-dot 2s infinite;flex-shrink:0;margin-top:8px"></div>';
   h += '<div style="min-width:0;flex:1">';
   h += '<div style="font-size:13px;font-weight:700;color:var(--cream)">' + escHtml(a.name) + '</div>';
-  if (a.sub) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(a.sub) + '</div>';
-  if (a.quip) h += '<div style="font-size:11px;color:var(--gold2);margin-top:4px;font-style:italic;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">' + a.quip + '</div>';
+  if (a.sub) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.3">' + escHtml(a.sub) + '</div>';
+  if (a.quip) h += '<div style="font-size:11px;color:var(--gold2);margin-top:4px;font-style:italic;line-height:1.4">' + a.quip + '</div>';
   h += '</div>';
   h += '<div style="flex-shrink:0;text-align:right">';
   if (a.score) h += '<div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:var(--gold);line-height:1">' + a.score + '</div>';
