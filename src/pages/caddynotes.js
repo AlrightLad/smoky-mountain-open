@@ -5,21 +5,21 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.26.0</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.27.0</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.26.0</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Visual Polish, Profile Redesign, Champion Red</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.27.0</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Push Notifications, Onboarding, Visual Polish</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Player profiles redesigned — hero banner, larger avatar, compact XP bar, and 4-tab layout (Overview, Stats, Gear, Social)", tag: "NEW"},
-    {item: "Round detail redesigned — big centered score with colored +/- pill, stat chips, consolidated commentary card", tag: "NEW"},
-    {item: "Activity feed redesigned — rounds are bold and prominent, chat is ultra-compact, range sessions get their own icon style", tag: "NEW"},
-    {item: "Champion Red theme now locked for non-champions — win an event to unlock it", tag: "NEW"},
-    {item: "Install The Parbaughs to your home screen — works like a native app with its own icon and splash screen", tag: "NEW"},
-    {item: "Offline support — cached pages and images load even with spotty reception on the course", tag: "NEW"},
-    {item: "Theme textures load up to 39% faster with next-gen image format", tag: "IMPROVED"},
-    {item: "7 bug fixes including course averages, calendar events, iOS scorecard tap, and Parbaugh Round player display", tag: "FIXED"}
+    {item: "Push notifications — get alerts for DMs, tee times, event results, and achievements even when the app is closed", tag: "NEW"},
+    {item: "New member onboarding — 3-screen welcome flow explaining the app, then a profile setup wizard with avatar upload", tag: "NEW"},
+    {item: "Enable notifications from Settings or during onboarding — your choice, never auto-prompted", tag: "NEW"},
+    {item: "Player profiles redesigned — hero banner, larger avatar, compact XP bar, and 4-tab layout", tag: "NEW"},
+    {item: "Round detail redesigned — big centered score with colored +/- pill, stat chips, consolidated commentary", tag: "NEW"},
+    {item: "Activity feed redesigned — rounds are bold and prominent, chat is compact, range gets its own style", tag: "NEW"},
+    {item: "Champion Red theme locked for non-champions — win an event to unlock it", tag: "NEW"},
+    {item: "7 bug fixes including course averages, calendar events, iOS tap, and Parbaugh Round display", tag: "FIXED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "var(--blue)" : "var(--muted)";
