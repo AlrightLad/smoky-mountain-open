@@ -290,6 +290,8 @@ function submitRound() {
         }
       }
     }
+    // Check if any wagers can be resolved with this round
+    setTimeout(function() { if (typeof checkWagerResolution === "function") checkWagerResolution(round); }, 3000);
     showRoundCommentary(round);
   }
 

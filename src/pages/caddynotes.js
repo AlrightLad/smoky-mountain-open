@@ -5,21 +5,21 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.29.0</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.30.0</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.29.0</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Cosmetics Shop, ParCoins, Push Notifications, Visual Polish</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.30.0</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Wager Matches, Cosmetics Shop, ParCoins</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Cosmetics Shop — spend your ParCoins on profile borders, banners, and card themes. 15 items at launch.", tag: "NEW"},
-    {item: "Equipped borders show on your avatar everywhere — profile, feed, leaderboard, member list", tag: "NEW"},
-    {item: "Equipped banners replace your profile hero gradient with custom colors", tag: "NEW"},
-    {item: "Card themes add accent styling to your rounds in the activity feed", tag: "NEW"},
-    {item: "ParCoins rebalanced — playing golf earns 5-10x more than logging in. Go play!", tag: "IMPROVED"},
-    {item: "Earn 25-75 coins per round (based on how you play vs your handicap)", tag: "NEW"},
-    {item: "Push notifications for DMs, tee times, and achievements", tag: "NEW"},
-    {item: "3-screen onboarding flow for new members with profile setup wizard", tag: "NEW"}
+    {item: "Wager Matches — challenge a friend to a ParCoin bet! 5 wager types: Stroke Play, Best 9, Most Pars, Fewest Putts, and Nassau", tag: "NEW"},
+    {item: "Nassau wagers are 3 bets in one (front 9, back 9, total) — the ultimate head-to-head format", tag: "NEW"},
+    {item: "Coins held in escrow until the wager resolves automatically when both players log a round", tag: "NEW"},
+    {item: "Wager history shows W-L record and payout details", tag: "NEW"},
+    {item: "Public wagers post to the feed so everyone can watch the rivalry", tag: "NEW"},
+    {item: "Cosmetics Shop with 15 items — profile borders, banners, and card themes", tag: "NEW"},
+    {item: "Feed card text no longer gets cut off — full event names and commentary visible", tag: "FIXED"},
+    {item: "ParCoins, push notifications, onboarding, and visual polish from recent updates", tag: "IMPROVED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "var(--blue)" : "var(--muted)";
