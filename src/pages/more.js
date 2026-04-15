@@ -10,7 +10,8 @@ Router.register("more", function() {
     {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22V2"/><path d="M12 2l8 4-8 4"/><circle cx="12" cy="22" r="2"/></svg>', label:"Tee Times", page:"teetimes"},
     {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--gold)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8.5 8.5h5a2.5 2.5 0 010 5H8.5"/></svg>', label:"Cosmetics Shop", page:"shop"},
     {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>', label:"Wagers", page:"wagers"},
-    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>', label:"Bounty Board", page:"bounties"}
+    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>', label:"Bounty Board", page:"bounties"},
+    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>', label:"Rich List & Power-Ups", page:"richlist"}
   ];
   h += '<div style="padding:8px 16px">';
   links.forEach(function(l) {
