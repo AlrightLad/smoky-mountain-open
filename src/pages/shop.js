@@ -6,6 +6,7 @@
 
 var COSMETICS_CATALOG = [
   // ── PROFILE BORDERS (shown around avatar) ──
+  {id:"border_default_gold",cat:"border",name:"Classic Gold",      price:0,   desc:"The default Parbaugh gold — free for all members",  css:"2px solid #c9a84c",  preview:"#c9a84c"},
   {id:"border_bronze",     cat:"border", name:"Bronze Ring",       price:50,  desc:"Subtle bronze glow",       css:"2px solid #CD7F32",          preview:"#CD7F32"},
   {id:"border_silver",     cat:"border", name:"Silver Ring",       price:75,  desc:"Clean silver finish",       css:"2px solid #C0C0C0",          preview:"#C0C0C0"},
   {id:"border_gold",       cat:"border", name:"Gold Ring",         price:150, desc:"Premium gold band",         css:"3px solid #c9a84c",          preview:"#c9a84c"},
@@ -23,6 +24,7 @@ var COSMETICS_CATALOG = [
   {id:"border_shimmer",    cat:"border", name:"Diamond Sparkle",   price:1000,desc:"Premium animated diamond ring",       css:"3px solid #b9f2ff",   preview:"#b9f2ff"},
 
   // ── PROFILE BANNERS (gradient behind avatar on profile) ──
+  {id:"banner_default",    cat:"banner", name:"Theme Default",     price:0,   desc:"Uses your active theme gradient — free for all",  css:"linear-gradient(180deg,var(--grad-hero),var(--bg))", preview:"var(--gold)"},
   {id:"banner_sunset",     cat:"banner", name:"Sunset Fairway",    price:100, desc:"Warm orange-pink gradient", css:"linear-gradient(135deg,#ff6b35,#e8729a)", preview:"#ff6b35"},
   {id:"banner_ocean",      cat:"banner", name:"Ocean Drive",       price:100, desc:"Cool blue-teal sweep",      css:"linear-gradient(135deg,#2563eb,#06b6d4)", preview:"#2563eb"},
   {id:"banner_midnight",   cat:"banner", name:"Midnight Green",    price:100, desc:"Dark green Augusta vibe",   css:"linear-gradient(135deg,#064e3b,#059669)", preview:"#064e3b"},
@@ -93,7 +95,7 @@ Router.register("shop", function() {
   var items = COSMETICS_CATALOG.filter(function(c) { return c.cat === _shopCat; });
   h += '<div style="padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px">';
   items.forEach(function(item) {
-    var isOwned = owned.indexOf(item.id) !== -1;
+    var isOwned = owned.indexOf(item.id) !== -1 || item.price === 0;
     var canAfford = balance >= item.price;
     var equipped = currentProfile && currentProfile.equippedCosmetics && currentProfile.equippedCosmetics[item.cat] === item.id;
 
