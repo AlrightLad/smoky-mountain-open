@@ -1,0 +1,130 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEMES — Each [data-theme] block overrides :root tokens from base.css
+   Classic (default) uses :root as-is — no block needed here.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── CAMO / MALBON ── */
+[data-theme="camo"]{
+--bg:#12140e;--bg2:#181a12;--bg3:#222418;--bg4:#2e3122;
+--gold:#d4943c;--gold2:#b87a2a;--gold3:#e8a84e;--gold-rgb:212,148,60;
+--green:#1e2414;--green2:#2a3320;
+--cream:#e8e4d8;--cream-rgb:232,228,216;--muted:#7a7d6e;--muted2:#52553e;
+--red:#c45a3e;--red-rgb:196,90,62;--birdie:#6abf4a;--birdie-rgb:106,191,74;
+--card:#161812;--border:#262918;
+--blue:#7aaa5c;--blue-rgb:122,170,92;--pink:#c47a5c;--pink-rgb:196,122,92;
+--purple:#8a9a6a;--purple-rgb:138,154,106;--live:#6abf4a;--live-rgb:106,191,74;
+--alert:#c45a3e;--alert-rgb:196,90,62;--orange:#d4843c;--orange-rgb:212,132,60;
+--cal-event:#7a9a5c;--cal-range:#c47a5c;--cal-tee:#8aaa6a;
+--accept-bg:#1a2a12;--accept-border:#2a4a1e;
+--grad-hero:#161812;--grad-deep:#0e100a;--grad-card:#222418;--grad-trophy:#1a1c12;--grad-mid:#121408;
+--medal-gold:#d4943c;--medal-silver:#a8a898;--medal-bronze:#8a6a3a;
+--shadow-glow:0 0 12px rgba(212,148,60,.15)
+}
+
+/* ── MASTERS ── */
+[data-theme="masters"]{
+--bg:#071a10;--bg2:#0c2218;--bg3:#122e1e;--bg4:#1a3a28;
+--gold:#fdd835;--gold2:#d4b82a;--gold3:#ffe54a;--gold-rgb:253,216,53;
+--green:#0a2a16;--green2:#143a22;
+--cream:#f0efe8;--cream-rgb:240,239,232;--muted:#6a8a72;--muted2:#3e5a44;
+--red:#c62828;--red-rgb:198,40,40;--birdie:#66bb6a;--birdie-rgb:102,187,106;
+--card:#0a1e12;--border:#1a3422;
+--blue:#4caf50;--blue-rgb:76,175,80;--pink:#e57373;--pink-rgb:229,115,115;
+--purple:#81c784;--purple-rgb:129,199,132;--live:#66bb6a;--live-rgb:102,187,106;
+--alert:#c62828;--alert-rgb:198,40,40;--orange:#ff8f00;--orange-rgb:255,143,0;
+--cal-event:#4caf50;--cal-range:#e57373;--cal-tee:#66bb6a;
+--accept-bg:#0e2a14;--accept-border:#1e4a28;
+--grad-hero:#0c2218;--grad-deep:#04120a;--grad-card:#162e1e;--grad-trophy:#0e2618;--grad-mid:#081a0e;
+--medal-gold:#fdd835;--medal-silver:#b0bec5;--medal-bronze:#8d6e63;
+--shadow-glow:0 0 12px rgba(253,216,53,.12)
+}
+
+/* ── USGA / GHIN ── */
+[data-theme="usga"]{
+--bg:#0a1628;--bg2:#0e1c32;--bg3:#142640;--bg4:#1c3050;
+--gold:#c41e3a;--gold2:#a01830;--gold3:#e02848;--gold-rgb:196,30,58;
+--green:#0e2040;--green2:#182a4e;
+--cream:#f2f0ea;--cream-rgb:242,240,234;--muted:#6a7a96;--muted2:#3e4e68;
+--red:#c41e3a;--red-rgb:196,30,58;--birdie:#43a047;--birdie-rgb:67,160,71;
+--card:#0c1a2e;--border:#1a2e4a;
+--blue:#4a90d9;--blue-rgb:74,144,217;--pink:#e0607a;--pink-rgb:224,96,122;
+--purple:#7a8ec8;--purple-rgb:122,142,200;--live:#43a047;--live-rgb:67,160,71;
+--alert:#c41e3a;--alert-rgb:196,30,58;--orange:#e65100;--orange-rgb:230,81,0;
+--cal-event:#4a90d9;--cal-range:#e0607a;--cal-tee:#5a9ae0;
+--accept-bg:#0e2a1a;--accept-border:#1e4a2e;
+--grad-hero:#0e1c32;--grad-deep:#060e1c;--grad-card:#1a2e4a;--grad-trophy:#0c1828;--grad-mid:#081420;
+--medal-gold:#c41e3a;--medal-silver:#b0bec5;--medal-bronze:#8d6e63;
+--shadow-glow:0 0 12px rgba(196,30,58,.12)
+}
+
+/* ── DARK MODE (OLED) ── */
+[data-theme="dark"]{
+--bg:#000000;--bg2:#0a0a0a;--bg3:#141414;--bg4:#1e1e1e;
+--gold:#b89a3e;--gold2:#967e30;--gold3:#d4b44e;--gold-rgb:184,154,62;
+--green:#0a1a0a;--green2:#142414;
+--cream:#d8d6d0;--cream-rgb:216,214,208;--muted:#6a6a6a;--muted2:#3e3e3e;
+--red:#cf6050;--red-rgb:207,96,80;--birdie:#4aaa6a;--birdie-rgb:74,170,106;
+--card:#0a0a0a;--border:#1a1a1a;
+--blue:#5a8abf;--blue-rgb:90,138,191;--pink:#d47a9a;--pink-rgb:212,122,154;
+--purple:#8a7aaa;--purple-rgb:138,122,170;--live:#4aaa6a;--live-rgb:74,170,106;
+--alert:#cf6050;--alert-rgb:207,96,80;--orange:#d4843c;--orange-rgb:212,132,60;
+--cal-event:#5a8abf;--cal-range:#d47a9a;--cal-tee:#5a9abf;
+--accept-bg:#0a1a0e;--accept-border:#1a2e1a;
+--grad-hero:#060606;--grad-deep:#000000;--grad-card:#141414;--grad-trophy:#080808;--grad-mid:#040404;
+--medal-gold:#b89a3e;--medal-silver:#8a8a8a;--medal-bronze:#8a6a3a;
+--shadow-glow:0 0 12px rgba(184,154,62,.1)
+}
+
+/* ── LIGHT MODE ── */
+[data-theme="light"]{
+--bg:#f5f3ee;--bg2:#eceae4;--bg3:#e2e0da;--bg4:#d5d3cc;
+--gold:#8a6d1e;--gold2:#6e5616;--gold3:#a68428;--gold-rgb:138,109,30;
+--green:#d8e8d4;--green2:#c8dac4;
+--cream:#1a1a18;--cream-rgb:26,26,24;--muted:#6a6860;--muted2:#9a988e;
+--red:#c44030;--red-rgb:196,64,48;--birdie:#2e8a4a;--birdie-rgb:46,138,74;
+--card:#ffffff;--border:#d8d6ce;
+--blue:#2a6aaa;--blue-rgb:42,106,170;--pink:#c4506a;--pink-rgb:196,80,106;
+--purple:#6a5aaa;--purple-rgb:106,90,170;--live:#2e8a4a;--live-rgb:46,138,74;
+--alert:#c44030;--alert-rgb:196,64,48;--orange:#c46a1e;--orange-rgb:196,106,30;
+--cal-event:#2a6aaa;--cal-range:#c4506a;--cal-tee:#3a7abb;
+--accept-bg:#d4ead8;--accept-border:#a4c4a8;
+--grad-hero:#eceae4;--grad-deep:#f5f3ee;--grad-card:#e2e0da;--grad-trophy:#eae8e2;--grad-mid:#f0eee8;
+--medal-gold:#8a6d1e;--medal-silver:#888888;--medal-bronze:#7a5a2a;
+--shadow-sm:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 2px 8px rgba(0,0,0,.1);--shadow-lg:0 4px 16px rgba(0,0,0,.12);--shadow-glow:0 0 12px rgba(138,109,30,.1)
+}
+
+/* ── AZALEA ── */
+[data-theme="azalea"]{
+--bg:#0e1118;--bg2:#131722;--bg3:#1a1f2c;--bg4:#212738;
+--gold:#e8729a;--gold2:#c45a7e;--gold3:#f48eb2;--gold-rgb:232,114,154;
+--green:#1a2840;--green2:#253a58;
+--cream:#f0efe8;--cream-rgb:240,239,232;--muted:#7a7e8a;--muted2:#484d5c;
+--red:#d4604e;--red-rgb:212,96,78;--birdie:#4ec97a;--birdie-rgb:78,201,122;
+--card:#121620;--border:#1e2333;
+--blue:#7aadcf;--blue-rgb:122,173,207;--pink:#e8729a;--pink-rgb:232,114,154;
+--purple:#b48ad4;--purple-rgb:180,138,212;--live:#4ec97a;--live-rgb:78,201,122;
+--alert:#d4604e;--alert-rgb:212,96,78;--orange:#f0946a;--orange-rgb:240,148,106;
+--cal-event:#7aadcf;--cal-range:#e8729a;--cal-tee:#7ac4cf;
+--accept-bg:#1a2a22;--accept-border:#2a4a38;
+--grad-hero:#111520;--grad-deep:#090d14;--grad-card:#1a1e2e;--grad-trophy:#121628;--grad-mid:#0e1118;
+--medal-gold:#e8729a;--medal-silver:#C0C0C0;--medal-bronze:#CD7F32;
+--shadow-glow:0 0 12px rgba(232,114,154,.12)
+}
+
+/* ── SUNDAY RED (Champion Red) ── */
+[data-theme="sundayred"]{
+--bg:#10080a;--bg2:#1a0e12;--bg3:#241418;--bg4:#301c22;
+--gold:#d4243c;--gold2:#b01c30;--gold3:#e83848;--gold-rgb:212,36,60;
+--green:#1a1014;--green2:#2a1820;
+--cream:#f0e8e8;--cream-rgb:240,232,232;--muted:#8a7478;--muted2:#5c4448;
+--red:#d4243c;--red-rgb:212,36,60;--birdie:#4ec97a;--birdie-rgb:78,201,122;
+--card:#140a0e;--border:#2a1820;
+--blue:#6a9ac4;--blue-rgb:106,154,196;--pink:#d4607a;--pink-rgb:212,96,122;
+--purple:#9a7aaa;--purple-rgb:154,122,170;--live:#4ec97a;--live-rgb:78,201,122;
+--alert:#d4243c;--alert-rgb:212,36,60;--orange:#d46a3c;--orange-rgb:212,106,60;
+--cal-event:#6a9ac4;--cal-range:#d4607a;--cal-tee:#6aaac4;
+--accept-bg:#0e1a12;--accept-border:#1e2e22;
+--grad-hero:#140a0e;--grad-deep:#0a0408;--grad-card:#241418;--grad-trophy:#180c10;--grad-mid:#0e060a;
+--medal-gold:#d4243c;--medal-silver:#9a8a8a;--medal-bronze:#8a5a3a;
+--shadow-glow:0 0 12px rgba(212,36,60,.12)
+}

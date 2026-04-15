@@ -87,7 +87,7 @@ export default defineConfig({
     assetsDir: 'assets',
     cssCodeSplit: false,
     rollupOptions: {
-      input: resolve(__dirname, 'app.html')
+      input: resolve(__dirname, 'index.html')
     }
   }
 });

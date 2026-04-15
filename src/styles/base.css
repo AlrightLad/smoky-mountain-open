@@ -1,0 +1,136 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   BASE — Resets, root tokens, typography, spacing, elevation, utilities,
+   responsive breakpoints. This is the foundation layer.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap');
+
+/* ── Reset ── */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--cream);min-height:100vh;min-height:100dvh;max-width:680px;margin:0 auto;overflow-x:hidden;-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
+input[type=date]{-webkit-appearance:none;appearance:none;min-width:0;font-size:14px}
+input[type=date]::-webkit-date-and-time-value{text-align:left}
+input,select,textarea{font-family:inherit}
+select{-webkit-appearance:none;appearance:none}
+button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
+
+/* ── Root tokens (Classic theme defaults) ── */
+:root{
+/* ── Core palette ── */
+--bg:#0e1118;--bg2:#131722;--bg3:#1a1f2c;--bg4:#212738;
+--gold:#c9a84c;--gold2:#a68b3a;--gold3:#dfc06a;
+--green:#1a2840;--green2:#253a58;
+--cream:#eae8e0;--muted:#7a7e8a;--muted2:#484d5c;
+--red:#d4604e;--birdie:#4ec97a;--card:#121620;--border:#1e2333;
+/* ── RGB channels (for alpha compositing) ── */
+--gold-rgb:201,168,76;--red-rgb:212,96,78;--birdie-rgb:78,201,122;
+--cream-rgb:234,232,224;--bg-rgb:14,17,24;--border-rgb:30,35,51;
+/* ── Semantic accent colors ── */
+--blue:#60a5fa;--blue-rgb:96,165,250;
+--pink:#f472b6;--pink-rgb:244,114,182;
+--purple:#a78bfa;--purple-rgb:167,139,250;
+--live:#4ade80;--live-rgb:74,222,128;
+--alert:#e53935;--alert-rgb:229,57,53;
+--orange:#f97316;--orange-rgb:249,115,22;
+/* ── Calendar category colors ── */
+--cal-event:#6a8ac9;--cal-range:#e879a8;--cal-tee:#5b9bd5;
+/* ── Green tint (accept/success backgrounds) ── */
+--accept-bg:#1a3a25;--accept-border:#2a6a3a;
+/* ── Gradient stops (theme-able) ── */
+--grad-hero:#111520;--grad-deep:#090d14;--grad-card:#1a1e30;--grad-trophy:#151929;--grad-mid:#0f121c;
+/* ── Medal colors ── */
+--medal-gold:#c9a84c;--medal-silver:#C0C0C0;--medal-bronze:#CD7F32;
+/* ── Spacing scale (4px base) ── */
+--sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:20px;--sp-6:24px;--sp-8:32px;--sp-10:40px;--sp-12:48px;
+/* ── Typography scale ── */
+--text-2xs:8px;--text-xs:9px;--text-sm:10px;--text-md:11px;--text-base:12px;--text-lg:13px;--text-xl:14px;--text-2xl:16px;--text-3xl:18px;--text-4xl:22px;--text-5xl:28px;
+/* ── Elevation ── */
+--shadow-sm:0 1px 2px rgba(0,0,0,.2);--shadow-md:0 2px 8px rgba(0,0,0,.25);--shadow-lg:0 4px 16px rgba(0,0,0,.4);--shadow-glow:0 0 12px rgba(var(--gold-rgb),.15);
+/* ── Border radius scale ── */
+--radius:6px;--radius-sm:4px;--radius-md:6px;--radius-lg:8px;--radius-xl:12px;--radius-2xl:16px;--radius-full:9999px
+}
+
+/* ── Hidden utility ── */
+.hidden{display:none!important}
+
+/* ── Utility classes ── */
+.flex{display:flex}.flex-col{display:flex;flex-direction:column}.flex-between{display:flex;justify-content:space-between;align-items:center}.flex-center{display:flex;align-items:center;justify-content:center}
+.gap-4{gap:4px}.gap-6{gap:6px}.gap-8{gap:8px}.gap-12{gap:12px}
+.p-16{padding:0 16px}.py-8{padding:8px 0}.py-12{padding:12px 0}
+.text-xs{font-size:9px}.text-sm{font-size:10px}.text-md{font-size:12px}.text-lg{font-size:14px}
+.text-muted{color:var(--muted)}.text-muted2{color:var(--muted2)}.text-gold{color:var(--gold)}.text-cream{color:var(--cream)}
+.font-bold{font-weight:600}.font-heavy{font-weight:700}
+.uppercase{text-transform:uppercase;letter-spacing:1px}
+.truncate{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shrink-0{flex-shrink:0}
+
+/* ── Global touch optimization ── */
+button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-rsvp-btn,.nav button,.ql,.dm-list-item,.cal-day{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE — Tablet + Desktop breakpoints
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (min-width: 768px) {
+  body{max-width:960px;font-size:15px}
+  .hero h1{font-size:28px}
+  .hero{padding:48px 32px 32px}
+  .hero-logo{width:100px;height:100px;border-radius:24px}
+  .sh{padding:16px 24px}
+  .sh h2{font-size:22px}
+  .sec-head{padding:12px 24px 8px}
+  .nav button{font-size:11px;padding:18px 20px;letter-spacing:1.5px}
+  .card{margin-left:24px;margin-right:24px}
+  .qlinks{padding:0 24px;gap:10px}
+  .btn,.btn-sm{font-size:12px;padding:11px 18px}
+  .auth-screen{padding:40px}
+  .auth-title{font-size:28px}
+  .auth-sub{font-size:14px}
+  #profileBar{padding:12px 24px}
+  .footer{font-size:11px;padding:24px 24px 32px}
+  .notif-panel{width:400px}
+  .trophy-header{padding:28px 24px}
+  .trophy-level{font-size:56px}
+  .ach-grid{grid-template-columns:repeat(4,1fr);padding:0 24px}
+  .ach-cat-head{padding-left:24px;padding-right:24px}
+  .ach-card{padding:16px 10px}
+  .stat-box{padding:14px 8px}
+  .est{font-size:12px}
+  .ff-input,.ff select{font-size:14px;padding:12px 14px}
+  .chat-input-row{padding:10px 24px}
+  .chat-input-row input{font-size:14px}
+  .member-row{padding:14px 24px}
+  .empty{padding:32px 24px}
+  .title-row{margin-left:24px;margin-right:24px}
+  .hcap-box{margin:0 24px 16px}
+  .hof-card{margin:0 24px 10px}
+  .course-banner{margin:0 24px}
+  .home-actions,.motivation-wrap{margin-left:24px!important;margin-right:24px!important}
+  .section{padding-left:24px;padding-right:24px}
+  .home-wrap{padding:0 24px}
+}
+@media (min-width: 1024px) {
+  body{max-width:1100px}
+  .hero{padding:56px 40px 36px}
+  .hero h1{font-size:32px}
+  .hero-logo{width:120px;height:120px}
+  .sh{padding:16px 32px}
+  .sec-head{padding:12px 32px 8px}
+  .card{margin-left:32px;margin-right:32px}
+  .qlinks{padding:0 32px;gap:12px}
+  .ach-grid{grid-template-columns:repeat(5,1fr);padding:0 32px}
+  .ach-cat-head{padding-left:32px;padding-right:32px}
+  #profileBar{padding:14px 32px}
+  .member-row{padding:14px 32px}
+  .chat-input-row{padding:10px 32px}
+  .hcap-box{margin:0 32px 16px}
+  .hof-card{margin:0 32px 10px}
+  .course-banner{margin:0 32px}
+  .title-row{margin-left:32px;margin-right:32px}
+  .empty{padding:32px 32px}
+  .home-actions,.motivation-wrap{margin-left:32px!important;margin-right:32px!important}
+  .section{padding-left:32px;padding-right:32px}
+  .home-wrap{padding:0 32px}
+}
