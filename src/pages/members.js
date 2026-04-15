@@ -343,11 +343,11 @@ function renderMemberDetailWithData(p) {
 
   // ── XP LEVEL BAR (compact) ──
   var pct = Math.min(100, Math.round(((lvl.xp - lvl.currentLevelXp) / Math.max(1, lvl.nextLevelXp - lvl.currentLevelXp)) * 100));
-  h += '<div style="padding:4px 16px 12px;cursor:pointer" onclick="Router.go(\'trophyroom\',{id:\'' + pid + '\'})">';
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;flex-wrap:wrap;gap:2px">';
-  h += '<div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.3px;white-space:nowrap">Lv. ' + lvl.level + ' · ' + lvl.name + '</div>';
-  h += '<div style="font-size:10px;color:var(--muted);white-space:nowrap">' + lvl.xp.toLocaleString() + ' XP <span style="font-size:9px;color:var(--muted2)">→ Trophies</span></div></div>';
-  h += '<div style="height:4px;background:var(--bg3);border-radius:2px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:2px;transition:width .4s"></div></div>';
+  h += '<div style="padding:8px 16px 14px;cursor:pointer;border-bottom:1px solid var(--border)" onclick="Router.go(\'trophyroom\',{id:\'' + pid + '\'})">';
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:4px">';
+  h += '<div style="font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.3px">Lv. ' + lvl.level + ' · ' + lvl.name + '</div>';
+  h += '<div style="font-size:10px;color:var(--muted)">' + lvl.xp.toLocaleString() + ' XP <span style="color:var(--muted2)">→ Trophies</span></div></div>';
+  h += '<div style="height:5px;background:var(--bg3);border-radius:3px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--gold2),var(--gold3));border-radius:3px;transition:width .4s"></div></div>';
   h += '</div>';
 
   // ── PARCOIN WALLET ──
