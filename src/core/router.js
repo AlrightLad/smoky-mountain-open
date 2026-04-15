@@ -1490,7 +1490,7 @@ function loadHomeActivityFeed() {
       return;
     }
     items.sort(function(a,b){return (b.ts||0)-(a.ts||0)});
-    var h = '<div class="card" style="max-height:420px;overflow-y:auto;-webkit-overflow-scrolling:touch">';
+    var h = '<div class="card" style="max-height:600px;overflow-y:auto;-webkit-overflow-scrolling:touch">';
     items.forEach(function(a) { h += renderFeedItem(a); });
     h += '</div>';
     el.innerHTML = h;

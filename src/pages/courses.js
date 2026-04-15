@@ -19,45 +19,30 @@ Router.register("courses", function(params) {
     var roundsHere = PB.getCourseRounds(c.name);
     var stars = c.reviews && c.reviews.length ? Math.round(c.reviews.reduce(function(a, r) { return a + r.rating; }, 0) / c.reviews.length * 10) / 10 : null;
     
-    // Compute stacked averages: front 9, back 9, full 18
-    var f9scores = [], b9scores = [], full18scores = [];
-    roundsHere.forEach(function(r) {
-      if (r.format === "scramble" || r.format === "scramble4") return; // Skip scramble team scores
+    // Compute best scores: front 9, back 9, full 18 from holesMode
+    var bestF9 = null, bestB9 = null, best18 = null;
+    var indivRounds = roundsHere.filter(function(r) { return r.format !== "scramble" && r.format !== "scramble4" && r.score; });
+    indivRounds.forEach(function(r) {
       var is9 = r.holesPlayed && r.holesPlayed <= 9;
-      if (!is9 && r.score) {
-        full18scores.push(r.score);
-        // Derive front/back from hole-by-hole if available
-        var hScores = r.holeScores || r.scores || [];
-        if (hScores.length >= 18) {
-          var fs = 0, bs = 0;
-          for (var si = 0; si < 9; si++) fs += (parseInt(hScores[si]) || 0);
-          for (var si2 = 9; si2 < 18; si2++) bs += (parseInt(hScores[si2]) || 0);
-          if (fs > 0) f9scores.push(fs);
-          if (bs > 0) b9scores.push(bs);
-        }
-      } else if (is9 && r.score) {
-        if (r.holesMode === "back9") b9scores.push(r.score);
-        else f9scores.push(r.score);
+      if (is9) {
+        if (r.holesMode === "back9") { if (bestB9 === null || r.score < bestB9) bestB9 = r.score; }
+        else { if (bestF9 === null || r.score < bestF9) bestF9 = r.score; }
+      } else {
+        if (best18 === null || r.score < best18) best18 = r.score;
       }
     });
-    var avgF9 = f9scores.length ? Math.round(f9scores.reduce(function(a,b){return a+b;},0) / f9scores.length) : null;
-    var avgB9 = b9scores.length ? Math.round(b9scores.reduce(function(a,b){return a+b;},0) / b9scores.length) : null;
-    var avg18 = full18scores.length ? Math.round(full18scores.reduce(function(a,b){return a+b;},0) / full18scores.length * 10) / 10 : null;
     
     h += '<div class="card course-dir-item" data-name="' + escHtml(c.name.toLowerCase()) + '" data-loc="' + escHtml((c.loc||"").toLowerCase()) + '" onclick="Router.go(\'courses\',{id:\'' + c.id + '\'})">';
     var thumbSrc = photoCache["course:" + c.id] || c.photo || '';
     h += '<div class="course-row"><div class="c-thumb">' + (thumbSrc ? '<img alt="" src="' + thumbSrc + '" onerror="this.src=COURSE_DEFAULT_IMG">' : '<img alt="" src="' + COURSE_DEFAULT_IMG + '">') + '</div>';
     h += '<div class="c-info"><div class="c-name">' + c.name + '</div><div class="c-loc">' + c.loc + ' · ' + c.rating + '/' + c.slope + '</div>';
-    h += '<div class="c-meta">' + (stars ? '' + stars + '/5 · ' : '') + roundsHere.length + ' rounds</div>';
-    // Stacked averages
-    var avgParts = [];
-    if (avgF9 !== null) avgParts.push('F9: ' + avgF9);
-    else avgParts.push('F9: --');
-    if (avgB9 !== null) avgParts.push('B9: ' + avgB9);
-    else avgParts.push('B9: --');
-    if (avg18 !== null) avgParts.push('18: ' + avg18);
-    else avgParts.push('18: --');
-    h += '<div style="font-size:10px;color:var(--muted);margin-top:2px;display:flex;gap:8px">' + avgParts.map(function(p){var val=p.split(": ")[1];var lbl=p.split(": ")[0];return '<span style="color:'+(val==="--"?"var(--muted2)":"var(--cream)")+'"><span style="color:var(--muted)">' + lbl + '</span> ' + val + '</span>';}).join('') + '</div>';
+    h += '<div class="c-meta">' + (stars ? '' + stars + '/5 · ' : '') + indivRounds.length + ' round' + (indivRounds.length !== 1 ? 's' : '') + '</div>';
+    // Best scores per mode — only show if at least one exists
+    var bestParts = [];
+    if (bestF9 !== null) bestParts.push('<span style="color:var(--cream)"><span style="color:var(--muted)">F9</span> ' + bestF9 + '</span>');
+    if (bestB9 !== null) bestParts.push('<span style="color:var(--cream)"><span style="color:var(--muted)">B9</span> ' + bestB9 + '</span>');
+    if (best18 !== null) bestParts.push('<span style="color:var(--cream)"><span style="color:var(--muted)">18</span> ' + best18 + '</span>');
+    if (bestParts.length) h += '<div style="font-size:10px;margin-top:2px;display:flex;gap:8px">' + bestParts.join('') + '</div>';
     h += '</div></div></div>';
   });
   h += '<div style="text-align:center;padding:12px;font-size:10px;color:var(--muted2)">' + courses.length + ' courses</div>';

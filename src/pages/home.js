@@ -43,6 +43,8 @@ Router.register("home", function() {
   var myIndividualRounds = myRounds.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4";});
   var myFull18 = myIndividualRounds.filter(function(r){return !r.holesPlayed || r.holesPlayed >= 18;});
   var myBest = myFull18.length ? Math.min.apply(null, myFull18.map(function(r){return r.score||999})) : null;
+  var myBestRound = myBest ? myFull18.find(function(r){return r.score===myBest}) : null;
+  var myBestRoundId = myBestRound ? myBestRound.id : null;
   var myHcap = myIndividualRounds.length >= 3 ? PB.calcHandicap(myRounds) : null;
 
   h += '<div style="padding:20px 16px 0;text-align:center;background:linear-gradient(180deg,var(--grad-hero),var(--bg))">';
@@ -60,13 +62,13 @@ Router.register("home", function() {
   h += '<div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Handicap</div></div>';
   h += '<div style="text-align:center"><div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--cream)" data-count="' + myIndividualRounds.length + '">' + myIndividualRounds.length + '</div>';
   h += '<div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Rounds</div></div>';
-  h += '<div style="text-align:center">';
+  h += '<div style="text-align:center;' + (myBestRoundId ? 'cursor:pointer' : '') + '"' + (myBestRoundId ? ' onclick="Router.go(\'rounds\',{roundId:\'' + myBestRoundId + '\'})"' : '') + '>';
   if (myBest && myBest < 999) {
     h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--birdie)" data-count="' + myBest + '">' + myBest + '</div>';
   } else {
     h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--muted2)">—</div>';
   }
-  h += '<div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Best</div></div>';
+  h += '<div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Best' + (myBestRoundId ? ' <svg viewBox="0 0 12 12" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg>' : '') + '</div></div>';
   h += '</div></div>';
 
   // 0. Who's Online

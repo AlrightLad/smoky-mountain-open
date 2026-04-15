@@ -68,7 +68,7 @@ Router.register("calendar", function() {
     var dH='';
     if(dots.length===1)dH='<div style="width:4px;height:4px;border-radius:50%;background:'+dots[0]+';margin:1px auto 0"></div>';
     else if(dots.length>1){dH='<div style="display:flex;justify-content:center;gap:2px;margin-top:1px">';dots.slice(0,3).forEach(function(c){dH+='<div style="width:3px;height:3px;border-radius:50%;background:'+c+'"></div>';});dH+='</div>';}
-    h+='<div onclick="selectCalDay(\''+ds+'\')" style="padding:6px 0;font-size:12px;font-weight:'+(isT?"700":"400")+';color:'+cl+';background:'+bg+';border-radius:6px;cursor:pointer;line-height:1;text-align:center;position:relative">'+d+dH+'</div>';
+    h+='<div class="cal-day'+(isT?' today':'')+(isS?' selected':'')+'" onclick="selectCalDay(\''+ds+'\')" style="color:'+cl+';background:'+bg+'">'+d+dH+'</div>';
   }
   h += '</div>';
 

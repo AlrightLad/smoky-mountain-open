@@ -64,12 +64,12 @@
    NAV
    ═══════════════════════════════════════════════════════════════════════════ */
 .nav{display:none}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--bg);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:stretch;padding:4px 0 calc(env(safe-area-inset-bottom,8px) + 4px);height:auto;min-height:56px}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--bg);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:stretch;padding:6px 0 calc(env(safe-area-inset-bottom,20px) + 6px);padding-bottom:calc(max(env(safe-area-inset-bottom,20px),20px) + 6px);height:auto;min-height:64px}
 .bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--muted);font-size:9px;font-weight:500;letter-spacing:.3px;padding:8px 0 4px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .15s}
 .bottom-nav button.a{color:var(--gold)}
 .bottom-nav button.a svg{stroke:var(--gold)}
 .bottom-nav button svg{width:22px;height:22px;stroke:var(--muted);fill:none;stroke-width:1.5;transition:stroke .15s}
-#mainApp{padding-bottom:90px}
+#mainApp{padding-bottom:100px}
 .nav::-webkit-scrollbar{display:none}
 /* OLD NAV */ .nav button{flex:0 0 auto;padding:14px 10px;background:0 0;color:var(--muted2);border:none;border-bottom:2px solid transparent;font:600 11px/1 'Inter',sans-serif;cursor:pointer;white-space:nowrap;text-transform:uppercase;letter-spacing:.6px;transition:color .1s,border-color .1s;text-align:center;touch-action:manipulation;-webkit-tap-highlight-color:rgba(var(--gold-rgb),.1);min-height:44px}
 /* OLD NAV */ .nav button:hover{color:var(--cream)}

@@ -38,15 +38,15 @@ function renderWagerList() {
 
   // Async load wagers from Firestore
   if (db && uid) {
-    db.collection("wagers").where("status", "in", ["pending", "accepted"]).orderBy("createdAt", "desc").limit(30).get().then(function(snap) {
+    db.collection("wagers").orderBy("createdAt", "desc").limit(50).get().then(function(snap) {
       var wagers = [];
       snap.forEach(function(doc) { wagers.push(Object.assign({_id: doc.id}, doc.data())); });
-      // Filter to wagers involving this user
-      var mine = wagers.filter(function(w) { return w.fromUid === uid || w.toUid === uid; });
+      // Filter to active wagers involving this user
+      var mine = wagers.filter(function(w) { return (w.status === "pending" || w.status === "accepted") && (w.fromUid === uid || w.toUid === uid); });
       var el = document.getElementById("wager-list");
       if (!el) return;
       if (!mine.length) {
-        el.innerHTML = '<div class="empty" style="padding:24px"><div style="font-size:28px;margin-bottom:6px"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--muted)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8.5 8.5h5a2.5 2.5 0 010 5H8.5"/></svg></div><div class="empty-text">No active wagers</div><div style="font-size:10px;color:var(--muted2);margin-top:4px">Challenge a friend to a head-to-head bet</div></div>';
+        el.innerHTML = '<div class="empty" style="padding:32px"><div style="font-size:28px;margin-bottom:6px"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div><div class="empty-text" style="color:var(--gold)">Ready to put your coins on the line?</div><div style="font-size:10px;color:var(--muted2);margin-top:4px">Challenge a friend and bet ParCoins on who plays better</div><button class="btn green" onclick="Router.go(\'wagers\',{create:true})" style="margin-top:12px;font-size:12px">Start a Wager</button></div>';
         // Show completed wagers below
         _loadCompletedWagers(uid, el);
         return;
@@ -56,9 +56,9 @@ function renderWagerList() {
       el.innerHTML = '<div class="section"><div class="sec-head"><span class="sec-title">Active wagers</span></div>' + wh + '</div>';
       _loadCompletedWagers(uid, el);
     }).catch(function(err) {
-      var el = document.getElementById("wager-list");
-      if (el) el.innerHTML = '<div style="padding:16px;font-size:12px;color:var(--muted)">Failed to load wagers</div>';
       pbWarn("[Wagers]", err.message);
+      var el = document.getElementById("wager-list");
+      if (el) el.innerHTML = '<div class="empty" style="padding:32px"><div style="font-size:28px;margin-bottom:6px"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div><div class="empty-text" style="color:var(--gold)">Ready to put your coins on the line?</div><div style="font-size:10px;color:var(--muted2);margin-top:4px">Challenge a friend and bet ParCoins on who plays better</div><button class="btn green" onclick="Router.go(\'wagers\',{create:true})" style="margin-top:12px;font-size:12px">Start a Wager</button></div>';
     });
   }
 }

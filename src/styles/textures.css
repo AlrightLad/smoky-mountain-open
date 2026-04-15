@@ -24,56 +24,56 @@ body>*{position:relative;z-index:1}
 /* ── Classic (gold weave) ── */
 [data-theme="classic"] body::before,
 :root:not([data-theme]) body::before{
-  background-image:image-set(url('/textures/classic-tile.webp') type('image/webp'),url('/textures/classic-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/classic-tile.jpg');
   opacity:.04;
   mix-blend-mode:overlay
 }
 
 /* ── Camo (woodland leaves) ── */
 [data-theme="camo"] body::before{
-  background-image:image-set(url('/textures/camo-tile.webp') type('image/webp'),url('/textures/camo-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/camo-tile.jpg');
   opacity:.06;
   mix-blend-mode:overlay
 }
 
 /* ── Masters (green leather) ── */
 [data-theme="masters"] body::before{
-  background-image:image-set(url('/textures/masters-tile.webp') type('image/webp'),url('/textures/masters-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/masters-tile.jpg');
   opacity:.05;
   mix-blend-mode:soft-light
 }
 
 /* ── Azalea (pink flowers) ── */
 [data-theme="azalea"] body::before{
-  background-image:image-set(url('/textures/azalea-tile.webp') type('image/webp'),url('/textures/azalea-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/azalea-tile.jpg');
   opacity:.04;
   mix-blend-mode:overlay
 }
 
 /* ── USGA (navy stripes) ── */
 [data-theme="usga"] body::before{
-  background-image:image-set(url('/textures/usga-tile.webp') type('image/webp'),url('/textures/usga-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/usga-tile.jpg');
   opacity:.05;
   mix-blend-mode:overlay
 }
 
 /* ── Sunday Red / Champion Red (red leather) ── */
 [data-theme="sundayred"] body::before{
-  background-image:image-set(url('/textures/champion-tile.webp') type('image/webp'),url('/textures/champion-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/champion-tile.jpg');
   opacity:.05;
   mix-blend-mode:soft-light
 }
 
 /* ── Dark (carbon fiber) ── */
 [data-theme="dark"] body::before{
-  background-image:image-set(url('/textures/dark-tile.webp') type('image/webp'),url('/textures/dark-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/dark-tile.jpg');
   opacity:.03;
   mix-blend-mode:overlay
 }
 
 /* ── Light (linen) ── */
 [data-theme="light"] body::before{
-  background-image:image-set(url('/textures/light-tile.webp') type('image/webp'),url('/textures/light-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/light-tile.jpg');
   opacity:.06;
   mix-blend-mode:multiply
 }
@@ -103,49 +103,49 @@ body>*{position:relative;z-index:1}
 /* Hero texture per theme */
 [data-theme="classic"] .hero::before,
 :root:not([data-theme]) .hero::before{
-  background-image:image-set(url('/textures/classic-tile.webp') type('image/webp'),url('/textures/classic-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/classic-tile.jpg');
   opacity:.07;
   mix-blend-mode:overlay
 }
 
 [data-theme="camo"] .hero::before{
-  background-image:image-set(url('/textures/camo-tile.webp') type('image/webp'),url('/textures/camo-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/camo-tile.jpg');
   opacity:.09;
   mix-blend-mode:overlay
 }
 
 [data-theme="masters"] .hero::before{
-  background-image:image-set(url('/textures/masters-tile.webp') type('image/webp'),url('/textures/masters-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/masters-tile.jpg');
   opacity:.08;
   mix-blend-mode:soft-light
 }
 
 [data-theme="azalea"] .hero::before{
-  background-image:image-set(url('/textures/azalea-tile.webp') type('image/webp'),url('/textures/azalea-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/azalea-tile.jpg');
   opacity:.06;
   mix-blend-mode:overlay
 }
 
 [data-theme="usga"] .hero::before{
-  background-image:image-set(url('/textures/usga-tile.webp') type('image/webp'),url('/textures/usga-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/usga-tile.jpg');
   opacity:.08;
   mix-blend-mode:overlay
 }
 
 [data-theme="sundayred"] .hero::before{
-  background-image:image-set(url('/textures/champion-tile.webp') type('image/webp'),url('/textures/champion-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/champion-tile.jpg');
   opacity:.07;
   mix-blend-mode:soft-light
 }
 
 [data-theme="dark"] .hero::before{
-  background-image:image-set(url('/textures/dark-tile.webp') type('image/webp'),url('/textures/dark-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/dark-tile.jpg');
   opacity:.05;
   mix-blend-mode:overlay
 }
 
 [data-theme="light"] .hero::before{
-  background-image:image-set(url('/textures/light-tile.webp') type('image/webp'),url('/textures/light-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/light-tile.jpg');
   opacity:.08;
   mix-blend-mode:multiply
 }
@@ -173,44 +173,44 @@ body>*{position:relative;z-index:1}
 
 [data-theme="classic"] .next-trip::before,
 :root:not([data-theme]) .next-trip::before{
-  background-image:image-set(url('/textures/classic-tile.webp') type('image/webp'),url('/textures/classic-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/classic-tile.jpg');
   opacity:.03
 }
 
 [data-theme="camo"] .next-trip::before{
-  background-image:image-set(url('/textures/camo-tile.webp') type('image/webp'),url('/textures/camo-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/camo-tile.jpg');
   opacity:.04
 }
 
 [data-theme="masters"] .next-trip::before{
-  background-image:image-set(url('/textures/masters-tile.webp') type('image/webp'),url('/textures/masters-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/masters-tile.jpg');
   opacity:.04;
   mix-blend-mode:soft-light
 }
 
 [data-theme="azalea"] .next-trip::before{
-  background-image:image-set(url('/textures/azalea-tile.webp') type('image/webp'),url('/textures/azalea-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/azalea-tile.jpg');
   opacity:.03
 }
 
 [data-theme="usga"] .next-trip::before{
-  background-image:image-set(url('/textures/usga-tile.webp') type('image/webp'),url('/textures/usga-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/usga-tile.jpg');
   opacity:.04
 }
 
 [data-theme="sundayred"] .next-trip::before{
-  background-image:image-set(url('/textures/champion-tile.webp') type('image/webp'),url('/textures/champion-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/champion-tile.jpg');
   opacity:.04;
   mix-blend-mode:soft-light
 }
 
 [data-theme="dark"] .next-trip::before{
-  background-image:image-set(url('/textures/dark-tile.webp') type('image/webp'),url('/textures/dark-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/dark-tile.jpg');
   opacity:.02
 }
 
 [data-theme="light"] .next-trip::before{
-  background-image:image-set(url('/textures/light-tile.webp') type('image/webp'),url('/textures/light-tile.jpg') type('image/jpeg'));
+  background-image:url('/textures/light-tile.jpg');
   opacity:.05;
   mix-blend-mode:multiply
 }

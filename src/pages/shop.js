@@ -12,6 +12,10 @@ var COSMETICS_CATALOG = [
   {id:"border_diamond",    cat:"border", name:"Diamond Ring",      price:300, desc:"Sparkling diamond edge",    css:"3px solid #b9f2ff",          preview:"#b9f2ff"},
   {id:"border_fire",       cat:"border", name:"Fire Ring",         price:200, desc:"Hot orange glow",           css:"3px solid #ff6b35",          preview:"#ff6b35"},
   {id:"border_emerald",    cat:"border", name:"Emerald Ring",      price:200, desc:"Deep green prestige",       css:"3px solid #50c878",          preview:"#50c878"},
+  {id:"border_rose",       cat:"border", name:"Rose Gold",         price:175, desc:"Elegant rose gold tone",    css:"3px solid #e8a0bf",          preview:"#e8a0bf"},
+  {id:"border_obsidian",   cat:"border", name:"Obsidian Edge",     price:250, desc:"Dark volcanic glass",       css:"3px solid #2d2d2d",          preview:"#555555"},
+  {id:"border_rainbow",    cat:"border", name:"Prismatic Ring",    price:400, desc:"Multicolor gradient ring",  css:"3px solid #ff6b6b",          preview:"#ff6b6b"},
+  {id:"border_platinum",   cat:"border", name:"Platinum Band",     price:350, desc:"Rare platinum finish",      css:"3px solid #e5e4e2",          preview:"#e5e4e2"},
 
   // ── PROFILE BANNERS (gradient behind avatar on profile) ──
   {id:"banner_sunset",     cat:"banner", name:"Sunset Fairway",    price:100, desc:"Warm orange-pink gradient", css:"linear-gradient(135deg,#ff6b35,#e8729a)", preview:"#ff6b35"},
@@ -19,12 +23,20 @@ var COSMETICS_CATALOG = [
   {id:"banner_midnight",   cat:"banner", name:"Midnight Green",    price:100, desc:"Dark green Augusta vibe",   css:"linear-gradient(135deg,#064e3b,#059669)", preview:"#064e3b"},
   {id:"banner_storm",      cat:"banner", name:"Thunder Storm",     price:150, desc:"Deep purple-gray power",    css:"linear-gradient(135deg,#581c87,#374151)", preview:"#581c87"},
   {id:"banner_gold_rush",  cat:"banner", name:"Gold Rush",         price:200, desc:"Rich gold gradient",        css:"linear-gradient(135deg,#92400e,#f59e0b)", preview:"#92400e"},
+  {id:"banner_pine",       cat:"banner", name:"Pine Forest",      price:125, desc:"Deep forest green fade",    css:"linear-gradient(135deg,#1a3a2a,#2d6a4f)", preview:"#1a3a2a"},
+  {id:"banner_crimson",    cat:"banner", name:"Crimson Tide",     price:150, desc:"Bold red-to-black power",   css:"linear-gradient(135deg,#991b1b,#1f1f1f)", preview:"#991b1b"},
+  {id:"banner_arctic",     cat:"banner", name:"Arctic Dawn",      price:125, desc:"Icy white-blue morning",    css:"linear-gradient(135deg,#e0f2fe,#7dd3fc)", preview:"#7dd3fc"},
+  {id:"banner_ember",      cat:"banner", name:"Ember Glow",       price:175, desc:"Warm amber to deep red",    css:"linear-gradient(135deg,#f59e0b,#b91c1c)", preview:"#f59e0b"},
 
   // ── CARD THEMES (how your rounds appear in the feed) ──
   {id:"card_neon",         cat:"card", name:"Neon Glow",           price:125, desc:"Bright accent border on your feed cards", css:"border-left:3px solid #4ade80",    preview:"#4ade80"},
   {id:"card_royal",        cat:"card", name:"Royal Purple",        price:125, desc:"Purple accent on your rounds",            css:"border-left:3px solid #a78bfa",    preview:"#a78bfa"},
   {id:"card_fire",         cat:"card", name:"Hot Shot",            price:150, desc:"Red-orange fire accent",                  css:"border-left:3px solid #ef4444",    preview:"#ef4444"},
-  {id:"card_ice",          cat:"card", name:"Ice Cold",            price:150, desc:"Cool blue frost accent",                  css:"border-left:3px solid #38bdf8",    preview:"#38bdf8"}
+  {id:"card_ice",          cat:"card", name:"Ice Cold",            price:150, desc:"Cool blue frost accent",                  css:"border-left:3px solid #38bdf8",    preview:"#38bdf8"},
+  {id:"card_gold",         cat:"card", name:"Gold Standard",      price:200, desc:"Gold accent for the elite",                css:"border-left:3px solid #c9a84c",    preview:"#c9a84c"},
+  {id:"card_stealth",      cat:"card", name:"Stealth Mode",       price:175, desc:"Dark charcoal accent — subtle flex",       css:"border-left:3px solid #374151",    preview:"#555555"},
+  {id:"card_birdie",       cat:"card", name:"Birdie Green",       price:125, desc:"Green accent for under-par energy",        css:"border-left:3px solid #22c55e",    preview:"#22c55e"},
+  {id:"card_sunset",       cat:"card", name:"Sunset Strip",       price:175, desc:"Warm amber accent on your rounds",         css:"border-left:3px solid #f97316",    preview:"#f97316"}
 ];
 
 var COSMETIC_CATS = {

@@ -193,8 +193,14 @@ function renderTeamDetail(teamId) {
   var matches = (team.matches || []).slice();
   // Also pull scramble rounds from the rounds collection that match this team's members
   var memberIds = team.members;
+  // Build full set of all known IDs for team members (UID, seed, claimedFrom)
+  var allMemberIds = [];
+  memberIds.forEach(function(mid) {
+    allMemberIds.push(mid);
+    try { var ids = PB.getAllPlayerIds(mid); ids.forEach(function(id) { if (allMemberIds.indexOf(id) === -1) allMemberIds.push(id); }); } catch(e) {}
+  });
   var roundsCol = PB.getRounds().filter(function(r) {
-    return (r.format === "scramble" || r.format === "scramble4") && memberIds.indexOf(r.player) !== -1;
+    return (r.format === "scramble" || r.format === "scramble4") && allMemberIds.indexOf(r.player) !== -1;
   });
   // Deduplicate — don't add a round that's already in matches (by course+date)
   var matchKeys = {};
