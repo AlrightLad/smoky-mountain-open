@@ -83,12 +83,42 @@ export default defineConfig({
   publicDir: 'public',
   plugins: [
     coreScriptsPlugin(),
-    // Remove crossorigin attribute from built HTML — GitHub Pages doesn't need it
-    // and it can cause issues with CSP
+    // Inline CSS into HTML — produces a single self-contained file
+    // like the original index.html. No external CSS to fail loading.
     {
-      name: 'remove-crossorigin',
-      transformIndexHtml: function(html) {
-        return html.replace(/ crossorigin/g, '');
+      name: 'inline-everything',
+      enforce: 'post',
+      generateBundle: function(options, bundle) {
+        var cssCode = '';
+        var jsEntryKey = null;
+        // Collect CSS and find the JS entry to remove
+        Object.keys(bundle).forEach(function(key) {
+          if (key.endsWith('.css')) {
+            cssCode += bundle[key].source;
+            delete bundle[key];
+          }
+          if (key.endsWith('.js') && bundle[key].type === 'chunk' && bundle[key].isEntry) {
+            jsEntryKey = key;
+          }
+        });
+        // Inline CSS into HTML, remove the JS module entry (our plugin handles JS)
+        Object.keys(bundle).forEach(function(key) {
+          if (key.endsWith('.html') && bundle[key].type === 'asset') {
+            var html = bundle[key].source;
+            // Remove external CSS link
+            html = html.replace(/<link rel="stylesheet"[^>]*>/g, '');
+            // Remove Vite JS module entry (our coreScriptsPlugin already inlines JS)
+            html = html.replace(/<script[^>]*type="module"[^>]*><\/script>/g, '');
+            html = html.replace(/<script type="module"[^>]*src="[^"]*"[^>]*><\/script>/g, '');
+            // Remove any crossorigin attributes
+            html = html.replace(/ crossorigin/g, '');
+            // Inject CSS as inline style tag right before </head>
+            html = html.replace('</head>', '<style>' + cssCode + '</style>\n</head>');
+            bundle[key].source = html;
+          }
+        });
+        // Remove the JS entry file from output (not needed — JS is inlined by plugin)
+        if (jsEntryKey) delete bundle[jsEntryKey];
       }
     }
   ],
@@ -98,13 +128,7 @@ export default defineConfig({
     cssCodeSplit: false,
     modulePreload: false,
     rollupOptions: {
-      input: resolve(__dirname, 'index.html'),
-      output: {
-        // Use predictable filenames instead of hashes for simpler debugging
-        entryFileNames: 'assets/app.js',
-        chunkFileNames: 'assets/[name].js',
-        assetFileNames: 'assets/[name][extname]'
-      }
+      input: resolve(__dirname, 'index.html')
     }
   }
 });
