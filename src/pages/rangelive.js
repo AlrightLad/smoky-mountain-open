@@ -30,6 +30,17 @@ Router.register("range", function() {
     h += '<button id="rangeVisBtn" onclick="rangeSessionPrivate=!rangeSessionPrivate;Router.go(\'range\')" style="background:' + (rangeSessionPrivate ? 'rgba(var(--red-rgb),.15)' : 'rgba(var(--birdie-rgb),.1)') + ';border:1px solid ' + (rangeSessionPrivate ? 'rgba(var(--red-rgb),.3)' : 'rgba(var(--birdie-rgb),.2)') + ';color:' + (rangeSessionPrivate ? 'var(--red)' : 'var(--birdie)') + ';font:600 10px/1 Inter,sans-serif;padding:6px 12px;border-radius:4px;cursor:pointer">' + (rangeSessionPrivate ? '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg> Private' : '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><circle cx="8" cy="8" r="6"/><path d="M8 5v6M5 8h6"/></svg> Public') + '</button>';
     h += '</div>';
 
+    // Caddie's practice plan suggestion
+    if (typeof caddieGeneratePracticePlan === "function" && currentUser) {
+      var _ppRounds = PB.getPlayerRounds(currentUser.uid);
+      var plan = caddieGeneratePracticePlan(_ppRounds);
+      if (plan) {
+        h += '<div style="margin:0 16px 12px;padding:12px;background:rgba(var(--birdie-rgb),.04);border:1px solid rgba(var(--birdie-rgb),.12);border-radius:var(--radius-lg)">';
+        h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><span style="font-size:12px">\u26f3</span><span style="font-size:10px;font-weight:700;color:var(--birdie)">Caddie\u2019s Plan: ' + plan.title + '</span></div>';
+        h += '<div style="font-size:11px;color:var(--cream);line-height:1.5">' + plan.plan + '</div></div>';
+      }
+    }
+
     // Start button — big, prominent
     h += '<div style="padding:20px 16px 24px"><button class="btn full green" style="font-size:16px;padding:18px;letter-spacing:.5px;font-weight:700" onclick="beginRangeTimer()">';
     h += '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:8px"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg>';

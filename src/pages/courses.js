@@ -612,6 +612,18 @@ function renderCourseDetail(courseId) {
     h += '</div></div></div>';
   }
 
+  // ── Caddie's Course Insights ──
+  if (typeof caddieCourseInsights === "function") {
+    var cInsights = caddieCourseInsights(c.name, PB.getRounds());
+    // Add personal scouting if player has rounds here
+    if (currentUser && typeof caddieScoutingReport === "function") {
+      var myRds = PB.getPlayerRounds(currentUser.uid);
+      var scout = caddieScoutingReport(c.name, myRds);
+      cInsights = cInsights.concat(scout);
+    }
+    if (cInsights.length) h += '<div class="section">' + renderCaddieInsights(cInsights, 5) + '</div>';
+  }
+
   // ── Reviews (enhanced with stars + aggregate) ──
   var reviews = c.reviews || [];
   var avgRating = reviews.length ? Math.round(reviews.reduce(function(a,r){return a+(r.rating||0)},0) / reviews.length * 10) / 10 : null;

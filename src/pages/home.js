@@ -88,6 +88,23 @@ Router.register("home", function() {
 
   h += '<div id="onlineSection"></div>';
 
+  // Trend alerts from The Caddie
+  if (typeof caddieTrendAlerts === "function" && myIndividualRounds.length >= 3) {
+    var trendAlerts = caddieTrendAlerts(myRounds);
+    if (trendAlerts.length) {
+      h += '<div style="margin:0 0 8px">';
+      trendAlerts.forEach(function(alert) {
+        var alertColor = alert.type === "positive" ? "var(--birdie)" : alert.type === "negative" ? "var(--gold)" : "var(--cream)";
+        h += '<div style="padding:10px 14px;margin-bottom:4px;background:rgba(var(--birdie-rgb),.03);border-left:3px solid ' + alertColor + ';border-radius:0 var(--radius) var(--radius) 0">';
+        h += '<div style="display:flex;align-items:center;gap:6px">';
+        h += '<span style="font-size:10px">\u26f3</span>';
+        h += '<span style="font-size:11px;color:var(--cream);line-height:1.4">' + alert.text + '</span>';
+        h += '</div></div>';
+      });
+      h += '</div>';
+    }
+  }
+
   // Tip of the Day
   h += '<div id="tipOfDay"></div>';
 

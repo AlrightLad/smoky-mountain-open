@@ -104,6 +104,21 @@ function renderRoundDetail(roundId) {
   h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(var(--red-rgb),.15);color:var(--red)" onclick="(function(){PB.deleteRound(\'' + roundId + '\');if(db)db.collection(\'rounds\').doc(\'' + roundId + '\').delete().catch(function(){});setTimeout(function(){persistPlayerStats(currentUser?currentUser.uid:null);},1500);Router.toast(\'Round deleted\');Router.go(\'rounds\');})()">Delete</button></div></div>';
   h += '<button class="btn full" style="background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);color:var(--red)" onclick="document.getElementById(\'del-confirm\').style.display=\'block\'">Delete round</button></div>';
 
+  // ── The Caddie's Take (post-round analysis) ──
+  if (typeof caddieAnalyzeRound === "function" && round.holeScores && round.holeScores.length >= 9) {
+    var playerRds = round.player ? PB.getPlayerRounds(round.player) : [];
+    var caddieInsights = caddieAnalyzeRound(round, playerRds);
+    if (caddieInsights.length) h += '<div class="section">' + renderCaddieInsights(caddieInsights, 6) + '</div>';
+  }
+
+  // Story display
+  if (round.story) {
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Round Story</span></div>';
+    h += '<div class="card"><div style="padding:14px 16px"><div style="font-size:12px;color:var(--cream);line-height:1.6;font-style:italic">\u201c' + escHtml(round.story) + '\u201d</div>';
+    if (round.storyPhoto) h += '<div style="margin-top:8px;border-radius:var(--radius);overflow:hidden"><img alt="" src="' + round.storyPhoto + '" style="width:100%;display:block"></div>';
+    h += '</div></div></div>';
+  }
+
   document.querySelector('[data-page="rounds"]').innerHTML = h;
 
   // Populate the hidden share template and clone into the inline preview

@@ -307,6 +307,9 @@ The ONLY way new coins enter the economy is through the earning sources table ab
 - **Trash talk (Spotlight of Shame, Victory Lap, etc):** Coins deducted from spender's balance. Pure sink.
 - **Shop purchases:** Coins deducted. Pure sink.
 
+### Premium AI Caddie (Phase 4 — Future)
+Cloud Function proxy to Claude API for natural language analysis. Free users get rule-based insights (built in v6.3.0). Pro subscribers get AI-powered conversational analysis. API key stored ONLY in Cloud Function environment variables, NEVER in client code or Firestore. Rate limit: 10 AI calls per month for Pro users.
+
 ### Known TODOs
 - **Bounty expiry refund**: When a bounty expires without being claimed, poster's coins should be refunded. Requires a scheduled Cloud Function or client-side check on page load. Not yet implemented.
 
