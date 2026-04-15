@@ -533,6 +533,7 @@ function enterApp() {
   document.getElementById("authScreen").classList.add("hidden");
   document.getElementById("mainApp").classList.remove("hidden");
   PB.load();
+  if (typeof _patchFirestoreForLeague === "function") _patchFirestoreForLeague();
   initSync();
   preloadMemberPhotos();
   syncCoursesFromFirestore();

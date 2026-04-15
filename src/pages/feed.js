@@ -35,10 +35,12 @@ Router.register("feed", function(params) {
   }
 
   // 1. Rounds — pull rich data for hole dots and stats
+  var _feedLeague = getActiveLeague();
   if (db) {
     db.collection("rounds").where("visibility", "==", "public").orderBy("createdAt", "desc").limit(40).get().then(function(snap) {
       snap.forEach(function(doc) {
         var r = doc.data();
+        if (r.leagueId && r.leagueId !== _feedLeague) return; // league filter
         var rid = doc.id;
         var isScramble = r.format === "scramble" || r.format === "scramble4";
         var comm = PB.generateRoundCommentary({score:r.score,rating:r.rating||72,slope:r.slope||113,player:r.player,holesPlayed:r.holesPlayed||18});
@@ -98,6 +100,7 @@ Router.register("feed", function(params) {
     db.collection("chat").orderBy("createdAt", "desc").limit(30).get().then(function(snap) {
       snap.forEach(function(doc) {
         var msg = doc.data();
+        if (msg.leagueId && msg.leagueId !== _feedLeague) return;
         var player = msg.authorId ? PB.getPlayer(msg.authorId) : null;
         items.push({
           type: "chat",

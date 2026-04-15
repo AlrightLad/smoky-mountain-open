@@ -1659,14 +1659,16 @@ function loadHomeActivityFeed() {
   }
 
   // 1. Recent rounds from Firestore
+  var _homeLeague = getActiveLeague();
   pending++;
   db.collection("rounds").orderBy("createdAt","desc").limit(30).get().then(function(snap) {
     var scrambleGroups = {}; // Group scramble by course+date
     snap.forEach(function(doc) {
       var r = doc.data();
+      if (r.leagueId && r.leagueId !== _homeLeague) return;
       var rid = doc.id;
       var isScramble = r.format === "scramble" || r.format === "scramble4";
-      
+
       if (isScramble) {
         // Group scramble rounds into one feed entry
         var groupKey = (r.course||"") + "|" + (r.date||"");
@@ -1770,6 +1772,7 @@ function loadHomeActivityFeed() {
   db.collection("chat").orderBy("createdAt", "desc").limit(20).get().then(function(snap) {
     snap.forEach(function(doc) {
       var msg = doc.data();
+      if (msg.leagueId && msg.leagueId !== _homeLeague) return;
       var isSystem = !!msg.system;
       var text = msg.text || "";
       // Skip automated messages that duplicate other feed items

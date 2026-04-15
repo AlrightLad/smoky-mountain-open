@@ -1,3 +1,37 @@
+// ========== LEAGUE CONTEXT ==========
+// Returns the current user's active league ID. Falls back to "the-parbaughs" for
+// backward compatibility — all pre-migration data has leagueId: "the-parbaughs".
+function getActiveLeague() {
+  if (currentProfile && currentProfile.activeLeague) return currentProfile.activeLeague;
+  return "the-parbaughs";
+}
+
+// ========== LEAGUE-SCOPED WRITE HELPER ==========
+// Wraps db.collection().add() to automatically include leagueId for league-scoped collections.
+var LEAGUE_SCOPED_COLLECTIONS = ['rounds','chat','trips','teetimes','wagers','bounties','scrambleTeams','calendar_events','scheduling_chat','social_actions','invites','syncrounds','liverounds'];
+
+// Monkey-patch Firestore add() to auto-inject leagueId for league-scoped collections.
+// This ensures EVERY write to a league-scoped collection gets the correct leagueId
+// without modifying 30+ call sites across the codebase.
+var _origFirestoreCollection;
+function _patchFirestoreForLeague() {
+  if (!db || _origFirestoreCollection) return;
+  _origFirestoreCollection = db.collection.bind(db);
+  db.collection = function(name) {
+    var ref = _origFirestoreCollection(name);
+    if (LEAGUE_SCOPED_COLLECTIONS.indexOf(name) !== -1) {
+      var origAdd = ref.add.bind(ref);
+      ref.add = function(data) {
+        if (data && typeof data === 'object' && !data.leagueId) {
+          data.leagueId = getActiveLeague();
+        }
+        return origAdd(data);
+      };
+    }
+    return ref;
+  };
+}
+
 // ========== SYNC STATUS ==========
 var syncStatus = "connecting";
 function setSyncStatus(s) {
@@ -72,7 +106,7 @@ function syncCoursesFromFirestore() {
 }
 
 function syncMember(m) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(m)); d.updatedAt=fsTimestamp(); delete d.photo; db.collection("members").doc(m.id).set(d,{merge:true}).catch(function(){}); }
-function syncRound(r) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(r)); d.createdAt=fsTimestamp(); db.collection("rounds").doc(r.id||genId()).set(d,{merge:true}).catch(function(){}); }
+function syncRound(r) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(r)); d.createdAt=fsTimestamp(); d.leagueId=getActiveLeague(); db.collection("rounds").doc(r.id||genId()).set(d,{merge:true}).catch(function(){}); }
 
 // Compute and persist player stats to Firestore member doc after any round change.
 // This ensures handicap, XP, level, avg, and best are always current even if rounds fail to load.
@@ -186,22 +220,24 @@ function syncScrambleTeam(team) {
 var _roundsListener = null;
 function loadRoundsFromFirestore() {
   if (!db) return;
+  var _league = getActiveLeague();
   db.collection("rounds").orderBy("date", "desc").limit(500).get().then(function(snap) {
     var fsRounds = [];
-    snap.forEach(function(doc) { var d = doc.data(); if (d && d.id) fsRounds.push(d); });
+    snap.forEach(function(doc) { var d = doc.data(); if (d && d.id && (!d.leagueId || d.leagueId === _league)) fsRounds.push(d); });
     if (fsRounds.length > 0) {
       PB.setRoundsFromFirestore(fsRounds);
-      pbLog("[Sync] Loaded", fsRounds.length, "rounds from Firestore");
+      pbLog("[Sync] Loaded", fsRounds.length, "rounds for league", _league);
     }
   }).catch(function(err) { pbWarn("[Sync] rounds load failed:", err.message); });
 }
 
 function startRoundsListener() {
   if (!db) return;
+  var _league = getActiveLeague();
   if (_roundsListener) _roundsListener();
   _roundsListener = db.collection("rounds").orderBy("date", "desc").limit(500).onSnapshot(function(snap) {
     var fsRounds = [];
-    snap.forEach(function(doc) { var d = doc.data(); if (d && d.id) fsRounds.push(d); });
+    snap.forEach(function(doc) { var d = doc.data(); if (d && d.id && (!d.leagueId || d.leagueId === _league)) fsRounds.push(d); });
     if (fsRounds.length > 0) {
       PB.setRoundsFromFirestore(fsRounds);
       if (window._suppressRoundsRerender) return; // Skip re-render for like/comment updates

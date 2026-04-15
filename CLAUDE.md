@@ -17,8 +17,8 @@ This app is a labor of love. Treat it with extreme care and pride. It's a core p
 
 ## Project State
 
-- **Version:** v5.23.2 (as of April 2026)
-- **Lines:** ~18,200 (currently single-file `index.html`, migration to Vite multi-file planned)
+- **Version:** v6.0.0 (as of April 2026)
+- **Architecture:** Multi-league, Vite multi-file
 - **Stack:** Vanilla JS, Firebase Auth + Firestore + Cloud Functions, GitHub Pages
 - **Budget:** Zero. No paid services beyond Firebase Blaze plan.
 - **Users:** 17 members, mixed iPhone/Android
@@ -114,6 +114,43 @@ Do NOT redeploy `searchCourses` unless explicitly modifying it — it has CORS a
 - **Key stored in:** Firestore `config/api_keys`
 - **WRONG endpoint:** `/v1/courses?search=` (non-functional, do not use)
 - **CRITICAL:** Zero guessing or padding of par arrays. Only use verified API data.
+
+## Multi-League Architecture
+
+### Data Scoping
+| Scope | Collections | Behavior |
+|-------|-------------|----------|
+| **LEAGUE** | rounds, chat, trips, teetimes, wagers, bounties, scrambleTeams, calendar_events, scheduling_chat, social_actions, invites, syncrounds, liverounds | Filtered by `leagueId` field. New writes auto-tagged via Firestore write helper. |
+| **GLOBAL** | members, courses, course_reviews, photos, parcoin_transactions, notifications, pendingPush, config, errors, presence | Not league-scoped. Shared across all leagues. |
+
+### Key Functions
+- `getActiveLeague()` — returns `currentProfile.activeLeague` or fallback `"the-parbaughs"`
+- `_patchFirestoreForLeague()` — monkey-patches `db.collection().add()` to auto-inject `leagueId` for league-scoped collections
+- Client-side filtering: queries fetch all docs, then filter by `leagueId === getActiveLeague()`. Avoids composite index requirements.
+
+### The Founding League
+- **Document:** `leagues/the-parbaughs`
+- **Badge:** `"founding"` — permanent, no other league can ever have this badge
+- **All 20 original members** have `leagues: ["the-parbaughs"]` and `activeLeague: "the-parbaughs"`
+- **Backup:** `backups/pre-multi-league.json` (pre-migration snapshot of all data)
+
+### League Document Schema
+```
+leagues/{leagueId} {
+  name, slug, location, founded, badge, tier, visibility,
+  commissioner, admins[], memberCount, memberUids[],
+  inviteCode, theme, createdAt, settings: { seasons, parcoins, wagers, bounties, trashTalk }
+}
+```
+
+### Member League Fields
+```
+members/{uid} {
+  ...existing fields...,
+  leagues: ["the-parbaughs", ...],    // array of league IDs the member belongs to
+  activeLeague: "the-parbaughs"       // currently active league for queries
+}
+```
 
 ## Firestore Rules
 
