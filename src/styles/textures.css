@@ -25,56 +25,56 @@ body>*{position:relative;z-index:1}
 [data-theme="classic"] body::before,
 :root:not([data-theme]) body::before{
   background-image:url('/textures/classic-tile.jpg');
-  opacity:.04;
+  opacity:.10;
   mix-blend-mode:overlay
 }
 
 /* ── Camo (woodland leaves) ── */
 [data-theme="camo"] body::before{
   background-image:url('/textures/camo-tile.jpg');
-  opacity:.06;
+  opacity:.14;
   mix-blend-mode:overlay
 }
 
 /* ── Masters (green leather) ── */
 [data-theme="masters"] body::before{
   background-image:url('/textures/masters-tile.jpg');
-  opacity:.05;
+  opacity:.12;
   mix-blend-mode:soft-light
 }
 
 /* ── Azalea (pink flowers) ── */
 [data-theme="azalea"] body::before{
   background-image:url('/textures/azalea-tile.jpg');
-  opacity:.04;
+  opacity:.10;
   mix-blend-mode:overlay
 }
 
 /* ── USGA (navy stripes) ── */
 [data-theme="usga"] body::before{
   background-image:url('/textures/usga-tile.jpg');
-  opacity:.05;
+  opacity:.12;
   mix-blend-mode:overlay
 }
 
 /* ── Sunday Red / Champion Red (red leather) ── */
 [data-theme="sundayred"] body::before{
   background-image:url('/textures/champion-tile.jpg');
-  opacity:.05;
+  opacity:.12;
   mix-blend-mode:soft-light
 }
 
 /* ── Dark (carbon fiber) ── */
 [data-theme="dark"] body::before{
   background-image:url('/textures/dark-tile.jpg');
-  opacity:.03;
+  opacity:.16;
   mix-blend-mode:overlay
 }
 
 /* ── Light (linen) ── */
 [data-theme="light"] body::before{
   background-image:url('/textures/light-tile.jpg');
-  opacity:.06;
+  opacity:.14;
   mix-blend-mode:multiply
 }
 
@@ -104,49 +104,49 @@ body>*{position:relative;z-index:1}
 [data-theme="classic"] .hero::before,
 :root:not([data-theme]) .hero::before{
   background-image:url('/textures/classic-tile.jpg');
-  opacity:.07;
+  opacity:.15;
   mix-blend-mode:overlay
 }
 
 [data-theme="camo"] .hero::before{
   background-image:url('/textures/camo-tile.jpg');
-  opacity:.09;
+  opacity:.18;
   mix-blend-mode:overlay
 }
 
 [data-theme="masters"] .hero::before{
   background-image:url('/textures/masters-tile.jpg');
-  opacity:.08;
+  opacity:.16;
   mix-blend-mode:soft-light
 }
 
 [data-theme="azalea"] .hero::before{
   background-image:url('/textures/azalea-tile.jpg');
-  opacity:.06;
+  opacity:.14;
   mix-blend-mode:overlay
 }
 
 [data-theme="usga"] .hero::before{
   background-image:url('/textures/usga-tile.jpg');
-  opacity:.08;
+  opacity:.16;
   mix-blend-mode:overlay
 }
 
 [data-theme="sundayred"] .hero::before{
   background-image:url('/textures/champion-tile.jpg');
-  opacity:.07;
+  opacity:.15;
   mix-blend-mode:soft-light
 }
 
 [data-theme="dark"] .hero::before{
   background-image:url('/textures/dark-tile.jpg');
-  opacity:.05;
+  opacity:.12;
   mix-blend-mode:overlay
 }
 
 [data-theme="light"] .hero::before{
   background-image:url('/textures/light-tile.jpg');
-  opacity:.08;
+  opacity:.16;
   mix-blend-mode:multiply
 }
 
@@ -174,33 +174,33 @@ body>*{position:relative;z-index:1}
 [data-theme="classic"] .next-trip::before,
 :root:not([data-theme]) .next-trip::before{
   background-image:url('/textures/classic-tile.jpg');
-  opacity:.03
+  opacity:.16
 }
 
 [data-theme="camo"] .next-trip::before{
   background-image:url('/textures/camo-tile.jpg');
-  opacity:.04
+  opacity:.10
 }
 
 [data-theme="masters"] .next-trip::before{
   background-image:url('/textures/masters-tile.jpg');
-  opacity:.04;
+  opacity:.10;
   mix-blend-mode:soft-light
 }
 
 [data-theme="azalea"] .next-trip::before{
   background-image:url('/textures/azalea-tile.jpg');
-  opacity:.03
+  opacity:.16
 }
 
 [data-theme="usga"] .next-trip::before{
   background-image:url('/textures/usga-tile.jpg');
-  opacity:.04
+  opacity:.10
 }
 
 [data-theme="sundayred"] .next-trip::before{
   background-image:url('/textures/champion-tile.jpg');
-  opacity:.04;
+  opacity:.10;
   mix-blend-mode:soft-light
 }
 
@@ -211,6 +211,6 @@ body>*{position:relative;z-index:1}
 
 [data-theme="light"] .next-trip::before{
   background-image:url('/textures/light-tile.jpg');
-  opacity:.05;
+  opacity:.12;
   mix-blend-mode:multiply
 }

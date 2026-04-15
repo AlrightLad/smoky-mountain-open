@@ -1436,13 +1436,24 @@ function startPresenceSystem() {
 function renderFeedItem(a) {
   var timeLabel = a.ts ? feedTimeAgo(a.ts) : "";
 
-  // ── Chat messages — ultra compact ──
+  // ── Chat messages ──
   if (a.type === "chat") {
     var chatColor = a.system ? "var(--birdie)" : "var(--gold)";
     var clickAttr = a.dest ? ' onclick="' + a.dest + '" style="cursor:pointer"' : '';
-    var h = '<div style="padding:6px 16px;border-left:2px solid ' + (a.system ? 'var(--birdie)' : 'rgba(var(--gold-rgb),.15)') + ';margin:1px 0"' + clickAttr + '>';
+    if (a.system) {
+      // System/Caddy messages — full text, no truncation
+      var h = '<div style="padding:8px 16px;border-left:3px solid var(--birdie);margin:2px 0;background:rgba(var(--birdie-rgb),.03)"' + clickAttr + '>';
+      h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">';
+      h += '<span style="font-size:10px;font-weight:700;color:var(--birdie)">' + escHtml(a.name) + '</span>';
+      h += '<span style="font-size:9px;color:var(--muted2)">' + timeLabel + '</span></div>';
+      h += '<div style="font-size:12px;color:var(--cream);line-height:1.5">' + escHtml(a.sub) + '</div>';
+      h += '</div>';
+      return h;
+    }
+    // Regular chat — compact single-line
+    var h = '<div style="padding:6px 16px;border-left:2px solid rgba(var(--gold-rgb),.15);margin:1px 0"' + clickAttr + '>';
     h += '<div style="display:flex;gap:6px;align-items:baseline">';
-    h += '<span style="font-size:10px;font-weight:700;color:' + chatColor + ';flex-shrink:0">' + escHtml(a.name) + '</span>';
+    h += '<span style="font-size:10px;font-weight:700;color:var(--gold);flex-shrink:0">' + escHtml(a.name) + '</span>';
     h += '<span style="font-size:11px;color:var(--cream);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(a.sub) + '</span>';
     h += '<span style="font-size:9px;color:var(--muted2);flex-shrink:0">' + timeLabel + '</span></div>';
     h += '</div>';
