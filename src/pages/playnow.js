@@ -585,15 +585,28 @@ function renderLiveScoring() {
   h += '<div style="display:flex;gap:8px;margin-bottom:20px">';
   if (!isPar3) {
     var firActive = liveState.fir[hole];
-    h += '<div onclick="togglePlayNowFirGir(this,' + hole + ',\'fir\')" style="flex:1;height:60px;border-radius:10px;border:1.5px solid ' + (firActive ? 'var(--birdie)' : 'var(--border)') + ';background:' + (firActive ? 'rgba(var(--birdie-rgb),.12)' : 'var(--bg3)') + ';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
-    h += '<div style="font-size:16px;font-weight:700;color:' + (firActive ? 'var(--birdie)' : 'var(--muted)') + '">FIR</div>';
-    h += '<div style="font-size:9px;color:' + (firActive ? 'var(--birdie)' : 'var(--muted2)') + ';letter-spacing:.3px">' + (firActive ? 'Hit' : 'Missed') + '</div>';
+    var firColor = firActive ? 'var(--birdie)' : 'var(--red)';
+    var firBg = firActive ? 'rgba(var(--birdie-rgb),.12)' : 'rgba(var(--red-rgb),.06)';
+    var firBorder = firActive ? 'var(--birdie)' : 'rgba(var(--red-rgb),.3)';
+    var firLabel = firActive ? '\u2713 Hit' : '\u2717 Miss';
+    h += '<div onclick="togglePlayNowFirGir(this,' + hole + ',\'fir\')" style="flex:1;height:60px;border-radius:10px;border:1.5px solid ' + firBorder + ';background:' + firBg + ';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
+    h += '<div style="font-size:14px;font-weight:700;color:' + firColor + '">FIR</div>';
+    h += '<div style="font-size:10px;font-weight:600;color:' + firColor + ';letter-spacing:.3px">' + firLabel + '</div>';
+    h += '</div>';
+  } else {
+    h += '<div style="flex:1;height:60px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;opacity:.4">';
+    h += '<div style="font-size:14px;font-weight:700;color:var(--muted)">FIR</div>';
+    h += '<div style="font-size:10px;color:var(--muted2)">N/A (Par 3)</div>';
     h += '</div>';
   }
   var girActive = liveState.gir[hole];
-  h += '<div onclick="togglePlayNowFirGir(this,' + hole + ',\'gir\')" style="flex:1;height:60px;border-radius:10px;border:1.5px solid ' + (girActive ? 'var(--gold)' : 'var(--border)') + ';background:' + (girActive ? 'rgba(var(--gold-rgb),.12)' : 'var(--bg3)') + ';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
-  h += '<div style="font-size:16px;font-weight:700;color:' + (girActive ? 'var(--gold)' : 'var(--muted)') + '">GIR</div>';
-  h += '<div style="font-size:9px;color:' + (girActive ? 'var(--gold)' : 'var(--muted2)') + ';letter-spacing:.3px">' + (girActive ? 'Hit' : 'Missed') + '</div>';
+  var girColor = girActive ? 'var(--gold)' : 'var(--red)';
+  var girBg = girActive ? 'rgba(var(--gold-rgb),.12)' : 'rgba(var(--red-rgb),.06)';
+  var girBorder = girActive ? 'var(--gold)' : 'rgba(var(--red-rgb),.3)';
+  var girLabel = girActive ? '\u2713 Hit' : '\u2717 Miss';
+  h += '<div onclick="togglePlayNowFirGir(this,' + hole + ',\'gir\')" style="flex:1;height:60px;border-radius:10px;border:1.5px solid ' + girBorder + ';background:' + girBg + ';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
+  h += '<div style="font-size:14px;font-weight:700;color:' + girColor + '">GIR</div>';
+  h += '<div style="font-size:10px;font-weight:600;color:' + girColor + ';letter-spacing:.3px">' + girLabel + '</div>';
   h += '</div>';
 
   var puttVal = liveState.putts[hole];
@@ -665,7 +678,8 @@ function renderLiveScoring() {
       // On last hole or all scored: BIG prominent finish button
       h += '<div style="display:flex;gap:8px">';
       if (hole > 0) h += '<button class="btn outline" style="flex:0 0 70px;padding:14px 0;font-size:11px" onclick="liveNavPrev()">← Prev</button>';
-      h += '<button class="btn" style="flex:1;padding:16px 0;font-size:16px;font-weight:800;background:linear-gradient(135deg,var(--birdie),#2a7a3e);color:#fff;border:none;border-radius:var(--radius)" onclick="showFinishOptions()">\u2714 Finish Round (' + scoredCount + '/' + totalHoles + ')</button>';
+      var _finishPulse = allScored ? 'animation:ringPulse 1.5s ease-in-out infinite;' : '';
+      h += '<button class="btn" style="flex:1;padding:16px 0;font-size:16px;font-weight:800;background:linear-gradient(135deg,var(--birdie),#2a7a3e);color:#fff;border:none;border-radius:var(--radius);' + _finishPulse + '" onclick="showFinishOptions()">\u2714 Finish Round (' + scoredCount + '/' + totalHoles + ')</button>';
       h += '</div>';
     } else {
       // Not on last hole: Next + small Finish option

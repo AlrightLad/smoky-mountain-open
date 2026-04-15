@@ -64,8 +64,7 @@ var COSMETICS_CATALOG = [
   {id:"card_neon_night",   cat:"card", name:"Neon Night",         price:400, desc:"Hot pink neon glow on dark",               css:"border-left:4px solid #ff00ff;background:linear-gradient(90deg,rgba(255,0,255,.06),transparent 40%)", preview:"#ff00ff"},
   {id:"card_dark_carbon",  cat:"card", name:"Dark Carbon",        price:500, desc:"Matte carbon fiber edge — ultimate stealth",css:"border-left:4px solid #1a1a1a;background:linear-gradient(90deg,rgba(0,0,0,.12),transparent 30%)", preview:"#444444"},
   {id:"card_augusta",      cat:"card", name:"Augusta Green",      price:500, desc:"Deep Masters green prestige",              css:"border-left:4px solid #006633;background:linear-gradient(90deg,rgba(0,102,51,.08),transparent 40%)", preview:"#006633"},
-  {id:"card_gold",         cat:"card", name:"Gold Standard",      price:500, desc:"Gold accent for the elite — unmistakable", css:"border-left:4px solid #c9a84c;background:linear-gradient(90deg,rgba(201,168,76,.08),transparent 40%)", preview:"#c9a84c"},
-  {id:"card_gold_foil",    cat:"card", name:"Gold Foil",          price:500, desc:"Luxe metallic gold edge with shimmer",     css:"border-left:4px solid #c9a84c;background:linear-gradient(90deg,rgba(201,168,76,.1),rgba(223,192,106,.04) 50%,transparent)", preview:"#c9a84c"},
+  {id:"card_gold_foil",    cat:"card", name:"Gold Foil",          price:500, desc:"Luxe metallic gold edge with shimmer — the ultimate flex", css:"border-left:4px solid #c9a84c;background:linear-gradient(90deg,rgba(201,168,76,.12),rgba(223,192,106,.05) 50%,transparent)", preview:"#c9a84c"},
 
   // ── NAME EFFECTS — Mid-tier: 300-500 ──
   {id:"name_shadow_depth", cat:"name", name:"Shadow Depth",        price:300, desc:"Deep shadow for a 3D carved look",  css:"text-shadow:2px 2px 4px rgba(0,0,0,.5)", preview:"#666666"},

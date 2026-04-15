@@ -361,13 +361,13 @@ function renderMemberDetailWithData(p) {
   var coinBalance = getParCoinBalance(pid);
   var coinLifetime = getParCoinLifetime(pid);
   h += '<div style="padding:0 16px 10px;display:flex;gap:8px">';
-  h += '<div style="flex:1;background:linear-gradient(135deg,rgba(var(--gold-rgb),.08),rgba(var(--gold-rgb),.03));border:1px solid rgba(var(--gold-rgb),.15);border-radius:var(--radius);padding:10px 12px;display:flex;align-items:center;gap:10px">';
+  h += '<div style="flex:1;background:linear-gradient(135deg,rgba(var(--gold-rgb),.08),rgba(var(--gold-rgb),.03));border:1px solid rgba(var(--gold-rgb),.15);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:10px">';
   h += '<div style="width:32px;height:32px;border-radius:50%;background:rgba(var(--gold-rgb),.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="var(--gold)" stroke-width="1.3"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7M7 11.5h5a2 2 0 010 0"/></svg></div>';
   h += '<div><div style="font-size:16px;font-weight:700;color:var(--gold)" data-count="' + coinBalance + '">' + coinBalance.toLocaleString() + '</div>';
   h += '<div style="font-size:9px;color:var(--muted);letter-spacing:.5px">PARCOINS</div></div>';
   h += '</div>';
   if (coinLifetime > coinBalance) {
-    h += '<div style="flex-shrink:0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;text-align:center;min-width:70px">';
+    h += '<div style="flex-shrink:0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;text-align:center;min-width:76px">';
     h += '<div style="font-size:14px;font-weight:700;color:var(--cream)" data-count="' + coinLifetime + '">' + coinLifetime.toLocaleString() + '</div>';
     h += '<div style="font-size:8px;color:var(--muted);letter-spacing:.5px">LIFETIME</div></div>';
   }

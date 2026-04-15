@@ -1627,7 +1627,6 @@ function renderFeedItem(a) {
     h += '<div class="feed-actions">';
     h += '<div class="feed-action' + (isLiked ? ' active' : '') + '" onclick="event.stopPropagation();likeFeedRound(\'' + a.roundId + '\',this)"><svg viewBox="0 0 16 16" width="14" height="14" fill="' + (isLiked ? 'var(--gold)' : 'none') + '" stroke="currentColor" stroke-width="1.2"><path d="M8 14s-5.5-3.5-5.5-7A2.5 2.5 0 018 4.5 2.5 2.5 0 0113.5 7C13.5 10.5 8 14 8 14z"/></svg><span>' + (likeCount || '') + '</span></div>';
     h += '<div class="feed-action" onclick="event.stopPropagation();toggleFeedComments(\'' + a.roundId + '\')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 3h12v8H5l-3 3V3z"/></svg><span>' + (commentCount || '') + '</span></div>';
-    h += '<div class="feed-action" onclick="event.stopPropagation();showFeedReactions(\'' + a.roundId + '\',this)" style="font-size:14px;padding:2px 6px">🔥</div>';
     if (a.dest) h += '<div class="feed-action" onclick="event.stopPropagation();' + a.dest + '" style="margin-left:auto;font-size:10px;font-weight:600;color:var(--gold)">View <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div>';
     h += '</div>';
     h += '<div id="feedComments_' + a.roundId + '" class="feed-comments" style="display:none"></div>';
@@ -1774,7 +1773,7 @@ function loadHomeActivityFeed() {
     snap.forEach(function(doc) {
       var msg = doc.data();
       if (msg.leagueId && msg.leagueId !== _homeLeague) return;
-      var isSystem = !!msg.system;
+      var isSystem = !!msg.system || msg.authorId === "system" || msg.authorName === "The Caddy" || msg.authorName === "Parbaughs";
       var text = msg.text || "";
       // Skip automated messages that duplicate other feed items
       if (text.indexOf("range session") !== -1 && (isSystem || msg.authorName === "Parbaughs" || msg.authorId === "system")) return;

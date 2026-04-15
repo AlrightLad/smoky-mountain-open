@@ -12,10 +12,13 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · CONTENT FEATURES</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Finish Round button now ALWAYS visible in Play Now once any scores are entered — impossible to miss on the last hole", tag: "FIXED"},
-    {item: "Finish Round on last hole: big green gradient button showing score count (7/9, 18/18, etc)", tag: "FIXED"},
-    {item: "Finish early: small Finish button alongside Next Hole on every non-final hole", tag: "NEW"},
-    {item: "Quit Round clearly separated: tiny red text below Finish, not competing for attention", tag: "IMPROVED"},
+    {item: "Finish Round button pulses with animation when ALL holes have scores — impossible to miss", tag: "FIXED"},
+    {item: "FIR/GIR now clearly shows HIT (green check) vs MISS (red X) with distinct colors — par 3s show N/A for FIR", tag: "FIXED"},
+    {item: "Rainbow Gradient name effect fixed — now uses animated color-cycling gradient instead of broken hue-rotate", tag: "FIXED"},
+    {item: "Gold Standard card theme removed (duplicate of Gold Foil) — 74 unique items in shop", tag: "FIXED"},
+    {item: "Emoji reaction picker removed from feed — action row now has comment, share, and view only", tag: "FIXED"},
+    {item: "Trash talk and system messages now correctly show as The Caddy with green accent — no more Unknown author", tag: "FIXED"},
+    {item: "ParCoin balance boxes on profile page now have more breathing room (14px/16px padding)", tag: "FIXED"},
     {item: "Clubhouse chat cleaned up — only human messages now, no auto-generated round posts or achievements", tag: "FIXED"},
     {item: "Course reviews enhanced: star rating selector, aggregate rating display, only players who\'ve played can review", tag: "IMPROVED"},
     {item: "NEW: Auto-generated course stats — member average, most played by, hardest/easiest hole from hole-by-hole data", tag: "NEW"},
@@ -255,7 +258,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v6.2.0</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v6.2.1</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
