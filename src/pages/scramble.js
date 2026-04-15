@@ -21,9 +21,38 @@ function renderTeamList() {
     teams.forEach(function(team) {
       var members = team.members.map(function(id) { return PB.getPlayer(id); }).filter(Boolean);
       var captain = team.captain ? PB.getPlayer(team.captain) : null;
-      var scored = (team.matches || []).filter(function(m){return m.score;}).sort(function(a,b){return a.score-b.score;});
+      // Build all member ID aliases for round matching
+      var _tMemberIds = [];
+      var _tMemberNames = [];
+      team.members.forEach(function(mid) {
+        _tMemberIds.push(mid);
+        try { var ids = PB.getAllPlayerIds(mid); ids.forEach(function(id) { if (_tMemberIds.indexOf(id) === -1) _tMemberIds.push(id); }); } catch(e) {}
+        var tp = PB.getPlayer(mid);
+        if (tp) {
+          if (tp.name && _tMemberNames.indexOf(tp.name) === -1) _tMemberNames.push(tp.name);
+          if (tp.username && _tMemberNames.indexOf(tp.username) === -1) _tMemberNames.push(tp.username);
+          if (tp.id && _tMemberIds.indexOf(tp.id) === -1) _tMemberIds.push(tp.id);
+        }
+      });
+      if (typeof fbMemberCache !== "undefined") {
+        Object.keys(fbMemberCache).forEach(function(uid) {
+          var m = fbMemberCache[uid];
+          if (m.claimedFrom && team.members.indexOf(m.claimedFrom) !== -1 && _tMemberIds.indexOf(uid) === -1) _tMemberIds.push(uid);
+        });
+      }
+      // Merge local matches with Firestore scramble rounds
+      var allMatches = (team.matches || []).slice();
+      var matchKeys = {};
+      allMatches.forEach(function(m) { matchKeys[(m.course||"") + "|" + (m.date||"")] = true; });
+      PB.getRounds().forEach(function(r) {
+        if (r.format !== "scramble" && r.format !== "scramble4") return;
+        if (_tMemberIds.indexOf(r.player) === -1 && (!r.playerName || _tMemberNames.indexOf(r.playerName) === -1)) return;
+        var key = (r.course||"") + "|" + (r.date||"");
+        if (!matchKeys[key]) { allMatches.push({course: r.course, date: r.date, score: r.score, format: r.format}); matchKeys[key] = true; }
+      });
+      var scored = allMatches.filter(function(m){return m.score;}).sort(function(a,b){return a.score-b.score;});
       var best = scored.length ? scored[0].score : null;
-      var last3 = (team.matches||[]).slice(-3).reverse();
+      var last3 = allMatches.slice(-3).reverse();
 
       h += '<div class="card" onclick="Router.go(\'scramble\',{id:\'' + team.id + '\'})" style="cursor:pointer">';
       h += '<div style="padding:14px 16px">';
@@ -44,7 +73,7 @@ function renderTeamList() {
       h += '</div>';
 
       // Right — W-L if team has H2H matches, otherwise best score
-      var h2h = (team.matches || []).filter(function(m) { return m.result === 'win' || m.result === 'loss' || m.result === 'tie'; });
+      var h2h = allMatches.filter(function(m) { return m.result === 'win' || m.result === 'loss' || m.result === 'tie'; });
       h += '<div style="text-align:right">';
       if (h2h.length > 0) {
         var wins = h2h.filter(function(m) { return m.result === "win"; }).length;
@@ -193,14 +222,39 @@ function renderTeamDetail(teamId) {
   var matches = (team.matches || []).slice();
   // Also pull scramble rounds from the rounds collection that match this team's members
   var memberIds = team.members;
-  // Build full set of all known IDs for team members (UID, seed, claimedFrom)
+  // Build full set of all known IDs for team members (UID, seed, claimedFrom, playerName)
   var allMemberIds = [];
+  var allMemberNames = [];
   memberIds.forEach(function(mid) {
     allMemberIds.push(mid);
-    try { var ids = PB.getAllPlayerIds(mid); ids.forEach(function(id) { if (allMemberIds.indexOf(id) === -1) allMemberIds.push(id); }); } catch(e) {}
+    try {
+      var ids = PB.getAllPlayerIds(mid);
+      ids.forEach(function(id) { if (allMemberIds.indexOf(id) === -1) allMemberIds.push(id); });
+    } catch(e) {}
+    var p = PB.getPlayer(mid);
+    if (p) {
+      if (p.name && allMemberNames.indexOf(p.name) === -1) allMemberNames.push(p.name);
+      if (p.username && allMemberNames.indexOf(p.username) === -1) allMemberNames.push(p.username);
+      if (p.id && allMemberIds.indexOf(p.id) === -1) allMemberIds.push(p.id);
+      if (p.uid && allMemberIds.indexOf(p.uid) === -1) allMemberIds.push(p.uid);
+    }
   });
+  // Also add all Firebase UIDs from fbMemberCache that claim any of our seed IDs
+  if (typeof fbMemberCache !== "undefined") {
+    Object.keys(fbMemberCache).forEach(function(uid) {
+      var m = fbMemberCache[uid];
+      if (m.claimedFrom && memberIds.indexOf(m.claimedFrom) !== -1 && allMemberIds.indexOf(uid) === -1) {
+        allMemberIds.push(uid);
+      }
+    });
+  }
   var roundsCol = PB.getRounds().filter(function(r) {
-    return (r.format === "scramble" || r.format === "scramble4") && allMemberIds.indexOf(r.player) !== -1;
+    if (r.format !== "scramble" && r.format !== "scramble4") return false;
+    // Match by player ID
+    if (allMemberIds.indexOf(r.player) !== -1) return true;
+    // Match by player name (fallback for rounds where player field is a name not ID)
+    if (r.playerName && allMemberNames.indexOf(r.playerName) !== -1) return true;
+    return false;
   });
   // Deduplicate — don't add a round that's already in matches (by course+date)
   var matchKeys = {};
