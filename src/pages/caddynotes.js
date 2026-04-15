@@ -5,21 +5,24 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.33.0</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.33.1</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.33.0</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Social Actions, Bounties, Rich List, Power-Ups</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.33.1</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · 11 Bug Fixes, Beat Their Score Wager, Scorecard Theming</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Trash Talk actions — Spotlight of Shame, Victory Lap, Demand a Rematch on any player\'s profile", tag: "NEW"},
-    {item: "Bounty Board — post coin bounties on scores or birdies at specific courses. Auto-claims when someone hits it.", tag: "NEW"},
-    {item: "Rich List — top 10 lifetime coin holders with Gold Member badge at 10,000 earned", tag: "NEW"},
-    {item: "Power-Ups — Double XP Round (150 coins) and Handicap Shield (100 coins)", tag: "NEW"},
-    {item: "Sponsor a Hole (500 coins) and Name a Tournament (1,000 coins) status purchases", tag: "NEW"},
-    {item: "Welcome Gift — send a free starter cosmetic to new members", tag: "NEW"},
-    {item: "All new pages accessible from the More menu with dedicated icons", tag: "NEW"},
-    {item: "Wager Matches, Seasons, Feed Filtering, Cosmetics Shop from recent updates", tag: "IMPROVED"}
+    {item: "Theme textures now display on all 8 themes — subtle patterns on every page", tag: "FIXED"},
+    {item: "Bottom nav bar no longer cut off on iPhone — proper safe area padding", tag: "FIXED"},
+    {item: "Activity feed shows full event messages — no more cutoff text", tag: "FIXED"},
+    {item: "Calendar dates all display at uniform size — days 1-4 no longer oversized", tag: "FIXED"},
+    {item: "Best score on home page is now tappable — takes you to that round", tag: "FIXED"},
+    {item: "Beat Their Score wager — bet you can beat a friend\'s best at a specific course", tag: "NEW"},
+    {item: "Shareable scorecards now render in your active theme colors", tag: "NEW"},
+    {item: "Course directory shows best scores (not averages) with clean formatting", tag: "FIXED"},
+    {item: "13 new cosmetic items in the shop — 28 total across borders, banners, and card themes", tag: "NEW"},
+    {item: "Scramble team rounds now display correctly even when stored under different player IDs", tag: "FIXED"},
+    {item: "Trash Talk, Bounty Board, Rich List, Power-Ups, and more from recent updates", tag: "IMPROVED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "var(--blue)" : "var(--muted)";
