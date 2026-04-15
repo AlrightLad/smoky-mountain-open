@@ -72,7 +72,8 @@ Router.register("calendar", function() {
   }
   h += '</div>';
 
-  // Day detail
+  // Day detail container (updated in-place by _updateCalendarInPlace)
+  h += '<div id="cal-day-detail" style="padding:0 16px">';
   if (calSelectedDate && eventMap[calSelectedDate]) {
     var dayEvs = eventMap[calSelectedDate];
     var selDate = new Date(calSelectedDate + "T12:00:00");
@@ -173,6 +174,7 @@ Router.register("calendar", function() {
     h += '</div>';
     h += '</div>';
   }
+  h += '</div>'; // close #cal-day-detail
 
   h += '<div class="section"><button class="btn full green" onclick="Router.go(\'tee-create\')">Post a Tee Time</button></div>';
 
@@ -229,9 +231,86 @@ Router.register("calendar", function() {
   }
 });
 
-function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}calSelectedDate=null;Router.go("calendar");}
-function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}calSelectedDate=null;Router.go("calendar");}
-function selectCalDay(ds){calSelectedDate=(calSelectedDate===ds)?null:ds;Router.go("calendar");}
+function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}calSelectedDate=null;_updateCalendarInPlace();}
+function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}calSelectedDate=null;_updateCalendarInPlace();}
+function selectCalDay(ds){calSelectedDate=(calSelectedDate===ds)?null:ds;_updateCalendarInPlace();}
+
+function _updateCalendarInPlace() {
+  // Re-render only the grid + detail without full page re-registration
+  var monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var dayLabels = ["S","M","T","W","T","F","S"];
+  var dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  var monNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var today = new Date();
+  var todayStr = today.getFullYear() + "-" + String(today.getMonth()+1).padStart(2,"0") + "-" + String(today.getDate()).padStart(2,"0");
+
+  // Update month title
+  var titleEl = document.querySelector(".cal-month-title");
+  if (titleEl) titleEl.textContent = monthNames[calMonth] + " " + calYear;
+
+  // Rebuild event map
+  var eventMap = {};
+  function addEv(date, ev) { if (!eventMap[date]) eventMap[date] = []; eventMap[date].push(ev); }
+  liveTeeTimes.forEach(function(t) {
+    if (t.status==="cancelled") return;
+    addEv(t.date, {type:"tee", title:t.courseName||"Tee Time", time:t.time||""});
+  });
+  PB.getTrips().forEach(function(trip) {
+    if (!trip.startDate) return;
+    var sd = new Date(trip.startDate+"T12:00:00"), ed = trip.endDate ? new Date(trip.endDate+"T12:00:00") : sd;
+    for (var dt=new Date(sd); dt<=ed; dt.setDate(dt.getDate()+1)) {
+      var ds=dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0");
+      addEv(ds, {type:"event", title:trip.name, tripId:trip.id});
+    }
+  });
+  PB.getRounds().forEach(function(r) { if (r.date) addEv(r.date, {type:"round", title:r.course||"Round", score:r.score, roundId:r.id}); });
+  if (typeof liveRangeSessions !== "undefined") {
+    liveRangeSessions.forEach(function(s) { if (s.date) addEv(s.date, {type:"range", title:"Range", duration:s.durationMin||0}); });
+  }
+
+  // Rebuild grid
+  var firstDay = new Date(calYear, calMonth, 1).getDay();
+  var daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  var gridEl = document.querySelector(".cal-grid");
+  if (!gridEl) return;
+  var gh = '';
+  for (var i=0;i<firstDay;i++) gh += '<div class="cal-day empty"></div>';
+  for (var d=1;d<=daysInMonth;d++) {
+    var ds=calYear+"-"+String(calMonth+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+    var isT=ds===todayStr,isS=ds===calSelectedDate;
+    var evs=eventMap[ds]||[];
+    var bg=isS?"var(--gold)":"transparent";
+    var cl=isS?"var(--bg)":isT?"var(--gold)":"var(--cream)";
+    var dots=[];
+    var ht={};
+    evs.forEach(function(ev){if(ev.type==="event"&&!ht.e){dots.push("var(--gold)");ht.e=1;}if(ev.type==="tee"&&!ht.t){dots.push("var(--blue)");ht.t=1;}if(ev.type==="round"&&!ht.r){dots.push("#4CAF50");ht.r=1;}if(ev.type==="range"&&!ht.rng){dots.push("var(--pink)");ht.rng=1;}});
+    var dH='';
+    if(dots.length===1)dH='<div style="width:4px;height:4px;border-radius:50%;background:'+dots[0]+';margin:1px auto 0"></div>';
+    else if(dots.length>1){dH='<div style="display:flex;justify-content:center;gap:2px;margin-top:1px">';dots.slice(0,3).forEach(function(c){dH+='<div style="width:3px;height:3px;border-radius:50%;background:'+c+'"></div>';});dH+='</div>';}
+    gh+='<div class="cal-day'+(isT?' today':'')+(isS?' selected':'')+'" onclick="selectCalDay(\''+ds+'\')" style="color:'+cl+';background:'+bg+'">'+d+dH+'</div>';
+  }
+  gridEl.innerHTML = gh;
+
+  // Rebuild day detail
+  var detailEl = document.getElementById("cal-day-detail");
+  if (!detailEl) return;
+  if (!calSelectedDate || !eventMap[calSelectedDate]) { detailEl.innerHTML = ''; return; }
+  var dayEvs = eventMap[calSelectedDate];
+  var selDate = new Date(calSelectedDate + "T12:00:00");
+  var dh = '<div style="padding:12px 0 4px;font-size:14px;font-weight:700;color:var(--cream)">' + dayNames[selDate.getDay()] + ', ' + monNames[selDate.getMonth()] + ' ' + selDate.getDate() + '</div>';
+  dayEvs.forEach(function(ev) {
+    var dotColor = ev.type==="event"?"var(--gold)":ev.type==="tee"?"var(--blue)":ev.type==="round"?"#4CAF50":"var(--pink)";
+    var clickAction = ev.type==="event"&&ev.tripId?"Router.go('scorecard',{tripId:'"+ev.tripId+"'})":ev.type==="round"&&ev.roundId?"Router.go('rounds',{roundId:'"+ev.roundId+"'})":"";
+    dh += '<div class="cal-event-item"' + (clickAction?' onclick="'+clickAction+'" style="cursor:pointer"':'') + '>';
+    dh += '<div class="cal-event-dot" style="background:'+dotColor+'"></div>';
+    dh += '<div><div class="cal-event-title">' + escHtml(ev.title) + '</div>';
+    if (ev.score) dh += '<div class="cal-event-time">Score: ' + ev.score + '</div>';
+    if (ev.time) dh += '<div class="cal-event-time">' + ev.time + '</div>';
+    if (ev.duration) dh += '<div class="cal-event-time">' + ev.duration + ' min</div>';
+    dh += '</div></div>';
+  });
+  detailEl.innerHTML = dh;
+}
 
 function sendCalChat() {
   var input = document.getElementById("calChatInput");
