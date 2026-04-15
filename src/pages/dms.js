@@ -38,7 +38,7 @@ Router.register("dms", function() {
     
     if (!filtered.length) {
       var el = document.getElementById("dmMemberList");
-      if (el) el.innerHTML = '<div class="section"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div class="empty-text">No other members yet</div></div></div>';
+      if (el) el.innerHTML = '<div style="text-align:center;padding:32px 16px"><div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".6"><path d="M38 28a3 3 0 01-3 3H15l-7 7V11a3 3 0 013-3h24a3 3 0 013 3z"/></svg></div><div style="font-size:16px;font-weight:700;color:var(--cream)">No Conversations Yet</div><div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5">Once more members join, you can message them here. Invite friends to grow the crew!</div></div>';
       return;
     }
     

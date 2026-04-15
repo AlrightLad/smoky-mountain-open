@@ -29,7 +29,22 @@ Router.register("teetimes", function() {
   var h = '<div class="sh"><h2>Tee Times</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'home\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'tee-create\')">+ Post</button></div></div>';
 
   if (!upcoming.length) {
-    h += '<div class="section"><div class="card"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><path d="M12 22V2"/><path d="M12 2l8 4-8 4"/><circle cx="12" cy="22" r="2"/></svg></div><div class="empty-text">No upcoming tee times. Be the first to post one!</div></div></div></div>';
+    h += '<div style="text-align:center;padding:32px 16px">';
+    h += '<div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".6"><circle cx="24" cy="24" r="18"/><path d="M24 14v10l7 4"/><path d="M38 10l-3 3M10 10l3 3"/></svg></div>';
+    h += '<div style="font-size:16px;font-weight:700;color:var(--cream)">No Tee Times Posted</div>';
+    h += '<div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:280px;margin-left:auto;margin-right:auto">Post a tee time and your crew can RSVP. Never wonder who\u2019s playing this weekend again.</div>';
+    h += '<button class="btn full green" style="margin-top:16px;max-width:220px" onclick="Router.go(\'tee-create\')">Post a Tee Time</button>';
+    h += '<div style="margin-top:20px;text-align:left;max-width:280px;margin-left:auto;margin-right:auto">';
+    h += '<div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Example tee times</div>';
+    var exTees = [
+      "Honey Run \u00b7 Saturday 8:30 AM \u00b7 2 spots open",
+      "Out Door CC \u00b7 Sunday 7:00 AM \u00b7 Need 3 more",
+      "Heritage Hills \u00b7 Friday 3:00 PM \u00b7 All welcome"
+    ];
+    exTees.forEach(function(ex) {
+      h += '<div style="padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:4px;font-size:11px;color:var(--muted);font-style:italic">' + ex + '</div>';
+    });
+    h += '</div></div>';
   }
   upcoming.forEach(function(t) { h += '<div class="section">' + renderTeeCard(t) + '</div>'; });
 

@@ -12,6 +12,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Feed Redesign, Calendar Fix, Shop Expansion</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "Branded empty states for Challenges, Tee Times, DMs, and Scramble Teams — icons, headlines, CTAs, and example ideas", tag: "NEW"},
     {item: "Feed completely redesigned — Instagram-style cards with avatars, theme rings, hole dots, stat chips, and action rows", tag: "NEW"},
     {item: "Round posts show full detail: score, course, F9/B9 splits, hole-by-hole colored dots, FIR/GIR/putts chips", tag: "NEW"},
     {item: "Every feed avatar uses THAT player\'s theme ring, not yours — see everyone\'s personality", tag: "NEW"},
