@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    TEXTURES — Background texture overlays for each theme.
-   Each theme uses a tiling JPG via a ::before pseudo-element on body,
+   Each theme uses a tiling JPG via a ::before pseudo-element on html,
    composited with mix-blend-mode + opacity for a subtle, premium feel.
    The texture sits behind all content but above the flat background color.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── Shared texture layer ── */
-body::before{
+html::before{
   content:'';
   position:fixed;
   inset:0;
@@ -22,57 +22,57 @@ body::before{
 body>*{position:relative;z-index:1}
 
 /* ── Classic (gold weave) ── */
-[data-theme="classic"] body::before,
-:root:not([data-theme]) body::before{
+[data-theme="classic"] html::before,
+:root:not([data-theme]) html::before{
   background-image:url('/textures/classic-tile.jpg');
   opacity:.10;
   mix-blend-mode:overlay
 }
 
 /* ── Camo (woodland leaves) ── */
-[data-theme="camo"] body::before{
+[data-theme="camo"] html::before{
   background-image:url('/textures/camo-tile.jpg');
   opacity:.14;
   mix-blend-mode:overlay
 }
 
 /* ── Masters (green leather) ── */
-[data-theme="masters"] body::before{
+[data-theme="masters"] html::before{
   background-image:url('/textures/masters-tile.jpg');
   opacity:.12;
   mix-blend-mode:soft-light
 }
 
 /* ── Azalea (pink flowers) ── */
-[data-theme="azalea"] body::before{
+[data-theme="azalea"] html::before{
   background-image:url('/textures/azalea-tile.jpg');
   opacity:.10;
   mix-blend-mode:overlay
 }
 
 /* ── USGA (navy stripes) ── */
-[data-theme="usga"] body::before{
+[data-theme="usga"] html::before{
   background-image:url('/textures/usga-tile.jpg');
   opacity:.12;
   mix-blend-mode:overlay
 }
 
 /* ── Sunday Red / Champion Red (red leather) ── */
-[data-theme="sundayred"] body::before{
+[data-theme="sundayred"] html::before{
   background-image:url('/textures/champion-tile.jpg');
   opacity:.12;
   mix-blend-mode:soft-light
 }
 
 /* ── Dark (carbon fiber) ── */
-[data-theme="dark"] body::before{
+[data-theme="dark"] html::before{
   background-image:url('/textures/dark-tile.jpg');
   opacity:.16;
   mix-blend-mode:overlay
 }
 
 /* ── Light (linen) ── */
-[data-theme="light"] body::before{
+[data-theme="light"] html::before{
   background-image:url('/textures/light-tile.jpg');
   opacity:.14;
   mix-blend-mode:multiply
