@@ -5,21 +5,21 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.27.0</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.28.0</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.27.0</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Push Notifications, Onboarding, Visual Polish</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.28.0</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · ParCoins, Push Notifications, Onboarding, Visual Polish</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Push notifications — get alerts for DMs, tee times, event results, and achievements even when the app is closed", tag: "NEW"},
-    {item: "New member onboarding — 3-screen welcome flow explaining the app, then a profile setup wizard with avatar upload", tag: "NEW"},
-    {item: "Enable notifications from Settings or during onboarding — your choice, never auto-prompted", tag: "NEW"},
-    {item: "Player profiles redesigned — hero banner, larger avatar, compact XP bar, and 4-tab layout", tag: "NEW"},
-    {item: "Round detail redesigned — big centered score with colored +/- pill, stat chips, consolidated commentary", tag: "NEW"},
-    {item: "Activity feed redesigned — rounds are bold and prominent, chat is compact, range gets its own style", tag: "NEW"},
-    {item: "Champion Red theme locked for non-champions — win an event to unlock it", tag: "NEW"},
-    {item: "7 bug fixes including course averages, calendar events, iOS tap, and Parbaugh Round display", tag: "FIXED"}
+    {item: "ParCoins are here — earn coins every time you play, practice, or compete. Your balance lives on your profile.", tag: "NEW"},
+    {item: "Earn 10-50 coins per round (better scores = more coins), 5-15 per range session, and 25-100 per achievement unlock", tag: "NEW"},
+    {item: "Daily login streak — 1 to 10 coins per day, scaling up the longer your streak runs", tag: "NEW"},
+    {item: "Personal best bonus — drop a new career low and earn 100 bonus coins", tag: "NEW"},
+    {item: "Wallet and transaction history on every player profile — see what you earned and when", tag: "NEW"},
+    {item: "Push notifications — get alerts for DMs, tee times, and achievements even when the app is closed", tag: "NEW"},
+    {item: "New member onboarding — 3-screen welcome flow with profile setup wizard", tag: "NEW"},
+    {item: "Visual polish — redesigned profiles, round detail, feed cards, and Champion Red unlock", tag: "IMPROVED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "var(--blue)" : "var(--muted)";
