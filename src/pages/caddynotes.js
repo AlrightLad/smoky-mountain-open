@@ -5,10 +5,10 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.34.0</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.34.1</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.34.0</span></div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.34.1</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · FAQ Rebuild, Onboarding Upgrade, UI Polish, Texture Fix</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -95,22 +95,22 @@ Router.register("caddynotes", function() {
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--muted)">On the Range — Coming Soon</span></div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--muted);line-height:1.8">';
   var upcoming = [
-    "Multi-league platform — create your own league",
-    "Public profiles and golfer discovery",
-    "AI Caddie — post-round analysis and practice plans",
-    "Strokes gained analytics",
-    "Course GPS yardages",
-    "Native mobile app (iOS + Android)",
-    "Season pass cosmetics (limited edition)",
-    "Prediction markets for events",
-    "Merch store integration"
+    "AI Caddie Insights — post-round analysis and practice plans",
+    "Swing Analysis — video upload with AI feedback",
+    "Course GPS & Yardages — front, middle, back of green",
+    "Apple Watch Companion — score entry from your wrist",
+    "Multi-League Support — create and manage your own league",
+    "Public Profiles — opt-in shareable profile links",
+    "Season Pass Cosmetics — limited edition items each season",
+    "Prediction Markets — bet on event outcomes",
+    "Native Mobile App — iOS and Android"
   ];
   upcoming.forEach(function(u) {
     h += '<div style="padding:2px 0;display:flex;gap:8px;align-items:flex-start"><span style="color:var(--muted2);flex-shrink:0;margin-top:4px"><svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/></svg></span><span>' + u + '</span></div>';
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.34.0</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.34.1</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
