@@ -53,6 +53,33 @@ function fsTimestamp() { return (typeof firebase !== "undefined" && firebase.fir
 function genId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 6); }
 function localDateStr(d) { d = d || new Date(); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
 
+// ========== SHARED UI HELPERS ==========
+// These are used across multiple pages — must be in core, not in a page file.
+
+function statBox(val, label) {
+  var isNum = !isNaN(parseFloat(val)) && isFinite(val) && val !== "—";
+  return '<div class="stat-box"><div class="stat-val"' + (isNum ? ' data-count="' + val + '"' : '') + '>' + (isNum ? '0' : val) + '</div><div class="stat-label">' + label + '</div></div>';
+}
+
+function formField(label, id, value, type, placeholder) {
+  return '<div class="ff"><label class="ff-label">' + label + '</label><input type="' + (type || "text") + '" class="ff-input" id="' + id + '" value="' + (value || "").toString().replace(/"/g, "&quot;") + '"' + (placeholder ? ' placeholder="' + placeholder + '"' : "") + '></div>';
+}
+
+function toggleSection(id) {
+  var el = document.getElementById(id);
+  var toggle = document.getElementById(id + "-toggle");
+  if (!el) return;
+  var isHidden = el.classList.contains("hidden") || el.style.display === "none";
+  if (isHidden) {
+    el.classList.remove("hidden");
+    el.style.display = "block";
+    if (toggle) toggle.style.transform = "rotate(90deg)";
+  } else {
+    el.style.display = "none";
+    if (toggle) toggle.style.transform = "rotate(0deg)";
+  }
+}
+
 // ========== PWA SERVICE WORKER ==========
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {

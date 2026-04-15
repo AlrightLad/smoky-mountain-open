@@ -1638,14 +1638,7 @@ function submitAddMember() {
 }
 
 /* Helpers */
-function statBox(val, label) {
-  var isNum = !isNaN(parseFloat(val)) && isFinite(val) && val !== "—";
-  return '<div class="stat-box"><div class="stat-val"' + (isNum ? ' data-count="' + val + '"' : '') + '>' + (isNum ? '0' : val) + '</div><div class="stat-label">' + label + '</div></div>';
-}
-
-function formField(label, id, value, type, placeholder) {
-  return '<div class="ff"><label class="ff-label">' + label + '</label><input type="' + (type || "text") + '" class="ff-input" id="' + id + '" value="' + (value || "").toString().replace(/"/g, "&quot;") + '"' + (placeholder ? ' placeholder="' + placeholder + '"' : "") + '></div>';
-}
+// statBox and formField moved to src/core/utils.js (shared across pages)
 
 function showCourseSearch(input, type) {
   var results = PB.searchCourses(input.value);
@@ -1660,20 +1653,7 @@ function showCourseSearch(input, type) {
   container.innerHTML = h;
 }
 
-function toggleSection(id) {
-  var el = document.getElementById(id);
-  var toggle = document.getElementById(id + "-toggle");
-  if (!el) return;
-  var isHidden = el.classList.contains("hidden") || el.style.display === "none";
-  if (isHidden) {
-    el.classList.remove("hidden");
-    el.style.display = "block";
-    if (toggle) toggle.style.transform = "rotate(90deg)";
-  } else {
-    el.style.display = "none";
-    if (toggle) toggle.style.transform = "rotate(0deg)";
-  }
-}
+// toggleSection moved to src/core/utils.js (shared across pages)
 
 function selectStockAvatar(pid, src) {
   var isOwn = currentUser && (pid === currentUser.uid || (currentProfile && pid === currentProfile.claimedFrom));

@@ -2209,4 +2209,5 @@ enterApp = function() {
 };
 
 // ========== FINAL INIT ==========
-Router.go("home");
+// Deferred: pages register after core loads, so wait for them
+setTimeout(function() { Router.go("home"); }, 0);
