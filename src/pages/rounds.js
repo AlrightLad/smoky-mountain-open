@@ -47,8 +47,8 @@ function renderRoundDetail(roundId) {
   h += '</div>';
   // Score hero
   h += '<div style="text-align:center">';
-  if (player) h += '<div class="pd-av" style="width:52px;height:52px;font-size:20px;border-width:2px;border-color:' + playerFrameColor(player) + ';margin:0 auto 8px">' + Router.getAvatar(player) + '</div>';
-  h += '<div style="font-size:14px;font-weight:600;color:var(--cream)">' + escHtml(round.playerName) + '</div>';
+  if (player) h += '<div style="display:flex;justify-content:center;margin-bottom:8px">' + renderAvatar(player, 52, true) + '</div>';
+  h += '<div style="font-size:14px;font-weight:600;color:var(--cream)">' + renderUsername(player || {name:round.playerName,id:''}, '', false) + '</div>';
   h += '<div style="font-size:12px;color:var(--muted);margin-top:2px">' + escHtml(round.course) + '</div>';
   h += '<div style="margin-top:12px"><span style="font-family:Playfair Display,serif;font-size:56px;font-weight:800;color:var(--gold);line-height:1">' + round.score + '</span></div>';
   h += '<div style="margin-top:6px"><span style="font-size:14px;font-weight:700;color:' + diffColor + ';background:' + diffColor + '15;padding:4px 14px;border-radius:var(--radius-full);border:1px solid ' + diffColor + '30">' + diffStr + '</span></div>';
@@ -280,13 +280,14 @@ function submitRound() {
     setTimeout(function() { persistPlayerStats(player); }, 2000);
     // ── ParCoin: award coins for logging a round ──
     if (currentUser && addRoundData.format !== "scramble" && addRoundData.format !== "scramble4") {
-      var hcap = PB.calcHandicap(PB.getPlayerRounds(currentUser.uid));
-      var coins = calcRoundCoins(score, rating, slope, hcap);
-      awardCoins(currentUser.uid, coins, "round_complete", "Logged round at " + courseName + " (" + score + ")", "round_" + round.id);
-      if (filledScores.length >= 18) {
+      var is9h = filledScores.length < 18;
+      var isAttested = !!round.attestedBy;
+      var coins = calcRoundCoins(is9h, isAttested);
+      awardCoins(currentUser.uid, coins, "round_complete", "Logged " + (is9h ? "9H" : "18H") + " at " + courseName + " (" + score + ")" + (isAttested ? " [attested]" : ""), "round_" + round.id);
+      if (!is9h) {
         var prevBest = PB.getPlayerBest(currentUser.uid);
         if (prevBest && prevBest.score && score < prevBest.score) {
-          awardCoins(currentUser.uid, PARCOIN_RATES.personal_best, "personal_best", "New personal best: " + score, "pb_" + round.id);
+          awardCoins(currentUser.uid, PARCOIN_RATES.personal_best_18h, "personal_best", "New PB (18H): " + score, "pb_" + round.id);
         }
       }
     }

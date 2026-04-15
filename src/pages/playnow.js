@@ -777,13 +777,19 @@ function finishLiveRound() {
 
   // ── ParCoin: award coins for completing a round ──
   if (currentUser && liveState.format !== "scramble" && liveState.format !== "scramble4") {
-    var hcap = PB.calcHandicap(PB.getPlayerRounds(currentUser.uid));
-    var roundCoins = calcRoundCoins(totalScore, liveState.rating, liveState.slope, hcap);
-    awardCoins(currentUser.uid, roundCoins, "round_complete", "Completed round at " + liveState.course + " (" + totalScore + ")", "round_" + round.id);
+    var is9h = completed < 18;
+    var isAttested = !!round.attestedBy;
+    var roundCoins = calcRoundCoins(is9h, isAttested);
+    awardCoins(currentUser.uid, roundCoins, "round_complete", "Completed " + (is9h ? "9H" : "18H") + " round at " + liveState.course + " (" + totalScore + ")" + (isAttested ? " [attested]" : ""), "round_" + round.id);
     // Personal best check
     var prevBest = PB.getPlayerBest(currentUser.uid);
-    if (completed >= 18 && prevBest && prevBest.score && totalScore < prevBest.score) {
-      awardCoins(currentUser.uid, PARCOIN_RATES.personal_best, "personal_best", "New personal best: " + totalScore + " at " + liveState.course, "pb_" + round.id);
+    if (!is9h && prevBest && prevBest.score && totalScore < prevBest.score) {
+      awardCoins(currentUser.uid, PARCOIN_RATES.personal_best_18h, "personal_best", "New PB (18H): " + totalScore + " at " + liveState.course, "pb_" + round.id);
+    } else if (is9h) {
+      var prevBest9 = PB.getPlayerRounds(currentUser.uid).filter(function(r){return r.holesPlayed&&r.holesPlayed<18&&r.score}).map(function(r){return r.score});
+      if (prevBest9.length > 1 && totalScore < Math.min.apply(null, prevBest9.slice(0,-1))) {
+        awardCoins(currentUser.uid, PARCOIN_RATES.personal_best_9h, "personal_best_9h", "New PB (9H): " + totalScore, "pb9_" + round.id);
+      }
     }
   }
   // Check if any wagers or bounties can be resolved with this round

@@ -22,7 +22,7 @@ Router.register("trips", function(params) {
   function tripCard(t) {
     var memberAvatars = (t.members || []).slice(0, 4).map(function(id) {
       var p = PB.getPlayer(id) || (typeof fbMemberCache !== "undefined" && fbMemberCache[id]);
-      return p ? '<div class="h2h-av" style="width:24px;height:24px;margin-left:-6px;border:1.5px solid var(--bg)">' + Router.getAvatar(p) + '</div>' : '';
+      return p ? '<div style="margin-left:-6px">' + renderAvatar(p, 24, false) + '</div>' : '';
     }).join('');
     var winner = t.champion ? (PB.getPlayer(t.champion) || (typeof fbMemberCache !== "undefined" && fbMemberCache[t.champion]) || {name: t.champion}) : null;
     var card = '<div class="card" onclick="Router.go(\'scorecard\',{tripId:\'' + t.id + '\'})">';
@@ -100,7 +100,7 @@ function renderTripCreate() {
   h += '<div id="tc-members">';
   allPlayers.forEach(function(p) {
     h += '<div class="h2h-row" style="cursor:pointer" onclick="toggleTripMember(\'' + p.id + '\')">';
-    h += '<div class="h2h-left"><div class="h2h-av" style="border-color:' + playerFrameColor(p) + '">' + Router.getAvatar(p) + '</div><span class="h2h-name">' + p.name + '</span>';
+    h += '<div class="h2h-left">' + renderAvatar(p, 28, false) + '<span class="h2h-name">' + renderUsername(p, '', false) + '</span>';
     if (p.founding) h += '<span style="font-size:9px;color:var(--gold);margin-left:6px"></span>';
     h += '</div>';
     h += '<div id="tc-check-' + p.id + '" style="width:22px;height:22px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--birdie)"></div>';

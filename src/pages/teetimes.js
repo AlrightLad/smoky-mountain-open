@@ -94,7 +94,7 @@ function renderTeeCard(t, isPast, isCancelled) {
   for (var i = 0; i < (t.spots||4); i++) {
     if (i < acceptedIds.length) {
       var m = PB.getPlayer(acceptedIds[i]);
-      h += '<div class="tee-spot filled">' + (m ? Router.getAvatar(m) : "Done") + '</div>';
+      h += '<div class="tee-spot filled">' + (m ? renderAvatar(m, 36, false) : "Done") + '</div>';
     } else h += '<div class="tee-spot open">+</div>';
   }
   h += '</div>';

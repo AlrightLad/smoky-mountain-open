@@ -66,7 +66,7 @@ function renderTeamList() {
       h += '<div style="display:flex;gap:6px;margin-bottom:6px">';
       members.forEach(function(p) {
         var isCap = captain && p.id === team.captain;
-        h += '<div class="h2h-av" style="width:28px;height:28px;border:2px solid ' + (isCap ? 'var(--gold)' : playerFrameColor(p)) + '">' + Router.getAvatar(p) + '</div>';
+        h += renderAvatar(p, 28, false);
       });
       h += '</div>';
       if (captain) h += '<div style="font-size:10px;color:var(--muted)">Captain: <span style="color:var(--gold);font-weight:600">' + escHtml(captain.name) + '</span></div>';
@@ -132,7 +132,7 @@ function renderCreateTeam() {
   h += '<div id="st-members">';
   players.forEach(function(p) {
     h += '<div class="h2h-row" style="cursor:pointer" onclick="toggleScrambleMember(\'' + p.id + '\')">';
-    h += '<div class="h2h-left"><div class="h2h-av">' + Router.getAvatar(p) + '</div><span class="h2h-name">' + p.name + '</span></div>';
+    h += '<div class="h2h-left">' + renderAvatar(p, 28, false) + '<span class="h2h-name">' + renderUsername(p, '', false) + '</span></div>';
     h += '<div id="st-check-' + p.id + '" style="width:22px;height:22px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--birdie)"></div>';
     h += '</div>';
   });
@@ -285,8 +285,8 @@ function renderTeamDetail(teamId) {
   members.forEach(function(p) {
     var isCaptain = captain && (p.id === team.captain);
     h += '<div style="text-align:center">';
-    h += '<div class="pd-av" style="width:60px;height:60px;font-size:24px;cursor:default;border:2px solid ' + playerFrameColor(p) + '">' + Router.getAvatar(p) + '</div>';
-    h += '<div style="font-size:12px;font-weight:600;margin-top:4px">' + escHtml(p.name) + '</div>';
+    h += renderAvatar(p, 60, true);
+    h += '<div style="font-size:12px;font-weight:600;margin-top:4px">' + renderUsername(p, '', false) + '</div>';
     if (isCaptain) h += '<div style="font-size:8px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:700">Captain</div>';
     h += '</div>';
   });

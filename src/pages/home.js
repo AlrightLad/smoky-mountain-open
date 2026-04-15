@@ -282,8 +282,7 @@ Router.register("home", function() {
       h += '<div class="card" style="margin-bottom:4px;cursor:pointer;' + (isFirst ? 'border-color:rgba(var(--gold-rgb),.2);background:linear-gradient(135deg,var(--grad-card),var(--card))' : '') + '" onclick="Router.go(\'members\',{id:\'' + s.id + '\'})">';
       h += '<div style="padding:10px 14px;display:flex;align-items:center;gap:12px">';
       h += '<div style="width:24px;text-align:center;font-size:14px">' + medalIcon + '</div>';
-      var _lbRingS = typeof playerRingStyle === "function" ? playerRingStyle(p || s) : "border:2px solid var(--gold)";
-      h += '<div class="m-av" style="width:32px;height:32px;font-size:13px;' + _lbRingS + '">' + Router.getAvatar(p || s) + '</div>';
+      h += renderAvatar(p || s, 32, false);
       h += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(s.name || s.username || "") + '</div>';
       h += '<div style="font-size:10px;color:var(--muted)">' + (s.rounds||0) + ' rounds</div></div>';
       h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--gold)" data-count="' + (s.points||0) + '">0</div>';
@@ -387,9 +386,9 @@ function showRivalryDetail(p1id, p2id) {
   // Big score display
   h += '<div style="text-align:center;padding:20px">';
   h += '<div class="rivalry-vs">';
-  h += '<div class="rv-player"><div class="rv-av" style="width:56px;height:56px;font-size:22px;border-color:' + playerFrameColor(p1) + '">' + Router.getAvatar(p1) + '</div><div class="rv-name">' + escHtml(p1.name) + '</div></div>';
+  h += '<div class="rv-player">' + renderAvatar(p1, 56, true) + '<div class="rv-name">' + renderUsername(p1, 'font-size:12px;color:var(--cream);', false) + '</div></div>';
   h += '<div class="rv-x">vs</div>';
-  h += '<div class="rv-player"><div class="rv-av" style="width:56px;height:56px;font-size:22px;border-color:' + playerFrameColor(p2) + '">' + Router.getAvatar(p2) + '</div><div class="rv-name">' + escHtml(p2.name) + '</div></div>';
+  h += '<div class="rv-player">' + renderAvatar(p2, 56, true) + '<div class="rv-name">' + renderUsername(p2, 'font-size:12px;color:var(--cream);', false) + '</div></div>';
   h += '</div>';
   h += '<div class="rv-score" style="margin-top:12px">' + h2h.p1wins + ' — ' + h2h.p2wins + '</div>';
   h += '<div class="rv-label">' + (h2h.ties > 0 ? h2h.ties + ' ties' : 'Head-to-head record') + '</div>';

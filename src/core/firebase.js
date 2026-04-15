@@ -581,8 +581,9 @@ function updateProfileBar() {
     if (currentUser && !photoCache["member:" + currentUser.uid] && photoCache["member:" + p.id]) {
       photoCache["member:" + currentUser.uid] = photoCache["member:" + p.id];
     }
+    var _pbRingS = typeof playerRingStyle === "function" ? playerRingStyle(p) : "border:2px solid " + playerFrameColor(p);
     avatarEl.innerHTML = Router.getAvatar(p);
-    avatarEl.style.border = '2px solid ' + playerFrameColor(p);
+    avatarEl.style.cssText += ';' + _pbRingS;
   } else {
     var initial = name.charAt(0).toUpperCase();
     avatarEl.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700;font-size:12px;background:var(--bg3);border-radius:50%">' + initial + '</div>';

@@ -482,7 +482,7 @@ function renderChatMessages(messages) {
     // Header
     var isSystem = msg.authorId === "system";
     ch += '<div style="display:flex;gap:10px">';
-    ch += '<div class="c-av" style="background:var(--bg3);border:1px solid ' + (isSystem ? 'var(--border)' : (m ? playerFrameColor(m) : 'var(--border)')) + ';display:flex;align-items:center;justify-content:center">' + (isSystem ? '⛳' : (m ? Router.getAvatar(m) : '')) + '</div>';
+    ch += (isSystem ? '<div style="width:32px;height:32px;min-width:32px;border-radius:50%;background:rgba(var(--birdie-rgb),.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:16px">⛳</span></div>' : renderAvatar(m, 32, true));
     ch += '<div style="flex:1"><div class="chat-author"' + (isSystem ? ' style="color:var(--birdie)"' : '') + '>' + escHtml((msg.system ? "The Caddy" : msg.authorName || msg.user || "Member")) + (mLvl && !isSystem ? ' <span style="font-size:8px;color:var(--gold);font-weight:600">LV' + mLvl.level + '</span>' : '') + '</div>';
     ch += '<div class="chat-text">' + escHtml(msg.text) + '</div>';
     if (msg.createdAt && msg.createdAt.toDate) {

@@ -148,10 +148,8 @@ function buildMemberCards(players) {
     var hcap = PB.calcHandicap(rounds);
     var plvl = {level:1};
     try { plvl = PB.getPlayerLevel(p.id) || {level:1}; } catch(e) {}
-    var ringStyle = typeof playerRingStyle === "function" ? playerRingStyle(p) : "border:2px solid " + playerFrameColor(p);
-
     h += '<div class="card member-card" data-name="' + escHtml((p.name||"").toLowerCase() + " " + (p.username||"").toLowerCase()) + '" onclick="Router.go(\'members\',{id:\'' + p.id + '\'})">';
-    h += '<div class="member-row"><div class="m-av" style="' + ringStyle + '">' + Router.getAvatar(p);
+    h += '<div class="member-row"><div style="position:relative">' + renderAvatar(p, 40, false);
     h += '<div style="position:absolute;bottom:-3px;right:-3px;background:var(--gold);color:var(--bg);font-size:7px;font-weight:800;border-radius:6px;padding:1px 3px;border:1.5px solid var(--bg);line-height:1.3;min-width:12px;text-align:center;z-index:2;pointer-events:none">' + (plvl.level||1) + '</div>';
     h += '</div><div class="m-info">';
     h += '<div class="m-name">' + escHtml(p.username || p.name);
@@ -283,11 +281,12 @@ function renderMemberDetailWithData(p) {
   h += '</div>';
   // Avatar + name block
   h += '<div style="text-align:center;padding-bottom:16px">';
-  h += '<div class="pd-av" style="width:96px;height:96px;font-size:38px;' + ringStyle + ';margin:0 auto 12px;box-shadow:0 4px 20px rgba(0,0,0,.3)"' + (canEditPhoto ? ' onclick="uploadMemberPhoto(\'' + pid + '\')"' : '') + '>' + Router.getAvatar(p);
+  var _profRingStyle = typeof playerRingStyle === "function" ? playerRingStyle(p) : "border:3px solid " + frameColor;
+  h += '<div class="pd-av" style="width:96px;height:96px;font-size:38px;' + _profRingStyle + ';margin:0 auto 12px;box-shadow:0 4px 20px rgba(0,0,0,.3)"' + (canEditPhoto ? ' onclick="uploadMemberPhoto(\'' + pid + '\')"' : '') + '>' + Router.getAvatar(p);
   if (canEditPhoto) h += '<div class="pd-edit"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2" style="vertical-align:middle"><path d="M11 2l3 3-8 8H3v-3z"/></svg></div>';
   h += '<div style="position:absolute;bottom:-4px;right:-4px;background:var(--gold);color:var(--bg);font-size:9px;font-weight:800;border-radius:10px;padding:2px 7px;border:2px solid var(--bg);line-height:1.3;min-width:18px;text-align:center;z-index:3">' + lvl.level + '</div>';
   h += '</div>';
-  h += '<div class="pd-name" style="font-size:24px">' + (p.username || p.name) + '</div>';
+  h += '<div class="pd-name" style="font-size:24px">' + renderUsername(p, '', false) + '</div>';
   if (p.username && p.name && p.username !== p.name) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + p.name + '</div>';
 
   // Display badges (max 3, player-selected)
@@ -812,8 +811,7 @@ function renderMemberDetailWithData(p) {
     h2hHasMatches = true;
     var record = h2h.p1wins + ' — ' + h2h.p2wins + (h2h.ties ? ' — ' + h2h.ties + 'T' : '');
     var color = h2h.p1wins > h2h.p2wins ? 'var(--birdie)' : h2h.p2wins > h2h.p1wins ? 'var(--red)' : 'var(--gold)';
-    var oppRingS = typeof playerRingStyle === "function" ? playerRingStyle(opp) : "border:2px solid " + playerFrameColor(opp);
-    h2hContent += '<div class="h2h-row" style="cursor:pointer" onclick="showRivalryDetail(\'' + pid + '\',\'' + opp.id + '\')"><div class="h2h-left"><div class="h2h-av" style="' + oppRingS + '">' + Router.getAvatar(opp) + '</div><span class="h2h-name">' + opp.name + '</span></div><span class="h2h-record" style="color:' + color + '">' + record + '</span></div>';
+    h2hContent += '<div class="h2h-row" style="cursor:pointer" onclick="showRivalryDetail(\'' + pid + '\',\'' + opp.id + '\')"><div class="h2h-left">' + renderAvatar(opp, 28, false) + '<span class="h2h-name">' + renderUsername(opp, '', false) + '</span></div><span class="h2h-record" style="color:' + color + '">' + record + '</span></div>';
   });
   if (!h2hHasMatches) {
     h2hContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No head-to-head matches yet. Play the same course on the same day as another member!</div>';

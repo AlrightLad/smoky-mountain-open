@@ -90,7 +90,7 @@ function renderAceDetail(idx) {
 
   // Player and details
   h += '<div class="pd-banner">';
-  if (player) h += '<div class="pd-av" style="width:70px;height:70px;font-size:28px;border-width:3px;border-color:var(--gold)">' + Router.getAvatar(player) + '</div>';
+  if (player) h += renderAvatar(player, 70, false);
   h += '<div style="font-size:24px;font-weight:800;color:var(--gold);margin-top:4px">' + ace.by + '</div>';
   h += '<div style="font-size:15px;color:var(--cream);margin-top:4px">' + ace.course + (isDirectory ? ' <span style="color:var(--gold)"></span>' : '') + '</div>';
   h += '<div style="font-size:13px;color:var(--muted);margin-top:4px">' + ace.date + '</div>';

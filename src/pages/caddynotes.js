@@ -5,13 +5,19 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.38.3</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.38.4</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.38.3</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Cosmetics Visual Upgrade, Economy Fix, UX Polish</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.38.4</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Health Check: Ring Migration, ParCoin Fix, Full Audit</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "EVERY avatar in the app now uses renderAvatar() — rings, glows, and animations show identically everywhere", tag: "FIXED"},
+    {item: "Migrated 17 avatar instances across 10 files: home leaderboard, member list, profile, chat, DMs, rounds, scramble, trips, tee times, aces, online section", tag: "FIXED"},
+    {item: "CRITICAL: Fixed calcRoundCoins() calls using old signature — rounds now correctly award 50/25 coins per new economy", tag: "FIXED"},
+    {item: "CRITICAL: Fixed personal_best award using deleted rate key — now uses personal_best_18h/9h correctly", tag: "FIXED"},
+    {item: "Fixed richlist power-ups and status purchases using broken awardCoins(-cost) — now uses deductCoins()", tag: "FIXED"},
+    {item: "Name effects now render on profile page, H2H section, scramble teams, and rivalry display via renderUsername()", tag: "IMPROVED"},
     {item: "All 8 themes verified for consistent variable coverage — every theme defines bg, card, border, accent, glow, and gradient tokens", tag: "IMPROVED"},
     {item: "Ring animations dramatically amplified — Pulse Gold breathes wider, Diamond Sparkle rotates light around the border, Rainbow cycles through full spectrum", tag: "IMPROVED"},
     {item: "Neon Green and Crimson Ember rings now pulse with much stronger glow spread — visible at a glance", tag: "IMPROVED"},
@@ -193,7 +199,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.38.3</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.38.4</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });

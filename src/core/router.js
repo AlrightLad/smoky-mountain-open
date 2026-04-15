@@ -1932,24 +1932,9 @@ function renderOnlineSection() {
     var isMe = currentUser && uid === currentUser.uid;
     var lvlForOnline = PB.getPlayerLevel(uid);
     var lvlNum = lvlForOnline ? lvlForOnline.level : null;
-    var onlineFC = p ? playerFrameColor(p) : (isMe ? 'var(--gold)' : 'rgba(var(--live-rgb),.4)');
-
-    // Try to get photo directly from cache using Firebase UID
-    var directPhoto = photoCache["member:" + uid];
-
     h += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0" onclick="Router.go(\'members\',{id:\'' + uid + '\'})">';
     h += '<div style="position:relative;width:40px;height:40px;flex-shrink:0">';
-    h += '<div style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid ' + onlineFC + ';cursor:pointer">';
-
-    if (directPhoto) {
-      h += '<img alt="" src="' + directPhoto + '" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">';
-    } else if (avatarPlayer) {
-      h += Router.getAvatar(avatarPlayer);
-    } else {
-      h += '<span style="color:var(--gold);font-weight:700">' + name.charAt(0).toUpperCase() + '</span>';
-    }
-
-    h += '</div>';
+    h += renderAvatar(p || {name:name,id:uid}, 40, false);
     // Level badge on avatar bottom-right
     if (lvlNum) h += '<div style="position:absolute;bottom:-3px;right:-3px;background:var(--gold);color:var(--bg);font-size:7px;font-weight:800;border-radius:6px;padding:1px 3px;border:1.5px solid var(--bg);line-height:1.3;min-width:12px;text-align:center;z-index:2">' + lvlNum + '</div>';
     h += '</div>';

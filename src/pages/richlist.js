@@ -102,7 +102,7 @@ function purchasePowerUp(key, cost) {
   if (balance < cost) { Router.toast("Not enough coins"); return; }
   var myName = currentProfile ? (currentProfile.name || currentProfile.username) : "A Parbaugh";
 
-  awardCoins(currentUser.uid, -cost, "powerup_" + key, "Activated: " + key);
+  if (!deductCoins(currentUser.uid, cost, "powerup_" + key, "Activated: " + key)) return;
 
   if (key === "doubleXP") {
     db.collection("members").doc(currentUser.uid).set({ activeDoubleXP: true }, { merge: true });
@@ -126,7 +126,7 @@ function purchaseStatus(key, cost) {
   if (balance < cost) { Router.toast("Not enough coins"); return; }
   var myName = currentProfile ? (currentProfile.name || currentProfile.username) : "A Parbaugh";
 
-  awardCoins(currentUser.uid, -cost, "status_" + key, "Purchased: " + key);
+  if (!deductCoins(currentUser.uid, cost, "status_" + key, "Purchased: " + key)) return;
 
   if (key === "sponsorHole") {
     var course = currentProfile ? (currentProfile.homeCourse || "their home course") : "a course";

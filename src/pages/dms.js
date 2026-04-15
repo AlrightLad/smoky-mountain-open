@@ -93,7 +93,7 @@ Router.register("dms", function() {
       }
       
       dh += '<div class="dm-list-item" onclick="Router.go(\'dm-thread\',{partner:\'' + m.id + '\'})">';
-      dh += '<div class="m-av" style="border-color:' + playerFrameColor(m) + '">' + Router.getAvatar(m) + '</div>';
+      dh += renderAvatar(m, 40, false);
       dh += '<div class="m-info" style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:6px">';
       dh += '<div class="m-name" style="flex:1;' + (isUnread ? 'color:var(--cream);font-weight:700' : '') + '">' + escHtml(m.name || m.username || m.id) + '</div>';
       if (isUnread) dh += '<span class="pill pill-new" style="font-size:7px;padding:2px 6px">NEW</span>';
@@ -156,9 +156,7 @@ Router.register("dm-thread", function(params) {
   function setHeader(name, partner) {
     var hdr = document.getElementById("dmThreadHeader");
     if (!hdr) return;
-    var partnerFC = partner ? playerFrameColor(partner) : 'var(--border)';
-    var av = partner ? Router.getAvatar(partner) : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg3);border-radius:50%;color:var(--gold);font-weight:700;font-size:12px">' + (name||"?").charAt(0).toUpperCase() + '</div>';
-    hdr.innerHTML = '<div style="display:flex;align-items:center;gap:8px"><div class="m-av" style="width:28px;height:28px;font-size:10px;border-color:' + partnerFC + '">' + av + '</div><h2 style="font-size:16px">' + escHtml(name) + '</h2></div><button class="back" onclick="Router.go(\'dms\')">← Back</button>';
+    hdr.innerHTML = '<div style="display:flex;align-items:center;gap:8px">' + renderAvatar(partner, 28, true) + '<h2 style="font-size:16px">' + escHtml(name) + '</h2></div><button class="back" onclick="Router.go(\'dms\')">← Back</button>';
     var inp = document.getElementById("dmInput");
     if (inp) inp.placeholder = "Message " + name + "...";
   }
