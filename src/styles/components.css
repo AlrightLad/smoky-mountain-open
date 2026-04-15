@@ -707,3 +707,96 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .pbs-tot-pos{color:#fff}
 .pbs-tot-neg{color:#fff}
 .pbs-tot-even{color:#fff}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT MODE OVERRIDES — Fix contrast and readability on light backgrounds
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Cards need stronger borders and subtle shadow on light */
+[data-theme="light"] .card{border-color:#c8c6be;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+[data-theme="light"] .card:hover{border-color:#b0ae a6;background:#f8f7f4}
+
+/* Next-trip card needs dark text treatment */
+[data-theme="light"] .next-trip{background:linear-gradient(135deg,#eae8e2,#f0eee8);border-color:#c8c6be}
+[data-theme="light"] .nt-name{color:#1a1a18}
+[data-theme="light"] .nt-detail{color:#6a6860}
+[data-theme="light"] .nt-count{color:#8a6d1e}
+
+/* Stat boxes need border on light */
+[data-theme="light"] .stat-box{border-color:#c8c6be;background:#f8f7f4}
+[data-theme="light"] .stat-val{color:#8a6d1e}
+
+/* Leaderboard cards */
+[data-theme="light"] .lb-card{border-color:#c8c6be;background:#f8f7f4}
+[data-theme="light"] .lb-card.first{background:linear-gradient(135deg,#f0eee8,#e8e6e0);border-color:#b8a86e}
+
+/* Quick links */
+[data-theme="light"] .ql{border-color:#c8c6be;background:#f8f7f4}
+[data-theme="light"] .ql-label{color:#1a1a18}
+
+/* Bottom nav */
+[data-theme="light"] .bottom-nav{border-top-color:#c8c6be;background:#f5f3ee}
+
+/* Hero */
+[data-theme="light"] .hero{border-bottom-color:#c8c6be}
+
+/* Auth screen */
+[data-theme="light"] .auth-screen{background:linear-gradient(180deg,#eceae4,#f5f3ee)}
+[data-theme="light"] .auth-input{background:#ffffff;border-color:#c8c6be;color:#1a1a18}
+[data-theme="light"] .auth-btn{background:#8a6d1e;color:#f5f3ee}
+[data-theme="light"] .auth-btn-alt{border-color:#c8c6be;color:#1a1a18}
+
+/* Form inputs */
+[data-theme="light"] .ff-input{background:#ffffff;border-color:#c8c6be;color:#1a1a18}
+[data-theme="light"] .ff-input:focus{border-color:#8a6d1e}
+
+/* Section headers */
+[data-theme="light"] .sec-title{color:#8a6d1e}
+
+/* Feed rows */
+[data-theme="light"] .feed-row{border-bottom-color:#d8d6ce}
+[data-theme="light"] .feed-row:hover{background:#eceae4}
+
+/* Member rows */
+[data-theme="light"] .member-row:hover{background:#eceae4}
+
+/* Profile */
+[data-theme="light"] .pd-name{color:#1a1a18}
+
+/* Handicap box */
+[data-theme="light"] .hcap-box{background:linear-gradient(135deg,#e8e6e0,#f0eee8);border-color:#c8c6be}
+
+/* HOF cards */
+[data-theme="light"] .hof-card{border-color:#c8c6be}
+
+/* Toggle bar tabs */
+[data-theme="light"] .toggle-bar{border-bottom-color:#c8c6be}
+[data-theme="light"] .toggle-bar button{color:#6a6860}
+[data-theme="light"] .toggle-bar button.a{color:#8a6d1e;border-bottom-color:#8a6d1e}
+
+/* Tee time cards */
+[data-theme="light"] .tee-card{border-color:#c8c6be}
+
+/* Calendar */
+[data-theme="light"] .cal-nav-btn{border-color:#c8c6be;color:#1a1a18}
+[data-theme="light"] .cal-day{color:#1a1a18}
+[data-theme="light"] .cal-day.today{background:rgba(46,138,74,.12);color:#2e8a4a}
+[data-theme="light"] .cal-day.empty{color:#d5d3cc}
+
+/* Notification panel */
+[data-theme="light"] .notif-panel{background:#f5f3ee;border-left-color:#c8c6be}
+[data-theme="light"] .notif-item{border-bottom-color:#d8d6ce}
+
+/* Skeleton loading */
+[data-theme="light"] .skeleton{background:linear-gradient(90deg,#e2e0da 25%,#eceae4 37%,#e2e0da 63%);background-size:400% 100%}
+
+/* Club/fact rows */
+[data-theme="light"] .club-row{border-color:#c8c6be;background:#f8f7f4}
+[data-theme="light"] .fact-item{border-color:#c8c6be;background:#f8f7f4;color:#6a6860}
+[data-theme="light"] .h2h-row{border-color:#c8c6be;background:#f8f7f4}
+
+/* Toast */
+[data-theme="light"] .toast{background:#8a6d1e;color:#f5f3ee}
+
+/* DM bubbles */
+[data-theme="light"] .dm-bubble-row.theirs .dm-bubble{background:#e2e0da;color:#1a1a18}
