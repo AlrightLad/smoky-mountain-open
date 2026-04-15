@@ -5,24 +5,21 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.33.1</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.34.0</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.33.1</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · 11 Bug Fixes, Beat Their Score Wager, Scorecard Theming</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.34.0</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · FAQ Rebuild, Onboarding Upgrade, UI Polish, Texture Fix</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Theme textures now display on all 8 themes — subtle patterns on every page", tag: "FIXED"},
-    {item: "Bottom nav bar no longer cut off on iPhone — proper safe area padding", tag: "FIXED"},
-    {item: "Activity feed shows full event messages — no more cutoff text", tag: "FIXED"},
-    {item: "Calendar dates all display at uniform size — days 1-4 no longer oversized", tag: "FIXED"},
-    {item: "Best score on home page is now tappable — takes you to that round", tag: "FIXED"},
-    {item: "Beat Their Score wager — bet you can beat a friend\'s best at a specific course", tag: "NEW"},
-    {item: "Shareable scorecards now render in your active theme colors", tag: "NEW"},
-    {item: "Course directory shows best scores (not averages) with clean formatting", tag: "FIXED"},
-    {item: "13 new cosmetic items in the shop — 28 total across borders, banners, and card themes", tag: "NEW"},
-    {item: "Scramble team rounds now display correctly even when stored under different player IDs", tag: "FIXED"},
-    {item: "Trash Talk, Bounty Board, Rich List, Power-Ups, and more from recent updates", tag: "IMPROVED"}
+    {item: "FAQ completely rewritten — 28 questions across 7 categories covering every feature with navigation directions", tag: "NEW"},
+    {item: "Onboarding upgraded to 5 screens: Welcome, Logging Rounds, Seasons & Events, ParCoins, and Your Legacy", tag: "IMPROVED"},
+    {item: "Theme textures NOW actually loading — root cause was Vite stripping body::before CSS rules", tag: "FIXED"},
+    {item: "More page reorganized — Shop and Rich List at top with gold accent styling", tag: "IMPROVED"},
+    {item: "Beat Their Score wager — bet you can beat a friend\'s best score at a course", tag: "NEW"},
+    {item: "Shareable scorecards render in your active theme colors", tag: "NEW"},
+    {item: "13 new cosmetic items — 28 total in the shop", tag: "NEW"},
+    {item: "Bottom nav, calendar dates, profile level, and component border-radius all polished", tag: "FIXED"}
   ];
   currentNotes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "var(--blue)" : "var(--muted)";
@@ -53,7 +50,67 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.33.1</div>';
+  // What's in the Bag — full feature list
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">What\'s in the Bag</span></div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
+  var features = [
+    "Invite-only membership with invite codes",
+    "Live hole-by-hole scoring (Play Now) with FIR, GIR, putts",
+    "Parbaugh Round — real-time shared scorecard",
+    "ParCoins in-game currency with 9 earning triggers",
+    "Cosmetics Shop — 28 items (borders, banners, card themes)",
+    "Wager Matches — 6 types including Nassau and Beat Their Score",
+    "Bounty Board — coin bounties on scores and birdies",
+    "Trash Talk — Spotlight of Shame, Victory Lap, Demand a Rematch",
+    "Rich List, Power-Ups, Sponsor a Hole, Name a Tournament",
+    "3 formal seasons per year (Spring, Summer, Fall) with awards",
+    "Trophy Room — 50+ achievements, XP levels, titles",
+    "8 premium themes with background textures and blend modes",
+    "Champion Red theme unlocked by winning an event",
+    "GHIN World Handicap System calculation",
+    "Activity feed with filtering (All/Rounds/Chat/Range)",
+    "Clubhouse — group chat with likes, comments, replies",
+    "Direct messages between members",
+    "Tee time posting with RSVP",
+    "Full calendar with event dots and scheduling",
+    "30,000+ course search via GolfCourseAPI",
+    "Range session timer with drill tracking",
+    "Scramble team management with W-L records",
+    "Shareable scorecard images in your active theme",
+    "Push notifications (FCM)",
+    "PWA — installable to home screen",
+    "First-time onboarding with profile setup wizard",
+    "Commissioner admin panel",
+    "Score attestation system for events",
+    "Season recap and yearly awards ceremony",
+    "Party games linked to active rounds",
+    "Pull-to-refresh, skeleton loading, number animations"
+  ];
+  features.forEach(function(f) {
+    h += '<div style="padding:2px 0;display:flex;gap:8px;align-items:flex-start"><span style="color:var(--gold);flex-shrink:0;margin-top:4px"><svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg></span><span>' + f + '</span></div>';
+  });
+  h += '</div></div></div>';
+
+  // On the Range — Coming Soon
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--muted)">On the Range — Coming Soon</span></div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--muted);line-height:1.8">';
+  var upcoming = [
+    "Multi-league platform — create your own league",
+    "Public profiles and golfer discovery",
+    "AI Caddie — post-round analysis and practice plans",
+    "Strokes gained analytics",
+    "Course GPS yardages",
+    "Native mobile app (iOS + Android)",
+    "Season pass cosmetics (limited edition)",
+    "Prediction markets for events",
+    "Merch store integration"
+  ];
+  upcoming.forEach(function(u) {
+    h += '<div style="padding:2px 0;display:flex;gap:8px;align-items:flex-start"><span style="color:var(--muted2);flex-shrink:0;margin-top:4px"><svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/></svg></span><span>' + u + '</span></div>';
+  });
+  h += '</div></div></div>';
+
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.34.0</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
