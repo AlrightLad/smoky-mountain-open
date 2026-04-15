@@ -175,9 +175,10 @@ function _renderFeedItems() {
   var filtered = _feedFilter === "all" ? items : items.filter(function(i) { return i.type === _feedFilter; });
   var fh = '';
   if (!filtered.length) {
-    fh = '<div style="padding:40px 16px;text-align:center"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="var(--muted)" stroke-width="1" style="margin-bottom:8px"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>';
-    fh += '<div style="font-size:14px;font-weight:600;color:var(--cream)">No ' + (_feedFilter === "all" ? "activity" : _feedFilter + "s") + ' yet</div>';
-    fh += '<div style="font-size:11px;color:var(--muted);margin-top:4px">Play a round, hit the range, or start chatting</div></div>';
+    fh = '<div style="padding:40px 16px;text-align:center"><div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".6"><circle cx="24" cy="24" r="18"/><path d="M16 28s3 4 8 4 8-4 8-4"/><circle cx="18" cy="18" r="2" fill="var(--gold)"/><circle cx="30" cy="18" r="2" fill="var(--gold)"/></svg></div>';
+    fh += '<div style="font-size:16px;font-weight:700;color:var(--cream)">No ' + (_feedFilter === "all" ? "Activity" : (_feedFilter === "round" ? "Rounds" : _feedFilter === "chat" ? "Messages" : "Range Sessions")) + ' Yet</div>';
+    fh += '<div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:280px;margin-left:auto;margin-right:auto">Play a round, hit the range, or drop a message in the feed to get things going.</div>';
+    fh += '<button class="btn full green" style="margin-top:16px;max-width:220px;margin-left:auto;margin-right:auto" onclick="Router.go(\'playnow\')">Log a Round</button></div>';
   }
   filtered.slice(0, 60).forEach(function(item) {
     if (item.type === "round") {

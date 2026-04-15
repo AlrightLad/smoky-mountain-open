@@ -5,13 +5,17 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.39.2</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.39.3</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.39.2</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Shop Live Previews, Cloud Function</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.39.3</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Avatar Fix, Shop Audit, 8-Theme Regression PASS</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "Online Now avatar squares fixed — inner clip div prevents image bleeding outside circular ring border", tag: "FIXED"},
+    {item: "Full cosmetics catalog audit: 75/75 items verified — every ring, banner, card, name effect, and title has working CSS", tag: "IMPROVED"},
+    {item: "8-theme regression test: all 8 themes pass variable coverage, Light Mode has 106 overrides, zero hardcoded colors", tag: "IMPROVED"},
+    {item: "Feed empty state upgraded to branded pattern with icon, headline, and Log a Round CTA", tag: "IMPROVED"},
     {item: "Cosmetics Shop: animated rings now show LIVE CSS animation in the preview — see the pulse, shimmer, and rainbow cycle before you buy", tag: "NEW"},
     {item: "Ring previews show YOUR actual profile photo inside the ring so you can see exactly how it looks on you", tag: "NEW"},
     {item: "Name effect previews show YOUR actual username with the live animation applied — Gold Shimmer, Fire Text, Ice, all running in real-time", tag: "NEW"},
@@ -216,7 +220,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.39.2</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.39.3</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
