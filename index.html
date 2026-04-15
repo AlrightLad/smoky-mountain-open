@@ -172,6 +172,42 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
 --shadow-sm:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 2px 8px rgba(0,0,0,.1);--shadow-lg:0 4px 16px rgba(0,0,0,.12);--shadow-glow:0 0 12px rgba(138,109,30,.1)
 }
 
+/* ── AZALEA ── */
+[data-theme="azalea"]{
+--bg:#0e1118;--bg2:#131722;--bg3:#1a1f2c;--bg4:#212738;
+--gold:#e8729a;--gold2:#c45a7e;--gold3:#f48eb2;--gold-rgb:232,114,154;
+--green:#1a2840;--green2:#253a58;
+--cream:#f0efe8;--cream-rgb:240,239,232;--muted:#7a7e8a;--muted2:#484d5c;
+--red:#d4604e;--red-rgb:212,96,78;--birdie:#4ec97a;--birdie-rgb:78,201,122;
+--card:#121620;--border:#1e2333;
+--blue:#7aadcf;--blue-rgb:122,173,207;--pink:#e8729a;--pink-rgb:232,114,154;
+--purple:#b48ad4;--purple-rgb:180,138,212;--live:#4ec97a;--live-rgb:78,201,122;
+--alert:#d4604e;--alert-rgb:212,96,78;--orange:#f0946a;--orange-rgb:240,148,106;
+--cal-event:#7aadcf;--cal-range:#e8729a;--cal-tee:#7ac4cf;
+--accept-bg:#1a2a22;--accept-border:#2a4a38;
+--grad-hero:#111520;--grad-deep:#090d14;--grad-card:#1a1e2e;--grad-trophy:#121628;--grad-mid:#0e1118;
+--medal-gold:#e8729a;--medal-silver:#C0C0C0;--medal-bronze:#CD7F32;
+--shadow-glow:0 0 12px rgba(232,114,154,.12)
+}
+
+/* ── SUNDAY RED ── */
+[data-theme="sundayred"]{
+--bg:#10080a;--bg2:#1a0e12;--bg3:#241418;--bg4:#301c22;
+--gold:#d4243c;--gold2:#b01c30;--gold3:#e83848;--gold-rgb:212,36,60;
+--green:#1a1014;--green2:#2a1820;
+--cream:#f0e8e8;--cream-rgb:240,232,232;--muted:#8a7478;--muted2:#5c4448;
+--red:#d4243c;--red-rgb:212,36,60;--birdie:#4ec97a;--birdie-rgb:78,201,122;
+--card:#140a0e;--border:#2a1820;
+--blue:#6a9ac4;--blue-rgb:106,154,196;--pink:#d4607a;--pink-rgb:212,96,122;
+--purple:#9a7aaa;--purple-rgb:154,122,170;--live:#4ec97a;--live-rgb:78,201,122;
+--alert:#d4243c;--alert-rgb:212,36,60;--orange:#d46a3c;--orange-rgb:212,106,60;
+--cal-event:#6a9ac4;--cal-range:#d4607a;--cal-tee:#6aaac4;
+--accept-bg:#0e1a12;--accept-border:#1e2e22;
+--grad-hero:#140a0e;--grad-deep:#0a0408;--grad-card:#241418;--grad-trophy:#180c10;--grad-mid:#0e060a;
+--medal-gold:#d4243c;--medal-silver:#9a8a8a;--medal-bronze:#8a5a3a;
+--shadow-glow:0 0 12px rgba(212,36,60,.12)
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    COMPONENT POLISH — micro-shadows, status pills, transitions, animations
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -1220,9 +1256,11 @@ function localDateStr(d) { d = d || new Date(); return d.getFullYear() + "-" + S
 // ========== THEME SYSTEM ==========
 var THEMES = {
   classic: {label:"Parbaugh Classic", desc:"Gold & dark — the original", colors:["#0e1118","#c9a84c","#eae8e0"], meta:"#0e1118"},
-  camo:    {label:"Camo / Malbon",    desc:"Olive & flame — hunting lodge", colors:["#12140e","#d4943c","#e8e4d8"], meta:"#12140e"},
+  camo:    {label:"Camo",             desc:"Olive & flame — hunting lodge", colors:["#12140e","#d4943c","#e8e4d8"], meta:"#12140e"},
   masters: {label:"Masters",          desc:"Pine green & Augusta yellow", colors:["#071a10","#fdd835","#f0efe8"], meta:"#071a10"},
+  azalea:  {label:"Azalea",           desc:"Pink blooms & deep green", colors:["#0e1118","#e8729a","#f0efe8"], meta:"#0e1118"},
   usga:    {label:"USGA",             desc:"Navy & red — clean GHIN style", colors:["#0a1628","#c41e3a","#f2f0ea"], meta:"#0a1628"},
+  sundayred:{label:"Sunday Red",      desc:"Championship Sunday — bold red", colors:["#10080a","#d4243c","#f0e8e8"], meta:"#10080a"},
   dark:    {label:"Dark Mode",        desc:"True black — OLED friendly", colors:["#000000","#b89a3e","#d8d6d0"], meta:"#000000"},
   light:   {label:"Light Mode",       desc:"Clean & bright — daytime", colors:["#f5f3ee","#8a6d1e","#1a1a18"], meta:"#f5f3ee"}
 };
@@ -5160,16 +5198,16 @@ Router.register("home", function() {
 
   // Personal stat bar
   h += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px">';
-  h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'trophyroom\')"><div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--gold)" data-count="' + myLevel.level + '">0</div><div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Level</div>';
+  h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'trophyroom\')"><div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--gold)" data-count="' + myLevel.level + '">' + myLevel.level + '</div><div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Level</div>';
   h += '<div style="height:3px;background:var(--bg3);border-radius:2px;margin-top:4px;overflow:hidden"><div style="height:100%;width:' + xpPct + '%;background:linear-gradient(90deg,var(--gold2),var(--gold3));border-radius:2px"></div></div></div>';
   h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'members\',{id:\'' + (currentUser?currentUser.uid:"") + '\'})">';
   h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--cream)">' + (myHcap !== null ? myHcap : "—") + '</div>';
   h += '<div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Handicap</div></div>';
-  h += '<div style="text-align:center"><div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--cream)" data-count="' + myIndividualRounds.length + '">0</div>';
+  h += '<div style="text-align:center"><div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--cream)" data-count="' + myIndividualRounds.length + '">' + myIndividualRounds.length + '</div>';
   h += '<div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Rounds</div></div>';
   h += '<div style="text-align:center">';
   if (myBest && myBest < 999) {
-    h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--birdie)" data-count="' + myBest + '">0</div>';
+    h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--birdie)" data-count="' + myBest + '">' + myBest + '</div>';
   } else {
     h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--muted2)">—</div>';
   }
@@ -5376,7 +5414,7 @@ Router.register("home", function() {
       h += '<div style="width:24px;text-align:center;font-size:14px">' + medalIcon + '</div>';
       h += '<div class="m-av" style="width:32px;height:32px;font-size:13px;border-width:1px">' + Router.getAvatar(p || s) + '</div>';
       h += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(s.name || s.username || "") + '</div>';
-      h += '<div style="font-size:10px;color:var(--muted)">' + (s.roundCount||0) + ' rounds</div></div>';
+      h += '<div style="font-size:10px;color:var(--muted)">' + (s.rounds||0) + ' rounds</div></div>';
       h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--gold)" data-count="' + (s.points||0) + '">0</div>';
       h += '</div></div>';
     });
@@ -5602,7 +5640,7 @@ Router.register("settings", function() {
 
   h += '<div class="form-section"><div class="form-title">About</div>';
   h += '<div style="font-size:12px;color:var(--muted);line-height:1.6">';
-  h += 'The Parbaughs Golf Platform v5.22.0<br>';
+  h += 'The Parbaughs Golf Platform v5.22.2<br>';
   h += 'Founded 2026 · York, PA<br>';
   h += 'Built by The Commissioner<br>';
   h += '<span style="color:var(--muted2)">Firebase-powered · Real-time sync</span>';
@@ -13646,7 +13684,7 @@ Router.register("dms", function() {
         if (!snap.empty) {
           var msg = snap.docs[0].data();
           var ts = msg.createdAt ? (msg.createdAt.toMillis ? msg.createdAt.toMillis() : msg.createdAt) : 0;
-          previewData[m.id] = { text: msg.text || "", time: ts, senderId: msg.senderId || "" };
+          previewData[m.id] = { text: msg.text || "", time: ts, senderId: msg.authorId || msg.senderId || msg.uid || "" };
         }
         loaded++;
         if (loaded >= total) renderSortedDms(filtered, previewData);
@@ -14536,27 +14574,44 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.22.0</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.22.2</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.22.0</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Component Polish, Masters Scorecard, Animations</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.22.2</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Bugfixes, DM Unread, 2 New Themes</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Card depth system — micro-shadows on all cards, tee times, stats, and leaderboard entries", tag: "NEW"},
-    {item: "Masters scorecard — Augusta National on-course scoreboard styling with green tables, yellow numbers, red birdies", tag: "NEW"},
-    {item: "Status pill components — Live, Final, Personal Best, New, and Hot badges available across the app", tag: "NEW"},
-    {item: "Page entrance animations — smooth fade and slide-up on every navigation", tag: "NEW"},
-    {item: "Number count-up animations on stats — profile, standings, trophy room, and leaderboard points", tag: "NEW"},
-    {item: "Bottom nav ink ripple effect on tap", tag: "IMPROVED"},
-    {item: "Home dashboard redesigned — compact hero with personal stat bar (level, handicap, rounds, best)", tag: "NEW"},
-    {item: "Live Spotlight moved to top of home page — live rounds and today's tees show first", tag: "IMPROVED"},
-    {item: "Season Standings mini-leaderboard — top 3 with avatars and animated point counts on home page", tag: "NEW"},
-    {item: "Status pills used on live rounds and event results for cleaner visual hierarchy", tag: "IMPROVED"},
-    {item: "Toast notifications enhanced with backdrop blur and shadow", tag: "IMPROVED"},
-    {item: "Improved skeleton loading shimmer", tag: "IMPROVED"}
+    {item: "Two new themes — Azalea (pink blooms on dark) and Sunday Red (championship bold red)", tag: "NEW"},
+    {item: "Home page personal stats now show correct values immediately", tag: "FIXED"},
+    {item: "Mini leaderboard round counts fixed — was referencing wrong property name", tag: "FIXED"},
+    {item: "DM unread indicators — bold name, blue NEW pill for conversations with new messages", tag: "NEW"},
+    {item: "DM sender detection fixed — now reads authorId field matching how messages are stored", tag: "FIXED"},
+    {item: "Event card three-state logic — Upcoming, Live (between start/end dates), and Awaiting Results (past end date, no champion)", tag: "FIXED"},
+    {item: "Handicap tap on home page now navigates to your player profile with stats and analytics", tag: "FIXED"},
+    {item: "PB.getHandicap crash fixed — was calling a non-existent function, now uses PB.calcHandicap correctly", tag: "FIXED"},
+    {item: "CSP updated — html2canvas (share card generator) now loads correctly from Cloudflare CDN", tag: "FIXED"},
+    {item: "Camo theme renamed (removed brand reference)", tag: "IMPROVED"}
   ];
   currentNotes.forEach(function(r) {
+    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "var(--blue)" : "var(--muted)";
+    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
+    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
+    h += '<span>' + r.item + '</span></div>';
+  });
+  h += '</div></div></div>';
+
+  // v5.22.0
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.22.0 · April 2026 · Component Polish, Masters Scorecard, Animations</span></div>';
+  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
+  var v522Notes = [
+    {item: "Card depth system — micro-shadows on all cards using elevation tokens", tag: "NEW"},
+    {item: "Masters scorecard — Augusta National on-course scoreboard styling", tag: "NEW"},
+    {item: "Status pill components — Live, Final, Personal Best, New, Hot", tag: "NEW"},
+    {item: "Page entrance animations — smooth fade and slide-up on every navigation", tag: "NEW"},
+    {item: "Number count-up animations on stats", tag: "NEW"},
+    {item: "Bottom nav ink ripple, toast backdrop blur, improved skeleton shimmer", tag: "IMPROVED"}
+  ];
+  v522Notes.forEach(function(r) {
     var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "var(--blue)" : "var(--muted)";
     h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
     h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
@@ -14688,7 +14743,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.22.0</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.22.2</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
