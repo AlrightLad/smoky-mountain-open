@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import { readFileSync, readdirSync } from 'fs';
 
-var CORE_FILES = ['utils.js', 'firebase.js', 'theme.js', 'data.js', 'sync.js', 'router.js'];
+var CORE_FILES = ['utils.js', 'firebase.js', 'theme.js', 'data.js', 'sync.js', 'parcoins.js', 'router.js'];
 
 // Pages needed for initial render (home + settings reachable from nav)
 var IMMEDIATE_PAGES = ['home.js', 'settings.js', 'onboarding.js'];
