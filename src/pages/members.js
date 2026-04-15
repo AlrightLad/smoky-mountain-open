@@ -337,6 +337,8 @@ function renderMemberDetailWithData(p) {
   var joinDate = p.joinDate || "2026";
   metaParts.push('Since ' + joinDate);
   h += '<div style="font-size:10px;color:var(--muted2);margin-top:6px">' + metaParts.join(' · ') + '</div>';
+  // Social action buttons (Trash Talk)
+  if (typeof renderSocialActions === "function") h += renderSocialActions(pid);
   h += '</div></div>'; // close text-align:center + hero banner
 
   // ── XP LEVEL BAR (compact) ──
