@@ -73,6 +73,19 @@ Router.register("home", function() {
 
   // 0. Who's Online
   h += '<div class="home-wrap">';
+
+  // New user welcome — show when 0 individual rounds
+  if (myIndividualRounds.length === 0) {
+    h += '<div style="background:linear-gradient(135deg,rgba(var(--gold-rgb),.08),rgba(var(--birdie-rgb),.06));border:1px solid rgba(var(--gold-rgb),.15);border-radius:var(--radius-lg);padding:20px 16px;margin-bottom:12px;text-align:center">';
+    h += '<div style="font-size:16px;font-weight:700;color:var(--gold);margin-bottom:6px">Welcome to The Parbaughs</div>';
+    h += '<div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">Log your first round to start earning XP, climbing the leaderboard, and unlocking achievements.</div>';
+    h += '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">';
+    h += '<button class="btn-sm green" onclick="Router.go(\'playnow\')" style="font-size:11px;padding:10px 16px"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle;margin-right:4px"><circle cx="8" cy="8" r="6"/><polygon points="7,5.5 11,8 7,10.5" fill="currentColor"/></svg>Log a Round</button>';
+    h += '<button class="btn-sm outline" onclick="Router.go(\'courses\')" style="font-size:11px;padding:10px 16px">Browse Courses</button>';
+    h += '<button class="btn-sm outline" onclick="Router.go(\'members\',{edit:\'' + (currentUser?currentUser.uid:'') + '\'})" style="font-size:11px;padding:10px 16px">Set Up Profile</button>';
+    h += '</div></div>';
+  }
+
   h += '<div id="onlineSection"></div>';
 
   // Quick Actions — 4 buttons

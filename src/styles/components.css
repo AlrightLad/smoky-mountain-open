@@ -890,6 +890,39 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 /* Loading spinner */
 [data-theme="light"] .loading{color:#6a6860}
 
+/* Share card template */
+[data-theme="light"] .pbs-inner{background:#f5f3ee!important}
+[data-theme="light"] .pbs-brand-name{color:#8a6d1e!important}
+
+/* Shop cards */
+[data-theme="light"] [data-page="shop"] .card{background:#ffffff}
+
+/* Scorecard / trip pages */
+[data-theme="light"] .sc-cell{color:#1a1a18}
+[data-theme="light"] .sc-header{background:#eceae4}
+[data-theme="light"] .li{background:#f8f7f4}
+
+/* Onboarding */
+[data-theme="light"] [data-page="onboarding"]{background:var(--bg)}
+
+/* More page */
+[data-theme="light"] [data-page="more"] .ql{background:#ffffff;border-color:#c8c6be}
+
+/* Modals / overlays */
+[data-theme="light"] .notif-overlay{background:rgba(0,0,0,.15)}
+
+/* Badge pills */
+[data-theme="light"] .badge{background:#eceae4;color:#6a6860;border-color:#c8c6be}
+
+/* Page footers */
+[data-theme="light"] .footer{background:transparent;color:#9a988e}
+
+/* Global text that uses --cream (which is dark in light mode) — already handled by variable */
+/* The --cream variable is #1a1a18 in light mode, so color:var(--cream) = dark text ✓ */
+/* The --bg variable is #f5f3ee in light mode, so background:var(--bg) = cream bg ✓ */
+/* The --card variable is #ffffff in light mode ✓ */
+/* The --border variable is #d8d6ce in light mode ✓ */
+
 /* ═══════════════════════════════════════════════════════════════════════════
    ANIMATED RINGS — Premium cosmetic avatar borders
    ═══════════════════════════════════════════════════════════════════════════ */

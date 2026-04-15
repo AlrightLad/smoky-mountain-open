@@ -234,6 +234,7 @@ function _renderRoundCard(item) {
   h += '<div onclick="' + roundClick + '" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--muted)" stroke-width="1.3"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 6h6M5 8h4M5 10h5"/></svg><span style="font-size:10px;color:var(--muted)">Scorecard</span></div>';
   h += '<div onclick="event.stopPropagation();Router.go(\'chat\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--muted)" stroke-width="1.3"><path d="M14 10a1.5 1.5 0 01-1.5 1.5H5L2 14V3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5z"/></svg><span style="font-size:10px;color:var(--muted)">Comment</span></div>';
   h += '<div onclick="event.stopPropagation();if(typeof shareScorecard===\'function\')shareScorecard(\'' + item.roundId + '\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--muted)" stroke-width="1.3"><path d="M4 12V8l4-6 4 6v4"/><path d="M4 8h8"/></svg><span style="font-size:10px;color:var(--muted)">Share</span></div>';
+  h += '<div onclick="event.stopPropagation();feedReact(\'' + (item.roundId||'') + '\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--muted)" stroke-width="1.3"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4.5 3.5 3.5 0 0113.5 7c0 3.5-5.5 7-5.5 7z"/></svg><span style="font-size:10px;color:var(--muted)">React</span></div>';
   h += '</div>';
 
   h += '</div>';
@@ -304,4 +305,18 @@ function applyFeedFilter() {
   document.querySelectorAll('[data-page="feed"] .toggle-bar button').forEach(function(btn) {
     btn.className = btn.textContent.toLowerCase() === (_feedFilter === "all" ? "all" : _feedFilter === "round" ? "rounds" : _feedFilter === "chat" ? "chat" : "range") ? "a" : "";
   });
+}
+
+function feedReact(roundId) {
+  if (!db || !currentUser || !roundId) { Router.toast("Sign in to react"); return; }
+  db.collection("rounds").doc(roundId).get().then(function(doc) {
+    if (!doc.exists) return;
+    var likes = doc.data().likes || [];
+    var uid = currentUser.uid;
+    var idx = likes.indexOf(uid);
+    if (idx !== -1) { likes.splice(idx, 1); } else { likes.push(uid); }
+    return db.collection("rounds").doc(roundId).update({ likes: likes });
+  }).then(function() {
+    Router.toast("Nice!");
+  }).catch(function() {});
 }
