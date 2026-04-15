@@ -1106,7 +1106,43 @@ function renderMemberEditForm(p) {
     h += '<option value="' + t + '"' + ((p.equippedTitle === t) ? ' selected' : '') + '>' + t + '</option>';
   });
   h += '</select></div>';
-  
+
+  // Ring selector — show owned rings from cosmetics
+  var ownedCosmetics = p.ownedCosmetics || [];
+  var equippedRing = (p.equippedCosmetics && p.equippedCosmetics.border) || "";
+  var equippedBanner = (p.equippedCosmetics && p.equippedCosmetics.banner) || "";
+  var allRings = (typeof COSMETICS_CATALOG !== "undefined" ? COSMETICS_CATALOG : []).filter(function(c) { return c.cat === "border" && (ownedCosmetics.indexOf(c.id) !== -1 || c.price === 0); });
+  if (allRings.length) {
+    h += '<div class="ff"><label class="ff-label">Avatar ring</label>';
+    h += '<div style="display:flex;flex-wrap:wrap;gap:8px">';
+    // None option
+    h += '<div onclick="document.getElementById(\'edit-ring\').value=\'\';document.querySelectorAll(\'.ring-opt\').forEach(function(e){e.style.borderColor=\'var(--border)\'});this.style.borderColor=\'var(--gold)\'" class="ring-opt" style="cursor:pointer;padding:8px 12px;border:2px solid ' + (!equippedRing ? 'var(--gold)' : 'var(--border)') + ';border-radius:var(--radius);font-size:10px;color:var(--muted)">None</div>';
+    allRings.forEach(function(ring) {
+      var isEquipped = equippedRing === ring.id;
+      h += '<div onclick="document.getElementById(\'edit-ring\').value=\'' + ring.id + '\';document.querySelectorAll(\'.ring-opt\').forEach(function(e){e.style.borderColor=\'var(--border)\'});this.style.borderColor=\'var(--gold)\'" class="ring-opt" style="cursor:pointer;padding:6px;border:2px solid ' + (isEquipped ? 'var(--gold)' : 'var(--border)') + ';border-radius:var(--radius);display:flex;align-items:center;gap:6px">';
+      h += '<div style="width:28px;height:28px;border-radius:50%;border:' + ring.css + ';background:var(--bg3)"></div>';
+      h += '<span style="font-size:10px;color:var(--cream)">' + ring.name + '</span></div>';
+    });
+    h += '</div>';
+    h += '<input type="hidden" id="edit-ring" value="' + equippedRing + '"></div>';
+  }
+
+  // Banner selector — show owned banners
+  var allBanners = (typeof COSMETICS_CATALOG !== "undefined" ? COSMETICS_CATALOG : []).filter(function(c) { return c.cat === "banner" && (ownedCosmetics.indexOf(c.id) !== -1 || c.price === 0); });
+  if (allBanners.length) {
+    h += '<div class="ff"><label class="ff-label">Profile banner</label>';
+    h += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
+    h += '<div onclick="document.getElementById(\'edit-banner\').value=\'\';document.querySelectorAll(\'.banner-opt\').forEach(function(e){e.style.outline=\'none\'});this.style.outline=\'2px solid var(--gold)\'" class="banner-opt" style="cursor:pointer;width:60px;height:24px;border-radius:4px;background:var(--bg3);' + (!equippedBanner ? 'outline:2px solid var(--gold)' : '') + ';display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--muted)">None</div>';
+    allBanners.forEach(function(b) {
+      var isEquipped = equippedBanner === b.id;
+      h += '<div onclick="document.getElementById(\'edit-banner\').value=\'' + b.id + '\';document.querySelectorAll(\'.banner-opt\').forEach(function(e){e.style.outline=\'none\'});this.style.outline=\'2px solid var(--gold)\'" class="banner-opt" style="cursor:pointer;width:60px;height:24px;border-radius:4px;background:' + b.css + ';' + (isEquipped ? 'outline:2px solid var(--gold)' : '') + '" title="' + escHtml(b.name) + '"></div>';
+    });
+    h += '</div>';
+    h += '<input type="hidden" id="edit-banner" value="' + equippedBanner + '"></div>';
+  }
+
+  h += '<div style="text-align:center;margin:4px 0 12px"><span style="font-size:10px;color:var(--gold);cursor:pointer" onclick="Router.go(\'shop\')">More cosmetics in the Shop →</span></div>';
+
   h += '<div class="ff"><label class="ff-label">Bio</label><textarea class="ff-input" id="edit-bio" placeholder="Tell us about your game...">' + (p.bio || "") + '</textarea></div>';
   h += '<div class="ff"><label class="ff-label">Profile photo</label>';
   h += '<div style="margin-bottom:8px"><button class="btn-sm outline" style="font-size:11px" onclick="uploadMemberPhoto(\'' + pid + '\')">Upload photo</button></div>';
@@ -1180,6 +1216,11 @@ function saveMemberEdit(pid) {
     nick: document.getElementById("edit-nick").value,
     displayPref: document.getElementById("edit-displayPref").value,
     equippedTitle: document.getElementById("edit-title").value,
+    equippedCosmetics: {
+      border: document.getElementById("edit-ring") ? document.getElementById("edit-ring").value : ((currentProfile && currentProfile.equippedCosmetics) ? currentProfile.equippedCosmetics.border : ""),
+      banner: document.getElementById("edit-banner") ? document.getElementById("edit-banner").value : ((currentProfile && currentProfile.equippedCosmetics) ? currentProfile.equippedCosmetics.banner : ""),
+      card: (currentProfile && currentProfile.equippedCosmetics) ? (currentProfile.equippedCosmetics.card || "") : ""
+    },
     range: document.getElementById("edit-range").value,
     bio: document.getElementById("edit-bio").value,
     homeCourse: document.getElementById("edit-homecourse").value,
