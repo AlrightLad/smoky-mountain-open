@@ -5162,7 +5162,7 @@ Router.register("home", function() {
   h += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px">';
   h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'trophyroom\')"><div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--gold)" data-count="' + myLevel.level + '">0</div><div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Level</div>';
   h += '<div style="height:3px;background:var(--bg3);border-radius:2px;margin-top:4px;overflow:hidden"><div style="height:100%;width:' + xpPct + '%;background:linear-gradient(90deg,var(--gold2),var(--gold3));border-radius:2px"></div></div></div>';
-  h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'members\',{detail:\'' + (currentUser?currentUser.uid:"") + '\'})">';
+  h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'members\',{id:\'' + (currentUser?currentUser.uid:"") + '\'})">';
   h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--cream)">' + (myHcap !== null ? myHcap : "—") + '</div>';
   h += '<div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Handicap</div></div>';
   h += '<div style="text-align:center"><div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--cream)" data-count="' + myIndividualRounds.length + '">0</div>';
@@ -5371,7 +5371,7 @@ Router.register("home", function() {
       var p = PB.getPlayer(s.id);
       var medalIcon = idx === 0 ? '<span style="color:var(--gold);font-weight:800">1</span>' : idx === 1 ? '<span style="color:var(--medal-silver);font-weight:700">2</span>' : '<span style="color:var(--medal-bronze);font-weight:700">3</span>';
       var isFirst = idx === 0;
-      h += '<div class="card" style="margin-bottom:4px;cursor:pointer;' + (isFirst ? 'border-color:rgba(var(--gold-rgb),.2);background:linear-gradient(135deg,var(--grad-card),var(--card))' : '') + '" onclick="Router.go(\'members\',{detail:\'' + s.id + '\'})">';
+      h += '<div class="card" style="margin-bottom:4px;cursor:pointer;' + (isFirst ? 'border-color:rgba(var(--gold-rgb),.2);background:linear-gradient(135deg,var(--grad-card),var(--card))' : '') + '" onclick="Router.go(\'members\',{id:\'' + s.id + '\'})">';
       h += '<div style="padding:10px 14px;display:flex;align-items:center;gap:12px">';
       h += '<div style="width:24px;text-align:center;font-size:14px">' + medalIcon + '</div>';
       h += '<div class="m-av" style="width:32px;height:32px;font-size:13px;border-width:1px">' + Router.getAvatar(p || s) + '</div>';
@@ -13664,20 +13664,33 @@ Router.register("dms", function() {
       var pb = previews[b.id];
       var ta = pa ? pa.time : 0;
       var tb = pb ? pb.time : 0;
-      if (ta || tb) return tb - ta; // Both or one have messages — sort by time
-      return (a.name || "").localeCompare(b.name || ""); // Neither has messages — alphabetical
+      if (ta || tb) return tb - ta;
+      return (a.name || "").localeCompare(b.name || "");
     });
     
+    var myUid = currentUser.uid;
     var dh = '';
     members.forEach(function(m) {
       var preview = previews[m.id];
       var previewText = preview ? escHtml(preview.text) : '<span style="color:var(--muted2)">Start a conversation</span>';
       var timeLabel = preview && preview.time ? '<span style="font-size:9px;color:var(--muted);flex-shrink:0">' + feedTimeAgo(preview.time) + '</span>' : '';
+      
+      // Unread detection: message from someone else, newer than last read
+      var isUnread = false;
+      if (preview && preview.senderId && preview.senderId !== myUid) {
+        var cid = getDmConvoId(myUid, m.id);
+        var lastRead = 0;
+        try { lastRead = parseInt(localStorage.getItem("dm_read_" + cid)) || 0; } catch(e){}
+        if (preview.time > lastRead) isUnread = true;
+      }
+      
       dh += '<div class="dm-list-item" onclick="Router.go(\'dm-thread\',{partner:\'' + m.id + '\'})">';
       dh += '<div class="m-av" style="border-color:' + playerFrameColor(m) + '">' + Router.getAvatar(m) + '</div>';
       dh += '<div class="m-info" style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:6px">';
-      dh += '<div class="m-name" style="flex:1">' + escHtml(m.name || m.username || m.id) + '</div>' + timeLabel + '</div>';
-      dh += '<div style="font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px">' + previewText + '</div>';
+      dh += '<div class="m-name" style="flex:1;' + (isUnread ? 'color:var(--cream);font-weight:700' : '') + '">' + escHtml(m.name || m.username || m.id) + '</div>';
+      if (isUnread) dh += '<span class="pill pill-new" style="font-size:7px;padding:2px 6px">NEW</span>';
+      dh += timeLabel + '</div>';
+      dh += '<div style="font-size:11px;color:' + (isUnread ? 'var(--cream)' : 'var(--muted)') + ';margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px;' + (isUnread ? 'font-weight:600' : '') + '">' + previewText + '</div>';
       dh += '</div></div>';
     });
     var el = document.getElementById("dmMemberList");
@@ -13710,6 +13723,8 @@ Router.register("dm-thread", function(params) {
   if (dmListenerUnsub) dmListenerUnsub();
   if (db) {
     var cid = getDmConvoId(currentUser.uid, activeDmPartner);
+    // Mark as read locally for unread indicators
+    try { localStorage.setItem("dm_read_" + cid, Date.now().toString()); } catch(e){}
     db.collection("dms").doc(cid).set({participants:[currentUser.uid,activeDmPartner].sort(),updatedAt:fsTimestamp()},{merge:true}).catch(function(){});
     var readUpdate = {};
     readUpdate["lastRead." + currentUser.uid] = fsTimestamp();
