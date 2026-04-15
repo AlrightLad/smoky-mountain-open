@@ -78,14 +78,18 @@ function sendFeedChat() {
   if (!input || !input.value.trim() || !db || !currentUser) return;
   var text = input.value.trim();
   input.value = "";
+  var name = currentProfile ? PB.getDisplayName(currentProfile) : "Anon";
+  // Optimistic: append to local feed immediately
+  if (window._feedItems) {
+    window._feedItems.unshift({type:"chat", author:name, text:text, ts:Date.now(), system:false});
+    _renderFeedItems();
+  }
   db.collection("chat").add({
     id: genId(),
     text: text,
     authorId: currentUser.uid,
-    authorName: currentProfile ? PB.getDisplayName(currentProfile) : "Anon",
+    authorName: name,
     createdAt: fsTimestamp()
-  }).then(function() {
-    Router.go("feed"); // Refresh feed
   }).catch(function(e) { Router.toast("Send failed: " + e.message); });
 }
 

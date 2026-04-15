@@ -76,7 +76,7 @@ Router.register("roundhistory", function(params) {
   h += '<span style="display:flex;align-items:center;gap:3px"><span style="width:6px;height:6px;border-radius:50%;background:#FFD700"></span>Eagle</span>';
   h += '<span style="display:flex;align-items:center;gap:3px"><span style="width:6px;height:6px;border-radius:50%;background:#4CAF50"></span>Birdie</span>';
   h += '<span style="display:flex;align-items:center;gap:3px"><span style="width:6px;height:6px;border-radius:50%;background:#888888"></span>Par</span>';
-  h += '<span style="display:flex;align-items:center;gap:3px"><span style="width:6px;height:6px;border-radius:50%;background:#E8729A"></span>Bogey</span>';
+  h += '<span style="display:flex;align-items:center;gap:3px"><span style="width:6px;height:6px;border-radius:50%;background:#F59E42"></span>Bogey</span>';
   h += '<span style="display:flex;align-items:center;gap:3px"><span style="width:6px;height:6px;border-radius:50%;background:#E53935"></span>Double+</span>';
   h += '</div>';
 
@@ -156,7 +156,7 @@ Router.register("roundhistory", function(params) {
             if (diff <= -2) dotColor = "#FFD700";      // eagle+ (gold)
             else if (diff === -1) dotColor = "#4CAF50"; // birdie (green)
             else if (diff === 0) dotColor = "#888888";  // par (gray)
-            else if (diff === 1) dotColor = "#E8729A";  // bogey (pink)
+            else if (diff === 1) dotColor = "#F59E42";  // bogey (orange)
             else dotColor = "#E53935";                   // double+ (red)
           }
           h += '<div style="width:' + (is9 ? '8px' : '5px') + ';height:' + (is9 ? '8px' : '5px') + ';border-radius:50%;background:' + dotColor + '"></div>';

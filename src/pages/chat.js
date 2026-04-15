@@ -616,14 +616,33 @@ function submitComment(docId) {
   var input = document.getElementById("commentText-" + docId);
   var text = input ? input.value.trim() : "";
   if (!text) return;
-  
+
   var name = currentProfile ? PB.getDisplayName(currentProfile) : "Anon";
-  
+  var newComment = { uid: currentUser.uid, name: name, text: text, at: new Date().toISOString() };
+
+  // Optimistic local update — append comment to liveChat immediately so it renders before Firestore roundtrip
+  var localMsg = liveChat.find(function(m) { return m._docId === docId; });
+  if (localMsg) {
+    if (!localMsg.comments) localMsg.comments = [];
+    localMsg.comments.push(newComment);
+    // Re-render feed in-place with updated data
+    var feed = document.getElementById("chatFeed");
+    if (feed) feed.innerHTML = renderChatMessages(liveChat);
+    // Re-show the comment input and scroll to it
+    var commentEl = document.getElementById("comment-" + docId);
+    if (commentEl) { commentEl.style.display = "flex"; }
+    var newInput = document.getElementById("commentText-" + docId);
+    if (newInput) { newInput.value = ""; newInput.focus(); }
+  } else if (input) {
+    input.value = "";
+  }
+
+  // Write to Firestore (snapshot listener will reconcile if needed)
   db.collection("chat").doc(docId).get().then(function(doc) {
     if (!doc.exists) return;
     var data = doc.data();
     var comments = data.comments || [];
-    comments.push({ uid: currentUser.uid, name: name, text: text, at: new Date().toISOString() });
+    comments.push(newComment);
     return db.collection("chat").doc(docId).update({ comments: comments }).then(function() {
       // Notify post author
       if (data.authorId && data.authorId !== currentUser.uid && data.authorId !== "system") {
@@ -634,7 +653,7 @@ function submitComment(docId) {
           linkPage: "chat"
         });
       }
-      // Also notify other commenters (not the author, not yourself)
+      // Notify other commenters
       var notified = {};
       notified[currentUser.uid] = true;
       if (data.authorId) notified[data.authorId] = true;
@@ -650,8 +669,6 @@ function submitComment(docId) {
         }
       });
     });
-  }).then(function() {
-    if (input) input.value = "";
   });
 }
 

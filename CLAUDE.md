@@ -152,6 +152,26 @@ service cloud.firestore {
 - Elevation: `--shadow-sm`, `--shadow-md`, `--shadow-lg`, `--shadow-glow`
 - Radius: `--radius-sm` through `--radius-full`
 
+### Hole Dot Colors (Static — Never Changes Per Theme)
+Hole-by-hole performance dots rendered on Round History, feed cards, and share cards:
+
+| Result | Color | Hex |
+|--------|-------|-----|
+| Eagle or better (score <= par-2) | Gold | `#FFD700` |
+| Birdie (score = par-1) | Green | `#4CAF50` |
+| Par (score = par) | Gray | `#888888` |
+| Bogey (score = par+1) | Orange | `#F59E42` |
+| Double bogey+ (score >= par+2) | Red | `#E53935` |
+
+These are hardcoded hex values, NOT CSS variables. They must be identical everywhere dots appear.
+
+### Calendar Dot Colors
+- Gold `var(--gold)` = Event/Trip
+- Green `#4CAF50` = Round
+- Blue `var(--blue)` = Range Session
+- Pink `var(--pink)` = Tee Time
+- Green `var(--live)` = Today indicator
+
 ## Key Members
 
 | Name | Role | Notes |
