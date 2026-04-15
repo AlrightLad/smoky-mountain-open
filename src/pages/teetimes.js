@@ -33,7 +33,7 @@ Router.register("teetimes", function() {
     h += '<div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".6"><circle cx="24" cy="24" r="18"/><path d="M24 14v10l7 4"/><path d="M38 10l-3 3M10 10l3 3"/></svg></div>';
     h += '<div style="font-size:16px;font-weight:700;color:var(--cream)">No Tee Times Posted</div>';
     h += '<div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:280px;margin-left:auto;margin-right:auto">Post a tee time and your crew can RSVP. Never wonder who\u2019s playing this weekend again.</div>';
-    h += '<button class="btn full green" style="margin-top:16px;max-width:220px" onclick="Router.go(\'tee-create\')">Post a Tee Time</button>';
+    h += '<button class="btn full green" style="margin-top:16px;max-width:280px;margin-left:auto;margin-right:auto" onclick="Router.go(\'tee-create\')">Post a Tee Time</button>';
     h += '<div style="margin-top:20px;text-align:left;max-width:280px;margin-left:auto;margin-right:auto">';
     h += '<div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Example tee times</div>';
     var exTees = [

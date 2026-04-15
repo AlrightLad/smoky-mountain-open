@@ -47,8 +47,12 @@ Router.register("trips", function(params) {
   if (activeTrips.length) {
     activeTrips.forEach(function(t) { h += tripCard(t); });
   } else {
-    h += '<div class="card"><div class="empty" style="padding:24px"><div class="empty-text">No upcoming events</div>';
-    h += '<div style="font-size:10px;color:var(--muted2);margin-top:4px">Create one to get the group planning</div></div></div>';
+    h += '<div style="text-align:center;padding:32px 16px">';
+    h += '<div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".6"><path d="M6 9l18-7 18 7v22l-18 7-18-7V9z"/><path d="M6 9l18 7 18-7"/><path d="M24 16v22"/></svg></div>';
+    h += '<div style="font-size:16px;font-weight:700;color:var(--cream)">No Upcoming Events</div>';
+    h += '<div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:280px;margin-left:auto;margin-right:auto">Plan a golf trip, tournament, or hangout. Set dates, invite the crew, and track scores together.</div>';
+    h += '<button class="btn full green" style="margin-top:16px;max-width:280px;margin-left:auto;margin-right:auto" onclick="Router.go(\'trips\',{create:true})">+ New Event</button>';
+    h += '</div>';
   }
 
   // Past events — collapsible, collapsed by default
@@ -56,9 +60,9 @@ Router.register("trips", function(params) {
     h += '<div style="padding:8px 16px 0">';
     h += '<div id="pastEventsToggle" onclick="togglePastEvents()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:10px 0;border-top:1px solid var(--border)">';
     h += '<span style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.8px">Past Events (' + pastTrips.length + ')</span>';
-    h += '<svg id="pastEventsChevron" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>';
+    h += '<svg id="pastEventsChevron" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="var(--muted)" stroke-width="1.5" style="transform:rotate(180deg)"><path d="M4 6l4 4 4-4"/></svg>';
     h += '</div></div>';
-    h += '<div id="pastEventsList" style="display:none">';
+    h += '<div id="pastEventsList">';
     pastTrips.forEach(function(t) { h += tripCard(t); });
     h += '</div>';
   }

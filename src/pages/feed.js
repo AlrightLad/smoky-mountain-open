@@ -114,14 +114,6 @@ Router.register("feed", function(params) {
   } else { pending--; }
 });
 
-// ── Feed avatar helper ──
-function _feedAvatar(player, size) {
-  size = size || 36;
-  var ringStyle = typeof playerRingStyle === "function" && player ? playerRingStyle(player) : "border:2px solid var(--gold)";
-  var avatarHtml = player ? Router.getAvatar(player) : '<div style="width:100%;height:100%;background:var(--bg3);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700">?</div>';
-  return '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;flex-shrink:0;overflow:hidden;' + ringStyle + '">' + avatarHtml + '</div>';
-}
-
 // ── Hole dot helper ──
 function _feedHoleDots(holeScores, holePars, holesPlayed, holesMode) {
   if (!holeScores || holeScores.length < 9) return '';
@@ -208,15 +200,14 @@ function _renderRoundCard(item) {
   var teeLabel = item.tee ? item.tee + " Tees" : "";
   var meta = [teeLabel, holeLabel, item.format !== "stroke" ? item.format : ""].filter(Boolean).join(" \u00b7 ");
   var scoreColor = item.score <= 72 ? "var(--birdie)" : item.score >= 100 ? "var(--alert)" : "var(--gold)";
-  var profileClick = item.playerId ? "event.stopPropagation();Router.go(\'members\',{id:\'" + item.playerId + "\'})" : "";
   var roundClick = item.roundId ? "Router.go(\'rounds\',{roundId:\'" + item.roundId + "\'})" : "";
 
   var h = '<div class="card" style="margin:6px 16px;overflow:hidden;' + cardCss + '">';
 
-  // Header: avatar + name + time
+  // Header: avatar + name + time + score
   h += '<div style="display:flex;align-items:center;gap:10px;padding:12px 14px 0">';
-  h += '<div onclick="' + profileClick + '" style="cursor:pointer;min-width:48px;min-height:48px">' + _feedAvatar(item.player, 40) + '</div>';
-  h += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:var(--cream);cursor:pointer" onclick="' + profileClick + '">' + escHtml(item.playerName) + (item.isScramble ? ' <span style="font-size:9px;color:var(--muted);font-weight:400">(Scramble)</span>' : '') + '</div>';
+  h += renderAvatar(item.player, 40, true);
+  h += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">' + renderUsername(item.player, 'color:var(--cream);', true) + (item.isScramble ? ' <span style="font-size:9px;color:var(--muted);font-weight:400">(Scramble)</span>' : '') + '</div>';
   h += '<div style="font-size:10px;color:var(--muted)">' + feedTimeAgo(item.ts) + '</div></div>';
   h += '<div style="text-align:right;flex-shrink:0"><div style="font-family:Playfair Display,serif;font-size:28px;font-weight:700;color:' + scoreColor + ';line-height:1">' + item.score + '</div></div>';
   h += '</div>';
@@ -252,13 +243,19 @@ function _renderRoundCard(item) {
 // ── CHAT CARD (compact) ──
 function _renderChatCard(item) {
   var isSystem = item.system;
-  var profileClick = item.playerId && !isSystem ? "event.stopPropagation();Router.go(\'members\',{id:\'" + item.playerId + "\'})" : "";
   var h = '<div class="card" style="margin:3px 16px;border-left:3px solid ' + (isSystem ? 'var(--birdie)' : 'var(--border)') + '">';
   h += '<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 12px">';
-  if (!isSystem) h += '<div onclick="' + profileClick + '" style="cursor:pointer;flex-shrink:0;min-width:48px;min-height:48px">' + _feedAvatar(item.player, 28) + '</div>';
-  else h += '<div style="width:28px;height:28px;border-radius:50%;background:rgba(var(--birdie-rgb),.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:14px">\u26f3</span></div>';
+  if (!isSystem) {
+    h += renderAvatar(item.player, 28, true);
+  } else {
+    h += '<div style="width:28px;height:28px;min-width:28px;border-radius:50%;background:rgba(var(--birdie-rgb),.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:14px">\u26f3</span></div>';
+  }
   h += '<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;align-items:center">';
-  h += '<span style="font-size:11px;font-weight:700;color:' + (isSystem ? 'var(--birdie)' : 'var(--gold)') + ';cursor:pointer" onclick="' + profileClick + '">' + escHtml(item.author) + '</span>';
+  if (isSystem) {
+    h += '<span style="font-size:11px;font-weight:700;color:var(--birdie)">The Caddy</span>';
+  } else {
+    h += renderUsername(item.player, 'font-size:11px;font-weight:700;color:var(--gold);', true);
+  }
   h += '<span style="font-size:9px;color:var(--muted2);flex-shrink:0">' + feedTimeAgo(item.ts) + '</span></div>';
   h += '<div style="font-size:12px;color:var(--cream);margin-top:3px;line-height:1.5">' + escHtml(item.text) + '</div>';
   h += '</div></div></div>';
@@ -267,12 +264,11 @@ function _renderChatCard(item) {
 
 // ── RANGE CARD (smaller) ──
 function _renderRangeCard(item) {
-  var profileClick = item.playerId ? "event.stopPropagation();Router.go(\'members\',{id:\'" + item.playerId + "\'})" : "";
   var rangeDest = item.sessionId ? "Router.go(\'range-detail\',{sessionId:\'" + item.sessionId + "\'})" : "Router.go(\'range\')";
   var h = '<div class="card" style="margin:3px 16px;cursor:pointer" onclick="' + rangeDest + '">';
   h += '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px">';
-  h += '<div onclick="' + profileClick + '" style="cursor:pointer;flex-shrink:0;min-width:48px;min-height:48px">' + _feedAvatar(item.player, 36) + '</div>';
-  h += '<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(item.playerName) + ' hit the range</div>';
+  h += renderAvatar(item.player, 36, true);
+  h += '<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600">' + renderUsername(item.player, 'color:var(--cream);', true) + ' <span style="color:var(--muted);font-weight:400">hit the range</span></div>';
   var subParts = [];
   if (item.duration) subParts.push(item.duration + ' min');
   if (item.focus) subParts.push(item.focus);

@@ -288,6 +288,46 @@ function getPlayerCardCss(p) {
   var equipped = cosm.find(function(c) { return c.id === p.equippedCosmetics.card; });
   return equipped ? equipped.css : '';
 }
+// ── SHARED RENDERING: renderAvatar + renderUsername ────────────────────────
+// Use these EVERYWHERE instead of raw HTML to guarantee ring + name effect consistency.
+
+// renderAvatar(player, size, clickToProfile) → HTML string
+// Renders a circular avatar with the player's photo, theme ring, and animated ring class.
+// If clickToProfile is true, wraps in an onclick that navigates to their profile.
+function renderAvatar(p, size, clickToProfile) {
+  size = size || 36;
+  var ringStyle = p ? playerRingStyle(p) : 'border:2px solid var(--gold)';
+  var avatarInner = p ? Router.getAvatar(p) : '<div style="width:100%;height:100%;background:var(--bg3);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700;font-size:' + Math.round(size * 0.4) + 'px">?</div>';
+  var pid = p ? (p.id || '') : '';
+  var click = clickToProfile && pid ? ' onclick="event.stopPropagation();Router.go(\'members\',{id:\'' + pid + '\'})"' : '';
+  var cursor = clickToProfile && pid ? 'cursor:pointer;' : '';
+  return '<div style="width:' + size + 'px;height:' + size + 'px;min-width:' + size + 'px;border-radius:50%;overflow:hidden;' + ringStyle + ';' + cursor + 'flex-shrink:0"' + click + '>' + avatarInner + '</div>';
+}
+
+// renderUsername(player, extraStyle) → HTML string
+// Renders the player's display name with their equipped name effect class.
+// If clickToProfile, wraps in an onclick span.
+function renderUsername(p, extraStyle, clickToProfile) {
+  if (!p) return '<span style="' + (extraStyle || '') + '">Unknown</span>';
+  var name = p.username || p.name || 'Member';
+  var nameClass = getPlayerNameClass(p);
+  var pid = p.id || '';
+  var click = clickToProfile && pid ? ' onclick="event.stopPropagation();Router.go(\'members\',{id:\'' + pid + '\'})"' : '';
+  var cursor = clickToProfile && pid ? 'cursor:pointer;' : '';
+  return '<span class="' + nameClass + '" style="' + cursor + (extraStyle || '') + '"' + click + '>' + escHtml(name) + '</span>';
+}
+
+// renderAvatarUsername(player, avatarSize, nameStyle) → HTML string
+// Convenience: avatar + username together in a flex row, both tappable to profile.
+function renderAvatarUsername(p, avatarSize, nameStyle) {
+  avatarSize = avatarSize || 36;
+  var pid = p ? (p.id || '') : '';
+  return '<div style="display:flex;align-items:center;gap:8px">' +
+    renderAvatar(p, avatarSize, true) +
+    renderUsername(p, (nameStyle || 'font-size:12px;font-weight:600;color:var(--cream);'), true) +
+    '</div>';
+}
+
 // ────────────────────────────────────────────────────────────────────────────
 
 

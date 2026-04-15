@@ -56,11 +56,11 @@ Router.register("calendar", function() {
   }
   h += '</div>';
 
-  // Action buttons
-  h += '<div style="display:flex;gap:6px;padding:8px 16px">';
-  h += '<button class="btn-sm green" style="flex:1;font-size:10px" onclick="Router.go(\'tee-create\')">+ Tee Time</button>';
-  h += '<button class="btn-sm outline" style="flex:1;font-size:10px" onclick="showCalEventForm()">+ New Event</button>';
-  h += '<button class="btn-sm outline" style="flex:1;font-size:10px;color:var(--pink);border-color:rgba(var(--pink-rgb),.3)" onclick="Router.go(\'range\')"><svg viewBox="0 0 16 16" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg> Range</button>';
+  // Action buttons — premium styled, consistent sizing
+  h += '<div style="display:flex;gap:10px;padding:12px 16px">';
+  h += '<button onclick="Router.go(\'tee-create\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 8px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:var(--radius);color:var(--bg);font:600 11px/1 Inter,sans-serif;cursor:pointer"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg>Tee Time</button>';
+  h += '<button onclick="showCalEventForm()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 8px;background:linear-gradient(135deg,var(--birdie),#2a7a3e);border:none;border-radius:var(--radius);color:#fff;font:600 11px/1 Inter,sans-serif;cursor:pointer"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15l8-12"/><path d="M4 3l8 4-8 4V3z"/></svg>Event</button>';
+  h += '<button onclick="Router.go(\'range\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--cream);font:600 11px/1 Inter,sans-serif;cursor:pointer"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--gold)" stroke-width="1.5"><circle cx="8" cy="8" r="3"/><circle cx="8" cy="8" r="6"/></svg>Range</button>';
   h += '</div>';
 
   // Event creation form (hidden by default)
