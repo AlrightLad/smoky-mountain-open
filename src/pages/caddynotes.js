@@ -12,6 +12,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Cosmetics Visual Upgrade, Economy Fix, UX Polish</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "All 8 themes verified for consistent variable coverage — every theme defines bg, card, border, accent, glow, and gradient tokens", tag: "IMPROVED"},
     {item: "Ring animations dramatically amplified — Pulse Gold breathes wider, Diamond Sparkle rotates light around the border, Rainbow cycles through full spectrum", tag: "IMPROVED"},
     {item: "Neon Green and Crimson Ember rings now pulse with much stronger glow spread — visible at a glance", tag: "IMPROVED"},
     {item: "Card themes upgraded from simple borders to border + color-tinted background gradients — each card type is now visually distinct", tag: "IMPROVED"},
