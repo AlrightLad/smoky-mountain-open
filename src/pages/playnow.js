@@ -786,8 +786,11 @@ function finishLiveRound() {
       awardCoins(currentUser.uid, PARCOIN_RATES.personal_best, "personal_best", "New personal best: " + totalScore + " at " + liveState.course, "pb_" + round.id);
     }
   }
-  // Check if any wagers can be resolved with this round
-  setTimeout(function() { if (typeof checkWagerResolution === "function") checkWagerResolution(round); }, 3000);
+  // Check if any wagers or bounties can be resolved with this round
+  setTimeout(function() {
+    if (typeof checkWagerResolution === "function") checkWagerResolution(round);
+    if (typeof checkBountyClaims === "function") checkBountyClaims(round);
+  }, 3000);
 
   var commentary = PB.generateRoundCommentary(round);
   var msg = commentary.roasts.length ? commentary.roasts[0] : (commentary.highlights.length ? commentary.highlights[0] : "Round complete!");

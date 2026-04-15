@@ -290,8 +290,11 @@ function submitRound() {
         }
       }
     }
-    // Check if any wagers can be resolved with this round
-    setTimeout(function() { if (typeof checkWagerResolution === "function") checkWagerResolution(round); }, 3000);
+    // Check if any wagers or bounties can be resolved with this round
+    setTimeout(function() {
+      if (typeof checkWagerResolution === "function") checkWagerResolution(round);
+      if (typeof checkBountyClaims === "function") checkBountyClaims(round);
+    }, 3000);
     showRoundCommentary(round);
   }
 
