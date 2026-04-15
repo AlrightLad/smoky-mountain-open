@@ -12,7 +12,7 @@ Router.register("scramble", function(params) {
 
 function renderTeamList() {
   var teams = PB.getScrambleTeams();
-  var h = '<div class="sh"><h2>Scramble teams</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'records\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'scramble\',{create:true})">+ New team</button></div></div>';
+  var h = '<div class="sh"><h2>Scramble teams</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'home\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'scramble\',{create:true})">+ New team</button></div></div>';
 
   if (teams.length) {
     if (teams.length >= 2) {

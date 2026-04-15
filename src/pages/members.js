@@ -87,7 +87,7 @@ function renderMemberListHtml(players, h) {
   var totalCount = players.filter(function(p){return p.role !== "removed";}).length;
   
   // Header with count
-  h = '<div class="sh"><h2>Members <span style="font-size:14px;color:var(--muted);font-weight:400">' + totalCount + '</span></h2></div>';
+  h = '<div class="sh"><h2>Members <span style="font-size:14px;color:var(--muted);font-weight:400">' + totalCount + '</span></h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
   
   // Search bar
   h += '<div style="padding:0 16px 12px"><input type="text" id="memberSearch" class="ff-input" placeholder="Search members..." oninput="filterMemberList()" style="background:var(--bg3);border:1px solid var(--border);font-size:13px;padding:10px 14px"></div>';

@@ -26,7 +26,7 @@ Router.register("teetimes", function() {
     return t.status === "cancelled" && t.cancelledAt && t.cancelledAt >= threeDaysAgo;
   });
 
-  var h = '<div class="sh"><h2>Tee Times</h2><button class="btn-sm green" onclick="Router.go(\'tee-create\')">+ Post</button></div>';
+  var h = '<div class="sh"><h2>Tee Times</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'home\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'tee-create\')">+ Post</button></div></div>';
 
   if (!upcoming.length) {
     h += '<div class="section"><div class="card"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><path d="M12 22V2"/><path d="M12 2l8 4-8 4"/><circle cx="12" cy="22" r="2"/></svg></div><div class="empty-text">No upcoming tee times. Be the first to post one!</div></div></div></div>';
