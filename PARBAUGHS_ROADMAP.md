@@ -84,6 +84,31 @@ Every golf app on the market today is built for the **individual golfer** — tr
 - [ ] Name glow effects
 - [ ] Seasonal limited-edition cosmetics (disappear after season ends)
 
+**Trash Talk & Social Actions**
+- [ ] Spotlight of Shame (75 coins) — pin someone's worst round to the feed for 24 hours
+- [ ] Victory Lap (50 coins) — animated celebration that plays on your opponent's screen after you win
+- [ ] Demand a Rematch (30 coins) — public challenge posted to the feed that they can't ignore
+- [ ] New Member Welcome Gift — give a starter cosmetic pack to a new member when they join
+
+**Bounties & Betting**
+- [ ] Bounty Board (100 coins) — place a bounty on a target score at a course; anyone who hits it claims the pot
+- [ ] Course Bounty — place a bounty on birdieing (or better) a specific hole
+- [ ] Side bets on other people's rounds — wager coins on whether a friend beats their handicap
+- [ ] Prediction Markets — vote on who wins an upcoming event; correct picks split the pot
+
+**Flex & Status**
+- [ ] Rich List leaderboard (top 10 lifetime coin holders, visible to all members)
+- [ ] Coin Rain animation for the top 3 on the Rich List
+- [ ] Gold Member badge — automatically awarded at 10,000 lifetime ParCoins earned
+- [ ] Sponsor a Hole (500 coins) — your name appears on that hole's scorecards for the season
+- [ ] Name a Tournament (1,000 coins) — name a league event after yourself or a custom title
+
+**Power-Ups**
+- [ ] Double XP Round (150 coins) — next completed round earns 2× XP
+- [ ] Handicap Shield (100 coins) — protect your handicap from one bad round (excluded from calc)
+
+> **Legal note:** ParCoins are a virtual, cosmetic-only currency with zero real-world cash value. They cannot be redeemed, transferred, or exchanged for money, goods, or services outside the app. No gambling license is required.
+
 **Wager Matches**
 - [ ] Challenge a friend to a wager (bet ParCoins on next round)
 - [ ] Wager types:
