@@ -7,6 +7,13 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Parbaughs">
 <meta name="theme-color" content="#0e1118">
+<!-- Critical inline CSS — ensures dark bg + hidden elements even before external CSS loads -->
+<style>
+:root{--bg:#0e1118;--bg2:#131722;--bg3:#1a1f2c;--gold:#c9a84c;--cream:#eae8e0;--muted:#7a7e8a;--border:#1e2333;--card:#121620}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:#0e1118;color:#eae8e0;min-height:100vh;max-width:680px;margin:0 auto;overflow-x:hidden}
+.hidden{display:none!important}
+</style>
 <!-- Security headers via meta tags -->
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="X-XSS-Protection" content="1; mode=block">

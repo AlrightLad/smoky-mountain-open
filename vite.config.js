@@ -81,13 +81,30 @@ export default defineConfig({
   base: '/smoky-mountain-open/',
   root: '.',
   publicDir: 'public',
-  plugins: [coreScriptsPlugin()],
+  plugins: [
+    coreScriptsPlugin(),
+    // Remove crossorigin attribute from built HTML — GitHub Pages doesn't need it
+    // and it can cause issues with CSP
+    {
+      name: 'remove-crossorigin',
+      transformIndexHtml: function(html) {
+        return html.replace(/ crossorigin/g, '');
+      }
+    }
+  ],
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
     cssCodeSplit: false,
+    modulePreload: false,
     rollupOptions: {
-      input: resolve(__dirname, 'index.html')
+      input: resolve(__dirname, 'index.html'),
+      output: {
+        // Use predictable filenames instead of hashes for simpler debugging
+        entryFileNames: 'assets/app.js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name][extname]'
+      }
     }
   }
 });
