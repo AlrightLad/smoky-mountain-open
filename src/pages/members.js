@@ -347,6 +347,22 @@ function renderMemberDetailWithData(p) {
   h += '<div style="height:4px;background:var(--bg3);border-radius:2px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:2px;transition:width .4s"></div></div>';
   h += '</div>';
 
+  // ── PARCOIN WALLET ──
+  var coinBalance = getParCoinBalance(pid);
+  var coinLifetime = getParCoinLifetime(pid);
+  h += '<div style="padding:0 16px 10px;display:flex;gap:8px">';
+  h += '<div style="flex:1;background:linear-gradient(135deg,rgba(var(--gold-rgb),.08),rgba(var(--gold-rgb),.03));border:1px solid rgba(var(--gold-rgb),.15);border-radius:var(--radius);padding:10px 12px;display:flex;align-items:center;gap:10px">';
+  h += '<div style="width:32px;height:32px;border-radius:50%;background:rgba(var(--gold-rgb),.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="var(--gold)" stroke-width="1.3"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7M7 11.5h5a2 2 0 010 0"/></svg></div>';
+  h += '<div><div style="font-size:16px;font-weight:700;color:var(--gold)" data-count="' + coinBalance + '">' + coinBalance.toLocaleString() + '</div>';
+  h += '<div style="font-size:9px;color:var(--muted);letter-spacing:.5px">PARCOINS</div></div>';
+  h += '</div>';
+  if (coinLifetime > coinBalance) {
+    h += '<div style="flex-shrink:0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;text-align:center;min-width:70px">';
+    h += '<div style="font-size:14px;font-weight:700;color:var(--cream)" data-count="' + coinLifetime + '">' + coinLifetime.toLocaleString() + '</div>';
+    h += '<div style="font-size:8px;color:var(--muted);letter-spacing:.5px">LIFETIME</div></div>';
+  }
+  h += '</div>';
+
   // ── STAT GRID ──
   h += '<div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">';
   h += statBox(hcap !== null ? hcap : "—", "Handicap");
@@ -602,6 +618,12 @@ function renderMemberDetailWithData(p) {
     coursesContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No courses played yet</div>';
   }
   h += profSection("courses-" + pid, "Courses played", coursesContent, true);
+
+  // === RECENT PARCOINS (async load) ===
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Recent earnings</span></div>';
+  h += '<div id="parcoin-history-' + pid + '"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
+  h += '</div>';
+
   h += '</div>'; // close ptab-overview
 
   // ═══ TAB: GEAR (bag, clubs, known for) ═══
@@ -807,6 +829,32 @@ function renderMemberDetailWithData(p) {
 
   document.querySelector('[data-page="members"]').innerHTML = h;
   setTimeout(initCountAnimations, 50);
+
+  // Async load ParCoin transaction history
+  var histEl = document.getElementById("parcoin-history-" + pid);
+  if (histEl) {
+    loadTransactionHistory(pid, 10).then(function(txns) {
+      if (!txns.length) {
+        histEl.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No earnings yet — play a round to start earning!</div>';
+        return;
+      }
+      var th = '';
+      txns.forEach(function(t) {
+        var dateStr = "";
+        if (t.createdAt && t.createdAt.toDate) {
+          var d = t.createdAt.toDate();
+          dateStr = (d.getMonth()+1) + "/" + d.getDate();
+        }
+        th += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">';
+        th += '<div style="flex:1;min-width:0"><div style="font-size:11px;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(t.label || t.reason) + '</div>';
+        if (dateStr) th += '<div style="font-size:9px;color:var(--muted2)">' + dateStr + '</div>';
+        th += '</div>';
+        th += '<div style="font-size:13px;font-weight:700;color:var(--gold);flex-shrink:0;margin-left:8px">+' + t.amount + '</div>';
+        th += '</div>';
+      });
+      histEl.innerHTML = '<div class="card"><div class="card-body" style="padding:10px 14px">' + th + '</div></div>';
+    });
+  }
 }
 
 /* Handicap graph builder */
