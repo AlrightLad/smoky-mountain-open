@@ -176,23 +176,57 @@ var Router = (function() {
 // ── GLOBAL UTILITY: profile border color ────────────────────────────────────
 // Single source of truth for avatar frame colors. Call anywhere you render
 // a player avatar. Matches the logic on the profile page exactly.
+// Theme-default ring colors — every theme has a distinct ring identity
+var THEME_RINGS = {
+  classic:   {color:"#c9a84c", shadow:"0 0 6px rgba(201,168,76,.4)"},
+  camo:      {color:"#8a7a5a", shadow:"0 0 5px rgba(138,122,90,.3)"},
+  masters:   {color:"#2e7d32", shadow:"0 0 8px rgba(253,216,53,.25)"},
+  azalea:    {color:"#e8729a", shadow:"0 0 8px rgba(232,114,154,.35)"},
+  usga:      {color:"#1a3a6a", shadow:"0 0 0 1px #c41e3a, 0 0 5px rgba(196,30,58,.2)"},
+  sundayred: {color:"#8b1a2b", shadow:"0 0 8px rgba(212,36,60,.3)"},
+  dark:      {color:"#6a6a6a", shadow:"0 0 6px rgba(255,255,255,.1)"},
+  light:     {color:"#a0845a", shadow:"0 0 6px rgba(138,109,30,.25)"}
+};
+
 function playerFrameColor(p) {
-  if (!p) return 'var(--border)';
-  // Check for equipped cosmetic border first
-  if (p.equippedCosmetics && p.equippedCosmetics.border) {
+  if (!p) return 'var(--gold)';
+  // 1. Manual cosmetic ring override (from shop purchase)
+  if (p.equippedCosmetics && p.equippedCosmetics.border && p.equippedCosmetics.border !== "theme-default") {
     var cosm = typeof COSMETICS_CATALOG !== "undefined" ? COSMETICS_CATALOG : [];
     var equipped = cosm.find(function(c) { return c.id === p.equippedCosmetics.border; });
-    if (equipped) return equipped.preview; // use the preview color for border
+    if (equipped) return equipped.preview;
   }
-  var pid = p.id || p.uid || '';
-  var achs = [];
-  try { if (pid) achs = PB.getAchievements(pid) || []; } catch(e) {}
-  if (achs.some(function(a){return a.id==="champion"})) return 'var(--gold)';
-  if (achs.some(function(a){return a.id==="sub80"}))    return 'var(--birdie)';
-  if (achs.some(function(a){return a.id==="sub90"}))    return 'rgba(var(--gold-rgb),.5)';
-  if (p.founding || p.isFoundingFour)                   return 'var(--gold2)';
-  return 'var(--border)';
+  // 2. Theme-default ring — matches the player's active theme
+  var playerTheme = p.theme || "classic";
+  var ring = THEME_RINGS[playerTheme] || THEME_RINGS.classic;
+  return ring.color;
 }
+
+function playerRingShadow(p) {
+  if (!p) return '';
+  // Manual override — premium animated rings
+  if (p.equippedCosmetics && p.equippedCosmetics.border) {
+    if (p.equippedCosmetics.border === 'border_pulse_gold') return '';
+    if (p.equippedCosmetics.border === 'border_shimmer') return '';
+    // Standard cosmetic rings get a subtle glow matching their color
+    var cosm = typeof COSMETICS_CATALOG !== "undefined" ? COSMETICS_CATALOG : [];
+    var equipped = cosm.find(function(c) { return c.id === p.equippedCosmetics.border; });
+    if (equipped) return '0 0 6px ' + equipped.preview + '60';
+  }
+  // Theme-default shadow
+  var playerTheme = p.theme || "classic";
+  var ring = THEME_RINGS[playerTheme] || THEME_RINGS.classic;
+  return ring.shadow;
+}
+
+// Returns full inline style for avatar ring (border + shadow + animation)
+function playerRingStyle(p) {
+  var color = playerFrameColor(p);
+  var shadow = playerRingShadow(p);
+  var cls = playerRingClass(p);
+  return 'border:3px solid ' + color + (shadow ? ';box-shadow:' + shadow : '') + (cls ? ';animation-name:' + (cls === 'ring-pulse-gold' ? 'ringPulse' : 'ringShimmer') + ';animation-duration:2s;animation-iteration-count:infinite;animation-timing-function:ease-in-out' : '');
+}
+
 function playerRingClass(p) {
   if (!p || !p.equippedCosmetics || !p.equippedCosmetics.border) return '';
   if (p.equippedCosmetics.border === 'border_pulse_gold') return 'ring-pulse-gold';
