@@ -5,21 +5,23 @@
    Transaction log in parcoin_transactions collection.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-// ── Earn rates (match PARBAUGHS_ROADMAP.md) ──
+// ── Earn rates ──
+// PRINCIPLE: Playing golf is 5-10x more rewarding than passive login.
+// Login-only: ~14/week. Casual (1 round): ~65/week. Active: ~145/week. Grinder: ~250+/week.
 var PARCOIN_RATES = {
-  round_complete_base:     10,   // minimum for any completed round
-  round_complete_max:      50,   // max for a great round vs handicap
-  range_session_base:      5,    // minimum for a range session
-  range_session_max:       15,   // max for a long focused session
-  attest_round:            5,    // attesting someone else's scores
-  tee_time_filled:         10,   // posting a tee time that fills all spots
+  round_complete_base:     25,   // minimum for any completed round
+  round_complete_max:      75,   // max for a great round vs handicap
+  range_session_base:      10,   // minimum for a range session
+  range_session_max:       20,   // max for a long focused session
+  attest_round:            10,   // attesting someone else's scores
+  tee_time_filled:         15,   // posting a tee time that fills all spots
   daily_login_base:        1,    // day 1 of a streak
-  daily_login_max:         10,   // day 7+ of a streak
+  daily_login_max:         3,    // day 3+ of a streak (trickle, not a strategy)
   achievement_unlock_min:  25,   // small achievements
   achievement_unlock_max:  100,  // major achievements
   event_win:               500,  // winning a trip/event
-  personal_best:           100,  // new personal best 18-hole score
-  invite_joined:           200   // invitee completes registration
+  personal_best:           150,  // new personal best 18-hole score
+  invite_joined:           250   // invitee completes registration
 };
 
 // ── Dedup cache (prevents double-awarding in same session) ──
@@ -70,8 +72,8 @@ function awardCoins(uid, amount, reason, label, dedupKey) {
 
 /**
  * Calculate coins earned for completing a round.
- * 10 base + up to 40 bonus based on score vs handicap.
- * Playing to your handicap = 30 coins. Beating it = up to 50. Worse = 10-25.
+ * 25 base + up to 50 bonus based on score vs handicap.
+ * Playing to your handicap = 50 coins. Beating it = up to 75. Worse = 25-40.
  */
 function calcRoundCoins(score, rating, slope, handicap) {
   var base = PARCOIN_RATES.round_complete_base;
@@ -79,39 +81,40 @@ function calcRoundCoins(score, rating, slope, handicap) {
 
   // Course handicap from index
   var courseHcap = handicap !== null && handicap !== undefined ? Math.round(handicap * (slope || 113) / 113) : null;
-  if (courseHcap === null) return base + 15; // no handicap yet, give middle value
+  if (courseHcap === null) return base + 20; // no handicap yet, give middle value
 
   var expected = rating + courseHcap;
   var diff = score - expected; // negative = better than expected
 
-  if (diff <= -5) return PARCOIN_RATES.round_complete_max;       // crushed it
-  if (diff <= -2) return 40;                                      // great round
-  if (diff <= 0)  return 30;                                      // played to handicap
-  if (diff <= 3)  return 20;                                      // close to expected
-  if (diff <= 6)  return 15;                                      // off day
-  return base;                                                    // rough day
+  if (diff <= -5) return PARCOIN_RATES.round_complete_max;       // 75 — crushed it
+  if (diff <= -2) return 65;                                      // great round
+  if (diff <= 0)  return 50;                                      // played to handicap
+  if (diff <= 3)  return 40;                                      // close to expected
+  if (diff <= 6)  return 30;                                      // off day
+  return base;                                                    // 25 — rough day, still earned it
 }
 
 /**
  * Calculate coins earned for a range session.
- * 5 base + bonus for duration (up to 5) + bonus for drills (up to 5).
+ * 10 base + bonus for duration (up to 5) + bonus for drills (up to 5).
  */
 function calcRangeCoins(durationMinutes, drillCount) {
   var base = PARCOIN_RATES.range_session_base;
-  var durationBonus = Math.min(5, Math.floor((durationMinutes || 0) / 15)); // 1 per 15 min, max 5
+  var durationBonus = Math.min(5, Math.floor((durationMinutes || 0) / 12)); // 1 per 12 min, max 5
   var drillBonus = Math.min(5, (drillCount || 0) * 2); // 2 per drill, max 5
   return Math.min(PARCOIN_RATES.range_session_max, base + durationBonus + drillBonus);
 }
 
 /**
  * Calculate daily login streak coins.
- * 1 coin on day 1, scaling up to 10 on day 7+.
+ * 1 coin on day 1, scaling to 3 on day 3+. Intentionally low —
+ * login is a trickle to keep you opening the app, not a primary earn source.
+ * Playing a single round earns 8-25x more than a daily login.
  */
 function calcStreakCoins(streakDays) {
   if (!streakDays || streakDays < 1) return PARCOIN_RATES.daily_login_base;
-  if (streakDays >= 7) return PARCOIN_RATES.daily_login_max;
-  // Linear scale: 1 + floor((streak-1) * 9/6) ≈ 1,2,4,5,7,8,10
-  return Math.min(PARCOIN_RATES.daily_login_max, PARCOIN_RATES.daily_login_base + Math.floor((streakDays - 1) * 1.5));
+  if (streakDays >= 3) return PARCOIN_RATES.daily_login_max;
+  return Math.min(PARCOIN_RATES.daily_login_max, streakDays); // 1, 2, 3
 }
 
 /**

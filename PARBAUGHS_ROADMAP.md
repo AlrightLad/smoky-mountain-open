@@ -61,16 +61,16 @@ Every golf app on the market today is built for the **individual golfer** — tr
 
 **ParCoins — In-Game Currency**
 - [ ] ParCoin system architecture (earn + spend + balance)
-- [ ] Earning ParCoins:
-  - Complete a round: 10-50 coins (based on score relative to handicap)
-  - Log a range session: 5-15 coins
-  - Attest someone else's round: 5 coins
-  - Post a tee time that fills up: 10 coins
-  - Daily login streak: 1-10 coins (scaling with streak)
+- [x] Earning ParCoins:
+  - Complete a round: 25-75 coins (based on score relative to handicap)
+  - Log a range session: 10-20 coins
+  - Attest someone else's round: 10 coins
+  - Post a tee time that fills up: 15 coins
+  - Daily login streak: 1-3 coins (caps at day 3 — trickle, not a strategy)
   - Achievement unlocks: 25-100 coins
   - Win an event: 500 coins
-  - Personal best: 100 coins
-  - Invite a friend who joins: 200 coins
+  - Personal best: 150 coins
+  - Invite a friend who joins: 250 coins
 - [ ] ParCoin wallet UI on profile
 - [ ] Transaction history
 
