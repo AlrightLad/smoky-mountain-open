@@ -634,6 +634,26 @@ function renderAITournamentResult(t, el) {
 // Returns true if template was populated successfully.
 function populateShareTemplateForRound(round) {
   if (!round) return false;
+  // Apply user's active theme colors to the share template
+  var tpl = document.getElementById("pbShareTemplate");
+  if (tpl) {
+    var bg = cssVar("--bg") || "#070b10";
+    var gold = cssVar("--gold") || "#c9a84c";
+    var cream = cssVar("--cream") || "#eae8e0";
+    tpl.style.background = bg;
+    tpl.style.color = cream;
+    // Update brand name color
+    var brandEl = tpl.querySelector(".pbs-brand-name");
+    if (brandEl) brandEl.style.color = gold;
+    // Update score diff colors
+    var diffPos = tpl.querySelector(".pbs-diff-pos");
+    if (diffPos) diffPos.style.color = gold;
+    // Update stat labels
+    tpl.querySelectorAll(".pbs-stat-lbl").forEach(function(el) { el.style.color = cssVar("--muted") || "#3d4a5c"; });
+    tpl.querySelectorAll(".pbs-tot").forEach(function(el) { el.style.background = "rgba(" + (cssVar("--gold-rgb") || "201,168,76") + ",.08)"; el.style.borderColor = "rgba(" + (cssVar("--gold-rgb") || "201,168,76") + ",.2)"; });
+    tpl.querySelectorAll(".pbs-tot-lbl").forEach(function(el) { el.style.color = gold; });
+    tpl.querySelectorAll(".pbs-hn").forEach(function(el) { el.style.color = "rgba(" + (cssVar("--gold-rgb") || "201,168,76") + ",.6)"; });
+  }
   var course = PB.getCourseByName(round.course);
   var diff = Math.round((round.score - (round.rating || 72)) * 10) / 10;
   var diffStr = diff > 0 ? "+" + diff : diff === 0 ? "E" : "" + diff;
