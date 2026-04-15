@@ -804,7 +804,26 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 /* ═══════════════════════════════════════════════════════════════════════════
    ANIMATED RINGS — Premium cosmetic avatar borders
    ═══════════════════════════════════════════════════════════════════════════ */
-@keyframes ringPulse{0%,100%{box-shadow:0 0 8px rgba(201,168,76,.3)}50%{box-shadow:0 0 20px rgba(201,168,76,.6)}}
-@keyframes ringShimmer{0%{box-shadow:0 0 12px rgba(185,242,255,.3)}50%{box-shadow:0 0 24px rgba(185,242,255,.7)}100%{box-shadow:0 0 12px rgba(185,242,255,.3)}}
+/* Premium animated ring keyframes — 60fps CSS-only */
+@keyframes ringPulse{0%,100%{box-shadow:0 0 6px rgba(201,168,76,.3),0 0 12px rgba(201,168,76,.15)}50%{box-shadow:0 0 16px rgba(201,168,76,.7),0 0 28px rgba(201,168,76,.3)}}
+@keyframes ringShimmer{0%{box-shadow:0 0 8px rgba(185,242,255,.3),inset 0 0 4px rgba(255,255,255,.1)}33%{box-shadow:0 0 18px rgba(185,242,255,.8),inset 0 0 6px rgba(255,255,255,.2)}66%{box-shadow:0 0 10px rgba(220,240,255,.4),inset 0 0 3px rgba(255,255,255,.05)}100%{box-shadow:0 0 8px rgba(185,242,255,.3),inset 0 0 4px rgba(255,255,255,.1)}}
+@keyframes ringRainbow{0%{border-color:#ff6b6b;box-shadow:0 0 10px rgba(255,107,107,.4)}17%{border-color:#ffd93d;box-shadow:0 0 10px rgba(255,217,61,.4)}33%{border-color:#6bcb77;box-shadow:0 0 10px rgba(107,203,119,.4)}50%{border-color:#4d96ff;box-shadow:0 0 10px rgba(77,150,255,.4)}67%{border-color:#a78bfa;box-shadow:0 0 10px rgba(167,139,250,.4)}83%{border-color:#ff6b9d;box-shadow:0 0 10px rgba(255,107,157,.4)}100%{border-color:#ff6b6b;box-shadow:0 0 10px rgba(255,107,107,.4)}}
+@keyframes ringNeonGreen{0%,100%{box-shadow:0 0 6px rgba(57,255,20,.3)}50%{box-shadow:0 0 14px rgba(57,255,20,.6),0 0 24px rgba(57,255,20,.2)}}
+@keyframes ringEmber{0%{box-shadow:0 0 6px rgba(204,51,0,.3)}25%{box-shadow:0 0 12px rgba(255,100,0,.5)}50%{box-shadow:0 0 8px rgba(204,51,0,.4)}75%{box-shadow:0 0 14px rgba(255,80,0,.6)}100%{box-shadow:0 0 6px rgba(204,51,0,.3)}}
+/* Animated name effects */
+@keyframes nameGoldShimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+@keyframes nameRainbow{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
+@keyframes nameGlowPulse{0%,100%{text-shadow:0 0 6px currentColor}50%{text-shadow:0 0 14px currentColor,0 0 24px currentColor}}
+@keyframes nameFlicker{0%,100%{opacity:1}50%{opacity:.85}}
 .ring-pulse-gold{animation:ringPulse 2s ease-in-out infinite}
 .ring-diamond-sparkle{animation:ringShimmer 2.5s ease-in-out infinite}
+.ring-rainbow-shift{animation:ringRainbow 3s linear infinite}
+.ring-neon-green{animation:ringNeonGreen 1.8s ease-in-out infinite}
+.ring-crimson-ember{animation:ringEmber 1.5s ease-in-out infinite}
+/* Name effect classes */
+.name-gold-shimmer{background:linear-gradient(90deg,var(--cream) 0%,var(--gold) 40%,#fff 50%,var(--gold) 60%,var(--cream) 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:nameGoldShimmer 3s linear infinite}
+.name-rainbow{animation:nameRainbow 4s linear infinite}
+.name-glow-green{color:#4ade80;animation:nameGlowPulse 2s ease-in-out infinite}
+.name-fire{background:linear-gradient(90deg,#ef4444,#f97316,#ef4444);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:nameGoldShimmer 2s linear infinite}
+.name-ice{background:linear-gradient(90deg,#38bdf8,#e0f2fe,#38bdf8);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:nameGoldShimmer 3s linear infinite}
+.name-shadow-depth{text-shadow:2px 2px 4px rgba(0,0,0,.6),1px 1px 2px rgba(0,0,0,.3)}
