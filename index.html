@@ -11,7 +11,7 @@
 <style>
 :root{--bg:#0e1118;--bg2:#131722;--bg3:#1a1f2c;--gold:#c9a84c;--cream:#eae8e0;--muted:#7a7e8a;--border:#1e2333;--card:#121620}
 *{margin:0;padding:0;box-sizing:border-box}
-html{background:#0e1118}body{font-family:'Inter',system-ui,sans-serif;background:transparent;color:#eae8e0;min-height:100vh;max-width:680px;margin:0 auto;overflow-x:hidden}
+html{background:#0e1118!important}:root{background:#0e1118!important}body{font-family:'Inter',system-ui,sans-serif;background:transparent!important;color:#eae8e0;min-height:100vh;max-width:680px;margin:0 auto;overflow-x:hidden}
 .hidden{display:none!important}
 </style>
 <!-- Security headers via meta tags -->
@@ -43,7 +43,7 @@ html{background:#0e1118}body{font-family:'Inter',system-ui,sans-serif;background
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-<div id="textureOverlay" style="position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;background-repeat:repeat;background-size:300px 300px;opacity:0;mix-blend-mode:overlay"></div>
+<div id="textureOverlay" style="position:fixed;inset:0;z-index:0;pointer-events:none;background-repeat:repeat;background-size:300px 300px;opacity:0;mix-blend-mode:overlay;width:100vw;height:100vh;height:100dvh"></div>
 <!-- ── SHARE CARD TEMPLATE (hidden, captured by html2canvas) ── -->
 <div id="pbShareTemplate" aria-hidden="true">
   <div class="pbs-inner">
