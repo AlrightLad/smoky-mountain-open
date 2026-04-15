@@ -714,7 +714,7 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 
 /* Cards need stronger borders and subtle shadow on light */
 [data-theme="light"] .card{border-color:#c8c6be;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-[data-theme="light"] .card:hover{border-color:#b0ae a6;background:#f8f7f4}
+[data-theme="light"] .card:hover{border-color:#b0aea6;background:#f8f7f4}
 
 /* Next-trip card needs dark text treatment */
 [data-theme="light"] .next-trip{background:linear-gradient(135deg,#eae8e2,#f0eee8);border-color:#c8c6be}
@@ -800,6 +800,95 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 
 /* DM bubbles */
 [data-theme="light"] .dm-bubble-row.theirs .dm-bubble{background:#e2e0da;color:#1a1a18}
+
+/* ── COMPREHENSIVE LIGHT MODE FIX ──────────────────────────────────────── */
+/* Body / page background — cream everywhere */
+[data-theme="light"] #mainApp{background:var(--bg)}
+[data-theme="light"] #profileBar{background:var(--bg)!important;border-bottom-color:#c8c6be!important}
+[data-theme="light"] #profileBar *{color:#1a1a18}
+[data-theme="light"] #profileBar svg{color:#6a6860!important}
+[data-theme="light"] .footer{color:#9a988e}
+[data-theme="light"] .nav{background:var(--bg);border-color:#c8c6be}
+[data-theme="light"] .ptr-indicator{background:var(--bg);color:#6a6860}
+
+/* Section / page headers */
+[data-theme="light"] .sh{border-bottom-color:#c8c6be}
+[data-theme="light"] .sh h2{color:#8a6d1e}
+[data-theme="light"] .back{color:#6a6860}
+
+/* Buttons */
+[data-theme="light"] .btn.full.green,.btn-sm.green{background:#2e8a4a!important;color:#fff!important}
+[data-theme="light"] .btn.full.outline,.btn-sm.outline{border-color:#c8c6be;color:#6a6860;background:transparent}
+[data-theme="light"] .btn.full.outline:hover,.btn-sm.outline:hover{background:#eceae4}
+
+/* Generic backgrounds used inline in JS */
+[data-theme="light"] [style*="background:var(--bg2)"]{background:#eceae4!important}
+[data-theme="light"] [style*="background:var(--bg3)"]{background:#e2e0da!important}
+[data-theme="light"] [style*="background:var(--card)"]{background:#ffffff!important}
+
+/* Form sections */
+[data-theme="light"] .form-section{background:transparent}
+[data-theme="light"] .form-title{color:#8a6d1e}
+[data-theme="light"] .ff-label{color:#6a6860}
+[data-theme="light"] select.ff-input{background:#ffffff;color:#1a1a18}
+[data-theme="light"] textarea.ff-input{background:#ffffff;color:#1a1a18}
+
+/* Chat */
+[data-theme="light"] .chat-input-row{border-top-color:#c8c6be;background:var(--bg)}
+[data-theme="light"] .chat-input-row input{background:#ffffff;color:#1a1a18;border-color:#c8c6be}
+[data-theme="light"] .chat-input-row button{background:#8a6d1e;color:#f5f3ee}
+
+/* Notif badge / bell area */
+[data-theme="light"] #notifBadge{background:#c44030!important}
+[data-theme="light"] #dmBadge{background:#c44030!important}
+[data-theme="light"] .notif-overlay{background:rgba(0,0,0,.2)}
+
+/* Bottom nav (ensure opaque cream) */
+[data-theme="light"] .bottom-nav{background:#f5f3ee!important;border-top:1px solid #c8c6be!important}
+[data-theme="light"] .bottom-nav button{color:#6a6860}
+[data-theme="light"] .bottom-nav button svg{fill:none;stroke:#6a6860}
+[data-theme="light"] .bottom-nav button span{color:#6a6860}
+
+/* Drill chips, feel buttons */
+[data-theme="light"] .drill-chip{background:#eceae4;border-color:#c8c6be;color:#1a1a18}
+[data-theme="light"] .drill-chip.selected{background:rgba(138,109,30,.1);border-color:#8a6d1e;color:#8a6d1e}
+[data-theme="light"] .feel-btn{background:#eceae4;border-color:#c8c6be;color:#1a1a18}
+[data-theme="light"] .feel-btn.sel{background:rgba(138,109,30,.1);border-color:#8a6d1e;color:#8a6d1e}
+
+/* Activity toggle */
+[data-theme="light"] .activity-toggle{background:#eceae4;border-color:#c8c6be}
+[data-theme="light"] .activity-toggle button{color:#6a6860}
+[data-theme="light"] .activity-toggle button.active{background:#8a6d1e;color:#f5f3ee}
+
+/* Toggle bar (shared filter tabs) */
+[data-theme="light"] .toggle-bar{background:transparent;border-color:#c8c6be}
+
+/* DM page */
+[data-theme="light"] .dm-list-item{border-bottom-color:#d8d6ce}
+[data-theme="light"] .dm-list-item:hover{background:#eceae4}
+[data-theme="light"] .dm-page-wrap{background:var(--bg)}
+[data-theme="light"] .dm-thread{background:var(--bg)}
+[data-theme="light"] .dm-messages{background:var(--bg)}
+
+/* Cal event items */
+[data-theme="light"] .cal-event-item{background:#ffffff;border-color:#c8c6be}
+[data-theme="light"] .cal-event-title{color:#1a1a18}
+
+/* Empty state text */
+[data-theme="light"] .empty-text{color:#6a6860}
+
+/* Search items */
+[data-theme="light"] .search-item{color:#1a1a18;border-color:#c8c6be}
+[data-theme="light"] .search-item:hover{background:#eceae4}
+
+/* Scorecard/leaderboard cells */
+[data-theme="light"] .li{color:#1a1a18}
+
+/* Range timer */
+[data-theme="light"] .range-timer-time,.range-timer-time--active{color:#8a6d1e}
+
+/* Loading spinner */
+[data-theme="light"] .loading{color:#6a6860}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    ANIMATED RINGS — Premium cosmetic avatar borders
