@@ -124,6 +124,29 @@ Router.register("shop", function() {
   });
   h += '</div>';
 
+  // User's avatar and name for live previews
+  var _myAvatar = currentProfile ? Router.getAvatar(currentProfile) : '';
+  var _myName = currentProfile ? (currentProfile.username || currentProfile.name || 'You') : 'You';
+
+  // Animated ring ID → CSS animation mapping
+  var _ringAnimMap = {
+    'border_pulse_gold': 'ringPulse 2s ease-in-out infinite',
+    'border_shimmer': 'ringShimmer 2s linear infinite',
+    'border_rainbow_shift': 'ringRainbow 3s linear infinite',
+    'border_neon_green': 'ringNeonGreen 1.8s ease-in-out infinite',
+    'border_crimson_ember': 'ringEmber 1.2s ease-in-out infinite'
+  };
+
+  // Name effect ID → CSS class mapping
+  var _nameClassMap = {
+    'name_gold_shimmer': 'name-gold-shimmer',
+    'name_rainbow': 'name-rainbow',
+    'name_glow_green': 'name-glow-green',
+    'name_fire_text': 'name-fire',
+    'name_ice_text': 'name-ice',
+    'name_shadow_depth': 'name-shadow-depth'
+  };
+
   // Items grid
   var items = COSMETICS_CATALOG.filter(function(c) { return c.cat === _shopCat; });
   h += '<div style="padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px">';
@@ -134,17 +157,33 @@ Router.register("shop", function() {
 
     h += '<div style="background:var(--card);border:1px solid ' + (equipped ? 'var(--gold)' : 'var(--border)') + ';border-radius:var(--radius-lg);padding:14px;text-align:center;position:relative">';
 
-    // Preview
+    // ── LIVE PREVIEW ──
     if (item.cat === "border") {
-      h += '<div style="width:52px;height:52px;border-radius:50%;border:' + item.css + ';margin:0 auto 8px;display:flex;align-items:center;justify-content:center;background:var(--bg3)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
+      // Ring preview: user's actual photo + live animation
+      var ringAnim = _ringAnimMap[item.id] || '';
+      var ringGlow = ringAnim ? '' : ';box-shadow:0 0 8px ' + item.preview + '50';
+      h += '<div style="width:56px;height:56px;border-radius:50%;border:' + item.css + ringGlow + ';margin:0 auto 8px;display:flex;align-items:center;justify-content:center;background:var(--bg3)' + (ringAnim ? ';animation:' + ringAnim : '') + '">' + (_myAvatar || '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>') + '</div>';
     } else if (item.cat === "banner") {
-      h += '<div style="height:32px;border-radius:var(--radius);background:' + item.css + ';margin-bottom:8px"></div>';
+      // Banner: full width at profile-like size
+      h += '<div style="height:40px;border-radius:var(--radius);background:' + item.css + ';margin-bottom:8px;position:relative;overflow:hidden">';
+      h += '<div style="position:absolute;bottom:4px;left:50%;transform:translateX(-50%);font-size:8px;color:rgba(255,255,255,.5);letter-spacing:.5px">PREVIEW</div>';
+      h += '</div>';
     } else if (item.cat === "card") {
-      h += '<div style="height:32px;border-radius:var(--radius);background:var(--bg3);margin-bottom:8px;' + item.css + '"></div>';
+      // Card: mock feed card with live styling
+      h += '<div style="border-radius:var(--radius);background:var(--bg3);margin-bottom:8px;padding:8px 10px;text-align:left;' + item.css + '">';
+      h += '<div style="font-size:9px;font-weight:600;color:var(--cream)">' + escHtml(_myName) + '</div>';
+      h += '<div style="font-size:8px;color:var(--muted);margin-top:1px">Honey Run \u00b7 92</div>';
+      h += '</div>';
     } else if (item.cat === "name") {
-      h += '<div style="padding:6px 0 8px;font-size:15px;font-weight:700;' + item.css + '">YourName</div>';
+      // Name effect: user's actual username with live CSS animation
+      var nameClass = _nameClassMap[item.id] || '';
+      h += '<div style="padding:6px 0 8px;font-size:16px;font-weight:700" class="' + nameClass + '">' + escHtml(_myName) + '</div>';
     } else if (item.cat === "title") {
-      h += '<div style="padding:8px 0;display:flex;flex-direction:column;align-items:center;gap:2px"><div style="font-size:13px;font-weight:700;color:var(--cream)">Player</div><div style="font-size:10px;color:' + item.preview + ';font-style:italic">' + item.name + '</div></div>';
+      // Title: shown under username exactly as on profile
+      h += '<div style="padding:6px 0 8px;display:flex;flex-direction:column;align-items:center;gap:2px">';
+      h += '<div style="font-size:13px;font-weight:700;color:var(--cream)">' + escHtml(_myName) + '</div>';
+      h += '<div style="font-size:10px;color:' + item.preview + ';font-style:italic">' + item.name + '</div>';
+      h += '</div>';
     }
 
     h += '<div style="font-size:12px;font-weight:700;color:var(--cream)">' + item.name + '</div>';
