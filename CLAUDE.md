@@ -249,6 +249,9 @@ The ONLY way new coins enter the economy is through the earning sources table ab
 - **Trash talk (Spotlight of Shame, Victory Lap, etc):** Coins deducted from spender's balance. Pure sink.
 - **Shop purchases:** Coins deducted. Pure sink.
 
+### Known TODOs
+- **Bounty expiry refund**: When a bounty expires without being claimed, poster's coins should be refunded. Requires a scheduled Cloud Function or client-side check on page load. Not yet implemented.
+
 ### Anti-Inflation Rules
 - NO signup bonus above 25 coins
 - NO daily login streak multipliers
