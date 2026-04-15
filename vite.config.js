@@ -16,7 +16,7 @@ var DEFERRED_PAGES = [
   'more.js', 'feed.js', 'chat.js', 'dms.js', 'invite.js', 'admin.js',
   'faq.js', 'caddynotes.js', 'trophyroom.js', 'partygames.js',
   'syncround.js', 'scramblelive.js', 'seasonrecap.js', 'awards.js',
-  'watchround.js', 'shop.js', 'wagers.js', 'social.js', 'bounties.js', 'richlist.js', 'roundhistory.js', 'leagues.js', 'findplayers.js'
+  'watchround.js', 'shop.js', 'wagers.js', 'social.js', 'bounties.js', 'richlist.js', 'roundhistory.js', 'leagues.js', 'findplayers.js', 'drills.js'
 ];
 
 var PAGE_FILES = IMMEDIATE_PAGES.concat(DEFERRED_PAGES);

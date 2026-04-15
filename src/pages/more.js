@@ -55,7 +55,8 @@ Router.register("more", function() {
     {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 20h5v-2a3 3 0 00-4-4H6a3 3 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', label:"Members", sub:PB.getPlayers().length + " Parbaughs", page:"members"},
     {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="8" r="5"/><circle cx="18" cy="8" r="5"/><path d="M3 20c0-4.4 3.6-8 8-8h6c4.4 0 8 3.6 8 8"/></svg>', label:"Scramble Teams", sub:"2v2, 3v3, 4v4 W-L records", page:"scramble"},
     {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>', label:"Tee Times", sub:"Post and RSVP", page:"teetimes"},
-    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>', label:"Clubhouse Chat", sub:"Trash talk central", page:"chat"}
+    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>', label:"Clubhouse Chat", sub:"Trash talk central", page:"chat"},
+    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="10"/></svg>', label:"Drills Library", sub:"Practice drills for every skill", page:"drills"}
   ]);
 
   // ── Info ──

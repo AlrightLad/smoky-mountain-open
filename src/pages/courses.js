@@ -569,18 +569,95 @@ function renderCourseDetail(courseId) {
     }
   }
 
-  // Reviews
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Reviews</span></div>';
-  if (c.reviews && c.reviews.length) {
-    c.reviews.forEach(function(r) {
-      h += '<div class="card"><div class="card-body"><div class="review-head">' + r.rating + '/5 — ' + r.by + '</div><div class="review-text">' + r.text + '</div></div></div>';
+  // ── Member Stats (auto-generated from round data) ──
+  var courseRounds = PB.getCourseRounds(c.name).filter(function(r) { return r.format !== "scramble" && r.format !== "scramble4"; });
+  if (courseRounds.length >= 3) {
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Member Stats</span></div>';
+    var full18cr = courseRounds.filter(function(r) { return !r.holesPlayed || r.holesPlayed >= 18; });
+    var avgScore = full18cr.length ? Math.round(full18cr.reduce(function(a,r){return a+r.score},0) / full18cr.length) : null;
+
+    // Most played by
+    var playedBy = {};
+    courseRounds.forEach(function(r) { var pn = r.playerName || "Unknown"; playedBy[pn] = (playedBy[pn]||0) + 1; });
+    var topPlayer = Object.entries(playedBy).sort(function(a,b){return b[1]-a[1]})[0];
+
+    h += '<div class="card"><div style="padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:12px">';
+    if (avgScore) h += '<div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Members average</div><div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:var(--cream)">' + avgScore + '</div></div>';
+    h += '<div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Total rounds</div><div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:var(--cream)">' + courseRounds.length + '</div></div>';
+    if (topPlayer) h += '<div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Most played by</div><div style="font-size:13px;font-weight:600;color:var(--gold)">' + escHtml(topPlayer[0]) + ' <span style="font-size:10px;color:var(--muted)">(' + topPlayer[1] + ' rounds)</span></div></div>';
+
+    // Hardest/easiest hole (from hole-by-hole data)
+    var holeData = {};
+    courseRounds.forEach(function(r) {
+      if (!r.holeScores || !r.holePars) return;
+      for (var hi = 0; hi < Math.min(r.holeScores.length, r.holePars.length); hi++) {
+        var hs = parseInt(r.holeScores[hi]), hp = r.holePars[hi];
+        if (hs > 0 && hp > 0) {
+          if (!holeData[hi]) holeData[hi] = { total: 0, count: 0, par: hp };
+          holeData[hi].total += hs - hp;
+          holeData[hi].count++;
+        }
+      }
     });
+    var holeAvgs = Object.entries(holeData).filter(function(e){return e[1].count >= 2}).map(function(e) {
+      return { hole: parseInt(e[0]) + 1, avg: Math.round(e[1].total / e[1].count * 10) / 10, par: e[1].par };
+    });
+    if (holeAvgs.length >= 2) {
+      holeAvgs.sort(function(a,b){return b.avg - a.avg});
+      var hardest = holeAvgs[0];
+      var easiest = holeAvgs[holeAvgs.length - 1];
+      h += '<div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Hardest hole</div><div style="font-size:13px;font-weight:600;color:var(--red)">#' + hardest.hole + ' <span style="font-size:10px;color:var(--muted)">(par ' + hardest.par + ', avg +' + hardest.avg + ')</span></div></div>';
+      h += '<div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Easiest hole</div><div style="font-size:13px;font-weight:600;color:var(--birdie)">#' + easiest.hole + ' <span style="font-size:10px;color:var(--muted)">(par ' + easiest.par + ', avg ' + (easiest.avg >= 0 ? '+' : '') + easiest.avg + ')</span></div></div>';
+    }
+    h += '</div></div></div>';
   }
+
+  // ── Reviews (enhanced with stars + aggregate) ──
+  var reviews = c.reviews || [];
+  var avgRating = reviews.length ? Math.round(reviews.reduce(function(a,r){return a+(r.rating||0)},0) / reviews.length * 10) / 10 : null;
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Reviews' + (reviews.length ? ' <span style="font-size:12px;color:var(--muted);font-weight:400">(' + reviews.length + ')</span>' : '') + '</span></div>';
+
+  // Aggregate rating
+  if (avgRating) {
+    h += '<div style="display:flex;align-items:center;gap:8px;padding:0 0 8px">';
+    h += '<div style="font-family:Playfair Display,serif;font-size:28px;font-weight:700;color:var(--gold)">' + avgRating + '</div>';
+    h += '<div>';
+    for (var si = 1; si <= 5; si++) h += '<span style="color:' + (si <= Math.round(avgRating) ? 'var(--gold)' : 'var(--bg3)') + ';font-size:16px">\u2605</span>';
+    h += '<div style="font-size:10px;color:var(--muted)">' + reviews.length + ' review' + (reviews.length !== 1 ? 's' : '') + '</div>';
+    h += '</div></div>';
+  }
+
+  // Individual reviews
+  reviews.slice().reverse().forEach(function(r) {
+    h += '<div class="card" style="margin-bottom:6px"><div style="padding:12px 16px">';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">';
+    h += '<div>';
+    for (var rs = 1; rs <= 5; rs++) h += '<span style="color:' + (rs <= r.rating ? 'var(--gold)' : 'var(--bg3)') + ';font-size:12px">\u2605</span>';
+    h += ' <span style="font-size:11px;font-weight:600;color:var(--cream)">' + escHtml(r.by || "Member") + '</span></div>';
+    h += '<span style="font-size:9px;color:var(--muted2)">' + (r.date || "") + '</span></div>';
+    h += '<div style="font-size:12px;color:var(--cream);line-height:1.5">' + escHtml(r.text || "") + '</div>';
+    h += '</div></div>';
+  });
+
+  // Check if user has played here
+  var hasPlayedHere = false;
+  if (currentUser) {
+    var myRoundsHere = PB.getPlayerRounds(currentUser.uid).filter(function(r) { return PB.normCourseName(r.course) === PB.normCourseName(c.name); });
+    hasPlayedHere = myRoundsHere.length > 0;
+  }
+
   h += '<div id="review-form-' + courseId + '" style="display:none;margin-top:8px">';
-  h += '<div class="ff"><label class="ff-label">Rating</label><select class="ff-input" id="rev-rating"><option value="5">5 stars (5)</option><option value="4">4 stars (4)</option><option value="3">3 stars (3)</option><option value="2">2 stars (2)</option><option value="1">(1)</option></select></div>';
-  h += '<div class="ff"><label class="ff-label">Review</label><textarea class="ff-input" id="rev-text" placeholder="What did you think of this course?"></textarea></div>';
-  h += '<button class="btn full green" onclick="submitCourseReview(\'' + courseId + '\')">Submit review</button></div>';
-  h += '<button class="btn full outline" onclick="document.getElementById(\'review-form-' + courseId + '\').style.display=\'block\';this.style.display=\'none\'">+ Write review</button></div>';
+  h += '<div class="ff"><label class="ff-label">Rating</label><div style="display:flex;gap:4px" id="rev-stars">';
+  for (var sti = 1; sti <= 5; sti++) h += '<span onclick="setReviewStars(' + sti + ')" style="font-size:24px;cursor:pointer;color:var(--bg3)" data-star="' + sti + '">\u2605</span>';
+  h += '</div><input type="hidden" id="rev-rating" value="5"></div>';
+  h += '<div class="ff"><label class="ff-label">Review</label><textarea class="ff-input" id="rev-text" rows="3" placeholder="What did you think of this course?"></textarea></div>';
+  h += '<button class="btn full green" onclick="submitCourseReview(\'' + courseId + '\')">Submit Review</button></div>';
+  if (hasPlayedHere) {
+    h += '<button class="btn full outline" onclick="document.getElementById(\'review-form-' + courseId + '\').style.display=\'block\';this.style.display=\'none\'">+ Write a Review</button>';
+  } else {
+    h += '<div style="font-size:10px;color:var(--muted);text-align:center;padding:8px 0">Play this course to leave a review</div>';
+  }
+  h += '</div>';
 
   document.querySelector('[data-page="courses"]').innerHTML = h;
   // Auto-render default tee scorecard
@@ -798,5 +875,11 @@ function submitCourseReview(courseId) {
   }
   Router.toast("Review added!");
   Router.go("courses", { id: courseId });
+}
+
+function setReviewStars(n) {
+  document.getElementById("rev-rating").value = n;
+  var stars = document.querySelectorAll("#rev-stars span");
+  stars.forEach(function(s) { s.style.color = parseInt(s.dataset.star) <= n ? "var(--gold)" : "var(--bg3)"; });
 }
 

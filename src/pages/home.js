@@ -88,6 +88,9 @@ Router.register("home", function() {
 
   h += '<div id="onlineSection"></div>';
 
+  // Tip of the Day
+  h += '<div id="tipOfDay"></div>';
+
   // Quick Actions — 4 buttons
   h += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 0 12px">';
   h += '<button class="btn full green" onclick="Router.go(\'playnow\')" style="font-size:10px;padding:12px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg>Play Now</button>';
@@ -342,6 +345,8 @@ Router.register("home", function() {
     document.querySelector('[data-page="home"]').innerHTML = h;
   // Re-render online section since the div was just recreated
   if (typeof renderOnlineSection === "function") renderOnlineSection();
+  // Tip of the Day
+  _renderTipOfDay();
   // Load activity feed async from Firestore
   loadHomeActivityFeed();
 });
@@ -429,5 +434,39 @@ function doRestore() {
   var code = prompt("Paste backup code:");
   if (code && PB.importBackup(code)) { Router.toast("Restored!"); Router.go("home"); }
   else if (code) Router.toast("Invalid code");
+}
+
+// ── Tip of the Day ──
+var GOLF_TIPS = [
+  {cat:"Putting", tip:"Gate drill: place two tees just wider than your putter head 3 feet from the hole. Roll 10 putts through the gate. Build confidence on short putts before tackling long ones."},
+  {cat:"Driving", tip:"Tee height matters. For driver, half the ball should be above the crown. For fairway woods, just a quarter inch. For irons off the tee, barely above the grass."},
+  {cat:"Short Game", tip:"On chip shots, keep your weight 60% on your lead foot throughout the swing. This promotes ball-first contact and consistent distance control."},
+  {cat:"Course Management", tip:"When you miss a green, always chip toward the fat part of the putting surface. Leaving yourself a longer putt is better than a tricky short one."},
+  {cat:"Mental Game", tip:"After a bad hole, take 3 deep breaths before your next tee shot. Reset your mental scorecard to zero. The next hole doesn't know what happened on the last one."},
+  {cat:"Etiquette", tip:"Repair your ball marks on the green AND one more. If everyone fixes two marks, the greens stay perfect. It's the easiest way to improve your course."},
+  {cat:"Putting", tip:"Read your putt from behind the ball AND behind the hole. Your brain averages both perspectives and gives you a more accurate read than either alone."},
+  {cat:"Driving", tip:"Slow down your backswing. Most amateurs swing too fast going back. A smoother tempo creates better contact and actually increases distance."},
+  {cat:"Short Game", tip:"From a bunker, open your clubface BEFORE you grip it. Then take your normal grip. This adds loft without changing your swing."},
+  {cat:"Course Management", tip:"Know your actual distances, not your best-ever distances. Your 7-iron average is more useful than the one time you flushed it 170."},
+  {cat:"Mental Game", tip:"Pre-shot routine should take the same time whether it's the first hole or the 18th. Consistency in routine creates consistency in results."},
+  {cat:"Putting", tip:"On breaking putts, aim at the apex of the break — the highest point — and let gravity do the work. Most amateurs under-read break by 50%."},
+  {cat:"Short Game", tip:"The bump-and-run with a 7 or 8 iron is the most reliable chip shot in golf. Use it whenever you have green to work with."},
+  {cat:"Driving", tip:"Alignment sticks in practice are worth 5 strokes a round. Most golfers aim further right than they think. Check your aim regularly."},
+  {cat:"Mental Game", tip:"Play the shot you have, not the shot you wish you had. Accept your lie, pick the highest-percentage play, and commit to it completely."}
+];
+
+function _renderTipOfDay() {
+  var el = document.getElementById("tipOfDay");
+  if (!el) return;
+  // Pick tip based on day of year (rotates daily)
+  var dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  var tip = GOLF_TIPS[dayOfYear % GOLF_TIPS.length];
+  var catColors = {Putting:"var(--birdie)",Driving:"var(--gold)",ShortGame:"var(--blue)",CourseManagement:"var(--purple)",MentalGame:"var(--pink)",Etiquette:"var(--muted)","Short Game":"var(--blue)","Course Management":"var(--purple)","Mental Game":"var(--pink)"};
+  var catColor = catColors[tip.cat] || "var(--gold)";
+  el.innerHTML = '<div style="margin:0 0 8px;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg)">' +
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
+    '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="' + catColor + '" stroke-width="1.5"><circle cx="8" cy="6" r="4"/><path d="M6 10v2a2 2 0 004 0v-2"/><path d="M5 14h6"/></svg>' +
+    '<span style="font-size:9px;font-weight:700;color:' + catColor + ';text-transform:uppercase;letter-spacing:1px">' + tip.cat + ' Tip</span></div>' +
+    '<div style="font-size:11px;color:var(--cream);line-height:1.6">' + tip.tip + '</div></div>';
 }
 

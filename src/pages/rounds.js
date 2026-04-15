@@ -350,6 +350,42 @@ function quickAddCourseForRound(name) {
 
 function showRoundCommentary(round) {
   Router.toast("Round saved!");
-  Router.go("rounds", {roundId: round.id});
+  // Show story prompt before navigating
+  _showStoryPrompt(round);
+}
+
+function _showStoryPrompt(round) {
+  var h = '<div class="sh"><h2>How\'d It Go?</h2></div>';
+  h += '<div style="text-align:center;padding:20px 16px">';
+  h += '<div style="font-family:Playfair Display,serif;font-size:36px;font-weight:700;color:var(--gold)">' + (round.score || "") + '</div>';
+  h += '<div style="font-size:12px;color:var(--muted);margin-top:4px">' + escHtml(round.course || "") + '</div>';
+  h += '</div>';
+  h += '<div style="padding:0 16px">';
+  h += '<div class="ff"><label class="ff-label">Tell the story of this round (optional)</label>';
+  h += '<textarea class="ff-input" id="story-text" rows="3" placeholder="The highlight of the day was... / I was cruising until hole 7... / First time breaking 100!"></textarea></div>';
+  h += '<div style="display:flex;gap:8px">';
+  h += '<button class="btn full green" style="flex:1" onclick="submitRoundStory(\'' + round.id + '\')">Post Story</button>';
+  h += '<button class="btn full outline" style="flex:1" onclick="Router.go(\'rounds\',{roundId:\'' + round.id + '\'})">Skip</button>';
+  h += '</div></div>';
+  document.querySelector('[data-page="rounds"]').innerHTML = h;
+}
+
+function submitRoundStory(roundId) {
+  var text = (document.getElementById("story-text") || {}).value || "";
+  if (!text.trim()) { Router.go("rounds", {roundId: roundId}); return; }
+  if (db && roundId) {
+    db.collection("rounds").doc(roundId).update({ story: text.trim() }).catch(function(){});
+    // Also post to chat feed as a story
+    if (currentUser) {
+      var name = currentProfile ? (currentProfile.name || currentProfile.username) : "A Parbaugh";
+      db.collection("chat").add({
+        id: genId(), text: name + " on their round: \"" + text.trim().substring(0, 200) + "\"",
+        authorId: currentUser.uid, authorName: name, createdAt: fsTimestamp(),
+        roundId: roundId, isStory: true
+      }).catch(function(){});
+    }
+  }
+  Router.toast("Story posted!");
+  Router.go("rounds", {roundId: roundId});
 }
 

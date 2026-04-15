@@ -5,13 +5,18 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v6.1.0</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v6.2.0</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v6.1.0</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · SOCIAL FEATURES</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v6.2.0</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · CONTENT FEATURES</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "Course reviews enhanced: star rating selector, aggregate rating display, only players who\'ve played can review", tag: "IMPROVED"},
+    {item: "NEW: Auto-generated course stats — member average, most played by, hardest/easiest hole from hole-by-hole data", tag: "NEW"},
+    {item: "NEW: Post-round stories — after logging a round, tell the story of your round with a \"How\'d It Go?\" prompt", tag: "NEW"},
+    {item: "NEW: Tip of the Day on home page — 15 curated golf tips rotating daily across putting, driving, short game, mental game", tag: "NEW"},
+    {item: "NEW: Drills Library page — browse all 15+ practice drills by category with expandable how-to instructions", tag: "NEW"},
     {item: "NEW: Public profiles — toggle in Settings, get a shareable profile URL", tag: "NEW"},
     {item: "NEW: Find Players page — search by name, filter by handicap (beginner/intermediate/advanced), see mutual leagues", tag: "NEW"},
     {item: "NEW: Golf reactions on feed posts — tap the fire emoji for a reaction picker (fire, clap, flag, skull, trophy, laugh)", tag: "NEW"},
@@ -245,7 +250,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v6.1.0</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v6.2.0</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
