@@ -1,0 +1,32 @@
+{
+  "name": "The Parbaughs",
+  "short_name": "Parbaughs",
+  "description": "Golf league platform · Est. 2026 · York, PA",
+  "start_url": "/smoky-mountain-open/",
+  "scope": "/smoky-mountain-open/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0e1118",
+  "theme_color": "#0e1118",
+  "categories": ["sports", "social"],
+  "icons": [
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "watermark.jpg",
+      "sizes": "1024x1024",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "watermark.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "maskable"
+    }
+  ]
+}
