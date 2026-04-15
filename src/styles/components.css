@@ -800,3 +800,11 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 
 /* DM bubbles */
 [data-theme="light"] .dm-bubble-row.theirs .dm-bubble{background:#e2e0da;color:#1a1a18}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ANIMATED RINGS — Premium cosmetic avatar borders
+   ═══════════════════════════════════════════════════════════════════════════ */
+@keyframes ringPulse{0%,100%{box-shadow:0 0 8px rgba(201,168,76,.3)}50%{box-shadow:0 0 20px rgba(201,168,76,.6)}}
+@keyframes ringShimmer{0%{box-shadow:0 0 12px rgba(185,242,255,.3)}50%{box-shadow:0 0 24px rgba(185,242,255,.7)}100%{box-shadow:0 0 12px rgba(185,242,255,.3)}}
+.ring-pulse-gold{animation:ringPulse 2s ease-in-out infinite}
+.ring-diamond-sparkle{animation:ringShimmer 2.5s ease-in-out infinite}

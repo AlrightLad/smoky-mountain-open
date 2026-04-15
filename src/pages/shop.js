@@ -16,6 +16,11 @@ var COSMETICS_CATALOG = [
   {id:"border_obsidian",   cat:"border", name:"Obsidian Edge",     price:250, desc:"Dark volcanic glass",       css:"3px solid #2d2d2d",          preview:"#555555"},
   {id:"border_rainbow",    cat:"border", name:"Prismatic Ring",    price:400, desc:"Multicolor gradient ring",  css:"3px solid #ff6b6b",          preview:"#ff6b6b"},
   {id:"border_platinum",   cat:"border", name:"Platinum Band",     price:350, desc:"Rare platinum finish",      css:"3px solid #e5e4e2",          preview:"#e5e4e2"},
+  {id:"border_birdie",     cat:"border", name:"Birdie Green",      price:125, desc:"Glowing green for under-par energy", css:"3px solid #4ade80",  preview:"#4ade80"},
+  {id:"border_ice",        cat:"border", name:"Ice Blue",          price:150, desc:"Cool arctic blue edge",              css:"3px solid #38bdf8",    preview:"#38bdf8"},
+  {id:"border_champ_red",  cat:"border", name:"Championship Red",  price:200, desc:"Bold crimson — champion vibes",      css:"3px solid #d4243c",   preview:"#d4243c"},
+  {id:"border_pulse_gold", cat:"border", name:"Pulse Gold",        price:500, desc:"Animated golden pulse glow",          css:"3px solid #c9a84c",   preview:"#c9a84c"},
+  {id:"border_shimmer",    cat:"border", name:"Diamond Sparkle",   price:1000,desc:"Premium animated diamond ring",       css:"3px solid #b9f2ff",   preview:"#b9f2ff"},
 
   // ── PROFILE BANNERS (gradient behind avatar on profile) ──
   {id:"banner_sunset",     cat:"banner", name:"Sunset Fairway",    price:100, desc:"Warm orange-pink gradient", css:"linear-gradient(135deg,#ff6b35,#e8729a)", preview:"#ff6b35"},
@@ -27,6 +32,20 @@ var COSMETICS_CATALOG = [
   {id:"banner_crimson",    cat:"banner", name:"Crimson Tide",     price:150, desc:"Bold red-to-black power",   css:"linear-gradient(135deg,#991b1b,#1f1f1f)", preview:"#991b1b"},
   {id:"banner_arctic",     cat:"banner", name:"Arctic Dawn",      price:125, desc:"Icy white-blue morning",    css:"linear-gradient(135deg,#e0f2fe,#7dd3fc)", preview:"#7dd3fc"},
   {id:"banner_ember",      cat:"banner", name:"Ember Glow",       price:175, desc:"Warm amber to deep red",    css:"linear-gradient(135deg,#f59e0b,#b91c1c)", preview:"#f59e0b"},
+  // Theme-paired banners
+  {id:"banner_classic",    cat:"banner", name:"Classic Pinstripe", price:100, desc:"Charcoal with gold pinstripe — pairs with Classic",    css:"linear-gradient(180deg,#0e1118 0%,#1a1f2c 50%,#0e1118 100%)", preview:"#0e1118"},
+  {id:"banner_camo_pair",  cat:"banner", name:"Woodland Camo",    price:125, desc:"Olive and shadow — pairs with Camo",                   css:"linear-gradient(135deg,#12140e,#2e3122,#181a12)", preview:"#12140e"},
+  {id:"banner_masters_pair",cat:"banner", name:"Augusta Green",   price:125, desc:"Deep green with yellow trim — pairs with Masters",      css:"linear-gradient(135deg,#071a10,#0c2218,#1a3a28)", preview:"#071a10"},
+  {id:"banner_azalea_pair",cat:"banner", name:"Bloom Garden",     price:125, desc:"Dark with pink accents — pairs with Azalea",            css:"linear-gradient(135deg,#0e1118,#1a0e18,#0e1118)", preview:"#1a0e18"},
+  {id:"banner_usga_pair",  cat:"banner", name:"Navy Stripe",      price:125, desc:"Institutional navy — pairs with USGA",                  css:"linear-gradient(135deg,#0a1628,#142640,#0a1628)", preview:"#0a1628"},
+  {id:"banner_champ_pair", cat:"banner", name:"Burgundy Leather", price:150, desc:"Championship leather — pairs with Sunday Red",           css:"linear-gradient(135deg,#10080a,#301c22,#10080a)", preview:"#10080a"},
+  {id:"banner_dark_pair",  cat:"banner", name:"Carbon Fiber",     price:125, desc:"Pure black with silver edge — pairs with Dark",          css:"linear-gradient(135deg,#000000,#141414,#000000)", preview:"#000000"},
+  {id:"banner_light_pair", cat:"banner", name:"Linen & Gold",     price:125, desc:"Warm cream with gold accent — pairs with Light",         css:"linear-gradient(135deg,#f5f3ee,#eceae4,#f5f3ee)", preview:"#f5f3ee"},
+  // Neutral banners (work across all themes)
+  {id:"banner_flagstick",  cat:"banner", name:"Flagstick",        price:100, desc:"Silhouette gradient — works on any theme",               css:"linear-gradient(180deg,#1a2840,#0e1118,#1a2840)", preview:"#1a2840"},
+  {id:"banner_mountain",   cat:"banner", name:"Mountain Range",   price:150, desc:"Golf trip mountain skyline vibes",                       css:"linear-gradient(180deg,#0f172a,#1e3a5f,#0f172a)", preview:"#0f172a"},
+  {id:"banner_fairway",    cat:"banner", name:"Fairway Aerial",   price:150, desc:"Top-down fairway pattern",                               css:"linear-gradient(135deg,#064e3b,#0a7c5a,#064e3b)", preview:"#064e3b"},
+  {id:"banner_golden_hr",  cat:"banner", name:"Golden Hour",      price:175, desc:"Sunset gradient — warm amber to deep navy",              css:"linear-gradient(180deg,#f59e0b,#c2410c,#1e1b4b)", preview:"#f59e0b"},
 
   // ── CARD THEMES (how your rounds appear in the feed) ──
   {id:"card_neon",         cat:"card", name:"Neon Glow",           price:125, desc:"Bright accent border on your feed cards", css:"border-left:3px solid #4ade80",    preview:"#4ade80"},

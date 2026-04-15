@@ -1035,7 +1035,11 @@ function renderMemberEdit(pid) {
   }
   
   var p = PB.getPlayer(pid);
-  
+  // Merge currentProfile data (has latest equippedTitle, cosmetics, etc.)
+  if (p && currentProfile && (pid === currentUser.uid || pid === (currentProfile.claimedFrom || ""))) {
+    p = Object.assign({}, p, {equippedTitle: currentProfile.equippedTitle, equippedCosmetics: currentProfile.equippedCosmetics, ownedCosmetics: currentProfile.ownedCosmetics, displayBadges: currentProfile.displayBadges});
+  }
+
   // If not in local data, try Firebase
   if (!p && db && pid) {
     db.collection("members").doc(pid).get().then(function(doc) {

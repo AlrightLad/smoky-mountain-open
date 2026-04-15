@@ -193,6 +193,12 @@ function playerFrameColor(p) {
   if (p.founding || p.isFoundingFour)                   return 'var(--gold2)';
   return 'var(--border)';
 }
+function playerRingClass(p) {
+  if (!p || !p.equippedCosmetics || !p.equippedCosmetics.border) return '';
+  if (p.equippedCosmetics.border === 'border_pulse_gold') return 'ring-pulse-gold';
+  if (p.equippedCosmetics.border === 'border_shimmer') return 'ring-diamond-sparkle';
+  return '';
+}
 // ── Cosmetic helpers ──
 function getPlayerBannerCss(p) {
   if (!p || !p.equippedCosmetics || !p.equippedCosmetics.banner) return '';
