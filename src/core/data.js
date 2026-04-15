@@ -1874,10 +1874,44 @@ var PB = (function() {
   // Better than expected = more points. Levels the playing field.
   // Base 100pts per round, +/- 5pts per stroke vs expected
   // Bonus: personal best = 50pts, new course = 25pts, attested = 15pts
-  function getSeasonStandings(year) {
+  // ── Season config ──
+  var SEASON_CONFIG = [
+    {key: "spring", label: "Spring", start: "-03-01", end: "-05-31"},
+    {key: "summer", label: "Summer", start: "-06-01", end: "-08-31"},
+    {key: "fall",   label: "Fall",   start: "-09-01", end: "-11-30"}
+  ];
+
+  function getCurrentSeason() {
+    var now = new Date();
+    var year = now.getFullYear();
+    var todayStr = localDateStr(now);
+    for (var i = 0; i < SEASON_CONFIG.length; i++) {
+      var s = SEASON_CONFIG[i];
+      if (todayStr >= year + s.start && todayStr <= year + s.end) {
+        return {key: s.key, label: s.label + " " + year, year: year, start: year + s.start, end: year + s.end};
+      }
+    }
+    // Offseason (Dec-Feb) — show most recent season
+    if (todayStr < year + "-03-01") {
+      return {key: "fall", label: "Fall " + (year - 1), year: year - 1, start: (year - 1) + "-09-01", end: (year - 1) + "-11-30"};
+    }
+    return {key: "fall", label: "Fall " + year, year: year, start: year + "-09-01", end: year + "-11-30"};
+  }
+
+  function getSeasonStandings(year, seasonKey) {
     year = year || new Date().getFullYear();
-    var seasonStart = year + "-03-01";
-    var seasonEnd = year + "-09-30";
+    var seasonStart, seasonEnd, seasonLabel;
+    if (seasonKey) {
+      var cfg = SEASON_CONFIG.find(function(s) { return s.key === seasonKey; });
+      if (cfg) { seasonStart = year + cfg.start; seasonEnd = year + cfg.end; seasonLabel = cfg.label + " " + year; }
+      else { seasonStart = year + "-03-01"; seasonEnd = year + "-11-30"; seasonLabel = year + " Full Year"; }
+    } else {
+      // Default: current season or full year
+      var current = getCurrentSeason();
+      seasonStart = current.start;
+      seasonEnd = current.end;
+      seasonLabel = current.label;
+    }
     var players = getPlayers();
     var standings = players.map(function(p) {
       var allRounds = getPlayerRounds(p.id);
@@ -1930,7 +1964,7 @@ var PB = (function() {
       };
     }).filter(function(s) { return s !== null; });
     standings.sort(function(a, b) { return b.points - a.points; });
-    return { year: year, standings: standings };
+    return { year: year, seasonKey: seasonKey || getCurrentSeason().key, seasonLabel: seasonLabel || (year + ""), standings: standings, seasonStart: seasonStart, seasonEnd: seasonEnd };
   }
 
   /* ---------- PROFILE POSTS ---------- */
@@ -1987,6 +2021,8 @@ var PB = (function() {
     createChallenge:createChallenge, getChallenges:getChallenges, updateChallenge:updateChallenge,
     addNotification:addNotification, getNotifications:getNotifications, markNotificationRead:markNotificationRead, getUnreadCount:getUnreadCount,
     getSeasonStandings:getSeasonStandings,
+    getCurrentSeason:getCurrentSeason,
+    SEASON_CONFIG:SEASON_CONFIG,
     addPost:addPost, getPlayerPosts:getPlayerPosts,
     exportBackup:exportBackup, importBackup:importBackup, reset:reset, save:save, load:load, setScoreSilent:setScoreSilent,
     setMiniWinnerSilent:function(id,pid){state.miniWinners[id]=pid;},

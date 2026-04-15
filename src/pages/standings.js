@@ -2,26 +2,36 @@
    PAGE: SEASON
    ================================================ */
 
-Router.register("standings", function() {
-  var year = new Date().getFullYear();
-  var season = PB.getSeasonStandings(year);
+Router.register("standings", function(params) {
+  var year = (params && params.year) ? parseInt(params.year) : new Date().getFullYear();
+  var seasonKey = (params && params.season) ? params.season : null;
+  var season = PB.getSeasonStandings(year, seasonKey);
+  var currentSeason = PB.getCurrentSeason();
   var now = new Date();
-  var month = now.getMonth();
-  var inSeason = month >= 2 && month <= 8;
+  var todayStr = localDateStr(now);
+  var inSeason = todayStr >= season.seasonStart && todayStr <= season.seasonEnd;
 
   var h = '<div class="sh"><h2>Season</h2><button class="back" onclick="Router.back(\'records\')">← Back</button></div>';
 
+  // Season selector tabs
+  h += '<div class="toggle-bar" style="justify-content:center">';
+  PB.SEASON_CONFIG.forEach(function(cfg) {
+    var isActive = season.seasonKey === cfg.key && season.year === year;
+    h += '<button' + (isActive ? ' class="a"' : '') + ' onclick="Router.go(\'standings\',{year:' + year + ',season:\'' + cfg.key + '\'},true)">' + cfg.label + '</button>';
+  });
+  h += '</div>';
+
   h += '<div style="text-align:center;padding:20px 16px 24px;background:linear-gradient(180deg,var(--grad-hero),var(--bg));border-bottom:1px solid var(--border)">';
-  h += '<div style="font-family:Playfair Display,serif;font-size:28px;color:var(--gold);font-weight:700">' + year + ' Parbaugh Season</div>';
-  h += '<div style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1.5px;text-transform:uppercase">March 1 — September 30</div>';
+  h += '<div style="font-family:Playfair Display,serif;font-size:28px;color:var(--gold);font-weight:700">' + escHtml(season.seasonLabel) + '</div>';
+  var monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var sStart = new Date(season.seasonStart + "T12:00:00");
+  var sEnd = new Date(season.seasonEnd + "T12:00:00");
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1.5px;text-transform:uppercase">' + monthNames[sStart.getMonth()] + ' ' + sStart.getDate() + ' — ' + monthNames[sEnd.getMonth()] + ' ' + sEnd.getDate() + ', ' + year + '</div>';
   if (inSeason) {
-    var seasonEnd = new Date(year, 8, 30);
-    var daysLeft = Math.ceil((seasonEnd - now) / (1000*60*60*24));
+    var daysLeft = Math.ceil((sEnd - now) / (1000*60*60*24));
     h += '<div style="display:inline-block;margin-top:10px;padding:5px 14px;background:rgba(var(--birdie-rgb),.08);border:1px solid rgba(var(--birdie-rgb),.15);border-radius:12px;font-size:10px;color:var(--birdie);font-weight:600;letter-spacing:.5px">IN SEASON · ' + daysLeft + ' DAYS LEFT</div>';
   } else {
-    var nextSeason = new Date(month >= 9 ? year+1 : year, 2, 1);
-    var daysUntil = Math.ceil((nextSeason - now) / (1000*60*60*24));
-    h += '<div style="display:inline-block;margin-top:10px;padding:5px 14px;background:rgba(var(--gold-rgb),.06);border:1px solid rgba(var(--gold-rgb),.12);border-radius:12px;font-size:10px;color:var(--gold);font-weight:600;letter-spacing:.5px">OFFSEASON · ' + daysUntil + ' DAYS UNTIL NEXT</div>';
+    h += '<div style="display:inline-block;margin-top:10px;padding:5px 14px;background:rgba(var(--gold-rgb),.06);border:1px solid rgba(var(--gold-rgb),.12);border-radius:12px;font-size:10px;color:var(--gold);font-weight:600;letter-spacing:.5px">SEASON COMPLETE</div>';
   }
   h += '</div>';
 
