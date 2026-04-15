@@ -1,13 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   TEXTURES — Background texture overlays are now handled by a real DOM
-   element (#textureOverlay div) controlled via applyTheme() in theme.js.
-
-   This file is intentionally minimal. The body/page texture is set by JS
-   on the #textureOverlay div — no pseudo-elements needed.
+   TEXTURES — Background texture overlay is a real DOM div (#textureOverlay)
+   placed as a direct child of <html> (outside <body>). Controlled by
+   applyTheme() in theme.js. No CSS pseudo-elements, no body>* z-index
+   hacks. The div is simply behind body in the stacking order.
    ═══════════════════════════════════════════════════════════════════════════ */
-
-/* Ensure all body children sit above the texture overlay */
-body>*{position:relative;z-index:1}
-
-/* The #textureOverlay div is absolutely positioned in HTML with z-index:0.
-   Its background-image, opacity, and blend-mode are set by applyTheme(). */
