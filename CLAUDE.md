@@ -87,8 +87,17 @@ smoky-mountain-open/
 - **Project ID:** parbaughs
 - **Auth:** Email/password, email verification on registration
 - **Firestore:** Primary data store, offline persistence DISABLED (caused duplicate entries)
-- **Cloud Function:** `us-central1-parbaughs.cloudfunctions.net/searchCourses` (Gen1, Node20, origin-locked CORS — do NOT change runtime or CORS)
+- **Cloud Functions:** Gen1, Node20, us-central1
+  - `searchCourses` — GolfCourseAPI proxy (origin-locked CORS — do NOT change runtime or CORS)
+  - `sendPushNotification` — triggers on `pendingPush` doc creation, sends FCM push to member's `fcmToken`, deletes doc after. Source: `functions/index.js`
 - **Plan:** Blaze (pay-as-you-go)
+
+### Push Notification Deployment
+```bash
+cd functions && npm install && cd ..
+firebase deploy --only functions:sendPushNotification
+```
+Do NOT redeploy `searchCourses` unless explicitly modifying it — it has CORS and runtime settings that must not change.
 
 ### GolfCourseAPI
 - **Correct endpoint:** `/v1/search?search_query=`

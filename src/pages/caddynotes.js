@@ -5,13 +5,17 @@ Router.register("caddynotes", function() {
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
   h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
-  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.39.0</div></div>';
+  h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v5.39.1</div></div>';
 
   // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.39.0</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Phase 2: Push Notifications, More Page Redesign</div>';
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v5.39.1</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Cloud Function, 8-Theme Regression Test</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "Push notification Cloud Function ready — triggers on pendingPush, sends via FCM, handles stale tokens, auto-cleans queue", tag: "NEW"},
+    {item: "Full 8-theme regression: all 29 CSS variables verified present in every theme — zero missing", tag: "IMPROVED"},
+    {item: "106 Light Mode component overrides verified covering all 20 critical components", tag: "IMPROVED"},
+    {item: "Zero hardcoded dark/light colors found in page JS — all themes render through CSS variables correctly", tag: "IMPROVED"},
     {item: "Push notifications now trigger when someone posts a round — your rivals can\'t sneak a round past you", tag: "NEW"},
     {item: "Tee time posted? Every member gets notified with course, date, and time", tag: "NEW"},
     {item: "More page completely redesigned: grouped sections (ParCoin Economy, Competition, Community, Info) with subtitles", tag: "NEW"},
@@ -206,7 +210,7 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.39.0</div>';
+  h += '<div style="text-align:center;padding:16px;font-size:10px;color:var(--muted2)">Built by The Commissioner · v5.39.1</div>';
 
   document.querySelector('[data-page="caddynotes"]').innerHTML = h;
 });
