@@ -71,6 +71,15 @@ Router.register("roundhistory", function(params) {
   }
   h += '</div>';
 
+  // Hole dot legend
+  h += '<div style="padding:6px 16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;font-size:9px;color:var(--muted)">';
+  h += '<span style="display:flex;align-items:center;gap:3px"><span style="width:6px;height:6px;border-radius:50%;background:#FFD700"></span>Eagle</span>';
+  h += '<span style="display:flex;align-items:center;gap:3px"><span style="width:6px;height:6px;border-radius:50%;background:#4CAF50"></span>Birdie</span>';
+  h += '<span style="display:flex;align-items:center;gap:3px"><span style="width:6px;height:6px;border-radius:50%;background:#888888"></span>Par</span>';
+  h += '<span style="display:flex;align-items:center;gap:3px"><span style="width:6px;height:6px;border-radius:50%;background:#E8729A"></span>Bogey</span>';
+  h += '<span style="display:flex;align-items:center;gap:3px"><span style="width:6px;height:6px;border-radius:50%;background:#E53935"></span>Double+</span>';
+  h += '</div>';
+
   // Apply filters
   var filtered = allRounds;
   if (_rhFilter === "9") filtered = filtered.filter(function(r) { return r.holesPlayed && r.holesPlayed <= 9; });
@@ -140,14 +149,15 @@ Router.register("roundhistory", function(params) {
         for (var hi = startHole; hi < startHole + numHoles; hi++) {
           var hs = parseInt(r.holeScores[hi]);
           var hp = pars[hi] || 4;
-          var dotColor = "var(--bg4)"; // no data
+          // STATIC scoring colors — never change per theme (universal golf convention)
+          var dotColor = "#444"; // no data
           if (hs > 0) {
             var diff = hs - hp;
-            if (diff <= -2) dotColor = "var(--blue)";      // eagle+
-            else if (diff === -1) dotColor = "var(--birdie)"; // birdie
-            else if (diff === 0) dotColor = "var(--gold)";    // par
-            else if (diff === 1) dotColor = "var(--red)";     // bogey
-            else dotColor = "rgba(var(--red-rgb),.6)";        // double+
+            if (diff <= -2) dotColor = "#FFD700";      // eagle+ (gold)
+            else if (diff === -1) dotColor = "#4CAF50"; // birdie (green)
+            else if (diff === 0) dotColor = "#888888";  // par (gray)
+            else if (diff === 1) dotColor = "#E8729A";  // bogey (pink)
+            else dotColor = "#E53935";                   // double+ (red)
           }
           h += '<div style="width:' + (is9 ? '8px' : '5px') + ';height:' + (is9 ? '8px' : '5px') + ';border-radius:50%;background:' + dotColor + '"></div>';
         }

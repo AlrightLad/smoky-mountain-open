@@ -196,8 +196,20 @@ function playerFrameColor(p) {
     var equipped = cosm.find(function(c) { return c.id === p.equippedCosmetics.border; });
     if (equipped) return equipped.preview;
   }
-  // 2. Theme-default ring — matches the player's active theme
-  var playerTheme = p.theme || "classic";
+  // 2. Theme-default ring — matches THIS PLAYER's active theme (not the viewer's)
+  var playerTheme = p.theme || null;
+  // If no theme on the player object, check fbMemberCache for their UID
+  if (!playerTheme && typeof fbMemberCache !== "undefined") {
+    var pid = p.id || p.uid || "";
+    if (fbMemberCache[pid] && fbMemberCache[pid].theme) playerTheme = fbMemberCache[pid].theme;
+    // Also check if pid is a seed ID claimed by someone
+    if (!playerTheme) {
+      Object.keys(fbMemberCache).forEach(function(k) {
+        if (fbMemberCache[k].claimedFrom === pid && fbMemberCache[k].theme) playerTheme = fbMemberCache[k].theme;
+      });
+    }
+  }
+  if (!playerTheme) playerTheme = "classic";
   var ring = THEME_RINGS[playerTheme] || THEME_RINGS.classic;
   return ring.color;
 }
@@ -213,8 +225,14 @@ function playerRingShadow(p) {
     var equipped = cosm.find(function(c) { return c.id === p.equippedCosmetics.border; });
     if (equipped) return '0 0 6px ' + equipped.preview + '60';
   }
-  // Theme-default shadow
-  var playerTheme = p.theme || "classic";
+  // Theme-default shadow — reads THIS PLAYER's theme
+  var playerTheme = p.theme || null;
+  if (!playerTheme && typeof fbMemberCache !== "undefined") {
+    var pid = p.id || p.uid || "";
+    if (fbMemberCache[pid] && fbMemberCache[pid].theme) playerTheme = fbMemberCache[pid].theme;
+    if (!playerTheme) { Object.keys(fbMemberCache).forEach(function(k) { if (fbMemberCache[k].claimedFrom === pid && fbMemberCache[k].theme) playerTheme = fbMemberCache[k].theme; }); }
+  }
+  if (!playerTheme) playerTheme = "classic";
   var ring = THEME_RINGS[playerTheme] || THEME_RINGS.classic;
   return ring.shadow;
 }
@@ -1514,7 +1532,7 @@ function renderFeedItem(a) {
   // ── Rounds — prominent card treatment ──
   var cardCss = '';
   if (a.playerId) { var _fp = PB.getPlayer(a.playerId); if (_fp) cardCss = getPlayerCardCss(_fp); }
-  var h = '<div class="feed-row" style="display:block;padding:12px 16px;' + cardCss + '"' + (a.dest ? ' onclick="' + a.dest + '"' : '') + '>';
+  var h = '<div class="feed-row" style="display:block;padding:12px 16px;' + cardCss + '">';
   // Top row: name/course left, score right
   h += '<div style="display:flex;align-items:flex-start;gap:10px">';
   if (a.live) h += '<div style="width:6px;height:6px;border-radius:50%;background:var(--live);animation:pulse-dot 2s infinite;flex-shrink:0;margin-top:8px"></div>';
@@ -1537,6 +1555,7 @@ function renderFeedItem(a) {
     h += '<div class="feed-actions">';
     h += '<div class="feed-action' + (isLiked ? ' active' : '') + '" onclick="event.stopPropagation();likeFeedRound(\'' + a.roundId + '\',this)"><svg viewBox="0 0 16 16" width="14" height="14" fill="' + (isLiked ? 'var(--gold)' : 'none') + '" stroke="currentColor" stroke-width="1.2"><path d="M8 14s-5.5-3.5-5.5-7A2.5 2.5 0 018 4.5 2.5 2.5 0 0113.5 7C13.5 10.5 8 14 8 14z"/></svg><span>' + (likeCount || '') + '</span></div>';
     h += '<div class="feed-action" onclick="event.stopPropagation();toggleFeedComments(\'' + a.roundId + '\')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 3h12v8H5l-3 3V3z"/></svg><span>' + (commentCount || '') + '</span></div>';
+    if (a.dest) h += '<div class="feed-action" onclick="event.stopPropagation();' + a.dest + '" style="margin-left:auto;font-size:10px;font-weight:600;color:var(--gold)">View <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div>';
     h += '</div>';
     h += '<div id="feedComments_' + a.roundId + '" class="feed-comments" style="display:none"></div>';
   }

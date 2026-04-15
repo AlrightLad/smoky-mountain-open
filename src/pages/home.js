@@ -269,7 +269,8 @@ Router.register("home", function() {
       h += '<div class="card" style="margin-bottom:4px;cursor:pointer;' + (isFirst ? 'border-color:rgba(var(--gold-rgb),.2);background:linear-gradient(135deg,var(--grad-card),var(--card))' : '') + '" onclick="Router.go(\'members\',{id:\'' + s.id + '\'})">';
       h += '<div style="padding:10px 14px;display:flex;align-items:center;gap:12px">';
       h += '<div style="width:24px;text-align:center;font-size:14px">' + medalIcon + '</div>';
-      h += '<div class="m-av" style="width:32px;height:32px;font-size:13px;border-width:1px">' + Router.getAvatar(p || s) + '</div>';
+      var _lbRingS = typeof playerRingStyle === "function" ? playerRingStyle(p || s) : "border:2px solid var(--gold)";
+      h += '<div class="m-av" style="width:32px;height:32px;font-size:13px;' + _lbRingS + '">' + Router.getAvatar(p || s) + '</div>';
       h += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(s.name || s.username || "") + '</div>';
       h += '<div style="font-size:10px;color:var(--muted)">' + (s.rounds||0) + ' rounds</div></div>';
       h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--gold)" data-count="' + (s.points||0) + '">0</div>';
