@@ -21,13 +21,16 @@ function applyTheme(themeId) {
   else if (meta) meta.setAttribute("content", "#0e1118");
   // Apply texture to the overlay div (real DOM element, not pseudo-element)
   var overlay = document.getElementById("textureOverlay");
-  if (overlay) {
-    var t = THEMES[themeId || "classic"];
-    if (t && t.texture) {
-      overlay.style.backgroundImage = "url('textures/" + t.texture + "')";
-      overlay.style.opacity = t.texOp;
-      overlay.style.mixBlendMode = t.texBlend;
-    }
+  var t = THEMES[themeId || "classic"];
+  if (overlay && t && t.texture) {
+    overlay.style.backgroundImage = "url('textures/" + t.texture + "')";
+    overlay.style.opacity = String(t.texOp);
+    overlay.style.mixBlendMode = t.texBlend;
+    overlay.style.backgroundRepeat = "repeat";
+    overlay.style.backgroundSize = "300px 300px";
+    console.log("[Texture] Applied:", t.texture, "opacity:", t.texOp, "blend:", t.texBlend);
+  } else {
+    console.warn("[Texture] Failed - overlay:", !!overlay, "theme:", themeId, "texture:", t ? t.texture : "none");
   }
 }
 function saveTheme(themeId) {
@@ -44,5 +47,14 @@ function saveTheme(themeId) {
   try {
     var saved = localStorage.getItem("pb_theme");
     if (saved && THEMES[saved]) applyTheme(saved);
-  } catch(e) {}
+    else applyTheme("classic");
+  } catch(e) { applyTheme("classic"); }
 })();
+// Retry texture application after DOM is fully loaded (in case div wasn't ready)
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", function() {
+    var saved = "classic";
+    try { saved = localStorage.getItem("pb_theme") || "classic"; } catch(e) {}
+    applyTheme(saved);
+  });
+}
