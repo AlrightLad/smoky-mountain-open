@@ -6,11 +6,12 @@
    ================================================ */
 
 var WAGER_TYPES = {
-  stroke:   {label: "Stroke Play",    desc: "Lower total score wins",                icon: "S"},
-  best9:    {label: "Best 9",         desc: "Best front or back 9 wins",             icon: "9"},
-  pars:     {label: "Most Pars",      desc: "Most pars (or better) wins",            icon: "P"},
-  putts:    {label: "Fewest Putts",   desc: "Fewer total putts wins",                icon: "T"},
-  nassau:   {label: "Nassau",         desc: "3 bets: front 9, back 9, and total",    icon: "N"}
+  stroke:   {label: "Stroke Play",    desc: "Lower total score wins",                        icon: "S"},
+  best9:    {label: "Best 9",         desc: "Best front or back 9 wins",                     icon: "9"},
+  pars:     {label: "Most Pars",      desc: "Most pars (or better) wins",                    icon: "P"},
+  putts:    {label: "Fewest Putts",   desc: "Fewer total putts wins",                        icon: "T"},
+  nassau:   {label: "Nassau",         desc: "3 bets: front 9, back 9, and total",            icon: "N"},
+  beatscore:{label: "Beat Their Score",desc: "Bet you can beat their best at a specific course", icon: "B"}
 };
 
 Router.register("wagers", function(params) {
@@ -173,6 +174,7 @@ function renderCreateWager(presetOpponent) {
 
   // Nassau note
   h += '<div id="nassau-note" style="display:none;padding:8px 12px;background:rgba(var(--gold-rgb),.06);border:1px solid rgba(var(--gold-rgb),.12);border-radius:var(--radius);font-size:10px;color:var(--muted);margin-bottom:12px">Nassau wagers are 3 separate bets (front 9, back 9, total). The coin amount is per bet, so a 50-coin Nassau costs 150 total.</div>';
+  h += '<div id="beatscore-note" style="display:none;padding:8px 12px;background:rgba(var(--gold-rgb),.06);border:1px solid rgba(var(--gold-rgb),.12);border-radius:var(--radius);font-size:10px;color:var(--muted);margin-bottom:12px"><div id="beatscore-target">Select opponent and course to see their best score</div><div style="margin-top:4px">You win if your next round at this course beats their personal best there.</div></div>';
 
   // Submit
   h += '<button class="btn full green" onclick="submitWager()" style="font-size:14px;padding:14px;font-weight:600">Send Challenge</button>';
@@ -196,6 +198,24 @@ function selectWagerType(type) {
   });
   var nassauNote = document.getElementById("nassau-note");
   if (nassauNote) nassauNote.style.display = type === "nassau" ? "block" : "none";
+  var beatNote = document.getElementById("beatscore-note");
+  if (beatNote) beatNote.style.display = type === "beatscore" ? "block" : "none";
+  // Show opponent's best score at course when Beat Their Score is selected
+  if (type === "beatscore") _updateBeatScoreTarget();
+}
+
+function _updateBeatScoreTarget() {
+  var noteEl = document.getElementById("beatscore-target");
+  if (!noteEl) return;
+  var oppId = document.getElementById("wager-opponent") ? document.getElementById("wager-opponent").value : "";
+  var course = document.getElementById("wager-course") ? document.getElementById("wager-course").value.trim() : "";
+  if (!oppId || !course) { noteEl.textContent = "Select opponent and course to see their best score"; return; }
+  var oppRounds = PB.getPlayerRounds(oppId).filter(function(r) { return r.course === course && r.format !== "scramble" && r.format !== "scramble4" && r.score; });
+  if (!oppRounds.length) { noteEl.textContent = "No rounds found for this opponent at this course"; return; }
+  var bestScore = Math.min.apply(null, oppRounds.map(function(r) { return r.score; }));
+  var opp = PB.getPlayer(oppId);
+  var oppName = opp ? (opp.name || opp.username) : "Opponent";
+  noteEl.innerHTML = '<span style="color:var(--gold);font-weight:700">' + oppName + "\'s best: " + bestScore + '</span> at ' + escHtml(course) + '. Beat that to win!';
 }
 
 function submitWager() {
@@ -309,7 +329,12 @@ function checkWagerResolution(round) {
       var oppUid = w.fromUid === uid ? w.toUid : w.fromUid;
       // If course-specific, round must match
       if (w.course && round.course !== w.course) return;
-      // Find opponent's round at same course on same date
+      // Beat Their Score: only the challenger needs to play
+      if (w.type === "beatscore") {
+        if (uid === w.fromUid) { _resolveWager(w, round, round, uid, oppUid); }
+        return;
+      }
+      // All other types: find opponent's round at same course on same date
       var oppRounds = PB.getPlayerRounds(oppUid);
       var oppRound = oppRounds.find(function(r) { return r.course === round.course && r.date === round.date; });
       if (!oppRound) return; // opponent hasn't played yet
@@ -352,6 +377,15 @@ function _resolveWager(w, myRound, oppRound, myUid, oppUid) {
       else winner = "tie";
     } else { winner = "tie"; }
     detail = "Putts: " + myPutts + " vs " + oppPutts;
+  } else if (w.type === "beatscore") {
+    // Challenger (fromUid) must beat opponent's best at this course
+    var challengerRound = w.fromUid === myUid ? myRound : oppRound;
+    var targetUid = w.fromUid === myUid ? oppUid : myUid;
+    var targetRounds = PB.getPlayerRounds(targetUid).filter(function(r) { return r.course === w.course && r.format !== "scramble" && r.score; });
+    var targetBest = targetRounds.length ? Math.min.apply(null, targetRounds.map(function(r){return r.score})) : 999;
+    if (challengerRound.score < targetBest) { winner = w.fromUid; detail = "Shot " + challengerRound.score + " vs target " + targetBest + " — BEAT IT!"; }
+    else if (challengerRound.score === targetBest) { winner = "tie"; detail = "Shot " + challengerRound.score + " vs target " + targetBest + " — tied!"; }
+    else { winner = w.toUid; detail = "Shot " + challengerRound.score + " vs target " + targetBest + " — didn't beat it"; }
   } else if (w.type === "nassau") {
     var res = _resolveNassau(myRound, oppRound, myUid, oppUid, w.amount);
     winner = res.overallWinner;
