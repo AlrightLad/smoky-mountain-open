@@ -16,22 +16,34 @@ function renderOnboardingStep() {
 
   var steps = [
     {
-      icon: '<svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="var(--gold)" stroke-width="1.5"><circle cx="32" cy="32" r="28"/><path d="M32 18v14l8 8"/><path d="M20 40l4-12 8 6 8-10 4 8"/></svg>',
+      icon: '<svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="var(--gold)" stroke-width="1.5"><circle cx="32" cy="32" r="28"/><path d="M20 32l8 8 16-16"/></svg>',
       title: "Welcome to The Parbaughs",
-      sub: "The golf league app built for your crew. Track rounds, compete in seasons, unlock achievements, and talk trash with your friends.",
-      detail: "This isn't a GPS app. It's a home for your golf group."
+      sub: "This isn't another golf app. It's a private league for your crew — where every round matters, every rivalry is tracked, and every moment becomes a story.",
+      detail: "Members only. Invite only. Your home course."
     },
     {
-      icon: '<svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="var(--gold)" stroke-width="1.5"><rect x="8" y="12" width="48" height="40" rx="4"/><path d="M8 24h48"/><circle cx="22" cy="36" r="6"/><circle cx="42" cy="36" r="6"/><path d="M28 36h8"/></svg>',
-      title: "Play, Score, Compete",
-      sub: "Log rounds, track your handicap, see how you stack up in the season standings. Every round earns XP and unlocks achievements.",
-      detail: "Play Now for live scoring, or log rounds after you play."
+      icon: '<svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="var(--gold)" stroke-width="1.5"><circle cx="32" cy="12" r="6"/><path d="M20 54l12-18 12 18"/><path d="M32 24v12"/></svg>',
+      title: "Log Every Round",
+      sub: "Tap Play Now for live hole-by-hole scoring on the course, or log rounds after you play. FIR, GIR, putts — full stat tracking. Your handicap calculates automatically after 3 rounds.",
+      detail: "Find it: Play button on the home screen"
+    },
+    {
+      icon: '<svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M8 52h48"/><rect x="12" y="28" width="8" height="24" rx="1"/><rect x="28" y="16" width="8" height="36" rx="1"/><rect x="44" y="36" width="8" height="16" rx="1"/></svg>',
+      title: "Seasons & Events",
+      sub: "Three seasons per year — Spring, Summer, Fall. Compete in events with your crew, earn season points, and chase end-of-season awards. The Commissioner crowns champions.",
+      detail: "Find it: Events tab + Standings page"
+    },
+    {
+      icon: '<svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="var(--gold)" stroke-width="1.5"><circle cx="32" cy="32" r="22"/><path d="M32 18v14"/><path d="M24 24h5a3 3 0 010 6H24"/><path d="M24 30h6a3 3 0 010 6H24"/><path d="M32 36v8"/></svg>',
+      title: "Earn & Spend ParCoins",
+      sub: "Every round, range session, and achievement earns ParCoins. Spend them on profile cosmetics, wager with friends, post bounties, or flex on the Rich List. Playing earns 5-10x more than just logging in.",
+      detail: "Find it: More → Cosmetics Shop, Wagers, Bounties"
     },
     {
       icon: '<svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M32 10l6 12 14 2-10 10 2 14-12-6-12 6 2-14L12 24l14-2z"/></svg>',
       title: "Your Legacy Starts Now",
-      sub: "50+ achievements to unlock, XP levels from Rookie to G.O.A.T., head-to-head rivalries, and shareable scorecards. This is your golf story.",
-      detail: "Let's set up your profile."
+      sub: "50+ achievements to unlock. XP levels from Rookie to G.O.A.T. Head-to-head rivalries. Shareable scorecards. 8 premium themes. This is your golf story — let's set up your profile.",
+      detail: ""
     }
   ];
 
