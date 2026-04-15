@@ -1559,35 +1559,36 @@ function startPresenceSystem() {
 // ========== FIRESTORE ACTIVITY FEED ==========
 function renderFeedItem(a) {
   var timeLabel = a.ts ? feedTimeAgo(a.ts) : "";
+  // Resolve player for avatar
+  var _fp = a.playerId && a.playerId !== "system" ? PB.getPlayer(a.playerId) : null;
 
   // ── Chat messages ──
   if (a.type === "chat") {
-    var chatColor = a.system ? "var(--birdie)" : "var(--gold)";
     var clickAttr = a.dest ? ' onclick="' + a.dest + '" style="cursor:pointer"' : '';
     if (a.system) {
-      // System/Caddy messages — full text, no truncation
-      var h = '<div style="padding:8px 16px;border-left:3px solid var(--birdie);margin:2px 0;background:rgba(var(--birdie-rgb),.03)"' + clickAttr + '>';
-      h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">';
-      h += '<span style="font-size:10px;font-weight:700;color:var(--birdie)">' + escHtml(a.name) + '</span>';
+      var h = '<div style="display:flex;gap:10px;padding:8px 16px;border-left:3px solid var(--birdie);margin:2px 0;background:rgba(var(--birdie-rgb),.03)"' + clickAttr + '>';
+      h += '<div style="width:28px;height:28px;min-width:28px;border-radius:50%;background:rgba(var(--birdie-rgb),.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:14px">\u26f3</span></div>';
+      h += '<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">';
+      h += '<span style="font-size:10px;font-weight:700;color:var(--birdie)">The Caddy</span>';
       h += '<span style="font-size:9px;color:var(--muted2)">' + timeLabel + '</span></div>';
-      h += '<div style="font-size:12px;color:var(--cream);line-height:1.7;white-space:pre-line">' + escHtml(a.sub) + '</div>';
-      h += '</div>';
+      h += '<div style="font-size:12px;color:var(--cream);line-height:1.6">' + escHtml(a.sub) + '</div>';
+      h += '</div></div>';
       return h;
     }
-    // Regular chat — compact single-line
-    var h = '<div style="padding:6px 16px;border-left:2px solid rgba(var(--gold-rgb),.15);margin:1px 0"' + clickAttr + '>';
-    h += '<div style="display:flex;gap:6px;align-items:baseline">';
-    h += '<span style="font-size:10px;font-weight:700;color:var(--gold);flex-shrink:0">' + escHtml(a.name) + '</span>';
-    h += '<span style="font-size:11px;color:var(--cream);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(a.sub) + '</span>';
-    h += '<span style="font-size:9px;color:var(--muted2);flex-shrink:0">' + timeLabel + '</span></div>';
-    h += '</div>';
+    var h = '<div style="display:flex;gap:10px;padding:8px 16px;border-left:2px solid rgba(var(--gold-rgb),.15);margin:1px 0"' + clickAttr + '>';
+    h += renderAvatar(_fp, 28, true);
+    h += '<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;align-items:center">';
+    h += '<span style="font-size:10px;font-weight:700;color:var(--gold)">' + renderUsername(_fp, '', true) + '</span>';
+    h += '<span style="font-size:9px;color:var(--muted2)">' + timeLabel + '</span></div>';
+    h += '<div style="font-size:11px;color:var(--cream);margin-top:2px;line-height:1.5">' + escHtml(a.sub) + '</div>';
+    h += '</div></div>';
     return h;
   }
 
-  // ── Range sessions — distinct with icon ──
+  // ── Range sessions ──
   if (a.type === "range") {
     var h = '<div class="feed-row" style="display:flex;align-items:center;gap:12px;padding:10px 16px"' + (a.dest ? ' onclick="' + a.dest + '"' : '') + '>';
-    h += '<div style="width:36px;height:36px;border-radius:50%;background:rgba(var(--gold-rgb),.08);border:1px solid rgba(var(--gold-rgb),.15);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--gold)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>';
+    h += renderAvatar(_fp, 36, true);
     h += '<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(a.name) + '</div>';
     h += '<div style="font-size:10px;color:var(--muted);margin-top:1px">' + escHtml(a.sub || '') + '</div></div>';
     h += '<div style="font-size:9px;color:var(--muted2)">' + timeLabel + '</div>';
@@ -1595,23 +1596,28 @@ function renderFeedItem(a) {
     return h;
   }
 
-  // ── Rounds — prominent card treatment ──
+  // ── Rounds — Instagram-style with avatar ──
   var cardCss = '';
-  if (a.playerId) { var _fp = PB.getPlayer(a.playerId); if (_fp) cardCss = getPlayerCardCss(_fp); }
-  var h = '<div class="feed-row" style="display:block;padding:12px 16px;' + cardCss + '">';
-  // Top row: name/course left, score right
-  h += '<div style="display:flex;align-items:flex-start;gap:10px">';
-  if (a.live) h += '<div style="width:6px;height:6px;border-radius:50%;background:var(--live);animation:pulse-dot 2s infinite;flex-shrink:0;margin-top:8px"></div>';
+  if (_fp) cardCss = getPlayerCardCss(_fp);
+  var h = '<div class="feed-row" style="display:flex;gap:12px;padding:12px 16px;align-items:flex-start;' + cardCss + '">';
+  // Avatar
+  h += renderAvatar(_fp, 44, true);
+  // Content
+  h += '<div style="flex:1;min-width:0">';
+  // Name + score row
+  h += '<div style="display:flex;justify-content:space-between;align-items:flex-start">';
   h += '<div style="min-width:0;flex:1">';
-  h += '<div style="font-size:13px;font-weight:700;color:var(--cream)">' + escHtml(a.name) + '</div>';
-  if (a.sub) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.3">' + escHtml(a.sub) + '</div>';
-  if (a.quip) h += '<div style="font-size:11px;color:var(--gold2);margin-top:4px;font-style:italic;line-height:1.4">' + a.quip + '</div>';
+  h += '<div style="display:flex;align-items:center;gap:6px">';
+  h += '<span style="font-size:13px;font-weight:700">' + renderUsername(_fp, 'color:var(--cream);', true) + '</span>';
+  if (a.live) h += '<span style="display:inline-flex;align-items:center;gap:3px"><span style="width:5px;height:5px;border-radius:50%;background:var(--live);animation:pulse-dot 2s infinite"></span><span style="font-size:8px;color:var(--live);font-weight:700">LIVE</span></span>';
   h += '</div>';
-  h += '<div style="flex-shrink:0;text-align:right">';
+  if (a.sub) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.3">' + escHtml(a.sub) + '</div>';
+  h += '</div>';
+  h += '<div style="flex-shrink:0;text-align:right;margin-left:8px">';
   if (a.score) h += '<div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:var(--gold);line-height:1">' + a.score + '</div>';
   h += '<div style="font-size:9px;color:var(--muted2);margin-top:2px">' + timeLabel + '</div>';
-  if (a.live) h += '<div class="pill pill-live" style="margin-top:4px">LIVE</div>';
   h += '</div></div>';
+  if (a.quip) h += '<div style="font-size:11px;color:var(--gold2);margin-top:4px;font-style:italic;line-height:1.4">' + a.quip + '</div>';
 
   // Like/comment actions for rounds
   if (a.type === "round" && a.roundId) {
@@ -1626,7 +1632,7 @@ function renderFeedItem(a) {
     h += '<div id="feedComments_' + a.roundId + '" class="feed-comments" style="display:none"></div>';
   }
 
-  h += '</div>';
+  h += '</div></div>';
   return h;
 }
 
@@ -1681,7 +1687,7 @@ function loadHomeActivityFeed() {
       var comments = r.comments || [];
       var isLiked = currentUser ? likes.indexOf(currentUser.uid) !== -1 : false;
       var timeAgo = feedTimeAgo(r.createdAt ? r.createdAt.toMillis() : 0);
-      items.push({type:"round", roundId:rid, name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + teeLabel + " · " + r.score + holeLabel + fmtLabel, quip:quip, score:r.score, date:r.date||"", ts:r.createdAt ? r.createdAt.toMillis() : 0, dest:"Router.go('rounds',{roundId:'" + rid + "'})", likeCount:likes.length, commentCount:comments.length, isLiked:isLiked, timeAgo:timeAgo});
+      items.push({type:"round", roundId:rid, playerId:r.player, playerName:r.playerName||"A Parbaugh", name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + teeLabel + " · " + r.score + holeLabel + fmtLabel, quip:quip, score:r.score, date:r.date||"", ts:r.createdAt ? r.createdAt.toMillis() : 0, dest:"Router.go('rounds',{roundId:'" + rid + "'})", likeCount:likes.length, commentCount:comments.length, isLiked:isLiked, timeAgo:timeAgo});
     });
     // Add grouped scramble entries
     Object.values(scrambleGroups).forEach(function(g) {
@@ -1713,7 +1719,7 @@ function loadHomeActivityFeed() {
       var name = s.playerName || s.playerId || "A Parbaugh";
       var sub = (s.durationMin ? s.durationMin + " min" : "") + (s.focus ? " · " + s.focus : "");
       var sessionDest = s._id ? "Router.go('range-detail',{sessionId:'" + s._id + "'})" : (s.playerId ? "Router.go('members',{id:'" + s.playerId + "'})" : "Router.go('range')");
-      items.push({type:"range", name:name + " hit the range", sub:sub||"Range session", date:s.date||"", ts:s.startedAt ? new Date(s.startedAt).getTime() : 0, dest:sessionDest});
+      items.push({type:"range", playerId:s.playerId||"", name:name + " hit the range", sub:sub||"Range session", date:s.date||"", ts:s.startedAt ? new Date(s.startedAt).getTime() : 0, dest:sessionDest});
     });
   }
   pending--; tryRender();
@@ -1773,7 +1779,7 @@ function loadHomeActivityFeed() {
       var dest = "";
       if (msg.linkType === "event" && msg.tripId) dest = "Router.go('scorecard',{tripId:'" + msg.tripId + "'})";
       else if (msg.linkType === "round" && msg.roundId) dest = "Router.go('rounds',{roundId:'" + msg.roundId + "'})";
-      items.push({type:"chat", name:(msg.system ? "The Caddy" : msg.authorName || msg.user || "Member"), sub:text, ts:msg.createdAt ? msg.createdAt.toMillis() : (msg.timestamp || 0), system:isSystem, dest:dest});
+      items.push({type:"chat", playerId:msg.authorId||"", name:(msg.system ? "The Caddy" : msg.authorName || msg.user || "Member"), sub:text, ts:msg.createdAt ? msg.createdAt.toMillis() : (msg.timestamp || 0), system:isSystem, dest:dest});
     });
     pending--; tryRender();
   }).catch(function() { pending--; tryRender(); });
@@ -1935,10 +1941,9 @@ function renderOnlineSection() {
     var lvlForOnline = PB.getPlayerLevel(uid);
     var lvlNum = lvlForOnline ? lvlForOnline.level : null;
     h += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0" onclick="Router.go(\'members\',{id:\'' + uid + '\'})">';
-    h += '<div style="position:relative;width:40px;height:40px;flex-shrink:0">';
+    h += '<div style="position:relative;width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center">';
     h += renderAvatar(p || {name:name,id:uid}, 40, false);
-    // Level badge on avatar bottom-right
-    if (lvlNum) h += '<div style="position:absolute;bottom:-3px;right:-3px;background:var(--gold);color:var(--bg);font-size:7px;font-weight:800;border-radius:6px;padding:1px 3px;border:1.5px solid var(--bg);line-height:1.3;min-width:12px;text-align:center;z-index:2">' + lvlNum + '</div>';
+    if (lvlNum) h += '<div style="position:absolute;bottom:0;right:0;background:var(--gold);color:var(--bg);font-size:7px;font-weight:800;border-radius:6px;padding:1px 3px;border:1.5px solid var(--bg);line-height:1.3;min-width:12px;text-align:center;z-index:2">' + lvlNum + '</div>';
     h += '</div>';
     h += '<div style="font-size:9px;color:' + (isMe ? 'var(--gold)' : 'var(--muted)') + ';max-width:44px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center">' + escHtml(name) + '</div>';
     h += '</div>';
