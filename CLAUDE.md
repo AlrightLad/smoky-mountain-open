@@ -1,8 +1,17 @@
-# The Parbaughs — Golf League Platform
+# Parbaughs — Golf League Platform
+
+## Brand
+
+- **Platform name:** Parbaughs (not PlayThru — that name is taken by PlayThru LLC at playthru.golf)
+- **The founding league:** "The Parbaughs" — the original 17-member crew from York, PA
+- **At scale:** Other users create their own leagues inside Parbaughs. "Start a league on Parbaughs." "Download Parbaughs and join my crew."
+- **Merch/branding:** PARBAUGHS
+- **Social handles:** @PlayThru_ was claimed but may conflict. Commissioner decision needed: switch to @Parbaughs or @ParbaughsGolf
+- **Domain:** Need to secure parbaughs.com or parbaughs.golf (flagged for commissioner)
 
 ## The Vision
 
-The Parbaughs is an invite-only golf league app for a tight friend group of 17 members based in York, PA. It's not trying to be 18Birdies or GHIN — it's trying to be the app that makes this group of friends play more golf, talk more trash, and build memories together. Every feature should strengthen community over competition. Think country club meets group chat meets fantasy sports.
+Parbaughs is an invite-only golf league app for a tight friend group of 17 members based in York, PA. It's not trying to be 18Birdies or GHIN — it's trying to be the app that makes this group of friends play more golf, talk more trash, and build memories together. Every feature should strengthen community over competition. Think country club meets group chat meets fantasy sports.
 
 This app is a labor of love. Treat it with extreme care and pride. It's a core piece of who the commissioner (Zach) is. Quality is non-negotiable.
 

@@ -305,10 +305,7 @@ Every golf app on the market today is built for the **individual golfer** — tr
 
 Before building further, I need your decisions on:
 
-1. **Brand name at scale:** "The Parbaughs" is perfect for your crew. When it goes public, do you keep it? Or does the public app get a different name with Parbaughs as your league name inside it? Options:
-   - Keep "The Parbaughs" as the platform name (unique, memorable, story behind it)
-   - Rebrand the platform, keep "The Parbaughs" as the original league
-   - Something like "ParUp" / "CrewGolf" / "FairwayHQ" for the platform
+1. **Brand name at scale:** DECIDED — **Parbaughs** is the platform name. "The Parbaughs" is the founding league inside it. PlayThru was considered but is taken (PlayThru LLC at playthru.golf). Parbaughs is unique, memorable, and has the story behind it. Need to secure parbaughs.com or parbaughs.golf domain. Social handles TBD (@PlayThru_ claimed, may switch to @Parbaughs).
 
 2. **ParCoin name:** Do you like "ParCoins"? Other options: "Fairway Coins", "Links Bucks", "Green Tokens", "Divots"
 
