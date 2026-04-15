@@ -19,16 +19,39 @@ Router.register("courses", function(params) {
     var roundsHere = PB.getCourseRounds(c.name);
     var stars = c.reviews && c.reviews.length ? Math.round(c.reviews.reduce(function(a, r) { return a + r.rating; }, 0) / c.reviews.length * 10) / 10 : null;
     
-    // Compute best scores: front 9, back 9, full 18 from holesMode
+    // Compute best scores from ALL sources:
+    // F9 = best of: standalone front9 rounds OR front half of any 18-hole round
+    // B9 = best of: standalone back9 rounds OR back half of any 18-hole round
+    // 18 = best of: ONLY full 18-hole rounds (never combine standalone F9+B9)
     var bestF9 = null, bestB9 = null, best18 = null;
     var indivRounds = roundsHere.filter(function(r) { return r.format !== "scramble" && r.format !== "scramble4" && r.score; });
     indivRounds.forEach(function(r) {
       var is9 = r.holesPlayed && r.holesPlayed <= 9;
       if (is9) {
+        // Standalone 9-hole round
         if (r.holesMode === "back9") { if (bestB9 === null || r.score < bestB9) bestB9 = r.score; }
         else { if (bestF9 === null || r.score < bestF9) bestF9 = r.score; }
       } else {
+        // Full 18-hole round
         if (best18 === null || r.score < best18) best18 = r.score;
+        // Also extract front/back splits from 18-hole rounds
+        var frontScore = null, backScore = null;
+        // Check for explicit frontScore/backScore fields
+        if (r.frontScore) frontScore = r.frontScore;
+        if (r.backScore) backScore = r.backScore;
+        // Otherwise derive from hole-by-hole scores
+        if (frontScore === null || backScore === null) {
+          var hScores = r.holeScores || [];
+          if (hScores.length >= 18) {
+            var fs = 0, bs = 0, fValid = true, bValid = true;
+            for (var si = 0; si < 9; si++) { var v = parseInt(hScores[si]); if (v > 0) fs += v; else fValid = false; }
+            for (var si2 = 9; si2 < 18; si2++) { var v2 = parseInt(hScores[si2]); if (v2 > 0) bs += v2; else bValid = false; }
+            if (fValid && fs > 0 && frontScore === null) frontScore = fs;
+            if (bValid && bs > 0 && backScore === null) backScore = bs;
+          }
+        }
+        if (frontScore !== null && (bestF9 === null || frontScore < bestF9)) bestF9 = frontScore;
+        if (backScore !== null && (bestB9 === null || backScore < bestB9)) bestB9 = backScore;
       }
     });
     
@@ -36,13 +59,18 @@ Router.register("courses", function(params) {
     var thumbSrc = photoCache["course:" + c.id] || c.photo || '';
     h += '<div class="course-row"><div class="c-thumb">' + (thumbSrc ? '<img alt="" src="' + thumbSrc + '" onerror="this.src=COURSE_DEFAULT_IMG">' : '<img alt="" src="' + COURSE_DEFAULT_IMG + '">') + '</div>';
     h += '<div class="c-info"><div class="c-name">' + c.name + '</div><div class="c-loc">' + c.loc + ' · ' + c.rating + '/' + c.slope + '</div>';
-    h += '<div class="c-meta">' + (stars ? '' + stars + '/5 · ' : '') + indivRounds.length + ' round' + (indivRounds.length !== 1 ? 's' : '') + '</div>';
-    // Best scores per mode — only show if at least one exists
-    var bestParts = [];
-    if (bestF9 !== null) bestParts.push('<span style="color:var(--cream)"><span style="color:var(--muted)">F9</span> ' + bestF9 + '</span>');
-    if (bestB9 !== null) bestParts.push('<span style="color:var(--cream)"><span style="color:var(--muted)">B9</span> ' + bestB9 + '</span>');
-    if (best18 !== null) bestParts.push('<span style="color:var(--cream)"><span style="color:var(--muted)">18</span> ' + best18 + '</span>');
-    if (bestParts.length) h += '<div style="font-size:10px;margin-top:2px;display:flex;gap:8px">' + bestParts.join('') + '</div>';
+    h += '<div class="c-meta">' + (stars ? '' + stars + '/5 · ' : '') + roundsHere.length + ' round' + (roundsHere.length !== 1 ? 's' : '') + '</div>';
+    // Best scores — always show all 3 columns, "--" for missing
+    if (indivRounds.length) {
+      var f9Display = bestF9 !== null ? '<span style="color:var(--cream);font-weight:600">' + bestF9 + '</span>' : '<span style="color:var(--muted2)">--</span>';
+      var b9Display = bestB9 !== null ? '<span style="color:var(--cream);font-weight:600">' + bestB9 + '</span>' : '<span style="color:var(--muted2)">--</span>';
+      var fullDisplay = best18 !== null ? '<span style="color:var(--gold);font-weight:700">' + best18 + '</span>' : '<span style="color:var(--muted2)">--</span>';
+      h += '<div style="font-size:10px;margin-top:3px;display:flex;gap:10px">';
+      h += '<span><span style="color:var(--muted);font-size:9px">F9</span> ' + f9Display + '</span>';
+      h += '<span><span style="color:var(--muted);font-size:9px">B9</span> ' + b9Display + '</span>';
+      h += '<span><span style="color:var(--muted);font-size:9px">18</span> ' + fullDisplay + '</span>';
+      h += '</div>';
+    }
     h += '</div></div></div>';
   });
   h += '<div style="text-align:center;padding:12px;font-size:10px;color:var(--muted2)">' + courses.length + ' courses</div>';

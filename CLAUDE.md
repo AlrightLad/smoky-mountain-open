@@ -187,6 +187,40 @@ Founding four have `claimedFrom` fields linking seed profiles to Firebase Auth a
 - Explicit `_navStack` array for navigation (not hash router)
 - Settings only in top bar cog, never in footer nav
 
+## Design Skills
+
+Before doing ANY visual or UI work, read the relevant skill files. These contain best practices that are mandatory for this project:
+
+### Frontend Design (REQUIRED for all UI changes)
+Read: /mnt/skills/public/frontend-design/SKILL.md
+- Bold aesthetic direction, not generic AI slop
+- Typography: distinctive font choices, clear hierarchy
+- Color: dominant colors with sharp accents, CSS variables
+- Motion: meaningful animations, staggered reveals, hover states
+- Spatial: unexpected layouts, generous negative space
+- Backgrounds: atmosphere and depth, textures, gradients, grain
+- NEVER use generic aesthetics (Inter as body font is our one exception since it's already our brand)
+
+### Canvas Design (REQUIRED for share cards and generated images)
+Read: /mnt/skills/examples/canvas-design/SKILL.md
+- Share cards, scorecard images, trophy graphics, event banners
+- Design philosophy first, then express visually
+- Meticulously crafted, master-level execution
+- Custom fonts available in canvas-design/canvas-fonts/
+
+### Theme Factory (REFERENCE for theme system work)
+Read: /mnt/skills/examples/theme-factory/SKILL.md
+- Color palette cohesion and font pairing principles
+- Each theme needs distinct visual identity, not just color swaps
+- Our 8 themes each have texture images — use them boldly
+
+### MCP Builder (FUTURE — for integrations)
+Read: /mnt/skills/examples/mcp-builder/SKILL.md
+- For building GHIN integration, GolfNow tee time booking, course data APIs, and other external service connections
+- Not needed until Phase 3+ of the roadmap
+
+**RULE:** If you're about to write CSS, redesign a page, generate a share card, or touch the theme system — read the relevant skill file FIRST. No exceptions.
+
 ## Built Features
 
 - Home dashboard (compact hero, personal stat bar, live spotlight, mini leaderboard)

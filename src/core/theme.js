@@ -1,13 +1,13 @@
 // ========== THEME SYSTEM ==========
 var THEMES = {
-  classic: {label:"Parbaugh Classic", desc:"Gold & dark — the original", colors:["#0e1118","#c9a84c","#eae8e0"], meta:"#0e1118", texture:"classic-tile.jpg", texOp:.12, texBlend:"overlay"},
-  camo:    {label:"Camo",             desc:"Olive & flame — hunting lodge", colors:["#12140e","#d4943c","#e8e4d8"], meta:"#12140e", texture:"camo-tile.jpg", texOp:.15, texBlend:"overlay"},
-  masters: {label:"Masters",          desc:"Pine green & Augusta yellow", colors:["#071a10","#fdd835","#f0efe8"], meta:"#071a10", texture:"masters-tile.jpg", texOp:.14, texBlend:"soft-light"},
-  azalea:  {label:"Azalea",           desc:"Pink blooms & deep green", colors:["#0e1118","#e8729a","#f0efe8"], meta:"#0e1118", texture:"azalea-tile.jpg", texOp:.12, texBlend:"overlay"},
-  usga:    {label:"USGA",             desc:"Navy & red — clean GHIN style", colors:["#0a1628","#c41e3a","#f2f0ea"], meta:"#0a1628", texture:"usga-tile.jpg", texOp:.14, texBlend:"overlay"},
-  sundayred:{label:"Sunday Red",      desc:"Championship Sunday — bold red", colors:["#10080a","#d4243c","#f0e8e8"], meta:"#10080a", texture:"champion-tile.jpg", texOp:.14, texBlend:"soft-light"},
-  dark:    {label:"Dark Mode",        desc:"True black — OLED friendly", colors:["#000000","#b89a3e","#d8d6d0"], meta:"#000000", texture:"dark-tile.jpg", texOp:.10, texBlend:"overlay"},
-  light:   {label:"Light Mode",       desc:"Clean & bright — daytime", colors:["#f5f3ee","#8a6d1e","#1a1a18"], meta:"#f5f3ee", texture:"light-tile.jpg", texOp:.15, texBlend:"multiply"}
+  classic: {label:"Parbaugh Classic", desc:"Gold & dark — the original", colors:["#0e1118","#c9a84c","#eae8e0"], meta:"#0e1118", texture:"classic-tile.jpg", texOp:.22, texBlend:"overlay"},
+  camo:    {label:"Camo",             desc:"Olive & flame — hunting lodge", colors:["#12140e","#d4943c","#e8e4d8"], meta:"#12140e", texture:"camo-tile.jpg", texOp:.25, texBlend:"overlay"},
+  masters: {label:"Masters",          desc:"Pine green & Augusta yellow", colors:["#071a10","#fdd835","#f0efe8"], meta:"#071a10", texture:"masters-tile.jpg", texOp:.20, texBlend:"soft-light"},
+  azalea:  {label:"Azalea",           desc:"Pink blooms & deep green", colors:["#0e1118","#e8729a","#f0efe8"], meta:"#0e1118", texture:"azalea-tile.jpg", texOp:.22, texBlend:"overlay"},
+  usga:    {label:"USGA",             desc:"Navy & red — clean GHIN style", colors:["#0a1628","#c41e3a","#f2f0ea"], meta:"#0a1628", texture:"usga-tile.jpg", texOp:.22, texBlend:"overlay"},
+  sundayred:{label:"Sunday Red",      desc:"Championship Sunday — bold red", colors:["#10080a","#d4243c","#f0e8e8"], meta:"#10080a", texture:"champion-tile.jpg", texOp:.20, texBlend:"soft-light"},
+  dark:    {label:"Dark Mode",        desc:"True black — OLED friendly", colors:["#000000","#b89a3e","#d8d6d0"], meta:"#000000", texture:"dark-tile.jpg", texOp:.18, texBlend:"overlay"},
+  light:   {label:"Light Mode",       desc:"Clean & bright — daytime", colors:["#f5f3ee","#8a6d1e","#1a1a18"], meta:"#f5f3ee", texture:"light-tile.jpg", texOp:.20, texBlend:"multiply"}
 };
 function applyTheme(themeId) {
   if (!themeId || themeId === "classic") {
