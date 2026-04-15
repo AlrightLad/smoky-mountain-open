@@ -344,6 +344,8 @@ function renderMemberDetailWithData(p) {
   h += '<div style="font-size:10px;color:var(--muted2);margin-top:6px">' + metaParts.join(' · ') + '</div>';
   // Social action buttons (Trash Talk)
   if (typeof renderSocialActions === "function") h += renderSocialActions(pid);
+  // Share profile card button
+  h += '<div style="margin-top:8px"><button class="btn-sm outline" style="font-size:10px" onclick="shareProfileCard(\'' + pid + '\')"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle;margin-right:4px"><path d="M4 12V8l4-6 4 6v4"/><path d="M4 8h8"/></svg>Share Profile Card</button></div>';
   h += '</div></div>'; // close text-align:center + hero banner
 
   // ── XP LEVEL BAR (compact) ──
@@ -1779,7 +1781,73 @@ function toggleBadge(pid, badgeId) {
   
   // Also update currentProfile in memory
   if (currentProfile && currentProfile.id === pid) currentProfile.displayBadges = badges;
-  
+
   Router.go("members", { id: pid });
+}
+
+// ── Shareable Profile Card ──
+function shareProfileCard(pid) {
+  var p = PB.getPlayer(pid);
+  if (!p) { Router.toast("Player not found"); return; }
+  var lvl = PB.getPlayerLevel(pid);
+  var rounds = PB.getPlayerRounds(pid);
+  var indiv = rounds.filter(function(r){return r.format!=="scramble"&&r.format!=="scramble4"});
+  var full18 = indiv.filter(function(r){return !r.holesPlayed||r.holesPlayed>=18});
+  var hcap = PB.calcHandicap(rounds);
+  var best = full18.length ? Math.min.apply(null, full18.map(function(r){return r.score})) : null;
+  var avg = full18.length ? Math.round(full18.reduce(function(a,r){return a+r.score},0)/full18.length) : null;
+
+  // Build HTML card for html2canvas
+  var cardDiv = document.createElement("div");
+  cardDiv.style.cssText = "width:400px;padding:32px;background:linear-gradient(135deg,#0e1118,#1a1f2c);border-radius:16px;font-family:Inter,sans-serif;color:#eae8e0;position:fixed;left:-9999px;top:0;z-index:9999";
+
+  // Header
+  var header = '<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">';
+  header += '<img src="watermark.jpg" style="width:32px;height:32px;border-radius:8px" onerror="this.style.display=\'none\'">';
+  header += '<div><div style="font-family:Playfair Display,serif;font-size:14px;font-weight:700;color:#c9a84c;letter-spacing:1px">PARBAUGHS</div>';
+  header += '<div style="font-size:8px;color:#7a7e8a;letter-spacing:2px">GOLF LEAGUE PLATFORM</div></div></div>';
+
+  // Player info
+  var name = p.username || p.name;
+  var title = p.equippedTitle || p.title || "";
+  var info = '<div style="text-align:center;margin-bottom:20px">';
+  info += '<div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:#eae8e0">' + name + '</div>';
+  if (title) info += '<div style="font-size:11px;color:#c9a84c;margin-top:4px;font-style:italic">' + title + '</div>';
+  info += '<div style="font-size:10px;color:#7a7e8a;margin-top:6px">Level ' + (lvl.level||1) + ' \u00b7 ' + (lvl.name||"Rookie") + '</div>';
+  info += '</div>';
+
+  // Stats grid
+  var stats = '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">';
+  stats += '<div style="text-align:center"><div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:#c9a84c">' + (hcap !== null ? hcap : "\u2014") + '</div><div style="font-size:8px;color:#7a7e8a;text-transform:uppercase;letter-spacing:.5px">Handicap</div></div>';
+  stats += '<div style="text-align:center"><div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:#eae8e0">' + (best || "\u2014") + '</div><div style="font-size:8px;color:#7a7e8a;text-transform:uppercase;letter-spacing:.5px">Best</div></div>';
+  stats += '<div style="text-align:center"><div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:#eae8e0">' + (avg || "\u2014") + '</div><div style="font-size:8px;color:#7a7e8a;text-transform:uppercase;letter-spacing:.5px">Average</div></div>';
+  stats += '<div style="text-align:center"><div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:#eae8e0">' + indiv.length + '</div><div style="font-size:8px;color:#7a7e8a;text-transform:uppercase;letter-spacing:.5px">Rounds</div></div>';
+  stats += '</div>';
+
+  // Footer
+  var footer = '<div style="text-align:center;padding-top:12px;border-top:1px solid #1e2333;font-size:9px;color:#484d5c">parbaughs.golf/player/' + (p.username || "") + '</div>';
+
+  cardDiv.innerHTML = header + info + stats + footer;
+  document.body.appendChild(cardDiv);
+
+  if (typeof html2canvas !== "undefined") {
+    html2canvas(cardDiv, { backgroundColor: null, scale: 2 }).then(function(canvas) {
+      document.body.removeChild(cardDiv);
+      canvas.toBlob(function(blob) {
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], "parbaughs-profile.png", { type: "image/png" })] })) {
+          navigator.share({ files: [new File([blob], "parbaughs-profile.png", { type: "image/png" })], title: name + " on Parbaughs" }).catch(function(){});
+        } else {
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "parbaughs-profile-" + (p.username || "player") + ".png";
+          a.click();
+          Router.toast("Profile card downloaded!");
+        }
+      }, "image/png");
+    }).catch(function() { document.body.removeChild(cardDiv); Router.toast("Could not generate card"); });
+  } else {
+    document.body.removeChild(cardDiv);
+    Router.toast("Share card generation not available");
+  }
 }
 

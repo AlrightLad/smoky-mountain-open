@@ -99,6 +99,22 @@ Router.register("settings", function() {
   }
   h += '</div>';
 
+  // Public Profile
+  h += '<div class="form-section"><div class="form-title">Public Profile</div>';
+  var isPublic = currentProfile && currentProfile.profilePublic;
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)">';
+  h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">Make profile public</div>';
+  h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">Anyone can see your stats, rounds, and achievements</div></div>';
+  h += '<div onclick="togglePublicProfile()" style="width:44px;height:26px;border-radius:13px;background:' + (isPublic ? 'var(--birdie)' : 'var(--bg3)') + ';cursor:pointer;position:relative;transition:background .2s;flex-shrink:0">';
+  h += '<div style="width:22px;height:22px;border-radius:50%;background:#fff;position:absolute;top:2px;' + (isPublic ? 'right:2px' : 'left:2px') + ';transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div></div>';
+  h += '</div>';
+  if (isPublic && currentProfile && currentProfile.username) {
+    h += '<div style="margin-top:8px;padding:8px 12px;background:rgba(var(--gold-rgb),.06);border:1px solid rgba(var(--gold-rgb),.12);border-radius:var(--radius);font-size:10px;color:var(--muted)">';
+    h += 'Your public profile: <span style="color:var(--gold);font-weight:600">parbaughs.golf/player/' + currentProfile.username + '</span>';
+    h += '<div style="margin-top:4px"><button class="btn-sm outline" style="font-size:9px" onclick="sharePublicProfile()">Share Profile Link</button></div></div>';
+  }
+  h += '</div>';
+
   // Cosmetics Shop
   h += '<div class="form-section"><div class="form-title">ParCoins</div>';
   var shopBalance = getParCoinBalance(currentUser ? currentUser.uid : null);
@@ -153,4 +169,23 @@ Router.register("settings", function() {
 
   document.querySelector('[data-page="settings"]').innerHTML = h;
 });
+
+function togglePublicProfile() {
+  if (!currentUser || !db) return;
+  var newVal = !(currentProfile && currentProfile.profilePublic);
+  db.collection("members").doc(currentUser.uid).update({ profilePublic: newVal }).then(function() {
+    if (currentProfile) currentProfile.profilePublic = newVal;
+    Router.toast(newVal ? "Profile is now public" : "Profile is now private");
+    Router.go("settings", {}, true);
+  }).catch(function(e) { Router.toast("Failed: " + e.message); });
+}
+
+function sharePublicProfile() {
+  var url = "https://parbaughs.golf/player/" + (currentProfile ? currentProfile.username : "");
+  if (navigator.share) {
+    navigator.share({ title: (currentProfile ? currentProfile.name : "Parbaugh") + " on Parbaughs", url: url }).catch(function(){});
+  } else {
+    navigator.clipboard.writeText(url).then(function() { Router.toast("Profile link copied!"); }).catch(function() { Router.toast(url); });
+  }
+}
 

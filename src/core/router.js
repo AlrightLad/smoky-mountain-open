@@ -1627,6 +1627,7 @@ function renderFeedItem(a) {
     h += '<div class="feed-actions">';
     h += '<div class="feed-action' + (isLiked ? ' active' : '') + '" onclick="event.stopPropagation();likeFeedRound(\'' + a.roundId + '\',this)"><svg viewBox="0 0 16 16" width="14" height="14" fill="' + (isLiked ? 'var(--gold)' : 'none') + '" stroke="currentColor" stroke-width="1.2"><path d="M8 14s-5.5-3.5-5.5-7A2.5 2.5 0 018 4.5 2.5 2.5 0 0113.5 7C13.5 10.5 8 14 8 14z"/></svg><span>' + (likeCount || '') + '</span></div>';
     h += '<div class="feed-action" onclick="event.stopPropagation();toggleFeedComments(\'' + a.roundId + '\')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 3h12v8H5l-3 3V3z"/></svg><span>' + (commentCount || '') + '</span></div>';
+    h += '<div class="feed-action" onclick="event.stopPropagation();showFeedReactions(\'' + a.roundId + '\',this)" style="font-size:14px;padding:2px 6px">🔥</div>';
     if (a.dest) h += '<div class="feed-action" onclick="event.stopPropagation();' + a.dest + '" style="margin-left:auto;font-size:10px;font-weight:600;color:var(--gold)">View <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div>';
     h += '</div>';
     h += '<div id="feedComments_' + a.roundId + '" class="feed-comments" style="display:none"></div>';
@@ -1840,6 +1841,53 @@ function likeFeedRound(roundId, el) {
       setTimeout(function() { window._suppressRoundsRerender = false; }, 2000);
     });
   }).catch(function() { window._suppressRoundsRerender = false; Router.toast("Could not like round"); });
+}
+
+// Golf-themed reactions popup
+function showFeedReactions(roundId, btnEl) {
+  var existing = document.getElementById("feedReactPopup_" + roundId);
+  if (existing) { existing.remove(); return; }
+  // Close any other open popups
+  document.querySelectorAll('[id^="feedReactPopup_"]').forEach(function(el) { el.remove(); });
+  var reactions = [
+    {emoji: "\uD83D\uDD25", key: "fire"},     // 🔥
+    {emoji: "\uD83D\uDC4F", key: "clap"},     // 👏
+    {emoji: "\u26F3", key: "flag"},            // ⛳
+    {emoji: "\uD83D\uDC80", key: "skull"},     // 💀
+    {emoji: "\uD83C\uDFC6", key: "trophy"},    // 🏆
+    {emoji: "\uD83D\uDE02", key: "laugh"}      // 😂
+  ];
+  var popup = document.createElement("div");
+  popup.id = "feedReactPopup_" + roundId;
+  popup.style.cssText = "display:flex;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:4px 8px;position:absolute;bottom:100%;left:0;z-index:10;box-shadow:var(--shadow-md)";
+  reactions.forEach(function(r) {
+    var btn = document.createElement("span");
+    btn.textContent = r.emoji;
+    btn.style.cssText = "font-size:20px;cursor:pointer;padding:4px;border-radius:50%;transition:transform .1s";
+    btn.onclick = function(e) { e.stopPropagation(); addFeedReaction(roundId, r.key); popup.remove(); };
+    popup.appendChild(btn);
+  });
+  btnEl.parentElement.style.position = "relative";
+  btnEl.parentElement.appendChild(popup);
+  setTimeout(function() { document.addEventListener("click", function once() { popup.remove(); document.removeEventListener("click", once); }); }, 10);
+}
+
+function addFeedReaction(roundId, reactionKey) {
+  if (!currentUser || !db) return;
+  var uid = currentUser.uid;
+  window._suppressRoundsRerender = true;
+  db.collection("rounds").doc(roundId).get().then(function(doc) {
+    if (!doc.exists) return;
+    var reactions = doc.data().reactions || {};
+    if (!reactions[reactionKey]) reactions[reactionKey] = [];
+    var idx = reactions[reactionKey].indexOf(uid);
+    if (idx !== -1) reactions[reactionKey].splice(idx, 1);
+    else reactions[reactionKey].push(uid);
+    return db.collection("rounds").doc(roundId).update({ reactions: reactions });
+  }).then(function() {
+    window._suppressRoundsRerender = false;
+    Router.toast("Reacted!");
+  }).catch(function() { window._suppressRoundsRerender = false; });
 }
 
 function toggleFeedComments(roundId) {
