@@ -5,7 +5,7 @@ import { readFileSync, readdirSync } from 'fs';
 var CORE_FILES = ['utils.js', 'firebase.js', 'theme.js', 'data.js', 'sync.js', 'router.js'];
 
 // Pages needed for initial render (home + settings reachable from nav)
-var IMMEDIATE_PAGES = ['home.js', 'settings.js'];
+var IMMEDIATE_PAGES = ['home.js', 'settings.js', 'onboarding.js'];
 
 // Pages loaded after initial render (deferred for faster first paint)
 var DEFERRED_PAGES = [
