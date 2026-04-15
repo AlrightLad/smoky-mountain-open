@@ -94,7 +94,15 @@ Router.register("chat", function() {
     var _chatLeague = getActiveLeague();
     window._chatFeedUnsub = db.collection("chat").orderBy("createdAt","desc").limit(50).onSnapshot(function(snap) {
       liveChat = [];
-      snap.forEach(function(doc){ var d = doc.data(); if (!d.leagueId || d.leagueId === _chatLeague) liveChat.push(Object.assign({_docId:doc.id}, d)); });
+      snap.forEach(function(doc){
+        var d = doc.data();
+        if (d.leagueId && d.leagueId !== _chatLeague) return;
+        // Filter out auto-generated system messages — clubhouse is for human conversation only
+        if (d.authorId === "system" || d.system) return;
+        if (d.authorName === "Parbaughs" || d.authorName === "The Caddy") return;
+        if (d.isStory) return; // post-round stories go to activity feed, not chat
+        liveChat.push(Object.assign({_docId:doc.id}, d));
+      });
       // Keep newest-first order (no reverse)
       var feed = document.getElementById("chatFeed");
       if (feed && Router.getPage() === "chat") {

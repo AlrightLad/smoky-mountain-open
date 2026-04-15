@@ -651,16 +651,39 @@ function renderLiveScoring() {
   h += '</div>';
 
   // Sticky bottom nav — always reachable
-  h += '<div style="position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--bg2);border-top:1px solid var(--border);padding:8px 12px;display:flex;gap:8px">';
-  if (hole > 0) {
-    h += '<button class="btn outline" style="flex:0 0 80px;padding:14px 0;font-size:12px" onclick="liveNavPrev()">← Prev</button>';
-  }
-  var lastHole = liveState.holesMode === "front9" ? 8 : 17;
-  if (hole < lastHole) {
-    h += '<button class="btn green" style="flex:1;padding:14px 0;font-size:14px;font-weight:700" onclick="liveNavNext(' + hole + ')">Next hole →</button>';
+  var lastHole = liveState.holesMode === "front9" ? 8 : (liveState.holesMode === "back9" ? 17 : 17);
+  var isLastHole = hole >= lastHole;
+  var scoredCount = liveState.scores.filter(function(s){return s!==""}).length;
+  var totalHoles = liveState.holesMode === "front9" || liveState.holesMode === "back9" ? 9 : 18;
+  var allScored = scoredCount >= totalHoles;
+
+  h += '<div style="position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--bg2);border-top:1px solid var(--border);padding:8px 12px">';
+
+  // Always show Finish Round button when any scores are entered
+  if (scoredCount >= 1) {
+    if (isLastHole || allScored) {
+      // On last hole or all scored: BIG prominent finish button
+      h += '<div style="display:flex;gap:8px">';
+      if (hole > 0) h += '<button class="btn outline" style="flex:0 0 70px;padding:14px 0;font-size:11px" onclick="liveNavPrev()">← Prev</button>';
+      h += '<button class="btn" style="flex:1;padding:16px 0;font-size:16px;font-weight:800;background:linear-gradient(135deg,var(--birdie),#2a7a3e);color:#fff;border:none;border-radius:var(--radius)" onclick="showFinishOptions()">\u2714 Finish Round (' + scoredCount + '/' + totalHoles + ')</button>';
+      h += '</div>';
+    } else {
+      // Not on last hole: Next + small Finish option
+      h += '<div style="display:flex;gap:8px">';
+      if (hole > 0) h += '<button class="btn outline" style="flex:0 0 70px;padding:14px 0;font-size:11px" onclick="liveNavPrev()">← Prev</button>';
+      h += '<button class="btn green" style="flex:1;padding:14px 0;font-size:14px;font-weight:700" onclick="liveNavNext(' + hole + ')">Next hole \u2192</button>';
+      h += '<button class="btn outline" style="flex:0 0 70px;padding:14px 0;font-size:10px;color:var(--gold);border-color:rgba(var(--gold-rgb),.3)" onclick="showFinishOptions()">Finish</button>';
+      h += '</div>';
+    }
   } else {
-    h += '<button class="btn green" style="flex:1;padding:14px 0;font-size:14px;font-weight:700" onclick="showFinishOptions()">Finish round</button>';
+    // No scores yet: just Next
+    h += '<div style="display:flex;gap:8px">';
+    h += '<button class="btn green" style="flex:1;padding:14px 0;font-size:14px;font-weight:700" onclick="liveNavNext(' + hole + ')">Next hole \u2192</button>';
+    h += '</div>';
   }
+
+  // Quit round — always tiny and de-emphasized
+  h += '<div style="text-align:center;margin-top:6px"><span style="font-size:9px;color:var(--red);cursor:pointer;opacity:.5" onclick="quitLiveRound()">Quit round (discard scores)</span></div>';
   h += '</div>';
 
   document.querySelector('[data-page="playnow"]').innerHTML = h;

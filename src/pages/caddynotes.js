@@ -12,6 +12,11 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · CONTENT FEATURES</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "Finish Round button now ALWAYS visible in Play Now once any scores are entered — impossible to miss on the last hole", tag: "FIXED"},
+    {item: "Finish Round on last hole: big green gradient button showing score count (7/9, 18/18, etc)", tag: "FIXED"},
+    {item: "Finish early: small Finish button alongside Next Hole on every non-final hole", tag: "NEW"},
+    {item: "Quit Round clearly separated: tiny red text below Finish, not competing for attention", tag: "IMPROVED"},
+    {item: "Clubhouse chat cleaned up — only human messages now, no auto-generated round posts or achievements", tag: "FIXED"},
     {item: "Course reviews enhanced: star rating selector, aggregate rating display, only players who\'ve played can review", tag: "IMPROVED"},
     {item: "NEW: Auto-generated course stats — member average, most played by, hardest/easiest hole from hole-by-hole data", tag: "NEW"},
     {item: "NEW: Post-round stories — after logging a round, tell the story of your round with a \"How\'d It Go?\" prompt", tag: "NEW"},
