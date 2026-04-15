@@ -178,6 +178,12 @@ var Router = (function() {
 // a player avatar. Matches the logic on the profile page exactly.
 function playerFrameColor(p) {
   if (!p) return 'var(--border)';
+  // Check for equipped cosmetic border first
+  if (p.equippedCosmetics && p.equippedCosmetics.border) {
+    var cosm = typeof COSMETICS_CATALOG !== "undefined" ? COSMETICS_CATALOG : [];
+    var equipped = cosm.find(function(c) { return c.id === p.equippedCosmetics.border; });
+    if (equipped) return equipped.preview; // use the preview color for border
+  }
   var pid = p.id || p.uid || '';
   var achs = [];
   try { if (pid) achs = PB.getAchievements(pid) || []; } catch(e) {}
@@ -186,6 +192,19 @@ function playerFrameColor(p) {
   if (achs.some(function(a){return a.id==="sub90"}))    return 'rgba(var(--gold-rgb),.5)';
   if (p.founding || p.isFoundingFour)                   return 'var(--gold2)';
   return 'var(--border)';
+}
+// ── Cosmetic helpers ──
+function getPlayerBannerCss(p) {
+  if (!p || !p.equippedCosmetics || !p.equippedCosmetics.banner) return '';
+  var cosm = typeof COSMETICS_CATALOG !== "undefined" ? COSMETICS_CATALOG : [];
+  var equipped = cosm.find(function(c) { return c.id === p.equippedCosmetics.banner; });
+  return equipped ? equipped.css : '';
+}
+function getPlayerCardCss(p) {
+  if (!p || !p.equippedCosmetics || !p.equippedCosmetics.card) return '';
+  var cosm = typeof COSMETICS_CATALOG !== "undefined" ? COSMETICS_CATALOG : [];
+  var equipped = cosm.find(function(c) { return c.id === p.equippedCosmetics.card; });
+  return equipped ? equipped.css : '';
 }
 // ────────────────────────────────────────────────────────────────────────────
 
@@ -1422,7 +1441,9 @@ function renderFeedItem(a) {
   }
 
   // ── Rounds — prominent card treatment ──
-  var h = '<div class="feed-row" style="display:block;padding:12px 16px"' + (a.dest ? ' onclick="' + a.dest + '"' : '') + '>';
+  var cardCss = '';
+  if (a.playerId) { var _fp = PB.getPlayer(a.playerId); if (_fp) cardCss = getPlayerCardCss(_fp); }
+  var h = '<div class="feed-row" style="display:block;padding:12px 16px;' + cardCss + '"' + (a.dest ? ' onclick="' + a.dest + '"' : '') + '>';
   // Top row: name/course left, score right
   h += '<div style="display:flex;align-items:flex-start;gap:10px">';
   if (a.live) h += '<div style="width:6px;height:6px;border-radius:50%;background:var(--live);animation:pulse-dot 2s infinite;flex-shrink:0;margin-top:8px"></div>';

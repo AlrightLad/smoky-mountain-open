@@ -79,6 +79,14 @@ Router.register("settings", function() {
   }
   h += '</div>';
 
+  // Cosmetics Shop
+  h += '<div class="form-section"><div class="form-title">ParCoins</div>';
+  var shopBalance = getParCoinBalance(currentUser ? currentUser.uid : null);
+  h += '<div style="display:flex;gap:8px">';
+  h += '<button class="btn full green" onclick="Router.go(\'shop\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg> Cosmetics Shop</button>';
+  h += '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:8px 14px;display:flex;align-items:center;gap:6px;flex-shrink:0"><span style="font-size:14px;font-weight:700;color:var(--gold)">' + shopBalance + '</span><span style="font-size:9px;color:var(--muted)">coins</span></div>';
+  h += '</div></div>';
+
   // Invite management
   if (currentProfile && (currentProfile.role === "commissioner" || (currentProfile.invitesUsed||0) < (currentProfile.maxInvites||3))) {
     h += '<div class="form-section"><div class="form-title">Invites</div>';

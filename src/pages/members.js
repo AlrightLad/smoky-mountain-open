@@ -272,7 +272,8 @@ function renderMemberDetailWithData(p) {
   var canEditPhoto = isOwnProfile;
 
   // ── HERO BANNER ──
-  var h = '<div style="position:relative;background:linear-gradient(180deg,var(--grad-hero) 0%,var(--bg) 100%);padding:16px 16px 0;border-bottom:1px solid var(--border)">';
+  var bannerBg = getPlayerBannerCss(p) || 'linear-gradient(180deg,var(--grad-hero) 0%,var(--bg) 100%)';
+  var h = '<div style="position:relative;background:' + bannerBg + ';padding:16px 16px 0;border-bottom:1px solid var(--border)">';
   // Back + Edit buttons
   h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">';
   h += '<button class="back" onclick="Router.go(\'members\')" style="padding:6px 10px;min-height:40px">← Members</button>';
