@@ -604,6 +604,44 @@ The app connects to the emulator only when loaded with `?emulator=1` in the URL.
 
 See `.claude/README.md` for the full reference, including how to bypass in emergencies (`git commit --no-verify` for Hooks 1 and 5; `"disableAllHooks": true` for everything) and the rule that hook changes ship as their own version bumps, never bundled.
 
+### Matcher note
+
+Hooks 1 and 5 use a word-boundary grep to catch `git commit` anywhere in a chained command:
+
+```sh
+grep -qE '(^|[;&|[:space:]])git[[:space:]]+commit([[:space:]]|$)'
+```
+
+The simpler `"git commit"*` glob misses chains like `git add foo && git commit -m ...` — the chained command doesn't *start* with `git commit`, so the glob early-exits and the check never runs. That was a real regression caught during v7.8.2's Phase 3 dry-runs; the regex fixes it. If you ever rewrite the matcher, make sure the `git add && git commit` case still fires.
+
+## Git Hooks (Husky)
+
+v7.8.2 adds Husky + lint-staged as a second, git-level layer of pre-commit gates. Both layers fire on every commit; the redundancy is intentional — either can catch what the other misses.
+
+| Layer | Where it runs | What it does | Bypass |
+|-------|---------------|--------------|--------|
+| Claude Code hooks (v7.8.1) | PreToolUse on Bash calls | Agent-side gate. Runs lint + version-sync before the Bash tool executes. | Not directly bypassable from the agent. |
+| Husky / lint-staged (v7.8.2) | Git's `pre-commit` hook | Git-side gate. Runs `npm run lint` via lint-staged on staged `.js` under `src/`, `tests/`, or `scripts/`, then a version-sync check. | `git commit --no-verify` — bypasses Husky only, not the Claude Code layer. |
+
+**Installation.** `npm install` runs `"prepare": "husky"` automatically, which sets `git config core.hooksPath` to `.husky/_`. New contributors get the hooks wired up on first install — no manual setup.
+
+**The `.husky/pre-commit` script** starts with `set -e` so a `lint-staged` failure propagates. Without it, the trailing version-sync check's exit code overwrites the lint-staged failure and broken code slips through. (This was caught during v7.8.2 Phase 3 testing — the original spec didn't include `set -e`, but it's load-bearing.)
+
+**Bypass.** `git commit --no-verify` skips Husky for genuine emergencies. Default response to a hook failure is to fix the root cause, not bypass. `--no-verify` does NOT skip Claude Code hooks (those fire at a different layer).
+
+### Destructive Git Operations
+
+`git reset --hard` is destructive to **uncommitted** working-tree state — not just the commit being discarded. When reverting a test commit that has valuable unstaged changes alongside it, use:
+
+```bash
+git reset HEAD~1                    # default --mixed — moves HEAD, unstages, keeps working tree
+git checkout HEAD -- <file>         # restore specific files from HEAD
+```
+
+This preserves unstaged work in other files. `--hard` would wipe everything in one shot.
+
+Lesson earned during v7.8.2 Phase 3: a `--hard` reset to clean up a test commit also nuked the in-flight `package.json` changes for the Husky install. Untracked files (`.husky/`) survived; tracked-but-modified files did not.
+
 ## Native Build Setup
 
 ### Capacitor Configuration
