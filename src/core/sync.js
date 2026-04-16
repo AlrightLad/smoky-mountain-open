@@ -149,9 +149,13 @@ function persistPlayerStats(pid) {
     var handicap = calculateHandicapIndex(rounds);
     var avg = full18public.length ? Math.round(full18public.reduce(function(a,r){return a+r.score;},0)/full18public.length) : null;
     var best = full18public.length ? Math.min.apply(null, full18public.map(function(r){return r.score;})) : null;
-    // XP and level from global rounds
-    var xp = PB.calcXPFromRounds(rounds, pid);
-    var level = PB.calcLevelFromXP(xp);
+    // XP and level: use the FULL getPlayerXP formula with global rounds.
+    // Temporarily swap state.rounds so getPlayerXP reads all rounds, then restore.
+    var savedRounds = PB.getRounds();
+    PB.setRoundsFromFirestore(rounds);
+    var xp = PB.getPlayerXP(pid);
+    var level = PB.getPlayerLevel(pid);
+    PB.setRoundsFromFirestore(savedRounds);
     var stats = {
       computedHandicap: handicap !== null ? handicap : null,
       avgScore: avg,

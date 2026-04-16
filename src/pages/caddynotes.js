@@ -12,7 +12,8 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Verify System, Global Stats, League Isolation</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "Handicap calculation corrected — calculated handicaps now match the World Handicap System formula your GHIN uses. Current handicaps for the 4 members with logged rounds have been recalculated from your actual scores. Stat counts (rounds played, best round, average) will be corrected in the next update.", tag: "FIXED"},
+    {item: "Home page round count, level, and XP now reflect your actual total across all rounds — including 9-hole rounds and scramble team rounds, across all leagues", tag: "FIXED"},
+    {item: "Handicap calculation corrected — calculated handicaps now match the World Handicap System formula your GHIN uses, recalculated from actual scores", tag: "FIXED"},
     {item: "League isolation hardening — fixed chat and 7 other scoped collections that could leak between leagues, replaced hardcoded league names with dynamic lookups, tightened listener cleanup on league switch", tag: "FIXED"},
     {item: "Added verify.js diagnostic system — catches data drift, isolation leaks, display mismatches, and auto-cleans stale test leagues before they hit members", tag: "NEW"},
     {item: "Trips no longer leak across leagues — events page now uses league-scoped queries so only your league's events show", tag: "FIXED"},
