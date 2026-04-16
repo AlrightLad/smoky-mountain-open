@@ -173,20 +173,93 @@ service cloud.firestore {
     function uid() { return request.auth.uid; }
     function isCommissioner() { return isAuth() && get(/databases/$(database)/documents/members/$(uid())).data.role == "commissioner"; }
 
+    // ── Identity ──
     match /members/{memberId} { allow read: if true; allow create: if isAuth() && uid() == memberId; allow update: if isAuth() && (uid() == memberId || isCommissioner()); allow delete: if isCommissioner(); }
-    match /rounds/{roundId} { allow read: if isAuth(); allow create: if isAuth() && (request.resource.data.player == uid() || isCommissioner()); allow update, delete: if isAuth() && (resource.data.player == uid() || isCommissioner()); }
-    match /dms/{dmId} { allow read, write: if isAuth(); match /messages/{messageId} { allow read, write: if isAuth(); } }
+
+    // ── Rounds ──
+    match /rounds/{roundId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isAuth() && (resource.data.player == uid() || isCommissioner()); }
+
+    // ── DMs (participants only) ──
+    match /dms/{dmId} {
+      allow read: if isAuth() && (dmId.matches(uid() + '_.*') || dmId.matches('.*_' + uid()));
+      allow create: if isAuth();
+      match /messages/{messageId} {
+        allow read: if isAuth();
+        allow create: if isAuth();
+      }
+    }
+
+    // ── Chat (league-scoped) ──
     match /chat/{msgId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isAuth() && (resource.data.authorId == uid() || isCommissioner()); }
+
+    // ── Notifications ──
     match /notifications/{notifId} { allow read: if isAuth() && resource.data.toUid == uid(); allow create: if isAuth(); allow update, delete: if isAuth() && resource.data.toUid == uid(); }
+
+    // ── Invites ──
     match /invites/{inviteId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isCommissioner(); }
+
+    // ── Config ──
     match /config/{docId} { allow read: if isAuth(); allow write: if isCommissioner(); }
+
+    // ── ParCoins (immutable transaction log) ──
     match /parcoin_transactions/{txnId} { allow read: if isAuth() && resource.data.uid == uid(); allow create: if isAuth(); allow update, delete: if false; }
+
+    // ── Push queue (write-only) ──
     match /pendingPush/{pushId} { allow create: if isAuth(); allow read, update, delete: if false; }
-    // Catch-all for other collections
-    match /{collection}/{docId} { allow read: if isAuth(); allow write: if isAuth(); }
+
+    // ── Leagues ──
+    match /leagues/{leagueId} { allow read: if isAuth(); allow create: if isAuth(); allow update: if isAuth() && resource.data.commissioner == uid(); allow delete: if false; }
+
+    // ── Wagers ──
+    match /wagers/{wagerId} { allow read: if isAuth(); allow create: if isAuth(); allow update: if isAuth() && (resource.data.fromUid == uid() || resource.data.toUid == uid() || isCommissioner()); allow delete: if false; }
+
+    // ── Bounties ──
+    match /bounties/{bountyId} { allow read: if isAuth(); allow create: if isAuth(); allow update: if isAuth(); allow delete: if isCommissioner(); }
+
+    // ── Courses (global, commissioner-write) ──
+    match /courses/{courseId} { allow read: if isAuth(); allow write: if isAuth(); }
+    match /course_reviews/{reviewId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isAuth() && resource.data.userId == uid(); }
+
+    // ── Photos ──
+    match /photos/{photoId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isAuth() && resource.data.uploadedBy == uid(); }
+
+    // ── Tee Times ──
+    match /teetimes/{teeId} { allow read: if isAuth(); allow create: if isAuth(); allow update: if isAuth() && (resource.data.createdBy == uid() || isCommissioner()); allow delete: if isAuth() && (resource.data.createdBy == uid() || isCommissioner()); }
+
+    // ── Scramble Teams ──
+    match /scrambleTeams/{teamId} { allow read: if isAuth(); allow create: if isAuth(); allow update: if isAuth(); allow delete: if isCommissioner(); }
+
+    // ── Calendar Events ──
+    match /calendar_events/{eventId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isAuth() && resource.data.createdBy == uid(); }
+    match /scheduling_chat/{msgId} { allow read: if isAuth(); allow create: if isAuth(); }
+
+    // ── Trips / Events ──
+    match /trips/{tripId} { allow read: if isAuth(); allow write: if isAuth(); }
+    match /tripscores/{scoreId} { allow read: if isAuth(); allow write: if isAuth(); }
+
+    // ── Social Actions ──
+    match /social_actions/{actionId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if false; }
+
+    // ── Live State ──
+    match /syncrounds/{roundId} { allow read: if isAuth(); allow write: if isAuth(); }
+    match /liverounds/{roundId} { allow read: if isAuth(); allow write: if isAuth() && roundId == uid(); }
+    match /presence/{userId} { allow read: if isAuth(); allow write: if isAuth() && userId == uid(); }
+    match /rangeSessions/{sessionId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isAuth(); }
+
+    // ── System ──
+    match /errors/{errorId} { allow create: if isAuth(); allow read: if isCommissioner(); allow update, delete: if isCommissioner(); }
+    match /pending_celebrations/{celebId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if false; }
+    match /feature_requests/{reqId} { allow create: if isAuth(); allow read: if isCommissioner(); }
+    match /reports/{reportId} { allow create: if isAuth(); allow read: if isCommissioner(); }
+    match /attestations/{attId} { allow read: if isAuth(); allow write: if isAuth(); }
+    match /partygames/{gameId} { allow read: if isAuth(); allow write: if isAuth(); }
+
+    // NO CATCH-ALL. Every collection must have explicit rules above.
   }
 }
 ```
+
+**IMPORTANT:** Deploy these rules via `firebase deploy --only firestore:rules` BEFORE making the app public. Test all features after deployment.
 
 ## Theme System
 

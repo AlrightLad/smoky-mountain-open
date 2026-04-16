@@ -211,6 +211,7 @@ Router.register("shop", function() {
 
 function purchaseCosmetic(itemId) {
   if (!currentUser || !db) { Router.toast("Sign in required"); return; }
+  if (!requireVerified("buy cosmetics")) return;
   var item = COSMETICS_CATALOG.find(function(c) { return c.id === itemId; });
   if (!item) return;
 

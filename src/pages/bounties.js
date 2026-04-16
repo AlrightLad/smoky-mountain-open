@@ -155,6 +155,7 @@ function showBountyCourseSearch(input) {
 
 function submitBounty() {
   if (!currentUser || !db) { Router.toast("Sign in required"); return; }
+  if (!requireVerified("post bounties")) return;
   var type = document.getElementById("bounty-type").value || "score";
   var course = (document.getElementById("bounty-course").value || "").trim();
   if (!course) { Router.toast("Pick a course"); return; }

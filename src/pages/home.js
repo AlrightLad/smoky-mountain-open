@@ -47,6 +47,15 @@ Router.register("home", function() {
   var myBestRoundId = myBestRound ? myBestRound.id : null;
   var myHcap = myIndividualRounds.length >= 3 ? PB.calcHandicap(myRounds) : null;
 
+  // Email verification banner
+  if (currentUser && !currentUser.emailVerified) {
+    h += '<div style="padding:8px 16px;background:rgba(var(--gold-rgb),.08);border-bottom:1px solid rgba(var(--gold-rgb),.15);display:flex;align-items:center;gap:8px">';
+    h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M8 1L1 5v6l7 4 7-4V5L8 1z"/><path d="M1 5l7 4 7-4"/></svg>';
+    h += '<div style="flex:1;font-size:10px;color:var(--gold)">Verify your email to unlock wagers, bounties, DMs, and the shop</div>';
+    h += '<button style="background:var(--gold);color:var(--bg);border:none;border-radius:4px;font:600 9px/1 Inter,sans-serif;padding:5px 10px;cursor:pointer;flex-shrink:0" onclick="currentUser.sendEmailVerification().then(function(){Router.toast(\'Verification email sent!\')}).catch(function(){Router.toast(\'Check your inbox\')})">Verify</button>';
+    h += '</div>';
+  }
+
   h += '<div style="padding:20px 16px 0;text-align:center;background:linear-gradient(180deg,var(--grad-hero),var(--bg))">';
   h += '<div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px">';
   h += '<div style="width:48px;height:48px;border-radius:14px;overflow:hidden;flex-shrink:0;border:1px solid var(--border)"><img alt="" src="watermark.jpg" style="width:100%;height:100%;object-fit:cover"></div>';

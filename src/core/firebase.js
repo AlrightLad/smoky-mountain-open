@@ -507,7 +507,8 @@ if (firebaseAvailable && auth) {
         }
         enterApp();
         // Start real-time profile listener — keeps currentProfile in sync across devices/sessions
-        db.collection("members").doc(user.uid).onSnapshot(function(snap) {
+        if (window._memberProfileUnsub) window._memberProfileUnsub();
+        window._memberProfileUnsub = db.collection("members").doc(user.uid).onSnapshot(function(snap) {
           if (!snap.exists) return;
           currentProfile = snap.data();
           window._pbShareCount = (currentProfile.shareCount || 0);
@@ -656,6 +657,12 @@ function goToMyProfile() {
 }
 
 function exitApp() {
+  // Clean up listeners on logout
+  if (window._memberProfileUnsub) { window._memberProfileUnsub(); window._memberProfileUnsub = null; }
+  if (window._notifUnsub) { window._notifUnsub(); window._notifUnsub = null; }
+  if (window._presenceUnsub) { window._presenceUnsub(); window._presenceUnsub = null; }
+  if (window._chatFeedUnsub) { window._chatFeedUnsub(); window._chatFeedUnsub = null; }
+  if (window._rangeUnsub) { window._rangeUnsub(); window._rangeUnsub = null; }
   document.getElementById("authScreen").classList.remove("hidden");
   document.getElementById("mainApp").classList.add("hidden");
   // Check for invite code in URL params — auto-fill and show register form

@@ -5,6 +5,14 @@
 
 var PB_DEBUG = false; // Set true for console output
 
+// Email verification gate — returns true if verified or gate should be skipped
+function requireVerified(actionName) {
+  if (!currentUser) { Router.toast("Sign in required"); return false; }
+  if (currentUser.emailVerified) return true;
+  Router.toast("Verify your email to " + (actionName || "do this") + " — check Settings");
+  return false;
+}
+
 // ── Global defaults for cross-file variables ──
 // These are re-declared with full state in their owning pages (playnow.js, range.js, etc.)
 // but must exist as globals BEFORE home.js renders to prevent ReferenceError.

@@ -220,6 +220,7 @@ function _updateBeatScoreTarget() {
 
 function submitWager() {
   if (!currentUser || !db) { Router.toast("Sign in required"); return; }
+  if (!requireVerified("create wagers")) return;
   var toUid = document.getElementById("wager-opponent").value;
   if (!toUid) { Router.toast("Pick an opponent"); return; }
   var type = document.getElementById("wager-type").value || "stroke";
