@@ -8,10 +8,11 @@ set -euo pipefail
 source "$(dirname "$0")/lib/parse-payload.sh"
 
 cmd="$(parse_payload '.tool_input.command')"
-case "$cmd" in
-  "git commit"*) ;;
-  *) exit 0 ;;
-esac
+# Matches `git commit` anywhere in a chained command (e.g., `git add &&
+# git commit`). The naïve `git commit*` pattern fails on chains.
+if ! echo "$cmd" | grep -qE '(^|[;&|[:space:]])git[[:space:]]+commit([[:space:]]|$)'; then
+  exit 0
+fi
 
 cd "$(git rev-parse --show-toplevel)"
 
