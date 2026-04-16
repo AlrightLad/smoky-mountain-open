@@ -115,6 +115,14 @@ Do NOT redeploy `searchCourses` unless explicitly modifying it — it has CORS a
 - **WRONG endpoint:** `/v1/courses?search=` (non-functional, do not use)
 - **CRITICAL:** Zero guessing or padding of par arrays. Only use verified API data.
 
+## Social Architecture
+Three connection levels:
+1. **League Members** — see each other within a league (current system)
+2. **Friends** — cross-league connections via friend request/accept. Can DM, see public rounds, wager cross-league. Stored as `friends[]` array on member doc.
+3. **Strangers** — can only see public profiles. Must friend request to interact.
+
+Members list is league-scoped only. Friends list is separate and personal. Build friends system before App Store launch.
+
 ## Multi-League Architecture
 
 ### Growth Policy
