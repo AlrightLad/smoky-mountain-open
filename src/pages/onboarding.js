@@ -17,7 +17,7 @@ function renderOnboardingStep() {
   var steps = [
     {
       icon: '<svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="var(--gold)" stroke-width="1.5"><circle cx="32" cy="32" r="28"/><path d="M20 32l8 8 16-16"/></svg>',
-      title: "Welcome to The Parbaughs",
+      title: "Welcome to " + (window._activeLeagueName || "Parbaughs"),
       sub: "This isn't another golf app. It's a private league for your crew — where every round matters, every rivalry is tracked, and every moment becomes a story.",
       detail: "Members only. Invite only. Your home course."
     },
@@ -225,7 +225,7 @@ function submitOnboardingProfile() {
   if (db && currentUser) {
     db.collection("members").doc(currentUser.uid).set(updates, { merge: true }).then(function() {
       if (currentProfile) Object.assign(currentProfile, updates);
-      Router.toast("Profile saved! Welcome to The Parbaughs.");
+      Router.toast("Profile saved! Welcome to " + (window._activeLeagueName || "Parbaughs") + ".");
       Router.go("home");
     }).catch(function() {
       if (currentProfile) Object.assign(currentProfile, updates);

@@ -547,6 +547,7 @@ function enterApp() {
   syncCoursesFromFirestore();
   syncScrambleTeamsFromFirestore();
   syncTripsFromFirestore();
+  loadActiveLeagueName();
   loadRoundsFromFirestore();
   startRoundsListener(); // real-time listener keeps rounds in sync across devices
   loadCustomDrillsFromFirestore();

@@ -6,6 +6,18 @@ function getActiveLeague() {
   return "the-parbaughs";
 }
 
+// Cache the active league name for display (loaded from leagues collection)
+window._activeLeagueName = "Parbaughs";
+function loadActiveLeagueName() {
+  if (!db) return;
+  var lid = getActiveLeague();
+  db.collection("leagues").doc(lid).get().then(function(doc) {
+    if (doc.exists && doc.data().name) {
+      window._activeLeagueName = doc.data().name;
+    }
+  }).catch(function(){});
+}
+
 // ========== LEAGUE-SCOPED WRITE HELPER ==========
 // Wraps db.collection().add() to automatically include leagueId for league-scoped collections.
 // MUST stay in sync with LEAGUE_SCOPED in utils.js — single source of truth.
@@ -110,7 +122,8 @@ function syncMember(m) { if (!db||syncStatus==="offline") return; var d=JSON.par
 function syncRound(r) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(r)); d.createdAt=fsTimestamp(); d.leagueId=getActiveLeague(); db.collection("rounds").doc(r.id||genId()).set(d,{merge:true}).catch(function(){}); }
 
 // Compute and persist player stats to Firestore member doc after any round change.
-// This ensures handicap, XP, level, avg, and best are always current even if rounds fail to load.
+// IMPORTANT: Stats are GLOBAL — calculated from ALL rounds across ALL leagues.
+// Uses db.collection("rounds") directly, NOT leagueQuery("rounds").
 function persistPlayerStats(pid) {
   if (!db || !pid) return;
   // Resolve Firestore doc ID — may differ from seed/claimedFrom ID
@@ -120,55 +133,62 @@ function persistPlayerStats(pid) {
   } else if (typeof fbMemberCache !== "undefined" && fbMemberCache[pid] && fbMemberCache[pid].id) {
     docId = fbMemberCache[pid].id;
   }
-  var rounds = PB.getPlayerRounds(pid);
-  if (!rounds.length && typeof fbMemberCache !== "undefined") {
-    var cached = fbMemberCache[pid];
-    if (cached && cached.claimedFrom) rounds = PB.getPlayerRounds(cached.claimedFrom);
-  }
-  var publicRounds = rounds.filter(function(r){return r.visibility !== "private";});
-  var individualPublic = publicRounds.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4";});
-  var full18public = individualPublic.filter(function(r){return !r.holesPlayed || r.holesPlayed >= 18;});
-  var handicap = PB.calcHandicap(rounds); // calcHandicap internally excludes scramble
-  var avg = full18public.length ? Math.round(full18public.reduce(function(a,r){return a+r.score;},0)/full18public.length) : null;
-  var best = full18public.length ? Math.min.apply(null, full18public.map(function(r){return r.score;})) : null;
-  var xp = PB.getPlayerXP(pid);
-  var level = PB.getPlayerLevel(pid);
-  var stats = {
-    handicap: handicap !== null ? handicap : null,
-    avgScore: avg,
-    bestRound: best,
-    roundCount: rounds.length,
-    xp: xp,
-    level: level.level,
-    updatedAt: fsTimestamp()
-  };
-  db.collection("members").doc(docId).update(stats).catch(function(){});
-  pbLog("[Stats] Persisted stats for", docId, "handicap:", handicap, "xp:", xp);
+  // Fetch ALL rounds for this player across ALL leagues (global stats)
+  var allIds = PB.getAllPlayerIds(pid);
+  var queries = allIds.map(function(id) {
+    return db.collection("rounds").where("player", "==", id).get();
+  });
+  Promise.all(queries).then(function(snaps) {
+    var rounds = [];
+    snaps.forEach(function(snap) {
+      snap.forEach(function(doc) { var d = doc.data(); if (d && d.id) rounds.push(d); });
+    });
+    var publicRounds = rounds.filter(function(r){return r.visibility !== "private";});
+    var individualPublic = publicRounds.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4";});
+    var full18public = individualPublic.filter(function(r){return !r.holesPlayed || r.holesPlayed >= 18;});
+    var handicap = PB.calcHandicap(rounds);
+    var avg = full18public.length ? Math.round(full18public.reduce(function(a,r){return a+r.score;},0)/full18public.length) : null;
+    var best = full18public.length ? Math.min.apply(null, full18public.map(function(r){return r.score;})) : null;
+    // XP and level from global rounds
+    var xp = PB.calcXPFromRounds(rounds, pid);
+    var level = PB.calcLevelFromXP(xp);
+    var stats = {
+      computedHandicap: handicap !== null ? handicap : null,
+      avgScore: avg,
+      bestRound: best,
+      totalRounds: rounds.length,
+      xp: xp,
+      level: level.level,
+      updatedAt: fsTimestamp()
+    };
+    db.collection("members").doc(docId).update(stats).catch(function(){});
+    pbLog("[Stats] Persisted GLOBAL stats for", docId, "handicap:", handicap, "xp:", xp, "rounds:", rounds.length);
+  }).catch(function(e) { pbWarn("[Stats] persistPlayerStats failed:", e.message); });
 }
 function syncCourse(c) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(c)); d.updatedAt=fsTimestamp(); delete d.photo; db.collection("courses").doc(c.id).set(d,{merge:true}).catch(function(){}); }
-function syncTrip(t) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(t)); d.updatedAt=fsTimestamp(); if(d.photos){delete d.photos;} db.collection("trips").doc(t.id).set(d,{merge:true}).catch(function(){}); }
+function syncTrip(t) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(t)); d.updatedAt=fsTimestamp(); if(d.photos){delete d.photos;} leagueDoc("trips",d); db.collection("trips").doc(t.id).set(d,{merge:true}).catch(function(){}); }
 
-// Pull trip settings (scorekeeper, finished, miniWinners, bonusWinners) from Firestore on startup
-// Trips are hardcoded in seed but settings only live in Firestore
+// Pull trips from Firestore — league-scoped query so only current league's trips show.
 function syncTripsFromFirestore() {
   if (!db) return;
-  var localTrips = PB.getTrips();
-  if (!localTrips || !localTrips.length) return;
-  localTrips.forEach(function(trip) {
-    db.collection("trips").doc(trip.id).get().then(function(doc) {
-      if (!doc.exists) {
-        // First time — push local trip to Firestore
-        syncTrip(trip);
-        return;
-      }
+  leagueQuery("trips").get().then(function(snap) {
+    snap.forEach(function(doc) {
       var remote = doc.data();
+      if (!remote || !remote.id) return;
+      var trip = PB.getTrip(remote.id);
+      if (!trip) {
+        // Trip exists in Firestore but not locally — add it
+        PB.addTripFromFirestore(remote);
+        trip = PB.getTrip(remote.id);
+        if (!trip) return;
+      }
       // Pull event closure state from Firestore (authoritative)
       if (remote.status) trip.status = remote.status;
       if (remote.champion) trip.champion = remote.champion;
       if (remote.finalStandings) trip.finalStandings = remote.finalStandings;
       if (remote.closedAt) trip.closedAt = remote.closedAt;
       // Merge remote course settings (scorekeeper, finished) into local trip
-      if (remote.courses && Array.isArray(remote.courses)) {
+      if (remote.courses && Array.isArray(remote.courses) && trip.courses) {
         remote.courses.forEach(function(rc) {
           var lc = trip.courses.find(function(c) { return c.key === rc.key; });
           if (lc) {
@@ -188,26 +208,25 @@ function syncTripsFromFirestore() {
           PB.setBonusWinnerSilent(k, remote.bonusWinners[k]);
         });
       }
-      pbLog("[Sync] Trip settings loaded from Firestore:", trip.id);
-      PB.save(); // Persist merged state (including closed status)
-      // Refresh scorecard if user is on it
-      if (Router.getPage() === "scorecard") Router.go("scorecard", Router.getParams(), true);
-    }).catch(function(e) { pbWarn("[Sync] Trip load failed:", e.message); });
+      pbLog("[Sync] Trip loaded from Firestore:", trip.id);
+    });
+    PB.save();
+    if (Router.getPage() === "scorecard") Router.go("scorecard", Router.getParams(), true);
+  }).catch(function(e) { pbWarn("[Sync] Trip sync failed:", e.message); });
 
-    // Also pull FIR/GIR data from tripscores collection
-    leagueQuery("tripscores").where("tripId", "==", trip.id).get().then(function(snap) {
-      snap.forEach(function(doc) {
-        var d = doc.data();
-        if (!d.fir && !d.gir) return; // no FIR/GIR data on this doc
-        if (!PB.getState().firGir) PB.getState().firGir = {};
-        var key = d.tripId + ":" + d.courseKey + ":" + d.playerId;
-        PB.getState().firGir[key] = {
-          fir: d.fir || Array(18).fill(false),
-          gir: d.gir || Array(18).fill(false)
-        };
-      });
-    }).catch(function() {});
-  });
+  // Also pull FIR/GIR data from tripscores collection
+  leagueQuery("tripscores").get().then(function(snap) {
+    snap.forEach(function(doc) {
+      var d = doc.data();
+      if (!d.fir && !d.gir) return;
+      if (!PB.getState().firGir) PB.getState().firGir = {};
+      var key = d.tripId + ":" + d.courseKey + ":" + d.playerId;
+      PB.getState().firGir[key] = {
+        fir: d.fir || Array(18).fill(false),
+        gir: d.gir || Array(18).fill(false)
+      };
+    });
+  }).catch(function() {});
 }
 
 function syncScrambleTeam(team) {

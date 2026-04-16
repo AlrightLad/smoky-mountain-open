@@ -33,19 +33,27 @@ Router.register("home", function() {
   // ── Compact Hero + Personal Stats ──
   var myRounds = currentUser ? PB.getPlayerRounds(currentUser.uid) : [];
   if (!myRounds.length && currentProfile && currentProfile.claimedFrom) myRounds = PB.getPlayerRounds(currentProfile.claimedFrom);
-  var myLevel = currentUser ? PB.getPlayerLevel(currentUser.uid) : {level:1,xp:0,nextLevelXp:100,currentLevelXp:0};
-  if (myLevel.level <= 1 && currentProfile && currentProfile.claimedFrom) myLevel = PB.getPlayerLevel(currentProfile.claimedFrom);
+  // Level/XP are GLOBAL — use stored Firestore values (computed from all rounds across all leagues)
+  var myLevel;
+  if (currentProfile && currentProfile.xp > 0) {
+    myLevel = PB.calcLevelFromXP(currentProfile.xp);
+  } else {
+    myLevel = currentUser ? PB.getPlayerLevel(currentUser.uid) : {level:1,xp:0,nextLevelXp:100,currentLevelXp:0};
+    if (myLevel.level <= 1 && currentProfile && currentProfile.claimedFrom) myLevel = PB.getPlayerLevel(currentProfile.claimedFrom);
+  }
   var xpToNext = myLevel.nextLevelXp - myLevel.xp;
-  var achievementCount = currentUser ? PB.getAchievements(currentUser.uid).length : 0;
-  if (!achievementCount && currentProfile && currentProfile.claimedFrom) achievementCount = PB.getAchievements(currentProfile.claimedFrom).length;
+  // Achievements are GLOBAL — use stored count from member doc
+  var achievementCount = currentProfile && currentProfile.earnedAchievements ? currentProfile.earnedAchievements.length : 0;
+  if (!achievementCount && currentUser) achievementCount = PB.getAchievements(currentUser.uid).length;
   var xpPct = myLevel.nextLevelXp > 0 ? Math.round(((myLevel.xp - myLevel.currentLevelXp) / (myLevel.nextLevelXp - myLevel.currentLevelXp)) * 100) : 0;
   
   var myIndividualRounds = myRounds.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4";});
   var myFull18 = myIndividualRounds.filter(function(r){return !r.holesPlayed || r.holesPlayed >= 18;});
-  var myBest = myFull18.length ? Math.min.apply(null, myFull18.map(function(r){return r.score||999})) : null;
+  // Best/handicap: prefer stored GLOBAL values from member doc, fall back to league rounds
+  var myBest = currentProfile && currentProfile.bestRound ? currentProfile.bestRound : (myFull18.length ? Math.min.apply(null, myFull18.map(function(r){return r.score||999})) : null);
   var myBestRound = myBest ? myFull18.find(function(r){return r.score===myBest}) : null;
   var myBestRoundId = myBestRound ? myBestRound.id : null;
-  var myHcap = myIndividualRounds.length >= 3 ? PB.calcHandicap(myRounds) : null;
+  var myHcap = currentProfile && currentProfile.computedHandicap != null ? currentProfile.computedHandicap : (myIndividualRounds.length >= 3 ? PB.calcHandicap(myRounds) : null);
 
   // Email verification banner
   if (currentUser && !currentUser.emailVerified) {
@@ -86,7 +94,7 @@ Router.register("home", function() {
   // New user welcome — show when 0 individual rounds
   if (myIndividualRounds.length === 0) {
     h += '<div style="background:linear-gradient(135deg,rgba(var(--gold-rgb),.08),rgba(var(--birdie-rgb),.06));border:1px solid rgba(var(--gold-rgb),.15);border-radius:var(--radius-lg);padding:20px 16px;margin-bottom:12px;text-align:center">';
-    h += '<div style="font-size:16px;font-weight:700;color:var(--gold);margin-bottom:6px">Welcome to The Parbaughs</div>';
+    h += '<div style="font-size:16px;font-weight:700;color:var(--gold);margin-bottom:6px">Welcome to ' + escHtml(window._activeLeagueName || "Parbaughs") + '</div>';
     h += '<div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">Log your first round to start earning XP, climbing the leaderboard, and unlocking achievements.</div>';
     h += '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">';
     h += '<button class="btn-sm green" onclick="Router.go(\'playnow\')" style="font-size:11px;padding:10px 16px"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle;margin-right:4px"><circle cx="8" cy="8" r="6"/><polygon points="7,5.5 11,8 7,10.5" fill="currentColor"/></svg>Log a Round</button>';

@@ -5,16 +5,41 @@ Router.register("courses", function(params) {
   if (params.add) { renderAddCourseForm(); return; }
   if (params.id) { renderCourseDetail(params.id); return; }
   var courses = PB.getCourses();
+  var showOurs = window._courseViewMode === "ours";
   var h = '<div class="sh"><h2>Course directory</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'records\')">← Back</button><button class="btn-sm green" onclick="promptAddCourse()">+ Add</button></div></div>';
-  
+
+  // Toggle: All Courses / Our Courses
+  h += '<div style="display:flex;justify-content:center;padding:0 16px 10px"><div style="display:flex;background:var(--bg2);border-radius:20px;border:1px solid var(--border);overflow:hidden">';
+  h += '<button onclick="window._courseViewMode=undefined;Router.go(\'courses\',{},true)" style="padding:7px 16px;font-size:11px;font-weight:600;border:none;cursor:pointer;background:' + (!showOurs ? 'var(--gold)' : 'transparent') + ';color:' + (!showOurs ? 'var(--bg)' : 'var(--muted)') + ';border-radius:20px">All Courses</button>';
+  h += '<button onclick="window._courseViewMode=\'ours\';Router.go(\'courses\',{},true)" style="padding:7px 16px;font-size:11px;font-weight:600;border:none;cursor:pointer;background:' + (showOurs ? 'var(--gold)' : 'transparent') + ';color:' + (showOurs ? 'var(--bg)' : 'var(--muted)') + ';border-radius:20px">Our Courses</button>';
+  h += '</div></div>';
+
   // Search filter
   h += '<div style="padding:0 16px 10px"><input type="text" class="ff-input" id="dir-search" placeholder="Search courses..." style="font-size:12px" oninput="filterCourseDirectory(this.value)"></div>';
-  
+
   // API results container (above local list)
   h += '<div id="dir-api-results"></div>';
   // Manual add prompt
   h += '<div id="dir-manual-add" style="display:none"></div>';
-  
+
+  // For "Our Courses" mode, get league rounds and filter courses
+  var leagueRounds = PB.getRounds();
+  var leagueCoursePlays = {};
+  var leagueCourseBest = {};
+  var leagueCourseBestPlayer = {};
+  if (showOurs) {
+    leagueRounds.forEach(function(r) {
+      if (!r.course || !r.score) return;
+      var cn = r.course;
+      leagueCoursePlays[cn] = (leagueCoursePlays[cn] || 0) + 1;
+      if (!leagueCourseBest[cn] || r.score < leagueCourseBest[cn]) {
+        leagueCourseBest[cn] = r.score;
+        leagueCourseBestPlayer[cn] = r.playerName || r.player;
+      }
+    });
+    courses = courses.filter(function(c) { return leagueCoursePlays[c.name]; });
+  }
+
   courses.forEach(function(c) {
     var roundsHere = PB.getCourseRounds(c.name);
     var stars = c.reviews && c.reviews.length ? Math.round(c.reviews.reduce(function(a, r) { return a + r.rating; }, 0) / c.reviews.length * 10) / 10 : null;
@@ -59,7 +84,16 @@ Router.register("courses", function(params) {
     var thumbSrc = photoCache["course:" + c.id] || c.photo || '';
     h += '<div class="course-row"><div class="c-thumb">' + (thumbSrc ? '<img alt="" src="' + thumbSrc + '" onerror="this.src=COURSE_DEFAULT_IMG">' : '<img alt="" src="' + COURSE_DEFAULT_IMG + '">') + '</div>';
     h += '<div class="c-info"><div class="c-name">' + c.name + '</div><div class="c-loc">' + c.loc + ' · ' + c.rating + '/' + c.slope + '</div>';
-    h += '<div class="c-meta">' + (stars ? '' + stars + '/5 · ' : '') + roundsHere.length + ' round' + (roundsHere.length !== 1 ? 's' : '') + '</div>';
+    if (showOurs) {
+      var lPlays = leagueCoursePlays[c.name] || 0;
+      var lBest = leagueCourseBest[c.name];
+      var lBestBy = leagueCourseBestPlayer[c.name];
+      h += '<div class="c-meta">' + lPlays + ' league round' + (lPlays !== 1 ? 's' : '');
+      if (lBest) h += ' · Best: <span style="color:var(--gold);font-weight:600">' + lBest + '</span> (' + escHtml(lBestBy || '') + ')';
+      h += '</div>';
+    } else {
+      h += '<div class="c-meta">' + (stars ? '' + stars + '/5 · ' : '') + roundsHere.length + ' round' + (roundsHere.length !== 1 ? 's' : '') + '</div>';
+    }
     // Best scores — always show all 3 columns, "--" for missing
     if (indivRounds.length) {
       var f9Display = bestF9 !== null ? '<span style="color:var(--cream);font-weight:600">' + bestF9 + '</span>' : '<span style="color:var(--muted2)">--</span>';
@@ -73,7 +107,7 @@ Router.register("courses", function(params) {
     }
     h += '</div></div></div>';
   });
-  h += '<div style="text-align:center;padding:12px;font-size:10px;color:var(--muted2)">' + courses.length + ' courses</div>';
+  h += '<div style="text-align:center;padding:12px;font-size:10px;color:var(--muted2)">' + courses.length + (showOurs ? ' league' : '') + ' course' + (courses.length !== 1 ? 's' : '') + '</div>';
   document.querySelector('[data-page="courses"]').innerHTML = h;
 });
 

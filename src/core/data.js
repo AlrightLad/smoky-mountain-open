@@ -422,6 +422,14 @@ var PB = (function() {
     return t;
   }
 
+  // Add a trip from Firestore data (no activity push, no save — caller handles save)
+  function addTripFromFirestore(data) {
+    if (!data || !data.id) return;
+    if (state.trips.some(function(t) { return t.id === data.id; })) return; // Already exists
+    state.trips.push(data);
+    if (!state.scores[data.id]) state.scores[data.id] = {};
+  }
+
   function updateTrip(id, updates) {
     var t = getTrip(id);
     if (!t) return;
@@ -1139,6 +1147,67 @@ var PB = (function() {
     if (rounds.some(function(r){return r.date && rangeDates[r.date]})) xp += 100; // Double Duty
 
     return xp;
+  }
+
+  // Simplified XP calculation from a provided rounds array + player object.
+  // Used by persistPlayerStats which fetches ALL rounds globally from Firestore.
+  // Does NOT read from state.rounds — takes rounds as direct input.
+  function calcXPFromRounds(rounds, pid) {
+    var player = getPlayer(pid);
+    if (!player && typeof fbMemberCache !== "undefined" && fbMemberCache[pid]) player = fbMemberCache[pid];
+    if (!player && currentProfile && currentProfile.id === pid) player = currentProfile;
+    if (!player) return 0;
+    var xp = 0;
+    // Rounds XP
+    rounds.forEach(function(r) { xp += r.holeScores ? 150 : 100; if (r.scorecardPhoto) xp += 25; });
+    // New course bonus
+    var seenCourses = {};
+    rounds.forEach(function(r) { if (!seenCourses[r.course]) { xp += 75; seenCourses[r.course] = 1; } });
+    // New state bonus
+    var seenStates = {};
+    rounds.forEach(function(r) { var c = getCourseByName(r.course); if (c && c.region && !seenStates[c.region]) { xp += 150; seenStates[c.region] = 1; } });
+    // Personal best bonus
+    var indiv = rounds.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4";});
+    if (indiv.length >= 2) { var sorted = indiv.slice().sort(function(a,b){return new Date(a.date)-new Date(b.date)}); var bestSoFar = sorted[0].score; for (var i = 1; i < sorted.length; i++) { if (sorted[i].score < bestSoFar) { xp += 200; bestSoFar = sorted[i].score; } } }
+    // Event wins + special
+    xp += (player.wins || 0) * 500;
+    if (player.founding || player.isFoundingFour) xp += 500;
+    xp += 250; // Beta tester
+    if (player.role === "commissioner") xp += 500;
+    // Round milestones
+    if (rounds.length >= 1) xp += 100; if (rounds.length >= 5) xp += 50; if (rounds.length >= 10) xp += 100; if (rounds.length >= 25) xp += 250; if (rounds.length >= 50) xp += 500;
+    // Score achievements
+    var full18 = rounds.filter(function(r){return (!r.holesPlayed || r.holesPlayed >= 18) && r.format !== "scramble" && r.format !== "scramble4";});
+    if (full18.some(function(r){return r.score<=120})) xp += 50;
+    if (full18.some(function(r){return r.score<100})) xp += 100;
+    if (full18.some(function(r){return r.score<90})) xp += 200;
+    if (full18.some(function(r){return r.score<80})) xp += 500;
+    // Explore achievements
+    var achCourseCount = Object.keys(seenCourses).length;
+    if (achCourseCount >= 3) xp += 50; if (achCourseCount >= 5) xp += 100; if (achCourseCount >= 10) xp += 200;
+    // Profile XP
+    var _pf = 0;
+    if (player.bio && player.bio.trim()) _pf++;
+    if (player.range && player.range.trim()) _pf++;
+    if (player.homeCourse && player.homeCourse.trim()) _pf++;
+    if (player.favoriteCourse && player.favoriteCourse.trim()) _pf++;
+    if (_pf >= 1) xp += 25; if (_pf >= 4) xp += 100;
+    // Invites
+    var invCount = player.invitesUsed || 0;
+    if (invCount >= 1) xp += 100; if (invCount >= 3) xp += 250;
+    return xp;
+  }
+
+  // Calculate level from a given XP value
+  function calcLevelFromXP(xp) {
+    var level = 1;
+    while (xpForLevel(level + 1) <= xp) level++;
+    var currentLevelXp = xpForLevel(level);
+    var nextLevelXp = xpForLevel(level + 1);
+    var titleLevel = 1;
+    var keys = Object.keys(LEVEL_TITLES).map(Number).sort(function(a,b){return a-b});
+    for (var i = keys.length - 1; i >= 0; i--) { if (level >= keys[i]) { titleLevel = keys[i]; break; } }
+    return { level: level, name: LEVEL_TITLES[titleLevel] || "Rookie", xp: xp, currentLevelXp: currentLevelXp, nextLevelXp: nextLevelXp, titleLevel: titleLevel };
   }
 
   function getAchievements(pid) {
@@ -2007,7 +2076,7 @@ var PB = (function() {
     getPlayer:getPlayer, getPlayers:getPlayers, addPlayer:addPlayer, updatePlayer:updatePlayer, removePlayer:removePlayer,
     getCourse:getCourse, getCourses:getCourses, getCourseByName:getCourseByName, addCourse:addCourse, updateCourse:updateCourse, deleteCourse:deleteCourse, setCoursesFromFirestore:setCoursesFromFirestore, addCourseReview:addCourseReview, searchCourses:searchCourses,
     getRounds:getRounds, getPlayerRounds:getPlayerRounds, getCourseRounds:getCourseRounds, addRound:addRound, deleteRound:deleteRound, setRoundsFromFirestore:setRoundsFromFirestore,
-    getTrips:getTrips, getTrip:getTrip, addTrip:addTrip, updateTrip:updateTrip, addTripPhoto:addTripPhoto,
+    getTrips:getTrips, getTrip:getTrip, addTrip:addTrip, addTripFromFirestore:addTripFromFirestore, updateTrip:updateTrip, addTripPhoto:addTripPhoto,
     getScores:getScores, setScore:setScore,
     getFirGir:getFirGir, setFir:setFir, setGir:setGir, getFirGirTotals:getFirGirTotals,
     getMiniWinner:getMiniWinner, setMiniWinner:setMiniWinner, getBonusWinner:getBonusWinner, setBonusWinner:setBonusWinner,
@@ -2017,7 +2086,7 @@ var PB = (function() {
     getPlayerAvg:getPlayerAvg, getPlayerBest:getPlayerBest, getDisplayName:getDisplayName, getUniqueCourses:getUniqueCourses, normCourseName:normCourseName, getAllPlayerIds:getAllPlayerIds,
     getTripStableford:getTripStableford, getTripTotal:getTripTotal,
     getMiniPoints:getMiniPoints, getBonusPoints:getBonusPoints, getTripPoints:getTripPoints,
-    daysUntil:daysUntil, generateRoundCommentary:generateRoundCommentary, getActivity:getActivity, getAchievements:getAchievements, getPlayerXP:getPlayerXP, getPlayerLevel:getPlayerLevel,
+    daysUntil:daysUntil, generateRoundCommentary:generateRoundCommentary, getActivity:getActivity, getAchievements:getAchievements, getPlayerXP:getPlayerXP, getPlayerLevel:getPlayerLevel, calcXPFromRounds:calcXPFromRounds, calcLevelFromXP:calcLevelFromXP,
     createChallenge:createChallenge, getChallenges:getChallenges, updateChallenge:updateChallenge,
     addNotification:addNotification, getNotifications:getNotifications, markNotificationRead:markNotificationRead, getUnreadCount:getUnreadCount,
     getSeasonStandings:getSeasonStandings,

@@ -9,9 +9,13 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Firestore Indexes, Data Recovery, Error Visibility</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Global Stats, League Isolation, Course Directory</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "Trips no longer leak across leagues — events page now uses league-scoped queries so only your league's events show", tag: "FIXED"},
+    {item: "Level, XP, handicap, and achievements are now GLOBAL — your stats reflect ALL your rounds across every league, not just the active one", tag: "FIXED"},
+    {item: "Welcome message now shows your active league name instead of hardcoded 'The Parbaughs'", tag: "FIXED"},
+    {item: "Course directory: new All Courses / Our Courses toggle — see every course or just the ones your league has played, with league records", tag: "NEW"},
     {item: "CRITICAL: 15 Firestore composite indexes deployed — rounds, chat, and all league data now load correctly with league filtering", tag: "FIXED"},
     {item: "Root cause found: leagueQuery() adds a where() filter that requires composite indexes for any orderBy() — queries were silently failing", tag: "FIXED"},
     {item: "Nick's 18 missing achievements restored from backup (28 total, merged with post-backup progress)", tag: "FIXED"},

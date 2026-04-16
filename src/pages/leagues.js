@@ -297,6 +297,8 @@ function switchLeague(lid) {
     liveRangeSessions = [];
     liveChat = [];
     // Reinitialize with new league context
+    loadActiveLeagueName();
+    syncTripsFromFirestore();
     loadRoundsFromFirestore();
     startRoundsListener();
     syncScrambleTeamsFromFirestore();
