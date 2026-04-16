@@ -1,7 +1,7 @@
 {
-  "name": "The Parbaughs",
+  "name": "Parbaughs",
   "short_name": "Parbaughs",
-  "description": "Golf league platform · Est. 2026 · York, PA",
+  "description": "Golf league platform — your crew, your course, your game.",
   "start_url": "/smoky-mountain-open/",
   "scope": "/smoky-mountain-open/",
   "display": "standalone",
@@ -9,24 +9,21 @@
   "background_color": "#0e1118",
   "theme_color": "#0e1118",
   "categories": ["sports", "social"],
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false,
   "icons": [
-    {
-      "src": "apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "watermark.jpg",
-      "sizes": "1024x1024",
-      "type": "image/jpeg",
-      "purpose": "any"
-    },
-    {
-      "src": "watermark.jpg",
-      "sizes": "512x512",
-      "type": "image/jpeg",
-      "purpose": "maskable"
-    }
+    { "src": "watermark.jpg", "sizes": "48x48", "type": "image/jpeg", "purpose": "any" },
+    { "src": "watermark.jpg", "sizes": "72x72", "type": "image/jpeg", "purpose": "any" },
+    { "src": "watermark.jpg", "sizes": "96x96", "type": "image/jpeg", "purpose": "any" },
+    { "src": "watermark.jpg", "sizes": "144x144", "type": "image/jpeg", "purpose": "any" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" },
+    { "src": "watermark.jpg", "sizes": "192x192", "type": "image/jpeg", "purpose": "any" },
+    { "src": "watermark.jpg", "sizes": "512x512", "type": "image/jpeg", "purpose": "any" },
+    { "src": "watermark.jpg", "sizes": "512x512", "type": "image/jpeg", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Play Now", "url": "/smoky-mountain-open/#playnow", "icons": [{"src": "watermark.jpg", "sizes": "96x96"}] },
+    { "name": "Log a Round", "url": "/smoky-mountain-open/#rounds", "icons": [{"src": "watermark.jpg", "sizes": "96x96"}] }
   ]
 }

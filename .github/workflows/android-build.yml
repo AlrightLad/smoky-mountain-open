@@ -1,0 +1,73 @@
+name: Android Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [release]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web app
+        run: npm run build
+
+      - name: Install Capacitor CLI
+        run: npm install @capacitor/core @capacitor/cli @capacitor/android
+
+      - name: Sync to Android
+        run: npx cap sync android
+
+      - name: Import keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/parbaughs.keystore
+
+      - name: Build signed APK
+        working-directory: android
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          cat > app/keystore.properties << EOF
+          storeFile=parbaughs.keystore
+          storePassword=$KEYSTORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
+          EOF
+          ./gradlew assembleRelease
+
+      - name: Build AAB (Play Store)
+        working-directory: android
+        run: ./gradlew bundleRelease
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Parbaughs-Android-APK
+          path: android/app/build/outputs/apk/release/*.apk
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Parbaughs-Android-AAB
+          path: android/app/build/outputs/bundle/release/*.aab

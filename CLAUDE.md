@@ -460,6 +460,48 @@ Read: /mnt/skills/examples/mcp-builder/SKILL.md
 - Course maps/GPS integration (if API supports it)
 - Swing analysis integration
 
+## Native Build Setup
+
+### Capacitor Configuration
+- **App ID:** `com.parbaughs.app`
+- **Config:** `capacitor.config.json`
+- **Web Dir:** `dist/` (Vite build output)
+- **Plugins needed:** push-notifications, camera, share, status-bar, splash-screen, keyboard, haptics, app, browser
+
+### CI/CD Pipeline (GitHub Actions)
+Builds run on GitHub Actions — no local Mac needed.
+
+**iOS Build** (`.github/workflows/ios-build.yml`):
+- Runner: `macos-latest`
+- Trigger: push to `release` branch or manual
+- Output: signed IPA artifact
+- Secrets needed:
+  - `APPLE_CERTIFICATE_P12` — base64 encoded .p12 distribution certificate (generate at developer.apple.com → Certificates)
+  - `APPLE_CERTIFICATE_PASSWORD` — password for the .p12
+  - `APPLE_PROVISIONING_PROFILE` — base64 encoded .mobileprovision (generate at developer.apple.com → Profiles)
+  - `APPLE_TEAM_ID` — 10-character team ID from Apple Developer portal
+
+**Android Build** (`.github/workflows/android-build.yml`):
+- Runner: `ubuntu-latest`
+- Output: signed APK + AAB artifacts
+- Secrets needed:
+  - `ANDROID_KEYSTORE` — base64 encoded .keystore file. Generate: `keytool -genkey -v -keystore parbaughs.keystore -alias parbaughs -keyalg RSA -keysize 2048 -validity 10000`
+  - `ANDROID_KEYSTORE_PASSWORD` — password used during keytool generation
+  - `ANDROID_KEY_ALIAS` — alias name (e.g., "parbaughs")
+  - `ANDROID_KEY_PASSWORD` — key password
+
+### App Store Submission Checklist
+- [ ] Apple Developer account ($99/yr) — developer.apple.com
+- [ ] Google Play Developer account ($25 one-time) — play.google.com/console
+- [ ] Generate iOS certificate + provisioning profile → store as GitHub Secrets
+- [ ] Generate Android keystore → store as GitHub Secret
+- [ ] Push to `release` branch → CI builds IPA + APK/AAB
+- [ ] Download artifacts from GitHub Actions
+- [ ] Upload IPA to App Store Connect → TestFlight → App Review
+- [ ] Upload AAB to Google Play Console → Internal Testing → Production
+- [ ] App Store assets: 1024x1024 icon, screenshots, description, keywords
+- [ ] Legal: privacy.html, terms.html, support.html (all in public/)
+
 ## Agent Team Configuration
 
 When using Claude Code agent teams, use this structure:
