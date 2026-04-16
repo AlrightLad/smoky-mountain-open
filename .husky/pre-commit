@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+# Exit immediately if any command fails. Without this, a lint-staged
+# failure would be ignored because the version-sync check below would
+# still run and its exit status would overwrite the script's overall
+# exit code. The user's spec didn't include `set -e` but the spec's
+# intent was clearly "lint-staged failure blocks the commit" (Test 2).
+set -e
+
+npx lint-staged
+
+# Version sync check — mirrors v7.8.1 Hook 5, but fires for any
+# git commit from anywhere (including outside Claude Code).
+UTILS_VER=$(grep 'APP_VERSION' src/core/utils.js | head -1 | \
+  sed -E 's/.*"([0-9.]+)".*/\1/')
+PKG_VER=$(node -p "require('./package.json').version")
+if [ "$UTILS_VER" != "$PKG_VER" ]; then
+  echo "ERROR: APP_VERSION ($UTILS_VER) in utils.js does not match"
+  echo "       package.json version ($PKG_VER)"
+  echo "Fix version drift before committing."
+  exit 1
+fi
