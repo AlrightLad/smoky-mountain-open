@@ -9,9 +9,14 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Data Recovery, League Isolation, Bug Fixes</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Firestore Indexes, Data Recovery, Error Visibility</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "CRITICAL: 15 Firestore composite indexes deployed — rounds, chat, and all league data now load correctly with league filtering", tag: "FIXED"},
+    {item: "Root cause found: leagueQuery() adds a where() filter that requires composite indexes for any orderBy() — queries were silently failing", tag: "FIXED"},
+    {item: "Nick's 18 missing achievements restored from backup (28 total, merged with post-backup progress)", tag: "FIXED"},
+    {item: "Query errors (missing indexes, permission denied) now auto-log to error dashboard and console — never silently swallowed again", tag: "FIXED"},
+    {item: "Full Firestore diagnostic tool: commissioner can audit every collection, compare to backup, copy results", tag: "NEW"},
     {item: "Data Recovery Tool: commissioner can scan for and fix all docs missing league tags — one-tap restore for founding league data", tag: "NEW"},
     {item: "League scope arrays unified: write helper now references the same source of truth as query wrapper — zero drift possible", tag: "FIXED"},
     {item: "NUCLEAR FIX: leagueQuery() wrapper — makes league data leak PHYSICALLY IMPOSSIBLE. Every query uses server-side where() filter.", tag: "FIXED"},

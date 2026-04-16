@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "7.4.1";
+var APP_VERSION = "7.4.2";
 
 // ══════════════════════════════════════════════════════════════════════════
 // LEAGUE ISOLATION — Nuclear approach. Makes leaking PHYSICALLY IMPOSSIBLE.
@@ -77,7 +77,29 @@ if (typeof liveTeeTimes === "undefined") var liveTeeTimes = [];
 if (typeof liveRangeSessions === "undefined") var liveRangeSessions = [];
 if (typeof liveNotifications === "undefined") var liveNotifications = [];
 function pbLog() { if (PB_DEBUG && console.log) console.log.apply(console, arguments); }
-function pbWarn() { if (PB_DEBUG && console.warn) console.warn.apply(console, arguments); }
+function pbWarn() {
+  // Always surface Firestore critical errors (index missing, permission denied)
+  var msg = arguments.length > 0 ? String(arguments[arguments.length > 1 ? 1 : 0]) : "";
+  var isCritical = /index|permission|FAILED_PRECONDITION|PERMISSION_DENIED|requires an index/i.test(msg);
+  if (isCritical) {
+    console.error("[PB CRITICAL]", Array.prototype.slice.call(arguments).join(" "));
+    // Log to Firestore errors collection so it shows in admin panel
+    try {
+      if (typeof db !== "undefined" && db) {
+        db.collection("errors").add({
+          message: Array.prototype.slice.call(arguments).map(String).join(" ").substring(0, 500),
+          type: "query_error",
+          page: typeof Router !== "undefined" ? Router.getPage() : "unknown",
+          appVersion: APP_VERSION,
+          timestamp: new Date().toISOString(),
+          resolved: false
+        }).catch(function(){});
+      }
+    } catch(e) {}
+  } else if (PB_DEBUG && console.warn) {
+    console.warn.apply(console, arguments);
+  }
+}
 
 // ========== SECURITY UTILITIES ==========
 function validatePassword(pw) {
