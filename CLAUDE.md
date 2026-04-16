@@ -590,6 +590,20 @@ The app connects to the emulator only when loaded with `?emulator=1` in the URL.
 - Never point tests at the production Firestore project. The test runner requires the emulator to be up.
 - Never seed production data into the emulator. Synthetic fixtures only.
 
+## Claude Code Hooks
+
+`.claude/settings.json` registers five project-level hooks that fire around every tool call. They're deterministic guardrails — they run regardless of what any agent remembers, which makes them the right layer for rules that must never be broken.
+
+| # | Hook | Fires on | Behavior |
+|---|------|----------|----------|
+| 1 | `pre-commit-lint.sh` | `git commit` via Bash | Runs `npm run lint`. Blocks commit on any non-zero exit. |
+| 2 | `post-edit-syntax.sh` | Edit/Write/MultiEdit of `*.js` under `src/`, `tests/`, or `scripts/` | Parses the edited file with acorn. Prints a stderr warning on parse error; non-blocking (Hook 1 is the enforcement gate). |
+| 3 | `gate-assertions.sh` | Edit/Write/MultiEdit of `tests/e2e/helpers/assertions.js` | **Blocks** every edit. Forces human handshake. This is the primary safety net of v7.8.1 — silent additions to `IGNORE_PATTERNS` can hide real test failures indefinitely. |
+| 4 | `gate-protected.sh` | Edit/Write/MultiEdit of `.env*`, `scripts/.service-account.json`, or `firestore.rules` | **Blocks** until user approves. Prevents accidental credential exposure and rule changes. |
+| 5 | `pre-commit-version-sync.sh` | `git commit` via Bash | Reads `APP_VERSION` from `src/core/utils.js` and `version` from `package.json`. Blocks commit on mismatch. |
+
+See `.claude/README.md` for the full reference, including how to bypass in emergencies (`git commit --no-verify` for Hooks 1 and 5; `"disableAllHooks": true` for everything) and the rule that hook changes ship as their own version bumps, never bundled.
+
 ## Native Build Setup
 
 ### Capacitor Configuration
