@@ -68,12 +68,14 @@ function adjustedGrossScore(holePars, holeScores, courseHandicap) {
 function calculateHandicapIndex(rounds) {
   if (!rounds || !rounds.length) return null;
 
-  // Filter to eligible rounds (must have score, rating, slope; exclude scramble)
+  // Filter to eligible rounds: 18-hole, non-scramble, with score/rating/slope.
+  // 9-hole rounds excluded until USGA Expected Score bootstrap is implemented.
   var eligible = [];
   for (var i = 0; i < rounds.length; i++) {
     var r = rounds[i];
     if (!r.score || !r.rating || !r.slope) continue;
     if (r.format === "scramble" || r.format === "scramble4") continue;
+    if (r.holesPlayed && r.holesPlayed < 18) continue;
     eligible.push(r);
   }
 
@@ -126,6 +128,7 @@ function getHandicapDetails(rounds) {
     var r = rounds[i];
     if (!r.score || !r.rating || !r.slope) continue;
     if (r.format === "scramble" || r.format === "scramble4") continue;
+    if (r.holesPlayed && r.holesPlayed < 18) continue;
     eligible.push(r);
   }
   eligible.sort(function(a, b) { return (b.date || "").localeCompare(a.date || ""); });
