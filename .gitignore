@@ -7,6 +7,7 @@ logs/
 /test-results/
 /playwright-report/
 /.firebase/
-/.claude/
+/.claude/settings.local.json
+/.claude/scheduled_tasks.lock
 /firebase-debug.log
 /firestore-debug.log

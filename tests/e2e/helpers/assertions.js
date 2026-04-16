@@ -1,4 +1,13 @@
 // Assertion helpers for Playwright tests.
+//
+// NOTE: Edits to this file are gated by a Claude Code hook at
+// .claude/hooks/gate-assertions.sh. The hook's matcher hardcodes this
+// exact path — if you move this file, update the matcher there too.
+// Additions to IGNORE_PATTERNS require human approval and a documented
+// rationale for why the suppressed message is non-functional noise
+// rather than a real bug. Silent additions here can hide real failures
+// in the test suite indefinitely; that failure mode shipped once in
+// v7.8.0 pre-release and is what v7.8.1's hooks exist to prevent.
 
 // Ignored console noise — every entry must point at an observed, explained
 // non-bug. Do not add speculative patterns.
