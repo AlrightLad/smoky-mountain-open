@@ -673,6 +673,88 @@ function renderMemberDetailWithData(p) {
   // ═══ TAB: STATS (achievements, accolades, all rounds) ═══
   h += '<div id="ptab-stats" data-ptab style="display:none">';
 
+  // ═══ ANALYTICS DASHBOARD ═══
+  if (typeof calcScoringTrends === "function" && rounds.length >= 3) {
+    // Scoring Trends
+    var trends = calcScoringTrends(rounds);
+    if (trends && trends.rolling5.length >= 3) {
+      h += '<div class="section"><div class="sec-head"><span class="sec-title">Scoring Trend</span></div>';
+      h += '<div class="card"><div style="padding:14px 16px">';
+      h += '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">Rolling 5-round average</div>';
+      h += svgLineChart(trends.rolling5, {width:310, height:120, color:'var(--gold)'});
+      h += '</div></div></div>';
+    }
+
+    // Scoring Zones (par type)
+    var zones = calcScoringZones(rounds);
+    if (zones) {
+      var zoneData = [];
+      [3,4,5].forEach(function(p) { if (zones[p]) zoneData.push({label:"Par "+p, value:zones[p].avg, color:zones[p].avg<=0.5?"var(--birdie)":zones[p].avg<=1.5?"var(--gold)":"var(--red)"}); });
+      if (zoneData.length >= 2) {
+        h += '<div class="section"><div class="sec-head"><span class="sec-title">Scoring by Par Type</span></div>';
+        h += '<div class="card"><div style="padding:14px 16px">';
+        h += '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">Average strokes over par</div>';
+        h += svgBarChart(zoneData, {width:200, height:120, showLabels:true, showValues:true});
+        zoneData.forEach(function(z) {
+          var label = z.value <= 0.5 ? "Strong" : z.value <= 1.0 ? "Solid" : z.value <= 1.5 ? "Average" : z.value <= 2.0 ? "Needs work" : "Bleeding strokes";
+          h += '<div style="font-size:10px;color:var(--muted);margin-top:4px">' + z.label + 's: <span style="color:' + z.color + ';font-weight:600">+' + z.value + '</span> — ' + label + '</div>';
+        });
+        h += '</div></div></div>';
+      }
+    }
+
+    // Strokes Gained
+    var sg = calcStrokesGained(rounds);
+    if (sg) {
+      var sgData = [
+        {label:"Tee", value:sg.tee, color:sg.tee>=0?"var(--birdie)":"var(--red)"},
+        {label:"Approach", value:sg.approach, color:sg.approach>=0?"var(--birdie)":"var(--red)"},
+        {label:"Short", value:sg.shortGame, color:sg.shortGame>=0?"var(--birdie)":"var(--red)"},
+        {label:"Putting", value:sg.putting, color:sg.putting>=0?"var(--birdie)":"var(--red)"}
+      ];
+      h += '<div class="section"><div class="sec-head"><span class="sec-title">Strokes Gained</span></div>';
+      h += '<div class="card"><div style="padding:14px 16px">';
+      h += '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">Per round vs baseline (from ' + sg.rounds + ' rounds)</div>';
+      h += svgBarChart(sgData, {width:280, height:130, showLabels:true, showValues:true});
+      h += '</div></div></div>';
+    }
+
+    // Stat Trends (FIR, GIR, Putts)
+    var statTr = calcStatTrends(rounds);
+    if (statTr) {
+      if (statTr.gir.length >= 3) {
+        h += '<div class="section"><div class="sec-head"><span class="sec-title">GIR % Trend</span></div>';
+        h += '<div class="card"><div style="padding:14px 16px">';
+        h += svgLineChart(statTr.gir, {width:310, height:100, color:'var(--gold)', yMin:0, yMax:100});
+        h += '</div></div></div>';
+      }
+      if (statTr.putts.length >= 3) {
+        h += '<div class="section"><div class="sec-head"><span class="sec-title">Putts Per Hole Trend</span></div>';
+        h += '<div class="card"><div style="padding:14px 16px">';
+        h += svgLineChart(statTr.putts, {width:310, height:100, color:'var(--pink)'});
+        h += '</div></div></div>';
+      }
+    }
+
+    // Course Breakdown (most-played course)
+    var courseCounts = {};
+    rounds.filter(function(r){return r.course}).forEach(function(r){courseCounts[r.course]=(courseCounts[r.course]||0)+1});
+    var topCourse = Object.entries(courseCounts).sort(function(a,b){return b[1]-a[1]})[0];
+    if (topCourse && topCourse[1] >= 3) {
+      var breakdown = calcCourseBreakdown(topCourse[0], rounds);
+      if (breakdown && breakdown.holes.length >= 9) {
+        var bkData = breakdown.holes.map(function(h2){return {label:"#"+h2.hole, value:h2.diff, color:h2.diff<=0?"var(--birdie)":h2.diff<=1?"var(--gold)":"var(--red)"}});
+        h += '<div class="section"><div class="sec-head"><span class="sec-title">Hole-by-Hole: ' + escHtml(topCourse[0]) + '</span></div>';
+        h += '<div class="card"><div style="padding:14px 16px">';
+        h += '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">Avg strokes over par per hole (' + breakdown.rounds + ' rounds)</div>';
+        h += svgBarChart(bkData, {width:310, height:120, showLabels:true, showValues:false});
+        h += '</div></div></div>';
+      }
+    }
+  } else if (rounds.length < 3) {
+    h += '<div style="text-align:center;padding:24px 16px;font-size:12px;color:var(--muted)">Log 3+ rounds to unlock analytics dashboard</div>';
+  }
+
   // === ACHIEVEMENTS (collapsible) ===
   var achieveContent = '';
   if (achievements.length) {
