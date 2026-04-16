@@ -184,13 +184,13 @@ function finishScrambleLive() {
     }).catch(function(){});
     
     // Post to activity feed
-    db.collection("chat").add({
+    db.collection("chat").add(leagueDoc("chat", {
       id: genId(),
       text: s.team.name + " shot " + total + " in a scramble at " + s.course + "!",
       authorId: "system",
       authorName: "Parbaughs",
       createdAt: fsTimestamp()
-    }).catch(function(){});
+    }))(function(){});
   }
   
   scrambleLiveState = { active: false };

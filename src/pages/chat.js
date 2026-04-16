@@ -453,13 +453,13 @@ function createEventFromCal(startDate, endDate) {
     db.collection("trips").doc(eventData.id).set(eventData).then(function() {
       Router.toast("Event created!");
       // Post to activity feed
-      db.collection("chat").add({
+      db.collection("chat").add(leagueDoc("chat", {
         id: genId(),
         text: (currentProfile ? PB.getDisplayName(currentProfile) : "Someone") + " created a new event: " + name.trim() + " (" + startDate + " to " + endDate + ")",
         authorId: "system",
         authorName: "Parbaughs",
         createdAt: fsTimestamp()
-      }).catch(function(){});
+      }))(function(){});
       clubCalRangeStart = null;
       clubCalRangeEnd = null;
       clubCalSelectedDate = null;
@@ -794,7 +794,7 @@ function deleteChat(docId) {
 function sendChat() {
   var input = document.getElementById("chatInput"); var text = input.value.trim();
   if (!text || !db) return;
-  db.collection("chat").add({ id:genId(), text:text, authorId:currentUser?currentUser.uid:"anon", authorName:currentProfile?PB.getDisplayName(currentProfile):"Anon", createdAt:fsTimestamp() })
+  db.collection("chat").add(leagueDoc("chat", { id:genId(), text:text, authorId:currentUser?currentUser.uid:"anon", authorName:currentProfile?PB.getDisplayName(currentProfile):"Anon", createdAt:fsTimestamp() }))
     .then(function(){input.value=""}).catch(function(){Router.toast("Failed to send")});
 }
 

@@ -76,7 +76,7 @@ function createSyncRound() {
   var players = {};
   players[myId] = { name: myName, scores: Array(18).fill(""), joinedAt: new Date().toISOString() };
   
-  db.collection("syncrounds").add({
+  db.collection("syncrounds").add(leagueDoc("syncrounds", {
     courseName: courseName,
     rating: rating,
     slope: slope,
@@ -88,7 +88,7 @@ function createSyncRound() {
     createdBy: myId,
     createdByName: myName,
     createdAt: fsTimestamp()
-  }).then(function(docRef) {
+  })).then(function(docRef) {
     Router.toast("Synced round created! Share with your group.");
     Router.go("syncround", { roundId: docRef.id });
   }).catch(function(e) { Router.toast("Failed: " + e.message); });

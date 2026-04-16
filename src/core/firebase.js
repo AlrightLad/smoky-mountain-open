@@ -395,14 +395,14 @@ function doRegister() {
             welcomeName + " is officially a member. The dress code is vibes only and the only rule is don't be slower than Nick."
           ];
           var ribb = welcomeRibbs[Math.floor(Math.random() * welcomeRibbs.length)];
-          db.collection("chat").add({
+          db.collection("chat").add(leagueDoc("chat", {
             id: genId(),
             text: ribb,
             authorId: "system",
             authorName: "The Caddy",
             createdAt: fsTimestamp(),
             type: "welcome"
-          }).catch(function(){});
+          }))(function(){});
         });
       });
     });

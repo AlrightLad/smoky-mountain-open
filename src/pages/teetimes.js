@@ -169,7 +169,7 @@ function submitTeeTime() {
   var timeStr = hr + ":" + timeParts[1] + " " + ampm;
   var tee = { courseId:courseId, courseName:course?course.name:courseId, date:date, time:timeStr, spots:spots, message:message, visibility:visibility, status:"open", official:false, createdBy:currentUser?currentUser.uid:"anon", createdByName:currentProfile?(currentProfile.name||currentProfile.username):"Anon", responses:{}, createdAt:fsTimestamp() };
   if (currentUser) tee.responses[currentUser.uid] = "accepted";
-  db.collection("teetimes").add(tee).then(function() {
+  db.collection("teetimes").add(leagueDoc("teetimes", tee)).then(function() {
     Router.toast("Tee time posted!");
     // Notify all members about the new tee time
     var _teeCreatorName = currentProfile ? (currentProfile.name||currentProfile.username) : "A Parbaugh";

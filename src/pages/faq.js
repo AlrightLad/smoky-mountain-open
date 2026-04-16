@@ -96,14 +96,14 @@ function openFeatureRequest() {
     });
     
     // Also post to activity feed so everyone can see/discuss
-    db.collection("chat").add({
+    db.collection("chat").add(leagueDoc("chat", {
       id: genId(),
       text: name + " submitted a feature request: \"" + feature.substring(0, 100) + (feature.length > 100 ? "..." : "") + "\"",
       authorId: "system",
       authorName: "Parbaughs",
       createdAt: fsTimestamp(),
       type: "feature_request"
-    }).catch(function(){});
+    }))(function(){});
     
     Router.toast("Request sent! The Commissioner has been notified.");
   } else {

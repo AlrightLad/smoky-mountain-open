@@ -158,13 +158,13 @@ function declarePartyWinner(gameId, winnerId, winnerName) {
   }).then(function() {
     Router.toast(winnerName + " wins!");
     // Post to activity feed
-    db.collection("chat").add({
+    db.collection("chat").add(leagueDoc("chat", {
       id: genId(),
       text: winnerName + " won " + (PARTY_GAMES.find(function(g) { return g.id; }) || {name:"a party game"}).name + "!",
       authorId: "system",
       authorName: "Parbaughs",
       createdAt: fsTimestamp()
-    });
+    }))
     Router.go("partygames");
   });
 }

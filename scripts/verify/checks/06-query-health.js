@@ -117,7 +117,11 @@ async function run(ctx) {
       if (/\.onSnapshot\(/.test(line)) {
         listenerCount++;
         // Check if the listener is assigned to a variable or window property for cleanup
-        if (!/=\s*.*\.onSnapshot|window\.\w+\s*=/.test(line) && !/_\w+Listener\s*=/.test(line) && !/Unsub\s*=/.test(line)) {
+        // Also check the preceding line (multi-line chaining)
+        var prevLine = idx > 0 ? lines[idx - 1] : "";
+        var prevLine2 = idx > 1 ? lines[idx - 2] : "";
+        var combined = prevLine2 + " " + prevLine + " " + line;
+        if (!/=\s*.*\.onSnapshot|window\.\w+\s*=/.test(combined) && !/_\w+Listener\s*=/.test(combined) && !/Unsub\s*=/.test(combined)) {
           log.warn(CHECK, basename + ":" + (idx + 1) + " — onSnapshot listener may not be tracked for cleanup",
             { file: f, line: idx + 1, remediation: "Store return value for unsubscribe on league switch" });
           untrackedCount++;

@@ -240,7 +240,7 @@ function submitWager() {
   if (!deductCoins(currentUser.uid, totalCost, "wager_escrow", "Wager escrow: " + WAGER_TYPES[type].label + " vs " + oppName)) return;
 
   // Create wager doc (with escrow tracking)
-  db.collection("wagers").add({
+  db.collection("wagers").add(leagueDoc("wagers", {
     fromUid: currentUser.uid,
     fromName: myName,
     toUid: toUid,
@@ -253,7 +253,7 @@ function submitWager() {
     escrowFrom: totalCost,
     escrowTo: 0,
     createdAt: fsTimestamp()
-  }).then(function(docRef) {
+  })).then(function(docRef) {
     // Notify opponent
     sendNotification(toUid, {
       type: "wager_challenge",
@@ -263,10 +263,10 @@ function submitWager() {
     });
     // Post to feed if public
     if (visibility === "public") {
-      db.collection("chat").add({
+      db.collection("chat").add(leagueDoc("chat", {
         id: genId(), text: myName + " challenged " + oppName + " to a " + WAGER_TYPES[type].label + " wager for " + totalCost + " ParCoins" + (course ? " at " + course : "") + "!",
         authorId: "system", authorName: "Parbaughs", createdAt: fsTimestamp()
-      }).catch(function(){});
+      }))(function(){});
     }
     Router.toast("Challenge sent to " + oppName + "!");
     Router.go("wagers");

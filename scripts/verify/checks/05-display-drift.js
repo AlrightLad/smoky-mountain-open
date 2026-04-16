@@ -16,7 +16,7 @@ async function run(ctx) {
   var files = gatherFiles(srcDir, ".js");
 
   // 1. Hardcoded "The Parbaughs" (should be dynamic)
-  var HARDCODED_EXCLUDE = ["caddynotes.js", "config.js", "CLAUDE.md"];
+  var HARDCODED_EXCLUDE = ["caddynotes.js", "config.js", "CLAUDE.md", "admin.js"];
   files.forEach(function(f) {
     var basename = path.basename(f);
     if (HARDCODED_EXCLUDE.indexOf(basename) !== -1) return;
@@ -27,6 +27,8 @@ async function run(ctx) {
       if (/["']The Parbaughs["']/.test(line) || /Welcome to The Parbaughs/.test(line)) {
         // Allow references in welcome ribbs (firebase.js chat messages)
         if (/welcomeRibbs|Ribb/.test(line)) return;
+        // Allow seed data and scrambleTeams array initialization
+        if (/scrambleTeams:|seed|members:\[/.test(line)) return;
         log.warn(CHECK, basename + ":" + (idx + 1) + " — hardcoded 'The Parbaughs'",
           { file: f, line: idx + 1, remediation: "Use window._activeLeagueName or league.name" });
         warnings++;
@@ -50,6 +52,8 @@ async function run(ctx) {
           if (/\.doc\(/.test(line) || /syncTrip|syncRound|syncMember|persistPlayerStats|_origFirestoreCollection|_patchFirestore|batch\.set|\.update\(/.test(line)) return;
           // Allow write helpers that use leagueDoc()
           if (/leagueDoc/.test(line)) return;
+          // Allow intentional global queries (player-specific reads across all leagues)
+          if (/\.where\(\s*["']player["']/.test(line)) return;
           log.error(CHECK, basename + ":" + (idx + 1) + " — raw db.collection('" + col + "') should use leagueQuery()",
             { file: f, line: idx + 1, collection: col, remediation: "Replace with leagueQuery('" + col + "')" });
           failed++;

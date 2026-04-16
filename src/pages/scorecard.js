@@ -256,7 +256,7 @@ function renderTripLB(trip, tripPlayers) {
   h += '<div class="lbs"><div class="lb-title">Round breakdown</div>';
   var st = PB.getTripTotal(tid, "scramble", "team", 0, 18);
   var scrambleTeam = PB.getScrambleTeams().find(function(t) { return t.id === "smo_scramble"; }) || {};
-  var scrambleTeamName = scrambleTeam.name || "The Parbaughs";
+  var scrambleTeamName = scrambleTeam.name || (window._activeLeagueName || "Your Team");
   var scrambleMemberNames = (scrambleTeam.members || ["zach","kayvan","kiyan","nick"]).map(function(id) {
     var fb = (typeof fbMemberCache !== "undefined") && (fbMemberCache[id] || null);
     if (fb) return PB.getDisplayName(fb);
@@ -383,7 +383,7 @@ function closeEvent(tripId) {
     finalStandings.forEach(function(s, i) {
       resultsText += (i + 1) + ". " + s.name + " — " + s.points + " pts\n";
     });
-    db.collection("chat").add({
+    db.collection("chat").add(leagueDoc("chat", {
       id: genId(),
       text: resultsText,
       authorId: "system",
@@ -393,7 +393,7 @@ function closeEvent(tripId) {
       linkType: "event",
       timestamp: Date.now(),
       createdAt: fsTimestamp()
-    }).catch(function(){});
+    }))(function(){});
   }
   
   // Update local player wins

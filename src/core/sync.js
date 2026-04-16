@@ -428,7 +428,7 @@ function startTripScoreListener(tripId) {
 // Event activity announcements
 function announceEventStart(tripId, courseName) {
   if (!db) return;
-  db.collection("chat").add({
+  db.collection("chat").add(leagueDoc("chat", {
     id: genId(),
     text: "Live scoring started for " + courseName + "! Watch the scorecard update in real-time.",
     authorId: "system",
@@ -437,14 +437,14 @@ function announceEventStart(tripId, courseName) {
     tripId: tripId,
     linkType: "event",
     createdAt: fsTimestamp()
-  });
+  }))
 }
 
 function announceEventEnd(tripId, courseName, results) {
   if (!db) return;
   var msg = courseName + " is complete!";
   if (results) msg += " " + results;
-  db.collection("chat").add({
+  db.collection("chat").add(leagueDoc("chat", {
     id: genId(),
     text: msg,
     authorId: "system",
@@ -453,7 +453,7 @@ function announceEventEnd(tripId, courseName, results) {
     tripId: tripId,
     linkType: "event",
     createdAt: fsTimestamp()
-  });
+  }))
 }
 
 function assignScorekeeper(tripId, courseKey, uid) {
@@ -526,7 +526,7 @@ function finishTripRound(tripId, courseKey) {
     createdAt: fsTimestamp()
   }).then(function() {
     // Announce to feed
-    db.collection("chat").add({
+    db.collection("chat").add(leagueDoc("chat", {
       id: genId(),
       text: course.n + " scoring is complete. All players must attest their scores.",
       authorId: "system",
@@ -535,7 +535,7 @@ function finishTripRound(tripId, courseKey) {
       tripId: tripId,
       linkType: "event",
       createdAt: fsTimestamp()
-    });
+    }))
     Router.toast("Attestation started! Players must confirm their scores.");
     Router.go("scorecard", { tripId: tripId });
   });

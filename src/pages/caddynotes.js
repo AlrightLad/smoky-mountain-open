@@ -12,6 +12,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Verify System, Global Stats, League Isolation</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "League isolation hardening — fixed chat and 7 other scoped collections that could leak between leagues, replaced hardcoded league names with dynamic lookups, tightened listener cleanup on league switch", tag: "FIXED"},
     {item: "Added verify.js diagnostic system — catches data drift, isolation leaks, display mismatches, and auto-cleans stale test leagues before they hit members", tag: "NEW"},
     {item: "Trips no longer leak across leagues — events page now uses league-scoped queries so only your league's events show", tag: "FIXED"},
     {item: "Level, XP, handicap, and achievements are now GLOBAL — your stats reflect ALL your rounds across every league, not just the active one", tag: "FIXED"},

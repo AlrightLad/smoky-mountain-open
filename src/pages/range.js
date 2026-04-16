@@ -343,11 +343,11 @@ function saveRangeSession(mins, totalSec) {
   var xp = isPrivate ? 0 : getRangeSessionXP(session);
   // Only post to feed and award XP if public
   if (!isPrivate && db) {
-    db.collection("chat").add({
+    db.collection("chat").add(leagueDoc("chat", {
       id: genId(),
       text: session.playerName + " just finished a " + mins + "-minute range session" + (session.drills.length ? " working on " + session.drills.length + " drill" + (session.drills.length>1?"s":"") : "") + " (+"+xp+" XP)",
       authorId: "system", authorName: "Parbaughs", createdAt: fsTimestamp()
-    }).catch(function(){});
+    }))(function(){});
   }
   activeRangeStart = null;
   activeRangeDrills = [];

@@ -292,13 +292,13 @@ function sendFeedChat() {
     window._feedItems.unshift({type:"chat", player:currentProfile, playerId:currentUser.uid, author:name, text:text, ts:Date.now(), system:false});
     _renderFeedItems();
   }
-  db.collection("chat").add({
+  db.collection("chat").add(leagueDoc("chat", {
     id: genId(),
     text: text,
     authorId: currentUser.uid,
     authorName: name,
     createdAt: fsTimestamp()
-  }).catch(function(e) { Router.toast("Send failed: " + e.message); });
+  }))(function(e) { Router.toast("Send failed: " + e.message); });
 }
 
 function applyFeedFilter() {

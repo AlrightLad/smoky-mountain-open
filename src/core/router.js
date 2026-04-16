@@ -412,7 +412,7 @@ function sendNotification(toUserId, notif) {
   // Queue push notification for delivery via Cloud Function
   db.collection("pendingPush").add({
     toUserId: toUserId,
-    title: notif.title || "The Parbaughs",
+    title: notif.title || (window._activeLeagueName || "Parbaughs"),
     body: notif.message || "",
     data: { type: notif.type || "general", page: notif.page || "" },
     createdAt: fsTimestamp()
@@ -582,7 +582,8 @@ function updateDmBadge() {
 var _origNotifListener = startNotificationListener;
 startNotificationListener = function() {
   if (!db || !currentUser) return;
-  db.collection("notifications").where("toUserId","==",currentUser.uid).where("read","==",false).limit(30)
+  if (window._notifUnsub) window._notifUnsub();
+  window._notifUnsub = db.collection("notifications").where("toUserId","==",currentUser.uid).where("read","==",false).limit(30)
     .onSnapshot(function(snap) {
       liveNotifications = [];
       snap.forEach(function(doc) { liveNotifications.push(Object.assign({_id:doc.id}, doc.data())); });
@@ -1167,7 +1168,7 @@ function shareGenericCanvas(filename) {
     if (!blob) return;
     var file = new File([blob], filename, {type:"image/png"});
     if (navigator.share && navigator.canShare && navigator.canShare({files:[file]})) {
-      navigator.share({files:[file], title:"The Parbaughs"}).catch(function(){ downloadScorecardImage(blob); });
+      navigator.share({files:[file], title:(window._activeLeagueName || "Parbaughs")}).catch(function(){ downloadScorecardImage(blob); });
     } else { downloadScorecardImage(blob); }
   }, "image/png");
 }
@@ -1792,7 +1793,7 @@ function sendHomeChat() {
   if (!input || !input.value.trim() || !db || !currentUser) return;
   var text = input.value.trim();
   input.value = "";
-  db.collection("chat").add({
+  db.collection("chat").add(leagueDoc("chat", {
     id: genId(),
     text: text,
     authorId: currentUser.uid,
@@ -1800,7 +1801,7 @@ function sendHomeChat() {
     createdAt: fsTimestamp()
   }).then(function() {
     loadHomeActivityFeed(); // Refresh
-  }).catch(function(e) { Router.toast("Send failed: " + e.message); });
+  }))(function(e) { Router.toast("Send failed: " + e.message); });
 }
 
 function feedTimeAgo(ts) {

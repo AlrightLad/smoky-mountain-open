@@ -55,7 +55,7 @@ function _executeSocialAction(actionKey, targetUid, action, cooldownKey) {
   }
 
   // Log the action (for cooldowns)
-  db.collection("social_actions").add({
+  db.collection("social_actions").add(leagueDoc("social_actions", {
     key: cooldownKey,
     action: actionKey,
     fromUid: uid,
@@ -63,7 +63,7 @@ function _executeSocialAction(actionKey, targetUid, action, cooldownKey) {
     toUid: targetUid,
     toName: targetName,
     createdAt: fsTimestamp()
-  }).catch(function(){});
+  })).catch(function(){});
 
   // Type-specific behavior
   if (actionKey === "spotlight") {
@@ -71,12 +71,12 @@ function _executeSocialAction(actionKey, targetUid, action, cooldownKey) {
     var rounds = PB.getPlayerRounds(targetUid).filter(function(r) { return r.format !== "scramble" && r.format !== "scramble4"; });
     var worst = rounds.length ? rounds.reduce(function(a, b) { return a.score > b.score ? a : b; }) : null;
     var worstDesc = worst ? worst.score + " at " + worst.course + " (" + worst.date + ")" : "their golf game in general";
-    db.collection("chat").add({
+    db.collection("chat").add(leagueDoc("chat", {
       id: genId(),
       text: myName + " put " + targetName + " in the SPOTLIGHT OF SHAME for 24 hours. Their worst round: " + worstDesc + ". No hiding from this one.",
       authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp(),
       pinned: true, pinExpires: new Date(Date.now() + 24*60*60*1000).toISOString()
-    }).catch(function(){});
+    }))(function(){});
   } else if (actionKey === "victorylap") {
     // Store pending celebration for target
     db.collection("pending_celebrations").add({
@@ -85,17 +85,17 @@ function _executeSocialAction(actionKey, targetUid, action, cooldownKey) {
       type: "victory_lap",
       createdAt: fsTimestamp()
     }).catch(function(){});
-    db.collection("chat").add({
+    db.collection("chat").add(leagueDoc("chat", {
       id: genId(),
       text: myName + " is taking a VICTORY LAP on " + targetName + "! A celebration animation awaits them.",
       authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp()
-    }).catch(function(){});
+    }))(function(){});
   } else if (actionKey === "rematch") {
-    db.collection("chat").add({
+    db.collection("chat").add(leagueDoc("chat", {
       id: genId(),
       text: myName + " DEMANDS A REMATCH against " + targetName + "! This can't be ignored. Who's got next?",
       authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp()
-    }).catch(function(){});
+    }))(function(){});
   } else if (actionKey === "welcome") {
     // Give target a random starter cosmetic
     var starters = ["border_bronze", "banner_sunset", "card_neon"];
@@ -103,11 +103,11 @@ function _executeSocialAction(actionKey, targetUid, action, cooldownKey) {
     db.collection("members").doc(targetUid).update({
       ownedCosmetics: firebase.firestore.FieldValue.arrayUnion(gift)
     }).catch(function(){});
-    db.collection("chat").add({
+    db.collection("chat").add(leagueDoc("chat", {
       id: genId(),
       text: myName + " sent " + targetName + " a Welcome Gift! They unlocked a free cosmetic item.",
       authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp()
-    }).catch(function(){});
+    }))(function(){});
   }
 
   // Notify target

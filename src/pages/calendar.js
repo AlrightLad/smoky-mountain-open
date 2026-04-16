@@ -383,7 +383,7 @@ function saveCalEvent() {
     createdAt: fsTimestamp()
   };
 
-  db.collection("calendar_events").add(doc).then(function() {
+  db.collection("calendar_events").add(leagueDoc("calendar_events", doc)).then(function() {
     Router.toast("Event created!");
     hideCalEventForm();
     // Add to live list and refresh
@@ -415,13 +415,13 @@ function sendCalChat() {
   if (!input || !input.value.trim() || !db || !currentUser) return;
   var text = input.value.trim();
   input.value = "";
-  db.collection("scheduling_chat").add({
+  db.collection("scheduling_chat").add(leagueDoc("scheduling_chat", {
     id: genId(),
     text: text,
     authorId: currentUser.uid,
     authorName: currentProfile ? PB.getDisplayName(currentProfile) : "Member",
     createdAt: fsTimestamp()
-  }).then(function() {
+  })).then(function() {
     Router.go("calendar");
   }).catch(function(e) { Router.toast("Send failed: " + e.message); });
 }
