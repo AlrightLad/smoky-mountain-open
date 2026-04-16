@@ -8,9 +8,10 @@ var liveTeeTimes = [];
 function startTeeTimeListener() {
   if (!db) return;
   if (window._teeTimeUnsub) window._teeTimeUnsub();
+  var _teLeague = getActiveLeague();
   window._teeTimeUnsub = db.collection("teetimes").orderBy("date","asc").onSnapshot(function(snap) {
     liveTeeTimes = [];
-    snap.forEach(function(doc) { liveTeeTimes.push(Object.assign({_id:doc.id}, doc.data())); });
+    snap.forEach(function(doc) { var d = doc.data(); if (d.leagueId && d.leagueId !== _teLeague) return; liveTeeTimes.push(Object.assign({_id:doc.id}, d)); });
     if (Router.getPage() === "teetimes") Router.go("teetimes", Router.getParams(), true);
   });
 }

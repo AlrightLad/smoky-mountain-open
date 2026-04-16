@@ -1732,6 +1732,7 @@ function loadHomeActivityFeed() {
     var today = localDateStr();
     snap.forEach(function(doc) {
       var t = doc.data();
+      if (t.leagueId && t.leagueId !== _homeLeague) return;
       var isToday = t.date === today;
       var isFuture = t.date > today;
       var accepted = t.responses ? Object.keys(t.responses).filter(function(k){return t.responses[k]==="accepted";}).length : 0;
@@ -1745,7 +1746,8 @@ function loadHomeActivityFeed() {
   db.collection("syncrounds").orderBy("createdAt","desc").limit(15).get().then(function(snap) {
     snap.forEach(function(doc) {
       var r = doc.data();
-      if (r.status === "discarded") return; // skip discarded rounds
+      if (r.leagueId && r.leagueId !== _homeLeague) return;
+      if (r.status === "discarded") return;
       var isLive = r.status === "active";
       var dest = isLive ? "Router.go('syncround',{roundId:'" + doc.id + "'})" : "";
       items.push({type:"syncround", name:(r.createdByName||"A Parbaugh") + (isLive ? " is playing a Parbaugh Round" : " finished a Parbaugh Round"), sub:(r.courseName||"") + (r.format ? " · " + r.format : "") + (isLive ? " · Tap to join" : ""), date:"", ts:r.createdAt ? r.createdAt.toMillis() : 0, live:isLive, dest:dest});
@@ -1758,6 +1760,7 @@ function loadHomeActivityFeed() {
   db.collection("liverounds").where("status","==","active").limit(8).get().then(function(snap) {
     snap.forEach(function(doc) {
       var lr = doc.data();
+      if (lr.leagueId && lr.leagueId !== _homeLeague) return;
       if (currentUser && doc.id === currentUser.uid) return; // skip own
       var thru = lr.thru || 0;
       if (thru < 1) return;

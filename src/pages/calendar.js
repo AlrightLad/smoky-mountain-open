@@ -120,6 +120,7 @@ Router.register("calendar", function() {
   h += '</div>';
   document.querySelector('[data-page="calendar"]').innerHTML = h;
 
+  var _schLeague = getActiveLeague();
   if (db) {
     db.collection("scheduling_chat").orderBy("createdAt","desc").limit(20).get().then(function(snap) {
       var feed = document.getElementById("calChatFeed");
@@ -128,6 +129,7 @@ Router.register("calendar", function() {
       var ch = '';
       snap.forEach(function(doc) {
         var msg = doc.data();
+        if (msg.leagueId && msg.leagueId !== _schLeague) return;
         var author = msg.authorName || "Member";
         var ts = msg.createdAt ? feedTimeAgo(msg.createdAt.toMillis()) : "";
         ch += '<div style="padding:6px 0;border-bottom:1px solid var(--border)">';
@@ -397,10 +399,12 @@ function saveCalEvent() {
 var _liveCalEvents = [];
 function _loadCalendarEvents() {
   if (!db) return;
+  var _calLeague = getActiveLeague();
   db.collection("calendar_events").orderBy("createdAt","desc").limit(50).get().then(function(snap) {
     _liveCalEvents = [];
     snap.forEach(function(doc) {
       var d = doc.data();
+      if (d.leagueId && d.leagueId !== _calLeague) return;
       d._id = doc.id;
       _liveCalEvents.push(d);
     });

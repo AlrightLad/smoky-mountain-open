@@ -266,12 +266,14 @@ function saveCustomDrillsToFirestore() {
 
 function syncScrambleTeamsFromFirestore() {
   if (!db) return;
+  var _stLeague = getActiveLeague();
   db.collection("scrambleTeams").get().then(function(snap) {
     var local = PB.getScrambleTeams();
     var remoteIds = {};
     var merged = 0;
     snap.forEach(function(doc) {
       var t = doc.data();
+      if (t.leagueId && t.leagueId !== _stLeague) return;
       remoteIds[t.id] = true;
       if (!t.id || !t.name) return;
       var existing = local.find(function(lt) { return lt.id === t.id; });

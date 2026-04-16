@@ -21,10 +21,11 @@ Router.register("bounties", function() {
   document.querySelector('[data-page="bounties"]').innerHTML = h;
 
   // Load active bounties
+  var _bLeague = getActiveLeague();
   if (db) {
     db.collection("bounties").orderBy("createdAt", "desc").limit(30).get().then(function(snap) {
       var bounties = [];
-      snap.forEach(function(doc) { var d = Object.assign({_id: doc.id}, doc.data()); if (d.status === "active") bounties.push(d); });
+      snap.forEach(function(doc) { var d = Object.assign({_id: doc.id}, doc.data()); if (d.leagueId && d.leagueId !== _bLeague) return; if (d.status === "active") bounties.push(d); });
       _renderBountyBoard(bounties, uid);
     }).catch(function() {
       _renderBountyBoard([], uid);
@@ -204,8 +205,10 @@ function submitBounty() {
 // Auto-check bounties when a round is logged
 function checkBountyClaims(round) {
   if (!db || !currentUser) return;
+  var _bcLeague = getActiveLeague();
   db.collection("bounties").where("status", "==", "active").get().then(function(snap) {
     snap.forEach(function(doc) {
+      if (doc.data().leagueId && doc.data().leagueId !== _bcLeague) return;
       var b = doc.data();
       if (b.createdBy === currentUser.uid) return; // can't claim own bounty
       if (b.course !== round.course) return;
