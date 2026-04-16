@@ -2280,7 +2280,6 @@ function renderContextualEmpty(type) {
 // ========== INIT FIREBASE LISTENERS ==========
 function initFirebaseListeners() {
   startTeeTimeListener();
-  startEventListener();
   startRangeSessionListener();
   startNotificationListener();
   startDmUnreadListener();

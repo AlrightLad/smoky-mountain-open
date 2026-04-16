@@ -20,9 +20,6 @@ Router.register("chat", function() {
       upcomingEvents.push({date: displayDate, title: trip.name, time: isLive ? "Happening now" : "", type: "trip", tripId: trip.id, isLive: isLive});
     }
   });
-  liveEvents.forEach(function(ev) {
-    if (ev.date && ev.date >= todayStr) upcomingEvents.push({date: ev.date, title: ev.title, time: ev.time || "", type: "event"});
-  });
   upcomingEvents.sort(function(a,b) { return a.date > b.date ? 1 : -1; });
   upcomingEvents = upcomingEvents.slice(0, 5);
   

@@ -1,6 +1,5 @@
 // ========== CALENDAR ==========
 var calMonth = new Date().getMonth(), calYear = new Date().getFullYear(), calSelectedDate = null;
-var liveEvents = [];
 
 // ========== RANGE SESSION SYSTEM ==========
 var liveRangeSessions = [];

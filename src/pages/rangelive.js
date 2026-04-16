@@ -106,13 +106,3 @@ Router.register("range", function() {
   activeRangeTimer = setInterval(tickRangeTimer, 1000);
 });
 
-function startEventListener() {
-  if (!db) return;
-  if (window._eventUnsub) window._eventUnsub();
-  window._eventUnsub = db.collection("events").onSnapshot(function(snap) {
-    liveEvents = [];
-    snap.forEach(function(doc) { liveEvents.push(Object.assign({_id:doc.id}, doc.data())); });
-    if (Router.getPage() === "calendar") Router.go("calendar", Router.getParams(), true);
-  });
-}
-
