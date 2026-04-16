@@ -14,7 +14,7 @@ window.onerror = function(msg, url, line, col, error) {
         userId: (typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : "anonymous",
         userName: (typeof currentProfile !== "undefined" && currentProfile) ? (currentProfile.name || currentProfile.username || "") : "",
         timestamp: new Date().toISOString(),
-        appVersion: "7.0.1",
+        appVersion: typeof APP_VERSION !== "undefined" ? APP_VERSION : "unknown",
         resolved: false
       }).catch(function(){});
     }

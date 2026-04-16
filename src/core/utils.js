@@ -3,6 +3,9 @@
    Phase 5 Firebase + Achievements + Live Spotlight
    ================================================ */
 
+// ── App version — single source of truth ──
+var APP_VERSION = "7.3.0";
+
 var PB_DEBUG = false; // Set true for console output
 
 // Send email verification with proper error handling and user feedback

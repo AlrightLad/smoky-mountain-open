@@ -8,8 +8,8 @@ Router.register("more", function() {
   h += '<div style="margin:0 16px 12px;cursor:pointer" onclick="Router.go(\'caddynotes\')">';
   h += '<div style="background:linear-gradient(135deg,rgba(var(--gold-rgb),.08),rgba(var(--birdie-rgb),.04));border:1px solid rgba(var(--gold-rgb),.15);border-radius:var(--radius-lg);padding:12px 16px;display:flex;align-items:center;gap:12px">';
   h += '<div style="width:36px;height:36px;border-radius:10px;background:rgba(var(--gold-rgb),.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>';
-  h += '<div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--gold)">What\'s New in v5.38</div>';
-  h += '<div style="font-size:10px;color:var(--muted);margin-top:1px">Animated rings, economy redesign, feed overhaul</div></div>';
+  h += '<div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--gold)">What\'s New in v' + APP_VERSION + '</div>';
+  h += '<div style="font-size:10px;color:var(--muted);margin-top:1px">Multi-league, security hardening, community scorecards</div></div>';
   h += '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>';
   h += '</div></div>';
 
