@@ -317,36 +317,8 @@ var PB = (function() {
   /* ---------- ROUND OPS ---------- */
   function getRounds() { return state.rounds; }
   function getPlayerRounds(pid) {
-    var rounds = state.rounds.filter(function(r) { return r.player === pid; });
-    if (!rounds.length) {
-      // Fast path: use cached ID mapping
-      var localId = typeof playerIdMap !== "undefined" ? playerIdMap[pid] : null;
-      if (localId) {
-        rounds = state.rounds.filter(function(r) { return r.player === localId; });
-      }
-      // Fallback: try username match from members list
-      if (!rounds.length) {
-        var member = state.players.find(function(p) { return p.id === pid; });
-        if (member && member.username) {
-          rounds = state.rounds.filter(function(r) { return r.player === member.username; });
-        }
-      }
-      // Fallback: scan local players by claimedFrom
-      if (!rounds.length) {
-        var localPlayer = state.players.find(function(p) { return p.claimedFrom === pid; });
-        if (localPlayer) rounds = state.rounds.filter(function(r) { return r.player === localPlayer.id; });
-      }
-      // Fallback: currentProfile
-      if (!rounds.length && typeof currentProfile !== "undefined" && currentProfile && currentProfile.id === pid) {
-        if (currentProfile.claimedFrom) {
-          rounds = state.rounds.filter(function(r) { return r.player === currentProfile.claimedFrom; });
-        }
-        if (!rounds.length && currentProfile.username) {
-          rounds = state.rounds.filter(function(r) { return r.player === currentProfile.username; });
-        }
-      }
-    }
-    return rounds;
+    var allIds = getAllPlayerIds(pid);
+    return state.rounds.filter(function(r) { return allIds.indexOf(r.player) !== -1; });
   }
   function getCourseRounds(courseName) { 
     var norm = normCourseName(courseName);
