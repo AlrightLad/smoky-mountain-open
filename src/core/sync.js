@@ -194,7 +194,7 @@ function syncTripsFromFirestore() {
     }).catch(function(e) { pbWarn("[Sync] Trip load failed:", e.message); });
 
     // Also pull FIR/GIR data from tripscores collection
-    db.collection("tripscores").where("tripId", "==", trip.id).get().then(function(snap) {
+    leagueQuery("tripscores").where("tripId", "==", trip.id).get().then(function(snap) {
       snap.forEach(function(doc) {
         var d = doc.data();
         if (!d.fir && !d.gir) return; // no FIR/GIR data on this doc
@@ -220,10 +220,9 @@ function syncScrambleTeam(team) {
 var _roundsListener = null;
 function loadRoundsFromFirestore() {
   if (!db) return;
-  var _league = getActiveLeague();
-  db.collection("rounds").orderBy("date", "desc").limit(500).get().then(function(snap) {
+  leagueQuery("rounds").orderBy("date", "desc").limit(500).get().then(function(snap) {
     var fsRounds = [];
-    snap.forEach(function(doc) { var d = doc.data(); if (d && d.id && (!d.leagueId || d.leagueId === _league)) fsRounds.push(d); });
+    snap.forEach(function(doc) { var d = doc.data(); if (d && d.id) fsRounds.push(d); });
     if (fsRounds.length > 0) {
       PB.setRoundsFromFirestore(fsRounds);
       pbLog("[Sync] Loaded", fsRounds.length, "rounds for league", _league);
@@ -233,11 +232,10 @@ function loadRoundsFromFirestore() {
 
 function startRoundsListener() {
   if (!db) return;
-  var _league = getActiveLeague();
   if (_roundsListener) _roundsListener();
-  _roundsListener = db.collection("rounds").orderBy("date", "desc").limit(500).onSnapshot(function(snap) {
+  _roundsListener = leagueQuery("rounds").orderBy("date", "desc").limit(500).onSnapshot(function(snap) {
     var fsRounds = [];
-    snap.forEach(function(doc) { var d = doc.data(); if (d && d.id && (!d.leagueId || d.leagueId === _league)) fsRounds.push(d); });
+    snap.forEach(function(doc) { var d = doc.data(); if (d && d.id) fsRounds.push(d); });
     if (fsRounds.length > 0) {
       PB.setRoundsFromFirestore(fsRounds);
       if (window._suppressRoundsRerender) return; // Skip re-render for like/comment updates
@@ -266,14 +264,12 @@ function saveCustomDrillsToFirestore() {
 
 function syncScrambleTeamsFromFirestore() {
   if (!db) return;
-  var _stLeague = getActiveLeague();
-  db.collection("scrambleTeams").get().then(function(snap) {
+  leagueQuery("scrambleTeams").get().then(function(snap) {
     var local = PB.getScrambleTeams();
     var remoteIds = {};
     var merged = 0;
     snap.forEach(function(doc) {
       var t = doc.data();
-      if (t.leagueId && t.leagueId !== _stLeague) return;
       remoteIds[t.id] = true;
       if (!t.id || !t.name) return;
       var existing = local.find(function(lt) { return lt.id === t.id; });
@@ -383,7 +379,7 @@ var tripScoreListener = null;
 function startTripScoreListener(tripId) {
   if (!db) return;
   if (tripScoreListener) tripScoreListener();
-  tripScoreListener = db.collection("tripscores").where("tripId","==",tripId).onSnapshot(function(snap) {
+  tripScoreListener = leagueQuery("tripscores").where("tripId","==",tripId).onSnapshot(function(snap) {
     var changed = false;
     snap.forEach(function(doc) {
       var d = doc.data();

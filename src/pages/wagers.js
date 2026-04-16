@@ -38,11 +38,10 @@ function renderWagerList() {
   document.querySelector('[data-page="wagers"]').innerHTML = h;
 
   // Async load wagers from Firestore
-  var _wLeague = getActiveLeague();
   if (db && uid) {
-    db.collection("wagers").orderBy("createdAt", "desc").limit(50).get().then(function(snap) {
+    leagueQuery("wagers").orderBy("createdAt", "desc").limit(50).get().then(function(snap) {
       var wagers = [];
-      snap.forEach(function(doc) { var d = doc.data(); if (d.leagueId && d.leagueId !== _wLeague) return; wagers.push(Object.assign({_id: doc.id}, d)); });
+      snap.forEach(function(doc) { wagers.push(Object.assign({_id: doc.id}, doc.data())); });
       // Filter to active wagers involving this user
       var mine = wagers.filter(function(w) { return (w.status === "pending" || w.status === "accepted") && (w.fromUid === uid || w.toUid === uid); });
       var el = document.getElementById("wager-list");
@@ -66,11 +65,9 @@ function renderWagerList() {
 }
 
 function _loadCompletedWagers(uid, appendTo) {
-  var _cwLeague = getActiveLeague();
-  db.collection("wagers").where("status", "==", "completed").orderBy("completedAt", "desc").limit(15).get().then(function(snap) {
+  leagueQuery("wagers").where("status", "==", "completed").orderBy("completedAt", "desc").limit(15).get().then(function(snap) {
     var completed = [];
     snap.forEach(function(doc) {
-      if (doc.data().leagueId && doc.data().leagueId !== _cwLeague) return;
       var w = Object.assign({_id: doc.id}, doc.data());
       if (w.fromUid === uid || w.toUid === uid) completed.push(w);
     });
@@ -325,11 +322,9 @@ function declineWager(wagerId) {
 function checkWagerResolution(round) {
   if (!db || !currentUser) return;
   var uid = currentUser.uid;
-  var _wrLeague = getActiveLeague();
-  db.collection("wagers").where("status", "==", "accepted").get().then(function(snap) {
+  leagueQuery("wagers").where("status", "==", "accepted").get().then(function(snap) {
     snap.forEach(function(doc) {
       var w = Object.assign({_id: doc.id}, doc.data());
-      if (w.leagueId && w.leagueId !== _wrLeague) return;
       // Must involve this player
       if (w.fromUid !== uid && w.toUid !== uid) return;
       var oppUid = w.fromUid === uid ? w.toUid : w.fromUid;

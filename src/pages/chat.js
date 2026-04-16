@@ -91,12 +91,10 @@ Router.register("chat", function() {
   // Start listener
   if (db) {
     if (window._chatFeedUnsub) window._chatFeedUnsub();
-    var _chatLeague = getActiveLeague();
-    window._chatFeedUnsub = db.collection("chat").orderBy("createdAt","desc").limit(50).onSnapshot(function(snap) {
+    window._chatFeedUnsub = leagueQuery("chat").orderBy("createdAt","desc").limit(50).onSnapshot(function(snap) {
       liveChat = [];
       snap.forEach(function(doc){
         var d = doc.data();
-        if (d.leagueId && d.leagueId !== _chatLeague) return;
         // Filter out auto-generated system messages — clubhouse is for human conversation only
         if (d.authorId === "system" || d.system) return;
         if (d.authorName === "Parbaughs" || d.authorName === "The Caddy") return;

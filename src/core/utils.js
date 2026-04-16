@@ -4,7 +4,42 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "7.3.0";
+var APP_VERSION = "7.4.0";
+
+// ══════════════════════════════════════════════════════════════════════════
+// LEAGUE ISOLATION — Nuclear approach. Makes leaking PHYSICALLY IMPOSSIBLE.
+// ══════════════════════════════════════════════════════════════════════════
+
+var LEAGUE_SCOPED = ["rounds","chat","trips","teetimes","wagers","bounties","challenges","scrambleTeams","calendar_events","scheduling_chat","social_actions","invites","syncrounds","liverounds","league_battles","tripscores","rangeSessions"];
+
+// leagueQuery(name) — returns a Firestore query pre-filtered by leagueId.
+// Use this for ALL reads on league-scoped collections.
+// For global collections, use db.collection(name) directly.
+function leagueQuery(name) {
+  if (!db) return null;
+  if (LEAGUE_SCOPED.indexOf(name) === -1) {
+    pbWarn("[LeagueQuery] Called on non-scoped collection:", name);
+    return db.collection(name);
+  }
+  var league = getActiveLeague();
+  if (!league) {
+    pbWarn("[LeagueQuery] No active league for:", name);
+    return db.collection(name).where("leagueId", "==", "NONE_SHOULD_MATCH");
+  }
+  return db.collection(name).where("leagueId", "==", league);
+}
+
+// leagueDoc(name, data) — injects leagueId into data before write.
+// Use this for ALL writes (.add, .set) on league-scoped collections.
+function leagueDoc(name, data) {
+  if (LEAGUE_SCOPED.indexOf(name) !== -1 && data && typeof data === "object") {
+    data.leagueId = getActiveLeague();
+  }
+  return data;
+}
+
+// Global array of active league-scoped listeners for cleanup on league switch
+var _leagueListeners = [];
 
 var PB_DEBUG = false; // Set true for console output
 

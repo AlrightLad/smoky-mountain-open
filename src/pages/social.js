@@ -25,7 +25,7 @@ function useSocialAction(actionKey, targetUid) {
 
   // Check cooldown
   var cooldownKey = actionKey + "_" + uid + "_" + targetUid;
-  db.collection("social_actions").where("key", "==", cooldownKey).orderBy("createdAt", "desc").limit(1).get().then(function(snap) {
+  leagueQuery("social_actions").where("key", "==", cooldownKey).orderBy("createdAt", "desc").limit(1).get().then(function(snap) {
     if (snap.size > 0 && action.cooldownHours > 0) {
       var last = snap.docs[0].data();
       var lastTime = last.createdAt ? last.createdAt.toMillis() : 0;

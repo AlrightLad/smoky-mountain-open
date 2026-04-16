@@ -285,9 +285,23 @@ function switchLeague(lid) {
   if (!currentUser || !db) return;
   db.collection("members").doc(currentUser.uid).update({ activeLeague: lid }).then(function() {
     if (currentProfile) currentProfile.activeLeague = lid;
-    Router.toast("Switched league!");
-    // Reload data for new league context
+    Router.toast("Switching to " + lid + "...");
+    // Tear down ALL league-scoped listeners
+    if (window._chatFeedUnsub) { window._chatFeedUnsub(); window._chatFeedUnsub = null; }
+    if (window._teeTimeUnsub) { window._teeTimeUnsub(); window._teeTimeUnsub = null; }
+    if (window._rangeUnsub) { window._rangeUnsub(); window._rangeUnsub = null; }
+    if (typeof _roundsListener !== "undefined" && _roundsListener) { _roundsListener(); _roundsListener = null; }
+    if (typeof tripScoreListener !== "undefined" && tripScoreListener) { tripScoreListener(); tripScoreListener = null; }
+    // Clear in-memory data from old league
+    liveTeeTimes = [];
+    liveRangeSessions = [];
+    liveChat = [];
+    // Reinitialize with new league context
     loadRoundsFromFirestore();
+    startRoundsListener();
+    syncScrambleTeamsFromFirestore();
+    if (typeof startTeeTimeListener === "function") startTeeTimeListener();
+    if (typeof startRangeSessionListener === "function") startRangeSessionListener();
     Router.go("home");
   }).catch(function(e) { Router.toast("Failed: " + e.message); });
 }

@@ -1659,13 +1659,12 @@ function loadHomeActivityFeed() {
   }
 
   // 1. Recent rounds from Firestore
-  var _homeLeague = getActiveLeague();
   pending++;
-  db.collection("rounds").orderBy("createdAt","desc").limit(30).get().then(function(snap) {
+  leagueQuery("rounds").orderBy("createdAt","desc").limit(30).get().then(function(snap) {
     var scrambleGroups = {}; // Group scramble by course+date
     snap.forEach(function(doc) {
       var r = doc.data();
-      if (r.leagueId && r.leagueId !== _homeLeague) return;
+      // leagueId filtered by leagueQuery()
       var rid = doc.id;
       var isScramble = r.format === "scramble" || r.format === "scramble4";
 
@@ -1728,11 +1727,10 @@ function loadHomeActivityFeed() {
 
   // 3. Tee times — upcoming and recent
   pending++;
-  db.collection("teetimes").orderBy("createdAt","desc").limit(15).get().then(function(snap) {
+  leagueQuery("teetimes").orderBy("createdAt","desc").limit(15).get().then(function(snap) {
     var today = localDateStr();
     snap.forEach(function(doc) {
       var t = doc.data();
-      if (t.leagueId && t.leagueId !== _homeLeague) return;
       var isToday = t.date === today;
       var isFuture = t.date > today;
       var accepted = t.responses ? Object.keys(t.responses).filter(function(k){return t.responses[k]==="accepted";}).length : 0;
@@ -1743,10 +1741,10 @@ function loadHomeActivityFeed() {
 
   // 4. Active/recent Parbaugh Rounds
   pending++;
-  db.collection("syncrounds").orderBy("createdAt","desc").limit(15).get().then(function(snap) {
+  leagueQuery("syncrounds").orderBy("createdAt","desc").limit(15).get().then(function(snap) {
     snap.forEach(function(doc) {
       var r = doc.data();
-      if (r.leagueId && r.leagueId !== _homeLeague) return;
+      // leagueId filtered by leagueQuery()
       if (r.status === "discarded") return;
       var isLive = r.status === "active";
       var dest = isLive ? "Router.go('syncround',{roundId:'" + doc.id + "'})" : "";
@@ -1757,10 +1755,9 @@ function loadHomeActivityFeed() {
 
   // 5. Active solo live rounds from Firestore
   pending++;
-  db.collection("liverounds").where("status","==","active").limit(8).get().then(function(snap) {
+  leagueQuery("liverounds").where("status","==","active").limit(8).get().then(function(snap) {
     snap.forEach(function(doc) {
       var lr = doc.data();
-      if (lr.leagueId && lr.leagueId !== _homeLeague) return;
       if (currentUser && doc.id === currentUser.uid) return; // skip own
       var thru = lr.thru || 0;
       if (thru < 1) return;
@@ -1772,10 +1769,9 @@ function loadHomeActivityFeed() {
 
   // 6. Trash talk / chat messages
   pending++;
-  db.collection("chat").orderBy("createdAt", "desc").limit(20).get().then(function(snap) {
+  leagueQuery("chat").orderBy("createdAt", "desc").limit(20).get().then(function(snap) {
     snap.forEach(function(doc) {
       var msg = doc.data();
-      if (msg.leagueId && msg.leagueId !== _homeLeague) return;
       var isSystem = !!msg.system || msg.authorId === "system" || msg.authorName === "The Caddy" || msg.authorName === "Parbaughs";
       var text = msg.text || "";
       // Skip automated messages that duplicate other feed items

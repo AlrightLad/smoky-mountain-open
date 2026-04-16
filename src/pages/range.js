@@ -121,7 +121,7 @@ Router.register("range-detail", function(params) {
 function startRangeSessionListener() {
   if (!db) return;
   if (window._rangeUnsub) window._rangeUnsub();
-  window._rangeUnsub = db.collection("rangeSessions").orderBy("startedAt","desc").limit(100).onSnapshot(function(snap) {
+  window._rangeUnsub = leagueQuery("rangeSessions").orderBy("startedAt","desc").limit(100).onSnapshot(function(snap) {
     liveRangeSessions = [];
     snap.forEach(function(doc) { liveRangeSessions.push(Object.assign({_id:doc.id}, doc.data())); });
     if (Router.getPage() === "activity" && rangeActiveView === "range") Router.go("activity", Router.getParams(), true);

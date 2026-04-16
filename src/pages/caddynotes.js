@@ -12,6 +12,9 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Security Hardening, Deployments, Bug Fixes</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "NUCLEAR FIX: leagueQuery() wrapper — makes league data leak PHYSICALLY IMPOSSIBLE. Every query uses server-side where() filter.", tag: "FIXED"},
+    {item: "18 orphaned Firestore docs backfilled with leagueId (invites, syncrounds, rangeSessions, tripscores)", tag: "FIXED"},
+    {item: "switchLeague() now tears down ALL listeners and rebuilds with new league context — zero stale data", tag: "FIXED"},
     {item: "League Settings page: commissioner can manage visibility, approval, invite codes, admins, and delete league", tag: "NEW"},
     {item: "Join Request system: users request to join public leagues, commissioner/admins approve or deny with notifications", tag: "NEW"},
     {item: "Member management: promote/demote admins, view all members with roles on league detail page", tag: "NEW"},
