@@ -110,8 +110,9 @@ export default defineConfig({
             // Remove Vite JS module entry (our coreScriptsPlugin already inlines JS)
             html = html.replace(/<script[^>]*type="module"[^>]*><\/script>/g, '');
             html = html.replace(/<script type="module"[^>]*src="[^"]*"[^>]*><\/script>/g, '');
-            // Remove any crossorigin attributes
-            html = html.replace(/ crossorigin/g, '');
+            // Remove Vite's bare crossorigin attributes (without ="anonymous")
+            // but KEEP crossorigin="anonymous" on external scripts
+            html = html.replace(/ crossorigin(?!=)/g, '');
             // Inject CSS as inline style tag right before </head>
             // Textures are now handled by a real DOM div (#textureOverlay) + theme.js
             html = html.replace('</head>', '<style>' + cssCode + '</style>\n</head>');

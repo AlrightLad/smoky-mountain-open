@@ -20,6 +20,7 @@ Router.register("caddynotes", function() {
     {item: "Trash talk and system messages now correctly show as The Caddy with green accent — no more Unknown author", tag: "FIXED"},
     {item: "ParCoin balance boxes on profile page now have more breathing room (14px/16px padding)", tag: "FIXED"},
     {item: "Clubhouse chat cleaned up — only human messages now, no auto-generated round posts or achievements", tag: "FIXED"},
+    {item: "CRITICAL HOTFIX: App was showing blank screen — Vite build plugin was stripping crossorigin from Firebase script tags, making them invalid HTML", tag: "FIXED"},
     {item: "HOTFIX: liveState ReferenceError fixed — global defaults now declared in utils.js before any page loads", tag: "FIXED"},
     {item: "HOTFIX: Play Now scoring wrapped in try/catch to prevent cascading Script errors during live rounds", tag: "FIXED"},
     {item: "crossorigin=anonymous added to all external scripts — errors now show full details instead of generic Script error", tag: "FIXED"},
