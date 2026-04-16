@@ -9,9 +9,11 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Pre-commit Safety Net, Developer Safety Guardrails, E2E Testing</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · UI Fixes, Pre-commit Safety Net, Developer Safety Guardrails</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "v7.8.4 — Fixed the XP bar sometimes showing different values between your home page and profile page. Now both reflect your actual total XP across all leagues.", tag: "FIXED"},
+    {item: "v7.8.4 — Fixed a broken stat box on the profile page that was showing a stray number instead of your Rounds total.", tag: "FIXED"},
     {item: "v7.8.2 — Pre-commit safety net. Every code change is now automatically checked for syntax errors before it can be committed. Prevents broken code from ever reaching the app.", tag: "NEW"},
     {item: "v7.8.2 — Fixed a gap in the automated quality checks that could let certain commits slip past without being verified.", tag: "FIXED"},
     {item: "v7.8.1 — Developer safety guardrails. Added automated quality checks to the development workflow so changes can\'t slip through without verification. Invisible to members but means fewer bugs reach you.", tag: "NEW"},

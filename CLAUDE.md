@@ -590,6 +590,12 @@ The app connects to the emulator only when loaded with `?emulator=1` in the URL.
 - Never point tests at the production Firestore project. The test runner requires the emulator to be up.
 - Never seed production data into the emulator. Synthetic fixtures only.
 
+### Diagnostic templates
+
+For visible UI bugs, layout regressions, or cross-page consistency issues, adapt the diagnostic template at `tests/e2e/_templates/DIAG-visual-diagnosis-template.spec.js.example`.
+
+See `tests/e2e/_templates/README.md` for when to use this approach, the full pattern, and post-diagnosis hygiene rules.
+
 ## Claude Code Hooks
 
 `.claude/settings.json` registers five project-level hooks that fire around every tool call. They're deterministic guardrails — they run regardless of what any agent remembers, which makes them the right layer for rules that must never be broken.
