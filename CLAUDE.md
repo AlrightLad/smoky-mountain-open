@@ -115,6 +115,20 @@ Do NOT redeploy `searchCourses` unless explicitly modifying it — it has CORS a
 - **WRONG endpoint:** `/v1/courses?search=` (non-functional, do not use)
 - **CRITICAL:** Zero guessing or padding of par arrays. Only use verified API data.
 
+## League Scoping Rules
+- A round logged in League A does NOT count toward League B's season standings or season points
+- Handicap is GLOBAL (can't hide skill level) — calculated from all rounds regardless of league
+- ParCoins, cosmetics, achievements are GLOBAL — travel with you across leagues
+- Season points, league rankings, wager W/L records are PER-LEAGUE — start at zero on join
+- Course records show DUAL display: your personal best (global) + league best (scoped)
+- Members list shows only members of your ACTIVE league
+
+## Privacy Defaults
+- All members are PRIVATE by default — invisible outside their leagues
+- PUBLIC opt-in via Settings toggle — discoverable in community search
+- Public profiles show: avatar, ring, handicap, level, home course, bio, rounds count
+- Public profiles hide: DMs, coin balance, email, private league data
+
 ## Social Architecture
 Three connection levels:
 1. **League Members** — see each other within a league (current system)

@@ -231,13 +231,38 @@ function renderLeagueDetail(lid) {
     dh += '<div class="card"><div style="padding:16px;text-align:center"><div style="font-family:\'SF Mono\',monospace;font-size:20px;font-weight:700;color:var(--gold);letter-spacing:4px">' + escHtml(l.inviteCode || "N/A") + '</div>';
     dh += '<div style="font-size:10px;color:var(--muted);margin-top:6px">Share this code with friends to invite them</div></div></div></div>';
 
-    // Commissioner settings
-    if (isComm) {
-      dh += '<div class="section"><div class="sec-head"><span class="sec-title">Commissioner Settings</span></div>';
-      dh += '<div class="card"><div style="padding:14px 16px">';
-      dh += '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">You are the commissioner of this league.</div>';
-      dh += '<button class="btn-sm outline" style="font-size:10px" onclick="Router.toast(\'League settings coming soon\')">Edit League Settings</button>';
-      dh += '</div></div></div>';
+    var isAdmin = currentUser && l.admins && l.admins.indexOf(currentUser.uid) !== -1;
+
+    // Commissioner/Admin settings
+    if (isComm || isAdmin) {
+      // Member management
+      dh += '<div class="section"><div class="sec-head"><span class="sec-title">Members (' + (l.memberCount || 0) + ')</span></div>';
+      dh += '<div id="leagueMemberList"><div class="loading"><div class="spinner"></div></div></div></div>';
+
+      // Pending join requests
+      dh += '<div class="section"><div class="sec-head"><span class="sec-title">Join Requests</span></div>';
+      dh += '<div id="leagueJoinRequests"><div style="font-size:11px;color:var(--muted);padding:12px">Loading...</div></div></div>';
+
+      // League settings (commissioner only)
+      if (isComm) {
+        dh += '<div class="section"><div class="sec-head"><span class="sec-title">League Settings</span></div>';
+        dh += '<div class="card"><div style="padding:14px 16px">';
+        dh += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:12px;color:var(--cream)">Visibility</span>';
+        dh += '<button class="btn-sm outline" style="font-size:10px" onclick="toggleLeagueVisibility(\'' + lid + '\')">' + (l.visibility === "public" ? "Public" : "Private") + '</button></div>';
+        dh += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:12px;color:var(--cream)">Require approval</span>';
+        dh += '<button class="btn-sm outline" style="font-size:10px" onclick="toggleLeagueApproval(\'' + lid + '\')">' + (l.requireApproval ? "On" : "Off") + '</button></div>';
+        dh += '<button class="btn-sm outline" style="font-size:10px;margin-bottom:8px" onclick="regenerateInviteCode(\'' + lid + '\')">Regenerate Invite Code</button>';
+        dh += '</div></div></div>';
+
+        // Danger zone
+        if (!isFounding) {
+          dh += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--red)">Danger Zone</span></div>';
+          dh += '<div class="card" style="border-color:rgba(var(--red-rgb),.2)"><div style="padding:14px 16px">';
+          dh += '<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Deleting a league removes it from all members. Rounds are preserved.</div>';
+          dh += '<button class="btn full" style="background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-rgb),.2);color:var(--red);font-size:11px" onclick="confirmDeleteLeague(\'' + lid + '\',\'' + escHtml(l.name).replace(/'/g,"\\\\'") + '\')">Delete League</button>';
+          dh += '</div></div></div>';
+        }
+      }
     }
 
     // Switch to this league
@@ -247,6 +272,12 @@ function renderLeagueDetail(lid) {
     }
 
     el.innerHTML = dh;
+
+    // Async load members
+    if (isComm || isAdmin) {
+      _loadLeagueMembers(lid, l);
+      _loadJoinRequests(lid);
+    }
   }).catch(function(e) { Router.toast("Error: " + e.message); });
 }
 
@@ -263,17 +294,182 @@ function switchLeague(lid) {
 
 function requestJoinLeague(lid) {
   if (!currentUser || !db) { Router.toast("Sign in required"); return; }
-  // For now, just send a notification to the commissioner
+  var uid = currentUser.uid;
+  var myName = currentProfile ? (currentProfile.name || currentProfile.username) : "Someone";
+  // Create a pending join request doc
+  db.collection("leagues").doc(lid).collection("joinRequests").doc(uid).set({
+    uid: uid,
+    name: myName,
+    handicap: currentProfile ? (currentProfile.computedHandicap || null) : null,
+    level: currentProfile ? (currentProfile.level || 1) : 1,
+    homeCourse: currentProfile ? (currentProfile.homeCourse || "") : "",
+    createdAt: fsTimestamp(),
+    status: "pending"
+  }).then(function() {
+    // Notify commissioner + admins
+    db.collection("leagues").doc(lid).get().then(function(doc) {
+      if (!doc.exists) return;
+      var l = doc.data();
+      var notifyUids = [l.commissioner].concat(l.admins || []);
+      var seen = {};
+      notifyUids.forEach(function(nuid) {
+        if (seen[nuid]) return; seen[nuid] = true;
+        sendNotification(nuid, { type:"league_request", title:"Join Request", message:myName + " wants to join " + l.name, page:"leagues" });
+      });
+    });
+    Router.toast("Request sent! An admin will review it.");
+  }).catch(function(e) { Router.toast("Failed: " + e.message); });
+}
+
+// ── League member management ──
+function _loadLeagueMembers(lid, league) {
+  var el = document.getElementById("leagueMemberList");
+  if (!el || !league.memberUids) return;
+  var mh = '';
+  league.memberUids.forEach(function(uid) {
+    var p = PB.getPlayer(uid);
+    if (!p) return;
+    var role = uid === league.commissioner ? "Commissioner" : (league.admins && league.admins.indexOf(uid) !== -1) ? "Admin" : "Member";
+    var roleColor = role === "Commissioner" ? "var(--gold)" : role === "Admin" ? "var(--blue)" : "var(--muted)";
+    mh += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">';
+    mh += renderAvatar(p, 32, true);
+    mh += '<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(p.name || p.username) + '</div>';
+    mh += '<div style="font-size:9px;color:' + roleColor + ';font-weight:600">' + role + '</div></div>';
+    if (currentUser && league.commissioner === currentUser.uid && uid !== currentUser.uid) {
+      var isAdmin = league.admins && league.admins.indexOf(uid) !== -1;
+      mh += '<button class="btn-sm outline" style="font-size:8px" onclick="toggleLeagueAdmin(\'' + lid + '\',\'' + uid + '\',' + isAdmin + ')">' + (isAdmin ? "Remove Admin" : "Make Admin") + '</button>';
+    }
+    mh += '</div>';
+  });
+  el.innerHTML = mh || '<div style="font-size:11px;color:var(--muted)">No members</div>';
+}
+
+function _loadJoinRequests(lid) {
+  var el = document.getElementById("leagueJoinRequests");
+  if (!el || !db) return;
+  db.collection("leagues").doc(lid).collection("joinRequests").where("status","==","pending").get().then(function(snap) {
+    if (snap.empty) { el.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:8px 0">No pending requests</div>'; return; }
+    var rh = '';
+    snap.forEach(function(doc) {
+      var req = doc.data();
+      rh += '<div class="card" style="margin-bottom:6px"><div style="padding:12px 16px;display:flex;align-items:center;gap:10px">';
+      var reqPlayer = PB.getPlayer(req.uid);
+      rh += renderAvatar(reqPlayer || {name:req.name,id:req.uid}, 36, false);
+      rh += '<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(req.name) + '</div>';
+      var meta = [];
+      if (req.handicap) meta.push("Hcap " + req.handicap);
+      if (req.homeCourse) meta.push(req.homeCourse);
+      rh += '<div style="font-size:9px;color:var(--muted)">' + (meta.join(" \u00b7 ") || "Level " + (req.level||1)) + '</div></div>';
+      rh += '<div style="display:flex;gap:4px">';
+      rh += '<button class="btn-sm green" style="font-size:9px;padding:6px 10px" onclick="approveJoinRequest(\'' + lid + '\',\'' + req.uid + '\')">Approve</button>';
+      rh += '<button class="btn-sm" style="font-size:9px;padding:6px 10px;background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-rgb),.2);color:var(--red)" onclick="denyJoinRequest(\'' + lid + '\',\'' + req.uid + '\')">Deny</button>';
+      rh += '</div></div></div>';
+    });
+    el.innerHTML = rh;
+  }).catch(function() { el.innerHTML = '<div style="font-size:11px;color:var(--muted)">Could not load requests</div>'; });
+}
+
+function approveJoinRequest(lid, reqUid) {
+  if (!db) return;
+  // Add member to league
+  db.collection("leagues").doc(lid).update({
+    memberUids: firebase.firestore.FieldValue.arrayUnion(reqUid),
+    memberCount: firebase.firestore.FieldValue.increment(1)
+  });
+  db.collection("members").doc(reqUid).update({
+    leagues: firebase.firestore.FieldValue.arrayUnion(lid)
+  });
+  // Update request status
+  db.collection("leagues").doc(lid).collection("joinRequests").doc(reqUid).update({ status: "approved" });
+  // Notify the requester
+  db.collection("leagues").doc(lid).get().then(function(doc) {
+    if (doc.exists) sendNotification(reqUid, { type:"league_approved", title:"Welcome!", message:"You've been approved to join " + doc.data().name + "!", page:"leagues" });
+  });
+  Router.toast("Member approved!");
+  Router.go("leagues", { id: lid });
+}
+
+function denyJoinRequest(lid, reqUid) {
+  if (!db) return;
+  db.collection("leagues").doc(lid).collection("joinRequests").doc(reqUid).update({ status: "denied" });
+  db.collection("leagues").doc(lid).get().then(function(doc) {
+    if (doc.exists) sendNotification(reqUid, { type:"league_denied", title:"Request Update", message:"Your request to join " + doc.data().name + " was not approved.", page:"leagues" });
+  });
+  Router.toast("Request denied");
+  Router.go("leagues", { id: lid });
+}
+
+function toggleLeagueAdmin(lid, uid, isCurrentlyAdmin) {
+  if (!db || !currentUser) return;
+  var update = isCurrentlyAdmin
+    ? { admins: firebase.firestore.FieldValue.arrayRemove(uid) }
+    : { admins: firebase.firestore.FieldValue.arrayUnion(uid) };
+  db.collection("leagues").doc(lid).update(update).then(function() {
+    Router.toast(isCurrentlyAdmin ? "Admin removed" : "Admin added");
+    Router.go("leagues", { id: lid });
+  });
+}
+
+function toggleLeagueVisibility(lid) {
+  if (!db) return;
+  db.collection("leagues").doc(lid).get().then(function(doc) {
+    if (!doc.exists) return;
+    var newVis = doc.data().visibility === "public" ? "private" : "public";
+    db.collection("leagues").doc(lid).update({ visibility: newVis }).then(function() {
+      Router.toast("League is now " + newVis);
+      Router.go("leagues", { id: lid });
+    });
+  });
+}
+
+function toggleLeagueApproval(lid) {
+  if (!db) return;
+  db.collection("leagues").doc(lid).get().then(function(doc) {
+    if (!doc.exists) return;
+    var newVal = !doc.data().requireApproval;
+    db.collection("leagues").doc(lid).update({ requireApproval: newVal }).then(function() {
+      Router.toast("Approval " + (newVal ? "required" : "not required"));
+      Router.go("leagues", { id: lid });
+    });
+  });
+}
+
+function regenerateInviteCode(lid) {
+  if (!db) return;
+  var newCode = "LG-" + Math.random().toString(36).substring(2, 10).toUpperCase();
+  db.collection("leagues").doc(lid).update({ inviteCode: newCode }).then(function() {
+    Router.toast("New invite code: " + newCode);
+    Router.go("leagues", { id: lid });
+  });
+}
+
+function confirmDeleteLeague(lid, leagueName) {
+  var typed = prompt("Type the league name to confirm deletion: \"" + leagueName + "\"");
+  if (typed !== leagueName) { Router.toast("Names don't match — deletion cancelled"); return; }
+  if (!db || !currentUser) return;
+  // Remove league from all members
   db.collection("leagues").doc(lid).get().then(function(doc) {
     if (!doc.exists) return;
     var l = doc.data();
-    var myName = currentProfile ? (currentProfile.name || currentProfile.username) : "Someone";
-    sendNotification(l.commissioner, {
-      type: "league_request",
-      title: "League Join Request",
-      message: myName + " wants to join " + l.name,
-      page: "leagues"
+    if (l.badge === "founding") { Router.toast("Cannot delete the founding league"); return; }
+    if (l.commissioner !== currentUser.uid) { Router.toast("Only commissioner can delete"); return; }
+    var promises = (l.memberUids || []).map(function(uid) {
+      return db.collection("members").doc(uid).update({
+        leagues: firebase.firestore.FieldValue.arrayRemove(lid)
+      }).catch(function(){});
     });
-    Router.toast("Request sent to " + l.name + " commissioner!");
+    Promise.all(promises).then(function() {
+      return db.collection("leagues").doc(lid).delete();
+    }).then(function() {
+      if (currentProfile) {
+        currentProfile.leagues = (currentProfile.leagues || []).filter(function(l2){return l2!==lid});
+        if (currentProfile.activeLeague === lid) {
+          currentProfile.activeLeague = currentProfile.leagues.length ? currentProfile.leagues[0] : "";
+          db.collection("members").doc(currentUser.uid).update({ activeLeague: currentProfile.activeLeague }).catch(function(){});
+        }
+      }
+      Router.toast("League deleted");
+      Router.go("leagues");
+    });
   });
 }
