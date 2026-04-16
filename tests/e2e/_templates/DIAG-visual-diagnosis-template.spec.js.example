@@ -1,0 +1,149 @@
+// Template: visual diagnosis pattern
+// Originally used for v7.8.4 UI bug investigation.
+// Adapt by: (1) changing the user to login as, (2) changing the
+// page navigation, (3) changing the element selectors to
+// extract, (4) changing the screenshot filenames.
+// Delete the adapted copy after use (see ../_templates/README.md).
+
+const { test, expect } = require('@playwright/test');
+const fs = require('fs');
+const path = require('path');
+const { loginAs } = require('../helpers/auth.js');
+const { goMyProfile } = require('../helpers/navigation.js');
+
+const OUT_DIR = path.join(__dirname, '..', '..', '..', 'test-results');
+function writeReport(name, obj) {
+  if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true });
+  fs.writeFileSync(path.join(OUT_DIR, name), JSON.stringify(obj, null, 2));
+}
+
+async function diagnoseUser(page, userKey) {
+  await loginAs(page, userKey);
+
+  // ── HOME ─────────────────────────────────────────────────────────
+  await page.screenshot({ path: path.join(OUT_DIR, `diag-home-${userKey}.png`), fullPage: true });
+
+  const homeData = await page.evaluate(() => {
+    const out = { userKey: 'home', currentProfile: null, homeBadge: null };
+    if (typeof currentProfile !== 'undefined' && currentProfile) {
+      out.currentProfile = {
+        id: currentProfile.id,
+        xp: currentProfile.xp,
+        level: currentProfile.level,
+        totalRounds: currentProfile.totalRounds,
+        claimedFrom: currentProfile.claimedFrom,
+      };
+    }
+    if (typeof PB !== 'undefined' && currentUser) {
+      try {
+        const lvl = PB.getPlayerLevel(currentUser.uid);
+        out.pbLevel = lvl;
+        out.pbXp = PB.getPlayerXP ? PB.getPlayerXP(currentUser.uid) : null;
+      } catch (e) { out.pbError = String(e); }
+    }
+
+    // Profile bar avatar + level badge
+    const bar = document.getElementById('profileBarAvatar');
+    const badge = document.getElementById('profileBarLevelBadge');
+    const right = document.getElementById('profileBarRight');
+    if (bar) {
+      out.homeBadge = {
+        avatar_outerHTML: bar.outerHTML.substring(0, 2000),
+        badge_outerHTML: badge ? badge.outerHTML : null,
+        badge_textContent: badge ? badge.textContent : null,
+        profileBarRight_outerHTML: right ? right.outerHTML.substring(0, 2000) : null,
+      };
+      // Find the xp bar fill element inside right
+      if (right) {
+        const fill = right.querySelector('[style*="width"]');
+        if (fill) {
+          const cs = getComputedStyle(fill);
+          out.homeBadge.xpFillComputed = { width: cs.width, background: cs.backgroundColor };
+          out.homeBadge.xpFillInlineStyle = fill.getAttribute('style');
+        }
+      }
+    }
+    return out;
+  });
+
+  // ── PROFILE ──────────────────────────────────────────────────────
+  await goMyProfile(page);
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: path.join(OUT_DIR, `diag-profile-${userKey}.png`), fullPage: true });
+
+  const profileData = await page.evaluate(() => {
+    const out = {};
+    // Find the page container for members/profile
+    const page = document.querySelector('[data-page="members"]');
+    out.pageFound = !!page;
+    if (!page) return out;
+
+    // XP bar — find any element on the profile with "XP" or "Trophies" text
+    // and capture nearby ancestors.
+    const all = page.querySelectorAll('*');
+    const xpCandidates = [];
+    for (const el of all) {
+      const t = (el.textContent || '').trim();
+      if ((t.length < 200) && (t.includes('Trophies') || (t.match(/\d[\d,]*\s*XP/) && !el.children.length))) {
+        xpCandidates.push({
+          tag: el.tagName,
+          text: t.substring(0, 200),
+          outerHTML: el.outerHTML.substring(0, 1500),
+        });
+      }
+    }
+    out.xpCandidates = xpCandidates.slice(0, 6);
+
+    // Stat grid — look for a container whose direct children are .stat-box
+    // or contain stat-val.
+    const statBoxes = page.querySelectorAll('.stat-box');
+    out.statBoxCount = statBoxes.length;
+    if (statBoxes.length > 0) {
+      const grid = statBoxes[0].parentElement;
+      if (grid) {
+        out.statGrid = {
+          tag: grid.tagName,
+          classList: Array.from(grid.classList),
+          outerHTML: grid.outerHTML.substring(0, 5000),
+          childCount: grid.children.length,
+          children: Array.from(grid.children).map((c, i) => ({
+            index: i,
+            tag: c.tagName,
+            classList: Array.from(c.classList),
+            dataStat: c.getAttribute('data-stat'),
+            dataCount: c.getAttribute('data-count'),
+            outerHTMLHead: c.outerHTML.substring(0, 400),
+            directText: Array.from(c.childNodes).filter(n => n.nodeType === 3).map(n => n.textContent.trim()).join('|'),
+          })),
+        };
+      }
+    }
+
+    return out;
+  });
+
+  return { home: homeData, profile: profileData };
+}
+
+test.describe('DIAG v7.8.4 — reproduce UI bugs', () => {
+  test('testZach home + profile', async ({ page }) => {
+    const data = await diagnoseUser(page, 'testZach');
+    writeReport('diag-testzach.json', data);
+    console.log('[DIAG] testZach:', JSON.stringify({
+      currentProfile: data.home.currentProfile,
+      pbXp: data.home.pbXp,
+      pbLevel: data.home.pbLevel,
+      xpFillInlineStyle: data.home.homeBadge && data.home.homeBadge.xpFillInlineStyle,
+      statBoxCount: data.profile.statBoxCount,
+      statGridChildCount: data.profile.statGrid && data.profile.statGrid.childCount,
+      statGridChildren: data.profile.statGrid && data.profile.statGrid.children.map(c => ({
+        i: c.index, tag: c.tag, classes: c.classList.join(','), dataStat: c.dataStat, directText: c.directText
+      })),
+    }, null, 2));
+  });
+
+  test('scenarioTwentyRounds profile (fallback sample)', async ({ page }) => {
+    const data = await diagnoseUser(page, 'scenarioTwentyRounds');
+    writeReport('diag-scenario20.json', data);
+  });
+});

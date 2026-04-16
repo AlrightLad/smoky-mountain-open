@@ -158,6 +158,21 @@ function statsFor(u) {
   return { totalRounds: mine.length, avgScore, bestRound, handicap };
 }
 
+// Materialized XP values per user. Production's persistPlayerStats persists
+// `xp` on the member doc (computed globally across all leagues). v7.8.4's fix
+// makes home/profile displays read that persisted value first — so to avoid
+// the displays falling back to live for every user, we populate matching
+// values here. For users the XP tests target: testZach (3,100) and
+// scenarioTwentyRounds (4,150) mirror their live league-scoped computation,
+// so parity holds trivially. scenarioMixedLeagues (4,500) is deliberately
+// higher than its league-scoped live value — that divergence is the scenario
+// the XP parity regression test exercises.
+const MATERIALIZED_XP = {
+  testZach: 3100,
+  scenarioTwentyRounds: 4150,
+  scenarioMixedLeagues: 4500,
+};
+
 for (const u of users) {
   const s = statsFor(u);
   u._expectedRoundCount = s.totalRounds;
@@ -173,6 +188,9 @@ for (const u of users) {
   // catch.
   if (!u.memberDoc.isFoundingFour) {
     u.memberDoc.totalRounds = s.totalRounds;
+  }
+  if (MATERIALIZED_XP[u.key] !== undefined) {
+    u.memberDoc.xp = MATERIALIZED_XP[u.key];
   }
 }
 
