@@ -3,3 +3,10 @@ dist/
 serviceAccountKey.json
 scripts/.service-account.json
 logs/
+/emulator-data/
+/test-results/
+/playwright-report/
+/.firebase/
+/.claude/
+/firebase-debug.log
+/firestore-debug.log

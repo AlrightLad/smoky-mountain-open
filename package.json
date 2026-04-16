@@ -11,9 +11,16 @@
     "verify:ci": "node scripts/verify.js --json --fail-fast",
     "verify:drift": "node scripts/verify.js --check=global-vs-scoped",
     "verify:display": "node scripts/verify.js --check=display-drift",
-    "verify:cleanup": "node scripts/verify.js --confirm-cleanup"
+    "verify:cleanup": "node scripts/verify.js --confirm-cleanup",
+    "emulator:start": "firebase emulators:start --import=./emulator-data --export-on-exit",
+    "emulator:seed": "node tests/e2e/setup/seed-baseline.js",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "ship-gate": "node scripts/ship-gate.js"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "acorn": "^8.16.0",
     "firebase-admin": "^13.8.0",
     "vite": "^8.0.8"

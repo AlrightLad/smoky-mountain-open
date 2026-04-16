@@ -61,6 +61,12 @@ try {
     auth = firebase.auth();
     // Offline persistence disabled — causes stale IndexedDB cache issues for a real-time community app.
     // Firestore real-time listeners handle live sync; server is always authoritative.
+    if (window.location.search.indexOf("emulator=1") !== -1) {
+      db.useEmulator("localhost", 8080);
+      auth.useEmulator("http://localhost:9099", { disableWarnings: true });
+      window._pbEmulator = true;
+      pbLog("[FB] Emulator mode — Firestore :8080, Auth :9099");
+    }
     firebaseAvailable = true;
     pbLog("[FB] Ready");
   } else {

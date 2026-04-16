@@ -78,7 +78,7 @@ Router.register("home", function() {
   h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--cream)">' + (myHcap !== null ? myHcap : "—") + '</div>';
   h += '<div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Handicap</div></div>';
   var myTotalRounds = currentProfile && currentProfile.totalRounds ? currentProfile.totalRounds : myRounds.length;
-  h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'roundhistory\')"><div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--cream)" data-count="' + myTotalRounds + '">' + myTotalRounds + '</div>';
+  h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'roundhistory\')"><div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--cream)" data-stat="round-count" data-count="' + myTotalRounds + '">' + myTotalRounds + '</div>';
   h += '<div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Rounds <svg viewBox="0 0 12 12" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div></div>';
   h += '<div style="text-align:center;' + (myBestRoundId ? 'cursor:pointer' : '') + '"' + (myBestRoundId ? ' onclick="Router.go(\'rounds\',{roundId:\'' + myBestRoundId + '\'})"' : '') + '>';
   if (myBest && myBest < 999) {

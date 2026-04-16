@@ -384,7 +384,7 @@ function renderMemberDetailWithData(p) {
   } else {
     h += statBox(bestScore, "Best");
   }
-  h += statBox(rounds.length, "Rounds");
+  h += '<span data-stat="round-count" data-count="' + rounds.length + '">' + statBox(rounds.length, "Rounds") + '</span>';
   h += statBox(unique, "Courses");
   var ewIds = [pid]; if (p.claimedFrom) ewIds.push(p.claimedFrom);
   var eventWinsCount = PB.getTrips().filter(function(t){ return t.champion && ewIds.indexOf(t.champion) !== -1; }).length;
