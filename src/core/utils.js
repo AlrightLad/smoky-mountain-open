@@ -5,6 +5,23 @@
 
 var PB_DEBUG = false; // Set true for console output
 
+// Send email verification with proper error handling and user feedback
+function sendVerificationEmail() {
+  if (!currentUser) { Router.toast("Sign in first"); return; }
+  if (currentUser.emailVerified) { Router.toast("Email already verified!"); return; }
+  var email = currentUser.email || "";
+  Router.toast("Sending verification to " + email + "...");
+  currentUser.sendEmailVerification().then(function() {
+    Router.toast("Verification email sent to " + email + " — check inbox and spam folder");
+  }).catch(function(err) {
+    var msg = "Failed to send verification email";
+    if (err && err.code === "auth/too-many-requests") msg = "Too many attempts — wait a few minutes and try again";
+    else if (err && err.message) msg = err.message;
+    Router.toast(msg);
+    pbWarn("[Auth] Verification email error:", err);
+  });
+}
+
 // Email verification gate — returns true if verified or gate should be skipped
 function requireVerified(actionName) {
   if (!currentUser) { Router.toast("Sign in required"); return false; }

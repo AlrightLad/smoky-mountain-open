@@ -12,6 +12,11 @@ Router.register("settings", function() {
     h += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="font-size:11px;color:var(--muted)">Username</span><span style="font-size:12px;font-weight:600;color:var(--gold)">' + escHtml(currentProfile ? (currentProfile.username||currentProfile.name) : "—") + '</span></div>';
     h += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="font-size:11px;color:var(--muted)">Role</span><span style="font-size:12px;font-weight:600">' + escHtml(currentProfile ? currentProfile.role : "—") + '</span></div>';
     h += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="font-size:11px;color:var(--muted)">Sync</span><span style="font-size:12px;font-weight:600;color:' + (syncStatus==="online"?"var(--birdie)":"var(--red)") + '">' + syncStatus + '</span></div>';
+    if (currentUser && !currentUser.emailVerified) {
+      h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-top:1px solid var(--border);margin-top:4px"><span style="font-size:11px;color:var(--gold)">Email not verified</span><button style="background:var(--gold);color:var(--bg);border:none;border-radius:4px;font:600 10px/1 Inter,sans-serif;padding:6px 12px;cursor:pointer" onclick="sendVerificationEmail()">Send Verification</button></div>';
+    } else if (currentUser && currentUser.emailVerified) {
+      h += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="font-size:11px;color:var(--muted)">Email</span><span style="font-size:11px;color:var(--birdie)">Verified \u2713</span></div>';
+    }
     h += '</div></div>';
   } else {
     h += '<div style="font-size:12px;color:var(--muted)">Not signed in</div>';
