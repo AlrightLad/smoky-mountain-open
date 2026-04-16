@@ -8,7 +8,8 @@ function getActiveLeague() {
 
 // ========== LEAGUE-SCOPED WRITE HELPER ==========
 // Wraps db.collection().add() to automatically include leagueId for league-scoped collections.
-var LEAGUE_SCOPED_COLLECTIONS = ['rounds','chat','trips','teetimes','wagers','bounties','scrambleTeams','calendar_events','scheduling_chat','social_actions','invites','syncrounds','liverounds'];
+// MUST stay in sync with LEAGUE_SCOPED in utils.js — single source of truth.
+var LEAGUE_SCOPED_COLLECTIONS = LEAGUE_SCOPED;
 
 // Monkey-patch Firestore add() to auto-inject leagueId for league-scoped collections.
 // This ensures EVERY write to a league-scoped collection gets the correct leagueId

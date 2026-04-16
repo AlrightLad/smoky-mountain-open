@@ -56,6 +56,13 @@ Router.register("admin", function() {
   if (savedApiKey) h += '<div style="font-size:9px;color:var(--birdie);margin-top:4px"><svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg> Active</div>';
   h += '</div></div></div>';
 
+  // Data Recovery — CRITICAL for league migration
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--gold)">Data Recovery</span></div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Scan Firestore for docs missing leagueId tags. Fixes founding league data that became invisible after multi-league migration.</div>';
+  h += '<button class="btn full" style="background:rgba(var(--gold-rgb),.1);border:1px solid rgba(var(--gold-rgb),.3);color:var(--gold);font-size:11px;margin-bottom:8px" onclick="runDataRecoveryScan()">Scan for Missing Data</button>';
+  h += '<div id="recoveryResult"></div>';
+  h += '</div>';
+
   // Course Management
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Course Management</span></div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Remove duplicate or incorrectly added courses. API-imported courses are preferred.</div>';
@@ -534,6 +541,219 @@ function adminDeleteCourse(fsId, name) {
     Router.toast('"' + name + '" removed');
     loadAdminCourses();
   }).catch(function(err) { Router.toast("Error: " + err.message); });
+}
+
+// ========== DATA RECOVERY TOOL (Commissioner only) ==========
+// Scans Firestore for docs missing leagueId and tags them "the-parbaughs".
+// Also fixes member docs missing leagues[] / activeLeague.
+
+var _recoveryCollections = ["rounds","chat","trips","teetimes","wagers","bounties","challenges","scrambleTeams","calendar_events","scheduling_chat","social_actions","invites","syncrounds","liverounds","league_battles","tripscores","rangeSessions","course_reviews","photos"];
+
+function runDataRecoveryScan() {
+  if (!db || !currentProfile || currentProfile.role !== "commissioner") return;
+  var el = document.getElementById("recoveryResult");
+  if (!el) return;
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>Scanning Firestore...</div>';
+
+  var report = {};
+  var promises = [];
+  var totalMissing = 0;
+  var totalDocs = 0;
+
+  _recoveryCollections.forEach(function(col) {
+    var p = db.collection(col).get().then(function(snap) {
+      var missing = 0;
+      var wrongId = 0;
+      var correct = 0;
+      var total = snap.size;
+      snap.forEach(function(doc) {
+        var d = doc.data();
+        if (!d.leagueId) missing++;
+        else if (d.leagueId === "the-parbaughs") correct++;
+        else wrongId++;
+      });
+      report[col] = { total: total, missing: missing, wrongId: wrongId, correct: correct };
+      totalMissing += missing;
+      totalDocs += total;
+    }).catch(function(e) {
+      report[col] = { total: 0, missing: 0, wrongId: 0, correct: 0, error: e.message };
+    });
+    promises.push(p);
+  });
+
+  // Also check members
+  var memberPromise = db.collection("members").get().then(function(snap) {
+    var membersNoLeague = 0;
+    var membersTotal = snap.size;
+    snap.forEach(function(doc) {
+      var d = doc.data();
+      if (!d.leagues || !d.leagues.length || !d.activeLeague) membersNoLeague++;
+    });
+    report["_members"] = { total: membersTotal, missing: membersNoLeague };
+  });
+  promises.push(memberPromise);
+
+  // Check if founding league doc exists
+  var leagueDocPromise = db.collection("leagues").doc("the-parbaughs").get().then(function(doc) {
+    report["_leagueDoc"] = { exists: doc.exists, data: doc.exists ? doc.data() : null };
+  });
+  promises.push(leagueDocPromise);
+
+  Promise.all(promises).then(function() {
+    var h = '<div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px">Scan Complete</div>';
+    h += '<div style="font-size:11px;color:var(--cream);margin-bottom:6px">Total docs scanned: <b>' + totalDocs + '</b> · Missing leagueId: <b style="color:var(--red)">' + totalMissing + '</b></div>';
+
+    // League doc status
+    if (report["_leagueDoc"]) {
+      var ld = report["_leagueDoc"];
+      h += '<div style="font-size:11px;margin-bottom:6px;color:' + (ld.exists ? 'var(--birdie)' : 'var(--red)') + '">Founding league doc: ' + (ld.exists ? 'EXISTS' : 'MISSING') + '</div>';
+    }
+
+    // Members status
+    if (report["_members"]) {
+      var mm = report["_members"];
+      h += '<div style="font-size:11px;margin-bottom:10px;color:' + (mm.missing > 0 ? 'var(--red)' : 'var(--birdie)') + '">Members without leagues[]: ' + mm.missing + ' / ' + mm.total + '</div>';
+    }
+
+    h += '<table style="width:100%;font-size:10px;border-collapse:collapse">';
+    h += '<tr style="border-bottom:1px solid var(--border);color:var(--muted)"><th style="text-align:left;padding:4px">Collection</th><th>Total</th><th>Missing</th><th>Wrong</th><th>OK</th></tr>';
+    _recoveryCollections.forEach(function(col) {
+      var r = report[col] || {};
+      var rowColor = r.missing > 0 ? "var(--red)" : r.error ? "var(--muted2)" : "var(--birdie)";
+      h += '<tr style="border-bottom:1px solid var(--border2)">';
+      h += '<td style="padding:4px;color:var(--cream)">' + col + '</td>';
+      h += '<td style="text-align:center;padding:4px">' + (r.total || 0) + '</td>';
+      h += '<td style="text-align:center;padding:4px;color:' + (r.missing > 0 ? 'var(--red);font-weight:700' : 'var(--birdie)') + '">' + (r.missing || 0) + '</td>';
+      h += '<td style="text-align:center;padding:4px;color:' + (r.wrongId > 0 ? 'var(--gold)' : 'var(--muted)') + '">' + (r.wrongId || 0) + '</td>';
+      h += '<td style="text-align:center;padding:4px;color:var(--birdie)">' + (r.correct || 0) + '</td>';
+      h += '</tr>';
+    });
+    h += '</table>';
+
+    if (totalMissing > 0 || (report["_members"] && report["_members"].missing > 0) || (report["_leagueDoc"] && !report["_leagueDoc"].exists)) {
+      h += '<button class="btn full green" style="margin-top:12px" onclick="runDataRecoveryFix()">Fix All (' + totalMissing + ' docs + members + league doc)</button>';
+    } else {
+      h += '<div style="margin-top:10px;font-size:11px;color:var(--birdie);text-align:center;font-weight:600">All data properly tagged. No recovery needed.</div>';
+    }
+
+    el.innerHTML = h;
+    window._recoveryReport = report;
+  });
+}
+
+function runDataRecoveryFix() {
+  if (!db || !currentProfile || currentProfile.role !== "commissioner") return;
+  var el = document.getElementById("recoveryResult");
+  if (!el) return;
+  if (!confirm("This will tag all untagged docs with leagueId:'the-parbaughs' and fix member profiles. Proceed?")) return;
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>Fixing data...</div>';
+
+  var fixPromises = [];
+  var fixCount = 0;
+
+  // 1. Fix league-scoped collections — tag missing leagueId
+  _recoveryCollections.forEach(function(col) {
+    var p = db.collection(col).get().then(function(snap) {
+      var batch = db.batch();
+      var batchCount = 0;
+      snap.forEach(function(doc) {
+        var d = doc.data();
+        if (!d.leagueId) {
+          batch.update(doc.ref, { leagueId: "the-parbaughs" });
+          batchCount++;
+        }
+      });
+      if (batchCount > 0) {
+        fixCount += batchCount;
+        return batch.commit();
+      }
+    }).catch(function(e) { pbWarn("[Recovery] Error fixing " + col + ":", e); });
+    fixPromises.push(p);
+  });
+
+  // 2. Fix members — add leagues[] and activeLeague
+  var memberFix = db.collection("members").get().then(function(snap) {
+    var batch = db.batch();
+    var batchCount = 0;
+    snap.forEach(function(doc) {
+      var d = doc.data();
+      var updates = {};
+      if (!d.leagues || !d.leagues.length) {
+        updates.leagues = ["the-parbaughs"];
+      }
+      if (!d.activeLeague) {
+        updates.activeLeague = "the-parbaughs";
+      }
+      if (Object.keys(updates).length > 0) {
+        batch.update(doc.ref, updates);
+        batchCount++;
+      }
+    });
+    if (batchCount > 0) {
+      fixCount += batchCount;
+      return batch.commit();
+    }
+  }).catch(function(e) { pbWarn("[Recovery] Error fixing members:", e); });
+  fixPromises.push(memberFix);
+
+  // 3. Ensure founding league doc exists
+  var leagueDocFix = db.collection("leagues").doc("the-parbaughs").get().then(function(doc) {
+    if (!doc.exists) {
+      // Collect all current member UIDs
+      return db.collection("members").get().then(function(mSnap) {
+        var allUids = [];
+        mSnap.forEach(function(mDoc) { allUids.push(mDoc.id); });
+        return db.collection("leagues").doc("the-parbaughs").set({
+          name: "The Parbaughs",
+          slug: "the-parbaughs",
+          location: "York, PA",
+          description: "The original. The founding league. Est. 2026.",
+          founded: "2026-04-05",
+          badge: "founding",
+          tier: "crew",
+          visibility: "private",
+          commissioner: "1GE683EauXO8TVhcStKfWiCCcRl2",
+          admins: ["1GE683EauXO8TVhcStKfWiCCcRl2"],
+          memberCount: allUids.length,
+          memberUids: allUids,
+          inviteCode: "PB-FOUNDING",
+          theme: "classic",
+          createdAt: fsTimestamp(),
+          settings: { seasons: true, parcoins: true, wagers: true, bounties: true, trashTalk: true }
+        });
+      });
+    } else {
+      // League doc exists — make sure memberUids is up to date
+      return db.collection("members").get().then(function(mSnap) {
+        var allUids = [];
+        mSnap.forEach(function(mDoc) {
+          var d = mDoc.data();
+          if (d.leagues && d.leagues.indexOf("the-parbaughs") !== -1) {
+            allUids.push(mDoc.id);
+          }
+        });
+        if (allUids.length > 0) {
+          return db.collection("leagues").doc("the-parbaughs").update({
+            memberUids: allUids,
+            memberCount: allUids.length
+          });
+        }
+      });
+    }
+  }).catch(function(e) { pbWarn("[Recovery] Error fixing league doc:", e); });
+  fixPromises.push(leagueDocFix);
+
+  Promise.all(fixPromises).then(function() {
+    el.innerHTML = '<div style="text-align:center;padding:16px">'
+      + '<div style="font-size:14px;font-weight:700;color:var(--birdie);margin-bottom:8px">Recovery Complete</div>'
+      + '<div style="font-size:11px;color:var(--cream)">Fixed ' + fixCount + ' documents</div>'
+      + '<div style="font-size:10px;color:var(--muted);margin-top:4px">Founding league doc ensured. Member profiles updated.</div>'
+      + '<button class="btn full outline" style="margin-top:12px" onclick="runDataRecoveryScan()">Run scan again to verify</button>'
+      + '</div>';
+    Router.toast("Recovery complete! " + fixCount + " docs fixed");
+  }).catch(function(e) {
+    el.innerHTML = '<div style="color:var(--red);font-size:11px;padding:12px">Recovery error: ' + escHtml(e.message) + '</div>';
+  });
 }
 
 function bulkGenerateInvites() {
