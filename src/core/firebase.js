@@ -3,15 +3,18 @@ window.onerror = function(msg, url, line, col, error) {
   try {
     if (typeof db !== "undefined" && db) {
       db.collection("errors").add({
-        message: String(msg),
+        message: String(msg).substring(0, 300),
+        url: String(url || "").substring(0, 200),
         line: line,
         col: col,
-        stack: error ? String(error.stack).substring(0, 500) : "",
+        stack: error ? String(error.stack).substring(0, 800) : "",
+        errorName: error ? (error.name || "") : "",
         userAgent: navigator.userAgent.substring(0, 150),
         page: typeof Router !== "undefined" ? Router.getPage() : "unknown",
         userId: (typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : "anonymous",
         userName: (typeof currentProfile !== "undefined" && currentProfile) ? (currentProfile.name || currentProfile.username || "") : "",
         timestamp: new Date().toISOString(),
+        appVersion: "7.0.1",
         resolved: false
       }).catch(function(){});
     }

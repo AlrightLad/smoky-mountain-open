@@ -4,6 +4,15 @@
    ================================================ */
 
 var PB_DEBUG = false; // Set true for console output
+
+// ── Global defaults for cross-file variables ──
+// These are re-declared with full state in their owning pages (playnow.js, range.js, etc.)
+// but must exist as globals BEFORE home.js renders to prevent ReferenceError.
+if (typeof liveState === "undefined") var liveState = {active:false,course:"",scores:[],fir:[],gir:[],putts:[],currentHole:0,holesMode:"full18",format:"stroke",startTime:null};
+if (typeof onlineMembers === "undefined") var onlineMembers = {};
+if (typeof liveTeeTimes === "undefined") var liveTeeTimes = [];
+if (typeof liveRangeSessions === "undefined") var liveRangeSessions = [];
+if (typeof liveNotifications === "undefined") var liveNotifications = [];
 function pbLog() { if (PB_DEBUG && console.log) console.log.apply(console, arguments); }
 function pbWarn() { if (PB_DEBUG && console.warn) console.warn.apply(console, arguments); }
 

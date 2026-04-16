@@ -461,6 +461,9 @@ function getStrokesOnHole(handicapIndex, rating, slope, par, holeHdcp) {
 }
 
 function renderLiveScoring() {
+  try { _renderLiveScoringInner(); } catch(e) { pbWarn("[PlayNow] Render error:", e.message, e.stack); }
+}
+function _renderLiveScoringInner() {
   var hole = liveState.currentHole;
   var player = PB.getPlayer(liveState.player);
   var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
@@ -704,6 +707,7 @@ function renderLiveScoring() {
 }
 
 function adjustLiveScore(delta) {
+  try {
   var hole = liveState.currentHole;
   var current = liveState.scores[hole];
   if (current === "") {
@@ -720,6 +724,7 @@ function adjustLiveScore(delta) {
     var el = document.getElementById("liveScoreNum");
     if (el) { el.classList.remove("score-pop"); void el.offsetWidth; el.classList.add("score-pop"); }
   }, 20);
+  } catch(e) { pbWarn("[PlayNow] adjustLiveScore error:", e.message); }
 }
 
 function liveNavNext(hole) {

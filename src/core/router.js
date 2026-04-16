@@ -1431,7 +1431,7 @@ function updatePresence() {
     lastSeen: fsTimestamp(),
     online: true
   };
-  if (liveState.active) {
+  if (typeof liveState !== "undefined" && liveState && liveState.active) {
     var scored = liveState.scores.filter(function(s){return s!==""});
     presenceData.liveRound = {
       course: liveState.course || "",

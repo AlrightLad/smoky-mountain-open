@@ -118,7 +118,7 @@ Router.register("home", function() {
 
   // ── Live Spotlight — MOVED UP, most urgent info first ──
   var liveRounds = [];
-  if (liveState.active) {
+  if (typeof liveState !== "undefined" && liveState && liveState.active) {
     var myName = currentProfile ? (currentProfile.name || currentProfile.username) : "You";
     var myThru = liveState.scores.filter(function(s){return s!==""}).length;
     var myScore = liveState.scores.filter(function(s){return s!==""}).reduce(function(a,b){return a+parseInt(b)},0);
