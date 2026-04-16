@@ -425,7 +425,43 @@ function renderCourseDetail(courseId) {
     if (c.yards) h += c.yards.toLocaleString() + ' yards';
     h += '</div>';
   }
-  h += '<button class="btn-sm outline" style="margin-top:8px" onclick="uploadCoursePhoto(\'' + courseId + '\')">Upload photo</button></div>';
+  h += '<button class="btn-sm outline" style="margin-top:8px" onclick="uploadCoursePhoto(\'' + courseId + '\')">Upload photo</button>';
+
+  // Community scorecard data status
+  var cd = c.communityData || {};
+  var cdStatus = cd.status || "api_only";
+  var verCount = cd.verifications ? cd.verifications.length : 0;
+  var hasPlayedHere2 = currentUser && PB.getPlayerRounds(currentUser.uid).some(function(r){ return PB.normCourseName(r.course) === PB.normCourseName(c.name); });
+  var isContributor = currentUser && cd.contributorId === currentUser.uid;
+  var hasVerified = currentUser && cd.verifications && cd.verifications.some(function(v){ return v.uid === currentUser.uid; });
+
+  h += '<div style="margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">';
+  if (cdStatus === "verified") {
+    h += '<span style="font-size:9px;font-weight:700;color:var(--birdie);background:rgba(var(--birdie-rgb),.08);padding:3px 8px;border-radius:4px;letter-spacing:.5px">COMMUNITY VERIFIED \u2713</span>';
+    h += '<span style="font-size:9px;color:var(--muted)">' + verCount + ' verified</span>';
+  } else if (cdStatus === "community_added") {
+    h += '<span style="font-size:9px;font-weight:700;color:var(--orange);background:rgba(var(--orange-rgb),.08);padding:3px 8px;border-radius:4px;letter-spacing:.5px">UNVERIFIED</span>';
+    if (cd.contributorName) h += '<span style="font-size:9px;color:var(--muted)">Added by ' + escHtml(cd.contributorName) + '</span>';
+  } else {
+    h += '<span style="font-size:9px;color:var(--muted2);background:var(--bg3);padding:3px 8px;border-radius:4px;letter-spacing:.5px">API DATA</span>';
+  }
+  h += '</div>';
+
+  // Action buttons based on state
+  h += '<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">';
+  if (cdStatus === "api_only" && hasPlayedHere2) {
+    h += '<button class="btn-sm green" style="font-size:10px" onclick="showScorecardEditor(\'' + courseId + '\')">Add Scorecard Data (+50 coins)</button>';
+  } else if (cdStatus === "community_added" && hasPlayedHere2 && !isContributor && !hasVerified) {
+    h += '<button class="btn-sm green" style="font-size:10px" onclick="verifyCourseData(\'' + courseId + '\')">Verify This Data (+10 coins)</button>';
+    h += '<button class="btn-sm outline" style="font-size:10px" onclick="showScorecardEditor(\'' + courseId + '\')">Suggest Edit</button>';
+  } else if (cdStatus === "verified") {
+    h += '<button class="btn-sm outline" style="font-size:10px" onclick="showScorecardEditor(\'' + courseId + '\')">Suggest Edit</button>';
+  } else if (!hasPlayedHere2) {
+    h += '<span style="font-size:9px;color:var(--muted)">Play this course to contribute data</span>';
+  }
+  h += '</div>';
+
+  h += '</div>';
 
   // All tees overview
   if (c.allTees && c.allTees.length > 0) {
@@ -922,5 +958,120 @@ function setReviewStars(n) {
   document.getElementById("rev-rating").value = n;
   var stars = document.querySelectorAll("#rev-stars span");
   stars.forEach(function(s) { s.style.color = parseInt(s.dataset.star) <= n ? "var(--gold)" : "var(--bg3)"; });
+}
+
+// ═══ COMMUNITY SCORECARD SYSTEM ═══
+
+function showScorecardEditor(courseId) {
+  var c = PB.getCourse(courseId);
+  if (!c) return;
+  var cd = c.communityData || {};
+  var existingPars = cd.holePars || c.holes || [];
+  // Pre-fill from API or existing community data
+  var numHoles = 18;
+
+  var h = '<div class="sh"><h2>Edit Scorecard</h2><button class="back" onclick="Router.go(\'courses\',{id:\'' + courseId + '\'})">← Back</button></div>';
+  h += '<div style="padding:16px">';
+  h += '<div style="font-size:14px;font-weight:700;color:var(--cream);margin-bottom:4px">' + escHtml(c.name) + '</div>';
+  h += '<div style="font-size:10px;color:var(--muted);margin-bottom:16px">' + escHtml(c.loc || '') + '</div>';
+
+  // Tee info
+  h += '<div style="display:flex;gap:8px;margin-bottom:12px">';
+  h += '<div class="ff" style="flex:1"><label class="ff-label">Tee name</label><input class="ff-input" id="sc-tee" value="' + escHtml(cd.teeName || c.tee || 'White') + '" placeholder="e.g. White"></div>';
+  h += '<div class="ff" style="flex:1"><label class="ff-label">Slope</label><input class="ff-input" type="number" id="sc-slope" value="' + (cd.slope || c.slope || '') + '" placeholder="113"></div>';
+  h += '<div class="ff" style="flex:1"><label class="ff-label">Rating</label><input class="ff-input" type="number" step="0.1" id="sc-rating" value="' + (cd.rating || c.rating || '') + '" placeholder="72.0"></div>';
+  h += '</div>';
+
+  // Hole-by-hole par entry
+  h += '<div style="font-size:11px;font-weight:600;color:var(--gold);margin-bottom:8px">Hole Pars</div>';
+  h += '<div style="display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin-bottom:8px">';
+  for (var hi = 0; hi < 9; hi++) {
+    var val = existingPars[hi] || 4;
+    h += '<div style="text-align:center"><div style="font-size:8px;color:var(--muted);margin-bottom:2px">' + (hi + 1) + '</div>';
+    h += '<select class="ff-input" id="sc-par-' + hi + '" style="padding:6px 2px;font-size:12px;text-align:center;min-width:0"><option value="3"' + (val==3?' selected':'') + '>3</option><option value="4"' + (val==4?' selected':'') + '>4</option><option value="5"' + (val==5?' selected':'') + '>5</option></select></div>';
+  }
+  h += '</div>';
+  h += '<div style="display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin-bottom:16px">';
+  for (var hi2 = 9; hi2 < 18; hi2++) {
+    var val2 = existingPars[hi2] || 4;
+    h += '<div style="text-align:center"><div style="font-size:8px;color:var(--muted);margin-bottom:2px">' + (hi2 + 1) + '</div>';
+    h += '<select class="ff-input" id="sc-par-' + hi2 + '" style="padding:6px 2px;font-size:12px;text-align:center;min-width:0"><option value="3"' + (val2==3?' selected':'') + '>3</option><option value="4"' + (val2==4?' selected':'') + '>4</option><option value="5"' + (val2==5?' selected':'') + '>5</option></select></div>';
+  }
+  h += '</div>';
+
+  h += '<button class="btn full green" onclick="submitScorecardData(\'' + courseId + '\')">Submit Scorecard Data</button>';
+  h += '<div style="font-size:9px;color:var(--muted);text-align:center;margin-top:6px">Your contribution helps everyone get accurate stats</div>';
+  h += '</div>';
+  document.querySelector('[data-page="courses"]').innerHTML = h;
+}
+
+function submitScorecardData(courseId) {
+  if (!currentUser || !db) { Router.toast("Sign in required"); return; }
+  var c = PB.getCourse(courseId);
+  if (!c) return;
+
+  var pars = [];
+  for (var i = 0; i < 18; i++) {
+    var el = document.getElementById("sc-par-" + i);
+    pars.push(parseInt(el ? el.value : 4));
+  }
+  var teeName = (document.getElementById("sc-tee") || {}).value || "White";
+  var slope = parseInt((document.getElementById("sc-slope") || {}).value) || c.slope || 113;
+  var rating = parseFloat((document.getElementById("sc-rating") || {}).value) || c.rating || 72;
+  var parTotal = pars.reduce(function(a, b) { return a + b; }, 0);
+
+  var myName = currentProfile ? (currentProfile.name || currentProfile.username) : "A Parbaugh";
+  var isFirstContribution = !c.communityData || c.communityData.status === "api_only";
+
+  var communityData = {
+    status: "community_added",
+    holePars: pars,
+    parTotal: parTotal,
+    teeName: teeName,
+    slope: slope,
+    rating: rating,
+    contributorId: currentUser.uid,
+    contributorName: myName,
+    contributedAt: fsTimestamp(),
+    verifications: []
+  };
+
+  // Update the course doc
+  db.collection("courses").doc(courseId).update({ communityData: communityData, par: parTotal }).then(function() {
+    // Also update local cache
+    c.communityData = communityData;
+    c.par = parTotal;
+
+    // Award ParCoins for first contribution
+    if (isFirstContribution) {
+      awardCoins(currentUser.uid, 50, "scorecard_contribution", "Scorecard data for " + c.name, "sc_" + courseId);
+      Router.toast("Scorecard submitted! +50 ParCoins");
+    } else {
+      Router.toast("Scorecard edit submitted!");
+    }
+    Router.go("courses", { id: courseId });
+  }).catch(function(e) { Router.toast("Failed: " + e.message); });
+}
+
+function verifyCourseData(courseId) {
+  if (!currentUser || !db) return;
+  var c = PB.getCourse(courseId);
+  if (!c || !c.communityData) return;
+
+  var myName = currentProfile ? (currentProfile.name || currentProfile.username) : "A Parbaugh";
+  var verification = { uid: currentUser.uid, name: myName, at: new Date().toISOString() };
+  var verifications = (c.communityData.verifications || []).concat([verification]);
+  var newStatus = verifications.length >= 2 ? "verified" : c.communityData.status;
+
+  db.collection("courses").doc(courseId).update({
+    "communityData.verifications": verifications,
+    "communityData.status": newStatus
+  }).then(function() {
+    c.communityData.verifications = verifications;
+    c.communityData.status = newStatus;
+    awardCoins(currentUser.uid, 10, "scorecard_verify", "Verified scorecard at " + c.name, "scv_" + courseId);
+    Router.toast("Data verified! +10 ParCoins" + (newStatus === "verified" ? " — Course is now Community Verified!" : ""));
+    Router.go("courses", { id: courseId });
+  }).catch(function(e) { Router.toast("Failed: " + e.message); });
 }
 

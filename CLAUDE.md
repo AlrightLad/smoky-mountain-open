@@ -345,6 +345,9 @@ ParCoins have ZERO real-world cash value. Purely cosmetic and social. No gamblin
 | Achievement unlock (social/misc) | 10 | When achieved |
 | Invite friend who joins | 200 | Per invite |
 | New member welcome bonus | 25 | Once ever |
+| First scorecard data for a new course | 50 | Per course |
+| Verify another member's course data | 10 | Per course |
+| Approved scorecard edit on verified course | 25 | Per edit |
 
 ### Earning Targets
 - Casual (~2 rounds, 1 range/month): ~175 coins/month — Can afford 1 basic cosmetic per month
