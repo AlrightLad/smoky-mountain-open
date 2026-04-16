@@ -502,6 +502,37 @@ Builds run on GitHub Actions — no local Mac needed.
 - [ ] App Store assets: 1024x1024 icon, screenshots, description, keywords
 - [ ] Legal: privacy.html, terms.html, support.html (all in public/)
 
+## Security Notes
+- Firebase API key in client code is **normal and expected** — Firebase keys are restricted by Firestore rules, not secrecy
+- GolfCourseAPI key stored in Firestore `config/api_keys` (not in client code) — accessed server-side via Cloud Function
+- FCM VAPID key loaded from Firestore config at runtime
+- `escHtml()` used on 265+ user content insertion points
+- Registration has rate limiting (3 attempts per 10 min), password validation, username length/format checks
+- Social actions have cooldown timers (12-48 hours per action type)
+- **PRE-LAUNCH:** Replace catch-all Firestore rule with explicit per-collection rules before going public
+
+## Launch Checklist
+- [ ] Apple Developer account purchased ($99/yr)
+- [ ] Google Play Developer account purchased ($25 one-time)
+- [ ] iOS signing certificate generated and in GitHub Secrets
+- [ ] Android keystore generated and in GitHub Secrets
+- [ ] Domain secured (parbaughs.com or parbaughs.golf)
+- [ ] Firebase Hosting configured with custom domain
+- [ ] Firestore catch-all rule replaced with explicit per-collection rules
+- [ ] Repo visibility changed to private
+- [ ] iOS build passing in GitHub Actions
+- [ ] Android build passing in GitHub Actions
+- [ ] App submitted to App Store (TestFlight first)
+- [ ] App submitted to Google Play (Internal Testing first)
+- [ ] Landing page live at domain
+- [ ] Social accounts posting content (@Parbaughs)
+- [ ] Beta testers invited (target: 100 golfers)
+- [ ] App icon generated at all required sizes (public/icons/)
+- [ ] App Store screenshots created (5-6 per platform)
+- [ ] Analytics tracking verified (Firestore usage, active users)
+- [ ] Support email monitored (support@parbaughs.golf)
+- [ ] Privacy policy and terms accessible from app + stores
+
 ## Agent Team Configuration
 
 When using Claude Code agent teams, use this structure:
