@@ -550,6 +550,46 @@ Read: /mnt/skills/examples/mcp-builder/SKILL.md
 - Course maps/GPS integration (if API supports it)
 - Swing analysis integration
 
+## E2E Testing
+
+End-to-end tests run in a real Chromium browser against an isolated local Firebase emulator. Synthetic fixtures reproduce the shape of production data (founding-four claim splits, 9-hole rounds, scrambles, multi-league membership) so display-layer bugs like v7.6.5 are caught before they reach members.
+
+### Running tests
+
+```bash
+# Terminal 1 — start the emulator (keep running)
+npm run emulator:start
+
+# Terminal 2 — run the suite
+npm run test:e2e
+
+# Other modes
+npm run test:e2e:ui       # Playwright interactive UI
+npm run test:e2e:headed   # watch the browser
+npm run ship-gate         # full pipeline: lint + emulator-check + e2e + verify
+```
+
+The app connects to the emulator only when loaded with `?emulator=1` in the URL. Normal dev (`npm run dev`) still talks to the production Firebase project.
+
+### Adding tests
+
+1. If the fixture doesn't cover your case, add users/rounds/leagues to `tests/e2e/setup/fixtures/`. Keep the `expectedRoundCount` map in `users.js` in sync.
+2. Create a `*.spec.js` file under `tests/e2e/flows/`.
+3. Use `loginAs(page, key)` from `tests/e2e/helpers/auth.js`. It mints a custom token against the Auth emulator, signs in with the compat SDK, and waits for `fbMemberCache` to populate before returning — so `getPlayerRounds` has full claimedFrom merge data.
+4. Read the round count with `readRoundCount(page)` (pulls `data-count`, avoiding the count-up animation race).
+
+### Debugging failures
+
+- Screenshots: `test-results/<test-name>/test-failed-*.png`
+- Video: `test-results/<test-name>/video.webm`
+- HTML report: `npx playwright show-report`
+- Seed log: re-run `npm run emulator:seed` to rebuild baseline state against the running emulator
+
+### Never
+
+- Never point tests at the production Firestore project. The test runner requires the emulator to be up.
+- Never seed production data into the emulator. Synthetic fixtures only.
+
 ## Native Build Setup
 
 ### Capacitor Configuration
