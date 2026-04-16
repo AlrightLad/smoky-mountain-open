@@ -261,8 +261,23 @@ function renderMemberDetailWithData(p) {
   // Get achievements and level early for frame/title
   var achievements = [];
   try { achievements = PB.getAchievements(pid) || []; } catch(e) {}
+  // XP source precedence (matches home.js:37–48 and firebase.js updateProfileBar):
+  // 1. currentProfile.xp       — viewing own profile, persisted global
+  // 2. fbMemberCache[pid].xp   — viewing another member, their persisted global
+  // 3. PB.getPlayerLevel(pid)  — live fallback (league-scoped)
+  // `isOwnProfile` is defined later in this function; recompute the same check
+  // inline here because the XP source depends on it.
+  var _xpIsSelf = currentUser && (pid === currentUser.uid || (currentProfile && pid === currentProfile.claimedFrom));
   var lvl = {level:1,name:"Rookie",xp:0,currentLevelXp:0,nextLevelXp:500};
-  try { lvl = PB.getPlayerLevel(pid) || lvl; } catch(e) {}
+  try {
+    if (_xpIsSelf && currentProfile && currentProfile.xp > 0) {
+      lvl = PB.calcLevelFromXP(currentProfile.xp);
+    } else if (!_xpIsSelf && typeof fbMemberCache !== "undefined" && fbMemberCache[pid] && fbMemberCache[pid].xp > 0) {
+      lvl = PB.calcLevelFromXP(fbMemberCache[pid].xp);
+    } else {
+      lvl = PB.getPlayerLevel(pid) || lvl;
+    }
+  } catch(e) {}
   var frameColor = playerFrameColor(p);
   var ringStyle = typeof playerRingStyle === "function" ? playerRingStyle(p) : "border:3px solid " + frameColor;
   var activeTitle = p.equippedTitle || p.title || "Member";
@@ -384,7 +399,11 @@ function renderMemberDetailWithData(p) {
   } else {
     h += statBox(bestScore, "Best");
   }
-  h += '<span data-stat="round-count" data-count="' + rounds.length + '">' + statBox(rounds.length, "Rounds") + '</span>';
+  // Render the Rounds stat-box inline so data-stat and data-count sit on the
+  // .stat-val div (the count-up animation target). The prior <span> wrapper
+  // was destroyed by initCountAnimations setting textContent on it, which
+  // wiped the inner stat-box entirely — v7.8.4 regression of v7.8.0's hook.
+  h += '<div class="stat-box"><div class="stat-val" data-stat="round-count" data-count="' + rounds.length + '">0</div><div class="stat-label">Rounds</div></div>';
   h += statBox(unique, "Courses");
   var ewIds = [pid]; if (p.claimedFrom) ewIds.push(p.claimedFrom);
   var eventWinsCount = PB.getTrips().filter(function(t){ return t.champion && ewIds.indexOf(t.champion) !== -1; }).length;
