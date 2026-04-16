@@ -32,7 +32,7 @@ function renderSyncRoundSetup() {
   
   // Load open Parbaugh Rounds
   if (db) {
-    db.collection("syncrounds").where("status","==","active").get().then(function(snap) {
+    leagueQuery("syncrounds").where("status","==","active").get().then(function(snap) {
       var rounds = []; snap.forEach(function(doc) { rounds.push(Object.assign({_id:doc.id}, doc.data())); });
       rounds.sort(function(a,b) { return (b.createdAt||0) - (a.createdAt||0); });
       rounds = rounds.slice(0, 10);

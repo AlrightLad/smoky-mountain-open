@@ -430,7 +430,7 @@ function reportMember(memberId) {
 
 function loadAdminInviteList() {
   if (!db) return;
-  db.collection("invites").orderBy("createdAt", "desc").limit(50).get().then(function(snap) {
+  leagueQuery("invites").orderBy("createdAt", "desc").limit(50).get().then(function(snap) {
     var invites = []; snap.forEach(function(doc) { invites.push(doc.data()); });
 
     var h = '';

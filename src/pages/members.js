@@ -1433,7 +1433,7 @@ function propagateNameChange(uid, oldName, newName) {
   var updates = 0;
   
   // 1. Chat messages — authorName
-  db.collection("chat").where("authorId","==",uid).get().then(function(snap) {
+  leagueQuery("chat").where("authorId","==",uid).get().then(function(snap) {
     if (snap.empty) return;
     var batch = db.batch();
     snap.forEach(function(doc) {
@@ -1446,7 +1446,7 @@ function propagateNameChange(uid, oldName, newName) {
   }).catch(function(e) { pbWarn("[Name] Chat failed:", e.message); });
   
   // 2. Rounds — playerName
-  db.collection("rounds").where("playerId","==",uid).get().then(function(snap) {
+  leagueQuery("rounds").where("playerId","==",uid).get().then(function(snap) {
     if (snap.empty) return;
     var batch = db.batch();
     snap.forEach(function(doc) {
@@ -1457,7 +1457,7 @@ function propagateNameChange(uid, oldName, newName) {
   }).catch(function(e) { pbWarn("[Name] Rounds failed:", e.message); });
   
   // 3. Tee times — createdByName
-  db.collection("teetimes").where("createdBy","==",uid).get().then(function(snap) {
+  leagueQuery("teetimes").where("createdBy","==",uid).get().then(function(snap) {
     if (snap.empty) return;
     var batch = db.batch();
     snap.forEach(function(doc) {
@@ -1483,7 +1483,7 @@ function propagateNameChange(uid, oldName, newName) {
   }).catch(function() {});
   
   // 5. Invites — createdByName
-  db.collection("invites").where("createdBy","==",uid).get().then(function(snap) {
+  leagueQuery("invites").where("createdBy","==",uid).get().then(function(snap) {
     if (snap.empty) return;
     var batch = db.batch();
     snap.forEach(function(doc) { batch.update(doc.ref, { createdByName: newName }); updates++; });
@@ -1491,7 +1491,7 @@ function propagateNameChange(uid, oldName, newName) {
   }).catch(function() {});
   
   // 6. Synced rounds — update player name inside the players map
-  db.collection("syncrounds").get().then(function(snap) {
+  leagueQuery("syncrounds").get().then(function(snap) {
     snap.forEach(function(doc) {
       var data = doc.data();
       if (data.players && data.players[uid]) {
@@ -1527,7 +1527,7 @@ function propagateNameChange(uid, oldName, newName) {
   }).catch(function() {});
   
   // 8. Comments in chat — update name in comment arrays
-  db.collection("chat").get().then(function(snap) {
+  leagueQuery("chat").get().then(function(snap) {
     snap.forEach(function(doc) {
       var data = doc.data();
       if (data.comments && data.comments.length) {

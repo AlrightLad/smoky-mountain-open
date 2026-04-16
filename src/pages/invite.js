@@ -11,7 +11,7 @@ Router.register("invite", function() {
   document.querySelector('[data-page="invite"]').innerHTML = h;
 
   if (db && currentUser) {
-    db.collection("invites").where("createdBy","==",currentUser.uid).get().then(function(snap) {
+    leagueQuery("invites").where("createdBy","==",currentUser.uid).get().then(function(snap) {
       var invites = []; snap.forEach(function(doc){invites.push(doc.data())});
       var ih = '<div class="sec-head"><span class="sec-title">Your invites</span></div>';
       if (!invites.length) ih += '<div style="font-size:11px;color:var(--muted)">None yet</div>';
