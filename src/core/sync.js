@@ -146,7 +146,7 @@ function persistPlayerStats(pid) {
     var publicRounds = rounds.filter(function(r){return r.visibility !== "private";});
     var individualPublic = publicRounds.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4";});
     var full18public = individualPublic.filter(function(r){return !r.holesPlayed || r.holesPlayed >= 18;});
-    var handicap = PB.calcHandicap(rounds);
+    var handicap = calculateHandicapIndex(rounds);
     var avg = full18public.length ? Math.round(full18public.reduce(function(a,r){return a+r.score;},0)/full18public.length) : null;
     var best = full18public.length ? Math.min.apply(null, full18public.map(function(r){return r.score;})) : null;
     // XP and level from global rounds

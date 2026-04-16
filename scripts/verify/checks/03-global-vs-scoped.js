@@ -99,8 +99,22 @@ async function run(ctx) {
   return { name: "Global vs Scoped", passed: passed, failed: failed, warnings: warnings, details: [] };
 }
 
-// Simplified handicap calculation (WHS-style)
+// Use the same canonical WHS implementation as the app
+var whsPath = require("path").resolve(__dirname, "../../../src/core/handicap.js");
+var whsModule = {};
+try {
+  // handicap.js uses global function declarations, so we eval it to get the functions
+  var whsCode = require("fs").readFileSync(whsPath, "utf8");
+  // Wrap in a function to capture the declarations
+  var wrappedCode = "(function() { " + whsCode + "; return { calculateHandicapIndex: calculateHandicapIndex, WHS_SCALE: WHS_SCALE }; })()";
+  whsModule = eval(wrappedCode);
+} catch (e) {
+  console.error("WARNING: Could not load handicap.js:", e.message);
+}
+
 function calcSimpleHandicap(rounds) {
+  if (whsModule.calculateHandicapIndex) return whsModule.calculateHandicapIndex(rounds);
+  // Fallback if handicap.js fails to load
   var eligible = rounds.filter(function(r) {
     return r.score && r.rating && r.slope && r.format !== "scramble" && r.format !== "scramble4";
   });
@@ -108,10 +122,12 @@ function calcSimpleHandicap(rounds) {
   var diffs = eligible.map(function(r) {
     return (113 / (r.slope || 113)) * ((r.score || 0) - (r.rating || 72));
   }).sort(function(a, b) { return a - b; });
-  var use = Math.max(1, Math.floor(diffs.length * 0.4));
-  var best = diffs.slice(0, use);
-  var avg = best.reduce(function(a, v) { return a + v; }, 0) / best.length;
-  return Math.round(avg * 10) / 10;
+  var n = Math.min(diffs.length, 20);
+  var scale = {3:{c:1,a:-2},4:{c:1,a:-1},5:{c:1,a:0},6:{c:2,a:-1},7:{c:2,a:0},8:{c:2,a:0},9:{c:3,a:0},10:{c:3,a:0},11:{c:3,a:0},12:{c:4,a:0},13:{c:4,a:0},14:{c:4,a:0},15:{c:5,a:0},16:{c:5,a:0},17:{c:6,a:0},18:{c:6,a:0},19:{c:7,a:0},20:{c:8,a:0}};
+  var rule = scale[n]; if (!rule) return null;
+  var best = diffs.slice(0, rule.c);
+  var avg = best.reduce(function(a,v){return a+v},0)/best.length;
+  return Math.round(Math.min(54.0, avg + rule.a) * 10) / 10;
 }
 
 // Level from XP

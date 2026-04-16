@@ -605,79 +605,12 @@ var PB = (function() {
     return d <= -2 ? 6 : d === -1 ? 4 : d === 0 ? 2 : d === 1 ? 1 : 0;
   }
 
+  // Delegates to the canonical WHS implementation in handicap.js
   function calcHandicap(rounds) {
-    // GHIN / World Handicap System formula with 9-hole pairing
-    // 1. Score Differential: (113 / Slope) × (Score - Rating)
-    // 2. Use most recent 20 differentials
-    // 3. Select best differentials based on count (GHIN table)
-    // 4. Average × 0.96, cap at 54.0
-    //
-    // WHS 9-HOLE PAIRING:
-    // - Two 9-hole scores are combined chronologically to form one 18-hole differential
-    // - Combined rating = sum of two 9-hole ratings (or 2× single if same course)
-    // - Combined slope = average of the two 9-hole slopes
-    // - Unpaired 9-hole rounds do NOT contribute until paired
-    var details = getHandicapDetails(rounds);
-    if (details.differentials.length < 3) return null;
-    
-    var sorted = details.differentials.slice().sort(function(a, b) { return a.diff - b.diff; });
-    var n = sorted.length;
-    var use = n <= 5 ? 1 : n <= 8 ? 2 : n <= 10 ? 3 : n <= 12 ? 4 : n <= 14 ? 5 : n <= 16 ? 6 : n <= 18 ? 7 : 8;
-    
-    var best = sorted.slice(0, use);
-    var avg = best.reduce(function(a, b) { return a + b.diff; }, 0) / best.length;
-    var handicap = Math.min(54.0, avg * 0.96);
-    return Math.round(handicap * 10) / 10;
+    return calculateHandicapIndex(rounds);
   }
 
-  // Returns detailed handicap breakdown including 9-hole pairing info
-  function getHandicapDetails(rounds) {
-    var result = { differentials: [], paired9s: [], unpaired9: null, eligible18: [] };
-    var indiv = (rounds || []).filter(function(r) {
-      return r.format !== "scramble" && r.format !== "scramble4";
-    });
-    
-    // Separate 18-hole and 9-hole rounds
-    var full18 = indiv.filter(function(r) { return !r.holesPlayed || r.holesPlayed >= 18; });
-    var nine = indiv.filter(function(r) { return r.holesPlayed && r.holesPlayed < 18; });
-    
-    // 18-hole differentials
-    full18.forEach(function(r) {
-      var rating = parseFloat(r.rating) || 72;
-      var slope = parseInt(r.slope) || 113;
-      var diff = (113 / slope) * (r.score - rating);
-      result.differentials.push({ diff: diff, date: r.date, type: "18", rounds: [r] });
-      result.eligible18.push(r);
-    });
-    
-    // 9-hole pairing — sort by date ascending, pair chronologically
-    nine.sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
-    for (var i = 0; i < nine.length - 1; i += 2) {
-      var r1 = nine[i], r2 = nine[i + 1];
-      var combinedScore = r1.score + r2.score;
-      // WHS: combined rating = sum of 9-hole ratings; combined slope = average
-      var rating1 = parseFloat(r1.rating) || 36;
-      var rating2 = parseFloat(r2.rating) || 36;
-      var slope1 = parseInt(r1.slope) || 113;
-      var slope2 = parseInt(r2.slope) || 113;
-      var combinedRating = rating1 + rating2;
-      var combinedSlope = Math.round((slope1 + slope2) / 2);
-      var diff = (113 / combinedSlope) * (combinedScore - combinedRating);
-      var pairDate = r2.date > r1.date ? r2.date : r1.date; // use later date
-      result.differentials.push({ diff: diff, date: pairDate, type: "9+9", rounds: [r1, r2], combinedScore: combinedScore });
-      result.paired9s.push({ r1: r1, r2: r2, diff: diff, combinedScore: combinedScore });
-    }
-    // Unpaired leftover
-    if (nine.length % 2 === 1) {
-      result.unpaired9 = nine[nine.length - 1];
-    }
-    
-    // Sort all differentials by date descending, take most recent 20
-    result.differentials.sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
-    result.differentials = result.differentials.slice(0, 20);
-    
-    return result;
-  }
+  // getHandicapDetails is now provided by the global function in handicap.js
 
   function getPlayerAvg(pid) {
     var r = getPlayerRounds(pid).filter(function(rd){return rd.visibility !== "private" && rd.format !== "scramble" && rd.format !== "scramble4" && (!rd.holesPlayed || rd.holesPlayed >= 18);});
