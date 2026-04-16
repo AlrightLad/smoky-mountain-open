@@ -1,0 +1,863 @@
+[
+  {
+    "timestamp": "2026-04-16T16:25:54.602Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "members: 20 docs (expected 20)",
+    "collection": "members",
+    "expected": 20,
+    "actual": 20
+  },
+  {
+    "timestamp": "2026-04-16T16:25:54.721Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "rounds: 22 docs (expected 22)",
+    "collection": "rounds",
+    "expected": 22,
+    "actual": 22
+  },
+  {
+    "timestamp": "2026-04-16T16:25:54.825Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "chat: 26 docs (expected 26)",
+    "collection": "chat",
+    "expected": 26,
+    "actual": 26
+  },
+  {
+    "timestamp": "2026-04-16T16:25:54.932Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "trips: 1 docs (expected 1)",
+    "collection": "trips",
+    "expected": 1,
+    "actual": 1
+  },
+  {
+    "timestamp": "2026-04-16T16:25:55.039Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "invites: 28 docs (expected 28)",
+    "collection": "invites",
+    "expected": 28,
+    "actual": 28
+  },
+  {
+    "timestamp": "2026-04-16T16:25:55.160Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "scrambleTeams: 1 docs (expected 1)",
+    "collection": "scrambleTeams",
+    "expected": 1,
+    "actual": 1
+  },
+  {
+    "timestamp": "2026-04-16T16:25:55.245Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "tripscores: 14 docs (expected 14)",
+    "collection": "tripscores",
+    "expected": 14,
+    "actual": 14
+  },
+  {
+    "timestamp": "2026-04-16T16:25:55.375Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "rangeSessions: 2 docs (expected 2)",
+    "collection": "rangeSessions",
+    "expected": 2,
+    "actual": 2
+  },
+  {
+    "timestamp": "2026-04-16T16:25:55.614Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "rounds: all 22 docs have valid leagueId"
+  },
+  {
+    "timestamp": "2026-04-16T16:25:55.718Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "chat: all 26 docs have valid leagueId"
+  },
+  {
+    "timestamp": "2026-04-16T16:25:55.844Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "trips: all 1 docs have valid leagueId"
+  },
+  {
+    "timestamp": "2026-04-16T16:25:56.384Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "scrambleTeams: all 1 docs have valid leagueId"
+  },
+  {
+    "timestamp": "2026-04-16T16:25:56.596Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "scheduling_chat: all 1 docs have valid leagueId"
+  },
+  {
+    "timestamp": "2026-04-16T16:25:56.695Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "social_actions: all 1 docs have valid leagueId"
+  },
+  {
+    "timestamp": "2026-04-16T16:25:56.809Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "invites: all 28 docs have valid leagueId"
+  },
+  {
+    "timestamp": "2026-04-16T16:25:56.924Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "syncrounds: all 1 docs have valid leagueId"
+  },
+  {
+    "timestamp": "2026-04-16T16:25:57.018Z",
+    "check": "data-integrity",
+    "severity": "ERROR",
+    "message": "liverounds: 2 docs missing leagueId",
+    "collection": "liverounds",
+    "missing": 2
+  },
+  {
+    "timestamp": "2026-04-16T16:25:57.243Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "tripscores: all 14 docs have valid leagueId"
+  },
+  {
+    "timestamp": "2026-04-16T16:25:57.455Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "rangeSessions: all 2 docs have valid leagueId"
+  },
+  {
+    "timestamp": "2026-04-16T16:25:57.657Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "Founding league badge: founding"
+  },
+  {
+    "timestamp": "2026-04-16T16:25:57.657Z",
+    "check": "data-integrity",
+    "severity": "PASS",
+    "message": "Founding league memberUids: 20"
+  },
+  {
+    "timestamp": "2026-04-16T16:25:57.658Z",
+    "check": "league-isolation",
+    "severity": "INFO",
+    "message": "Scanning for stale test leagues..."
+  },
+  {
+    "timestamp": "2026-04-16T16:25:57.768Z",
+    "check": "league-isolation",
+    "severity": "INFO",
+    "message": "Stale test league: test, created 2026-04-16T02:26:39.739Z, members 1"
+  },
+  {
+    "timestamp": "2026-04-16T16:25:59.693Z",
+    "check": "league-isolation",
+    "severity": "INFO",
+    "message": "Cleanup plan for test: 0 docs + 1 league doc"
+  },
+  {
+    "timestamp": "2026-04-16T16:25:59.693Z",
+    "check": "league-isolation",
+    "severity": "INFO",
+    "message": "Executing cleanup for test..."
+  },
+  {
+    "timestamp": "2026-04-16T16:26:02.053Z",
+    "check": "league-isolation",
+    "severity": "INFO",
+    "message": "Deleted stale league: test"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:02.146Z",
+    "check": "league-isolation",
+    "severity": "PASS",
+    "message": "Stale league test deleted and verified"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:02.146Z",
+    "check": "league-isolation",
+    "severity": "INFO",
+    "message": "Creating temp league: verify-test-1776356762146"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:04.088Z",
+    "check": "league-isolation",
+    "severity": "PASS",
+    "message": "Temp league verify-test-1776356762146: zero cross-contamination across all collections"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:04.309Z",
+    "check": "league-isolation",
+    "severity": "PASS",
+    "message": "Write isolation: test round correctly excluded from founding league query"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:04.622Z",
+    "check": "league-isolation",
+    "severity": "PASS",
+    "message": "Temp league verify-test-1776356762146 cleaned up"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:04.812Z",
+    "check": "global-vs-scoped",
+    "severity": "ERROR",
+    "message": "Mr Parbaugh: bestRound stored=100, calculated=98",
+    "docId": "1GE683EauXO8TVhcStKfWiCCcRl2",
+    "field": "bestRound",
+    "expected": 98,
+    "actual": 100,
+    "remediation": "Run persistPlayerStats for 1GE683EauXO8TVhcStKfWiCCcRl2"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:04.812Z",
+    "check": "global-vs-scoped",
+    "severity": "ERROR",
+    "message": "Mr Parbaugh: handicap stored=26, calculated=9.3 (delta 16.7)",
+    "docId": "1GE683EauXO8TVhcStKfWiCCcRl2",
+    "field": "handicap",
+    "expected": 9.3,
+    "actual": 26,
+    "remediation": "Run persistPlayerStats for 1GE683EauXO8TVhcStKfWiCCcRl2"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:04.812Z",
+    "check": "global-vs-scoped",
+    "severity": "ERROR",
+    "message": "Nick: totalRounds stored=5, calculated=6",
+    "docId": "8WJ2jTnTuxggUPA4ymAuUO3Nq093",
+    "collection": "members",
+    "field": "totalRounds",
+    "expected": 6,
+    "actual": 5,
+    "remediation": "Run persistPlayerStats for 8WJ2jTnTuxggUPA4ymAuUO3Nq093"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:04.812Z",
+    "check": "global-vs-scoped",
+    "severity": "ERROR",
+    "message": "Nick: handicap stored=49.7, calculated=20.9 (delta 28.8)",
+    "docId": "8WJ2jTnTuxggUPA4ymAuUO3Nq093",
+    "field": "handicap",
+    "expected": 20.9,
+    "actual": 49.7,
+    "remediation": "Run persistPlayerStats for 8WJ2jTnTuxggUPA4ymAuUO3Nq093"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:04.812Z",
+    "check": "global-vs-scoped",
+    "severity": "ERROR",
+    "message": "Kayvan: handicap stored=33, calculated=23.7 (delta 9.3)",
+    "docId": "GKIpnlixcfcvDYf2ugWSC5J5DkG2",
+    "field": "handicap",
+    "expected": 23.7,
+    "actual": 33,
+    "remediation": "Run persistPlayerStats for GKIpnlixcfcvDYf2ugWSC5J5DkG2"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:04.812Z",
+    "check": "global-vs-scoped",
+    "severity": "ERROR",
+    "message": "Kiyan: bestRound stored=108, calculated=102",
+    "docId": "V8b60CIf04VGjEoclxfSEMLh4lp2",
+    "field": "bestRound",
+    "expected": 102,
+    "actual": 108,
+    "remediation": "Run persistPlayerStats for V8b60CIf04VGjEoclxfSEMLh4lp2"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:04.812Z",
+    "check": "global-vs-scoped",
+    "severity": "ERROR",
+    "message": "Kiyan: avgScore stored=116, calculated=111",
+    "docId": "V8b60CIf04VGjEoclxfSEMLh4lp2",
+    "field": "avgScore",
+    "expected": 111,
+    "actual": 116,
+    "remediation": "Run persistPlayerStats for V8b60CIf04VGjEoclxfSEMLh4lp2"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:04.812Z",
+    "check": "global-vs-scoped",
+    "severity": "ERROR",
+    "message": "Kiyan: handicap stored=30.1, calculated=12.2 (delta 17.9)",
+    "docId": "V8b60CIf04VGjEoclxfSEMLh4lp2",
+    "field": "handicap",
+    "expected": 12.2,
+    "actual": 30.1,
+    "remediation": "Run persistPlayerStats for V8b60CIf04VGjEoclxfSEMLh4lp2"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.047Z",
+    "check": "economy",
+    "severity": "INFO",
+    "message": "Nick: balance=319, lifetime=319, txn_sum=72",
+    "docId": "8WJ2jTnTuxggUPA4ymAuUO3Nq093",
+    "field": "parcoins"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.047Z",
+    "check": "economy",
+    "severity": "INFO",
+    "message": "Kayvan: balance=309, lifetime=309, txn_sum=176",
+    "docId": "GKIpnlixcfcvDYf2ugWSC5J5DkG2",
+    "field": "parcoins"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.047Z",
+    "check": "economy",
+    "severity": "INFO",
+    "message": "Luke: balance=34, lifetime=34, txn_sum=101",
+    "docId": "acv6lxp4yFez6KNBRYLbKJfehbp2",
+    "field": "parcoins"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.047Z",
+    "check": "economy",
+    "severity": "INFO",
+    "message": "Anthony: balance=51, lifetime=51, txn_sum=51",
+    "docId": "d4cVJRc8d2QDhKUYjzCWAgQbAbN2",
+    "field": "parcoins"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.047Z",
+    "check": "economy",
+    "severity": "INFO",
+    "message": "Jordyn: balance=2, lifetime=2, txn_sum=2",
+    "docId": "tdINDhrTu9NIUVHQKsn9NvdZzgO2",
+    "field": "parcoins"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.170Z",
+    "check": "economy",
+    "severity": "PASS",
+    "message": "No wagers to verify"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.170Z",
+    "check": "economy",
+    "severity": "INFO",
+    "message": "Global: total member balances=1159, total txn amounts=329, txn count=18"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.176Z",
+    "check": "display-drift",
+    "severity": "WARN",
+    "message": "data.js:72 — hardcoded 'The Parbaughs'",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\core\\data.js",
+    "line": 72,
+    "remediation": "Use window._activeLeagueName or league.name"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.178Z",
+    "check": "display-drift",
+    "severity": "WARN",
+    "message": "router.js:415 — hardcoded 'The Parbaughs'",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\core\\router.js",
+    "line": 415,
+    "remediation": "Use window._activeLeagueName or league.name"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.178Z",
+    "check": "display-drift",
+    "severity": "WARN",
+    "message": "router.js:1170 — hardcoded 'The Parbaughs'",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\core\\router.js",
+    "line": 1170,
+    "remediation": "Use window._activeLeagueName or league.name"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.179Z",
+    "check": "display-drift",
+    "severity": "WARN",
+    "message": "admin.js:906 — hardcoded 'The Parbaughs'",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\admin.js",
+    "line": 906,
+    "remediation": "Use window._activeLeagueName or league.name"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.183Z",
+    "check": "display-drift",
+    "severity": "WARN",
+    "message": "scorecard.js:259 — hardcoded 'The Parbaughs'",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\scorecard.js",
+    "line": 259,
+    "remediation": "Use window._activeLeagueName or league.name"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.210Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "firebase.js:398 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\core\\firebase.js",
+    "line": 398,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.224Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "router.js:1795 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\core\\router.js",
+    "line": 1795,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.230Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "sync.js:139 — raw db.collection('rounds') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\core\\sync.js",
+    "line": 139,
+    "collection": "rounds",
+    "remediation": "Replace with leagueQuery('rounds')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.232Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "sync.js:431 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\core\\sync.js",
+    "line": 431,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.232Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "sync.js:447 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\core\\sync.js",
+    "line": 447,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.233Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "sync.js:529 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\core\\sync.js",
+    "line": 529,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.246Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "bounties.js:193 — raw db.collection('bounties') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\bounties.js",
+    "line": 193,
+    "collection": "bounties",
+    "remediation": "Replace with leagueQuery('bounties')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.246Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "bounties.js:194 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\bounties.js",
+    "line": 194,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.246Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "bounties.js:229 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\bounties.js",
+    "line": 229,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.252Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "calendar.js:386 — raw db.collection('calendar_events') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\calendar.js",
+    "line": 386,
+    "collection": "calendar_events",
+    "remediation": "Replace with leagueQuery('calendar_events')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.252Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "calendar.js:418 — raw db.collection('scheduling_chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\calendar.js",
+    "line": 418,
+    "collection": "scheduling_chat",
+    "remediation": "Replace with leagueQuery('scheduling_chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.256Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "chat.js:456 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\chat.js",
+    "line": 456,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.259Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "chat.js:797 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\chat.js",
+    "line": 797,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.270Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "faq.js:99 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\faq.js",
+    "line": 99,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.273Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "feed.js:295 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\feed.js",
+    "line": 295,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.300Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "partygames.js:161 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\partygames.js",
+    "line": 161,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.309Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "range.js:346 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\range.js",
+    "line": 346,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.315Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "richlist.js:115 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\richlist.js",
+    "line": 115,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.315Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "richlist.js:135 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\richlist.js",
+    "line": 135,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.315Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "richlist.js:144 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\richlist.js",
+    "line": 144,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.324Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "scorecard.js:386 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\scorecard.js",
+    "line": 386,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.330Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "scramblelive.js:187 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\scramblelive.js",
+    "line": 187,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.337Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "social.js:58 — raw db.collection('social_actions') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\social.js",
+    "line": 58,
+    "collection": "social_actions",
+    "remediation": "Replace with leagueQuery('social_actions')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.337Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "social.js:74 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\social.js",
+    "line": 74,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.337Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "social.js:88 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\social.js",
+    "line": 88,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.337Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "social.js:94 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\social.js",
+    "line": 94,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.337Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "social.js:106 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\social.js",
+    "line": 106,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.340Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "syncround.js:79 — raw db.collection('syncrounds') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\syncround.js",
+    "line": 79,
+    "collection": "syncrounds",
+    "remediation": "Replace with leagueQuery('syncrounds')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.343Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "teetimes.js:172 — raw db.collection('teetimes') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\teetimes.js",
+    "line": 172,
+    "collection": "teetimes",
+    "remediation": "Replace with leagueQuery('teetimes')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.351Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "wagers.js:243 — raw db.collection('wagers') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\wagers.js",
+    "line": 243,
+    "collection": "wagers",
+    "remediation": "Replace with leagueQuery('wagers')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.351Z",
+    "check": "display-drift",
+    "severity": "ERROR",
+    "message": "wagers.js:266 — raw db.collection('chat') should use leagueQuery()",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\pages\\wagers.js",
+    "line": 266,
+    "collection": "chat",
+    "remediation": "Replace with leagueQuery('chat')"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.370Z",
+    "check": "query-health",
+    "severity": "INFO",
+    "message": "Loaded 17 composite indexes from firestore.indexes.json"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.386Z",
+    "check": "query-health",
+    "severity": "PASS",
+    "message": "Index exists: rounds [leagueId, createdAt]"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.386Z",
+    "check": "query-health",
+    "severity": "PASS",
+    "message": "Index exists: teetimes [leagueId, createdAt]"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.386Z",
+    "check": "query-health",
+    "severity": "PASS",
+    "message": "Index exists: syncrounds [leagueId, createdAt]"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.386Z",
+    "check": "query-health",
+    "severity": "PASS",
+    "message": "Index exists: chat [leagueId, createdAt]"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.386Z",
+    "check": "query-health",
+    "severity": "PASS",
+    "message": "Index exists: rounds [leagueId, date]"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.386Z",
+    "check": "query-health",
+    "severity": "PASS",
+    "message": "Index exists: invites [leagueId, createdAt]"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.386Z",
+    "check": "query-health",
+    "severity": "PASS",
+    "message": "Index exists: bounties [leagueId, createdAt]"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.386Z",
+    "check": "query-health",
+    "severity": "PASS",
+    "message": "Index exists: scheduling_chat [leagueId, createdAt]"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.386Z",
+    "check": "query-health",
+    "severity": "PASS",
+    "message": "Index exists: calendar_events [leagueId, createdAt]"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.386Z",
+    "check": "query-health",
+    "severity": "PASS",
+    "message": "Index exists: rounds [leagueId, visibility, createdAt]"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.386Z",
+    "check": "query-health",
+    "severity": "PASS",
+    "message": "Index exists: rangeSessions [leagueId, startedAt]"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.386Z",
+    "check": "query-health",
+    "severity": "PASS",
+    "message": "Index exists: social_actions [leagueId, key, createdAt]"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.386Z",
+    "check": "query-health",
+    "severity": "PASS",
+    "message": "Index exists: teetimes [leagueId, date]"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.386Z",
+    "check": "query-health",
+    "severity": "PASS",
+    "message": "Index exists: wagers [leagueId, createdAt]"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.386Z",
+    "check": "query-health",
+    "severity": "PASS",
+    "message": "Index exists: wagers [leagueId, status, completedAt]"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.389Z",
+    "check": "query-health",
+    "severity": "WARN",
+    "message": "router.js:425 — onSnapshot listener may not be tracked for cleanup",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\core\\router.js",
+    "line": 425,
+    "remediation": "Store return value for unsubscribe on league switch"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.389Z",
+    "check": "query-health",
+    "severity": "WARN",
+    "message": "router.js:550 — onSnapshot listener may not be tracked for cleanup",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\core\\router.js",
+    "line": 550,
+    "remediation": "Store return value for unsubscribe on league switch"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.389Z",
+    "check": "query-health",
+    "severity": "WARN",
+    "message": "router.js:586 — onSnapshot listener may not be tracked for cleanup",
+    "file": "C:\\Users\\zachary.boogher\\smoky-mountain-open\\src\\core\\router.js",
+    "line": 586,
+    "remediation": "Store return value for unsubscribe on league switch"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.401Z",
+    "check": "query-health",
+    "severity": "INFO",
+    "message": "Found 13 snapshot listeners, 3 potentially untracked"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.402Z",
+    "check": "code-patterns",
+    "severity": "PASS",
+    "message": "APP_VERSION (7.6.0) matches package.json (7.6.0)"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.402Z",
+    "check": "code-patterns",
+    "severity": "PASS",
+    "message": "Caddy Notes references current version"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.402Z",
+    "check": "code-patterns",
+    "severity": "PASS",
+    "message": "CLAUDE.md modified within 30 days (1 days ago)"
+  },
+  {
+    "timestamp": "2026-04-16T16:26:05.421Z",
+    "check": "code-patterns",
+    "severity": "PASS",
+    "message": "No critical TODO/FIXME/XXX markers found"
+  }
+]

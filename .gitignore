@@ -1,3 +1,5 @@
 node_modules/
 dist/
 serviceAccountKey.json
+scripts/.service-account.json
+logs/
