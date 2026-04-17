@@ -24,6 +24,8 @@ This app is a labor of love. Treat it with extreme care and pride. It's a core p
 - **Users:** 17 members, mixed iPhone/Android
 - **Repo:** `AlrightLad/smoky-mountain-open`
 - **Live:** https://alrightlad.github.io/smoky-mountain-open
+- **Positioning (approved v8.0, 2026-04-17):** PARBAUGHS is a solo-first golf tracking app with an optional league layer for competitive and social play. Leagues are additive, not required. Marketing copy, App Store framing, and Phase 4 monetization all follow from this framing.
+- **Role terminology (approved v8.0, 2026-04-17):** "Founder" is the platform-level role (held by Zach). "Commissioner" is the per-league role. These terms are NOT interchangeable starting v8.0. Legacy copy referring to "The Commissioner" for Zach is migrated to "Founder" during v8.0.1 Visibility Polish.
 
 ## Three-Agent Workflow
 
@@ -171,6 +173,28 @@ Every ship that changes member-visible behavior or UI must update `src/pages/cad
 4. Update the tagline under "What's New · v{VERSION}" to reflect the current ship's theme
 
 Infrastructure-only ships (no member-visible change) still get a Caddy Note — one honest line per the writing standard. Never ship a version bump with no Caddy Note entry.
+
+## Parked Design Tracks
+
+Product direction decisions made during v8.0 governance review that require their own Stage 1 design documents before implementation. These are not yet scoped but are captured here so future sessions don't accidentally build conflicting features.
+
+### v9.0 — Social System
+
+Users can add other users as "friends" via profile pages (Instagram/Twitter-style social graph). Friend list is public on profiles, browsable by tapping. Friendship gates DM access for leagueless users. Full mechanics (mutual vs one-way, request flow, privacy controls, friend removal) deferred to own design doc.
+
+Stub: `docs/v9.0-social-system-design.md`
+
+### v9.1 — Handle System
+
+Discord-style user handles: `username#discriminator` format. Enables search and discovery by handle, allows duplicate usernames disambiguated by discriminator. Migration required for existing 20+ members. Full mechanics (discriminator length, assignment policy, handle changes, reserved names, search behavior) deferred to own design doc.
+
+Stub: `docs/v9.1-handle-system-design.md`
+
+### League Custom Branding (Phase 4 paid feature)
+
+Per-league custom branding: logos, theme colors, league-specific visual identity. Only available to commissioners of leagues on paid tier. Validates commitment before platform invests in design, storage, and moderation overhead. Full mechanics (upload moderation, theme interaction with user cosmetics, share card behavior, storage economics, feature pricing tier) deferred to own design doc.
+
+Stub: `docs/league-custom-branding-design.md`
 
 ## Architecture
 
