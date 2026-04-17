@@ -7,272 +7,259 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
   h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v' + APP_VERSION + '</div></div>';
 
+  function tagColorFor(tag) {
+    return tag === "NEW" ? "var(--birdie)" : tag === "FIXED" ? "var(--gold)" : tag === "IMPROVED" ? "var(--blue)" : "var(--muted)";
+  }
+  function renderEntry(r) {
+    var tc = tagColorFor(r.tag);
+    return '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">' +
+      '<span style="font-size:8px;font-weight:700;color:' + tc + ';background:' + tc + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>' +
+      '<span>' + r.item + '</span></div>';
+  }
+
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · UI Fixes, Pre-commit Safety Net, Developer Safety Guardrails</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Caddy Notes cleanup</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    {item: "v7.8.5 — Completed the XP display fix from v7.8.4. The Trophy Room, member lists, chat, and other places that show your level now all match your home page and profile page.", tag: "FIXED"},
-    {item: "v7.8.4 — Fixed the XP bar sometimes showing different values between your home page and profile page. Now both reflect your actual total XP across all leagues.", tag: "FIXED"},
-    {item: "v7.8.4 — Fixed a broken stat box on the profile page that was showing a stray number instead of your Rounds total.", tag: "FIXED"},
-    {item: "v7.8.2 — Pre-commit safety net. Every code change is now automatically checked for syntax errors before it can be committed. Prevents broken code from ever reaching the app.", tag: "NEW"},
-    {item: "v7.8.2 — Fixed a gap in the automated quality checks that could let certain commits slip past without being verified.", tag: "FIXED"},
-    {item: "v7.8.1 — Developer safety guardrails. Added automated quality checks to the development workflow so changes can\'t slip through without verification. Invisible to members but means fewer bugs reach you.", tag: "NEW"},
-    {item: "End-to-end testing infrastructure — the app is now tested in a real browser against an isolated local database before every ship, catching display bugs automatically", tag: "NEW"},
-    {item: "Fixed profile pages showing only 1 round for founding members — all historical rounds now correctly linked", tag: "FIXED"},
-    {item: "Home page round count, level, and XP now reflect your actual total across all rounds — including 9-hole rounds and scramble team rounds, across all leagues", tag: "FIXED"},
-    {item: "Handicap calculation corrected — calculated handicaps now match the World Handicap System formula your GHIN uses, recalculated from actual scores", tag: "FIXED"},
-    {item: "League isolation hardening — fixed chat and 7 other scoped collections that could leak between leagues, replaced hardcoded league names with dynamic lookups, tightened listener cleanup on league switch", tag: "FIXED"},
-    {item: "Added verify.js diagnostic system — catches data drift, isolation leaks, display mismatches, and auto-cleans stale test leagues before they hit members", tag: "NEW"},
-    {item: "Trips no longer leak across leagues — events page now uses league-scoped queries so only your league's events show", tag: "FIXED"},
-    {item: "Level, XP, handicap, and achievements are now GLOBAL — your stats reflect ALL your rounds across every league, not just the active one", tag: "FIXED"},
-    {item: "Welcome message now shows your active league name instead of hardcoded 'The Parbaughs'", tag: "FIXED"},
-    {item: "Course directory: new All Courses / Our Courses toggle — see every course or just the ones your league has played, with league records", tag: "NEW"},
-    {item: "CRITICAL: 15 Firestore composite indexes deployed — rounds, chat, and all league data now load correctly with league filtering", tag: "FIXED"},
-    {item: "Root cause found: leagueQuery() adds a where() filter that requires composite indexes for any orderBy() — queries were silently failing", tag: "FIXED"},
-    {item: "Nick's 18 missing achievements restored from backup (28 total, merged with post-backup progress)", tag: "FIXED"},
-    {item: "Query errors (missing indexes, permission denied) now auto-log to error dashboard and console — never silently swallowed again", tag: "FIXED"},
-    {item: "Full Firestore diagnostic tool: commissioner can audit every collection, compare to backup, copy results", tag: "NEW"},
-    {item: "Data Recovery Tool: commissioner can scan for and fix all docs missing league tags — one-tap restore for founding league data", tag: "NEW"},
-    {item: "League scope arrays unified: write helper now references the same source of truth as query wrapper — zero drift possible", tag: "FIXED"},
-    {item: "NUCLEAR FIX: leagueQuery() wrapper — makes league data leak PHYSICALLY IMPOSSIBLE. Every query uses server-side where() filter.", tag: "FIXED"},
-    {item: "18 orphaned Firestore docs backfilled with leagueId (invites, syncrounds, rangeSessions, tripscores)", tag: "FIXED"},
-    {item: "switchLeague() now tears down ALL listeners and rebuilds with new league context — zero stale data", tag: "FIXED"},
-    {item: "League Settings page: commissioner can manage visibility, approval, invite codes, admins, and delete league", tag: "NEW"},
-    {item: "Join Request system: users request to join public leagues, commissioner/admins approve or deny with notifications", tag: "NEW"},
-    {item: "Member management: promote/demote admins, view all members with roles on league detail page", tag: "NEW"},
-    {item: "League deletion: type league name to confirm, removes from all members, founding league protected", tag: "NEW"},
-    {item: "The Parbaughs set to PUBLIC with approval required — Original Four (Zach, Kayvan, Kiyan, Nick) as admins", tag: "NEW"},
-    {item: "CRITICAL: League data leak fixed — added leagueId filter to ALL 20+ queries across teetimes, wagers, bounties, calendar, scramble, syncrounds, liverounds", tag: "FIXED"},
-    {item: "NEW: Community Scorecard System — members can add, edit, and verify course scorecard data", tag: "NEW"},
-    {item: "Three data states: API Only (gray), Community Added (orange), Community Verified (green) — badges on every course", tag: "NEW"},
-    {item: "Earn 50 ParCoins for contributing first scorecard data, 10 for verifying — incentivizes community contributions", tag: "NEW"},
-    {item: "Scorecard editor: tap-to-set par per hole, tee name, slope, rating — pre-fills from API or existing data", tag: "NEW"},
-    {item: "CRITICAL: Fixed blank screen bug — app was showing CONNECTING forever due to broken script tags in build", tag: "FIXED"},
-    {item: "CRITICAL: Firestore security rules deployed — catch-all removed, 30+ explicit collection rules live in production", tag: "FIXED"},
-    {item: "Push notification Cloud Function deployed and live — members now receive push notifications", tag: "NEW"},
-    {item: "5 Firestore composite indexes deployed for faster compound queries", tag: "NEW"},
-    {item: "Email verification: send button with proper error handling, Settings page shows verification status", tag: "NEW"},
-    {item: "Listener leak fixed — all snapshot listeners properly cleaned up on logout", tag: "FIXED"},
-    {item: "Finish Round button pulses with animation when ALL holes have scores — impossible to miss", tag: "FIXED"},
-    {item: "FIR/GIR now clearly shows HIT (green check) vs MISS (red X) with distinct colors — par 3s show N/A for FIR", tag: "FIXED"},
-    {item: "Rainbow Gradient name effect fixed — now uses animated color-cycling gradient instead of broken hue-rotate", tag: "FIXED"},
-    {item: "Gold Standard card theme removed (duplicate of Gold Foil) — 74 unique items in shop", tag: "FIXED"},
-    {item: "Emoji reaction picker removed from feed — action row now has comment, share, and view only", tag: "FIXED"},
-    {item: "Trash talk and system messages now correctly show as The Caddy with green accent — no more Unknown author", tag: "FIXED"},
-    {item: "ParCoin balance boxes on profile page now have more breathing room (14px/16px padding)", tag: "FIXED"},
-    {item: "Clubhouse chat cleaned up — only human messages now, no auto-generated round posts or achievements", tag: "FIXED"},
-    {item: "DEPLOYED: Firestore security rules live in production — catch-all removed, 30+ explicit rules active", tag: "FIXED"},
-    {item: "DEPLOYED: Push notification Cloud Function (sendPushNotification) live on us-central1", tag: "NEW"},
-    {item: "DEPLOYED: 5 Firestore composite indexes for compound queries (rounds, notifications, wagers, social, photos)", tag: "NEW"},
-    {item: "SECURITY: Firestore rules rewritten — explicit rules for ALL 30+ collections, catch-all REMOVED", tag: "FIXED"},
-    {item: "SECURITY: Listener leak fixed — member profile onSnapshot now properly unsubscribes on logout", tag: "FIXED"},
-    {item: "SECURITY: Email verification banner — unverified users prompted, wagers/bounties/DMs/shop gated behind verification", tag: "NEW"},
-    {item: "SECURITY: All listeners cleaned up on logout (profile, notifications, presence, chat, range)", tag: "FIXED"},
-    {item: "CRITICAL HOTFIX: App was showing blank screen — Vite build plugin was stripping crossorigin from Firebase script tags, making them invalid HTML", tag: "FIXED"},
-    {item: "HOTFIX: liveState ReferenceError fixed — global defaults now declared in utils.js before any page loads", tag: "FIXED"},
-    {item: "HOTFIX: Play Now scoring wrapped in try/catch to prevent cascading Script errors during live rounds", tag: "FIXED"},
-    {item: "crossorigin=anonymous added to all external scripts — errors now show full details instead of generic Script error", tag: "FIXED"},
-    {item: "Error logger enhanced: captures URL, error name, app version, longer stack traces", tag: "IMPROVED"},
-    {item: "LAUNCH READY: v7.0.0 — Landing page, security audit, performance audit, launch checklist in CLAUDE.md", tag: "NEW"},
-    {item: "Landing page built: hero, 6 feature cards, origin story, stats, CTA — premium design for first impressions", tag: "NEW"},
-    {item: "Legal pages: Privacy Policy, Terms of Service, Support FAQ — all ready for App Store submission", tag: "NEW"},
-    {item: "Security audit: escHtml on 265+ points, rate limiting, input validation, API key handling verified", tag: "IMPROVED"},
-    {item: "APP STORE PREP: PWA manifest updated, service worker caches all textures and assets, Capacitor config ready", tag: "NEW"},
-    {item: "GitHub Actions CI/CD: iOS build (macos-latest) and Android build (ubuntu-latest) workflows created", tag: "NEW"},
-    {item: "Legal pages: Privacy Policy, Terms of Service, and Support/FAQ pages created", tag: "NEW"},
-    {item: "CLAUDE.md: Native build setup, CI/CD pipeline, App Store submission checklist documented", tag: "NEW"},
-    {item: "NEW: Analytics Dashboard on profile Stats tab — scoring trends, strokes gained, par type analysis, course breakdown", tag: "NEW"},
-    {item: "SVG charts: line charts for trends, bar charts for strokes gained and par type scoring, all theme-aware", tag: "NEW"},
-    {item: "Strokes Gained: see where you gain/lose strokes — tee, approach, short game, putting", tag: "NEW"},
-    {item: "Hole-by-hole course breakdown: avg over par per hole at your most-played course", tag: "NEW"},
-    {item: "GIR% and Putts Per Hole trend lines — track your improvement over time", tag: "NEW"},
-    {item: "NEW: The Caddie — AI-free analysis engine that reads your round data and gives personalized insights", tag: "NEW"},
-    {item: "Post-round analysis: scoring by par type, front/back comparison, GIR impact, putting, bogey streaks, birdie ratio", tag: "NEW"},
-    {item: "Pre-round scouting: when starting a round at a course you\'ve played, see your toughest and best holes", tag: "NEW"},
-    {item: "Practice plan generator: based on your last 5 rounds, The Caddie suggests a focused 30-min range plan", tag: "NEW"},
-    {item: "Trend alerts on home page: improving streak, PB within reach, inactivity warning", tag: "NEW"},
-    {item: "Course insights: The Caddie\'s take on each course page with personal and league-wide stats", tag: "NEW"},
-    {item: "Course reviews now support photo uploads and helpful voting on each review", tag: "NEW"},
-    {item: "Post-round stories now support photo attachments — share your round moment visually", tag: "NEW"},
-    {item: "Drills Library shows difficulty level and estimated duration for each drill", tag: "IMPROVED"},
-    {item: "Course reviews enhanced: star rating selector, aggregate rating display, only players who\'ve played can review", tag: "IMPROVED"},
-    {item: "NEW: Auto-generated course stats — member average, most played by, hardest/easiest hole from hole-by-hole data", tag: "NEW"},
-    {item: "NEW: Post-round stories — after logging a round, tell the story of your round with a \"How\'d It Go?\" prompt", tag: "NEW"},
-    {item: "NEW: Tip of the Day on home page — 15 curated golf tips rotating daily across putting, driving, short game, mental game", tag: "NEW"},
-    {item: "NEW: Drills Library page — browse all 15+ practice drills by category with expandable how-to instructions", tag: "NEW"},
-    {item: "NEW: Public profiles — toggle in Settings, get a shareable profile URL", tag: "NEW"},
-    {item: "NEW: Find Players page — search by name, filter by handicap (beginner/intermediate/advanced), see mutual leagues", tag: "NEW"},
-    {item: "NEW: Golf reactions on feed posts — tap the fire emoji for a reaction picker (fire, clap, flag, skull, trophy, laugh)", tag: "NEW"},
-    {item: "NEW: Shareable profile cards — one-tap generate a branded PNG with your stats, share to Instagram or text", tag: "NEW"},
-    {item: "Share Profile Card button on every profile page", tag: "NEW"},
-    {item: "MULTI-LEAGUE: Parbaughs now supports multiple leagues — The Parbaughs is the founding league with a permanent badge", tag: "NEW"},
-    {item: "All existing data migrated: 96 documents tagged with leagueId, zero data loss, zero broken features", tag: "NEW"},
-    {item: "League-scoped queries: rounds, chat, events, wagers, bounties all filter by your active league", tag: "NEW"},
-    {item: "New writes automatically include leagueId via Firestore write helper — no call site changes needed", tag: "NEW"},
-    {item: "NEW: Leagues page — view your leagues, create new ones, join via invite code, browse public leagues", tag: "NEW"},
-    {item: "Create a League: set name, location, description, visibility — you become commissioner", tag: "NEW"},
-    {item: "Join a League: enter invite code or request to join a public league", tag: "NEW"},
-    {item: "League switcher: tap Switch on any league card to change your active league context", tag: "NEW"},
-    {item: "The Parbaughs shows FOUNDING LEAGUE badge — permanent, no other league can ever get it", tag: "NEW"},
-    {item: "Courses, ParCoins, cosmetics, and achievements are GLOBAL — they travel with you across leagues", tag: "IMPROVED"},
-    {item: "Home feed now shows profile photos with theme rings on EVERY post — rounds, chat, range, tee times, live rounds", tag: "FIXED"},
-    {item: "Feed layout is now Instagram-style: avatar left, content right, username tappable to profile", tag: "FIXED"},
-    {item: "Chat messages in home feed now show the author\'s avatar and name with effects", tag: "FIXED"},
-    {item: "Range sessions in home feed use the player\'s actual avatar instead of a generic clock icon", tag: "FIXED"},
-    {item: "Online Now avatar wrapper cleaned up — no more square backgrounds behind circular photos", tag: "FIXED"},
-    {item: "NEW: 4 additional season awards — Course Specialist, Rivalry Winner, Iron Will, Newcomer", tag: "NEW"},
-    {item: "Season archive on standings page — shows past season champions with Inaugural Season badge", tag: "NEW"},
-    {item: "Champion Red theme now unlockable by winning a SEASON or an event (was event-only)", tag: "IMPROVED"},
-    {item: "Season rules updated: 3 seasons per year (Spring/Summer/Fall) with Dec-Feb off-season", tag: "IMPROVED"},
-    {item: "Season winner earns Champion Red theme + ParCoins + title", tag: "NEW"},
-    {item: "Online Now avatar squares fixed — inner clip div prevents image bleeding outside circular ring border", tag: "FIXED"},
-    {item: "Full cosmetics catalog audit: 75/75 items verified — every ring, banner, card, name effect, and title has working CSS", tag: "IMPROVED"},
-    {item: "8-theme regression test: all 8 themes pass variable coverage, Light Mode has 106 overrides, zero hardcoded colors", tag: "IMPROVED"},
-    {item: "Feed empty state upgraded to branded pattern with icon, headline, and Log a Round CTA", tag: "IMPROVED"},
-    {item: "Cosmetics Shop: animated rings now show LIVE CSS animation in the preview — see the pulse, shimmer, and rainbow cycle before you buy", tag: "NEW"},
-    {item: "Ring previews show YOUR actual profile photo inside the ring so you can see exactly how it looks on you", tag: "NEW"},
-    {item: "Name effect previews show YOUR actual username with the live animation applied — Gold Shimmer, Fire Text, Ice, all running in real-time", tag: "NEW"},
-    {item: "Card theme previews now show a mock feed card with realistic data instead of a plain colored rectangle", tag: "NEW"},
-    {item: "Banner previews enlarged to profile-like width with PREVIEW label for better visualization", tag: "IMPROVED"},
-    {item: "Title previews show your name + the title exactly as it appears on your profile", tag: "IMPROVED"},
-    {item: "Push notification Cloud Function ready — triggers on pendingPush, sends via FCM, handles stale tokens, auto-cleans queue", tag: "NEW"},
-    {item: "Full 8-theme regression: all 29 CSS variables verified present in every theme — zero missing", tag: "IMPROVED"},
-    {item: "106 Light Mode component overrides verified covering all 20 critical components", tag: "IMPROVED"},
-    {item: "Zero hardcoded dark/light colors found in page JS — all themes render through CSS variables correctly", tag: "IMPROVED"},
-    {item: "Push notifications now trigger when someone posts a round — your rivals can\'t sneak a round past you", tag: "NEW"},
-    {item: "Tee time posted? Every member gets notified with course, date, and time", tag: "NEW"},
-    {item: "More page completely redesigned: grouped sections (ParCoin Economy, Competition, Community, Info) with subtitles", tag: "NEW"},
-    {item: "What\'s New callout at top of More page promotes latest features", tag: "NEW"},
-    {item: "Existing Phase 2 features verified: onboarding (5 screens + wizard), hole-by-hole scoring, feed filtering all already built", tag: "IMPROVED"},
-    {item: "CRITICAL: Ring glow was invisible on ALL avatars — overflow:hidden was clipping box-shadow. Removed overflow:hidden from renderAvatar()", tag: "FIXED"},
-    {item: "Profile page hero avatar now shows BOTH the theme ring glow AND the depth shadow together (were overriding each other)", tag: "FIXED"},
-    {item: "EVERY avatar in the app now uses renderAvatar() — rings, glows, and animations show identically everywhere", tag: "FIXED"},
-    {item: "Migrated 17 avatar instances across 10 files: home leaderboard, member list, profile, chat, DMs, rounds, scramble, trips, tee times, aces, online section", tag: "FIXED"},
-    {item: "CRITICAL: Fixed calcRoundCoins() calls using old signature — rounds now correctly award 50/25 coins per new economy", tag: "FIXED"},
-    {item: "CRITICAL: Fixed personal_best award using deleted rate key — now uses personal_best_18h/9h correctly", tag: "FIXED"},
-    {item: "Fixed richlist power-ups and status purchases using broken awardCoins(-cost) — now uses deductCoins()", tag: "FIXED"},
-    {item: "Name effects now render on profile page, H2H section, scramble teams, and rivalry display via renderUsername()", tag: "IMPROVED"},
-    {item: "All 8 themes verified for consistent variable coverage — every theme defines bg, card, border, accent, glow, and gradient tokens", tag: "IMPROVED"},
-    {item: "Ring animations dramatically amplified — Pulse Gold breathes wider, Diamond Sparkle rotates light around the border, Rainbow cycles through full spectrum", tag: "IMPROVED"},
-    {item: "Neon Green and Crimson Ember rings now pulse with much stronger glow spread — visible at a glance", tag: "IMPROVED"},
-    {item: "Card themes upgraded from simple borders to border + color-tinted background gradients — each card type is now visually distinct", tag: "IMPROVED"},
-    {item: "Name effects made bolder — Gold Shimmer faster sweep, Fire gets orange-yellow peaks, Ice brighter white highlights", tag: "IMPROVED"},
-    {item: "CRITICAL FIX: Wager, bounty, and trash talk coin deductions were silently failing — coins were being created from nothing", tag: "FIXED"},
-    {item: "New deductCoins() function properly validates balance and deducts coins atomically", tag: "FIXED"},
-    {item: "Wager escrow now tracks coins in the wager document (escrowFrom/escrowTo fields)", tag: "FIXED"},
-    {item: "Trash talk actions (Spotlight, Victory Lap, Rematch) now properly cost coins — no more free actions", tag: "FIXED"},
-    {item: "All player ParCoin balances recalculated and reset to match new economy earn rates", tag: "IMPROVED"},
-    {item: "Feed round cards now have a React button — tap to show love on someone\'s round", tag: "NEW"},
-    {item: "New users (0 rounds) see a Welcome banner with quick links to Log a Round, Browse Courses, Set Up Profile", tag: "NEW"},
-    {item: "Light Mode: additional overrides for shop, scorecard, onboarding, badges, and More page", tag: "FIXED"},
-    {item: "ParCoin economy completely redesigned — playing golf is now THE primary earning method", tag: "NEW"},
-    {item: "New earn rates: 18-hole round = 50 coins (+25 attested), 9-hole = 25 (+10 attested), range 30min+ = 10", tag: "IMPROVED"},
-    {item: "Daily login simplified to flat 1 coin/day — no streak bonus (streaks were unincentivizing play)", tag: "IMPROVED"},
-    {item: "New triggers: Season Champion (1000 coins), Personal Best 18H (100), Personal Best 9H (50)", tag: "NEW"},
-    {item: "Shop prices rebalanced across 4 tiers: Basic (100-200), Mid (300-500), Premium (750-1500), Ultra (2000+)", tag: "IMPROVED"},
-    {item: "Diamond Sparkle ring is now 2500 coins — the ultimate flex takes real dedication to earn", tag: "IMPROVED"},
-    {item: "Wagers and bounties enforce balance checks — you can only bet coins you have", tag: "IMPROVED"},
-    {item: "NEW: renderAvatar() and renderUsername() shared functions — rings and name effects now render consistently everywhere", tag: "NEW"},
-    {item: "Feed posts now use shared avatar+username rendering with theme rings and name effects on every card", tag: "IMPROVED"},
-    {item: "Events page: branded empty state with icon, headline, and New Event CTA — past events expanded by default", tag: "FIXED"},
-    {item: "Challenge and Tee Time CTA buttons now properly centered and full-width matching the example cards", tag: "FIXED"},
-    {item: "Calendar action buttons redesigned — premium gradient styling, consistent sizing, proper icons", tag: "IMPROVED"},
-    {item: "Light Mode COMPLETE FIX — cream backgrounds everywhere, proper dark text, white cards, correct nav and form colors", tag: "FIXED"},
-    {item: "Fixed critical inline CSS that hardcoded dark background — now uses theme variable so light mode applies properly", tag: "FIXED"},
-    {item: "50+ Light Mode component overrides added: profile bar, bottom nav, buttons, forms, DMs, chat, drill chips, toggles", tag: "FIXED"},
-    {item: "Premium animated rings now ACTUALLY animate: Pulse Gold breathes, Rainbow Shift cycles colors, Diamond Sparkle shimmers, Neon Green pulses, Crimson Ember flickers", tag: "NEW"},
-    {item: "All avatar rings upgraded — bolder 3px borders with visible glow shadows that match each theme", tag: "IMPROVED"},
-    {item: "Name effects now animate: Gold Shimmer scrolls, Rainbow cycles hue, Fire and Ice gradient, Glowing Green pulses", tag: "NEW"},
-    {item: "Branded empty states for Challenges, Tee Times, DMs, and Scramble Teams — icons, headlines, CTAs, and example ideas", tag: "NEW"},
-    {item: "Feed completely redesigned — Instagram-style cards with avatars, theme rings, hole dots, stat chips, and action rows", tag: "NEW"},
-    {item: "Round posts show full detail: score, course, F9/B9 splits, hole-by-hole colored dots, FIR/GIR/putts chips", tag: "NEW"},
-    {item: "Every feed avatar uses THAT player\'s theme ring, not yours — see everyone\'s personality", tag: "NEW"},
-    {item: "Chat posts compact with avatar, range posts show duration and drills — each type has its own card style", tag: "IMPROVED"},
-    {item: "Feed action row: tap Scorecard, Comment, or Share on any round post with 48px touch targets", tag: "NEW"},
-    {item: "Bogey dots changed from pink to orange for better visual distinction from double-bogey red", tag: "IMPROVED"},
-    {item: "Comment submit no longer refreshes the page — appears instantly with optimistic local update", tag: "FIXED"},
-    {item: "Calendar restored to original clean design — tap dates to browse, no accidental range selections", tag: "FIXED"},
-    {item: "NEW: Create Events button on calendar — add multi-day events with name, location, start/end dates, and type", tag: "NEW"},
-    {item: "Multi-day events show as gold dots on each day in the range — tap any day to see the event details", tag: "NEW"},
-    {item: "Calendar dot colors updated: gold=event, green=round, blue=range, pink=tee time", tag: "IMPROVED"},
-    {item: "All calendar date cells are 44px minimum tap targets with uniform sizing", tag: "FIXED"},
-    {item: "Cosmetics Shop expanded to 75 items across 5 categories — rings, banners, card themes, name effects, and titles", tag: "NEW"},
-    {item: "NEW: Name Effects — 6 visual styles for your display name (Gold Shimmer, Rainbow Gradient, Fire Text, more)", tag: "NEW"},
-    {item: "NEW: Purchasable Titles — 10 buyable titles plus reserved titles for commissioner and founding four", tag: "NEW"},
-    {item: "New rings: Flame, Neon Green, Crimson Ember, Rainbow Shift (animated, 750 coins)", tag: "NEW"},
-    {item: "New card themes: Gold Foil, Birdie Streak, Dark Carbon, Vintage Parchment, Augusta Green, Neon Night", tag: "NEW"},
-    {item: "Profile photo uploads fixed — photos now persist correctly across sessions and sync to all views", tag: "FIXED"},
-    {item: "Photo compression improved with error handling — unsupported formats show a clear message instead of failing silently", tag: "FIXED"},
-    {item: "Switching to a stock avatar now properly clears your old custom photo", tag: "FIXED"},
-    {item: "Tap once for a date, tap again for a range — colored band shows your selection with start and end circles", tag: "NEW"},
-    {item: "Multi-day events render as spanning gold bars across the calendar grid", tag: "NEW"},
-    {item: "Calendar dots updated: gold=event, green=round, blue=range, pink=tee time — up to 4 dots per day", tag: "IMPROVED"},
-    {item: "Month navigation slides smoothly with animation — no page refreshes on any interaction", tag: "IMPROVED"},
-    {item: "All calendar date cells are now 44px minimum for reliable touch targets", tag: "FIXED"},
-    {item: "Today indicator is now a subtle ring instead of a solid background — visible even when selected", tag: "IMPROVED"},
-    {item: "Full data audit completed — every round, course, member, handicap, and balance verified", tag: "NEW"},
-    {item: "Hole dots now render correctly on 5 previously broken rounds — par data backfilled from verified sources", tag: "FIXED"},
-    {item: "Handicap index now persists correctly for all members with rounds", tag: "FIXED"},
-    {item: "Player averages and best scores now sync to profiles automatically", tag: "FIXED"},
-    {item: "FAQ completely rewritten — 28 questions across 7 categories covering every feature with navigation directions", tag: "NEW"},
-    {item: "Onboarding upgraded to 5 screens: Welcome, Logging Rounds, Seasons & Events, ParCoins, and Your Legacy", tag: "IMPROVED"},
-    {item: "Theme textures NOW actually loading — root cause was Vite stripping body::before CSS rules", tag: "FIXED"},
-    {item: "More page reorganized — Shop and Rich List at top with gold accent styling", tag: "IMPROVED"},
-    {item: "Beat Their Score wager — bet you can beat a friend\'s best score at a course", tag: "NEW"},
-    {item: "Shareable scorecards render in your active theme colors", tag: "NEW"},
-    {item: "13 new cosmetic items — 28 total in the shop", tag: "NEW"},
-    {item: "Bottom nav, calendar dates, profile level, and component border-radius all polished", tag: "FIXED"},
-    {item: "Theme textures now BOLD and visible — opacity doubled to 0.18-0.25. Switch themes and see camo leaves, azalea flowers, carbon fiber, leather.", tag: "FIXED"},
-    {item: "Course directory scores completely rewritten — F9/B9 now pull from front/back halves of 18-hole rounds too", tag: "FIXED"},
-    {item: "Light Mode completely fixed — 40+ component overrides for proper contrast, borders, and readability", tag: "FIXED"},
-    {item: "All 8 themes verified for WCAG AA contrast compliance", tag: "FIXED"},
-    {item: "12 new theme-paired profile banners — one for each theme plus 4 neutral options (Flagstick, Mountain, Fairway, Golden Hour)", tag: "NEW"},
-    {item: "6 new avatar rings including premium animated Pulse Gold (500), Diamond Sparkle (1000)", tag: "NEW"},
-    {item: "Equipped title now correctly highlighted in Edit Profile form", tag: "FIXED"},
-    {item: "Scramble team The Parbaughs now shows the 77 at Sequoyah National", tag: "FIXED"},
-    {item: "Avatar rings now match your theme automatically — gold for Classic, pink for Azalea, green for Masters, and more", tag: "NEW"},
-    {item: "Every avatar in the app shows a visible 3px ring with glow matching the player\'s active theme", tag: "NEW"},
-    {item: "Back buttons now work correctly on Members, Tee Times, and Scramble Teams when accessed from More", tag: "FIXED"},
-    {item: "Bounty Board empty state redesigned — shows bounty ideas and Post a Bounty button instead of error", tag: "FIXED"},
-    {item: "NEW: My Rounds page — lifetime round journal with stats, F9/B9 splits, hole visualizations, PB badges, and filters", tag: "NEW"},
-    {item: "Tap Rounds on home page to see your complete golf history with colored hole dots and personal best highlights", tag: "NEW"},
-    {item: "Avatar rings now correctly show each PLAYER\'s theme, not the viewer\'s — fixes ring color on profile pages", tag: "FIXED"},
-    {item: "Feed comment tap no longer navigates to scorecard — separate View button added", tag: "FIXED"},
-    {item: "Hole dots use static universal golf colors (gold/green/gray/pink/red) with legend on Round History", tag: "FIXED"},
-    {item: "Home mini leaderboard avatars now show theme rings", tag: "FIXED"},
-    {item: "Calendar no longer refreshes on date tap — instant in-place updates", tag: "FIXED"},
-    {item: "Calendar month navigation is now instant (no page re-render)", tag: "FIXED"},
-    {item: "Caddy/system messages in feed now show full text with green accent — no more truncation", tag: "FIXED"}
+    { item: "Cleaned up these release notes. Only the current version shows here now. Older updates moved to Past Releases below, tap any version to expand.", tag: "NEW" }
   ];
-  currentNotes.forEach(function(r) {
-    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "var(--blue)" : "var(--muted)";
-    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
-    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
-    h += '<span>' + r.item + '</span></div>';
-  });
+  currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
-  // Previous release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">v5.33.0 · April 2026 · Social Actions, Bounties, Rich List</span></div>';
-  h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
-  var prevNotes = [
-    {item: "Trash Talk — Spotlight of Shame, Victory Lap, Demand a Rematch on any profile", tag: "NEW"},
-    {item: "Bounty Board — post coin bounties on scores or birdies, auto-claims on qualifying rounds", tag: "NEW"},
-    {item: "Rich List — top 10 lifetime coin holders with Gold Member badge", tag: "NEW"},
-    {item: "Power-Ups — Double XP Round and Handicap Shield", tag: "NEW"},
-    {item: "Sponsor a Hole and Name a Tournament status purchases", tag: "NEW"},
-    {item: "Wager Matches with 6 types including Nassau and Beat Their Score", tag: "NEW"},
-    {item: "Formal seasons (Spring/Summer/Fall) with tab selector", tag: "NEW"},
-    {item: "Activity feed filtering (All/Rounds/Chat/Range)", tag: "NEW"}
+  // Past Releases (newest first; each block collapses by default)
+  var archiveNotes = [
+    {
+      version: "v7.8.5", date: "April 2026", headline: "XP Display Consistency",
+      items: [
+        { item: "Fixed XP values showing different numbers on different pages. Home, profile, Trophy Room, chat, and member lists now all match.", tag: "FIXED" }
+      ]
+    },
+    {
+      version: "v7.8.4", date: "April 2026", headline: "UI Fixes",
+      items: [
+        { item: "Fixed XP bars showing different values between home and profile.", tag: "FIXED" },
+        { item: "Fixed the Rounds stat box rendering incorrectly on profile pages.", tag: "FIXED" }
+      ]
+    },
+    {
+      version: "v7.8.0 – v7.8.2", date: "April 2026", headline: "Behind-the-scenes reliability",
+      items: [
+        { item: "Behind-the-scenes improvements to reliability. Nothing new you can see, but the app is more stable and every change is checked before shipping.", tag: "IMPROVED" }
+      ]
+    },
+    {
+      version: "v7.6.x", date: "April 2026", headline: "Global stats + league isolation",
+      items: [
+        { item: "Fixed profile pages showing only 1 round for founding members. All historical rounds now appear correctly.", tag: "FIXED" },
+        { item: "Home page round count, level, and XP now reflect every round you've played, including 9-hole and scramble rounds across all leagues.", tag: "FIXED" },
+        { item: "Handicap now uses the World Handicap System formula and matches your GHIN, recalculated from your real scores.", tag: "FIXED" },
+        { item: "Fixed chat and other areas that could show content from the wrong league. Switching leagues now cleanly resets your view.", tag: "FIXED" }
+      ]
+    },
+    {
+      version: "v7.5.0", date: "April 2026", headline: "4 bug fixes",
+      items: [
+        { item: "Events page now only shows events from your active league.", tag: "FIXED" },
+        { item: "Level, XP, handicap, and achievements are now global. Your stats reflect all your rounds, not just your active league.", tag: "FIXED" },
+        { item: "Welcome message now shows your active league name instead of always saying The Parbaughs.", tag: "FIXED" },
+        { item: "Course directory: new All Courses / Our Courses toggle. See every course or just the ones your league has played.", tag: "NEW" }
+      ]
+    },
+    {
+      version: "v7.4.x", date: "April 2026", headline: "League data isolation",
+      items: [
+        { item: "Fixed rounds, chat, and league data not loading properly for everyone. Speed improved dramatically.", tag: "FIXED" },
+        { item: "Restored Nick's 18 missing achievements from backup.", tag: "FIXED" },
+        { item: "League data mixing across leagues is now impossible. Every piece of league content stays inside its league.", tag: "FIXED" },
+        { item: "Commissioner admin panel: full data audit tool and data recovery tool for fixing stray records.", tag: "NEW" }
+      ]
+    },
+    {
+      version: "v7.3.0", date: "April 2026", headline: "League management",
+      items: [
+        { item: "League Settings page: commissioner can manage visibility, approval, invite codes, admins, and delete the league.", tag: "NEW" },
+        { item: "Join Request system: users can request to join public leagues and commissioners or admins approve or deny with notifications.", tag: "NEW" },
+        { item: "Member management: promote or demote admins, view all members with roles.", tag: "NEW" },
+        { item: "The Parbaughs is now public with approval required. The Original Four (Zach, Kayvan, Kiyan, Nick) are admins.", tag: "NEW" }
+      ]
+    },
+    {
+      version: "v7.2.x", date: "April 2026", headline: "Community Scorecards",
+      items: [
+        { item: "Fixed league data showing up in the wrong league across 20+ areas (tee times, wagers, bounties, calendar, scramble, and more).", tag: "FIXED" },
+        { item: "New Community Scorecard System: members can add, edit, and verify course scorecard data.", tag: "NEW" },
+        { item: "Three data states on every course: API Only (gray), Community Added (orange), Community Verified (green).", tag: "NEW" },
+        { item: "Earn 50 ParCoins for contributing first scorecard data, 10 for verifying, 25 for approved edits.", tag: "NEW" },
+        { item: "Scorecard editor: tap to set par per hole, tee name, slope, and rating.", tag: "NEW" }
+      ]
+    },
+    {
+      version: "v7.1.x", date: "April 2026", headline: "Security audit + deploys",
+      items: [
+        { item: "Fixed a blank-screen bug that was showing CONNECTING forever on some devices.", tag: "FIXED" },
+        { item: "Push notifications now work. Members receive pushes for rounds and tee times.", tag: "NEW" },
+        { item: "Email verification: Settings page shows verification status and lets you send a verification email.", tag: "NEW" },
+        { item: "Faster load times across rounds, notifications, wagers, social actions, and photos.", tag: "IMPROVED" },
+        { item: "Security: unverified accounts are prompted to verify. Wagers, bounties, DMs, and shop require a verified email.", tag: "NEW" }
+      ]
+    },
+    {
+      version: "v7.0.x", date: "April 2026", headline: "Launch ready",
+      items: [
+        { item: "Parbaughs is App Store ready. Landing page, Privacy Policy, Terms of Service, and Support FAQ are all done.", tag: "NEW" },
+        { item: "Fixed a blank-screen startup bug that prevented the app from loading for some members.", tag: "FIXED" },
+        { item: "Fixed crashes during rounds and improved error reporting.", tag: "FIXED" }
+      ]
+    },
+    {
+      version: "v6.5.0", date: "April 2026", headline: "App Store prep",
+      items: [
+        { item: "App Store prep: installable home-screen version, full offline theme support, and native app builds ready.", tag: "NEW" },
+        { item: "Legal pages: Privacy Policy, Terms of Service, and Support FAQ created.", tag: "NEW" }
+      ]
+    },
+    {
+      version: "v6.4.0", date: "April 2026", headline: "Advanced Analytics",
+      items: [
+        { item: "New Analytics Dashboard on profile Stats tab: scoring trends, strokes gained, par type analysis, course breakdown.", tag: "NEW" },
+        { item: "Charts for trends, strokes gained, and par-type scoring. All match your theme.", tag: "NEW" },
+        { item: "Strokes Gained: see where you gain or lose strokes across tee, approach, short game, and putting.", tag: "NEW" },
+        { item: "Hole-by-hole breakdown: average over par per hole at your most-played course.", tag: "NEW" },
+        { item: "GIR% and putts-per-hole trend lines so you can track your improvement over time.", tag: "NEW" }
+      ]
+    },
+    {
+      version: "v6.3.0", date: "April 2026", headline: "The Caddie",
+      items: [
+        { item: "New personal analysis engine that reads your round data and gives you insights, no AI required.", tag: "NEW" },
+        { item: "Post-round analysis: scoring by par type, front/back comparison, GIR impact, putting, bogey streaks, birdie ratio.", tag: "NEW" },
+        { item: "Pre-round scouting: when starting a round at a course you've played, see your toughest and best holes.", tag: "NEW" },
+        { item: "Practice plan generator: based on your last 5 rounds, get a focused 30-minute range plan.", tag: "NEW" },
+        { item: "Trend alerts on home page: improving streak, personal best within reach, inactivity warning.", tag: "NEW" },
+        { item: "Course insights: The Caddie's take on each course with personal and league-wide stats.", tag: "NEW" }
+      ]
+    },
+    {
+      version: "v6.2.x", date: "April 2026", headline: "Content + social polish",
+      items: [
+        { item: "Course reviews now support photo uploads and helpful voting.", tag: "NEW" },
+        { item: "Post-round stories now support photos. Share a round moment visually.", tag: "NEW" },
+        { item: "Drills Library shows difficulty level and estimated duration for each drill.", tag: "IMPROVED" },
+        { item: "Course reviews: star rating selector, aggregate rating, only players who've played can review.", tag: "IMPROVED" },
+        { item: "Auto-generated course stats: member average, most played by, hardest and easiest hole.", tag: "NEW" },
+        { item: "Post-round stories: after logging a round, tell the story with a How'd It Go? prompt.", tag: "NEW" },
+        { item: "Tip of the Day on home page: 15 rotating golf tips across putting, driving, short game, and mental game.", tag: "NEW" },
+        { item: "Drills Library page: browse all 15+ practice drills by category with how-to instructions.", tag: "NEW" },
+        { item: "Finish Round button pulses when all holes have scores, so you can't miss it.", tag: "FIXED" },
+        { item: "FIR and GIR now clearly show HIT (green check) vs MISS (red X). Par 3s show N/A for FIR.", tag: "FIXED" },
+        { item: "Rainbow Gradient name effect fixed. Now properly cycles through colors.", tag: "FIXED" },
+        { item: "Clubhouse chat cleaned up: only human messages now, no auto-generated round posts.", tag: "FIXED" }
+      ]
+    },
+    {
+      version: "v6.1.0", date: "April 2026", headline: "Social features",
+      items: [
+        { item: "Public profiles: toggle in Settings to get a shareable profile URL.", tag: "NEW" },
+        { item: "Find Players page: search by name, filter by handicap, see mutual leagues.", tag: "NEW" },
+        { item: "Golf reactions on feed posts: tap the fire emoji for a reaction picker (fire, clap, flag, skull, trophy, laugh).", tag: "NEW" },
+        { item: "Shareable profile cards: one-tap generate a branded image with your stats to share.", tag: "NEW" },
+        { item: "Share Profile Card button on every profile.", tag: "NEW" }
+      ]
+    },
+    {
+      version: "v6.0.x", date: "April 2026", headline: "Multi-league launch",
+      items: [
+        { item: "Parbaughs now supports multiple leagues. The Parbaughs is the founding league with a permanent badge.", tag: "NEW" },
+        { item: "All existing data migrated. Zero data loss, zero broken features.", tag: "NEW" },
+        { item: "Rounds, chat, events, wagers, and bounties now filter by your active league.", tag: "NEW" },
+        { item: "New Leagues page: view your leagues, create new ones, join via invite code, browse public leagues.", tag: "NEW" },
+        { item: "Create a League: set name, location, description, visibility. You become commissioner.", tag: "NEW" },
+        { item: "Join a League: enter an invite code or request to join a public league.", tag: "NEW" },
+        { item: "League switcher: tap Switch on any league card to change your active league.", tag: "NEW" },
+        { item: "Founding League badge on The Parbaughs. Permanent. No other league can ever earn it.", tag: "NEW" },
+        { item: "Courses, ParCoins, cosmetics, and achievements are global. They travel with you across leagues.", tag: "IMPROVED" }
+      ]
+    },
+    {
+      version: "v5.33.0 – v5.40.x", date: "early 2026", headline: "Pre-redesign era",
+      items: [
+        { item: "Trash Talk: Spotlight of Shame, Victory Lap, Demand a Rematch on any profile.", tag: "NEW" },
+        { item: "Bounty Board: post coin bounties on scores or birdies. Auto-claims on qualifying rounds.", tag: "NEW" },
+        { item: "Rich List: top 10 lifetime coin holders with Gold Member badge.", tag: "NEW" },
+        { item: "Power-Ups: Double XP Round and Handicap Shield.", tag: "NEW" },
+        { item: "Sponsor a Hole and Name a Tournament status purchases.", tag: "NEW" },
+        { item: "Wager Matches: 6 types including Nassau and Beat Their Score.", tag: "NEW" },
+        { item: "Formal seasons (Spring, Summer, Fall) with tab selector.", tag: "NEW" },
+        { item: "Activity feed filtering: All, Rounds, Chat, Range.", tag: "NEW" },
+        { item: "4 new season awards: Course Specialist, Rivalry Winner, Iron Will, Newcomer.", tag: "NEW" },
+        { item: "Season archive on standings page. Shows past season champions with Inaugural Season badge.", tag: "NEW" },
+        { item: "Champion Red theme unlockable by winning a season or an event.", tag: "IMPROVED" },
+        { item: "Season rules: 3 seasons per year (Spring/Summer/Fall) with Dec-Feb off-season.", tag: "IMPROVED" },
+        { item: "Season winner earns Champion Red theme, ParCoins, and a title.", tag: "NEW" },
+        { item: "Cosmetics Shop expanded to 75 items across 5 categories: rings, banners, card themes, name effects, titles.", tag: "NEW" },
+        { item: "Name Effects: 6 visual styles for your display name including Gold Shimmer, Rainbow Gradient, Fire Text.", tag: "NEW" },
+        { item: "Purchasable Titles: 10 buyable titles plus reserved titles for commissioner and founding four.", tag: "NEW" },
+        { item: "New rings: Flame, Neon Green, Crimson Ember, Rainbow Shift (animated, 750 coins).", tag: "NEW" },
+        { item: "New card themes: Gold Foil, Birdie Streak, Dark Carbon, Vintage Parchment, Augusta Green, Neon Night.", tag: "NEW" },
+        { item: "Shop previews: animated rings, name effects, and mock feed cards show what you're buying before you buy.", tag: "NEW" },
+        { item: "Ring previews show your actual profile photo inside the ring.", tag: "NEW" },
+        { item: "Name effect previews show your actual username with the animation applied.", tag: "NEW" },
+        { item: "Feed redesigned: Instagram-style cards with avatars, theme rings, hole dots, stat chips, and action rows.", tag: "NEW" },
+        { item: "Round posts show full detail: score, course, front/back splits, hole-by-hole colored dots, FIR/GIR/putts.", tag: "NEW" },
+        { item: "Every feed avatar now shows that player's theme ring, not yours.", tag: "NEW" },
+        { item: "Feed action row: tap Scorecard, Comment, or Share on any round post.", tag: "NEW" },
+        { item: "ParCoin economy redesigned. Playing golf is now the primary earning method.", tag: "NEW" },
+        { item: "New earn rates: 18-hole round = 50 coins (+25 attested), 9-hole = 25 (+10 attested), range 30 min+ = 10.", tag: "IMPROVED" },
+        { item: "Shop prices rebalanced across 4 tiers: Basic (100-200), Mid (300-500), Premium (750-1500), Ultra (2000+).", tag: "IMPROVED" },
+        { item: "Wagers and bounties enforce balance checks. You can only bet coins you actually have.", tag: "IMPROVED" },
+        { item: "Premium animated rings now actually animate. Pulse Gold breathes, Rainbow cycles colors, Diamond Sparkle shimmers.", tag: "NEW" },
+        { item: "Name effects now animate: Gold Shimmer scrolls, Rainbow cycles, Fire and Ice gradient, Glowing Green pulses.", tag: "NEW" },
+        { item: "Branded empty views for Challenges, Tee Times, DMs, and Scramble Teams when you have nothing posted yet.", tag: "NEW" },
+        { item: "Every avatar in the app now shows a visible ring with glow matching the player's theme.", tag: "NEW" },
+        { item: "Profile photos now save correctly and appear everywhere the same.", tag: "FIXED" },
+        { item: "Calendar restored to original clean design. Tap dates to browse, no accidental selections.", tag: "FIXED" },
+        { item: "Create Events button on calendar: add multi-day events with name, location, and dates.", tag: "NEW" },
+        { item: "Multi-day events show as spanning gold bars across the calendar grid.", tag: "NEW" },
+        { item: "Calendar dots updated: gold = event, green = round, blue = range, pink = tee time.", tag: "IMPROVED" },
+        { item: "Month navigation slides smoothly. No page refreshes.", tag: "IMPROVED" },
+        { item: "Today indicator is now a subtle ring instead of a solid background.", tag: "IMPROVED" },
+        { item: "Full data audit: every round, course, member, handicap, and balance verified.", tag: "NEW" },
+        { item: "FAQ completely rewritten: 28 questions across 7 categories with navigation directions.", tag: "NEW" },
+        { item: "Onboarding upgraded to 5 screens: Welcome, Logging Rounds, Seasons & Events, ParCoins, Your Legacy.", tag: "IMPROVED" },
+        { item: "Theme textures now visible: camo leaves, azalea flowers, carbon fiber, leather. Switch themes and see the detail.", tag: "FIXED" },
+        { item: "Beat Their Score wager: bet you can beat a friend's best score at a course.", tag: "NEW" },
+        { item: "Shareable scorecards render in your active theme colors.", tag: "NEW" },
+        { item: "Course directory: 9-hole averages now pull from the front and back halves of 18-hole rounds.", tag: "FIXED" },
+        { item: "Light Mode completely fixed: cream backgrounds, dark text, white cards, proper contrast.", tag: "FIXED" },
+        { item: "All 8 themes verified for WCAG AA contrast compliance.", tag: "FIXED" },
+        { item: "12 new theme-paired profile banners and 4 neutral options (Flagstick, Mountain, Fairway, Golden Hour).", tag: "NEW" },
+        { item: "6 new avatar rings including premium animated Pulse Gold (500) and Diamond Sparkle (1000).", tag: "NEW" },
+        { item: "Avatar rings now match your theme automatically: gold for Classic, pink for Azalea, green for Masters.", tag: "NEW" },
+        { item: "New My Rounds page: lifetime round journal with stats, front/back splits, hole visualizations, personal best badges, filters.", tag: "NEW" },
+        { item: "Tap Rounds on home page to see your complete golf history.", tag: "NEW" },
+        { item: "Hole dots use universal golf colors (gold/green/gray/orange/red) with a legend on Round History.", tag: "FIXED" },
+        { item: "Bounty Board empty view redesigned. Shows bounty ideas and a Post a Bounty button.", tag: "FIXED" }
+      ]
+    }
   ];
-  prevNotes.forEach(function(r) {
-    var tagColor = r.tag === "NEW" ? "var(--birdie)" : r.tag === "FIXED" ? "var(--gold)" : r.tag === "IMPROVED" ? "var(--blue)" : "var(--muted)";
-    h += '<div style="padding:4px 0;display:flex;gap:8px;align-items:flex-start">';
-    h += '<span style="font-size:8px;font-weight:700;color:' + tagColor + ';background:' + tagColor + '15;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:2px">' + r.tag + '</span>';
-    h += '<span>' + r.item + '</span></div>';
+
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Past Releases</span></div>';
+  archiveNotes.forEach(function(block) {
+    h += '<div class="card" style="margin-bottom:8px;overflow:hidden">';
+    h += '<div onclick="var e=this.nextElementSibling;var c=this.querySelector(\'svg\');var open=e.style.display===\'block\';e.style.display=open?\'none\':\'block\';c.style.transform=open?\'rotate(0deg)\':\'rotate(90deg)\';" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:12px 14px;gap:8px;min-height:48px">';
+    h += '<div style="flex:1;min-width:0">';
+    h += '<div style="font-size:12px;color:var(--gold);font-weight:600">' + block.version + ' · ' + block.date + '</div>';
+    h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + block.headline + '</div>';
+    h += '</div>';
+    h += '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0;transition:transform .15s ease"><path d="M6 4l4 4-4 4"/></svg>';
+    h += '</div>';
+    h += '<div style="display:none;padding:0 14px 14px;font-size:12px;color:var(--cream);line-height:1.8;border-top:1px solid var(--border)">';
+    block.items.forEach(function(r) { h += renderEntry(r); });
+    h += '</div>';
+    h += '</div>';
   });
-  h += '</div></div></div>';
+  h += '</div>';
 
   // What's in the Bag — full feature list
   h += '<div class="section"><div class="sec-head"><span class="sec-title">What\'s in the Bag</span></div>';
