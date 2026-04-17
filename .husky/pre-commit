@@ -10,8 +10,15 @@ npx lint-staged
 
 # Version sync check — mirrors v7.8.1 Hook 5, but fires for any
 # git commit from anywhere (including outside Claude Code).
+#
+# v7.9.8 — aligned sed regex with the Claude Code hook's permissive
+# pattern ([^"]+) so semver pre-release identifiers (8.0.0-rc1,
+# 1.2.3-beta, etc.) parse correctly. The prior ([0-9.]+) regex
+# rejected anything with a hyphen, blocking pre-release version
+# bumps. No behavior change for plain semver (7.9.7 → 7.9.7 still
+# matches); strictly a bug fix that widens acceptance.
 UTILS_VER=$(grep 'APP_VERSION' src/core/utils.js | head -1 | \
-  sed -E 's/.*"([0-9.]+)".*/\1/')
+  sed -E 's/.*"([^"]+)".*/\1/')
 PKG_VER=$(node -p "require('./package.json').version")
 if [ "$UTILS_VER" != "$PKG_VER" ]; then
   echo "ERROR: APP_VERSION ($UTILS_VER) in utils.js does not match"
