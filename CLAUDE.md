@@ -25,6 +25,110 @@ This app is a labor of love. Treat it with extreme care and pride. It's a core p
 - **Repo:** `AlrightLad/smoky-mountain-open`
 - **Live:** https://alrightlad.github.io/smoky-mountain-open
 
+## Three-Agent Workflow
+
+PARBAUGHS development uses a three-agent model:
+
+**Agent 1 — Zach (Founder / Commissioner / Product Owner)**
+- Final decision authority on product and architecture
+- Reviews specs before execution, verifies ships on device
+- Makes judgment calls on scope, energy, and timing
+- Does NOT write code directly
+
+**Agent 2 — Claude.ai (CTO / Strategic Planner)**
+- Writes specs, design documents, and reviews Agent 3's work
+- Pushes back on Zach when scope, timing, or approach is off
+- Makes recommendations; Zach makes decisions
+- Does NOT write code directly — produces specs that Agent 3 executes
+
+**Agent 3 — Claude Code (Engineer / QA)**
+- Executes specs autonomously
+- Investigates, diagnoses, implements, and tests
+- Reports findings back to Zach for review before shipping
+- Is trusted to make small judgment calls within spec scope, flagged transparently in reports
+
+Each agent has defined authority. Agent 3 does NOT write specs. Agent 2 does NOT write code. Agent 1 does NOT execute tests. Violations of this boundary are treated as a process failure to be named and corrected.
+
+This three-agent model is distinct from the multi-subagent "Agent Team Configuration" block later in this document. That block describes how Agent 3 (Claude Code) can fan out internally via subagents to parallelize work; the three-agent model describes the outer authority structure between Zach, Claude.ai, and Claude Code.
+
+## Fresh Session Rule
+
+**Every distinct task gets a fresh Claude Code session.**
+
+"Distinct task" means:
+- A different ship (new version)
+- A different code area from the last session
+- After signing off for any period of time
+- When prior session context has become irrelevant or stale
+
+Why: Accumulated context from prior sessions causes Agent 3 to carry stale assumptions, conflate unrelated code paths, and make worse judgment calls. Fresh session = maximum focus and minimum drift.
+
+Multi-phase work on the **same ship** (e.g., Phase 1 → Phase 2 → ship) stays in the same session. Switching to a different ship means starting fresh.
+
+## Design Before Implementation
+
+For non-trivial features (especially product-level changes like governance, role systems, or cross-cutting UX work), development follows a three-stage cadence:
+
+**Stage 1 — Product Design Document**
+- Written to `docs/`
+- Covers product decisions: capabilities, visibility, edge cases, user experience
+- Presents options for decisions, doesn't make them unilaterally
+- No code, no schema, no implementation details
+
+**Stage 2 — Technical Design Document**
+- Written to `docs/`
+- Maps product decisions to system changes: data model, Firestore rules, migrations, API surface
+- References the Stage 1 doc for product intent
+
+**Stage 3 — Implementation Ships**
+- Multiple small ships, each implementing a slice of the technical design
+- Each ship is independently shippable and reversible
+- Scope is inherited from Stage 2, not invented at ship time
+
+Bug fixes and small feature additions skip Stages 1-2 and go directly to implementation. The cadence applies to substantive design work.
+
+## Testing Strategy
+
+Three-tier model:
+
+**Tier 1 — Pre-push smoke test**
+Status: **PLANNED for v7.9.1**
+
+A minimal test suite (8-12 tests, 30-60 second runtime) that verifies the app boots, core auth works, home page renders, and the critical user path (logging a round) completes. Runs on every `git push`, blocks the push on failure. Catches catastrophic regressions before they leave the local machine.
+
+**Tier 2 — Full regression suite**
+Status: **IMPLEMENTED (v7.8.0, v7.8.4, v7.8.5)**
+
+The Playwright test suite in `tests/e2e/flows/` (see the E2E Testing section below for setup and mechanics). Currently 44+ tests covering specific known failure modes. Grows incrementally: every bug discovered adds a regression test.
+
+Explicitly invoked by Agent 3 during ship execution per spec instructions. Not currently wired to run automatically on every commit.
+
+**Tier 3 — Manual QA on device**
+Status: **ONGOING (Zach's responsibility)**
+
+Zach verifies every ship on his phone against the live site (GitHub Pages). Catches visual issues, layout regressions, and feel/UX problems that automated tests cannot.
+
+For major releases (v8.x and App Store submission), consider adding structured manual QA: a checklist of scenarios walked through by Zach plus 1-2 founding members before the release.
+
+### Testing principles
+
+- **Tests grow with bugs, not with features.** Every bug that slips to production or past review adds a test. Features don't get tests just for existing.
+- **The "test everything" fantasy is a trap.** Giant test suites become slow, flaky, and untrusted. Keep tests focused on what has actually broken or is most critical.
+- **Fast feedback beats comprehensive feedback.** A 60-second smoke test that runs every push catches more bugs in practice than a 3-hour suite that runs "sometimes."
+
+## Version Numbering
+
+- Semantic versioning: MAJOR.MINOR.PATCH (X.Y.Z)
+- **MAJOR (X):** Breaking changes or major product direction shifts (e.g., v7.0 launch readiness, v8.0 governance system)
+- **MINOR (Y):** New capabilities, architectural additions, substantive features (e.g., v7.9 session-start stats refresh)
+- **PATCH (Z):** Bug fixes, small tweaks, doc updates (e.g., v7.8.x)
+
+**Version numbers are monotonic.** When a version is paused or abandoned mid-ship, skip it rather than inserting it out-of-order. If v7.8.3 is abandoned and v7.8.4 ships, the next ship is v7.8.5, not v7.8.3.
+
+**Version bumps happen in their own commit**, separate from the feature/fix commits. The bump commit is always last in a ship's commit sequence.
+
+Both `APP_VERSION` in `src/core/utils.js` and `version` in `package.json` must be kept in sync. Hook 5 (see Claude Code Hooks section) enforces this.
+
 ## Caddy Notes Writing Standard
 
 Caddy Notes is member-facing documentation. Members do not care about implementation details. They care about what's different when they use the app.
@@ -55,12 +159,18 @@ Don't pretend infra work is a feature. Don't hide it silently. One honest line.
 
 Ask: if I read this as a member who only uses the app to log golf rounds, would I know what this means? Would I care? If either answer is no, rewrite.
 
-### Archive versioning
+## Caddy Notes Lifecycle
 
-When a new version ships:
+(Refer to the Caddy Notes Writing Standard above for writing rules. This adds the mechanical process.)
+
+Every ship that changes member-visible behavior or UI must update `src/pages/caddynotes.js`. The mechanical steps:
+
 1. Move all entries currently in `currentNotes` to a new block at the top of `archiveNotes`, tagged with the version they shipped under
 2. Clear `currentNotes`
 3. Add the new version's entries to `currentNotes`
+4. Update the tagline under "What's New · v{VERSION}" to reflect the current ship's theme
+
+Infrastructure-only ships (no member-visible change) still get a Caddy Note — one honest line per the writing standard. Never ship a version bump with no Caddy Note entry.
 
 ## Architecture
 
