@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · v8 technical planning</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Testing infrastructure</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Behind-the-scenes technical planning work for upcoming platform upgrades. Nothing new you can see yet — the groundwork for the next wave of features.", tag: "IMPROVED" }
+    { item: "Behind-the-scenes testing infrastructure to help catch potential bugs before they reach members.", tag: "IMPROVED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v7.9.2", date: "April 2026", headline: "v8 technical planning",
+      items: [
+        { item: "Behind-the-scenes technical planning work for upcoming platform upgrades. Nothing new you can see yet — the groundwork for the next wave of features.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v7.9.1", date: "April 2026", headline: "Long-term governance groundwork",
       items: [
