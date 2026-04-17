@@ -596,6 +596,10 @@ For visible UI bugs, layout regressions, or cross-page consistency issues, adapt
 
 See `tests/e2e/_templates/README.md` for when to use this approach, the full pattern, and post-diagnosis hygiene rules.
 
+#### Before scoping a fix
+
+Before scoping a fix to a display bug, grep the full codebase for every instance of the pattern. A bug that shows on pages A and B often also affects pages C, D, E. A 2-minute comprehensive grep prevents partial fixes from shipping as "done" and returning as new bugs. v7.8.4 shipped incomplete because we fixed 3 of 9 XP display sites; v7.8.5 completed the sweep.
+
 ## Claude Code Hooks
 
 `.claude/settings.json` registers five project-level hooks that fire around every tool call. They're deterministic guardrails — they run regardless of what any agent remembers, which makes them the right layer for rules that must never be broken.

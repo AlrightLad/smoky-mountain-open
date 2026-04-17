@@ -12,6 +12,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · UI Fixes, Pre-commit Safety Net, Developer Safety Guardrails</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    {item: "v7.8.5 — Completed the XP display fix from v7.8.4. The Trophy Room, member lists, chat, and other places that show your level now all match your home page and profile page.", tag: "FIXED"},
     {item: "v7.8.4 — Fixed the XP bar sometimes showing different values between your home page and profile page. Now both reflect your actual total XP across all leagues.", tag: "FIXED"},
     {item: "v7.8.4 — Fixed a broken stat box on the profile page that was showing a stray number instead of your Rounds total.", tag: "FIXED"},
     {item: "v7.8.2 — Pre-commit safety net. Every code change is now automatically checked for syntax errors before it can be committed. Prevents broken code from ever reaching the app.", tag: "NEW"},
