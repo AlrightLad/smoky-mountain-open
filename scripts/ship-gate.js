@@ -29,6 +29,11 @@ async function main() {
     process.exit(1);
   }
 
+  if (!run('npm', ['run', 'test:rules'])) {
+    console.error('\n✗ Firestore rules tests failed');
+    process.exit(1);
+  }
+
   if (!run('npx', ['playwright', 'test'])) {
     console.error('\n✗ E2E tests failed');
     process.exit(1);
