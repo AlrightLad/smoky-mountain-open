@@ -33,14 +33,8 @@ Router.register("home", function() {
   // ── Compact Hero + Personal Stats ──
   var myRounds = currentUser ? PB.getPlayerRounds(currentUser.uid) : [];
   if (!myRounds.length && currentProfile && currentProfile.claimedFrom) myRounds = PB.getPlayerRounds(currentProfile.claimedFrom);
-  // Level/XP are GLOBAL — use stored Firestore values (computed from all rounds across all leagues)
-  var myLevel;
-  if (currentProfile && currentProfile.xp > 0) {
-    myLevel = PB.calcLevelFromXP(currentProfile.xp);
-  } else {
-    myLevel = currentUser ? PB.getPlayerLevel(currentUser.uid) : {level:1,xp:0,nextLevelXp:100,currentLevelXp:0};
-    if (myLevel.level <= 1 && currentProfile && currentProfile.claimedFrom) myLevel = PB.getPlayerLevel(currentProfile.claimedFrom);
-  }
+  // XP source precedence (see PB.getPlayerXPForDisplay in core/data.js).
+  var myLevel = PB.calcLevelFromXP(PB.getPlayerXPForDisplay(currentUser ? currentUser.uid : null));
   var xpToNext = myLevel.nextLevelXp - myLevel.xp;
   // Achievements are GLOBAL — use stored count from member doc
   var achievementCount = currentProfile && currentProfile.earnedAchievements ? currentProfile.earnedAchievements.length : 0;

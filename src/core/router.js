@@ -1988,7 +1988,7 @@ function renderOnlineSection() {
     
     var name = (p ? (p.name || p.username) : null) || data.name || "Member";
     var isMe = currentUser && uid === currentUser.uid;
-    var lvlForOnline = PB.getPlayerLevel(uid);
+    var lvlForOnline = PB.calcLevelFromXP(PB.getPlayerXPForDisplay(uid));
     var lvlNum = lvlForOnline ? lvlForOnline.level : null;
     h += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0" onclick="Router.go(\'members\',{id:\'' + uid + '\'})">';
     h += '<div style="position:relative;width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center">';

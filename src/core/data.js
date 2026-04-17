@@ -1104,6 +1104,35 @@ var PB = (function() {
   }
 
   // Calculate level from a given XP value
+  // Single source of truth for "what XP value should a display element show"?
+  // Used by home.js, firebase.js (top-left profile bar), members.js (profile
+  // page + member list + Edit Profile + shareProfileCard), trophyroom.js,
+  // chat.js, and router.js (Online Now).
+  // Precedence:
+  //   1. currentProfile.xp       — viewing own identity, persisted global value
+  //                                maintained by persistPlayerStats
+  //   2. fbMemberCache[pid].xp   — viewing another member, their persisted global
+  //   3. getPlayerLevel(pid).xp  — live fallback (league-scoped; used before
+  //                                persisted has been written on a new account)
+  // The helper exists to keep all 9 display sites in lock-step — v7.8.4 shipped
+  // with only 3 of 9 migrated, which is the failure mode this centralization
+  // prevents from recurring.
+  function getPlayerXPForDisplay(pid) {
+    if (!pid) return 0;
+    var isSelf = typeof currentUser !== "undefined" && currentUser
+      && (pid === currentUser.uid
+          || (typeof currentProfile !== "undefined" && currentProfile && pid === currentProfile.claimedFrom));
+    if (isSelf && typeof currentProfile !== "undefined" && currentProfile && currentProfile.xp > 0) {
+      return currentProfile.xp;
+    }
+    if (!isSelf && typeof fbMemberCache !== "undefined"
+        && fbMemberCache[pid] && fbMemberCache[pid].xp > 0) {
+      return fbMemberCache[pid].xp;
+    }
+    var live = getPlayerLevel(pid);
+    return live ? live.xp : 0;
+  }
+
   function calcLevelFromXP(xp) {
     var level = 1;
     while (xpForLevel(level + 1) <= xp) level++;
@@ -1991,7 +2020,7 @@ var PB = (function() {
     getPlayerAvg:getPlayerAvg, getPlayerBest:getPlayerBest, getDisplayName:getDisplayName, getUniqueCourses:getUniqueCourses, normCourseName:normCourseName, getAllPlayerIds:getAllPlayerIds,
     getTripStableford:getTripStableford, getTripTotal:getTripTotal,
     getMiniPoints:getMiniPoints, getBonusPoints:getBonusPoints, getTripPoints:getTripPoints,
-    daysUntil:daysUntil, generateRoundCommentary:generateRoundCommentary, getActivity:getActivity, getAchievements:getAchievements, getPlayerXP:getPlayerXP, getPlayerLevel:getPlayerLevel, calcXPFromRounds:calcXPFromRounds, calcLevelFromXP:calcLevelFromXP,
+    daysUntil:daysUntil, generateRoundCommentary:generateRoundCommentary, getActivity:getActivity, getAchievements:getAchievements, getPlayerXP:getPlayerXP, getPlayerLevel:getPlayerLevel, getPlayerXPForDisplay:getPlayerXPForDisplay, calcXPFromRounds:calcXPFromRounds, calcLevelFromXP:calcLevelFromXP,
     createChallenge:createChallenge, getChallenges:getChallenges, updateChallenge:updateChallenge,
     addNotification:addNotification, getNotifications:getNotifications, markNotificationRead:markNotificationRead, getUnreadCount:getUnreadCount,
     getSeasonStandings:getSeasonStandings,

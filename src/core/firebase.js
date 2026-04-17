@@ -605,21 +605,8 @@ function updateProfileBar() {
     avatarEl.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700;font-size:12px;background:var(--bg3);border-radius:50%">' + initial + '</div>';
   }
 
-  // XP source precedence for the top-left avatar badge (always current user):
-  // 1. currentProfile.xp  — global persisted value from persistPlayerStats
-  // 2. PB.getPlayerLevel  — live fallback (league-scoped; used before the
-  //    persisted field has ever been written on a brand-new account)
-  // Matches home.js:37–48 and members.js self-profile branch so all three
-  // XP displays agree.
-  var lvlInfo = null;
-  if (currentProfile && currentProfile.xp > 0) {
-    lvlInfo = PB.calcLevelFromXP(currentProfile.xp);
-  } else if (currentUser) {
-    lvlInfo = PB.getPlayerLevel(currentUser.uid);
-    if ((!lvlInfo || lvlInfo.level <= 1) && currentProfile && currentProfile.claimedFrom) {
-      lvlInfo = PB.getPlayerLevel(currentProfile.claimedFrom);
-    }
-  }
+  // XP source precedence (see PB.getPlayerXPForDisplay in core/data.js).
+  var lvlInfo = currentUser ? PB.calcLevelFromXP(PB.getPlayerXPForDisplay(currentUser.uid)) : null;
   
   // Level badge — circular pill at bottom-right of avatar
   var existingBadge = document.getElementById("profileBarLevelBadge");

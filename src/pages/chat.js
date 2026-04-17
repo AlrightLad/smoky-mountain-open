@@ -474,7 +474,7 @@ function renderChatMessages(messages) {
   var ch = '';
   messages.forEach(function(msg) {
     var m = PB.getPlayer(msg.authorId);
-    var mLvl = m ? PB.getPlayerLevel(m.id) : null;
+    var mLvl = m ? PB.calcLevelFromXP(PB.getPlayerXPForDisplay(m.id)) : null;
     var likes = msg.likes || [];
     var likeCount = likes.length;
     var iLiked = currentUser && likes.indexOf(currentUser.uid) !== -1;

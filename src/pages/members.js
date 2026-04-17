@@ -147,7 +147,7 @@ function buildMemberCards(players) {
     var rounds = PB.getPlayerRounds(p.id);
     var hcap = PB.calcHandicap(rounds);
     var plvl = {level:1};
-    try { plvl = PB.getPlayerLevel(p.id) || {level:1}; } catch(e) {}
+    try { plvl = PB.calcLevelFromXP(PB.getPlayerXPForDisplay(p.id)) || {level:1}; } catch(e) {}
     h += '<div class="card member-card" data-name="' + escHtml((p.name||"").toLowerCase() + " " + (p.username||"").toLowerCase()) + '" onclick="Router.go(\'members\',{id:\'' + p.id + '\'})">';
     h += '<div class="member-row"><div style="position:relative">' + renderAvatar(p, 40, false);
     h += '<div style="position:absolute;bottom:-3px;right:-3px;background:var(--gold);color:var(--bg);font-size:7px;font-weight:800;border-radius:6px;padding:1px 3px;border:1.5px solid var(--bg);line-height:1.3;min-width:12px;text-align:center;z-index:2;pointer-events:none">' + (plvl.level||1) + '</div>';
@@ -261,23 +261,9 @@ function renderMemberDetailWithData(p) {
   // Get achievements and level early for frame/title
   var achievements = [];
   try { achievements = PB.getAchievements(pid) || []; } catch(e) {}
-  // XP source precedence (matches home.js:37–48 and firebase.js updateProfileBar):
-  // 1. currentProfile.xp       — viewing own profile, persisted global
-  // 2. fbMemberCache[pid].xp   — viewing another member, their persisted global
-  // 3. PB.getPlayerLevel(pid)  — live fallback (league-scoped)
-  // `isOwnProfile` is defined later in this function; recompute the same check
-  // inline here because the XP source depends on it.
-  var _xpIsSelf = currentUser && (pid === currentUser.uid || (currentProfile && pid === currentProfile.claimedFrom));
+  // XP source precedence (see PB.getPlayerXPForDisplay in core/data.js).
   var lvl = {level:1,name:"Rookie",xp:0,currentLevelXp:0,nextLevelXp:500};
-  try {
-    if (_xpIsSelf && currentProfile && currentProfile.xp > 0) {
-      lvl = PB.calcLevelFromXP(currentProfile.xp);
-    } else if (!_xpIsSelf && typeof fbMemberCache !== "undefined" && fbMemberCache[pid] && fbMemberCache[pid].xp > 0) {
-      lvl = PB.calcLevelFromXP(fbMemberCache[pid].xp);
-    } else {
-      lvl = PB.getPlayerLevel(pid) || lvl;
-    }
-  } catch(e) {}
+  try { lvl = PB.calcLevelFromXP(PB.getPlayerXPForDisplay(pid)) || lvl; } catch(e) {}
   var frameColor = playerFrameColor(p);
   var ringStyle = typeof playerRingStyle === "function" ? playerRingStyle(p) : "border:3px solid " + frameColor;
   var activeTitle = p.equippedTitle || p.title || "Member";
@@ -1194,7 +1180,8 @@ function renderMemberEditForm(p) {
   h += formField("Score range", "edit-range", p.range || "", "text", "e.g. 85-95");
   
   // Equipped title selector
-  var lvl = PB.getPlayerLevel(pid);
+  // XP source precedence (see PB.getPlayerXPForDisplay in core/data.js).
+  var lvl = PB.calcLevelFromXP(PB.getPlayerXPForDisplay(pid));
   var availableTitles = [];
   var TITLES = {1:"Rookie",5:"Weekend Warrior",10:"Range Rat",15:"Fairway Finder",20:"Club Member",25:"Course Regular",30:"Low Handicapper",35:"Scratch Aspirant",40:"Ironman",45:"Birdie Hunter",50:"Eagle Eye",55:"Tour Wannabe",60:"Golf Addict",65:"Links Legend",70:"Course Conqueror",75:"The Professor",80:"Hall of Famer",85:"Living Legend",90:"Immortal",95:"Transcendent",100:"G.O.A.T."};
   var titleKeys = [1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100];
@@ -1890,7 +1877,8 @@ function toggleBadge(pid, badgeId) {
 function shareProfileCard(pid) {
   var p = PB.getPlayer(pid);
   if (!p) { Router.toast("Player not found"); return; }
-  var lvl = PB.getPlayerLevel(pid);
+  // XP source precedence (see PB.getPlayerXPForDisplay in core/data.js).
+  var lvl = PB.calcLevelFromXP(PB.getPlayerXPForDisplay(pid));
   var rounds = PB.getPlayerRounds(pid);
   var indiv = rounds.filter(function(r){return r.format!=="scramble"&&r.format!=="scramble4"});
   var full18 = indiv.filter(function(r){return !r.holesPlayed||r.holesPlayed>=18});

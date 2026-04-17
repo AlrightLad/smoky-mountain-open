@@ -19,7 +19,8 @@ Router.register("trophyroom", function(params) {
 
 function renderTrophyRoom(p) {
   var pid = p.id;
-  var lvl = PB.getPlayerLevel(pid);
+  // XP source precedence (see PB.getPlayerXPForDisplay in core/data.js).
+  var lvl = PB.calcLevelFromXP(PB.getPlayerXPForDisplay(pid));
   var achievements = PB.getAchievements(pid);
   var rounds = PB.getPlayerRounds(pid);
   
