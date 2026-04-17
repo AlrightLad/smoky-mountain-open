@@ -25,6 +25,43 @@ This app is a labor of love. Treat it with extreme care and pride. It's a core p
 - **Repo:** `AlrightLad/smoky-mountain-open`
 - **Live:** https://alrightlad.github.io/smoky-mountain-open
 
+## Caddy Notes Writing Standard
+
+Caddy Notes is member-facing documentation. Members do not care about implementation details. They care about what's different when they use the app.
+
+### The current-release section shows ONLY the current version
+
+- `currentNotes` contains entries for the latest APP_VERSION only
+- Previous versions go to `archiveNotes` (collapsible "Past Releases" section, default-collapsed)
+- Never accumulate entries across versions in `currentNotes` — each ship moves the prior version's entries to archive
+
+### Entry format rules
+
+- Describe what members SEE or EXPERIENCE differently
+- No implementation terms: "matcher", "pre-commit", "hook", "Firestore", "refactor", "state", "cache", "async", "helper", "persisted", "live", "session", "listener", "payload"
+- No meta references: "completed the fix from vX.Y", "fixed a regression in vX.Y", "continued from previous version"
+- Start with a verb in plain English: "Fixed", "Added", "Updated", "Improved"
+- Max 25 words per entry. If you can't describe it that short, it probably wasn't member-visible to begin with
+
+### Pure infrastructure ships
+
+Sometimes a version ships that doesn't change what members see (new hooks, new tests, new dev tools). Still write one honest short entry:
+
+  "Behind-the-scenes improvements to reliability. Nothing new you can see, but the app is more stable."
+
+Don't pretend infra work is a feature. Don't hide it silently. One honest line.
+
+### Before shipping any Caddy Notes entry
+
+Ask: if I read this as a member who only uses the app to log golf rounds, would I know what this means? Would I care? If either answer is no, rewrite.
+
+### Archive versioning
+
+When a new version ships:
+1. Move all entries currently in `currentNotes` to a new block at the top of `archiveNotes`, tagged with the version they shipped under
+2. Clear `currentNotes`
+3. Add the new version's entries to `currentNotes`
+
 ## Architecture
 
 ### Current (Single File)
