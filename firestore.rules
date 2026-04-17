@@ -1,170 +1,669 @@
+// ═════════════════════════════════════════════════════════════════════
+// PARBAUGHS — FIRESTORE SECURITY RULES
+// ═════════════════════════════════════════════════════════════════════
+//
+// v8.0.0-rc1 — Full rewrite per docs/v8.0-technical-design.md Section 3.
+//
+// Architecture overview:
+//
+//   Helpers (top of file):
+//     - Identity primitives:    isAuth, uid, memberDoc, myProfile
+//     - Platform role state:    platformConfig, isFounder, amIFounder,
+//                               platformRoleOf, myPlatformRole,
+//                               isPlatformSuspended, isPlatformBanned,
+//                               amIActive, amIReadable
+//     - Per-league state:       leagueDoc, isLeagueCommissioner,
+//                               amILeagueCommissioner, isLeagueAdmin,
+//                               amILeagueAdmin, isLeagueMember,
+//                               amILeagueMember, amILeagueLeadership,
+//                               isBannedFromLeague
+//
+//   Transition tolerance:
+//     platformRoleOf and amIFounder tolerate missing v8 fields by
+//     falling back to legacy `role` field. This lets rules deploy
+//     independently of the migration script run. Decision 7.1.c.1.
+//
+//   Semantics:
+//     - amIActive: banned and suspended users block. Used on writes.
+//     - amIReadable: only banned users block. Suspended users keep
+//       read access per decision 3.1.a.
+//     - Founder authority: platformConfig.founderUid (explicit field
+//       per decision 2.1.a). Pre-migration: legacy role=="commissioner".
+//
+//   Preserved from v7.9.5:
+//     - Gap 4 fix: bounties update scoped to poster/claimant
+//     - Gap 6 fix: rangeSessions update/delete scoped to playerId owner
+//     - Gap 7 fix: parcoin_transactions create validates uid match
+//     - Gap 8 fix: leagues/{id}/joinRequests rules (no silent-fail)
+//
+//   New collections (v8.0.0):
+//     - platformConfig/singleton — founderUid, platformVersion
+//     - founder_access_logs/{id} — audit trail per decision 3.5.a
+//     - platform_announcements/{id} — v8.0.0 + v8.2.0 broadcasts
+//     - transfer_requests/{id} — commissioner + founder transfers
+//     - leagues/{id}/moderation_log/{id} — per-league kick/ban audit
+//     - members/{uid}/erasure_requests/{id} — GDPR anonymization flow
+//
+// ═════════════════════════════════════════════════════════════════════
+
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // ─── Identity primitives ────────────────────────────────────────
     function isAuth() { return request.auth != null; }
     function uid() { return request.auth.uid; }
-    function isCommissioner() { return isAuth() && get(/databases/$(database)/documents/members/$(uid())).data.role == "commissioner"; }
 
-    // ── Identity ──
+    function memberDoc(memberUid) {
+      return get(/databases/$(database)/documents/members/$(memberUid)).data;
+    }
+
+    function myProfile() { return memberDoc(uid()); }
+
+    // ─── Platform-level role resolution ─────────────────────────────
+    // platformRoleOf: reads the v8 platformRole field. Falls back to
+    // the legacy `role` field for docs that haven't been migrated yet
+    // (decision 7.1.c.1 dual-read window). Legacy mapping:
+    //   role == "commissioner" → founder (only Zach has this legacy role)
+    //   role == "suspended"    → suspended
+    //   role == "removed"      → banned
+    //   anything else          → user
+
+    function platformRoleOf(memberUid) {
+      return memberDoc(memberUid).get('platformRole',
+        memberDoc(memberUid).get('role', '') == 'commissioner' ? 'founder' :
+        memberDoc(memberUid).get('role', '') == 'suspended' ? 'suspended' :
+        memberDoc(memberUid).get('role', '') == 'removed' ? 'banned' :
+        'user'
+      );
+    }
+
+    function myPlatformRole() { return platformRoleOf(uid()); }
+
+    function isPlatformSuspended(memberUid) {
+      return isAuth() && platformRoleOf(memberUid) == 'suspended';
+    }
+
+    function isPlatformBanned(memberUid) {
+      return isAuth() && platformRoleOf(memberUid) == 'banned';
+    }
+
+    function amIActive() {
+      return isAuth()
+        && myPlatformRole() != 'banned'
+        && myPlatformRole() != 'suspended';
+    }
+
+    function amIReadable() {
+      return isAuth() && myPlatformRole() != 'banned';
+    }
+
+    // ─── Founder authority ──────────────────────────────────────────
+    // Reads platformConfig/singleton.founderUid (explicit per decision
+    // 2.1.a). Pre-migration fallback: checks caller's legacy role.
+
+    function isFounder(memberUid) {
+      return isAuth() && (
+        exists(/databases/$(database)/documents/platformConfig/singleton)
+          ? get(/databases/$(database)/documents/platformConfig/singleton).data.founderUid == memberUid
+          : memberDoc(memberUid).get('role', '') == 'commissioner'
+      );
+    }
+
+    function amIFounder() { return isFounder(uid()); }
+
+    // ─── Per-league role resolution ─────────────────────────────────
+
+    function leagueDoc(leagueId) {
+      return get(/databases/$(database)/documents/leagues/$(leagueId)).data;
+    }
+
+    function isLeagueCommissioner(leagueId, memberUid) {
+      return isAuth() && leagueDoc(leagueId).commissioner == memberUid;
+    }
+
+    function amILeagueCommissioner(leagueId) {
+      return isLeagueCommissioner(leagueId, uid());
+    }
+
+    function isLeagueAdmin(leagueId, memberUid) {
+      return isAuth() && memberUid in leagueDoc(leagueId).get('admins', []);
+    }
+
+    function amILeagueAdmin(leagueId) {
+      return isLeagueAdmin(leagueId, uid());
+    }
+
+    function isLeagueMember(leagueId, memberUid) {
+      return isAuth() && memberUid in leagueDoc(leagueId).get('memberUids', []);
+    }
+
+    function amILeagueMember(leagueId) {
+      return isLeagueMember(leagueId, uid());
+    }
+
+    function amILeagueLeadership(leagueId) {
+      return amILeagueCommissioner(leagueId) || amILeagueAdmin(leagueId);
+    }
+
+    function isBannedFromLeague(leagueId, memberUid) {
+      return memberUid in leagueDoc(leagueId).get('bans', []);
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    // COLLECTION RULES
+    // ════════════════════════════════════════════════════════════════
+
+    // ─── Identity: members/{memberId} ───────────────────────────────
+    // Read: own doc always (needed for ban-screen detection on auth);
+    // others' docs only if caller is not platform-banned.
+    // Create: self only, must initialize with platformRole=='user'.
+    // Update: owner (if active) or Founder. platformRole/suspension/ban
+    //   are immutable via client — Cloud Function writes those.
+    // Delete: Founder only (decision 3.5.a).
     match /members/{memberId} {
-      allow read: if true;
-      allow create: if isAuth() && uid() == memberId;
-      allow update: if isAuth() && (uid() == memberId || isCommissioner());
-      allow delete: if isCommissioner();
+      allow read: if isAuth() && (uid() == memberId || amIReadable());
+      allow create: if isAuth()
+                   && uid() == memberId
+                   && (
+                     !('platformRole' in request.resource.data)
+                     || request.resource.data.platformRole == 'user'
+                   );
+      allow update: if amIReadable()
+                   && (
+                     (uid() == memberId && amIActive())
+                     || amIFounder()
+                   )
+                   && (
+                     // platformRole is immutable via client
+                     !('platformRole' in request.resource.data)
+                     || request.resource.data.get('platformRole', '') ==
+                        resource.data.get('platformRole', '')
+                   )
+                   && (
+                     // suspension object is immutable via client
+                     !('suspension' in request.resource.data)
+                     || request.resource.data.get('suspension', null) ==
+                        resource.data.get('suspension', null)
+                     || amIFounder()
+                   )
+                   && (
+                     // ban object is immutable via client
+                     !('ban' in request.resource.data)
+                     || request.resource.data.get('ban', null) ==
+                        resource.data.get('ban', null)
+                     || amIFounder()
+                   );
+      allow delete: if amIFounder();
     }
 
-    // ── Rounds ──
-    match /rounds/{roundId} {
+    // ─── Platform-level config ──────────────────────────────────────
+    // Read: any authenticated user (founder identity is public).
+    // Write: Cloud Function only (Admin SDK bypasses rules).
+    match /platformConfig/{docId} {
       allow read: if isAuth();
-      allow create: if isAuth();
-      allow update, delete: if isAuth() && (resource.data.player == uid() || isCommissioner());
+      allow write: if false;
     }
 
-    // ── DMs ──
-    match /dms/{dmId} {
-      allow read: if isAuth() && (dmId.matches(uid() + '_.*') || dmId.matches('.*_' + uid()));
-      allow create: if isAuth();
-      match /messages/{messageId} {
-        allow read, create: if isAuth();
-      }
-    }
-
-    // ── Chat ──
-    match /chat/{msgId} {
+    // ─── Platform announcements (v8.0.0 + v8.2.0 broadcasts) ────────
+    match /platform_announcements/{id} {
       allow read: if isAuth();
-      allow create: if isAuth();
-      allow update, delete: if isAuth() && (resource.data.authorId == uid() || isCommissioner());
+      allow create, update: if amIFounder();
+      allow delete: if false;
     }
 
-    // ── Notifications ──
-    match /notifications/{notifId} {
-      allow read: if isAuth() && resource.data.toUid == uid();
-      allow create: if isAuth();
-      allow update, delete: if isAuth() && resource.data.toUid == uid();
-    }
-
-    // ── Invites ──
-    match /invites/{inviteId} {
-      allow read: if isAuth();
-      allow create: if isAuth();
-      allow update, delete: if isCommissioner();
-    }
-
-    // ── Config ──
-    match /config/{docId} { allow read: if isAuth(); allow write: if isCommissioner(); }
-
-    // ── ParCoins (immutable log) ──
-    // v7.9.5 Gap 7 fix: create requires request.resource.data.uid == uid()
-    // so a user cannot forge a transaction with another user's uid.
-    match /parcoin_transactions/{txnId} {
-      allow read: if isAuth() && resource.data.uid == uid();
-      allow create: if isAuth() && request.resource.data.uid == uid();
+    // ─── Founder access audit log ───────────────────────────────────
+    // Cloud Function writes these when the Founder reads private
+    // content. Members of affected leagues can read their own audit
+    // trail; Founder can read all.
+    match /founder_access_logs/{logId} {
+      allow create: if false;  // Cloud Function only
+      allow read: if amIReadable() && (
+        resource.data.leagueId in myProfile().get('leagues', [])
+        || amIFounder()
+      );
       allow update, delete: if false;
     }
 
-    // ── Push queue ──
-    match /pendingPush/{pushId} { allow create: if isAuth(); allow read, update, delete: if false; }
+    // ─── Transfer requests (commissioner + founder transfers) ───────
+    match /transfer_requests/{id} {
+      allow read: if amIReadable() && (
+        resource.data.fromUid == uid()
+        || resource.data.toUid == uid()
+        || (resource.data.type == 'commissioner'
+            && amILeagueLeadership(resource.data.leagueId))
+        || amIFounder()
+      );
+      allow create: if amIActive()
+                   && request.resource.data.fromUid == uid()
+                   && (
+                     (request.resource.data.type == 'commissioner'
+                      && amILeagueCommissioner(request.resource.data.leagueId))
+                     || (request.resource.data.type == 'founder'
+                         && amIFounder())
+                   );
+      allow update: if amIActive() && (
+        // accept: nominee accepting their own pending transfer
+        (resource.data.toUid == uid() && resource.data.status == 'pending')
+        // cancel: initiator revoking during cooling-off window
+        || (resource.data.fromUid == uid()
+            && resource.data.status == 'accepted'
+            && request.time < resource.data.coolingOffEndsAt)
+        // Founder override (forced transfers, completions)
+        || amIFounder()
+      );
+      allow delete: if false;  // historical record
+    }
 
-    // ── Leagues ──
+    // ─── Rounds (league-scoped) ─────────────────────────────────────
+    match /rounds/{roundId} {
+      allow read: if amIReadable();
+      allow create: if amIActive()
+                   && request.resource.data.player == uid()
+                   && amILeagueMember(request.resource.data.leagueId)
+                   && !isBannedFromLeague(request.resource.data.leagueId, uid());
+      allow update: if amIActive() && (
+        resource.data.player == uid()
+        || amILeagueLeadership(resource.data.leagueId)
+        || amIFounder()
+      );
+      allow delete: if amIActive()
+                   && (resource.data.player == uid() || amIFounder());
+    }
+
+    // ─── DMs (participants only) ────────────────────────────────────
+    // Suspended users cannot send DMs (decision 3.1.a refinement).
+    // Banned users cannot even read their own DM history.
+    match /dms/{dmId} {
+      allow read: if isAuth()
+                 && !isPlatformBanned(uid())
+                 && (dmId.matches(uid() + '_.*') || dmId.matches('.*_' + uid()));
+      allow create: if amIActive()
+                   && (dmId.matches(uid() + '_.*') || dmId.matches('.*_' + uid()));
+      allow update: if false;
+      allow delete: if amIFounder();
+
+      match /messages/{messageId} {
+        allow read: if isAuth()
+                   && !isPlatformBanned(uid())
+                   && (dmId.matches(uid() + '_.*') || dmId.matches('.*_' + uid()));
+        allow create: if amIActive()
+                     && (dmId.matches(uid() + '_.*') || dmId.matches('.*_' + uid()));
+        allow update: if false;
+        allow delete: if amIFounder();
+      }
+    }
+
+    // ─── Chat (league-scoped) ───────────────────────────────────────
+    match /chat/{msgId} {
+      allow read: if amIReadable() && (
+        amILeagueMember(resource.data.leagueId)
+        || amIFounder()
+      );
+      allow create: if amIActive()
+                   && amILeagueMember(request.resource.data.leagueId)
+                   && !isBannedFromLeague(request.resource.data.leagueId, uid())
+                   && request.resource.data.authorId == uid();
+      allow update: if amIActive()
+                   && resource.data.authorId == uid();
+      allow delete: if amIActive() && (
+        resource.data.authorId == uid()
+        || amILeagueLeadership(resource.data.leagueId)
+        || amIFounder()
+      );
+    }
+
+    // ─── Notifications ──────────────────────────────────────────────
+    // Banned users can still read their own (ban / appeal outcomes).
+    // Suspended users can't queue new ones (prevents harassment loop).
+    match /notifications/{notifId} {
+      allow read: if isAuth() && resource.data.toUid == uid();
+      allow create: if amIActive();
+      allow update: if isAuth() && resource.data.toUid == uid();
+      allow delete: if isAuth() && resource.data.toUid == uid();
+    }
+
+    // ─── Invites ────────────────────────────────────────────────────
+    match /invites/{inviteId} {
+      allow read: if isAuth();
+      allow create: if amIActive();
+      allow update: if amIActive() && (
+        resource.data.get('createdBy', '') == uid()
+        || amILeagueCommissioner(resource.data.get('leagueId', ''))
+        || amIFounder()
+      );
+      allow delete: if amIFounder();
+    }
+
+    // ─── Config (platform-level API keys, feature flags) ────────────
+    match /config/{docId} {
+      allow read: if isAuth();
+      allow write: if amIFounder();
+    }
+
+    // ─── ParCoins ──────────────────────────────────────────────────
+    // Gap 7 fix preserved from v7.9.5: create validates uid match.
+    // Delete added for GDPR erasure flow (Founder only).
+    match /parcoin_transactions/{txnId} {
+      allow read: if isAuth() && resource.data.uid == uid();
+      allow create: if amIActive() && request.resource.data.uid == uid();
+      allow update: if false;
+      allow delete: if amIFounder();
+    }
+
+    // ─── Push queue ─────────────────────────────────────────────────
+    match /pendingPush/{pushId} {
+      allow create: if amIActive();
+      allow read, update, delete: if false;
+    }
+
+    // ─── Leagues ────────────────────────────────────────────────────
     match /leagues/{leagueId} {
-      allow read: if isAuth();
-      allow create: if isAuth();
-      allow update: if isAuth() && resource.data.commissioner == uid();
-      allow delete: if false;
+      allow read: if amIReadable() && (
+        resource.data.get('visibility', 'private') == 'public'
+        || amILeagueMember(leagueId)
+        || amIFounder()
+      );
+      allow create: if amIActive()
+                   && request.resource.data.commissioner == uid()
+                   && request.resource.data.memberUids.size() == 1
+                   && uid() in request.resource.data.memberUids;
+      allow update: if amIActive() && (
+        amILeagueCommissioner(leagueId)
+        || amIFounder()
+      );
+      // Sole-member auto-delete per decision 6.2.a. Founding league
+      // is hard-gated non-deletable. Force-delete (Founder override
+      // for abandoned leagues) goes through Cloud Function with
+      // Admin SDK, which bypasses rules.
+      allow delete: if amILeagueCommissioner(leagueId)
+                   && resource.data.get('memberCount', 0) <= 1
+                   && resource.data.get('badge', '') != 'founding';
+
+      // Join requests (fills Gap 8 from v7.9.5)
+      match /joinRequests/{requestUid} {
+        allow read: if amIReadable() && (
+          uid() == requestUid
+          || amILeagueLeadership(leagueId)
+          || amIFounder()
+        );
+        allow create: if amIActive()
+                     && uid() == requestUid
+                     && !isBannedFromLeague(leagueId, uid())
+                     && !isLeagueMember(leagueId, uid());
+        allow update: if amIActive() && (
+          amILeagueLeadership(leagueId)
+          || amIFounder()
+        );
+        allow delete: if amIFounder();
+      }
+
+      // Moderation log (kick/ban/unban audit, decision 8.3.a)
+      match /moderation_log/{logId} {
+        allow read: if amIReadable() && (
+          amILeagueLeadership(leagueId)
+          || amIFounder()
+          || (resource.data.targetUid == uid()
+              && resource.data.get('reasonPrivate', false) == false)
+        );
+        allow create: if amIActive()
+                     && (amILeagueLeadership(leagueId) || amIFounder())
+                     && request.resource.data.actorUid == uid();
+        allow update, delete: if amIFounder();
+      }
     }
 
-    // ── League Join Requests (v7.9.5 Gap 8) ──
-    // Missing entirely prior to v7.9.5. Creation restricted to the
-    // requesting user (doc id must match caller). Read visible to the
-    // requester plus league commissioner and admins. Approve / deny /
-    // cleanup restricted to league leadership.
-    match /leagues/{leagueId}/joinRequests/{requestUid} {
-      allow read: if isAuth() && (
-        uid() == requestUid
-        || get(/databases/$(database)/documents/leagues/$(leagueId)).data.commissioner == uid()
-        || uid() in get(/databases/$(database)/documents/leagues/$(leagueId)).data.admins
-      );
-      allow create: if isAuth() && uid() == requestUid;
-      allow update, delete: if isAuth() && (
-        get(/databases/$(database)/documents/leagues/$(leagueId)).data.commissioner == uid()
-        || uid() in get(/databases/$(database)/documents/leagues/$(leagueId)).data.admins
-      );
-    }
-
-    // ── Wagers ──
+    // ─── Wagers ─────────────────────────────────────────────────────
     match /wagers/{wagerId} {
-      allow read: if isAuth();
-      allow create: if isAuth();
-      allow update: if isAuth() && (resource.data.fromUid == uid() || resource.data.toUid == uid() || isCommissioner());
-      allow delete: if false;
-    }
-
-    // ── Bounties ──
-    // v7.9.5 Gap 4 fix: update scoped to creator or claimant. `request.resource`
-    // covers the claim transition where pre-update doc has no claimedBy.
-    match /bounties/{bountyId} {
-      allow read: if isAuth();
-      allow create: if isAuth();
-      allow update: if isAuth() && (
-        resource.data.createdBy == uid() ||
-        resource.data.claimedBy == uid() ||
-        request.resource.data.claimedBy == uid()
+      allow read: if amIReadable() && (
+        resource.data.fromUid == uid()
+        || resource.data.toUid == uid()
+        || amILeagueLeadership(resource.data.leagueId)
+        || amIFounder()
       );
-      allow delete: if isCommissioner();
+      allow create: if amIActive()
+                   && request.resource.data.fromUid == uid()
+                   && amILeagueMember(request.resource.data.leagueId)
+                   && !isBannedFromLeague(request.resource.data.leagueId, uid());
+      allow update: if amIActive() && (
+        resource.data.fromUid == uid()
+        || resource.data.toUid == uid()
+        || amILeagueLeadership(resource.data.leagueId)
+        || amIFounder()
+      );
+      allow delete: if amIFounder();
     }
 
-    // ── Courses (global) ──
-    match /courses/{courseId} { allow read: if isAuth(); allow write: if isAuth(); }
+    // ─── Bounties ───────────────────────────────────────────────────
+    // Gap 4 fix preserved from v7.9.5 (createdBy/claimedBy scoping).
+    // Reads now league-scoped.
+    match /bounties/{bountyId} {
+      allow read: if amIReadable()
+                 && amILeagueMember(resource.data.leagueId);
+      allow create: if amIActive()
+                   && request.resource.data.createdBy == uid()
+                   && amILeagueMember(request.resource.data.leagueId)
+                   && !isBannedFromLeague(request.resource.data.leagueId, uid());
+      allow update: if amIActive() && (
+        resource.data.createdBy == uid()
+        || resource.data.get('claimedBy', '') == uid()
+        || request.resource.data.get('claimedBy', '') == uid()
+        || amILeagueLeadership(resource.data.leagueId)
+        || amIFounder()
+      );
+      allow delete: if amILeagueCommissioner(resource.data.leagueId)
+                   || amIFounder();
+    }
+
+    // ─── Courses (global) ───────────────────────────────────────────
+    // Courses are public golf-course data. Community-writable model
+    // preserved from v7.x.
+    match /courses/{courseId} {
+      allow read: if amIReadable();
+      allow write: if amIActive();
+    }
+
     match /course_reviews/{reviewId} {
-      allow read: if isAuth();
-      allow create: if isAuth();
-      allow update, delete: if isAuth() && resource.data.userId == uid();
+      allow read: if amIReadable();
+      allow create: if amIActive()
+                   && request.resource.data.userId == uid();
+      allow update, delete: if amIActive()
+                           && (resource.data.userId == uid() || amIFounder());
     }
 
-    // ── Photos ──
+    // ─── Photos ─────────────────────────────────────────────────────
     match /photos/{photoId} {
-      allow read: if isAuth();
-      allow create: if isAuth();
-      allow update, delete: if isAuth() && resource.data.uploadedBy == uid();
+      allow read: if amIReadable();
+      allow create: if amIActive()
+                   && request.resource.data.uploadedBy == uid();
+      allow update, delete: if amIActive()
+                           && (resource.data.uploadedBy == uid() || amIFounder());
     }
 
-    // ── Tee Times ──
+    // ─── Tee Times ──────────────────────────────────────────────────
     match /teetimes/{teeId} {
-      allow read: if isAuth();
-      allow create: if isAuth();
-      allow update: if isAuth() && (resource.data.createdBy == uid() || isCommissioner());
-      allow delete: if isAuth() && (resource.data.createdBy == uid() || isCommissioner());
+      allow read: if amIReadable()
+                 && amILeagueMember(resource.data.leagueId);
+      allow create: if amIActive()
+                   && request.resource.data.createdBy == uid()
+                   && amILeagueMember(request.resource.data.leagueId)
+                   && !isBannedFromLeague(request.resource.data.leagueId, uid());
+      allow update: if amIActive() && (
+        resource.data.createdBy == uid()
+        || amILeagueLeadership(resource.data.leagueId)
+        || amIFounder()
+      );
+      allow delete: if amIActive() && (
+        resource.data.createdBy == uid()
+        || amILeagueLeadership(resource.data.leagueId)
+        || amIFounder()
+      );
     }
 
-    // ── Scramble Teams ──
-    match /scrambleTeams/{teamId} { allow read: if isAuth(); allow create: if isAuth(); allow update: if isAuth(); allow delete: if isCommissioner(); }
+    // ─── Scramble Teams ─────────────────────────────────────────────
+    match /scrambleTeams/{teamId} {
+      allow read: if amIReadable()
+                 && amILeagueMember(resource.data.leagueId);
+      allow create: if amIActive()
+                   && amILeagueMember(request.resource.data.leagueId)
+                   && !isBannedFromLeague(request.resource.data.leagueId, uid());
+      allow update: if amIActive() && (
+        uid() in resource.data.get('memberUids', [])
+        || amILeagueLeadership(resource.data.leagueId)
+        || amIFounder()
+      );
+      allow delete: if amILeagueCommissioner(resource.data.leagueId)
+                   || amIFounder();
+    }
 
-    // ── Calendar ──
-    match /calendar_events/{eventId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isAuth() && resource.data.createdBy == uid(); }
-    match /scheduling_chat/{msgId} { allow read: if isAuth(); allow create: if isAuth(); }
+    // ─── Calendar ──────────────────────────────────────────────────
+    match /calendar_events/{eventId} {
+      allow read: if amIReadable()
+                 && amILeagueMember(resource.data.leagueId);
+      allow create: if amIActive()
+                   && request.resource.data.createdBy == uid()
+                   && amILeagueMember(request.resource.data.leagueId);
+      allow update, delete: if amIActive() && (
+        resource.data.createdBy == uid()
+        || amILeagueLeadership(resource.data.leagueId)
+        || amIFounder()
+      );
+    }
 
-    // ── Trips ──
-    match /trips/{tripId} { allow read: if isAuth(); allow write: if isAuth(); }
-    match /tripscores/{scoreId} { allow read: if isAuth(); allow write: if isAuth(); }
+    match /scheduling_chat/{msgId} {
+      allow read: if amIReadable()
+                 && amILeagueMember(resource.data.leagueId);
+      allow create: if amIActive()
+                   && amILeagueMember(request.resource.data.leagueId)
+                   && request.resource.data.authorId == uid();
+      allow update: if false;
+      allow delete: if amILeagueLeadership(resource.data.leagueId)
+                   || amIFounder();
+    }
 
-    // ── Social ──
-    match /social_actions/{actionId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if false; }
+    // ─── Trips / Events ─────────────────────────────────────────────
+    match /trips/{tripId} {
+      allow read: if amIReadable()
+                 && amILeagueMember(resource.data.leagueId);
+      allow create: if amIActive()
+                   && amILeagueMember(request.resource.data.leagueId);
+      allow update: if amIActive()
+                   && amILeagueLeadership(resource.data.leagueId);
+      allow delete: if amILeagueCommissioner(resource.data.leagueId)
+                   || amIFounder();
+    }
 
-    // ── Live State ──
-    match /syncrounds/{roundId} { allow read: if isAuth(); allow write: if isAuth(); }
-    match /liverounds/{roundId} { allow read: if isAuth(); allow write: if isAuth() && roundId == uid(); }
-    match /presence/{userId} { allow read: if isAuth(); allow write: if isAuth() && userId == uid(); }
-    // v7.9.5 Gap 6 fix: update/delete scoped to session owner (playerId).
-    match /rangeSessions/{sessionId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isAuth() && resource.data.playerId == uid(); }
+    // tripscores: reads derive leagueId from parent trip doc. If doc
+    // has a denormalized leagueId field (post-rc2 migration), prefer
+    // that; otherwise chained get. DESIGN NEEDED 3.3.2.
+    match /tripscores/{scoreId} {
+      allow read: if amIReadable() && (
+        'leagueId' in resource.data
+          ? amILeagueMember(resource.data.leagueId)
+          : amILeagueMember(get(/databases/$(database)/documents/trips/$(resource.data.tripId)).data.leagueId)
+      );
+      allow create: if amIActive() && (
+        // creator logging their own score in a trip they're a member of
+        request.resource.data.player == uid()
+        || (
+          'leagueId' in request.resource.data
+            && amILeagueLeadership(request.resource.data.leagueId)
+        )
+      );
+      allow update: if amIActive() && (
+        resource.data.player == uid()
+        || (
+          'leagueId' in resource.data
+            && amILeagueLeadership(resource.data.leagueId)
+        )
+        || amIFounder()
+      );
+      allow delete: if amIFounder();
+    }
 
-    // ── System ──
-    match /errors/{errorId} { allow create: if isAuth(); allow read: if isCommissioner(); allow update, delete: if isCommissioner(); }
-    match /pending_celebrations/{celebId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if false; }
-    match /feature_requests/{reqId} { allow create: if isAuth(); allow read: if isCommissioner(); }
-    match /reports/{reportId} { allow create: if isAuth(); allow read: if isCommissioner(); }
-    match /attestations/{attId} { allow read: if isAuth(); allow write: if isAuth(); }
-    match /partygames/{gameId} { allow read: if isAuth(); allow write: if isAuth(); }
+    // ─── Social actions ─────────────────────────────────────────────
+    match /social_actions/{actionId} {
+      allow read: if amIReadable();
+      allow create: if amIActive()
+                   && request.resource.data.get('fromUid', '') == uid();
+      allow update, delete: if false;
+    }
 
-    // NO CATCH-ALL — every collection must have explicit rules above.
+    // ─── Live state ─────────────────────────────────────────────────
+    match /syncrounds/{roundId} {
+      allow read: if amIReadable();
+      allow write: if amIActive();
+    }
+
+    match /liverounds/{roundId} {
+      allow read: if amIReadable();
+      allow write: if amIActive() && roundId == uid();
+    }
+
+    match /presence/{userId} {
+      allow read: if amIReadable();
+      allow write: if amIActive() && userId == uid();
+    }
+
+    // ─── Range sessions ─────────────────────────────────────────────
+    // Gap 6 fix preserved from v7.9.5 (playerId scoping).
+    match /rangeSessions/{sessionId} {
+      allow read: if amIReadable();
+      allow create: if amIActive()
+                   && request.resource.data.playerId == uid();
+      allow update: if amIActive()
+                   && resource.data.playerId == uid();
+      allow delete: if amIActive()
+                   && (resource.data.playerId == uid() || amIFounder());
+    }
+
+    // ─── Erasure requests (subcollection on members) ────────────────
+    match /members/{memberUid}/erasure_requests/{id} {
+      allow create: if isAuth() && uid() == memberUid && !isPlatformBanned(uid());
+      allow read: if (isAuth() && uid() == memberUid) || amIFounder();
+      allow update: if false;  // Cloud Function only
+      allow delete: if false;  // legal record, never deleted
+    }
+
+    // ─── System ─────────────────────────────────────────────────────
+    // errors: create by any auth user (log from any auth'd flow).
+    // Reads and moderation: Founder only.
+    match /errors/{errorId} {
+      allow create: if isAuth();
+      allow read: if amIFounder();
+      allow update, delete: if amIFounder();
+    }
+
+    match /pending_celebrations/{celebId} {
+      allow read: if amIReadable();
+      allow create: if amIActive();
+      allow update, delete: if false;
+    }
+
+    match /feature_requests/{reqId} {
+      allow create: if amIActive();
+      allow read: if amIFounder();
+      allow update, delete: if amIFounder();
+    }
+
+    match /reports/{reportId} {
+      allow create: if amIActive();
+      allow read: if amIFounder();
+      allow update: if amIFounder();
+      allow delete: if amIFounder();
+    }
+
+    match /attestations/{attId} {
+      allow read: if amIReadable();
+      allow write: if amIActive();
+    }
+
+    match /partygames/{gameId} {
+      allow read: if amIReadable();
+      allow write: if amIActive() && amILeagueMember(resource.data.leagueId);
+    }
+
+    // NO CATCH-ALL. Every collection must have explicit rules above.
   }
 }
