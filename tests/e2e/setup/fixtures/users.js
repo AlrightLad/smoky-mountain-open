@@ -160,17 +160,26 @@ function statsFor(u) {
 
 // Materialized XP values per user. Production's persistPlayerStats persists
 // `xp` on the member doc (computed globally across all leagues). v7.8.4's fix
-// makes home/profile displays read that persisted value first — so to avoid
-// the displays falling back to live for every user, we populate matching
-// values here. For users the XP tests target: testZach (3,100) and
-// scenarioTwentyRounds (4,150) mirror their live league-scoped computation,
-// so parity holds trivially. scenarioMixedLeagues (4,500) is deliberately
-// higher than its league-scoped live value — that divergence is the scenario
-// the XP parity regression test exercises.
+// makes home/profile displays read that persisted value first.
+//
+// v7.9 runs persistPlayerStats at session start. That means the persisted
+// value always converges to the global-live computation within a few
+// seconds of login. Seeded values that diverge from global-live are
+// overwritten on first login and any test that asserts against them will
+// flake. So these seeds are chosen to MATCH what v7.9's global computation
+// produces — the value-compare gate in v7.9 then makes persist idempotent.
+//
+// For users the XP tests target: testZach (3,100) and scenarioTwentyRounds
+// (4,150) match their global-live computation. scenarioMixedLeagues (1,875)
+// also matches global-live but is DIFFERENT from its league-scoped live
+// value (test-league-01 is their active league, but they have rounds in
+// test-league-02 too). That persisted-vs-league-scoped divergence is what
+// the XP parity regression test still exercises — displays must read
+// persisted (global) not league-scoped live.
 const MATERIALIZED_XP = {
   testZach: 3100,
   scenarioTwentyRounds: 4150,
-  scenarioMixedLeagues: 4500,
+  scenarioMixedLeagues: 1875,
 };
 
 for (const u of users) {

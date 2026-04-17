@@ -174,12 +174,14 @@ test.describe('XP display parity — v7.8.4 regression (Bug 1)', () => {
 
 test.describe('XP display parity — v7.8.5 completion (remaining 6 sites)', () => {
 
-  // scenarioMixedLeagues has persisted xp = 4,500 → level 7. League-scoped
-  // live XP is lower (only 3 rounds in the active league). If any display
-  // site still reads live, it shows a lower level; the helper makes every
-  // site agree at level 7.
-  const EXPECTED_LEVEL = 7;
-  const EXPECTED_XP = 4500;
+  // scenarioMixedLeagues has persisted xp = 1,875 → level 4. This is the
+  // global live computation — v7.9 session-start persist reconciles the
+  // member doc to this value on every login. League-scoped live XP
+  // (active league only, excluding test-league-02 rounds) is lower; if
+  // any display site still reads league-scoped live, it shows a lower
+  // level. The helper makes every site agree at level 4.
+  const EXPECTED_LEVEL = 4;
+  const EXPECTED_XP = 1875;
 
   test('Trophy Room shows persisted level/XP for scenarioMixedLeagues', async ({ page }) => {
     await loginAs(page, 'scenarioMixedLeagues');

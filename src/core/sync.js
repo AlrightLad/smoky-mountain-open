@@ -165,6 +165,21 @@ function persistPlayerStats(pid) {
       level: level.level,
       updatedAt: fsTimestamp()
     };
+    // v7.9 — skip the write if computed values match what's already persisted.
+    // Prevents a cosmetic re-render cascade on session-start calls when nothing changed.
+    var existing = (typeof currentProfile !== "undefined" && currentProfile && pid === (currentUser && currentUser.uid))
+      ? currentProfile
+      : (typeof fbMemberCache !== "undefined" && fbMemberCache[pid]) || null;
+    if (existing
+        && existing.xp === stats.xp
+        && existing.level === stats.level
+        && existing.totalRounds === stats.totalRounds
+        && existing.avgScore === stats.avgScore
+        && existing.bestRound === stats.bestRound
+        && existing.computedHandicap === stats.computedHandicap) {
+      pbLog("[Stats] Skip persist for", docId, "— values unchanged (xp:", xp, "rounds:", rounds.length + ")");
+      return;
+    }
     db.collection("members").doc(docId).update(stats).catch(function(){});
     pbLog("[Stats] Persisted GLOBAL stats for", docId, "handicap:", handicap, "xp:", xp, "rounds:", rounds.length);
   }).catch(function(e) { pbWarn("[Stats] persistPlayerStats failed:", e.message); });

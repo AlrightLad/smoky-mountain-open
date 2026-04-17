@@ -852,6 +852,11 @@ function preloadMemberPhotos() {
           }
         });
         pbLog("[Members] Cached", Object.keys(fbMemberCache).length, "member profiles");
+        // v7.9 — refresh persisted stats at session start so XP displays don't drift.
+        // See logs/v7.9-persistplayerstats-recon-2026-04-16T23-30.md
+        if (currentUser && currentUser.uid) {
+          persistPlayerStats(currentUser.uid);
+        }
         updateProfileBar();
         // Only re-render home page for avatar updates — members page fetches fresh from Firestore on its own
         if (Router.getPage() === "home") Router.go("home", Router.getParams(), true);
