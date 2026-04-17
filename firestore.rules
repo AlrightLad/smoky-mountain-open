@@ -54,9 +54,11 @@ service cloud.firestore {
     match /config/{docId} { allow read: if isAuth(); allow write: if isCommissioner(); }
 
     // ── ParCoins (immutable log) ──
+    // v7.9.5 Gap 7 fix: create requires request.resource.data.uid == uid()
+    // so a user cannot forge a transaction with another user's uid.
     match /parcoin_transactions/{txnId} {
       allow read: if isAuth() && resource.data.uid == uid();
-      allow create: if isAuth();
+      allow create: if isAuth() && request.resource.data.uid == uid();
       allow update, delete: if false;
     }
 
@@ -71,6 +73,24 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ── League Join Requests (v7.9.5 Gap 8) ──
+    // Missing entirely prior to v7.9.5. Creation restricted to the
+    // requesting user (doc id must match caller). Read visible to the
+    // requester plus league commissioner and admins. Approve / deny /
+    // cleanup restricted to league leadership.
+    match /leagues/{leagueId}/joinRequests/{requestUid} {
+      allow read: if isAuth() && (
+        uid() == requestUid
+        || get(/databases/$(database)/documents/leagues/$(leagueId)).data.commissioner == uid()
+        || uid() in get(/databases/$(database)/documents/leagues/$(leagueId)).data.admins
+      );
+      allow create: if isAuth() && uid() == requestUid;
+      allow update, delete: if isAuth() && (
+        get(/databases/$(database)/documents/leagues/$(leagueId)).data.commissioner == uid()
+        || uid() in get(/databases/$(database)/documents/leagues/$(leagueId)).data.admins
+      );
+    }
+
     // ── Wagers ──
     match /wagers/{wagerId} {
       allow read: if isAuth();
@@ -80,10 +100,16 @@ service cloud.firestore {
     }
 
     // ── Bounties ──
+    // v7.9.5 Gap 4 fix: update scoped to creator or claimant. `request.resource`
+    // covers the claim transition where pre-update doc has no claimedBy.
     match /bounties/{bountyId} {
       allow read: if isAuth();
       allow create: if isAuth();
-      allow update: if isAuth();
+      allow update: if isAuth() && (
+        resource.data.createdBy == uid() ||
+        resource.data.claimedBy == uid() ||
+        request.resource.data.claimedBy == uid()
+      );
       allow delete: if isCommissioner();
     }
 
@@ -128,7 +154,8 @@ service cloud.firestore {
     match /syncrounds/{roundId} { allow read: if isAuth(); allow write: if isAuth(); }
     match /liverounds/{roundId} { allow read: if isAuth(); allow write: if isAuth() && roundId == uid(); }
     match /presence/{userId} { allow read: if isAuth(); allow write: if isAuth() && userId == uid(); }
-    match /rangeSessions/{sessionId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isAuth(); }
+    // v7.9.5 Gap 6 fix: update/delete scoped to session owner (playerId).
+    match /rangeSessions/{sessionId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isAuth() && resource.data.playerId == uid(); }
 
     // ── System ──
     match /errors/{errorId} { allow create: if isAuth(); allow read: if isCommissioner(); allow update, delete: if isCommissioner(); }
