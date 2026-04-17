@@ -240,6 +240,12 @@ Per-league custom branding: logos, theme colors, league-specific visual identity
 
 Stub: `docs/league-custom-branding-design.md`
 
+### Clubhouse Visual Redesign (post-v8.2)
+
+Full app visual redesign to "Clubhouse" direction. Six parts — palette, island-row headers, data gating, wallet/shop, desktop + onboarding, prioritized UX ideas. Sequenced after v8.2.0 ships.
+
+Stub: `docs/clubhouse-rollout-plan.md`
+
 ## Architecture
 
 ### Current (Single File)
