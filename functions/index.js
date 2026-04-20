@@ -137,7 +137,31 @@ exports.validateInvite = functions.https.onRequest(async (req, res) => {
   res.set('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
   if (req.method !== 'POST') { res.status(405).json({ valid: false, reason: 'Method not allowed' }); return; }
-  const { code } = req.body || {};
+  const { code, email } = req.body || {};
+
+  // Email blocklist (layered before invite-code validation). Populated
+  // by onMemberRoleChange when a member is banned. Email is optional
+  // on the request — older clients that don't send it get invite-code
+  // validation only. Fails open on lookup errors: invite-code check is
+  // the primary security layer, and a blocklist infra outage should not
+  // block legitimate registrations.
+  if (email && typeof email === 'string') {
+    try {
+      const emailHash = hashEmail(email);
+      const blocked = await db.collection('banned_emails').doc(emailHash).get();
+      if (blocked.exists) {
+        res.json({
+          valid: false,
+          reason: 'This email cannot be used to register. Contact support if you believe this is an error.',
+        });
+        return;
+      }
+    } catch (err) {
+      console.error('validateInvite blocklist check failed:', err);
+      // Fall through to invite-code validation.
+    }
+  }
+
   try {
     const result = await validateInviteCode(code);
     if (!result.valid) { res.json({ valid: false, reason: result.reason }); return; }

@@ -260,7 +260,7 @@ function doRegister() {
   var validatePromise = fetch("https://us-central1-parbaughs.cloudfunctions.net/validateInvite", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ code: invite })
+    body: JSON.stringify({ code: invite, email: email })
   }).then(function(res) {
     if (!res.ok) throw new Error("Network error");
     return res.json();
