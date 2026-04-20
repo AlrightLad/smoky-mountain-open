@@ -10,7 +10,7 @@ var APP_VERSION = "8.0.0-rc1";
 // LEAGUE ISOLATION — Nuclear approach. Makes leaking PHYSICALLY IMPOSSIBLE.
 // ══════════════════════════════════════════════════════════════════════════
 
-var LEAGUE_SCOPED = ["rounds","chat","trips","teetimes","wagers","bounties","challenges","scrambleTeams","calendar_events","scheduling_chat","social_actions","invites","syncrounds","liverounds","league_battles","tripscores","rangeSessions"];
+var LEAGUE_SCOPED = ["rounds","chat","trips","teetimes","wagers","bounties","challenges","scrambleTeams","calendar_events","scheduling_chat","social_actions","invites","syncrounds","liverounds","league_battles","tripscores","rangeSessions","partygames"];
 
 // leagueQuery(name) — returns a Firestore query pre-filtered by leagueId.
 // Use this for ALL reads on league-scoped collections.

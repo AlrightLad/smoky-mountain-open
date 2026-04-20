@@ -447,7 +447,7 @@ function createEventFromCal(startDate, endDate) {
   
   // Save to Firestore trips collection
   if (db) {
-    db.collection("trips").doc(eventData.id).set(eventData).then(function() {
+    db.collection("trips").doc(eventData.id).set(leagueDoc("trips", eventData)).then(function() {
       Router.toast("Event created!");
       // Post to activity feed
       db.collection("chat").add(leagueDoc("chat", {

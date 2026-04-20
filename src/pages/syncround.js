@@ -274,7 +274,7 @@ function finishSyncRound(roundId) {
         syncedRound: true,
         syncRoundId: roundId
       };
-      db.collection("rounds").doc(round.id).set(Object.assign({}, round, { createdAt: fsTimestamp() }));
+      db.collection("rounds").doc(round.id).set(leagueDoc("rounds", Object.assign({}, round, { createdAt: fsTimestamp() })));
       var localPlayer = PB.getPlayer(pid);
       if (localPlayer) PB.addRound(round);
       playerIds.push(pid);

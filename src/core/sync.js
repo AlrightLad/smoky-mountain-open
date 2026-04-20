@@ -252,6 +252,9 @@ function syncScrambleTeam(team) {
   if (!db || syncStatus === "offline") return;
   var d = JSON.parse(JSON.stringify(team));
   d.updatedAt = fsTimestamp();
+  // v8 rules require leagueId on scrambleTeams writes. leagueDoc() mutates
+  // d in place to add the active league id.
+  leagueDoc("scrambleTeams", d);
   db.collection("scrambleTeams").doc(team.id).set(d, {merge: true}).catch(function(err) { pbWarn("[Sync] scrambleTeam write failed:", err.message); });
 }
 
@@ -328,18 +331,24 @@ function syncScrambleTeamsFromFirestore() {
   }).catch(function(err) { pbWarn("[Sync] scrambleTeams read failed:", err.message); });
 }
 
-// Trip score sync — pushes individual scores to Firestore for live viewing
+// Trip score sync — pushes individual scores to Firestore for live viewing.
+// leagueId denormalized onto the doc per DESIGN NEEDED 3.3.2 so v8 rules can
+// authorize without a chained get to the parent trip.
+// Uses the "player" field name to match the v8 tripscores create rule
+// (player == uid() branch lets the player write their own score without
+// requiring leadership authority).
 function syncTripScore(tripId, courseKey, playerId, scores) {
   if (!db || syncStatus === "offline") return;
   var docId = tripId + "_" + courseKey + "_" + playerId;
-  db.collection("tripscores").doc(docId).set({
+  db.collection("tripscores").doc(docId).set(leagueDoc("tripscores", {
     tripId: tripId,
     courseKey: courseKey,
     playerId: playerId,
+    player: playerId,
     scores: scores,
     updatedAt: fsTimestamp(),
     updatedBy: currentUser ? currentUser.uid : "local"
-  }, { merge: true }).catch(function(e) { pbWarn("[Sync] Trip score failed:", e.message); });
+  }), { merge: true }).catch(function(e) { pbWarn("[Sync] Trip score failed:", e.message); });
 }
 
 // Sync FIR/GIR data to Firestore — stored on the tripscores doc alongside scores
@@ -347,14 +356,15 @@ function syncFirGir(tripId, courseKey, playerId) {
   if (!db || syncStatus === "offline") return;
   var fg = PB.getFirGir(tripId, courseKey, playerId);
   var docId = tripId + "_" + courseKey + "_" + playerId;
-  db.collection("tripscores").doc(docId).set({
+  db.collection("tripscores").doc(docId).set(leagueDoc("tripscores", {
     tripId: tripId,
     courseKey: courseKey,
     playerId: playerId,
+    player: playerId,
     fir: fg.fir,
     gir: fg.gir,
     updatedAt: fsTimestamp()
-  }, { merge: true }).catch(function(e) { pbWarn("[Sync] FIR/GIR sync failed:", e.message); });
+  }), { merge: true }).catch(function(e) { pbWarn("[Sync] FIR/GIR sync failed:", e.message); });
 }
 
 // In-place score input handler — saves score without re-rendering the whole scorecard

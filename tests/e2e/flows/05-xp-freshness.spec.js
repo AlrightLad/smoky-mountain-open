@@ -71,7 +71,11 @@ test.describe('v7.9 — session-start persistPlayerStats refreshes stale XP', ()
     }
 
     // Give the write a moment to settle in Firestore before the final read.
-    await page.waitForTimeout(500);
+    // v8 rules evaluation (multiple get()s per eval for helper chain) is
+    // slightly slower to commit than v7.x; 500ms was enough in v7.9 but
+    // crosses the flakiness threshold under v8. 2000ms gives comfortable
+    // margin.
+    await page.waitForTimeout(2000);
 
     const refreshedClientXp = await page.evaluate(() => window.currentProfile.xp);
     expect(refreshedClientXp).toBeGreaterThan(STALE_XP);

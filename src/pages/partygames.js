@@ -121,7 +121,7 @@ function startPartyGame(gameType) {
   if (!db || !currentUser) { Router.toast("Sign in required"); return; }
   if (!liveState.active) { Router.toast("Start a round first"); return; }
   var game = PARTY_GAMES.find(function(g) { return g.id === gameType; });
-  db.collection("partygames").add({
+  db.collection("partygames").add(leagueDoc("partygames", {
     gameType: gameType,
     gameName: game ? game.name : gameType,
     status: "active",
@@ -131,7 +131,7 @@ function startPartyGame(gameType) {
     roundDate: localDateStr(),
     winner: null,
     createdAt: fsTimestamp()
-  }).then(function() {
+  })).then(function() {
     Router.toast((game ? game.name : "Game") + " started!");
     Router.go("partygames");
   });
