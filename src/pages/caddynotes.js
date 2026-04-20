@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Infrastructure polish</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · v8 release candidate 1</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Behind-the-scenes tooling fix for development infrastructure.", tag: "IMPROVED" }
+    { item: "Behind-the-scenes security infrastructure upgrade — release candidate 1 of 3 for the next major platform version.", tag: "IMPROVED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v7.9.8", date: "April 2026", headline: "Infrastructure polish",
+      items: [
+        { item: "Behind-the-scenes tooling fix for development infrastructure.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v7.9.7", date: "April 2026", headline: "Design planning",
       items: [
