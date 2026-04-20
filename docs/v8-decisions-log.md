@@ -73,6 +73,14 @@ All decisions resolved by Zach on 2026-04-17.
 | 8.3.a | League-scoped audit logs in v8 | Minimal log (kicks + bans). Expanded views in v9. |
 | 8.5.a | GDPR full erasure path | Anonymization flow — "Erase me completely". Pre-App-Store. |
 
+## RC-era Additions (not in original technical design)
+
+Decisions made during rc ship work that deviate from or extend `docs/v8.0-technical-design.md`. Backlog: fold these into the next revision of the technical design.
+
+| ID | Topic | Decision |
+|----|-------|----------|
+| 8.1 | Platform-role audit log location | New `platform_audit_log/{logId}` collection added for `onMemberRoleChange` audit trail. `founder_access_logs` kept scoped to reads only per its original semantic (private-content reads by Founder), not overloaded for administrative role transitions. Schema: `{ timestamp, targetUid, action, before: {platformRole, suspension?, ban?}, after: {platformRole, suspension?, ban?}, issuedBy, reason? }`. Rules: writes denied to clients (Admin SDK only via Cloud Function); reads allowed only for `amIFounder()`. Decided during v8.0.0-rc2.3 scaffold of v8 Cloud Functions. |
+
 ---
 
 ## Parked for Future Design

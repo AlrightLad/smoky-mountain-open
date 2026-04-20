@@ -226,6 +226,28 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // ─── Platform audit log ─────────────────────────────────────────
+    // Decision 8.1 (docs/v8-decisions-log.md). Cloud Function
+    // onMemberRoleChange writes entries here via Admin SDK on every
+    // platformRole transition. founder_access_logs is intentionally
+    // NOT overloaded for administrative role changes — it stays
+    // scoped to private-content reads.
+    match /platform_audit_log/{logId} {
+      allow create: if false;  // Cloud Function only (Admin SDK)
+      allow read: if amIFounder();
+      allow update, delete: if false;
+    }
+
+    // ─── Banned email hashes ────────────────────────────────────────
+    // Written by onMemberRoleChange on ban; read by validateInvite
+    // (Stage 3) for registration blocklist check. Both writes and
+    // reads happen via Admin SDK, which bypasses these rules. Rule
+    // is defense-in-depth: no client should ever touch this
+    // collection directly.
+    match /banned_emails/{emailHash} {
+      allow read, write: if false;
+    }
+
     // ─── Transfer requests (commissioner + founder transfers) ───────
     match /transfer_requests/{id} {
       allow read: if amIReadable() && (
