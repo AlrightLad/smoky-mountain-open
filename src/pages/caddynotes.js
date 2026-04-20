@@ -22,13 +22,19 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · v8 release candidate 2</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Behind-the-scenes security infrastructure upgrade — release candidate 2 continuing platform hardening.", tag: "IMPROVED" }
+    { item: "Behind-the-scenes permission system upgrade — release candidate 2 continuing platform hardening.", tag: "IMPROVED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.0.0-rc2.1", date: "April 2026", headline: "v8 release candidate 2",
+      items: [
+        { item: "Behind-the-scenes security infrastructure upgrade — release candidate 2 continuing platform hardening.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.0.0-rc1", date: "April 2026", headline: "v8 release candidate 1",
       items: [
