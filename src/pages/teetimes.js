@@ -115,10 +115,10 @@ function renderTeeCard(t, isPast, isCancelled) {
       h += '</div>';
     }
 
-    if (currentUser && (t.createdBy === currentUser.uid || (currentProfile && currentProfile.role === "commissioner"))) {
+    if (currentUser && (t.createdBy === currentUser.uid || isFounderRole(currentProfile))) {
       h += '<div style="margin-top:10px;text-align:right">';
       h += '<button style="background:none;border:none;color:var(--muted);font-size:10px;text-decoration:underline;cursor:pointer" onclick="cancelTeeTime(\'' + t._id + '\')">Cancel</button>';
-      if (currentProfile && currentProfile.role === "commissioner" && !t.official) {
+      if (isFounderRole(currentProfile) && !t.official) {
         h += ' <button style="background:none;border:none;color:var(--gold);font-size:10px;text-decoration:underline;cursor:pointer;margin-left:8px" onclick="markOfficial(\'' + t._id + '\')">Mark Official</button>';
       }
       h += '</div>';
@@ -126,7 +126,7 @@ function renderTeeCard(t, isPast, isCancelled) {
   }
   
   // Commissioner-only hard delete for cancelled or past tee times
-  if ((isCancelled || isPast) && currentProfile && currentProfile.role === "commissioner") {
+  if ((isCancelled || isPast) && isFounderRole(currentProfile)) {
     h += '<div style="margin-top:8px;text-align:right">';
     h += '<button style="background:none;border:none;color:var(--red);font-size:10px;text-decoration:underline;cursor:pointer;opacity:.7" onclick="deleteTeeTime(\'' + t._id + '\')">Delete permanently</button>';
     h += '</div>';
@@ -174,7 +174,7 @@ function submitTeeTime() {
     // Notify all members about the new tee time
     var _teeCreatorName = currentProfile ? (currentProfile.name||currentProfile.username) : "A Parbaugh";
     PB.getPlayers().forEach(function(p) {
-      if (p.id === (currentUser ? currentUser.uid : "") || p.role === "removed") return;
+      if (p.id === (currentUser ? currentUser.uid : "") || isBannedRole(p)) return;
       sendNotification(p.id, { type: "tee_posted", title: "New Tee Time", message: _teeCreatorName + " posted: " + (course?course.name:"") + " · " + date + " · " + timeStr, page: "teetimes" });
     });
     Router.go("teetimes");
@@ -209,7 +209,7 @@ function cancelTeeTime(teeId) {
 }
 
 function deleteTeeTime(teeId) {
-  if (!currentProfile || currentProfile.role !== "commissioner") { Router.toast("Commissioner only"); return; }
+  if (!isFounderRole(currentProfile)) { Router.toast("Commissioner only"); return; }
   if (!confirm("Permanently delete this tee time? This cannot be undone.")) return;
   db.collection("teetimes").doc(teeId).delete().then(function() {
     Router.toast("Deleted");

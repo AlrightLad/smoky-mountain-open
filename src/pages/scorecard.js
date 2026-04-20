@@ -27,8 +27,9 @@ Router.register("scorecard", function(params) {
     h += '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h8v3L8 8l4 3v3H4v-3l4-3L4 5z"/></svg> Event closed — scores are final</div>';
   }
 
-  // Commissioner controls (only for active events)
-  var isCommissioner = currentProfile && (currentProfile.role === "commissioner" || currentProfile.username === "thecommissioner" || currentProfile.username === "TheCommissioner");
+  // Commissioner controls (only for active events). Username fallback
+  // preserved from v7.x for local-only profiles that never migrated.
+  var isCommissioner = isFounderRole(currentProfile) || (currentProfile && (currentProfile.username === "thecommissioner" || currentProfile.username === "TheCommissioner"));
   if (isCommissioner && trip.status !== "closed") {
     var currentCourse = trip.courses.find(function(x) { return x.key === scState.courseKey; }) || trip.courses[0];
     h += '<div style="display:flex;gap:6px;padding:8px 16px">';
@@ -72,7 +73,7 @@ function renderTripScorecard(trip, tripPlayers) {
 
   var c = trip.courses.find(function(x) { return x.key === scState.courseKey; }) || trip.courses[0];
   var iS = c.s, pT = c.p.reduce(function(a, b) { return a + b; }, 0);
-  var isComm = currentProfile && currentProfile.role === "commissioner";
+  var isComm = isFounderRole(currentProfile);
   var myUid = currentUser ? currentUser.uid : null;
   var isScorekeeper = c.scorekeeper && myUid && c.scorekeeper === myUid;
   var isRoundFinished = c.finished === true;
@@ -219,7 +220,7 @@ function renderTripScorecard(trip, tripPlayers) {
   }
 
   // ── Commissioner lock/unlock — bottom of scorecard ──────────────────
-  if (currentProfile && currentProfile.role === "commissioner") {
+  if (isFounderRole(currentProfile)) {
     if (isRoundFinished) {
       h += '<div style="margin:16px;padding:14px 16px;background:rgba(var(--birdie-rgb),.06);border:1px solid rgba(var(--birdie-rgb),.2);border-radius:8px;display:flex;align-items:center;justify-content:space-between">';
       h += '<div style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--birdie)" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 016 0"/></svg><div><div style="font-size:12px;font-weight:600;color:var(--birdie)">' + escHtml(c.n) + ' — Scores Locked</div><div style="font-size:10px;color:var(--muted);margin-top:1px">Only you can make changes</div></div></div>';
@@ -287,7 +288,7 @@ function renderTripLB(trip, tripPlayers) {
   }
   
   // Close Event button (commissioner or event creator, not already closed)
-  var isCommish = currentProfile && (currentProfile.role === "commissioner" || currentProfile.username === "thecommissioner" || currentProfile.username === "TheCommissioner");
+  var isCommish = isFounderRole(currentProfile) || (currentProfile && (currentProfile.username === "thecommissioner" || currentProfile.username === "TheCommissioner"));
   var isCreator = currentProfile && trip.createdBy && (trip.createdBy === currentProfile.id || trip.createdBy === (currentProfile.claimedFrom || ""));
   if ((isCommish || isCreator) && trip.status !== "closed") {
     h += '<div style="padding:16px"><button class="btn full outline" style="color:var(--red);border-color:var(--red)" onclick="closeEvent(\'' + tid + '\')"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M4 2h8v3L8 8l4 3v3H4v-3l4-3L4 5z"/></svg> Close Event and Post Results</button></div>';
@@ -316,7 +317,7 @@ function renderTripLB(trip, tripPlayers) {
 }
 
 function closeEvent(tripId) {
-  var isCommish = currentProfile && (currentProfile.role === "commissioner" || currentProfile.username === "thecommissioner" || currentProfile.username === "TheCommissioner");
+  var isCommish = isFounderRole(currentProfile) || (currentProfile && (currentProfile.username === "thecommissioner" || currentProfile.username === "TheCommissioner"));
   if (!isCommish) { Router.toast("Only the commissioner can close events"); return; }
   var trip = PB.getTrip(tripId);
   if (!trip) return;

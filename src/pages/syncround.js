@@ -202,7 +202,7 @@ function renderSyncRoundLive(round) {
   h += '</tr></tbody></table></div>';
   
   // Finish & Discard buttons
-  if (round.createdBy === myId || (currentProfile && currentProfile.role === "commissioner")) {
+  if (round.createdBy === myId || isFounderRole(currentProfile)) {
     h += '<div class="section" style="display:flex;gap:8px">';
     h += '<button class="btn full" style="flex:1;background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);color:var(--red)" onclick="finishSyncRound(\'' + round._id + '\')">Finish Round</button>';
     h += '<button class="btn full" style="flex:1;background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);color:var(--red);opacity:.7" onclick="discardSyncRound(\'' + round._id + '\')">Discard</button>';

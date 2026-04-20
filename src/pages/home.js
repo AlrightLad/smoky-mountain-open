@@ -260,7 +260,7 @@ Router.register("home", function() {
         tr.members.indexOf(myUidForBanner) !== -1 ||
         (myClaimedFrom && tr.members.indexOf(myClaimedFrom) !== -1)
       );
-      if (!isTripMember2 && currentProfile && currentProfile.role !== "commissioner") return;
+      if (!isTripMember2 && !isFounderRole(currentProfile)) return;
       var dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
       var todayDay = dayNames[new Date().getDay()];
       tr.courses.forEach(function(crs) {

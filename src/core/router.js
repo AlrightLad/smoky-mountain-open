@@ -2301,7 +2301,7 @@ function initFirebaseListeners() {
 function cleanupCorruptedProfiles() {
   if (!db || !currentUser) return;
   // Only Commissioner can run this for all members
-  if (!currentProfile || currentProfile.role !== "commissioner") return;
+  if (!isFounderRole(currentProfile)) return;
   
   db.collection("members").get().then(function(snap) {
     snap.forEach(function(doc) {
@@ -2316,8 +2316,10 @@ function cleanupCorruptedProfiles() {
       if (m.founding === true) { updates.founding = false; needsFix = true; }
       if (m.title && m.title.indexOf("Original Four") !== -1) { updates.title = ""; updates.equippedTitle = ""; needsFix = true; }
       if (m.equippedTitle && m.equippedTitle.indexOf("Original Four") !== -1) { updates.equippedTitle = ""; needsFix = true; }
-      if (m.role === "commissioner" && doc.id !== currentUser.uid) {
-        // Only the real commissioner should have this role
+      if (isFounderRole(m) && doc.id !== currentUser.uid) {
+        // Only the real platform founder should have this role. Demote
+        // any stray commissioner via the legacy field (v8.0 rules still
+        // allow writing to `role`; platformRole is immutable via client).
         updates.role = "member"; needsFix = true;
       }
       // Check for badges they shouldn't have

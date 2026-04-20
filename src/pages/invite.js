@@ -1,7 +1,7 @@
 // ========== INVITE SYSTEM PAGE ==========
 Router.register("invite", function() {
   var h = '<div class="sh"><h2>Invites</h2><button class="back" onclick="Router.go(\'settings\')">← Back</button></div>';
-  var remaining = currentProfile ? (currentProfile.role === "commissioner" ? "∞" : ((currentProfile.maxInvites||3) - (currentProfile.invitesUsed||0))) : 0;
+  var remaining = currentProfile ? (isFounderRole(currentProfile) ? "∞" : ((currentProfile.maxInvites||3) - (currentProfile.invitesUsed||0))) : 0;
   h += '<div class="form-section"><div style="text-align:center;margin-bottom:16px"><div style="font-size:12px;color:var(--muted)">Generate an invite code for a new member</div>';
   h += '<div style="margin-top:6px;font-size:11px;color:var(--gold)">Remaining: ' + remaining + '</div></div>';
   h += '<button class="btn full green" onclick="generateInvite()">Generate Invite Code</button>';
@@ -50,7 +50,7 @@ function isInviteExpired(invite) {
 
 function generateInvite() {
   if (!db || !currentUser || !currentProfile) { Router.toast("Not ready — try refreshing"); return; }
-  var isComm = currentProfile.role === "commissioner";
+  var isComm = isFounderRole(currentProfile);
   if (!isComm && (currentProfile.invitesUsed||0) >= (currentProfile.maxInvites||3)) { Router.toast("No invites remaining"); return; }
   var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; var code = "PB-";
   for (var i=0;i<8;i++) code += chars.charAt(Math.floor(Math.random()*chars.length));

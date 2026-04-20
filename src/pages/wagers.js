@@ -120,7 +120,7 @@ function _renderWagerCard(w, uid) {
 function renderCreateWager(presetOpponent) {
   var uid = currentUser ? currentUser.uid : null;
   var balance = getParCoinBalance(uid);
-  var players = PB.getPlayers().filter(function(p) { return p.id !== uid && p.role !== "removed"; });
+  var players = PB.getPlayers().filter(function(p) { return p.id !== uid && !isBannedRole(p); });
 
   var h = '<div class="sh"><h2>New wager</h2><button class="back" onclick="Router.back(\'wagers\')">← Back</button></div>';
 

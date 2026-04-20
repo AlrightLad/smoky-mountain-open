@@ -312,7 +312,7 @@ function submitRound() {
       PB.getPlayers().forEach(function(p) {
         var pUid = p.id;
         if (pUid === currentUser.uid) return;
-        if (p.role === "removed") return;
+        if (isBannedRole(p)) return;
         sendNotification(pUid, {
           type: "round_posted",
           title: _roundPlayerName + " posted a round",

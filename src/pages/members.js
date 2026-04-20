@@ -58,7 +58,7 @@ function renderMemberList() {
         }
       });
       fbMembers.forEach(function(fm) {
-        if (fm.role === "removed") return;
+        if (isBannedRole(fm)) return;
         if (filteredIds.indexOf(fm.id) !== -1) return;
         // Skip stub docs: has claimedFrom but no username, AND a real account exists
         if (fm.claimedFrom && !fm.username && seenClaimedFrom[fm.claimedFrom]) return;
@@ -84,7 +84,7 @@ function renderMemberList() {
 }
 
 function renderMemberListHtml(players, h) {
-  var totalCount = players.filter(function(p){return p.role !== "removed";}).length;
+  var totalCount = players.filter(function(p){return !isBannedRole(p);}).length;
   
   // Header with count
   h = '<div class="sh"><h2>Members <span style="font-size:14px;color:var(--muted);font-weight:400">' + totalCount + '</span></h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
@@ -110,7 +110,7 @@ function renderMemberListHtml(players, h) {
   h += '<div id="memberListContainer">';
   
   // Sort: founding members first, then by level
-  var sortedPlayers = players.filter(function(p){return p.role !== "removed";}).slice();
+  var sortedPlayers = players.filter(function(p){return !isBannedRole(p);}).slice();
   sortedPlayers.sort(function(a, b) {
     var aFounder = a.founding || a.isFoundingFour ? 1 : 0;
     var bFounder = b.founding || b.isFoundingFour ? 1 : 0;
@@ -156,8 +156,10 @@ function buildMemberCards(players) {
     if (isFounder) h += ' <svg viewBox="0 0 12 12" width="10" height="10" style="vertical-align:middle;margin-left:2px"><path d="M6 1l1.5 3 3.5.5-2.5 2.5.6 3.5L6 9l-3.1 1.5.6-3.5L1 4.5 4.5 4z" fill="var(--gold)" stroke="none"/></svg>';
     h += '</div>';
     if (p.equippedTitle && p.equippedTitle !== "Member" && p.equippedTitle !== "Rookie") h += '<div class="m-nick">' + escHtml(p.equippedTitle) + '</div>';
-    else if (p.role === "commissioner") h += '<div class="m-nick">Commissioner</div>';
-    else if (p.role === "suspended") h += '<div class="m-nick" style="color:var(--red)">Suspended</div>';
+    // v8.0: "Founder" is the platform-wide role (Zach). The opal-ring
+    // visual treatment lands in v8.0.1. For rc2.2, just the text label.
+    else if (isFounderRole(p)) h += '<div class="m-nick">Founder</div>';
+    else if (platformRoleOf(p) === "suspended") h += '<div class="m-nick" style="color:var(--red)">Suspended</div>';
     h += '<div class="m-stats">' + (hcap !== null ? 'HCP ' + hcap + ' · ' : '') + (avg ? 'Avg ' + avg + ' · ' : '') + rounds.length + ' rds</div>';
     h += '</div><div class="m-arrow">></div></div></div>';
   });
@@ -448,7 +450,7 @@ function renderMemberDetailWithData(p) {
   ];
   var sTitles = [
     {name:"The Original Four",req:"Founding member",unlocked:!!(p.founding || p.isFoundingFour || (p.badges && p.badges.indexOf("founder") !== -1))},
-    {name:"The Original Four · Commissioner",req:"Be The Commissioner",unlocked:(p.founding || p.isFoundingFour) && (p.role==="commissioner"||pid==="zach"||p.username==="TheCommissioner")},
+    {name:"The Original Four · Commissioner",req:"Be The Commissioner",unlocked:(p.founding || p.isFoundingFour) && (isFounderRole(p)||pid==="zach"||p.username==="TheCommissioner")},
     {name:"Beta Tester",req:"First 30 members",unlocked:isBeta}
   ];
   // Event-specific champion titles
@@ -1155,7 +1157,7 @@ function renderMemberEditForm(p) {
   var pid = p.id;
   // Only allow editing own profile
   var isOwn = currentUser && (pid === currentUser.uid || (currentProfile && pid === currentProfile.claimedFrom));
-  var isComm = currentProfile && currentProfile.role === "commissioner";
+  var isComm = isFounderRole(currentProfile);
   if (!isOwn && !isComm) {
     Router.toast("You can only edit your own profile");
     Router.go("members", { id: pid });
@@ -1608,7 +1610,7 @@ function uploadMemberPhoto(pid) {
 function renderInviteMemberButton() {
   if (!currentProfile) return '<button class="btn full outline" disabled>Sign in to invite members</button>';
   
-  var isComm = currentProfile.role === "commissioner";
+  var isComm = isFounderRole(currentProfile);
   var invitesLeft = isComm ? 999 : ((currentProfile.maxInvites||3) - (currentProfile.invitesUsed||0));
   var h = '';
   
@@ -1632,7 +1634,7 @@ function requestInviteFromCommissioner() {
   if (!db || !currentUser || !currentProfile) { Router.toast("Not ready"); return; }
   // Find commissioner
   var players = PB.getPlayers();
-  var commissioner = players.find(function(p) { return p.role === "commissioner"; });
+  var commissioner = players.find(function(p) { return isFounderRole(p); });
   if (!commissioner) { Router.toast("No commissioner found"); return; }
   
   // Send notification to commissioner
@@ -1646,7 +1648,7 @@ function requestInviteFromCommissioner() {
 
 function promptAddMember() {
   if (!currentProfile) { Router.toast("Sign in first"); return; }
-  var isComm = currentProfile.role === "commissioner";
+  var isComm = isFounderRole(currentProfile);
   var invitesLeft = isComm ? 999 : ((currentProfile.maxInvites||3) - (currentProfile.invitesUsed||0));
   
   if (invitesLeft <= 0 && !isComm) {
@@ -1657,7 +1659,7 @@ function promptAddMember() {
 }
 
 function renderAddMemberForm() {
-  var isComm = currentProfile && currentProfile.role === "commissioner";
+  var isComm = isFounderRole(currentProfile);
   var invitesLeft = isComm ? "∞" : ((currentProfile.maxInvites||3) - (currentProfile.invitesUsed||0));
   
   var h = '<div class="sh"><h2>Invite Member</h2><button class="back" onclick="Router.back(\'members\')">← Back</button></div>';
@@ -1700,7 +1702,7 @@ var _lastGeneratedInvite = null; // Survives page re-renders
 
 function generateInviteFromMembers() {
   if (!db || !currentUser || !currentProfile) { Router.toast("Not ready — try refreshing"); return; }
-  var isComm = currentProfile.role === "commissioner";
+  var isComm = isFounderRole(currentProfile);
   if (!isComm && (currentProfile.invitesUsed||0) >= (currentProfile.maxInvites||3)) { Router.toast("No invites remaining"); return; }
   
   var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; var code = "PB-";
@@ -1738,7 +1740,7 @@ function showGeneratedInvite() {
   if (!resultEl) return;
   var code = _lastGeneratedInvite.code;
   var inviteLink = _lastGeneratedInvite.link;
-  var isComm = currentProfile && currentProfile.role === "commissioner";
+  var isComm = isFounderRole(currentProfile);
   var newLeft = isComm ? "∞" : ((currentProfile.maxInvites||3) - (currentProfile.invitesUsed||0));
   var countEl = document.getElementById("inviteCountDisplay");
   if (countEl) countEl.textContent = "Invites remaining: " + newLeft;

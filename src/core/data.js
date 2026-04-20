@@ -137,7 +137,7 @@ var PB = (function() {
     // First: add all Firestore members (deduplicated)
     Object.keys(fbMemberCache).forEach(function(key) {
       var m = fbMemberCache[key];
-      if (!m || !m.id || m.role === "removed") return;
+      if (!m || !m.id || isBannedRole(m)) return;
       if (m.claimedFrom) claimedSeedIds[m.claimedFrom] = true;
       // Only add once per unique ID (fbMemberCache stores both uid and claimedFrom keys)
       if (seenIds[m.id]) return;
@@ -991,7 +991,7 @@ var PB = (function() {
     if (chatCount >= 100) xp += 200;
     // Invites — also check fbMemberCache for recruited member count
     var inviteCount = player ? (player.invitesUsed || 0) : 0;
-    if (player && player.role === "commissioner" && typeof fbMemberCache !== "undefined") {
+    if (player && isFounderRole(player) && typeof fbMemberCache !== "undefined") {
       var recruited = Object.values(fbMemberCache).filter(function(m) { return m.invitedBy === pid; });
       if (recruited.length > inviteCount) inviteCount = recruited.length;
     }
@@ -1000,7 +1000,7 @@ var PB = (function() {
     // Special achievement XP
     if (player && (player.founding || player.isFoundingFour)) xp += 500;
     if (player) xp += 250; // Beta tester — all current members qualify
-    if (player && player.role === "commissioner") xp += 500;
+    if (player && isFounderRole(player)) xp += 500;
     if (player && player.email === "jopinksalot@msn.com") xp += 250;
 
     // Profile completion XP
@@ -1078,7 +1078,7 @@ var PB = (function() {
     xp += (player.wins || 0) * 500;
     if (player.founding || player.isFoundingFour) xp += 500;
     xp += 250; // Beta tester
-    if (player.role === "commissioner") xp += 500;
+    if (isFounderRole(player)) xp += 500;
     // Round milestones
     if (rounds.length >= 1) xp += 100; if (rounds.length >= 5) xp += 50; if (rounds.length >= 10) xp += 100; if (rounds.length >= 25) xp += 250; if (rounds.length >= 50) xp += 500;
     // Score achievements
@@ -1342,7 +1342,7 @@ var PB = (function() {
 
     // --- UNIQUE SPECIAL BADGES ---
     if (player && player.email === "jopinksalot@msn.com") achievements.push({id:"boss_wife",name:"The Boss's Wife",desc:"The one who really runs things",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M2 12h12L13 5l-3 3-2-4-2 4-3-3z' fill='none' stroke='currentColor' stroke-width='1.2'/><rect x='2' y='12' width='12' height='2' rx='1' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:250,cat:"special",title:"The Boss's Wife",badge:"boss_wife"});
-    if (player && player.role === "commissioner") achievements.push({id:"the_commish",name:"The Commissioner",desc:"Running the show",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l6 4H2zM3 6v7M6 6v7M10 6v7M13 6v7M1 13h14M1 14h14' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"special",title:"The Commissioner",badge:"commissioner"});
+    if (player && isFounderRole(player)) achievements.push({id:"the_commish",name:"The Commissioner",desc:"Running the show",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l6 4H2zM3 6v7M6 6v7M10 6v7M13 6v7M1 13h14M1 14h14' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"special",title:"The Commissioner",badge:"commissioner"});
 
     // --- EVENT PARTICIPATION BADGES ---
     // Each event a player participates in earns them a unique badge
@@ -1614,7 +1614,7 @@ var PB = (function() {
     // --- INVITE ACHIEVEMENT ---
     var inviteCount = player ? (player.invitesUsed || 0) : 0;
     // Commissioner who has created invites — check role as fallback since invitesUsed wasn't tracked before
-    if (player && player.role === "commissioner" && inviteCount < 3) {
+    if (player && isFounderRole(player) && inviteCount < 3) {
       // Count from members who have invitedBy matching this user's UID
       var recruited = getPlayers().filter(function(p) { return p.invitedBy === pid || (player.claimedFrom && p.invitedBy === player.claimedFrom); });
       if (recruited.length > inviteCount) inviteCount = recruited.length;

@@ -30,7 +30,7 @@ Router.register("findplayers", function() {
       window._fpAllPlayers = [];
       snap.forEach(function(doc) {
         var d = doc.data();
-        if (d.role === "removed") return;
+        if (isBannedRole(d)) return;
         d._id = doc.id;
         window._fpAllPlayers.push(d);
       });

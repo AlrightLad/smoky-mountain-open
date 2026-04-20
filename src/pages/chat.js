@@ -479,7 +479,7 @@ function renderChatMessages(messages) {
     var likeCount = likes.length;
     var iLiked = currentUser && likes.indexOf(currentUser.uid) !== -1;
     var comments = msg.comments || [];
-    var isCommissioner = currentProfile && currentProfile.role === "commissioner";
+    var isCommissioner = isFounderRole(currentProfile);
     var isMine = currentUser && msg.authorId === currentUser.uid;
     
     ch += '<div class="card" style="margin-bottom:6px"><div style="padding:10px 14px">';

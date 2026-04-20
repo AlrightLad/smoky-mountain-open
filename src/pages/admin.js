@@ -1,6 +1,6 @@
 // ========== COMMISSIONER ADMIN PANEL ==========
 Router.register("admin", function() {
-  if (!currentProfile || currentProfile.role !== "commissioner") {
+  if (!isFounderRole(currentProfile)) {
     var h = '<div class="sh"><h2>Access Denied</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
     h += '<div class="section"><div class="card"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg></div><div class="empty-text">Commissioner access only</div></div></div></div>';
     document.querySelector('[data-page="admin"]').innerHTML = h;
@@ -241,12 +241,14 @@ function loadAdminMemberList() {
     allMembers.forEach(function(m) {
       var used = m.invitesUsed || 0;
       var max = m.maxInvites || 3;
-      var isComm = m.role === "commissioner";
-      var isSuspended = m.role === "suspended";
-      var isRemoved = m.role === "removed";
+      // v8 platform-role semantics with legacy fallback via platformRoleOf().
+      var pRole = platformRoleOf(m);
+      var isComm = pRole === "founder";
+      var isSuspended = pRole === "suspended";
+      var isRemoved = pRole === "banned";
 
       var statusColor = isSuspended ? "var(--red)" : isRemoved ? "var(--muted2)" : isComm ? "var(--gold)" : "var(--birdie)";
-      var statusText = isSuspended ? "SUSPENDED" : isRemoved ? "REMOVED" : isComm ? "COMMISSIONER" : "ACTIVE";
+      var statusText = isSuspended ? "SUSPENDED" : isRemoved ? "BANNED" : isComm ? "FOUNDER" : "ACTIVE";
 
       h += '<div class="card"><div class="card-body">';
       // Top row — name and status
@@ -320,7 +322,7 @@ function promptSuspend(memberId, memberName) {
 }
 
 function suspendMember(memberId, days, reason) {
-  if (!db || !currentProfile || currentProfile.role !== "commissioner") return;
+  if (!db || !isFounderRole(currentProfile)) return;
   var until = new Date();
   until.setDate(until.getDate() + days);
 
@@ -429,7 +431,7 @@ function reportMember(memberId) {
   }).then(function() {
     // Notify commissioner
     var players = PB.getPlayers();
-    var commissioner = players.find(function(p) { return p.role === "commissioner"; });
+    var commissioner = players.find(function(p) { return isFounderRole(p); });
     if (commissioner) {
       var reported = PB.getPlayer(memberId);
       sendNotification(commissioner.id, {
@@ -555,7 +557,7 @@ function adminDeleteCourse(fsId, name) {
 // CHANGES NOTHING IN FIRESTORE.
 
 function runFullDiagnostic() {
-  if (!db || !currentProfile || currentProfile.role !== "commissioner") return;
+  if (!db || !isFounderRole(currentProfile)) return;
   var el = document.getElementById("diagnosticResult");
   if (!el) return;
   el.innerHTML = '<div class="loading"><div class="spinner"></div>Running full diagnostic (read-only)...</div>';
@@ -749,7 +751,7 @@ function copyDiagnosticText() {
 var _recoveryCollections = ["rounds","chat","trips","teetimes","wagers","bounties","challenges","scrambleTeams","calendar_events","scheduling_chat","social_actions","invites","syncrounds","liverounds","league_battles","tripscores","rangeSessions","course_reviews","photos"];
 
 function runDataRecoveryScan() {
-  if (!db || !currentProfile || currentProfile.role !== "commissioner") return;
+  if (!db || !isFounderRole(currentProfile)) return;
   var el = document.getElementById("recoveryResult");
   if (!el) return;
   el.innerHTML = '<div class="loading"><div class="spinner"></div>Scanning Firestore...</div>';
@@ -841,7 +843,7 @@ function runDataRecoveryScan() {
 }
 
 function runDataRecoveryFix() {
-  if (!db || !currentProfile || currentProfile.role !== "commissioner") return;
+  if (!db || !isFounderRole(currentProfile)) return;
   var el = document.getElementById("recoveryResult");
   if (!el) return;
   if (!confirm("This will tag all untagged docs with leagueId:'the-parbaughs' and fix member profiles. Proceed?")) return;

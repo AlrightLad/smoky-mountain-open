@@ -50,7 +50,7 @@ Router.register("partygames", function() {
   
   // Load active + past games
   if (db) {
-    var isComm = currentProfile && currentProfile.role === "commissioner";
+    var isComm = isFounderRole(currentProfile);
     var myUid = currentUser ? currentUser.uid : null;
     
     // Active games
@@ -76,7 +76,7 @@ Router.register("partygames", function() {
         gh += '<div style="margin-top:10px"><div style="font-size:10px;color:var(--gold);margin-bottom:6px">Declare winner:</div>';
         gh += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
         PB.getPlayers().forEach(function(p) {
-          if (p.role === "removed") return;
+          if (isBannedRole(p)) return;
           gh += '<button class="btn-sm outline" style="font-size:10px" onclick="declarePartyWinner(\'' + g._id + '\',\'' + p.id + '\',\'' + escHtml(p.name) + '\')">' + escHtml(p.name) + '</button>';
         });
         gh += '</div></div></div></div>';
@@ -139,7 +139,7 @@ function startPartyGame(gameType) {
 
 function deletePartyGame(gameId) {
   if (!db) return;
-  var isComm = currentProfile && currentProfile.role === "commissioner";
+  var isComm = isFounderRole(currentProfile);
   if (!confirm("Delete this game?")) return;
   db.collection("partygames").doc(gameId).delete().then(function() {
     Router.toast("Game deleted");

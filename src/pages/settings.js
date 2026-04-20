@@ -129,14 +129,14 @@ Router.register("settings", function() {
   h += '</div></div>';
 
   // Invite management
-  if (currentProfile && (currentProfile.role === "commissioner" || (currentProfile.invitesUsed||0) < (currentProfile.maxInvites||3))) {
+  if (currentProfile && (isFounderRole(currentProfile) || (currentProfile.invitesUsed||0) < (currentProfile.maxInvites||3))) {
     h += '<div class="form-section"><div class="form-title">Invites</div>';
     h += '<div style="margin-bottom:12px"><button class="btn full green" onclick="Router.go(\'invite\')">Manage Invite Codes</button></div>';
     h += '</div>';
   }
 
   // Commissioner Admin Panel
-  if (currentProfile && currentProfile.role === "commissioner") {
+  if (isFounderRole(currentProfile)) {
     h += '<div class="form-section"><div class="form-title" style="color:var(--gold)">Commissioner Tools</div>';
     h += '<div style="margin-bottom:12px"><button class="btn full green" onclick="Router.go(\'admin\')">Admin Panel</button></div>';
     h += '<div style="font-size:10px;color:var(--muted);margin-top:-6px;margin-bottom:12px">Manage member invite quotas, view all codes, bulk generate</div>';
@@ -147,7 +147,7 @@ Router.register("settings", function() {
   h += '<div class="form-section"><div class="form-title">Data management</div>';
   h += '<div style="margin-bottom:12px"><button class="btn full outline" onclick="doCopy()">Copy backup code</button></div>';
   h += '<div style="margin-bottom:12px"><button class="btn full outline" onclick="doRestore()">Restore from backup</button></div>';
-  if (currentProfile && currentProfile.role === "commissioner") {
+  if (isFounderRole(currentProfile)) {
     h += '<div style="margin-bottom:12px"><button class="btn full outline" onclick="seedFirestore().then(function(){Router.toast(\'Firestore reseeded\')})">Reseed Firestore from Local</button></div>';
   }
   h += '<div style="margin-bottom:12px"><button class="btn full" style="background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);color:var(--red)" onclick="document.getElementById(\'reset-confirm\').style.display=\'block\'">Reset local data</button></div>';

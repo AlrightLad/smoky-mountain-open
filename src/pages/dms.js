@@ -21,7 +21,7 @@ Router.register("dms", function() {
     var myUid = currentUser.uid;
     var myClaimedFrom = currentProfile ? currentProfile.claimedFrom : null;
     var filtered = members.filter(function(m) { 
-      if (m.role === "removed") return false;
+      if (isBannedRole(m)) return false;
       if (m.id === myUid) return false;
       if (myClaimedFrom && m.id === myClaimedFrom) return false;
       if (m.claimedFrom && m.claimedFrom === myClaimedFrom && myClaimedFrom) return false;

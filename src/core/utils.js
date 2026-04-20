@@ -76,6 +76,37 @@ if (typeof onlineMembers === "undefined") var onlineMembers = {};
 if (typeof liveTeeTimes === "undefined") var liveTeeTimes = [];
 if (typeof liveRangeSessions === "undefined") var liveRangeSessions = [];
 if (typeof liveNotifications === "undefined") var liveNotifications = [];
+
+// ── Platform role resolution (v8.0 client-side) ──────────────────────
+// Mirrors the Firestore rules helper platformRoleOf() so client and
+// server stay consistent during the v8.0 → v8.2 transition window
+// where both `platformRole` (v8) and `role` (legacy) may be present.
+//
+// Preference: v8 `platformRole` field if set. Otherwise falls back to
+// legacy `role` mapping:
+//   role === "commissioner"  →  founder  (Zach only had this in v7.x)
+//   role === "suspended"     →  suspended
+//   role === "removed"       →  banned
+//   anything else            →  user
+//
+// Returns null if member is nullish. Returns one of:
+//   "founder" | "user" | "suspended" | "banned"
+function platformRoleOf(member) {
+  if (!member) return null;
+  if (member.platformRole) return member.platformRole;
+  if (member.role === "commissioner") return "founder";
+  if (member.role === "suspended") return "suspended";
+  if (member.role === "removed") return "banned";
+  return "user";
+}
+
+// Convenience: returns true if member is the platform founder.
+function isFounderRole(member) { return platformRoleOf(member) === "founder"; }
+
+// Convenience: returns true if member is platform-banned (was "removed"
+// in v7 terminology — legacy fallback handles that).
+function isBannedRole(member) { return platformRoleOf(member) === "banned"; }
+
 function pbLog() { if (PB_DEBUG && console.log) console.log.apply(console, arguments); }
 function pbWarn() {
   // Always surface Firestore critical errors (index missing, permission denied)

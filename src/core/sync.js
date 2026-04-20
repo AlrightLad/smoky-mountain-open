@@ -656,7 +656,7 @@ function attestMyScore(tripId, courseKey) {
 }
 
 function overrideAttestation(tripId, courseKey) {
-  if (!currentProfile || currentProfile.role !== "commissioner") return;
+  if (!isFounderRole(currentProfile)) return;
   if (!confirm("Override attestation and post results now? Some players haven't attested yet.")) return;
   
   var docId = tripId + "_" + courseKey;
@@ -908,8 +908,8 @@ function renderAttestationStatus(tripId, courseKey) {
             ah += '<div style="margin-top:8px;font-size:10px;color:var(--birdie);text-align:center">You have attested</div>';
           }
           
-          // Commissioner override
-          if (currentProfile && currentProfile.role === "commissioner" && !allAttested) {
+          // Founder override (platform-level, per v8 — previously "commissioner")
+          if (isFounderRole(currentProfile) && !allAttested) {
             ah += '<div style="margin-top:8px"><button class="btn-sm outline" style="width:100%;font-size:9px;color:var(--muted)" onclick="overrideAttestation(\'' + tripId + '\',\'' + courseKey + '\')">Commissioner: Override & Finalize</button></div>';
           }
         }
