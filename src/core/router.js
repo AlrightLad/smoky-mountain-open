@@ -1502,7 +1502,7 @@ function checkAndAwardNewAchievements() {
           // Also push a notification to the bell
           if (db && currentUser) {
             db.collection("notifications").add({
-              toUid: currentUser.uid,
+              toUserId: currentUser.uid,
               type: "achievement",
               title: "Achievement unlocked: " + ach.name,
               body: ach.desc + " (+" + ach.xp + " XP)",
@@ -1938,7 +1938,7 @@ function submitFeedComment(roundId) {
 }
 
 function renderOnlineSection() {
-  hookWatchRoundRefresh(); // keep live watch page in sync when presence updates
+  if (typeof hookWatchRoundRefresh === "function") hookWatchRoundRefresh(); // keep live watch page in sync when presence updates
   var el = document.getElementById("onlineSection");
   if (!el) return;
   

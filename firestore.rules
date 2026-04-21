@@ -303,7 +303,9 @@ service cloud.firestore {
                  && (dmId.matches(uid() + '_.*') || dmId.matches('.*_' + uid()));
       allow create: if amIActive()
                    && (dmId.matches(uid() + '_.*') || dmId.matches('.*_' + uid()));
-      allow update: if false;
+      allow update: if isAuth()
+                   && !isPlatformBanned(uid())
+                   && (dmId.matches(uid() + '_.*') || dmId.matches('.*_' + uid()));
       allow delete: if amIFounder();
 
       match /messages/{messageId} {
@@ -340,10 +342,10 @@ service cloud.firestore {
     // Banned users can still read their own (ban / appeal outcomes).
     // Suspended users can't queue new ones (prevents harassment loop).
     match /notifications/{notifId} {
-      allow read: if isAuth() && resource.data.toUid == uid();
+      allow read: if isAuth() && resource.data.toUserId == uid();
       allow create: if amIActive();
-      allow update: if isAuth() && resource.data.toUid == uid();
-      allow delete: if isAuth() && resource.data.toUid == uid();
+      allow update: if isAuth() && resource.data.toUserId == uid();
+      allow delete: if isAuth() && resource.data.toUserId == uid();
     }
 
     // ─── Invites ────────────────────────────────────────────────────
