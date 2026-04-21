@@ -19,16 +19,23 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · Cutover prep</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · v8 foundation live</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Pre-cutover index parity — declared four live indexes ahead of the v8.0 deploy.", tag: "IMPROVED" }
+    { item: "New Parbaughs platform is live — cleaner permissions system, foundation for Founder tools and league management coming soon.", tag: "IMPROVED" },
+    { item: "Behind-the-scenes upgrade complete — your data is preserved and everything works the same, just better.", tag: "FIXED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.0.0-rc2.4", date: "April 2026", headline: "Cutover prep",
+      items: [
+        { item: "Pre-cutover index parity — declared four live indexes ahead of the v8.0 deploy.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.0.0-rc2.3", date: "April 2026", headline: "v8 release candidate 2",
       items: [
