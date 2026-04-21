@@ -22,14 +22,20 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · v8 foundation live</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Notifications and direct messages restored to full working order after the v8 upgrade.", tag: "FIXED" },
-    { item: "ParCoin transaction history loads faster and more reliably.", tag: "IMPROVED" }
+    { item: "Direct message unread badges now update reliably.", tag: "FIXED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.0.1", date: "April 2026", headline: "Gate 2 patch",
+      items: [
+        { item: "Notifications and direct messages restored to full working order after the v8 upgrade.", tag: "FIXED" },
+        { item: "ParCoin transaction history loads faster and more reliably.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.0.0", date: "April 2026", headline: "v8 foundation live",
       items: [

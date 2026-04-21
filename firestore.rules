@@ -300,12 +300,12 @@ service cloud.firestore {
     match /dms/{dmId} {
       allow read: if isAuth()
                  && !isPlatformBanned(uid())
-                 && (dmId.matches(uid() + '_.*') || dmId.matches('.*_' + uid()));
+                 && uid() in resource.data.get('participants', []);
       allow create: if amIActive()
-                   && (dmId.matches(uid() + '_.*') || dmId.matches('.*_' + uid()));
+                   && uid() in request.resource.data.get('participants', []);
       allow update: if isAuth()
                    && !isPlatformBanned(uid())
-                   && (dmId.matches(uid() + '_.*') || dmId.matches('.*_' + uid()));
+                   && uid() in resource.data.get('participants', []);
       allow delete: if amIFounder();
 
       match /messages/{messageId} {
