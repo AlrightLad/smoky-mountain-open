@@ -218,6 +218,69 @@ The bypass pattern — use only when Zach has **explicitly** authorized rule edi
 
 If the pattern feels wrong — if Zach hasn't explicitly authorized rule edits in this specific ship, or if the edit you're about to make isn't a rule change — STOP and ask. Don't bypass hooks for plausible-sounding reasons.
 
+See also: Cutover Playbook section for migration-specific patterns.
+
+## Cutover Playbook
+
+Captured from v8.0.0 production cutover (April 21, 2026). These patterns turn multi-ship cutovers into single-ship cutovers. Apply to any future migration that touches firestore.rules, schema, or both.
+
+### Pattern 1 — Ship A Audit (read-only pre-cutover inventory)
+
+Before any cutover ship, run a read-only audit that verifies:
+
+- **Indexes declared vs deployed.** `firebase firestore:indexes` vs `firestore.indexes.json`. Orphans (deployed-not-declared) get dropped on next deploy; missing (declared-not-deployed) need build time. Both must be reconciled before cutover.
+- **Functions in-repo vs spec.** `grep "^exports\." functions/index.js` against whatever ship-specific function list the migration expects. No drift.
+- **Migration script vs design doc.** Read the migration script line-by-line against the tech design section that specifies it. Every field mapping, every assertion, every phase boundary must match.
+- **Production state snapshot.** Read-only Admin SDK dump of affected collections. Confirms starting state matches assumption.
+- **Dry-run with pre/post snapshot comparison.** Run migration script in --dry-run mode. Snapshot production before and after. Must be identical — if dry-run wrote anything, the script has a bug.
+
+Output: a written audit report before the cutover ship begins. Audit report is the input to the cutover spec.
+
+### Pattern 2 — Rules-Freeze Mechanism
+
+Maintenance window enforcement for rule-based platforms: use a dedicated `firestore.rules.maintenance` file (11 lines, read-allowed-if-auth, write-deny-all-with-catch-all-match), checked into the repo as a reusable artifact.
+
+Cutover sequence:
+1. `cp firestore.rules firestore.rules.v<version>-staged` (preserve current rules)
+2. `cp firestore.rules.maintenance firestore.rules` (stage the freeze)
+3. `firebase deploy --only firestore:rules` (freeze live)
+4. Run migration work
+5. `cp firestore.rules.v<version>-staged firestore.rules` (restore target rules)
+6. `rm firestore.rules.v<version>-staged`
+7. `firebase deploy --only firestore:rules` (freeze lifts, v-rules live)
+
+Advantages over flag-based maintenance mode:
+- Works for clients that don't know about maintenance mode (legacy clients during v-upgrade window)
+- No schema change required (no `maintenanceMode` field on platformConfig)
+- Rollback is the same mechanism: re-stage freeze if Gate 2 reveals blockers
+
+### Pattern 3 — Human Gates Are Mandatory
+
+Every schema migration requires minimum two human gates:
+
+**Gate 1 — Pre-migration-execute.** Agent 3 halts after dry-run completes. Human reviews the mapping report (member count, role transitions, doc counts, write totals). Human posts "continue" to proceed. Abort if the mapping deviates from plan.
+
+**Gate 2 — Pre-maintenance-off.** Agent 3 halts after all deploys complete, before lifting maintenance. Human opens the live app, verifies key flows, checks console for errors, confirms with test users if available. Human posts "continue" to lift maintenance. Post "hold" to investigate. Post "abort" to re-freeze.
+
+These gates are non-negotiable. Automating past them means shipping a broken state to real users with no intervention point. Every Gate 2 this author has executed has surfaced at least one issue that wouldn't have been caught by automated smoke tests.
+
+### Pattern 4 — Rules Rewrite Cross-Validation
+
+Before deploying any firestore.rules rewrite, for every collection with changes:
+
+  grep -rn "db.collection(\"<collection>\")" src/
+  grep -rn "db.collectionGroup(\"<collection>\")" src/
+
+For each query found, verify the rule evaluates correctly against the query's shape. Critical pitfall:
+
+**List / collectionGroup queries evaluate rules against query filter fields, NOT document paths.**
+
+A rule like `allow read: if dmId.matches(uid() + '_.*')` works for `db.collection("dms").doc(id).get()` but FAILS for `db.collection("dms").where("participants", "array-contains", uid)`. The Firestore rules engine must prove the rule from query constraints alone — it cannot evaluate path regex against the query filter.
+
+Fix: rules gating list queries must check fields the query can filter on. Use `uid() in resource.data.get('fieldName', [])` patterns for list-compatibility.
+
+This pattern prevents the v8.0.0 notifications / DMs / ParCoin / achievement listener bugs that surfaced at Gate 2 instead of pre-deploy.
+
 ## Parked Design Tracks
 
 Product direction decisions made during v8.0 governance review that require their own Stage 1 design documents before implementation. These are not yet scoped but are captured here so future sessions don't accidentally build conflicting features.
