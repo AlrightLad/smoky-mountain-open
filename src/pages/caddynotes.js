@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · the clubhouse opens</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · clubhouse polish</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "The Clubhouse is open. Major visual refresh with new typography, colors, and a cleaner aesthetic throughout. Light and dark appearance modes available in settings. Your rounds, badges, handicap, and ParCoins are preserved — only the look changed. Cosmetics audit coming in the next few updates.", tag: "NEW" }
+    { item: "Buttons, cards, and rows now respond when you tap them. Added proper keyboard navigation indicators for accessibility. Standardized how everything transitions and presses across the app. Small change but everything feels tighter.", tag: "IMPROVED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.1.0", date: "April 2026", headline: "The clubhouse opens",
+      items: [
+        { item: "The Clubhouse is open. Major visual refresh with new typography, colors, and a cleaner aesthetic throughout. Light and dark appearance modes available in settings. Your rounds, badges, handicap, and ParCoins are preserved — only the look changed. Cosmetics audit coming in the next few updates.", tag: "NEW" }
+      ]
+    },
     {
       version: "v8.0.5", date: "April 2026", headline: "Infrastructure sprint",
       items: [

@@ -7,6 +7,28 @@
 
 /* ── Reset ── */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FOCUS RING — accessibility-first keyboard navigation indicator
+   :focus-visible fires only for keyboard/accessibility focus, not mouse clicks
+   ═══════════════════════════════════════════════════════════════════════════ */
+*:focus-visible {
+  outline: 2px solid var(--cb-brass);
+  outline-offset: 2px;
+  border-radius: inherit;
+}
+/* Form elements have their own focus treatment (border + box-shadow ring).
+   Override the default outline for inputs to avoid double-ring visual. */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+}
+/* Ensure :focus without -visible (mouse clicks) doesn't show outline */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
 html{background:var(--bg)!important}
 body{font-family:'Inter',sans-serif;background:transparent!important;color:var(--cream);min-height:100vh;min-height:100dvh;max-width:680px;margin:0 auto;overflow-x:hidden;-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
