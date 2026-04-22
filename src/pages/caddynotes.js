@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · v8 foundation live</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · planning ahead</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Direct message unread badges now update reliably.", tag: "FIXED" }
+    { item: "Behind-the-scenes planning documentation for upcoming features. Nothing new you can see yet, but work continues toward the App Store launch.", tag: "IMPROVED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.0.2", date: "April 2026", headline: "DM badge fix",
+      items: [
+        { item: "Direct message unread badges now update reliably.", tag: "FIXED" }
+      ]
+    },
     {
       version: "v8.0.1", date: "April 2026", headline: "Gate 2 patch",
       items: [
