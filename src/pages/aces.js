@@ -44,7 +44,7 @@ function renderAceList() {
     });
   } else {
     h += '<div class="card"><div class="empty" style="padding:40px 20px">';
-    h += '<div style="font-family:Playfair Display,serif;font-size:28px;color:var(--gold)">Ace Wall</div>';
+    h += '<div style="font-family:var(--font-display);font-size:28px;color:var(--gold)">Ace Wall</div>';
     h += '<div style="font-size:16px;font-weight:700;color:var(--gold);margin-top:8px">No aces yet</div>';
     h += '<div class="empty-text" style="margin-top:4px">When a Parbaugh makes a hole-in-one, it gets immortalized here</div>';
     h += '<div style="margin-top:16px"><button class="btn green" onclick="Router.go(\'aces\',{add:true})">Log first ace</button></div>';
@@ -131,7 +131,7 @@ function renderAceDetail(idx) {
 function renderAddAce() {
   var h = '<div class="sh"><h2>Log a hole-in-one</h2><button class="back" onclick="Router.back(\'aces\')">← Back</button></div>';
 
-  h += '<div style="text-align:center;padding:16px"><div style="font-family:Playfair Display,serif;font-size:24px;color:var(--gold)">Hole in One</div><div style="font-size:14px;color:var(--gold);font-weight:600;margin-top:4px">Congratulations!</div></div>';
+  h += '<div style="text-align:center;padding:16px"><div style="font-family:var(--font-display);font-size:24px;color:var(--gold)">Hole in One</div><div style="font-size:14px;color:var(--gold);font-weight:600;margin-top:4px">Congratulations!</div></div>';
 
   h += '<div class="form-section"><div class="form-title">Ace details</div>';
   h += '<div class="ff"><label class="ff-label">Who made it?</label><select class="ff-input" id="ace-player">';

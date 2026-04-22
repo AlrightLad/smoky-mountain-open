@@ -38,7 +38,7 @@ function _renderBountyBoard(bounties, uid) {
   if (!bounties.length) {
     var eh = '<div style="padding:24px 16px;text-align:center">';
     eh += '<div style="margin-bottom:12px"><svg viewBox="0 0 64 64" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5"><circle cx="32" cy="32" r="24"/><circle cx="32" cy="32" r="16"/><circle cx="32" cy="32" r="8"/><circle cx="32" cy="32" r="2" fill="var(--gold)"/></svg></div>';
-    eh += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold);margin-bottom:6px">No Active Bounties</div>';
+    eh += '<div style="font-family:var(--font-display);font-size:18px;color:var(--gold);margin-bottom:6px">No Active Bounties</div>';
     eh += '<div style="font-size:12px;color:var(--muted);line-height:1.5;max-width:280px;margin:0 auto 16px">Post a bounty and challenge your crew. Bet coins that nobody can break 80 at your home course or birdie the hardest hole.</div>';
     eh += '<button class="btn full green" onclick="showCreateBounty()" style="max-width:240px;margin:0 auto;font-size:13px;padding:14px">Post a Bounty</button>';
     // Example bounties

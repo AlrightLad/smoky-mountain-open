@@ -502,7 +502,7 @@ function renderMemberDetailWithData(p) {
   // Current handicap hero
   if (hcap !== null) {
     hcapContent += '<div style="text-align:center;padding:16px 12px 12px">';
-    hcapContent += '<div style="font-family:Playfair Display,serif;font-size:42px;font-weight:700;color:var(--gold)">' + hcap + '</div>';
+    hcapContent += '<div style="font-family:var(--font-display);font-size:42px;font-weight:700;color:var(--gold)">' + hcap + '</div>';
     hcapContent += '<div style="font-size:10px;color:var(--muted);letter-spacing:.5px;margin-top:2px">WHS HANDICAP INDEX</div>';
     hcapContent += '</div>';
   } else if (totalDiffs > 0) {
@@ -1895,24 +1895,24 @@ function shareProfileCard(pid) {
   // Header
   var header = '<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">';
   header += '<img src="watermark.jpg" style="width:32px;height:32px;border-radius:8px" onerror="this.style.display=\'none\'">';
-  header += '<div><div style="font-family:Playfair Display,serif;font-size:14px;font-weight:700;color:#c9a84c;letter-spacing:1px">PARBAUGHS</div>';
+  header += '<div><div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:#c9a84c;letter-spacing:1px">PARBAUGHS</div>';
   header += '<div style="font-size:8px;color:#7a7e8a;letter-spacing:2px">GOLF LEAGUE PLATFORM</div></div></div>';
 
   // Player info
   var name = p.username || p.name;
   var title = p.equippedTitle || p.title || "";
   var info = '<div style="text-align:center;margin-bottom:20px">';
-  info += '<div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:#eae8e0">' + name + '</div>';
+  info += '<div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:#eae8e0">' + name + '</div>';
   if (title) info += '<div style="font-size:11px;color:#c9a84c;margin-top:4px;font-style:italic">' + title + '</div>';
   info += '<div style="font-size:10px;color:#7a7e8a;margin-top:6px">Level ' + (lvl.level||1) + ' \u00b7 ' + (lvl.name||"Rookie") + '</div>';
   info += '</div>';
 
   // Stats grid
   var stats = '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">';
-  stats += '<div style="text-align:center"><div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:#c9a84c">' + (hcap !== null ? hcap : "\u2014") + '</div><div style="font-size:8px;color:#7a7e8a;text-transform:uppercase;letter-spacing:.5px">Handicap</div></div>';
-  stats += '<div style="text-align:center"><div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:#eae8e0">' + (best || "\u2014") + '</div><div style="font-size:8px;color:#7a7e8a;text-transform:uppercase;letter-spacing:.5px">Best</div></div>';
-  stats += '<div style="text-align:center"><div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:#eae8e0">' + (avg || "\u2014") + '</div><div style="font-size:8px;color:#7a7e8a;text-transform:uppercase;letter-spacing:.5px">Average</div></div>';
-  stats += '<div style="text-align:center"><div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:#eae8e0">' + indiv.length + '</div><div style="font-size:8px;color:#7a7e8a;text-transform:uppercase;letter-spacing:.5px">Rounds</div></div>';
+  stats += '<div style="text-align:center"><div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:#c9a84c">' + (hcap !== null ? hcap : "\u2014") + '</div><div style="font-size:8px;color:#7a7e8a;text-transform:uppercase;letter-spacing:.5px">Handicap</div></div>';
+  stats += '<div style="text-align:center"><div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:#eae8e0">' + (best || "\u2014") + '</div><div style="font-size:8px;color:#7a7e8a;text-transform:uppercase;letter-spacing:.5px">Best</div></div>';
+  stats += '<div style="text-align:center"><div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:#eae8e0">' + (avg || "\u2014") + '</div><div style="font-size:8px;color:#7a7e8a;text-transform:uppercase;letter-spacing:.5px">Average</div></div>';
+  stats += '<div style="text-align:center"><div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:#eae8e0">' + indiv.length + '</div><div style="font-size:8px;color:#7a7e8a;text-transform:uppercase;letter-spacing:.5px">Rounds</div></div>';
   stats += '</div>';
 
   // Footer

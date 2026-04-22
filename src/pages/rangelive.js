@@ -7,7 +7,7 @@ Router.register("range", function() {
 
     // Intent field
     h += '<div style="padding:16px 16px 0">';
-    h += '<div style="font-family:Playfair Display,serif;font-size:17px;color:var(--gold);margin-bottom:2px">What are you working on?</div>';
+    h += '<div style="font-family:var(--font-display);font-size:17px;color:var(--gold);margin-bottom:2px">What are you working on?</div>';
     h += '<div style="font-size:10px;color:var(--muted);margin-bottom:10px">Optional — helps track your focus over time</div>';
     h += '<input class="ff-input" id="rangeFocusInput" placeholder="e.g. Driver path, wedge distance, putting..." autocomplete="off" value="' + escHtml(activeRangeFocus) + '" oninput="activeRangeFocus=this.value" style="margin-bottom:0">';
     h += '</div>';

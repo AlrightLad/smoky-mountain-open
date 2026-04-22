@@ -220,7 +220,7 @@ function renderLeagueDetail(lid) {
     var isFounding = l.badge === "founding";
 
     var dh = '<div style="text-align:center;padding:24px 16px;background:linear-gradient(180deg,var(--grad-hero),var(--bg));border-bottom:1px solid var(--border)">';
-    dh += '<div style="font-family:Playfair Display,serif;font-size:24px;color:var(--gold);font-weight:700">' + escHtml(l.name) + '</div>';
+    dh += '<div style="font-family:var(--font-display);font-size:24px;color:var(--gold);font-weight:700">' + escHtml(l.name) + '</div>';
     if (isFounding) dh += '<div style="display:inline-block;margin-top:8px;padding:4px 12px;background:linear-gradient(135deg,rgba(var(--gold-rgb),.12),rgba(var(--gold-rgb),.04));border:1px solid rgba(var(--gold-rgb),.2);border-radius:8px;font-size:9px;font-weight:800;color:var(--gold);letter-spacing:1px">FOUNDING LEAGUE \u00b7 EST. 2026</div>';
     dh += '<div style="font-size:11px;color:var(--muted);margin-top:6px">' + escHtml(l.location || '') + ' \u00b7 ' + (l.memberCount || 0) + ' members \u00b7 ' + (l.visibility === "public" ? "Public" : "Private") + '</div>';
     if (l.description) dh += '<div style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5">' + escHtml(l.description) + '</div>';

@@ -39,7 +39,7 @@ Router.register("faq", function() {
       {q:"What are scramble teams?", a:"<b>More → Scramble Teams</b>. Create a team (2-4 players), log matches against other teams, track W-L records. Scramble rounds from events are automatically associated with your team."}
     ]},
     { title: "Profile & Achievements", faqs: [
-      {q:"How do themes work?", a:"<b>Settings → Theme</b>. 8 premium themes with unique colors and background textures. Champion Red is locked until you win an event. Your theme syncs across all your devices."},
+      {q:"Can I change the app's appearance?", a:"<b>Settings → Appearance</b>. Choose Light (Clubhouse) or Dark (After hours). Your choice syncs across all your devices."},
       {q:"What's the Trophy Room?", a:"Tap the XP bar on any profile. 50+ achievements across categories like Milestones, Scoring, Exploration, and more. Each achievement has an icon, description, and XP reward. Unlock them by playing golf."},
       {q:"How do titles work?", a:"Your title shows under your name on your profile. You unlock new titles by reaching levels (Weekend Warrior at Lv. 5, G.O.A.T. at Lv. 100) or earning specific achievements (Champion, Ace Maker, etc.). Equip any unlocked title from your profile."},
       {q:"What's the Scorekeeper role?", a:"During events, the Commissioner can assign a scorekeeper per course. The scorekeeper can enter scores for all players. Once scores are locked, only the Commissioner can edit them."}

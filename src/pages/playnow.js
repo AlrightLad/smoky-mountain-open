@@ -92,7 +92,7 @@ Router.register("playnow", function(params) {
 function renderPlaySetup() {
   var h = '<div class="sh"><h2>Play now</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
 
-  h += '<div style="text-align:center;padding:16px"><div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">Start a round</div><div style="font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.3px">Score hole by hole as you play</div>';
+  h += '<div style="text-align:center;padding:16px"><div style="font-family:var(--font-display);font-size:18px;color:var(--gold)">Start a round</div><div style="font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.3px">Score hole by hole as you play</div>';
   h += '<div style="margin-top:10px"><span style="font-size:11px;color:var(--gold);cursor:pointer;text-decoration:underline" onclick="Router.go(\'scramble-live\')">Or start a Scramble Round →</span></div></div>';
 
   h += '<div class="form-section">';
@@ -501,7 +501,7 @@ function _renderLiveScoringInner() {
   h += '<div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">';
   h += '<div><div style="font-size:13px;font-weight:600">' + liveState.course + '</div>';
   h += '<div style="font-size:10px;color:var(--muted);margin-top:1px">' + (player ? player.name : '') + ' · ' + liveState.format + '</div></div>';
-  h += '<div style="text-align:right"><div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:var(--gold)">' + (totalSoFar || "—") + '</div>';
+  h += '<div style="text-align:right"><div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--gold)">' + (totalSoFar || "—") + '</div>';
   if (holesPlayed > 0) {
     var diff = totalSoFar - parSoFar;
     h += '<div style="font-size:10px;color:' + (diff > 0 ? 'var(--red)' : diff < 0 ? 'var(--birdie)' : 'var(--muted)') + '">' + (diff > 0 ? '+' : '') + diff + ' thru ' + holesPlayed + '</div>';
@@ -534,7 +534,7 @@ function _renderLiveScoringInner() {
   // Stats row: Par / Yardage / Hdcp
   h += '<div style="display:flex;align-items:center;gap:0">';
   h += '<div style="flex:1;text-align:center;border-right:1px solid var(--border)">';
-  h += '<div style="font-family:Playfair Display,serif;font-size:36px;font-weight:700;color:var(--cream);line-height:1">' + par + '</div>';
+  h += '<div style="font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--cream);line-height:1">' + par + '</div>';
   h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px">Par</div>';
   h += '</div>';
   if (yardage) {
@@ -571,7 +571,7 @@ function _renderLiveScoringInner() {
   h += '<div style="display:flex;align-items:stretch;gap:0;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;height:76px">';
   h += '<div onclick="adjustLiveScore(-1)" style="flex:1;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:300;color:var(--muted);cursor:pointer;background:var(--bg3);-webkit-tap-highlight-color:transparent;user-select:none;border-right:1px solid var(--border)">−</div>';
   h += '<div id="liveScoreNum" style="flex:1.2;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg2)">';
-  h += '<div style="font-family:Playfair Display,serif;font-size:46px;font-weight:700;color:var(--gold);line-height:1">' + (currentScore || "—") + '</div>';
+  h += '<div style="font-family:var(--font-display);font-size:46px;font-weight:700;color:var(--gold);line-height:1">' + (currentScore || "—") + '</div>';
   if (currentScore !== "") {
     var scoreDiff = parseInt(currentScore) - par;
     var labels = {"-3":"Albatross","-2":"Eagle","-1":"Birdie","0":"Par","1":"Bogey","2":"Double","3":"Triple"};
@@ -632,16 +632,16 @@ function _renderLiveScoringInner() {
       var backDiff = back - backPar;
       h += '<div style="margin-bottom:16px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);display:flex;justify-content:space-around;text-align:center">';
       h += '<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Front</div>';
-      h += '<div style="font-family:Playfair Display,serif;font-size:20px;color:var(--gold)">' + front + '</div>';
+      h += '<div style="font-family:var(--font-display);font-size:20px;color:var(--gold)">' + front + '</div>';
       h += '<div style="font-size:9px;color:' + (frontDiff > 0 ? 'var(--red)' : frontDiff < 0 ? 'var(--birdie)' : 'var(--muted)') + '">' + (frontDiff > 0 ? '+' : '') + frontDiff + '</div></div>';
       if (backCount > 0) {
         h += '<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Back</div>';
-        h += '<div style="font-family:Playfair Display,serif;font-size:20px;color:var(--gold)">' + back + '</div>';
+        h += '<div style="font-family:var(--font-display);font-size:20px;color:var(--gold)">' + back + '</div>';
         h += '<div style="font-size:9px;color:' + (backDiff > 0 ? 'var(--red)' : backDiff < 0 ? 'var(--birdie)' : 'var(--muted)') + '">' + (backDiff > 0 ? '+' : '') + backDiff + '</div></div>';
       }
       var totalDiff = totalSoFar - parSoFar;
       h += '<div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Total</div>';
-      h += '<div style="font-family:Playfair Display,serif;font-size:20px;color:var(--gold)">' + totalSoFar + '</div>';
+      h += '<div style="font-family:var(--font-display);font-size:20px;color:var(--gold)">' + totalSoFar + '</div>';
       h += '<div style="font-size:9px;color:' + (totalDiff > 0 ? 'var(--red)' : totalDiff < 0 ? 'var(--birdie)' : 'var(--muted)') + '">' + (totalDiff > 0 ? '+' : '') + totalDiff + '</div></div>';
       h += '</div>';
     }

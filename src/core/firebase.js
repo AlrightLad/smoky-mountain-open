@@ -494,6 +494,60 @@ function deleteMyAccount() {
     });
 }
 
+// ========== APPEARANCE (light/dark) ==========
+function initAppearance(userProfile) {
+  var pref = userProfile && userProfile.appearance;
+  if (pref !== 'dark' && pref !== 'light') {
+    try { pref = localStorage.getItem('pb_appearance'); } catch(e) { pref = null; }
+  }
+  if (pref !== 'dark' && pref !== 'light') pref = 'light';
+  document.documentElement.setAttribute('data-theme', pref);
+  try { localStorage.setItem('pb_appearance', pref); } catch(e) {}
+}
+
+window.setAppearance = function(mode) {
+  if (mode !== 'light' && mode !== 'dark') return;
+  document.documentElement.setAttribute('data-theme', mode);
+  try { localStorage.setItem('pb_appearance', mode); } catch(e) {}
+  var uid = auth && auth.currentUser && auth.currentUser.uid;
+  if (uid && db) {
+    db.collection('members').doc(uid).update({ appearance: mode }).catch(function(){});
+  }
+  updateAppearanceButtonStates();
+};
+
+function updateAppearanceButtonStates() {
+  var current = document.documentElement.getAttribute('data-theme') || 'light';
+  var lightBtn = document.getElementById('mode-light-btn');
+  var darkBtn = document.getElementById('mode-dark-btn');
+  if (lightBtn) {
+    lightBtn.style.background = current === 'light' ? 'var(--cb-brass)' : 'transparent';
+    lightBtn.style.border = current === 'light' ? '1px solid var(--cb-brass)' : '1px solid var(--border-subtle)';
+  }
+  if (darkBtn) {
+    darkBtn.style.background = current === 'dark' ? 'var(--cb-brass)' : 'transparent';
+    darkBtn.style.border = current === 'dark' ? '1px solid var(--cb-brass)' : '1px solid var(--border-subtle)';
+  }
+}
+
+function showClubhouseWelcomeToast() {
+  try {
+    if (localStorage.getItem('pb_clubhouse_welcomed')) return;
+  } catch(e) { return; }
+  setTimeout(function() {
+    var t = document.createElement('div');
+    t.className = 'toast show';
+    t.style.cssText = 'max-width:320px;padding:14px 20px;line-height:1.4;font-size:12px';
+    t.innerHTML = '<div style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--text-inverse);margin-bottom:4px">The Clubhouse is open.</div><div style="font-family:var(--font-ui);font-size:11px;color:var(--text-inverse);opacity:0.85">We have refreshed the look. Your data is safe.</div>';
+    document.body.appendChild(t);
+    setTimeout(function() {
+      t.classList.remove('show');
+      setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 400);
+    }, 5000);
+    try { localStorage.setItem('pb_clubhouse_welcomed', '1'); } catch(e) {}
+  }, 1500);
+}
+
 // ========== AUTH STATE ==========
 if (firebaseAvailable && auth) {
   auth.onAuthStateChanged(function(user) {
@@ -506,11 +560,9 @@ if (firebaseAvailable && auth) {
         if (currentProfile.sharedRounds && currentProfile.sharedRounds.length) {
           currentProfile.sharedRounds.forEach(function(rid){ window._sharedRoundIds[rid] = true; });
         }
-        // Apply theme from Firestore profile (overrides localStorage if different)
-        if (currentProfile.theme && THEMES[currentProfile.theme]) {
-          applyTheme(currentProfile.theme);
-          try { localStorage.setItem("pb_theme", currentProfile.theme); } catch(e) {}
-        }
+        // Apply appearance preference from Firestore profile
+        initAppearance(currentProfile);
+        showClubhouseWelcomeToast();
         enterApp();
         // Start real-time profile listener — keeps currentProfile in sync across devices/sessions
         if (window._memberProfileUnsub) window._memberProfileUnsub();
@@ -518,11 +570,8 @@ if (firebaseAvailable && auth) {
           if (!snap.exists) return;
           currentProfile = snap.data();
           window._pbShareCount = (currentProfile.shareCount || 0);
-          // Sync theme from Firestore (cross-device)
-          if (currentProfile.theme && THEMES[currentProfile.theme]) {
-            applyTheme(currentProfile.theme);
-            try { localStorage.setItem("pb_theme", currentProfile.theme); } catch(e) {}
-          }
+          // Sync appearance from Firestore (cross-device)
+          initAppearance(currentProfile);
           updateProfileBar();
           // Re-render current page if it depends on profile data
           var pg = Router.getPage();

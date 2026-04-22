@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import { readFileSync, readdirSync } from 'fs';
 
-var CORE_FILES = ['utils.js', 'handicap.js', 'firebase.js', 'theme.js', 'data.js', 'sync.js', 'parcoins.js', 'caddie.js', 'charts.js', 'analytics.js', 'router.js'];
+var CORE_FILES = ['utils.js', 'handicap.js', 'firebase.js', 'data.js', 'sync.js', 'parcoins.js', 'caddie.js', 'charts.js', 'analytics.js', 'router.js'];
 
 // Pages needed for initial render (home + settings reachable from nav)
 var IMMEDIATE_PAGES = ['home.js', 'settings.js', 'onboarding.js'];
@@ -114,7 +114,6 @@ export default defineConfig({
             // but KEEP crossorigin="anonymous" on external scripts
             html = html.replace(/ crossorigin(?!=)/g, '');
             // Inject CSS as inline style tag right before </head>
-            // Textures are now handled by a real DOM div (#textureOverlay) + theme.js
             html = html.replace('</head>', '<style>' + cssCode + '</style>\n</head>');
             bundle[key].source = html;
           }

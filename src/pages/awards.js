@@ -10,8 +10,8 @@ Router.register("awards", function(params) {
   
   h += '<div style="text-align:center;padding:30px 16px 24px;background:linear-gradient(180deg,var(--bg),var(--grad-hero),var(--bg));border-bottom:1px solid rgba(var(--gold-rgb),.15)">';
   h += '';
-  h += '<div style="font-family:Playfair Display,serif;font-size:28px;color:var(--gold);font-weight:700;letter-spacing:1px">The ' + year + '</div>';
-  h += '<div style="font-family:Playfair Display,serif;font-size:22px;color:var(--cream);font-weight:400;margin-top:2px">Parbaugh Awards</div>';
+  h += '<div style="font-family:var(--font-display);font-size:28px;color:var(--gold);font-weight:700;letter-spacing:1px">The ' + year + '</div>';
+  h += '<div style="font-family:var(--font-display);font-size:22px;color:var(--cream);font-weight:400;margin-top:2px">Parbaugh Awards</div>';
   if (!seasonOver) {
     h += '<div style="display:inline-block;margin-top:14px;padding:5px 14px;background:rgba(var(--gold-rgb),.06);border:1px solid rgba(var(--gold-rgb),.12);border-radius:12px;font-size:10px;color:var(--gold);font-weight:600;letter-spacing:.5px">PROJECTED · SEASON IN PROGRESS</div>';
   }
@@ -113,7 +113,7 @@ Router.register("awards", function(params) {
     h += '<div style="padding:16px;display:flex;align-items:center;gap:16px">';
     h += '<div style="font-size:36px;flex-shrink:0">' + a.icon + '</div>';
     h += '<div style="flex:1"><div style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px">' + a.title + '</div>';
-    h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--cream);font-weight:700">' + escHtml(a.winner) + '</div>';
+    h += '<div style="font-family:var(--font-display);font-size:18px;color:var(--cream);font-weight:700">' + escHtml(a.winner) + '</div>';
     h += '<div style="font-size:11px;color:var(--muted);margin-top:3px">' + escHtml(a.detail) + '</div>';
     h += '</div></div></div>';
   });

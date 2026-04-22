@@ -33,7 +33,7 @@ function renderWatchRound() {
   var h = '<div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">';
   h += '<div><button class="back" onclick="Router.go(\'home\')" style="margin-bottom:4px">← Back</button><div style="font-size:13px;font-weight:600">' + escHtml(name) + '</div>';
   h += '<div style="font-size:10px;color:var(--muted);margin-top:1px">' + escHtml(lr.course) + (lr.tee ? ' · ' + escHtml(lr.tee) : '') + ' · ' + escHtml(lr.format || "stroke") + '</div></div>';
-  h += '<div style="text-align:right"><div style="font-family:Playfair Display,serif;font-size:26px;font-weight:700;color:' + diffColor + '">' + diffStr + '</div>';
+  h += '<div style="text-align:right"><div style="font-family:var(--font-display);font-size:26px;font-weight:700;color:' + diffColor + '">' + diffStr + '</div>';
   h += '<div style="font-size:9px;color:var(--muted)">' + (thru > 0 ? 'Thru ' + thru : 'Not started') + '</div>';
   h += '<div style="display:flex;align-items:center;gap:4px;justify-content:flex-end;margin-top:2px"><div style="width:5px;height:5px;border-radius:50%;background:var(--live);animation:pulse-dot 2s infinite"></div><span style="font-size:9px;color:var(--live);font-weight:600">LIVE</span></div>';
   h += '</div></div>';

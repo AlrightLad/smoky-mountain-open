@@ -49,9 +49,9 @@ Router.register("roundhistory", function(params) {
   h += '<div style="padding:12px 16px 16px;background:linear-gradient(180deg,var(--grad-hero),var(--bg));border-bottom:1px solid var(--border)">';
   h += '<div style="font-size:12px;color:var(--muted);margin-bottom:12px">' + totalRounds + ' round' + (totalRounds !== 1 ? 's' : '') + (dateRange ? ' · ' + dateRange : '') + '</div>';
   h += '<div style="display:flex;gap:8px">';
-  h += '<div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px;text-align:center"><div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--gold)">' + totalRounds + '</div><div style="font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:2px">Rounds</div></div>';
-  h += '<div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px;text-align:center"><div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--birdie)">' + (lowest || "—") + '</div><div style="font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:2px">Lowest</div></div>';
-  h += '<div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px;text-align:center"><div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--cream)">' + (avg || "—") + '</div><div style="font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:2px">Average</div></div>';
+  h += '<div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px;text-align:center"><div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--gold)">' + totalRounds + '</div><div style="font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:2px">Rounds</div></div>';
+  h += '<div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px;text-align:center"><div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--birdie)">' + (lowest || "—") + '</div><div style="font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:2px">Lowest</div></div>';
+  h += '<div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px;text-align:center"><div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--cream)">' + (avg || "—") + '</div><div style="font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:2px">Average</div></div>';
   h += '</div>';
   h += '<div style="font-size:10px;color:var(--muted);margin-top:8px">Most played: <span style="color:var(--cream);font-weight:600">' + escHtml(mostPlayed) + '</span></div>';
   h += '</div>';
@@ -110,7 +110,7 @@ Router.register("roundhistory", function(params) {
       h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + (r.date || "") + ' · ' + holeLabel + ' · ' + fmtLabel + '</div>';
       h += '</div>';
       h += '<div style="text-align:right;flex-shrink:0;margin-left:12px">';
-      h += '<div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:' + (isPB ? 'var(--birdie)' : 'var(--gold)') + '">' + (r.score || "—") + '</div>';
+      h += '<div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:' + (isPB ? 'var(--birdie)' : 'var(--gold)') + '">' + (r.score || "—") + '</div>';
       if (isPB) h += '<div style="font-size:8px;font-weight:700;color:var(--birdie);letter-spacing:.5px;margin-top:2px">PERSONAL BEST</div>';
       h += '</div></div>';
 

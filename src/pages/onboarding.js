@@ -70,7 +70,7 @@ function renderOnboardingStep() {
   h += '<div style="margin-bottom:24px;opacity:.9">' + s.icon + '</div>';
 
   // Title
-  h += '<div style="font-family:Playfair Display,serif;font-size:24px;font-weight:800;color:var(--gold);letter-spacing:1px;margin-bottom:12px">' + s.title + '</div>';
+  h += '<div style="font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--gold);letter-spacing:1px;margin-bottom:12px">' + s.title + '</div>';
 
   // Subtitle
   h += '<div style="font-size:14px;color:var(--cream);line-height:1.6;max-width:320px;margin-bottom:8px">' + s.sub + '</div>';
@@ -115,7 +115,7 @@ function renderProfileSetup() {
 
   // Header
   h += '<div style="text-align:center;margin-bottom:24px">';
-  h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--gold);margin-bottom:4px">Set up your profile</div>';
+  h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--gold);margin-bottom:4px">Set up your profile</div>';
   h += '<div style="font-size:11px;color:var(--muted)">You can always change this later in settings</div>';
   h += '</div>';
 

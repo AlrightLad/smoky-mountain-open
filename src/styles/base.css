@@ -3,7 +3,7 @@
    responsive breakpoints. This is the foundation layer.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600;1,9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap');
 
 /* ── Reset ── */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -17,40 +17,226 @@ input,select,textarea{font-family:inherit}
 select{-webkit-appearance:none;appearance:none}
 button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
 
-/* ── Root tokens (Classic theme defaults) ── */
-:root{
-/* ── Core palette ── */
---bg:#0e1118;--bg2:#131722;--bg3:#1a1f2c;--bg4:#212738;
---gold:#c9a84c;--gold2:#a68b3a;--gold3:#dfc06a;
---green:#1a2840;--green2:#253a58;
---cream:#eae8e0;--muted:#7a7e8a;--muted2:#484d5c;
---red:#d4604e;--birdie:#4ec97a;--card:#121620;--border:#1e2333;
-/* ── RGB channels (for alpha compositing) ── */
---gold-rgb:201,168,76;--red-rgb:212,96,78;--birdie-rgb:78,201,122;
---cream-rgb:234,232,224;--bg-rgb:14,17,24;--border-rgb:30,35,51;
-/* ── Semantic accent colors ── */
---blue:#60a5fa;--blue-rgb:96,165,250;
---pink:#f472b6;--pink-rgb:244,114,182;
---purple:#a78bfa;--purple-rgb:167,139,250;
---live:#4ade80;--live-rgb:74,222,128;
---alert:#e53935;--alert-rgb:229,57,53;
---orange:#f97316;--orange-rgb:249,115,22;
-/* ── Calendar category colors ── */
---cal-event:#6a8ac9;--cal-range:#e879a8;--cal-tee:#5b9bd5;
-/* ── Green tint (accept/success backgrounds) ── */
---accept-bg:#1a3a25;--accept-border:#2a6a3a;
-/* ── Gradient stops (theme-able) ── */
---grad-hero:#111520;--grad-deep:#090d14;--grad-card:#1a1e30;--grad-trophy:#151929;--grad-mid:#0f121c;
-/* ── Medal colors ── */
---medal-gold:#c9a84c;--medal-silver:#C0C0C0;--medal-bronze:#CD7F32;
-/* ── Spacing scale (4px base) ── */
---sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:20px;--sp-6:24px;--sp-8:32px;--sp-10:40px;--sp-12:48px;
-/* ── Typography scale ── */
---text-2xs:8px;--text-xs:9px;--text-sm:10px;--text-md:11px;--text-base:12px;--text-lg:13px;--text-xl:14px;--text-2xl:16px;--text-3xl:18px;--text-4xl:22px;--text-5xl:28px;
-/* ── Elevation ── */
---shadow-sm:0 1px 2px rgba(0,0,0,.2);--shadow-md:0 2px 8px rgba(0,0,0,.25);--shadow-lg:0 4px 16px rgba(0,0,0,.4);--shadow-glow:0 0 12px rgba(var(--gold-rgb),.15);
-/* ── Border radius scale ── */
---radius:6px;--radius-sm:4px;--radius-md:6px;--radius-lg:8px;--radius-xl:12px;--radius-2xl:16px;--radius-full:9999px
+/* ═══════════════════════════════════════════════════════════════════════════
+   CLUBHOUSE DESIGN SYSTEM — source of truth
+   Deep billiard green + warm chalk + brass accent. Light-mode default.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* Clubhouse · surface palette */
+  --cb-green: #0F3D2E;
+  --cb-green-2: #164A38;
+  --cb-green-3: #1D5A44;
+  --cb-green-ink: #0A2A20;
+  --cb-chalk: #F4EFE4;
+  --cb-chalk-2: #E9E2D1;
+  --cb-chalk-3: #DCD3BD;
+
+  /* Clubhouse · ink palette */
+  --cb-ink: #14130F;
+  --cb-ink-2: #2D2B24;
+  --cb-charcoal: #4A4740;
+  --cb-mute: #7A766B;
+  --cb-mute-2: #A8A395;
+
+  /* Clubhouse · accents */
+  --cb-brass: #B4893E;
+  --cb-brass-2: #9A7434;
+  --cb-brass-3: #D4A957;
+  --cb-copper: #A05A3A;
+  --cb-slate: #5A6B78;
+  --cb-moss: #5A7D4E;
+  --cb-claret: #8E3A3A;
+  --cb-sand: #C9B68A;
+
+  /* Clubhouse · semantic surface tokens (light mode default) */
+  --surface-primary: var(--cb-chalk);
+  --surface-secondary: var(--cb-chalk-2);
+  --surface-tertiary: var(--cb-chalk-3);
+  --surface-inverse: var(--cb-green);
+  --surface-raised: var(--cb-chalk);
+
+  /* Clubhouse · semantic text tokens (light mode default) */
+  --text-primary: var(--cb-ink);
+  --text-secondary: var(--cb-charcoal);
+  --text-muted: var(--cb-mute);
+  --text-subtle: var(--cb-mute-2);
+  --text-inverse: var(--cb-chalk);
+  --text-brand: var(--cb-brass);
+
+  /* Clubhouse · border tokens */
+  --border-subtle: var(--cb-chalk-3);
+  --border-default: rgba(20,19,15,0.12);
+  --border-strong: var(--cb-ink);
+
+  /* Clubhouse · semantic accent tokens */
+  --accent-positive: var(--cb-moss);
+  --accent-negative: var(--cb-claret);
+  --accent-warning: var(--cb-copper);
+  --accent-hazard: var(--cb-sand);
+  --accent-neutral: var(--cb-slate);
+
+  /* Clubhouse · typography */
+  --font-display: 'Fraunces', 'Playfair Display', Georgia, serif;
+  --font-ui: 'Inter', -apple-system, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Clubhouse · type scale */
+  --text-2xs: 8px;
+  --text-xs: 10px;
+  --text-sm: 11px;
+  --text-base: 13px;
+  --text-md: 14px;
+  --text-lg: 16px;
+  --text-xl: 18px;
+  --text-2xl: 22px;
+  --text-3xl: 28px;
+  --text-4xl: 36px;
+  --text-5xl: 48px;
+  --text-hero: 88px;
+  --text-hero-xl: 140px;
+
+  /* Clubhouse · spacing scale */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Clubhouse · radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-2xl: 20px;
+  --radius-pill: 9999px;
+
+  /* Clubhouse · transitions (basic only — animations are v8.1.2) */
+  --duration-fast: 150ms;
+  --duration-med: 250ms;
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Clubhouse · depth */
+  --shadow-soft: 0 4px 16px rgba(14,28,20,0.12);
+  --shadow-raised: 0 20px 60px rgba(14,28,20,0.15);
+
+  /* ═════════════════════════════════════════════════════════════════════════
+     LEGACY TOKEN ALIASES — backwards compatibility for ~1,800 inline refs
+     in src/pages/ and src/core/. Every existing token name preserved but
+     its VALUE is remapped to a Clubhouse equivalent. No legacy aesthetic.
+     ═════════════════════════════════════════════════════════════════════════ */
+  --bg: var(--cb-chalk);
+  --bg2: var(--cb-chalk-2);
+  --bg3: var(--cb-chalk-3);
+  --cream: var(--cb-ink);
+  --muted: var(--cb-mute);
+  --border: var(--border-default);
+  --gold: var(--cb-brass);
+  --gold2: var(--cb-brass-2);
+  --gold-rgb: 180, 137, 62;
+  --bg-rgb: 244, 239, 228;
+  --cream-rgb: 20, 19, 15;
+  --birdie: var(--cb-moss);
+  --eagle: var(--cb-brass);
+  --bogey: var(--cb-claret);
+  --double: var(--cb-claret);
+  --live: var(--cb-moss);
+  --accept: var(--cb-moss);
+  --reject: var(--cb-claret);
+  --wild: var(--cb-brass);
+  --radius: var(--radius-lg);
+
+  /* Extended aliases — preserve JS ref compatibility */
+  --bg4: var(--cb-chalk-3);
+  --muted2: var(--cb-mute-2);
+  --card: var(--surface-raised);
+  --gold3: var(--cb-brass-3);
+  --green: var(--cb-green-2);
+  --blue: var(--cb-slate);
+  --pink: var(--cb-claret);
+  --purple: var(--cb-slate);
+  --red: var(--cb-claret);
+  --red-rgb: 142, 58, 58;
+  --birdie-rgb: 90, 125, 78;
+  --blue-rgb: 90, 107, 120;
+  --pink-rgb: 142, 58, 58;
+  --purple-rgb: 90, 107, 120;
+  --live-rgb: 90, 125, 78;
+  --alert: var(--cb-claret);
+  --alert-rgb: 142, 58, 58;
+  --orange: var(--cb-copper);
+  --orange-rgb: 160, 90, 58;
+  --border-rgb: 20, 19, 15;
+  --cal-event: var(--cb-slate);
+  --cal-range: var(--cb-copper);
+  --cal-tee: var(--cb-brass);
+  --accept-bg: rgba(90,125,78,0.15);
+  --accept-border: var(--cb-moss);
+  --grad-hero: var(--cb-chalk-2);
+  --grad-deep: var(--cb-chalk);
+  --grad-card: var(--cb-chalk);
+  --grad-trophy: var(--cb-chalk-2);
+  --grad-mid: var(--cb-chalk);
+  --medal-gold: var(--cb-brass);
+  --medal-silver: var(--cb-mute-2);
+  --medal-bronze: var(--cb-copper);
+  --shadow-sm: 0 1px 2px rgba(20,19,15,0.06);
+  --shadow-md: 0 2px 8px rgba(20,19,15,0.08);
+  --shadow-lg: var(--shadow-soft);
+  --shadow-glow: 0 0 12px rgba(180,137,62,0.15);
+  --radius-full: var(--radius-pill);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DARK MODE — [data-theme="dark"] override
+   User opts in via settings toggle. Not default. Default is light.
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="dark"] {
+  --surface-primary: var(--cb-green);
+  --surface-secondary: var(--cb-green-2);
+  --surface-tertiary: var(--cb-green-3);
+  --surface-inverse: var(--cb-chalk);
+  --surface-raised: var(--cb-green-ink);
+
+  --text-primary: var(--cb-chalk);
+  --text-secondary: var(--cb-chalk-2);
+  --text-muted: var(--cb-mute-2);
+  --text-subtle: rgba(244,239,228,0.5);
+  --text-inverse: var(--cb-ink);
+
+  --border-subtle: rgba(244,239,228,0.12);
+  --border-default: rgba(244,239,228,0.2);
+  --border-strong: var(--cb-chalk);
+
+  /* Legacy alias remapping for dark mode */
+  --bg: var(--cb-green);
+  --bg2: var(--cb-green-2);
+  --bg3: var(--cb-green-3);
+  --bg4: var(--cb-green-ink);
+  --cream: var(--cb-chalk);
+  --muted: var(--cb-mute-2);
+  --muted2: rgba(244,239,228,0.5);
+  --card: var(--cb-green-2);
+  --border: rgba(244,239,228,0.2);
+  --bg-rgb: 15, 61, 46;
+  --cream-rgb: 244, 239, 228;
+  --alert: var(--cb-claret);
+  --grad-hero: var(--cb-green-2);
+  --grad-deep: var(--cb-green);
+  --grad-card: var(--cb-green);
+  --grad-trophy: var(--cb-green-2);
+  --grad-mid: var(--cb-green);
+  --accept-bg: rgba(90,125,78,0.25);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.5);
 }
 
 /* ── Hidden utility ── */

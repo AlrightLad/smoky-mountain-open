@@ -210,7 +210,7 @@ function _renderRoundCard(item) {
   h += renderAvatar(item.player, 40, true);
   h += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">' + renderUsername(item.player, 'color:var(--cream);', true) + (item.isScramble ? ' <span style="font-size:9px;color:var(--muted);font-weight:400">(Scramble)</span>' : '') + '</div>';
   h += '<div style="font-size:10px;color:var(--muted)">' + feedTimeAgo(item.ts) + '</div></div>';
-  h += '<div style="text-align:right;flex-shrink:0"><div style="font-family:Playfair Display,serif;font-size:28px;font-weight:700;color:' + scoreColor + ';line-height:1">' + item.score + '</div></div>';
+  h += '<div style="text-align:right;flex-shrink:0"><div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:' + scoreColor + ';line-height:1">' + item.score + '</div></div>';
   h += '</div>';
 
   // Course + meta

@@ -23,69 +23,34 @@ Router.register("settings", function() {
   }
   h += '</div>';
 
-  // Theme picker
-  var currentTheme = (currentProfile && currentProfile.theme) || 'classic';
-  try { if (!currentProfile || !currentProfile.theme) { var ls = localStorage.getItem('pb_theme'); if (ls && THEMES[ls]) currentTheme = ls; } } catch(e){}
-  h += '<div class="form-section"><div class="form-title">Theme</div>';
-  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
-  // Check if current user is a champion (won any event or season)
-  var isChampion = false;
-  if (currentUser) {
-    var myChampIds = [currentUser.uid];
-    if (currentProfile && currentProfile.claimedFrom) myChampIds.push(currentProfile.claimedFrom);
-    // Check trip/event champions
-    PB.getTrips().forEach(function(t) {
-      if (t.champion && myChampIds.indexOf(t.champion) !== -1) isChampion = true;
-    });
-    // Check season champions — top of any completed season standings
-    if (!isChampion && currentProfile) {
-      var _checkSeasons = [
-        {y:2026,k:"spring"},{y:2026,k:"summer"},{y:2026,k:"fall"},
-        {y:2025,k:"spring"},{y:2025,k:"summer"},{y:2025,k:"fall"}
-      ];
-      _checkSeasons.forEach(function(sk) {
-        try {
-          var ss = PB.getSeasonStandings(sk.y, sk.k);
-          var now = new Date(); var todayStr = localDateStr(now);
-          // Only count completed seasons
-          if (todayStr > ss.seasonEnd && ss.standings.length) {
-            if (myChampIds.indexOf(ss.standings[0].id) !== -1) isChampion = true;
-          }
-        } catch(e){}
-      });
-    }
-    // Check Firestore flag (set by admin or auto on season end)
-    if (!isChampion && currentProfile && currentProfile.isChampion) isChampion = true;
-  }
-  Object.keys(THEMES).forEach(function(tid) {
-    var t = THEMES[tid];
-    var isActive = tid === currentTheme;
-    var isLocked = tid === "sundayred" && !isChampion;
-    if (isLocked) {
-      h += '<div style="padding:12px;border-radius:var(--radius-lg);border:2px solid var(--border);background:var(--card);opacity:.4;position:relative">';
-      h += '<div style="display:flex;gap:4px;margin-bottom:8px">';
-      t.colors.forEach(function(c) {
-        h += '<div style="width:20px;height:20px;border-radius:50%;background:' + c + ';border:1px solid rgba(255,255,255,.1)"></div>';
-      });
-      h += '</div>';
-      h += '<div style="font-size:12px;font-weight:600;color:var(--muted2)">' + t.label + '</div>';
-      h += '<div style="font-size:9px;color:var(--muted2);margin-top:2px">' + t.desc + '</div>';
-      h += '<div style="font-size:8px;color:var(--muted2);margin-top:4px;font-weight:700;letter-spacing:.5px;display:flex;align-items:center;gap:4px"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg> WIN A SEASON OR EVENT TO UNLOCK</div>';
-      h += '</div>';
-    } else {
-      h += '<div onclick="saveTheme(\'' + tid + '\');Router.go(\'settings\',{},true)" style="cursor:pointer;padding:12px;border-radius:var(--radius-lg);border:2px solid ' + (isActive ? 'var(--gold)' : 'var(--border)') + ';background:' + (isActive ? 'rgba(var(--gold-rgb),.08)' : 'var(--card)') + ';transition:border-color .15s">';
-      h += '<div style="display:flex;gap:4px;margin-bottom:8px">';
-      t.colors.forEach(function(c) {
-        h += '<div style="width:20px;height:20px;border-radius:50%;background:' + c + ';border:1px solid rgba(255,255,255,.1)"></div>';
-      });
-      h += '</div>';
-      h += '<div style="font-size:12px;font-weight:600;color:' + (isActive ? 'var(--gold)' : 'var(--cream)') + '">' + t.label + '</div>';
-      h += '<div style="font-size:9px;color:var(--muted);margin-top:2px">' + t.desc + '</div>';
-      if (isActive) h += '<div style="font-size:8px;color:var(--gold);margin-top:4px;font-weight:700;letter-spacing:.5px">ACTIVE</div>';
-      h += '</div>';
-    }
-  });
-  h += '</div></div>';
+  // Appearance toggle (light/dark) — replaces legacy theme picker
+  var currentAppearance = 'light';
+  try {
+    var lsAppearance = localStorage.getItem('pb_appearance');
+    if (lsAppearance === 'dark' || lsAppearance === 'light') currentAppearance = lsAppearance;
+    else if (currentProfile && currentProfile.appearance === 'dark') currentAppearance = 'dark';
+  } catch(e){}
+  var lightActive = currentAppearance === 'light';
+  var darkActive = currentAppearance === 'dark';
+  var lightBg = lightActive ? 'var(--cb-brass)' : 'transparent';
+  var lightBorder = lightActive ? '1px solid var(--cb-brass)' : '1px solid var(--border-subtle)';
+  var darkBg = darkActive ? 'var(--cb-brass)' : 'transparent';
+  var darkBorder = darkActive ? '1px solid var(--cb-brass)' : '1px solid var(--border-subtle)';
+  h += '<div class="section" style="margin-top:16px">';
+  h += '<div class="sec-head"><span class="sec-title">Appearance</span></div>';
+  h += '<div class="card"><div class="card-body" style="padding:16px">';
+  h += '<div style="display:flex;align-items:center;gap:12px">';
+  h += '<button id="mode-light-btn" onclick="setAppearance(\'light\')" class="btn-sm" style="flex:1;padding:14px;border-radius:10px;background:' + lightBg + ';border:' + lightBorder + '">';
+  h += '<span style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)">Light</span>';
+  h += '<div style="margin-top:6px;font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--text-primary)">Clubhouse</div>';
+  h += '</button>';
+  h += '<button id="mode-dark-btn" onclick="setAppearance(\'dark\')" class="btn-sm" style="flex:1;padding:14px;border-radius:10px;background:' + darkBg + ';border:' + darkBorder + '">';
+  h += '<span style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)">Dark</span>';
+  h += '<div style="margin-top:6px;font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--text-primary)">After hours</div>';
+  h += '</button>';
+  h += '</div>';
+  h += '<div style="margin-top:12px;font-family:var(--font-mono);font-size:10px;color:var(--text-muted);letter-spacing:0.5px">The Clubhouse refresh replaces our previous themes. Your data is safe — only the look changed.</div>';
+  h += '</div></div></div>';
 
   // Push notifications
   h += '<div class="form-section"><div class="form-title">Notifications</div>';

@@ -14,7 +14,7 @@ Router.register("records", function() {
   var inSeason = month >= 2 && month <= 8;
   h += '<div class="card" onclick="Router.go(\'standings\')" style="cursor:pointer;' + (inSeason ? 'border-color:rgba(var(--gold-rgb),.2);background:linear-gradient(135deg,var(--grad-card),var(--card))' : '') + '">';
   h += '<div style="padding:16px;display:flex;justify-content:space-between;align-items:center">';
-  h += '<div><div style="font-family:Playfair Display,serif;font-size:16px;font-weight:700;color:var(--gold)">' + year + ' Season Standings</div>';
+  h += '<div><div style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--gold)">' + year + ' Season Standings</div>';
   h += '<div style="font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.3px">March — September · ' + (inSeason ? 'In season' : 'Offseason') + '</div></div>';
   h += '<div class="m-arrow" style="color:var(--gold);font-size:20px">›</div></div></div>';
 
@@ -25,25 +25,25 @@ Router.register("records", function() {
   var challengeCount = 0;
   try { PB.getPlayers().forEach(function(p){challengeCount += PB.getChallenges(p.id).filter(function(c){return c.status==="pending"}).length}); } catch(e) {}
   h += '<div class="card" onclick="Router.go(\'challenges\')" style="cursor:pointer;margin-bottom:0"><div style="padding:14px 12px;text-align:center">';
-  h += '<div style="font-size:20px;font-family:Playfair Display,serif;font-weight:700;color:var(--gold)">' + (challengeCount || "0") + '</div>';
+  h += '<div style="font-size:20px;font-family:var(--font-display);font-weight:700;color:var(--gold)">' + (challengeCount || "0") + '</div>';
   h += '<div style="font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.8px">Challenges</div></div></div>';
 
   // Ace Wall
   var aceCount = (rec.holeInOnes && rec.holeInOnes.length) || 0;
   h += '<div class="card" onclick="Router.go(\'aces\')" style="cursor:pointer;margin-bottom:0"><div style="padding:14px 12px;text-align:center">';
-  h += '<div style="font-size:20px;font-family:Playfair Display,serif;font-weight:700;color:var(--gold)">' + aceCount + '</div>';
+  h += '<div style="font-size:20px;font-family:var(--font-display);font-weight:700;color:var(--gold)">' + aceCount + '</div>';
   h += '<div style="font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.8px">Aces</div></div></div>';
 
   // Teams
   var teamCount = PB.getScrambleTeams().length;
   h += '<div class="card" onclick="Router.go(\'scramble\')" style="cursor:pointer;margin-bottom:0"><div style="padding:14px 12px;text-align:center">';
-  h += '<div style="font-size:20px;font-family:Playfair Display,serif;font-weight:700;color:var(--gold)">' + teamCount + '</div>';
+  h += '<div style="font-size:20px;font-family:var(--font-display);font-weight:700;color:var(--gold)">' + teamCount + '</div>';
   h += '<div style="font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.8px">Teams</div></div></div>';
 
   // Courses
   var coursesPlayed = PB.getCourses().filter(function(c){return PB.getCourseRounds(c.name).length>0}).length;
   h += '<div class="card" onclick="Router.go(\'courses\')" style="cursor:pointer;margin-bottom:0"><div style="padding:14px 12px;text-align:center">';
-  h += '<div style="font-size:20px;font-family:Playfair Display,serif;font-weight:700;color:var(--gold)">' + coursesPlayed + '</div>';
+  h += '<div style="font-size:20px;font-family:var(--font-display);font-weight:700;color:var(--gold)">' + coursesPlayed + '</div>';
   h += '<div style="font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.8px">Courses played</div></div></div>';
 
   h += '</div>';
@@ -81,22 +81,22 @@ Router.register("records", function() {
     recContent += '<div style="flex:1;background:var(--bg3);border-radius:var(--radius);padding:10px 12px;text-align:center">';
     recContent += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Best 18 holes</div>';
     if (best18) {
-      recContent += '<div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:var(--gold)">' + best18.score + '</div>';
+      recContent += '<div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--gold)">' + best18.score + '</div>';
       recContent += '<div style="font-size:10px;color:var(--cream);margin-top:2px">' + escHtml(best18.playerName) + '</div>';
       recContent += '<div style="font-size:9px;color:var(--muted);margin-top:1px">' + escHtml(best18.course) + '</div>';
     } else {
-      recContent += '<div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:var(--muted2)">—</div>';
+      recContent += '<div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--muted2)">—</div>';
     }
     recContent += '</div>';
     recContent += '<div style="flex:1;background:var(--bg3);border-radius:var(--radius);padding:10px 12px;text-align:center">';
     recContent += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Best 9 holes</div>';
     if (best9) {
       var nineLabel = best9.holesMode === "back9" ? "Back 9" : "Front 9";
-      recContent += '<div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:var(--gold)">' + best9.score + '</div>';
+      recContent += '<div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--gold)">' + best9.score + '</div>';
       recContent += '<div style="font-size:10px;color:var(--cream);margin-top:2px">' + escHtml(best9.playerName) + '</div>';
       recContent += '<div style="font-size:9px;color:var(--muted);margin-top:1px">' + escHtml(best9.course) + ' · ' + nineLabel + '</div>';
     } else {
-      recContent += '<div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:var(--muted2)">—</div>';
+      recContent += '<div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--muted2)">—</div>';
     }
     recContent += '</div></div>';
   } else {

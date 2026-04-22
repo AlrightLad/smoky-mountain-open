@@ -22,7 +22,7 @@ Router.register("standings", function(params) {
   h += '</div>';
 
   h += '<div style="text-align:center;padding:20px 16px 24px;background:linear-gradient(180deg,var(--grad-hero),var(--bg));border-bottom:1px solid var(--border)">';
-  h += '<div style="font-family:Playfair Display,serif;font-size:28px;color:var(--gold);font-weight:700">' + escHtml(season.seasonLabel) + '</div>';
+  h += '<div style="font-family:var(--font-display);font-size:28px;color:var(--gold);font-weight:700">' + escHtml(season.seasonLabel) + '</div>';
   var monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var sStart = new Date(season.seasonStart + "T12:00:00");
   var sEnd = new Date(season.seasonEnd + "T12:00:00");
@@ -61,7 +61,7 @@ Router.register("standings", function(params) {
         h += '<div style="font-size:9px;color:var(--muted2);margin-top:3px;line-height:1.4">' + s.courses.join(', ') + '</div>';
       }
       h += '</div></div>';
-      h += '<div style="text-align:right"><div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:var(--gold)" data-count="' + (s.points||0) + '">0</div>';
+      h += '<div style="text-align:right"><div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--gold)" data-count="' + (s.points||0) + '">0</div>';
       h += '<div style="font-size:9px;color:var(--muted);letter-spacing:.5px">PTS</div></div>';
       h += '</div></div>';
     });

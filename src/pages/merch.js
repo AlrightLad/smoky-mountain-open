@@ -5,7 +5,7 @@ Router.register("merch", function() {
   var h = '<div class="sh"><h2>Merch</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
 
   h += '<div style="text-align:center;padding:20px 16px"><div style="width:60px;height:60px;border-radius:14px;margin:0 auto 12px;overflow:hidden"><img alt="" src="watermark.jpg" style="width:100%;height:100%;object-fit:cover"></div>';
-  h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">Parbaughs Collection</div>';
+  h += '<div style="font-family:var(--font-display);font-size:18px;color:var(--gold)">Parbaughs Collection</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.3px">Rep the crew on and off the course</div></div>';
 
   var items = [

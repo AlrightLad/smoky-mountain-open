@@ -40,7 +40,7 @@ function renderScrambleLiveSetup() {
   var teams = PB.getScrambleTeams();
   var h = '<div class="sh"><h2>Scramble Round</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
   
-  h += '<div style="text-align:center;padding:16px"><div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">Live Scramble Scoring</div>';
+  h += '<div style="text-align:center;padding:16px"><div style="font-family:var(--font-display);font-size:18px;color:var(--gold)">Live Scramble Scoring</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">Score hole by hole as a team</div></div>';
   
   h += '<div class="form-section">';
@@ -92,7 +92,7 @@ function renderScrambleLiveScoring() {
   h += '<div style="padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">';
   h += '<div><div style="font-size:13px;font-weight:600">' + escHtml(s.course) + '</div>';
   h += '<div style="font-size:10px;color:var(--gold);margin-top:1px">' + escHtml(s.team.name) + ' · Scramble</div></div>';
-  h += '<div style="text-align:right"><div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:var(--gold)">' + (totalSoFar || "—") + '</div>';
+  h += '<div style="text-align:right"><div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--gold)">' + (totalSoFar || "—") + '</div>';
   if (holesPlayed > 0) {
     var diff = totalSoFar - parSoFar;
     h += '<div style="font-size:10px;color:' + (diff > 0 ? 'var(--red)' : diff < 0 ? 'var(--birdie)' : 'var(--muted)') + '">' + (diff > 0 ? '+' : '') + diff + ' thru ' + holesPlayed + '</div>';
@@ -110,7 +110,7 @@ function renderScrambleLiveScoring() {
   // Current hole
   h += '<div style="text-align:center;padding:32px 16px">';
   h += '<div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px">Hole ' + (hole+1) + '</div>';
-  h += '<div style="font-family:Playfair Display,serif;font-size:48px;color:var(--gold);font-weight:700;margin:8px 0">Par ' + par + '</div>';
+  h += '<div style="font-family:var(--font-display);font-size:48px;color:var(--gold);font-weight:700;margin:8px 0">Par ' + par + '</div>';
   h += '<div style="font-size:10px;color:var(--muted2)">' + members.join(" · ") + '</div>';
   
   // Score buttons

@@ -652,8 +652,8 @@ function renderCourseDetail(courseId) {
     var topPlayer = Object.entries(playedBy).sort(function(a,b){return b[1]-a[1]})[0];
 
     h += '<div class="card"><div style="padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:12px">';
-    if (avgScore) h += '<div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Members average</div><div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:var(--cream)">' + avgScore + '</div></div>';
-    h += '<div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Total rounds</div><div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:var(--cream)">' + courseRounds.length + '</div></div>';
+    if (avgScore) h += '<div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Members average</div><div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--cream)">' + avgScore + '</div></div>';
+    h += '<div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Total rounds</div><div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--cream)">' + courseRounds.length + '</div></div>';
     if (topPlayer) h += '<div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Most played by</div><div style="font-size:13px;font-weight:600;color:var(--gold)">' + escHtml(topPlayer[0]) + ' <span style="font-size:10px;color:var(--muted)">(' + topPlayer[1] + ' rounds)</span></div></div>';
 
     // Hardest/easiest hole (from hole-by-hole data)
@@ -702,7 +702,7 @@ function renderCourseDetail(courseId) {
   // Aggregate rating
   if (avgRating) {
     h += '<div style="display:flex;align-items:center;gap:8px;padding:0 0 8px">';
-    h += '<div style="font-family:Playfair Display,serif;font-size:28px;font-weight:700;color:var(--gold)">' + avgRating + '</div>';
+    h += '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--gold)">' + avgRating + '</div>';
     h += '<div>';
     for (var si = 1; si <= 5; si++) h += '<span style="color:' + (si <= Math.round(avgRating) ? 'var(--gold)' : 'var(--bg3)') + ';font-size:16px">\u2605</span>';
     h += '<div style="font-size:10px;color:var(--muted)">' + reviews.length + ' review' + (reviews.length !== 1 ? 's' : '') + '</div>';

@@ -1,6 +1,0 @@
-/* ═══════════════════════════════════════════════════════════════════════════
-   TEXTURES — Background texture overlay is a real DOM div (#textureOverlay)
-   placed as a direct child of <html> (outside <body>). Controlled by
-   applyTheme() in theme.js. No CSS pseudo-elements, no body>* z-index
-   hacks. The div is simply behind body in the stacking order.
-   ═══════════════════════════════════════════════════════════════════════════ */

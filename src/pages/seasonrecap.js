@@ -17,7 +17,7 @@ Router.register("seasonrecap", function(params) {
   
   h += '<div style="text-align:center;padding:24px 16px;background:linear-gradient(180deg,var(--grad-hero),var(--bg));border-bottom:1px solid var(--border)">';
   h += '';
-  h += '<div style="font-family:Playfair Display,serif;font-size:24px;color:var(--gold);font-weight:700">' + year + ' Season Recap</div>';
+  h += '<div style="font-family:var(--font-display);font-size:24px;color:var(--gold);font-weight:700">' + year + ' Season Recap</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:6px">March 1 — September 30</div></div>';
   
   // Overall stats
@@ -39,7 +39,7 @@ Router.register("seasonrecap", function(params) {
     h += '<div class="card" style="border-color:rgba(var(--gold-rgb),.3);background:linear-gradient(135deg,var(--grad-card),var(--card))">';
     h += '<div style="padding:20px;text-align:center">';
     h += '';
-    h += '<div style="font-family:Playfair Display,serif;font-size:22px;color:var(--gold);font-weight:700">' + escHtml(champ.name||champ.username) + '</div>';
+    h += '<div style="font-family:var(--font-display);font-size:22px;color:var(--gold);font-weight:700">' + escHtml(champ.name||champ.username) + '</div>';
     h += '<div style="font-size:24px;font-weight:800;color:var(--cream);margin-top:4px">' + champ.points + ' points</div>';
     h += '<div style="font-size:11px;color:var(--muted);margin-top:8px">' + champ.rounds + ' rounds · Avg: ' + champ.avg + ' · Best: ' + champ.best + '</div>';
     h += '</div></div></div>';
@@ -182,7 +182,7 @@ Router.register("seasonrecap", function(params) {
       h += '<div style="font-size:18px;width:28px;text-align:center">' + medal + '</div>';
       h += '<div><div style="font-size:13px;font-weight:600">' + escHtml(s.name||s.username) + '</div>';
       h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + s.rounds + ' rds · Avg: ' + s.avg + '</div></div></div>';
-      h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--gold)">' + s.points + '</div>';
+      h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--gold)">' + s.points + '</div>';
       h += '</div></div>';
     });
     h += '</div>';

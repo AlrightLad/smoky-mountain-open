@@ -350,7 +350,6 @@ smoky-mountain-open/
 │   │   ├── firebase.js     ← auth, firestore, cloud functions
 │   │   ├── router.js       ← SPA router system
 │   │   ├── data.js         ← PB object (all data access)
-│   │   ├── theme.js        ← 8 themes + texture loading + champion unlock
 │   │   ├── sync.js         ← firestore sync, presence, connection status
 │   │   └── utils.js        ← escHtml, feedTimeAgo, localDateStr, etc.
 │   ├── pages/
@@ -377,12 +376,8 @@ smoky-mountain-open/
 │   │   ├── modals.js       ← toasts, share cards, confirmations
 │   │   └── skeletons.js    ← loading states
 │   └── styles/
-│       ├── base.css        ← tokens, global resets
-│       ├── components.css  ← cards, buttons, pills, forms
-│       ├── themes.css      ← 8 theme color blocks
-│       ├── textures.css    ← texture overlays per theme
-│       ├── masters.css     ← Masters scorecard special styling
-│       └── responsive.css  ← tablet/desktop breakpoints
+│       ├── base.css        ← Clubhouse token system, dual-mode, global resets
+│       └── components.css  ← cards, buttons, pills, forms
 ├── firebase/
 │   ├── firestore.rules
 │   └── functions/
@@ -573,37 +568,21 @@ service cloud.firestore {
 
 **IMPORTANT:** Deploy these rules via `firebase deploy --only firestore:rules` BEFORE making the app public. Test all features after deployment.
 
-## Theme System
+## Appearance
 
-8 themes, each with CSS color tokens + texture image + visual identity:
+Parbaughs supports light and dark appearance modes:
+- **Light (default):** warm chalk surface, ink text, brass accents. The Clubhouse aesthetic.
+- **Dark:** billiard green surface, chalk text, brass accents. "After hours" mode.
 
-| Theme | Texture | Accent | Unlock |
-|-------|---------|--------|--------|
-| Classic | `classic-tile.jpg` (gold weave) | Gold `#c9a84c` | Default |
-| Camo | `camo-tile.jpg` (woodland leaves) | Flame `#d4943c` | Default |
-| Masters | `masters-tile.jpg` (green leather) | Yellow `#fdd835` | Default |
-| Azalea | `azalea-tile.jpg` (pink flowers) | Pink `#e8729a` | Default |
-| USGA | `usga-tile.jpg` (navy stripes) | Red `#c41e3a` | Default |
-| Champion Red | `champion-tile.jpg` (red leather) | Crimson `#d4243c` | **Champions only** |
-| Dark | `dark-tile.jpg` (carbon fiber) | Gold `#b89a3e` | Default |
-| Light | `light-tile.jpg` (linen) | Gold `#8a6d1e` | Default |
+Users toggle via Settings → Appearance. Preference stored in Firestore `members/{uid}.appearance` and localStorage `pb_appearance`.
 
-- Themes persist to Firestore `members/{uid}.theme` and localStorage `pb_theme`
-- `[data-theme="xxx"]` CSS attribute system overrides `:root` tokens
-- `cssVar()` and `cssRgba()` helpers resolve CSS vars for Canvas 2D API
-- Champion Red: gated behind `trip.champion` field — only users who have won an event can select it
+No custom themes, no theme picker, no theme-specific cosmetics.
 
-### CSS Token Architecture
-- RGB channel variables: `--gold-rgb: 201,168,76` enabling `rgba(var(--gold-rgb), .1)`
-- Semantic colors: `--blue`, `--pink`, `--purple`, `--live`, `--alert`, `--orange`
-- Calendar dots: `--cal-event`, `--cal-range`, `--cal-tee`
-- Gradient stops: `--grad-hero`, `--grad-deep`, `--grad-card`, `--grad-trophy`
-- Spacing: 4px base, 12 stops (`--sp-1` through `--sp-12`)
-- Typography: 11 stops (`--text-2xs` through `--text-5xl`)
-- Elevation: `--shadow-sm`, `--shadow-md`, `--shadow-lg`, `--shadow-glow`
-- Radius: `--radius-sm` through `--radius-full`
+## Visual Reference
 
-### Hole Dot Colors (Static — Never Changes Per Theme)
+Mode-independent visual constants used across canvas-rendered artifacts (share cards, feed cards, scorecards). These are hardcoded hex values, not CSS tokens — they must render identically in light mode, dark mode, and within html2canvas captures.
+
+### Hole Dot Colors
 Hole-by-hole performance dots rendered on Round History, feed cards, and share cards:
 
 | Result | Color | Hex |
@@ -613,8 +592,6 @@ Hole-by-hole performance dots rendered on Round History, feed cards, and share c
 | Par (score = par) | Gray | `#888888` |
 | Bogey (score = par+1) | Orange | `#F59E42` |
 | Double bogey+ (score >= par+2) | Red | `#E53935` |
-
-These are hardcoded hex values, NOT CSS variables. They must be identical everywhere dots appear.
 
 ### Calendar Dot Colors
 - Gold `var(--gold)` = Event/Trip

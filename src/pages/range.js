@@ -50,15 +50,15 @@ Router.register("range-detail", function(params) {
     var playerName = s.playerName || (player ? player.name : "A Parbaugh");
     
     h += '<div style="text-align:center;padding:20px 16px;background:linear-gradient(180deg,rgba(var(--gold-rgb),.06),transparent)">';
-    h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--gold)">' + escHtml(playerName) + '</div>';
+    h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--gold)">' + escHtml(playerName) + '</div>';
     h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">' + escHtml(s.date || "") + '</div></div>';
     
     // Stats grid
     h += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin:0 16px;border-radius:var(--radius);overflow:hidden">';
-    h += '<div style="background:var(--bg2);padding:16px;text-align:center"><div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:var(--gold)">' + (s.durationMin || "—") + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">MINUTES</div></div>';
-    h += '<div style="background:var(--bg2);padding:16px;text-align:center"><div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:var(--birdie)">' + getRangeSessionXP(s) + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">XP EARNED</div></div>';
+    h += '<div style="background:var(--bg2);padding:16px;text-align:center"><div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--gold)">' + (s.durationMin || "—") + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">MINUTES</div></div>';
+    h += '<div style="background:var(--bg2);padding:16px;text-align:center"><div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--birdie)">' + getRangeSessionXP(s) + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">XP EARNED</div></div>';
     var drillCount = s.drills ? s.drills.length : 0;
-    h += '<div style="background:var(--bg2);padding:16px;text-align:center"><div style="font-family:Playfair Display,serif;font-size:24px;font-weight:700;color:var(--cream)">' + drillCount + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">DRILLS</div></div>';
+    h += '<div style="background:var(--bg2);padding:16px;text-align:center"><div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--cream)">' + drillCount + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px">DRILLS</div></div>';
     h += '</div>';
     
     // Focus
@@ -271,7 +271,7 @@ function endRangeSession() {
   // Time hero
   h += '<div style="text-align:center;padding:28px 16px 20px;border-bottom:1px solid var(--border)">';
   h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">Time on range</div>';
-  h += '<div style="font-family:Playfair Display,serif;font-size:60px;font-weight:800;color:var(--gold);letter-spacing:3px;line-height:1">' + formatRangeTime(elapsed) + '</div>';
+  h += '<div style="font-family:var(--font-display);font-size:60px;font-weight:800;color:var(--gold);letter-spacing:3px;line-height:1">' + formatRangeTime(elapsed) + '</div>';
   h += '<div style="font-size:12px;color:var(--muted);margin-top:8px">' + mins + ' minute' + (mins !== 1 ? 's' : '') + (activeRangeFocus ? ' · <span style="color:var(--cream)">' + escHtml(activeRangeFocus) + '</span>' : '') + '</div>';
   if (!isPrivate) h += '<div style="margin-top:10px;font-size:14px;font-weight:700;color:var(--gold)">+' + xp + ' XP</div>';
   h += '</div>';

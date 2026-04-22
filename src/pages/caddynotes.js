@@ -3,7 +3,7 @@ Router.register("caddynotes", function() {
   var h = '<div class="sh"><h2>The Caddy Notes</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
 
   h += '<div style="text-align:center;padding:16px"><div style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--gold)"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>';
-  h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">The Caddy Notes</div>';
+  h += '<div style="font-family:var(--font-display);font-size:18px;color:var(--gold)">The Caddy Notes</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">What\'s new, what\'s fixed, and what\'s coming</div>';
   h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v' + APP_VERSION + '</div></div>';
 
@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · infrastructure sprint</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · the clubhouse opens</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "App now respects iPhone notch and home indicator on all screens. Tap targets enlarged for easier use on mobile. Stats charts no longer silently break on empty data. Behind-the-scenes: server runtime upgraded ahead of Google's April 30 deadline.", tag: "IMPROVED" }
+    { item: "The Clubhouse is open. Major visual refresh with new typography, colors, and a cleaner aesthetic throughout. Light and dark appearance modes available in settings. Your rounds, badges, handicap, and ParCoins are preserved — only the look changed. Cosmetics audit coming in the next few updates.", tag: "NEW" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.0.5", date: "April 2026", headline: "Infrastructure sprint",
+      items: [
+        { item: "App now respects iPhone notch and home indicator on all screens. Tap targets enlarged for easier use on mobile. Stats charts no longer silently break on empty data. Behind-the-scenes: server runtime upgraded ahead of Google's April 30 deadline.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.0.4", date: "April 2026", headline: "Planning documentation",
       items: [

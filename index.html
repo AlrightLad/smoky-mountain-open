@@ -1,16 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-<div id="textureOverlay" style="position:fixed;inset:0;z-index:0;pointer-events:none;background-repeat:repeat;background-size:300px 300px;opacity:0"></div>
 <head>
 <meta charset="UTF-8">
+<script>
+(function(){
+  try {
+    var pref = localStorage.getItem('pb_appearance') || 'light';
+    document.documentElement.setAttribute('data-theme', pref);
+  } catch(e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Parbaughs">
-<meta name="theme-color" content="#0e1118">
+<meta name="theme-color" content="#F4EFE4">
 <!-- Critical inline CSS — ensures bg + hidden elements even before external CSS loads -->
 <style>
-:root{--bg:#0e1118;--bg2:#131722;--bg3:#1a1f2c;--gold:#c9a84c;--cream:#eae8e0;--muted:#7a7e8a;--border:#1e2333;--card:#121620}
+:root{--bg:#F4EFE4;--bg2:#E9E2D1;--bg3:#DCD3BD;--gold:#B4893E;--cream:#14130F;--muted:#7A766B;--border:rgba(20,19,15,0.12);--card:#F4EFE4}
 *{margin:0;padding:0;box-sizing:border-box}
 html{background:var(--bg)!important}body{font-family:'Inter',system-ui,sans-serif;background:transparent!important;color:var(--cream);min-height:100vh;max-width:680px;margin:0 auto;overflow-x:hidden}
 .hidden{display:none!important}
@@ -39,9 +48,7 @@ html{background:var(--bg)!important}body{font-family:'Inter',system-ui,sans-seri
 <script type="module" src="/src/main.js"></script>
 <!-- html2canvas for share card image generation -->
 <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<!-- Playfair Display for share card brand heading -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 <!-- ── SHARE CARD TEMPLATE (hidden, captured by html2canvas) ── -->
@@ -49,7 +56,7 @@ html{background:var(--bg)!important}body{font-family:'Inter',system-ui,sans-seri
   <div class="pbs-inner">
     <!-- Header: logo left, brand center, spacer right -->
     <div class="pbs-header">
-      <div class="pbs-logo"><img id="pbs-logo-img" src="Logo.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=&quot;width:100%;height:100%;background:linear-gradient(135deg,var(--gold),#8b6914);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--bg)&quot;>P</div>'"></div>
+      <div class="pbs-logo"><img id="pbs-logo-img" src="Logo.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=&quot;width:100%;height:100%;background:linear-gradient(135deg,var(--gold),#8b6914);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:Fraunces,Georgia,serif;font-size:20px;font-weight:700;color:var(--bg)&quot;>P</div>'"></div>
       <div class="pbs-brand-center">
         <div class="pbs-brand-name">The Parbaughs</div>
         <div class="pbs-brand-sub">Members Only</div>

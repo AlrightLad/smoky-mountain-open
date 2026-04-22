@@ -300,7 +300,7 @@ function renderTripLB(trip, tripPlayers) {
     var champName = champPlayer ? (champPlayer.name || champPlayer.username) : "Champion";
     h += '<div style="padding:16px;text-align:center;background:linear-gradient(180deg,rgba(var(--gold-rgb),.08),transparent);border:1px solid rgba(var(--gold-rgb),.15);border-radius:var(--radius);margin:0 16px 16px">';
     h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Event Complete</div>';
-    h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--gold)">' + escHtml(champName) + '</div>';
+    h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--gold)">' + escHtml(champName) + '</div>';
     h += '<div style="font-size:11px;color:var(--cream);margin-top:4px">Champion of ' + escHtml(trip.name) + '</div>';
     if (trip.finalStandings) {
       h += '<div style="margin-top:10px;font-size:11px;color:var(--muted)">';

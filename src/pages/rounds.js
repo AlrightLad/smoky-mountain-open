@@ -50,7 +50,7 @@ function renderRoundDetail(roundId) {
   if (player) h += '<div style="display:flex;justify-content:center;margin-bottom:8px">' + renderAvatar(player, 52, true) + '</div>';
   h += '<div style="font-size:14px;font-weight:600;color:var(--cream)">' + renderUsername(player || {name:round.playerName,id:''}, '', false) + '</div>';
   h += '<div style="font-size:12px;color:var(--muted);margin-top:2px">' + escHtml(round.course) + '</div>';
-  h += '<div style="margin-top:12px"><span style="font-family:Playfair Display,serif;font-size:56px;font-weight:800;color:var(--gold);line-height:1">' + round.score + '</span></div>';
+  h += '<div style="margin-top:12px"><span style="font-family:var(--font-display);font-size:56px;font-weight:800;color:var(--gold);line-height:1">' + round.score + '</span></div>';
   h += '<div style="margin-top:6px"><span style="font-size:14px;font-weight:700;color:' + diffColor + ';background:' + diffColor + '15;padding:4px 14px;border-radius:var(--radius-full);border:1px solid ' + diffColor + '30">' + diffStr + '</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);margin-top:10px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap">';
   h += '<span>' + round.date + '</span><span>·</span><span>' + holeLabel + '</span><span>·</span><span>' + fmtLabel + '</span>';
@@ -372,7 +372,7 @@ function showRoundCommentary(round) {
 function _showStoryPrompt(round) {
   var h = '<div class="sh"><h2>How\'d It Go?</h2></div>';
   h += '<div style="text-align:center;padding:20px 16px">';
-  h += '<div style="font-family:Playfair Display,serif;font-size:36px;font-weight:700;color:var(--gold)">' + (round.score || "") + '</div>';
+  h += '<div style="font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--gold)">' + (round.score || "") + '</div>';
   h += '<div style="font-size:12px;color:var(--muted);margin-top:4px">' + escHtml(round.course || "") + '</div>';
   h += '</div>';
   h += '<div style="padding:0 16px">';

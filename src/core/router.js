@@ -175,47 +175,24 @@ var Router = (function() {
 
 // ── GLOBAL UTILITY: profile border color ────────────────────────────────────
 // Single source of truth for avatar frame colors. Call anywhere you render
-// a player avatar. Matches the logic on the profile page exactly.
-// Theme-default ring colors — every theme has a distinct ring identity
-var THEME_RINGS = {
-  classic:   {color:"#c9a84c", shadow:"0 0 8px rgba(201,168,76,.5), 0 0 16px rgba(201,168,76,.15)"},
-  camo:      {color:"#8a7a5a", shadow:"0 0 8px rgba(138,122,90,.45), 0 0 14px rgba(138,122,90,.15)"},
-  masters:   {color:"#2e7d32", shadow:"0 0 8px rgba(46,125,50,.5), 0 0 16px rgba(253,216,53,.2)"},
-  azalea:    {color:"#e8729a", shadow:"0 0 10px rgba(232,114,154,.5), 0 0 18px rgba(232,114,154,.2)"},
-  usga:      {color:"#1a3a6a", shadow:"0 0 0 1px #c41e3a, 0 0 8px rgba(196,30,58,.35)"},
-  sundayred: {color:"#8b1a2b", shadow:"0 0 10px rgba(212,36,60,.5), 0 0 18px rgba(212,36,60,.2)"},
-  dark:      {color:"#6a6a6a", shadow:"0 0 8px rgba(255,255,255,.15), 0 0 14px rgba(255,255,255,.05)"},
-  light:     {color:"#a0845a", shadow:"0 0 8px rgba(138,109,30,.4), 0 0 14px rgba(138,109,30,.15)"}
-};
+// a player avatar. Default ring is Clubhouse brass for all users; shop-
+// purchased cosmetic rings (equippedCosmetics.border) override the default.
+// Tier-specific rings (commissioner, Mr. Parbaugh, Founding Four) come in v8.1.4.
 
 function playerFrameColor(p) {
-  if (!p) return 'var(--gold)';
-  // 1. Manual cosmetic ring override (from shop purchase)
+  if (!p) return '#B4893E';
+  // Cosmetic ring override (from shop purchase)
   if (p.equippedCosmetics && p.equippedCosmetics.border && p.equippedCosmetics.border !== "theme-default") {
     var cosm = typeof COSMETICS_CATALOG !== "undefined" ? COSMETICS_CATALOG : [];
     var equipped = cosm.find(function(c) { return c.id === p.equippedCosmetics.border; });
     if (equipped) return equipped.preview;
   }
-  // 2. Theme-default ring — matches THIS PLAYER's active theme (not the viewer's)
-  var playerTheme = p.theme || null;
-  // If no theme on the player object, check fbMemberCache for their UID
-  if (!playerTheme && typeof fbMemberCache !== "undefined") {
-    var pid = p.id || p.uid || "";
-    if (fbMemberCache[pid] && fbMemberCache[pid].theme) playerTheme = fbMemberCache[pid].theme;
-    // Also check if pid is a seed ID claimed by someone
-    if (!playerTheme) {
-      Object.keys(fbMemberCache).forEach(function(k) {
-        if (fbMemberCache[k].claimedFrom === pid && fbMemberCache[k].theme) playerTheme = fbMemberCache[k].theme;
-      });
-    }
-  }
-  if (!playerTheme) playerTheme = "classic";
-  var ring = THEME_RINGS[playerTheme] || THEME_RINGS.classic;
-  return ring.color;
+  // Default: Clubhouse brass for all members
+  return '#B4893E';
 }
 
 function playerRingShadow(p) {
-  if (!p) return '0 0 8px rgba(201,168,76,.3)';
+  if (!p) return '0 0 8px rgba(180,137,62,.5), 0 0 16px rgba(180,137,62,.25)';
   // Animated rings handle their own shadows via keyframes
   if (p.equippedCosmetics && p.equippedCosmetics.border) {
     var animatedRings = ['border_pulse_gold','border_shimmer','border_rainbow_shift','border_neon_green','border_crimson_ember'];
@@ -225,16 +202,8 @@ function playerRingShadow(p) {
     var equipped = cosm.find(function(c) { return c.id === p.equippedCosmetics.border; });
     if (equipped) return '0 0 8px ' + equipped.preview + '50, 0 0 16px ' + equipped.preview + '20';
   }
-  // Theme-default shadow — bold glow so rings POP
-  var playerTheme = p.theme || null;
-  if (!playerTheme && typeof fbMemberCache !== "undefined") {
-    var pid = p.id || p.uid || "";
-    if (fbMemberCache[pid] && fbMemberCache[pid].theme) playerTheme = fbMemberCache[pid].theme;
-    if (!playerTheme) { Object.keys(fbMemberCache).forEach(function(k) { if (fbMemberCache[k].claimedFrom === pid && fbMemberCache[k].theme) playerTheme = fbMemberCache[k].theme; }); }
-  }
-  if (!playerTheme) playerTheme = "classic";
-  var ring = THEME_RINGS[playerTheme] || THEME_RINGS.classic;
-  return ring.shadow;
+  // Default: Clubhouse brass glow
+  return '0 0 8px rgba(180,137,62,.5), 0 0 16px rgba(180,137,62,.25)';
 }
 
 // Returns full inline style for avatar ring (border + shadow + animation)
@@ -604,7 +573,7 @@ function showAITournamentGenerator() {
   var h = '<div class="sh"><h2>AI Tournament Builder</h2><button class="back" onclick="Router.back(\'trips\')">← Back</button></div>';
   
   h += '<div style="text-align:center;padding:20px 16px">';
-  h += '<div style="font-family:Playfair Display,serif;font-size:18px;color:var(--gold)">AI Tournament Generator</div>';
+  h += '<div style="font-family:var(--font-display);font-size:18px;color:var(--gold)">AI Tournament Generator</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">Describe what you want and the AI builds it</div></div>';
   
   h += '<div class="form-section"><div class="form-title">Tell the AI what you want</div>';
@@ -705,7 +674,7 @@ function generateAITournament() {
 function renderAITournamentResult(t, el) {
   var h = '<div class="card" style="border-color:rgba(var(--gold-rgb),.2)">';
   h += '<div style="padding:16px;background:linear-gradient(135deg,var(--grad-card),var(--card));border-radius:var(--radius) var(--radius) 0 0">';
-  h += '<div style="font-family:Playfair Display,serif;font-size:20px;color:var(--gold);font-weight:700">' + escHtml(t.title||"AI Tournament") + '</div>';
+  h += '<div style="font-family:var(--font-display);font-size:20px;color:var(--gold);font-weight:700">' + escHtml(t.title||"AI Tournament") + '</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5">' + escHtml(t.description||"") + '</div></div>';
   
   if (t.rounds && t.rounds.length) {
@@ -1615,7 +1584,7 @@ function renderFeedItem(a) {
   if (a.sub) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.3">' + escHtml(a.sub) + '</div>';
   h += '</div>';
   h += '<div style="flex-shrink:0;text-align:right;margin-left:8px">';
-  if (a.score) h += '<div style="font-family:Playfair Display,serif;font-size:22px;font-weight:700;color:var(--gold);line-height:1">' + a.score + '</div>';
+  if (a.score) h += '<div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--gold);line-height:1">' + a.score + '</div>';
   h += '<div style="font-size:9px;color:var(--muted2);margin-top:2px">' + timeLabel + '</div>';
   h += '</div></div>';
   if (a.quip) h += '<div style="font-size:11px;color:var(--gold2);margin-top:4px;font-style:italic;line-height:1.4">' + a.quip + '</div>';

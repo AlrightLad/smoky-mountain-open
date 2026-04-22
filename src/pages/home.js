@@ -61,24 +61,24 @@ Router.register("home", function() {
   h += '<div style="padding:20px 16px 0;text-align:center;background:linear-gradient(180deg,var(--grad-hero),var(--bg))">';
   h += '<div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px">';
   h += '<div style="width:48px;height:48px;border-radius:14px;overflow:hidden;flex-shrink:0;border:1px solid var(--border)"><img alt="" src="watermark.jpg" style="width:100%;height:100%;object-fit:cover"></div>';
-  h += '<div style="text-align:left"><div style="font-family:Playfair Display,serif;font-size:18px;font-weight:800;color:var(--gold);letter-spacing:2px">THE PARBAUGHS</div>';
+  h += '<div style="text-align:left"><div style="font-family:var(--font-display);font-size:18px;font-weight:800;color:var(--gold);letter-spacing:2px">THE PARBAUGHS</div>';
   h += '<div style="font-size:8px;color:var(--muted);letter-spacing:4px;text-transform:uppercase;font-weight:500">Est. 2026 · York, PA</div></div></div>';
 
   // Personal stat bar
   h += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px">';
-  h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'trophyroom\')"><div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--gold)" data-count="' + myLevel.level + '">' + myLevel.level + '</div><div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Level</div>';
+  h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'trophyroom\')"><div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--gold)" data-count="' + myLevel.level + '">' + myLevel.level + '</div><div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Level</div>';
   h += '<div style="height:3px;background:var(--bg3);border-radius:2px;margin-top:4px;overflow:hidden"><div style="height:100%;width:' + xpPct + '%;background:linear-gradient(90deg,var(--gold2),var(--gold3));border-radius:2px"></div></div></div>';
   h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'members\',{id:\'' + (currentUser?currentUser.uid:"") + '\'})">';
-  h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--cream)">' + (myHcap !== null ? myHcap : "—") + '</div>';
+  h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--cream)">' + (myHcap !== null ? myHcap : "—") + '</div>';
   h += '<div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Handicap</div></div>';
   var myTotalRounds = currentProfile && currentProfile.totalRounds ? currentProfile.totalRounds : myRounds.length;
-  h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'roundhistory\')"><div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--cream)" data-stat="round-count" data-count="' + myTotalRounds + '">' + myTotalRounds + '</div>';
+  h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'roundhistory\')"><div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--cream)" data-stat="round-count" data-count="' + myTotalRounds + '">' + myTotalRounds + '</div>';
   h += '<div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Rounds <svg viewBox="0 0 12 12" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div></div>';
   h += '<div style="text-align:center;' + (myBestRoundId ? 'cursor:pointer' : '') + '"' + (myBestRoundId ? ' onclick="Router.go(\'rounds\',{roundId:\'' + myBestRoundId + '\'})"' : '') + '>';
   if (myBest && myBest < 999) {
-    h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--birdie)" data-count="' + myBest + '">' + myBest + '</div>';
+    h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--birdie)" data-count="' + myBest + '">' + myBest + '</div>';
   } else {
-    h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--muted2)">—</div>';
+    h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--muted2)">—</div>';
   }
   h += '<div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Best' + (myBestRoundId ? ' <svg viewBox="0 0 12 12" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg>' : '') + '</div></div>';
   h += '</div></div>';
@@ -159,7 +159,7 @@ Router.register("home", function() {
       h += '<div style="display:flex;justify-content:space-between;align-items:center">';
       h += '<div><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span class="pill pill-live">LIVE</span><span style="font-size:12px;font-weight:700;color:var(--cream)">' + escHtml(lr.name) + '</span></div>';
       h += '<div style="font-size:11px;color:var(--muted)">' + escHtml(lr.course) + ' · Hole ' + lr.hole + (lr.thru > 0 ? ' · Thru ' + lr.thru : '') + '</div></div>';
-      h += '<div style="text-align:right"><div style="font-family:Playfair Display,serif;font-size:24px;font-weight:800;color:' + diffColor + '">' + diffStr + '</div>';
+      h += '<div style="text-align:right"><div style="font-family:var(--font-display);font-size:24px;font-weight:800;color:' + diffColor + '">' + diffStr + '</div>';
       if (!lr.isMe) h += '<div style="font-size:9px;color:var(--gold);font-weight:600">Watch →</div>';
       h += '</div></div></div>';
     });
@@ -317,7 +317,7 @@ Router.register("home", function() {
       h += renderAvatar(p || s, 32, false);
       h += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(s.name || s.username || "") + '</div>';
       h += '<div style="font-size:10px;color:var(--muted)">' + (s.rounds||0) + ' rounds</div></div>';
-      h += '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;color:var(--gold)" data-count="' + (s.points||0) + '">0</div>';
+      h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--gold)" data-count="' + (s.points||0) + '">0</div>';
       h += '</div></div>';
     });
     h += '</div>';
@@ -442,7 +442,7 @@ function showRivalryDetail(p1id, p2id) {
       var winColor = m.winner === "tie" ? "var(--muted)" : "var(--gold)";
       h += '<div class="card"><div class="card-body"><div style="display:flex;justify-content:space-between;align-items:center">';
       h += '<div><div style="font-size:12px;font-weight:600">' + escHtml(m.course) + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">' + m.date + '</div></div>';
-      h += '<div style="text-align:right"><div style="font-family:Playfair Display,serif;font-size:18px;font-weight:700;color:' + winColor + '">' + m.p1score + ' — ' + m.p2score + '</div>';
+      h += '<div style="text-align:right"><div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:' + winColor + '">' + m.p1score + ' — ' + m.p2score + '</div>';
       h += '<div style="font-size:9px;color:var(--muted)">' + escHtml(winnerName) + '</div></div>';
       h += '</div></div></div>';
     });
