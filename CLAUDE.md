@@ -218,6 +218,20 @@ The bypass pattern — use only when Zach has **explicitly** authorized rule edi
 
 If the pattern feels wrong — if Zach hasn't explicitly authorized rule edits in this specific ship, or if the edit you're about to make isn't a rule change — STOP and ask. Don't bypass hooks for plausible-sounding reasons.
 
+### Cloud Functions runtime lives in `firebase.json`, not `functions/package.json`
+
+For Firebase Functions deploys, `firebase.json`'s `"runtime"` key takes precedence over `functions/package.json`'s `engines.node` field. If both exist and disagree, `firebase.json` wins silently — the `engines` bump appears to succeed but the deployed runtime doesn't change. Both must match on any runtime-version ship; `firebase.json` is the authoritative declaration.
+
+Learned during v8.0.5 Node 20 → 22 cutover: engines bump alone didn't move the deployed runtime off Node 20, and `firebase functions:list` was the only way to catch it post-deploy.
+
+### Firebase CLI skip-unchanged detection misses config-only changes
+
+`firebase deploy --only functions` hashes source code to decide which functions need redeploying. `firebase.json` changes (including runtime, region, or memory updates) do NOT invalidate that hash. A config-only edit will deploy as "No changes detected" across the board and silently skip the actual rollout. `--force` doesn't bypass this — its semantics are for confirming destructive operations, not forcing a re-deploy of unchanged code.
+
+Workaround: pair every config-only Functions change with a trivial source-code edit (e.g., updating a docstring comment) to invalidate the hash. Verify with `firebase functions:list` after deploy, not just the deploy output.
+
+Learned during v8.0.5: `firebase.json` runtime bump to `nodejs22` deployed successfully but skipped all 8 functions; had to pair it with a one-line docstring change to `functions/index.js` to actually trigger redeployment.
+
 See also: Cutover Playbook section for migration-specific patterns.
 
 ## Cutover Playbook
@@ -380,8 +394,8 @@ smoky-mountain-open/
 - **Project ID:** parbaughs
 - **Auth:** Email/password, email verification on registration
 - **Firestore:** Primary data store, offline persistence DISABLED (caused duplicate entries)
-- **Cloud Functions:** Gen1, Node20, us-central1
-  - `searchCourses` — GolfCourseAPI proxy (origin-locked CORS — do NOT change runtime or CORS)
+- **Cloud Functions:** Gen1, Node22, us-central1
+  - `searchCourses` — GolfCourseAPI proxy. Preserve CORS origin lock + Firebase Function runtime settings (memory, timeout, region). Node version is upgradeable.
   - `sendPushNotification` — triggers on `pendingPush` doc creation, sends FCM push to member's `fcmToken`, deletes doc after. Source: `functions/index.js`
 - **Plan:** Blaze (pay-as-you-go)
 
@@ -390,7 +404,7 @@ smoky-mountain-open/
 cd functions && npm install && cd ..
 firebase deploy --only functions:sendPushNotification
 ```
-Do NOT redeploy `searchCourses` unless explicitly modifying it — it has CORS and runtime settings that must not change.
+Do NOT redeploy `searchCourses` unless explicitly modifying it — the CORS origin lock and Firebase Function runtime settings (memory, timeout, region) must be preserved. Node runtime version is upgradeable when Google deprecates versions; coordinate via explicit ship plan.
 
 ### GolfCourseAPI
 - **Correct endpoint:** `/v1/search?search_query=`

@@ -8,6 +8,8 @@
 function svgBarChart(data, options) {
   var o = Object.assign({width:320, height:140, barGap:4, showLabels:true, showValues:true, baseline:null}, options || {});
   if (!data || !data.length) return '';
+  data = data.filter(function(d){return Number.isFinite(d.value)});
+  if (!data.length) return '';
   var maxVal = Math.max.apply(null, data.map(function(d){return Math.abs(d.value)}));
   if (maxVal === 0) maxVal = 1;
   var barW = Math.floor((o.width - (data.length - 1) * o.barGap) / data.length);
@@ -51,6 +53,8 @@ function svgBarChart(data, options) {
 function svgLineChart(data, options) {
   var o = Object.assign({width:320, height:120, color:'var(--gold)', showDots:true, showArea:true}, options || {});
   if (!data || data.length < 2) return '';
+  data = data.filter(function(d){return Number.isFinite(d.value)});
+  if (data.length < 2) return '';
   var values = data.map(function(d){return d.value});
   var yMin = o.yMin !== undefined ? o.yMin : Math.min.apply(null, values) - 2;
   var yMax = o.yMax !== undefined ? o.yMax : Math.max.apply(null, values) + 2;
@@ -106,6 +110,8 @@ function svgLineChart(data, options) {
 function svgHorizontalBars(data, options) {
   var o = Object.assign({width:280, barHeight:18, gap:8, showValues:true}, options || {});
   if (!data || !data.length) return '';
+  data = data.filter(function(d){return Number.isFinite(d.value)});
+  if (!data.length) return '';
   var maxVal = Math.max.apply(null, data.map(function(d){return d.maxValue || d.value}));
   if (maxVal === 0) maxVal = 1;
   var totalH = data.length * (o.barHeight + o.gap) - o.gap;

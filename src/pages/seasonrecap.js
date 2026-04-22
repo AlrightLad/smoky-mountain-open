@@ -148,7 +148,9 @@ Router.register("seasonrecap", function(params) {
     if (pr.length >= 3) {
       var avg = pr.reduce(function(a,r){return a+r.score},0) / pr.length;
       var variance = pr.reduce(function(a,r){return a + Math.pow(r.score-avg,2)},0) / pr.length;
-      consistencyData.push({name: p.name||p.username, stdDev: Math.sqrt(variance)});
+      var stdDev = Math.sqrt(variance);
+      if (!Number.isFinite(stdDev)) stdDev = 0;
+      consistencyData.push({name: p.name||p.username, stdDev: stdDev});
     }
   });
   if (consistencyData.length) {

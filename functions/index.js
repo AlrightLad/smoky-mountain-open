@@ -1,6 +1,6 @@
 /**
  * Firebase Cloud Functions for The Parbaughs
- * Gen1, Node20, us-central1
+ * Gen1, Node22, us-central1
  *
  * Functions:
  *   Existing (pre-v8):

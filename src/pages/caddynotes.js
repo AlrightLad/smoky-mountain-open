@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · planning ahead</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · infrastructure sprint</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Behind-the-scenes planning documentation for upcoming features. Nothing new you can see yet, but work continues toward the App Store launch.", tag: "IMPROVED" }
+    { item: "App now respects iPhone notch and home indicator on all screens. Tap targets enlarged for easier use on mobile. Stats charts no longer silently break on empty data. Behind-the-scenes: server runtime upgraded ahead of Google's April 30 deadline.", tag: "IMPROVED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.0.4", date: "April 2026", headline: "Planning documentation",
+      items: [
+        { item: "Behind-the-scenes planning documentation for upcoming features. Nothing new you can see yet, but work continues toward the App Store launch.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.0.2", date: "April 2026", headline: "DM badge fix",
       items: [
