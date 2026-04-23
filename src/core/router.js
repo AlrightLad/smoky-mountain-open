@@ -1437,6 +1437,8 @@ function showAchievementCelebration(ach) {
   var el = document.createElement("div");
   el.id = "achCelebration";
   el.className = "ach-celebrate";
+  el.setAttribute("role", "alert");
+  el.setAttribute("aria-live", "assertive");
   el.innerHTML = '<div style="background:linear-gradient(135deg,rgba(var(--gold-rgb),.18),rgba(var(--gold-rgb),.08));border:1.5px solid rgba(var(--gold-rgb),.4);border-radius:16px;padding:16px 20px;display:flex;align-items:center;gap:14px;backdrop-filter:blur(8px)">'
     + '<div style="width:44px;height:44px;border-radius:12px;background:rgba(var(--gold-rgb),.15);border:1.5px solid rgba(var(--gold-rgb),.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--gold)">' + ach.icon + '</div>'
     + '<div style="flex:1;min-width:0">'
@@ -2089,36 +2091,8 @@ function skeletonFeed() {
 }
 
 
-// ========== ANIMATED NUMBER COUNTING ==========
-function animateNumber(el, target, duration) {
-  if (!el) return;
-  duration = duration || 600;
-  var start = 0;
-  var startTime = null;
-  target = parseInt(target) || 0;
-  if (target === 0) { el.textContent = "0"; return; }
-  
-  function step(timestamp) {
-    if (!startTime) startTime = timestamp;
-    var progress = Math.min((timestamp - startTime) / duration, 1);
-    // Ease out cubic
-    var eased = 1 - Math.pow(1 - progress, 3);
-    var current = Math.round(eased * target);
-    el.textContent = current;
-    if (progress < 1) requestAnimationFrame(step);
-    else el.textContent = target;
-  }
-  requestAnimationFrame(step);
-}
-
-// Auto-animate elements with data-count attribute after page renders
-function initCountAnimations() {
-  var els = document.querySelectorAll("[data-count]");
-  els.forEach(function(el) {
-    var target = el.getAttribute("data-count");
-    animateNumber(el, target, 500);
-  });
-}
+// Number animation utilities moved to src/core/animate.js
+// Global API: animateNumber, initCountAnimations, reanimateNumber, prefersReducedMotion
 
 
 // ========== CONTEXTUAL EMPTY STATES ==========

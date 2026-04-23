@@ -145,6 +145,14 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 
+  /* Clubhouse · semantic motion (v8.1.2) */
+  --duration-slow: 400ms;           /* entrances, celebratory moments */
+  --duration-celebration: 800ms;    /* achievement unlocks, level ups */
+  --ease-enter: cubic-bezier(0, 0, 0.2, 1);           /* decelerate into place */
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);            /* accelerate away */
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);      /* expressive, for hero moments */
+  --ease-back-out: cubic-bezier(0.34, 1.56, 0.64, 1); /* slight overshoot — number pop */
+
   /* Clubhouse · depth */
   --shadow-soft: 0 4px 16px rgba(14,28,20,0.12);
   --shadow-raised: 0 20px 60px rgba(14,28,20,0.15);
@@ -342,4 +350,36 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
   .home-actions,.motivation-wrap{margin-left:32px!important;margin-right:32px!important}
   .section{padding-left:32px;padding-right:32px}
   .home-wrap{padding:0 32px}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   REDUCED MOTION — respect user preference
+   Decorative animations suppressed. Functional feedback preserved.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  /* Kill decorative keyframe animations */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Preserve essential feedback — allow brief transitions on functional state */
+  .toast,
+  .toast.show,
+  :focus-visible,
+  .skeleton {
+    animation-duration: 200ms !important;
+    transition-duration: 150ms !important;
+  }
+
+  /* Suppress decorative loops entirely */
+  .rip-dot,
+  .pill-live::before,
+  .nt-count.live {
+    animation: none !important;
+  }
 }

@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · clubhouse polish</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · motion and accessibility</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Buttons, cards, and rows now respond when you tap them. Added proper keyboard navigation indicators for accessibility. Standardized how everything transitions and presses across the app. Small change but everything feels tighter.", tag: "IMPROVED" }
+    { item: "Numbers now roll smoothly with decimals instead of jumping. Extended motion vocabulary across the app. Respects your phone's Reduce Motion accessibility setting. Screen readers now announce toasts and stat updates. Small visual polish across navigation.", tag: "IMPROVED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.1.1", date: "April 2026", headline: "Clubhouse polish",
+      items: [
+        { item: "Buttons, cards, and rows now respond when you tap them. Added proper keyboard navigation indicators for accessibility. Standardized how everything transitions and presses across the app. Small change but everything feels tighter.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.1.0", date: "April 2026", headline: "The clubhouse opens",
       items: [

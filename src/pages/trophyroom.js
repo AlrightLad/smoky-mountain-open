@@ -37,7 +37,7 @@ function renderTrophyRoom(p) {
   var xpInLevel = lvl.xp - lvl.currentLevelXp;
   var xpNeeded = lvl.nextLevelXp - lvl.currentLevelXp;
   var pct = xpNeeded > 0 ? Math.min(100, Math.round((xpInLevel / xpNeeded) * 100)) : 100;
-  h += '<div class="trophy-bar"><div class="trophy-bar-fill" style="width:' + pct + '%"></div></div>';
+  h += '<div class="trophy-bar"><div class="trophy-bar-fill" style="transform:scaleX(' + (pct / 100) + ')"></div></div>';
   h += '<div class="trophy-next">' + (xpNeeded - xpInLevel).toLocaleString() + ' XP to Level ' + (lvl.level + 1) + '</div>';
   h += '</div>';
   
