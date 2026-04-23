@@ -609,38 +609,26 @@ function _renderLiveScoringInner() {
   h += '</div>';
   h += '</div>';
 
-  // FIR / GIR / Putts — bigger, full-label buttons
+  // FIR / GIR / Putts — binary toggles, direct-DOM update on tap (v8.2.2)
   h += '<div style="display:flex;gap:8px;margin-bottom:20px">';
-  if (!isPar3) {
-    var firActive = liveState.fir[hole];
-    var firColor = firActive ? 'var(--birdie)' : 'var(--red)';
-    var firBg = firActive ? 'rgba(var(--birdie-rgb),.12)' : 'rgba(var(--red-rgb),.06)';
-    var firBorder = firActive ? 'var(--birdie)' : 'rgba(var(--red-rgb),.3)';
-    var firLabel = firActive ? '\u2713 Hit' : '\u2717 Miss';
-    h += '<div onclick="togglePlayNowFirGir(this,' + hole + ',\'fir\')" style="flex:1;height:60px;border-radius:10px;border:1.5px solid ' + firBorder + ';background:' + firBg + ';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
-    h += '<div style="font-size:14px;font-weight:700;color:' + firColor + '">FIR</div>';
-    h += '<div style="font-size:10px;font-weight:600;color:' + firColor + ';letter-spacing:.3px">' + firLabel + '</div>';
-    h += '</div>';
-  } else {
-    h += '<div style="flex:1;height:60px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;opacity:.4">';
-    h += '<div style="font-size:14px;font-weight:700;color:var(--muted)">FIR</div>';
-    h += '<div style="font-size:10px;color:var(--muted2)">N/A (Par 3)</div>';
-    h += '</div>';
-  }
-  var girActive = liveState.gir[hole];
-  var girColor = girActive ? 'var(--gold)' : 'var(--red)';
-  var girBg = girActive ? 'rgba(var(--gold-rgb),.12)' : 'rgba(var(--red-rgb),.06)';
-  var girBorder = girActive ? 'var(--gold)' : 'rgba(var(--red-rgb),.3)';
-  var girLabel = girActive ? '\u2713 Hit' : '\u2717 Miss';
-  h += '<div onclick="togglePlayNowFirGir(this,' + hole + ',\'gir\')" style="flex:1;height:60px;border-radius:10px;border:1.5px solid ' + girBorder + ';background:' + girBg + ';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
-  h += '<div style="font-size:14px;font-weight:700;color:' + girColor + '">GIR</div>';
-  h += '<div style="font-size:10px;font-weight:600;color:' + girColor + ';letter-spacing:.3px">' + girLabel + '</div>';
+  var firActive = !!liveState.fir[hole];
+  var firCls = isPar3 ? 'pn-fg-btn disabled' : ('pn-fg-btn' + (firActive ? ' active' : ''));
+  var firAttr = isPar3 ? '' : ' onclick="toggleFir(' + hole + ')"';
+  h += '<div id="pn-fir-' + hole + '" class="' + firCls + '"' + firAttr + '>';
+  h += '<div class="pn-fg-title">FIR</div>';
+  h += '<div class="pn-fg-state">' + (isPar3 ? 'N/A (Par 3)' : (firActive ? '\u2713 Hit' : 'Miss')) + '</div>';
+  h += '</div>';
+
+  var girActive = !!liveState.gir[hole];
+  h += '<div id="pn-gir-' + hole + '" class="pn-fg-btn' + (girActive ? ' active' : '') + '" onclick="toggleGir(' + hole + ')">';
+  h += '<div class="pn-fg-title">GIR</div>';
+  h += '<div class="pn-fg-state">' + (girActive ? '\u2713 Hit' : 'Miss') + '</div>';
   h += '</div>';
 
   var puttVal = liveState.putts[hole];
-  h += '<div onclick="cyclePutts(' + hole + ')" style="flex:1;height:60px;border-radius:10px;border:1.5px solid ' + (puttVal ? 'var(--cream)' : 'var(--border)') + ';background:' + (puttVal ? 'rgba(var(--cream-rgb),.06)' : 'var(--bg3)') + ';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
-  h += '<div style="font-size:20px;font-weight:700;color:' + (puttVal ? 'var(--cream)' : 'var(--muted)') + '">' + (puttVal || '—') + '</div>';
-  h += '<div style="font-size:9px;color:var(--muted2);letter-spacing:.3px">Putts</div>';
+  h += '<div id="pn-putts-' + hole + '" class="pn-putts-btn' + (puttVal ? ' active' : '') + '" onclick="cyclePutts(' + hole + ')">';
+  h += '<div class="pn-putts-val">' + (puttVal || '—') + '</div>';
+  h += '<div class="pn-putts-lbl">Putts</div>';
   h += '</div>';
   h += '</div>';
 
@@ -653,73 +641,71 @@ function _renderLiveScoringInner() {
   if (liveState.upDown[hole] !== null) advFilled++;
   if (liveState.miss[hole]) advFilled++;
   if (liveState.penalty[hole] > 0) advFilled++;
-  h += '<button class="advanced-stats-toggle" onclick="toggleAdvancedStats(' + hole + ')">';
-  h += '<span>Advanced stats' + (advFilled > 0 ? ' · ' + advFilled : '') + '</span>';
-  h += '<span style="font-size:16px;color:var(--gold)">' + (isAdvOpen ? '−' : '+') + '</span>';
+  var advCountStr = advFilled > 0 ? 'Advanced stats \u00b7 ' + advFilled : 'Advanced stats';
+  h += '<button id="pn-advtoggle-' + hole + '" class="advanced-stats-toggle' + (isAdvOpen ? ' open' : '') + '" onclick="toggleAdvancedStats(' + hole + ')">';
+  h += '<span id="pn-advcount-' + hole + '">' + advCountStr + '</span>';
+  h += '<span id="pn-advicon-' + hole + '" style="font-size:16px;color:var(--gold)">' + (isAdvOpen ? '\u2212' : '+') + '</span>';
   h += '</button>';
 
-  if (isAdvOpen) {
-    var gir = liveState.gir[hole];
-    var bunker = liveState.bunker[hole];
-    var sand = liveState.sand[hole];
-    var upDown = liveState.upDown[hole];
-    var miss = liveState.miss[hole];
-    var penalty = liveState.penalty[hole] || 0;
+  // Advanced stats body — always in DOM, .hidden toggled (v8.2.2 direct-DOM refactor).
+  // Conditional rows (sand save, up-and-down, miss direction) are also always in DOM,
+  // with .hidden applied when their condition is not met. Toggle helpers update these.
+  var gir = liveState.gir[hole];
+  var bunker = liveState.bunker[hole];
+  var sand = liveState.sand[hole];
+  var upDown = liveState.upDown[hole];
+  var miss = liveState.miss[hole];
+  var penalty = liveState.penalty[hole] || 0;
 
-    h += '<div class="advanced-stats-body">';
+  h += '<div id="pn-advbody-' + hole + '" class="advanced-stats-body' + (isAdvOpen ? '' : ' hidden') + '">';
 
-    // Bunker toggle
-    h += '<div class="adv-row">';
-    h += '<span class="adv-label">In bunker?</span>';
-    h += '<div class="adv-tri" onclick="toggleBunker(' + hole + ')">';
-    h += '<span class="adv-tri-opt' + (bunker === null ? ' active-neutral' : '') + '">—</span>';
-    h += '<span class="adv-tri-opt' + (bunker === true ? ' active-yes' : '') + '">Yes</span>';
-    h += '<span class="adv-tri-opt' + (bunker === false ? ' active-no' : '') + '">No</span>';
-    h += '</div></div>';
+  // Bunker toggle
+  h += '<div class="adv-row">';
+  h += '<span class="adv-label">In bunker?</span>';
+  h += '<div id="pn-tri-bunker-' + hole + '" class="adv-tri" onclick="toggleBunker(' + hole + ')">';
+  h += '<span class="adv-tri-opt' + (bunker === null ? ' active-neutral' : '') + '">\u2014</span>';
+  h += '<span class="adv-tri-opt' + (bunker === true ? ' active-yes' : '') + '">Yes</span>';
+  h += '<span class="adv-tri-opt' + (bunker === false ? ' active-no' : '') + '">No</span>';
+  h += '</div></div>';
 
-    // Sand save — only if bunker === true
-    if (bunker === true) {
-      h += '<div class="adv-row">';
-      h += '<span class="adv-label">Sand save?</span>';
-      h += '<div class="adv-tri" onclick="toggleSand(' + hole + ')">';
-      h += '<span class="adv-tri-opt' + (sand === null ? ' active-neutral' : '') + '">—</span>';
-      h += '<span class="adv-tri-opt' + (sand === true ? ' active-yes' : '') + '">Yes</span>';
-      h += '<span class="adv-tri-opt' + (sand === false ? ' active-no' : '') + '">No</span>';
-      h += '</div></div>';
-    }
+  // Sand save — always rendered, hidden when bunker !== true
+  h += '<div id="pn-row-sand-' + hole + '" data-row="sand-save" class="adv-row' + (bunker !== true ? ' hidden' : '') + '">';
+  h += '<span class="adv-label">Sand save?</span>';
+  h += '<div id="pn-tri-sand-' + hole + '" class="adv-tri" onclick="toggleSand(' + hole + ')">';
+  h += '<span class="adv-tri-opt' + (sand === null ? ' active-neutral' : '') + '">\u2014</span>';
+  h += '<span class="adv-tri-opt' + (sand === true ? ' active-yes' : '') + '">Yes</span>';
+  h += '<span class="adv-tri-opt' + (sand === false ? ' active-no' : '') + '">No</span>';
+  h += '</div></div>';
 
-    // Up-and-down — only when GIR missed
-    if (gir === false) {
-      h += '<div class="adv-row">';
-      h += '<span class="adv-label">Up and down?</span>';
-      h += '<div class="adv-tri" onclick="toggleUpDown(' + hole + ')">';
-      h += '<span class="adv-tri-opt' + (upDown === null ? ' active-neutral' : '') + '">—</span>';
-      h += '<span class="adv-tri-opt' + (upDown === true ? ' active-yes' : '') + '">Yes</span>';
-      h += '<span class="adv-tri-opt' + (upDown === false ? ' active-no' : '') + '">No</span>';
-      h += '</div></div>';
+  // Up-and-down — always rendered, hidden unless GIR missed (gir === false)
+  h += '<div id="pn-row-updown-' + hole + '" data-row="up-down" class="adv-row' + (gir !== false ? ' hidden' : '') + '">';
+  h += '<span class="adv-label">Up and down?</span>';
+  h += '<div id="pn-tri-updown-' + hole + '" class="adv-tri" onclick="toggleUpDown(' + hole + ')">';
+  h += '<span class="adv-tri-opt' + (upDown === null ? ' active-neutral' : '') + '">\u2014</span>';
+  h += '<span class="adv-tri-opt' + (upDown === true ? ' active-yes' : '') + '">Yes</span>';
+  h += '<span class="adv-tri-opt' + (upDown === false ? ' active-no' : '') + '">No</span>';
+  h += '</div></div>';
 
-      // Miss direction — only when GIR missed
-      h += '<div class="adv-col">';
-      h += '<span class="adv-label">Miss direction</span>';
-      h += '<div class="miss-chips">';
-      ['left','right','long','short'].forEach(function(dir) {
-        var isActive = miss === dir;
-        h += '<button class="miss-chip' + (isActive ? ' active' : '') + '" onclick="setMiss(' + hole + ',\'' + dir + '\')">' + dir.charAt(0).toUpperCase() + dir.slice(1) + '</button>';
-      });
-      h += '</div></div>';
-    }
+  // Miss direction — always rendered, hidden unless GIR missed
+  h += '<div id="pn-row-missdir-' + hole + '" data-row="miss-dir" class="adv-col' + (gir !== false ? ' hidden' : '') + '">';
+  h += '<span class="adv-label">Miss direction</span>';
+  h += '<div class="miss-chips">';
+  ['left','right','long','short'].forEach(function(dir) {
+    var isActive = miss === dir;
+    h += '<button id="pn-miss-' + hole + '-' + dir + '" class="miss-chip' + (isActive ? ' active' : '') + '" onclick="setMiss(' + hole + ',\'' + dir + '\')">' + dir.charAt(0).toUpperCase() + dir.slice(1) + '</button>';
+  });
+  h += '</div></div>';
 
-    // Penalty strokes stepper
-    h += '<div class="adv-row">';
-    h += '<span class="adv-label">Penalty strokes</span>';
-    h += '<div class="adv-stepper">';
-    h += '<button class="adv-step-btn" onclick="adjustPenalty(' + hole + ',-1)"' + (penalty <= 0 ? ' disabled' : '') + '>−</button>';
-    h += '<span class="adv-step-val">' + penalty + '</span>';
-    h += '<button class="adv-step-btn" onclick="adjustPenalty(' + hole + ',1)"' + (penalty >= 5 ? ' disabled' : '') + '>+</button>';
-    h += '</div></div>';
+  // Penalty strokes stepper
+  h += '<div class="adv-row">';
+  h += '<span class="adv-label">Penalty strokes</span>';
+  h += '<div class="adv-stepper">';
+  h += '<button id="pn-pen-minus-' + hole + '" class="adv-step-btn" onclick="adjustPenalty(' + hole + ',-1)"' + (penalty <= 0 ? ' disabled' : '') + '>\u2212</button>';
+  h += '<span id="pn-pen-val-' + hole + '" class="adv-step-val">' + penalty + '</span>';
+  h += '<button id="pn-pen-plus-' + hole + '" class="adv-step-btn" onclick="adjustPenalty(' + hole + ',1)"' + (penalty >= 5 ? ' disabled' : '') + '>+</button>';
+  h += '</div></div>';
 
-    h += '</div>'; // end advanced-stats-body
-  }
+  h += '</div>'; // end advanced-stats-body
 
   // Turn summary (show at hole 9)
   if (hole === 9 || hole === 17) {
@@ -812,21 +798,42 @@ function adjustLiveScore(delta) {
   try {
   var hole = liveState.currentHole;
   var current = liveState.scores[hole];
+  var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+  var par = (liveState.holes && liveState.holes[hole] && liveState.holes[hole].par) || defaultPar[hole] || 4;
   if (current === "") {
-    var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
-    liveState.scores[hole] = (liveState.holes && liveState.holes[hole] && liveState.holes[hole].par) || defaultPar[hole] || 4;
+    liveState.scores[hole] = par;
   } else {
     var newVal = parseInt(current) + delta;
     if (newVal >= 1 && newVal <= 15) liveState.scores[hole] = newVal;
   }
   updatePresence(); // broadcast to watchers
-  saveLiveState();  // no-op — live state is in Firestore syncrounds
-  Router.go("playnow");
-  setTimeout(function() {
-    var el = document.getElementById("liveScoreNum");
-    if (el) { el.classList.remove("score-pop"); void el.offsetWidth; el.classList.add("score-pop"); }
-  }, 20);
+  saveLiveState();  // persist for crash recovery / cross-device
+  // Direct-DOM update — primary score display, diff label, and running total.
+  // Turn-summary and hole-selector-dot update on next hole navigation.
+  _redrawScoreCard(hole, par);
   } catch(e) { pbWarn("[PlayNow] adjustLiveScore error:", e.message); }
+}
+
+// Update only the parts of the scorecard that the score number touches.
+// Called from adjustLiveScore on every tap. Full re-render still fires on hole nav.
+function _redrawScoreCard(hole, par) {
+  var scoreVal = liveState.scores[hole];
+  var scoreNumEl = document.getElementById("liveScoreNum");
+  if (scoreNumEl) {
+    // scoreNum wraps two children: the big number and the diff label. Rebuild both.
+    var inner = '<div style="font-family:var(--font-display);font-size:46px;font-weight:700;color:var(--gold);line-height:1">' + (scoreVal || '\u2014') + '</div>';
+    if (scoreVal !== "") {
+      var scoreDiff = parseInt(scoreVal) - par;
+      var labels = {"-3":"Albatross","-2":"Eagle","-1":"Birdie","0":"Par","1":"Bogey","2":"Double","3":"Triple"};
+      var label = labels[scoreDiff.toString()] || (scoreDiff > 0 ? '+' + scoreDiff : scoreDiff);
+      var labelColor = scoreDiff < 0 ? 'var(--birdie)' : scoreDiff === 0 ? 'var(--muted)' : 'var(--red)';
+      inner += '<div style="font-size:10px;color:' + labelColor + ';font-weight:600;margin-top:2px;letter-spacing:.3px">' + label + '</div>';
+    }
+    scoreNumEl.innerHTML = inner;
+    scoreNumEl.classList.remove("score-pop");
+    void scoreNumEl.offsetWidth;
+    scoreNumEl.classList.add("score-pop");
+  }
 }
 
 function liveNavNext(hole) {
@@ -848,31 +855,127 @@ function liveNavJump(hole) {
   Router.go("playnow");
 }
 
+// ── Scoring toggle helpers (v8.2.2 direct-DOM refactor) ───────────────────
+// All helpers update liveState, call saveLiveState for persistence, then
+// mutate only the affected DOM nodes. Router.go is NOT called — the page
+// is never re-rendered during in-hole interaction. Hole navigation is the
+// only thing that triggers a full Router.go("playnow") re-render.
+
+// Shared: apply active class to the correct tri-toggle option for a tri-state value.
+function _applyTriToggle(triEl, value) {
+  if (!triEl) return;
+  var opts = triEl.querySelectorAll(".adv-tri-opt");
+  if (opts.length < 3) return;
+  opts[0].className = "adv-tri-opt" + (value === null ? " active-neutral" : "");
+  opts[1].className = "adv-tri-opt" + (value === true ? " active-yes" : "");
+  opts[2].className = "adv-tri-opt" + (value === false ? " active-no" : "");
+}
+
+// Shared: recompute advFilled count and write to the toggle-button badge.
+function _refreshAdvCount(hole) {
+  var n = 0;
+  if (liveState.bunker[hole] !== null) n++;
+  if (liveState.sand[hole] !== null) n++;
+  if (liveState.upDown[hole] !== null) n++;
+  if (liveState.miss[hole]) n++;
+  if (liveState.penalty[hole] > 0) n++;
+  var countEl = document.getElementById("pn-advcount-" + hole);
+  if (countEl) countEl.textContent = n > 0 ? ("Advanced stats \u00b7 " + n) : "Advanced stats";
+}
+
+function toggleFir(hole) {
+  liveState.fir[hole] = !liveState.fir[hole];
+  var el = document.getElementById("pn-fir-" + hole);
+  if (el) {
+    var active = !!liveState.fir[hole];
+    el.classList.toggle("active", active);
+    var state = el.querySelector(".pn-fg-state");
+    if (state) state.textContent = active ? "\u2713 Hit" : "Miss";
+  }
+  saveLiveState();
+}
+
+function toggleGir(hole) {
+  var newVal = !liveState.gir[hole];
+  liveState.gir[hole] = newVal;
+  // If GIR flipped to hit, the up-and-down and miss-direction rows no longer
+  // apply — clear any values that were captured while GIR was missed.
+  if (newVal === true) {
+    if (liveState.upDown[hole] !== null) {
+      liveState.upDown[hole] = null;
+      var triUpDown = document.getElementById("pn-tri-updown-" + hole);
+      _applyTriToggle(triUpDown, null);
+    }
+    if (liveState.miss[hole]) {
+      liveState.miss[hole] = null;
+      ["left","right","long","short"].forEach(function(dir) {
+        var chip = document.getElementById("pn-miss-" + hole + "-" + dir);
+        if (chip) chip.classList.remove("active");
+      });
+    }
+  }
+  var el = document.getElementById("pn-gir-" + hole);
+  if (el) {
+    el.classList.toggle("active", newVal);
+    var state = el.querySelector(".pn-fg-state");
+    if (state) state.textContent = newVal ? "\u2713 Hit" : "Miss";
+  }
+  // Conditional rows: visible only when GIR missed.
+  var showUd = newVal === false;
+  var udRow = document.getElementById("pn-row-updown-" + hole);
+  if (udRow) udRow.classList.toggle("hidden", !showUd);
+  var missRow = document.getElementById("pn-row-missdir-" + hole);
+  if (missRow) missRow.classList.toggle("hidden", !showUd);
+  _refreshAdvCount(hole);
+  saveLiveState();
+}
+
 function cyclePutts(hole) {
   var current = liveState.putts[hole];
   if (!current) liveState.putts[hole] = 1;
   else if (current >= 4) liveState.putts[hole] = "";
   else liveState.putts[hole] = current + 1;
-  saveLiveState(); // persist putt count for crash recovery
-  Router.go("playnow");
+  var newVal = liveState.putts[hole];
+  var el = document.getElementById("pn-putts-" + hole);
+  if (el) {
+    el.classList.toggle("active", !!newVal);
+    var valEl = el.querySelector(".pn-putts-val");
+    if (valEl) valEl.textContent = newVal || "\u2014";
+  }
+  saveLiveState();
 }
 
 // ── Advanced stats helpers (v8.2.0) ────────────────────────────────────
 function toggleAdvancedStats(hole) {
   advancedOpen[hole] = !advancedOpen[hole];
-  Router.go("playnow");
+  var open = !!advancedOpen[hole];
+  var body = document.getElementById("pn-advbody-" + hole);
+  if (body) body.classList.toggle("hidden", !open);
+  var toggle = document.getElementById("pn-advtoggle-" + hole);
+  if (toggle) toggle.classList.toggle("open", open);
+  var icon = document.getElementById("pn-advicon-" + hole);
+  if (icon) icon.textContent = open ? "\u2212" : "+";
+  // Ephemeral UI state — not persisted, matches prior behavior.
 }
 
 function toggleBunker(hole) {
   var cur = liveState.bunker[hole];
-  // Tri-state cycle: null → true → false → null
+  // Tri-state cycle: null -> true -> false -> null
   if (cur === null) liveState.bunker[hole] = true;
   else if (cur === true) liveState.bunker[hole] = false;
-  else { liveState.bunker[hole] = null; liveState.sand[hole] = null; }
-  // If bunker is no longer true, clear sand save
-  if (liveState.bunker[hole] !== true) liveState.sand[hole] = null;
+  else liveState.bunker[hole] = null;
+  var newBunker = liveState.bunker[hole];
+  // If bunker is no longer true, clear sand save.
+  if (newBunker !== true && liveState.sand[hole] !== null) {
+    liveState.sand[hole] = null;
+    _applyTriToggle(document.getElementById("pn-tri-sand-" + hole), null);
+  }
+  _applyTriToggle(document.getElementById("pn-tri-bunker-" + hole), newBunker);
+  // Sand save row visible only when bunker === true.
+  var sandRow = document.getElementById("pn-row-sand-" + hole);
+  if (sandRow) sandRow.classList.toggle("hidden", newBunker !== true);
+  _refreshAdvCount(hole);
   saveLiveState();
-  Router.go("playnow");
 }
 
 function toggleSand(hole) {
@@ -880,8 +983,9 @@ function toggleSand(hole) {
   if (cur === null) liveState.sand[hole] = true;
   else if (cur === true) liveState.sand[hole] = false;
   else liveState.sand[hole] = null;
+  _applyTriToggle(document.getElementById("pn-tri-sand-" + hole), liveState.sand[hole]);
+  _refreshAdvCount(hole);
   saveLiveState();
-  Router.go("playnow");
 }
 
 function toggleUpDown(hole) {
@@ -889,16 +993,21 @@ function toggleUpDown(hole) {
   if (cur === null) liveState.upDown[hole] = true;
   else if (cur === true) liveState.upDown[hole] = false;
   else liveState.upDown[hole] = null;
+  _applyTriToggle(document.getElementById("pn-tri-updown-" + hole), liveState.upDown[hole]);
+  _refreshAdvCount(hole);
   saveLiveState();
-  Router.go("playnow");
 }
 
 function setMiss(hole, direction) {
-  // Toggle off if same direction tapped again
-  if (liveState.miss[hole] === direction) liveState.miss[hole] = null;
-  else liveState.miss[hole] = direction;
+  // Toggle off if same direction tapped again.
+  var newVal = liveState.miss[hole] === direction ? null : direction;
+  liveState.miss[hole] = newVal;
+  ["left","right","long","short"].forEach(function(dir) {
+    var chip = document.getElementById("pn-miss-" + hole + "-" + dir);
+    if (chip) chip.classList.toggle("active", newVal === dir);
+  });
+  _refreshAdvCount(hole);
   saveLiveState();
-  Router.go("playnow");
 }
 
 function adjustPenalty(hole, delta) {
@@ -907,8 +1016,14 @@ function adjustPenalty(hole, delta) {
   if (next < 0) next = 0;
   if (next > 5) next = 5;
   liveState.penalty[hole] = next;
+  var valEl = document.getElementById("pn-pen-val-" + hole);
+  if (valEl) valEl.textContent = next;
+  var minusBtn = document.getElementById("pn-pen-minus-" + hole);
+  if (minusBtn) minusBtn.disabled = next <= 0;
+  var plusBtn = document.getElementById("pn-pen-plus-" + hole);
+  if (plusBtn) plusBtn.disabled = next >= 5;
+  _refreshAdvCount(hole);
   saveLiveState();
-  Router.go("playnow");
 }
 
 function finishLiveRound() {

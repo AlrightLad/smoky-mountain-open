@@ -767,6 +767,21 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .adv-step-btn:disabled{opacity:.3;cursor:not-allowed}
 .adv-step-val{min-width:24px;text-align:center;font-family:var(--font-display);font-size:var(--text-lg);font-weight:700;color:var(--gold)}
 
+/* FIR / GIR / Putts buttons — binary toggles that match the tri-toggle visual language (v8.2.2) */
+.pn-fg-btn{flex:1;height:60px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background var(--duration-fast) var(--ease-default),border-color var(--duration-fast) var(--ease-default),color var(--duration-fast) var(--ease-default)}
+.pn-fg-btn:active{transform:scale(.97)}
+.pn-fg-btn .pn-fg-title{font-size:14px;font-weight:700;color:var(--muted);letter-spacing:.3px}
+.pn-fg-btn .pn-fg-state{font-size:10px;font-weight:600;color:var(--muted2);letter-spacing:.3px}
+.pn-fg-btn.active{background:rgba(var(--birdie-rgb),.15);border-color:var(--birdie)}
+.pn-fg-btn.active .pn-fg-title,.pn-fg-btn.active .pn-fg-state{color:var(--birdie)}
+.pn-fg-btn.disabled{opacity:.4;cursor:default;pointer-events:none}
+.pn-putts-btn{flex:1;height:60px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background var(--duration-fast) var(--ease-default),border-color var(--duration-fast) var(--ease-default),color var(--duration-fast) var(--ease-default)}
+.pn-putts-btn:active{transform:scale(.97)}
+.pn-putts-btn .pn-putts-val{font-size:20px;font-weight:700;color:var(--muted)}
+.pn-putts-btn .pn-putts-lbl{font-size:9px;color:var(--muted2);letter-spacing:.3px}
+.pn-putts-btn.active{background:rgba(var(--cream-rgb),.06);border-color:var(--cream)}
+.pn-putts-btn.active .pn-putts-val{color:var(--cream)}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    ANIMATED RINGS — Premium cosmetic avatar borders
    ═══════════════════════════════════════════════════════════════════════════ */
