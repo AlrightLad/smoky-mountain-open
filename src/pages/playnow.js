@@ -682,7 +682,7 @@ function _renderLiveScoringInner() {
       h += '<div style="display:flex;gap:8px">';
       if (hole > 0) h += '<button class="btn outline" style="flex:0 0 70px;padding:14px 0;font-size:11px" onclick="liveNavPrev()">← Prev</button>';
       var _finishPulse = allScored ? 'animation:ringPulse 1.5s ease-in-out infinite;' : '';
-      h += '<button class="btn" style="flex:1;padding:16px 0;font-size:16px;font-weight:800;background:linear-gradient(135deg,var(--birdie),#2a7a3e);color:#fff;border:none;border-radius:var(--radius);' + _finishPulse + '" onclick="showFinishOptions()">\u2714 Finish Round (' + scoredCount + '/' + totalHoles + ')</button>';
+      h += '<button class="btn" style="flex:1;padding:16px 0;font-size:16px;font-weight:800;background:linear-gradient(135deg,var(--birdie),var(--cb-green-3));color:#fff;border:none;border-radius:var(--radius);' + _finishPulse + '" onclick="showFinishOptions()">\u2714 Finish Round (' + scoredCount + '/' + totalHoles + ')</button>';
       h += '</div>';
     } else {
       // Not on last hole: Next + small Finish option

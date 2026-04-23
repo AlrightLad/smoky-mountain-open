@@ -69,7 +69,11 @@ Router.register("home", function() {
   h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'trophyroom\')"><div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--gold)" data-count="' + myLevel.level + '">' + myLevel.level + '</div><div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Level</div>';
   h += '<div style="height:3px;background:var(--bg3);border-radius:2px;margin-top:4px;overflow:hidden"><div style="height:100%;width:' + xpPct + '%;background:linear-gradient(90deg,var(--gold2),var(--gold3));border-radius:2px"></div></div></div>';
   h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'members\',{id:\'' + (currentUser?currentUser.uid:"") + '\'})">';
-  h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--cream)">' + (myHcap !== null ? myHcap : "—") + '</div>';
+  if (myHcap !== null) {
+    h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--cream)" data-count="' + (+myHcap).toFixed(1) + '" data-count-decimals="1">0.0</div>';
+  } else {
+    h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--cream)">—</div>';
+  }
   h += '<div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Handicap</div></div>';
   var myTotalRounds = currentProfile && currentProfile.totalRounds ? currentProfile.totalRounds : myRounds.length;
   h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'roundhistory\')"><div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--cream)" data-stat="round-count" data-count="' + myTotalRounds + '">' + myTotalRounds + '</div>';

@@ -376,6 +376,19 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
     transition-duration: 150ms !important;
   }
 
+  /* Loading spinner: keep rotating (slower) so users know something's happening */
+  .spinner {
+    animation-duration: 1.2s !important;
+  }
+
+  /* Achievement celebration: preserve visibility under reduced motion
+     Snap to visible state, rely on JS timeout for removal */
+  .ach-celebrate {
+    animation: none !important;
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+  }
+
   /* Suppress decorative loops entirely */
   .rip-dot,
   .pill-live::before,

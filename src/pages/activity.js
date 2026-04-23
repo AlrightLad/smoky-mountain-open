@@ -35,7 +35,11 @@ function renderActivityRounds() {
   var h = '';
 
   // Handicap
-  h += '<div class="hcap-box"><div class="hcap-val">' + (hcap !== null ? hcap : "—") + '</div><div class="hcap-label">Your handicap index</div></div>';
+  if (hcap !== null) {
+    h += '<div class="hcap-box"><div class="hcap-val" data-count="' + (+hcap).toFixed(1) + '" data-count-decimals="1">0.0</div><div class="hcap-label">Your handicap index</div></div>';
+  } else {
+    h += '<div class="hcap-box"><div class="hcap-val">—</div><div class="hcap-label">Your handicap index</div></div>';
+  }
 
   // Form
   h += '<div class="form-section"><div class="form-title">Log a round</div>';
