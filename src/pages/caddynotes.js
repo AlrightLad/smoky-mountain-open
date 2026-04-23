@@ -19,16 +19,23 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · closing Part A</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · advanced stat tracking</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Handicap number now animates with decimals on load. Fixed a bug where achievement notifications wouldn't appear for users with Reduce Motion enabled. Small accessibility polish across header buttons. Code cleanup under the hood.", tag: "IMPROVED" }
+    { item: "Added advanced stat tracking on Play Now and Log a Round — bunker visits, sand saves, scrambling, miss direction, and penalty strokes. All optional per hole.", tag: "NEW" },
+    { item: "Advanced stats start feeding the app's analytics engine. Track a few rounds and new insights will surface in future updates.", tag: "NEW" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.1.3", date: "April 2026", headline: "Final Part A polish",
+      items: [
+        { item: "Handicap number now animates with decimals on load. Fixed a bug where achievement notifications wouldn't appear for users with Reduce Motion enabled. Small accessibility polish across header buttons. Code cleanup under the hood.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.1.2", date: "April 2026", headline: "Motion and accessibility",
       items: [

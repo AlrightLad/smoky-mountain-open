@@ -352,6 +352,11 @@ var PB = (function() {
     if (data.firData) r.firData = data.firData;
     if (data.girData) r.girData = data.girData;
     if (data.puttsData) r.puttsData = data.puttsData;
+    if (data.bunkerData) r.bunkerData = data.bunkerData;
+    if (data.sandData) r.sandData = data.sandData;
+    if (data.upDownData) r.upDownData = data.upDownData;
+    if (data.missData) r.missData = data.missData;
+    if (data.penaltyData) r.penaltyData = data.penaltyData;
     if (data.tee) r.tee = data.tee;
     if (data.yards) r.yards = data.yards;
     state.rounds.push(r);

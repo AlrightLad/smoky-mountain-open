@@ -742,6 +742,32 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .pbs-tot-even{color:#fff}
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   ADVANCED STATS EXPANDER (Play Now — v8.2.0)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.advanced-stats-toggle{width:100%;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);color:var(--muted);font:600 11px/1 'Inter',sans-serif;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;min-height:44px;transition:background var(--duration-fast) var(--ease-default)}
+.advanced-stats-toggle:hover{background:var(--bg3)}
+.advanced-stats-toggle:active{transform:scale(.985)}
+.advanced-stats-body{margin-bottom:16px;padding:14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column;gap:14px}
+.adv-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.adv-col{display:flex;flex-direction:column;gap:6px}
+.adv-label{font-size:var(--text-sm);color:var(--muted);font-weight:600}
+.adv-tri{display:flex;gap:0;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;min-height:36px}
+.adv-tri-opt{flex:1;padding:8px 12px;font-size:var(--text-sm);font-weight:600;color:var(--muted);text-align:center;min-width:40px;display:flex;align-items:center;justify-content:center;transition:background var(--duration-fast) var(--ease-default)}
+.adv-tri-opt.active-neutral{background:var(--bg2);color:var(--cream)}
+.adv-tri-opt.active-yes{background:rgba(var(--birdie-rgb),.15);color:var(--birdie)}
+.adv-tri-opt.active-no{background:rgba(var(--red-rgb),.12);color:var(--red)}
+.miss-chips{display:flex;gap:6px;flex-wrap:wrap}
+.miss-chip{flex:1;min-width:60px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--muted);font:600 var(--text-sm)/1 'Inter',sans-serif;cursor:pointer;min-height:44px;transition:background var(--duration-fast) var(--ease-default),color var(--duration-fast) var(--ease-default),border-color var(--duration-fast) var(--ease-default)}
+.miss-chip:hover{background:var(--bg4);color:var(--cream)}
+.miss-chip:active{transform:scale(.95)}
+.miss-chip.active{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+.adv-stepper{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:2px}
+.adv-step-btn{width:36px;height:36px;border-radius:var(--radius-sm);background:transparent;border:none;color:var(--cream);font-size:18px;font-weight:700;cursor:pointer;transition:background var(--duration-fast) var(--ease-default)}
+.adv-step-btn:hover:not(:disabled){background:var(--bg2)}
+.adv-step-btn:disabled{opacity:.3;cursor:not-allowed}
+.adv-step-val{min-width:24px;text-align:center;font-family:var(--font-display);font-size:var(--text-lg);font-weight:700;color:var(--gold)}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    ANIMATED RINGS — Premium cosmetic avatar borders
    ═══════════════════════════════════════════════════════════════════════════ */
 /* ── RING ANIMATIONS — Premium cosmetics must be UNMISTAKABLE ── */

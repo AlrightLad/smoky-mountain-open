@@ -166,6 +166,23 @@ function renderLogHoleGrid() {
 
   var h = '<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Enter your score for each hole</div>';
 
+  function _advRowsHtml(startIdx, endIdx) {
+    // Produces 5 rows of advanced-stat inputs for holes [startIdx, endIdx)
+    var out = '';
+    out += '<tr><td class="sc-lbl">Bunker</td>';
+    for (var i = startIdx; i < endIdx; i++) out += '<td><select class="rf-hole-bunker" data-hole="' + i + '" style="width:36px;padding:2px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--cream);font-size:10px"><option value="">—</option><option value="Yes">Y</option><option value="No">N</option></select></td>';
+    out += '</tr><tr><td class="sc-lbl">Sand</td>';
+    for (var i = startIdx; i < endIdx; i++) out += '<td><select class="rf-hole-sand" data-hole="' + i + '" style="width:36px;padding:2px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--cream);font-size:10px"><option value="">—</option><option value="Yes">Y</option><option value="No">N</option></select></td>';
+    out += '</tr><tr><td class="sc-lbl">Up/Dn</td>';
+    for (var i = startIdx; i < endIdx; i++) out += '<td><select class="rf-hole-updown" data-hole="' + i + '" style="width:36px;padding:2px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--cream);font-size:10px"><option value="">—</option><option value="Yes">Y</option><option value="No">N</option></select></td>';
+    out += '</tr><tr><td class="sc-lbl">Miss</td>';
+    for (var i = startIdx; i < endIdx; i++) out += '<td><select class="rf-hole-miss" data-hole="' + i + '" style="width:40px;padding:2px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--cream);font-size:10px"><option value="">—</option><option value="left">L</option><option value="right">R</option><option value="long">Lo</option><option value="short">Sh</option></select></td>';
+    out += '</tr><tr><td class="sc-lbl">Pen</td>';
+    for (var i = startIdx; i < endIdx; i++) out += '<td><input type="number" inputmode="numeric" class="rf-hole-penalty" data-hole="' + i + '" min="0" max="5" value="0" style="width:28px;padding:4px 2px;text-align:center;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--cream);font-size:11px"></td>';
+    out += '</tr>';
+    return out;
+  }
+
   if (showFront) {
     h += '<div style="overflow-x:auto;margin-bottom:8px"><table class="sc-table" style="font-size:10px;width:100%"><tr><td class="sc-lbl">Hole</td>';
     for (var i = 1; i <= 9; i++) h += '<td class="sc-hdr">' + i + '</td>';
@@ -179,7 +196,12 @@ function renderLogHoleGrid() {
     for (var i = 0; i < 9; i++) h += '<td><input type="checkbox" class="rf-hole-gir" data-hole="' + i + '" style="width:14px;height:14px"></td>';
     h += '</tr><tr><td class="sc-lbl">Putts</td>';
     for (var i = 0; i < 9; i++) h += '<td><input type="number" inputmode="numeric" class="rf-hole-putts" data-hole="' + i + '" style="width:28px;padding:4px 2px;text-align:center;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--cream);font-size:11px"></td>';
-    h += '</tr></table></div>';
+    h += '</tr></table>';
+    h += '<details style="margin-top:6px"><summary style="font-size:10px;color:var(--muted);cursor:pointer;padding:6px 0">+ Advanced stats (front 9)</summary>';
+    h += '<table class="sc-table" style="font-size:10px;width:100%;margin-top:4px"><tr><td class="sc-lbl">Hole</td>';
+    for (var i = 1; i <= 9; i++) h += '<td class="sc-hdr">' + i + '</td>';
+    h += '</tr>' + _advRowsHtml(0, 9) + '</table>';
+    h += '</details></div>';
   }
 
   if (showBack) {
@@ -195,7 +217,12 @@ function renderLogHoleGrid() {
     for (var i = 9; i < 18; i++) h += '<td><input type="checkbox" class="rf-hole-gir" data-hole="' + i + '" style="width:14px;height:14px"></td>';
     h += '</tr><tr><td class="sc-lbl">Putts</td>';
     for (var i = 9; i < 18; i++) h += '<td><input type="number" inputmode="numeric" class="rf-hole-putts" data-hole="' + i + '" style="width:28px;padding:4px 2px;text-align:center;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--cream);font-size:11px"></td>';
-    h += '</tr></table></div>';
+    h += '</tr></table>';
+    h += '<details style="margin-top:6px"><summary style="font-size:10px;color:var(--muted);cursor:pointer;padding:6px 0">+ Advanced stats (back 9)</summary>';
+    h += '<table class="sc-table" style="font-size:10px;width:100%;margin-top:4px"><tr><td class="sc-lbl">Hole</td>';
+    for (var i = 10; i <= 18; i++) h += '<td class="sc-hdr">' + i + '</td>';
+    h += '</tr>' + _advRowsHtml(9, 18) + '</table>';
+    h += '</details></div>';
   }
   h += '<div id="rf-hbh-total" style="font-size:12px;color:var(--gold);text-align:center;margin-bottom:8px"></div>';
 
@@ -220,6 +247,11 @@ function getLogHoleData() {
   var fir = Array(18).fill(false);
   var gir = Array(18).fill(false);
   var putts = Array(18).fill("");
+  var bunker = Array(18).fill(null);
+  var sand = Array(18).fill(null);
+  var upDown = Array(18).fill(null);
+  var miss = Array(18).fill(null);
+  var penalty = Array(18).fill(0);
   document.querySelectorAll(".rf-hole-score").forEach(function(inp) {
     var idx = parseInt(inp.dataset.hole);
     if (inp.value) scores[idx] = inp.value;
@@ -236,8 +268,44 @@ function getLogHoleData() {
     var idx = parseInt(inp.dataset.hole);
     if (inp.value) putts[idx] = parseInt(inp.value);
   });
+  document.querySelectorAll(".rf-hole-bunker").forEach(function(sel) {
+    var idx = parseInt(sel.dataset.hole);
+    if (sel.value === "Yes") bunker[idx] = true;
+    else if (sel.value === "No") bunker[idx] = false;
+  });
+  document.querySelectorAll(".rf-hole-sand").forEach(function(sel) {
+    var idx = parseInt(sel.dataset.hole);
+    if (sel.value === "Yes") sand[idx] = true;
+    else if (sel.value === "No") sand[idx] = false;
+  });
+  document.querySelectorAll(".rf-hole-updown").forEach(function(sel) {
+    var idx = parseInt(sel.dataset.hole);
+    if (sel.value === "Yes") upDown[idx] = true;
+    else if (sel.value === "No") upDown[idx] = false;
+  });
+  document.querySelectorAll(".rf-hole-miss").forEach(function(sel) {
+    var idx = parseInt(sel.dataset.hole);
+    if (sel.value) miss[idx] = sel.value;
+  });
+  document.querySelectorAll(".rf-hole-penalty").forEach(function(inp) {
+    var idx = parseInt(inp.dataset.hole);
+    var v = parseInt(inp.value) || 0;
+    if (v < 0) v = 0;
+    if (v > 5) v = 5;
+    penalty[idx] = v;
+  });
   var hasData = scores.some(function(s) { return s !== ""; });
-  return hasData ? { holeScores: scores, firData: fir, girData: gir, puttsData: putts } : null;
+  return hasData ? {
+    holeScores: scores,
+    firData: fir,
+    girData: gir,
+    puttsData: putts,
+    bunkerData: bunker,
+    sandData: sand,
+    upDownData: upDown,
+    missData: miss,
+    penaltyData: penalty
+  } : null;
 }
 
 function submitRound() {
@@ -281,6 +349,11 @@ function submitRound() {
     firData: hbhData.firData,
     girData: hbhData.girData,
     puttsData: hbhData.puttsData,
+    bunkerData: hbhData.bunkerData,
+    sandData: hbhData.sandData,
+    upDownData: hbhData.upDownData,
+    missData: hbhData.missData,
+    penaltyData: hbhData.penaltyData,
     visibility: "public"
   };
 

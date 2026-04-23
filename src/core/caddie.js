@@ -303,6 +303,62 @@ function caddieH2HInsights(p1Id, p2Id, allRounds) {
   return insights;
 }
 
+// ── 7. ADVANCED-STAT INSIGHTS ──
+// Narrative insights built from bunker / scrambling / miss-direction / penalty
+// data. Gated at 3 rounds minimum. Fields may be absent on older rounds —
+// every loop uses the top-of-body guard so missing fields skip the round
+// entirely instead of throwing on undefined access.
+function caddieAdvancedStatInsights(playerRounds) {
+  if (!playerRounds || playerRounds.length < 3) return [];
+  var insights = [];
+
+  var ss = typeof calcSandSavePct === "function" ? calcSandSavePct(playerRounds) : null;
+  if (ss) {
+    if (ss.pct < 30 && ss.bunker >= 5) {
+      insights.push({text:"Sand saves at " + ss.pct + "% (" + ss.saves + "/" + ss.bunker + " bunker escapes). The beach is costing strokes — 15 min of bunker practice twice a week and this number climbs fast.", type:"negative"});
+    } else if (ss.pct > 60) {
+      insights.push({text:"Sand saves at " + ss.pct + "% — tour-caliber work from the bunker. Keep doing whatever you’re doing.", type:"positive"});
+    }
+  }
+
+  var ud = typeof calcUpDownPct === "function" ? calcUpDownPct(playerRounds) : null;
+  if (ud) {
+    if (ud.pct < 20) {
+      insights.push({text:"Scrambling at " + ud.pct + "% — when you miss the green, the damage is sticking. Short game reps this week would save 2-3 strokes a round.", type:"negative"});
+    } else if (ud.pct > 50) {
+      insights.push({text:"Scrambling at " + ud.pct + "% — excellent recovery play. The short game is carrying your scoring.", type:"positive"});
+    }
+  }
+
+  var mt = typeof calcMissTendency === "function" ? calcMissTendency(playerRounds) : null;
+  if (mt && mt.dominant) {
+    var pct = Math.round(mt.counts[mt.dominant] / mt.total * 100);
+    insights.push({text:pct + "% of approach misses go " + mt.dominant + " — that’s a swing pattern, not bad luck. One lesson on alignment and contact could tighten this up fast.", type:"neutral"});
+  }
+
+  var penTotal = 0, penRounds = 0;
+  playerRounds.forEach(function(r) {
+    if (r.format === "scramble") return;
+    if (!r.penaltyData) return;
+    var rt = 0;
+    for (var i = 0; i < r.penaltyData.length; i++) {
+      var p = parseInt(r.penaltyData[i]) || 0;
+      if (p > 0) rt += p;
+    }
+    penTotal += rt;
+    penRounds++;
+  });
+  if (penRounds >= 3) {
+    var avgPen = penTotal / penRounds;
+    if (avgPen > 2) {
+      var avgStr = Math.round(avgPen * 10) / 10;
+      insights.push({text:"Averaging " + avgStr + " penalty strokes per round. Course management is the easy fix — club down from trouble, play to the fat side of greens, and this disappears.", type:"negative"});
+    }
+  }
+
+  return insights;
+}
+
 // ── Render helper: format insights as Caddy messages ──
 function renderCaddieInsights(insights, maxShow) {
   if (!insights || !insights.length) return '';

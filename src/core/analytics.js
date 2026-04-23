@@ -133,13 +133,13 @@ function calcCourseBreakdown(courseName, playerRounds) {
   return holes.length >= 9 ? {holes:holes, rounds:courseRounds.length, course:courseName} : null;
 }
 
-// ── Stat Trends (FIR%, GIR%, putts over time) ──
+// ── Stat Trends (FIR%, GIR%, putts, penalty over time) ──
 function calcStatTrends(rounds) {
   var indiv = (rounds || []).filter(function(r){return r.format!=="scramble"&&r.holeScores&&r.holeScores.length>=9});
   indiv.sort(function(a,b){return a.date>b.date?1:-1});
   if (indiv.length < 3) return null;
 
-  var firTrend = [], girTrend = [], puttsTrend = [];
+  var firTrend = [], girTrend = [], puttsTrend = [], penaltyTrend = [];
   indiv.forEach(function(r) {
     var label = r.date ? r.date.substring(5) : "";
     if (r.firData) {
@@ -157,9 +157,85 @@ function calcStatTrends(rounds) {
       r.puttsData.forEach(function(v){if(v){pTotal+=v;pHoles++;}});
       if (pHoles > 0) puttsTrend.push({value:Math.round(pTotal/pHoles*10)/10, label:label});
     }
+    if (!r.penaltyData) return;
+    var penTotal = 0;
+    for (var i = 0; i < r.penaltyData.length; i++) {
+      var pen = parseInt(r.penaltyData[i]) || 0;
+      if (pen > 0) penTotal += pen;
+    }
+    penaltyTrend.push({value:penTotal, label:label});
   });
 
-  return {fir:firTrend, gir:girTrend, putts:puttsTrend};
+  return {fir:firTrend, gir:girTrend, putts:puttsTrend, penalty:penaltyTrend};
+}
+
+// ── Sand Save % ── Of holes in a bunker, how often did you get up-and-down?
+// Guard pattern: skip round entirely at top of loop if either field missing.
+function calcSandSavePct(rounds) {
+  if (!rounds || !rounds.length) return null;
+  var indiv = rounds.filter(function(r){return r.format!=="scramble"});
+  var bunker = 0, saves = 0;
+  indiv.forEach(function(r) {
+    if (!r.bunkerData || !r.sandData) return;
+    for (var i = 0; i < r.bunkerData.length; i++) {
+      if (r.bunkerData[i] === true) {
+        bunker++;
+        if (r.sandData[i] === true) saves++;
+      }
+    }
+  });
+  if (bunker < 1) return null;
+  return {
+    pct: Math.round(saves / bunker * 100),
+    saves: saves,
+    bunker: bunker
+  };
+}
+
+// ── Up-and-Down % ── Of greens missed where scrambling was attempted,
+// how often did you save par or better?
+function calcUpDownPct(rounds) {
+  if (!rounds || !rounds.length) return null;
+  var indiv = rounds.filter(function(r){return r.format!=="scramble"});
+  var missed = 0, upDown = 0;
+  indiv.forEach(function(r) {
+    if (!r.upDownData) return;
+    for (var i = 0; i < r.upDownData.length; i++) {
+      if (r.upDownData[i] === true) { missed++; upDown++; }
+      else if (r.upDownData[i] === false) { missed++; }
+    }
+  });
+  if (missed < 1) return null;
+  return {
+    pct: Math.round(upDown / missed * 100),
+    upDown: upDown,
+    missed: missed
+  };
+}
+
+// ── Miss Tendency ── Where do your approach misses tend to go?
+function calcMissTendency(rounds) {
+  if (!rounds || !rounds.length) return null;
+  var indiv = rounds.filter(function(r){return r.format!=="scramble"});
+  var counts = {left:0, right:0, long:0, short:0};
+  var total = 0;
+  indiv.forEach(function(r) {
+    if (!r.missData) return;
+    for (var i = 0; i < r.missData.length; i++) {
+      var dir = r.missData[i];
+      if (dir && counts.hasOwnProperty(dir)) {
+        counts[dir]++;
+        total++;
+      }
+    }
+  });
+  if (total < 1) return null;
+  var dominant = null;
+  var keys = ["left","right","long","short"];
+  for (var k = 0; k < keys.length; k++) {
+    if (counts[keys[k]] / total > 0.5) { dominant = keys[k]; break; }
+  }
+  return {counts:counts, total:total, dominant:dominant};
 }
 
 // ── H2H Deep Stats ──

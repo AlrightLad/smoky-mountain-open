@@ -12,8 +12,16 @@ var liveState = {
   scores: Array(18).fill(""),
   fir: Array(18).fill(false),
   gir: Array(18).fill(false),
-  putts: Array(18).fill("")
+  putts: Array(18).fill(""),
+  bunker: Array(18).fill(null),
+  sand: Array(18).fill(null),
+  upDown: Array(18).fill(null),
+  miss: Array(18).fill(null),
+  penalty: Array(18).fill(0)
 };
+
+// Per-hole "Advanced stats" expander open state (module-scoped, not persisted)
+var advancedOpen = {};
 
 // ── liveState crash recovery ──────────────────────────────────────────────
 // If the phone restarts or browser crashes mid-round, we restore from this.
@@ -41,6 +49,11 @@ function saveLiveState() {
       fir: liveState.fir,
       gir: liveState.gir,
       putts: liveState.putts,
+      bunker: liveState.bunker,
+      sand: liveState.sand,
+      upDown: liveState.upDown,
+      miss: liveState.miss,
+      penalty: liveState.penalty,
       rating: liveState.rating || 72,
       slope: liveState.slope || 113,
       par: liveState.par || 72,
@@ -75,6 +88,12 @@ function clearLiveState() {
   liveState.fir = Array(18).fill(false);
   liveState.gir = Array(18).fill(false);
   liveState.putts = Array(18).fill("");
+  liveState.bunker = Array(18).fill(null);
+  liveState.sand = Array(18).fill(null);
+  liveState.upDown = Array(18).fill(null);
+  liveState.miss = Array(18).fill(null);
+  liveState.penalty = Array(18).fill(0);
+  advancedOpen = {};
   try { localStorage.removeItem("pb_liveState"); } catch(e) {}
   // Clear Firestore live round
   if (db && currentUser) {
@@ -619,6 +638,83 @@ function _renderLiveScoringInner() {
   h += '</div>';
   h += '</div>';
 
+  // ── Advanced stats expander (v8.2.0) ────────────────────────────────
+  var isAdvOpen = !!advancedOpen[hole];
+  // Count filled advanced fields for badge
+  var advFilled = 0;
+  if (liveState.bunker[hole] !== null) advFilled++;
+  if (liveState.sand[hole] !== null) advFilled++;
+  if (liveState.upDown[hole] !== null) advFilled++;
+  if (liveState.miss[hole]) advFilled++;
+  if (liveState.penalty[hole] > 0) advFilled++;
+  h += '<button class="advanced-stats-toggle" onclick="toggleAdvancedStats(' + hole + ')">';
+  h += '<span>Advanced stats' + (advFilled > 0 ? ' · ' + advFilled : '') + '</span>';
+  h += '<span style="font-size:16px;color:var(--gold)">' + (isAdvOpen ? '−' : '+') + '</span>';
+  h += '</button>';
+
+  if (isAdvOpen) {
+    var gir = liveState.gir[hole];
+    var bunker = liveState.bunker[hole];
+    var sand = liveState.sand[hole];
+    var upDown = liveState.upDown[hole];
+    var miss = liveState.miss[hole];
+    var penalty = liveState.penalty[hole] || 0;
+
+    h += '<div class="advanced-stats-body">';
+
+    // Bunker toggle
+    h += '<div class="adv-row">';
+    h += '<span class="adv-label">In bunker?</span>';
+    h += '<div class="adv-tri" onclick="toggleBunker(' + hole + ')">';
+    h += '<span class="adv-tri-opt' + (bunker === null ? ' active-neutral' : '') + '">—</span>';
+    h += '<span class="adv-tri-opt' + (bunker === true ? ' active-yes' : '') + '">Yes</span>';
+    h += '<span class="adv-tri-opt' + (bunker === false ? ' active-no' : '') + '">No</span>';
+    h += '</div></div>';
+
+    // Sand save — only if bunker === true
+    if (bunker === true) {
+      h += '<div class="adv-row">';
+      h += '<span class="adv-label">Sand save?</span>';
+      h += '<div class="adv-tri" onclick="toggleSand(' + hole + ')">';
+      h += '<span class="adv-tri-opt' + (sand === null ? ' active-neutral' : '') + '">—</span>';
+      h += '<span class="adv-tri-opt' + (sand === true ? ' active-yes' : '') + '">Yes</span>';
+      h += '<span class="adv-tri-opt' + (sand === false ? ' active-no' : '') + '">No</span>';
+      h += '</div></div>';
+    }
+
+    // Up-and-down — only when GIR missed
+    if (gir === false) {
+      h += '<div class="adv-row">';
+      h += '<span class="adv-label">Up and down?</span>';
+      h += '<div class="adv-tri" onclick="toggleUpDown(' + hole + ')">';
+      h += '<span class="adv-tri-opt' + (upDown === null ? ' active-neutral' : '') + '">—</span>';
+      h += '<span class="adv-tri-opt' + (upDown === true ? ' active-yes' : '') + '">Yes</span>';
+      h += '<span class="adv-tri-opt' + (upDown === false ? ' active-no' : '') + '">No</span>';
+      h += '</div></div>';
+
+      // Miss direction — only when GIR missed
+      h += '<div class="adv-col">';
+      h += '<span class="adv-label">Miss direction</span>';
+      h += '<div class="miss-chips">';
+      ['left','right','long','short'].forEach(function(dir) {
+        var isActive = miss === dir;
+        h += '<button class="miss-chip' + (isActive ? ' active' : '') + '" onclick="setMiss(' + hole + ',\'' + dir + '\')">' + dir.charAt(0).toUpperCase() + dir.slice(1) + '</button>';
+      });
+      h += '</div></div>';
+    }
+
+    // Penalty strokes stepper
+    h += '<div class="adv-row">';
+    h += '<span class="adv-label">Penalty strokes</span>';
+    h += '<div class="adv-stepper">';
+    h += '<button class="adv-step-btn" onclick="adjustPenalty(' + hole + ',-1)"' + (penalty <= 0 ? ' disabled' : '') + '>−</button>';
+    h += '<span class="adv-step-val">' + penalty + '</span>';
+    h += '<button class="adv-step-btn" onclick="adjustPenalty(' + hole + ',1)"' + (penalty >= 5 ? ' disabled' : '') + '>+</button>';
+    h += '</div></div>';
+
+    h += '</div>'; // end advanced-stats-body
+  }
+
   // Turn summary (show at hole 9)
   if (hole === 9 || hole === 17) {
     var front = 0, frontCount = 0, back = 0, backCount = 0;
@@ -755,6 +851,60 @@ function cyclePutts(hole) {
   Router.go("playnow");
 }
 
+// ── Advanced stats helpers (v8.2.0) ────────────────────────────────────
+function toggleAdvancedStats(hole) {
+  advancedOpen[hole] = !advancedOpen[hole];
+  Router.go("playnow");
+}
+
+function toggleBunker(hole) {
+  var cur = liveState.bunker[hole];
+  // Tri-state cycle: null → true → false → null
+  if (cur === null) liveState.bunker[hole] = true;
+  else if (cur === true) liveState.bunker[hole] = false;
+  else { liveState.bunker[hole] = null; liveState.sand[hole] = null; }
+  // If bunker is no longer true, clear sand save
+  if (liveState.bunker[hole] !== true) liveState.sand[hole] = null;
+  saveLiveState();
+  Router.go("playnow");
+}
+
+function toggleSand(hole) {
+  var cur = liveState.sand[hole];
+  if (cur === null) liveState.sand[hole] = true;
+  else if (cur === true) liveState.sand[hole] = false;
+  else liveState.sand[hole] = null;
+  saveLiveState();
+  Router.go("playnow");
+}
+
+function toggleUpDown(hole) {
+  var cur = liveState.upDown[hole];
+  if (cur === null) liveState.upDown[hole] = true;
+  else if (cur === true) liveState.upDown[hole] = false;
+  else liveState.upDown[hole] = null;
+  saveLiveState();
+  Router.go("playnow");
+}
+
+function setMiss(hole, direction) {
+  // Toggle off if same direction tapped again
+  if (liveState.miss[hole] === direction) liveState.miss[hole] = null;
+  else liveState.miss[hole] = direction;
+  saveLiveState();
+  Router.go("playnow");
+}
+
+function adjustPenalty(hole, delta) {
+  var cur = liveState.penalty[hole] || 0;
+  var next = cur + delta;
+  if (next < 0) next = 0;
+  if (next > 5) next = 5;
+  liveState.penalty[hole] = next;
+  saveLiveState();
+  Router.go("playnow");
+}
+
 function finishLiveRound() {
   var startHole = liveState.holesMode === "back9" ? 9 : 0;
   var endHole = liveState.holesMode === "front9" ? 9 : 18;
@@ -783,6 +933,11 @@ function finishLiveRound() {
     firData: liveState.fir.slice(),
     girData: liveState.gir.slice(),
     puttsData: liveState.putts.slice(),
+    bunkerData: liveState.bunker.slice(),
+    sandData: liveState.sand.slice(),
+    upDownData: liveState.upDown.slice(),
+    missData: liveState.miss.slice(),
+    penaltyData: liveState.penalty.slice(),
     visibility: liveState.visibility || "public"
   });
   // Sync to Firestore immediately — critical for cross-device visibility and loadRoundsFromFirestore

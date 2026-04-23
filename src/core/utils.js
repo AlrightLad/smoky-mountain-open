@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.1.3";
+var APP_VERSION = "8.2.0";
 
 // ══════════════════════════════════════════════════════════════════════════
 // LEAGUE ISOLATION — Nuclear approach. Makes leaking PHYSICALLY IMPOSSIBLE.
