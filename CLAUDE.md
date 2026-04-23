@@ -3,7 +3,7 @@
 ## Brand
 
 - **Platform name:** Parbaughs (not PlayThru — that name is taken by PlayThru LLC at playthru.golf)
-- **The founding league:** "The Parbaughs" — the original 17-member crew from York, PA
+- **The founding league:** "The Parbaughs" — the original 20-member crew from York, PA
 - **At scale:** Other users create their own leagues inside Parbaughs. "Start a league on Parbaughs." "Download Parbaughs and join my crew."
 - **Merch/branding:** PARBAUGHS
 - **Social handles:** @PlayThru_ was claimed but may conflict. Commissioner decision needed: switch to @Parbaughs or @ParbaughsGolf
@@ -11,21 +11,32 @@
 
 ## The Vision
 
-Parbaughs is an invite-only golf league app for a tight friend group of 17 members based in York, PA. It's not trying to be 18Birdies or GHIN — it's trying to be the app that makes this group of friends play more golf, talk more trash, and build memories together. Every feature should strengthen community over competition. Think country club meets group chat meets fantasy sports.
+Parbaughs is an invite-only golf league app for a tight friend group of 20 members based in York, PA. It's not trying to be 18Birdies or GHIN — it's trying to be the app that makes this group of friends play more golf, talk more trash, and build memories together. Every feature should strengthen community over competition. Think country club meets group chat meets fantasy sports.
 
 This app is a labor of love. Treat it with extreme care and pride. It's a core piece of who the commissioner (Zach) is. Quality is non-negotiable.
 
 ## Project State
 
-- **Version:** v6.0.0 (as of April 2026)
-- **Architecture:** Multi-league, Vite multi-file
-- **Stack:** Vanilla JS, Firebase Auth + Firestore + Cloud Functions, GitHub Pages
+- **Version:** v8.1.3 (as of 2026-04-22) — Clubhouse Part A foundation complete
+- **Architecture:** Multi-league, Vite multi-file, vanilla JS
+- **Stack:** Firebase Auth + Firestore + Cloud Functions (Node 22, Gen1), GitHub Pages static deploy
+- **Design system:** Clubhouse (light default / dark opt-in). See Appearance + Design System sections.
 - **Budget:** Zero. No paid services beyond Firebase Blaze plan.
-- **Users:** 17 members, mixed iPhone/Android
+- **Users:** 20 members, mixed iPhone/Android
 - **Repo:** `AlrightLad/smoky-mountain-open`
 - **Live:** https://alrightlad.github.io/smoky-mountain-open
 - **Positioning (approved v8.0, 2026-04-17):** PARBAUGHS is a solo-first golf tracking app with an optional league layer for competitive and social play. Leagues are additive, not required. Marketing copy, App Store framing, and Phase 4 monetization all follow from this framing.
 - **Role terminology (approved v8.0, 2026-04-17):** "Founder" is the platform-level role (held by Zach). "Commissioner" is the per-league role. These terms are NOT interchangeable starting v8.0. Legacy copy referring to "The Commissioner" for Zach is migrated to "Founder" during v8.0.1 Visibility Polish.
+
+### Clubhouse Part A shipped (v8.1.0 — v8.1.3, April 2026)
+- **v8.1.0** — Foundation. ~90 Clubhouse tokens, legacy 8-theme system removed (themes.css/masters.css/textures.css/theme.js deleted, 16 texture assets removed), Fraunces replaces Playfair, dual-mode light/dark architecture, welcome toast
+- **v8.1.1** — Component states. :focus-visible ring (WCAG 2.1 AA), hover/active/disabled coverage, 100% transition token adoption (42 transitions), standardized 3-tier active-scale (.95 / .97 / .985)
+- **v8.1.2** — Motion + accessibility. `src/core/animate.js` module, semantic motion tokens, jank-risk fixes (trophy-bar + bottom-nav ripple → transform), prefers-reduced-motion architecture, aria-live on toasts + counts
+- **v8.1.3** — Final polish. Reduced-motion ach-celebrate visibility fix, handicap decimal instrumentation, header icon aria-labels, dead code cleanup (nameRainbow keyframe, OLD NAV rules)
+
+Part A bundle delta: **−19 KB net** (legacy CSS deletion > new token expansion). Clubhouse is leaner than the 8-theme system it replaced.
+
+Part B (weeks 8-10): screen restructuring on the new design system — home, profile, feed, scorecard, round detail.
 
 ## Three-Agent Workflow
 
@@ -325,73 +336,55 @@ Stub: `docs/clubhouse-rollout-plan.md`
 
 ## Architecture
 
-### Current (Single File)
 ```
 smoky-mountain-open/
-├── index.html          ← entire app (~18K lines: CSS + HTML + JS)
-├── textures/           ← theme texture images (8 files)
-├── watermark.jpg       ← app logo/icon
-├── logo.jpg            ← alternate logo
-└── CLAUDE.md           ← this file
-```
-
-### Target (Vite Multi-File)
-```
-smoky-mountain-open/
-├── index.html              ← HTML shell only
-├── vite.config.js
+├── index.html                  ← HTML shell + pre-auth appearance load
+├── vite.config.js              ← CORE_FILES bundle order, coreScriptsPlugin
+├── firebase.json               ← runtime, rules, emulator config
+├── firestore.rules             ← 693 lines, v8.0.0-rc1 full rewrite
+├── firestore.rules.maintenance ← 11-line freeze for cutover ships
+├── firestore.indexes.json
 ├── public/
-│   ├── textures/           ← 8 theme texture images
 │   ├── watermark.jpg
-│   └── logo.jpg
+│   ├── Logo.jpg
+│   └── manifest.json
 ├── src/
-│   ├── main.js             ← entry point
-│   ├── core/
-│   │   ├── firebase.js     ← auth, firestore, cloud functions
-│   │   ├── router.js       ← SPA router system
-│   │   ├── data.js         ← PB object (all data access)
-│   │   ├── sync.js         ← firestore sync, presence, connection status
-│   │   └── utils.js        ← escHtml, feedTimeAgo, localDateStr, etc.
-│   ├── pages/
-│   │   ├── home.js
-│   │   ├── profile.js
-│   │   ├── scorecard.js
-│   │   ├── standings.js
-│   │   ├── feed.js
-│   │   ├── settings.js
-│   │   ├── dms.js
-│   │   ├── playnow.js
-│   │   ├── range.js
-│   │   ├── calendar.js
-│   │   ├── trophyroom.js
-│   │   ├── courses.js
-│   │   ├── teetimes.js
-│   │   ├── chat.js
-│   │   ├── members.js
-│   │   ├── scramble.js
-│   │   └── records.js
-│   ├── components/
-│   │   ├── cards.js        ← card, stat-box, feed-row renderers
-│   │   ├── nav.js          ← bottom nav + profile bar
-│   │   ├── modals.js       ← toasts, share cards, confirmations
-│   │   └── skeletons.js    ← loading states
+│   ├── main.js                 ← CSS entry point
+│   ├── core/                   ← bundled first (see vite.config.js CORE_FILES order)
+│   │   ├── utils.js            ← APP_VERSION, escHtml, time/date, platformRoleOf
+│   │   ├── animate.js          ← animateNumber, initCountAnimations, reanimateNumber, prefersReducedMotion
+│   │   ├── handicap.js         ← WHS handicap calc
+│   │   ├── firebase.js         ← auth, Firestore init, appearance, welcome toast
+│   │   ├── data.js             ← PB data access object
+│   │   ├── sync.js             ← presence, connection status, replication
+│   │   ├── parcoins.js         ← awardCoins, deductCoins, balance, ledger
+│   │   ├── caddie.js           ← AI Caddie rule-based insights
+│   │   ├── charts.js           ← SVG chart primitives
+│   │   ├── analytics.js        ← strokes gained, trends, stats
+│   │   └── router.js           ← SPA routing + avatar ring helpers
+│   ├── pages/                  ← ~45 page renderers, each registers with Router
 │   └── styles/
-│       ├── base.css        ← Clubhouse token system, dual-mode, global resets
-│       └── components.css  ← cards, buttons, pills, forms
-├── firebase/
-│   ├── firestore.rules
-│   └── functions/
-│       └── index.js        ← searchCourses Cloud Function
-└── CLAUDE.md
+│       ├── base.css            ← Clubhouse token system, dual-mode, reduced-motion
+│       └── components.css      ← all components on token system
+├── functions/
+│   ├── index.js                ← Cloud Functions (Node 22, Gen1, us-central1)
+│   └── package.json
+├── docs/                       ← design docs, rollout plans, decision logs
+├── tests/
+│   └── e2e/                    ← Playwright suite + emulator fixtures
+├── scripts/                    ← lint, verify, ship-gate
+├── .claude/                    ← project-level hooks + settings
+├── .husky/                     ← git pre-commit hooks
+└── CLAUDE.md                   ← this file
 ```
 
 ### Firebase Configuration
 - **Project ID:** parbaughs
 - **Auth:** Email/password, email verification on registration
 - **Firestore:** Primary data store, offline persistence DISABLED (caused duplicate entries)
-- **Cloud Functions:** Gen1, Node22, us-central1
-  - `searchCourses` — GolfCourseAPI proxy. Preserve CORS origin lock + Firebase Function runtime settings (memory, timeout, region). Node version is upgradeable.
-  - `sendPushNotification` — triggers on `pendingPush` doc creation, sends FCM push to member's `fcmToken`, deletes doc after. Source: `functions/index.js`
+- **Cloud Functions:** Gen1, Node22, us-central1. 8 functions: `searchCourses`, `validateInvite`, `sendPushNotification`, `onMemberRoleChange`, `onLeagueDelete`, `joinLeague`, `onFounderAccessLog`, `expireSuspensionsAndTransfers`.
+  - `searchCourses` — GolfCourseAPI proxy. Preserve CORS origin lock + runtime settings (memory, timeout, region). Node version is upgradeable.
+  - `sendPushNotification` — triggers on `pendingPush` doc creation, sends FCM push to member's `fcmToken`, deletes doc after.
 - **Plan:** Blaze (pay-as-you-go)
 
 ### Push Notification Deployment
@@ -472,101 +465,21 @@ members/{uid} {
 
 ## Firestore Rules
 
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    function isAuth() { return request.auth != null; }
-    function uid() { return request.auth.uid; }
-    function isCommissioner() { return isAuth() && get(/databases/$(database)/documents/members/$(uid())).data.role == "commissioner"; }
+**Source of truth:** `firestore.rules` (693 lines, v8.0.0-rc1 full rewrite per `docs/v8.0-technical-design.md` Section 3).
 
-    // ── Identity ──
-    match /members/{memberId} { allow read: if true; allow create: if isAuth() && uid() == memberId; allow update: if isAuth() && (uid() == memberId || isCommissioner()); allow delete: if isCommissioner(); }
+Do not duplicate the rules contents here — they drift. Read the live file when needed.
 
-    // ── Rounds ──
-    match /rounds/{roundId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isAuth() && (resource.data.player == uid() || isCommissioner()); }
+### Architecture summary
+- **Helpers** at top: `isAuth`, `uid`, `memberDoc`, `myProfile`, `platformRoleOf`, `isFounder`, `isSuspended`, `isBanned`, `leagueCommissioner`
+- **Per-collection match blocks** — no catch-all. Every collection has explicit `allow read / create / update / delete` gates.
+- **List-query compatibility:** rules gating list queries must prove from query filter fields, not document paths. See Cutover Playbook Pattern 4.
 
-    // ── DMs (participants only) ──
-    match /dms/{dmId} {
-      allow read: if isAuth() && (dmId.matches(uid() + '_.*') || dmId.matches('.*_' + uid()));
-      allow create: if isAuth();
-      match /messages/{messageId} {
-        allow read: if isAuth();
-        allow create: if isAuth();
-      }
-    }
-
-    // ── Chat (league-scoped) ──
-    match /chat/{msgId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isAuth() && (resource.data.authorId == uid() || isCommissioner()); }
-
-    // ── Notifications ──
-    match /notifications/{notifId} { allow read: if isAuth() && resource.data.toUid == uid(); allow create: if isAuth(); allow update, delete: if isAuth() && resource.data.toUid == uid(); }
-
-    // ── Invites ──
-    match /invites/{inviteId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isCommissioner(); }
-
-    // ── Config ──
-    match /config/{docId} { allow read: if isAuth(); allow write: if isCommissioner(); }
-
-    // ── ParCoins (immutable transaction log) ──
-    match /parcoin_transactions/{txnId} { allow read: if isAuth() && resource.data.uid == uid(); allow create: if isAuth(); allow update, delete: if false; }
-
-    // ── Push queue (write-only) ──
-    match /pendingPush/{pushId} { allow create: if isAuth(); allow read, update, delete: if false; }
-
-    // ── Leagues ──
-    match /leagues/{leagueId} { allow read: if isAuth(); allow create: if isAuth(); allow update: if isAuth() && resource.data.commissioner == uid(); allow delete: if false; }
-
-    // ── Wagers ──
-    match /wagers/{wagerId} { allow read: if isAuth(); allow create: if isAuth(); allow update: if isAuth() && (resource.data.fromUid == uid() || resource.data.toUid == uid() || isCommissioner()); allow delete: if false; }
-
-    // ── Bounties ──
-    match /bounties/{bountyId} { allow read: if isAuth(); allow create: if isAuth(); allow update: if isAuth(); allow delete: if isCommissioner(); }
-
-    // ── Courses (global, commissioner-write) ──
-    match /courses/{courseId} { allow read: if isAuth(); allow write: if isAuth(); }
-    match /course_reviews/{reviewId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isAuth() && resource.data.userId == uid(); }
-
-    // ── Photos ──
-    match /photos/{photoId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isAuth() && resource.data.uploadedBy == uid(); }
-
-    // ── Tee Times ──
-    match /teetimes/{teeId} { allow read: if isAuth(); allow create: if isAuth(); allow update: if isAuth() && (resource.data.createdBy == uid() || isCommissioner()); allow delete: if isAuth() && (resource.data.createdBy == uid() || isCommissioner()); }
-
-    // ── Scramble Teams ──
-    match /scrambleTeams/{teamId} { allow read: if isAuth(); allow create: if isAuth(); allow update: if isAuth(); allow delete: if isCommissioner(); }
-
-    // ── Calendar Events ──
-    match /calendar_events/{eventId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isAuth() && resource.data.createdBy == uid(); }
-    match /scheduling_chat/{msgId} { allow read: if isAuth(); allow create: if isAuth(); }
-
-    // ── Trips / Events ──
-    match /trips/{tripId} { allow read: if isAuth(); allow write: if isAuth(); }
-    match /tripscores/{scoreId} { allow read: if isAuth(); allow write: if isAuth(); }
-
-    // ── Social Actions ──
-    match /social_actions/{actionId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if false; }
-
-    // ── Live State ──
-    match /syncrounds/{roundId} { allow read: if isAuth(); allow write: if isAuth(); }
-    match /liverounds/{roundId} { allow read: if isAuth(); allow write: if isAuth() && roundId == uid(); }
-    match /presence/{userId} { allow read: if isAuth(); allow write: if isAuth() && userId == uid(); }
-    match /rangeSessions/{sessionId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if isAuth(); }
-
-    // ── System ──
-    match /errors/{errorId} { allow create: if isAuth(); allow read: if isCommissioner(); allow update, delete: if isCommissioner(); }
-    match /pending_celebrations/{celebId} { allow read: if isAuth(); allow create: if isAuth(); allow update, delete: if false; }
-    match /feature_requests/{reqId} { allow create: if isAuth(); allow read: if isCommissioner(); }
-    match /reports/{reportId} { allow create: if isAuth(); allow read: if isCommissioner(); }
-    match /attestations/{attId} { allow read: if isAuth(); allow write: if isAuth(); }
-    match /partygames/{gameId} { allow read: if isAuth(); allow write: if isAuth(); }
-
-    // NO CATCH-ALL. Every collection must have explicit rules above.
-  }
-}
+### Deploy
+```bash
+firebase deploy --only firestore:rules
 ```
 
-**IMPORTANT:** Deploy these rules via `firebase deploy --only firestore:rules` BEFORE making the app public. Test all features after deployment.
+See Operational Gotchas → "firestore.rules is hook-protected" for the authorized-edit bypass pattern.
 
 ## Appearance
 
@@ -599,6 +512,83 @@ Hole-by-hole performance dots rendered on Round History, feed cards, and share c
 - Blue `var(--blue)` = Range Session
 - Pink `var(--pink)` = Tee Time
 - Green `var(--live)` = Today indicator
+
+## Design System (Clubhouse)
+
+All Clubhouse design tokens are declared in `src/styles/base.css` `:root`. Components consume tokens via `var(--*)`. Legacy aliases preserve the ~1,800 inline `var(--*)` references in JS pages.
+
+### Color tokens
+- **Surface palette:** `--cb-green`, `--cb-green-2/3`, `--cb-green-ink`, `--cb-chalk`, `--cb-chalk-2/3`
+- **Ink palette:** `--cb-ink`, `--cb-ink-2`, `--cb-charcoal`, `--cb-mute`, `--cb-mute-2`
+- **Accents:** `--cb-brass`, `--cb-brass-2/3`, `--cb-copper`, `--cb-slate`, `--cb-moss`, `--cb-claret`, `--cb-sand`
+- **Semantic surface:** `--surface-primary/secondary/tertiary/inverse/raised`
+- **Semantic text:** `--text-primary/secondary/muted/subtle/inverse/brand`
+- **Semantic border:** `--border-subtle/default/strong`
+- **Semantic accent:** `--accent-positive/negative/warning/hazard/neutral`
+- **Legacy aliases:** `--bg`, `--bg2/3/4`, `--cream`, `--muted/muted2`, `--gold/gold2/gold3`, `--card`, `--birdie`, `--blue`, `--pink`, `--live`, `--alert`, etc. — all remapped to Clubhouse palette, all JS inline refs still work
+
+### Typography
+- **Display:** Fraunces (replaced Playfair Display in v8.1.0). Access via `var(--font-display)`.
+- **UI:** Inter. Access via `var(--font-ui)`.
+- **Mono:** JetBrains Mono (for technical labels, eyebrow text). Access via `var(--font-mono)`.
+- **Scale:** `--text-2xs` (8px) through `--text-5xl` (48px), plus `--text-hero` (88px) and `--text-hero-xl` (140px). 13 stops total.
+
+### Motion
+- **Durations:** `--duration-fast` (150ms), `--duration-med` (250ms), `--duration-slow` (400ms), `--duration-celebration` (800ms)
+- **Easings:** `--ease-default`, `--ease-out`, `--ease-in-out`, `--ease-enter`, `--ease-exit`, `--ease-emphasized`, `--ease-back-out`
+- Every `transition:` in `components.css` uses these tokens. The single exception is a share card context where html2canvas needs literal durations.
+
+### Spacing + radius
+- **Spacing scale:** `--space-0/1/2/3/4/5/6/8/10/12/16` (0 through 64px, 4px base)
+- **Radius:** `--radius-sm/md/lg/xl/2xl/pill`. Legacy alias `--radius-full` maps to pill.
+
+### Depth
+- **Shadows:** `--shadow-soft`, `--shadow-raised` (new), plus legacy `--shadow-sm/md/lg/glow` aliases.
+
+### Avatar ring rendering
+Centralized in `src/core/router.js`:
+- `playerFrameColor(p)` — hex color for border
+- `playerRingShadow(p)` — box-shadow string (empty for animated rings which handle their own)
+- `playerRingStyle(p)` — full `border + box-shadow + animation` inline style
+- `playerRingClass(p)` — animation class name for animated cosmetic rings
+- `getPlayerNameClass(p)` / `getPlayerBannerCss(p)` / `getPlayerCardCss(p)` — cosmetic helpers
+
+All callers use these — no bypass render paths. v8.1.0 collapsed the legacy per-theme lookup into a single brass default + cosmetic-override pattern. Tier rings (Mr. Parbaugh / Founding Four / Commissioner) coming in v8.1.4.
+
+### Animation module
+`src/core/animate.js` — rAF-based number animation + reduced-motion awareness.
+
+Global API:
+- `animateNumber(el, target, opts)` — animate to target with opts `{duration, from, decimals, prefix, suffix, easing, onComplete}`. Auto-detects decimals from string target ("18.8" → 1 decimal).
+- `initCountAnimations(root)` — scans `[data-count]` elements, animates each, sets `data-count-animated="1"` for idempotency, auto-adds `aria-live="polite"`
+- `reanimateNumber(el, newTarget, opts)` — for live updates; reads current `textContent` as "from" unless opts.from provided
+- `prefersReducedMotion()` — boolean getter
+
+`data-count` conventions on HTML elements:
+- `data-count="TARGET"` — required
+- `data-count-decimals="N"` — override auto-detection
+- `data-count-from="N"` — override default "from" of 0
+- `data-count-prefix="+"` / `data-count-suffix="%"` — text affixes
+
+Router.go auto-fires `initCountAnimations()` 80ms after every page navigation, so sites just need the attributes in their rendered HTML.
+
+### Appearance modes
+Two modes via `data-theme` attribute on `<html>`:
+- **Light (default):** chalk surface, ink text, brass accents
+- **Dark:** green surface, chalk text, brass accents
+
+User preference persisted in `members/{uid}.appearance` (Firestore) + `pb_appearance` localStorage. Pre-auth `<script>` in index.html applies saved preference before external CSS loads (no flash).
+
+### Accessibility architecture
+- **`:focus-visible`** (base.css): 2px brass ring on all focusable elements for keyboard navigation. Inputs suppress via override + have their own border+box-shadow treatment. Mouse clicks don't show outlines.
+- **`prefers-reduced-motion`** (base.css): global kill of animation-duration + transition-duration, with explicit allowlist for functional feedback (.toast, .spinner, .skeleton, :focus-visible, .ach-celebrate — the celebration gets explicit visible-state override to prevent invisibility bug).
+- **aria-live:** auto-added to `[data-count]` elements by `initCountAnimations`. Manually added to `#toast` (role="status"), `.ach-celebrate` (role="alert"). 4 header icon buttons (notifBell, dmInbox, calendar, settings) have aria-label + role="button" + tabindex="0".
+
+### Visual exceptions (intentional hardcoded values)
+1. **Visual Reference section above:** hole dot colors, calendar dots — mode-independent
+2. **Share card template (`#pbShareTemplate`, `.pbs-*` rules):** deliberately hardcoded hex values — html2canvas doesn't reliably resolve CSS variables
+3. **Ring / name cosmetic keyframes:** preserved for v8.1.4 cosmetic audit
+4. **Boot-fallback `<style>` in index.html:** inline hex copies of core tokens for pre-external-CSS load
 
 ## ParCoin Economy Design
 
@@ -698,7 +688,7 @@ Cloud Function proxy to Claude API for natural language analysis. Free users get
 
 | Name | Role | Notes |
 |------|------|-------|
-| Zach (TheCommissioner) | Commissioner/Developer | `zboogher@gmail.com`, 6'4", 18.8 handicap, engaged to Jordyn |
+| Zach (TheCommissioner) | Platform Founder / Developer | `zboogher@gmail.com`, 6'4", 18.8 handicap, engaged to Jordyn. Per v8.0 terminology: "Founder" at platform level. "TheCommissioner" username is legacy. |
 | Jordyn (flossonthefairway) | Member | Username: flossonthefairway, badge: "The Boss's Wife" |
 | Nick | Founding Four | `nick.blades1@gmail.com` |
 | Kayvan | Founding Four | Manually-created profile, `claimedFrom` links to Auth |
@@ -712,19 +702,18 @@ Founding four have `claimedFrom` fields linking seed profiles to Firebase Auth a
 1. **Caddy Notes:** Update The Caddy Notes changelog with proper semver (X.Y.Z). X = major, Y = features, Z = bugfixes. Public-facing language only — no Firestore, Firebase, CORS, or internal references. Only current version displays.
 2. **Syntax check:** Run acorn/Function parse before every commit
 3. **No emojis** in place of SVG icons (exception: ⛳ for The Caddy bot)
-4. **Firestore is source of truth** — not localStorage (localStorage only for theme fast-load and DM read timestamps)
-5. **Output to `/mnt/user-data/outputs/`** when working in Claude chat
+4. **Firestore is source of truth** — not localStorage. localStorage is used only for: `pb_appearance` (appearance fast-load pre-auth), `pb_clubhouse_welcomed` (one-time toast guard), `pb_liveState` (in-progress round resumption), `golfcourse_api_key` (cached API key), `dm_read_*` (per-thread read timestamps). If you add a new localStorage key, document it here.
 
 ### Before Making Changes
 - **Ask before architectural decisions** or feature removal
 - **Zero guessing on course/par data** — API data or nothing
-- **No hardcoded colors** — everything uses CSS variables
-- **48px minimum touch targets** on all interactive elements
+- **No hardcoded colors** — use Clubhouse tokens (see Design System section). Exceptions: Visual Reference (hole dot colors, calendar dots) and share card template (html2canvas compatibility).
+- **44pt minimum touch targets** on all interactive elements (Apple HIG standard, established v8.0.5)
 - **Test on mobile Safari + Chrome** — mixed iPhone/Android user base
 
 ### Code Style
-- Targeted `str_replace` edits preferred over full rewrites
-- Python/Node scripts for bulk changes
+- Targeted `Edit` tool replacements preferred over full rewrites
+- Bulk changes: use Bash + sed/perl with scoped patterns
 - `var` (not `let`/`const`) for compatibility with the current vanilla JS setup
 - Explicit `_navStack` array for navigation (not hash router)
 - Settings only in top bar cog, never in footer nav
@@ -749,12 +738,6 @@ Read: /mnt/skills/examples/canvas-design/SKILL.md
 - Design philosophy first, then express visually
 - Meticulously crafted, master-level execution
 - Custom fonts available in canvas-design/canvas-fonts/
-
-### Theme Factory (REFERENCE for theme system work)
-Read: /mnt/skills/examples/theme-factory/SKILL.md
-- Color palette cohesion and font pairing principles
-- Each theme needs distinct visual identity, not just color swaps
-- Our 8 themes each have texture images — use them boldly
 
 ### MCP Builder (FUTURE — for integrations)
 Read: /mnt/skills/examples/mcp-builder/SKILL.md
@@ -782,9 +765,12 @@ Read: /mnt/skills/examples/mcp-builder/SKILL.md
 - Photo gallery with self-only delete
 - Invite system with shareable links
 - Commissioner admin panel
-- 8 premium themes with texture images
-- Masters-styled scorecard (Augusta National on-course board treatment)
-- Component polish: card shadows, status pills, page transitions, number animations
+- Masters-styled scorecard (Augusta National on-course board treatment) — survives theme removal; Masters is a scorecard variant, not a theme
+- Clubhouse design system (v8.1.0) — full token vocabulary, Fraunces typography, dual-mode light/dark appearance
+- Component interaction polish (v8.1.1) — hover/focus/active/disabled states, :focus-visible keyboard accessibility (WCAG 2.1 AA), tokenized transitions
+- Animation system (v8.1.2) — src/core/animate.js module with decimal-capable number roll-over, semantic motion tokens, prefers-reduced-motion architecture, aria-live on toasts + counts
+- Final Part A polish (v8.1.3) — reduced-motion bug fix, handicap decimal instrumentation, header icon aria-labels
+- Part A bundle delta: −19 KB net. Clubhouse is leaner than the 8-theme legacy it replaced.
 
 ## Known Bugs (Diagnosed, Not Yet Fixed)
 
@@ -800,17 +786,13 @@ Read: /mnt/skills/examples/mcp-builder/SKILL.md
 
 ## Roadmap (Priority Order)
 
-### Immediate (Visual Polish)
-- Wire 8 texture images into theme CSS with opacity layers and blend modes
-- Champion Red unlock gating (check `trip.champion` fields)
-- Player profile page redesign
-- Feed card redesign (rounds prominent, chat compact)
-- Round detail + shareable scorecard redesign
+### Immediate (Clubhouse Part A final + Part B prep)
+- v8.1.4 — Cosmetic audit and tier ring system. In planning (design assets Friday-weekend, execution next week).
+- v8.2.x — Clubhouse Part B: screen restructuring (home, profile, feed, scorecard, round detail redesigns on the new design system)
 
 ### Near-Term (Features)
-- Push notifications
+- Push notifications (infra shipped, UX polish remaining)
 - Hole-by-hole scoring in Log a Round (score, GIR, FIR, putts per hole)
-- Badge cosmetic selector UI + profile border/banner system
 - Course Directory API-first dedup
 - DM full repair (mobile layout, rules verification)
 - Scramble live scoring mode
@@ -824,6 +806,8 @@ Read: /mnt/skills/examples/mcp-builder/SKILL.md
 - Range UI three-state redesign
 - Course maps/GPS integration (if API supports it)
 - Swing analysis integration
+- CORE / PRO / ULTRA subscription tiers (see docs/subscription-scoping.md)
+- OSM course data pipeline (see docs/osm-course-data-evaluation.md)
 
 ## E2E Testing
 
@@ -976,7 +960,7 @@ Builds run on GitHub Actions — no local Mac needed.
 - `escHtml()` used on 265+ user content insertion points
 - Registration has rate limiting (3 attempts per 10 min), password validation, username length/format checks
 - Social actions have cooldown timers (12-48 hours per action type)
-- **PRE-LAUNCH:** Replace catch-all Firestore rule with explicit per-collection rules before going public
+- Firestore rules rewritten in v8.0.0-rc1 to explicit per-collection gates — no catch-all remains
 
 ## Launch Checklist
 - [ ] Apple Developer account purchased ($99/yr)
@@ -985,7 +969,7 @@ Builds run on GitHub Actions — no local Mac needed.
 - [ ] Android keystore generated and in GitHub Secrets
 - [ ] Domain secured (parbaughs.com or parbaughs.golf)
 - [ ] Firebase Hosting configured with custom domain
-- [ ] Firestore catch-all rule replaced with explicit per-collection rules
+- [x] Firestore catch-all rule replaced with explicit per-collection rules (done v8.0.0-rc1)
 - [ ] Repo visibility changed to private
 - [ ] iOS build passing in GitHub Actions
 - [ ] Android build passing in GitHub Actions
@@ -1000,35 +984,16 @@ Builds run on GitHub Actions — no local Mac needed.
 - [ ] Support email monitored (support@parbaughs.golf)
 - [ ] Privacy policy and terms accessible from app + stores
 
-## Agent Team Configuration
+## Ground Rules for All Agents
 
-When using Claude Code agent teams, use this structure:
+The authoritative agent structure is the **Three-Agent Workflow** at the top of this file (Zach / Claude.ai / Claude Code). The earlier multi-subagent "Team: Full Stack Polish" / "Team: Feature Build" blocks have been retired — they conflicted with the Three-Agent Workflow and referenced dead work (the 8-theme system).
 
-### Team: Full Stack Polish
-```
-Agent 1 (Frontend Lead): Owns src/styles/ and src/pages/. Handles all visual work — themes, textures, component CSS, page layouts. Tests in Chrome + Safari.
-
-Agent 2 (Core Engineer): Owns src/core/ and firebase/. Handles data layer, Firestore rules, Cloud Functions, sync logic, auth flows. Never touches CSS.
-
-Agent 3 (QA + Polish): Runs after agents 1 & 2 complete. Syntax checks with acorn, verifies touch targets, tests all 8 themes, checks mobile rendering, updates Caddy Notes, bumps version.
-```
-
-### Team: Feature Build
-```
-Agent 1 (Architect): Reads the full codebase, plans the feature, writes the spec with file-level task breakdown. Does NOT write code.
-
-Agent 2 (Builder): Implements the spec from Agent 1. Writes all code changes.
-
-Agent 3 (Reviewer): Reviews Agent 2's code for bugs, edge cases, missing error handling, and consistency with existing patterns. Requests changes if needed.
-```
-
-### Ground Rules for All Agents
 - Read CLAUDE.md before starting any work
 - Never remove features without commissioner approval
 - Never guess course/par data
 - Always update Caddy Notes on every build
 - Always syntax check before committing
-- Use CSS variables, never hardcoded colors
+- Use Clubhouse tokens, never hardcoded colors (exceptions: Visual Reference + share cards)
 - Firestore is source of truth
 - The app should feel premium — country club, not startup
 - Community over competition in every design decision
