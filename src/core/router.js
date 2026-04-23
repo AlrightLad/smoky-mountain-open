@@ -2026,7 +2026,13 @@ Router.go = function(page, params) {
   // Always close notification panel when navigating
   closeNotifPanel();
   _origRouterGo(page, params);
-  if (page !== "playnow" && liveState.active) {
+  // Always reconcile the RIP banner. renderRipBanner is self-healing
+  // (removes existing, re-adds only if liveState.active). On the playnow
+  // page the banner is redundant — the page itself shows round state.
+  if (page === "playnow") {
+    var existing = document.getElementById("ripBanner");
+    if (existing) existing.remove();
+  } else {
     setTimeout(renderRipBanner, 50);
   }
   // Re-trigger page-enter animation

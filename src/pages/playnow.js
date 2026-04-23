@@ -462,8 +462,14 @@ function startLiveRound() {
     scores: Array(18).fill(""),
     fir: Array(18).fill(false),
     gir: Array(18).fill(false),
-    putts: Array(18).fill("")
+    putts: Array(18).fill(""),
+    bunker: Array(18).fill(null),
+    sand: Array(18).fill(null),
+    upDown: Array(18).fill(null),
+    miss: Array(18).fill(null),
+    penalty: Array(18).fill(0)
   };
+  advancedOpen = {};
 
   Router.toast("Let's go!");
   saveLiveState(); // persist round start immediately for crash recovery
