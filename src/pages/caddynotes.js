@@ -19,17 +19,23 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · reading room</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · sheets under the hood</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "New look on larger screens. If you pull up Parbaughs on a laptop or tablet, you'll see a fresh sidebar navigation — the app finally feels like a real platform beyond your phone. Mobile is unchanged.", tag: "NEW" },
-    { item: "Every tap now feels consistent across the app. Subtle press feedback applied universally — no more mixed button behaviors.", tag: "IMPROVED" }
+    { item: "Behind-the-scenes improvement: added a new bottom sheet system under the hood. You won't see it yet — but it'll power smoother detail views, confirmations, and forms in upcoming updates.", tag: "IMPROVED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.3.0", date: "April 2026", headline: "Reading Room shell",
+      items: [
+        { item: "New look on larger screens. If you pull up Parbaughs on a laptop or tablet, you'll see a fresh sidebar navigation — the app finally feels like a real platform beyond your phone. Mobile is unchanged.", tag: "NEW" },
+        { item: "Every tap now feels consistent across the app. Subtle press feedback applied universally — no more mixed button behaviors.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.2.2", date: "April 2026", headline: "Smoother scorecard",
       items: [
