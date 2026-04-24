@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · six themes</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · hotfix</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Theme system reimagined. Six new editorial themes — three ready to use (Clubhouse, Twilight Links, Linen Draft), three to earn through play. Picker coming in the next update. Your old theme has been mapped to the closest new one.", tag: "NEW" }
+    { item: "Hotfix: on desktop, page content was appearing below the fold under a 945px gap. Sidebar is now fixed-position and content flows naturally from the top. Mobile unaffected.", tag: "FIXED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.3.5", date: "April 2026", headline: "Six themes",
+      items: [
+        { item: "Theme system reimagined. Six new editorial themes — three ready to use (Clubhouse, Twilight Links, Linen Draft), three to earn through play. Picker coming in the next update. Your old theme has been mapped to the closest new one.", tag: "NEW" }
+      ]
+    },
     {
       version: "v8.3.4", date: "April 2026", headline: "Chalk Dry loading",
       items: [
