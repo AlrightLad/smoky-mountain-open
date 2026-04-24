@@ -19,16 +19,23 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · hotfix</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · home</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Hotfix: on desktop, page content was appearing below the fold under a 945px gap. Sidebar is now fixed-position and content flows naturally from the top. Mobile unaffected.", tag: "FIXED" }
+    { item: "Home page redesigned. A cleaner editorial layout that shows what matters today — your live round, tee times, stats at a glance. Season standings and event results moved to their own pages.", tag: "NEW" },
+    { item: "New user welcome flow: brand new Parbaughs land on a welcome screen with quick-start CTAs for your first round or range session.", tag: "NEW" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.3.6", date: "April 2026", headline: "Layout hotfix",
+      items: [
+        { item: "Hotfix: on desktop, page content was appearing below the fold under a 945px gap. Sidebar is now fixed-position and content flows naturally from the top. Mobile unaffected.", tag: "FIXED" }
+      ]
+    },
     {
       version: "v8.3.5", date: "April 2026", headline: "Six themes",
       items: [

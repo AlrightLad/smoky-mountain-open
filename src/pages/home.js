@@ -1,8 +1,406 @@
-/* ================================================
-   PAGE: HOME
-   ================================================ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   PAGE: HOME — Clubhouse editorial layout (v8.4.0 · Ship 1)
 
-// Shared footer links rendered at the bottom of every main tab page
+   Three render states gated by user/round context:
+     · "active"  — liveState.active === true  (live round in progress)
+     · "idle"    — returning user, no active round, rounds.length > 0
+     · "new"     — 0 rounds ever (welcome flow)
+
+   Render order is consistent across states:
+     1. Email verification banner (always, if unverified)
+     2. Greeting (all states)
+     3. State-specific primary block (live card / CTA / new-user CTAs)
+     4. Stats strip (all states — zeros/em-dashes for new)
+     5. Pulses (idle only — up to 2 lightweight editorial items)
+     6. Tee times section (conditional, not on new state)
+     7. Page footer
+
+   Visual tokens: --cb-chalk, --cb-chalk-2, --cb-chalk-3, --cb-green, --cb-ink,
+   --cb-charcoal, --cb-mute, --cb-brass, --font-display, --font-mono, --font-ui.
+   All theme-aware via v8.3.5 token system.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+// ═══════════════════════════════════════════════════════════════════════════
+// === PART 1: Home render (Clubhouse editorial) ===
+// ═══════════════════════════════════════════════════════════════════════════
+
+Router.register("home", function() {
+  var myRounds = currentUser ? PB.getPlayerRounds(currentUser.uid) : [];
+  if (!myRounds.length && currentProfile && currentProfile.claimedFrom) {
+    myRounds = PB.getPlayerRounds(currentProfile.claimedFrom);
+  }
+  var season = PB.getSeasonStandings(new Date().getFullYear());
+
+  var state = _homeState(myRounds);
+  var greetingWord = state === "new" ? "Welcome" : _greetingForTime();
+  var firstName = _firstName(currentProfile);
+
+  // Materialized stats preferred (kept in sync by persistPlayerStats).
+  var totalRounds = (currentProfile && currentProfile.totalRounds != null) ? currentProfile.totalRounds : myRounds.length;
+  var handicap = (currentProfile && currentProfile.computedHandicap != null) ? currentProfile.computedHandicap : null;
+  var bestRound = (currentProfile && currentProfile.bestRound != null) ? currentProfile.bestRound : null;
+  var bestRoundId = null;
+  if (bestRound != null) {
+    var myFull18 = myRounds.filter(function(r) {
+      return r.format !== "scramble" && r.format !== "scramble4" && (!r.holesPlayed || r.holesPlayed >= 18);
+    });
+    var br = myFull18.find(function(r) { return r.score === bestRound; });
+    if (br) bestRoundId = br.id;
+  }
+
+  var myLevel = PB.calcLevelFromXP(PB.getPlayerXPForDisplay(currentUser ? currentUser.uid : null));
+
+  var h = "";
+  h += _renderEmailVerifyBanner();
+  h += _renderGreeting(greetingWord, firstName);
+
+  if (state === "active") {
+    h += _renderLiveRoundCard();
+  } else if (state === "new") {
+    h += _renderNewUserIntro();
+    h += _renderNewUserCTAs();
+  } else {
+    // state === "idle"
+    h += _renderUnfinishedTripBanner(
+      PB.getTrips(),
+      currentUser ? currentUser.uid : null,
+      currentProfile ? currentProfile.claimedFrom : null
+    );
+    h += _renderReadyCTA();
+  }
+
+  h += _renderStatsStrip(totalRounds, handicap, bestRound, bestRoundId, state === "new");
+
+  if (state === "idle") {
+    var pulses = _generatePulses(currentProfile, myRounds, myLevel, season);
+    h += _renderPulses(pulses);
+  }
+
+  if (state !== "new") {
+    var upcoming = _getUpcomingTeeTimes();
+    if (upcoming && upcoming.length > 0) h += _renderTeeTimesSection(upcoming);
+  }
+
+  h += renderPageFooter();
+
+  document.querySelector('[data-page="home"]').innerHTML = h;
+});
+
+// ─── Private helpers (home-only — underscore prefix) ──────────────────────
+
+function _homeState(myRounds) {
+  var hasLive = typeof liveState !== "undefined" && liveState && liveState.active === true;
+  if (hasLive) return "active";
+  if (!myRounds || myRounds.length === 0) return "new";
+  return "idle";
+}
+
+function _greetingForTime() {
+  var h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  return "Good evening";
+}
+
+function _firstName(profile) {
+  if (!profile) return "Friend";
+  var name = profile.name || profile.username || "";
+  if (!name) return "Friend";
+  var first = String(name).split(/\s+/)[0];
+  return first || "Friend";
+}
+
+function _formatDateEyebrow() {
+  var d = new Date();
+  var day = ["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"][d.getDay()];
+  var month = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][d.getMonth()];
+  return day + " · " + month + " " + d.getDate();
+}
+
+function _renderEmailVerifyBanner() {
+  if (!currentUser || currentUser.emailVerified) return "";
+  var h = '<div style="padding:10px 22px;background:rgba(180,137,62,0.08);border-bottom:1px solid rgba(180,137,62,0.15);display:flex;align-items:center;gap:10px">';
+  h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--cb-brass)" stroke-width="1.5" style="flex-shrink:0"><path d="M8 1L1 5v6l7 4 7-4V5L8 1z"/><path d="M1 5l7 4 7-4"/></svg>';
+  h += '<div style="flex:1;font-family:var(--font-mono);font-size:10px;letter-spacing:0.5px;color:var(--cb-brass);line-height:1.4">Verify your email to unlock wagers, bounties, DMs, and the shop.</div>';
+  h += '<button style="background:var(--cb-brass);color:var(--cb-chalk);border:none;border-radius:4px;font:700 10px/1 var(--font-ui);padding:6px 12px;cursor:pointer;flex-shrink:0;letter-spacing:0.5px" onclick="sendVerificationEmail()">Verify</button>';
+  h += '</div>';
+  return h;
+}
+
+function _renderGreeting(greetingWord, firstName) {
+  var h = '<div style="padding:28px 22px 0">';
+  h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:10px">' + _formatDateEyebrow() + '</div>';
+  h += '<div style="font-family:var(--font-display);font-size:32px;font-weight:700;color:var(--cb-ink);line-height:1.15;letter-spacing:-0.5px">';
+  h += escHtml(greetingWord) + ',<br>';
+  h += '<span style="font-style:italic;font-weight:600">' + escHtml(firstName) + '.</span>';
+  h += '</div>';
+  h += '</div>';
+  return h;
+}
+
+function _renderLiveRoundCard() {
+  if (typeof liveState === "undefined" || !liveState || !liveState.active) return "";
+
+  var course = liveState.course || "Round in progress";
+  var hole = (liveState.currentHole || 0) + 1;
+  var scored = liveState.scores ? liveState.scores.filter(function(s) { return s !== ""; }) : [];
+  var thru = scored.length;
+  var total = scored.reduce(function(a, b) { return a + parseInt(b); }, 0);
+
+  var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+  var parSoFar = 0;
+  for (var i = 0; i < thru; i++) {
+    var hd = liveState.holes && liveState.holes[i];
+    parSoFar += (hd && hd.par) ? hd.par : (defaultPar[i] || 4);
+  }
+  var diff = thru > 0 ? total - parSoFar : 0;
+  var diffStr = thru === 0 ? "—" : (diff === 0 ? "E" : (diff > 0 ? "+" + diff : String(diff)));
+
+  var fmt = (liveState.format || "stroke").toString();
+  var formatLabel = fmt === "scramble" ? "SCRAMBLE" : fmt.toUpperCase() + " PLAY";
+
+  var h = '<div style="padding:18px 22px 0">';
+  h += '<div class="tappable" onclick="Router.go(\'playnow\')" style="background:var(--cb-green);border-radius:16px;padding:22px;color:var(--cb-chalk);cursor:pointer;position:relative;overflow:hidden">';
+  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);display:flex;align-items:center;gap:8px;margin-bottom:14px">';
+  h += '<span style="width:6px;height:6px;border-radius:50%;background:var(--cb-brass);animation:pulse-dot 2s infinite"></span>';
+  h += 'LIVE · YOUR ROUND';
+  h += '</div>';
+  h += '<div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--cb-chalk);line-height:1.2;letter-spacing:-0.3px;margin-bottom:6px">' + escHtml(course) + '</div>';
+  h += '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(var(--bg-rgb),0.6);letter-spacing:1.5px">HOLE ' + hole + ' · THRU ' + thru + ' · ' + formatLabel + '</div>';
+  h += '<div style="display:flex;gap:22px;padding-top:16px;margin-top:16px;border-top:1px solid rgba(var(--bg-rgb),0.14)">';
+  h += '<div style="flex:1">';
+  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;color:var(--cb-brass);margin-bottom:6px">YOU</div>';
+  h += '<div style="font-family:var(--font-display);font-size:32px;font-weight:700;color:var(--cb-chalk);line-height:1">' + (thru > 0 ? total : "—") + '</div>';
+  h += '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(var(--bg-rgb),0.6);letter-spacing:1px;margin-top:4px">' + diffStr + (thru > 0 ? " THRU " + thru : "") + '</div>';
+  h += '</div>';
+  h += '<div style="flex:1;text-align:right;align-self:center">';
+  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;color:var(--cb-brass);margin-bottom:6px">RESUME</div>';
+  h += '<div style="font-family:var(--font-display);font-size:15px;font-weight:600;color:var(--cb-chalk)">Scorecard →</div>';
+  h += '</div>';
+  h += '</div>';
+  h += '</div>';
+  h += '</div>';
+  return h;
+}
+
+function _renderUnfinishedTripBanner(trips, uid, claimedFrom) {
+  if (!uid || !trips || !trips.length) return "";
+  var today = localDateStr();
+  var dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  var todayDay = dayNames[new Date().getDay()];
+  var h = "";
+  trips.forEach(function(tr) {
+    if (!tr.courses || !tr.startDate || !tr.endDate) return;
+    if (today < tr.startDate || today > tr.endDate) return;
+    var isMember = tr.members && (
+      tr.members.indexOf(uid) !== -1 ||
+      (claimedFrom && tr.members.indexOf(claimedFrom) !== -1)
+    );
+    if (!isMember && !isFounderRole(currentProfile)) return;
+    tr.courses.forEach(function(crs) {
+      if (crs.finished) return;
+      var courseDay = (crs.d || "").split(" ")[0];
+      if (courseDay && courseDay !== todayDay) return;
+      var tid = escHtml(tr.id);
+      var ck = escHtml(crs.key);
+      h += '<div data-trip-id="' + tid + '" data-course-key="' + ck + '" class="tappable" onclick="Router.go(\'scorecard\',{tripId:this.getAttribute(\'data-trip-id\'),course:this.getAttribute(\'data-course-key\')})" style="margin:18px 22px 0;padding:14px 16px;background:var(--cb-chalk-2);border-left:2px solid var(--cb-moss);border-radius:10px;cursor:pointer">';
+      h += '<div style="display:flex;align-items:center;gap:10px;pointer-events:none">';
+      h += '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--cb-moss)" stroke-width="1.5" style="flex-shrink:0"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>';
+      h += '<div style="flex:1">';
+      h += '<div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--cb-ink);line-height:1.3">' + escHtml(crs.n || crs.key) + ' — scores not finalized</div>';
+      h += '<div style="font-family:var(--font-ui);font-size:11px;color:var(--cb-mute);margin-top:2px">' + escHtml(tr.name) + ' · Tap to review and finish round</div>';
+      h += '</div>';
+      h += '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="var(--cb-mute)" stroke-width="1.5" style="flex-shrink:0"><path d="M6 4l4 4-4 4"/></svg>';
+      h += '</div></div>';
+    });
+  });
+  return h;
+}
+
+function _renderReadyCTA() {
+  var h = '<div style="padding:18px 22px 0">';
+  h += '<div class="tappable" onclick="Router.go(\'playnow\')" style="padding:22px;background:var(--cb-chalk);border:1px dashed var(--cb-chalk-3);border-radius:14px;cursor:pointer">';
+  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:10px">NO ROUND TODAY</div>';
+  h += '<div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--cb-ink);line-height:1.2;letter-spacing:-0.2px;margin-bottom:8px">Ready when you are.</div>';
+  h += '<div style="font-family:var(--font-ui);font-size:13px;color:var(--cb-charcoal);line-height:1.55;max-width:380px;margin-bottom:16px">Start a round and the scorecard, skins pot and your caddie will wake up.</div>';
+  h += '<div style="display:inline-flex;align-items:center;gap:8px;padding:11px 18px;background:var(--cb-green);color:var(--cb-chalk);border-radius:8px;font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:0.3px">';
+  h += '<svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 14V2l8 3-8 3"/></svg>';
+  h += 'Start a round';
+  h += '</div>';
+  h += '</div>';
+  h += '</div>';
+  return h;
+}
+
+function _renderNewUserIntro() {
+  var h = '<div style="padding:10px 22px 0">';
+  h += '<div style="font-family:var(--font-ui);font-size:14px;color:var(--cb-charcoal);line-height:1.55;max-width:440px">You’re in. Start by logging a round, or hit the range to warm up.</div>';
+  h += '</div>';
+  return h;
+}
+
+function _renderNewUserCTAs() {
+  var h = '<div style="padding:18px 22px 0;display:flex;gap:10px;flex-wrap:wrap">';
+  // First round
+  h += '<div class="tappable" onclick="Router.go(\'playnow\')" style="flex:1 1 180px;padding:18px 16px;background:var(--cb-chalk);border:1px dashed var(--cb-chalk-3);border-radius:14px;cursor:pointer">';
+  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:8px">START HERE</div>';
+  h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--cb-ink);line-height:1.25;letter-spacing:-0.2px">Your first round.</div>';
+  h += '<div style="font-family:var(--font-ui);font-size:12px;color:var(--cb-mute);margin-top:6px;line-height:1.5">Log a full round and the Clubhouse comes alive.</div>';
+  h += '</div>';
+  // Range session
+  h += '<div class="tappable" onclick="Router.go(\'range\')" style="flex:1 1 180px;padding:18px 16px;background:var(--cb-chalk);border:1px dashed var(--cb-chalk-3);border-radius:14px;cursor:pointer">';
+  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:8px">OR WARM UP</div>';
+  h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--cb-ink);line-height:1.25;letter-spacing:-0.2px">Range session.</div>';
+  h += '<div style="font-family:var(--font-ui);font-size:12px;color:var(--cb-mute);margin-top:6px;line-height:1.5">Track your bucket and focus drills.</div>';
+  h += '</div>';
+  h += '</div>';
+  return h;
+}
+
+function _renderStatsStrip(totalRounds, handicap, bestRound, bestRoundId, isNew) {
+  var roundsStr = isNew ? "0" : String(totalRounds != null ? totalRounds : 0);
+  var hcapStr = (!isNew && handicap != null && !isNaN(handicap)) ? (+handicap).toFixed(1) : "—";
+  var bestStr = (!isNew && bestRound != null) ? String(bestRound) : "—";
+
+  var h = '<div style="padding:22px;display:grid;grid-template-columns:repeat(3, 1fr);gap:10px">';
+
+  // ROUNDS
+  var roundsClickable = !isNew && totalRounds > 0;
+  h += '<div' + (roundsClickable ? ' class="tappable" onclick="Router.go(\'roundhistory\')"' : '') + ' style="padding:12px 10px;background:var(--cb-chalk-2);border-radius:10px;' + (roundsClickable ? 'cursor:pointer' : '') + '">';
+  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:6px">ROUNDS</div>';
+  h += '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + roundsStr + '</div>';
+  h += '</div>';
+
+  // HCP
+  h += '<div style="padding:12px 10px;background:var(--cb-chalk-2);border-radius:10px">';
+  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:6px">HCP</div>';
+  h += '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + hcapStr + '</div>';
+  h += '</div>';
+
+  // BEST
+  var bestClickable = !!bestRoundId;
+  h += '<div' + (bestClickable ? ' class="tappable" onclick="Router.go(\'rounds\',{roundId:\'' + escHtml(bestRoundId) + '\'})"' : '') + ' style="padding:12px 10px;background:var(--cb-chalk-2);border-radius:10px;' + (bestClickable ? 'cursor:pointer' : '') + '">';
+  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:6px">BEST</div>';
+  h += '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + bestStr + '</div>';
+  h += '</div>';
+
+  h += '</div>';
+  return h;
+}
+
+function _generatePulses(profile, myRounds, myLevel, season) {
+  var pulses = [];
+
+  // Near level-up (≤ 200 XP to next)
+  if (myLevel && myLevel.level > 1 && (myLevel.nextLevelXp - myLevel.xp) <= 200 && (myLevel.nextLevelXp - myLevel.xp) > 0) {
+    var xpToNext = myLevel.nextLevelXp - myLevel.xp;
+    pulses.push({ eyebrow: "NEXT LEVEL", text: xpToNext + " XP to Level " + (myLevel.level + 1) + "." });
+  }
+
+  // 1-2 rounds: encourage handicap threshold
+  if (myRounds && myRounds.length > 0 && myRounds.length < 3) {
+    var n = 3 - myRounds.length;
+    pulses.push({
+      eyebrow: "HANDICAP",
+      text: n + " more round" + (n === 1 ? "" : "s") + " until your handicap is official."
+    });
+  }
+
+  // Season gap — only if under ~80 pts (reachable)
+  if (season && season.standings && season.standings.length > 0) {
+    var uid = currentUser ? currentUser.uid : null;
+    var claimedFrom = profile ? profile.claimedFrom : null;
+    var myStanding = season.standings.find(function(s) { return s.id === uid || s.id === claimedFrom; });
+    if (myStanding) {
+      var idx = season.standings.indexOf(myStanding);
+      if (idx > 0) {
+        var ahead = season.standings[idx - 1];
+        var gap = ahead.points - myStanding.points;
+        if (gap > 0 && gap <= 80) {
+          pulses.push({
+            eyebrow: "SEASON",
+            text: gap + " point" + (gap === 1 ? "" : "s") + " behind " + (ahead.name || ahead.username || "them") + "."
+          });
+        }
+      }
+    }
+  }
+
+  return pulses.slice(0, 2);
+}
+
+function _renderPulses(pulses) {
+  if (!pulses || pulses.length === 0) return "";
+  var h = '<div style="padding:0 22px">';
+  pulses.forEach(function(p) {
+    h += '<div style="padding:14px 16px;background:var(--cb-chalk-2);border-left:2px solid var(--cb-brass);border-radius:6px;margin-bottom:8px">';
+    h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:4px">' + escHtml(p.eyebrow) + '</div>';
+    h += '<div style="font-family:var(--font-ui);font-size:13px;color:var(--cb-ink);line-height:1.5">' + escHtml(p.text) + '</div>';
+    h += '</div>';
+  });
+  h += '</div>';
+  return h;
+}
+
+function _getUpcomingTeeTimes() {
+  if (typeof liveTeeTimes === "undefined" || !liveTeeTimes) return null;
+  var today = localDateStr();
+  var upcoming = liveTeeTimes.filter(function(t) {
+    return t.date && t.date >= today && t.status !== "cancelled";
+  });
+  // Sort by date (ascending), then time
+  upcoming.sort(function(a, b) {
+    if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+    return (a.time || "") < (b.time || "") ? -1 : 1;
+  });
+  return upcoming.slice(0, 3);
+}
+
+function _teeTimeDateLabel(dateStr, timeStr) {
+  if (!dateStr) return (timeStr || "").toUpperCase();
+  var today = localDateStr();
+  var d = new Date(Date.now() + 86400000);
+  var tomorrow = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  var prefix;
+  if (dateStr === today) prefix = "TODAY";
+  else if (dateStr === tomorrow) prefix = "TMRW";
+  else {
+    var dd = new Date(dateStr + "T12:00:00");
+    prefix = ["SUN","MON","TUE","WED","THU","FRI","SAT"][dd.getDay()];
+  }
+  return prefix + (timeStr ? " " + timeStr : "");
+}
+
+function _renderTeeTimesSection(upcoming) {
+  if (!upcoming || upcoming.length === 0) return "";
+  var h = '<div style="padding:22px 22px 0">';
+  h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:10px">ON THE TEE</div>';
+  upcoming.forEach(function(t, i) {
+    var accepted = t.responses ? Object.keys(t.responses).filter(function(k) { return t.responses[k] === "accepted"; }).length : 0;
+    var label = _teeTimeDateLabel(t.date, t.time);
+    h += '<div class="tappable" onclick="Router.go(\'teetimes\')" style="padding:12px 0;' + (i === 0 ? '' : 'border-top:1px solid var(--cb-chalk-3);') + 'display:flex;align-items:baseline;gap:14px;cursor:pointer">';
+    h += '<div style="font-family:var(--font-mono);font-size:11px;color:var(--cb-brass);font-weight:700;letter-spacing:0.5px;min-width:74px;flex-shrink:0">' + escHtml(label) + '</div>';
+    h += '<div style="flex:1;min-width:0">';
+    h += '<div style="font-family:var(--font-display);font-size:15px;font-weight:600;color:var(--cb-ink);line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(t.courseName || "Tee time") + '</div>';
+    h += '<div style="font-family:var(--font-ui);font-size:11px;color:var(--cb-mute);margin-top:2px">' + (t.postedByName ? "Posted by " + escHtml(t.postedByName) + " · " : "") + accepted + ' going</div>';
+    h += '</div>';
+    h += '</div>';
+  });
+  h += '</div>';
+  return h;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// === PART 2: External helpers (DO NOT DELETE — used by other pages) ===
+// These functions are called from pages outside home.js. Removing them will
+// break: 11+ pages that call renderPageFooter(), members.js (showRivalryDetail),
+// scorecard.js + settings.js (doCopy / doRestore). Future cleanup ship can
+// extract these to src/core/page-helpers.js — logged to backlog.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Shared footer links rendered at the bottom of every main tab page.
+// Used by: activity, drills, findplayers, leagues, members, more, records,
+// richlist, roundhistory, teetimes, trips, wagers.
 function renderPageFooter() {
   var d = "·";
   var s = "font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px";
@@ -21,374 +419,12 @@ function renderPageFooter() {
     '</div>';
 }
 
-Router.register("home", function() {
-  var players = PB.getPlayers();
-  var tournaments = PB.getTrips();
-  var rounds = PB.getRounds();
-  var recent = rounds.slice().reverse().slice(0, 5);
-  var season = PB.getSeasonStandings(new Date().getFullYear());
-
-  var h = '';
-
-  // ── Compact Hero + Personal Stats ──
-  var myRounds = currentUser ? PB.getPlayerRounds(currentUser.uid) : [];
-  if (!myRounds.length && currentProfile && currentProfile.claimedFrom) myRounds = PB.getPlayerRounds(currentProfile.claimedFrom);
-  // XP source precedence (see PB.getPlayerXPForDisplay in core/data.js).
-  var myLevel = PB.calcLevelFromXP(PB.getPlayerXPForDisplay(currentUser ? currentUser.uid : null));
-  var xpToNext = myLevel.nextLevelXp - myLevel.xp;
-  // Achievements are GLOBAL — use stored count from member doc
-  var achievementCount = currentProfile && currentProfile.earnedAchievements ? currentProfile.earnedAchievements.length : 0;
-  if (!achievementCount && currentUser) achievementCount = PB.getAchievements(currentUser.uid).length;
-  var xpPct = myLevel.nextLevelXp > 0 ? Math.round(((myLevel.xp - myLevel.currentLevelXp) / (myLevel.nextLevelXp - myLevel.currentLevelXp)) * 100) : 0;
-  
-  var myIndividualRounds = myRounds.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4";});
-  var myFull18 = myIndividualRounds.filter(function(r){return !r.holesPlayed || r.holesPlayed >= 18;});
-  // Best/handicap: prefer stored GLOBAL values from member doc, fall back to league rounds
-  var myBest = currentProfile && currentProfile.bestRound ? currentProfile.bestRound : (myFull18.length ? Math.min.apply(null, myFull18.map(function(r){return r.score||999})) : null);
-  var myBestRound = myBest ? myFull18.find(function(r){return r.score===myBest}) : null;
-  var myBestRoundId = myBestRound ? myBestRound.id : null;
-  var myHcap = currentProfile && currentProfile.computedHandicap != null ? currentProfile.computedHandicap : (myIndividualRounds.length >= 3 ? PB.calcHandicap(myRounds) : null);
-
-  // Email verification banner
-  if (currentUser && !currentUser.emailVerified) {
-    h += '<div style="padding:8px 16px;background:rgba(var(--gold-rgb),.08);border-bottom:1px solid rgba(var(--gold-rgb),.15);display:flex;align-items:center;gap:8px">';
-    h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M8 1L1 5v6l7 4 7-4V5L8 1z"/><path d="M1 5l7 4 7-4"/></svg>';
-    h += '<div style="flex:1;font-size:10px;color:var(--gold)">Verify your email to unlock wagers, bounties, DMs, and the shop</div>';
-    h += '<button style="background:var(--gold);color:var(--bg);border:none;border-radius:4px;font:600 9px/1 Inter,sans-serif;padding:5px 10px;cursor:pointer;flex-shrink:0" onclick="sendVerificationEmail()">Verify</button>';
-    h += '</div>';
-  }
-
-  h += '<div style="padding:20px 16px 0;text-align:center;background:linear-gradient(180deg,var(--grad-hero),var(--bg))">';
-  h += '<div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px">';
-  h += '<div style="width:48px;height:48px;border-radius:14px;overflow:hidden;flex-shrink:0;border:1px solid var(--border)"><img alt="" src="watermark.jpg" style="width:100%;height:100%;object-fit:cover"></div>';
-  h += '<div style="text-align:left"><div style="font-family:var(--font-display);font-size:18px;font-weight:800;color:var(--gold);letter-spacing:2px">THE PARBAUGHS</div>';
-  h += '<div style="font-size:8px;color:var(--muted);letter-spacing:4px;text-transform:uppercase;font-weight:500">Est. 2026 · York, PA</div></div></div>';
-
-  // Personal stat bar
-  h += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px">';
-  h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'trophyroom\')"><div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--gold)" data-count="' + myLevel.level + '">' + myLevel.level + '</div><div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Level</div>';
-  h += '<div style="height:3px;background:var(--bg3);border-radius:2px;margin-top:4px;overflow:hidden"><div style="height:100%;width:' + xpPct + '%;background:linear-gradient(90deg,var(--gold2),var(--gold3));border-radius:2px"></div></div></div>';
-  h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'members\',{id:\'' + (currentUser?currentUser.uid:"") + '\'})">';
-  if (myHcap !== null) {
-    h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--cream)" data-count="' + (+myHcap).toFixed(1) + '" data-count-decimals="1">0.0</div>';
-  } else {
-    h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--cream)">—</div>';
-  }
-  h += '<div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Handicap</div></div>';
-  var myTotalRounds = currentProfile && currentProfile.totalRounds ? currentProfile.totalRounds : myRounds.length;
-  h += '<div style="text-align:center;cursor:pointer" onclick="Router.go(\'roundhistory\')"><div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--cream)" data-stat="round-count" data-count="' + myTotalRounds + '">' + myTotalRounds + '</div>';
-  h += '<div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Rounds <svg viewBox="0 0 12 12" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div></div>';
-  h += '<div style="text-align:center;' + (myBestRoundId ? 'cursor:pointer' : '') + '"' + (myBestRoundId ? ' onclick="Router.go(\'rounds\',{roundId:\'' + myBestRoundId + '\'})"' : '') + '>';
-  if (myBest && myBest < 999) {
-    h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--birdie)" data-count="' + myBest + '">' + myBest + '</div>';
-  } else {
-    h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--muted2)">—</div>';
-  }
-  h += '<div style="font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600">Best' + (myBestRoundId ? ' <svg viewBox="0 0 12 12" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg>' : '') + '</div></div>';
-  h += '</div></div>';
-
-  // 0. Who's Online
-  h += '<div class="home-wrap">';
-
-  // New user welcome — show when 0 individual rounds
-  if (myIndividualRounds.length === 0) {
-    h += '<div style="background:linear-gradient(135deg,rgba(var(--gold-rgb),.08),rgba(var(--birdie-rgb),.06));border:1px solid rgba(var(--gold-rgb),.15);border-radius:var(--radius-lg);padding:20px 16px;margin-bottom:12px;text-align:center">';
-    h += '<div style="font-size:16px;font-weight:700;color:var(--gold);margin-bottom:6px">Welcome to ' + escHtml(window._activeLeagueName || "Parbaughs") + '</div>';
-    h += '<div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">Log your first round to start earning XP, climbing the leaderboard, and unlocking achievements.</div>';
-    h += '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">';
-    h += '<button class="btn-sm green" onclick="Router.go(\'playnow\')" style="font-size:11px;padding:10px 16px"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle;margin-right:4px"><circle cx="8" cy="8" r="6"/><polygon points="7,5.5 11,8 7,10.5" fill="currentColor"/></svg>Log a Round</button>';
-    h += '<button class="btn-sm outline" onclick="Router.go(\'courses\')" style="font-size:11px;padding:10px 16px">Browse Courses</button>';
-    h += '<button class="btn-sm outline" onclick="Router.go(\'members\',{edit:\'' + (currentUser?currentUser.uid:'') + '\'})" style="font-size:11px;padding:10px 16px">Set Up Profile</button>';
-    h += '</div></div>';
-  }
-
-  h += '<div id="onlineSection"></div>';
-
-  // Trend alerts from The Caddie
-  if (typeof caddieTrendAlerts === "function" && myIndividualRounds.length >= 3) {
-    var trendAlerts = caddieTrendAlerts(myRounds);
-    if (trendAlerts.length) {
-      h += '<div style="margin:0 0 8px">';
-      trendAlerts.forEach(function(alert) {
-        var alertColor = alert.type === "positive" ? "var(--birdie)" : alert.type === "negative" ? "var(--gold)" : "var(--cream)";
-        h += '<div style="padding:10px 14px;margin-bottom:4px;background:rgba(var(--birdie-rgb),.03);border-left:3px solid ' + alertColor + ';border-radius:0 var(--radius) var(--radius) 0">';
-        h += '<div style="display:flex;align-items:center;gap:6px">';
-        h += '<span style="font-size:10px">\u26f3</span>';
-        h += '<span style="font-size:11px;color:var(--cream);line-height:1.4">' + alert.text + '</span>';
-        h += '</div></div>';
-      });
-      h += '</div>';
-    }
-  }
-
-  // Tip of the Day
-  h += '<div id="tipOfDay"></div>';
-
-  // Quick Actions — 4 buttons
-  h += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 0 12px">';
-  h += '<button class="btn full green" onclick="Router.go(\'playnow\')" style="font-size:10px;padding:12px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor"/></svg>Play Now</button>';
-  h += '<button class="btn full outline" onclick="startRangeSession()" style="font-size:10px;padding:12px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--pink)" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Range</button>';
-  h += '<button class="btn full outline" onclick="Router.go(\'tee-create\')" style="font-size:10px;padding:12px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Tee Time</button>';
-  h += '<button class="btn full outline" onclick="Router.go(\'partygames\')" style="font-size:10px;padding:12px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/></svg>Games</button>';
-  h += '</div>';
-
-  // ── Live Spotlight — MOVED UP, most urgent info first ──
-  var liveRounds = [];
-  if (typeof liveState !== "undefined" && liveState && liveState.active) {
-    var myName = currentProfile ? (currentProfile.name || currentProfile.username) : "You";
-    var myThru = liveState.scores.filter(function(s){return s!==""}).length;
-    var myScore = liveState.scores.filter(function(s){return s!==""}).reduce(function(a,b){return a+parseInt(b)},0);
-    liveRounds.push({uid: currentUser ? currentUser.uid : null, name: myName, course: liveState.course, hole: liveState.currentHole + 1, thru: myThru, score: myScore, isMe: true});
-  }
-  Object.keys(onlineMembers).forEach(function(uid) {
-    if (currentUser && uid === currentUser.uid) return;
-    var m = onlineMembers[uid];
-    if (m.liveRound && m.liveRound.course && m.liveRound.thru > 0) {
-      liveRounds.push({uid: uid, name: m.name || "Member", course: m.liveRound.course, hole: m.liveRound.hole || 0, thru: m.liveRound.thru || 0, score: m.liveRound.score || 0, isMe: false});
-    }
-  });
-  var todayStr = new Date().getFullYear() + "-" + String(new Date().getMonth()+1).padStart(2,"0") + "-" + String(new Date().getDate()).padStart(2,"0");
-  var todayTees = liveTeeTimes.filter(function(t) { return t.date === todayStr && t.status !== "cancelled"; });
-  
-  if (liveRounds.length || todayTees.length) {
-    h += '<div class="section" style="padding-top:0"><div class="sec-head"><span class="sec-title" style="color:var(--live)"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--live);animation:pulse-dot 2s infinite;vertical-align:middle;margin-right:6px"></span>Live</span></div>';
-    liveRounds.forEach(function(lr) {
-      var holePars = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
-      var parThru = 0; for (var pi=0;pi<lr.thru;pi++) parThru += holePars[pi];
-      var diff = lr.thru > 0 ? lr.score - parThru : 0;
-      var diffStr = lr.thru === 0 ? "—" : diff === 0 ? "E" : (diff > 0 ? "+" + diff : "" + diff);
-      var diffColor = diff < 0 ? "var(--birdie)" : diff > 0 ? "var(--red)" : "var(--cream)";
-      var clickAction = lr.isMe ? "Router.go('playnow')" : (lr.uid ? "Router.go('watchround',{uid:'" + lr.uid + "'})" : "");
-      h += '<div class="card" style="padding:14px 16px;' + (lr.isMe ? 'border-left:3px solid var(--gold)' : 'border-left:3px solid var(--live);cursor:pointer') + '" onclick="' + clickAction + '">';
-      h += '<div style="display:flex;justify-content:space-between;align-items:center">';
-      h += '<div><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span class="pill pill-live">LIVE</span><span style="font-size:12px;font-weight:700;color:var(--cream)">' + escHtml(lr.name) + '</span></div>';
-      h += '<div style="font-size:11px;color:var(--muted)">' + escHtml(lr.course) + ' · Hole ' + lr.hole + (lr.thru > 0 ? ' · Thru ' + lr.thru : '') + '</div></div>';
-      h += '<div style="text-align:right"><div style="font-family:var(--font-display);font-size:24px;font-weight:800;color:' + diffColor + '">' + diffStr + '</div>';
-      if (!lr.isMe) h += '<div style="font-size:9px;color:var(--gold);font-weight:600">Watch →</div>';
-      h += '</div></div></div>';
-    });
-    todayTees.forEach(function(t) {
-      var accepted = t.responses ? Object.keys(t.responses).filter(function(k){return t.responses[k]==="accepted"}).length : 0;
-      h += '<div class="card" style="padding:14px 16px;cursor:pointer" onclick="Router.go(\'teetimes\')">';
-      h += '<div style="display:flex;justify-content:space-between;align-items:center">';
-      h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(t.courseName || "Tee Time") + '</div>';
-      h += '<div style="font-size:11px;color:var(--muted)">Today at ' + (t.time || "TBD") + '</div></div>';
-      h += '<div style="font-size:11px;color:var(--gold)">' + accepted + ' going</div>';
-      h += '</div></div>';
-    });
-    h += '</div>';
-  }
-
-  // ── Profile completion reminder ──
-  if (currentProfile) {
-    var _profDone = 0, _profTotal = 6;
-    if (currentProfile.bio && currentProfile.bio.trim()) _profDone++;
-    if (currentProfile.range && currentProfile.range.trim()) _profDone++;
-    if (currentProfile.homeCourse && currentProfile.homeCourse.trim()) _profDone++;
-    if (currentProfile.favoriteCourse && currentProfile.favoriteCourse.trim()) _profDone++;
-    var _clubsDone = 0;
-    if (currentProfile.clubs) Object.keys(currentProfile.clubs).forEach(function(k){if(currentProfile.clubs[k])_clubsDone++});
-    if (_clubsDone >= 1) _profDone++;
-    var _hasPhoto = false;
-    if (typeof photoCache !== "undefined") {
-      var _pc = photoCache["member:" + (currentUser?currentUser.uid:"")];
-      if (_pc && _pc.indexOf("stock_profile") === -1) _hasPhoto = true;
-    }
-    if (_hasPhoto) _profDone++;
-    if (_profDone < 4) {
-      var _missing = [];
-      if (!currentProfile.bio || !currentProfile.bio.trim()) _missing.push("bio");
-      if (!currentProfile.range || !currentProfile.range.trim()) _missing.push("score range");
-      if (!currentProfile.homeCourse || !currentProfile.homeCourse.trim()) _missing.push("home course");
-      if (_clubsDone < 1) _missing.push("club distances");
-      h += '<div onclick="Router.go(\'members\',{edit:\'' + (currentUser?currentUser.uid:"") + '\'})" style="margin-bottom:12px;padding:12px 16px;background:linear-gradient(135deg,rgba(var(--gold-rgb),.08),rgba(var(--gold-rgb),.02));border:1px solid rgba(var(--gold-rgb),.15);border-radius:var(--radius);cursor:pointer">';
-      h += '<div style="display:flex;align-items:center;gap:10px"><div style="flex-shrink:0;color:var(--gold)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="5"/><path d="M3 21c0-4.4 3.6-8 9-8s9 3.6 9 8"/><path d="M12 14v4M10 16h4"/></svg></div>';
-      h += '<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--gold)">Complete your profile</div>';
-      h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">Add your ' + _missing.slice(0,2).join(" & ") + ' to earn XP and unlock achievements</div></div>';
-      h += '<div style="font-size:10px;color:var(--gold);font-weight:600">' + _profDone + '/' + _profTotal + '</div>';
-      h += '</div></div>';
-    }
-  }
-
-  // ── Motivation card ──
-  var motivationCards = [];
-  if (myRounds.length === 0) {
-    motivationCards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='4' r='3'/><path d='M4 14l4-4 4 4'/><line x1='8' y1='10' x2='8' y2='16'/></svg>", title:"Log your first round", sub:"Earn 100 XP, unlock the First Blood badge, and establish your handicap.", cta:"Play Now →", page:"playnow"});
-  } else if (myRounds.length < 3) {
-    motivationCards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><rect x='2' y='3' width='12' height='10' rx='1'/><path d='M5 7h6M5 10h4'/></svg>", title: (3 - myRounds.length) + " more round" + (myRounds.length < 2 ? "s" : "") + " until your handicap", sub:"Log " + (3 - myRounds.length) + " more to get your official GHIN handicap calculated.", cta:"Play Now →", page:"playnow"});
-  }
-  if (xpToNext <= 200 && myLevel.level > 1) {
-    motivationCards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M9 1L4 9h4l-1 6 6-8H9l1-6z' fill='none' stroke='currentColor' stroke-width='1'/></svg>", title: xpToNext + " XP to Level " + (myLevel.level+1), sub:"One solid round could get you there. New title unlocks every 5 levels.", cta:"View Trophy Room →", page:"trophyroom"});
-  }
-  if (myRounds.length >= 3 && myRounds.length < 10 && myBest && myBest < 999) {
-    motivationCards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='8' r='6'/><circle cx='8' cy='8' r='3'/><circle cx='8' cy='8' r='.8' fill='currentColor'/></svg>", title:"Your best: " + myBest, sub:"Can you beat it? Every round that ties or beats your PR earns a 50-point bonus.", cta:"Play Now →", page:"playnow"});
-  }
-  var now = new Date();
-  var inSeason = now.getMonth() >= 2 && now.getMonth() <= 8;
-  if (inSeason && season.standings.length > 0) {
-    var myStanding = season.standings.find(function(s) { return s.id === (currentUser ? currentUser.uid : "") || s.id === (currentProfile ? currentProfile.claimedFrom : ""); });
-    if (myStanding && season.standings.indexOf(myStanding) > 0) {
-      var ahead = season.standings[season.standings.indexOf(myStanding) - 1];
-      var gap = ahead.points - myStanding.points;
-      motivationCards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M5 2h6v5a3 3 0 01-6 0V2z'/><path d='M5 4H3a1 1 0 00-1 1v1a2 2 0 002 2h1M11 4h2a1 1 0 011 1v1a2 2 0 01-2 2h-1'/><path d='M6 10v2h4v-2M4 14h8'/></svg>", title: gap + " points behind " + (ahead.name||ahead.username), sub:"One big round with an attested score could close that gap.", cta:"View Standings →", page:"standings"});
-    }
-  }
-  if (!motivationCards.length) {
-    motivationCards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M3 2v12'/><path d='M3 2l9 3.5L3 9'/></svg>", title:"The course is calling", sub:"Every round earns XP, builds your handicap, and pushes you up the standings.", cta:"Play Now →", page:"playnow"});
-  }
-  var mCard;
-  if (motivationCards.length === 1) { mCard = motivationCards[0]; }
-  else {
-    var userSeed = currentUser ? currentUser.uid.charCodeAt(0) : 0;
-    var dayIndex = (Math.floor(Date.now() / 86400000) + userSeed) % motivationCards.length;
-    mCard = motivationCards[dayIndex];
-  }
-  h += '<div style="margin-bottom:12px"><div onclick="Router.go(\'' + mCard.page + '\')" style="background:linear-gradient(135deg,rgba(var(--gold-rgb),.06),rgba(var(--gold-rgb),.02));border:1px solid rgba(var(--gold-rgb),.12);border-radius:var(--radius);padding:14px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
-  h += '<div style="display:flex;align-items:flex-start;gap:12px">';
-  h += '<div style="font-size:24px;flex-shrink:0;margin-top:2px">' + mCard.icon + '</div>';
-  h += '<div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--cream)">' + mCard.title + '</div>';
-  h += '<div style="font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4">' + mCard.sub + '</div>';
-  h += '<div style="font-size:11px;color:var(--gold);font-weight:600;margin-top:8px">' + mCard.cta + '</div>';
-  h += '</div></div></div></div>';
-
-  // ── Unfinished trip banners ──
-  var myUidForBanner = currentUser ? currentUser.uid : null;
-  var myClaimedFrom = currentProfile ? currentProfile.claimedFrom : null;
-  if (myUidForBanner) {
-    var todayStr2 = localDateStr();
-    var allTrips2 = PB.getTrips();
-    allTrips2.forEach(function(tr) {
-      if (!tr.courses || !tr.startDate || !tr.endDate) return;
-      if (todayStr2 < tr.startDate || todayStr2 > tr.endDate) return;
-      var isTripMember2 = tr.members && (
-        tr.members.indexOf(myUidForBanner) !== -1 ||
-        (myClaimedFrom && tr.members.indexOf(myClaimedFrom) !== -1)
-      );
-      if (!isTripMember2 && !isFounderRole(currentProfile)) return;
-      var dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-      var todayDay = dayNames[new Date().getDay()];
-      tr.courses.forEach(function(crs) {
-        if (crs.finished) return;
-        var courseDay = (crs.d || "").split(" ")[0];
-        if (courseDay && courseDay !== todayDay) return;
-        var tid = escHtml(tr.id);
-        var ck = escHtml(crs.key);
-        h += '<div data-trip-id="' + tid + '" data-course-key="' + ck + '" onclick="Router.go(\'scorecard\',{tripId:this.getAttribute(\'data-trip-id\'),course:this.getAttribute(\'data-course-key\')})" style="margin-bottom:8px;padding:12px 16px;background:linear-gradient(135deg,rgba(var(--birdie-rgb),.06),rgba(var(--birdie-rgb),.02));border:1px solid rgba(var(--birdie-rgb),.15);border-radius:var(--radius);cursor:pointer;-webkit-tap-highlight-color:rgba(var(--birdie-rgb),.15)">';
-        h += '<div style="display:flex;align-items:center;gap:10px;pointer-events:none"><div style="flex-shrink:0;color:var(--birdie)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h2M14 14h2M8 18h2"/></svg></div>';
-        h += '<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--birdie)">' + escHtml(crs.n || crs.key) + ' — scores not finalized</div>';
-        h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(tr.name) + ' · Tap to review and finish round</div></div>';
-        h += '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M6 4l4 4-4 4"/></svg>';
-        h += '</div></div>';
-      });
-    });
-  }
-
-  // ── Next Event ──
-  var nextTournament = tournaments.find(function(t) { return t.status !== "closed" && !t.champion; });
-  if (nextTournament) {
-    var days = PB.daysUntil(nextTournament.startDate);
-    var daysUntilEnd = nextTournament.endDate ? PB.daysUntil(nextTournament.endDate) : days;
-    var isUpcoming = days > 0;
-    var isLiveEvent = days <= 0 && daysUntilEnd >= 0;
-    var isPastEvent = days <= 0 && daysUntilEnd < 0;
-    h += '<div class="next-trip" onclick="Router.go(\'scorecard\',{tripId:\'' + nextTournament.id + '\'})">';
-    if (isLiveEvent) {
-      h += '<div class="nt-eye"><span class="pill pill-live" style="font-size:8px">LIVE EVENT</span></div>';
-    } else if (isPastEvent) {
-      h += '<div class="nt-eye"><span class="pill pill-final" style="font-size:8px">AWAITING RESULTS</span></div>';
-    } else {
-      h += '<div class="nt-eye"><span style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:3px;font-weight:700">Upcoming</span></div>';
-    }
-    h += '<div class="nt-name">' + nextTournament.name + '</div>';
-    h += '<div class="nt-detail">' + nextTournament.dates + ' · ' + nextTournament.location + ' · ' + nextTournament.courses.length + ' rounds</div>';
-    if (isUpcoming) h += '<div class="nt-count">' + days + ' days away</div>';
-    else if (isLiveEvent) h += '<div class="nt-count live">Happening now</div>';
-    else h += '<div class="nt-count" style="color:var(--muted)">Tap to finalize results</div>';
-    h += '</div>';
-  }
-
-  // ── Season Standings Mini-Leaderboard (top 3) ──
-  if (season.standings.length > 0) {
-    h += '<div class="section" style="padding-top:6px"><div class="sec-head"><span class="sec-title">Season Standings</span><span class="sec-link" onclick="Router.go(\'standings\')">View All</span></div>';
-    var top3 = season.standings.slice(0, 3);
-    top3.forEach(function(s, idx) {
-      var p = PB.getPlayer(s.id);
-      var medalIcon = idx === 0 ? '<span style="color:var(--gold);font-weight:800">1</span>' : idx === 1 ? '<span style="color:var(--medal-silver);font-weight:700">2</span>' : '<span style="color:var(--medal-bronze);font-weight:700">3</span>';
-      var isFirst = idx === 0;
-      h += '<div class="card" style="margin-bottom:4px;cursor:pointer;' + (isFirst ? 'border-color:rgba(var(--gold-rgb),.2);background:linear-gradient(135deg,var(--grad-card),var(--card))' : '') + '" onclick="Router.go(\'members\',{id:\'' + s.id + '\'})">';
-      h += '<div style="padding:10px 14px;display:flex;align-items:center;gap:12px">';
-      h += '<div style="width:24px;text-align:center;font-size:14px">' + medalIcon + '</div>';
-      h += renderAvatar(p || s, 32, false);
-      h += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(s.name || s.username || "") + '</div>';
-      h += '<div style="font-size:10px;color:var(--muted)">' + (s.rounds||0) + ' rounds</div></div>';
-      h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--gold)" data-count="' + (s.points||0) + '">0</div>';
-      h += '</div></div>';
-    });
-    h += '</div>';
-  }
-
-  // ── Event Results ──
-  var pastTournaments = tournaments.filter(function(t) { return t.champion; });
-  if (pastTournaments.length) {
-    h += '<div class="section"><div class="sec-head"><span class="sec-title">Event results</span><span class="sec-link" onclick="Router.go(\'trips\',{create:true})">Start New Event</span></div>';
-    pastTournaments.forEach(function(t) {
-      var champ = PB.getPlayer(t.champion);
-      var champName = champ ? champ.name : t.champion;
-      h += '<div class="card" onclick="Router.go(\'scorecard\',{tripId:\'' + t.id + '\'})" style="cursor:pointer"><div style="padding:14px 16px">';
-      h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">';
-      h += '<div><div style="font-size:14px;font-weight:700;color:var(--cream)">' + escHtml(t.name) + '</div>';
-      h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(t.dates || "") + ' · ' + escHtml(t.location || "") + '</div></div>';
-      h += '<span class="pill pill-final">FINAL</span></div>';
-      if (t.finalStandings && t.finalStandings.length) {
-        var placeLabels = ["1st","2nd","3rd","4th","5th","6th"];
-        t.finalStandings.forEach(function(s, i) {
-          var isWinner = i === 0;
-          h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;' + (i < t.finalStandings.length - 1 ? 'border-bottom:1px solid var(--border);' : '') + '">';
-          h += '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;color:' + (isWinner ? 'var(--gold)' : 'var(--muted)') + ';width:24px;font-weight:600">' + (placeLabels[i]||"") + '</span>';
-          h += '<span style="font-size:12px;color:' + (isWinner ? 'var(--gold)' : 'var(--cream)') + ';font-weight:' + (isWinner ? '700' : '400') + '">' + escHtml(s.name) + '</span></div>';
-          h += '<span style="font-size:12px;font-weight:600;color:' + (isWinner ? 'var(--gold)' : 'var(--muted)') + '">' + s.points + ' pts</span></div>';
-        });
-      } else {
-        h += '<div style="font-size:12px;color:var(--gold);font-weight:600">Champion: ' + escHtml(champName) + '</div>';
-      }
-      h += '</div></div>';
-    });
-    h += '</div>';
-  }
-
-  // ── Activity Feed ──
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Activity feed</span></div>';
-  h += '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">';
-  h += '<input class="ff-input" id="homeChatInput" placeholder="Say something..." style="flex:1;margin:0;font-size:12px;padding:9px 14px;border-radius:20px" onkeydown="if(event.key===\'Enter\')sendHomeChat()">';
-  h += '<button style="background:var(--gold);border:none;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0" onclick="sendHomeChat()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--bg)" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>';
-  h += '</div>';
-  h += '<div id="homeActivityFeed"><div class="card"><div style="padding:20px;text-align:center;font-size:11px;color:var(--muted)">Loading...</div></div></div>';
-
-  // Quick links
-  h += '<div style="display:flex;gap:8px;margin-bottom:8px">';
-  h += '<div class="ql" style="flex:1" onclick="Router.go(\'teetimes\')"><div class="ql-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="ql-label">Tee Times</div></div>';
-  h += '<div class="ql" style="flex:1" onclick="Router.go(\'records\')"><div class="ql-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div><div class="ql-label">Records</div></div>';
-  h += '<div class="ql" style="flex:1" onclick="Router.go(\'syncround\')"><div class="ql-icon" style="color:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M21 3v6h-6"/><path d="M3 21v-6h6"/><path d="M21 9A9 9 0 006.3 5.3L3 9"/><path d="M3 15a9 9 0 0014.7 3.7L21 15"/></svg></div><div class="ql-label">Sync Round</div></div>';
-  h += '</div>';
-
-  h += '</div>'; // close home-wrap
-  
-  h += renderPageFooter();
-
-    document.querySelector('[data-page="home"]').innerHTML = h;
-  // Re-render online section since the div was just recreated
-  if (typeof renderOnlineSection === "function") renderOnlineSection();
-  // Tip of the Day
-  _renderTipOfDay();
-  // Load activity feed async from Firestore
-  loadHomeActivityFeed();
-});
-
+// Rivalry detail view — used by members.js H2H list.
 function showRivalryDetail(p1id, p2id) {
   var p1 = PB.getPlayer(p1id), p2 = PB.getPlayer(p2id);
   if (!p1 || !p2) return;
   var h2h = calcH2H(p1id, p2id);
-  
+
   // Find shared rounds for match history
   var p1rounds = PB.getPlayerRounds(p1id);
   var p2rounds = PB.getPlayerRounds(p2id);
@@ -420,7 +456,7 @@ function showRivalryDetail(p1id, p2id) {
   matches.sort(function(a,b) { return b.date > a.date ? 1 : -1; });
 
   var h = '<div class="sh"><h2>' + escHtml(p1.name) + ' vs ' + escHtml(p2.name) + '</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
-  
+
   // Big score display
   h += '<div style="text-align:center;padding:20px">';
   h += '<div class="rivalry-vs">';
@@ -459,47 +495,15 @@ function showRivalryDetail(p1id, p2id) {
   document.querySelector('[data-page="standings"]').innerHTML = h;
 }
 
+// Backup export — used by scorecard.js and settings.js.
 function doCopy() {
   var code = PB.exportBackup();
   navigator.clipboard.writeText(code).then(function() { Router.toast("Backup copied!"); }).catch(function() { prompt("Copy this code:", code); });
 }
+
+// Backup import — used by scorecard.js and settings.js.
 function doRestore() {
   var code = prompt("Paste backup code:");
   if (code && PB.importBackup(code)) { Router.toast("Restored!"); Router.go("home"); }
   else if (code) Router.toast("Invalid code");
 }
-
-// ── Tip of the Day ──
-var GOLF_TIPS = [
-  {cat:"Putting", tip:"Gate drill: place two tees just wider than your putter head 3 feet from the hole. Roll 10 putts through the gate. Build confidence on short putts before tackling long ones."},
-  {cat:"Driving", tip:"Tee height matters. For driver, half the ball should be above the crown. For fairway woods, just a quarter inch. For irons off the tee, barely above the grass."},
-  {cat:"Short Game", tip:"On chip shots, keep your weight 60% on your lead foot throughout the swing. This promotes ball-first contact and consistent distance control."},
-  {cat:"Course Management", tip:"When you miss a green, always chip toward the fat part of the putting surface. Leaving yourself a longer putt is better than a tricky short one."},
-  {cat:"Mental Game", tip:"After a bad hole, take 3 deep breaths before your next tee shot. Reset your mental scorecard to zero. The next hole doesn't know what happened on the last one."},
-  {cat:"Etiquette", tip:"Repair your ball marks on the green AND one more. If everyone fixes two marks, the greens stay perfect. It's the easiest way to improve your course."},
-  {cat:"Putting", tip:"Read your putt from behind the ball AND behind the hole. Your brain averages both perspectives and gives you a more accurate read than either alone."},
-  {cat:"Driving", tip:"Slow down your backswing. Most amateurs swing too fast going back. A smoother tempo creates better contact and actually increases distance."},
-  {cat:"Short Game", tip:"From a bunker, open your clubface BEFORE you grip it. Then take your normal grip. This adds loft without changing your swing."},
-  {cat:"Course Management", tip:"Know your actual distances, not your best-ever distances. Your 7-iron average is more useful than the one time you flushed it 170."},
-  {cat:"Mental Game", tip:"Pre-shot routine should take the same time whether it's the first hole or the 18th. Consistency in routine creates consistency in results."},
-  {cat:"Putting", tip:"On breaking putts, aim at the apex of the break — the highest point — and let gravity do the work. Most amateurs under-read break by 50%."},
-  {cat:"Short Game", tip:"The bump-and-run with a 7 or 8 iron is the most reliable chip shot in golf. Use it whenever you have green to work with."},
-  {cat:"Driving", tip:"Alignment sticks in practice are worth 5 strokes a round. Most golfers aim further right than they think. Check your aim regularly."},
-  {cat:"Mental Game", tip:"Play the shot you have, not the shot you wish you had. Accept your lie, pick the highest-percentage play, and commit to it completely."}
-];
-
-function _renderTipOfDay() {
-  var el = document.getElementById("tipOfDay");
-  if (!el) return;
-  // Pick tip based on day of year (rotates daily)
-  var dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
-  var tip = GOLF_TIPS[dayOfYear % GOLF_TIPS.length];
-  var catColors = {Putting:"var(--birdie)",Driving:"var(--gold)",ShortGame:"var(--blue)",CourseManagement:"var(--purple)",MentalGame:"var(--pink)",Etiquette:"var(--muted)","Short Game":"var(--blue)","Course Management":"var(--purple)","Mental Game":"var(--pink)"};
-  var catColor = catColors[tip.cat] || "var(--gold)";
-  el.innerHTML = '<div style="margin:0 0 8px;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg)">' +
-    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
-    '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="' + catColor + '" stroke-width="1.5"><circle cx="8" cy="6" r="4"/><path d="M6 10v2a2 2 0 004 0v-2"/><path d="M5 14h6"/></svg>' +
-    '<span style="font-size:9px;font-weight:700;color:' + catColor + ';text-transform:uppercase;letter-spacing:1px">' + tip.cat + ' Tip</span></div>' +
-    '<div style="font-size:11px;color:var(--cream);line-height:1.6">' + tip.tip + '</div></div>';
-}
-
