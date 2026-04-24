@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · sheets under the hood</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · page lift</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Behind-the-scenes improvement: added a new bottom sheet system under the hood. You won't see it yet — but it'll power smoother detail views, confirmations, and forms in upcoming updates.", tag: "IMPROVED" }
+    { item: "Navigation between pages now has subtle motion. Moving deeper into the app (tap a row, view a detail) lifts pages into place. Big moments like starting a round get a premium brass sweep. It's quiet, editorial, and respects your reduced-motion settings.", tag: "NEW" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.3.1", date: "April 2026", headline: "Bottom sheet foundation",
+      items: [
+        { item: "Behind-the-scenes improvement: added a new bottom sheet system under the hood. You won't see it yet — but it'll power smoother detail views, confirmations, and forms in upcoming updates.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.3.0", date: "April 2026", headline: "Reading Room shell",
       items: [

@@ -34,8 +34,8 @@
 .pill-hot{background:rgba(var(--alert-rgb),.1);color:var(--alert);border:1px solid rgba(var(--alert-rgb),.2)}
 
 /* ── Page transitions ── */
-@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-[data-page]:not(.hidden){animation:pageIn .2s ease-out}
+/* Legacy pageIn animation removed in v8.3.2 — replaced by the three-tier
+   transition system at the end of this file. */
 
 /* ── Number animation ── */
 @keyframes countPop{0%{transform:scale(.8);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
@@ -1030,4 +1030,84 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 
 @media (prefers-reduced-motion: reduce) {
   .bs-backdrop, .bs-sheet { transition: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PAGE TRANSITIONS (v8.3.2 · Ship 0b-ii)
+   Three tiers driven by data attributes set from src/core/transitions.js on
+   the active [data-page] element.
+     cut      — no attributes, no animation (default + same-route re-nav)
+     lift     — 200ms 6px Y + fade; back-nav inverts Y
+     masthead — 320ms fade + 640ms brass hairline sweep (entrance only)
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-transition] { --pt-y: 6px; }
+
+/* LIFT — forward (default direction) */
+[data-transition="lift"][data-direction="in"]:not([data-nav="back"]) {
+  animation: pt-lift-in 200ms var(--ease-default) 80ms both;
+}
+[data-transition="lift"][data-direction="out"]:not([data-nav="back"]) {
+  animation: pt-lift-out 200ms var(--ease-default) both;
+}
+@keyframes pt-lift-in {
+  from { opacity: 0; transform: translateY(calc(var(--pt-y) * -1)); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pt-lift-out {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(var(--pt-y)); }
+}
+
+/* LIFT — back (inverted Y) */
+[data-transition="lift"][data-direction="in"][data-nav="back"] {
+  animation: pt-lift-in-back 200ms var(--ease-default) 80ms both;
+}
+[data-transition="lift"][data-direction="out"][data-nav="back"] {
+  animation: pt-lift-out-back 200ms var(--ease-default) both;
+}
+@keyframes pt-lift-in-back {
+  from { opacity: 0; transform: translateY(var(--pt-y)); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pt-lift-out-back {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(calc(var(--pt-y) * -1)); }
+}
+
+/* MASTHEAD — content crossfade (entrance only; exit is no-op per design) */
+[data-transition="masthead"][data-direction="in"] {
+  animation: pt-masthead-in 320ms var(--ease-default) 120ms both;
+  position: relative;
+}
+@keyframes pt-masthead-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* MASTHEAD — brass hairline sweep via ::before pseudo-element on the host */
+[data-transition="masthead"][data-direction="in"]::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  height: 1px; width: 100%;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--cb-brass) 20%,
+    var(--cb-brass) 80%,
+    transparent 100%);
+  transform-origin: left;
+  animation: pt-masthead-sweep 640ms var(--ease-default) both;
+  z-index: 10;
+  pointer-events: none;
+}
+@keyframes pt-masthead-sweep {
+  0%   { transform: scaleX(0); opacity: 0; }
+  20%  { opacity: 0.8; }
+  80%  { transform: scaleX(1); opacity: 0.8; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-transition],
+  [data-transition]::before { animation: none !important; }
 }

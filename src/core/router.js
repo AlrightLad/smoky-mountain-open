@@ -2103,18 +2103,71 @@ Router.go = function(page, params) {
   } else {
     setTimeout(renderRipBanner, 50);
   }
-  // Re-trigger page-enter animation
-  var pageEl = document.querySelector('[data-page="' + page + '"]');
-  if (pageEl) {
-    pageEl.style.animation = 'none';
-    pageEl.offsetHeight; // force reflow
-    pageEl.style.animation = '';
-  }
   // Auto-animate any data-count elements on the new page
   setTimeout(initCountAnimations, 80);
   // Sync sidebar active state + lazily wire click handler on first nav
   _wireSidebar();
   _updateSidebarActive(page);
+};
+
+// ========== PAGE TRANSITIONS (v8.3.2 · Ship 0b-ii) ==========
+// Outer wrap: orchestrates the three-tier transition (Cut / Lift / Masthead).
+// Defers to the v8.3.0 wrap above (which handles RIP banner, sidebar, counts).
+// getTransitionTier, applyTransition, _clearTransition come from transitions.js,
+// loaded before router.js in CORE_FILES so the references are live at wrap time.
+var _transitionInner = Router.go;   // the v8.3.0 wrap
+var _hasNavigated = false;
+
+Router.go = function(page, params) {
+  var from = _hasNavigated ? Router.getPage() : null;
+  _hasNavigated = true;
+  var back = !!(params && params.__back === true);
+
+  var tier = (typeof getTransitionTier === "function")
+    ? getTransitionTier(from, page)
+    : "cut";
+
+  // Reduced motion forces Cut regardless of tier.
+  if (typeof prefersReducedMotion === "function" && prefersReducedMotion()) {
+    tier = "cut";
+  }
+
+  var fromEl = from ? document.querySelector('#mainApp [data-page="' + from + '"]') : null;
+  var toEl = document.querySelector('#mainApp [data-page="' + page + '"]');
+
+  if (tier === "cut") {
+    if (fromEl) _clearTransition(fromEl);
+    if (toEl) _clearTransition(toEl);
+    _transitionInner(page, params);
+    return;
+  }
+
+  if (tier === "lift") {
+    // Exit on outgoing page, then swap + enter on incoming.
+    if (fromEl && fromEl !== toEl) applyTransition(fromEl, "lift", "out", back);
+    setTimeout(function() {
+      _transitionInner(page, params);
+      if (toEl) applyTransition(toEl, "lift", "in", back);
+      // Strip attrs after anim completes so future navigations start fresh.
+      setTimeout(function() {
+        if (fromEl) _clearTransition(fromEl);
+        if (toEl) _clearTransition(toEl);
+      }, 400);
+    }, 200);
+    return;
+  }
+
+  if (tier === "masthead") {
+    // Entrance only — skip exit. Swap synchronously, then apply enter attrs
+    // in the same tick so the browser paints the initial "from" state of
+    // the fill-mode:both animation on the first frame of the new page.
+    _transitionInner(page, params);
+    if (toEl) applyTransition(toEl, "masthead", "in", back);
+    setTimeout(function() {
+      if (toEl) _clearTransition(toEl);
+    }, 820); // 120ms delay + 640ms sweep + margin
+    return;
+  }
 };
 
 
