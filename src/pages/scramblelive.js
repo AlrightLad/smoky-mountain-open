@@ -194,6 +194,8 @@ function finishScrambleLive() {
   }
   
   scrambleLiveState = { active: false };
+  // Haptic success on round finish (Ship 0b-iii)
+  if (typeof hapticSuccess === "function") hapticSuccess();
   Router.toast("Scramble round saved! ");
   Router.go("rounds");
 }

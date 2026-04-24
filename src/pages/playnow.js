@@ -800,17 +800,23 @@ function adjustLiveScore(delta) {
   var current = liveState.scores[hole];
   var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
   var par = (liveState.holes && liveState.holes[hole] && liveState.holes[hole].par) || defaultPar[hole] || 4;
+  var changed = false;
   if (current === "") {
     liveState.scores[hole] = par;
+    changed = true;
   } else {
     var newVal = parseInt(current) + delta;
-    if (newVal >= 1 && newVal <= 15) liveState.scores[hole] = newVal;
+    if (newVal >= 1 && newVal <= 15) {
+      liveState.scores[hole] = newVal;
+      changed = true;
+    }
   }
   updatePresence(); // broadcast to watchers
   saveLiveState();  // persist for crash recovery / cross-device
   // Direct-DOM update — primary score display, diff label, and running total.
   // Turn-summary and hole-selector-dot update on next hole navigation.
   _redrawScoreCard(hole, par);
+  if (changed && typeof hapticLight === "function") hapticLight();
   } catch(e) { pbWarn("[PlayNow] adjustLiveScore error:", e.message); }
 }
 
@@ -1063,6 +1069,9 @@ function finishLiveRound() {
   });
   // Sync to Firestore immediately — critical for cross-device visibility and loadRoundsFromFirestore
   syncRound(round);
+
+  // Haptic success on round finish (Ship 0b-iii)
+  if (typeof hapticSuccess === "function") hapticSuccess();
 
   // Persist computed stats back to member doc so they're always available even if rounds don't load
   setTimeout(function() { persistPlayerStats(liveState.player); }, 2000);

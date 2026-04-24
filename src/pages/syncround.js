@@ -295,6 +295,8 @@ function finishSyncRound(roundId) {
     return db.collection("syncrounds").doc(roundId).update({ status: "completed", completedAt: fsTimestamp() });
   }).then(function() {
     if (syncRoundListener) { syncRoundListener(); syncRoundListener = null; }
+    // Haptic success on round finish (Ship 0b-iii)
+    if (typeof hapticSuccess === "function") hapticSuccess();
     Router.toast("Round finished! Scores saved.");
     Router.go("rounds");
   }).catch(function(e) {

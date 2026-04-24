@@ -1434,6 +1434,9 @@ function showAchievementCelebration(ach) {
   var existing = document.getElementById("achCelebration");
   if (existing) existing.remove();
 
+  // Haptic unlock pattern (Ship 0b-iii) — fires alongside the visual celebration
+  if (typeof hapticUnlock === "function") hapticUnlock();
+
   var el = document.createElement("div");
   el.id = "achCelebration";
   el.className = "ach-celebrate";

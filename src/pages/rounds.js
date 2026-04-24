@@ -365,6 +365,8 @@ function submitRound() {
 
   function _afterRoundSubmit(round) {
     syncRound(round);
+    // Haptic success on round finish (Ship 0b-iii)
+    if (typeof hapticSuccess === "function") hapticSuccess();
     setTimeout(function() { persistPlayerStats(player); }, 2000);
     // ── ParCoin: award coins for logging a round ──
     if (currentUser && addRoundData.format !== "scramble" && addRoundData.format !== "scramble4") {
