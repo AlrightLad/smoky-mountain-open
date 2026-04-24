@@ -232,48 +232,110 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   DARK MODE — [data-theme="dark"] override
-   User opts in via settings toggle. Not default. Default is light.
+   EDITORIAL THEMES — six palettes (v8.3.5 · Ship 0d-i)
+   Replaces the light/dark appearance axis. Each theme overrides the 9 core
+   Clubhouse tokens (chalk, chalk-2, chalk-3, green, green-2, ink, charcoal,
+   mute, brass). Semantic tokens + legacy aliases inherit via var() chains
+   from :root, so pages pick up each theme automatically.
+
+   Three rgb tuples that derive from themed colors are also redefined per
+   theme so rgba() overlays remain palette-accurate.
    ═══════════════════════════════════════════════════════════════════════════ */
-[data-theme="dark"] {
-  --surface-primary: var(--cb-green);
-  --surface-secondary: var(--cb-green-2);
-  --surface-tertiary: var(--cb-green-3);
-  --surface-inverse: var(--cb-chalk);
-  --surface-raised: var(--cb-green-ink);
 
-  --text-primary: var(--cb-chalk);
-  --text-secondary: var(--cb-chalk-2);
-  --text-muted: var(--cb-mute-2);
-  --text-subtle: rgba(244,239,228,0.5);
-  --text-inverse: var(--cb-ink);
+/* Clubhouse — default. Matches :root fallback so explicit selection works. */
+[data-theme="clubhouse"] {
+  --cb-chalk: #F4EFE4;
+  --cb-chalk-2: #E9E2D1;
+  --cb-chalk-3: #DCD3BD;
+  --cb-green: #0F3D2E;
+  --cb-green-2: #0A2A20;
+  --cb-ink: #14130F;
+  --cb-charcoal: #4A4740;
+  --cb-mute: #7A766B;
+  --cb-brass: #B4893E;
+  --bg-rgb: 244, 239, 228;
+  --cream-rgb: 20, 19, 15;
+  --gold-rgb: 180, 137, 62;
+}
 
-  --border-subtle: rgba(244,239,228,0.12);
-  --border-default: rgba(244,239,228,0.2);
-  --border-strong: var(--cb-chalk);
+/* Twilight Links — dusk over coastal course, cool-leaning. */
+[data-theme="twilight_links"] {
+  --cb-chalk: #ECE5D2;
+  --cb-chalk-2: #DFD5BE;
+  --cb-chalk-3: #CFC3A6;
+  --cb-green: #1A2A3E;
+  --cb-green-2: #0F1D2D;
+  --cb-ink: #0F1620;
+  --cb-charcoal: #3A4454;
+  --cb-mute: #74798A;
+  --cb-brass: #C48540;
+  --bg-rgb: 236, 229, 210;
+  --cream-rgb: 15, 22, 32;
+  --gold-rgb: 196, 133, 64;
+}
 
-  /* Legacy alias remapping for dark mode */
-  --bg: var(--cb-green);
-  --bg2: var(--cb-green-2);
-  --bg3: var(--cb-green-3);
-  --bg4: var(--cb-green-ink);
-  --cream: var(--cb-chalk);
-  --muted: var(--cb-mute-2);
-  --muted2: rgba(244,239,228,0.5);
-  --card: var(--cb-green-2);
-  --border: rgba(244,239,228,0.2);
-  --bg-rgb: 15, 61, 46;
-  --cream-rgb: 244, 239, 228;
-  --alert: var(--cb-claret);
-  --grad-hero: var(--cb-green-2);
-  --grad-deep: var(--cb-green);
-  --grad-card: var(--cb-green);
-  --grad-trophy: var(--cb-green-2);
-  --grad-mid: var(--cb-green);
-  --accept-bg: rgba(90,125,78,0.25);
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-  --shadow-md: 0 2px 8px rgba(0,0,0,0.4);
-  --shadow-lg: 0 20px 60px rgba(0,0,0,0.5);
+/* Linen Draft — bright outdoor daylight, reading chair. */
+[data-theme="linen_draft"] {
+  --cb-chalk: #F8F3E6;
+  --cb-chalk-2: #EDE4CE;
+  --cb-chalk-3: #DCCFB4;
+  --cb-green: #2B3A2E;
+  --cb-green-2: #1D2A20;
+  --cb-ink: #2B3A2E;
+  --cb-charcoal: #56604F;
+  --cb-mute: #8A8974;
+  --cb-brass: #B8743A;
+  --bg-rgb: 248, 243, 230;
+  --cream-rgb: 43, 58, 46;
+  --gold-rgb: 184, 116, 58;
+}
+
+/* Champion Sunday (unlock) — tournament-program burgundy. */
+[data-theme="champion_sunday"] {
+  --cb-chalk: #F1E8D6;
+  --cb-chalk-2: #E6DAC1;
+  --cb-chalk-3: #D3C4A4;
+  --cb-green: #4A1D24;
+  --cb-green-2: #341016;
+  --cb-ink: #1E1412;
+  --cb-charcoal: #5A463F;
+  --cb-mute: #8A7264;
+  --cb-brass: #C68A3C;
+  --bg-rgb: 241, 232, 214;
+  --cream-rgb: 30, 20, 18;
+  --gold-rgb: 198, 138, 60;
+}
+
+/* Bourbon Room (unlock) — lodge / whiskey bar. */
+[data-theme="bourbon_room"] {
+  --cb-chalk: #F0E4CC;
+  --cb-chalk-2: #E3D3B2;
+  --cb-chalk-3: #C9B689;
+  --cb-green: #3D2817;
+  --cb-green-2: #281A0E;
+  --cb-ink: #2A1A0E;
+  --cb-charcoal: #5A3E24;
+  --cb-mute: #8C6B4A;
+  --cb-brass: #B8743A;
+  --bg-rgb: 240, 228, 204;
+  --cream-rgb: 42, 26, 14;
+  --gold-rgb: 184, 116, 58;
+}
+
+/* Course Record (unlock, rarest) — ledger paper, silver-brass. */
+[data-theme="course_record"] {
+  --cb-chalk: #F6F1E3;
+  --cb-chalk-2: #E9E0C8;
+  --cb-chalk-3: #CDC3A8;
+  --cb-green: #0C2A22;
+  --cb-green-2: #071C17;
+  --cb-ink: #0C1612;
+  --cb-charcoal: #3E4A42;
+  --cb-mute: #7A8078;
+  --cb-brass: #8A8572;
+  --bg-rgb: 246, 241, 227;
+  --cream-rgb: 12, 22, 18;
+  --gold-rgb: 138, 133, 114;
 }
 
 /* ── Hidden utility ── */

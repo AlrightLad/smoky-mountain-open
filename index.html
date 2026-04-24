@@ -3,12 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <script>
+// No-flash theme boot (v8.3.5 · Ship 0d-i). Reads pb_theme; migrates legacy
+// pb_appearance "light"/"dark" on first run. Defaults to "clubhouse".
 (function(){
   try {
-    var pref = localStorage.getItem('pb_appearance') || 'light';
-    document.documentElement.setAttribute('data-theme', pref);
+    var theme = localStorage.getItem('pb_theme');
+    if (!theme) {
+      var legacy = localStorage.getItem('pb_appearance');
+      theme = legacy === 'dark' ? 'twilight_links' : 'clubhouse';
+      try { localStorage.setItem('pb_theme', theme); } catch(e) {}
+    }
+    document.documentElement.setAttribute('data-theme', theme);
   } catch(e) {
-    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.setAttribute('data-theme', 'clubhouse');
   }
 })();
 </script>

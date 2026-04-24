@@ -494,41 +494,12 @@ function deleteMyAccount() {
     });
 }
 
-// ========== APPEARANCE (light/dark) ==========
-function initAppearance(userProfile) {
-  var pref = userProfile && userProfile.appearance;
-  if (pref !== 'dark' && pref !== 'light') {
-    try { pref = localStorage.getItem('pb_appearance'); } catch(e) { pref = null; }
-  }
-  if (pref !== 'dark' && pref !== 'light') pref = 'light';
-  document.documentElement.setAttribute('data-theme', pref);
-  try { localStorage.setItem('pb_appearance', pref); } catch(e) {}
-}
-
-window.setAppearance = function(mode) {
-  if (mode !== 'light' && mode !== 'dark') return;
-  document.documentElement.setAttribute('data-theme', mode);
-  try { localStorage.setItem('pb_appearance', mode); } catch(e) {}
-  var uid = auth && auth.currentUser && auth.currentUser.uid;
-  if (uid && db) {
-    db.collection('members').doc(uid).update({ appearance: mode }).catch(function(){});
-  }
-  updateAppearanceButtonStates();
-};
-
-function updateAppearanceButtonStates() {
-  var current = document.documentElement.getAttribute('data-theme') || 'light';
-  var lightBtn = document.getElementById('mode-light-btn');
-  var darkBtn = document.getElementById('mode-dark-btn');
-  if (lightBtn) {
-    lightBtn.style.background = current === 'light' ? 'var(--cb-brass)' : 'transparent';
-    lightBtn.style.border = current === 'light' ? '1px solid var(--cb-brass)' : '1px solid var(--border-subtle)';
-  }
-  if (darkBtn) {
-    darkBtn.style.background = current === 'dark' ? 'var(--cb-brass)' : 'transparent';
-    darkBtn.style.border = current === 'dark' ? '1px solid var(--cb-brass)' : '1px solid var(--border-subtle)';
-  }
-}
+// ========== APPEARANCE → THEME (retired in v8.3.5, Ship 0d-i) ==========
+// The old initAppearance / setAppearance / updateAppearanceButtonStates
+// helpers were replaced by the 6-theme system in src/core/theme.js. User
+// theme state is reconciled via reconcileThemeFromProfile(currentProfile).
+// The legacy light/dark toggle in Settings was swapped for a placeholder
+// note; the full picker ships in 0d-ii.
 
 function showClubhouseWelcomeToast() {
   try {
@@ -560,8 +531,8 @@ if (firebaseAvailable && auth) {
         if (currentProfile.sharedRounds && currentProfile.sharedRounds.length) {
           currentProfile.sharedRounds.forEach(function(rid){ window._sharedRoundIds[rid] = true; });
         }
-        // Apply appearance preference from Firestore profile
-        initAppearance(currentProfile);
+        // Apply theme preference from Firestore profile (migrates legacy .appearance if present)
+        if (typeof reconcileThemeFromProfile === "function") reconcileThemeFromProfile(currentProfile);
         showClubhouseWelcomeToast();
         enterApp();
         // Start real-time profile listener — keeps currentProfile in sync across devices/sessions
@@ -570,8 +541,8 @@ if (firebaseAvailable && auth) {
           if (!snap.exists) return;
           currentProfile = snap.data();
           window._pbShareCount = (currentProfile.shareCount || 0);
-          // Sync appearance from Firestore (cross-device)
-          initAppearance(currentProfile);
+          // Sync theme from Firestore (cross-device)
+          if (typeof reconcileThemeFromProfile === "function") reconcileThemeFromProfile(currentProfile);
           updateProfileBar();
           // Re-render current page if it depends on profile data
           var pg = Router.getPage();

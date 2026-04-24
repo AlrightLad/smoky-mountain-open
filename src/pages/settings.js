@@ -23,33 +23,17 @@ Router.register("settings", function() {
   }
   h += '</div>';
 
-  // Appearance toggle (light/dark) — replaces legacy theme picker
-  var currentAppearance = 'light';
-  try {
-    var lsAppearance = localStorage.getItem('pb_appearance');
-    if (lsAppearance === 'dark' || lsAppearance === 'light') currentAppearance = lsAppearance;
-    else if (currentProfile && currentProfile.appearance === 'dark') currentAppearance = 'dark';
-  } catch(e){}
-  var lightActive = currentAppearance === 'light';
-  var darkActive = currentAppearance === 'dark';
-  var lightBg = lightActive ? 'var(--cb-brass)' : 'transparent';
-  var lightBorder = lightActive ? '1px solid var(--cb-brass)' : '1px solid var(--border-subtle)';
-  var darkBg = darkActive ? 'var(--cb-brass)' : 'transparent';
-  var darkBorder = darkActive ? '1px solid var(--cb-brass)' : '1px solid var(--border-subtle)';
+  // Appearance — placeholder pending full theme picker (Ship 0d-ii)
+  var _activeThemeId = (typeof getCurrentTheme === "function") ? getCurrentTheme() : "clubhouse";
+  var _activeThemeName = (typeof THEMES !== "undefined" && THEMES[_activeThemeId]) ? THEMES[_activeThemeId].name : "Clubhouse";
   h += '<div class="section" style="margin-top:16px">';
   h += '<div class="sec-head"><span class="sec-title">Appearance</span></div>';
   h += '<div class="card"><div class="card-body" style="padding:16px">';
-  h += '<div style="display:flex;align-items:center;gap:12px">';
-  h += '<button id="mode-light-btn" onclick="setAppearance(\'light\')" class="btn-sm" style="flex:1;padding:14px;border-radius:10px;background:' + lightBg + ';border:' + lightBorder + '">';
-  h += '<span style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)">Light</span>';
-  h += '<div style="margin-top:6px;font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--text-primary)">Clubhouse</div>';
-  h += '</button>';
-  h += '<button id="mode-dark-btn" onclick="setAppearance(\'dark\')" class="btn-sm" style="flex:1;padding:14px;border-radius:10px;background:' + darkBg + ';border:' + darkBorder + '">';
-  h += '<span style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)">Dark</span>';
-  h += '<div style="margin-top:6px;font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--text-primary)">After hours</div>';
-  h += '</button>';
+  h += '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">';
+  h += '<span style="font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)">Current theme</span>';
+  h += '<span style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--text-primary)">' + escHtml(_activeThemeName) + '</span>';
   h += '</div>';
-  h += '<div style="margin-top:12px;font-family:var(--font-mono);font-size:10px;color:var(--text-muted);letter-spacing:0.5px">The Clubhouse refresh replaces our previous themes. Your data is safe — only the look changed.</div>';
+  h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-subtle);font-size:11px;color:var(--text-muted);line-height:1.5">The full theme picker arrives in an upcoming update. Six editorial themes — three ready, three to earn.</div>';
   h += '</div></div></div>';
 
   // Push notifications
