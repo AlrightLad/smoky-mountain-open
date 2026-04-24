@@ -1111,3 +1111,131 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   [data-transition],
   [data-transition]::before { animation: none !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHALK DRY — loading state system (v8.3.4 · Ship 0c)
+   Three states gated by duration. Primitives composed from existing tokens,
+   coexists alongside the legacy .skeleton/.spinner system. Class names use
+   BEM modifiers (.skel--title, .skel--body) that don't collide with the
+   legacy .skel-line/.skel-circle/.skel-card utilities.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* RUNNING PIN — 200-700ms state */
+.load-rule {
+  position: relative;
+  height: 1px;
+  background: var(--cb-chalk-3);
+  margin: 16px 0;
+  overflow: visible;
+}
+.load-rule::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--cb-brass);
+  transform: translateY(-50%);
+  box-shadow: 0 0 0 2px var(--cb-chalk);
+  animation: load-pin-run 600ms var(--ease-default) forwards;
+}
+@keyframes load-pin-run {
+  from { left: 0; opacity: 1; }
+  70%  { opacity: 1; }
+  to   { left: 100%; opacity: 0; }
+}
+
+/* SKELETON BLOCKS */
+.skel {
+  background: var(--cb-chalk-2);
+  border-radius: 4px;
+  display: inline-block;
+}
+.skel--title  { height: 34px; width: 78%; display: block; }
+.skel--body   { height: 20px; width: 92%; margin-top: 8px; display: block; }
+.skel--body:nth-child(even) { width: 71%; }
+.skel--meta   { height: 12px; width: 40%; margin-top: 6px; display: block; }
+.skel--avatar { height: 72px; width: 72px; border-radius: 50%; flex-shrink: 0; }
+.skel--stat-value { height: 38px; width: 60%; margin-top: 6px; display: block; }
+
+/* SKELETON CONTAINERS */
+.skel-header {
+  padding: 0 0 16px;
+}
+.skel-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--cb-mute);
+  margin-bottom: 6px;
+}
+.skel-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--cb-chalk-3);
+}
+.skel-row:first-child { border-top: 0; }
+.skel-row__body { flex: 1; min-width: 0; }
+.skel-stat { flex: 1; min-width: 0; }
+
+/* BREATH PIN — scaffold state anchor, top-right */
+.breath-pin {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--cb-brass);
+  animation: breath-pin-pulse 2400ms ease-in-out infinite;
+}
+@keyframes breath-pin-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
+/* CROSSFADE — skeleton out, real content in */
+.skel-stage { animation: skel-fade-out 160ms ease-out forwards; }
+.data-stage { animation: skel-fade-in 160ms ease-out 40ms forwards; opacity: 0; }
+@keyframes skel-fade-out { to { opacity: 0; } }
+@keyframes skel-fade-in  { to { opacity: 1; } }
+
+/* SYNC RIBBON — Live HUD exception (helper present; no HUD integration yet) */
+.sync-ribbon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--cb-chalk-2);
+  border-top: 1px solid var(--cb-brass);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--cb-brass-deep);
+}
+.sync-ribbon__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cb-brass);
+  animation: sync-pulse 1200ms ease-in-out infinite;
+}
+@keyframes sync-pulse { 50% { opacity: 0.35; } }
+
+/* REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+  .load-rule::after,
+  .breath-pin,
+  .sync-ribbon__dot,
+  .skel-stage,
+  .data-stage { animation: none !important; }
+  .data-stage { opacity: 1 !important; }
+}

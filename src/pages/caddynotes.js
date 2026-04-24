@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · feel the moment</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · chalk dry</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Haptic feedback added on iOS and Android — a light tap when you enter a score, a success buzz when you finish a round, and an unlock pattern when you earn something new. Subtle and intentional, only where the moment is real.", tag: "NEW" }
+    { item: "Behind-the-scenes improvement: added a new loading state system that feels intentional instead of clunky. Quick loads show nothing; medium loads show a subtle brass cue; slower loads show a skeleton of the real content. You won't see it yet — but it'll feel premium across upcoming screens.", tag: "IMPROVED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.3.3", date: "April 2026", headline: "Haptic bridge",
+      items: [
+        { item: "Haptic feedback added on iOS and Android — a light tap when you enter a score, a success buzz when you finish a round, and an unlock pattern when you earn something new. Subtle and intentional, only where the moment is real.", tag: "NEW" }
+      ]
+    },
     {
       version: "v8.3.2", date: "April 2026", headline: "Page transitions",
       items: [
