@@ -2020,6 +2020,74 @@ function renderRipBanner() {
   }
 }
 
+// ========== READING ROOM SIDEBAR (v8.3.0 · Ship 0a) ==========
+// Wires desktop sidebar nav clicks, active-state sync, and user footer.
+// Sidebar markup lives in index.html. Below 960px viewport the sidebar is
+// hidden via CSS; helpers still run (cheap) so state stays correct if the
+// viewport widens post-init.
+var _sidebarRoutes = ["home","playnow","rounds","feed","standings","members","shop","trophyroom"];
+
+function _wireSidebar() {
+  var sidebar = document.getElementById("rrSidebar");
+  if (!sidebar || sidebar._pbWired) return;
+  sidebar._pbWired = true;
+  sidebar.addEventListener("click", function(e) {
+    var item = e.target.closest(".rr-sidebar__item");
+    if (!item) return;
+    var route = item.dataset.route;
+    if (route) Router.go(route);
+  });
+  sidebar.addEventListener("keydown", function(e) {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    var item = e.target.closest(".rr-sidebar__item");
+    if (!item) return;
+    e.preventDefault();
+    var route = item.dataset.route;
+    if (route) Router.go(route);
+  });
+}
+
+function _updateSidebarActive(page) {
+  var sidebar = document.getElementById("rrSidebar");
+  if (!sidebar) return;
+  // Only highlight if the current page is one the sidebar actually lists.
+  // Non-sidebar pages (e.g., settings, courses) leave every item inactive.
+  var match = _sidebarRoutes.indexOf(page) !== -1 ? page : null;
+  sidebar.querySelectorAll(".rr-sidebar__item").forEach(function(item) {
+    item.classList.toggle("rr-sidebar__item--active", item.dataset.route === match);
+  });
+}
+
+function _sidebarInitials(p) {
+  if (!p) return "P";
+  var name = p.name || p.username || "Parbaugh";
+  var parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+  return name.substring(0, 2).toUpperCase();
+}
+
+function refreshSidebarUser() {
+  var avatarEl = document.getElementById("rrSidebarAvatar");
+  var nameEl = document.getElementById("rrSidebarName");
+  var metaEl = document.getElementById("rrSidebarMeta");
+  if (!avatarEl || !nameEl || !metaEl) return;
+  var p = (typeof currentProfile !== "undefined") ? currentProfile : null;
+  var display = p ? (PB.getDisplayName ? PB.getDisplayName(p) : (p.name || p.username || "Parbaugh")) : "Parbaugh";
+  var username = p ? (p.username || "member") : "member";
+  var level = 1;
+  try {
+    if (p && typeof currentUser !== "undefined" && currentUser
+        && typeof PB !== "undefined" && PB.getPlayerXPForDisplay && PB.calcLevelFromXP) {
+      var xp = PB.getPlayerXPForDisplay(currentUser.uid);
+      var lvl = PB.calcLevelFromXP(xp);
+      if (lvl && lvl.level) level = lvl.level;
+    }
+  } catch(e) { /* fall through to level 1 */ }
+  avatarEl.textContent = _sidebarInitials(p);
+  nameEl.textContent = display;
+  metaEl.textContent = "@" + username + " · LVL " + level;
+}
+
 // Hook into Router.go to show/hide the banner on non-playnow pages
 var _origRouterGo = Router.go;
 Router.go = function(page, params) {
@@ -2044,6 +2112,9 @@ Router.go = function(page, params) {
   }
   // Auto-animate any data-count elements on the new page
   setTimeout(initCountAnimations, 80);
+  // Sync sidebar active state + lazily wire click handler on first nav
+  _wireSidebar();
+  _updateSidebarActive(page);
 };
 
 

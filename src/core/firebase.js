@@ -702,6 +702,9 @@ function updateProfileBar() {
       : '<div style="width:72px;height:2px;background:var(--border);border-radius:1px"><div style="width:' + xpPct + '%;height:100%;background:var(--gold);border-radius:1px;transition:width .3s"></div></div>';
     rightEl.innerHTML += '<div style="display:flex;align-items:center;gap:6px;margin-top:3px">' + streakRow + '</div>';
   }
+
+  // Mirror the current profile into the Reading Room sidebar footer (v8.3.0)
+  if (typeof refreshSidebarUser === "function") refreshSidebarUser();
 }
 
 function goToMyProfile() {
