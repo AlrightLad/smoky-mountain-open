@@ -24,25 +24,38 @@
 // === PART 1: Home render (Clubhouse editorial) ===
 // ═══════════════════════════════════════════════════════════════════════════
 
-// HQ desktop breakpoint: ≥960px gets the editorial HQ layout (lead column always,
-// features column at 1280+, agate rail at 1440+). Below 960px renders the
-// mobile-editorial layout — reserved for the Capacitor app on phones.
+// HQ desktop breakpoint: ≥960px gets the editorial HQ layout. Within HQ, four
+// design bands (mobile / B / C / D) drive layout + typography:
+//   mobile (<960):       mobile-editorial layout (Capacitor app, narrow browsers)
+//   B      (960-1279):   single 600px lead column; chart promoted into lead flow
+//   C      (1280-1439):  lead 480 + features 400
+//   D      (1440+):      lead 480 + features 400 + agate 196
 var HQ_BREAKPOINT = 960;
 function _isHQViewport() { return window.innerWidth >= HQ_BREAKPOINT; }
 
-// Resize handler is bound once on first home render. Re-renders if viewport
-// crosses the HQ threshold while user is on the home page.
+// Returns the active design band based on viewport width.
+function _currentBand() {
+  var w = window.innerWidth;
+  if (w < 960) return "mobile";
+  if (w < 1280) return "B";
+  if (w < 1440) return "C";
+  return "D";
+}
+
+// Resize handler is bound once on first home render. Re-renders when crossing
+// any band boundary (mobile/B/C/D) — band-specific layouts need this for
+// chart promotion (B), features column toggle (B↔C), agate toggle (C↔D).
 var _hqResizeBound = false;
-var _hqLastViewportWasHQ = null;
+var _hqLastBand = null;
 function _bindHQResize() {
   if (_hqResizeBound) return;
   _hqResizeBound = true;
-  _hqLastViewportWasHQ = _isHQViewport();
+  _hqLastBand = _currentBand();
   window.addEventListener("resize", function() {
     if (Router.getPage() !== "home") return;
-    var nowHQ = _isHQViewport();
-    if (nowHQ !== _hqLastViewportWasHQ) {
-      _hqLastViewportWasHQ = nowHQ;
+    var nowBand = _currentBand();
+    if (nowBand !== _hqLastBand) {
+      _hqLastBand = nowBand;
       Router.go("home", Router.getParams());
     }
   });
@@ -205,6 +218,9 @@ function _formatHQMastheadDate() {
 // aggregate data path lands in a future ship.
 function _renderHQMasthead() {
   var date = _formatHQMastheadDate();
+  var condensed = window.innerWidth < 1280;
+  var myLeagueLabel = condensed ? "League" : "My league";
+  var allParbaughsLabel = condensed ? "All" : "All Parbaughs";
   var h = '<div style="background:var(--cb-chalk);border-bottom:1px solid var(--cb-chalk-3);max-width:1152px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between">';
 
   // Left: wordmark + divider + date
@@ -220,8 +236,8 @@ function _renderHQMasthead() {
   h += '<div title="York, PA · weather will go live in a future update" style="display:inline-flex;align-items:center;height:28px;padding:0 12px;background:var(--cb-chalk-2);border-radius:6px;font-family:var(--font-ui);font-weight:500;font-size:12px;color:var(--cb-brass);letter-spacing:0.3px">58° · CLEAR</div>';
   // Scope switcher — visual-only until cross-league aggregate data exists
   h += '<div style="display:inline-flex;align-items:stretch;background:var(--cb-chalk-2);border-radius:6px;padding:2px;gap:2px">';
-  h += '<div style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:4px;text-transform:uppercase">My league</div>';
-  h += '<div title="All Parbaughs view coming in a future update" style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:1.2px;color:var(--cb-mute);text-transform:uppercase;cursor:not-allowed;opacity:0.55">All Parbaughs</div>';
+  h += '<div style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:4px;text-transform:uppercase">' + escHtml(myLeagueLabel) + '</div>';
+  h += '<div title="All Parbaughs view coming in a future update" style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:1.2px;color:var(--cb-mute);text-transform:uppercase;cursor:not-allowed;opacity:0.55">' + escHtml(allParbaughsLabel) + '</div>';
   h += '</div>';
   h += '</div>';
 
@@ -234,26 +250,29 @@ function _renderHQMasthead() {
 // Ship 1b-i: typed placeholders in each column. Ship 1b-ii fills lead + features;
 // Ship 1b-iii fills agate.
 function _renderHQGrid(ctx) {
-  var w = window.innerWidth;
-  var showFeatures = w >= 1280;
-  var showAgate = w >= 1440;
+  var band = _currentBand();
   var h = '<div style="max-width:1152px;margin:0 auto;padding:32px 24px 0;display:flex">';
-  // Lead column — always present from 960px+
-  h += '<div style="width:480px;flex-shrink:0">';
-  h += _renderHQLeadColumn(ctx);
-  h += '</div>';
-  // Features column — appears at 1280px+
-  if (showFeatures) {
+
+  if (band === "B") {
+    // Band B (960-1279): single 600px lead column, chart promoted into flow.
+    h += '<div style="width:600px;flex-shrink:0">';
+    h += _renderHQLeadColumnBandB(ctx);
+    h += '</div>';
+  } else {
+    // Bands C (1280-1439) and D (1440+): existing v8.5.1 architecture.
+    h += '<div style="width:480px;flex-shrink:0">';
+    h += _renderHQLeadColumn(ctx);
+    h += '</div>';
     h += '<div style="width:400px;flex-shrink:0;margin-left:32px">';
     h += _renderHQFeaturesColumn(ctx);
     h += '</div>';
+    if (band === "D") {
+      h += '<div style="width:196px;flex-shrink:0;margin-left:24px">';
+      h += _renderHQPlaceholder("Agate rail", ctx.state);
+      h += '</div>';
+    }
   }
-  // Agate rail (Ship 1b-iii fills this; only renders at ≥1440px)
-  if (showAgate) {
-    h += '<div style="width:196px;flex-shrink:0;margin-left:24px">';
-    h += _renderHQPlaceholder("Agate rail", ctx.state);
-    h += '</div>';
-  }
+
   h += '</div>';
   return h;
 }
@@ -353,13 +372,13 @@ function _renderEditorialGreetingHero(ctx) {
 
   var h = '<div>';
   // Eyebrow
-  h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:18px">' + escHtml(eyebrow) + '</div>';
-  // Headline — Fraunces 56 with italic name
-  h += '<div style="font-family:var(--font-display);font-size:56px;font-weight:700;line-height:1.05;letter-spacing:-2px;color:var(--cb-ink);margin-bottom:14px">';
+  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:18px">' + escHtml(eyebrow) + '</div>';
+  // Headline — Fraunces, scales 36/44/52/56 across bands
+  h += '<div style="font-family:var(--font-display);font-size:var(--hq-hero-size);font-weight:var(--hq-hero-weight);line-height:1.05;letter-spacing:-2px;color:var(--cb-ink);margin-bottom:14px">';
   h += 'Welcome back, <em style="font-style:italic;font-weight:700">' + escHtml(ctx.firstName) + '</em>.';
   h += '</div>';
-  // Subhead
-  h += '<div style="font-family:var(--font-ui);font-size:18px;font-weight:500;color:var(--cb-charcoal);max-width:380px;line-height:1.45;margin-bottom:22px">' + escHtml(_hqHeroSubhead(ctx)) + '</div>';
+  // Subhead — scales 15/16/17/18
+  h += '<div style="font-family:var(--font-ui);font-size:var(--hq-subhead-size);font-weight:500;color:var(--cb-charcoal);max-width:380px;line-height:1.45;margin-bottom:22px">' + escHtml(_hqHeroSubhead(ctx)) + '</div>';
   // Pull-quote
   h += _hqHeroPullquote(ctx);
   h += '</div>';
@@ -440,6 +459,14 @@ function _hqHeroPullquote(ctx) {
   return h;
 }
 
+// Truncate a caption string to a max char count with ellipsis. Used by the
+// stats quartet to keep cell captions inside the column at all bands.
+function _truncateCaption(s, max) {
+  if (!s) return s;
+  max = max || 13;
+  return s.length > max ? s.slice(0, max - 1) + '…' : s;
+}
+
 // Stats snapshot quartet — 4 cells, no card chrome, vertical chalk-3 dividers
 // between cells. Baseball box-score feel. Some cells are clickable.
 function _renderStatsSnapshotQuartet(ctx) {
@@ -463,7 +490,7 @@ function _renderStatsSnapshotQuartet(ctx) {
   var bestCourse = "";
   if (ctx.bestRoundId) {
     var br = (ctx.myRounds || []).find(function(r){ return r.id === ctx.bestRoundId; });
-    if (br && br.course) bestCourse = br.course.toUpperCase().slice(0, 16);
+    if (br && br.course) bestCourse = br.course.toUpperCase();
   }
   var bestCaption = bestCourse || "";
 
@@ -472,11 +499,12 @@ function _renderStatsSnapshotQuartet(ctx) {
   var streakCaption = streak > 0 ? streak + " ROUND" + (streak === 1 ? "" : "S") + " UNDER" : "ROUNDS LOGGED: " + rounds;
   var streakColor = streak > 0 ? "var(--cb-moss)" : "var(--cb-mute)";
 
+  // Universal 13-char caption cap with ellipsis — fits cleanly across all bands.
   var cells = [
-    { label: "HCP", value: hcap, caption: hcapDelta, captionColor: hcapDeltaColor, click: "Router.go('records')" },
-    { label: "ROUNDS", value: String(rounds), caption: roundsCaption, captionColor: "var(--cb-mute)", click: "Router.go('roundhistory')" },
-    { label: "BEST", value: best, caption: bestCaption, captionColor: "var(--cb-mute)", click: ctx.bestRoundId ? ("Router.go('rounds',{roundId:'" + ctx.bestRoundId + "'})") : "" },
-    { label: "STREAK", value: streakVal, caption: streakCaption, captionColor: streakColor, click: "" }
+    { label: "HCP", value: hcap, caption: _truncateCaption(hcapDelta), captionColor: hcapDeltaColor, click: "Router.go('records')" },
+    { label: "ROUNDS", value: String(rounds), caption: _truncateCaption(roundsCaption), captionColor: "var(--cb-mute)", click: "Router.go('roundhistory')" },
+    { label: "BEST", value: best, caption: _truncateCaption(bestCaption), captionColor: "var(--cb-mute)", click: ctx.bestRoundId ? ("Router.go('rounds',{roundId:'" + ctx.bestRoundId + "'})") : "" },
+    { label: "STREAK", value: streakVal, caption: _truncateCaption(streakCaption), captionColor: streakColor, click: "" }
   ];
 
   var h = '<div style="display:flex;align-items:stretch;height:120px">';
@@ -485,9 +513,9 @@ function _renderStatsSnapshotQuartet(ctx) {
     var cursor = c.click ? "cursor:pointer;" : "";
     var onclick = c.click ? ' onclick="' + c.click + '"' : "";
     h += '<div' + onclick + ' style="flex:1;' + sep + cursor + 'padding:18px 14px;display:flex;flex-direction:column;justify-content:center;gap:6px">';
-    h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">' + escHtml(c.label) + '</div>';
-    h += '<div style="font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--cb-ink);line-height:1;font-variant-numeric:lining-nums tabular-nums">' + escHtml(c.value) + '</div>';
-    if (c.caption) h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:1.2px;color:' + c.captionColor + ';text-transform:uppercase">' + escHtml(c.caption) + '</div>';
+    h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">' + escHtml(c.label) + '</div>';
+    h += '<div style="font-family:var(--font-display);font-size:var(--hq-stat-number-size);font-weight:700;color:var(--cb-ink);line-height:1;font-variant-numeric:lining-nums tabular-nums">' + escHtml(c.value) + '</div>';
+    if (c.caption) h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.2px;color:' + c.captionColor + ';text-transform:uppercase">' + escHtml(c.caption) + '</div>';
     h += '</div>';
   });
   h += '</div>';
@@ -507,8 +535,8 @@ function _renderSeasonLadderTop10(ctx) {
   // Section header
   h += '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px">';
   h += '<div>';
-  h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:4px">SEASON LADDER · ' + escHtml(label.toUpperCase()) + '</div>';
-  h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--cb-ink);line-height:1.2">Standings</div>';
+  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:4px">SEASON LADDER · ' + escHtml(label.toUpperCase()) + '</div>';
+  h += '<div style="font-family:var(--font-display);font-size:var(--hq-section-header-size);font-weight:700;color:var(--cb-ink);line-height:1.2">Standings</div>';
   h += '</div>';
   h += '<div onclick="Router.go(\'standings\')" style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--cb-brass);cursor:pointer;text-transform:uppercase">Full ladder →</div>';
   h += '</div>';
@@ -546,7 +574,7 @@ function _hqLadderRow(s, rank, leaderPts, isMe) {
   var rule = isMe ? "border-left:3px solid var(--cb-brass);padding-left:9px;" : "padding-left:12px;";
   var weight = isMe ? "600" : "500";
   var click = s.id ? ' onclick="Router.go(\'members\',{id:\'' + s.id + '\'})"' : "";
-  var h = '<div' + click + ' style="' + bg + rule + 'padding-right:12px;height:32px;display:flex;align-items:center;gap:10px;cursor:pointer;border-radius:4px">';
+  var h = '<div' + click + ' style="' + bg + rule + 'padding-right:12px;height:var(--hq-ladder-row-height);display:flex;align-items:center;gap:10px;cursor:pointer;border-radius:4px">';
   h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--cb-mute);width:24px;flex-shrink:0">' + rank + '</div>';
   // Avatar — initial fallback (24×24)
   var initial = (name.charAt(0) || "?").toUpperCase();
@@ -571,7 +599,7 @@ function _renderRecentRoundRow(r) {
   var holeLabel = r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? "Back 9" : "Front 9") : "18 holes";
   var dateLabel = r.date || "";
 
-  var h = '<div onclick="Router.go(\'rounds\',{roundId:\'' + (r.id || "") + '\'})" style="height:64px;border-bottom:1px solid var(--cb-chalk-3);display:flex;align-items:center;gap:14px;padding:0 4px;cursor:pointer">';
+  var h = '<div onclick="Router.go(\'rounds\',{roundId:\'' + (r.id || "") + '\'})" style="height:var(--hq-recent-row-height);border-bottom:1px solid var(--cb-chalk-3);display:flex;align-items:center;gap:14px;padding:0 4px;cursor:pointer">';
   // Score block
   h += '<div style="width:80px;flex-shrink:0;text-align:left">';
   h += '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1;font-variant-numeric:lining-nums tabular-nums">' + (r.score || "—") + '</div>';
@@ -615,20 +643,20 @@ function _renderLiveRoundExpandedCard(ctx) {
 
   var h = '<div onclick="Router.go(\'playnow\')" style="background:var(--cb-green);border-radius:16px;padding:32px;color:var(--cb-chalk);cursor:pointer;position:relative;overflow:hidden">';
   // Top eyebrow with pulsing dot
-  h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);display:flex;align-items:center;gap:10px;margin-bottom:18px">';
+  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);display:flex;align-items:center;gap:10px;margin-bottom:18px">';
   h += '<span style="width:6px;height:6px;border-radius:50%;background:var(--cb-brass);animation:pulse-dot 2s infinite;flex-shrink:0"></span>';
   h += 'LIVE · HOLE ' + hole + ' · ' + escHtml(course.toUpperCase());
   h += '</div>';
-  // Big score-vs-par block
+  // Big score-vs-par block — score scales 64/80/88/96 across bands
   h += '<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:18px">';
-  h += '<div style="font-family:var(--font-display);font-size:96px;font-weight:700;line-height:0.95;letter-spacing:-3px;color:var(--cb-chalk);font-variant-numeric:lining-nums tabular-nums">' + diffStr + '</div>';
+  h += '<div style="font-family:var(--font-display);font-size:var(--hq-live-score-size);font-weight:700;line-height:0.95;letter-spacing:-3px;color:var(--cb-chalk);font-variant-numeric:lining-nums tabular-nums">' + diffStr + '</div>';
   h += '<div style="text-align:right;padding-bottom:8px">';
-  h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--cb-brass);margin-bottom:6px">THRU</div>';
+  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:1.5px;color:var(--cb-brass);margin-bottom:6px">THRU</div>';
   h += '<div style="font-family:var(--font-display);font-size:32px;font-weight:700;color:var(--cb-chalk);line-height:1">' + thru + '</div>';
   h += '</div>';
   h += '</div>';
   // Sub-meta row
-  h += '<div style="font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;color:rgba(var(--bg-rgb),0.65);margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid rgba(var(--bg-rgb),0.18)">';
+  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);letter-spacing:1.5px;color:rgba(var(--bg-rgb),0.65);margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid rgba(var(--bg-rgb),0.18)">';
   h += 'TOTAL ' + (thru > 0 ? total : "—") + ' · PAR ' + (thru > 0 ? parSoFar : "—") + ' · ' + formatLabel;
   h += '</div>';
   // CTA
@@ -679,8 +707,12 @@ function _renderSeasonPositionStrip(ctx) {
 
 // 30-day handicap trend chart. Theme-aware via CSS custom-property in style attr
 // (presentation attributes don't resolve var(), so we wire color through the SVG
-// root's style and use currentColor on plot elements).
-function _renderHandicapTrendChart(ctx) {
+// root's style and use currentColor on plot elements). Chart width configurable
+// via opts.width (defaults 400 for features column; 600 when promoted into the
+// Band B lead column).
+function _renderHandicapTrendChart(ctx, opts) {
+  opts = opts || {};
+  var chartWidth = opts.width || 400;
   var rounds = ctx.myRounds || [];
   var now = Date.now();
   var windowMs = 30 * 86400000;
@@ -699,19 +731,19 @@ function _renderHandicapTrendChart(ctx) {
   var current = ctx.handicap != null ? Number(ctx.handicap).toFixed(1) : "—";
   h += '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px">';
   h += '<div>';
-  h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:4px">HANDICAP</div>';
-  h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--cb-ink);line-height:1.2">' + current + '</div>';
+  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:4px">HANDICAP</div>';
+  h += '<div style="font-family:var(--font-display);font-size:var(--hq-section-header-size);font-weight:700;color:var(--cb-ink);line-height:1.2">' + current + '</div>';
   h += '</div>';
   // Range pills
   h += '<div style="display:inline-flex;background:var(--cb-chalk-2);border-radius:6px;padding:2px;gap:2px">';
-  h += '<div style="padding:5px 9px;font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:4px;text-transform:uppercase">30D</div>';
-  h += '<div title="Coming in a future update" style="padding:5px 9px;font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:1.2px;color:var(--cb-mute);text-transform:uppercase;cursor:not-allowed;opacity:0.55">90D</div>';
-  h += '<div title="Coming in a future update" style="padding:5px 9px;font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:1.2px;color:var(--cb-mute);text-transform:uppercase;cursor:not-allowed;opacity:0.55">1Y</div>';
+  h += '<div style="padding:5px 9px;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:4px;text-transform:uppercase">30D</div>';
+  h += '<div title="Coming in a future update" style="padding:5px 9px;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:500;letter-spacing:1.2px;color:var(--cb-mute);text-transform:uppercase;cursor:not-allowed;opacity:0.55">90D</div>';
+  h += '<div title="Coming in a future update" style="padding:5px 9px;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:500;letter-spacing:1.2px;color:var(--cb-mute);text-transform:uppercase;cursor:not-allowed;opacity:0.55">1Y</div>';
   h += '</div>';
   h += '</div>';
 
   if (recent.length < 3) {
-    h += '<div style="height:140px;background:var(--cb-chalk-2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">TREND APPEARS AFTER 3 ROUNDS</div>';
+    h += '<div style="height:140px;background:var(--cb-chalk-2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">TREND APPEARS AFTER 3 ROUNDS</div>';
     h += '</div>';
     return h;
   }
@@ -734,13 +766,13 @@ function _renderHandicapTrendChart(ctx) {
   });
 
   if (series.length < 2) {
-    h += '<div style="height:140px;background:var(--cb-chalk-2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">TREND APPEARS AFTER 3 ROUNDS</div>';
+    h += '<div style="height:140px;background:var(--cb-chalk-2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">TREND APPEARS AFTER 3 ROUNDS</div>';
     h += '</div>';
     return h;
   }
 
   // Render inline SVG with currentColor + style-defined accent.
-  var w = 400, height = 140;
+  var w = chartWidth, height = 140;
   var pad = { t: 14, b: 22, l: 0, r: 32 };
   var chartW = w - pad.l - pad.r, chartH = height - pad.t - pad.b;
   var values = series.map(function(p){return p.value});
@@ -791,8 +823,8 @@ function _renderActivityFeedCompact(ctx, limit) {
   // Header
   h += '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px">';
   h += '<div>';
-  h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:4px">ACTIVITY</div>';
-  h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--cb-ink);line-height:1.2">League pulse</div>';
+  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:4px">ACTIVITY</div>';
+  h += '<div style="font-family:var(--font-display);font-size:var(--hq-section-header-size);font-weight:700;color:var(--cb-ink);line-height:1.2">League pulse</div>';
   h += '</div>';
   h += '<div onclick="Router.go(\'feed\')" style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--cb-brass);cursor:pointer;text-transform:uppercase">Full feed →</div>';
   h += '</div>';
@@ -931,6 +963,48 @@ function _renderHQFeaturesColumn(ctx) {
   h += _renderHandicapTrendChart(ctx);
   h += _renderActivityFeedCompact(ctx, feedLimit);
   // Events strip deferred to v1.x
+  h += '</div>';
+  return h;
+}
+
+// ─── Band B (960-1279) sibling lead-column composers ───────────────────────
+// At Band B the features column is hidden, so the handicap chart is promoted
+// into the lead column flow at 600px width. Activity feed is dropped.
+// State 3 (new user) at Band B still placeholder until v8.6.1.
+
+function _renderHQLeadColumnBandB(ctx) {
+  if (ctx.state === "active") return _renderHQLeadColumnBandBActive(ctx);
+  if (ctx.state === "new") return _renderHQPlaceholder("Lead column", ctx.state);
+  return _renderHQLeadColumnBandBIdle(ctx);
+}
+
+function _renderHQLeadColumnBandBIdle(ctx) {
+  var h = '<div style="display:flex;flex-direction:column;gap:32px">';
+  h += _renderEditorialGreetingHero(ctx);
+  h += _renderStatsSnapshotQuartet(ctx);
+  h += _renderHandicapTrendChart(ctx, { width: 600 });  // promoted from features
+  h += _renderSeasonLadderTop10(ctx);
+  var recent = (ctx.myRounds || []).slice(0, 3);
+  if (recent.length > 0) {
+    h += '<div style="display:flex;flex-direction:column">';
+    recent.forEach(function(r) { h += _renderRecentRoundRow(r); });
+    h += '</div>';
+  }
+  h += '</div>';
+  return h;
+}
+
+function _renderHQLeadColumnBandBActive(ctx) {
+  var h = '<div style="display:flex;flex-direction:column;gap:32px">';
+  h += _renderLiveRoundExpandedCard(ctx);
+  h += _renderSeasonPositionStrip(ctx);
+  h += _renderHandicapTrendChart(ctx, { width: 600 });  // promoted from features
+  var recent = (ctx.myRounds || []).slice(0, 2);
+  if (recent.length > 0) {
+    h += '<div style="display:flex;flex-direction:column">';
+    recent.forEach(function(r) { h += _renderRecentRoundRow(r); });
+    h += '</div>';
+  }
   h += '</div>';
   return h;
 }

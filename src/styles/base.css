@@ -165,6 +165,22 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --shell-breakpoint: 960px;
 
   /* ═════════════════════════════════════════════════════════════════════════
+     HQ RESPONSIVE TYPOGRAPHY (v8.6.0 — responsive HQ foundation)
+     Defaults to Band D (1440+). Narrower bands override progressively below
+     via max-width media queries. Letter-spacing on hero stays -2px regardless.
+     ═════════════════════════════════════════════════════════════════════════ */
+  --hq-hero-size: 56px;
+  --hq-hero-weight: 700;
+  --hq-subhead-size: 18px;
+  --hq-section-header-size: 18px;
+  --hq-live-score-size: 96px;
+  --hq-stat-number-size: 36px;
+  --hq-eyebrow-size: 11px;
+  --hq-agate-body-size: 13px;
+  --hq-ladder-row-height: 32px;
+  --hq-recent-row-height: 64px;
+
+  /* ═════════════════════════════════════════════════════════════════════════
      LEGACY TOKEN ALIASES — backwards compatibility for ~1,800 inline refs
      in src/pages/ and src/core/. Every existing token name preserved but
      its VALUE is remapped to a Clubhouse equivalent. No legacy aesthetic.
@@ -431,6 +447,53 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 @media (min-width: 960px) {
   body {
     max-width: calc(var(--shell-side-w) + var(--shell-gutter) + 1152px);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HQ RESPONSIVE TYPOGRAPHY OVERRIDES (v8.6.0)
+   Cascade: defaults in :root = Band D (1440+). Each max-width query below
+   overrides only the tokens that change at narrower bands. .98 boundaries
+   prevent overlap when viewport hits an exact integer breakpoint.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Band C: 1280-1439 */
+@media (max-width: 1439.98px) {
+  :root {
+    --hq-hero-size: 52px;
+    --hq-section-header-size: 18px;
+    --hq-live-score-size: 88px;
+    --hq-stat-number-size: 34px;
+    --hq-eyebrow-size: 11px;
+    --hq-subhead-size: 17px;
+  }
+}
+
+/* Band B: 960-1279 */
+@media (max-width: 1279.98px) {
+  :root {
+    --hq-hero-size: 44px;
+    --hq-section-header-size: 17px;
+    --hq-live-score-size: 80px;
+    --hq-stat-number-size: 32px;
+    --hq-eyebrow-size: 10px;
+    --hq-subhead-size: 16px;
+    --hq-ladder-row-height: 30px;
+    --hq-recent-row-height: 60px;
+  }
+}
+
+/* Band A: 720-959 (typography prep — layout in v8.6.2) */
+@media (max-width: 959.98px) {
+  :root {
+    --hq-hero-size: 36px;
+    --hq-section-header-size: 16px;
+    --hq-live-score-size: 64px;
+    --hq-stat-number-size: 28px;
+    --hq-subhead-size: 15px;
+    --hq-agate-body-size: 12px;
+    --hq-ladder-row-height: 28px;
+    --hq-recent-row-height: 56px;
   }
 }
 
