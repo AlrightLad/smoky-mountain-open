@@ -24,13 +24,46 @@
 // === PART 1: Home render (Clubhouse editorial) ===
 // ═══════════════════════════════════════════════════════════════════════════
 
+// HQ desktop breakpoint: ≥1280px gets the three-column "Saturday sports section" layout.
+// Below this, the v8.4.1 mobile-editorial layout renders unchanged.
+var HQ_BREAKPOINT = 1280;
+function _isHQViewport() { return window.innerWidth >= HQ_BREAKPOINT; }
+
+// Resize handler is bound once on first home render. Re-renders if viewport
+// crosses the HQ threshold while user is on the home page.
+var _hqResizeBound = false;
+var _hqLastViewportWasHQ = null;
+function _bindHQResize() {
+  if (_hqResizeBound) return;
+  _hqResizeBound = true;
+  _hqLastViewportWasHQ = _isHQViewport();
+  window.addEventListener("resize", function() {
+    if (Router.getPage() !== "home") return;
+    var nowHQ = _isHQViewport();
+    if (nowHQ !== _hqLastViewportWasHQ) {
+      _hqLastViewportWasHQ = nowHQ;
+      Router.go("home", Router.getParams());
+    }
+  });
+}
+
 Router.register("home", function() {
+  _bindHQResize();
+  var ctx = _buildHomeContext();
+  if (_isHQViewport()) {
+    _renderHQHome(ctx);
+  } else {
+    _renderMobileHome(ctx);
+  }
+});
+
+// Build the shared render context — same data shape consumed by both layouts.
+function _buildHomeContext() {
   var myRounds = currentUser ? PB.getPlayerRounds(currentUser.uid) : [];
   if (!myRounds.length && currentProfile && currentProfile.claimedFrom) {
     myRounds = PB.getPlayerRounds(currentProfile.claimedFrom);
   }
   var season = PB.getSeasonStandings(new Date().getFullYear());
-
   var state = _homeState(myRounds);
   var greetingWord = state === "new" ? "Welcome" : _greetingForTime();
   var firstName = _firstName(currentProfile);
@@ -47,16 +80,26 @@ Router.register("home", function() {
     var br = myFull18.find(function(r) { return r.score === bestRound; });
     if (br) bestRoundId = br.id;
   }
-
   var myLevel = PB.calcLevelFromXP(PB.getPlayerXPForDisplay(currentUser ? currentUser.uid : null));
 
+  return {
+    myRounds: myRounds, season: season, state: state,
+    greetingWord: greetingWord, firstName: firstName,
+    totalRounds: totalRounds, handicap: handicap,
+    bestRound: bestRound, bestRoundId: bestRoundId,
+    myLevel: myLevel
+  };
+}
+
+// v8.4.1 mobile-editorial layout — preserved unchanged below HQ_BREAKPOINT.
+function _renderMobileHome(ctx) {
   var h = "";
   h += _renderEmailVerifyBanner();
-  h += _renderGreeting(greetingWord, firstName);
+  h += _renderGreeting(ctx.greetingWord, ctx.firstName);
 
-  if (state === "active") {
+  if (ctx.state === "active") {
     h += _renderLiveRoundCard();
-  } else if (state === "new") {
+  } else if (ctx.state === "new") {
     h += _renderNewUserIntro();
     h += _renderNewUserCTAs();
   } else {
@@ -69,14 +112,14 @@ Router.register("home", function() {
     h += _renderReadyCTA();
   }
 
-  h += _renderStatsStrip(totalRounds, handicap, bestRound, bestRoundId, state === "new");
+  h += _renderStatsStrip(ctx.totalRounds, ctx.handicap, ctx.bestRound, ctx.bestRoundId, ctx.state === "new");
 
-  if (state === "idle") {
-    var pulses = _generatePulses(currentProfile, myRounds, myLevel, season);
+  if (ctx.state === "idle") {
+    var pulses = _generatePulses(currentProfile, ctx.myRounds, ctx.myLevel, ctx.season);
     h += _renderPulses(pulses);
   }
 
-  if (state !== "new") {
+  if (ctx.state !== "new") {
     var upcoming = _getUpcomingTeeTimes();
     if (upcoming && upcoming.length > 0) h += _renderTeeTimesSection(upcoming);
   }
@@ -84,7 +127,19 @@ Router.register("home", function() {
   h += renderPageFooter();
 
   document.querySelector('[data-page="home"]').innerHTML = h;
-});
+}
+
+// HQ desktop layout — masthead + three-column asymmetric grid (lead/features/agate).
+// Ship 1b-i: shell + masthead only. Columns hold typed placeholders. Ships 1b-ii
+// and 1b-iii populate the column components.
+function _renderHQHome(ctx) {
+  var h = "";
+  h += _renderEmailVerifyBanner();
+  h += _renderHQMasthead();
+  h += _renderHQGrid(ctx);
+  h += renderPageFooter();
+  document.querySelector('[data-page="home"]').innerHTML = h;
+}
 
 // ─── Private helpers (home-only — underscore prefix) ──────────────────────
 
@@ -123,6 +178,79 @@ function _formatDateEyebrow() {
   var day = ["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"][d.getDay()];
   var month = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][d.getMonth()];
   return day + " · " + month + " " + d.getDate();
+}
+
+// Long-form date for HQ masthead: "Saturday · April 24, 2026"
+function _formatHQMastheadDate() {
+  var d = new Date();
+  var day = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][d.getDay()];
+  var month = ["January","February","March","April","May","June","July","August","September","October","November","December"][d.getMonth()];
+  return day + " · " + month + " " + d.getDate() + ", " + d.getFullYear();
+}
+
+// HQ masthead — full-width 56px-tall band: wordmark + date on left, weather pill +
+// scope switcher on right. Weather is mocked for v1 (TODO v1.1: Open-Meteo wiring).
+// Scope switcher is visual-only — "All Parbaughs" pill disabled until cross-league
+// aggregate data path lands in a future ship.
+function _renderHQMasthead() {
+  var date = _formatHQMastheadDate();
+  var h = '<div style="background:var(--cb-chalk);border-bottom:1px solid var(--cb-chalk-3);max-width:1152px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between">';
+
+  // Left: wordmark + divider + date
+  h += '<div style="display:flex;align-items:center;gap:14px">';
+  h += '<div style="font-family:var(--font-display);font-weight:700;font-size:22px;line-height:24px;color:var(--cb-ink);letter-spacing:-0.5px">Parbaughs</div>';
+  h += '<div style="width:1px;height:24px;background:var(--cb-chalk-3)"></div>';
+  h += '<div style="font-family:var(--font-ui);font-weight:500;font-size:13px;color:var(--cb-charcoal)">' + escHtml(date) + '</div>';
+  h += '</div>';
+
+  // Right: weather pill + scope switcher
+  h += '<div style="display:flex;align-items:center;gap:12px">';
+  // TODO v1.1: replace mock with Open-Meteo fetch (geo-permission + sessionStorage cache)
+  h += '<div title="York, PA · weather will go live in a future update" style="display:inline-flex;align-items:center;height:28px;padding:0 12px;background:var(--cb-chalk-2);border-radius:6px;font-family:var(--font-ui);font-weight:500;font-size:12px;color:var(--cb-brass);letter-spacing:0.3px">58° · CLEAR</div>';
+  // Scope switcher — visual-only until cross-league aggregate data exists
+  h += '<div style="display:inline-flex;align-items:stretch;background:var(--cb-chalk-2);border-radius:6px;padding:2px;gap:2px">';
+  h += '<div style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:4px;text-transform:uppercase">My league</div>';
+  h += '<div title="All Parbaughs view coming in a future update" style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:1.2px;color:var(--cb-mute);text-transform:uppercase;cursor:not-allowed;opacity:0.55">All Parbaughs</div>';
+  h += '</div>';
+  h += '</div>';
+
+  h += '</div>';
+  return h;
+}
+
+// HQ three-column grid. At 1280-1439px renders lead (480) + features (400) only.
+// At ≥1440px adds the agate rail (196). Content capped at 1152px and centered.
+// Ship 1b-i: typed placeholders in each column. Ship 1b-ii fills lead + features;
+// Ship 1b-iii fills agate.
+function _renderHQGrid(ctx) {
+  var showAgate = window.innerWidth >= 1440;
+  var h = '<div style="max-width:1152px;margin:0 auto;padding:32px 24px 0;display:flex">';
+  // Lead column
+  h += '<div style="width:480px;flex-shrink:0">';
+  h += _renderHQPlaceholder("Lead column", ctx.state);
+  h += '</div>';
+  // Features column
+  h += '<div style="width:400px;flex-shrink:0;margin-left:32px">';
+  h += _renderHQPlaceholder("Features column", ctx.state);
+  h += '</div>';
+  // Agate rail (only at ≥1440px)
+  if (showAgate) {
+    h += '<div style="width:196px;flex-shrink:0;margin-left:24px">';
+    h += _renderHQPlaceholder("Agate rail", ctx.state);
+    h += '</div>';
+  }
+  h += '</div>';
+  return h;
+}
+
+// Empty-column placeholder. Visible during Ship 1b-i so the grid architecture is
+// inspectable before column components arrive in Ships 1b-ii and 1b-iii.
+function _renderHQPlaceholder(label, state) {
+  var stateLabel = (state || "idle").toUpperCase();
+  return '<div style="height:400px;background:var(--cb-chalk-2);border-radius:12px;border:1px dashed var(--cb-chalk-3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-family:var(--font-mono);color:var(--cb-mute);text-transform:uppercase">' +
+    '<div style="font-size:10px;letter-spacing:2.5px">' + escHtml(label) + '</div>' +
+    '<div style="font-size:9px;letter-spacing:2px;opacity:0.7">v8.5.x · state: ' + stateLabel + '</div>' +
+    '</div>';
 }
 
 function _renderEmailVerifyBanner() {

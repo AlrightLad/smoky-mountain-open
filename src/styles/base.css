@@ -433,6 +433,18 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   HQ HOME SHELL — ≥1280px viewport (v8.5.0 · Ship 1b-i)
+   Body widens to fit sidebar + gutter + 1152px HQ content area (max 1440px total).
+   Additional viewport width becomes margin at ultrawide displays — printed
+   objects don't grow with the table.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (min-width: 1280px) {
+  body {
+    max-width: calc(var(--shell-side-w) + var(--shell-gutter) + 1152px);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    REDUCED MOTION — respect user preference
    Decorative animations suppressed. Functional feedback preserved.
    ═══════════════════════════════════════════════════════════════════════════ */
