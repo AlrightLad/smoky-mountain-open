@@ -19,17 +19,23 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · home</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · polish</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Home page redesigned. A cleaner editorial layout that shows what matters today — your live round, tee times, stats at a glance. Season standings and event results moved to their own pages.", tag: "NEW" },
-    { item: "New user welcome flow: brand new Parbaughs land on a welcome screen with quick-start CTAs for your first round or range session.", tag: "NEW" }
+    { item: "Polish: Home greeting now correctly extracts your first name when your profile starts with a title (Mr, Mrs, Dr, etc.). Previously showed just the title — now skips it to show your actual name.", tag: "FIXED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.4.0", date: "April 2026", headline: "Home restructure",
+      items: [
+        { item: "Home page redesigned. A cleaner editorial layout that shows what matters today — your live round, tee times, stats at a glance. Season standings and event results moved to their own pages.", tag: "NEW" },
+        { item: "New user welcome flow: brand new Parbaughs land on a welcome screen with quick-start CTAs for your first round or range session.", tag: "NEW" }
+      ]
+    },
     {
       version: "v8.3.6", date: "April 2026", headline: "Layout hotfix",
       items: [

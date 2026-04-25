@@ -106,8 +106,16 @@ function _firstName(profile) {
   if (!profile) return "Friend";
   var name = profile.name || profile.username || "";
   if (!name) return "Friend";
-  var first = String(name).split(/\s+/)[0];
-  return first || "Friend";
+  var words = String(name).trim().split(/\s+/);
+  if (words.length === 0) return "Friend";
+
+  // Skip common titles if present as first word AND there are more words
+  var titles = ["mr","mrs","ms","miss","dr","prof","sir","madam","mx"];
+  var firstWordLower = words[0].replace(/\./g, "").toLowerCase();
+  if (words.length > 1 && titles.indexOf(firstWordLower) !== -1) {
+    return words[1];
+  }
+  return words[0] || "Friend";
 }
 
 function _formatDateEyebrow() {
