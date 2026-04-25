@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · HQ shell</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · HQ takes shape</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Behind-the-scenes: built the foundation for a new Desktop HQ experience for screens 1280px and wider. Mobile experience unchanged. The HQ layout, columns, and content fill in over the next couple updates.", tag: "NEW" }
+    { item: "Desktop HQ took shape. Big screens now show your editorial greeting with a daily-focused subhead, a four-cell stats snapshot, the full season ladder, your recent rounds, a 30-day handicap trend chart, and a compact league activity feed. Mobile experience unchanged.", tag: "NEW" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.5.0", date: "April 2026", headline: "HQ shell",
+      items: [
+        { item: "Behind-the-scenes: built the foundation for a new Desktop HQ experience for screens 1280px and wider. Mobile experience unchanged. The HQ layout, columns, and content fill in over the next couple updates.", tag: "NEW" }
+      ]
+    },
     {
       version: "v8.4.1", date: "April 2026", headline: "Home polish",
       items: [
