@@ -24,9 +24,10 @@
 // === PART 1: Home render (Clubhouse editorial) ===
 // ═══════════════════════════════════════════════════════════════════════════
 
-// HQ desktop breakpoint: ≥1280px gets the three-column "Saturday sports section" layout.
-// Below this, the v8.4.1 mobile-editorial layout renders unchanged.
-var HQ_BREAKPOINT = 1280;
+// HQ desktop breakpoint: ≥960px gets the editorial HQ layout (lead column always,
+// features column at 1280+, agate rail at 1440+). Below 960px renders the
+// mobile-editorial layout — reserved for the Capacitor app on phones.
+var HQ_BREAKPOINT = 960;
 function _isHQViewport() { return window.innerWidth >= HQ_BREAKPOINT; }
 
 // Resize handler is bound once on first home render. Re-renders if viewport
@@ -233,16 +234,20 @@ function _renderHQMasthead() {
 // Ship 1b-i: typed placeholders in each column. Ship 1b-ii fills lead + features;
 // Ship 1b-iii fills agate.
 function _renderHQGrid(ctx) {
-  var showAgate = window.innerWidth >= 1440;
+  var w = window.innerWidth;
+  var showFeatures = w >= 1280;
+  var showAgate = w >= 1440;
   var h = '<div style="max-width:1152px;margin:0 auto;padding:32px 24px 0;display:flex">';
-  // Lead column (Ship 1b-ii: real components for state 1 + 2; state 3 still placeholder)
+  // Lead column — always present from 960px+
   h += '<div style="width:480px;flex-shrink:0">';
   h += _renderHQLeadColumn(ctx);
   h += '</div>';
-  // Features column (Ship 1b-ii: handicap trend + activity feed for state 1 + 2)
-  h += '<div style="width:400px;flex-shrink:0;margin-left:32px">';
-  h += _renderHQFeaturesColumn(ctx);
-  h += '</div>';
+  // Features column — appears at 1280px+
+  if (showFeatures) {
+    h += '<div style="width:400px;flex-shrink:0;margin-left:32px">';
+    h += _renderHQFeaturesColumn(ctx);
+    h += '</div>';
+  }
   // Agate rail (Ship 1b-iii fills this; only renders at ≥1440px)
   if (showAgate) {
     h += '<div style="width:196px;flex-shrink:0;margin-left:24px">';

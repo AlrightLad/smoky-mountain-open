@@ -422,23 +422,13 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   READING ROOM SHELL — ≥960px viewport (v8.3.0 · Ship 0a)
-   Body narrows to sidebar + gutter + column (728px) on desktop.
-   Placed after 768/1024 breakpoints so this cascades last and wins.
-   ═══════════════════════════════════════════════════════════════════════════ */
-@media (min-width: 960px) {
-  body {
-    max-width: calc(var(--shell-side-w) + var(--shell-gutter) + var(--shell-col-w));
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   HQ HOME SHELL — ≥1280px viewport (v8.5.0 · Ship 1b-i)
+   HQ HOME SHELL — ≥960px viewport (v8.5.3 · HQ everywhere)
    Body widens to fit sidebar + gutter + 1152px HQ content area (max 1440px total).
    Additional viewport width becomes margin at ultrawide displays — printed
-   objects don't grow with the table.
+   objects don't grow with the table. Threshold dropped from 1280→960 so HQ
+   activates at any viewport where the desktop sidebar is visible.
    ═══════════════════════════════════════════════════════════════════════════ */
-@media (min-width: 1280px) {
+@media (min-width: 960px) {
   body {
     max-width: calc(var(--shell-side-w) + var(--shell-gutter) + 1152px);
   }
