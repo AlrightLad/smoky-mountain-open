@@ -50,10 +50,20 @@ function _bindHQResize() {
 Router.register("home", function() {
   _bindHQResize();
   var ctx = _buildHomeContext();
+  var w = window.innerWidth;
+  var pageEl = document.querySelector('[data-page="home"]');
   if (_isHQViewport()) {
-    _renderHQHome(ctx);
+    try {
+      _renderHQHome(ctx);
+      if (pageEl) { pageEl.dataset.renderPath = "hq"; pageEl.dataset.renderWidth = w; }
+    } catch (e) {
+      console.error("[Home] HQ render failed, falling back to mobile:", e);
+      _renderMobileHome(ctx);
+      if (pageEl) { pageEl.dataset.renderPath = "hq-fallback"; pageEl.dataset.renderWidth = w; pageEl.dataset.renderError = (e && e.message) || String(e); }
+    }
   } else {
     _renderMobileHome(ctx);
+    if (pageEl) { pageEl.dataset.renderPath = "mobile"; pageEl.dataset.renderWidth = w; }
   }
 });
 

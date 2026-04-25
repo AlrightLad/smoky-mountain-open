@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · HQ takes shape</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · diagnostics</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Desktop HQ took shape. Big screens now show your editorial greeting with a daily-focused subhead, a four-cell stats snapshot, the full season ladder, your recent rounds, a 30-day handicap trend chart, and a compact league activity feed. Mobile experience unchanged.", tag: "NEW" }
+    { item: "Behind-the-scenes: added safety net + diagnostic instrumentation to the Home page so we can pinpoint a Desktop HQ rendering issue. No member-visible changes — Mobile users see no difference, Desktop users will start seeing HQ once the underlying issue is identified.", tag: "FIXED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.5.1", date: "April 2026", headline: "HQ takes shape",
+      items: [
+        { item: "Desktop HQ took shape. Big screens now show your editorial greeting with a daily-focused subhead, a four-cell stats snapshot, the full season ladder, your recent rounds, a 30-day handicap trend chart, and a compact league activity feed. Mobile experience unchanged.", tag: "NEW" }
+      ]
+    },
     {
       version: "v8.5.0", date: "April 2026", headline: "HQ shell",
       items: [
