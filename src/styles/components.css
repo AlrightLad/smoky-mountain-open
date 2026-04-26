@@ -830,7 +830,9 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .rr-sidebar { display: none; }
 
 @media (min-width: 960px) {
-  /* Sidebar: fixed to left edge of viewport, full height, scrollable if tall. */
+  /* Sidebar: fixed to left edge of viewport, full height. Content must fit —
+     overflow:hidden over a scrollbar (v8.6.2.1 hotfix). Drawer mode at Band A
+     keeps overflow-y:auto since drawer can be tall on short viewports. */
   .rr-sidebar {
     display: flex;
     flex-direction: column;
@@ -843,7 +845,12 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
     border-right: 1px solid var(--cb-chalk-3);
     background: var(--cb-chalk);
     z-index: 10;
-    overflow-y: auto;
+    overflow: hidden;
+  }
+  /* Notifications row hidden at desktop — masthead bell is the desktop
+     affordance. Drawer Notifications row is Band A only. (v8.6.2.1) */
+  .rr-sidebar__action[aria-label="Notifications"] {
+    display: none;
   }
   /* Main app: left padding reserves space for the fixed sidebar. Content
      flows as normal block layout — no grid. */
