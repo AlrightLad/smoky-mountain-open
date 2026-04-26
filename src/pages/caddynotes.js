@@ -22,6 +22,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · spacing migration</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    { item: "Removed a duplicate notification bell from the top of the page — only one bell now appears at desktop. The drawer menu's Notifications row on smaller screens is unchanged.", tag: "FIXED" },
     { item: "Behind-the-scenes spacing system migration — replaced inline pixel values with the design system spacing tokens from v8.7.0. No visible changes; this lets future updates propagate instantly across every screen instead of requiring file-by-file edits.", tag: "INFRA" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });

@@ -250,12 +250,11 @@ function _renderHQMastheadDefault() {
   h += '<div style="font-family:var(--font-ui);font-weight:500;font-size:13px;color:var(--cb-charcoal)">' + escHtml(date) + '</div>';
   h += '</div>';
 
-  // Right: weather pill + bell stub + scope switcher
+  // Right: weather pill + scope switcher
+  // (Notification bell lives in the global #profileBar action cluster — index.html:201)
   h += '<div style="display:flex;align-items:center;gap:var(--sp-3)">';
   // TODO v1.1: replace mock with Open-Meteo fetch (geo-permission + sessionStorage cache)
   h += '<div title="York, PA · weather will go live in a future update" style="display:inline-flex;align-items:center;height:28px;padding:0 12px;background:var(--cb-chalk-2);border-radius:6px;font-family:var(--font-ui);font-weight:500;font-size:12px;color:var(--cb-brass);letter-spacing:0.3px">58° · CLEAR</div>';
-  // Bell stub — between weather and scope switcher (Band B+ only; collapses to drawer at Band A)
-  h += _renderHQBellStub();
   // Scope switcher — visual-only until cross-league aggregate data exists
   h += '<div style="display:inline-flex;align-items:stretch;background:var(--cb-chalk-2);border-radius:6px;padding:2px;gap:2px">';
   h += '<div style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:4px;text-transform:uppercase">' + escHtml(myLeagueLabel) + '</div>';
@@ -268,8 +267,9 @@ function _renderHQMastheadDefault() {
 }
 
 // Band A masthead — two rows totaling 68px. Hamburger left, wordmark center,
-// scope switcher right. Bell collapses into drawer footer (not in masthead).
-// Row 2: mono date + weather caption. Reduced density per design spec §2.1.
+// scope switcher right. Row 2: mono date + weather caption. Reduced density
+// per design spec §2.1. (Notifications affordance lives in #profileBar at all
+// bands plus the drawer .rr-sidebar__actions row at Band A.)
 function _renderHQMastheadBandA() {
   var d = new Date();
   var dayShort = ["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"][d.getDay()];
@@ -296,19 +296,6 @@ function _renderHQMastheadBandA() {
   h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">' + escHtml(caption) + '</div>';
   h += '</div>';
   h += '</div>';
-  return h;
-}
-
-// Bell stub — Band B+ only (24×24 brass icon outline). Renders between weather
-// pill and scope switcher in default masthead. At Band A the bell lives in the
-// drawer footer (rr-sidebar__actions row), not in the masthead.
-function _renderHQBellStub() {
-  var h = '<button type="button" aria-label="Notifications" aria-disabled="true" tabindex="-1" onclick="event.preventDefault();event.stopPropagation();" style="width:32px;height:32px;background:transparent;border:none;cursor:default;display:flex;align-items:center;justify-content:center;padding:0">';
-  h += '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--cb-brass)" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true">';
-  h += '<path d="M18 16v-5a6 6 0 0 0-12 0v5l-2 2h16l-2-2z"/>';
-  h += '<path d="M10 20a2 2 0 0 0 4 0"/>';
-  h += '</svg>';
-  h += '</button>';
   return h;
 }
 
