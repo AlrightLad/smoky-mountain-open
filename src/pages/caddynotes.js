@@ -22,6 +22,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · design system foundations</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    { item: "Cleaned up the sidebar — your profile no longer crops at the bottom on desktop. Sidebar now ends cleanly at Sign out across all screen sizes.", tag: "FIXED" },
     { item: "Behind-the-scenes infrastructure update — added the design system foundations (spacing, sizing, shadows, animation timing tokens) and built reusable notification + banner components ready for future features. No visible changes; this prepares the codebase for upcoming work on scoring, members, leaderboard, and more.", tag: "INFRA" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
