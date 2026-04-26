@@ -153,16 +153,29 @@ function _renderMobileHome(ctx) {
   document.querySelector('[data-page="home"]').innerHTML = h;
 }
 
-// HQ desktop layout — masthead + three-column asymmetric grid (lead/features/agate).
-// Ship 1b-i: shell + masthead only. Columns hold typed placeholders. Ships 1b-ii
-// and 1b-iii populate the column components.
+// HQ desktop layout — masthead + band-aware content wrapper (grid + footer).
+// The wrapper bounds content + footer to the column width at each band so the
+// footer visually aligns with the columns above it.
 function _renderHQHome(ctx) {
+  var band = _currentBand();
+  var maxWidth = _hqContentMaxWidth(band);
   var h = "";
   h += _renderEmailVerifyBanner();
   h += _renderHQMasthead();
-  h += _renderHQGrid(ctx);
+  h += '<div style="max-width:' + maxWidth + ';margin:0 auto;padding:0 24px">';
+  h += _renderHQGridInner(ctx);
   h += renderPageFooter();
+  h += '</div>';
   document.querySelector('[data-page="home"]').innerHTML = h;
+}
+
+// HQ content width helper — used by all HQ pages to bound content + footer
+// to the column width at each band. Ships 2-7 page renders should consume
+// this same helper for consistent width treatment across HQ surfaces.
+function _hqContentMaxWidth(band) {
+  if (band === "B") return "600px";       // single 600px lead column
+  if (band === "C") return "912px";       // 480 + 32 + 400
+  return "1132px";                        // 480 + 32 + 400 + 24 + 196 (Band D)
 }
 
 // ─── Private helpers (home-only — underscore prefix) ──────────────────────
@@ -249,9 +262,11 @@ function _renderHQMasthead() {
 // At ≥1440px adds the agate rail (196). Content capped at 1152px and centered.
 // Ship 1b-i: typed placeholders in each column. Ship 1b-ii fills lead + features;
 // Ship 1b-iii fills agate.
-function _renderHQGrid(ctx) {
+// Inner grid — bounded width + horizontal padding now live in _renderHQHome's
+// content wrapper. This emits only the column flex container.
+function _renderHQGridInner(ctx) {
   var band = _currentBand();
-  var h = '<div style="max-width:1152px;margin:0 auto;padding:32px 24px 0;display:flex">';
+  var h = '<div style="padding-top:32px;display:flex">';
 
   if (band === "B") {
     // Band B (960-1279): single 600px lead column, chart promoted into flow.
@@ -259,7 +274,7 @@ function _renderHQGrid(ctx) {
     h += _renderHQLeadColumnBandB(ctx);
     h += '</div>';
   } else {
-    // Bands C (1280-1439) and D (1440+): existing v8.5.1 architecture.
+    // Bands C (1280-1439) and D (1440+): lead + features (+ agate at D).
     h += '<div style="width:480px;flex-shrink:0">';
     h += _renderHQLeadColumn(ctx);
     h += '</div>';
@@ -268,7 +283,7 @@ function _renderHQGrid(ctx) {
     h += '</div>';
     if (band === "D") {
       h += '<div style="width:196px;flex-shrink:0;margin-left:24px">';
-      h += _renderHQPlaceholder("Agate rail", ctx.state);
+      h += _renderHQAgateRail(ctx);
       h += '</div>';
     }
   }
@@ -560,6 +575,18 @@ function _renderSeasonLadderTop10(ctx) {
     h += '<div style="height:1px;background:var(--cb-chalk-3);margin:12px 0 10px"></div>';
     h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;color:var(--cb-mute);text-transform:uppercase;margin-bottom:6px">YOUR POSITION</div>';
     h += _hqLadderRow(standings[myIdx], myIdx + 1, leaderPts, true);
+  } else if (ctx.state === "new") {
+    // New user has 0 rounds, won't appear in standings. Pin a placeholder row
+    // so they can see where their position will land once they log a round.
+    var initial = (ctx.firstName || "?").charAt(0).toUpperCase();
+    h += '<div style="height:1px;background:var(--cb-chalk-3);margin:12px 0 10px"></div>';
+    h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;color:var(--cb-mute);text-transform:uppercase;margin-bottom:6px">YOUR POSITION</div>';
+    h += '<div style="background:var(--cb-chalk-2);padding:0 12px;height:var(--hq-ladder-row-height);display:flex;align-items:center;gap:10px;border-radius:4px">';
+    h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--cb-mute);width:24px;flex-shrink:0">—</div>';
+    h += '<div style="width:24px;height:24px;border-radius:50%;background:var(--cb-chalk-3);color:var(--cb-charcoal);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:11px;font-weight:700;flex-shrink:0">' + escHtml(initial) + '</div>';
+    h += '<div style="flex:1;min-width:0;font-family:var(--font-ui);font-size:13px;font-weight:500;color:var(--cb-mute)">You</div>';
+    h += '<div style="font-family:var(--font-mono);font-size:10px;color:var(--cb-mute);font-style:italic;flex-shrink:0">Appears after your first round</div>';
+    h += '</div>';
   }
 
   h += '</div>';
@@ -923,7 +950,7 @@ function _hqBuildActivityItems(limit) {
 
 function _renderHQLeadColumn(ctx) {
   if (ctx.state === "active") return _renderHQLeadColumnActive(ctx);
-  if (ctx.state === "new") return _renderHQPlaceholder("Lead column", ctx.state);
+  if (ctx.state === "new") return _renderHQLeadColumnNew(ctx);
   return _renderHQLeadColumnIdle(ctx);
 }
 
@@ -957,7 +984,7 @@ function _renderHQLeadColumnActive(ctx) {
 }
 
 function _renderHQFeaturesColumn(ctx) {
-  if (ctx.state === "new") return _renderHQPlaceholder("Features column", ctx.state);
+  if (ctx.state === "new") return _renderHQFeaturesColumnNew(ctx);
   var feedLimit = ctx.state === "active" ? 8 : 12;
   var h = '<div style="display:flex;flex-direction:column;gap:32px">';
   h += _renderHandicapTrendChart(ctx);
@@ -974,7 +1001,7 @@ function _renderHQFeaturesColumn(ctx) {
 
 function _renderHQLeadColumnBandB(ctx) {
   if (ctx.state === "active") return _renderHQLeadColumnBandBActive(ctx);
-  if (ctx.state === "new") return _renderHQPlaceholder("Lead column", ctx.state);
+  if (ctx.state === "new") return _renderHQLeadColumnNew(ctx);  // same component fits at 600px
   return _renderHQLeadColumnBandBIdle(ctx);
 }
 
@@ -1005,6 +1032,273 @@ function _renderHQLeadColumnBandBActive(ctx) {
     recent.forEach(function(r) { h += _renderRecentRoundRow(r); });
     h += '</div>';
   }
+  h += '</div>';
+  return h;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// === AGATE RAIL (Band D · v8.6.1 · Ship 1b-iii) ===
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Online-now strip — 4-up avatar grid (2×2) of members active in last 10 min.
+// Listener race: onlineMembers may be empty on first render — empty state covers
+// this; subsequent re-renders refresh data when presence listener fires.
+function _renderOnlineNowStrip(ctx) {
+  var entries = (typeof onlineMembers !== "undefined" && onlineMembers) ? Object.keys(onlineMembers) : [];
+  // Exclude self for cleaner display (you know you're online)
+  var uid = currentUser ? currentUser.uid : null;
+  entries = entries.filter(function(id) { return id !== uid; });
+  var count = entries.length;
+
+  var h = '<div>';
+  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:12px">';
+  h += '<span style="color:var(--cb-mute)">ONLINE · </span><span style="color:var(--cb-brass)">' + count + '</span>';
+  h += '</div>';
+
+  if (count === 0) {
+    h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase;padding:8px 0">QUIET RIGHT NOW</div>';
+    h += '</div>';
+    return h;
+  }
+
+  // 2×2 grid, 4 visible max
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px 10px">';
+  entries.slice(0, 4).forEach(function(id) {
+    var data = onlineMembers[id];
+    var name = (data && data.name) || "Member";
+    var initial = (name.charAt(0) || "?").toUpperCase();
+    // Truncate handle to 8 chars + ellipsis
+    var handle = name.length > 8 ? name.slice(0, 7) + "…" : name;
+    h += '<div onclick="Router.go(\'members\',{id:\'' + id + '\'})" style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer">';
+    h += '<div style="position:relative;width:36px;height:36px">';
+    h += '<div style="width:36px;height:36px;border-radius:50%;background:var(--cb-chalk-3);color:var(--cb-charcoal);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:14px;font-weight:700">' + escHtml(initial) + '</div>';
+    h += '<div style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-radius:50%;background:var(--cb-moss);border:2px solid var(--cb-chalk)"></div>';
+    h += '</div>';
+    h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:500;color:var(--cb-ink);max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(handle) + '</div>';
+    h += '</div>';
+  });
+  h += '</div>';
+  h += '</div>';
+  return h;
+}
+
+// Upcoming tee times — next 5 league sessions. Listener race: liveTeeTimes may
+// be empty on first render — empty state covers this; subsequent re-renders
+// refresh data when teetime listener fires.
+function _renderUpcomingTeeTimes(ctx) {
+  var upcoming = _getUpcomingTeeTimes(5) || [];
+  var newUserFraming = ctx.state === "new";
+
+  var h = '<div>';
+  if (newUserFraming) {
+    h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-mute);text-transform:uppercase;margin-bottom:4px">OPEN TEE TIMES</div>';
+    h += '<div onclick="Router.go(\'teetimes\')" style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;color:var(--cb-brass);text-transform:uppercase;cursor:pointer;margin-bottom:12px">JOIN ANOTHER MEMBER →</div>';
+  } else {
+    h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-mute);text-transform:uppercase;margin-bottom:12px">TEE TIMES</div>';
+  }
+
+  if (!upcoming.length) {
+    h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase;padding:8px 0">NOTHING SCHEDULED</div>';
+    h += '</div>';
+    return h;
+  }
+
+  upcoming.forEach(function(t) {
+    var hourLabel = (t.time || "").toUpperCase().replace(/^0/, "");  // "8 AM" / "11 AM" / "2 PM"
+    var dateLabel = "";
+    if (t.date) {
+      var d = new Date(t.date + "T12:00:00");
+      var month = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][d.getMonth()];
+      dateLabel = month + " " + d.getDate();
+    }
+    var max = t.maxPlayers || 4;
+    var rsvps = (t.rsvps && t.rsvps.length) || (t.players && t.players.length) || 0;
+    var spotsOpen = Math.max(0, max - rsvps);
+    var spotsLabel = spotsOpen > 0 ? spotsOpen + " OPEN" : "FULL";
+    var spotsColor = spotsOpen > 0 ? "var(--cb-brass)" : "var(--cb-moss)";
+
+    h += '<div onclick="Router.go(\'teetimes\',{id:\'' + (t._id || "") + '\'})" style="height:48px;border-bottom:1px solid var(--cb-chalk-3);display:flex;align-items:center;gap:10px;cursor:pointer">';
+    // Time stack
+    h += '<div style="flex-shrink:0">';
+    h += '<div style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--cb-ink);line-height:1">' + escHtml(hourLabel || "—") + '</div>';
+    h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);color:var(--cb-mute);letter-spacing:0.5px;margin-top:2px">' + escHtml(dateLabel) + '</div>';
+    h += '</div>';
+    // Course
+    h += '<div style="flex:1;min-width:0;font-family:var(--font-ui);font-size:var(--hq-eyebrow-size);font-weight:500;color:var(--cb-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(t.course || "TBD") + '</div>';
+    // Spots
+    h += '<div style="flex-shrink:0;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:1px;color:' + spotsColor + ';text-transform:uppercase">' + escHtml(spotsLabel) + '</div>';
+    h += '</div>';
+  });
+  h += '</div>';
+  return h;
+}
+
+// Member spotlight — featured member intro for State 3 only. Founding-four
+// rotation by day-of-week, excluding self. Falls back to first non-self
+// member if pool is empty; skips render if pool is still empty.
+function _renderMemberSpotlight(ctx) {
+  if (typeof PB === "undefined" || !PB.getPlayers) return "";
+  var uid = currentUser ? currentUser.uid : null;
+  var claimedFrom = currentProfile ? currentProfile.claimedFrom : null;
+
+  var allPlayers = PB.getPlayers() || [];
+  var pool = allPlayers.filter(function(p) {
+    return p && (p.founding || p.isFoundingFour) && p.id !== uid && p.id !== claimedFrom;
+  });
+  if (!pool.length) {
+    // Fallback: any non-self member
+    pool = allPlayers.filter(function(p) {
+      return p && p.id !== uid && p.id !== claimedFrom;
+    });
+  }
+  if (!pool.length) return "";  // Graceful skip — no other members to spotlight
+
+  // Deterministic rotation by day-of-week
+  var idx = new Date().getDay() % pool.length;
+  var member = pool[idx];
+  if (!member) return "";
+
+  var name = member.name || member.username || "Member";
+  var handle = member.username ? "@" + member.username : "";
+  var initial = (name.charAt(0) || "?").toUpperCase();
+  var bio = member.bio || "";
+  var bioOrCourse = bio || (member.homeCourse ? "Plays out of " + member.homeCourse + "." : "");
+  var tenureLabel = (member.founding || member.isFoundingFour) ? "FOUNDING MEMBER" : "MEMBER";
+
+  var h = '<div onclick="Router.go(\'members\',{id:\'' + member.id + '\'})" style="cursor:pointer">';
+  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-mute);text-transform:uppercase;margin-bottom:12px">MEET</div>';
+  h += '<div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px">';
+  // Avatar 64×64
+  h += '<div style="width:64px;height:64px;border-radius:50%;background:var(--cb-chalk-3);color:var(--cb-charcoal);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:24px;font-weight:700">' + escHtml(initial) + '</div>';
+  // Name
+  h += '<div style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--cb-ink);line-height:1.2">' + escHtml(name) + '</div>';
+  // Handle + tenure
+  if (handle) {
+    h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);color:var(--cb-mute);letter-spacing:0.5px">' + escHtml(handle) + ' · ' + tenureLabel + '</div>';
+  } else {
+    h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);color:var(--cb-mute);letter-spacing:0.5px">' + tenureLabel + '</div>';
+  }
+  // Bio (or course fallback) — 2 lines max
+  if (bioOrCourse) {
+    h += '<div style="font-family:var(--font-ui);font-size:var(--hq-agate-body-size);font-weight:500;color:var(--cb-charcoal);line-height:1.4;max-height:34px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">' + escHtml(bioOrCourse) + '</div>';
+  }
+  // CTA
+  h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--cb-brass);text-transform:uppercase;margin-top:4px">Say hi →</div>';
+  h += '</div>';
+  h += '</div>';
+  return h;
+}
+
+// Agate rail composer — stacks online + tee times. State 3 adds member spotlight.
+function _renderHQAgateRail(ctx) {
+  var h = '<div style="display:flex;flex-direction:column;gap:32px">';
+  h += _renderOnlineNowStrip(ctx);
+  h += _renderUpcomingTeeTimes(ctx);
+  if (ctx.state === "new") {
+    h += _renderMemberSpotlight(ctx);
+  }
+  h += '</div>';
+  return h;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// === STATE 3 LEAD COLUMN COMPONENTS (v8.6.1 · Ship 1b-iii) ===
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Welcome hero — same architecture as _renderEditorialGreetingHero but with
+// member-count-derived subhead and tenure eyebrow.
+function _renderWelcomeHero(ctx) {
+  var memberCount = 0;
+  var courseCount = 0;
+  if (typeof PB !== "undefined") {
+    if (PB.getPlayers) memberCount = (PB.getPlayers() || []).length;
+    if (PB.getRounds) {
+      var courses = {};
+      (PB.getRounds() || []).forEach(function(r) { if (r.course) courses[r.course] = true; });
+      courseCount = Object.keys(courses).length;
+    }
+  }
+  // New user is +1 to current count
+  var memberNum = memberCount + 1;
+  var d = new Date();
+  var monthName = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"][d.getMonth()];
+  var eyebrow = "MEMBER #" + memberNum + " · " + monthName + " " + d.getFullYear();
+
+  var subhead;
+  if (memberCount > 0 && courseCount > 0) {
+    subhead = memberCount + " members. " + courseCount + " courses played. One season already underway. Here's how to get in.";
+  } else {
+    subhead = "A small league with big games. Log a round to claim your spot.";
+  }
+
+  var h = '<div>';
+  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:18px">' + escHtml(eyebrow) + '</div>';
+  h += '<div style="font-family:var(--font-display);font-size:var(--hq-hero-size);font-weight:var(--hq-hero-weight);line-height:1.05;letter-spacing:-2px;color:var(--cb-ink);margin-bottom:14px">';
+  h += 'Welcome to the Parbaughs, <em style="font-style:italic;font-weight:700">' + escHtml(ctx.firstName) + '</em>.';
+  h += '</div>';
+  h += '<div style="font-family:var(--font-ui);font-size:var(--hq-subhead-size);font-weight:500;color:var(--cb-charcoal);max-width:480px;line-height:1.45">' + escHtml(subhead) + '</div>';
+  h += '</div>';
+  return h;
+}
+
+// Start-first-round panel — green CTA panel with stacked actions.
+function _renderStartFirstRoundPanel(ctx) {
+  var h = '<div style="background:var(--cb-green);border-radius:16px;padding:32px;color:var(--cb-chalk)">';
+  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:18px">FIRST MOVE</div>';
+  // Primary CTA — brass-on-chalk
+  h += '<div onclick="Router.go(\'playnow\')" style="background:var(--cb-chalk);color:var(--cb-ink);height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;margin-bottom:10px">';
+  h += '<span style="font-family:var(--font-ui);font-size:14px;font-weight:600">Start a round</span>';
+  h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--cb-brass)" stroke-width="2"><path d="M5 4l4 4-4 4"/></svg>';
+  h += '</div>';
+  // Secondary CTA — ghost chalk-2
+  h += '<div onclick="Router.go(\'courses\')" style="background:rgba(var(--bg-rgb),0.10);color:rgba(var(--bg-rgb),0.85);height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-bottom:14px">';
+  h += '<span style="font-family:var(--font-ui);font-size:13px;font-weight:500">Browse courses</span>';
+  h += '</div>';
+  // Tertiary text link
+  h += '<div onclick="Router.go(\'teetimes\')" style="text-align:center;cursor:pointer">';
+  h += '<span style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--cb-brass);text-transform:uppercase">Or join an open match →</span>';
+  h += '</div>';
+  h += '</div>';
+  return h;
+}
+
+// Ghosted stats quartet — same structure as _renderStatsSnapshotQuartet but
+// at 35% opacity, "—" values, and a "YOUR STATS APPEAR..." caption above.
+function _renderGhostedStatsQuartet(ctx) {
+  var h = '<div>';
+  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-mute);text-transform:uppercase;margin-bottom:12px">YOUR STATS APPEAR AFTER YOUR FIRST ROUND</div>';
+  h += '<div style="opacity:0.35;pointer-events:none">';
+  h += '<div style="display:flex;align-items:stretch;height:120px">';
+  var labels = ["HCP", "ROUNDS", "BEST", "STREAK"];
+  labels.forEach(function(label, i) {
+    var sep = i > 0 ? "border-left:1px solid var(--cb-chalk-3);" : "";
+    h += '<div style="flex:1;' + sep + 'padding:18px 14px;display:flex;flex-direction:column;justify-content:center;gap:6px">';
+    h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">' + label + '</div>';
+    h += '<div style="font-family:var(--font-display);font-size:var(--hq-stat-number-size);font-weight:700;color:var(--cb-ink);line-height:1">—</div>';
+    h += '</div>';
+  });
+  h += '</div>';
+  h += '</div>';
+  h += '</div>';
+  return h;
+}
+
+// State 3 lead column composer — same component shapes work at Band B/C/D
+// because tokens drive size and flex-children stretch to column width.
+function _renderHQLeadColumnNew(ctx) {
+  var h = '<div style="display:flex;flex-direction:column;gap:32px">';
+  h += _renderWelcomeHero(ctx);
+  h += _renderStartFirstRoundPanel(ctx);
+  h += _renderGhostedStatsQuartet(ctx);
+  h += '</div>';
+  return h;
+}
+
+// State 3 features column composer — reuses ladder (state-aware) + activity feed.
+function _renderHQFeaturesColumnNew(ctx) {
+  var h = '<div style="display:flex;flex-direction:column;gap:32px">';
+  h += _renderSeasonLadderTop10(ctx);   // state-aware; renders "your position" placeholder
+  h += _renderActivityFeedCompact(ctx, 12);
   h += '</div>';
   return h;
 }
@@ -1234,7 +1528,7 @@ function _renderPulses(pulses) {
   return h;
 }
 
-function _getUpcomingTeeTimes() {
+function _getUpcomingTeeTimes(limit) {
   if (typeof liveTeeTimes === "undefined" || !liveTeeTimes) return null;
   var today = localDateStr();
   var upcoming = liveTeeTimes.filter(function(t) {
@@ -1245,7 +1539,7 @@ function _getUpcomingTeeTimes() {
     if (a.date !== b.date) return a.date < b.date ? -1 : 1;
     return (a.time || "") < (b.time || "") ? -1 : 1;
   });
-  return upcoming.slice(0, 3);
+  return upcoming.slice(0, limit || 3);
 }
 
 function _teeTimeDateLabel(dateStr, timeStr) {
