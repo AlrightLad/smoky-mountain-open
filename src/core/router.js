@@ -2034,11 +2034,18 @@ function _wireSidebar() {
   var sidebar = document.getElementById("rrSidebar");
   if (!sidebar || sidebar._pbWired) return;
   sidebar._pbWired = true;
+  _bindHQDrawerSwipe();
+  // Initialize aria-hidden = true (drawer starts closed at Band A; ignored at ≥960).
+  sidebar.setAttribute("aria-hidden", "true");
   sidebar.addEventListener("click", function(e) {
     var item = e.target.closest(".rr-sidebar__item");
     if (!item) return;
     var route = item.dataset.route;
-    if (route) Router.go(route);
+    if (route) {
+      Router.go(route);
+      // Auto-close drawer after nav at Band A
+      if (window._drawerOpen) _closeHQDrawer();
+    }
   });
   sidebar.addEventListener("keydown", function(e) {
     if (e.key !== "Enter" && e.key !== " ") return;
@@ -2046,8 +2053,95 @@ function _wireSidebar() {
     if (!item) return;
     e.preventDefault();
     var route = item.dataset.route;
-    if (route) Router.go(route);
+    if (route) {
+      Router.go(route);
+      if (window._drawerOpen) _closeHQDrawer();
+    }
   });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HQ DRAWER (v8.6.2 · Ship 2) — Band A (720-959px) drawer-mode interaction.
+// The same #rrSidebar element becomes an off-canvas drawer at this band via
+// CSS transform (see components.css Band A drawer block). This module handles
+// open/close state, focus trap, ESC/swipe dismiss, and body scroll lock.
+//
+// Single drawer state, single source of truth — drawer is shared across all
+// HQ pages (home + future Ships 2-7 page migrations). Hamburger buttons in
+// any HQ masthead call window._toggleHQDrawer().
+// ═══════════════════════════════════════════════════════════════════════════
+window._drawerOpen = false;
+var _drawerLastFocused = null;
+var _drawerFocusables = [];
+
+window._toggleHQDrawer = function() {
+  if (window._drawerOpen) _closeHQDrawer();
+  else _openHQDrawer();
+};
+
+window._openHQDrawer = function() {
+  var sidebar = document.getElementById("rrSidebar");
+  if (!sidebar) return;
+  // Capture trigger so we can restore focus on close (typically the hamburger).
+  _drawerLastFocused = document.activeElement;
+  window._drawerOpen = true;
+  document.body.classList.add("hq-drawer-open");
+  sidebar.setAttribute("aria-hidden", "false");
+  // Build focusable list inside drawer. Skip aria-disabled (Notifications stub).
+  _drawerFocusables = Array.prototype.slice.call(
+    sidebar.querySelectorAll('a, button:not([aria-disabled="true"]), [tabindex]:not([tabindex="-1"])')
+  );
+  if (_drawerFocusables.length > 0) {
+    setTimeout(function() { _drawerFocusables[0].focus(); }, 50);
+  }
+  document.addEventListener("keydown", _drawerKeydown);
+};
+
+window._closeHQDrawer = function() {
+  var sidebar = document.getElementById("rrSidebar");
+  if (!sidebar) return;
+  window._drawerOpen = false;
+  document.body.classList.remove("hq-drawer-open");
+  sidebar.setAttribute("aria-hidden", "true");
+  document.removeEventListener("keydown", _drawerKeydown);
+  // Restore focus to the element that opened the drawer (typically hamburger).
+  if (_drawerLastFocused && typeof _drawerLastFocused.focus === "function") {
+    _drawerLastFocused.focus();
+  }
+};
+
+function _drawerKeydown(e) {
+  if (e.key === "Escape") {
+    _closeHQDrawer();
+    return;
+  }
+  if (e.key !== "Tab" || _drawerFocusables.length === 0) return;
+  var first = _drawerFocusables[0];
+  var last = _drawerFocusables[_drawerFocusables.length - 1];
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
+}
+
+// Swipe-left to dismiss (touch only). Bound once via guard flag.
+function _bindHQDrawerSwipe() {
+  var sidebar = document.getElementById("rrSidebar");
+  if (!sidebar || sidebar._pbSwipeBound) return;
+  sidebar._pbSwipeBound = true;
+  var startX = 0;
+  sidebar.addEventListener("touchstart", function(e) {
+    if (!window._drawerOpen) return;
+    startX = e.touches[0].clientX;
+  }, { passive: true });
+  sidebar.addEventListener("touchend", function(e) {
+    if (!window._drawerOpen) return;
+    var deltaX = e.changedTouches[0].clientX - startX;
+    if (deltaX < -50) _closeHQDrawer();  // swipe left ≥50px dismisses
+  }, { passive: true });
 }
 
 function _updateSidebarActive(page) {

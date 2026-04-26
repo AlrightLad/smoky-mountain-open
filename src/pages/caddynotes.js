@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · HQ complete</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · HQ on narrow screens</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Desktop HQ is now feature-complete. New members get a tailored welcome screen with a featured member spotlight. Wide-screen desktops show online members and upcoming tee times alongside the lead and features columns. Page footer now aligns with the column content above it.", tag: "NEW" }
+    { item: "Parbaughs HQ now works on narrow tablets and small windowed browsers down to 720px wide. Tap the menu button (top-left) on smaller screens to open the navigation drawer.", tag: "NEW" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.6.1", date: "April 2026", headline: "HQ complete",
+      items: [
+        { item: "Desktop HQ is now feature-complete. New members get a tailored welcome screen with a featured member spotlight. Wide-screen desktops show online members and upcoming tee times alongside the lead and features columns. Page footer now aligns with the column content above it.", tag: "NEW" }
+      ]
+    },
     {
       version: "v8.6.0", date: "April 2026", headline: "Responsive HQ",
       items: [

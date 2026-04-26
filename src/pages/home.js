@@ -24,19 +24,21 @@
 // === PART 1: Home render (Clubhouse editorial) ===
 // ═══════════════════════════════════════════════════════════════════════════
 
-// HQ desktop breakpoint: ≥960px gets the editorial HQ layout. Within HQ, four
-// design bands (mobile / B / C / D) drive layout + typography:
-//   mobile (<960):       mobile-editorial layout (Capacitor app, narrow browsers)
+// HQ desktop breakpoint: ≥720px gets the editorial HQ layout. Within HQ, five
+// design bands (mobile / A / B / C / D) drive layout + typography:
+//   mobile (<720):       mobile-editorial layout (v8.6.3 lowers cutoff)
+//   A      (720-959):    drawer-nav, single column 640px, two-row masthead
 //   B      (960-1279):   single 600px lead column; chart promoted into lead flow
 //   C      (1280-1439):  lead 480 + features 400
 //   D      (1440+):      lead 480 + features 400 + agate 196
-var HQ_BREAKPOINT = 960;
+var HQ_BREAKPOINT = 720;
 function _isHQViewport() { return window.innerWidth >= HQ_BREAKPOINT; }
 
 // Returns the active design band based on viewport width.
 function _currentBand() {
   var w = window.innerWidth;
-  if (w < 960) return "mobile";
+  if (w < 720) return "mobile";
+  if (w < 960) return "A";
   if (w < 1280) return "B";
   if (w < 1440) return "C";
   return "D";
@@ -173,6 +175,7 @@ function _renderHQHome(ctx) {
 // to the column width at each band. Ships 2-7 page renders should consume
 // this same helper for consistent width treatment across HQ surfaces.
 function _hqContentMaxWidth(band) {
+  if (band === "A") return "640px";       // single column, drawer-nav, no sidebar
   if (band === "B") return "600px";       // single 600px lead column
   if (band === "C") return "912px";       // 480 + 32 + 400
   return "1132px";                        // 480 + 32 + 400 + 24 + 196 (Band D)
@@ -225,11 +228,15 @@ function _formatHQMastheadDate() {
   return day + " · " + month + " " + d.getDate() + ", " + d.getFullYear();
 }
 
-// HQ masthead — full-width 56px-tall band: wordmark + date on left, weather pill +
-// scope switcher on right. Weather is mocked for v1 (TODO v1.1: Open-Meteo wiring).
-// Scope switcher is visual-only — "All Parbaughs" pill disabled until cross-league
-// aggregate data path lands in a future ship.
+// HQ masthead — band-aware. Default single-row 56px (Bands B/C/D); two-row 68px
+// at Band A with hamburger + wordmark + scope switcher.
 function _renderHQMasthead() {
+  if (_currentBand() === "A") return _renderHQMastheadBandA();
+  return _renderHQMastheadDefault();
+}
+
+// Default masthead — single row, used at Bands B/C/D.
+function _renderHQMastheadDefault() {
   var date = _formatHQMastheadDate();
   var condensed = window.innerWidth < 1280;
   var myLeagueLabel = condensed ? "League" : "My league";
@@ -243,10 +250,12 @@ function _renderHQMasthead() {
   h += '<div style="font-family:var(--font-ui);font-weight:500;font-size:13px;color:var(--cb-charcoal)">' + escHtml(date) + '</div>';
   h += '</div>';
 
-  // Right: weather pill + scope switcher
+  // Right: weather pill + bell stub + scope switcher
   h += '<div style="display:flex;align-items:center;gap:12px">';
   // TODO v1.1: replace mock with Open-Meteo fetch (geo-permission + sessionStorage cache)
   h += '<div title="York, PA · weather will go live in a future update" style="display:inline-flex;align-items:center;height:28px;padding:0 12px;background:var(--cb-chalk-2);border-radius:6px;font-family:var(--font-ui);font-weight:500;font-size:12px;color:var(--cb-brass);letter-spacing:0.3px">58° · CLEAR</div>';
+  // Bell stub — between weather and scope switcher (Band B+ only; collapses to drawer at Band A)
+  h += _renderHQBellStub();
   // Scope switcher — visual-only until cross-league aggregate data exists
   h += '<div style="display:inline-flex;align-items:stretch;background:var(--cb-chalk-2);border-radius:6px;padding:2px;gap:2px">';
   h += '<div style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:4px;text-transform:uppercase">' + escHtml(myLeagueLabel) + '</div>';
@@ -255,6 +264,51 @@ function _renderHQMasthead() {
   h += '</div>';
 
   h += '</div>';
+  return h;
+}
+
+// Band A masthead — two rows totaling 68px. Hamburger left, wordmark center,
+// scope switcher right. Bell collapses into drawer footer (not in masthead).
+// Row 2: mono date + weather caption. Reduced density per design spec §2.1.
+function _renderHQMastheadBandA() {
+  var d = new Date();
+  var dayShort = ["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"][d.getDay()];
+  var monthShort = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][d.getMonth()];
+  var caption = dayShort + " · " + monthShort + " " + d.getDate() + " · 58° CLEAR";
+
+  var h = '<div style="background:var(--cb-chalk);border-bottom:1px solid var(--cb-chalk-3);max-width:640px;margin:0 auto;padding:0 24px">';
+  // Row 1 (44px): hamburger + wordmark + scope switcher
+  h += '<div style="height:44px;display:flex;align-items:center;justify-content:space-between;gap:8px">';
+  // Hamburger button
+  h += '<button type="button" onclick="window._toggleHQDrawer && window._toggleHQDrawer()" aria-label="Open menu" style="width:44px;height:44px;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:-10px">';
+  h += '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--cb-ink)" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
+  h += '</button>';
+  // Wordmark center
+  h += '<div style="font-family:var(--font-display);font-weight:700;font-size:18px;line-height:1;color:var(--cb-ink);letter-spacing:-0.5px">Parbaughs</div>';
+  // Scope switcher (compact)
+  h += '<div style="display:inline-flex;align-items:stretch;background:var(--cb-chalk-2);border-radius:6px;padding:2px;gap:2px;flex-shrink:0">';
+  h += '<div style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:4px;text-transform:uppercase">League</div>';
+  h += '<div title="All Parbaughs view coming in a future update" style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:1.2px;color:var(--cb-mute);text-transform:uppercase;cursor:not-allowed;opacity:0.55">All</div>';
+  h += '</div>';
+  h += '</div>';
+  // Row 2 (24px): mono date + weather caption
+  h += '<div style="height:24px;display:flex;align-items:center">';
+  h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">' + escHtml(caption) + '</div>';
+  h += '</div>';
+  h += '</div>';
+  return h;
+}
+
+// Bell stub — Band B+ only (24×24 brass icon outline). Renders between weather
+// pill and scope switcher in default masthead. At Band A the bell lives in the
+// drawer footer (rr-sidebar__actions row), not in the masthead.
+function _renderHQBellStub() {
+  var h = '<button type="button" aria-label="Notifications" aria-disabled="true" tabindex="-1" onclick="event.preventDefault();event.stopPropagation();" style="width:32px;height:32px;background:transparent;border:none;cursor:default;display:flex;align-items:center;justify-content:center;padding:0">';
+  h += '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--cb-brass)" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true">';
+  h += '<path d="M18 16v-5a6 6 0 0 0-12 0v5l-2 2h16l-2-2z"/>';
+  h += '<path d="M10 20a2 2 0 0 0 4 0"/>';
+  h += '</svg>';
+  h += '</button>';
   return h;
 }
 
@@ -268,7 +322,13 @@ function _renderHQGridInner(ctx) {
   var band = _currentBand();
   var h = '<div style="padding-top:32px;display:flex">';
 
-  if (band === "B") {
+  if (band === "A") {
+    // Band A (720-959): single content column, full-width within 640px wrapper.
+    // Chart + features column dropped; activity feed promoted into lead flow.
+    h += '<div style="width:100%;min-width:0">';
+    h += _renderHQLeadColumnBandA(ctx);
+    h += '</div>';
+  } else if (band === "B") {
     // Band B (960-1279): single 600px lead column, chart promoted into flow.
     h += '<div style="width:600px;flex-shrink:0">';
     h += _renderHQLeadColumnBandB(ctx);
@@ -522,12 +582,27 @@ function _renderStatsSnapshotQuartet(ctx) {
     { label: "STREAK", value: streakVal, caption: _truncateCaption(streakCaption), captionColor: streakColor, click: "" }
   ];
 
-  var h = '<div style="display:flex;align-items:stretch;height:120px">';
+  // Band A renders 2×2 grid (each cell ~50% width); Bands B/C/D use horizontal flex row.
+  var isBandA = _currentBand() === "A";
+  var containerStyle = isBandA
+    ? 'display:grid;grid-template-columns:1fr 1fr'
+    : 'display:flex;align-items:stretch;height:120px';
+  var h = '<div style="' + containerStyle + '">';
   cells.forEach(function(c, i) {
-    var sep = i > 0 ? "border-left:1px solid var(--cb-chalk-3);" : "";
-    var cursor = c.click ? "cursor:pointer;" : "";
-    var onclick = c.click ? ' onclick="' + c.click + '"' : "";
-    h += '<div' + onclick + ' style="flex:1;' + sep + cursor + 'padding:18px 14px;display:flex;flex-direction:column;justify-content:center;gap:6px">';
+    var sep;
+    if (isBandA) {
+      // 2×2: cells 0,1 top row; 2,3 bottom row. Right cell gets left border;
+      // bottom row gets top border.
+      sep = '';
+      if (i === 1 || i === 3) sep += 'border-left:1px solid var(--cb-chalk-3);';
+      if (i === 2 || i === 3) sep += 'border-top:1px solid var(--cb-chalk-3);';
+    } else {
+      sep = i > 0 ? 'border-left:1px solid var(--cb-chalk-3);' : '';
+    }
+    var cellSize = isBandA ? 'min-height:108px;' : 'flex:1;';
+    var cursor = c.click ? 'cursor:pointer;' : '';
+    var onclick = c.click ? ' onclick="' + c.click + '"' : '';
+    h += '<div' + onclick + ' style="' + cellSize + sep + cursor + 'padding:18px 14px;display:flex;flex-direction:column;justify-content:center;gap:6px">';
     h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">' + escHtml(c.label) + '</div>';
     h += '<div style="font-family:var(--font-display);font-size:var(--hq-stat-number-size);font-weight:700;color:var(--cb-ink);line-height:1;font-variant-numeric:lining-nums tabular-nums">' + escHtml(c.value) + '</div>';
     if (c.caption) h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.2px;color:' + c.captionColor + ';text-transform:uppercase">' + escHtml(c.caption) + '</div>';
@@ -537,9 +612,11 @@ function _renderStatsSnapshotQuartet(ctx) {
   return h;
 }
 
-// Season ladder top 10 — current user highlighted; if outside top 10, pinned
-// below a divider with "YOUR POSITION" caption.
-function _renderSeasonLadderTop10(ctx) {
+// Season ladder — top N (default 10, Band A passes 6); current user highlighted;
+// if outside top N, pinned below a divider with "YOUR POSITION" caption.
+function _renderSeasonLadderTop10(ctx, opts) {
+  opts = opts || {};
+  var limit = opts.limit || 10;
   var season = ctx.season;
   var standings = (season && season.standings) || [];
   var label = (season && season.label) || "Season";
@@ -562,10 +639,10 @@ function _renderSeasonLadderTop10(ctx) {
     return h;
   }
 
-  var top10 = standings.slice(0, 10);
+  var top10 = standings.slice(0, limit);
   var leaderPts = top10[0] ? (top10[0].points || 0) : 0;
   var myIdx = standings.findIndex(function(s){ return s.id === uid || s.id === claimedFrom; });
-  var myInTop10 = myIdx >= 0 && myIdx < 10;
+  var myInTop10 = myIdx >= 0 && myIdx < limit;
 
   top10.forEach(function(s, idx) {
     h += _hqLadderRow(s, idx + 1, leaderPts, idx === myIdx);
@@ -1032,6 +1109,49 @@ function _renderHQLeadColumnBandBActive(ctx) {
     recent.forEach(function(r) { h += _renderRecentRoundRow(r); });
     h += '</div>';
   }
+  h += '</div>';
+  return h;
+}
+
+// ─── Band A (720-959) sibling lead-column composers ────────────────────────
+// At Band A the features column + agate are dropped; activity feed (5 rows)
+// promoted into lead flow. Stats quartet adapts to 2×2 grid via runtime band
+// detection inside _renderStatsSnapshotQuartet. Ladder takes opts.limit:6.
+// State 3 reuses _renderHQLeadColumnNew (welcome flow scales via tokens).
+
+function _renderHQLeadColumnBandA(ctx) {
+  if (ctx.state === "active") return _renderHQLeadColumnBandAActive(ctx);
+  if (ctx.state === "new") return _renderHQLeadColumnNew(ctx);
+  return _renderHQLeadColumnBandAIdle(ctx);
+}
+
+function _renderHQLeadColumnBandAIdle(ctx) {
+  var h = '<div style="display:flex;flex-direction:column;gap:32px">';
+  h += _renderEditorialGreetingHero(ctx);    // hero scales to 36 via --hq-hero-size token
+  h += _renderStatsSnapshotQuartet(ctx);     // 2×2 grid via band-aware container
+  h += _renderSeasonLadderTop10(ctx, { limit: 6 });
+  var recent = (ctx.myRounds || []).slice(0, 2);
+  if (recent.length > 0) {
+    h += '<div style="display:flex;flex-direction:column">';
+    recent.forEach(function(r) { h += _renderRecentRoundRow(r); });
+    h += '</div>';
+  }
+  h += _renderActivityFeedCompact(ctx, 5);
+  h += '</div>';
+  return h;
+}
+
+function _renderHQLeadColumnBandAActive(ctx) {
+  var h = '<div style="display:flex;flex-direction:column;gap:32px">';
+  h += _renderLiveRoundExpandedCard(ctx);    // score scales to 64 via --hq-live-score-size
+  h += _renderSeasonPositionStrip(ctx);
+  var recent = (ctx.myRounds || []).slice(0, 2);
+  if (recent.length > 0) {
+    h += '<div style="display:flex;flex-direction:column">';
+    recent.forEach(function(r) { h += _renderRecentRoundRow(r); });
+    h += '</div>';
+  }
+  h += _renderActivityFeedCompact(ctx, 5);
   h += '</div>';
   return h;
 }
