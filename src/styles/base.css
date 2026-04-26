@@ -181,6 +181,48 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --hq-recent-row-height: 64px;
 
   /* ═════════════════════════════════════════════════════════════════════════
+     SPACING SCALE (v8.7.0 — Ship 3a · spec v9.0.2 §0.1)
+     Components migrate to these in Ship 3b; new components use directly.
+     ═════════════════════════════════════════════════════════════════════════ */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 72px;
+
+  /* ═════════════════════════════════════════════════════════════════════════
+     RADIUS SCALE (v8.7.0 — Ship 3a · spec v9.0.2 §0.2)
+     ═════════════════════════════════════════════════════════════════════════ */
+  --r-1: 4px;
+  --r-2: 8px;
+  --r-3: 12px;
+  --r-4: 16px;
+  --r-5: 20px;
+
+  /* ═════════════════════════════════════════════════════════════════════════
+     ELEVATION SCALE (v8.7.0 — Ship 3a · spec v9.0.2 §0.3)
+     ═════════════════════════════════════════════════════════════════════════ */
+  --el-0: none;
+  --el-1: 0 1px 0 var(--cb-chalk-3);
+  --el-2: 0 8px 24px rgba(20, 19, 15, 0.06);
+  --el-3: 0 -12px 40px rgba(20, 19, 15, 0.14);
+  --el-4: 0 24px 60px rgba(20, 19, 15, 0.18);
+
+  /* ═════════════════════════════════════════════════════════════════════════
+     MOTION SCALE (v8.7.0 — Ship 3a · spec v9.0.2 §0.4)
+     Spec-named tokens; existing --duration-* tokens preserved for unmigrated
+     sites. Value drift acknowledged (120/200/320 vs existing 150/250/400) —
+     flagged for design follow-up; both naming systems coexist for now.
+     ═════════════════════════════════════════════════════════════════════════ */
+  --dur-quick: 120ms;
+  --dur-base: 200ms;
+  --dur-smooth: 320ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ═════════════════════════════════════════════════════════════════════════
      LEGACY TOKEN ALIASES — backwards compatibility for ~1,800 inline refs
      in src/pages/ and src/core/. Every existing token name preserved but
      its VALUE is remapped to a Clubhouse equivalent. No legacy aesthetic.

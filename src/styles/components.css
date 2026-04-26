@@ -1342,3 +1342,152 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   .data-stage { animation: none !important; }
   .data-stage { opacity: 1 !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOAST PRIMITIVE (v8.7.0 — Ship 3a · spec v9.0.2 §1.9)
+   Top-center stacking notifications; auto-dismiss with severity-based timing.
+   Public API: PB.toast({type, eyebrow, message, action, duration})
+   ═══════════════════════════════════════════════════════════════════════════ */
+#pb-toast-stack {
+  position: fixed;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1000;
+  pointer-events: none;
+  max-width: calc(100vw - 48px);
+}
+
+/* Band A: clear masthead + potential banner */
+@media (max-width: 959.98px) {
+  #pb-toast-stack { top: 88px; }
+}
+
+.pb-toast {
+  background: var(--cb-chalk-2);
+  border-radius: var(--r-3);
+  padding: var(--sp-3) var(--sp-5);
+  box-shadow: var(--el-2);
+  border-left: 4px solid var(--cb-brass);
+  min-width: 280px;
+  max-width: 480px;
+  width: max-content;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity var(--dur-base) var(--ease-standard),
+              transform var(--dur-base) var(--ease-standard);
+}
+.pb-toast.pb-toast--enter { opacity: 1; transform: translateY(0); }
+.pb-toast.pb-toast--exit  { opacity: 0; transform: translateY(-8px); }
+.pb-toast--success { border-left-color: var(--cb-moss); }
+.pb-toast--error   { border-left-color: var(--cb-claret); }
+
+.pb-toast__eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--hq-eyebrow-size);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--cb-brass);
+  margin-bottom: 4px;
+}
+.pb-toast--success .pb-toast__eyebrow { color: var(--cb-moss); }
+.pb-toast--error   .pb-toast__eyebrow { color: var(--cb-claret); }
+
+.pb-toast__message {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--cb-ink);
+  line-height: 1.4;
+}
+
+.pb-toast__action {
+  display: inline-block;
+  margin-left: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: var(--cb-brass);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  padding: 2px 0;
+}
+.pb-toast__action:hover { text-decoration: underline; }
+
+/* Reduced-motion override: universal rule at base.css zeros transition-duration
+   but does NOT reset transform — so the entry transform: translateY(-8px) would
+   still render on insert (one-frame flicker before classList.add fires). Force
+   transform: none here so the toast appears at its final position immediately. */
+@media (prefers-reduced-motion: reduce) {
+  .pb-toast,
+  .pb-toast.pb-toast--enter,
+  .pb-toast.pb-toast--exit { transform: none !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BANNER PRIMITIVE (v8.7.0 — Ship 3a · spec v9.0.2 §1.10)
+   Persistent above-masthead notification; pushes content down.
+   Public API: PB.banner({id, type, eyebrow, message, button})
+   ═══════════════════════════════════════════════════════════════════════════ */
+#pb-banner-stack {
+  width: 100%;
+}
+
+.pb-banner {
+  background: var(--cb-chalk-3);
+  border-bottom: 1px solid var(--cb-brass);
+  padding: var(--sp-3) var(--sp-5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  width: 100%;
+}
+.pb-banner--success { border-bottom-color: var(--cb-moss); }
+.pb-banner--error   { border-bottom-color: var(--cb-claret); }
+
+.pb-banner__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.pb-banner__eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--hq-eyebrow-size);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--cb-brass);
+  margin-bottom: 2px;
+}
+.pb-banner--success .pb-banner__eyebrow { color: var(--cb-moss); }
+.pb-banner--error   .pb-banner__eyebrow { color: var(--cb-claret); }
+
+.pb-banner__message {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--cb-ink);
+  line-height: 1.4;
+}
+
+.pb-banner__action {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--cb-brass);
+  text-transform: uppercase;
+  padding: var(--sp-2) var(--sp-3);
+}
+.pb-banner__action:hover { text-decoration: underline; }

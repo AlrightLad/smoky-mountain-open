@@ -8,7 +8,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v' + APP_VERSION + '</div></div>';
 
   function tagColorFor(tag) {
-    return tag === "NEW" ? "var(--birdie)" : tag === "FIXED" ? "var(--gold)" : tag === "IMPROVED" ? "var(--blue)" : "var(--muted)";
+    return tag === "NEW" ? "var(--birdie)" : tag === "FIXED" ? "var(--gold)" : tag === "IMPROVED" ? "var(--blue)" : tag === "INFRA" ? "var(--cb-mute)" : "var(--muted)";
   }
   function renderEntry(r) {
     var tc = tagColorFor(r.tag);
@@ -19,18 +19,24 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · HQ on narrow screens</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · design system foundations</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Cleaned up the stats display — captions now fit naturally instead of awkward mid-word truncation. Sidebar bottom no longer crops your name on desktop (the drawer menu still shows it on smaller screens).", tag: "FIXED" },
-    { item: "Cleaned up sidebar appearance — no more scrollbar showing on desktop, and Notifications row only appears in the drawer menu where the masthead bell isn't visible.", tag: "FIXED" },
-    { item: "Parbaughs HQ now works on narrow tablets and small windowed browsers down to 720px wide. Tap the menu button (top-left) on smaller screens to open the navigation drawer.", tag: "NEW" }
+    { item: "Behind-the-scenes infrastructure update — added the design system foundations (spacing, sizing, shadows, animation timing tokens) and built reusable notification + banner components ready for future features. No visible changes; this prepares the codebase for upcoming work on scoring, members, leaderboard, and more.", tag: "INFRA" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.6.2", date: "April 2026", headline: "HQ on narrow screens",
+      items: [
+        { item: "Cleaned up the stats display — captions now fit naturally instead of awkward mid-word truncation. Sidebar bottom no longer crops your name on desktop (the drawer menu still shows it on smaller screens).", tag: "FIXED" },
+        { item: "Cleaned up sidebar appearance — no more scrollbar showing on desktop, and Notifications row only appears in the drawer menu where the masthead bell isn't visible.", tag: "FIXED" },
+        { item: "Parbaughs HQ now works on narrow tablets and small windowed browsers down to 720px wide. Tap the menu button (top-left) on smaller screens to open the navigation drawer.", tag: "NEW" }
+      ]
+    },
     {
       version: "v8.6.1", date: "April 2026", headline: "HQ complete",
       items: [

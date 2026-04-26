@@ -77,6 +77,10 @@ var Router = (function() {
     });
   }
 
+  // LEGACY mobile toast primitive — single #toast element, single message,
+  // fixed 2.2s timing. Coexists with PB.toast (richer, severity-aware, stacked)
+  // from v8.7.0 / Ship 3a. Migration to PB.toast deferred to Ship 11+ when the
+  // auth surface refactors and existing call sites can be retargeted safely.
   function toast(msg) {
     var el = document.getElementById("toast");
     el.textContent = msg;
@@ -2143,6 +2147,166 @@ function _bindHQDrawerSwipe() {
     if (deltaX < -50) _closeHQDrawer();  // swipe left ≥50px dismisses
   }, { passive: true });
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TOAST PRIMITIVE (v8.7.0 — Ship 3a · spec v9.0.2 §1.9)
+// Public API: PB.toast({type, eyebrow, message, action, duration})
+//   type:     'info' | 'success' | 'action' | 'error'  (default: 'info')
+//   duration: ms; default 4000 info/success, 8000 action, persistent (0) error
+//   action:   {label, handler}  — optional inline button
+// Returns: numeric id; pass to PB.toastDismiss(id) for early dismiss.
+//
+// NOTE: Router.toast(msg) (line ~80) is the legacy mobile primitive — single
+// element, single message, fixed timing. Coexists with PB.toast for now;
+// migration deferred to Ship 11+ when auth surface refactors.
+// ═══════════════════════════════════════════════════════════════════════════
+var _pbToastStack = null;
+var _pbToastSeq = 0;
+var _pbToasts = [];
+
+function _pbToastInit() {
+  if (_pbToastStack) return;
+  _pbToastStack = document.createElement("div");
+  _pbToastStack.id = "pb-toast-stack";
+  _pbToastStack.setAttribute("aria-live", "polite");
+  _pbToastStack.setAttribute("role", "status");
+  document.body.appendChild(_pbToastStack);
+}
+
+function _pbToastDismiss(id) {
+  var t = _pbToasts.find(function(x) { return x.id === id; });
+  if (!t) return;
+  t.el.classList.remove("pb-toast--enter");
+  t.el.classList.add("pb-toast--exit");
+  setTimeout(function() {
+    if (t.el.parentNode) t.el.parentNode.removeChild(t.el);
+    _pbToasts = _pbToasts.filter(function(x) { return x.id !== id; });
+  }, 200);
+}
+
+PB.toast = function(opts) {
+  _pbToastInit();
+  opts = opts || {};
+  var type = opts.type || "info";
+  var duration = opts.duration;
+  if (duration === undefined) {
+    duration = type === "error" ? 0 : type === "action" ? 8000 : 4000;
+  }
+
+  var id = ++_pbToastSeq;
+  var el = document.createElement("div");
+  el.className = "pb-toast pb-toast--" + type;
+  el.setAttribute("role", "alert");
+
+  var html = "";
+  if (opts.eyebrow) {
+    html += '<div class="pb-toast__eyebrow">' + escHtml(opts.eyebrow) + "</div>";
+  }
+  if (opts.message) {
+    html += '<div class="pb-toast__message">' + escHtml(opts.message);
+    if (opts.action && typeof opts.action === "object") {
+      html += '<button class="pb-toast__action" data-toast-action="' + id + '">' +
+              escHtml(opts.action.label || "Undo") + "</button>";
+    }
+    html += "</div>";
+  }
+  el.innerHTML = html;
+
+  // Stack overflow handling — max 3 visible
+  while (_pbToasts.length >= 3) {
+    _pbToastDismiss(_pbToasts[0].id);
+  }
+
+  _pbToastStack.appendChild(el);
+  _pbToasts.push({ id: id, el: el, opts: opts });
+
+  if (opts.action && typeof opts.action === "object" && typeof opts.action.handler === "function") {
+    el.querySelector("[data-toast-action]").addEventListener("click", function() {
+      try { opts.action.handler(); } catch (e) {}
+      _pbToastDismiss(id);
+    });
+  }
+
+  // Trigger enter animation on next frame so transition fires from initial state
+  requestAnimationFrame(function() { el.classList.add("pb-toast--enter"); });
+
+  if (duration > 0) {
+    setTimeout(function() { _pbToastDismiss(id); }, duration);
+  }
+  return id;
+};
+
+PB.toastDismiss = _pbToastDismiss;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BANNER PRIMITIVE (v8.7.0 — Ship 3a · spec v9.0.2 §1.10)
+// Public API: PB.banner({id, type, eyebrow, message, button})
+//   id:      stable identifier; subsequent calls with same id are no-ops (dedupe)
+//   type:    'info' | 'success' | 'error'  (default: 'info')
+//   button:  {label, handler}  — optional right-side action
+// Returns: id; pass to PB.bannerDismiss(id) when underlying condition resolves.
+//
+// Coexists with the inline _renderEmailVerifyBanner in home.js — that block is
+// home-page-only and renders inside the page DOM. PB.banner is system-wide,
+// rendered above the masthead, persistent across pages.
+// ═══════════════════════════════════════════════════════════════════════════
+var _pbBannerStack = null;
+var _pbBanners = {};
+
+function _pbBannerInit() {
+  if (_pbBannerStack) return;
+  _pbBannerStack = document.getElementById("pb-banner-stack");
+  if (_pbBannerStack) return;
+  _pbBannerStack = document.createElement("div");
+  _pbBannerStack.id = "pb-banner-stack";
+  // Insert at top of body — above authScreen, mainApp, everything. System-level
+  // banners (maintenance) should appear pre-auth as well as post-auth.
+  document.body.insertBefore(_pbBannerStack, document.body.firstChild);
+}
+
+PB.banner = function(opts) {
+  _pbBannerInit();
+  opts = opts || {};
+  if (!opts.id) opts.id = "banner-" + Date.now();
+  if (_pbBanners[opts.id]) return opts.id;  // already shown — dedupe
+
+  var type = opts.type || "info";
+  var el = document.createElement("div");
+  el.className = "pb-banner pb-banner--" + type;
+  el.setAttribute("data-banner-id", opts.id);
+  el.setAttribute("role", "status");
+
+  var html = '<div class="pb-banner__content">';
+  if (opts.eyebrow) {
+    html += '<div class="pb-banner__eyebrow">' + escHtml(opts.eyebrow) + "</div>";
+  }
+  if (opts.message) {
+    html += '<div class="pb-banner__message">' + escHtml(opts.message) + "</div>";
+  }
+  html += "</div>";
+  if (opts.button && typeof opts.button === "object") {
+    html += '<button class="pb-banner__action" data-banner-action="' + opts.id + '">' +
+            escHtml(opts.button.label || "Action") + "</button>";
+  }
+  el.innerHTML = html;
+
+  if (opts.button && typeof opts.button === "object" && typeof opts.button.handler === "function") {
+    el.querySelector("[data-banner-action]").addEventListener("click", function() {
+      try { opts.button.handler(); } catch (e) {}
+    });
+  }
+
+  _pbBannerStack.appendChild(el);
+  _pbBanners[opts.id] = el;
+  return opts.id;
+};
+
+PB.bannerDismiss = function(id) {
+  var el = _pbBanners[id];
+  if (!el) return;
+  if (el.parentNode) el.parentNode.removeChild(el);
+  delete _pbBanners[id];
+};
 
 function _updateSidebarActive(page) {
   var sidebar = document.getElementById("rrSidebar");
