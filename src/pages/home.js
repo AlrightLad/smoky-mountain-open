@@ -251,7 +251,7 @@ function _renderHQMastheadDefault() {
   h += '</div>';
 
   // Right: weather pill + bell stub + scope switcher
-  h += '<div style="display:flex;align-items:center;gap:12px">';
+  h += '<div style="display:flex;align-items:center;gap:var(--sp-3)">';
   // TODO v1.1: replace mock with Open-Meteo fetch (geo-permission + sessionStorage cache)
   h += '<div title="York, PA · weather will go live in a future update" style="display:inline-flex;align-items:center;height:28px;padding:0 12px;background:var(--cb-chalk-2);border-radius:6px;font-family:var(--font-ui);font-weight:500;font-size:12px;color:var(--cb-brass);letter-spacing:0.3px">58° · CLEAR</div>';
   // Bell stub — between weather and scope switcher (Band B+ only; collapses to drawer at Band A)
@@ -278,7 +278,7 @@ function _renderHQMastheadBandA() {
 
   var h = '<div style="background:var(--cb-chalk);border-bottom:1px solid var(--cb-chalk-3);max-width:640px;margin:0 auto;padding:0 24px">';
   // Row 1 (44px): hamburger + wordmark + scope switcher
-  h += '<div style="height:44px;display:flex;align-items:center;justify-content:space-between;gap:8px">';
+  h += '<div style="height:44px;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2)">';
   // Hamburger button
   h += '<button type="button" onclick="window._toggleHQDrawer && window._toggleHQDrawer()" aria-label="Open menu" style="width:44px;height:44px;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:-10px">';
   h += '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--cb-ink)" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
@@ -651,14 +651,14 @@ function _renderSeasonLadderTop10(ctx, opts) {
   });
 
   if (!myInTop10 && myIdx >= 0) {
-    h += '<div style="height:1px;background:var(--cb-chalk-3);margin:12px 0 10px"></div>';
+    h += '<div style="height:1px;background:var(--cb-chalk-3);margin:var(--sp-3) 0 10px"></div>';
     h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;color:var(--cb-mute);text-transform:uppercase;margin-bottom:6px">YOUR POSITION</div>';
     h += _hqLadderRow(standings[myIdx], myIdx + 1, leaderPts, true);
   } else if (ctx.state === "new") {
     // New user has 0 rounds, won't appear in standings. Pin a placeholder row
     // so they can see where their position will land once they log a round.
     var initial = (ctx.firstName || "?").charAt(0).toUpperCase();
-    h += '<div style="height:1px;background:var(--cb-chalk-3);margin:12px 0 10px"></div>';
+    h += '<div style="height:1px;background:var(--cb-chalk-3);margin:var(--sp-3) 0 10px"></div>';
     h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;color:var(--cb-mute);text-transform:uppercase;margin-bottom:6px">YOUR POSITION</div>';
     h += '<div style="background:var(--cb-chalk-2);padding:0 12px;height:var(--hq-ladder-row-height);display:flex;align-items:center;gap:10px;border-radius:4px">';
     h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--cb-mute);width:24px;flex-shrink:0">—</div>';
@@ -747,7 +747,7 @@ function _renderLiveRoundExpandedCard(ctx) {
   var fmt = (liveState.format || "stroke").toString();
   var formatLabel = fmt === "scramble" ? "SCRAMBLE" : fmt.toUpperCase() + " PLAY";
 
-  var h = '<div onclick="Router.go(\'playnow\')" style="background:var(--cb-green);border-radius:16px;padding:32px;color:var(--cb-chalk);cursor:pointer;position:relative;overflow:hidden">';
+  var h = '<div onclick="Router.go(\'playnow\')" style="background:var(--cb-green);border-radius:16px;padding:var(--sp-6);color:var(--cb-chalk);cursor:pointer;position:relative;overflow:hidden">';
   // Top eyebrow with pulsing dot
   h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);display:flex;align-items:center;gap:10px;margin-bottom:18px">';
   h += '<span style="width:6px;height:6px;border-radius:50%;background:var(--cb-brass);animation:pulse-dot 2s infinite;flex-shrink:0"></span>';
@@ -766,7 +766,7 @@ function _renderLiveRoundExpandedCard(ctx) {
   h += 'TOTAL ' + (thru > 0 ? total : "—") + ' · PAR ' + (thru > 0 ? parSoFar : "—") + ' · ' + formatLabel;
   h += '</div>';
   // CTA
-  h += '<div style="background:var(--cb-chalk-2);height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px">';
+  h += '<div style="background:var(--cb-chalk-2);height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:var(--sp-2)">';
   h += '<span style="font-family:var(--font-ui);font-size:14px;font-weight:600;color:var(--cb-ink)">Open scorecard</span>';
   h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--cb-brass)" stroke-width="2"><path d="M5 4l4 4-4 4"/></svg>';
   h += '</div>';
@@ -936,7 +936,7 @@ function _renderActivityFeedCompact(ctx, limit) {
   h += '</div>';
 
   if (!items.length) {
-    h += '<div style="padding:32px 0;text-align:center;font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">QUIET WEEK</div>';
+    h += '<div style="padding:var(--sp-6) 0;text-align:center;font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">QUIET WEEK</div>';
     h += '</div>';
     return h;
   }
@@ -960,7 +960,7 @@ function _renderActivityFeedCompact(ctx, limit) {
     var color = brassEyebrow ? "var(--cb-brass)" : "var(--cb-mute)";
     var b = '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;color:' + color + ';text-transform:uppercase;padding:10px 0 6px;border-top:1px solid var(--cb-chalk-3)">' + label + '</div>';
     list.forEach(function(it) {
-      b += '<div' + (it.dest ? ' onclick="' + it.dest + '" style="cursor:pointer;' : ' style="') + 'min-height:56px;padding:8px 0;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--cb-chalk-3)">';
+      b += '<div' + (it.dest ? ' onclick="' + it.dest + '" style="cursor:pointer;' : ' style="') + 'min-height:56px;padding:var(--sp-2) 0;display:flex;align-items:center;gap:var(--sp-3);border-bottom:1px solid var(--cb-chalk-3)">';
       var initial = (it.actorName.charAt(0) || "?").toUpperCase();
       b += '<div style="width:32px;height:32px;border-radius:50%;background:var(--cb-chalk-3);color:var(--cb-charcoal);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:14px;font-weight:700;flex-shrink:0">' + escHtml(initial) + '</div>';
       b += '<div style="flex:1;min-width:0;line-height:1.4">';
@@ -1034,7 +1034,7 @@ function _renderHQLeadColumn(ctx) {
 }
 
 function _renderHQLeadColumnIdle(ctx) {
-  var h = '<div style="display:flex;flex-direction:column;gap:32px">';
+  var h = '<div style="display:flex;flex-direction:column;gap:var(--sp-6)">';
   h += _renderEditorialGreetingHero(ctx);
   h += _renderStatsSnapshotQuartet(ctx);
   h += _renderSeasonLadderTop10(ctx);
@@ -1049,7 +1049,7 @@ function _renderHQLeadColumnIdle(ctx) {
 }
 
 function _renderHQLeadColumnActive(ctx) {
-  var h = '<div style="display:flex;flex-direction:column;gap:32px">';
+  var h = '<div style="display:flex;flex-direction:column;gap:var(--sp-6)">';
   h += _renderLiveRoundExpandedCard(ctx);
   h += _renderSeasonPositionStrip(ctx);
   var recent = (ctx.myRounds || []).slice(0, 2);
@@ -1065,7 +1065,7 @@ function _renderHQLeadColumnActive(ctx) {
 function _renderHQFeaturesColumn(ctx) {
   if (ctx.state === "new") return _renderHQFeaturesColumnNew(ctx);
   var feedLimit = ctx.state === "active" ? 8 : 12;
-  var h = '<div style="display:flex;flex-direction:column;gap:32px">';
+  var h = '<div style="display:flex;flex-direction:column;gap:var(--sp-6)">';
   h += _renderHandicapTrendChart(ctx);
   h += _renderActivityFeedCompact(ctx, feedLimit);
   // Events strip deferred to v1.x
@@ -1085,7 +1085,7 @@ function _renderHQLeadColumnBandB(ctx) {
 }
 
 function _renderHQLeadColumnBandBIdle(ctx) {
-  var h = '<div style="display:flex;flex-direction:column;gap:32px">';
+  var h = '<div style="display:flex;flex-direction:column;gap:var(--sp-6)">';
   h += _renderEditorialGreetingHero(ctx);
   h += _renderStatsSnapshotQuartet(ctx);
   h += _renderHandicapTrendChart(ctx, { width: 600 });  // promoted from features
@@ -1101,7 +1101,7 @@ function _renderHQLeadColumnBandBIdle(ctx) {
 }
 
 function _renderHQLeadColumnBandBActive(ctx) {
-  var h = '<div style="display:flex;flex-direction:column;gap:32px">';
+  var h = '<div style="display:flex;flex-direction:column;gap:var(--sp-6)">';
   h += _renderLiveRoundExpandedCard(ctx);
   h += _renderSeasonPositionStrip(ctx);
   h += _renderHandicapTrendChart(ctx, { width: 600 });  // promoted from features
@@ -1128,7 +1128,7 @@ function _renderHQLeadColumnBandA(ctx) {
 }
 
 function _renderHQLeadColumnBandAIdle(ctx) {
-  var h = '<div style="display:flex;flex-direction:column;gap:32px">';
+  var h = '<div style="display:flex;flex-direction:column;gap:var(--sp-6)">';
   h += _renderEditorialGreetingHero(ctx);    // hero scales to 36 via --hq-hero-size token
   h += _renderStatsSnapshotQuartet(ctx);     // 2×2 grid via band-aware container
   h += _renderSeasonLadderTop10(ctx, { limit: 6 });
@@ -1144,7 +1144,7 @@ function _renderHQLeadColumnBandAIdle(ctx) {
 }
 
 function _renderHQLeadColumnBandAActive(ctx) {
-  var h = '<div style="display:flex;flex-direction:column;gap:32px">';
+  var h = '<div style="display:flex;flex-direction:column;gap:var(--sp-6)">';
   h += _renderLiveRoundExpandedCard(ctx);    // score scales to 64 via --hq-live-score-size
   h += _renderSeasonPositionStrip(ctx);
   var recent = (ctx.myRounds || []).slice(0, 2);
@@ -1178,7 +1178,7 @@ function _renderOnlineNowStrip(ctx) {
   h += '</div>';
 
   if (count === 0) {
-    h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase;padding:8px 0">QUIET RIGHT NOW</div>';
+    h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase;padding:var(--sp-2) 0">QUIET RIGHT NOW</div>';
     h += '</div>';
     return h;
   }
@@ -1191,7 +1191,7 @@ function _renderOnlineNowStrip(ctx) {
     var initial = (name.charAt(0) || "?").toUpperCase();
     // Truncate handle to 8 chars + ellipsis
     var handle = name.length > 8 ? name.slice(0, 7) + "…" : name;
-    h += '<div onclick="Router.go(\'members\',{id:\'' + id + '\'})" style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer">';
+    h += '<div onclick="Router.go(\'members\',{id:\'' + id + '\'})" style="display:flex;flex-direction:column;align-items:center;gap:var(--sp-1);cursor:pointer">';
     h += '<div style="position:relative;width:36px;height:36px">';
     h += '<div style="width:36px;height:36px;border-radius:50%;background:var(--cb-chalk-3);color:var(--cb-charcoal);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:14px;font-weight:700">' + escHtml(initial) + '</div>';
     h += '<div style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-radius:50%;background:var(--cb-moss);border:2px solid var(--cb-chalk)"></div>';
@@ -1220,7 +1220,7 @@ function _renderUpcomingTeeTimes(ctx) {
   }
 
   if (!upcoming.length) {
-    h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase;padding:8px 0">NOTHING SCHEDULED</div>';
+    h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase;padding:var(--sp-2) 0">NOTHING SCHEDULED</div>';
     h += '</div>';
     return h;
   }
@@ -1289,7 +1289,7 @@ function _renderMemberSpotlight(ctx) {
 
   var h = '<div onclick="Router.go(\'members\',{id:\'' + member.id + '\'})" style="cursor:pointer">';
   h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-mute);text-transform:uppercase;margin-bottom:12px">MEET</div>';
-  h += '<div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px">';
+  h += '<div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--sp-2)">';
   // Avatar 64×64
   h += '<div style="width:64px;height:64px;border-radius:50%;background:var(--cb-chalk-3);color:var(--cb-charcoal);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:24px;font-weight:700">' + escHtml(initial) + '</div>';
   // Name
@@ -1313,7 +1313,7 @@ function _renderMemberSpotlight(ctx) {
 
 // Agate rail composer — stacks online + tee times. State 3 adds member spotlight.
 function _renderHQAgateRail(ctx) {
-  var h = '<div style="display:flex;flex-direction:column;gap:32px">';
+  var h = '<div style="display:flex;flex-direction:column;gap:var(--sp-6)">';
   h += _renderOnlineNowStrip(ctx);
   h += _renderUpcomingTeeTimes(ctx);
   if (ctx.state === "new") {
@@ -1365,10 +1365,10 @@ function _renderWelcomeHero(ctx) {
 
 // Start-first-round panel — green CTA panel with stacked actions.
 function _renderStartFirstRoundPanel(ctx) {
-  var h = '<div style="background:var(--cb-green);border-radius:16px;padding:32px;color:var(--cb-chalk)">';
+  var h = '<div style="background:var(--cb-green);border-radius:16px;padding:var(--sp-6);color:var(--cb-chalk)">';
   h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:18px">FIRST MOVE</div>';
   // Primary CTA — brass-on-chalk
-  h += '<div onclick="Router.go(\'playnow\')" style="background:var(--cb-chalk);color:var(--cb-ink);height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;margin-bottom:10px">';
+  h += '<div onclick="Router.go(\'playnow\')" style="background:var(--cb-chalk);color:var(--cb-ink);height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:var(--sp-2);cursor:pointer;margin-bottom:10px">';
   h += '<span style="font-family:var(--font-ui);font-size:14px;font-weight:600">Start a round</span>';
   h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--cb-brass)" stroke-width="2"><path d="M5 4l4 4-4 4"/></svg>';
   h += '</div>';
@@ -1408,7 +1408,7 @@ function _renderGhostedStatsQuartet(ctx) {
 // State 3 lead column composer — same component shapes work at Band B/C/D
 // because tokens drive size and flex-children stretch to column width.
 function _renderHQLeadColumnNew(ctx) {
-  var h = '<div style="display:flex;flex-direction:column;gap:32px">';
+  var h = '<div style="display:flex;flex-direction:column;gap:var(--sp-6)">';
   h += _renderWelcomeHero(ctx);
   h += _renderStartFirstRoundPanel(ctx);
   h += _renderGhostedStatsQuartet(ctx);
@@ -1418,7 +1418,7 @@ function _renderHQLeadColumnNew(ctx) {
 
 // State 3 features column composer — reuses ladder (state-aware) + activity feed.
 function _renderHQFeaturesColumnNew(ctx) {
-  var h = '<div style="display:flex;flex-direction:column;gap:32px">';
+  var h = '<div style="display:flex;flex-direction:column;gap:var(--sp-6)">';
   h += _renderSeasonLadderTop10(ctx);   // state-aware; renders "your position" placeholder
   h += _renderActivityFeedCompact(ctx, 12);
   h += '</div>';
@@ -1469,7 +1469,7 @@ function _renderLiveRoundCard() {
 
   var h = '<div style="padding:18px 22px 0">';
   h += '<div class="tappable" onclick="Router.go(\'playnow\')" style="background:var(--cb-green);border-radius:16px;padding:22px;color:var(--cb-chalk);cursor:pointer;position:relative;overflow:hidden">';
-  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);display:flex;align-items:center;gap:8px;margin-bottom:14px">';
+  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);display:flex;align-items:center;gap:var(--sp-2);margin-bottom:14px">';
   h += '<span style="width:6px;height:6px;border-radius:50%;background:var(--cb-brass);animation:pulse-dot 2s infinite"></span>';
   h += 'LIVE · YOUR ROUND';
   h += '</div>';
@@ -1531,7 +1531,7 @@ function _renderReadyCTA() {
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:10px">NO ROUND TODAY</div>';
   h += '<div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--cb-ink);line-height:1.2;letter-spacing:-0.2px;margin-bottom:8px">Ready when you are.</div>';
   h += '<div style="font-family:var(--font-ui);font-size:13px;color:var(--cb-charcoal);line-height:1.55;max-width:380px;margin-bottom:16px">Start a round and the scorecard, skins pot and your caddie will wake up.</div>';
-  h += '<div style="display:inline-flex;align-items:center;gap:8px;padding:11px 18px;background:var(--cb-green);color:var(--cb-chalk);border-radius:8px;font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:0.3px">';
+  h += '<div style="display:inline-flex;align-items:center;gap:var(--sp-2);padding:11px 18px;background:var(--cb-green);color:var(--cb-chalk);border-radius:8px;font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:0.3px">';
   h += '<svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 14V2l8 3-8 3"/></svg>';
   h += 'Start a round';
   h += '</div>';
@@ -1574,20 +1574,20 @@ function _renderStatsStrip(totalRounds, handicap, bestRound, bestRoundId, isNew)
 
   // ROUNDS
   var roundsClickable = !isNew && totalRounds > 0;
-  h += '<div' + (roundsClickable ? ' class="tappable" onclick="Router.go(\'roundhistory\')"' : '') + ' style="padding:12px 10px;background:var(--cb-chalk-2);border-radius:10px;' + (roundsClickable ? 'cursor:pointer' : '') + '">';
+  h += '<div' + (roundsClickable ? ' class="tappable" onclick="Router.go(\'roundhistory\')"' : '') + ' style="padding:var(--sp-3) 10px;background:var(--cb-chalk-2);border-radius:10px;' + (roundsClickable ? 'cursor:pointer' : '') + '">';
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:6px">ROUNDS</div>';
   h += '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + roundsStr + '</div>';
   h += '</div>';
 
   // HCP
-  h += '<div style="padding:12px 10px;background:var(--cb-chalk-2);border-radius:10px">';
+  h += '<div style="padding:var(--sp-3) 10px;background:var(--cb-chalk-2);border-radius:10px">';
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:6px">HCP</div>';
   h += '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + hcapStr + '</div>';
   h += '</div>';
 
   // BEST
   var bestClickable = !!bestRoundId;
-  h += '<div' + (bestClickable ? ' class="tappable" onclick="Router.go(\'rounds\',{roundId:\'' + escHtml(bestRoundId) + '\'})"' : '') + ' style="padding:12px 10px;background:var(--cb-chalk-2);border-radius:10px;' + (bestClickable ? 'cursor:pointer' : '') + '">';
+  h += '<div' + (bestClickable ? ' class="tappable" onclick="Router.go(\'rounds\',{roundId:\'' + escHtml(bestRoundId) + '\'})"' : '') + ' style="padding:var(--sp-3) 10px;background:var(--cb-chalk-2);border-radius:10px;' + (bestClickable ? 'cursor:pointer' : '') + '">';
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:6px">BEST</div>';
   h += '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + bestStr + '</div>';
   h += '</div>';
@@ -1686,7 +1686,7 @@ function _renderTeeTimesSection(upcoming) {
   upcoming.forEach(function(t, i) {
     var accepted = t.responses ? Object.keys(t.responses).filter(function(k) { return t.responses[k] === "accepted"; }).length : 0;
     var label = _teeTimeDateLabel(t.date, t.time);
-    h += '<div class="tappable" onclick="Router.go(\'teetimes\')" style="padding:12px 0;' + (i === 0 ? '' : 'border-top:1px solid var(--cb-chalk-3);') + 'display:flex;align-items:baseline;gap:14px;cursor:pointer">';
+    h += '<div class="tappable" onclick="Router.go(\'teetimes\')" style="padding:var(--sp-3) 0;' + (i === 0 ? '' : 'border-top:1px solid var(--cb-chalk-3);') + 'display:flex;align-items:baseline;gap:14px;cursor:pointer">';
     h += '<div style="font-family:var(--font-mono);font-size:11px;color:var(--cb-brass);font-weight:700;letter-spacing:0.5px;min-width:74px;flex-shrink:0">' + escHtml(label) + '</div>';
     h += '<div style="flex:1;min-width:0">';
     h += '<div style="font-family:var(--font-display);font-size:15px;font-weight:600;color:var(--cb-ink);line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(t.courseName || "Tee time") + '</div>';
@@ -1713,7 +1713,7 @@ function renderPageFooter() {
   var d = "·";
   var s = "font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px";
   var sm = "font-size:11px;color:var(--muted2)";
-  return '<div style="text-align:center;padding:20px 16px 8px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap">' +
+  return '<div style="text-align:center;padding:20px 16px 8px;display:flex;justify-content:center;gap:var(--sp-3);flex-wrap:wrap">' +
     '<span style="' + s + '" onclick="Router.go(\'merch\')">Merch</span>' +
     '<span style="' + sm + '">' + d + '</span>' +
     '<span style="' + s + '" onclick="Router.go(\'rules\')">Rules</span>' +
@@ -1777,7 +1777,7 @@ function showRivalryDetail(p1id, p2id) {
   h += '</div>';
 
   // Action buttons
-  h += '<div class="section"><div style="display:flex;gap:8px">';
+  h += '<div class="section"><div style="display:flex;gap:var(--sp-2)">';
   h += '<button class="btn full green" style="flex:1" onclick="Router.go(\'challenges\',{opponent:\'' + p2id + '\'})">Issue Challenge</button>';
   h += '<button class="btn full outline" style="flex:1" onclick="Router.go(\'tee-create\')">Post Tee Time</button>';
   h += '</div></div>';

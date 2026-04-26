@@ -19,17 +19,23 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · design system foundations</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · spacing migration</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Cleaned up the sidebar — your profile no longer crops at the bottom on desktop. Sidebar now ends cleanly at Sign out across all screen sizes.", tag: "FIXED" },
-    { item: "Behind-the-scenes infrastructure update — added the design system foundations (spacing, sizing, shadows, animation timing tokens) and built reusable notification + banner components ready for future features. No visible changes; this prepares the codebase for upcoming work on scoring, members, leaderboard, and more.", tag: "INFRA" }
+    { item: "Behind-the-scenes spacing system migration — replaced inline pixel values with the design system spacing tokens from v8.7.0. No visible changes; this lets future updates propagate instantly across every screen instead of requiring file-by-file edits.", tag: "INFRA" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.7", date: "April 2026", headline: "Design system foundations",
+      items: [
+        { item: "Cleaned up the sidebar — your profile no longer crops at the bottom on desktop. Sidebar now ends cleanly at Sign out across all screen sizes.", tag: "FIXED" },
+        { item: "Behind-the-scenes infrastructure update — added the design system foundations (spacing, sizing, shadows, animation timing tokens) and built reusable notification + banner components ready for future features. No visible changes; this prepares the codebase for upcoming work on scoring, members, leaderboard, and more.", tag: "INFRA" }
+      ]
+    },
     {
       version: "v8.6.2", date: "April 2026", headline: "HQ on narrow screens",
       items: [
