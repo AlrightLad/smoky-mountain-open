@@ -852,6 +852,12 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   .rr-sidebar__action[aria-label="Notifications"] {
     display: none;
   }
+  /* User identity footer hidden at desktop — already shown in masthead
+     greeting. Drawer at Band A keeps it (drawer has no masthead identity).
+     Also avoids cropped-avatar visual when sidebar content overflows. (v8.6.2.2) */
+  .rr-sidebar__footer {
+    display: none;
+  }
   /* Main app: left padding reserves space for the fixed sidebar. Content
      flows as normal block layout — no grid. */
   #mainApp {

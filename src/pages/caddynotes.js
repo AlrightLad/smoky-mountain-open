@@ -22,6 +22,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · HQ on narrow screens</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    { item: "Cleaned up the stats display — captions now fit naturally instead of awkward mid-word truncation. Sidebar bottom no longer crops your name on desktop (the drawer menu still shows it on smaller screens).", tag: "FIXED" },
     { item: "Cleaned up sidebar appearance — no more scrollbar showing on desktop, and Notifications row only appears in the drawer menu where the masthead bell isn't visible.", tag: "FIXED" },
     { item: "Parbaughs HQ now works on narrow tablets and small windowed browsers down to 720px wide. Tap the menu button (top-left) on smaller screens to open the navigation drawer.", tag: "NEW" }
   ];

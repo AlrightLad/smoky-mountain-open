@@ -559,7 +559,7 @@ function _renderStatsSnapshotQuartet(ctx) {
     var now = new Date();
     return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
   }).length;
-  var roundsCaption = thisMonth + " THIS MONTH";
+  var roundsCaption = "MTD: " + thisMonth;
 
   var best = ctx.bestRound != null ? String(ctx.bestRound) : "—";
   var bestCourse = "";
@@ -571,15 +571,16 @@ function _renderStatsSnapshotQuartet(ctx) {
 
   var streak = _hqStreakCount(ctx.myRounds);
   var streakVal = streak > 0 ? String(streak) : "—";
-  var streakCaption = streak > 0 ? streak + " ROUND" + (streak === 1 ? "" : "S") + " UNDER" : "ROUNDS LOGGED: " + rounds;
+  var streakCaption = streak > 0 ? streak + " UNDER" : rounds + " LOGGED";
   var streakColor = streak > 0 ? "var(--cb-moss)" : "var(--cb-mute)";
 
-  // Universal 13-char caption cap with ellipsis — fits cleanly across all bands.
+  // Captions kept naturally short; CSS text-overflow:ellipsis on the caption
+  // div handles overflow (e.g., long course names in BEST cell) at narrow bands.
   var cells = [
-    { label: "HCP", value: hcap, caption: _truncateCaption(hcapDelta), captionColor: hcapDeltaColor, click: "Router.go('records')" },
-    { label: "ROUNDS", value: String(rounds), caption: _truncateCaption(roundsCaption), captionColor: "var(--cb-mute)", click: "Router.go('roundhistory')" },
-    { label: "BEST", value: best, caption: _truncateCaption(bestCaption), captionColor: "var(--cb-mute)", click: ctx.bestRoundId ? ("Router.go('rounds',{roundId:'" + ctx.bestRoundId + "'})") : "" },
-    { label: "STREAK", value: streakVal, caption: _truncateCaption(streakCaption), captionColor: streakColor, click: "" }
+    { label: "HCP", value: hcap, caption: hcapDelta, captionColor: hcapDeltaColor, click: "Router.go('records')" },
+    { label: "ROUNDS", value: String(rounds), caption: roundsCaption, captionColor: "var(--cb-mute)", click: "Router.go('roundhistory')" },
+    { label: "BEST", value: best, caption: bestCaption, captionColor: "var(--cb-mute)", click: ctx.bestRoundId ? ("Router.go('rounds',{roundId:'" + ctx.bestRoundId + "'})") : "" },
+    { label: "STREAK", value: streakVal, caption: streakCaption, captionColor: streakColor, click: "" }
   ];
 
   // Band A renders 2×2 grid (each cell ~50% width); Bands B/C/D use horizontal flex row.
@@ -599,13 +600,14 @@ function _renderStatsSnapshotQuartet(ctx) {
     } else {
       sep = i > 0 ? 'border-left:1px solid var(--cb-chalk-3);' : '';
     }
-    var cellSize = isBandA ? 'min-height:108px;' : 'flex:1;';
+    // min-width:0 enables text-overflow:ellipsis on caption inside flex/grid children
+    var cellSize = isBandA ? 'min-height:108px;min-width:0;' : 'flex:1;min-width:0;';
     var cursor = c.click ? 'cursor:pointer;' : '';
     var onclick = c.click ? ' onclick="' + c.click + '"' : '';
     h += '<div' + onclick + ' style="' + cellSize + sep + cursor + 'padding:18px 14px;display:flex;flex-direction:column;justify-content:center;gap:6px">';
     h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">' + escHtml(c.label) + '</div>';
     h += '<div style="font-family:var(--font-display);font-size:var(--hq-stat-number-size);font-weight:700;color:var(--cb-ink);line-height:1;font-variant-numeric:lining-nums tabular-nums">' + escHtml(c.value) + '</div>';
-    if (c.caption) h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.2px;color:' + c.captionColor + ';text-transform:uppercase">' + escHtml(c.caption) + '</div>';
+    if (c.caption) h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.2px;color:' + c.captionColor + ';text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(c.caption) + '</div>';
     h += '</div>';
   });
   h += '</div>';
