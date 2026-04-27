@@ -257,7 +257,7 @@ function _renderHQMastheadDefault() {
   h += '<div title="York, PA · weather will go live in a future update" style="display:inline-flex;align-items:center;height:28px;padding:0 12px;background:var(--cb-chalk-2);border-radius:6px;font-family:var(--font-ui);font-weight:500;font-size:12px;color:var(--cb-brass);letter-spacing:0.3px">58° · CLEAR</div>';
   // Scope switcher — visual-only until cross-league aggregate data exists
   h += '<div style="display:inline-flex;align-items:stretch;background:var(--cb-chalk-2);border-radius:6px;padding:2px;gap:2px">';
-  h += '<div style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:4px;text-transform:uppercase">' + escHtml(myLeagueLabel) + '</div>';
+  h += '<div style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:var(--r-1);text-transform:uppercase">' + escHtml(myLeagueLabel) + '</div>';
   h += '<div title="All Parbaughs view coming in a future update" style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:1.2px;color:var(--cb-mute);text-transform:uppercase;cursor:not-allowed;opacity:0.55">' + escHtml(allParbaughsLabel) + '</div>';
   h += '</div>';
   h += '</div>';
@@ -287,7 +287,7 @@ function _renderHQMastheadBandA() {
   h += '<div style="font-family:var(--font-display);font-weight:700;font-size:18px;line-height:1;color:var(--cb-ink);letter-spacing:-0.5px">Parbaughs</div>';
   // Scope switcher (compact)
   h += '<div style="display:inline-flex;align-items:stretch;background:var(--cb-chalk-2);border-radius:6px;padding:2px;gap:2px;flex-shrink:0">';
-  h += '<div style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:4px;text-transform:uppercase">League</div>';
+  h += '<div style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:var(--r-1);text-transform:uppercase">League</div>';
   h += '<div title="All Parbaughs view coming in a future update" style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:1.2px;color:var(--cb-mute);text-transform:uppercase;cursor:not-allowed;opacity:0.55">All</div>';
   h += '</div>';
   h += '</div>';
@@ -343,7 +343,7 @@ function _renderHQGridInner(ctx) {
 // inspectable before column components arrive in Ships 1b-ii and 1b-iii.
 function _renderHQPlaceholder(label, state) {
   var stateLabel = (state || "idle").toUpperCase();
-  return '<div style="height:400px;background:var(--cb-chalk-2);border-radius:12px;border:1px dashed var(--cb-chalk-3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-family:var(--font-mono);color:var(--cb-mute);text-transform:uppercase">' +
+  return '<div style="height:400px;background:var(--cb-chalk-2);border-radius:var(--r-3);border:1px dashed var(--cb-chalk-3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-family:var(--font-mono);color:var(--cb-mute);text-transform:uppercase">' +
     '<div style="font-size:10px;letter-spacing:2.5px">' + escHtml(label) + '</div>' +
     '<div style="font-size:9px;letter-spacing:2px;opacity:0.7">v8.5.x · state: ' + stateLabel + '</div>' +
     '</div>';
@@ -647,7 +647,7 @@ function _renderSeasonLadderTop10(ctx, opts) {
     var initial = (ctx.firstName || "?").charAt(0).toUpperCase();
     h += '<div style="height:1px;background:var(--cb-chalk-3);margin:var(--sp-3) 0 10px"></div>';
     h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;color:var(--cb-mute);text-transform:uppercase;margin-bottom:6px">YOUR POSITION</div>';
-    h += '<div style="background:var(--cb-chalk-2);padding:0 12px;height:var(--hq-ladder-row-height);display:flex;align-items:center;gap:10px;border-radius:4px">';
+    h += '<div style="background:var(--cb-chalk-2);padding:0 12px;height:var(--hq-ladder-row-height);display:flex;align-items:center;gap:10px;border-radius:var(--r-1)">';
     h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--cb-mute);width:24px;flex-shrink:0">—</div>';
     h += '<div style="width:24px;height:24px;border-radius:50%;background:var(--cb-chalk-3);color:var(--cb-charcoal);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:11px;font-weight:700;flex-shrink:0">' + escHtml(initial) + '</div>';
     h += '<div style="flex:1;min-width:0;font-family:var(--font-ui);font-size:13px;font-weight:500;color:var(--cb-mute)">You</div>';
@@ -667,7 +667,7 @@ function _hqLadderRow(s, rank, leaderPts, isMe) {
   var rule = isMe ? "border-left:3px solid var(--cb-brass);padding-left:9px;" : "padding-left:12px;";
   var weight = isMe ? "600" : "500";
   var click = s.id ? ' onclick="Router.go(\'members\',{id:\'' + s.id + '\'})"' : "";
-  var h = '<div' + click + ' style="' + bg + rule + 'padding-right:12px;height:var(--hq-ladder-row-height);display:flex;align-items:center;gap:10px;cursor:pointer;border-radius:4px">';
+  var h = '<div' + click + ' style="' + bg + rule + 'padding-right:12px;height:var(--hq-ladder-row-height);display:flex;align-items:center;gap:10px;cursor:pointer;border-radius:var(--r-1)">';
   h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--cb-mute);width:24px;flex-shrink:0">' + rank + '</div>';
   // Avatar — initial fallback (24×24)
   var initial = (name.charAt(0) || "?").toUpperCase();
@@ -704,7 +704,7 @@ function _renderRecentRoundRow(r) {
   h += '<div style="font-family:var(--font-mono);font-size:10px;color:var(--cb-mute);letter-spacing:0.8px;margin-top:3px">' + escHtml(dateLabel) + ' · ' + escHtml(holeLabel) + '</div>';
   h += '</div>';
   // Format pill
-  h += '<div style="flex-shrink:0;font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--cb-brass);background:var(--cb-chalk-2);padding:5px 9px;border-radius:4px;text-transform:uppercase">' + escHtml(fmtPill) + '</div>';
+  h += '<div style="flex-shrink:0;font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--cb-brass);background:var(--cb-chalk-2);padding:5px 9px;border-radius:var(--r-1);text-transform:uppercase">' + escHtml(fmtPill) + '</div>';
   h += '</div>';
   return h;
 }
@@ -734,7 +734,7 @@ function _renderLiveRoundExpandedCard(ctx) {
   var fmt = (liveState.format || "stroke").toString();
   var formatLabel = fmt === "scramble" ? "SCRAMBLE" : fmt.toUpperCase() + " PLAY";
 
-  var h = '<div onclick="Router.go(\'playnow\')" style="background:var(--cb-green);border-radius:16px;padding:var(--sp-6);color:var(--cb-chalk);cursor:pointer;position:relative;overflow:hidden">';
+  var h = '<div onclick="Router.go(\'playnow\')" style="background:var(--cb-green);border-radius:var(--r-4);padding:var(--sp-6);color:var(--cb-chalk);cursor:pointer;position:relative;overflow:hidden">';
   // Top eyebrow with pulsing dot
   h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);display:flex;align-items:center;gap:10px;margin-bottom:18px">';
   h += '<span style="width:6px;height:6px;border-radius:50%;background:var(--cb-brass);animation:pulse-dot 2s infinite;flex-shrink:0"></span>';
@@ -753,7 +753,7 @@ function _renderLiveRoundExpandedCard(ctx) {
   h += 'TOTAL ' + (thru > 0 ? total : "—") + ' · PAR ' + (thru > 0 ? parSoFar : "—") + ' · ' + formatLabel;
   h += '</div>';
   // CTA
-  h += '<div style="background:var(--cb-chalk-2);height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:var(--sp-2)">';
+  h += '<div style="background:var(--cb-chalk-2);height:48px;border-radius:var(--r-3);display:flex;align-items:center;justify-content:center;gap:var(--sp-2)">';
   h += '<span style="font-family:var(--font-ui);font-size:14px;font-weight:600;color:var(--cb-ink)">Open scorecard</span>';
   h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--cb-brass)" stroke-width="2"><path d="M5 4l4 4-4 4"/></svg>';
   h += '</div>';
@@ -772,7 +772,7 @@ function _renderSeasonPositionStrip(ctx) {
   var label = (season && season.label) ? season.label.toUpperCase() : "SEASON";
   var eyebrow = label + " · WEEK " + weekInfo.week + "/" + weekInfo.total;
 
-  var h = '<div onclick="Router.go(\'standings\')" style="background:var(--cb-chalk-2);border-radius:12px;padding:18px 24px;cursor:pointer">';
+  var h = '<div onclick="Router.go(\'standings\')" style="background:var(--cb-chalk-2);border-radius:var(--r-3);padding:18px 24px;cursor:pointer">';
   h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:8px">' + escHtml(eyebrow) + '</div>';
   if (myIdx < 0) {
     h += '<div style="display:flex;align-items:baseline;gap:14px">';
@@ -829,14 +829,14 @@ function _renderHandicapTrendChart(ctx, opts) {
   h += '</div>';
   // Range pills
   h += '<div style="display:inline-flex;background:var(--cb-chalk-2);border-radius:6px;padding:2px;gap:2px">';
-  h += '<div style="padding:5px 9px;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:4px;text-transform:uppercase">30D</div>';
+  h += '<div style="padding:5px 9px;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:var(--r-1);text-transform:uppercase">30D</div>';
   h += '<div title="Coming in a future update" style="padding:5px 9px;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:500;letter-spacing:1.2px;color:var(--cb-mute);text-transform:uppercase;cursor:not-allowed;opacity:0.55">90D</div>';
   h += '<div title="Coming in a future update" style="padding:5px 9px;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:500;letter-spacing:1.2px;color:var(--cb-mute);text-transform:uppercase;cursor:not-allowed;opacity:0.55">1Y</div>';
   h += '</div>';
   h += '</div>';
 
   if (recent.length < 3) {
-    h += '<div style="height:140px;background:var(--cb-chalk-2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">TREND APPEARS AFTER 3 ROUNDS</div>';
+    h += '<div style="height:140px;background:var(--cb-chalk-2);border-radius:var(--r-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">TREND APPEARS AFTER 3 ROUNDS</div>';
     h += '</div>';
     return h;
   }
@@ -859,7 +859,7 @@ function _renderHandicapTrendChart(ctx, opts) {
   });
 
   if (series.length < 2) {
-    h += '<div style="height:140px;background:var(--cb-chalk-2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">TREND APPEARS AFTER 3 ROUNDS</div>';
+    h += '<div style="height:140px;background:var(--cb-chalk-2);border-radius:var(--r-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">TREND APPEARS AFTER 3 ROUNDS</div>';
     h += '</div>';
     return h;
   }
@@ -900,7 +900,7 @@ function _renderHandicapTrendChart(ctx, opts) {
   svg += '<text x="' + chartW + '" y="' + (height - 4) + '" font-family="ui-monospace,monospace" font-size="9" fill="var(--cb-mute)" text-anchor="end" letter-spacing="1">' + lastM + '</text>';
   svg += '</svg>';
 
-  h += '<div style="background:var(--cb-chalk-2);border-radius:8px;padding:14px 16px">';
+  h += '<div style="background:var(--cb-chalk-2);border-radius:var(--r-2);padding:14px 16px">';
   h += svg;
   h += '</div>';
   h += '</div>';
@@ -1352,7 +1352,7 @@ function _renderWelcomeHero(ctx) {
 
 // Start-first-round panel — green CTA panel with stacked actions.
 function _renderStartFirstRoundPanel(ctx) {
-  var h = '<div style="background:var(--cb-green);border-radius:16px;padding:var(--sp-6);color:var(--cb-chalk)">';
+  var h = '<div style="background:var(--cb-green);border-radius:var(--r-4);padding:var(--sp-6);color:var(--cb-chalk)">';
   h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:18px">FIRST MOVE</div>';
   // Primary CTA — brass-on-chalk
   h += '<div onclick="Router.go(\'playnow\')" style="background:var(--cb-chalk);color:var(--cb-ink);height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:var(--sp-2);cursor:pointer;margin-bottom:10px">';
@@ -1360,7 +1360,7 @@ function _renderStartFirstRoundPanel(ctx) {
   h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--cb-brass)" stroke-width="2"><path d="M5 4l4 4-4 4"/></svg>';
   h += '</div>';
   // Secondary CTA — ghost chalk-2
-  h += '<div onclick="Router.go(\'courses\')" style="background:rgba(var(--bg-rgb),0.10);color:rgba(var(--bg-rgb),0.85);height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-bottom:14px">';
+  h += '<div onclick="Router.go(\'courses\')" style="background:rgba(var(--bg-rgb),0.10);color:rgba(var(--bg-rgb),0.85);height:44px;border-radius:var(--r-2);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-bottom:14px">';
   h += '<span style="font-family:var(--font-ui);font-size:13px;font-weight:500">Browse courses</span>';
   h += '</div>';
   // Tertiary text link
@@ -1417,7 +1417,7 @@ function _renderEmailVerifyBanner() {
   var h = '<div style="padding:10px 22px;background:rgba(180,137,62,0.08);border-bottom:1px solid rgba(180,137,62,0.15);display:flex;align-items:center;gap:10px">';
   h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--cb-brass)" stroke-width="1.5" style="flex-shrink:0"><path d="M8 1L1 5v6l7 4 7-4V5L8 1z"/><path d="M1 5l7 4 7-4"/></svg>';
   h += '<div style="flex:1;font-family:var(--font-mono);font-size:10px;letter-spacing:0.5px;color:var(--cb-brass);line-height:1.4">Verify your email to unlock wagers, bounties, DMs, and the shop.</div>';
-  h += '<button style="background:var(--cb-brass);color:var(--cb-chalk);border:none;border-radius:4px;font:700 10px/1 var(--font-ui);padding:6px 12px;cursor:pointer;flex-shrink:0;letter-spacing:0.5px" onclick="sendVerificationEmail()">Verify</button>';
+  h += '<button style="background:var(--cb-brass);color:var(--cb-chalk);border:none;border-radius:var(--r-1);font:700 10px/1 var(--font-ui);padding:6px 12px;cursor:pointer;flex-shrink:0;letter-spacing:0.5px" onclick="sendVerificationEmail()">Verify</button>';
   h += '</div>';
   return h;
 }
@@ -1455,7 +1455,7 @@ function _renderLiveRoundCard() {
   var formatLabel = fmt === "scramble" ? "SCRAMBLE" : fmt.toUpperCase() + " PLAY";
 
   var h = '<div style="padding:18px 22px 0">';
-  h += '<div class="tappable" onclick="Router.go(\'playnow\')" style="background:var(--cb-green);border-radius:16px;padding:22px;color:var(--cb-chalk);cursor:pointer;position:relative;overflow:hidden">';
+  h += '<div class="tappable" onclick="Router.go(\'playnow\')" style="background:var(--cb-green);border-radius:var(--r-4);padding:22px;color:var(--cb-chalk);cursor:pointer;position:relative;overflow:hidden">';
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);display:flex;align-items:center;gap:var(--sp-2);margin-bottom:14px">';
   h += '<span style="width:6px;height:6px;border-radius:50%;background:var(--cb-brass);animation:pulse-dot 2s infinite"></span>';
   h += 'LIVE · YOUR ROUND';
@@ -1518,7 +1518,7 @@ function _renderReadyCTA() {
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:10px">NO ROUND TODAY</div>';
   h += '<div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--cb-ink);line-height:1.2;letter-spacing:-0.2px;margin-bottom:8px">Ready when you are.</div>';
   h += '<div style="font-family:var(--font-ui);font-size:13px;color:var(--cb-charcoal);line-height:1.55;max-width:380px;margin-bottom:16px">Start a round and the scorecard, skins pot and your caddie will wake up.</div>';
-  h += '<div style="display:inline-flex;align-items:center;gap:var(--sp-2);padding:11px 18px;background:var(--cb-green);color:var(--cb-chalk);border-radius:8px;font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:0.3px">';
+  h += '<div style="display:inline-flex;align-items:center;gap:var(--sp-2);padding:11px 18px;background:var(--cb-green);color:var(--cb-chalk);border-radius:var(--r-2);font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:0.3px">';
   h += '<svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 14V2l8 3-8 3"/></svg>';
   h += 'Start a round';
   h += '</div>';

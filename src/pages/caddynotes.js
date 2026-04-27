@@ -19,17 +19,23 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · spacing migration</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · radius + motion migration</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Removed a duplicate notification bell from the top of the page — only one bell now appears at desktop. The drawer menu's Notifications row on smaller screens is unchanged.", tag: "FIXED" },
-    { item: "Behind-the-scenes spacing system migration — replaced inline pixel values with the design system spacing tokens from v8.7.0. No visible changes; this lets future updates propagate instantly across every screen instead of requiring file-by-file edits.", tag: "INFRA" }
+    { item: "Behind-the-scenes design system migration — corners and animation timing now reference design tokens instead of inline values. Shadows continue using the existing shadow tokens; consolidation of those into the spec system is queued for a future cleanup pass. No visible changes; this completes the design system foundation work that began with the spacing migration.", tag: "INFRA" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.8", date: "April 2026", headline: "Spacing migration + bell stub cleanup",
+      items: [
+        { item: "Removed a duplicate notification bell from the top of the page — only one bell now appears at desktop. The drawer menu's Notifications row on smaller screens is unchanged.", tag: "FIXED" },
+        { item: "Behind-the-scenes spacing system migration — replaced inline pixel values with the design system spacing tokens from v8.7.0. No visible changes; this lets future updates propagate instantly across every screen instead of requiring file-by-file edits.", tag: "INFRA" }
+      ]
+    },
     {
       version: "v8.7", date: "April 2026", headline: "Design system foundations",
       items: [
