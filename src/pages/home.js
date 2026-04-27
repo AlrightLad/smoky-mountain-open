@@ -169,6 +169,36 @@ function _renderHQHome(ctx) {
   h += renderPageFooter();
   h += '</div>';
   document.querySelector('[data-page="home"]').innerHTML = h;
+  _initWeatherDisplays();
+}
+
+// Populate the three weather sites (masthead pill, Band A caption, hero eyebrow)
+// after innerHTML is set. Each site emits a "—°" placeholder; this fires
+// PB.weather.getDisplay() and patches the DOM when data resolves. Failures are
+// silent — pill hides if first-ever fetch fails with no cache; Band A + eyebrow
+// retain their "—°" placeholder.
+function _initWeatherDisplays() {
+  if (typeof PB === "undefined" || !PB.weather) return;
+  var sites = [
+    { id: "hq-weather-pill", format: "pill", includeWind: true, withTooltip: true },
+    { id: "hq-weather-caption", format: "caption", includeWind: false, withTooltip: false },
+    { id: "hq-weather-eyebrow", format: "eyebrow", includeWind: false, withTooltip: false }
+  ];
+  sites.forEach(function(site) {
+    var el = document.getElementById(site.id);
+    if (!el) return;
+    PB.weather.getDisplay({ format: site.format, includeWind: site.includeWind }).then(function(w) {
+      if (!w) {
+        // First-fetch fail with no cache — only the pill hides; caption + eyebrow stay as "—"
+        if (site.id === "hq-weather-pill" && el.textContent === "—°") el.style.display = "none";
+        return;
+      }
+      el.textContent = w.displayString;
+      if (site.withTooltip && w.locationName) {
+        el.title = w.locationName.toUpperCase() + " · WEATHER UPDATES EVERY 30 MIN";
+      }
+    });
+  });
 }
 
 // HQ content width helper — used by all HQ pages to bound content + footer
@@ -253,8 +283,9 @@ function _renderHQMastheadDefault() {
   // Right: weather pill + scope switcher
   // (Notification bell lives in the global #profileBar action cluster — index.html:201)
   h += '<div style="display:flex;align-items:center;gap:var(--sp-3)">';
-  // TODO v1.1: replace mock with Open-Meteo fetch (geo-permission + sessionStorage cache)
-  h += '<div title="York, PA · weather will go live in a future update" style="display:inline-flex;align-items:center;height:28px;padding:0 12px;background:var(--cb-chalk-2);border-radius:6px;font-family:var(--font-ui);font-weight:500;font-size:12px;color:var(--cb-brass);letter-spacing:0.3px">58° · CLEAR</div>';
+  // Live weather via PB.weather (v8.10.0). Renders placeholder; populated by
+  // _initWeatherDisplays after innerHTML is set. Conditional wind ≥5 MPH per design Q1.
+  h += '<div id="hq-weather-pill" data-weather-site="pill" style="display:inline-flex;align-items:center;height:28px;padding:0 12px;background:var(--cb-chalk-2);border-radius:6px;font-family:var(--font-ui);font-weight:500;font-size:12px;color:var(--cb-brass);letter-spacing:0.3px">—°</div>';
   // Scope switcher — visual-only until cross-league aggregate data exists
   h += '<div style="display:inline-flex;align-items:stretch;background:var(--cb-chalk-2);border-radius:6px;padding:2px;gap:2px">';
   h += '<div style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:var(--r-1);text-transform:uppercase">' + escHtml(myLeagueLabel) + '</div>';
@@ -274,7 +305,8 @@ function _renderHQMastheadBandA() {
   var d = new Date();
   var dayShort = ["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"][d.getDay()];
   var monthShort = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][d.getMonth()];
-  var caption = dayShort + " · " + monthShort + " " + d.getDate() + " · 58° CLEAR";
+  // Date prefix renders static; weather portion populated post-render via PB.weather (v8.10.0).
+  var datePrefix = dayShort + " · " + monthShort + " " + d.getDate() + " · ";
 
   var h = '<div style="background:var(--cb-chalk);border-bottom:1px solid var(--cb-chalk-3);max-width:640px;margin:0 auto;padding:0 24px">';
   // Row 1 (44px): hamburger + wordmark + scope switcher
@@ -293,7 +325,7 @@ function _renderHQMastheadBandA() {
   h += '</div>';
   // Row 2 (24px): mono date + weather caption
   h += '<div style="height:24px;display:flex;align-items:center">';
-  h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">' + escHtml(caption) + '</div>';
+  h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">' + escHtml(datePrefix) + '<span id="hq-weather-caption" data-weather-site="caption">—°</span></div>';
   h += '</div>';
   h += '</div>';
   return h;
@@ -430,11 +462,12 @@ function _renderEditorialGreetingHero(ctx) {
   var d = new Date();
   var dayParts = ["MORNING","MORNING","MORNING","MORNING","MORNING","MORNING","MORNING","MORNING","MORNING","MORNING","MORNING","MORNING","AFTERNOON","AFTERNOON","AFTERNOON","AFTERNOON","AFTERNOON","EVENING","EVENING","EVENING","EVENING","EVENING","EVENING","EVENING"];
   var dayName = ["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"][d.getDay()];
-  var eyebrow = dayName + " " + dayParts[d.getHours()] + " · YORK, PA · 58° AND CLEAR";
+  // Date+time prefix renders static; weather portion populated post-render via PB.weather (v8.10.0).
+  var eyebrowPrefix = dayName + " " + dayParts[d.getHours()] + " · ";
 
   var h = '<div>';
   // Eyebrow
-  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:18px">' + escHtml(eyebrow) + '</div>';
+  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:18px">' + escHtml(eyebrowPrefix) + '<span id="hq-weather-eyebrow" data-weather-site="eyebrow">—</span></div>';
   // Headline — Fraunces, scales 36/44/52/56 across bands
   h += '<div style="font-family:var(--font-display);font-size:var(--hq-hero-size);font-weight:var(--hq-hero-weight);line-height:1.05;letter-spacing:-2px;color:var(--cb-ink);margin-bottom:14px">';
   h += 'Welcome back, <em style="font-style:italic;font-weight:700">' + escHtml(ctx.firstName) + '</em>.';

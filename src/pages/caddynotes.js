@@ -8,7 +8,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--gold);margin-top:6px;font-weight:600">v' + APP_VERSION + '</div></div>';
 
   function tagColorFor(tag) {
-    return tag === "NEW" ? "var(--birdie)" : tag === "FIXED" ? "var(--gold)" : tag === "IMPROVED" ? "var(--blue)" : tag === "INFRA" ? "var(--cb-mute)" : "var(--muted)";
+    return tag === "NEW" ? "var(--birdie)" : tag === "FEATURE" ? "var(--birdie)" : tag === "FIXED" ? "var(--gold)" : tag === "IMPROVED" ? "var(--blue)" : tag === "INFRA" ? "var(--cb-mute)" : "var(--muted)";
   }
   function renderEntry(r) {
     var tc = tagColorFor(r.tag);
@@ -19,18 +19,24 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · radius + motion migration</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · live weather</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Fixed log noise on member profiles — viewing another member's page no longer triggers ParCoin permission errors. ParCoin history is private to each owner; non-owners now don't see an empty placeholder section.", tag: "FIXED" },
-    { item: "Fixed connection issues that were blocking parts of the app from loading data. Profile pages, member stats, and ParCoins should now load reliably across all browsers.", tag: "FIXED" },
-    { item: "Behind-the-scenes design system migration — corners and animation timing now reference design tokens instead of inline values. Shadows continue using the existing shadow tokens; consolidation of those into the spec system is queued for a future cleanup pass. No visible changes; this completes the design system foundation work that began with the spacing migration.", tag: "INFRA" }
+    { item: "Live weather on Home — temperature, wind, and conditions update automatically every 30 minutes for your league's home area. Founding members default to York, PA; future updates will let you set a custom location.", tag: "FEATURE" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.9", date: "April 2026", headline: "Foundation phase + production hotfixes",
+      items: [
+        { item: "Fixed log noise on member profiles — viewing another member's page no longer triggers ParCoin permission errors. ParCoin history is private to each owner; non-owners now don't see an empty placeholder section.", tag: "FIXED" },
+        { item: "Fixed connection issues that were blocking parts of the app from loading data. Profile pages, member stats, and ParCoins should now load reliably across all browsers.", tag: "FIXED" },
+        { item: "Behind-the-scenes design system migration — corners and animation timing now reference design tokens instead of inline values. Shadows continue using the existing shadow tokens; consolidation of those into the spec system is queued for a future cleanup pass. No visible changes; this completes the design system foundation work that began with the spacing migration.", tag: "INFRA" }
+      ]
+    },
     {
       version: "v8.8", date: "April 2026", headline: "Spacing migration + bell stub cleanup",
       items: [
