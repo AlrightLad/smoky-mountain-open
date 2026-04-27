@@ -637,9 +637,15 @@ function renderMemberDetailWithData(p) {
   h += profSection("courses-" + pid, "Courses played", coursesContent, true);
 
   // === RECENT PARCOINS (async load) ===
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Recent earnings</span></div>';
-  h += '<div id="parcoin-history-' + pid + '"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
-  h += '</div>';
+  // Self-only: parcoin_transactions are private-to-owner per firestore.rules:372-377
+  // (allow read: if isAuth() && resource.data.uid == uid()). Skipping the section
+  // entirely for non-self profiles avoids both the empty placeholder and the
+  // rules-denied query firing on every re-render. (v8.9.2)
+  if (isOwnProfile) {
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Recent earnings</span></div>';
+    h += '<div id="parcoin-history-' + pid + '"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
+    h += '</div>';
+  }
 
   h += '</div>'; // close ptab-overview
 
@@ -929,8 +935,8 @@ function renderMemberDetailWithData(p) {
   document.querySelector('[data-page="members"]').innerHTML = h;
   setTimeout(initCountAnimations, 50);
 
-  // Async load ParCoin transaction history
-  var histEl = document.getElementById("parcoin-history-" + pid);
+  // Async load ParCoin transaction history (self-only — private per rules)
+  var histEl = isOwnProfile ? document.getElementById("parcoin-history-" + pid) : null;
   if (histEl) {
     loadTransactionHistory(pid, 10).then(function(txns) {
       if (!txns.length) {

@@ -22,6 +22,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · radius + motion migration</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    { item: "Fixed log noise on member profiles — viewing another member's page no longer triggers ParCoin permission errors. ParCoin history is private to each owner; non-owners now don't see an empty placeholder section.", tag: "FIXED" },
     { item: "Fixed connection issues that were blocking parts of the app from loading data. Profile pages, member stats, and ParCoins should now load reliably across all browsers.", tag: "FIXED" },
     { item: "Behind-the-scenes design system migration — corners and animation timing now reference design tokens instead of inline values. Shadows continue using the existing shadow tokens; consolidation of those into the spec system is queued for a future cleanup pass. No visible changes; this completes the design system foundation work that began with the spacing migration.", tag: "INFRA" }
   ];
