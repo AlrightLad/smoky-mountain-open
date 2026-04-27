@@ -19,9 +19,10 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · live weather</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · live weather + hotfix</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    { item: "Fixed weather location detection — members who set a home course now see weather for that location, instead of defaulting to York, PA. Affects anyone whose home course is outside the York area.", tag: "FIXED" },
     { item: "Live weather on Home — temperature, wind, and conditions update automatically every 30 minutes for your league's home area. Founding members default to York, PA; future updates will let you set a custom location.", tag: "FEATURE" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });

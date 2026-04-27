@@ -62,16 +62,18 @@
   }
 
   // Resolve user location. homeCourse → course coords; else York fallback.
+  // Course shape stores coords as flat c.lat / c.lng (per data.js:278-279).
+  // The c.location.latitude/longitude shape is the GolfCourseAPI response
+  // shape — flattened during PB.addCourse() before storage. (v8.10.1 fix)
   function _coords() {
     try {
       if (typeof currentProfile !== "undefined" && currentProfile && currentProfile.homeCourse
           && typeof PB !== "undefined" && PB.getCourseByName) {
         var c = PB.getCourseByName(currentProfile.homeCourse);
-        if (c && c.location && typeof c.location.latitude === "number"
-            && typeof c.location.longitude === "number") {
+        if (c && typeof c.lat === "number" && typeof c.lng === "number") {
           return {
-            lat: c.location.latitude,
-            lng: c.location.longitude,
+            lat: c.lat,
+            lng: c.lng,
             name: c.loc || c.name || currentProfile.homeCourse
           };
         }
