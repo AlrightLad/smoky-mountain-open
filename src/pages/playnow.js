@@ -159,13 +159,22 @@ function quitLiveRound() {
 // (Gate 2) and completion cross-fade (Gate 3) layer on top of this foundation.
 // ════════════════════════════════════════════════════════════════════════
 
-// Defensive shape validator — minimal per design F3. Status enum + lastWriteAt
-// numeric. Other fields validated implicitly by downstream rendering with
-// existing fallback patterns ("Round in progress" if course missing, etc.).
+// Defensive shape validator — minimal per design F3. Status enum required;
+// lastWriteAt optional but type-checked when present. Other fields validated
+// implicitly by downstream rendering with existing fallback patterns
+// ("Round in progress" if course missing, etc.).
+//
+// v8.11.9 hotfix: lastWriteAt relaxed from required-number to optional-number.
+// Pre-v8.11.8 active /liverounds/{uid} docs lack the field; the original
+// strict check rejected them silently and blocked cross-device hydration
+// during the self-healing migration window. Self-healing fires naturally on
+// the next saveLiveState write from any v8.11.8+ client; this validator
+// keeps the hydration path unblocked while corruption (wrong type) is still
+// caught.
 function isValidLiveRound(doc) {
   if (!doc || typeof doc !== "object") return false;
   if (!doc.status || ["active","completed","abandoned"].indexOf(doc.status) === -1) return false;
-  if (typeof doc.lastWriteAt !== "number") return false;
+  if (doc.lastWriteAt !== undefined && typeof doc.lastWriteAt !== "number") return false;
   return true;
 }
 
