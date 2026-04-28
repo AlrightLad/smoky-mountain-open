@@ -225,6 +225,13 @@ function _initWeatherDisplays() {
       }
     });
   });
+  // v8.11.1 — Background staleness check (silent, granted-only, ≥7d gate, once-per-session).
+  // Deferred so it never blocks the synchronous render path or visible weather paint.
+  if (typeof PB.weather.checkStaleness === "function") {
+    setTimeout(function() {
+      try { PB.weather.checkStaleness(); } catch (e) { /* silent */ }
+    }, 100);
+  }
 }
 
 // HQ content width helper — used by all HQ pages to bound content + footer

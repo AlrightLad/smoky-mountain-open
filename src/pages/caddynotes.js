@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · member location</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · location refresh</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Set your location for accurate weather — Settings now lets you use browser location detection or enter your city manually. Replaces the temporary York, PA default with your actual area's conditions on every screen.", tag: "FEATURE" }
+    { item: "Behind-the-scenes improvements to keep your location current. Your weather stays accurate as you travel.", tag: "INFRA" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.11.0", date: "April 2026", headline: "Member location",
+      items: [
+        { item: "Set your location for accurate weather — Settings now lets you use browser location detection or enter your city manually. Replaces the temporary York, PA default with your actual area's conditions on every screen.", tag: "FEATURE" }
+      ]
+    },
     {
       version: "v8.10", date: "April 2026", headline: "Live weather on Home",
       items: [

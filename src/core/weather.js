@@ -295,6 +295,163 @@
     };
   }
 
+  // ─── Staleness refresh helpers (v8.11.1 · Background location refresh) ────
+  //
+  // PRIVACY POSTURE — three invariants enforced before any silent geolocation:
+  //   1. 7-day staleness gate (only fires when location.setAt > 7 days old)
+  //   2. Permission state must be "granted" — never auto-prompts users
+  //   3. Once-per-session via sessionStorage flag (24hr TTL inside session)
+  //
+  // The user granted permission for "show me accurate weather", not "track my
+  // movements". Silent re-detection happens only when (a) they previously
+  // granted, (b) significant time has passed, (c) they haven't been checked
+  // this session. Per design bot v8.11.2 — silent path avoids contradicting
+  // the privacy copy ("we don't track your movements") which a visible refresh
+  // prompt would.
+  //
+  // 10-mile delta gate filters commute/errands noise: only persist updates
+  // when the user has actually relocated, not just left the house.
+  // ──────────────────────────────────────────────────────────────────────────
+
+  var STALENESS_THRESHOLD_MS = 7 * 24 * 60 * 60 * 1000;   // 7 days
+  var STALENESS_DELTA_MILES = 10;                          // 10mi minimum to update
+  var STALENESS_SESSION_KEY = "pb_location_staleness_checked";
+  var STALENESS_SESSION_TTL_MS = 24 * 60 * 60 * 1000;     // 24hr in-session re-check
+  var SILENT_GEO_TIMEOUT_MS = 5000;                        // silent path: 5s timeout
+  var SILENT_GEOCODE_TIMEOUT_MS = 5000;                    // reverse geocode: 5s timeout
+
+  // Defensive setAt parser. Returns ms-age. Infinity if missing/unparseable
+  // (treated as ancient — triggers refresh on corrupt data, fail-forward).
+  function _setAtAgeMs(setAt) {
+    if (!setAt) return Infinity;
+    if (setAt.toDate && typeof setAt.toDate === "function") {
+      try { return Date.now() - setAt.toDate().getTime(); } catch (e) { return Infinity; }
+    }
+    if (typeof setAt === "string") {
+      var ms = Date.parse(setAt);
+      return isNaN(ms) ? Infinity : Date.now() - ms;
+    }
+    if (typeof setAt === "number") return Date.now() - setAt;
+    return Infinity;
+  }
+
+  // Haversine distance in miles between two lat/lng points.
+  // ±0.5% error at North America latitudes — well within 10mi tolerance.
+  function _milesBetween(lat1, lng1, lat2, lng2) {
+    var R = 3958.8; // Earth radius in miles
+    var toRad = function(d) { return d * Math.PI / 180; };
+    var dLat = toRad(lat2 - lat1);
+    var dLng = toRad(lng2 - lng1);
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+          + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2))
+          * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return 2 * R * Math.asin(Math.sqrt(a));
+  }
+
+  // Once-per-session gate (24hr TTL inside session for long-lived tabs).
+  function _shouldRunStaleness() {
+    try {
+      var raw = sessionStorage.getItem(STALENESS_SESSION_KEY);
+      if (!raw) return true;
+      var last = parseInt(raw, 10);
+      if (isNaN(last)) return true;
+      return (Date.now() - last) > STALENESS_SESSION_TTL_MS;
+    } catch (e) { return true; }
+  }
+
+  function _markStalenessChecked() {
+    try { sessionStorage.setItem(STALENESS_SESSION_KEY, String(Date.now())); }
+    catch (e) { /* private mode quota — non-critical */ }
+  }
+
+  // Promise.race timeout wrapper. Resolves to null on timeout (silent failure).
+  function _withTimeout(promise, ms) {
+    return Promise.race([
+      promise,
+      new Promise(function(resolve) { setTimeout(function() { resolve(null); }, ms); })
+    ]);
+  }
+
+  // Silent getCurrentPosition wrapper. Returns Promise<{lat, lng} | null>.
+  // Never throws, never prompts (caller verified permission "granted" first).
+  function _silentGeolocate() {
+    return new Promise(function(resolve) {
+      if (!navigator.geolocation) { resolve(null); return; }
+      navigator.geolocation.getCurrentPosition(
+        function(pos) { resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }); },
+        function() { resolve(null); },  // any error → silent null
+        { enableHighAccuracy: false, timeout: SILENT_GEO_TIMEOUT_MS, maximumAge: 60000 }
+      );
+    });
+  }
+
+  // Main staleness check. Silent throughout — never throws, never alerts user.
+  // Logs to pbWarn for observability on Firestore failures only.
+  function _checkLocationStaleness() {
+    // Guard 1: must be on session-eligible window
+    if (!_shouldRunStaleness()) return;
+
+    // Guard 2: profile must exist with location set
+    if (typeof currentProfile === "undefined" || !currentProfile) return;
+    var loc = currentProfile.location;
+    if (!loc || typeof loc.lat !== "number" || typeof loc.lng !== "number") return;
+
+    // Guard 3: setAt must be older than threshold
+    var ageMs = _setAtAgeMs(loc.setAt);
+    if (ageMs < STALENESS_THRESHOLD_MS) {
+      _markStalenessChecked();   // mark so we don't re-check fresh data this session
+      return;
+    }
+
+    // Guard 4: permissions API must report "granted" (no prompt, no denial)
+    if (!navigator.permissions || !navigator.permissions.query) return;
+    navigator.permissions.query({ name: "geolocation" }).then(function(status) {
+      if (status.state !== "granted") return;
+
+      // Silent geolocate (already wrapped in 5s timeout via getCurrentPosition options)
+      _silentGeolocate().then(function(coords) {
+        if (!coords) return;
+
+        // Guard 5: did user move significantly?
+        var miles = _milesBetween(loc.lat, loc.lng, coords.lat, coords.lng);
+        if (miles < STALENESS_DELTA_MILES) {
+          _markStalenessChecked();   // we checked, didn't move enough — don't re-check this session
+          return;
+        }
+
+        // Reverse geocode for new display name (5s Promise.race timeout).
+        // On fail/timeout/missing geocoder: keep old name, update only coords.
+        var geoPromise = (typeof PB !== "undefined" && PB.weather && PB.weather.reverseGeocode)
+          ? _withTimeout(PB.weather.reverseGeocode(coords.lat, coords.lng), SILENT_GEOCODE_TIMEOUT_MS)
+          : Promise.resolve(null);
+
+        geoPromise.then(function(name) {
+          var newLocation = {
+            lat: coords.lat,
+            lng: coords.lng,
+            name: name || loc.name || "My Location",
+            source: "geolocation",
+            setAt: (typeof firebase !== "undefined" && firebase.firestore)
+              ? firebase.firestore.FieldValue.serverTimestamp()
+              : new Date().toISOString()
+          };
+
+          // Write to Firestore. Pattern matches settings.js (uses currentUser.uid + db global).
+          if (typeof db !== "undefined" && db && typeof currentUser !== "undefined" && currentUser && currentUser.uid) {
+            db.collection("members").doc(currentUser.uid).update({ location: newLocation })
+              .then(function() {
+                currentProfile.location = newLocation;  // mirror so this-session reads see it
+                _markStalenessChecked();
+              })
+              .catch(function(e) {
+                if (typeof pbWarn === "function") pbWarn("[weather] staleness write failed:", e.message);
+              });
+          }
+        });
+      });
+    }).catch(function() { /* permissions.query rejected — silent */ });
+  }
+
   // Attach to PB. PB exists from data.js (loaded earlier in CORE_FILES order).
   if (typeof PB !== "undefined") {
     PB.weather = {
@@ -302,7 +459,8 @@
       refresh: refresh,
       geocodeCity: geocodeCity,
       reverseGeocode: reverseGeocode,
-      getResolutionStatus: getResolutionStatus
+      getResolutionStatus: getResolutionStatus,
+      checkStaleness: _checkLocationStaleness  // (v8.11.1)
     };
   }
 })();

@@ -84,6 +84,8 @@ Router.register("settings", function(params) {
     h += 'Use my current location';
     h += '</button>';
     h += '<div id="loc-detect-error" style="display:none;font-family:var(--font-mono);font-size:11px;color:var(--cb-claret);margin-top:var(--sp-2);letter-spacing:0.3px"></div>';
+    // v8.11.1 — permission-denied caption (hidden by default; revealed by async permissions.query post-render).
+    h += '<div id="loc-permission-denied" style="display:none;font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-top:var(--sp-2);letter-spacing:1.5px;text-transform:uppercase">BROWSER LOCATION ACCESS IS DENIED · TAP TO USE MANUAL ENTRY</div>';
     h += '<div style="display:flex;align-items:center;gap:var(--sp-3);margin:var(--sp-4) 0;font-family:var(--font-mono);font-size:10px;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase"><div style="flex:1;height:1px;background:var(--border-subtle)"></div>or<div style="flex:1;height:1px;background:var(--border-subtle)"></div></div>';
     h += '<div style="display:flex;gap:var(--sp-2)">';
     h += '<input type="text" id="loc-manual-input" placeholder="City, State (e.g., Charlotte, NC)" onkeydown="if(event.key===\'Enter\'){event.preventDefault();setLocationManual();}" style="flex:1;min-height:44px;padding:var(--sp-2) var(--sp-3);background:var(--cb-chalk);border:1px solid var(--border-subtle);border-radius:var(--r-2);font-family:var(--font-ui);font-size:13px;color:var(--text-primary);outline:none">';
@@ -191,6 +193,20 @@ Router.register("settings", function(params) {
         try { target.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (e) { target.scrollIntoView(); }
       }
     }, 50);
+  }
+
+  // v8.11.1 — Async permission state probe. When State A is rendered and
+  // navigator.permissions.query reports geolocation is "denied", reveal the
+  // caption explaining the block. Silent failure on unsupported browsers
+  // (older Safari) — the caption simply stays hidden, and clicking the button
+  // surfaces the runtime error via loc-detect-error as before.
+  if (navigator.permissions && typeof navigator.permissions.query === "function") {
+    navigator.permissions.query({ name: "geolocation" }).then(function(status) {
+      if (status && status.state === "denied") {
+        var cap = document.getElementById("loc-permission-denied");
+        if (cap) cap.style.display = "block";
+      }
+    }).catch(function() { /* silent — older browsers reject the query */ });
   }
 });
 

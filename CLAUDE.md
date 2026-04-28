@@ -703,7 +703,7 @@ Founding four have `claimedFrom` fields linking seed profiles to Firebase Auth a
 2. **Syntax check:** Run acorn/Function parse before every commit
 3. **No emojis** in place of SVG icons (exception: ⛳ for The Caddy bot)
 4. **Firestore is source of truth** — not localStorage. localStorage is used only for: `pb_appearance` (appearance fast-load pre-auth), `pb_clubhouse_welcomed` (one-time toast guard), `pb_liveState` (in-progress round resumption), `golfcourse_api_key` (cached API key), `dm_read_*` (per-thread read timestamps). If you add a new localStorage key, document it here.
-   **sessionStorage** (separate API, clears on tab close — not bound by this rule): `pb_weather_cache` (Open-Meteo response, 30-min TTL, v8.10.0). Document new sessionStorage keys here as well.
+   **sessionStorage** (separate API, clears on tab close — not bound by this rule): `pb_weather_cache` (Open-Meteo response, 30-min TTL, v8.10.0), `pb_location_staleness_checked` (once-per-session guard for background location staleness probe, v8.11.1). Document new sessionStorage keys here as well.
 
 ### Before Making Changes
 - **Ask before architectural decisions** or feature removal
