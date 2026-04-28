@@ -735,6 +735,19 @@ function _renderLiveScoringInner() {
     }
   }
 
+  // v8.11.6 — Backup Submit affordance. Always renders when at least one hole
+  // is scored, regardless of which hole is being viewed or whether the panel
+  // above rendered. Defense-in-depth against bottom-nav rendering failures
+  // (Mr Parbaugh Ocean Pines stuck-round, April 28, 2026 — undiagnosed mobile
+  // bug where _redrawBottomNav fix from v8.11.5 didn't restore visibility).
+  // Bottom nav at line ~761+ remains as primary affordance; this is the
+  // redundant escape hatch. finishLiveRound's existing >=9 guard handles
+  // early taps via Router.toast — no state corruption risk.
+  if (holesPlayed >= 1) {
+    var totalHoles = liveState.holesMode === "front9" || liveState.holesMode === "back9" ? 9 : 18;
+    h += '<button onclick="showFinishOptions()" style="display:block;width:100%;margin-top:12px;padding:14px;background:linear-gradient(135deg,var(--birdie),var(--cb-green-3));color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;letter-spacing:0.3px;cursor:pointer">\u2714 Submit Round (' + holesPlayed + '/' + totalHoles + ')</button>';
+  }
+
   // Quit confirm panel
   h += '<div id="quit-confirm" style="display:none;margin-bottom:8px;padding:12px;background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);border-radius:var(--radius);text-align:center">';
   h += '<div style="font-size:12px;color:var(--red);margin-bottom:8px">Quit this round? Scores will be lost.</div>';

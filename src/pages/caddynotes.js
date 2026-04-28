@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · hotfix</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · backup affordance</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Fixed an issue where the Finish Round button could appear stuck at the wrong hole count after scoring the last hole.", tag: "FIXED" }
+    { item: "Added a backup Submit Round button to the round summary card so finishing a round is always one tap away.", tag: "FIXED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.11.5", date: "April 2026", headline: "Last-hole fix",
+      items: [
+        { item: "Fixed an issue where the Finish Round button could appear stuck at the wrong hole count after scoring the last hole.", tag: "FIXED" }
+      ]
+    },
     {
       version: "v8.11.4", date: "April 2026", headline: "Foundation",
       items: [
