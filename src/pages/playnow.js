@@ -238,14 +238,34 @@ function handleLiveRoundEmission(snap) {
   var status = doc.status;
 
   if (status === "completed") {
-    // Gate 3 will add 600ms cross-fade transition. For Gate 1: clear local
-    // (remote already has truth) + re-render. Card disappears abruptly.
+    // v8.11.11 — Cross-fade completion (Gate 3 of cross-device trilogy).
+    // Stash retention overlay first so any concurrent render sees it.
+    // Cross-fade BEFORE clearing local state — animation reads liveState
+    // for idempotent guard. After 650ms (transition + safety), clear state
+    // and caption timers without Router.go (finished-summary card is in DOM
+    // via cross-fade; render-driven retention check handles 5-min expiry).
+    // 5-min force-render covers users still on HQ Home at expiry moment.
     if (liveState && liveState.active) {
-      _clearLiveStateLocally();
-      // v8.11.10 — cancel any active caption timers so stale captions don't
-      // outlive the round on this device after the listener clears state.
-      if (typeof _clearLiveRoundCaption === "function") _clearLiveRoundCaption();
-      _triggerRouteAwareRender();
+      window._completedRoundOverlay = {
+        round: doc,
+        expiresAt: Date.now() + 5 * 60 * 1000
+      };
+      if (typeof _triggerCompletionCrossFade === "function") {
+        _triggerCompletionCrossFade(doc);
+      }
+      setTimeout(function() {
+        // Defensive idempotent: if user navigated away or another emission
+        // already cleared state, this setTimeout is stale — no-op.
+        if (liveState && liveState.active) {
+          _clearLiveStateLocally();
+          if (typeof _clearLiveRoundCaption === "function") _clearLiveRoundCaption();
+        }
+      }, 650);
+      setTimeout(function() {
+        if (typeof Router !== "undefined" && Router.getPage && Router.getPage() === "home") {
+          Router.go("home", Router.getParams ? Router.getParams() : {}, true);
+        }
+      }, 5 * 60 * 1000);
     }
     return;
   }

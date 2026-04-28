@@ -914,6 +914,126 @@ function _liveRoundOpenOnPhoneToast() {
   if (Router && Router.toast) Router.toast("This round is being scored on another device.");
 }
 
+// ════════════════════════════════════════════════════════════════════════
+// COMPLETION CROSS-FADE + FINISHED-SUMMARY CARD (v8.11.11 — Gate 3)
+// Closes the cross-device sync trilogy. When listener fires status='completed',
+// _triggerCompletionCrossFade animates the live-card → finished-summary card
+// transition over 600ms (Pattern A dual-card stacked per design C1). The
+// finished-summary card retains for 5 minutes via window._completedRoundOverlay
+// (HYBRID retention pattern: render-side expiry check + 5-min setTimeout for
+// active-on-page user trigger).
+// ════════════════════════════════════════════════════════════════════════
+
+// Render finished-summary card per design C1.
+//   Eyebrow: FINAL · X MIN AGO (mono brass 11px)
+//   Hero:    playerName · course · totalScore (diff)   for full 18-hole rounds
+//            playerName · course · totalScore thru N   for partial rounds
+//   Caption: ROUND COMPLETE · OPEN FOR DETAILS (mono brass 11px)
+//   No footer link (round is over).
+//   Same green chrome as live card for visual continuity during cross-fade.
+//
+// Diff calculation uses defaultPar approximation since /liverounds/ doc does
+// not persist holes-array per-hole pars. Conservative: only show diff for
+// full-18 completions; partial rounds show "thru N" without diff to avoid
+// inaccurate par-thru-N math.
+function _renderFinishedSummaryCard(round) {
+  if (!round) return "";
+  var playerName = round.playerName || "Member";
+  var course = round.course || "";
+  var totalScore = (typeof round.totalScore === "number") ? round.totalScore : 0;
+  var thru = (typeof round.thru === "number") ? round.thru : 0;
+  var lastWriteAt = (typeof round.lastWriteAt === "number") ? round.lastWriteAt : null;
+
+  var ageStr = lastWriteAt ? _formatAge(Date.now() - lastWriteAt).toUpperCase() : "JUST NOW";
+
+  // Diff uses round.par (course's actual total par from /liverounds/ doc) —
+  // accurate for any course, NOT the par-72 defaultPar approximation. Only
+  // computed for full-18 completions; partial rounds show "thru N" instead.
+  var subhead;
+  if (thru === 18) {
+    var parTotal = (typeof round.par === "number") ? round.par : 72;
+    var diff = totalScore - parTotal;
+    var diffStr = (diff === 0 ? "E" : (diff > 0 ? "+" + diff : String(diff)));
+    subhead = escHtml(playerName) + " · " + escHtml(course) + " · " + totalScore + " (" + diffStr + ")";
+  } else if (thru > 0) {
+    subhead = escHtml(playerName) + " · " + escHtml(course) + " · " + totalScore + " thru " + thru;
+  } else {
+    subhead = escHtml(playerName) + " · " + escHtml(course);
+  }
+
+  var h = '<div id="live-round-card-finished" style="background:var(--cb-green);border-radius:var(--r-4);padding:var(--sp-6);color:var(--cb-chalk);position:relative;overflow:hidden">';
+  h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:18px">FINAL · ' + ageStr + '</div>';
+  h += '<div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--cb-chalk);letter-spacing:-0.3px;line-height:1.3;margin-bottom:18px">' + subhead + '</div>';
+  h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass)">ROUND COMPLETE · OPEN FOR DETAILS</div>';
+  h += '</div>';
+  return h;
+}
+
+// Pattern A dual-card stacked cross-fade. Dynamically positions the
+// finished-summary card absolutely overlaid on the existing live-card,
+// animates simultaneous opacity transitions over 600ms, then removes
+// the live-card and switches finished-summary to in-flow positioning.
+//
+// Layout-shift safety: parent of #live-round-card receives a temporary
+// position:relative if its computed position is static. Original
+// positioning is restored after transition completes. Live-card removal
+// + finished-summary absolute→relative swap happen atomically (no layout
+// shift since both cards have matching height in the same green chrome).
+//
+// Defensive idempotent: bails if liveState.active is false (stale call
+// from delayed setTimeout) or if #live-round-card is absent (already
+// removed by prior fade).
+function _triggerCompletionCrossFade(doc) {
+  if (typeof liveState === "undefined" || !liveState || !liveState.active) return;
+  var liveCard = document.getElementById("live-round-card");
+  if (!liveCard) return;
+  var parent = liveCard.parentElement;
+  if (!parent) return;
+
+  // Save + ensure parent positioning for absolute child overlay
+  var originalParentPos = parent.style.position;
+  var computedPos = window.getComputedStyle(parent).position;
+  if (computedPos === "static") parent.style.position = "relative";
+
+  // Build finished-summary card DOM
+  var shell = document.createElement("div");
+  shell.innerHTML = _renderFinishedSummaryCard(doc);
+  var finishedCard = shell.firstElementChild;
+  if (!finishedCard) return;
+
+  // Position finishedCard absolutely overlaid on liveCard
+  finishedCard.style.position = "absolute";
+  finishedCard.style.top = liveCard.offsetTop + "px";
+  finishedCard.style.left = liveCard.offsetLeft + "px";
+  finishedCard.style.width = liveCard.offsetWidth + "px";
+  finishedCard.style.opacity = "0";
+  finishedCard.style.transition = "opacity 600ms ease";
+
+  // Insert as sibling AFTER liveCard
+  liveCard.parentNode.insertBefore(finishedCard, liveCard.nextSibling);
+
+  // Setup liveCard transition
+  liveCard.style.transition = "opacity 600ms ease";
+
+  // Force reflow so transition kicks in
+  void finishedCard.offsetWidth;
+
+  // Trigger simultaneous fades (true cross-fade per design C1)
+  liveCard.style.opacity = "0";
+  finishedCard.style.opacity = "1";
+
+  // After transition completes (600ms + 50ms safety margin)
+  setTimeout(function() {
+    if (liveCard.parentNode) liveCard.parentNode.removeChild(liveCard);
+    finishedCard.style.position = "";
+    finishedCard.style.top = "";
+    finishedCard.style.left = "";
+    finishedCard.style.width = "";
+    finishedCard.style.transition = "";
+    if (computedPos === "static") parent.style.position = originalParentPos;
+  }, 650);
+}
+
 // Live round expanded card — single-player editorial fallback (group leaderboard
 // awaits sync-round / tee-time pairing infrastructure; backlog: post-Part-B).
 //
@@ -922,6 +1042,16 @@ function _liveRoundOpenOnPhoneToast() {
 // Primary variant unchanged from prior ships modulo caption slot insertion.
 // Secondary variant is view-only per design B1/B2.
 function _renderLiveRoundExpandedCard(ctx) {
+  // v8.11.11 — Completed-round retention overlay check (5-min window after
+  // listener-observed completion). Render-side expiry is the source of truth;
+  // _triggerCompletionCrossFade DOM is replaced on next render, finished-
+  // summary card persists via this check until expiresAt.
+  if (window._completedRoundOverlay) {
+    if (Date.now() < window._completedRoundOverlay.expiresAt) {
+      return _renderFinishedSummaryCard(window._completedRoundOverlay.round);
+    }
+    window._completedRoundOverlay = null;
+  }
   if (typeof liveState === "undefined" || !liveState || !liveState.active) {
     return _renderHQPlaceholder("Lead column", ctx.state);
   }
@@ -946,7 +1076,7 @@ function _renderLiveRoundExpandedCard(ctx) {
   var fmt = (liveState.format || "stroke").toString();
   var formatLabel = fmt === "scramble" ? "SCRAMBLE" : fmt.toUpperCase() + " PLAY";
 
-  var h = '<div onclick="Router.go(\'playnow\')" style="background:var(--cb-green);border-radius:var(--r-4);padding:var(--sp-6);color:var(--cb-chalk);cursor:pointer;position:relative;overflow:hidden">';
+  var h = '<div id="live-round-card" onclick="Router.go(\'playnow\')" style="background:var(--cb-green);border-radius:var(--r-4);padding:var(--sp-6);color:var(--cb-chalk);cursor:pointer;position:relative;overflow:hidden">';
   // Top eyebrow with pulsing dot
   h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);display:flex;align-items:center;gap:10px;margin-bottom:18px">';
   h += '<span style="width:6px;height:6px;border-radius:50%;background:var(--cb-brass);animation:pulse-dot 2s infinite;flex-shrink:0"></span>';
@@ -1010,7 +1140,7 @@ function _renderLiveRoundSecondary(opts) {
   var heroSize = compact ? "32px" : "48px";
   var courseSize = compact ? "18px" : "22px";
 
-  var h = '<div style="background:var(--cb-green);border-radius:var(--r-4);padding:' + pad + ';color:var(--cb-chalk);position:relative;overflow:hidden;opacity:1">';
+  var h = '<div id="live-round-card" style="background:var(--cb-green);border-radius:var(--r-4);padding:' + pad + ';color:var(--cb-chalk);position:relative;overflow:hidden;opacity:1">';
   // Eyebrow — VIEWING · LIVE ON PHONE
   h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:18px">VIEWING · LIVE ON PHONE</div>';
   // Hero — course · hole, then score thru holes
@@ -1704,6 +1834,13 @@ function _renderGreeting(greetingWord, firstName) {
 // Compact secondary variant rendered when 'remote'; primary variant otherwise
 // (existing behavior preserved with caption slot inserted).
 function _renderLiveRoundCard() {
+  // v8.11.11 — Completed-round retention overlay check (mirror HQ pattern).
+  if (window._completedRoundOverlay) {
+    if (Date.now() < window._completedRoundOverlay.expiresAt) {
+      return '<div style="padding:18px 22px 0">' + _renderFinishedSummaryCard(window._completedRoundOverlay.round) + '</div>';
+    }
+    window._completedRoundOverlay = null;
+  }
   if (typeof liveState === "undefined" || !liveState || !liveState.active) return "";
   if (liveState.deviceOwnership === "remote") {
     return '<div style="padding:18px 22px 0">' + _renderLiveRoundSecondary({ size: "compact" }) + '</div>';
@@ -1728,7 +1865,7 @@ function _renderLiveRoundCard() {
   var formatLabel = fmt === "scramble" ? "SCRAMBLE" : fmt.toUpperCase() + " PLAY";
 
   var h = '<div style="padding:18px 22px 0">';
-  h += '<div class="tappable" onclick="Router.go(\'playnow\')" style="background:var(--cb-green);border-radius:var(--r-4);padding:22px;color:var(--cb-chalk);cursor:pointer;position:relative;overflow:hidden">';
+  h += '<div id="live-round-card" class="tappable" onclick="Router.go(\'playnow\')" style="background:var(--cb-green);border-radius:var(--r-4);padding:22px;color:var(--cb-chalk);cursor:pointer;position:relative;overflow:hidden">';
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);display:flex;align-items:center;gap:var(--sp-2);margin-bottom:14px">';
   h += '<span style="width:6px;height:6px;border-radius:50%;background:var(--cb-brass);animation:pulse-dot 2s infinite"></span>';
   h += 'LIVE · YOUR ROUND';
