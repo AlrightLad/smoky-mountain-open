@@ -754,16 +754,33 @@ function _renderLiveScoringInner() {
   h += '<button class="btn full green" onclick="finishLiveRound()">Confirm &amp; save</button>';
   h += '</div>';
 
-  // Sticky bottom nav — always reachable
+  // Sticky bottom nav — always reachable.
+  // v8.11.5: extracted to _renderBottomNavInner so adjustLiveScore + per-stat
+  // toggles can refresh nav state via _redrawBottomNav without a full page
+  // re-render. Container has id="liveBottomNav" for surgical innerHTML swap.
+  h += '<div id="liveBottomNav" style="position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--bg2);border-top:1px solid var(--border);padding:8px 12px">';
+  h += _renderBottomNavInner(hole);
+  h += '</div>';
+
+  document.querySelector('[data-page="playnow"]').innerHTML = h;
+}
+
+// v8.11.5 — Bottom-nav inner string-builder. Extracted so initial render
+// (_renderLiveScoringInner) and surgical repaint (_redrawBottomNav) share
+// a single source of truth. Inputs derived from liveState globals + the
+// passed `hole` (always liveState.currentHole; passed explicitly for clarity).
+//
+// ringPulse animation inlined via style attribute survives innerHTML swap —
+// when the BIG button is freshly inserted the animation starts at frame 0,
+// which is the desired behavior when allScored flips from false to true.
+function _renderBottomNavInner(hole) {
   var lastHole = liveState.holesMode === "front9" ? 8 : (liveState.holesMode === "back9" ? 17 : 17);
   var isLastHole = hole >= lastHole;
   var scoredCount = liveState.scores.filter(function(s){return s!==""}).length;
   var totalHoles = liveState.holesMode === "front9" || liveState.holesMode === "back9" ? 9 : 18;
   var allScored = scoredCount >= totalHoles;
+  var h = "";
 
-  h += '<div style="position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--bg2);border-top:1px solid var(--border);padding:8px 12px">';
-
-  // Always show Finish Round button when any scores are entered
   if (scoredCount >= 1) {
     if (isLastHole || allScored) {
       // On last hole or all scored: BIG prominent finish button
@@ -789,9 +806,20 @@ function _renderLiveScoringInner() {
 
   // Quit round — always tiny and de-emphasized
   h += '<div style="text-align:center;margin-top:6px"><span style="font-size:9px;color:var(--red);cursor:pointer;opacity:.5" onclick="quitLiveRound()">Quit round (discard scores)</span></div>';
-  h += '</div>';
+  return h;
+}
 
-  document.querySelector('[data-page="playnow"]').innerHTML = h;
+// v8.11.5 — Surgical bottom-nav repaint. Called by every liveState mutator
+// that doesn't trigger a full Router.go("playnow") re-render. Conservative
+// coverage per audit Call 3: all 9 mutators (adjustLiveScore + 8 per-stat
+// toggles) call this. Per-stat toggles don't change bottom-nav inputs today,
+// but conservative coverage forecloses the memory #9 trap if Ship 4a/4b
+// expands the nav's input set (e.g., FIR/GIR running counts in the bottom
+// strip). Cost: idempotent innerHTML swap, ~negligible per call.
+function _redrawBottomNav() {
+  var nav = document.getElementById("liveBottomNav");
+  if (!nav) return;
+  nav.innerHTML = _renderBottomNavInner(liveState.currentHole);
 }
 
 function adjustLiveScore(delta) {
@@ -816,6 +844,7 @@ function adjustLiveScore(delta) {
   // Direct-DOM update — primary score display, diff label, and running total.
   // Turn-summary and hole-selector-dot update on next hole navigation.
   _redrawScoreCard(hole, par);
+  _redrawBottomNav(); // v8.11.5 — refresh Finish button label/state
   if (changed && typeof hapticLight === "function") hapticLight();
   } catch(e) { pbWarn("[PlayNow] adjustLiveScore error:", e.message); }
 }
@@ -899,6 +928,7 @@ function toggleFir(hole) {
     if (state) state.textContent = active ? "\u2713 Hit" : "Miss";
   }
   saveLiveState();
+  _redrawBottomNav();
 }
 
 function toggleGir(hole) {
@@ -934,6 +964,7 @@ function toggleGir(hole) {
   if (missRow) missRow.classList.toggle("hidden", !showUd);
   _refreshAdvCount(hole);
   saveLiveState();
+  _redrawBottomNav();
 }
 
 function cyclePutts(hole) {
@@ -949,6 +980,7 @@ function cyclePutts(hole) {
     if (valEl) valEl.textContent = newVal || "\u2014";
   }
   saveLiveState();
+  _redrawBottomNav();
 }
 
 // ── Advanced stats helpers (v8.2.0) ────────────────────────────────────
@@ -982,6 +1014,7 @@ function toggleBunker(hole) {
   if (sandRow) sandRow.classList.toggle("hidden", newBunker !== true);
   _refreshAdvCount(hole);
   saveLiveState();
+  _redrawBottomNav();
 }
 
 function toggleSand(hole) {
@@ -992,6 +1025,7 @@ function toggleSand(hole) {
   _applyTriToggle(document.getElementById("pn-tri-sand-" + hole), liveState.sand[hole]);
   _refreshAdvCount(hole);
   saveLiveState();
+  _redrawBottomNav();
 }
 
 function toggleUpDown(hole) {
@@ -1002,6 +1036,7 @@ function toggleUpDown(hole) {
   _applyTriToggle(document.getElementById("pn-tri-updown-" + hole), liveState.upDown[hole]);
   _refreshAdvCount(hole);
   saveLiveState();
+  _redrawBottomNav();
 }
 
 function setMiss(hole, direction) {
@@ -1014,6 +1049,7 @@ function setMiss(hole, direction) {
   });
   _refreshAdvCount(hole);
   saveLiveState();
+  _redrawBottomNav();
 }
 
 function adjustPenalty(hole, delta) {
@@ -1030,6 +1066,7 @@ function adjustPenalty(hole, delta) {
   if (plusBtn) plusBtn.disabled = next >= 5;
   _refreshAdvCount(hole);
   saveLiveState();
+  _redrawBottomNav();
 }
 
 function finishLiveRound() {
