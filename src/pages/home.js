@@ -790,12 +790,145 @@ function _renderRecentRoundRow(r) {
 
 // ─── Lead column · State 1 (active) ────────────────────────────────────────
 
+// ════════════════════════════════════════════════════════════════════════
+// LIVE-ROUND CARD HELPERS (v8.11.10 — Gate 2 of cross-device trilogy)
+// Caption slot + format helpers shared between HQ + mobile renderers.
+// Caption slot DOM lives inside both primary and secondary card variants;
+// helpers operate via direct DOM mutation (no Router.go re-render).
+// ════════════════════════════════════════════════════════════════════════
+
+// Format milliseconds since startTime as "3H 14M" or "47M" elapsed display.
+function _formatElapsed(startTime) {
+  if (!startTime) return "—";
+  var ts = startTime;
+  if (typeof ts === "string") ts = Date.parse(ts);
+  if (typeof ts !== "number" || isNaN(ts)) return "—";
+  var diffMs = Date.now() - ts;
+  if (diffMs < 0) return "—";
+  var totalMin = Math.floor(diffMs / 60000);
+  var h = Math.floor(totalMin / 60);
+  var m = totalMin % 60;
+  if (h > 0) return h + "H " + m + "M";
+  return m + "M";
+}
+
+// Format millisecond delta as "4 min ago" / "12 min ago" / "1H 14M ago" / "just now".
+function _formatAge(ms) {
+  if (typeof ms !== "number" || isNaN(ms) || ms < 0) return "just now";
+  var totalMin = Math.floor(ms / 60000);
+  if (totalMin < 1) return "just now";
+  if (totalMin < 60) return totalMin + " min ago";
+  var h = Math.floor(totalMin / 60);
+  var m = totalMin % 60;
+  return h + "H " + m + "M ago";
+}
+
+// Set caption text + tone class. tone: 'staleness' | 'multi-device' | null
+// (clears caption). Direct DOM mutation; silently no-ops when slot absent
+// (handles route-change cleanup gracefully).
+function _setLiveRoundCaption(text, tone) {
+  var el = document.getElementById("live-round-caption");
+  if (!el) return;
+  if (!text || !tone) {
+    el.innerHTML = "";
+    el.style.cssText = "";
+    return;
+  }
+  var color = tone === "multi-device" ? "var(--cb-brass-deep)" : "var(--cb-brass)";
+  el.style.cssText = "font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:" + color + ";margin-top:14px";
+  el.textContent = text;
+}
+
+// A2: 30s auto-dismiss multi-device caption. Idempotent — clears any existing
+// timer before setting new one. Called from handleLiveRoundEmission when
+// status='active' fires from peer device while liveState.active===true locally.
+function _showMultiDeviceCaption(lastWriteAt) {
+  if (window._liveRoundMultiDeviceTimer) {
+    clearTimeout(window._liveRoundMultiDeviceTimer);
+    window._liveRoundMultiDeviceTimer = null;
+  }
+  var ageMs = Date.now() - (lastWriteAt || Date.now());
+  var ageStr = _formatAge(ageMs);
+  _setLiveRoundCaption("ALSO BEING SCORED ON ANOTHER DEVICE · LAST PHONE WRITE " + ageStr, "multi-device");
+  window._liveRoundMultiDeviceTimer = setTimeout(function() {
+    _setLiveRoundCaption(null, null);
+    window._liveRoundMultiDeviceTimer = null;
+  }, 30000);
+}
+
+// E2: staleness caption appears after 10 min no-update. Polls every 60s
+// updating "X MIN AGO". Idempotent self-clean: stored in
+// window._liveRoundCaptionPollerId, cleared at top of each call. Single
+// timer reference covers both the initial setTimeout and the recurring
+// setInterval (only one is active at any time).
+function _scheduleStalenessPolling(lastWriteAt) {
+  if (window._liveRoundCaptionPollerId) {
+    clearTimeout(window._liveRoundCaptionPollerId);
+    clearInterval(window._liveRoundCaptionPollerId);
+    window._liveRoundCaptionPollerId = null;
+  }
+  if (typeof lastWriteAt !== "number") return;
+  var THRESHOLD_MS = 10 * 60 * 1000;
+  var ageMs = Date.now() - lastWriteAt;
+  function showAndStartInterval() {
+    _showStalenessCaption(lastWriteAt);
+    window._liveRoundCaptionPollerId = setInterval(function() {
+      var el = document.getElementById("live-round-caption");
+      if (!el) {
+        clearInterval(window._liveRoundCaptionPollerId);
+        window._liveRoundCaptionPollerId = null;
+        return;
+      }
+      _showStalenessCaption(lastWriteAt);
+    }, 60000);
+  }
+  if (ageMs >= THRESHOLD_MS) {
+    showAndStartInterval();
+  } else {
+    window._liveRoundCaptionPollerId = setTimeout(showAndStartInterval, THRESHOLD_MS - ageMs);
+  }
+}
+
+function _showStalenessCaption(lastWriteAt) {
+  var ageStr = _formatAge(Date.now() - lastWriteAt);
+  _setLiveRoundCaption("LAST UPDATE " + ageStr.toUpperCase() + " · OPEN ROUND TO REFRESH", "staleness");
+}
+
+function _clearLiveRoundCaption() {
+  if (window._liveRoundMultiDeviceTimer) {
+    clearTimeout(window._liveRoundMultiDeviceTimer);
+    window._liveRoundMultiDeviceTimer = null;
+  }
+  if (window._liveRoundCaptionPollerId) {
+    clearTimeout(window._liveRoundCaptionPollerId);
+    clearInterval(window._liveRoundCaptionPollerId);
+    window._liveRoundCaptionPollerId = null;
+  }
+  _setLiveRoundCaption(null, null);
+}
+
+// Toast handler for secondary-variant footer link. Does NOT navigate per
+// design B1 (no handoff, no shared scoring). Future ship swaps for deep-link
+// when parbaughs:// scheme infrastructure lands.
+function _liveRoundOpenOnPhoneToast() {
+  if (Router && Router.toast) Router.toast("This round is being scored on another device.");
+}
+
 // Live round expanded card — single-player editorial fallback (group leaderboard
 // awaits sync-round / tee-time pairing infrastructure; backlog: post-Part-B).
+//
+// v8.11.10 — Variant dispatch via liveState.deviceOwnership flag (set by
+// saveLiveState 'local' / loadLiveState 'local' / hydrateFromFirestore 'remote').
+// Primary variant unchanged from prior ships modulo caption slot insertion.
+// Secondary variant is view-only per design B1/B2.
 function _renderLiveRoundExpandedCard(ctx) {
   if (typeof liveState === "undefined" || !liveState || !liveState.active) {
     return _renderHQPlaceholder("Lead column", ctx.state);
   }
+  if (liveState.deviceOwnership === "remote") {
+    return _renderLiveRoundSecondary({ size: "full" });
+  }
+  // PRIMARY variant — unchanged from prior ships, plus caption slot.
   var course = liveState.course || "Round in progress";
   var hole = (liveState.currentHole || 0) + 1;
   var scored = liveState.scores ? liveState.scores.filter(function(s) { return s !== ""; }) : [];
@@ -831,11 +964,66 @@ function _renderLiveRoundExpandedCard(ctx) {
   h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);letter-spacing:1.5px;color:rgba(var(--bg-rgb),0.65);margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid rgba(var(--bg-rgb),0.18)">';
   h += 'TOTAL ' + (thru > 0 ? total : "—") + ' · PAR ' + (thru > 0 ? parSoFar : "—") + ' · ' + formatLabel;
   h += '</div>';
+  // v8.11.10 — caption slot for multi-device caption. Empty → zero footprint.
+  h += '<div id="live-round-caption"></div>';
   // CTA
-  h += '<div style="background:var(--cb-chalk-2);height:48px;border-radius:var(--r-3);display:flex;align-items:center;justify-content:center;gap:var(--sp-2)">';
+  h += '<div style="background:var(--cb-chalk-2);height:48px;border-radius:var(--r-3);display:flex;align-items:center;justify-content:center;gap:var(--sp-2);margin-top:24px">';
   h += '<span style="font-family:var(--font-ui);font-size:14px;font-weight:600;color:var(--cb-ink)">Open scorecard</span>';
   h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--cb-brass)" stroke-width="2"><path d="M5 4l4 4-4 4"/></svg>';
   h += '</div>';
+  h += '</div>';
+  return h;
+}
+
+// Secondary variant — view-only, rendered when liveState.deviceOwnership === 'remote'.
+// Per design rulings B1, B2: no scoring chrome, opacity 1.0 (NOT greyed),
+// "VIEWING · LIVE ON PHONE" eyebrow, hero score panel, elapsed/last-hole subline,
+// caption slot, footer link with toast (no deep-link navigation in v8.11.10).
+//
+// size: "full" (HQ desktop) | "compact" (mobile). Compact shrinks hero score
+// from 48px → 32px and tightens spacing.
+function _renderLiveRoundSecondary(opts) {
+  opts = opts || {};
+  var size = opts.size || "full";
+  var compact = size === "compact";
+
+  var course = liveState.course || "Round in progress";
+  var hole = (liveState.currentHole || 0) + 1;
+  var scored = liveState.scores ? liveState.scores.filter(function(s) { return s !== ""; }) : [];
+  var thru = scored.length;
+  var total = scored.reduce(function(a, b) { return a + parseInt(b); }, 0);
+  var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+  var parSoFar = 0;
+  for (var i = 0; i < thru; i++) {
+    var hd = liveState.holes && liveState.holes[i];
+    parSoFar += (hd && hd.par) ? hd.par : (defaultPar[i] || 4);
+  }
+  var diff = thru > 0 ? total - parSoFar : 0;
+  var diffStr = thru === 0 ? "—" : (diff === 0 ? "E" : (diff > 0 ? "+" + diff : String(diff)));
+
+  var elapsedStr = _formatElapsed(liveState.startTime);
+  // Last hole age — compute from liveState.lastWriteAt if available, fallback to startTime.
+  var lastWriteAt = (typeof liveState.lastWriteAt === "number") ? liveState.lastWriteAt : null;
+  var lastHoleAgeStr = lastWriteAt ? _formatAge(Date.now() - lastWriteAt) : "—";
+
+  var pad = compact ? "22px" : "var(--sp-6)";
+  var heroSize = compact ? "32px" : "48px";
+  var courseSize = compact ? "18px" : "22px";
+
+  var h = '<div style="background:var(--cb-green);border-radius:var(--r-4);padding:' + pad + ';color:var(--cb-chalk);position:relative;overflow:hidden;opacity:1">';
+  // Eyebrow — VIEWING · LIVE ON PHONE
+  h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:18px">VIEWING · LIVE ON PHONE</div>';
+  // Hero — course · hole, then score thru holes
+  h += '<div style="margin-bottom:14px">';
+  h += '<div style="font-family:var(--font-display);font-size:' + courseSize + ';font-weight:700;color:var(--cb-chalk);letter-spacing:-0.3px;line-height:1.15">' + escHtml(course) + ' · Hole ' + hole + '</div>';
+  h += '<div style="font-family:var(--font-display);font-size:' + heroSize + ';font-weight:700;color:var(--cb-chalk);line-height:1;margin-top:8px;font-variant-numeric:lining-nums tabular-nums">' + diffStr + ' thru ' + thru + '</div>';
+  h += '</div>';
+  // Subline — elapsed + last hole age
+  h += '<div style="font-family:var(--font-ui);font-size:13px;color:var(--cb-mute-2);margin-bottom:16px">' + escHtml(elapsedStr) + ' elapsed · last hole ' + escHtml(lastHoleAgeStr) + '</div>';
+  // Caption slot
+  h += '<div id="live-round-caption"></div>';
+  // Footer link — brass underline, no button chrome. Toast on tap.
+  h += '<div style="margin-top:16px"><a onclick="_liveRoundOpenOnPhoneToast()" style="font-family:var(--font-ui);font-size:14px;font-weight:600;color:var(--cb-brass);text-decoration:underline;cursor:pointer">Open round on phone to keep scoring</a></div>';
   h += '</div>';
   return h;
 }
@@ -1512,8 +1700,14 @@ function _renderGreeting(greetingWord, firstName) {
   return h;
 }
 
+// Mobile live-round card — v8.11.10 adds variant dispatch via deviceOwnership.
+// Compact secondary variant rendered when 'remote'; primary variant otherwise
+// (existing behavior preserved with caption slot inserted).
 function _renderLiveRoundCard() {
   if (typeof liveState === "undefined" || !liveState || !liveState.active) return "";
+  if (liveState.deviceOwnership === "remote") {
+    return '<div style="padding:18px 22px 0">' + _renderLiveRoundSecondary({ size: "compact" }) + '</div>';
+  }
 
   var course = liveState.course || "Round in progress";
   var hole = (liveState.currentHole || 0) + 1;
@@ -1552,6 +1746,8 @@ function _renderLiveRoundCard() {
   h += '<div style="font-family:var(--font-display);font-size:15px;font-weight:600;color:var(--cb-chalk)">Scorecard →</div>';
   h += '</div>';
   h += '</div>';
+  // v8.11.10 — caption slot for multi-device caption (mobile primary variant)
+  h += '<div id="live-round-caption"></div>';
   h += '</div>';
   h += '</div>';
   return h;

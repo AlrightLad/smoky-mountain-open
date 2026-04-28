@@ -242,6 +242,9 @@ function handleLiveRoundEmission(snap) {
     // (remote already has truth) + re-render. Card disappears abruptly.
     if (liveState && liveState.active) {
       _clearLiveStateLocally();
+      // v8.11.10 — cancel any active caption timers so stale captions don't
+      // outlive the round on this device after the listener clears state.
+      if (typeof _clearLiveRoundCaption === "function") _clearLiveRoundCaption();
       _triggerRouteAwareRender();
     }
     return;
@@ -251,6 +254,7 @@ function handleLiveRoundEmission(snap) {
     // C2 silent dismiss — clear local + re-render. No UI announcement.
     if (liveState && liveState.active) {
       _clearLiveStateLocally();
+      if (typeof _clearLiveRoundCaption === "function") _clearLiveRoundCaption();
       _triggerRouteAwareRender();
     }
     return;
@@ -260,14 +264,27 @@ function handleLiveRoundEmission(snap) {
     // Pattern 3 strict: hydrate-if-empty. NEVER overrides locally-active state.
     if (liveState && !liveState.active) {
       _hydrateLiveStateFromFirestore(doc);
+      // v8.11.10 — store lastWriteAt on liveState for secondary-card subline
+      // ("last hole 4 min ago") and for staleness polling.
+      liveState.lastWriteAt = doc.lastWriteAt;
       // D2: only swap render on first emission within 800ms window. Late
       // emissions hydrate liveState but commit idle for this page load —
       // surface the card on next navigation.
       if (wasFirstEmission) {
         _triggerRouteAwareRender();
       }
+      // v8.11.10 — schedule staleness polling from time of hydration. Helper
+      // is idempotent: clears existing timer + reschedules.
+      if (typeof _scheduleStalenessPolling === "function") {
+        _scheduleStalenessPolling(doc.lastWriteAt);
+      }
+    } else if (liveState && liveState.active) {
+      // v8.11.10 — A2: liveState already active locally + remote write detected.
+      // Multi-device caption fires for 30s on the local card.
+      if (typeof _showMultiDeviceCaption === "function") {
+        _showMultiDeviceCaption(doc.lastWriteAt);
+      }
     }
-    // liveState already active locally: no-op (multi-device caption is Gate 2)
     return;
   }
 
