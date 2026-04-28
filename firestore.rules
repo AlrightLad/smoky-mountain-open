@@ -151,6 +151,14 @@ service cloud.firestore {
       return memberUid in leagueDoc(leagueId).get('bans', []);
     }
 
+    // v8.11.2 — DM participation gate. Reads parent dms/{dmId} doc to
+    // verify uid() is in participants. Hardens prior dmId.matches()
+    // pattern which trusted client-supplied path semantics. Cost: one
+    // rule-time read per message create.
+    function isDMParticipant(dmId) {
+      return uid() in get(/databases/$(database)/documents/dms/$(dmId)).data.participants;
+    }
+
     // ════════════════════════════════════════════════════════════════
     // COLLECTION RULES
     // ════════════════════════════════════════════════════════════════
@@ -312,8 +320,9 @@ service cloud.firestore {
         allow read: if isAuth()
                    && !isPlatformBanned(uid())
                    && (dmId.matches(uid() + '_.*') || dmId.matches('.*_' + uid()));
-        allow create: if amIActive()
-                     && (dmId.matches(uid() + '_.*') || dmId.matches('.*_' + uid()));
+        // v8.11.2 — create now reads parent dms/{dmId}.participants instead
+        // of trusting dmId path regex. Read rule deferred to v8.12.x cleanup.
+        allow create: if amIActive() && isDMParticipant(dmId);
         allow update: if false;
         allow delete: if amIFounder();
       }

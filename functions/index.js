@@ -37,7 +37,19 @@ if (!admin.apps.length) admin.initializeApp();
 const db = admin.firestore();
 const messaging = admin.messaging();
 
-const ALLOWED_ORIGINS = ['https://alrightlad.github.io', 'http://localhost', 'file://'];
+// v8.11.2 — origin check hardened. Old startsWith pattern matched
+// 'https://alrightlad.github.io.evil.com' against 'https://alrightlad.github.io'.
+// New helper parses URLs and exact-matches hostname; file:// is allow-listed
+// for the Capacitor mobile shell (no hostname).
+const ALLOWED_HOSTNAMES = ['alrightlad.github.io', 'localhost'];
+function isAllowedOrigin(origin) {
+  if (!origin) return false;
+  if (origin.startsWith('file://')) return true;
+  try {
+    const host = new URL(origin).hostname.toLowerCase();
+    return ALLOWED_HOSTNAMES.indexOf(host) !== -1;
+  } catch (e) { return false; }
+}
 const FOUNDING_CODE = 'FOUNDING-FOUR';
 const FOUNDING_CODE_MAX_USES = 4;
 
@@ -107,7 +119,7 @@ async function validateInviteCode(code) {
 
 exports.searchCourses = functions.https.onRequest((req, res) => {
   const origin = req.headers.origin || req.headers.referer || '';
-  const isAllowed = ALLOWED_ORIGINS.some(a => origin.startsWith(a));
+  const isAllowed = isAllowedOrigin(origin);
   if (!isAllowed && origin) { res.status(403).json({ error: 'Not authorized' }); return; }
   res.set('Access-Control-Allow-Origin', 'https://alrightlad.github.io');
   res.set('Access-Control-Allow-Methods', 'GET');
@@ -130,7 +142,7 @@ exports.searchCourses = functions.https.onRequest((req, res) => {
 
 exports.validateInvite = functions.https.onRequest(async (req, res) => {
   const origin = req.headers.origin || req.headers.referer || '';
-  const isAllowed = ALLOWED_ORIGINS.some(a => origin.startsWith(a));
+  const isAllowed = isAllowedOrigin(origin);
   if (!isAllowed && origin) { res.status(403).json({ valid: false, reason: 'Not authorized' }); return; }
   res.set('Access-Control-Allow-Origin', 'https://alrightlad.github.io');
   res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
