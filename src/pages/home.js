@@ -165,11 +165,37 @@ function _renderHQHome(ctx) {
   h += _renderEmailVerifyBanner();
   h += _renderHQMasthead();
   h += '<div style="max-width:' + maxWidth + ';margin:0 auto;padding:0 24px">';
+  h += _renderHQLocationBanner();   // (v8.11.0) hidden when accurate weather resolves
   h += _renderHQGridInner(ctx);
   h += renderPageFooter();
   h += '</div>';
   document.querySelector('[data-page="home"]').innerHTML = h;
   _initWeatherDisplays();
+}
+
+// HQ Home location banner (v8.11.0 · Member Location ship). Inline (NOT
+// PB.banner per Call 1 — PB.banner is system-level; this is HQ-Home contextual).
+// Renders below masthead, above editorial hero (inside the content wrapper so
+// it respects band-aware width). Hidden when PB.weather.getResolutionStatus()
+// reports a non-fallback source — design bot Option B per Call 2: banner is
+// wrong-weather disclosure, not feature promotion. Founding-4 with valid
+// homeCourse coords never see this banner.
+//
+// Edge case: page renders before PB.weather initializes. Banner returns ""
+// in that case; it'll appear on the next full render (route change). Most
+// users have currentProfile loaded before HQ Home renders, so this is rare.
+function _renderHQLocationBanner() {
+  if (typeof PB === "undefined" || !PB.weather || !PB.weather.getResolutionStatus) return "";
+  var status = PB.weather.getResolutionStatus();
+  if (status.resolved) return "";
+  var locationName = escHtml(status.name);
+  var h = '<div style="background:var(--cb-chalk-2);border-bottom:1px solid var(--cb-chalk-3);padding:var(--sp-3) var(--sp-5);display:flex;flex-direction:column;gap:var(--sp-1);margin-top:var(--sp-3);border-radius:var(--r-3)">';
+  h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--cb-ink);line-height:1.3">';
+  h += "We're showing weather for " + locationName + ".";
+  h += '</div>';
+  h += '<a onclick="Router.go(\'settings\',{section:\'location\'})" style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.5px;color:var(--cb-brass);text-transform:uppercase;cursor:pointer;text-decoration:none;align-self:flex-start" role="link" tabindex="0">Set your location →</a>';
+  h += '</div>';
+  return h;
 }
 
 // Populate the three weather sites (masthead pill, Band A caption, hero eyebrow)

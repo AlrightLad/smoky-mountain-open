@@ -61,12 +61,32 @@
     return dirs[Math.round(((deg % 360) + 360) % 360 / 45) % 8];
   }
 
-  // Resolve user location. homeCourse → course coords; else York fallback.
+  // Resolve user location. Three-tier resolution (v8.11.0):
+  //   1. profile.location (user-set, source of truth)
+  //   2. profile.homeCourse → course flat c.lat/c.lng (v8.10.1 path)
+  //   3. York fallback (founding league home base)
+  //
   // Course shape stores coords as flat c.lat / c.lng (per data.js:278-279).
   // The c.location.latitude/longitude shape is the GolfCourseAPI response
   // shape — flattened during PB.addCourse() before storage. (v8.10.1 fix)
   function _coords() {
     try {
+      // Priority 1: profile.location (v8.11.0)
+      if (typeof currentProfile !== "undefined" && currentProfile && currentProfile.location
+          && typeof currentProfile.location.lat === "number"
+          && typeof currentProfile.location.lng === "number") {
+        return {
+          lat: currentProfile.location.lat,
+          lng: currentProfile.location.lng,
+          // "Your location" only surfaces if save path landed coords without
+          // a name field — should never happen in v8.11.0 (settings.js always
+          // populates name from forward/reverse geocoding). If you see this
+          // string in production, treat as a signal to investigate the save
+          // path — likely a partial-write bug or schema-drift regression.
+          name: currentProfile.location.name || "Your location"
+        };
+      }
+      // Priority 2: homeCourse with valid coords
       if (typeof currentProfile !== "undefined" && currentProfile && currentProfile.homeCourse
           && typeof PB !== "undefined" && PB.getCourseByName) {
         var c = PB.getCourseByName(currentProfile.homeCourse);
@@ -78,7 +98,8 @@
           };
         }
       }
-    } catch (e) { /* fall through to default */ }
+    } catch (e) { /* fall through to York */ }
+    // Priority 3: York fallback
     return FALLBACK_COORDS;
   }
 
@@ -209,11 +230,79 @@
     });
   }
 
+  // ─── Geocoding helpers (v8.11.0 — Member Location ship) ────────────────────
+  // Forward + reverse via Open-Meteo geocoding-api subdomain. Same provider
+  // family as forecast (api.open-meteo.com). Free tier shared rate limit;
+  // geocoding is one-shot per location-set action so per-user load is trivial.
+  // Both helpers return null on any error — caller renders graceful caption.
+
+  // Forward geocoding: city name (+ optional state) → coords + canonical name
+  function geocodeCity(cityName, stateCode) {
+    if (!cityName) return Promise.resolve(null);
+    var params = "name=" + encodeURIComponent(cityName);
+    if (stateCode) params += "&country=US&admin1=" + encodeURIComponent(stateCode);
+    return fetch("https://geocoding-api.open-meteo.com/v1/search?" + params + "&count=1")
+      .then(function(r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function(data) {
+        if (!data || !data.results || !data.results.length) return null;
+        var hit = data.results[0];
+        if (typeof hit.latitude !== "number" || typeof hit.longitude !== "number") return null;
+        return {
+          lat: hit.latitude,
+          lng: hit.longitude,
+          name: hit.name + (hit.admin1 ? ", " + hit.admin1 : "")
+        };
+      })
+      .catch(function(e) {
+        if (typeof pbWarn === "function") pbWarn("[weather] geocodeCity failed:", e.message);
+        return null;
+      });
+  }
+
+  // Reverse geocoding: coords → display name (e.g., "Charlotte, NC")
+  function reverseGeocode(lat, lng) {
+    if (typeof lat !== "number" || typeof lng !== "number") return Promise.resolve(null);
+    var url = "https://geocoding-api.open-meteo.com/v1/reverse?latitude=" + lat
+      + "&longitude=" + lng + "&count=1";
+    return fetch(url)
+      .then(function(r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function(data) {
+        if (!data || !data.results || !data.results.length) return null;
+        var hit = data.results[0];
+        if (!hit.name) return null;
+        return hit.name + (hit.admin1 ? ", " + hit.admin1 : "");
+      })
+      .catch(function(e) {
+        if (typeof pbWarn === "function") pbWarn("[weather] reverseGeocode failed:", e.message);
+        return null;
+      });
+  }
+
+  // Resolution status — synchronous query for the HQ Home banner trigger.
+  // Returns whether _coords() resolved to a non-fallback source. NO fetch,
+  // NO cache write. Per Call 2 / design bot Option B: banner hides when
+  // EITHER profile.location is set OR homeCourse provides valid coords.
+  function getResolutionStatus() {
+    var c = _coords();
+    var isFallback = c.lat === FALLBACK_COORDS.lat && c.lng === FALLBACK_COORDS.lng;
+    var hasProfileLocation = typeof currentProfile !== "undefined" && currentProfile
+      && currentProfile.location
+      && typeof currentProfile.location.lat === "number";
+    return {
+      resolved: !isFallback,
+      source: hasProfileLocation ? "profile" : (isFallback ? "fallback" : "homeCourse"),
+      name: c.name
+    };
+  }
+
   // Attach to PB. PB exists from data.js (loaded earlier in CORE_FILES order).
   if (typeof PB !== "undefined") {
     PB.weather = {
       getDisplay: getDisplay,
-      refresh: refresh
+      refresh: refresh,
+      geocodeCity: geocodeCity,
+      reverseGeocode: reverseGeocode,
+      getResolutionStatus: getResolutionStatus
     };
   }
 })();
