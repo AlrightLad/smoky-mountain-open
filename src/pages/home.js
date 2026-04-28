@@ -35,6 +35,10 @@ var HQ_BREAKPOINT = 720;
 function _isHQViewport() { return window.innerWidth >= HQ_BREAKPOINT; }
 
 // Returns the active design band based on viewport width.
+// TODO (post-v8.11.4): when at least 3 pages consume PB.pageShell, deprecate
+// this duplicate and read from PB.pageShell.currentBand() instead. Today both
+// home.js (for _bindHQResize) and page-shell.js own a copy. Constants must
+// stay in sync — see page-shell.js BREAKPOINTS.
 function _currentBand() {
   var w = window.innerWidth;
   if (w < 720) return "mobile";
@@ -71,7 +75,9 @@ Router.register("home", function() {
   if (_isHQViewport()) {
     try {
       _renderHQHome(ctx);
-      if (pageEl) { pageEl.dataset.renderPath = "hq"; pageEl.dataset.renderWidth = w; }
+      // Shell stamps data-render-path="hq-shell" + data-render-band itself
+      // during PB.pageShell.render. We do NOT overwrite — preserves the shell
+      // observability surface for debugging. Width/page already in shell stamps.
     } catch (e) {
       console.error("[Home] HQ render failed, falling back to mobile:", e);
       _renderMobileHome(ctx);
@@ -155,22 +161,80 @@ function _renderMobileHome(ctx) {
   document.querySelector('[data-page="home"]').innerHTML = h;
 }
 
-// HQ desktop layout — masthead + band-aware content wrapper (grid + footer).
-// The wrapper bounds content + footer to the column width at each band so the
-// footer visually aligns with the columns above it.
+// HQ desktop layout — thin orchestrator over PB.pageShell (v8.11.4 refactor).
+// Shell owns the chrome (banner placement above masthead, masthead variant
+// dispatch, content max-width wrapper, footer placement). Page provides slot
+// data. Mobile path bypasses shell entirely (Router dispatcher handles).
+//
+// Banner slot: email verify only (full-width above masthead, matches pre-
+// refactor placement). Location banner stays inside content slot so it
+// inherits the band-aware max-width wrapper — same visual treatment as
+// pre-refactor where it sat between content opening and grid.
+//
+// rightRail null: agate rail stays inside _renderHQGridInner at Band D
+// (per v8.11.4 Call 7 — keep agate inside content slot for the refactor;
+// future ship extracts to rail when other rail-consuming pages arrive).
 function _renderHQHome(ctx) {
-  var band = _currentBand();
-  var maxWidth = _hqContentMaxWidth(band);
-  var h = "";
-  h += _renderEmailVerifyBanner();
-  h += _renderHQMasthead();
-  h += '<div style="max-width:' + maxWidth + ';margin:0 auto;padding:0 24px">';
-  h += _renderHQLocationBanner();   // (v8.11.0) hidden when accurate weather resolves
-  h += _renderHQGridInner(ctx);
-  h += renderPageFooter();
-  h += '</div>';
-  document.querySelector('[data-page="home"]').innerHTML = h;
+  var pageEl = document.querySelector('[data-page="home"]');
+  PB.pageShell.render(pageEl, {
+    pageKey: 'home',
+    bands: ['A', 'B', 'C', 'D'],
+    banner: function() { return _renderEmailVerifyBanner(); },
+    masthead: function(band) {
+      if (band === 'A') {
+        var d = new Date();
+        var dayShort = ["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"][d.getDay()];
+        var monthShort = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][d.getMonth()];
+        return {
+          variant: 'bandA',
+          title: 'Parbaughs',
+          date: dayShort + " · " + monthShort + " " + d.getDate() + " · ",
+          weatherSiteId: 'hq-weather-caption'
+        };
+      }
+      return {
+        variant: 'default',
+        title: 'Parbaughs',
+        date: _formatHQMastheadDate(),
+        weatherSiteId: 'hq-weather-pill'
+      };
+    },
+    scope: function(band) {
+      // Band A: always condensed labels + flex-shrink:0 (compact two-row masthead)
+      // Band B: condensed labels (window.innerWidth < 1280 in pre-refactor logic)
+      // Bands C/D: full labels
+      var condensed = (band === 'A' || band === 'B');
+      var flexShrink = (band === 'A');
+      return _renderHQScopeSwitcher(condensed, flexShrink);
+    },
+    content: function() {
+      // Location banner inside content wrapper preserves pre-refactor band-
+      // aware width treatment + position (above grid, below masthead).
+      return _renderHQLocationBanner() + _renderHQGridInner(ctx);
+    },
+    leftRail: null,
+    rightRail: null,
+    footer: function() { return renderPageFooter(); },
+    contentMaxWidth: _hqContentMaxWidth
+  });
   _initWeatherDisplays();
+}
+
+// Scope switcher — extracted from inline masthead HTML during v8.11.4 refactor
+// (Call 5). Pre-refactor lived in two copies inside _renderHQMastheadDefault and
+// _renderHQMastheadBandA. Behavior identical post-extraction:
+//   condensed=true  → "League" / "All"           (Bands A + B)
+//   condensed=false → "My league" / "All Parbaughs" (Bands C + D)
+//   flexShrink=true → adds flex-shrink:0          (Band A only — two-row layout)
+function _renderHQScopeSwitcher(condensed, flexShrink) {
+  var myLeagueLabel = condensed ? "League" : "My league";
+  var allParbaughsLabel = condensed ? "All" : "All Parbaughs";
+  var shrink = flexShrink ? ";flex-shrink:0" : "";
+  var h = '<div style="display:inline-flex;align-items:stretch;background:var(--cb-chalk-2);border-radius:6px;padding:2px;gap:2px' + shrink + '">';
+  h += '<div style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:var(--r-1);text-transform:uppercase">' + escHtml(myLeagueLabel) + '</div>';
+  h += '<div title="All Parbaughs view coming in a future update" style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:1.2px;color:var(--cb-mute);text-transform:uppercase;cursor:not-allowed;opacity:0.55">' + escHtml(allParbaughsLabel) + '</div>';
+  h += '</div>';
+  return h;
 }
 
 // HQ Home location banner (v8.11.0 · Member Location ship). Inline (NOT
@@ -289,79 +353,6 @@ function _formatHQMastheadDate() {
   var day = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][d.getDay()];
   var month = ["January","February","March","April","May","June","July","August","September","October","November","December"][d.getMonth()];
   return day + " · " + month + " " + d.getDate() + ", " + d.getFullYear();
-}
-
-// HQ masthead — band-aware. Default single-row 56px (Bands B/C/D); two-row 68px
-// at Band A with hamburger + wordmark + scope switcher.
-function _renderHQMasthead() {
-  if (_currentBand() === "A") return _renderHQMastheadBandA();
-  return _renderHQMastheadDefault();
-}
-
-// Default masthead — single row, used at Bands B/C/D.
-function _renderHQMastheadDefault() {
-  var date = _formatHQMastheadDate();
-  var condensed = window.innerWidth < 1280;
-  var myLeagueLabel = condensed ? "League" : "My league";
-  var allParbaughsLabel = condensed ? "All" : "All Parbaughs";
-  var h = '<div style="background:var(--cb-chalk);border-bottom:1px solid var(--cb-chalk-3);max-width:1152px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between">';
-
-  // Left: wordmark + divider + date
-  h += '<div style="display:flex;align-items:center;gap:14px">';
-  h += '<div style="font-family:var(--font-display);font-weight:700;font-size:22px;line-height:24px;color:var(--cb-ink);letter-spacing:-0.5px">Parbaughs</div>';
-  h += '<div style="width:1px;height:24px;background:var(--cb-chalk-3)"></div>';
-  h += '<div style="font-family:var(--font-ui);font-weight:500;font-size:13px;color:var(--cb-charcoal)">' + escHtml(date) + '</div>';
-  h += '</div>';
-
-  // Right: weather pill + scope switcher
-  // (Notification bell lives in the global #profileBar action cluster — index.html:201)
-  h += '<div style="display:flex;align-items:center;gap:var(--sp-3)">';
-  // Live weather via PB.weather (v8.10.0). Renders placeholder; populated by
-  // _initWeatherDisplays after innerHTML is set. Conditional wind ≥5 MPH per design Q1.
-  h += '<div id="hq-weather-pill" data-weather-site="pill" style="display:inline-flex;align-items:center;height:28px;padding:0 12px;background:var(--cb-chalk-2);border-radius:6px;font-family:var(--font-ui);font-weight:500;font-size:12px;color:var(--cb-brass);letter-spacing:0.3px">—°</div>';
-  // Scope switcher — visual-only until cross-league aggregate data exists
-  h += '<div style="display:inline-flex;align-items:stretch;background:var(--cb-chalk-2);border-radius:6px;padding:2px;gap:2px">';
-  h += '<div style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:var(--r-1);text-transform:uppercase">' + escHtml(myLeagueLabel) + '</div>';
-  h += '<div title="All Parbaughs view coming in a future update" style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:1.2px;color:var(--cb-mute);text-transform:uppercase;cursor:not-allowed;opacity:0.55">' + escHtml(allParbaughsLabel) + '</div>';
-  h += '</div>';
-  h += '</div>';
-
-  h += '</div>';
-  return h;
-}
-
-// Band A masthead — two rows totaling 68px. Hamburger left, wordmark center,
-// scope switcher right. Row 2: mono date + weather caption. Reduced density
-// per design spec §2.1. (Notifications affordance lives in #profileBar at all
-// bands plus the drawer .rr-sidebar__actions row at Band A.)
-function _renderHQMastheadBandA() {
-  var d = new Date();
-  var dayShort = ["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"][d.getDay()];
-  var monthShort = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][d.getMonth()];
-  // Date prefix renders static; weather portion populated post-render via PB.weather (v8.10.0).
-  var datePrefix = dayShort + " · " + monthShort + " " + d.getDate() + " · ";
-
-  var h = '<div style="background:var(--cb-chalk);border-bottom:1px solid var(--cb-chalk-3);max-width:640px;margin:0 auto;padding:0 24px">';
-  // Row 1 (44px): hamburger + wordmark + scope switcher
-  h += '<div style="height:44px;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2)">';
-  // Hamburger button
-  h += '<button type="button" onclick="window._toggleHQDrawer && window._toggleHQDrawer()" aria-label="Open menu" style="width:44px;height:44px;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:-10px">';
-  h += '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--cb-ink)" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
-  h += '</button>';
-  // Wordmark center
-  h += '<div style="font-family:var(--font-display);font-weight:700;font-size:18px;line-height:1;color:var(--cb-ink);letter-spacing:-0.5px">Parbaughs</div>';
-  // Scope switcher (compact)
-  h += '<div style="display:inline-flex;align-items:stretch;background:var(--cb-chalk-2);border-radius:6px;padding:2px;gap:2px;flex-shrink:0">';
-  h += '<div style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:var(--r-1);text-transform:uppercase">League</div>';
-  h += '<div title="All Parbaughs view coming in a future update" style="padding:6px 10px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:1.2px;color:var(--cb-mute);text-transform:uppercase;cursor:not-allowed;opacity:0.55">All</div>';
-  h += '</div>';
-  h += '</div>';
-  // Row 2 (24px): mono date + weather caption
-  h += '<div style="height:24px;display:flex;align-items:center">';
-  h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">' + escHtml(datePrefix) + '<span id="hq-weather-caption" data-weather-site="caption">—°</span></div>';
-  h += '</div>';
-  h += '</div>';
-  return h;
 }
 
 // HQ three-column grid. At 1280-1439px renders lead (480) + features (400) only.

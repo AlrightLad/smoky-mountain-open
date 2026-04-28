@@ -361,7 +361,8 @@ smoky-mountain-open/
 │   │   ├── caddie.js           ← AI Caddie rule-based insights
 │   │   ├── charts.js           ← SVG chart primitives
 │   │   ├── analytics.js        ← strokes gained, trends, stats
-│   │   └── router.js           ← SPA routing + avatar ring helpers
+│   │   ├── router.js           ← SPA routing + avatar ring helpers
+│   │   └── page-shell.js       ← PB.pageShell.render — band-aware HQ chrome
 │   ├── pages/                  ← ~45 page renderers, each registers with Router
 │   └── styles/
 │       ├── base.css            ← Clubhouse token system, dual-mode, reduced-motion
@@ -571,6 +572,38 @@ Global API:
 - `data-count-prefix="+"` / `data-count-suffix="%"` — text affixes
 
 Router.go auto-fires `initCountAnimations()` 80ms after every page navigation, so sites just need the attributes in their rendered HTML.
+
+### Page Shell architecture (v8.11.4)
+`src/core/page-shell.js` — `PB.pageShell.render(rootEl, opts)` is the band-aware HQ chrome orchestrator. Per design bot Q1 ruling, slot-based composition: pages provide slot data, shell owns the frame.
+
+**Engineering rules (load-bearing):**
+1. Only the shell sets `max-width` on the page body. Pages never roll their own outer wrapper.
+2. Only the shell renders the masthead. Pages provide slot data (`{variant, title, date, weatherSiteId}`); shell renders the chrome.
+
+**Public API:**
+- `PB.pageShell.render(rootEl, opts)` — composes banner + masthead + content (+ optional rails) + footer
+- `PB.pageShell.currentBand()` — returns `'mobile' | 'A' | 'B' | 'C' | 'D'` synchronously
+- `PB.pageShell.BREAKPOINTS` — `{ mobile: 720, A: 960, B: 1280, C: 1440, D: Infinity }`
+
+**Slots in `opts`:**
+- `pageKey` (string) — debug stamp
+- `bands` (string[]) — declared band support; shell throws if active band not in list
+- `banner: (band) => htmlString` — full-width above masthead
+- `masthead: (band) => slotData` — `{variant: 'default'|'bandA', title, date, weatherSiteId, condensed?}`
+- `scope: (band) => htmlString` — rendered inside masthead right cluster (extracted from inline masthead per Call 5)
+- `content: (band) => htmlString` — band-aware page content
+- `leftRail: null | (band) => string` — 196px column inside content wrapper
+- `rightRail: null | (band) => string` — 196px column inside content wrapper
+- `footer: () => htmlString` — page footer (HQ default = `renderPageFooter` from home.js)
+- `contentMaxWidth: (band) => '640px'|'600px'|'912px'|'1132px'` — band → max-width function
+
+**Mobile bypass:** Mobile band (<720px) MUST bypass shell — pages render `_renderMobileHome` (or equivalent) inline. Shell throws defensively if invoked at mobile band.
+
+**Stamps on success:** `data-render-path="hq-shell"`, `data-render-band`, `data-render-width`, `data-render-page`. Pages preserve a try/catch fallback to mobile path; catch block stamps `data-render-path="hq-fallback"` + `data-render-error`.
+
+**First consumer:** `src/pages/home.js` (HQ Home, v8.11.4). Future consumers per memory #21 architecture entry: Ships 4a-7 (spectator HUD, members, calendar, scorecard, leaderboard, round detail).
+
+**Band detection duplication:** `_currentBand` lives in BOTH `page-shell.js` (for shell autonomy) and `home.js` (for `_bindHQResize` reactive resize). Constants must stay in sync — see `BREAKPOINTS` declaration in `page-shell.js`. TODO comment on `home.js` `_currentBand` flags deprecation when 3+ pages consume the shell.
 
 ### Appearance modes
 Two modes via `data-theme` attribute on `<html>`:
