@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · polish + hardening</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · groundwork</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Auth screen loads faster, and secondary text is now easier to read across the app.", tag: "IMPROVED" }
+    { item: "Behind-the-scenes preparation for upcoming features.", tag: "INFRA" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.11.2", date: "April 2026", headline: "Polish + hardening",
+      items: [
+        { item: "Auth screen loads faster, and secondary text is now easier to read across the app.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.11.1", date: "April 2026", headline: "Location refresh",
       items: [

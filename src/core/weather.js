@@ -1,29 +1,30 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   PB.weather — live weather data layer (v8.10.0 · Ship 8)
+   PB.weather — live weather data layer (v8.10.0 → v8.11.3)
 
    Public API:
      PB.weather.getDisplay({format, includeWind})
-       format:      'pill' | 'caption' | 'eyebrow'
-       includeWind: bool — whether to append wind segment when threshold met
-       Returns Promise<{
-         temp, condition, windSpeed, windDir,
-         displayString, locationName, cachedAt, isFresh
-       }>
+       User-location weather. Resolves coords via three-tier chain
+       (profile.location → homeCourse → York fallback).
+       Returns Promise<{ temp, condition, windSpeed, windDir, windDeg,
+                         humidity, locationName, displayString,
+                         cachedAt, isFresh }>
+
+     PB.weather.getCourseDisplay(coords, {format, includeWind})  (v8.11.3)
+       Per-course weather. Caller passes resolved coords {lat, lng, name?}
+       from a course doc. Independent cache namespace
+       (pb_weather_cache_course_<key>). Returns same shape as getDisplay.
+       Null-returns on missing coords or lat===0 && lng===0 sentinel.
 
      PB.weather.refresh()
-       Force-fetch, bypass cache. Reserved for future manual-refresh UX.
+       Force-fetch user-path, bypass cache. Reserved for future manual UX.
 
-   Phase 1 location strategy (v8.10.0):
-     1. currentProfile.homeCourse → PB.getCourseByName().location → coords
-     2. fallback: York, PA (39.96, -76.73) — founding league home base
+     PB.weather.geocodeCity / reverseGeocode  (v8.11.0)
+     PB.weather.getResolutionStatus  (v8.11.0)
+     PB.weather.checkStaleness  (v8.11.1 — silent background refresh)
 
-   Cache: sessionStorage 'pb_weather_cache', 30-min TTL, invalidates on coord
-   change. Failures log to pbWarn but resolve gracefully (caller hides UI).
-
-   Out of scope (queued):
-     - Phase 2: profile location field via settings (future ship)
-     - Phase 3: opt-in browser geolocation (future ship)
-     - Per-course weather data layer (v8.10.1 → Ship 4a spectator HUD)
+   Cache: sessionStorage. User path 'pb_weather_cache'; per-course path
+   'pb_weather_cache_course_<latkey>_<lngkey>'. 30-min TTL on both.
+   Failures log to pbWarn and resolve gracefully (caller hides UI).
    ═══════════════════════════════════════════════════════════════════════════ */
 
 (function() {
@@ -107,9 +108,12 @@
     return coords.lat.toFixed(2) + "_" + coords.lng.toFixed(2);
   }
 
-  function _readCache(coordsKey) {
+  // Cache primitives (v8.11.3 — refactored to take explicit storageKey).
+  // User path uses CACHE_KEY directly; per-course path uses
+  // CACHE_KEY + "_course_" + coordsKey for namespaced isolation.
+  function _readCache(storageKey, coordsKey) {
     try {
-      var raw = sessionStorage.getItem(CACHE_KEY);
+      var raw = sessionStorage.getItem(storageKey);
       if (!raw) return null;
       var parsed = JSON.parse(raw);
       if (!parsed || parsed.coordsKey !== coordsKey) return null;
@@ -121,9 +125,9 @@
     }
   }
 
-  function _writeCache(coordsKey, data) {
+  function _writeCache(storageKey, coordsKey, data) {
     try {
-      sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+      sessionStorage.setItem(storageKey, JSON.stringify({
         coordsKey: coordsKey,
         cachedAt: Date.now(),
         data: data
@@ -132,11 +136,13 @@
   }
 
   // Fetch from Open-Meteo. Returns parsed weather object or null on failure.
+  // v8.11.3: relative_humidity_2m added to current= params; windDeg numeric +
+  // humidity exposed in returned shape for spectator HUD consumption.
   function _fetch(coords) {
     var url = API_BASE
       + "?latitude=" + coords.lat
       + "&longitude=" + coords.lng
-      + "&current=temperature_2m,wind_speed_10m,wind_direction_10m,weather_code"
+      + "&current=temperature_2m,wind_speed_10m,wind_direction_10m,weather_code,relative_humidity_2m"
       + "&temperature_unit=fahrenheit"
       + "&wind_speed_unit=mph";
     return fetch(url).then(function(r) {
@@ -147,11 +153,14 @@
         if (typeof pbWarn === "function") pbWarn("[weather] Unexpected API response", json);
         return null;
       }
+      var deg = json.current.wind_direction_10m;
       return {
         temp: Math.round(json.current.temperature_2m),
         condition: _wmoToCondition(json.current.weather_code),
         windSpeed: Math.round(json.current.wind_speed_10m || 0),
-        windDir: _degToCompass(json.current.wind_direction_10m),
+        windDir: _degToCompass(deg),
+        windDeg: (typeof deg === "number" && Number.isFinite(deg)) ? Math.round(deg) : null,
+        humidity: (json.current.relative_humidity_2m != null) ? Math.round(json.current.relative_humidity_2m) : null,
         locationName: coords.name
       };
     }).catch(function(e) {
@@ -186,7 +195,7 @@
     var includeWind = opts.includeWind !== false;  // default true
     var coords = _coords();
     var key = _coordsKey(coords);
-    var cached = _readCache(key);
+    var cached = _readCache(CACHE_KEY, key);
 
     function pack(data, cachedAt, isFresh) {
       if (!data) return null;
@@ -195,6 +204,8 @@
         condition: data.condition,
         windSpeed: data.windSpeed,
         windDir: data.windDir,
+        windDeg: data.windDeg,
+        humidity: data.humidity,
         locationName: data.locationName,
         cachedAt: cachedAt,
         isFresh: isFresh,
@@ -211,7 +222,7 @@
     // stale data if available, else null.
     return _fetch(coords).then(function(data) {
       if (data) {
-        _writeCache(key, data);
+        _writeCache(CACHE_KEY, key, data);
         return pack(data, Date.now(), true);
       }
       if (cached && cached.data) {
@@ -225,8 +236,72 @@
   function refresh() {
     var coords = _coords();
     return _fetch(coords).then(function(data) {
-      if (data) _writeCache(_coordsKey(coords), data);
+      if (data) _writeCache(CACHE_KEY, _coordsKey(coords), data);
       return data;
+    });
+  }
+
+  // ─── Per-course weather (v8.11.3 — Ship 4a foundation) ─────────────────────
+  // Coords-first API. Caller (Ship 4a spectator HUD, future round cards)
+  // resolves round → course → coords from c.lat / c.lng, then invokes this.
+  // Decoupled from course schema so future schema migration doesn't ripple
+  // into the data layer.
+  //
+  // Cache key: pb_weather_cache_course_<latkey>_<lngkey>. Independent of user
+  // weather cache. 30-min TTL matches user path; reconsider post-Ship 4a if
+  // spectator UX feels stale.
+  //
+  // Defensive returns null on:
+  //   - missing/invalid coords (no lat/lng or non-numeric)
+  //   - lat===0 && lng===0 (sentinel for courses without API coords — see
+  //     courses.js:237-239,379-380 `(c.location && c.location.latitude) || 0`
+  //     fallback. Do not fetch weather for the Gulf of Guinea.)
+  //   - fetch failure with no stale cache available
+  //
+  // Returned shape mirrors getDisplay (additive — same fields plus humidity
+  // and windDeg numeric). Caller picks fields per its own UI needs.
+  function getCourseDisplay(coords, opts) {
+    opts = opts || {};
+    var format = opts.format || "pill";
+    var includeWind = opts.includeWind !== false;
+
+    if (!coords || typeof coords.lat !== "number" || typeof coords.lng !== "number") {
+      return Promise.resolve(null);
+    }
+    if (coords.lat === 0 && coords.lng === 0) return Promise.resolve(null);
+
+    var fetchCoords = { lat: coords.lat, lng: coords.lng, name: coords.name || "Course" };
+    var coordsKey = _coordsKey(fetchCoords);
+    var storageKey = CACHE_KEY + "_course_" + coordsKey;
+    var cached = _readCache(storageKey, coordsKey);
+
+    function pack(data, cachedAt, isFresh) {
+      if (!data) return null;
+      return {
+        temp: data.temp,
+        condition: data.condition,
+        windSpeed: data.windSpeed,
+        windDir: data.windDir,
+        windDeg: data.windDeg,
+        humidity: data.humidity,
+        locationName: data.locationName,
+        cachedAt: cachedAt,
+        isFresh: isFresh,
+        displayString: _formatDisplay(data, format, includeWind)
+      };
+    }
+
+    if (cached && !cached.stale) {
+      return Promise.resolve(pack(cached.data, cached.cachedAt, true));
+    }
+
+    return _fetch(fetchCoords).then(function(data) {
+      if (data) {
+        _writeCache(storageKey, coordsKey, data);
+        return pack(data, Date.now(), true);
+      }
+      if (cached && cached.data) return pack(cached.data, cached.cachedAt, false);
+      return null;
     });
   }
 
@@ -456,6 +531,7 @@
   if (typeof PB !== "undefined") {
     PB.weather = {
       getDisplay: getDisplay,
+      getCourseDisplay: getCourseDisplay,  // (v8.11.3)
       refresh: refresh,
       geocodeCity: geocodeCity,
       reverseGeocode: reverseGeocode,
