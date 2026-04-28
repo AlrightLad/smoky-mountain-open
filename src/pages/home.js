@@ -101,9 +101,31 @@ function _buildHomeContext() {
   var firstName = _firstName(currentProfile);
 
   // Materialized stats preferred (kept in sync by persistPlayerStats).
+  // v8.11.7: handicap + bestRound fall back to live computation when cached
+  // fields are null. Original asymmetry (totalRounds had live fallback,
+  // handicap + bestRound did not) caused HQ Home to render "—" on devices
+  // where persistPlayerStats hadn't run, even with rounds loaded.
+  //
+  // Handicap: pass myRounds directly to PB.calcHandicap. Function self-gates
+  // (n < 3 → null per handicap.js:88), no caller-side length check needed.
+  //
+  // Best round: inline IIFE with the SAME filter persistPlayerStats uses
+  // (sync.js:146-148) — visibility !== "private", format !== scramble/scramble4,
+  // holesPlayed >= 18 OR undefined. Returns null when no qualifying rounds.
   var totalRounds = (currentProfile && currentProfile.totalRounds != null) ? currentProfile.totalRounds : myRounds.length;
-  var handicap = (currentProfile && currentProfile.computedHandicap != null) ? currentProfile.computedHandicap : null;
-  var bestRound = (currentProfile && currentProfile.bestRound != null) ? currentProfile.bestRound : null;
+  var handicap = (currentProfile && currentProfile.computedHandicap != null)
+    ? currentProfile.computedHandicap
+    : (myRounds.length ? PB.calcHandicap(myRounds) : null);
+  var bestRound = (currentProfile && currentProfile.bestRound != null)
+    ? currentProfile.bestRound
+    : (function() {
+        var fullPub = myRounds.filter(function(r) {
+          return r.format !== "scramble" && r.format !== "scramble4"
+            && (!r.holesPlayed || r.holesPlayed >= 18)
+            && r.visibility !== "private";
+        });
+        return fullPub.length ? Math.min.apply(null, fullPub.map(function(r){return r.score;})) : null;
+      })();
   var bestRoundId = null;
   if (bestRound != null) {
     var myFull18 = myRounds.filter(function(r) {
