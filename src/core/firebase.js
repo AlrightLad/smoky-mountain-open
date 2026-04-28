@@ -550,11 +550,22 @@ if (firebaseAvailable && auth) {
             Router.go(pg, Router.getParams(), true);
           }
         }, function() {}); // silent catch — offline is fine
+        // v8.11.8 — Cross-device live-round listener. Mirrors profile-listener
+        // pattern. Attach AFTER currentProfile resolves (no race). Detach in
+        // sign-out branch below per design D1.
+        if (typeof attachLiveRoundsListener === "function") attachLiveRoundsListener(user.uid);
       }).catch(function() {
         currentProfile = { id:user.uid, name:user.displayName||"Member", role:"member" };
         enterApp();
       });
-    } else { exitApp(); }
+    } else {
+      // v8.11.8 — Sign-out: detach live-rounds listener + clear local liveState
+      // per design D1. currentUser is already null here, so clearLiveState's
+      // Firestore-write gate skips naturally — _clearLiveStateLocally is the
+      // explicit no-write path used inside detachLiveRoundsListener.
+      if (typeof detachLiveRoundsListener === "function") detachLiveRoundsListener();
+      exitApp();
+    }
   });
 } else {
   // Offline mode — skip auth, go straight to app

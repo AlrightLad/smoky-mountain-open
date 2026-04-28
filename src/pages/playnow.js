@@ -17,7 +17,12 @@ var liveState = {
   sand: Array(18).fill(null),
   upDown: Array(18).fill(null),
   miss: Array(18).fill(null),
-  penalty: Array(18).fill(0)
+  penalty: Array(18).fill(0),
+  // v8.11.8 — Device ownership flag drives card variant selection (Gate 2).
+  // "local" = scoring on this device. "remote" = hydrated from another device's
+  // /liverounds/ write via cross-device listener. Default "local" prevents
+  // accidental view-only mode if a code path forgets to set it.
+  deviceOwnership: "local"
 };
 
 // Per-hole "Advanced stats" expander open state (module-scoped, not persisted)
@@ -29,6 +34,8 @@ var advancedOpen = {};
 
 function saveLiveState() {
   if (!liveState.active) return;
+  // v8.11.8 — Any local save → this device owns the round (drives card variant)
+  liveState.deviceOwnership = "local";
   // Local crash recovery
   try {
     localStorage.setItem("pb_liveState", JSON.stringify(liveState));
@@ -61,6 +68,9 @@ function saveLiveState() {
       totalScore: scored.reduce(function(a,b){return a+parseInt(b)},0),
       startTime: liveState.startTime || null,
       status: "active",
+      // v8.11.8 — Date.now() for cross-device elapsed-time displays. ±1s drift
+      // between client clocks acceptable for "X min ago" labels.
+      lastWriteAt: Date.now(),
       updatedAt: fsTimestamp()
     }, { merge: true }).catch(function(e) { pbWarn("[LiveRound] save failed:", e.message); });
   }
@@ -73,11 +83,19 @@ function loadLiveState() {
     var parsed = JSON.parse(saved);
     if (parsed && parsed.active) {
       Object.assign(liveState, parsed);
+      // v8.11.8 — localStorage hydration represents this device's prior crash-
+      // recovery state, so always tagged as local-owned. Listener may later
+      // reconcile with remote state if /liverounds/{uid} disagrees.
+      liveState.deviceOwnership = "local";
     }
   } catch(e) { /* corrupt data, ignore */ }
 }
 
-function clearLiveState() {
+// v8.11.8 — In-memory + localStorage clear, no Firestore writes. Used by
+// clearLiveState (which then layers on Firestore writes) AND by listener
+// emission handlers when remote already wrote the truth (avoids redundant
+// status writes ricocheting back through the listener).
+function _clearLiveStateLocally() {
   liveState.active = false;
   liveState.player = null;
   liveState.course = null;
@@ -93,13 +111,194 @@ function clearLiveState() {
   liveState.upDown = Array(18).fill(null);
   liveState.miss = Array(18).fill(null);
   liveState.penalty = Array(18).fill(0);
+  liveState.deviceOwnership = "local";
   advancedOpen = {};
   try { localStorage.removeItem("pb_liveState"); } catch(e) {}
-  // Clear Firestore live round
+}
+
+// v8.11.8 — clearLiveState now takes a reason parameter. Default "completed"
+// preserves backward compat with finishLiveRound's existing call. "abandoned"
+// distinguishes intentional Quit from natural completion in /liverounds/ —
+// listeners on other devices use this to differentiate cross-fade-to-summary
+// (completed) from silent dismiss (abandoned). Per design ruling C2, abandoned
+// docs are deleted 5s post-status-write so peer listeners observe the abandon
+// before the doc disappears.
+function clearLiveState(reason) {
+  reason = reason || "completed";
+  _clearLiveStateLocally();
   if (db && currentUser) {
-    db.collection("liverounds").doc(currentUser.uid).update({ status: "completed", updatedAt: fsTimestamp() }).catch(function(){});
+    var uid = currentUser.uid;
+    db.collection("liverounds").doc(uid).update({
+      status: reason,
+      lastWriteAt: Date.now(),
+      updatedAt: fsTimestamp()
+    }).catch(function(){});
+    if (reason === "abandoned") {
+      setTimeout(function() {
+        if (db) db.collection("liverounds").doc(uid).delete().catch(function(){});
+      }, 5000);
+    }
   }
 }
+
+// v8.11.8 — Wires the previously dead onclick="quitLiveRound()" at the tiny
+// "Quit round (discard scores)" link inside the bottom nav (renderLiveScoring).
+// Reveals the existing #quit-confirm panel; the panel's "Quit" button calls
+// clearLiveState('abandoned'). Pre-v8.11.8 this onclick threw a silent
+// ReferenceError (undefined function); discovered during the v8.11.8 audit.
+function quitLiveRound() {
+  var el = document.getElementById("quit-confirm");
+  if (el) el.style.display = "block";
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// CROSS-DEVICE SYNC LISTENER (v8.11.8 — Gate 1 foundation)
+// Own-user /liverounds/{uid} subscription. Hydrates liveState from Firestore
+// when the user starts a round on another device. Strict Pattern 3 hydrate-
+// if-empty: never overrides locally-active scoring. Card variant rendering
+// (Gate 2) and completion cross-fade (Gate 3) layer on top of this foundation.
+// ════════════════════════════════════════════════════════════════════════
+
+// Defensive shape validator — minimal per design F3. Status enum + lastWriteAt
+// numeric. Other fields validated implicitly by downstream rendering with
+// existing fallback patterns ("Round in progress" if course missing, etc.).
+function isValidLiveRound(doc) {
+  if (!doc || typeof doc !== "object") return false;
+  if (!doc.status || ["active","completed","abandoned"].indexOf(doc.status) === -1) return false;
+  if (typeof doc.lastWriteAt !== "number") return false;
+  return true;
+}
+
+// Hydrate liveState from a Firestore /liverounds/{uid} doc. Mutates fields
+// in place; sets deviceOwnership="remote" to flag this is a peer-device round.
+// Only called when liveState is currently inactive (Pattern 3 strict).
+function _hydrateLiveStateFromFirestore(doc) {
+  liveState.active = true;
+  liveState.player = doc.playerId || liveState.player;
+  liveState.course = doc.course || "";
+  liveState.courseId = doc.courseId || "";
+  liveState.format = doc.format || "stroke";
+  liveState.holesMode = doc.holesMode || "18";
+  liveState.tee = doc.tee || "";
+  liveState.currentHole = doc.currentHole || 0;
+  if (Array.isArray(doc.scores)) liveState.scores = doc.scores.slice();
+  if (Array.isArray(doc.fir)) liveState.fir = doc.fir.slice();
+  if (Array.isArray(doc.gir)) liveState.gir = doc.gir.slice();
+  if (Array.isArray(doc.putts)) liveState.putts = doc.putts.slice();
+  if (Array.isArray(doc.bunker)) liveState.bunker = doc.bunker.slice();
+  if (Array.isArray(doc.sand)) liveState.sand = doc.sand.slice();
+  if (Array.isArray(doc.upDown)) liveState.upDown = doc.upDown.slice();
+  if (Array.isArray(doc.miss)) liveState.miss = doc.miss.slice();
+  if (Array.isArray(doc.penalty)) liveState.penalty = doc.penalty.slice();
+  liveState.rating = doc.rating || 72;
+  liveState.slope = doc.slope || 113;
+  liveState.par = doc.par || 72;
+  liveState.startTime = doc.startTime || null;
+  liveState.deviceOwnership = "remote";
+}
+
+// Re-render current page if it's one that displays live-round state. Mirrors
+// _memberProfileUnsub's route-aware Router.go pattern (firebase.js:548-551).
+function _triggerRouteAwareRender() {
+  if (typeof Router === "undefined" || !Router.getPage) return;
+  var pg = Router.getPage();
+  if (pg === "home" || pg === "playnow") {
+    Router.go(pg, Router.getParams ? Router.getParams() : {}, true);
+  }
+}
+
+// Listener emission handler. Called for each /liverounds/{uid} snapshot.
+// First emission post-attach uses _liveListenerPendingFirstEmission flag
+// (set by attachLiveRoundsListener; cleared after 800ms or first emission).
+function handleLiveRoundEmission(snap) {
+  // Capture-and-clear the first-emission flag regardless of doc state, so
+  // late emissions don't trigger render swaps (per design D2 commit-idle rule).
+  var wasFirstEmission = !!window._liveListenerPendingFirstEmission;
+  window._liveListenerPendingFirstEmission = false;
+
+  if (!snap.exists) return;  // F2 silent — no remote round
+
+  var doc = snap.data();
+  if (!isValidLiveRound(doc)) {
+    if (typeof pbWarn === "function") {
+      pbWarn("listener:liverounds:invalid-shape", { id: snap.id, keys: doc ? Object.keys(doc) : [] });
+    }
+    return;
+  }
+
+  var status = doc.status;
+
+  if (status === "completed") {
+    // Gate 3 will add 600ms cross-fade transition. For Gate 1: clear local
+    // (remote already has truth) + re-render. Card disappears abruptly.
+    if (liveState && liveState.active) {
+      _clearLiveStateLocally();
+      _triggerRouteAwareRender();
+    }
+    return;
+  }
+
+  if (status === "abandoned") {
+    // C2 silent dismiss — clear local + re-render. No UI announcement.
+    if (liveState && liveState.active) {
+      _clearLiveStateLocally();
+      _triggerRouteAwareRender();
+    }
+    return;
+  }
+
+  if (status === "active") {
+    // Pattern 3 strict: hydrate-if-empty. NEVER overrides locally-active state.
+    if (liveState && !liveState.active) {
+      _hydrateLiveStateFromFirestore(doc);
+      // D2: only swap render on first emission within 800ms window. Late
+      // emissions hydrate liveState but commit idle for this page load —
+      // surface the card on next navigation.
+      if (wasFirstEmission) {
+        _triggerRouteAwareRender();
+      }
+    }
+    // liveState already active locally: no-op (multi-device caption is Gate 2)
+    return;
+  }
+
+  // Unknown status — observability only.
+  if (typeof pbWarn === "function") pbWarn("listener:liverounds:unknown-status:", status);
+}
+
+// Attach own-user /liverounds/{uid} listener. Mirrors window._memberProfileUnsub
+// (firebase.js:539-552): detach-before-reattach discipline, silent error path,
+// route-aware re-render on snapshot. Sets _liveListenerPendingFirstEmission
+// flag with 800ms TTL per design D2.
+function attachLiveRoundsListener(uid) {
+  if (!db || !uid) return;
+  if (window._liveRoundsUnsub) { window._liveRoundsUnsub(); window._liveRoundsUnsub = null; }
+  window._liveListenerPendingFirstEmission = true;
+  setTimeout(function() {
+    window._liveListenerPendingFirstEmission = false;
+  }, 800);
+  try {
+    window._liveRoundsUnsub = db.collection("liverounds").doc(uid).onSnapshot(
+      handleLiveRoundEmission,
+      function(err) {
+        if (typeof pbWarn === "function") pbWarn("listener:liverounds:attach-failed:", err && err.message);
+      }
+    );
+  } catch (e) {
+    if (typeof pbWarn === "function") pbWarn("listener:liverounds:attach-failed:", e.message);
+  }
+}
+
+// Detach listener + clear local liveState per design D1. Called from sign-out
+// path in firebase.js. Skips Firestore writes (currentUser is null at this
+// point — clearLiveState's gate would skip anyway, but using
+// _clearLiveStateLocally to be explicit about no-write intent).
+function detachLiveRoundsListener() {
+  if (window._liveRoundsUnsub) { window._liveRoundsUnsub(); window._liveRoundsUnsub = null; }
+  window._liveListenerPendingFirstEmission = false;
+  if (typeof liveState !== "undefined") _clearLiveStateLocally();
+}
+
 // ─────────────────────────────────────────────────────────────────────────
 
 Router.register("playnow", function(params) {
@@ -752,7 +951,7 @@ function _renderLiveScoringInner() {
   h += '<div id="quit-confirm" style="display:none;margin-bottom:8px;padding:12px;background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);border-radius:var(--radius);text-align:center">';
   h += '<div style="font-size:12px;color:var(--red);margin-bottom:8px">Quit this round? Scores will be lost.</div>';
   h += '<div style="display:flex;gap:8px"><button class="btn outline" style="flex:1;font-size:11px" onclick="document.getElementById(\'quit-confirm\').style.display=\'none\'">Cancel</button>';
-  h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(var(--red-rgb),.15);color:var(--red)" onclick="clearLiveState();updatePresence._force=true;updatePresence();Router.go(\'rounds\')">Quit</button></div></div>';
+  h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(var(--red-rgb),.15);color:var(--red)" onclick="clearLiveState(\'abandoned\');updatePresence._force=true;updatePresence();Router.go(\'rounds\')">Quit</button></div></div>';
   h += '<button class="btn full" style="background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);color:var(--red);font-size:11px;margin-bottom:80px" onclick="document.getElementById(\'quit-confirm\').style.display=\'block\'">Quit round</button>';
 
   h += '</div>';
