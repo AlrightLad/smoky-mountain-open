@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · cross-device trilogy</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · stability</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Round completion now shows a smooth transition when watching across devices. Finished rounds stay visible for 5 minutes for context.", tag: "FIXED" }
+    { item: "Behind-the-scenes improvements to site stability and reliability.", tag: "INFRA" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.11.11", date: "April 2026", headline: "Cross-device trilogy",
+      items: [
+        { item: "Round completion now shows a smooth transition when watching across devices. Finished rounds stay visible for 5 minutes for context.", tag: "FIXED" }
+      ]
+    },
     {
       version: "v8.11.10", date: "April 2026", headline: "Cross-device polish",
       items: [

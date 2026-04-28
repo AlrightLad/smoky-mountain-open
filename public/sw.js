@@ -1,4 +1,9 @@
-var CACHE_NAME = 'parbaughs-v6-4-0';
+// TODO: Update CACHE_NAME on every version bump per CLAUDE.md checklist.
+// Value tied to APP_VERSION ensures activate-handler cache cleanup (line 32+)
+// invalidates stale caches on each deploy. Static CACHE_NAME means cleanup
+// is a no-op (the bug v8.12.0 hotfix targets — was stuck at 'parbaughs-v6-4-0'
+// for ~30 ships). Future ship may automate via Vite build-time injection.
+var CACHE_NAME = 'parbaughs-v8.12.0';
 var STATIC_ASSETS = [
   '/smoky-mountain-open/',
   '/smoky-mountain-open/watermark.jpg',
@@ -42,6 +47,14 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
+  // v8.12.0 — Skip non-http(s) requests. Browser extensions (chrome-extension://,
+  // moz-extension://, safari-web-extension://) trigger fetch events through the
+  // page's SW and would throw on cache.put. Filtering at the handler entry point
+  // is a single-point fix covering both cache.put call sites below (lines 60 + 72).
+  // Also covers file:, blob:, data: schemes as a side effect — none of those
+  // belong in the SW cache anyway.
+  if (!event.request.url.startsWith('http')) return;
+
   // Network-first for API and Firestore calls
   if (event.request.url.indexOf('googleapis.com') !== -1 ||
       event.request.url.indexOf('firebaseio.com') !== -1 ||

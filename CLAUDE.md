@@ -142,6 +142,8 @@ For major releases (v8.x and App Store submission), consider adding structured m
 
 Both `APP_VERSION` in `src/core/utils.js` and `version` in `package.json` must be kept in sync. Hook 5 (see Claude Code Hooks section) enforces this.
 
+`CACHE_NAME` in `public/sw.js` must also be updated on every version bump to `'parbaughs-v{version}'` (e.g., `'parbaughs-v8.12.0'`). The service worker's activate-handler cache cleanup deletes any cache whose name differs from `CACHE_NAME` — if `CACHE_NAME` doesn't change between deploys, the cleanup is a no-op and stale caches accumulate forever. (Pre-v8.12.0 was stuck at `'parbaughs-v6-4-0'` for ~30 ships.) Hook 5 does NOT enforce this — manual update part of the version-bump step.
+
 ## Caddy Notes Writing Standard
 
 Caddy Notes is member-facing documentation. Members do not care about implementation details. They care about what's different when they use the app.
