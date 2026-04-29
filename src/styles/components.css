@@ -757,7 +757,7 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .adv-col{display:flex;flex-direction:column;gap:6px}
 .adv-label{font-size:var(--text-sm);color:var(--muted);font-weight:600}
 .adv-tri{display:flex;gap:0;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;min-height:36px}
-.adv-tri-opt{flex:1;padding:var(--sp-2) var(--sp-3);font-size:var(--text-sm);font-weight:600;color:var(--muted);text-align:center;min-width:40px;display:flex;align-items:center;justify-content:center;transition:background var(--duration-fast) var(--ease-default)}
+.adv-tri-opt{flex:1;padding:var(--sp-2) var(--sp-3);font-size:var(--text-sm);font-weight:600;color:var(--muted);text-align:center;min-width:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background var(--duration-fast) var(--ease-default)}
 .adv-tri-opt.active-neutral{background:var(--bg2);color:var(--cream)}
 .adv-tri-opt.active-yes{background:rgba(var(--birdie-rgb),.15);color:var(--birdie)}
 .adv-tri-opt.active-no{background:rgba(var(--red-rgb),.12);color:var(--red)}

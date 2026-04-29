@@ -916,31 +916,31 @@ function _renderLiveScoringInner() {
 
   h += '<div id="pn-advbody-' + hole + '" class="advanced-stats-body' + (isAdvOpen ? '' : ' hidden') + '">';
 
-  // Bunker toggle
+  // Bunker toggle — v8.13.1 per-span onclick (Pattern B direct-set; was Pattern C parent-onclick + hidden cycling)
   h += '<div class="adv-row">';
   h += '<span class="adv-label">In bunker?</span>';
-  h += '<div id="pn-tri-bunker-' + hole + '" class="adv-tri" onclick="toggleBunker(' + hole + ')">';
-  h += '<span class="adv-tri-opt' + (bunker === null ? ' active-neutral' : '') + '">\u2014</span>';
-  h += '<span class="adv-tri-opt' + (bunker === true ? ' active-yes' : '') + '">Yes</span>';
-  h += '<span class="adv-tri-opt' + (bunker === false ? ' active-no' : '') + '">No</span>';
+  h += '<div id="pn-tri-bunker-' + hole + '" class="adv-tri">';
+  h += '<span class="adv-tri-opt' + (bunker === null ? ' active-neutral' : '') + '" onclick="toggleBunker(' + hole + ',null)">\u2014</span>';
+  h += '<span class="adv-tri-opt' + (bunker === true ? ' active-yes' : '') + '" onclick="toggleBunker(' + hole + ',true)">Yes</span>';
+  h += '<span class="adv-tri-opt' + (bunker === false ? ' active-no' : '') + '" onclick="toggleBunker(' + hole + ',false)">No</span>';
   h += '</div></div>';
 
   // Sand save — always rendered, hidden when bunker !== true
   h += '<div id="pn-row-sand-' + hole + '" data-row="sand-save" class="adv-row' + (bunker !== true ? ' hidden' : '') + '">';
   h += '<span class="adv-label">Sand save?</span>';
-  h += '<div id="pn-tri-sand-' + hole + '" class="adv-tri" onclick="toggleSand(' + hole + ')">';
-  h += '<span class="adv-tri-opt' + (sand === null ? ' active-neutral' : '') + '">\u2014</span>';
-  h += '<span class="adv-tri-opt' + (sand === true ? ' active-yes' : '') + '">Yes</span>';
-  h += '<span class="adv-tri-opt' + (sand === false ? ' active-no' : '') + '">No</span>';
+  h += '<div id="pn-tri-sand-' + hole + '" class="adv-tri">';
+  h += '<span class="adv-tri-opt' + (sand === null ? ' active-neutral' : '') + '" onclick="toggleSand(' + hole + ',null)">\u2014</span>';
+  h += '<span class="adv-tri-opt' + (sand === true ? ' active-yes' : '') + '" onclick="toggleSand(' + hole + ',true)">Yes</span>';
+  h += '<span class="adv-tri-opt' + (sand === false ? ' active-no' : '') + '" onclick="toggleSand(' + hole + ',false)">No</span>';
   h += '</div></div>';
 
   // Up-and-down — always rendered, hidden unless GIR missed (gir === false)
   h += '<div id="pn-row-updown-' + hole + '" data-row="up-down" class="adv-row' + (gir !== false ? ' hidden' : '') + '">';
   h += '<span class="adv-label">Up and down?</span>';
-  h += '<div id="pn-tri-updown-' + hole + '" class="adv-tri" onclick="toggleUpDown(' + hole + ')">';
-  h += '<span class="adv-tri-opt' + (upDown === null ? ' active-neutral' : '') + '">\u2014</span>';
-  h += '<span class="adv-tri-opt' + (upDown === true ? ' active-yes' : '') + '">Yes</span>';
-  h += '<span class="adv-tri-opt' + (upDown === false ? ' active-no' : '') + '">No</span>';
+  h += '<div id="pn-tri-updown-' + hole + '" class="adv-tri">';
+  h += '<span class="adv-tri-opt' + (upDown === null ? ' active-neutral' : '') + '" onclick="toggleUpDown(' + hole + ',null)">\u2014</span>';
+  h += '<span class="adv-tri-opt' + (upDown === true ? ' active-yes' : '') + '" onclick="toggleUpDown(' + hole + ',true)">Yes</span>';
+  h += '<span class="adv-tri-opt' + (upDown === false ? ' active-no' : '') + '" onclick="toggleUpDown(' + hole + ',false)">No</span>';
   h += '</div></div>';
 
   // Miss direction — always rendered, hidden unless GIR missed
@@ -1266,44 +1266,38 @@ function toggleAdvancedStats(hole) {
   // Ephemeral UI state — not persisted, matches prior behavior.
 }
 
-function toggleBunker(hole) {
-  var cur = liveState.bunker[hole];
-  // Tri-state cycle: null -> true -> false -> null
-  if (cur === null) liveState.bunker[hole] = true;
-  else if (cur === true) liveState.bunker[hole] = false;
-  else liveState.bunker[hole] = null;
-  var newBunker = liveState.bunker[hole];
+// v8.13.1 — Tri-toggle handlers converted from cycling-on-parent-onclick to
+// direct-set-per-span-onclick (Pattern C → Pattern B). Each span passes its
+// own value (null/true/false) so taps select directly. Function names retained
+// semantically — toggleBunker(hole, value) reads as "toggle bunker to value."
+// Bug introduced v8.2.0; fixed v8.13.1 after surfacing in production.
+function toggleBunker(hole, value) {
+  liveState.bunker[hole] = value;
   // If bunker is no longer true, clear sand save.
-  if (newBunker !== true && liveState.sand[hole] !== null) {
+  if (value !== true && liveState.sand[hole] !== null) {
     liveState.sand[hole] = null;
     _applyTriToggle(document.getElementById("pn-tri-sand-" + hole), null);
   }
-  _applyTriToggle(document.getElementById("pn-tri-bunker-" + hole), newBunker);
+  _applyTriToggle(document.getElementById("pn-tri-bunker-" + hole), value);
   // Sand save row visible only when bunker === true.
   var sandRow = document.getElementById("pn-row-sand-" + hole);
-  if (sandRow) sandRow.classList.toggle("hidden", newBunker !== true);
+  if (sandRow) sandRow.classList.toggle("hidden", value !== true);
   _refreshAdvCount(hole);
   saveLiveState();
   _redrawBottomNav();
 }
 
-function toggleSand(hole) {
-  var cur = liveState.sand[hole];
-  if (cur === null) liveState.sand[hole] = true;
-  else if (cur === true) liveState.sand[hole] = false;
-  else liveState.sand[hole] = null;
-  _applyTriToggle(document.getElementById("pn-tri-sand-" + hole), liveState.sand[hole]);
+function toggleSand(hole, value) {
+  liveState.sand[hole] = value;
+  _applyTriToggle(document.getElementById("pn-tri-sand-" + hole), value);
   _refreshAdvCount(hole);
   saveLiveState();
   _redrawBottomNav();
 }
 
-function toggleUpDown(hole) {
-  var cur = liveState.upDown[hole];
-  if (cur === null) liveState.upDown[hole] = true;
-  else if (cur === true) liveState.upDown[hole] = false;
-  else liveState.upDown[hole] = null;
-  _applyTriToggle(document.getElementById("pn-tri-updown-" + hole), liveState.upDown[hole]);
+function toggleUpDown(hole, value) {
+  liveState.upDown[hole] = value;
+  _applyTriToggle(document.getElementById("pn-tri-updown-" + hole), value);
   _refreshAdvCount(hole);
   saveLiveState();
   _redrawBottomNav();
