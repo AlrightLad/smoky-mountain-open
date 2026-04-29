@@ -189,26 +189,19 @@ function _renderRoundDetailPlaceholder(pageEl, round, viewerRole) {
   _renderRoundPage(pageEl, h, "Final round");
 }
 
-// ─── SpectatorHUD placeholder (Gate 2-9 territory) ──────────────────────
-// Minimal read-only display for other+active case until Gates 2-9 ship the
-// full HUD (HeroScorePanel + PerHoleStrip + StatsPanel + CoursePanel +
-// RecentShotsFeed + connection state escalation + listener integration).
+// ─── SpectatorHUD render (Gate 2 of 9 wires real shell from spectator.js) ───
+// Gate 2 (v8.13.2) replaced the v8.13.0 minimal placeholder with PB.spectator.
+// renderHUDShell which emits the real HUD shell: HeroScorePanel (live-page mode)
+// + Gate 3-5 placeholders. round.js stays as the route + dispatch layer; spectator.js
+// owns the HUD content. Defensive fallback to inline placeholder if spectator.js
+// hasn't loaded yet (vite DEFERRED_PAGES; small theoretical window).
 function _renderSpectatorHUDPlaceholder(pageEl, round) {
-  var playerName = round.playerName || "Member";
-  var course = round.course || "Course";
-  var totalScore = (typeof round.totalScore === "number") ? round.totalScore : 0;
-  var thru = (typeof round.thru === "number") ? round.thru : 0;
-
-  var h = '';
-  h += '<div style="padding:32px 24px;max-width:680px;margin:0 auto">';
-  h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:18px">VIEWING · LIVE</div>';
-  h += '<div style="font-family:var(--font-display);font-size:22px;font-weight:600;color:var(--cb-ink);line-height:1.3;margin-bottom:14px">';
-  h += escHtml(playerName) + ' · ' + escHtml(course);
-  h += '</div>';
-  h += '<div style="font-family:var(--font-display);font-size:48px;font-weight:700;color:var(--cb-ink);line-height:1;margin-bottom:32px;font-variant-numeric:lining-nums tabular-nums">';
-  h += totalScore + (thru > 0 ? ' thru ' + thru : '');
-  h += '</div>';
-  h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass)">SPECTATOR HUD · COMING IN A FUTURE SHIP</div>';
-  h += '</div>';
-  _renderRoundPage(pageEl, h, "Live round");
+  var contentHtml;
+  if (typeof PB !== "undefined" && PB.spectator && typeof PB.spectator.renderHUDShell === "function") {
+    contentHtml = '<div style="padding:32px 24px;max-width:680px;margin:0 auto">' + PB.spectator.renderHUDShell(round) + '</div>';
+  } else {
+    // Defensive fallback — spectator.js not yet loaded (rare; DEFERRED_PAGES script load order edge case)
+    contentHtml = '<div style="padding:60px 24px;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--cb-mute-2)">SPECTATOR HUD LOADING...</div>';
+  }
+  _renderRoundPage(pageEl, contentHtml, "Live round");
 }

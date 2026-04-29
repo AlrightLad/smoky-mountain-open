@@ -1112,8 +1112,17 @@ function _renderLiveRoundExpandedCard(ctx) {
 //
 // size: "full" (HQ desktop) | "compact" (mobile). Compact shrinks hero score
 // from 48px → 32px and tightens spacing.
+// v8.13.2 — Ship 4a Gate 2: mode parameter added.
+//   'live-card' (default) — v8.11.10 secondary digest card on HQ Home + mobile.
+//                            Reads from liveState. Behavior preserved byte-identical.
+//   'live-page'           — Spectator HUD hero panel on /round/:roundId page.
+//                            Reads from opts.round (Firestore /liverounds/ doc).
+//                            Avatar + bigger fonts + pace projection + no footer link.
 function _renderLiveRoundSecondary(opts) {
   opts = opts || {};
+  if (opts.mode === "live-page") return _renderLivePageHero(opts.round || {});
+
+  // ─── 'live-card' mode (default) — v8.11.10 production code, byte-identical ───
   var size = opts.size || "full";
   var compact = size === "compact";
 
@@ -1154,6 +1163,79 @@ function _renderLiveRoundSecondary(opts) {
   h += '<div id="live-round-caption"></div>';
   // Footer link — brass underline, no button chrome. Toast on tap.
   h += '<div style="margin-top:16px"><a onclick="_liveRoundOpenOnPhoneToast()" style="font-family:var(--font-ui);font-size:14px;font-weight:600;color:var(--cb-brass);text-decoration:underline;cursor:pointer">Open round on phone to keep scoring</a></div>';
+  h += '</div>';
+  return h;
+}
+
+// v8.13.2 — 'live-page' mode hero panel for Spectator HUD page (Ship 4a Gate 2).
+// Reads from `round` (Firestore /liverounds/ doc), NOT from liveState — Spectator
+// HUD displays OTHER user's round data fetched directly via /round/:roundId route.
+//
+// Differences from 'live-card':
+//   - No id="live-round-card" — only one card per page; that wrapper id is for
+//     v8.11.11 cross-fade animation on HQ Home digest-card surface, not HUD page
+//   - Avatar 64px brass-stroke circle via existing renderAvatar(player, 64, false)
+//   - Eyebrow VIEWING · LIVE (no "ON PHONE" — page IS the experience, not a redirect)
+//   - Player name + handicap (Fraunces italic 18-22px)
+//   - Bigger hero score (Fraunces 64px display)
+//   - Course · hole · time mono small caps subline (per design C1)
+//   - "ON PACE FOR N" projection when 0 < thru < 18
+//   - NO footer link
+//   - NO course wordmark/photo (deferred — no data path in current course schema)
+//   - Caption slot preserved for Gate 7 connection-state-escalation reuse
+function _renderLivePageHero(round) {
+  var playerName = round.playerName || "Member";
+  var course = round.course || "Round";
+  var hole = (round.currentHole || 0) + 1;
+  var thru = (typeof round.thru === "number") ? round.thru : 0;
+  var totalScore = (typeof round.totalScore === "number") ? round.totalScore : 0;
+
+  // Diff via defaultPar approximation. Per-hole pars not in /liverounds/ doc.
+  var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+  var parSoFar = 0;
+  for (var i = 0; i < thru; i++) parSoFar += (defaultPar[i] || 4);
+  var diff = thru > 0 ? totalScore - parSoFar : 0;
+  var diffStr = thru === 0 ? "—" : (diff === 0 ? "E" : (diff > 0 ? "+" + diff : String(diff)));
+
+  var elapsedStr = _formatElapsed(round.startTime);
+  var lastWriteAt = (typeof round.lastWriteAt === "number") ? round.lastWriteAt : null;
+  var lastHoleAgeStr = lastWriteAt ? _formatAge(Date.now() - lastWriteAt) : "—";
+
+  // Pace projection — simple linear extrapolation. Only renders 0<thru<18.
+  var paceProjection = (thru > 0 && thru < 18) ? Math.round((totalScore / thru) * 18) : null;
+
+  // Avatar + handicap from cached member profile (fbMemberCache pre-populated post-auth)
+  var player = (typeof PB !== "undefined" && PB.getPlayer) ? PB.getPlayer(round.playerId) : null;
+  var avatarHtml = (player && typeof renderAvatar === "function") ? renderAvatar(player, 64, false) : '';
+  var handicap = player ? (player.computedHandicap != null ? player.computedHandicap : (player.handicap != null ? player.handicap : null)) : null;
+  var handicapStr = (handicap !== null) ? " · " + handicap + " hcp" : "";
+
+  var h = '<div style="background:var(--cb-green);border-radius:var(--r-4);padding:var(--sp-6);color:var(--cb-chalk);position:relative;overflow:hidden;opacity:1">';
+  // Eyebrow
+  h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:20px">VIEWING · LIVE</div>';
+  // Avatar + player name row
+  h += '<div style="display:flex;align-items:center;gap:16px;margin-bottom:18px">';
+  if (avatarHtml) {
+    h += '<div style="width:64px;height:64px;border-radius:50%;border:1px solid var(--cb-brass);overflow:hidden;flex-shrink:0">' + avatarHtml + '</div>';
+  }
+  h += '<div style="font-family:var(--font-display);font-style:italic;font-size:22px;font-weight:600;color:var(--cb-chalk);line-height:1.2">';
+  h += escHtml(playerName) + escHtml(handicapStr);
+  h += '</div>';
+  h += '</div>';
+  // Big score
+  h += '<div style="font-family:var(--font-display);font-size:64px;font-weight:700;color:var(--cb-chalk);line-height:0.95;letter-spacing:-2px;margin-bottom:14px;font-variant-numeric:lining-nums tabular-nums">' + diffStr + ' thru ' + thru + '</div>';
+  // Course · hole · time subline
+  h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:14px">';
+  h += escHtml(course) + ' · HOLE ' + hole + ' · ' + escHtml(elapsedStr) + ' ELAPSED';
+  h += '</div>';
+  // Pace projection (when applicable)
+  if (paceProjection !== null) {
+    h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-2);margin-bottom:14px">ON PACE FOR ' + paceProjection + '</div>';
+  }
+  // Last hole age
+  h += '<div style="font-family:var(--font-ui);font-size:13px;color:var(--cb-mute-2);margin-bottom:16px">last hole ' + escHtml(lastHoleAgeStr) + '</div>';
+  // Caption slot — Gate 7 connection-state-escalation reuses this id
+  h += '<div id="live-round-caption"></div>';
   h += '</div>';
   return h;
 }
