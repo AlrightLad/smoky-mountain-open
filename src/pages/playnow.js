@@ -71,6 +71,10 @@ function saveLiveState() {
       // v8.11.8 — Date.now() for cross-device elapsed-time displays. ±1s drift
       // between client clocks acceptable for "X min ago" labels.
       lastWriteAt: Date.now(),
+      // v8.13.0 — Stable roundId enables /round/:roundId lookup. Pre-v8.13.0
+      // active docs lack this field; validator accepts missing for self-
+      // healing migration window (memory #20 pattern).
+      roundId: liveState.roundId || null,
       updatedAt: fsTimestamp()
     }, { merge: true }).catch(function(e) { pbWarn("[LiveRound] save failed:", e.message); });
   }
@@ -175,6 +179,10 @@ function isValidLiveRound(doc) {
   if (!doc || typeof doc !== "object") return false;
   if (!doc.status || ["active","completed","abandoned"].indexOf(doc.status) === -1) return false;
   if (doc.lastWriteAt !== undefined && typeof doc.lastWriteAt !== "number") return false;
+  // v8.13.0 — roundId optional for backward compat (pre-v8.13.0 docs lack it).
+  // Self-healing migration: any saveLiveState call from v8.13.0+ client
+  // backfills the field. Wrong-type roundId rejected.
+  if (doc.roundId !== undefined && doc.roundId !== null && typeof doc.roundId !== "string") return false;
   return true;
 }
 
@@ -712,7 +720,11 @@ function startLiveRound() {
     sand: Array(18).fill(null),
     upDown: Array(18).fill(null),
     miss: Array(18).fill(null),
-    penalty: Array(18).fill(0)
+    penalty: Array(18).fill(0),
+    // v8.13.0 — Stable roundId persists across saveLiveState calls + carries
+    // forward to /rounds/{id} on completion. Enables /round/:roundId lookup
+    // for both live and completed rounds with a single id (Ship 4a Gate 1).
+    roundId: typeof genId === "function" ? genId() : (Date.now().toString(36) + Math.random().toString(36).substr(2, 6))
   };
   advancedOpen = {};
 
@@ -1337,9 +1349,14 @@ function finishLiveRound() {
 
   if (completed < 9) { Router.toast("Play at least 9 holes"); return; }
 
-  // Save as a local round
+  // Save as a local round.
+  // v8.13.0 — Pass liveState.roundId so /rounds/{id} aligns with the same
+  // identifier used in /liverounds/{playerUid}.roundId during the live phase.
+  // Enables /round/:roundId lookup to find the same round across both
+  // collections (Ship 4a Gate 1).
   var _pName = currentProfile ? (currentProfile.name || currentProfile.username || liveState.player) : liveState.player;
   var round = PB.addRound({
+    id: liveState.roundId || undefined,
     player: liveState.player,
     playerName: _pName,
     course: liveState.course,

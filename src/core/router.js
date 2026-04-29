@@ -62,7 +62,7 @@ var Router = (function() {
     var nav = document.getElementById("bottomNav");
     if (!nav) return;
     var tabs = [
-      { match: ["home","watchround","standings","seasonrecap","awards","feed"] },
+      { match: ["home","round","standings","seasonrecap","awards","feed"] },
       { match: ["activity","rounds","playnow","range","scramble-live","syncround"] },
       { match: ["courses"] },
       { match: ["trips","scorecard","teetimes","tee-create","partygames"] },
@@ -1733,6 +1733,9 @@ function loadHomeActivityFeed() {
   }).catch(function() { pending--; tryRender(); });
 
   // 5. Active solo live rounds from Firestore
+  // v8.13.0 (Ship 4a Gate 1) — dest navigates to /round/:roundId when lr.roundId
+  // is present. Pre-v8.13.0 docs without roundId remain visible but non-tappable
+  // (acceptable migration window — next saveLiveState backfills field).
   pending++;
   leagueQuery("liverounds").where("status","==","active").limit(8).get().then(function(snap) {
     snap.forEach(function(doc) {
@@ -1741,7 +1744,8 @@ function loadHomeActivityFeed() {
       var thru = lr.thru || 0;
       if (thru < 1) return;
       var scoreTxt = lr.totalScore ? lr.totalScore + " thru " + thru : "thru " + thru;
-      items.push({type:"liveround", name:(lr.playerName||"A Parbaugh") + " is playing", sub:(lr.course||"") + " · " + scoreTxt, date:"", ts:lr.updatedAt ? lr.updatedAt.toMillis() : Date.now(), live:true, dest:""});
+      var dest = lr.roundId ? "Router.go('round',{roundId:'" + lr.roundId + "'})" : "";
+      items.push({type:"liveround", name:(lr.playerName||"A Parbaugh") + " is playing", sub:(lr.course||"") + " · " + scoreTxt, date:"", ts:lr.updatedAt ? lr.updatedAt.toMillis() : Date.now(), live:true, dest:dest});
     });
     pending--; tryRender();
   }).catch(function() { pending--; tryRender(); });

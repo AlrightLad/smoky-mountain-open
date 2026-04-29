@@ -328,7 +328,10 @@ var PB = (function() {
   function addRound(data) {
     var p = getPlayer(data.player);
     var r = {
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+      // v8.13.0 — Accept passed-in id (from finishLiveRound carrying liveState.roundId
+      // forward) for /round/:roundId lookup parity. Falls back to inline auto-gen
+      // for callers that don't supply one (e.g., manual round entry, tests).
+      id: data.id || (Date.now().toString(36) + Math.random().toString(36).slice(2,6)),
       player: data.player,
       playerName: data.playerName || (p ? p.name : data.player),
       course: data.course,
