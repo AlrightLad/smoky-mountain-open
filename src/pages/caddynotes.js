@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · spectator hero</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · spectator strip</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Spectator HUD now shows a richer hero panel when watching another member's round. More detail coming in future ships.", tag: "IMPROVED" }
+    { item: "Spectator HUD now shows the per-hole scorecard strip with each hole's score and to-par status.", tag: "IMPROVED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.13.2", date: "April 2026", headline: "Spectator hero",
+      items: [
+        { item: "Spectator HUD now shows a richer hero panel when watching another member's round. More detail coming in future ships.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.13.1", date: "April 2026", headline: "Stats fix",
       items: [

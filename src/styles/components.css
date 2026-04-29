@@ -753,6 +753,27 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .advanced-stats-toggle:hover{background:var(--bg3)}
 .advanced-stats-toggle:active{transform:scale(.985)}
 .advanced-stats-body{margin-bottom:16px;padding:14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column;gap:14px}
+/* ── Per-hole strip (Ship 4a Gate 3 — v8.13.3) ──────────────────────────
+   Spectator HUD per-hole detail strip below hero panel. 18 cells, single
+   row at desktop / two rows of 9 at mobile via flex-wrap. Cell BG color
+   classifies score-to-par (par/bogey+/birdie/eagle+); current hole gets
+   brass left-border + pulsing dot; future holes get small dot. */
+.phs-strip{padding:0}
+.phs-row{display:flex;flex-wrap:wrap;gap:0}
+.phs-cell{flex:0 0 calc(100% / 18);min-width:36px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:var(--radius-sm);background:transparent;position:relative;min-height:48px;text-align:center;transition:background var(--duration-fast) var(--ease-default)}
+.phs-cell--par{background:var(--cb-chalk-3)}
+.phs-cell--bogey{background:rgba(var(--cb-claret-rgb),.10)}
+.phs-cell--birdie{background:rgba(var(--cb-moss-rgb),.20)}
+.phs-cell--eagle{background:rgba(var(--cb-brass-rgb),.40)}
+.phs-cell--current{border-left:2px solid var(--cb-brass)}
+.phs-cell--current::before{content:'';position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--cb-brass);animation:pulse-dot 2s infinite}
+.phs-cell--future::before{content:'';position:absolute;top:4px;right:4px;width:4px;height:4px;border-radius:50%;background:var(--cb-mute-2)}
+.phs-cell:nth-child(9){margin-right:var(--sp-2)}
+.phs-score{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--cb-ink);line-height:1;font-variant-numeric:lining-nums tabular-nums}
+.phs-diff{font-family:var(--font-mono);font-size:9px;font-weight:600;color:var(--cb-mute-2);letter-spacing:.5px;margin-top:2px}
+.phs-hole-num{font-family:var(--font-mono);font-size:8px;color:var(--cb-mute-2);margin-bottom:2px;letter-spacing:.5px}
+@media (max-width:720px){.phs-cell{flex:0 0 calc(100% / 9 - 1px)}}
+
 .adv-row{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-3)}
 .adv-col{display:flex;flex-direction:column;gap:6px}
 .adv-label{font-size:var(--text-sm);color:var(--muted);font-weight:600}

@@ -71,6 +71,14 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-claret: #8E3A3A;
   --cb-sand: #C9B68A;
 
+  /* v8.13.3 — RGB variants for alpha-blended renders. Pattern parallels
+     legacy --gold-rgb / --red-rgb / --birdie-rgb convention. Consumed via
+     rgba(var(--cb-claret-rgb), 0.10) etc. for components needing translucent
+     fills (per-hole strip cell classifications). */
+  --cb-claret-rgb: 142, 58, 58;
+  --cb-moss-rgb: 90, 125, 78;
+  --cb-brass-rgb: 180, 137, 62;
+
   /* Clubhouse · semantic surface tokens (light mode default) */
   --surface-primary: var(--cb-chalk);
   --surface-secondary: var(--cb-chalk-2);
