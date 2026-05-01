@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · spectator stats</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">April 2026 · spectator narration</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Spectator HUD now shows the full stats panel (FRONT 9 / BACK 9 / TOTAL with GIR / PUTTS / FIR) and course context (course name / tee / yardage / par).", tag: "IMPROVED" }
+    { item: "Spectator HUD now shows recent shots feed — auto-generated editorial summaries for each hole as you watch a round in progress.", tag: "IMPROVED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.13.5", date: "April 2026", headline: "Spectator stats",
+      items: [
+        { item: "Spectator HUD now shows the full stats panel (FRONT 9 / BACK 9 / TOTAL with GIR / PUTTS / FIR) and course context (course name / tee / yardage / par).", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.13.4", date: "April 2026", headline: "Render fixes",
       items: [

@@ -47,7 +47,8 @@ function _renderSpectatorHUDShell(round) {
   // v8.13.5 Gate 4 — StatsPanel + CoursePanel land here.
   h += '<div style="' + placeholderStyle + '">' + _renderStatsPanel(round, 'live') + '</div>';
   h += '<div style="' + placeholderStyle + '">' + _renderCoursePanel(round) + '</div>';
-  h += '<div style="' + placeholderStyle + '"><div style="' + labelStyle + '">RECENT SHOTS · COMING IN GATE 5</div></div>';
+  // v8.13.6 Gate 5 — RecentShotsFeed lands here.
+  h += '<div style="' + placeholderStyle + '">' + _renderRecentShotsFeed(round, 'live') + '</div>';
 
   return h;
 }
@@ -329,9 +330,141 @@ function _renderCoursePanel(round) {
   return h;
 }
 
+// v8.13.6 — Recent Shots Feed for Spectator HUD (Ship 4a Gate 5 of 9).
+//
+// generateShotEntry(holeIndex, round) — pure function. Deterministic given
+// inputs. Returns { eyebrow, sentence } shape per design B2 two-line entry,
+// or null when the hole is unscored / invalid (caller skips). No DOM, no
+// side effects. Gate 6 calls this on each listener-emission diff hit to
+// produce a new entry, then prepends to the live feed array with animation.
+//
+// Schema interpretation (Gate 0 audit findings):
+//   - scores[]/putts[] are STRINGS (parseInt + NaN guard required)
+//   - fir[]/gir[] are booleans
+//   - bunker[]/sand[]/upDown[] are TRI-STATE: null=unanswered, true=yes,
+//     false=no. Templates use === true / === false comparisons (truthy
+//     check misclassifies false as unanswered).
+//   - miss[] is string ("left"/"right"/"long"/"short") OR null. Only
+//     populated when GIR === false.
+//   - penalty[] is number (default 0).
+//   - Per-hole timestamps are NOT in /liverounds/ doc. Eyebrow omits time.
+//
+// Templates: 13 conditional branches across 5 classifications, each with
+// default fall-through to terse classification name. Voice is founding-crew
+// neutral-observational — factual, not cheerleading or pity.
+function generateShotEntry(holeIndex, round) {
+  if (!round) return null;
+  if (typeof holeIndex !== "number" || holeIndex < 0 || holeIndex >= 18) return null;
+
+  var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+  var par = defaultPar[holeIndex] || 4;
+
+  // Score: required. Empty/non-numeric returns null (caller skips entry).
+  var scoreRaw = (Array.isArray(round.scores) && round.scores[holeIndex] !== undefined) ? round.scores[holeIndex] : "";
+  if (scoreRaw === "" || scoreRaw === null || scoreRaw === undefined) return null;
+  var score = parseInt(scoreRaw, 10);
+  if (isNaN(score)) return null;
+
+  var diff = score - par;
+
+  // Optional advanced stats. Defensive defaults preserve template fall-through
+  // semantics (missing data → terse default, never crash).
+  var gir = Array.isArray(round.gir) ? !!round.gir[holeIndex] : false;
+  var puttsRaw = (Array.isArray(round.putts) && round.putts[holeIndex] !== undefined) ? round.putts[holeIndex] : "";
+  var putts = (puttsRaw === "" || puttsRaw === null || puttsRaw === undefined) ? null : parseInt(puttsRaw, 10);
+  if (putts !== null && isNaN(putts)) putts = null;
+  var sand = Array.isArray(round.sand) ? round.sand[holeIndex] : null;
+  var upDown = Array.isArray(round.upDown) ? round.upDown[holeIndex] : null;
+  var miss = Array.isArray(round.miss) ? round.miss[holeIndex] : null;
+  var penalty = (Array.isArray(round.penalty) && typeof round.penalty[holeIndex] === "number") ? round.penalty[holeIndex] : 0;
+
+  var eyebrow = "HOLE " + (holeIndex + 1) + " · PAR " + par;
+  var sentence;
+
+  if (diff <= -2) {
+    // EAGLE+ classification
+    if (score === 1) sentence = "Aced it.";
+    else if (diff <= -3) sentence = "Albatross. Three under par.";
+    else sentence = "Eagle.";
+  } else if (diff === -1) {
+    // BIRDIE classification
+    if (gir && putts === 1) sentence = "Stuck it close. One-putt birdie.";
+    else if (gir && putts === 2) sentence = "Hit the green and rolled it in for birdie.";
+    else if (!gir && putts === 1) sentence = "Holed it from off the green for birdie.";
+    else sentence = "Birdie.";
+  } else if (diff === 0) {
+    // PAR classification
+    if (gir && putts === 1) sentence = "Hit and held. One-putt par.";
+    else if (gir && (putts === null || putts >= 2)) sentence = "Routine par.";
+    else if (sand === true) sentence = "Sand save for par.";
+    else if (!gir && upDown === true) sentence = "Up-and-down for par.";
+    else sentence = "Par.";
+  } else if (diff === 1) {
+    // BOGEY classification
+    if (penalty > 0) sentence = "Penalty stroke. Bogey.";
+    else if (putts !== null && putts >= 3) sentence = "Three-putted. Bogey.";
+    else if (!gir && upDown === false) sentence = "Missed up-and-down for bogey.";
+    else if (!gir && miss) sentence = "Missed it " + miss + ". Bogey.";
+    else sentence = "Bogey.";
+  } else {
+    // DOUBLE+ classification (diff >= 2)
+    if (penalty >= 2) sentence = "Multiple penalties. Double bogey or worse.";
+    else if (diff === 2) sentence = "Double bogey.";
+    else if (diff >= 3) sentence = "Triple bogey or worse.";
+    else sentence = "Double bogey or worse.";
+  }
+
+  return { eyebrow: eyebrow, sentence: sentence };
+}
+
+// _renderRecentShotsFeed(round, mode) — static render of the recent-shots
+// feed for Spectator HUD. Gate 5 ships static-from-fetch only; Gate 6
+// will wire OTHER-user listener emissions to prepend new entries with
+// animation per design D1 (300ms slide + 4s brass settle).
+//
+// Iterates played holes [0..thru-1], generates editorial entries via
+// generateShotEntry, reverses for most-recent-first, caps at 10. Empty
+// state (thru === 0) renders mute-2 placeholder — section never hides
+// for visual rhythm consistency with surrounding HUD components.
+function _renderRecentShotsFeed(round, mode) {
+  if (mode !== 'live') return '';
+  if (!round) return '';
+
+  var thru = (typeof round.thru === "number") ? round.thru : 0;
+  if (thru <= 0) {
+    return '<div class="rsf-feed"><div class="rsf-empty">RECENT SHOTS · NONE YET</div></div>';
+  }
+
+  var entries = [];
+  for (var i = 0; i < thru; i++) {
+    var entry = generateShotEntry(i, round);
+    if (entry) entries.push(entry);
+  }
+  // Most-recent-first, cap at 10
+  entries = entries.reverse().slice(0, 10);
+
+  if (entries.length === 0) {
+    // Defensive: thru > 0 but no valid scores resolved (corrupt data?)
+    return '<div class="rsf-feed"><div class="rsf-empty">RECENT SHOTS · NONE YET</div></div>';
+  }
+
+  var h = '<div class="rsf-feed">';
+  for (var j = 0; j < entries.length; j++) {
+    var e = entries[j];
+    h += '<div class="rsf-entry">';
+    h += '<div class="rsf-eyebrow">' + escHtml(e.eyebrow) + '</div>';
+    h += '<div class="rsf-sentence">' + escHtml(e.sentence) + '</div>';
+    h += '</div>';
+  }
+  h += '</div>';
+  return h;
+}
+
 // Attach to PB namespace for round.js consumption.
+// generateShotEntry exposed for Gate 6 listener-emission diff reuse.
 if (typeof PB !== "undefined") {
   PB.spectator = {
-    renderHUDShell: _renderSpectatorHUDShell
+    renderHUDShell: _renderSpectatorHUDShell,
+    generateShotEntry: generateShotEntry
   };
 }

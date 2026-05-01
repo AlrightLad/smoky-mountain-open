@@ -792,6 +792,14 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .cp-meta{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-2)}
 .cp-weather{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--cb-mute-2);margin-top:8px;min-height:14px}
 
+/* ── Spectator HUD RecentShotsFeed (v8.13.6 · Ship 4a Gate 5) ── */
+.rsf-feed{display:flex;flex-direction:column;gap:0}
+.rsf-entry{padding:12px 0;border-bottom:1px solid var(--cb-chalk-3)}
+.rsf-entry:last-child{border-bottom:none}
+.rsf-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-2);margin-bottom:4px}
+.rsf-sentence{font-family:var(--font-ui);font-size:14px;font-weight:400;color:var(--cb-ink);line-height:1.4}
+.rsf-empty{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-2);text-align:center;padding:12px 0}
+
 .adv-row{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-3)}
 .adv-col{display:flex;flex-direction:column;gap:6px}
 .adv-label{font-size:var(--text-sm);color:var(--muted);font-weight:600}
