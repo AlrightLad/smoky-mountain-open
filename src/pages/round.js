@@ -204,4 +204,11 @@ function _renderSpectatorHUDPlaceholder(pageEl, round) {
     contentHtml = '<div style="padding:60px 24px;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--cb-mute-2)">SPECTATOR HUD LOADING...</div>';
   }
   _renderRoundPage(pageEl, contentHtml, "Live round");
+  // v8.13.7 Gate 6 — Attach realtime listener after DOM is in place. Detach
+  // happens via Router.go interception (router.js:2358) on dispatch-change /
+  // back-nav, beforeunload (router.js:1516), and status-flip handlers in
+  // spectator.js (_handleSpectatorEmission "completed"/"abandoned" branches).
+  if (typeof PB !== "undefined" && PB.spectator && typeof PB.spectator.attachListener === "function" && round) {
+    PB.spectator.attachListener(round.roundId, round.playerId);
+  }
 }

@@ -1517,6 +1517,11 @@ function startPresenceSystem() {
     if (db && currentUser) {
       db.collection("presence").doc(currentUser.uid).update({ online: false }).catch(function(){});
     }
+    // v8.13.7 Gate 6 — Best-effort spectator listener cleanup on tab close /
+    // page reload. Explicit > Firebase SDK auto-cleanup; audit-friendly.
+    if (typeof PB !== "undefined" && PB.spectator && typeof PB.spectator.detachListener === "function") {
+      PB.spectator.detachListener();
+    }
   });
   
   // Listen to presence — 10 min window (matches 5 min heartbeat with buffer)
@@ -2356,6 +2361,15 @@ function refreshSidebarUser() {
 // Hook into Router.go to show/hide the banner on non-playnow pages
 var _origRouterGo = Router.go;
 Router.go = function(page, params) {
+  // v8.13.7 Gate 6 — Detach Spectator HUD listener when leaving /round
+  // dispatch. Idempotent; safe if state is null. Runs BEFORE _origRouterGo
+  // so Router.getPage() still reports the prior page during the check.
+  var fromPage = (typeof Router.getPage === "function") ? Router.getPage() : null;
+  if (fromPage === "round" && page !== "round") {
+    if (typeof PB !== "undefined" && PB.spectator && typeof PB.spectator.detachListener === "function") {
+      PB.spectator.detachListener();
+    }
+  }
   // Always close notification panel when navigating
   closeNotifPanel();
   _origRouterGo(page, params);

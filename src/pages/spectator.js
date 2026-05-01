@@ -71,60 +71,78 @@ function _renderSpectatorHUDShell(round) {
 //   'scoring' (future)      — playnow.js scoring UI replacement
 //   'static'  (Ship 7)      — RoundDetail page read-only display
 // Gate 3 implements 'live' only; defensive empty render for other modes.
+// v8.13.7 — Cell rendering refactored into module-level helpers so Gate 6
+// surgical single-cell updates and full-strip render share one code path.
+// Full-strip output is byte-identical to the prior closure-based version.
+var _phsDefaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+
+function _phsClassifyScore(score, par) {
+  if (score === null || score === undefined || score === "") return null;
+  var n = parseInt(score, 10);
+  if (isNaN(n)) return null;
+  var diff = n - par;
+  if (diff <= -2) return 'eagle';
+  if (diff === -1) return 'birdie';
+  if (diff === 0) return 'par';
+  return 'bogey'; // bogey or worse
+}
+
+function _phsFormatDiff(score, par) {
+  if (score === null || score === undefined || score === "") return '';
+  var n = parseInt(score, 10);
+  if (isNaN(n)) return '';
+  var diff = n - par;
+  if (diff === 0) return 'E';
+  if (diff > 0) return '+' + diff;
+  return String(diff);
+}
+
+// Compute CSS classes for a single phs cell. Used by full-strip render
+// AND surgical single-cell update on Gate 6 listener emission diff hit.
+function _computePhsCellClasses(holeIndex, round) {
+  var par = _phsDefaultPar[holeIndex] || 4;
+  var scores = Array.isArray(round.scores) ? round.scores : [];
+  var score = scores[holeIndex];
+  var classification = _phsClassifyScore(score, par);
+  var currentHole = (typeof round.currentHole === "number") ? round.currentHole : 0;
+  var thru = (typeof round.thru === "number") ? round.thru : 0;
+  var isCurrent = holeIndex === currentHole && thru < 18;
+  var isFuture = holeIndex > currentHole - 1 && holeIndex >= thru;
+  var hasScore = score !== null && score !== undefined && score !== "";
+
+  var classes = ['phs-cell'];
+  if (classification) classes.push('phs-cell--' + classification);
+  if (isCurrent) classes.push('phs-cell--current');
+  else if (isFuture && !hasScore) classes.push('phs-cell--future');
+  return classes.join(' ');
+}
+
+// Render INNER HTML of a single phs cell (excludes the wrapping div). Used
+// by full-strip render AND surgical single-cell update.
+function _renderPhsCellHTML(holeIndex, round) {
+  var par = _phsDefaultPar[holeIndex] || 4;
+  var scores = Array.isArray(round.scores) ? round.scores : [];
+  var score = scores[holeIndex];
+  var hasScore = score !== null && score !== undefined && score !== "";
+
+  var h = '<div class="phs-hole-num">' + (holeIndex + 1) + '</div>';
+  if (hasScore) {
+    h += '<div class="phs-score">' + escHtml(String(score)) + '</div>';
+    h += '<div class="phs-diff">' + escHtml(_phsFormatDiff(score, par)) + '</div>';
+  } else {
+    // Empty cell — no score/diff text. Current/future indicator via ::before pseudo-element.
+    h += '<div class="phs-score">—</div>';
+  }
+  return h;
+}
+
 function _renderPerHoleStrip(round, mode) {
   if (mode !== 'live') return ''; // Future modes Gate 3 doesn't implement
   if (!round) return '';
 
-  var scores = Array.isArray(round.scores) ? round.scores : [];
-  var currentHole = (typeof round.currentHole === "number") ? round.currentHole : 0;
-  var thru = (typeof round.thru === "number") ? round.thru : 0;
-  var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
-
-  function classifyScore(score, par) {
-    if (score === null || score === undefined || score === "") return null;
-    var n = parseInt(score, 10);
-    if (isNaN(n)) return null;
-    var diff = n - par;
-    if (diff <= -2) return 'eagle';
-    if (diff === -1) return 'birdie';
-    if (diff === 0) return 'par';
-    return 'bogey'; // bogey or worse
-  }
-
-  function formatDiff(score, par) {
-    if (score === null || score === undefined || score === "") return '';
-    var n = parseInt(score, 10);
-    if (isNaN(n)) return '';
-    var diff = n - par;
-    if (diff === 0) return 'E';
-    if (diff > 0) return '+' + diff;
-    return String(diff);
-  }
-
   var h = '<div class="phs-strip"><div class="phs-row">';
   for (var i = 0; i < 18; i++) {
-    var par = defaultPar[i] || 4;
-    var score = scores[i];
-    var classification = classifyScore(score, par);
-    var isCurrent = i === currentHole && thru < 18;
-    var isFuture = i > currentHole - 1 && i >= thru;
-    var hasScore = score !== null && score !== undefined && score !== "";
-
-    var classes = ['phs-cell'];
-    if (classification) classes.push('phs-cell--' + classification);
-    if (isCurrent) classes.push('phs-cell--current');
-    else if (isFuture && !hasScore) classes.push('phs-cell--future');
-
-    h += '<div class="' + classes.join(' ') + '">';
-    h += '<div class="phs-hole-num">' + (i + 1) + '</div>';
-    if (hasScore) {
-      h += '<div class="phs-score">' + escHtml(String(score)) + '</div>';
-      h += '<div class="phs-diff">' + escHtml(formatDiff(score, par)) + '</div>';
-    } else {
-      // Empty cell — no score/diff text. Current/future indicator via ::before pseudo-element.
-      h += '<div class="phs-score">—</div>';
-    }
-    h += '</div>';
+    h += '<div class="' + _computePhsCellClasses(i, round) + '">' + _renderPhsCellHTML(i, round) + '</div>';
   }
   h += '</div></div>';
   return h;
@@ -460,11 +478,340 @@ function _renderRecentShotsFeed(round, mode) {
   return h;
 }
 
+// ════════════════════════════════════════════════════════════════════════
+// v8.13.7 — Real-time spectator listener (Ship 4a Gate 6 of 9)
+// ════════════════════════════════════════════════════════════════════════
+// Subscribes to /liverounds/{otherUid} on Spectator HUD entry. Diff state
+// machine identifies newly-completed holes, hero changes, and status flips
+// across emissions. Drives surgical DOM updates per design ruling D1:
+//   - 300ms slide-down on new RecentShotsFeed entries
+//   - 4s brass left-border settle (--duration-settle)
+//   - 200ms Pattern A cross-fade on hero diff/thru changes
+//   - 400ms fade-in on PerHoleStrip cell update (--duration-slow)
+//
+// Lifecycle (attach/detach symmetry):
+//   - attach: round.js _renderSpectatorHUDPlaceholder calls
+//             PB.spectator.attachListener(roundId, otherUid) post-render
+//   - detach: 4 exit paths — back nav, dispatch change, beforeunload,
+//             status-flip ("completed" → in-place final mode;
+//                          "abandoned" → re-route via Router.go)
+//
+// CTO Part 1 spec fixes encoded:
+//   FIX 1 — detach BEFORE Router.go re-dispatch on abandoned status flip
+//           (avoid race where late emission re-triggers re-route)
+//   FIX 2 — parent inline-position captured + restored explicitly per
+//           cross-fade unit; relative-position management refcounted
+//           across simultaneous diff/thru fades to avoid stuck mutation
+//   FIX 3 — console.info (not console.debug) for emission instrumentation
+//           so smoke test observability doesn't require verbose log toggle
+// ════════════════════════════════════════════════════════════════════════
+
+function _attachSpectatorListener(roundId, otherUid) {
+  if (typeof db === "undefined" || !db || !roundId || !otherUid) return;
+  // Detach prior state symmetrically — covers dispatch-change-to-different-round.
+  _detachSpectatorListener();
+
+  window._spectatorState = {
+    roundId: roundId,
+    otherUid: otherUid,
+    unsub: null,
+    prevScored: new Set(),
+    prevStatus: "active",
+    prevHero: null,
+    pendingFirstEmission: true
+  };
+
+  // Mirror playnow.js attachLiveRoundsListener's 800ms first-emission flag
+  // (preserved for parity; Gate 6 currently does not use it for render-swap
+  // gating, but kept for future Gate 7 connection-state escalation reuse).
+  setTimeout(function() {
+    if (window._spectatorState) window._spectatorState.pendingFirstEmission = false;
+  }, 800);
+
+  try {
+    window._spectatorState.unsub = db.collection("liverounds").doc(otherUid).onSnapshot(
+      _handleSpectatorEmission,
+      function(err) {
+        if (typeof pbWarn === "function") pbWarn("listener:spectator:error", err && err.message);
+      }
+    );
+  } catch (e) {
+    if (typeof pbWarn === "function") pbWarn("listener:spectator:attach-failed:", e.message);
+  }
+}
+
+function _detachSpectatorListener() {
+  if (!window._spectatorState) return;
+  if (typeof window._spectatorState.unsub === "function") {
+    try { window._spectatorState.unsub(); } catch (e) { /* silent */ }
+  }
+  window._spectatorState = null;
+}
+
+function _handleSpectatorEmission(snap) {
+  var state = window._spectatorState;
+  if (!state) return;             // late emission post-detach — drop
+  if (!snap.exists) return;       // F2 silent — round doc deleted
+
+  var doc = snap.data();
+  if (typeof isValidLiveRound === "function" && !isValidLiveRound(doc)) {
+    if (typeof pbWarn === "function") {
+      pbWarn("listener:spectator:invalid-shape", { keys: doc ? Object.keys(doc) : [] });
+    }
+    return;
+  }
+
+  // Diff size + holeIndices computed up-front for instrumentation.
+  var newHoleIndices = [];
+  if (Array.isArray(doc.scores)) {
+    for (var i = 0; i < doc.scores.length && i < 18; i++) {
+      var s = doc.scores[i];
+      if (s !== "" && s !== null && s !== undefined) {
+        var n = parseInt(s, 10);
+        if (!isNaN(n) && !state.prevScored.has(i)) newHoleIndices.push(i);
+      }
+    }
+  }
+
+  // FIX 3 — console.info for visibility without DevTools verbose toggle.
+  console.info("[Spectator] emission", {
+    roundId: state.roundId,
+    otherUid: state.otherUid,
+    status: doc.status,
+    thru: doc.thru,
+    diffSize: newHoleIndices.length,
+    holeIndices: newHoleIndices
+  });
+
+  // ── Status-flip handling ──────────────────────────────────────────────
+  if (doc.status === "completed") {
+    // Final-mode in-place variant — render BEFORE detach so prevHero
+    // remains available to crossFadeHero invoked inside the variant render.
+    _triggerFinalModeVariant(doc);
+    _detachSpectatorListener();
+    return;
+  }
+  if (doc.status === "abandoned") {
+    // FIX 1 — detach BEFORE Router.go re-dispatch. If a late emission lands
+    // mid-route while the listener is still attached, re-handler would
+    // re-fire and attempt re-route again. Detach-first eliminates the race.
+    _detachSpectatorListener();
+    if (typeof Router !== "undefined" && typeof Router.go === "function" && doc.roundId) {
+      Router.go("round", { roundId: doc.roundId }, true);
+    }
+    return;
+  }
+
+  // ── Active diff processing ────────────────────────────────────────────
+  if (doc.status !== "active") {
+    if (typeof pbWarn === "function") pbWarn("listener:spectator:unknown-status:", doc.status);
+    return;
+  }
+
+  newHoleIndices.sort(function(a, b) { return a - b; });
+  for (var k = 0; k < newHoleIndices.length; k++) {
+    var holeIndex = newHoleIndices[k];
+    var entry = generateShotEntry(holeIndex, doc);
+    if (entry) {
+      _prependEntryToFeed(entry);
+      _surgicalUpdatePhsCell(holeIndex, doc);
+    }
+    state.prevScored.add(holeIndex);
+  }
+
+  // Hero cross-fade: detect any visible hero-value change.
+  var newHero = _computeHeroValues(doc);
+  if (state.prevHero && _heroChanged(state.prevHero, newHero)) {
+    _crossFadeHero(state.prevHero, newHero);
+  }
+  state.prevHero = newHero;
+  state.prevStatus = "active";
+}
+
+// Hero value snapshot for cross-fade comparison. Mirrors home.js
+// _renderLivePageHero diff calculation (defaultPar approximation).
+function _computeHeroValues(round) {
+  var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+  var thru = (typeof round.thru === "number") ? round.thru : 0;
+  var totalScore = (typeof round.totalScore === "number") ? round.totalScore : 0;
+  var parSoFar = 0;
+  for (var i = 0; i < thru; i++) parSoFar += (defaultPar[i] || 4);
+  var diff = thru > 0 ? totalScore - parSoFar : 0;
+  var diffStr = thru === 0 ? "—" : (diff === 0 ? "E" : (diff > 0 ? "+" + diff : String(diff)));
+  return { diff: diffStr, thru: thru, totalScore: totalScore };
+}
+
+function _heroChanged(prev, next) {
+  return prev.diff !== next.diff || prev.thru !== next.thru;
+}
+
+// Prepend a new shot entry to the RecentShotsFeed, animate slide-down
+// (300ms) and brass settle (4s via --duration-settle). Caps feed at 10.
+function _prependEntryToFeed(entry) {
+  var feed = document.querySelector('.rsf-feed');
+  if (!feed) return;
+  // Drop empty placeholder if present (transition from thru===0 → thru>0)
+  var empty = feed.querySelector('.rsf-empty');
+  if (empty) empty.remove();
+
+  var div = document.createElement('div');
+  div.className = 'rsf-entry rsf-entry--fresh';
+  div.innerHTML = '<div class="rsf-eyebrow">' + escHtml(entry.eyebrow) + '</div>'
+                + '<div class="rsf-sentence">' + escHtml(entry.sentence) + '</div>';
+
+  feed.insertBefore(div, feed.firstChild);
+
+  // Cap at 10 — drop overflow tail, preserves v8.13.6 most-recent-first contract.
+  var entries = feed.querySelectorAll('.rsf-entry');
+  for (var i = 10; i < entries.length; i++) entries[i].remove();
+
+  // Force reflow so 300ms slide-in animation kicks in.
+  void div.offsetWidth;
+
+  // After 300ms slide finishes, transition to --settled (4s brass border fade).
+  setTimeout(function() {
+    if (div.parentNode) div.classList.add('rsf-entry--settled');
+  }, 300);
+}
+
+// Surgical update of a single PerHoleStrip cell. Refreshes innerHTML +
+// CSS classes via shared _renderPhsCellHTML/_computePhsCellClasses helpers.
+// 400ms fade-in via --duration-slow.
+function _surgicalUpdatePhsCell(holeIndex, round) {
+  var cell = document.querySelector('.phs-row .phs-cell:nth-child(' + (holeIndex + 1) + ')');
+  if (!cell) return;
+  cell.innerHTML = _renderPhsCellHTML(holeIndex, round);
+  cell.className = _computePhsCellClasses(holeIndex, round);
+  cell.classList.add('phs-cell--fresh');
+  void cell.offsetWidth;
+  setTimeout(function() {
+    if (cell.parentNode) cell.classList.remove('phs-cell--fresh');
+  }, 400);
+}
+
+// FIX 2 — parent inline-position captured + restored per cross-fade unit.
+// Refcount `pending` so the relative-position mutation is restored only
+// after ALL simultaneous fades complete (.sphud-hero-diff + .sphud-hero-thru
+// can both fire on a single emission). Mirrors home.js:_triggerCompletionCrossFade
+// pattern but adapted for inline-span value swap (not full-card swap).
+function _crossFadeHero(prevHero, newHero) {
+  var diffEl = document.querySelector('.sphud-hero-diff');
+  if (!diffEl) return;
+  var heroParent = diffEl.parentNode;
+  if (!heroParent) return;
+
+  var originalInlinePos = heroParent.style.position;
+  var needsRelative = window.getComputedStyle(heroParent).position === "static";
+  if (needsRelative) heroParent.style.position = "relative";
+
+  var pending = 0;
+
+  function fade(cls, oldText, newText) {
+    if (oldText === newText) return;
+    var el = document.querySelector('.' + cls);
+    if (!el) return;
+
+    pending++;
+
+    var newSpan = document.createElement('span');
+    newSpan.className = cls;
+    newSpan.textContent = newText;
+    newSpan.style.position = "absolute";
+    newSpan.style.left = el.offsetLeft + "px";
+    newSpan.style.top = el.offsetTop + "px";
+    newSpan.style.opacity = "0";
+    newSpan.style.transition = "opacity 200ms ease";  // 200ms hardcoded per design ruling D1
+
+    el.style.transition = "opacity 200ms ease";
+    el.parentNode.insertBefore(newSpan, el.nextSibling);
+
+    void newSpan.offsetWidth;
+
+    el.style.opacity = "0";
+    newSpan.style.opacity = "1";
+
+    setTimeout(function() {
+      if (el.parentNode) el.parentNode.removeChild(el);
+      newSpan.style.position = "";
+      newSpan.style.left = "";
+      newSpan.style.top = "";
+      newSpan.style.opacity = "";
+      newSpan.style.transition = "";
+      pending--;
+      // Restore parent position only after ALL pending fades complete.
+      if (pending === 0 && needsRelative) {
+        heroParent.style.position = originalInlinePos;
+      }
+    }, 250);  // 200ms transition + 50ms safety margin (mirrors home.js cross-fade pattern)
+  }
+
+  fade('sphud-hero-diff', prevHero.diff, newHero.diff);
+  fade('sphud-hero-thru', ' thru ' + prevHero.thru, ' thru ' + newHero.thru);
+
+  // Edge case: if no fades fired (no visible change after diff detected
+  // upstream), restore parent position immediately.
+  if (pending === 0 && needsRelative) {
+    heroParent.style.position = originalInlinePos;
+  }
+}
+
+// Final-mode in-place variant. Mutates SpectatorHUD content without
+// Router.go re-dispatch. Per CTO Q1: spectator present at the moment of
+// completion earned the live view — final mode persists for the page
+// session, no auto-expiry. Listener detached after this fires.
+function _triggerFinalModeVariant(doc) {
+  // 1. Eyebrow swap: VIEWING · LIVE → FINAL · X MIN AGO
+  var eyebrow = document.querySelector('.sphud-hero-eyebrow');
+  if (eyebrow) {
+    var ageStr = "JUST NOW";
+    if (typeof doc.lastWriteAt === "number" && typeof _formatAge === "function") {
+      ageStr = _formatAge(Date.now() - doc.lastWriteAt).toUpperCase();
+    }
+    eyebrow.textContent = "FINAL · " + ageStr;
+  }
+
+  // 2. Hero cross-fade for final score (one last cross-fade trigger).
+  var newHero = _computeHeroValues(doc);
+  var state = window._spectatorState;
+  if (state && state.prevHero && _heroChanged(state.prevHero, newHero)) {
+    _crossFadeHero(state.prevHero, newHero);
+  }
+
+  // 3. PerHoleStrip — refresh all cells (clears current-hole pulsing dot
+  //    via class recomputation; thru===18 → no future cells either).
+  for (var i = 0; i < 18; i++) {
+    var cell = document.querySelector('.phs-row .phs-cell:nth-child(' + (i + 1) + ')');
+    if (cell) {
+      cell.innerHTML = _renderPhsCellHTML(i, doc);
+      cell.className = _computePhsCellClasses(i, doc);
+    }
+  }
+
+  // 4. StatsPanel re-render with final values (pace+proj sub-line is
+  //    suppressed when thru===18 per v8.13.5 spec).
+  var statsPanel = document.querySelector('.sp-panel');
+  if (statsPanel && statsPanel.parentNode) {
+    statsPanel.parentNode.innerHTML = _renderStatsPanel(doc, 'live');
+  }
+
+  // 5. ROUND COMPLETE caption in #live-round-caption slot (slot exists
+  //    in home.js:_renderLivePageHero per Gate 7 reuse contract).
+  var caption = document.getElementById('live-round-caption');
+  if (caption) {
+    caption.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass);margin-top:14px">ROUND COMPLETE</div>';
+  }
+}
+
 // Attach to PB namespace for round.js consumption.
-// generateShotEntry exposed for Gate 6 listener-emission diff reuse.
+// generateShotEntry exposed for in-house Gate 6 reuse via _handleSpectatorEmission
+// (and remains exposed for any future gate that needs editorial entry generation).
+// attachListener / detachListener are the public Gate 6 lifecycle hooks called
+// from round.js dispatch and router.js Router.go interception + beforeunload.
 if (typeof PB !== "undefined") {
   PB.spectator = {
     renderHUDShell: _renderSpectatorHUDShell,
-    generateShotEntry: generateShotEntry
+    generateShotEntry: generateShotEntry,
+    attachListener: _attachSpectatorListener,
+    detachListener: _detachSpectatorListener
   };
 }

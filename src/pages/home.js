@@ -1211,8 +1211,10 @@ function _renderLivePageHero(round) {
   var handicapStr = (handicap !== null) ? " · " + handicap + " hcp" : "";
 
   var h = '<div style="background:var(--cb-green);border-radius:var(--r-4);padding:var(--sp-6);color:var(--cb-chalk);position:relative;overflow:hidden;opacity:1">';
-  // Eyebrow
-  h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:20px">VIEWING · LIVE</div>';
+  // Eyebrow — .sphud-hero-eyebrow class added v8.13.7 for Gate 6 final-mode
+  // textContent swap. Additive class only; no markup removal. Active-player
+  // path unaffected — class is consumed only by spectator.js listener.
+  h += '<div class="sphud-hero-eyebrow" style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:20px">VIEWING · LIVE</div>';
   // Avatar + player name row
   h += '<div style="display:flex;align-items:center;gap:16px;margin-bottom:18px">';
   if (avatarHtml) {
@@ -1222,8 +1224,15 @@ function _renderLivePageHero(round) {
   h += escHtml(playerName) + escHtml(handicapStr);
   h += '</div>';
   h += '</div>';
-  // Big score
-  h += '<div style="font-family:var(--font-display);font-size:64px;font-weight:700;color:var(--cb-chalk);line-height:0.95;letter-spacing:-2px;margin-bottom:14px;font-variant-numeric:lining-nums tabular-nums">' + diffStr + ' thru ' + thru + '</div>';
+  // Big score — .sphud-hero-diff and .sphud-hero-thru class spans added
+  // v8.13.7 for Gate 6 hero cross-fade hooks. Both spans wrap existing text
+  // inline; no layout shift, no visual diff in active-player or spectator
+  // initial render. Active-player path unaffected — classes consumed only
+  // by spectator.js listener crossFadeHero on listener emission.
+  h += '<div style="font-family:var(--font-display);font-size:64px;font-weight:700;color:var(--cb-chalk);line-height:0.95;letter-spacing:-2px;margin-bottom:14px;font-variant-numeric:lining-nums tabular-nums">';
+  h += '<span class="sphud-hero-diff">' + diffStr + '</span>';
+  h += '<span class="sphud-hero-thru"> thru ' + thru + '</span>';
+  h += '</div>';
   // Course · hole · time subline
   h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:14px">';
   h += escHtml(course) + ' · HOLE ' + hole + ' · ' + escHtml(elapsedStr) + ' ELAPSED';

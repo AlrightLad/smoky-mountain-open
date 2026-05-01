@@ -800,6 +800,13 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .rsf-sentence{font-family:var(--font-ui);font-size:14px;font-weight:400;color:var(--cb-ink);line-height:1.4}
 .rsf-empty{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-2);text-align:center;padding:12px 0}
 
+/* ── Spectator HUD realtime animations (v8.13.7 · Ship 4a Gate 6 · D1) ── */
+@keyframes rsfSlideDown{0%{transform:translateY(-100%);opacity:0}100%{transform:translateY(0);opacity:1}}
+@keyframes phsFadeIn{0%{opacity:0;transform:scale(0.96)}100%{opacity:1;transform:scale(1)}}
+.rsf-entry--fresh{animation:rsfSlideDown 300ms ease-out;border-left:2px solid var(--cb-brass);padding-left:8px;transition:border-left-color var(--duration-settle) ease-out,padding-left var(--duration-settle) ease-out}
+.rsf-entry--settled{border-left-color:transparent;padding-left:0}
+.phs-cell--fresh{animation:phsFadeIn var(--duration-slow) ease-out}
+
 .adv-row{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-3)}
 .adv-col{display:flex;flex-direction:column;gap:6px}
 .adv-label{font-size:var(--text-sm);color:var(--muted);font-weight:600}

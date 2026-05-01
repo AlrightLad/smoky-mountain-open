@@ -157,6 +157,7 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   /* Clubhouse · semantic motion (v8.1.2) */
   --duration-slow: 400ms;           /* entrances, celebratory moments */
   --duration-celebration: 800ms;    /* achievement unlocks, level ups */
+  --duration-settle: 4000ms;        /* long-form settle — D1 brass left-border on RecentShotsFeed (v8.13.7) */
   --ease-enter: cubic-bezier(0, 0, 0.2, 1);           /* decelerate into place */
   --ease-exit: cubic-bezier(0.4, 0, 1, 1);            /* accelerate away */
   --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);      /* expressive, for hero moments */
