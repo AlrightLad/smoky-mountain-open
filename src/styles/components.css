@@ -774,6 +774,24 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .phs-hole-num{font-family:var(--font-mono);font-size:8px;color:var(--cb-mute-2);margin-bottom:2px;letter-spacing:.5px}
 @media (max-width:720px){.phs-cell{flex:0 0 calc(100% / 9 - 1px)}}
 
+/* ── Spectator HUD StatsPanel (v8.13.5 · Ship 4a Gate 4) ── */
+.sp-panel{padding:0}
+.sp-row{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-3)}
+.sp-row-top{padding-bottom:var(--sp-4)}
+.sp-row-bottom{padding-top:var(--sp-4);border-top:1px solid var(--cb-chalk-3)}
+.sp-cell{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
+.sp-label{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-2);margin-bottom:6px}
+.sp-value{font-family:var(--font-display);font-size:32px;font-weight:700;color:var(--cb-ink);line-height:1;font-variant-numeric:lining-nums tabular-nums}
+.sp-diff{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--cb-mute-2);letter-spacing:.5px;margin-top:4px}
+.sp-pace{font-family:var(--font-mono);font-size:9px;font-weight:600;color:var(--cb-mute-2);letter-spacing:.5px;margin-top:6px;text-transform:uppercase}
+.sp-substat{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--cb-ink);line-height:1;font-variant-numeric:lining-nums tabular-nums}
+
+/* ── Spectator HUD CoursePanel (v8.13.5 · Ship 4a Gate 4) ── */
+.cp-panel{padding:0}
+.cp-name{font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--cb-ink);line-height:1.2;letter-spacing:-0.2px;margin-bottom:8px}
+.cp-meta{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-2)}
+.cp-weather{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--cb-mute-2);margin-top:8px;min-height:14px}
+
 .adv-row{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-3)}
 .adv-col{display:flex;flex-direction:column;gap:6px}
 .adv-label{font-size:var(--text-sm);color:var(--muted);font-weight:600}
