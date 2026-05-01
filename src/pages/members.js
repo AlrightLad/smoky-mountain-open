@@ -521,22 +521,20 @@ function renderMemberDetailWithData(p) {
     var diffToggleId = "diffTable_" + pid;
     hcapContent += '<div style="padding:8px 12px 4px"><div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center" onclick="var el=document.getElementById(\'' + diffToggleId + '\');el.style.display=el.style.display===\'none\'?\'block\':\'none\'">SCORE DIFFERENTIALS (' + hcapDetails.differentials.length + ')<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12" style="color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg></div>';
     hcapContent += '<div id="' + diffToggleId + '" style="display:none">';
-    hcapDetails.differentials.forEach(function(d, idx) {
-      var roundInfo = "";
-      if (d.type === "18") {
-        var r = d.rounds[0];
-        roundInfo = escHtml(r.course || "") + " · " + r.score;
-      } else if (d.type === "9+9") {
-        var r1 = d.rounds[0], r2 = d.rounds[1];
-        var m1 = r1.holesMode === "back9" ? "B9" : "F9";
-        var m2 = r2.holesMode === "back9" ? "B9" : "F9";
-        roundInfo = escHtml(r1.course || "") + " " + m1 + " + " + escHtml(r2.course || "") + " " + m2 + " · " + d.combinedScore;
-      }
+    // v8.13.4 — Schema simplification. getHandicapDetails (handicap.js:125-165)
+    // returns differentials as flat objects {diff, round, date, course, score,
+    // rating, slope, is9}. Legacy d.type/d.rounds/d.combinedScore branching
+    // never fires against current data shape, leaving roundInfo empty. Format
+    // mirrors the "LAST 3 ROUNDS" two-row pattern (course/score on row 1,
+    // date on row 2) for visual consistency. 9-hole rounds are excluded by
+    // handicap.js:131 so the 9+9 branch is dead code anyway.
+    hcapDetails.differentials.forEach(function(d) {
       var diffColor = d.diff < 15 ? "var(--birdie)" : d.diff < 25 ? "var(--gold)" : "var(--red)";
       hcapContent += '<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:11px">';
-      hcapContent += '<div style="display:flex;align-items:center;gap:6px;min-width:0;flex:1">';
-      if (d.type === "9+9") hcapContent += '<span style="font-size:8px;background:rgba(var(--gold-rgb),.12);color:var(--gold);padding:2px 5px;border-radius:3px;flex-shrink:0">9+9</span>';
-      hcapContent += '<span style="color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + roundInfo + '</span></div>';
+      hcapContent += '<div style="min-width:0;flex:1;overflow:hidden">';
+      hcapContent += '<div style="color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(d.course || "") + ' · ' + d.score + '</div>';
+      hcapContent += '<div style="font-size:9px;color:var(--muted)">' + escHtml(d.date || "") + '</div>';
+      hcapContent += '</div>';
       hcapContent += '<div style="flex-shrink:0;font-weight:600;color:' + diffColor + ';min-width:40px;text-align:right">' + d.diff.toFixed(1) + '</div>';
       hcapContent += '</div>';
     });

@@ -79,12 +79,11 @@
         return {
           lat: currentProfile.location.lat,
           lng: currentProfile.location.lng,
-          // "Your location" only surfaces if save path landed coords without
-          // a name field — should never happen in v8.11.0 (settings.js always
-          // populates name from forward/reverse geocoding). If you see this
-          // string in production, treat as a signal to investigate the save
-          // path — likely a partial-write bug or schema-drift regression.
-          name: currentProfile.location.name || "Your location"
+          // v8.13.4 — name may be missing if save path landed coords without
+          // a name field (partial write / schema drift). Pass through as null
+          // so render layer can omit the location segment entirely instead of
+          // emitting a literal "Your location" placeholder.
+          name: currentProfile.location.name || null
         };
       }
       // Priority 2: homeCourse with valid coords
@@ -177,7 +176,15 @@
 
     if (format === "eyebrow") {
       // Atmospheric: "YORK, PA · 58° AND CLEAR" — no wind
-      return (data.locationName || "").toUpperCase() + " · " + temp + " AND " + data.condition;
+      // v8.13.4 — Guard against null/empty names + literal placeholder strings
+      // ("MY LOCATION", "YOUR LOCATION") that may exist in older Firestore
+      // member docs. Omit the location segment entirely rather than render
+      // the placeholder. Data-layer fixes at _coords() and _checkLocationStaleness
+      // prevent NEW writes; this guard catches existing bad data on read.
+      var rawName = (data.locationName || "").toUpperCase();
+      var isPlaceholder = !rawName || rawName === "MY LOCATION" || rawName === "YOUR LOCATION";
+      if (isPlaceholder) return temp + " AND " + data.condition;
+      return rawName + " · " + temp + " AND " + data.condition;
     }
     if (format === "caption") {
       // Band A row-2: "58° CLEAR" — no wind, narrow space
@@ -504,7 +511,11 @@
           var newLocation = {
             lat: coords.lat,
             lng: coords.lng,
-            name: name || loc.name || "My Location",
+            // v8.13.4 — fall through to null when reverse geocode fails AND
+            // existing loc.name is also missing. Never write the literal
+            // "My Location" placeholder (was the v8.11.1 bug surfacing as
+            // "MY LOCATION" in the HQ Home eyebrow).
+            name: name || loc.name || null,
             source: "geolocation",
             setAt: (typeof firebase !== "undefined" && firebase.firestore)
               ? firebase.firestore.FieldValue.serverTimestamp()
