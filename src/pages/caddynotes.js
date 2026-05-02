@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · spectator live</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · spectator status</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Spectator HUD now updates in real time — new shots, score changes, and round completion appear live as they happen.", tag: "IMPROVED" }
+    { item: "Spectator HUD now signals connection problems — when the host's connection lapses or yours drops, the screen shows a clear status instead of frozen data.", tag: "IMPROVED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.13.7", date: "May 2026", headline: "Spectator live",
+      items: [
+        { item: "Spectator HUD now updates in real time — new shots, score changes, and round completion appear live as they happen.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.13.6", date: "April 2026", headline: "Spectator narration",
       items: [

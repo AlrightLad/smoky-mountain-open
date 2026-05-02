@@ -807,6 +807,12 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .rsf-entry--settled{border-left-color:transparent;padding-left:0}
 .phs-cell--fresh{animation:phsFadeIn var(--duration-slow) ease-out}
 
+/* ── Spectator HUD connection-state chrome (v8.13.8 · Ship 4a Gate 7 · D2/F3) ── */
+.sphud-hero-card{transition:opacity var(--duration-fast) var(--ease-default)}
+.sphud-hero-card--dimmed{opacity:0.85}
+.sphud-hero-eyebrow--alert{color:var(--alert)}
+.sphud-hero-eyebrow--mute{color:var(--cb-mute-2)}
+
 .adv-row{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-3)}
 .adv-col{display:flex;flex-direction:column;gap:6px}
 .adv-label{font-size:var(--text-sm);color:var(--muted);font-weight:600}

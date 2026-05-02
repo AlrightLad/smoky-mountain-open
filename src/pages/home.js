@@ -1210,7 +1210,11 @@ function _renderLivePageHero(round) {
   var handicap = player ? (player.computedHandicap != null ? player.computedHandicap : (player.handicap != null ? player.handicap : null)) : null;
   var handicapStr = (handicap !== null) ? " · " + handicap + " hcp" : "";
 
-  var h = '<div style="background:var(--cb-green);border-radius:var(--r-4);padding:var(--sp-6);color:var(--cb-chalk);position:relative;overflow:hidden;opacity:1">';
+  // .sphud-hero-card class added v8.13.8 for Gate 7 D2 connection-state
+  // opacity transitions. Additive class only; no markup removal. Active-
+  // player path unaffected — class is consumed only by spectator.js
+  // _applyChrome on listener emission state changes.
+  var h = '<div class="sphud-hero-card" style="background:var(--cb-green);border-radius:var(--r-4);padding:var(--sp-6);color:var(--cb-chalk);position:relative;overflow:hidden;opacity:1">';
   // Eyebrow — .sphud-hero-eyebrow class added v8.13.7 for Gate 6 final-mode
   // textContent swap. Additive class only; no markup removal. Active-player
   // path unaffected — class is consumed only by spectator.js listener.
