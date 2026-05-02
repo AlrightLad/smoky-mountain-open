@@ -1143,7 +1143,12 @@ function buildHandicapGraph(rounds, pid) {
 
   svg += '</svg>';
 
-  var result = '<div style="padding:4px 0 0">' + svg + '</div>';
+  // v8.14.5 — chart-container wrapper for 720px max-width cap (components.css).
+  // Legend + trend status divs appended after stay outside .chart-container
+  // so they keep full-width treatment. Members profile buildHandicapGraph
+  // remains untoggled per v8.14.4 Q-RULING-A (handicap monthly aggregation
+  // doesn't fit naive filter-before-compute semantics).
+  var result = '<div class="chart-container" style="padding:4px 0 0">' + svg + '</div>';
 
   // Compact legend
   result += '<div style="display:flex;justify-content:center;gap:16px;padding:2px 12px 8px;font-size:9px;color:var(--muted2)">';
@@ -2058,6 +2063,16 @@ function _rerenderTrendChart(chartId, pid) {
       html = svgLineChart(statTrP.putts, {width:310, height:100, color:'var(--pink)'});
     } else {
       html = '<div style="padding:24px 8px;text-align:center;font-size:11px;color:var(--muted)">Not enough rounds in this range. Try a wider window.</div>';
+    }
+  } else if (chartId === 'handicap_home') {
+    // v8.14.5 — Home handicap trend chart rerender. Different data shape than
+    // the 3 Members profile trend charts: per-round-date handicap series
+    // (PB.calcHandicap(roundsUpToDate) per round), not calc helper output.
+    // Render via shared helper from home.js (_renderHandicapTrendSeries).
+    if (typeof _renderHandicapTrendSeries === "function") {
+      html = _renderHandicapTrendSeries(filtered, rounds, 600);
+    } else {
+      html = '<div style="padding:24px 8px;text-align:center;font-size:11px;color:var(--muted)">Chart unavailable.</div>';
     }
   }
   container.innerHTML = html;

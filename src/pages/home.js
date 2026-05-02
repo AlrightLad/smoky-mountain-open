@@ -1351,26 +1351,32 @@ function _renderSeasonPositionStrip(ctx) {
 
 // ─── Features column components ─────────────────────────────────────────────
 
-// 30-day handicap trend chart. Theme-aware via CSS custom-property in style attr
-// (presentation attributes don't resolve var(), so we wire color through the SVG
-// root's style and use currentColor on plot elements). Chart width configurable
-// via opts.width (defaults 400 for features column; 600 when promoted into the
-// Band B lead column).
+// Handicap trend chart for HQ Home (Features column / Band B lead column).
+// v8.14.5 — Stub 30D/90D/1Y pills replaced with functional 30D/SEASON/ANNUAL
+// toggle (P17 pattern). Toggle state persists via PB.getChartRange/setChartRange
+// keyed 'handicap_home'. Surgical rerender via _rerenderTrendChart in members.js
+// (delegated click handler app-wide). SVG modernized to Approach B per P16
+// (preserveAspectRatio="none" + width:100% + fixed pixel height).
+//
+// Theme-aware via CSS custom-property in style attr (presentation attributes
+// don't resolve var(), so color wires through the SVG root's style and uses
+// currentColor on plot elements). Chart width configurable via opts.width
+// (defaults 400 for features column; 600 when promoted into Band B lead column).
 function _renderHandicapTrendChart(ctx, opts) {
   opts = opts || {};
   var chartWidth = opts.width || 400;
   var rounds = ctx.myRounds || [];
-  var now = Date.now();
-  var windowMs = 30 * 86400000;
-  var recent = rounds.filter(function(r) {
-    if (r.format === "scramble" || r.format === "scramble4") return false;
-    var t = r.timestamp || (r.date ? new Date(r.date).getTime() : 0);
-    return t && (now - t) <= windowMs;
-  }).sort(function(a, b) {
-    var ax = a.timestamp || new Date(a.date + "T00:00:00").getTime();
-    var bx = b.timestamp || new Date(b.date + "T00:00:00").getTime();
-    return ax - bx;
-  });
+  var range = (typeof PB !== "undefined" && PB.getChartRange) ? PB.getChartRange('handicap_home', '30D') : '30D';
+
+  // Filter rounds by selected range. PB.filterRoundsByRange handles 30D /
+  // SEASON / ANNUAL semantics. Also filter out scramble rounds (handicap math
+  // excludes them per existing chart logic).
+  var filtered = ((typeof PB !== "undefined" && PB.filterRoundsByRange) ? PB.filterRoundsByRange(rounds, range) : rounds)
+    .filter(function(r) { return r.format !== "scramble" && r.format !== "scramble4"; });
+
+  // currentUser uid stashed on toggle for surgical rerender lookup (P17 contract).
+  var pidForToggle = (typeof currentUser !== "undefined" && currentUser && currentUser.uid) ? currentUser.uid
+                   : (typeof currentProfile !== "undefined" && currentProfile && currentProfile.claimedFrom) ? currentProfile.claimedFrom : '';
 
   var h = '<div>';
   // Header
@@ -1380,30 +1386,61 @@ function _renderHandicapTrendChart(ctx, opts) {
   h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:4px">HANDICAP</div>';
   h += '<div style="font-family:var(--font-display);font-size:var(--hq-section-header-size);font-weight:700;color:var(--cb-ink);line-height:1.2">' + current + '</div>';
   h += '</div>';
-  // Range pills
-  h += '<div style="display:inline-flex;background:var(--cb-chalk-2);border-radius:6px;padding:2px;gap:2px">';
-  h += '<div style="padding:5px 9px;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.2px;color:var(--cb-ink);background:var(--cb-chalk);border-radius:var(--r-1);text-transform:uppercase">30D</div>';
-  h += '<div title="Coming in a future update" style="padding:5px 9px;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:500;letter-spacing:1.2px;color:var(--cb-mute);text-transform:uppercase;cursor:not-allowed;opacity:0.55">90D</div>';
-  h += '<div title="Coming in a future update" style="padding:5px 9px;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:500;letter-spacing:1.2px;color:var(--cb-mute);text-transform:uppercase;cursor:not-allowed;opacity:0.55">1Y</div>';
+  // v8.14.5 — Functional toggle pills using shared P17 .chart-range-toggle/.chart-range-pill
+  // classes. Replaces v8.14.4 stub UI (90D/1Y were "Coming in a future update"
+  // placeholders with cursor:not-allowed). Click handled by delegated listener
+  // in members.js; rerender via _rerenderTrendChart 'handicap_home' branch.
+  var ranges = ['30D', 'SEASON', 'ANNUAL'];
+  h += '<div class="chart-range-toggle" data-chart-id="handicap_home" data-pid="' + escHtml(pidForToggle) + '">';
+  ranges.forEach(function(r) {
+    var activeClass = (r === range) ? ' chart-range-pill--active' : '';
+    h += '<button class="chart-range-pill' + activeClass + '" data-range="' + r + '" type="button">' + r + '</button>';
+  });
   h += '</div>';
   h += '</div>';
 
-  if (recent.length < 3) {
-    h += '<div style="height:140px;background:var(--cb-chalk-2);border-radius:var(--r-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">TREND APPEARS AFTER 3 ROUNDS</div>';
-    h += '</div>';
-    return h;
-  }
+  // v8.14.5 — wrap chart body in .chart-container so 720px max-width cap
+  // applies (components.css). chartId selector enables surgical rerender on
+  // toggle change (P17 pattern).
+  h += '<div class="chart-container" data-chart-id="handicap_home">';
+  h += _renderHandicapTrendSeries(filtered, rounds, chartWidth);
+  h += '</div>';
+  h += '</div>';
+  return h;
+}
 
-  // Build cumulative-handicap series. Each point = handicap as of that round date.
-  var allUpToRecent = rounds.slice().sort(function(a, b) {
+// v8.14.5 — Extracted handicap series rendering helper. Reused by initial
+// home.js render AND surgical rerender via members.js _rerenderTrendChart's
+// 'handicap_home' branch on toggle change. Returns chart body HTML (chrome
+// container + SVG OR empty-state placeholder).
+//
+// rangeFiltered: rounds already filtered by selected time range (in-window).
+// allRounds: complete round set, used for cumulative handicap-up-to-date math.
+// chartWidth: viewBox width (400 features column / 600 Band B lead).
+function _renderHandicapTrendSeries(rangeFiltered, allRounds, chartWidth) {
+  var width = chartWidth || 400;
+  var recent = (rangeFiltered || []).slice().sort(function(a, b) {
+    var ax = a.timestamp || new Date(a.date + "T00:00:00").getTime();
+    var bx = b.timestamp || new Date(b.date + "T00:00:00").getTime();
+    return ax - bx;
+  });
+
+  var emptyState = '<div style="height:140px;background:var(--cb-chalk-2);border-radius:var(--r-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">TREND APPEARS AFTER 3 ROUNDS</div>';
+
+  if (recent.length < 3) return emptyState;
+
+  // Build cumulative-handicap series. Each point = handicap as of that round
+  // date. Iterates allRounds (NOT filtered) for the upTo computation — handicap
+  // math uses entire history up to date, not just the time window.
+  var allSorted = (allRounds || []).slice().sort(function(a, b) {
     var ax = a.timestamp || new Date(a.date + "T00:00:00").getTime();
     var bx = b.timestamp || new Date(b.date + "T00:00:00").getTime();
     return ax - bx;
   });
   var series = [];
-  recent.forEach(function(r, idx) {
+  recent.forEach(function(r) {
     var rt = r.timestamp || new Date(r.date + "T00:00:00").getTime();
-    var upTo = allUpToRecent.filter(function(x) {
+    var upTo = allSorted.filter(function(x) {
       var xt = x.timestamp || new Date(x.date + "T00:00:00").getTime();
       return xt <= rt;
     });
@@ -1411,14 +1448,10 @@ function _renderHandicapTrendChart(ctx, opts) {
     if (hcap !== null && Number.isFinite(hcap)) series.push({ value: hcap, ts: rt });
   });
 
-  if (series.length < 2) {
-    h += '<div style="height:140px;background:var(--cb-chalk-2);border-radius:var(--r-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">TREND APPEARS AFTER 3 ROUNDS</div>';
-    h += '</div>';
-    return h;
-  }
+  if (series.length < 2) return emptyState;
 
   // Render inline SVG with currentColor + style-defined accent.
-  var w = chartWidth, height = 140;
+  var w = width, height = 140;
   var pad = { t: 14, b: 22, l: 0, r: 32 };
   var chartW = w - pad.l - pad.r, chartH = height - pad.t - pad.b;
   var values = series.map(function(p){return p.value});
@@ -1428,7 +1461,11 @@ function _renderHandicapTrendChart(ctx, opts) {
   function px(i) { return pad.l + (i / (series.length - 1)) * chartW; }
   function py(v) { return pad.t + (1 - (v - yMin) / range) * chartH; }
 
-  var svg = '<svg width="' + w + '" height="' + height + '" viewBox="0 0 ' + w + ' ' + height + '" style="display:block;color:var(--cb-brass)">';
+  // v8.14.5 — Approach B per P16: viewBox + width:100% + fixed pixel height
+  // + preserveAspectRatio="none". Container governs render width (max-width
+  // cap via .chart-container); height stays at declared px so chart doesn't
+  // grow proportionally tall on wider parents.
+  var svg = '<svg viewBox="0 0 ' + w + ' ' + height + '" preserveAspectRatio="none" style="width:100%;height:' + height + 'px;display:block;color:var(--cb-brass)">';
   // Baseline
   svg += '<line x1="0" y1="' + (pad.t + chartH) + '" x2="' + chartW + '" y2="' + (pad.t + chartH) + '" stroke="var(--cb-chalk-3)" stroke-width="1"/>';
   // Area fill
@@ -1453,11 +1490,7 @@ function _renderHandicapTrendChart(ctx, opts) {
   svg += '<text x="' + chartW + '" y="' + (height - 4) + '" font-family="ui-monospace,monospace" font-size="9" fill="var(--cb-mute)" text-anchor="end" letter-spacing="1">' + lastM + '</text>';
   svg += '</svg>';
 
-  h += '<div style="background:var(--cb-chalk-2);border-radius:var(--r-2);padding:14px 16px">';
-  h += svg;
-  h += '</div>';
-  h += '</div>';
-  return h;
+  return '<div style="background:var(--cb-chalk-2);border-radius:var(--r-2);padding:14px 16px">' + svg + '</div>';
 }
 
 // Compact league activity feed. Synchronous: reads PB.getRounds() last 30 +

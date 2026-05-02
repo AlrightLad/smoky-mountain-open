@@ -143,7 +143,19 @@ The handicap chart's natural unit is monthly snapshots, not raw rounds. The 30D 
 ### B.6 — Design bot follow-up: HQ Home v1 handicap chart toggle (Ship 5 territory)
 **Scope:** S investigation · **Target:** Ship 5 prep
 
-Image 2 of HQ Home v1 mock visualizes a 30D/90D/1Y toggle at the handicap chart. v8.14.4 audit confirmed no such toggle exists in production buildHandicapGraph. Ping design bot pre-Ship-5 to clarify whether the toggle was load-bearing in the mock or illustrative. If load-bearing, Ship 5 implements it as part of HQ Home v1.
+**RESOLVED v8.14.5**: audit located `_renderHandicapTrendChart` in home.js:1359 — that's the chart shown in Image 2. Stub 30D/90D/1Y pills replaced with functional 30D/SEASON/ANNUAL toggle in v8.14.5. Item closed; left in backlog as historical reference.
+
+### B.7 — HQ Home stat strip alignment + course name truncation
+**Scope:** S · **Target:** Ship 5 (HQ Home v1 implementation)
+
+CTO smoke screenshot of HQ Home (post-v8.14.4) revealed pre-existing visual issues:
+- 4-cell stat strip (HCP / ROUNDS / BEST / STREAK) — values not consistently aligned across cells, label baselines don't match
+- BEST cell shows "OCEAN PINES GOLF…" truncated via text-overflow ellipsis on long course names
+- STREAK cell shows orphaned em-dash when no streak active
+
+Not introduced by Ship 4a — these are pre-existing HQ Home polish issues. Get addressed naturally by Ship 5 (HQ Home v1 redesign) per design bot mock — the v1 mock has different stat-strip chrome (4-cell with eyebrow + display numeral + delta line per design bot mock).
+
+**Surfaced:** v8.14.4 smoke screenshot. Deferred to keep ship scope focused on chart fix.
 
 ### B.4 — Quiet-state v3 mock pass + ship
 **Scope:** L · **Target:** No current target (v3 mock authoring needed first)

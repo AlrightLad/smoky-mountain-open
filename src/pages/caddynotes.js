@@ -19,17 +19,24 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · charts, time-traveled</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · charts, properly proportioned</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Trend charts on member profiles and Home now render at the right proportions across all screen widths. Date labels no longer get clipped on the right edge.", tag: "FIXED" },
-    { item: "Scoring, GIR, and putts trend charts now have time-range toggles — switch between Last 30 Days, Season (Apr–Oct), and Annual (trailing year) to see your stats over different windows. Your selection is remembered per chart.", tag: "IMPROVED" }
+    { item: "Trend charts no longer stretch across the entire screen on desktop — they cap at a comfortable reading width while staying responsive on mobile.", tag: "FIXED" },
+    { item: "The handicap chart on the Home page now has a working 30D/SEASON/ANNUAL toggle (previously the 90D/1Y pills were placeholder stubs). All four trend charts across the platform now use the same time-range pattern.", tag: "IMPROVED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.14.4", date: "May 2026", headline: "Charts, time-traveled",
+      items: [
+        { item: "Trend charts on member profiles and Home now render at the right proportions across all screen widths. Date labels no longer get clipped on the right edge.", tag: "FIXED" },
+        { item: "Scoring, GIR, and putts trend charts now have time-range toggles — switch between Last 30 Days, Season (Apr–Oct), and Annual (trailing year) to see your stats over different windows. Your selection is remembered per chart.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.14.3", date: "May 2026", headline: "Charts read full-width",
       items: [

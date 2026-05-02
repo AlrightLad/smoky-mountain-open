@@ -813,10 +813,14 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 
 /* ── Trend chart time-range toggle (v8.14.4 · P17) ──
    3-pill toggle (30D / SEASON / ANNUAL) above trend charts on Members
-   profile. Right-aligned above the chart inside its .card wrapper.
-   .chart-container is the JS hook for surgical re-render on toggle
-   change (no class styling needed, just the data-chart-id selector). */
-.chart-container{}
+   profile + Home handicap chart. Right-aligned above the chart inside
+   its .card wrapper. .chart-container is the JS hook for surgical
+   re-render on toggle change (data-chart-id selector).
+   v8.14.5 — Added max-width:720px (magazine-spread reading width).
+   Trend charts at full content-column width felt visually stretched at
+   desktop (~1300px). Cap centers the chart inside its parent, preserving
+   full-width section card chrome while keeping data readable. */
+.chart-container{max-width:720px;margin:0 auto}
 .chart-range-toggle{display:flex;gap:var(--sp-1);justify-content:flex-end;margin-bottom:var(--sp-2)}
 .chart-range-pill{font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-1);background:transparent;border:1px solid var(--cb-chalk-3);padding:4px 10px;border-radius:12px;cursor:pointer;transition:color var(--duration-fast) var(--ease-default),background var(--duration-fast) var(--ease-default),border-color var(--duration-fast) var(--ease-default)}
 .chart-range-pill:hover{color:var(--cb-ink);border-color:var(--cb-brass)}
