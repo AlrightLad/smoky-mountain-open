@@ -1037,6 +1037,92 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .pn-putts-btn.active{background:rgba(var(--cream-rgb),.06);border-color:var(--cream)}
 .pn-putts-btn.active .pn-putts-val{color:var(--cream)}
 
+/* ──────────────────────────────────────────────────────────────────────────
+   HQ Home v1 banded grid (Ship 5 Gate 1 · v8.15.0)
+
+   4-band CSS-driven layout primitive. Home-only consumer per Q2 ruling
+   (P18: primitives extracted on second consumer, not authored on first).
+   Replaces 5-band JS-driven _renderHQGridInner from Ship 1b-i era.
+
+   Band breakpoints (Q1 hybrid scheme):
+     mobile:    <720px    — single column; right rail inlines as page
+                            tail in Gate 3 (mobile reflow)
+     compact:   720-1119  — single main column, no rails (max-width 720)
+     standard:  1120-1439 — main + right rail 280px (max-width 1120)
+     cinema:    ≥1440     — left rail placeholder 240px + main + right
+                            rail 320px (max-width 1380)
+
+   Right rail content (Live Now / Standings / Recent Posted) renders in
+   .hq-grid__rail-right at standard+. Hidden at mobile/compact via
+   display:none until Gate 3 implements rail-as-tail mobile reflow.
+
+   Left rail is empty placeholder per Q4 ruling — reserves grid column
+   at cinema, no border / background / content. Nav + scope-memory line
+   deferred whole to follow-on ship.
+   ────────────────────────────────────────────────────────────────────────── */
+.hq-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-4);
+  max-width: 100%;
+  margin: 0 auto;
+}
+.hq-grid__rail-left,
+.hq-grid__rail-right {
+  display: none;
+}
+.hq-grid__main {
+  grid-column: 1;
+  min-width: 0;
+}
+
+/* Compact band: 720-1119 — single main column with reading-width cap */
+@media (min-width: 720px) {
+  .hq-grid__main {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+}
+
+/* Standard band: 1120-1439 — main + right rail */
+@media (min-width: 1120px) {
+  .hq-grid {
+    grid-template-columns: 1fr 280px;
+    max-width: 1120px;
+  }
+  .hq-grid__main {
+    grid-column: 1;
+    max-width: none;
+    margin: 0;
+  }
+  .hq-grid__rail-right {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-6);
+    grid-column: 2;
+  }
+}
+
+/* Cinema band: ≥1440 — left rail placeholder + main + right rail */
+@media (min-width: 1440px) {
+  .hq-grid {
+    grid-template-columns: 240px 1fr 320px;
+    max-width: 1380px;
+  }
+  .hq-grid__rail-left {
+    display: block;
+    grid-column: 1;
+    /* Empty placeholder per Q4 ruling — reserves column for correct
+       main-column width. Nav + scope-memory line deferred whole. */
+  }
+  .hq-grid__main {
+    grid-column: 2;
+  }
+  .hq-grid__rail-right {
+    grid-column: 3;
+  }
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    ANIMATED RINGS — Premium cosmetic avatar borders
    ═══════════════════════════════════════════════════════════════════════════ */

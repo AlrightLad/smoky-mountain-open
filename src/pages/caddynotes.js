@@ -19,17 +19,23 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · charts, properly proportioned</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Home, regrouped</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Trend charts no longer stretch across the entire screen on desktop — they cap at a comfortable reading width while staying responsive on mobile.", tag: "FIXED" },
-    { item: "The handicap chart on the Home page now has a working 30D/SEASON/ANNUAL toggle (previously the 90D/1Y pills were placeholder stubs). All four trend charts across the platform now use the same time-range pattern.", tag: "IMPROVED" }
+    { item: "The Home page now uses a new layout system that adapts more cleanly across screen sizes. More refinements coming over the next few releases.", tag: "IMPROVED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.14.5", date: "May 2026", headline: "Charts, properly proportioned",
+      items: [
+        { item: "Trend charts no longer stretch across the entire screen on desktop — they cap at a comfortable reading width while staying responsive on mobile.", tag: "FIXED" },
+        { item: "The handicap chart on the Home page now has a working 30D/SEASON/ANNUAL toggle (previously the 90D/1Y pills were placeholder stubs). All four trend charts across the platform now use the same time-range pattern.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.14.4", date: "May 2026", headline: "Charts, time-traveled",
       items: [

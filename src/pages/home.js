@@ -34,6 +34,12 @@
 var HQ_BREAKPOINT = 720;
 function _isHQViewport() { return window.innerWidth >= HQ_BREAKPOINT; }
 
+// DEPRECATED v8.15.0 (Ship 5 Gate 1) — Ship 5 swaps the 5-band JS-driven
+// layout for a 4-band CSS-driven layout (.hq-grid in components.css). This
+// helper survives in the codebase only as long as _renderHQGridInner does;
+// follow-on ship retires both. PB.pageShell still consumes its own internal
+// _currentBand for shell stamping — that copy is intentionally retained.
+//
 // Returns the active design band based on viewport width.
 // TODO (post-v8.11.4): when at least 3 pages consume PB.pageShell, deprecate
 // this duplicate and read from PB.pageShell.currentBand() instead. Today both
@@ -48,6 +54,13 @@ function _currentBand() {
   return "D";
 }
 
+// DEPRECATED v8.15.0 (Ship 5 Gate 1) — re-render-on-band-change loses its
+// reason-for-being once layout is CSS-driven (.hq-grid). The new banded grid
+// reflows automatically via media queries; no JS re-render needed. Helper
+// retained until follow-on ship retires _renderHQGridInner; the listener
+// remains harmless (re-renders home page on band cross with identical content).
+// Do not consume in new code paths.
+//
 // Resize handler is bound once on first home render. Re-renders when crossing
 // any band boundary (mobile/B/C/D) — band-specific layouts need this for
 // chart promotion (B), features column toggle (B↔C), agate toggle (C↔D).
@@ -221,18 +234,23 @@ function _renderHQHome(ctx) {
         weatherSiteId: 'hq-weather-pill'
       };
     },
-    scope: function(band) {
-      // Band A: always condensed labels + flex-shrink:0 (compact two-row masthead)
-      // Band B: condensed labels (window.innerWidth < 1280 in pre-refactor logic)
-      // Bands C/D: full labels
-      var condensed = (band === 'A' || band === 'B');
-      var flexShrink = (band === 'A');
-      return _renderHQScopeSwitcher(condensed, flexShrink);
+    scope: function() {
+      // Ship 5 Gate 1 (v8.15.0) — scope slot returns empty string per Q-RULING-A.
+      // Hides production scope switcher (League/All Parbaughs pill toggle) per
+      // design bot Q3 ruling. Mock chip row markup (All / This week / This month)
+      // is deferred per §12(f). Empty string is no-op visually — masthead chrome
+      // intact, just no scope pill rendered.
+      // Pre-Gate-1 wiring lived in this slot — see git history.
+      return "";
     },
     content: function() {
       // Location banner inside content wrapper preserves pre-refactor band-
       // aware width treatment + position (above grid, below masthead).
-      return _renderHQLocationBanner() + _renderHQGridInner(ctx);
+      // Ship 5 Gate 1 (v8.15.0) — grid swapped from 5-band JS-driven
+      // _renderHQGridInner to 4-band CSS-driven _renderHQHomeBanded per
+      // Q-RULING-B. Concatenation preserved (banner stays at content-
+      // wrapper level above the grid, P5 functional vs editorial split).
+      return _renderHQLocationBanner() + _renderHQHomeBanded(ctx);
     },
     leftRail: null,
     rightRail: null,
@@ -248,6 +266,10 @@ function _renderHQHome(ctx) {
 //   condensed=true  → "League" / "All"           (Bands A + B)
 //   condensed=false → "My league" / "All Parbaughs" (Bands C + D)
 //   flexShrink=true → adds flex-shrink:0          (Band A only — two-row layout)
+//
+// DEPRECATED v8.15.0 (Ship 5 Gate 1) — scope switcher hidden per design bot Q3
+// ruling. Function retained for reference until follow-on ship ships chip row
+// markup (All / This week / This month). Do not consume in new code paths.
 function _renderHQScopeSwitcher(condensed, flexShrink) {
   var myLeagueLabel = condensed ? "League" : "My league";
   var allParbaughsLabel = condensed ? "All" : "All Parbaughs";
@@ -377,6 +399,50 @@ function _formatHQMastheadDate() {
   return day + " · " + month + " " + d.getDate() + ", " + d.getFullYear();
 }
 
+// Ship 5 Gate 1 (v8.15.0) — banded grid foundation. CSS-driven 4-band layout
+// primitive (.hq-grid in components.css) replaces the JS-branched 5-band
+// _renderHQGridInner below. Bands (Q1 hybrid scheme):
+//   compact   (720-1119): main only
+//   standard  (1120-1439): main + right rail (280px)
+//   cinema    (≥1440):   left rail (240px, empty per Q4) + main + right rail (320px)
+//
+// Content composition uses existing state-aware composers:
+//   main       → _renderHQLeadColumn   (idle / active / new branching internal)
+//   right rail → _renderHQFeaturesColumn + _renderHQAgateRail
+//   left rail  → empty placeholder (Q4 ruling — content reserved for Gate 2+)
+//
+// Per P18 (primitives extracted on second consumer, not authored on first),
+// .hq-grid CSS + this composer stay in home.js until League v1 ships as the
+// second consumer. At that point the API design emerges from comparing both
+// real consumers. For Gate 1, scaffold + content reuse only.
+//
+// Known Gate 1 tradeoff: at compact band (720-1119), the right rail content
+// (chart + activity feed + online + tee times + spotlight) is hidden via CSS
+// display:none. Subsequent gates reflow these into main at compact band per
+// the mock's mobile-tail pattern. Tracked for Gate 3 (mobile reflow).
+function _renderHQHomeBanded(ctx) {
+  var h = '<div class="hq-grid">';
+  // Cinema-only left rail. Empty per Q4 ruling — reserves grid column at
+  // ≥1440 for correct main-column width. Nav + scope-memory line deferred.
+  h += '<div class="hq-grid__rail-left"></div>';
+  // Main column — state-aware lead content (greeting/live/welcome).
+  h += '<div class="hq-grid__main">';
+  h += _renderHQLeadColumn(ctx);
+  h += '</div>';
+  // Right rail — features (chart + feed) + agate (online + tee times + spotlight).
+  // CSS hides at compact; visible at standard + cinema.
+  h += '<div class="hq-grid__rail-right">';
+  h += _renderHQFeaturesColumn(ctx);
+  h += _renderHQAgateRail(ctx);
+  h += '</div>';
+  h += '</div>';
+  return h;
+}
+
+// DEPRECATED v8.15.0 (Ship 5 Gate 1) — superseded by _renderHQHomeBanded above.
+// Function retained for reference until follow-on ship retires the 5-band JS-
+// branched layout entirely. Do not consume in new code paths.
+//
 // HQ three-column grid. At 1280-1439px renders lead (480) + features (400) only.
 // At ≥1440px adds the agate rail (196). Content capped at 1152px and centered.
 // Ship 1b-i: typed placeholders in each column. Ship 1b-ii fills lead + features;
