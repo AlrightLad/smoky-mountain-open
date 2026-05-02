@@ -17,7 +17,11 @@ function svgBarChart(data, options) {
   var hasNeg = data.some(function(d){return d.value < 0});
   var zeroY = hasNeg ? chartH / 2 + (o.showValues ? 16 : 0) : chartH + (o.showValues ? 16 : 0);
 
-  var svg = '<svg width="' + o.width + '" height="' + o.height + '" viewBox="0 0 ' + o.width + ' ' + o.height + '" style="display:block">';
+  // v8.14.3 — viewBox + width:100% style instead of hardcoded HTML width=.
+  // Helper renders responsive; container governs width. o.width retained for
+  // viewBox numeric value (drives chart-internal positioning math). See P16
+  // memory rule + members.js:1041 buildHandicapGraph for canonical pattern.
+  var svg = '<svg viewBox="0 0 ' + o.width + ' ' + o.height + '" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">';
 
   // Baseline
   if (o.baseline !== null || hasNeg) {
@@ -66,7 +70,10 @@ function svgLineChart(data, options) {
   function px(i) { return padLeft + (i / (data.length - 1)) * chartW; }
   function py(v) { return padTop + (1 - (v - yMin) / range) * chartH; }
 
-  var svg = '<svg width="' + o.width + '" height="' + o.height + '" viewBox="0 0 ' + o.width + ' ' + o.height + '" style="display:block">';
+  // v8.14.3 — viewBox + width:100% style instead of hardcoded HTML width=.
+  // Same responsive pattern as svgBarChart above (P16). o.width drives
+  // viewBox + chart-internal positioning math; container governs render width.
+  var svg = '<svg viewBox="0 0 ' + o.width + ' ' + o.height + '" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">';
 
   // Grid lines
   for (var gi = 0; gi <= 3; gi++) {
@@ -116,7 +123,10 @@ function svgHorizontalBars(data, options) {
   if (maxVal === 0) maxVal = 1;
   var totalH = data.length * (o.barHeight + o.gap) - o.gap;
 
-  var svg = '<svg width="' + o.width + '" height="' + totalH + '" viewBox="0 0 ' + o.width + ' ' + totalH + '" style="display:block">';
+  // v8.14.3 — viewBox + width:100% style instead of hardcoded HTML width=.
+  // Same responsive pattern as svgBarChart / svgLineChart above (P16).
+  // totalH (height) is computed from data length and stays in viewBox + style:height:auto.
+  var svg = '<svg viewBox="0 0 ' + o.width + ' ' + totalH + '" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">';
   var labelW = 50;
   var barAreaW = o.width - labelW - (o.showValues ? 40 : 0);
 

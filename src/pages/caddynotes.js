@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · spotlight complete</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · charts read full-width</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "The Spotlight round page now feels like the publication it deserves — bigger, sharper hero, cleaner scorecard summary, mobile-ready typography. Live spectating tells you when the connection is healthy and when it\u0027s not. Real-time shots stream in as the round happens. The Spotlight is done.", tag: "IMPROVED" }
+    { item: "Trend charts on member profile pages now render full-width instead of compressing to half the container. Long-standing chart-helper bug, fixed.", tag: "FIXED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.14.2", date: "May 2026", headline: "Spotlight complete",
+      items: [
+        { item: "The Spotlight round page now feels like the publication it deserves — bigger, sharper hero, cleaner scorecard summary, mobile-ready typography. Live spectating tells you when the connection is healthy and when it\u0027s not. Real-time shots stream in as the round happens. The Spotlight is done.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.14.1", date: "May 2026", headline: "Spotlight on phones",
       items: [
