@@ -157,6 +157,25 @@ Not introduced by Ship 4a — these are pre-existing HQ Home polish issues. Get 
 
 **Surfaced:** v8.14.4 smoke screenshot. Deferred to keep ship scope focused on chart fix.
 
+### B.8 — Members profile chart visual scale
+**Scope:** S · **Target:** Ship 6+ (after Ship 5 establishes card chrome conventions)
+
+CTO smoke v8.14.5 surfaced: Members profile trend charts feel oversized on desktop web view. Diagnostic confirmed cap IS working (chart-container at 582px, max-width 720px not binding) — issue is visual proportion of chart inside its full-width section card. "Small chart in big card" aesthetic feels off, OR data/typography elements within the chart render too large for desktop scale.
+
+Multiple competing constraints (card chrome consistency, chart readability, visual proportion) — not solvable in isolation without breaking other surfaces. Defer to Ship 6+ when Members profile gets aligned to Ship 5's banded grid + card chrome conventions.
+
+**Surfaced:** v8.14.5 smoke. Deferred per CTO direction (v8.14.6 SKIPPED) to avoid polishing legacy surface that gets redesigned holistically.
+
+### B.9 — WHS HANDICAP INDEX label clipping (Symptom 3)
+**Scope:** S investigation + S fix · **Target:** Ship 5 prep DOM inspection
+
+CTO smoke surfaced clipping on WHS HANDICAP INDEX label rendering at members.js:497-507 (div-only, not chart SVG). Pending DevTools inspection of accordion/section parent ancestor chain. Likely interacts with section card chrome that Ship 5 addresses. Bundle DOM diagnostic into Ship 5 prep rather than separate ship.
+
+**Surfaced:** v8.14.3 Q-CHART-4. Deferred through v8.14.4 / v8.14.5 / v8.14.6 (skipped). Investigation rolls into Ship 5 prep phase.
+
+### Chart bug arc — CLOSED
+v8.14.3 → v8.14.4 → v8.14.5 closed the chart rendering issues surfaced post-Ship-4a. v8.14.6 SKIPPED per CTO decision (diminishing returns on legacy surface polish). Outstanding chart-adjacent items (B.8, B.9, plus bar chart container caps) deferred to Ship 5+ where holistic redesign covers them naturally.
+
 ### B.4 — Quiet-state v3 mock pass + ship
 **Scope:** L · **Target:** No current target (v3 mock authoring needed first)
 
