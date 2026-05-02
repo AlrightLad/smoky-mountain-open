@@ -44,26 +44,29 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
    Deep billiard green + warm chalk + brass accent. Light-mode default.
    ═══════════════════════════════════════════════════════════════════════════ */
 :root {
-  /* Clubhouse · surface palette */
-  --cb-green: #0F3D2E;
-  --cb-green-2: #164A38;
-  --cb-green-3: #1D5A44;
-  --cb-green-ink: #0A2A20;
+  /* Clubhouse · surface palette (v8.14.0 — locked palette per HQ Home v1 mock + Spotlight v2) */
+  --cb-green: #2F4A3A;
+  --cb-green-2: #3D5C48;
+  --cb-green-3: #5A7D4E;
+  --cb-green-ink: #1F2F25;
   --cb-chalk: #F4EFE4;
-  --cb-chalk-2: #E9E2D1;
-  --cb-chalk-3: #DCD3BD;
+  --cb-chalk-2: #EBE5D6;
+  --cb-chalk-3: #DCD4C0;
 
-  /* Clubhouse · ink palette */
+  /* Clubhouse · ink palette (v8.14.0 — mute family expanded to 3 tiers) */
   --cb-ink: #14130F;
   --cb-ink-2: #2D2B24;
   --cb-charcoal: #4A4740;
+  --cb-ink-link: #5A4318;       /* deep brass for link colors on chalk */
   --cb-mute: #7A766B;
-  --cb-mute-2: #8A8478;
+  --cb-mute-1: #6B6862;         /* body-secondary copy on chalk */
+  --cb-mute-2: #A8A395;         /* default mute (was #8A8478 — v8.14.0 lighter sage-tinted) */
+  --cb-mute-3: #C9C5BD;         /* light mute, disabled states / hairline-on-chalk-3 */
 
-  /* Clubhouse · accents */
+  /* Clubhouse · accents (v8.14.0 — brass family expanded for partner accents + live-pulse) */
   --cb-brass: #B4893E;
-  --cb-brass-2: #9A7434;
-  --cb-brass-3: #D4A957;
+  --cb-brass-2: #C9A04A;        /* partner.you border accent (was #9A7434) */
+  --cb-brass-3: #E0BB60;        /* live-indicator pulse, hero accents on green (was #D4A957) */
   --cb-brass-deep: #8C6A2E;
   --cb-copper: #A05A3A;
   --cb-slate: #5A6B78;
@@ -71,13 +74,17 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-claret: #8E3A3A;
   --cb-sand: #C9B68A;
 
-  /* v8.13.3 — RGB variants for alpha-blended renders. Pattern parallels
-     legacy --gold-rgb / --red-rgb / --birdie-rgb convention. Consumed via
-     rgba(var(--cb-claret-rgb), 0.10) etc. for components needing translucent
-     fills (per-hole strip cell classifications). */
+  /* v8.13.3 — RGB variants (comma-separated, classic rgba(token, alpha) syntax).
+     Consumed via rgba(var(--cb-claret-rgb), 0.10) etc. for translucent fills. */
   --cb-claret-rgb: 142, 58, 58;
   --cb-moss-rgb: 90, 125, 78;
   --cb-brass-rgb: 180, 137, 62;
+
+  /* v8.14.0 — RGB variants (space-separated, modern rgba(token / alpha) syntax).
+     Consumed via rgba(var(--cb-green-ink-rgb) / 0.08) for elevation tints + alpha overlays. */
+  --cb-green-ink-rgb: 31 47 37;
+  --cb-chalk-rgb: 244 239 228;
+  --cb-brass-3-rgb: 224 187 96;
 
   /* Clubhouse · semantic surface tokens (light mode default) */
   --surface-primary: var(--cb-chalk);
@@ -190,17 +197,22 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --hq-recent-row-height: 64px;
 
   /* ═════════════════════════════════════════════════════════════════════════
-     SPACING SCALE (v8.7.0 — Ship 3a · spec v9.0.2 §0.1)
-     Components migrate to these in Ship 3b; new components use directly.
+     SPACING SCALE (v8.14.0 — locked per design bot ruling 14)
+     Half-step values (1-5, 2-5, 4-5, 5-5) added for sparse-use editorial
+     micro-spacing. --sp-8 migrated 72px → 64px (zero consumers verified).
      ═════════════════════════════════════════════════════════════════════════ */
   --sp-1: 4px;
+  --sp-1-5: 6px;
   --sp-2: 8px;
+  --sp-2-5: 14px;
   --sp-3: 12px;
   --sp-4: 16px;
+  --sp-4-5: 18px;
   --sp-5: 24px;
+  --sp-5-5: 22px;
   --sp-6: 32px;
   --sp-7: 48px;
-  --sp-8: 72px;
+  --sp-8: 64px;
 
   /* ═════════════════════════════════════════════════════════════════════════
      RADIUS SCALE (v8.7.0 — Ship 3a · spec v9.0.2 §0.2)
@@ -212,13 +224,14 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --r-5: 20px;
 
   /* ═════════════════════════════════════════════════════════════════════════
-     ELEVATION SCALE (v8.7.0 — Ship 3a · spec v9.0.2 §0.3)
+     ELEVATION SCALE (v8.14.0 — locked per design bot ruling 4)
+     Green-ink-tinted alpha replaces ink-tinted alpha. Modern rgba slash-syntax.
      ═════════════════════════════════════════════════════════════════════════ */
   --el-0: none;
-  --el-1: 0 1px 0 var(--cb-chalk-3);
-  --el-2: 0 8px 24px rgba(20, 19, 15, 0.06);
-  --el-3: 0 -12px 40px rgba(20, 19, 15, 0.14);
-  --el-4: 0 24px 60px rgba(20, 19, 15, 0.18);
+  --el-1: 0 1px 2px rgba(var(--cb-green-ink-rgb) / 0.06);
+  --el-2: 0 4px 16px rgba(var(--cb-green-ink-rgb) / 0.08);
+  --el-3: 0 12px 40px rgba(var(--cb-green-ink-rgb) / 0.12);
+  --el-4: 0 24px 80px rgba(var(--cb-green-ink-rgb) / 0.18);
 
   /* ═════════════════════════════════════════════════════════════════════════
      MOTION SCALE (v8.7.0 — Ship 3a · spec v9.0.2 §0.4)
@@ -298,6 +311,30 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --radius-full: var(--radius-pill);
 }
 
+/* ── Avatar pattern (v8.14.0 · Ship 4a Gate 8a Section 2.8) ──
+   Forward-looking utility class. Pattern:
+     <div class="av" style="--av-bg:#8E3A3A">JD</div>
+   Per-element background via --av-bg custom property; defaults to --cb-green
+   when --av-bg is unset. Forward-looking — no consumers in v8.14.0.
+   Companion to forward-looking .sphud-partners / .sphud-partner /
+   .sphud-partner--you rules in components.css (added same ship). Both light
+   up together when right-rail partner-list consumer ships in a future gate.
+   Existing avatar render path renderAvatar() at router.js:270 uses photo
+   or token-based fallback, never inline hex — does NOT consume this pattern.
+   ───────────────────────────────────────────────────────────────────────── */
+.av {
+  background: var(--av-bg, var(--cb-green));
+  color: var(--cb-chalk);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 600;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    EDITORIAL THEMES — six palettes (v8.3.5 · Ship 0d-i)
    Replaces the light/dark appearance axis. Each theme overrides the 9 core
@@ -309,13 +346,17 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
    theme so rgba() overlays remain palette-accurate.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Clubhouse — default. Matches :root fallback so explicit selection works. */
+/* Clubhouse — default. Matches :root fallback so explicit selection works.
+   v8.14.0 — palette migration: chalk-2/3, green, green-2 reconciled with new
+   :root values per CTO ruling Q-A. Other 5 [data-theme="..."] blocks below
+   left UNTOUCHED — out of Gate 8a scope. Multi-theme cleanup deferred to
+   post-Ship-4a per backlog. */
 [data-theme="clubhouse"] {
   --cb-chalk: #F4EFE4;
-  --cb-chalk-2: #E9E2D1;
-  --cb-chalk-3: #DCD3BD;
-  --cb-green: #0F3D2E;
-  --cb-green-2: #0A2A20;
+  --cb-chalk-2: #EBE5D6;
+  --cb-chalk-3: #DCD4C0;
+  --cb-green: #2F4A3A;
+  --cb-green-2: #3D5C48;
   --cb-ink: #14130F;
   --cb-charcoal: #4A4740;
   --cb-mute: #7A766B;

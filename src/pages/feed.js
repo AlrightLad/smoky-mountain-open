@@ -39,6 +39,11 @@ Router.register("feed", function(params) {
     leagueQuery("rounds").where("visibility", "==", "public").orderBy("createdAt", "desc").limit(40).get().then(function(snap) {
       snap.forEach(function(doc) {
         var r = doc.data();
+        // v8.14.0 — Defense-in-depth render guard. Abandoned rounds are dev-test
+        // artifacts and never surface publicly. Per Gate 8a A1 audit, /rounds
+        // collection writes filter abandoned at write time, but this render-side
+        // guard catches anything that slips through (memory rule on abandoned).
+        if (r.status === "abandoned") return;
         var rid = doc.id;
         var isScramble = r.format === "scramble" || r.format === "scramble4";
         var comm = PB.generateRoundCommentary({score:r.score,rating:r.rating||72,slope:r.slope||113,player:r.player,holesPlayed:r.holesPlayed||18});

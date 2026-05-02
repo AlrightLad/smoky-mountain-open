@@ -1183,6 +1183,20 @@ function _renderLiveRoundSecondary(opts) {
 //   - NO footer link
 //   - NO course wordmark/photo (deferred — no data path in current course schema)
 //   - Caption slot preserved for Gate 7 connection-state-escalation reuse
+// v8.14.0 (Ship 4a Gate 8a) — class-based extraction with structural redesign
+// per CTO Q-C rulings:
+//   - Avatar dropped (mock authority)
+//   - Handicap rendered as italic em-tail on player name
+//   - Last-hole-age line dropped (Gate 7 stale chrome owns this signal via
+//     #live-round-caption — editorial doesn't duplicate functional state)
+//   - .sphud-hero-actions row OMITTED until action ship lands
+//   - .sphud-hero-delta carries pace projection in-progress / empty completed
+//   - Course/hole/elapsed kept as .sphud-hero-where
+// Gate 6 (.sphud-hero-diff, .sphud-hero-thru) cross-fade hooks PRESERVED.
+// Gate 7 (.sphud-hero-eyebrow, .sphud-hero-card, #live-round-caption)
+// modifier targets PRESERVED. New editorial modifiers (--in-progress /
+// --completed) coexist additively with functional modifiers (--dimmed /
+// --alert / --mute) per Q-C ruling 5.
 function _renderLivePageHero(round) {
   var playerName = round.playerName || "Member";
   var course = round.course || "Round";
@@ -1198,57 +1212,104 @@ function _renderLivePageHero(round) {
   var diffStr = thru === 0 ? "—" : (diff === 0 ? "E" : (diff > 0 ? "+" + diff : String(diff)));
 
   var elapsedStr = _formatElapsed(round.startTime);
-  var lastWriteAt = (typeof round.lastWriteAt === "number") ? round.lastWriteAt : null;
-  var lastHoleAgeStr = lastWriteAt ? _formatAge(Date.now() - lastWriteAt) : "—";
 
-  // Pace projection — simple linear extrapolation. Only renders 0<thru<18.
+  // Pace projection — linear extrapolation. Renders only 0<thru<18.
+  // Becomes deltaText source for in-progress mode.
   var paceProjection = (thru > 0 && thru < 18) ? Math.round((totalScore / thru) * 18) : null;
 
-  // Avatar + handicap from cached member profile (fbMemberCache pre-populated post-auth)
+  // Handicap from cached member profile (fbMemberCache pre-populated post-auth).
+  // Avatar HTML deliberately NOT generated — name carries identity per mock.
   var player = (typeof PB !== "undefined" && PB.getPlayer) ? PB.getPlayer(round.playerId) : null;
-  var avatarHtml = (player && typeof renderAvatar === "function") ? renderAvatar(player, 64, false) : '';
   var handicap = player ? (player.computedHandicap != null ? player.computedHandicap : (player.handicap != null ? player.handicap : null)) : null;
-  var handicapStr = (handicap !== null) ? " · " + handicap + " hcp" : "";
 
-  // .sphud-hero-card class added v8.13.8 for Gate 7 D2 connection-state
-  // opacity transitions. Additive class only; no markup removal. Active-
-  // player path unaffected — class is consumed only by spectator.js
-  // _applyChrome on listener emission state changes.
-  var h = '<div class="sphud-hero-card" style="background:var(--cb-green);border-radius:var(--r-4);padding:var(--sp-6);color:var(--cb-chalk);position:relative;overflow:hidden;opacity:1">';
-  // Eyebrow — .sphud-hero-eyebrow class added v8.13.7 for Gate 6 final-mode
-  // textContent swap. Additive class only; no markup removal. Active-player
-  // path unaffected — class is consumed only by spectator.js listener.
-  h += '<div class="sphud-hero-eyebrow" style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:20px">VIEWING · LIVE</div>';
-  // Avatar + player name row
-  h += '<div style="display:flex;align-items:center;gap:16px;margin-bottom:18px">';
-  if (avatarHtml) {
-    h += '<div style="width:64px;height:64px;border-radius:50%;border:1px solid var(--cb-brass);overflow:hidden;flex-shrink:0">' + avatarHtml + '</div>';
+  // Editorial mode dispatch. round.status === "active" reaches this render
+  // path per round.js dispatch (other + completed routes to RoundDetail).
+  // Defensive "completed" branch covers the theoretical case where status
+  // transitions mid-render; _triggerFinalModeVariant flips modifier post-render.
+  var editorialMode = (round.status === "completed") ? "completed" : "in-progress";
+
+  // Handicap-as-em-tail logic per CTO Q-C-2:
+  //   "Mike Hill" + 12.4 → first="Mike", emTail="Hill · 12.4 hcp"
+  //   "Mike" + 12.4 → first="Mike", emTail=" · 12.4 hcp"   (single-word name)
+  //   "flossonthefairway" + null → first="flossonthefairway", emTail=""
+  //   "Mike Hill" + null → first="Mike", emTail="Hill"
+  var nameParts = playerName.split(' ');
+  var firstName = nameParts[0];
+  var surname = nameParts.slice(1).join(' ');
+  var emTail = '';
+  if (surname && handicap !== null) {
+    emTail = surname + ' · ' + handicap + ' hcp';
+  } else if (surname) {
+    emTail = surname;
+  } else if (handicap !== null) {
+    emTail = ' · ' + handicap + ' hcp';
   }
-  h += '<div style="font-family:var(--font-display);font-style:italic;font-size:22px;font-weight:600;color:var(--cb-chalk);line-height:1.2">';
-  h += escHtml(playerName) + escHtml(handicapStr);
+
+  // Eyebrow text — initial baseline. Gate 7 _applyChrome mutates at runtime
+  // for connection-state chrome ("VIEWING · OFFLINE" / "PLAYER NOT CONNECTED")
+  // and Gate 6 _triggerFinalModeVariant overwrites for completion.
+  var eyebrowText = "VIEWING · LIVE";
+
+  // Delta text — in-progress mode renders pace projection; completed mode
+  // empty (future ship adds editorial commentary like "best of the season").
+  var deltaText = (editorialMode === "in-progress" && paceProjection !== null)
+    ? "ON PACE FOR " + paceProjection
+    : "";
+
+  // Stats line — empty for 8a. StatsPanel below the hero already shows
+  // GIR / PUTTS / FIR; duplicating in hero adds cognitive load. Future ship
+  // may populate with summarized stats string if mock direction shifts.
+  var statsLineText = "";
+
+  var h = '<div class="sphud-hero sphud-hero-card sphud-hero-card--' + editorialMode + '">';
+
+  // Eyebrow with pulse dot (in-progress only). Dot suppressed via CSS rule
+  // .sphud-hero-card--completed .sphud-hero-eyebrow-dot{display:none}.
+  h += '<div class="sphud-hero-eyebrow">';
+  if (editorialMode === "in-progress") {
+    h += '<span class="sphud-hero-eyebrow-dot"></span>';
+  }
+  h += '<span>' + escHtml(eyebrowText) + '</span>';
   h += '</div>';
-  h += '</div>';
-  // Big score — .sphud-hero-diff and .sphud-hero-thru class spans added
-  // v8.13.7 for Gate 6 hero cross-fade hooks. Both spans wrap existing text
-  // inline; no layout shift, no visual diff in active-player or spectator
-  // initial render. Active-player path unaffected — classes consumed only
-  // by spectator.js listener crossFadeHero on listener emission.
-  h += '<div style="font-family:var(--font-display);font-size:64px;font-weight:700;color:var(--cb-chalk);line-height:0.95;letter-spacing:-2px;margin-bottom:14px;font-variant-numeric:lining-nums tabular-nums">';
-  h += '<span class="sphud-hero-diff">' + diffStr + '</span>';
-  h += '<span class="sphud-hero-thru"> thru ' + thru + '</span>';
-  h += '</div>';
-  // Course · hole · time subline
-  h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:14px">';
+
+  // Player name + handicap-as-em-tail.
+  h += '<h2 class="sphud-hero-name">' + escHtml(firstName);
+  if (emTail) {
+    h += ' <em>' + escHtml(emTail) + '</em>';
+  }
+  h += '</h2>';
+
+  // Course / hole / elapsed subline (kept per Q-C-6).
+  h += '<div class="sphud-hero-where">';
   h += escHtml(course) + ' · HOLE ' + hole + ' · ' + escHtml(elapsedStr) + ' ELAPSED';
   h += '</div>';
-  // Pace projection (when applicable)
-  if (paceProjection !== null) {
-    h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-2);margin-bottom:14px">ON PACE FOR ' + paceProjection + '</div>';
+
+  // Score row: score + delta + thru. Gate 6 cross-fade hooks (.sphud-hero-diff
+  // for the diff value, .sphud-hero-thru for the thru count) PRESERVED inside
+  // the new structural wrappers.
+  h += '<div class="sphud-hero-score-row">';
+  h += '<div class="sphud-hero-score-num' + (diff < 0 ? ' sphud-hero-score-num--under' : '') + '">';
+  h += '<span class="sphud-hero-diff">' + escHtml(diffStr) + '</span>';
+  h += '</div>';
+  h += '<div class="sphud-hero-delta">' + escHtml(deltaText) + '</div>';
+  h += '<div class="sphud-hero-thru">';
+  h += '<div class="sphud-hero-thru-lbl">THRU</div>';
+  h += '<div class="sphud-hero-thru-val"><span class="sphud-hero-thru">' + thru + '</span></div>';
+  h += '</div>';
+  h += '</div>';
+
+  // Stats line — render only if non-empty (8a always-empty; future ship populates).
+  if (statsLineText) {
+    h += '<div class="sphud-hero-stats-line">' + escHtml(statsLineText) + '</div>';
   }
-  // Last hole age
-  h += '<div style="font-family:var(--font-ui);font-size:13px;color:var(--cb-mute-2);margin-bottom:16px">last hole ' + escHtml(lastHoleAgeStr) + '</div>';
-  // Caption slot — Gate 7 connection-state-escalation reuses this id
+
+  // Caption slot — Gate 7 connection-state chrome consumes this id.
+  // PRESERVE — removing breaks Gate 7 _applyChrome + final-mode caption.
   h += '<div id="live-round-caption"></div>';
+
+  // .sphud-hero-actions row — OMITTED in 8a per CTO Q-C-3. Action set
+  // undefined; future ship adds when affordances + click handlers are spec'd.
+
   h += '</div>';
   return h;
 }

@@ -1648,6 +1648,9 @@ function loadHomeActivityFeed() {
     var scrambleGroups = {}; // Group scramble by course+date
     snap.forEach(function(doc) {
       var r = doc.data();
+      // v8.14.0 — Defense-in-depth render guard. Abandoned rounds are
+      // dev-test artifacts and never surface publicly (Gate 8a memory rule).
+      if (r.status === "abandoned") return;
       // leagueId filtered by leagueQuery()
       var rid = doc.id;
       var isScramble = r.format === "scramble" || r.format === "scramble4";

@@ -792,13 +792,17 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .cp-meta{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-2)}
 .cp-weather{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--cb-mute-2);margin-top:8px;min-height:14px}
 
-/* ── Spectator HUD RecentShotsFeed (v8.13.6 · Ship 4a Gate 5) ── */
-.rsf-feed{display:flex;flex-direction:column;gap:0}
-.rsf-entry{padding:12px 0;border-bottom:1px solid var(--cb-chalk-3)}
+/* ── Spectator HUD RecentShotsFeed (v8.13.6 · Ship 4a Gate 5; v8.14.0 visual refresh) ──
+   Gate 8a refresh: two-column entry layout (timestamp left + body right) per v2 mock.
+   Class names + Gate 6 JS contract (rsf-entry--fresh / rsf-entry--settled / rsfSlideDown
+   keyframe) preserved unchanged — visual upgrade only. */
+.rsf-feed{display:flex;flex-direction:column}
+.rsf-entry{display:flex;align-items:flex-start;gap:var(--sp-4);padding:var(--sp-2-5) 0;border-bottom:1px solid var(--cb-chalk-3)}
 .rsf-entry:last-child{border-bottom:none}
-.rsf-eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-2);margin-bottom:4px}
-.rsf-sentence{font-family:var(--font-ui);font-size:14px;font-weight:400;color:var(--cb-ink);line-height:1.4}
-.rsf-empty{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-2);text-align:center;padding:12px 0}
+.rsf-eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-1);width:64px;flex-shrink:0;padding-top:2px}
+.rsf-sentence{flex:1;min-width:0;font-family:var(--font-display);font-size:15px;color:var(--cb-ink);line-height:1.45}
+.rsf-sentence em{font-style:italic;color:var(--cb-charcoal)}
+.rsf-empty{font-family:var(--font-display);font-style:italic;font-size:15px;color:var(--cb-mute-1);padding:var(--sp-2-5) 0;text-align:center}
 
 /* ── Spectator HUD realtime animations (v8.13.7 · Ship 4a Gate 6 · D1) ── */
 @keyframes rsfSlideDown{0%{transform:translateY(-100%);opacity:0}100%{transform:translateY(0);opacity:1}}
@@ -812,6 +816,109 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .sphud-hero-card--dimmed{opacity:0.85}
 .sphud-hero-eyebrow--alert{color:var(--alert)}
 .sphud-hero-eyebrow--mute{color:var(--cb-mute-2)}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Spotlight visual upgrade (v8.14.0 · Ship 4a Gate 8a)
+   Locked palette + editorial type + v2 mock structure. Avatar dropped per
+   CTO ruling Q-C-1 (mock authority). Handicap rendered as italic em-tail
+   on player name per Q-C-2. .sphud-hero-actions row + .sphud-hero-delta
+   semantics + last-hole age line all per Q-C rulings.
+   Existing v8.13.6/7/8 functional contracts preserved:
+     .sphud-hero-diff / .sphud-hero-thru — Gate 6 cross-fade hooks
+     .sphud-hero-eyebrow / .sphud-hero-card — Gate 7 modifier targets
+     #live-round-caption — Gate 7 connection-state caption slot
+   New editorial state modifiers (--in-progress, --completed) coexist with
+   functional state modifiers (--dimmed, --alert, --mute) per ruling P1.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Masthead (page-level header above hero) */
+.sphud-masthead{padding:var(--sp-6) var(--sp-6) var(--sp-7);border-bottom:1px solid var(--cb-chalk-3)}
+.sphud-masthead-eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--cb-mute-1);margin-bottom:var(--sp-2-5)}
+.sphud-masthead-h1{font-family:var(--font-display);font-weight:700;font-size:72px;line-height:0.95;letter-spacing:-1.8px;color:var(--cb-ink);font-variation-settings:'opsz' 144;text-wrap:pretty}
+.sphud-masthead-h1 em{font-style:italic;font-weight:500;color:var(--cb-charcoal)}
+.sphud-masthead-sub{font-family:var(--font-display);font-style:italic;font-weight:400;font-size:18px;color:var(--cb-charcoal);margin-top:var(--sp-2-5);max-width:600px;text-wrap:pretty}
+.sphud-masthead-date{font-family:var(--font-mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--cb-mute-1);margin-top:var(--sp-2-5)}
+
+/* Round hero card — the green slab */
+.sphud-hero{background:var(--cb-green);color:var(--cb-chalk);padding:36px 36px 32px;box-shadow:var(--el-2)}
+.sphud-hero-eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass-3);margin-bottom:var(--sp-4-5);display:flex;align-items:center;gap:var(--sp-2)}
+.sphud-hero-eyebrow-dot{width:7px;height:7px;border-radius:50%;background:var(--cb-brass-3);animation:pulse 1.6s ease-out infinite}
+.sphud-hero-card--completed .sphud-hero-eyebrow{color:var(--cb-mute-3)}
+.sphud-hero-card--completed .sphud-hero-eyebrow-dot{display:none}
+.sphud-hero-name{font-family:var(--font-display);font-weight:600;font-size:40px;line-height:1.05;letter-spacing:-0.6px;color:var(--cb-chalk);font-variation-settings:'opsz' 96}
+.sphud-hero-name em{font-style:italic;font-weight:500}
+.sphud-hero-where{font-family:var(--font-mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--cb-mute-3);margin-top:var(--sp-2)}
+.sphud-hero-score-row{display:flex;align-items:flex-end;gap:36px;margin-top:var(--sp-5);padding-top:20px;border-top:1px solid rgba(var(--cb-chalk-rgb) / 0.14)}
+.sphud-hero-score-num{font-family:var(--font-display);font-weight:600;font-size:88px;line-height:0.85;letter-spacing:-2.5px;color:var(--cb-chalk);font-variation-settings:'opsz' 144;font-variant-numeric:lining-nums tabular-nums}
+.sphud-hero-score-num--under{color:var(--cb-brass-3)}
+.sphud-hero-delta{font-family:var(--font-display);font-style:italic;font-weight:500;font-size:20px;color:var(--cb-brass-3);margin-bottom:var(--sp-2);text-wrap:pretty}
+.sphud-hero-thru{margin-left:auto;text-align:right}
+.sphud-hero-thru-lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--cb-mute-3);margin-bottom:var(--sp-1)}
+.sphud-hero-thru-val{font-family:var(--font-display);font-weight:600;font-size:36px;line-height:1;color:var(--cb-chalk);font-variant-numeric:lining-nums tabular-nums}
+.sphud-hero-stats-line{font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-3);margin-top:var(--sp-4-5)}
+
+/* Editorial state modifiers — coexist additively with Gate 7 functional state. */
+/* Default in-progress: eyebrow keeps brass-3 + pulse (rules above). */
+/* .sphud-hero-card--completed override is on .sphud-hero-eyebrow rule above. */
+
+/* Scorecard summary (3-cell out / in / total) */
+.sphud-card-summary{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--cb-chalk-3)}
+.sphud-card-summary-cell{padding:var(--sp-4-5) var(--sp-4);border-right:1px solid var(--cb-chalk-3);text-align:center}
+.sphud-card-summary-cell:last-child{border-right:none}
+.sphud-card-summary-cell-lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--cb-mute-1);margin-bottom:var(--sp-1-5)}
+.sphud-card-summary-cell-num{font-family:var(--font-display);font-weight:600;font-size:38px;line-height:1;color:var(--cb-ink);font-variation-settings:'opsz' 60;font-variant-numeric:lining-nums tabular-nums}
+.sphud-card-summary-cell--under .sphud-card-summary-cell-num{color:var(--cb-moss)}
+.sphud-card-summary-cell--over .sphud-card-summary-cell-num{color:var(--cb-claret)}
+.sphud-card-summary-cell--tot{background:var(--cb-chalk-2);border-left:2px solid var(--cb-brass)}
+.sphud-card-summary-cell-delta{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;color:var(--cb-mute-1);margin-top:var(--sp-1)}
+
+/* Scorecard full toggle + table (collapsed by default) */
+.sphud-card-toggle{margin-top:var(--sp-2-5);font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-ink-link);cursor:pointer;display:inline-block;border-bottom:1px solid var(--cb-brass);padding-bottom:2px}
+.sphud-card-toggle:hover{color:var(--cb-brass)}
+.sphud-card-full{margin-top:var(--sp-4-5);border:1px solid var(--cb-chalk-3);overflow-x:auto;display:none}
+.sphud-card-full--show{display:block}
+.sphud-card-full table{width:100%;border-collapse:collapse;min-width:640px}
+.sphud-card-full th{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-1);font-weight:500;text-align:center;padding:var(--sp-2) var(--sp-1);border-bottom:1px solid var(--cb-chalk-3);background:var(--cb-chalk-2)}
+.sphud-card-full th:first-child{text-align:left;padding-left:var(--sp-2-5);width:84px}
+.sphud-card-full th--tot{border-left:2px solid var(--cb-brass);background:var(--cb-chalk);color:var(--cb-ink);font-weight:700}
+.sphud-card-full td{font-family:var(--font-display);font-size:13px;text-align:center;padding:var(--sp-2) var(--sp-1);border-bottom:1px solid var(--cb-chalk-3);color:var(--cb-ink);font-variant-numeric:lining-nums tabular-nums}
+.sphud-card-full tr:last-child td{border-bottom:none}
+.sphud-card-full td:first-child{text-align:left;padding-left:var(--sp-2-5);font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-1);font-weight:500}
+.sphud-card-full td--tot{border-left:2px solid var(--cb-brass);background:var(--cb-chalk-2);font-weight:700}
+.sphud-card-full-row-score td{font-weight:600;font-size:14px}
+.sphud-card-full-holediff{display:inline-block;width:22px;height:22px;line-height:22px;position:relative}
+.sphud-card-full-holediff--under{color:var(--cb-moss)}
+.sphud-card-full-holediff--under::before{content:'';position:absolute;inset:1px;border-radius:50%;border:1.5px solid var(--cb-moss)}
+.sphud-card-full-holediff--over{color:var(--cb-claret)}
+.sphud-card-full-holediff--over::before{content:'';position:absolute;inset:1px;border:1.5px solid var(--cb-claret)}
+
+/* Recap blockquote */
+.sphud-recap blockquote{font-family:var(--font-display);font-style:italic;font-weight:400;font-size:22px;line-height:1.5;color:var(--cb-ink);max-width:560px;text-wrap:pretty;border-left:3px solid var(--cb-brass);padding:var(--sp-1-5) 0 var(--sp-1-5) var(--sp-5-5)}
+.sphud-recap-by{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--cb-mute-1);margin-top:var(--sp-2-5)}
+
+/* Right rail modules.
+   .sphud-partners + .sphud-partner + .sphud-partner--you rules below are
+   forward-looking — no JS consumer in v8.14.0. Consumer markup expects the
+   .av base class (defined in base.css) on partner avatar children. Both rule
+   sets light up together when the partner-rail render ships in a future gate. */
+.sphud-rail{display:flex;flex-direction:column;gap:36px}
+.sphud-rail-module-eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--cb-mute-1);margin-bottom:var(--sp-3);padding-top:var(--sp-2-5);border-top:2px solid var(--cb-brass)}
+.sphud-course-meta-name{font-family:var(--font-display);font-weight:600;font-size:20px;line-height:1.15;color:var(--cb-ink);letter-spacing:-0.3px}
+.sphud-course-meta-where{font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-1);margin-top:var(--sp-1)}
+.sphud-course-meta-stats{display:grid;grid-template-columns:repeat(3,1fr);margin-top:var(--sp-2-5)}
+.sphud-course-meta-stats-c{padding:var(--sp-2-5) 0;border-right:1px solid var(--cb-chalk-3);text-align:center}
+.sphud-course-meta-stats-c:last-child{border-right:none}
+.sphud-course-meta-stats-c-n{font-family:var(--font-display);font-weight:600;font-size:18px;color:var(--cb-ink);font-variant-numeric:lining-nums tabular-nums}
+.sphud-course-meta-stats-c-l{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-1);margin-top:2px}
+.sphud-conditions{display:flex;flex-direction:column;gap:var(--sp-2-5)}
+.sphud-conditions-row{display:flex;align-items:baseline;gap:var(--sp-2-5)}
+.sphud-conditions-row-l{font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-1);width:60px}
+.sphud-conditions-row-v{font-family:var(--font-display);font-style:italic;font-size:14px;color:var(--cb-ink);font-weight:500}
+.sphud-partners{display:flex;flex-direction:column}
+.sphud-partner{display:flex;align-items:center;gap:var(--sp-2-5);padding:var(--sp-2) var(--sp-2);border-bottom:1px solid var(--cb-chalk-3);border-left:3px solid transparent;margin-left:-8px;cursor:pointer}
+.sphud-partner:last-child{border-bottom:none}
+.sphud-partner:hover{border-left-color:var(--cb-brass)}
+.sphud-partner--you{background:var(--cb-chalk-2);border-left-color:var(--cb-brass-2)}
 
 .adv-row{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-3)}
 .adv-col{display:flex;flex-direction:column;gap:6px}

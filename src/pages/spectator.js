@@ -1058,6 +1058,27 @@ function _crossFadeHero(prevHero, newHero) {
 // completion earned the live view — final mode persists for the page
 // session, no auto-expiry. Listener detached after this fires.
 function _triggerFinalModeVariant(doc) {
+  // Gate 8a — flip editorial-mode modifier class on hero card.
+  // Editorial state (.sphud-hero-card--in-progress / --completed) is independent
+  // of functional state (.sphud-hero-card--dimmed) per Gate 8a Q-C ruling P1
+  // editorial-vs-functional split. Both modifier-class layers coexist additively.
+  var heroCard = document.querySelector('.sphud-hero-card');
+  if (heroCard) {
+    heroCard.classList.remove('sphud-hero-card--in-progress');
+    heroCard.classList.add('sphud-hero-card--completed');
+  }
+
+  // Gate 7 — Reset all connection-state chrome before final-mode mutations.
+  // Without this, eyebrow modifier classes / dimming / captions from active
+  // stale/disconnected/host-offline state would bleed into final-mode display.
+  var state = window._spectatorState;
+  if (state) {
+    state.connectionState = "live";
+    state.hostOnline = true;
+    state.lastChromeKey = "live";
+  }
+  if (typeof _applyChrome === "function") _applyChrome("live");
+
   // 1. Eyebrow swap: VIEWING · LIVE → FINAL · X MIN AGO
   var eyebrow = document.querySelector('.sphud-hero-eyebrow');
   if (eyebrow) {
@@ -1069,8 +1090,8 @@ function _triggerFinalModeVariant(doc) {
   }
 
   // 2. Hero cross-fade for final score (one last cross-fade trigger).
+  // Reuses `state` reference declared above for editorial-mode + chrome reset.
   var newHero = _computeHeroValues(doc);
-  var state = window._spectatorState;
   if (state && state.prevHero && _heroChanged(state.prevHero, newHero)) {
     _crossFadeHero(state.prevHero, newHero);
   }

@@ -246,7 +246,12 @@ function renderMemberDetail(pid) {
 
 function renderMemberDetailWithData(p) {
   var pid = p.id;
-  var rounds = PB.getPlayerRounds(pid);
+  // v8.14.0 — Defense-in-depth: filter abandoned rounds before any member-page
+  // render consumers iterate. Abandoned rounds are dev-test artifacts and never
+  // surface publicly (Gate 8a memory rule). Filter at top so all downstream
+  // consumers (round history, handicap, courses played, stats, etc.) see clean
+  // data without per-iteration guards.
+  var rounds = PB.getPlayerRounds(pid).filter(function(r){return r.status !== "abandoned";});
   var avg = PB.getPlayerAvg(pid);
   var best = PB.getPlayerBest(pid);
   var ghinHcap = PB.calcHandicap(rounds);
@@ -1885,7 +1890,8 @@ function shareProfileCard(pid) {
   if (!p) { Router.toast("Player not found"); return; }
   // XP source precedence (see PB.getPlayerXPForDisplay in core/data.js).
   var lvl = PB.calcLevelFromXP(PB.getPlayerXPForDisplay(pid));
-  var rounds = PB.getPlayerRounds(pid);
+  // v8.14.0 — Defense-in-depth abandoned filter (Gate 8a memory rule).
+  var rounds = PB.getPlayerRounds(pid).filter(function(r){return r.status !== "abandoned";});
   var indiv = rounds.filter(function(r){return r.format!=="scramble"&&r.format!=="scramble4"});
   var full18 = indiv.filter(function(r){return !r.holesPlayed||r.holesPlayed>=18});
   var hcap = PB.calcHandicap(rounds);
