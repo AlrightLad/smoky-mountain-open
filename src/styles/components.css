@@ -831,14 +831,6 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
    functional state modifiers (--dimmed, --alert, --mute) per ruling P1.
    ────────────────────────────────────────────────────────────────────────── */
 
-/* Masthead (page-level header above hero) */
-.sphud-masthead{padding:var(--sp-6) var(--sp-6) var(--sp-7);border-bottom:1px solid var(--cb-chalk-3)}
-.sphud-masthead-eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--cb-mute-1);margin-bottom:var(--sp-2-5)}
-.sphud-masthead-h1{font-family:var(--font-display);font-weight:700;font-size:72px;line-height:0.95;letter-spacing:-1.8px;color:var(--cb-ink);font-variation-settings:'opsz' 144;text-wrap:pretty}
-.sphud-masthead-h1 em{font-style:italic;font-weight:500;color:var(--cb-charcoal)}
-.sphud-masthead-sub{font-family:var(--font-display);font-style:italic;font-weight:400;font-size:18px;color:var(--cb-charcoal);margin-top:var(--sp-2-5);max-width:600px;text-wrap:pretty}
-.sphud-masthead-date{font-family:var(--font-mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--cb-mute-1);margin-top:var(--sp-2-5)}
-
 /* Round hero card — the green slab */
 .sphud-hero{background:var(--cb-green);color:var(--cb-chalk);padding:36px 36px 32px;box-shadow:var(--el-2)}
 .sphud-hero-eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass-3);margin-bottom:var(--sp-4-5);display:flex;align-items:center;gap:var(--sp-2)}

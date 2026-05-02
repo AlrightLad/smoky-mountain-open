@@ -3,7 +3,7 @@
 // invalidates stale caches on each deploy. Static CACHE_NAME means cleanup
 // is a no-op (the bug v8.12.0 hotfix targets — was stuck at 'parbaughs-v6-4-0'
 // for ~30 ships). Future ship may automate via Vite build-time injection.
-var CACHE_NAME = 'parbaughs-v8.14.1';
+var CACHE_NAME = 'parbaughs-v8.14.2';
 var STATIC_ASSETS = [
   '/smoky-mountain-open/',
   '/smoky-mountain-open/watermark.jpg',
