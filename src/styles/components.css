@@ -811,6 +811,17 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .rsf-entry--settled{border-left-color:transparent;padding-left:0}
 .phs-cell--fresh{animation:phsFadeIn var(--duration-slow) ease-out}
 
+/* ── Trend chart time-range toggle (v8.14.4 · P17) ──
+   3-pill toggle (30D / SEASON / ANNUAL) above trend charts on Members
+   profile. Right-aligned above the chart inside its .card wrapper.
+   .chart-container is the JS hook for surgical re-render on toggle
+   change (no class styling needed, just the data-chart-id selector). */
+.chart-container{}
+.chart-range-toggle{display:flex;gap:var(--sp-1);justify-content:flex-end;margin-bottom:var(--sp-2)}
+.chart-range-pill{font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-1);background:transparent;border:1px solid var(--cb-chalk-3);padding:4px 10px;border-radius:12px;cursor:pointer;transition:color var(--duration-fast) var(--ease-default),background var(--duration-fast) var(--ease-default),border-color var(--duration-fast) var(--ease-default)}
+.chart-range-pill:hover{color:var(--cb-ink);border-color:var(--cb-brass)}
+.chart-range-pill--active{color:var(--cb-ink);background:var(--cb-chalk-2);border-color:var(--cb-brass)}
+
 /* ── Spectator HUD connection-state chrome (v8.13.8 · Ship 4a Gate 7 · D2/F3) ── */
 .sphud-hero-card{transition:opacity var(--duration-fast) var(--ease-default)}
 .sphud-hero-card--dimmed{opacity:0.85}

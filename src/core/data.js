@@ -2013,6 +2013,72 @@ var PB = (function() {
   if (!state.challenges) state.challenges = [];
   if (!state.notifications) state.notifications = {};
 
+  // ── v8.14.4 — Time-range filtering helpers (P17 trend-chart toggle pattern) ──
+  // Used by Members profile trend charts (Scoring/GIR/Putts) to subset rounds
+  // before passing to calcScoringTrends / calcStatTrends.
+
+  // Extract round timestamp. Handles ISO date string (canonical r.date format
+  // per utils.js localDateStr — "YYYY-MM-DD"), Firestore Timestamp shapes
+  // (defensive against legacy round docs), Unix millis. Returns 0 on missing
+  // or unparseable date — caller's range filter excludes via `>= cutoff`.
+  function getRoundTimestamp(round) {
+    var d = round && (round.date || round.createdAt || round.roundDate);
+    if (!d) return 0;
+    if (typeof d === "number") return d;
+    if (typeof d === "string") {
+      var ms = new Date(d).getTime();
+      return isNaN(ms) ? 0 : ms;
+    }
+    if (typeof d.toMillis === "function") { try { return d.toMillis(); } catch (e) { return 0; } }
+    if (typeof d.seconds === "number") return d.seconds * 1000;
+    return 0;
+  }
+
+  // Filter rounds by time range. range: "30D" | "SEASON" | "ANNUAL".
+  //   30D     — trailing 30 days from now
+  //   SEASON  — Apr 1 – Oct 31 of current calendar year (US northern golf season)
+  //   ANNUAL  — trailing 365 days from now
+  // Unknown range falls through to unfiltered rounds (safe default).
+  function filterRoundsByRange(rounds, range) {
+    if (!Array.isArray(rounds)) return [];
+    var now = Date.now();
+    if (range === "30D") {
+      var cutoff30 = now - (30 * 24 * 60 * 60 * 1000);
+      return rounds.filter(function(r) { return getRoundTimestamp(r) >= cutoff30; });
+    }
+    if (range === "SEASON") {
+      var year = new Date(now).getFullYear();
+      var seasonStart = new Date(year, 3, 1).getTime();              // Apr 1
+      var seasonEnd = new Date(year, 9, 31, 23, 59, 59, 999).getTime(); // Oct 31
+      return rounds.filter(function(r) {
+        var t = getRoundTimestamp(r);
+        return t >= seasonStart && t <= seasonEnd;
+      });
+    }
+    if (range === "ANNUAL") {
+      var cutoff365 = now - (365 * 24 * 60 * 60 * 1000);
+      return rounds.filter(function(r) { return getRoundTimestamp(r) >= cutoff365; });
+    }
+    return rounds;
+  }
+
+  // localStorage helpers for chart-range toggle state. Device-scoped per
+  // existing pb_* convention (pb_theme, pb_liveState). chartId is canonical
+  // identifier (e.g. "scoring_trend", "gir_trend", "putts_trend").
+  var CHART_RANGE_PREFIX = "pb_chart_range_";
+  function getChartRange(chartId, defaultRange) {
+    try {
+      var stored = localStorage.getItem(CHART_RANGE_PREFIX + chartId);
+      if (stored === "30D" || stored === "SEASON" || stored === "ANNUAL") return stored;
+    } catch (e) { /* private browsing / quota */ }
+    return defaultRange || "30D";
+  }
+  function setChartRange(chartId, range) {
+    try {
+      localStorage.setItem(CHART_RANGE_PREFIX + chartId, range);
+    } catch (e) { /* silent — device storage failure non-critical */ }
+  }
+
   /* ---------- PUBLIC API ---------- */
   return {
     getPlayer:getPlayer, getPlayers:getPlayers, addPlayer:addPlayer, updatePlayer:updatePlayer, removePlayer:removePlayer,
@@ -2038,6 +2104,8 @@ var PB = (function() {
     exportBackup:exportBackup, importBackup:importBackup, reset:reset, save:save, load:load, setScoreSilent:setScoreSilent,
     setMiniWinnerSilent:function(id,pid){state.miniWinners[id]=pid;},
     setBonusWinnerSilent:function(id,pid){state.bonusWinners[id]=pid;},
-    getState:function(){return state;}
+    getState:function(){return state;},
+    // v8.14.4 — trend-chart time-range helpers (P17)
+    filterRoundsByRange:filterRoundsByRange, getChartRange:getChartRange, setChartRange:setChartRange
   };
 })();

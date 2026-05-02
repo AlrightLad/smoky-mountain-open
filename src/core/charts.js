@@ -17,11 +17,13 @@ function svgBarChart(data, options) {
   var hasNeg = data.some(function(d){return d.value < 0});
   var zeroY = hasNeg ? chartH / 2 + (o.showValues ? 16 : 0) : chartH + (o.showValues ? 16 : 0);
 
-  // v8.14.3 — viewBox + width:100% style instead of hardcoded HTML width=.
-  // Helper renders responsive; container governs width. o.width retained for
-  // viewBox numeric value (drives chart-internal positioning math). See P16
-  // memory rule + members.js:1041 buildHandicapGraph for canonical pattern.
-  var svg = '<svg viewBox="0 0 ' + o.width + ' ' + o.height + '" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">';
+  // v8.14.4 (Approach B) — viewBox + width:100% + FIXED pixel height.
+  // preserveAspectRatio="none" lets x-axis fill container width while y-axis
+  // stays at the declared o.height pixels. Data charts have independent x
+  // (time) and y (value) dimensions; aspect distortion is fine and preferred
+  // — prevents the v8.14.3 proportional-height blow-up at wide containers.
+  // See P16 memory rule (refined v8.14.4) for icon-vs-data-chart distinction.
+  var svg = '<svg viewBox="0 0 ' + o.width + ' ' + o.height + '" preserveAspectRatio="none" style="width:100%;height:' + o.height + 'px;display:block">';
 
   // Baseline
   if (o.baseline !== null || hasNeg) {
@@ -70,10 +72,9 @@ function svgLineChart(data, options) {
   function px(i) { return padLeft + (i / (data.length - 1)) * chartW; }
   function py(v) { return padTop + (1 - (v - yMin) / range) * chartH; }
 
-  // v8.14.3 — viewBox + width:100% style instead of hardcoded HTML width=.
-  // Same responsive pattern as svgBarChart above (P16). o.width drives
-  // viewBox + chart-internal positioning math; container governs render width.
-  var svg = '<svg viewBox="0 0 ' + o.width + ' ' + o.height + '" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">';
+  // v8.14.4 (Approach B) — viewBox + width:100% + FIXED pixel height with
+  // preserveAspectRatio="none". Same data-chart pattern as svgBarChart above.
+  var svg = '<svg viewBox="0 0 ' + o.width + ' ' + o.height + '" preserveAspectRatio="none" style="width:100%;height:' + o.height + 'px;display:block">';
 
   // Grid lines
   for (var gi = 0; gi <= 3; gi++) {
@@ -102,9 +103,16 @@ function svgLineChart(data, options) {
   }
 
   // X labels (first, middle, last)
+  // v8.14.4 — first label uses text-anchor="start" + last uses text-anchor="end"
+  // so labels don't half-overflow viewBox edges. Middle label keeps "middle"
+  // anchor for natural centering. Edge anchoring keeps labels readable at
+  // narrow chart widths where viewBox=0 sits at the literal left edge.
   if (data.length >= 3) {
-    [0, Math.floor(data.length/2), data.length-1].forEach(function(idx) {
-      if (data[idx].label) svg += '<text x="' + px(idx) + '" y="' + (o.height - 2) + '" text-anchor="middle" fill="var(--muted)" font-size="8" font-family="Inter,sans-serif">' + data[idx].label + '</text>';
+    var lastIdx = data.length - 1;
+    [0, Math.floor(data.length/2), lastIdx].forEach(function(idx) {
+      if (!data[idx].label) return;
+      var anchor = idx === 0 ? 'start' : (idx === lastIdx ? 'end' : 'middle');
+      svg += '<text x="' + px(idx) + '" y="' + (o.height - 2) + '" text-anchor="' + anchor + '" fill="var(--muted)" font-size="8" font-family="Inter,sans-serif">' + data[idx].label + '</text>';
     });
   }
 
@@ -123,10 +131,11 @@ function svgHorizontalBars(data, options) {
   if (maxVal === 0) maxVal = 1;
   var totalH = data.length * (o.barHeight + o.gap) - o.gap;
 
-  // v8.14.3 — viewBox + width:100% style instead of hardcoded HTML width=.
-  // Same responsive pattern as svgBarChart / svgLineChart above (P16).
-  // totalH (height) is computed from data length and stays in viewBox + style:height:auto.
-  var svg = '<svg viewBox="0 0 ' + o.width + ' ' + totalH + '" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">';
+  // v8.14.4 (Approach B) — viewBox + width:100% + FIXED pixel height (totalH
+  // computed from data length). preserveAspectRatio="none" matches sibling
+  // helpers; horizontal bars distort gracefully on x-axis if container exceeds
+  // o.width while bar heights stay readable.
+  var svg = '<svg viewBox="0 0 ' + o.width + ' ' + totalH + '" preserveAspectRatio="none" style="width:100%;height:' + totalH + 'px;display:block">';
   var labelW = 50;
   var barAreaW = o.width - labelW - (o.showValues ? 40 : 0);
 

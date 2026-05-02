@@ -691,15 +691,24 @@ function renderMemberDetailWithData(p) {
 
   // ═══ ANALYTICS DASHBOARD ═══
   if (typeof calcScoringTrends === "function" && rounds.length >= 3) {
-    // Scoring Trends
-    var trends = calcScoringTrends(rounds);
+    // Scoring Trends — v8.14.4 adds 30D/SEASON/ANNUAL toggle (P17 pattern).
+    // Toggle inside .card per F2 ruling. Filter rounds before calc; if filter
+    // is too aggressive (<3 rounds) chart shows empty-state but toggle stays
+    // visible so user can switch range.
+    var scoringRange = PB.getChartRange('scoring_trend', '30D');
+    var scoringFiltered = PB.filterRoundsByRange(rounds, scoringRange);
+    var trends = calcScoringTrends(scoringFiltered);
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Scoring Trend</span></div>';
+    h += '<div class="card"><div style="padding:14px 16px">';
+    h += _renderChartRangeToggle('scoring_trend', scoringRange, pid);
+    h += '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">Rolling 5-round average</div>';
+    h += '<div class="chart-container" data-chart-id="scoring_trend">';
     if (trends && trends.rolling5.length >= 3) {
-      h += '<div class="section"><div class="sec-head"><span class="sec-title">Scoring Trend</span></div>';
-      h += '<div class="card"><div style="padding:14px 16px">';
-      h += '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">Rolling 5-round average</div>';
       h += svgLineChart(trends.rolling5, {width:310, height:120, color:'var(--gold)'});
-      h += '</div></div></div>';
+    } else {
+      h += '<div style="padding:24px 8px;text-align:center;font-size:11px;color:var(--muted)">Not enough rounds in this range. Try a wider window.</div>';
     }
+    h += '</div></div></div></div>';
 
     // Scoring Zones (par type)
     var zones = calcScoringZones(rounds);
@@ -735,20 +744,43 @@ function renderMemberDetailWithData(p) {
       h += '</div></div></div>';
     }
 
-    // Stat Trends (FIR, GIR, Putts)
-    var statTr = calcStatTrends(rounds);
-    if (statTr) {
-      if (statTr.gir.length >= 3) {
+    // Stat Trends (FIR, GIR, Putts) — v8.14.4 GIR + Putts get their own
+    // independent toggles (separate localStorage keys; user can view different
+    // ranges per chart). Section always renders if calcStatTrends has data
+    // for ALL rounds (not filtered yet); per-chart filter happens below.
+    if (typeof calcStatTrends === "function") {
+      // GIR % Trend
+      var girRange = PB.getChartRange('gir_trend', '30D');
+      var girFiltered = PB.filterRoundsByRange(rounds, girRange);
+      var statTrGir = calcStatTrends(girFiltered);
+      if (statTrGir || calcStatTrends(rounds)) {
         h += '<div class="section"><div class="sec-head"><span class="sec-title">GIR % Trend</span></div>';
         h += '<div class="card"><div style="padding:14px 16px">';
-        h += svgLineChart(statTr.gir, {width:310, height:100, color:'var(--gold)', yMin:0, yMax:100});
-        h += '</div></div></div>';
+        h += _renderChartRangeToggle('gir_trend', girRange, pid);
+        h += '<div class="chart-container" data-chart-id="gir_trend">';
+        if (statTrGir && statTrGir.gir.length >= 3) {
+          h += svgLineChart(statTrGir.gir, {width:310, height:100, color:'var(--gold)', yMin:0, yMax:100});
+        } else {
+          h += '<div style="padding:24px 8px;text-align:center;font-size:11px;color:var(--muted)">Not enough rounds in this range. Try a wider window.</div>';
+        }
+        h += '</div></div></div></div>';
       }
-      if (statTr.putts.length >= 3) {
+
+      // Putts Per Hole Trend
+      var puttsRange = PB.getChartRange('putts_trend', '30D');
+      var puttsFiltered = PB.filterRoundsByRange(rounds, puttsRange);
+      var statTrPutts = calcStatTrends(puttsFiltered);
+      if (statTrPutts || calcStatTrends(rounds)) {
         h += '<div class="section"><div class="sec-head"><span class="sec-title">Putts Per Hole Trend</span></div>';
         h += '<div class="card"><div style="padding:14px 16px">';
-        h += svgLineChart(statTr.putts, {width:310, height:100, color:'var(--pink)'});
-        h += '</div></div></div>';
+        h += _renderChartRangeToggle('putts_trend', puttsRange, pid);
+        h += '<div class="chart-container" data-chart-id="putts_trend">';
+        if (statTrPutts && statTrPutts.putts.length >= 3) {
+          h += svgLineChart(statTrPutts.putts, {width:310, height:100, color:'var(--pink)'});
+        } else {
+          h += '<div style="padding:24px 8px;text-align:center;font-size:11px;color:var(--muted)">Not enough rounds in this range. Try a wider window.</div>';
+        }
+        h += '</div></div></div></div>';
       }
     }
 
@@ -1038,7 +1070,13 @@ function buildHandicapGraph(rounds, pid) {
   var chartW = svgW - padL - padR, chartH = svgH - padT - padB;
   var gradId = "hcapGrad_" + pid;
 
-  var svg = '<svg viewBox="0 0 ' + svgW + ' ' + svgH + '" style="width:100%;height:auto;display:block">';
+  // v8.14.4 (Approach B) — viewBox + width:100% + FIXED pixel height with
+  // preserveAspectRatio="none". Prevents v8.14.3 proportional-height blow-up
+  // at wide containers. Month labels (line ~1062) sit inside padL=32 / padR=14
+  // padding so edge-anchor fix from svgLineChart is NOT needed here — labels
+  // never reach viewBox edges. text-anchor="middle" stays correct for monthly
+  // bin labels.
+  var svg = '<svg viewBox="0 0 ' + svgW + ' ' + svgH + '" preserveAspectRatio="none" style="width:100%;height:' + svgH + 'px;display:block">';
 
   // Gradient definition for area fill
   svg += '<defs><linearGradient id="' + gradId + '" x1="0" y1="0" x2="0" y2="1">';
@@ -1950,5 +1988,99 @@ function shareProfileCard(pid) {
     document.body.removeChild(cardDiv);
     Router.toast("Share card generation not available");
   }
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// v8.14.4 — Trend chart time-range toggle (P17 pattern)
+// ════════════════════════════════════════════════════════════════════════
+// Three trend charts on Members profile (Scoring/GIR/Putts) each have a
+// 30D / SEASON / ANNUAL toggle. Toggle state persists in localStorage via
+// PB.getChartRange/setChartRange (device-scoped per Q-RULING-B). Click
+// surgically re-renders only the affected chart container — preserves
+// scroll position and other section state.
+//
+// Handicap chart toggle deferred to separate ship per Q-RULING-A — the
+// handicap data shape (monthly aggregation) doesn't fit naive filter-
+// before-compute semantics. See POST_SHIP_4A_BACKLOG.md.
+// ════════════════════════════════════════════════════════════════════════
+
+// Render the toggle pill row above a chart. Stashes pid on the toggle root
+// so the click handler can re-fetch rounds on toggle change.
+function _renderChartRangeToggle(chartId, currentRange, pid) {
+  var ranges = ['30D', 'SEASON', 'ANNUAL'];
+  var labels = { '30D': '30D', 'SEASON': 'SEASON', 'ANNUAL': 'ANNUAL' };
+  var html = '<div class="chart-range-toggle" data-chart-id="' + chartId + '" data-pid="' + escHtml(pid || '') + '">';
+  ranges.forEach(function(r) {
+    var activeClass = (r === currentRange) ? ' chart-range-pill--active' : '';
+    html += '<button class="chart-range-pill' + activeClass + '" data-range="' + r + '" type="button">' + labels[r] + '</button>';
+  });
+  html += '</div>';
+  return html;
+}
+
+// Surgical re-render of a single chart container. Preserves scroll position,
+// other chart toggle states, and section accordion state. Updates toggle pill
+// active class + replaces .chart-container innerHTML with new SVG.
+function _rerenderTrendChart(chartId, pid) {
+  var newRange = PB.getChartRange(chartId, '30D');
+  var rounds = PB.getPlayerRounds(pid).filter(function(r){return r.status !== "abandoned";});
+  // Update toggle pill active state for the targeted chart only.
+  var toggle = document.querySelector('.chart-range-toggle[data-chart-id="' + chartId + '"]');
+  if (toggle) {
+    var pills = toggle.querySelectorAll('.chart-range-pill');
+    pills.forEach(function(p) {
+      if (p.dataset.range === newRange) p.classList.add('chart-range-pill--active');
+      else p.classList.remove('chart-range-pill--active');
+    });
+  }
+  // Re-render the chart SVG (or empty-state) in the container.
+  var container = document.querySelector('.chart-container[data-chart-id="' + chartId + '"]');
+  if (!container) return;
+  var filtered = PB.filterRoundsByRange(rounds, newRange);
+  var html = '';
+  if (chartId === 'scoring_trend') {
+    var trends = calcScoringTrends(filtered);
+    if (trends && trends.rolling5.length >= 3) {
+      html = svgLineChart(trends.rolling5, {width:310, height:120, color:'var(--gold)'});
+    } else {
+      html = '<div style="padding:24px 8px;text-align:center;font-size:11px;color:var(--muted)">Not enough rounds in this range. Try a wider window.</div>';
+    }
+  } else if (chartId === 'gir_trend') {
+    var statTr = calcStatTrends(filtered);
+    if (statTr && statTr.gir.length >= 3) {
+      html = svgLineChart(statTr.gir, {width:310, height:100, color:'var(--gold)', yMin:0, yMax:100});
+    } else {
+      html = '<div style="padding:24px 8px;text-align:center;font-size:11px;color:var(--muted)">Not enough rounds in this range. Try a wider window.</div>';
+    }
+  } else if (chartId === 'putts_trend') {
+    var statTrP = calcStatTrends(filtered);
+    if (statTrP && statTrP.putts.length >= 3) {
+      html = svgLineChart(statTrP.putts, {width:310, height:100, color:'var(--pink)'});
+    } else {
+      html = '<div style="padding:24px 8px;text-align:center;font-size:11px;color:var(--muted)">Not enough rounds in this range. Try a wider window.</div>';
+    }
+  }
+  container.innerHTML = html;
+}
+
+// Delegated click handler — registered ONCE at script load time. Listens
+// for clicks on any .chart-range-pill across the app; re-renders the
+// associated chart on toggle change. Idempotent against repeated attaches
+// via the _pbChartRangeListenerAttached flag.
+if (typeof window !== "undefined" && !window._pbChartRangeListenerAttached) {
+  window._pbChartRangeListenerAttached = true;
+  document.addEventListener('click', function(e) {
+    var pill = e.target.closest && e.target.closest('.chart-range-pill');
+    if (!pill) return;
+    var toggle = pill.closest('.chart-range-toggle');
+    if (!toggle) return;
+    var chartId = toggle.dataset.chartId;
+    var pid = toggle.dataset.pid;
+    var newRange = pill.dataset.range;
+    if (!chartId || !newRange) return;
+    if (typeof PB === "undefined" || !PB.setChartRange) return;
+    PB.setChartRange(chartId, newRange);
+    _rerenderTrendChart(chartId, pid);
+  });
 }
 

@@ -127,6 +127,24 @@ When sync-rounds or tee-times have multiple players in the same active round, su
 
 ---
 
+### B.5 — Handicap chart time-range toggle (added v8.14.4 Q-RULING-A)
+**Scope:** M · **Target:** No current target
+
+`buildHandicapGraph` in `members.js` currently shows a 12-month rolling tail with hardcoded slice (`graphData.slice(-12)`). Adding the v8.14.4 30D/SEASON/ANNUAL toggle pattern (P17) requires restructuring the data computation: handicap math has well-defined semantics (best 8 of last 20 differentials, etc.); naive filter-before-compute would produce mathematically wrong values.
+
+The handicap chart's natural unit is monthly snapshots, not raw rounds. The 30D toggle on a monthly-aggregated chart produces 1-2 data points — not a useful trend. Either:
+- (a) Adopt different toggle semantics (6M / 12M / 24M monthly bins) — produces inconsistent toggle vocabulary across charts
+- (b) Restructure handicap data computation to handicap-as-of-date snapshots filtered by range — substantial work + risk of regressing handicap math
+
+**Dependency:** None blocking, but pair with handicap-display redesign or Profile/Members page redesign in future ship.
+
+**Surfaced:** v8.14.4 Q-RULING-A — spec assumed buildHandicapGraph had an existing 30D/90D/1Y toggle to replace; audit confirmed no toggle exists. Deferred to keep v8.14.4 scope reasonable.
+
+### B.6 — Design bot follow-up: HQ Home v1 handicap chart toggle (Ship 5 territory)
+**Scope:** S investigation · **Target:** Ship 5 prep
+
+Image 2 of HQ Home v1 mock visualizes a 30D/90D/1Y toggle at the handicap chart. v8.14.4 audit confirmed no such toggle exists in production buildHandicapGraph. Ping design bot pre-Ship-5 to clarify whether the toggle was load-bearing in the mock or illustrative. If load-bearing, Ship 5 implements it as part of HQ Home v1.
+
 ### B.4 — Quiet-state v3 mock pass + ship
 **Scope:** L · **Target:** No current target (v3 mock authoring needed first)
 
