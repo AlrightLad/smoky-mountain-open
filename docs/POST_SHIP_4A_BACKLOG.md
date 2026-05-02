@@ -176,6 +176,36 @@ CTO smoke surfaced clipping on WHS HANDICAP INDEX label rendering at members.js:
 ### Chart bug arc — CLOSED
 v8.14.3 → v8.14.4 → v8.14.5 closed the chart rendering issues surfaced post-Ship-4a. v8.14.6 SKIPPED per CTO decision (diminishing returns on legacy surface polish). Outstanding chart-adjacent items (B.8, B.9, plus bar chart container caps) deferred to Ship 5+ where holistic redesign covers them naturally.
 
+### B.10 — Stat strip computed delta line
+**Scope:** S · **Target:** Future ship (post-Ship 5)
+
+Ship 5 Gate 2 Q-AUDIT-C ruling deferred new computed delta values for the HQ Home stat strip (e.g., "↑ 0.3 vs last month" for handicap, "+2 this week" for rounds). Existing caption ("OFFICIAL" / "MTD: 3" / etc.) refined per §12(a) row 08 in Gate 2; new computed deltas require persisted period-over-period stat snapshots that don't exist yet.
+
+**Surfaced:** Ship 5 Gate 2 audit V5. Deferred per Q-AUDIT-C Option C ruling.
+
+### B.11 — Feed card photo slot data wiring
+**Scope:** M · **Target:** Future ship
+
+Ship 5 Gate 2 Q-AUDIT-D Option A added markup-only photo slot to `.hq-feed-card` (renders only when `it.photoUrl` is defined). Data layer wiring — augmenting `_hqBuildActivityItems` to expose `photoUrl` from rounds/posts where applicable, plus upstream Firestore schema updates for round-attached photos — deferred to a future ship.
+
+**Surfaced:** Ship 5 Gate 2 audit V7. Deferred per Q-AUDIT-D Option A ruling.
+
+### B.12 — Feed card actions row persistence
+**Scope:** L · **Target:** Future ship
+
+Ship 5 Gate 2 added markup-only actions row (Like / Comment / Share buttons) to `.hq-feed-card` per §12(d) + §12(f) deferral pattern. Buttons currently have `tabindex="-1"`, `pointer-events: none`, `aria-hidden`. Persistence — Firestore collections, rules, write helpers, optimistic UI, notifications — deferred to a future ship.
+
+**Surfaced:** Ship 5 Gate 2 audit V7. Deferred per Q-AUDIT-D Option A ruling + §12(f).
+
+### B.13 — Vestigial `chartWidth` parameter cleanup
+**Scope:** S · **Target:** Cleanup ship
+
+`_renderHandicapTrendChart(opts.width)` and `_renderHandicapTrendSeries(chartWidth)` accept a `chartWidth` parameter that's effectively dead post-v8.14.5 — Approach B (`preserveAspectRatio="none"` + `width:100%` + fixed pixel height) makes the SVG fill its container regardless of the viewBox width number. Callers still pass `400` (default features-column) and `600` (Band B promotion), but the value is purely cosmetic for the viewBox aspect ratio.
+
+Cleanup: remove `opts.width` / `chartWidth` parameter from both functions; viewBox can use a constant. Audit all consumers (members.js `_rerenderTrendChart`, the 3 home.js call sites) to verify zero behavioral regression before removing.
+
+**Surfaced:** Ship 5 Gate 2 audit V3 + D2 ruling. Deferred — minimal benefit, requires consumer audit.
+
 ### B.4 — Quiet-state v3 mock pass + ship
 **Scope:** L · **Target:** No current target (v3 mock authoring needed first)
 

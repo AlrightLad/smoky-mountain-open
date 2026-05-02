@@ -1038,19 +1038,35 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .pn-putts-btn.active .pn-putts-val{color:var(--cream)}
 
 /* ──────────────────────────────────────────────────────────────────────────
-   HQ Home v1 banded grid (Ship 5 Gate 1 · v8.15.0)
+   HQ Home v1 banded grid (Ship 5 Gate 1 · v8.15.0 · Gate 2 · v8.15.1)
 
    4-band CSS-driven layout primitive. Home-only consumer per Q2 ruling
    (P18: primitives extracted on second consumer, not authored on first).
    Replaces 5-band JS-driven _renderHQGridInner from Ship 1b-i era.
 
+   Ship 5 Gate 2 (v8.15.1) — viewport @media replaced with @container
+   hq-content per P19 (container queries over @media when responding to
+   wrapper, not viewport). The grid lives inside .page-shell__container
+   which declares container-type: inline-size — @container queries match
+   on the actual content area, NOT the OS viewport. Fixes the >1440px
+   "left-shifted with empty space" issue from Gate 1 (page-shell wrapper
+   was capped at 1132px so cinema query never activated).
+
    Band breakpoints (Q1 hybrid scheme):
      mobile:    <720px    — single column; right rail inlines as page
                             tail in Gate 3 (mobile reflow)
-     compact:   720-1119  — single main column, no rails (max-width 720)
-     standard:  1120-1439 — main + right rail 280px (max-width 1120)
-     cinema:    ≥1440     — left rail placeholder 240px + main + right
-                            rail 320px (max-width 1380)
+     compact:   720-1119  — single main column, no rails
+     standard:  1120-1439 — main + right rail 280px
+     cinema:    ≥1440     — left rail placeholder 240px + main + right rail 320px
+
+   max-width caps removed per Q-AUDIT-A revised spec — container queries
+   already constrain when each layout activates; redundant caps caused the
+   orphan-space issue. Grid fills its container.
+
+   @supports not (container-type: inline-size) fallback re-activates
+   viewport @media for browsers <2022. Acceptable graceful degradation;
+   target audience is 2026 desktop/laptop browsers (Chrome 105+ Aug 2022,
+   Safari 16.0+ Sep 2022, Firefox 110+ Feb 2023).
 
    Right rail content (Live Now / Standings / Recent Posted) renders in
    .hq-grid__rail-right at standard+. Hidden at mobile/compact via
@@ -1064,7 +1080,6 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--sp-4);
-  max-width: 100%;
   margin: 0 auto;
 }
 .hq-grid__rail-left,
@@ -1076,19 +1091,18 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   min-width: 0;
 }
 
-/* Compact band: 720-1119 — single main column with reading-width cap */
-@media (min-width: 720px) {
+/* Compact band: container ≥720px — single main column with reading-width cap */
+@container hq-content (min-width: 720px) {
   .hq-grid__main {
     max-width: 720px;
     margin: 0 auto;
   }
 }
 
-/* Standard band: 1120-1439 — main + right rail */
-@media (min-width: 1120px) {
+/* Standard band: container ≥1120px — main + right rail */
+@container hq-content (min-width: 1120px) {
   .hq-grid {
     grid-template-columns: 1fr 280px;
-    max-width: 1120px;
   }
   .hq-grid__main {
     grid-column: 1;
@@ -1103,11 +1117,10 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   }
 }
 
-/* Cinema band: ≥1440 — left rail placeholder + main + right rail */
-@media (min-width: 1440px) {
+/* Cinema band: container ≥1440px — left rail placeholder + main + right rail */
+@container hq-content (min-width: 1440px) {
   .hq-grid {
     grid-template-columns: 240px 1fr 320px;
-    max-width: 1380px;
   }
   .hq-grid__rail-left {
     display: block;
@@ -1121,6 +1134,223 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   .hq-grid__rail-right {
     grid-column: 3;
   }
+}
+
+/* @supports fallback for browsers without container query support
+   (pre-2022). Re-activates viewport @media with same thresholds. */
+@supports not (container-type: inline-size) {
+  @media (min-width: 720px) {
+    .hq-grid__main {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+  }
+  @media (min-width: 1120px) {
+    .hq-grid {
+      grid-template-columns: 1fr 280px;
+    }
+    .hq-grid__main {
+      grid-column: 1;
+      max-width: none;
+      margin: 0;
+    }
+    .hq-grid__rail-right {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-6);
+      grid-column: 2;
+    }
+  }
+  @media (min-width: 1440px) {
+    .hq-grid {
+      grid-template-columns: 240px 1fr 320px;
+    }
+    .hq-grid__rail-left {
+      display: block;
+      grid-column: 1;
+    }
+    .hq-grid__main {
+      grid-column: 2;
+    }
+    .hq-grid__rail-right {
+      grid-column: 3;
+    }
+  }
+}
+
+/* Page-shell container — container-type host for @container hq-content
+   queries above. Always-on; non-HQ-Home consumers don't author
+   @container hq-content rules so their layout is unaffected.
+   See Q-AUDIT-A ruling (Ship 5 Gate 2 · v8.15.1). */
+.page-shell__container {
+  container-type: inline-size;
+  container-name: hq-content;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   HQ Home feed card (Ship 5 Gate 2 · v8.15.1)
+   Per design bot §12(d) — entity chip, conditional photo slot, actions
+   row (markup-only per §12(f); B.12 backlog wires persistence). Hover
+   bleed extends card slightly past the column gutter for editorial effect.
+   ────────────────────────────────────────────────────────────────────────── */
+.hq-feed-card {
+  display: block;
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--cb-chalk-3);
+  transition: margin var(--duration-fast) var(--ease-default),
+              padding var(--duration-fast) var(--ease-default),
+              background var(--duration-fast) var(--ease-default);
+}
+.hq-feed-card[onclick] { cursor: pointer; }
+.hq-feed-card:hover {
+  margin: 0 -8px;
+  padding: var(--sp-2) 8px;
+  background: var(--cb-chalk-2);
+}
+.hq-feed-card__top {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.hq-feed-card__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--cb-chalk-3);
+  color: var(--cb-charcoal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.hq-feed-card__body {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.4;
+}
+.hq-feed-card__chip {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--cb-brass);
+  background: var(--cb-chalk-2);
+  border: 1px solid var(--cb-chalk-3);
+  border-radius: 3px;
+  padding: 2px 6px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.hq-feed-card__text {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cb-ink);
+}
+.hq-feed-card__sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--cb-mute);
+  letter-spacing: 0.6px;
+  margin-top: 2px;
+}
+.hq-feed-card__time {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--cb-mute);
+  flex-shrink: 0;
+}
+.hq-feed-card__photo {
+  margin: var(--sp-2) 0 0 44px;
+  border-radius: var(--r-2);
+  overflow: hidden;
+}
+.hq-feed-card__photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 180px;
+  object-fit: cover;
+}
+.hq-feed-card__actions {
+  display: flex;
+  gap: var(--sp-3);
+  padding: 6px 0 0 44px;
+  margin-top: 4px;
+}
+.hq-feed-card__action {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  color: var(--cb-mute);
+  text-transform: uppercase;
+  cursor: default; /* markup-only — no handler wired in Gate 2 */
+  pointer-events: none;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   HQ Home right-rail modules (Ship 5 Gate 2 · v8.15.1)
+   Per design bot §12(d) — brass 2px top-border eyebrow accent on each
+   module (Online Now, Tee Times, Member Spotlight). Live-Now module
+   gets a claret pulse dot indicator beside the count.
+   ────────────────────────────────────────────────────────────────────────── */
+.hq-rail-module {
+  border-top: 2px solid var(--cb-brass);
+  padding-top: 14px;
+}
+.hq-rail-module__eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--hq-eyebrow-size);
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  color: var(--cb-mute);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hq-rail-module__eyebrow--live { color: var(--cb-claret); }
+.hq-rail-module__pulse-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cb-claret);
+  animation: hq-rail-claret-pulse 2.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes hq-rail-claret-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.18); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hq-rail-module__pulse-dot { animation: none; opacity: 0.85; }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   HQ Home stat-strip numeral (Ship 5 Gate 2 · v8.15.1)
+   Variable font axis declaration per memory P9 — Fraunces 'opsz' axis at
+   60 picks the optical-size master tuned for ~36px display rendering.
+   --hq-stat-number-size stays 36px per Q5 ruling (no px change).
+   ────────────────────────────────────────────────────────────────────────── */
+.hq-stat-strip__numeral {
+  font-family: var(--font-display);
+  font-size: var(--hq-stat-number-size);
+  font-weight: 700;
+  color: var(--cb-ink);
+  line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-variation-settings: "opsz" 60;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

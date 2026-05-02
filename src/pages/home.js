@@ -216,20 +216,18 @@ function _renderHQHome(ctx) {
     bands: ['A', 'B', 'C', 'D'],
     banner: function() { return _renderEmailVerifyBanner(); },
     masthead: function(band) {
-      if (band === 'A') {
-        var d = new Date();
-        var dayShort = ["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"][d.getDay()];
-        var monthShort = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][d.getMonth()];
-        return {
-          variant: 'bandA',
-          title: 'Parbaughs',
-          date: dayShort + " · " + monthShort + " " + d.getDate() + " · ",
-          weatherSiteId: 'hq-weather-caption'
-        };
-      }
+      // Ship 5 Gate 2 (v8.15.1) — editorial 'hqHome' variant per Q6 ruling.
+      // Eyebrow: "HQ · <Day> Edition" (e.g. "HQ · Saturday Edition"). Headline:
+      // "Parbaughs" italic Fraunces. Subhead: contextual ladder/handicap blurb.
+      // Date stamp: long form ("Saturday · April 24, 2026"). Replaces prior
+      // 'default' / 'bandA' wordmark+date variants for HQ Home.
+      var d = new Date();
+      var dayName = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][d.getDay()];
       return {
-        variant: 'default',
-        title: 'Parbaughs',
+        variant: 'hqHome',
+        eyebrow: 'HQ · ' + dayName + ' Edition',
+        headline: 'Parbaughs',
+        subhead: _hqMastheadSubhead(ctx),
         date: _formatHQMastheadDate(),
         weatherSiteId: 'hq-weather-pill'
       };
@@ -255,7 +253,11 @@ function _renderHQHome(ctx) {
     leftRail: null,
     rightRail: null,
     footer: function() { return renderPageFooter(); },
-    contentMaxWidth: _hqContentMaxWidth
+    // Ship 5 Gate 2 (v8.15.1) — HQ Home opts into container queries via
+    // _hqHomeContentMaxWidth (returns "none" at all bands). Wrapper becomes
+    // .page-shell__container's actual content area; .hq-grid responds via
+    // @container hq-content rules in components.css. See Q-AUDIT-A ruling.
+    contentMaxWidth: _hqHomeContentMaxWidth
   });
   _initWeatherDisplays();
 }
@@ -352,6 +354,21 @@ function _hqContentMaxWidth(band) {
   return "1132px";                        // 480 + 32 + 400 + 24 + 196 (Band D)
 }
 
+// Ship 5 Gate 2 (v8.15.1) — HQ Home-specific content width override per
+// Q-AUDIT-A ruling. Returns "none" at every band so the page-shell wrapper
+// becomes container-query-host (.page-shell__container has container-type:
+// inline-size in components.css). .hq-grid then responds to its actual
+// available content area, not viewport — fixes the >1440px "left-shifted
+// with empty space" issue caused by the 1132px cap at Band D, and properly
+// activates standard band at viewport 1120-1439 (was capped at 912px).
+//
+// Subsequent HQ pages (Members, Spotlight, etc.) keep _hqContentMaxWidth's
+// per-band caps; they don't yet author @container hq-content rules, so their
+// layout is unaffected by the always-on container-type: inline-size declaration.
+function _hqHomeContentMaxWidth() {
+  return "none";
+}
+
 // ─── Private helpers (home-only — underscore prefix) ──────────────────────
 
 function _homeState(myRounds) {
@@ -389,6 +406,19 @@ function _formatDateEyebrow() {
   var day = ["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"][d.getDay()];
   var month = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][d.getMonth()];
   return day + " · " + month + " " + d.getDate();
+}
+
+// Ship 5 Gate 2 (v8.15.1) — editorial subhead for hqHome masthead variant.
+// Contextual one-liner: leader name + position phrasing for league context.
+// Falls back to a generic line when standings are unavailable.
+function _hqMastheadSubhead(ctx) {
+  var season = ctx && ctx.season;
+  var standings = (season && season.standings) || [];
+  if (!standings.length) return "A small league with big games — log a round to claim your spot.";
+  var leader = standings[0];
+  var leaderName = leader && (leader.name || leader.playerName) ? (leader.name || leader.playerName) : "the leader";
+  var weekCount = standings.length;
+  return leaderName + " leads. " + weekCount + " on the ladder. The week is in motion.";
 }
 
 // Long-form date for HQ masthead: "Saturday · April 24, 2026"
@@ -738,7 +768,9 @@ function _renderStatsSnapshotQuartet(ctx) {
     var onclick = c.click ? ' onclick="' + c.click + '"' : '';
     h += '<div' + onclick + ' style="' + cellSize + sep + cursor + 'padding:18px 14px;display:flex;flex-direction:column;justify-content:center;gap:6px">';
     h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">' + escHtml(c.label) + '</div>';
-    h += '<div style="font-family:var(--font-display);font-size:var(--hq-stat-number-size);font-weight:700;color:var(--cb-ink);line-height:1;font-variant-numeric:lining-nums tabular-nums">' + escHtml(c.value) + '</div>';
+    // Ship 5 Gate 2 (v8.15.1) — extracted to .hq-stat-strip__numeral so the
+    // 'opsz' 60 axis declaration lives in CSS (memory P9 axis discipline).
+    h += '<div class="hq-stat-strip__numeral">' + escHtml(c.value) + '</div>';
     if (c.caption) h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.2px;color:' + c.captionColor + ';text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(c.caption) + '</div>';
     h += '</div>';
   });
@@ -1599,15 +1631,36 @@ function _renderActivityFeedCompact(ctx, limit) {
     var color = brassEyebrow ? "var(--cb-brass)" : "var(--cb-mute)";
     var b = '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;color:' + color + ';text-transform:uppercase;padding:10px 0 6px;border-top:1px solid var(--cb-chalk-3)">' + label + '</div>';
     list.forEach(function(it) {
-      b += '<div' + (it.dest ? ' onclick="' + it.dest + '" style="cursor:pointer;' : ' style="') + 'min-height:56px;padding:var(--sp-2) 0;display:flex;align-items:center;gap:var(--sp-3);border-bottom:1px solid var(--cb-chalk-3)">';
+      // Ship 5 Gate 2 (v8.15.1) — .hq-feed-card with chip + conditional
+      // photo slot + markup-only actions row per Q-AUDIT-D Option A. Hover
+      // bleed CSS in components.css. dest still wires onclick on the card root.
+      var clickAttr = it.dest ? ' onclick="' + it.dest + '"' : '';
+      b += '<article class="hq-feed-card"' + clickAttr + '>';
+      // Top row: avatar + body + timeAgo
+      b += '<div class="hq-feed-card__top">';
       var initial = (it.actorName.charAt(0) || "?").toUpperCase();
-      b += '<div style="width:32px;height:32px;border-radius:50%;background:var(--cb-chalk-3);color:var(--cb-charcoal);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:14px;font-weight:700;flex-shrink:0">' + escHtml(initial) + '</div>';
-      b += '<div style="flex:1;min-width:0;line-height:1.4">';
-      b += '<div style="font-family:var(--font-ui);font-size:13px;font-weight:500;color:var(--cb-ink)">' + escHtml(it.text) + '</div>';
-      if (it.sub) b += '<div style="font-family:var(--font-mono);font-size:10px;color:var(--cb-mute);letter-spacing:0.6px;margin-top:2px">' + escHtml(it.sub) + '</div>';
+      b += '<div class="hq-feed-card__avatar">' + escHtml(initial) + '</div>';
+      b += '<div class="hq-feed-card__body">';
+      // Chip (entityType) — only when defined
+      if (it.entityType) {
+        b += '<div class="hq-feed-card__chip">' + escHtml(it.entityType) + '</div>';
+      }
+      b += '<div class="hq-feed-card__text">' + escHtml(it.text) + '</div>';
+      if (it.sub) b += '<div class="hq-feed-card__sub">' + escHtml(it.sub) + '</div>';
       b += '</div>';
-      b += '<div style="font-family:var(--font-mono);font-size:10px;color:var(--cb-mute);flex-shrink:0">' + escHtml(it.timeAgo) + '</div>';
+      b += '<div class="hq-feed-card__time">' + escHtml(it.timeAgo) + '</div>';
       b += '</div>';
+      // Photo slot — conditional on it.photoUrl (B.11 backlog wires data layer).
+      if (it.photoUrl) {
+        b += '<div class="hq-feed-card__photo"><img src="' + escHtml(it.photoUrl) + '" alt=""></div>';
+      }
+      // Actions row — markup-only per §12(f) deferral (B.12 wires persistence).
+      b += '<div class="hq-feed-card__actions" aria-hidden="true">';
+      b += '<button class="hq-feed-card__action" type="button" tabindex="-1">Like</button>';
+      b += '<button class="hq-feed-card__action" type="button" tabindex="-1">Comment</button>';
+      b += '<button class="hq-feed-card__action" type="button" tabindex="-1">Share</button>';
+      b += '</div>';
+      b += '</article>';
     });
     return b;
   }
@@ -1643,7 +1696,10 @@ function _hqBuildActivityItems(limit) {
       var fmt = r.format && r.format !== "stroke" ? r.format : "";
       var holes = r.holesPlayed && r.holesPlayed <= 9 ? " · 9 holes" : "";
       var sub = (fmt ? fmt.charAt(0).toUpperCase() + fmt.slice(1) : "") + holes;
-      items.push({ ts: ts, actorName: actor, text: text, sub: sub.replace(/^ · /, ""), timeAgo: feedTimeAgo(ts), dest: r.id ? "Router.go('rounds',{roundId:'" + r.id + "'})" : "" });
+      // Ship 5 Gate 2 (v8.15.1) — entityType chip per Q-AUDIT-D Option A.
+      // Scramble rounds chip as "SCRAMBLE"; otherwise plain "ROUND".
+      var entityType = (fmt === "scramble" || fmt === "scramble4") ? "SCRAMBLE" : "ROUND";
+      items.push({ ts: ts, actorName: actor, text: text, sub: sub.replace(/^ · /, ""), timeAgo: feedTimeAgo(ts), dest: r.id ? "Router.go('rounds',{roundId:'" + r.id + "'})" : "", entityType: entityType });
     });
   }
   // state.activity (in-memory events)
@@ -1652,12 +1708,14 @@ function _hqBuildActivityItems(limit) {
       if (!a || !a.ts) return;
       var actor = a.name || a.playerName || "Member";
       var text = actor;
-      if (a.type === "post") text += " posted: " + (a.text || "").slice(0, 60);
-      else if (a.type === "trip_created") text += " started a trip";
-      else if (a.type === "review") text += " reviewed " + (a.course || "a course");
-      else if (a.type === "member_joined") text += " joined the league";
+      // Ship 5 Gate 2 (v8.15.1) — entityType chip derivation per Q-AUDIT-D.
+      var entityType = "";
+      if (a.type === "post") { text += " posted: " + (a.text || "").slice(0, 60); entityType = "POST"; }
+      else if (a.type === "trip_created") { text += " started a trip"; entityType = "TRIP"; }
+      else if (a.type === "review") { text += " reviewed " + (a.course || "a course"); entityType = "REVIEW"; }
+      else if (a.type === "member_joined") { text += " joined the league"; entityType = "JOINED"; }
       else text += " did something";
-      items.push({ ts: a.ts, actorName: actor, text: text, sub: "", timeAgo: feedTimeAgo(a.ts), dest: "" });
+      items.push({ ts: a.ts, actorName: actor, text: text, sub: "", timeAgo: feedTimeAgo(a.ts), dest: "", entityType: entityType });
     });
   }
   items.sort(function(a, b) { return b.ts - a.ts; });
@@ -1811,9 +1869,12 @@ function _renderOnlineNowStrip(ctx) {
   entries = entries.filter(function(id) { return id !== uid; });
   var count = entries.length;
 
-  var h = '<div>';
-  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:12px">';
-  h += '<span style="color:var(--cb-mute)">ONLINE · </span><span style="color:var(--cb-brass)">' + count + '</span>';
+  // Ship 5 Gate 2 (v8.15.1) — .hq-rail-module + .hq-rail-module__eyebrow per
+  // §12(d). Live-Now eyebrow gets the claret pulse dot indicator.
+  var h = '<div class="hq-rail-module">';
+  h += '<div class="hq-rail-module__eyebrow hq-rail-module__eyebrow--live">';
+  h += '<span class="hq-rail-module__pulse-dot" aria-hidden="true"></span>';
+  h += '<span>ONLINE · </span><span style="color:var(--cb-brass)">' + count + '</span>';
   h += '</div>';
 
   if (count === 0) {
@@ -1850,12 +1911,13 @@ function _renderUpcomingTeeTimes(ctx) {
   var upcoming = _getUpcomingTeeTimes(5) || [];
   var newUserFraming = ctx.state === "new";
 
-  var h = '<div>';
+  // Ship 5 Gate 2 (v8.15.1) — .hq-rail-module + .hq-rail-module__eyebrow per §12(d).
+  var h = '<div class="hq-rail-module">';
   if (newUserFraming) {
-    h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-mute);text-transform:uppercase;margin-bottom:4px">OPEN TEE TIMES</div>';
+    h += '<div class="hq-rail-module__eyebrow" style="margin-bottom:4px">OPEN TEE TIMES</div>';
     h += '<div onclick="Router.go(\'teetimes\')" style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;color:var(--cb-brass);text-transform:uppercase;cursor:pointer;margin-bottom:12px">JOIN ANOTHER MEMBER →</div>';
   } else {
-    h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-mute);text-transform:uppercase;margin-bottom:12px">TEE TIMES</div>';
+    h += '<div class="hq-rail-module__eyebrow">TEE TIMES</div>';
   }
 
   if (!upcoming.length) {
@@ -1926,8 +1988,9 @@ function _renderMemberSpotlight(ctx) {
   var bioOrCourse = bio || (member.homeCourse ? "Plays out of " + member.homeCourse + "." : "");
   var tenureLabel = (member.founding || member.isFoundingFour) ? "FOUNDING MEMBER" : "MEMBER";
 
-  var h = '<div onclick="Router.go(\'members\',{id:\'' + member.id + '\'})" style="cursor:pointer">';
-  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-mute);text-transform:uppercase;margin-bottom:12px">MEET</div>';
+  // Ship 5 Gate 2 (v8.15.1) — .hq-rail-module + .hq-rail-module__eyebrow per §12(d).
+  var h = '<div class="hq-rail-module" onclick="Router.go(\'members\',{id:\'' + member.id + '\'})" style="cursor:pointer">';
+  h += '<div class="hq-rail-module__eyebrow">MEET</div>';
   h += '<div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--sp-2)">';
   // Avatar 64×64
   h += '<div style="width:64px;height:64px;border-radius:50%;background:var(--cb-chalk-3);color:var(--cb-charcoal);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:24px;font-weight:700">' + escHtml(initial) + '</div>';

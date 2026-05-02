@@ -11,13 +11,16 @@
        pageKey,                                  string · debug stamp
        bands,                                    string[] · which bands the page supports
        banner:        (band) => htmlString,      full-width above masthead
-       masthead:      (band) => slotData,        { variant, title, date, condensed?, weatherSiteId? }
+       masthead:      (band) => slotData,        slot data; shape varies by variant:
+                                                   default: { variant, title, date, weatherSiteId? }
+                                                   bandA:   { variant, title, date, weatherSiteId? }
+                                                   hqHome:  { variant, eyebrow, headline, subhead, date, weatherSiteId? }
        scope:         (band) => htmlString,      rendered inside masthead right cluster
        content:       (band) => htmlString,      band-aware page content
        leftRail:      null | (band) => string,   null or page-shell-internal column
        rightRail:     null | (band) => string,   null or page-shell-internal column
        footer:        () => htmlString,          page footer (HQ default = renderPageFooter)
-       contentMaxWidth: (band) => '640px'|...    band → max-width fn
+       contentMaxWidth: (band) => '640px'|'none' band → max-width fn ("none" opts into container queries)
      });
 
      PB.pageShell.currentBand()                  read current band synchronously
@@ -28,6 +31,10 @@
                                        · weather pill + scope cluster
      'bandA' variant (Band A): 68px two rows · hamburger + wordmark + scope
                                 · mono date + weather caption
+     'hqHome' variant (HQ Home all bands · v8.15.1 Gate 2): editorial eyebrow
+                                + Fraunces italic headline (84/64/52px via
+                                --hq-masthead-size) + subhead + mono date,
+                                weather pill + scope cluster on right
 
    Stamps: rootEl.dataset.renderPath = "hq-shell" (success) or unchanged on
    throw — caller's try/catch can stamp "hq-fallback" before falling back.
@@ -90,6 +97,55 @@
     h += '</div>';
 
     h += '</div>';
+    return h;
+  }
+
+  // Ship 5 Gate 2 (v8.15.1) — third masthead variant per Q6 ruling. Editorial
+  // hqHome chrome: eyebrow ("HQ · Saturday Edition"), oversized italic
+  // wordmark headline (Fraunces 84/64/52px per band via --hq-masthead-size
+  // token), subhead, mono date stamp. Scope cluster + weather pill on the
+  // right same as default. Variant fields beyond default: { eyebrow, headline,
+  // subhead } — slot data shape is documented at top of this file.
+  //
+  // Per memory P9 (variable font axis discipline), font-variation-settings
+  // 'opsz' 144 declared on the headline so Fraunces selects its largest
+  // optical size master at the largest rendered size. Per P14, "Parbaughs"
+  // wordmark is identity-bearing and floors at 44px at mobile (handled in
+  // mobile path, not here — this variant only renders at bands A/B/C/D).
+  function _renderMastheadHQHome(slotData, scopeHtml) {
+    var eyebrow = slotData && slotData.eyebrow ? slotData.eyebrow : "";
+    var headline = slotData && slotData.headline ? slotData.headline : "";
+    var subhead = slotData && slotData.subhead ? slotData.subhead : "";
+    var date = slotData && slotData.date ? slotData.date : "";
+    var weatherId = slotData && slotData.weatherSiteId ? slotData.weatherSiteId : "";
+
+    var h = '<header class="page-shell__masthead page-shell__masthead--hq-home" style="background:var(--cb-chalk);border-bottom:1px solid var(--cb-chalk-3);padding:32px 24px 28px">';
+    // Inner row spans two columns at standard+: editorial stack on left, scope+weather cluster on right.
+    h += '<div style="max-width:1380px;margin:0 auto;display:flex;align-items:flex-start;justify-content:space-between;gap:24px">';
+    // Left: editorial stack
+    h += '<div style="flex:1;min-width:0">';
+    if (eyebrow) {
+      h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:10px">' + escHtml(eyebrow) + '</div>';
+    }
+    if (headline) {
+      h += '<h1 class="page-shell__masthead-headline" style="font-family:var(--font-display);font-size:var(--hq-masthead-size);font-style:italic;font-weight:700;line-height:0.95;letter-spacing:-2px;color:var(--cb-ink);margin:0 0 8px;font-variation-settings:\'opsz\' 144">' + escHtml(headline) + '</h1>';
+    }
+    if (subhead) {
+      h += '<div style="font-family:var(--font-ui);font-size:var(--hq-subhead-size);font-weight:500;color:var(--cb-charcoal);line-height:1.4;max-width:640px">' + escHtml(subhead) + '</div>';
+    }
+    if (date) {
+      h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2px;color:var(--cb-mute);text-transform:uppercase;margin-top:14px">' + escHtml(date) + '</div>';
+    }
+    h += '</div>';
+    // Right: scope cluster + weather pill (matches default variant chrome)
+    h += '<div style="display:flex;align-items:center;gap:var(--sp-3);flex-shrink:0;padding-top:4px">';
+    if (weatherId) {
+      h += '<div id="' + escHtml(weatherId) + '" data-weather-site="pill" style="display:inline-flex;align-items:center;height:28px;padding:0 12px;background:var(--cb-chalk-2);border-radius:6px;font-family:var(--font-ui);font-weight:500;font-size:12px;color:var(--cb-brass);letter-spacing:0.3px">—°</div>';
+    }
+    if (scopeHtml) h += scopeHtml;
+    h += '</div>';
+    h += '</div>';
+    h += '</header>';
     return h;
   }
 
@@ -183,19 +239,33 @@
       ? opts.contentMaxWidth(band)
       : "1132px";
 
-    // Compose masthead from slot data + scope HTML.
+    // Compose masthead from slot data + scope HTML. Ship 5 Gate 2 (v8.15.1)
+    // — dispatch table replaces 2-branch ternary; supports 3 variants:
+    // 'default' (Bands B/C/D wordmark + date), 'bandA' (compact two-row),
+    // and 'hqHome' (editorial eyebrow + headline + subhead + date). Default
+    // and bandA variants are byte-identical to pre-v8.15.1 per Q6 ruling.
+    var MASTHEAD_VARIANTS = {
+      bandA: _renderMastheadBandA,
+      hqHome: _renderMastheadHQHome,
+      default: _renderMastheadDefault
+    };
     var mastheadHtml = "";
     if (mastheadData) {
-      mastheadHtml = (mastheadData.variant === "bandA")
-        ? _renderMastheadBandA(mastheadData, scopeHtml)
-        : _renderMastheadDefault(mastheadData, scopeHtml);
+      var renderVariant = MASTHEAD_VARIANTS[mastheadData.variant] || _renderMastheadDefault;
+      mastheadHtml = renderVariant(mastheadData, scopeHtml);
     }
 
     // Assemble the page.
     var h = "";
     if (bannerHtml) h += bannerHtml;
     if (mastheadHtml) h += mastheadHtml;
-    h += '<div style="max-width:' + maxWidth + ';margin:0 auto;padding:0 24px">';
+    // Ship 5 Gate 2 (v8.15.1) — class + inline max-width + container-type host
+    // for @container hq-content queries. Container-type rule lives in
+    // components.css (.page-shell__container declaration is always-on; only
+    // pages that author @container hq-content rules respond, so non-HQ-Home
+    // consumers are unaffected). Per Q-AUDIT-A ruling Option A.
+    var maxWidthCss = (maxWidth && maxWidth !== "none") ? "max-width:" + maxWidth + ";" : "";
+    h += '<div class="page-shell__container" style="' + maxWidthCss + 'margin:0 auto;padding:0 24px">';
     h += _renderContentRow(contentHtml, leftRailHtml, rightRailHtml);
     if (footerHtml) h += footerHtml;
     h += '</div>';

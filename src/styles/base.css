@@ -195,6 +195,10 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --hq-agate-body-size: 13px;
   --hq-ladder-row-height: 32px;
   --hq-recent-row-height: 64px;
+  /* Ship 5 Gate 2 (v8.15.1) — hqHome masthead headline. Cinema default 84px;
+     scales down per band below. Wordmark floors at 44px (mobile) per P14
+     identity-tier preservation; above mobile it downscales freely (52/64/84). */
+  --hq-masthead-size: 84px;
 
   /* ═════════════════════════════════════════════════════════════════════════
      SPACING SCALE (v8.14.0 — locked per design bot ruling 14)
@@ -558,6 +562,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
     --hq-stat-number-size: 34px;
     --hq-eyebrow-size: 11px;
     --hq-subhead-size: 17px;
+    --hq-masthead-size: 64px;
   }
 }
 
@@ -572,6 +577,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
     --hq-subhead-size: 16px;
     --hq-ladder-row-height: 30px;
     --hq-recent-row-height: 60px;
+    --hq-masthead-size: 52px;
   }
 }
 
@@ -586,6 +592,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
     --hq-agate-body-size: 12px;
     --hq-ladder-row-height: 28px;
     --hq-recent-row-height: 56px;
+    --hq-masthead-size: 52px;
   }
 }
 
