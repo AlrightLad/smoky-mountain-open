@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · spotlight visual upgrade</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · spotlight on phones</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "The Spotlight round page got a full visual makeover — masthead-style page header, new hero card, cleaner scorecard summary, sharper typography throughout. Same data, dressed for the publication it deserves.", tag: "IMPROVED" }
+    { item: "Spotlight round page now reads cleanly on phones — score, scorecard, and shots feed all reflow properly at narrow widths.", tag: "IMPROVED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.14.0", date: "May 2026", headline: "Spotlight visual upgrade",
+      items: [
+        { item: "The Spotlight round page got a full visual makeover — masthead-style page header, new hero card, cleaner scorecard summary, sharper typography throughout. Same data, dressed for the publication it deserves.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.13.8", date: "May 2026", headline: "Spectator status",
       items: [

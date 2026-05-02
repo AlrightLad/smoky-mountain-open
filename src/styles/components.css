@@ -920,6 +920,82 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .sphud-partner:hover{border-left-color:var(--cb-brass)}
 .sphud-partner--you{background:var(--cb-chalk-2);border-left-color:var(--cb-brass-2)}
 
+/* ──────────────────────────────────────────────────────────────────────────
+   Spotlight outer page wrapper (v8.14.1 · Ship 4a Gate 8b)
+   Extracted from round.js:201 inline-style so mobile reflow at
+   @media (max-width:767px) can override padding + lift max-width without
+   !important. Desktop declaration matches prior inline-style byte-equivalent.
+   Spectator-only — active-player path uses different markup.
+   ────────────────────────────────────────────────────────────────────────── */
+.sphud-page-wrap{padding:32px 24px;max-width:680px;margin:0 auto}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Spotlight mobile-band reflow (v8.14.1 · Ship 4a Gate 8b · §9.02 §1-§12)
+   Mobile-band: 380px ≤ viewport ≤ 767px. Targets v8.14.0 production
+   rendering surface only (hero, per-hole strip, stats, course, recent shots).
+   Forward-looking surfaces (.sphud-rail, .sphud-card-summary, .sphud-recap,
+   .sphud-partners, photos, comments) NOT addressed — defer to consumer ship
+   per CTO Q-A ruling.
+   PerHoleStrip not addressed — existing 720px breakpoint at line ~775 reflows
+   to 9-per-row × 2 stacked correctly per §9.02 §6.
+   Hero opsz overrides per Q-4 ruling: opsz axis values adjusted to match
+   downscaled rendered sizes. Override applies only on tiers where desktop
+   declares opsz (consistency-over-correctness): .sphud-hero-name and
+   .sphud-hero-score-num. Tiers without desktop opsz (.sphud-hero-thru-val,
+   .sphud-hero-delta) do not introduce opsz at mobile.
+   ────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  /* Outer page wrapper — full viewport width on phone, tighter padding */
+  .sphud-page-wrap{padding:20px 16px;max-width:none}
+
+  /* Hero card — reduced padding, type ladder downscale, score-row grid reflow */
+  .sphud-hero{padding:24px 20px 20px}
+  .sphud-hero-eyebrow{margin-bottom:14px}
+  .sphud-hero-name{font-size:28px;letter-spacing:-0.4px;font-variation-settings:'opsz' 30}
+  .sphud-hero-where{font-size:10px;margin-top:6px}
+  .sphud-hero-score-row{
+    display:grid;
+    grid-template-columns:1fr auto;
+    grid-template-areas:"num thru" "delta delta";
+    gap:8px 16px;
+    align-items:end;
+    margin-top:18px;
+    padding-top:14px;
+  }
+  .sphud-hero-score-num{
+    grid-area:num;
+    font-size:56px;
+    letter-spacing:-1.4px;
+    font-variation-settings:'opsz' 60;
+  }
+  .sphud-hero-thru{grid-area:thru;margin-left:0}
+  .sphud-hero-thru-val{font-size:26px}
+  .sphud-hero-thru-lbl{font-size:9px}
+  .sphud-hero-delta{grid-area:delta;font-size:16px;margin-bottom:0}
+  .sphud-hero-stats-line{font-size:10px;margin-top:14px}
+
+  /* StatsPanel — 3-col grid preserved, type downscale + tighter padding */
+  .sp-row{gap:var(--sp-2)}
+  .sp-row-top{padding-bottom:var(--sp-3)}
+  .sp-row-bottom{padding-top:var(--sp-3)}
+  .sp-label{font-size:9px;letter-spacing:1px;margin-bottom:4px}
+  .sp-value{font-size:24px}
+  .sp-diff{font-size:10px;margin-top:3px}
+  .sp-pace{font-size:8px;margin-top:4px}
+  .sp-substat{font-size:18px}
+
+  /* CoursePanel — typography scaling */
+  .cp-name{font-size:20px;line-height:1.2;letter-spacing:-0.2px;margin-bottom:6px}
+  .cp-meta{font-size:10px;letter-spacing:1.2px}
+  .cp-weather{font-size:10px;margin-top:6px}
+
+  /* RecentShotsFeed — entry layout adjustments, timestamp width compression */
+  .rsf-entry{gap:var(--sp-3);padding:var(--sp-2) 0}
+  .rsf-eyebrow{width:52px;font-size:9px;letter-spacing:1.2px}
+  .rsf-sentence{font-size:14px;line-height:1.4}
+  .rsf-empty{font-size:14px;padding:var(--sp-2) 0}
+}
+
 .adv-row{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-3)}
 .adv-col{display:flex;flex-direction:column;gap:6px}
 .adv-label{font-size:var(--text-sm);color:var(--muted);font-weight:600}

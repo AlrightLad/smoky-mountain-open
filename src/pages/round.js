@@ -198,7 +198,10 @@ function _renderRoundDetailPlaceholder(pageEl, round, viewerRole) {
 function _renderSpectatorHUDPlaceholder(pageEl, round) {
   var contentHtml;
   if (typeof PB !== "undefined" && PB.spectator && typeof PB.spectator.renderHUDShell === "function") {
-    contentHtml = '<div style="padding:32px 24px;max-width:680px;margin:0 auto">' + PB.spectator.renderHUDShell(round) + '</div>';
+    // v8.14.1 Gate 8b — outer wrapper extracted from inline-style to .sphud-page-wrap
+    // class so mobile reflow at @media (max-width:767px) can override padding +
+    // lift max-width without !important. CSS declaration in components.css.
+    contentHtml = '<div class="sphud-page-wrap">' + PB.spectator.renderHUDShell(round) + '</div>';
   } else {
     // Defensive fallback — spectator.js not yet loaded (rare; DEFERRED_PAGES script load order edge case)
     contentHtml = '<div style="padding:60px 24px;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--cb-mute-2)">SPECTATOR HUD LOADING...</div>';
