@@ -1038,59 +1038,37 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .pn-putts-btn.active .pn-putts-val{color:var(--cream)}
 
 /* ──────────────────────────────────────────────────────────────────────────
-   HQ Home v1 banded grid (Ship 5 Gate 1 · v8.15.0 · Gate 2 · v8.15.1
-   · Gate 2 recalibration · v8.15.2)
+   HQ Home banded grid — Ship 5 Gate 2 simplified (v8.15.3)
+   Home-only consumer per Q2 ruling (P18: primitives extracted on second
+   consumer, not authored on first).
 
-   4-band CSS-driven layout primitive. Home-only consumer per Q2 ruling
-   (P18: primitives extracted on second consumer, not authored on first).
-   Replaces 5-band JS-driven _renderHQGridInner from Ship 1b-i era.
+   v8.15.3 simplification per P21 (pick the simplest CSS architecture that
+   solves the actual problem). Replaces v8.15.1/v8.15.2 container query
+   architecture (~140 lines deleted). Three consecutive ships missed CSS
+   box-model math layers chasing container query thresholds:
+     - v8.15.1: thresholds 1120/1440 assumed container ≈ viewport. Wrong:
+                shell sidebar consumes ~240px at viewport ≥960.
+     - v8.15.2: thresholds 960/1280 against viewport-sidebar-padding. Still
+                wrong: container queries match the CONTENT BOX (border box
+                minus padding), so a .page-shell__container measuring 968px
+                via getBoundingClientRect queries against 920px (after 48px
+                padding subtraction). Right rail stayed hidden when expected
+                visible.
+     - v8.15.3: container queries abandoned. Single viewport @media achieves
+                the same user-visible outcome with one threshold instead of
+                three, no @supports fallback, no math layers to miss.
 
-   Ship 5 Gate 2 (v8.15.1) — viewport @media replaced with @container
-   hq-content per P19 (container queries over @media when responding to
-   wrapper, not viewport). The grid lives inside .page-shell__container
-   which declares container-type: inline-size — @container queries match
-   on the actual content area, NOT the OS viewport.
+   Two states:
+     mobile (<960 viewport):   single column, right rail hidden
+     desktop (≥960 viewport):  main + 280px right rail
 
-   Ship 5 Gate 2 recalibration (v8.15.2) — thresholds calibrated against
-   the actual content-area width post-page-shell-sidebar consumption.
-   Diagnostic evidence (CTO runtime inspection at v8.15.1, DevTools
-   getBoundingClientRect on .page-shell__container): viewport 1272px →
-   content area 968px (sidebar consumes ~240px + page-shell padding 48px).
-   Old thresholds 1120/1440 didn't activate at content area 968. New
-   thresholds 960/1280 activate correctly. Compact 720 unchanged (already
-   below the consumption-band).
-   Per P20 — the thresholds were originally set via mental walkthrough
-   (assumed container ≈ viewport), which the runtime-verification
-   protocol now prevents.
+   The previous "cinema" 3-column layout (empty left placeholder + main +
+   right) was cosmetic only and is removed. No information loss — left rail
+   was always intentionally empty per Q4 ruling.
 
-   Band breakpoints (Q1 hybrid scheme · v8.15.2 recalibrated values):
-     mobile:    <720px container       — single column; rail inlines as
-                                          page tail in Gate 3 (mobile reflow)
-     compact:   container ≥720px       — single main column, no rails
-     standard:  container ≥960px       — main + right rail 280px
-                                          (calibrated for ~240px sidebar consumption)
-     cinema:    container ≥1280px      — left rail placeholder 240px +
-                                          main + right rail 320px
-                                          (calibrated for ~240px sidebar consumption)
-
-   max-width caps removed per Q-AUDIT-A revised spec — container queries
-   already constrain when each layout activates; redundant caps caused the
-   orphan-space issue. Grid fills its container.
-
-   @supports not (container-type: inline-size) fallback re-activates
-   viewport @media for browsers <2022. Acceptable graceful degradation;
-   target audience is 2026 desktop/laptop browsers (Chrome 105+ Aug 2022,
-   Safari 16.0+ Sep 2022, Firefox 110+ Feb 2023). Fallback values
-   recalibrated to 960/1280 alongside the @container thresholds so
-   pre-2022 browsers see the same layout activation points.
-
-   Right rail content (Live Now / Standings / Recent Posted) renders in
-   .hq-grid__rail-right at standard+. Hidden at mobile/compact via
-   display:none until Gate 3 implements rail-as-tail mobile reflow.
-
-   Left rail is empty placeholder per Q4 ruling — reserves grid column
-   at cinema, no border / background / content. Nav + scope-memory line
-   deferred whole to follow-on ship.
+   .page-shell__container class preserved as generic wrapper; container-type
+   declaration removed (no longer container-type host). _hqHomeContentMaxWidth
+   still returns "none" so right rail has room to render at desktop width.
    ────────────────────────────────────────────────────────────────────────── */
 .hq-grid {
   display: grid;
@@ -1098,7 +1076,6 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   gap: var(--sp-4);
   margin: 0 auto;
 }
-.hq-grid__rail-left,
 .hq-grid__rail-right {
   display: none;
 }
@@ -1107,24 +1084,12 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   min-width: 0;
 }
 
-/* Compact band: container ≥720px — single main column with reading-width cap */
-@container hq-content (min-width: 720px) {
-  .hq-grid__main {
-    max-width: 720px;
-    margin: 0 auto;
-  }
-}
-
-/* Standard band: container ≥960px — main + right rail
-   (v8.15.2 recalibrated from 1120px — accounts for ~240px sidebar consumption) */
-@container hq-content (min-width: 960px) {
+@media (min-width: 960px) {
   .hq-grid {
     grid-template-columns: 1fr 280px;
   }
   .hq-grid__main {
     grid-column: 1;
-    max-width: none;
-    margin: 0;
   }
   .hq-grid__rail-right {
     display: flex;
@@ -1132,77 +1097,6 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
     gap: var(--sp-6);
     grid-column: 2;
   }
-}
-
-/* Cinema band: container ≥1280px — left rail placeholder + main + right rail
-   (v8.15.2 recalibrated from 1440px — accounts for ~240px sidebar consumption) */
-@container hq-content (min-width: 1280px) {
-  .hq-grid {
-    grid-template-columns: 240px 1fr 320px;
-  }
-  .hq-grid__rail-left {
-    display: block;
-    grid-column: 1;
-    /* Empty placeholder per Q4 ruling — reserves column for correct
-       main-column width. Nav + scope-memory line deferred whole. */
-  }
-  .hq-grid__main {
-    grid-column: 2;
-  }
-  .hq-grid__rail-right {
-    grid-column: 3;
-  }
-}
-
-/* @supports fallback for browsers without container query support
-   (pre-2022). Re-activates viewport @media with same thresholds. */
-@supports not (container-type: inline-size) {
-  @media (min-width: 720px) {
-    .hq-grid__main {
-      max-width: 720px;
-      margin: 0 auto;
-    }
-  }
-  @media (min-width: 960px) {
-    .hq-grid {
-      grid-template-columns: 1fr 280px;
-    }
-    .hq-grid__main {
-      grid-column: 1;
-      max-width: none;
-      margin: 0;
-    }
-    .hq-grid__rail-right {
-      display: flex;
-      flex-direction: column;
-      gap: var(--sp-6);
-      grid-column: 2;
-    }
-  }
-  @media (min-width: 1280px) {
-    .hq-grid {
-      grid-template-columns: 240px 1fr 320px;
-    }
-    .hq-grid__rail-left {
-      display: block;
-      grid-column: 1;
-    }
-    .hq-grid__main {
-      grid-column: 2;
-    }
-    .hq-grid__rail-right {
-      grid-column: 3;
-    }
-  }
-}
-
-/* Page-shell container — container-type host for @container hq-content
-   queries above. Always-on; non-HQ-Home consumers don't author
-   @container hq-content rules so their layout is unaffected.
-   See Q-AUDIT-A ruling (Ship 5 Gate 2 · v8.15.1). */
-.page-shell__container {
-  container-type: inline-size;
-  container-name: hq-content;
 }
 
 /* ──────────────────────────────────────────────────────────────────────────

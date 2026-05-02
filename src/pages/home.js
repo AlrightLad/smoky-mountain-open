@@ -451,16 +451,16 @@ function _formatHQMastheadDate() {
 // display:none. Subsequent gates reflow these into main at compact band per
 // the mock's mobile-tail pattern. Tracked for Gate 3 (mobile reflow).
 function _renderHQHomeBanded(ctx) {
+  // Ship 5 Gate 2 simplified (v8.15.3) — 2-state layout. Empty cinema left
+  // rail removed; was cosmetic only. Mobile (<960 viewport): main only,
+  // right rail hidden via CSS. Desktop (≥960): main + 280px right rail.
   var h = '<div class="hq-grid">';
-  // Cinema-only left rail. Empty per Q4 ruling — reserves grid column at
-  // ≥1440 for correct main-column width. Nav + scope-memory line deferred.
-  h += '<div class="hq-grid__rail-left"></div>';
   // Main column — state-aware lead content (greeting/live/welcome).
   h += '<div class="hq-grid__main">';
   h += _renderHQLeadColumn(ctx);
   h += '</div>';
   // Right rail — features (chart + feed) + agate (online + tee times + spotlight).
-  // CSS hides at compact; visible at standard + cinema.
+  // CSS hides at <960 viewport; visible at ≥960.
   h += '<div class="hq-grid__rail-right">';
   h += _renderHQFeaturesColumn(ctx);
   h += _renderHQAgateRail(ctx);

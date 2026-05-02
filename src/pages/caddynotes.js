@@ -19,16 +19,22 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Home, calibrated</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Home, simplified</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Right-rail content (handicap chart, activity feed, online now, tee times, member spotlight) now appears at expected viewport widths. Previous breakpoints didn't account for the navigation sidebar's width.", tag: "FIXED" }
+    { item: "Right-rail content (handicap chart, activity feed, online now, tee times, member spotlight) now appears reliably on desktop screens. The previous architectural approach proved unnecessarily complex for this layout.", tag: "FIXED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.15.2", date: "May 2026", headline: "Home, calibrated",
+      items: [
+        { item: "Right-rail content (handicap chart, activity feed, online now, tee times, member spotlight) now appears at expected viewport widths. Previous breakpoints didn't account for the navigation sidebar's width.", tag: "FIXED" }
+      ]
+    },
     {
       version: "v8.15.1", date: "May 2026", headline: "Home, refined",
       items: [
