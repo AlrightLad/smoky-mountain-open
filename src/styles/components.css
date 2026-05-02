@@ -1038,7 +1038,8 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .pn-putts-btn.active .pn-putts-val{color:var(--cream)}
 
 /* ──────────────────────────────────────────────────────────────────────────
-   HQ Home v1 banded grid (Ship 5 Gate 1 · v8.15.0 · Gate 2 · v8.15.1)
+   HQ Home v1 banded grid (Ship 5 Gate 1 · v8.15.0 · Gate 2 · v8.15.1
+   · Gate 2 recalibration · v8.15.2)
 
    4-band CSS-driven layout primitive. Home-only consumer per Q2 ruling
    (P18: primitives extracted on second consumer, not authored on first).
@@ -1048,16 +1049,29 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
    hq-content per P19 (container queries over @media when responding to
    wrapper, not viewport). The grid lives inside .page-shell__container
    which declares container-type: inline-size — @container queries match
-   on the actual content area, NOT the OS viewport. Fixes the >1440px
-   "left-shifted with empty space" issue from Gate 1 (page-shell wrapper
-   was capped at 1132px so cinema query never activated).
+   on the actual content area, NOT the OS viewport.
 
-   Band breakpoints (Q1 hybrid scheme):
-     mobile:    <720px    — single column; right rail inlines as page
-                            tail in Gate 3 (mobile reflow)
-     compact:   720-1119  — single main column, no rails
-     standard:  1120-1439 — main + right rail 280px
-     cinema:    ≥1440     — left rail placeholder 240px + main + right rail 320px
+   Ship 5 Gate 2 recalibration (v8.15.2) — thresholds calibrated against
+   the actual content-area width post-page-shell-sidebar consumption.
+   Diagnostic evidence (CTO runtime inspection at v8.15.1, DevTools
+   getBoundingClientRect on .page-shell__container): viewport 1272px →
+   content area 968px (sidebar consumes ~240px + page-shell padding 48px).
+   Old thresholds 1120/1440 didn't activate at content area 968. New
+   thresholds 960/1280 activate correctly. Compact 720 unchanged (already
+   below the consumption-band).
+   Per P20 — the thresholds were originally set via mental walkthrough
+   (assumed container ≈ viewport), which the runtime-verification
+   protocol now prevents.
+
+   Band breakpoints (Q1 hybrid scheme · v8.15.2 recalibrated values):
+     mobile:    <720px container       — single column; rail inlines as
+                                          page tail in Gate 3 (mobile reflow)
+     compact:   container ≥720px       — single main column, no rails
+     standard:  container ≥960px       — main + right rail 280px
+                                          (calibrated for ~240px sidebar consumption)
+     cinema:    container ≥1280px      — left rail placeholder 240px +
+                                          main + right rail 320px
+                                          (calibrated for ~240px sidebar consumption)
 
    max-width caps removed per Q-AUDIT-A revised spec — container queries
    already constrain when each layout activates; redundant caps caused the
@@ -1066,7 +1080,9 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
    @supports not (container-type: inline-size) fallback re-activates
    viewport @media for browsers <2022. Acceptable graceful degradation;
    target audience is 2026 desktop/laptop browsers (Chrome 105+ Aug 2022,
-   Safari 16.0+ Sep 2022, Firefox 110+ Feb 2023).
+   Safari 16.0+ Sep 2022, Firefox 110+ Feb 2023). Fallback values
+   recalibrated to 960/1280 alongside the @container thresholds so
+   pre-2022 browsers see the same layout activation points.
 
    Right rail content (Live Now / Standings / Recent Posted) renders in
    .hq-grid__rail-right at standard+. Hidden at mobile/compact via
@@ -1099,8 +1115,9 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   }
 }
 
-/* Standard band: container ≥1120px — main + right rail */
-@container hq-content (min-width: 1120px) {
+/* Standard band: container ≥960px — main + right rail
+   (v8.15.2 recalibrated from 1120px — accounts for ~240px sidebar consumption) */
+@container hq-content (min-width: 960px) {
   .hq-grid {
     grid-template-columns: 1fr 280px;
   }
@@ -1117,8 +1134,9 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   }
 }
 
-/* Cinema band: container ≥1440px — left rail placeholder + main + right rail */
-@container hq-content (min-width: 1440px) {
+/* Cinema band: container ≥1280px — left rail placeholder + main + right rail
+   (v8.15.2 recalibrated from 1440px — accounts for ~240px sidebar consumption) */
+@container hq-content (min-width: 1280px) {
   .hq-grid {
     grid-template-columns: 240px 1fr 320px;
   }
@@ -1145,7 +1163,7 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
       margin: 0 auto;
     }
   }
-  @media (min-width: 1120px) {
+  @media (min-width: 960px) {
     .hq-grid {
       grid-template-columns: 1fr 280px;
     }
@@ -1161,7 +1179,7 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
       grid-column: 2;
     }
   }
-  @media (min-width: 1440px) {
+  @media (min-width: 1280px) {
     .hq-grid {
       grid-template-columns: 240px 1fr 320px;
     }

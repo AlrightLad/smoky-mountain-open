@@ -19,19 +19,25 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Home, refined</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Home, calibrated</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "The Home page layout now adapts to your screen's available content area instead of just the viewport — fewer empty gaps when the sidebar is open.", tag: "IMPROVED" },
-    { item: "Masthead reads more like a magazine: HQ Saturday Edition eyebrow, larger display headline, contextual subhead.", tag: "IMPROVED" },
-    { item: "Activity feed and right-rail modules have refined card chrome — entity chips, brass top-border accents, and a live pulse on the Online Now strip.", tag: "IMPROVED" },
-    { item: "Stat strip numerals use the correct optical-size variable font axis for cleaner display rendering.", tag: "IMPROVED" }
+    { item: "Right-rail content (handicap chart, activity feed, online now, tee times, member spotlight) now appears at expected viewport widths. Previous breakpoints didn't account for the navigation sidebar's width.", tag: "FIXED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.15.1", date: "May 2026", headline: "Home, refined",
+      items: [
+        { item: "The Home page layout now adapts to your screen's available content area instead of just the viewport — fewer empty gaps when the sidebar is open.", tag: "IMPROVED" },
+        { item: "Masthead reads more like a magazine: HQ Saturday Edition eyebrow, larger display headline, contextual subhead.", tag: "IMPROVED" },
+        { item: "Activity feed and right-rail modules have refined card chrome — entity chips, brass top-border accents, and a live pulse on the Online Now strip.", tag: "IMPROVED" },
+        { item: "Stat strip numerals use the correct optical-size variable font axis for cleaner display rendering.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.15.0", date: "May 2026", headline: "Home, regrouped",
       items: [
