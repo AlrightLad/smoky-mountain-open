@@ -235,6 +235,28 @@ Profile pictures (avatars) are not consistently rendering across all surfaces th
 
 **Surfaced:** v8.16.2 post-push CTO observation. Parked per P23.
 
+### B.27 — Parbaughs logo redesign (design bot consultation)
+**Scope:** L (design consultation + multiple asset replacements + multi-platform updates)
+**Target:** Tier 1 — design bot consultation. Tier 2 — engineering ship after design bot delivers.
+**Dependency:** Should land before public launch (Phase 6) for brand-coherent first impressions on new league signups.
+
+Current logo on HQ Home (top-left in left-rail navigation, "P" inside a chalk square next to "Parbaughs" wordmark) is a placeholder — single letter "P" treatment doesn't reflect the full editorial aesthetic established across the platform (billiard green / chalk / brass / claret palette, Fraunces italic display type, mono-uppercase eyebrow style).
+
+**Resolution plan (deferred):**
+1. Design bot consultation on logo direction
+   - Options to explore: monogram (refined "P"), wordmark only, icon + wordmark lockup, crest/badge treatment, custom illustration
+   - Must work at multiple sizes: ~32px (sidebar nav), ~84px (masthead headline if used), favicon (16px / 32px / 192px)
+   - Must work in both color (full palette) and monochrome (single-color contexts)
+   - Must work on both chalk (light) and billiard-green (dark) backgrounds
+   - Must reflect golf league identity without being golf-cliché (avoid generic golf ball / club imagery)
+2. Design bot delivers logo specification (vector source files or detailed SVG specs)
+3. Engineering ship: replace existing `/Logo.jpg` + `apple-touch-icon.png` + favicon variants + any inline SVG logo references
+4. Update `sw.js` STATIC_ASSETS if new logo file paths differ from current
+5. Update any social media assets (OG image, Twitter card) if used
+6. Update Capacitor mobile app icons (relevant for Phase 3 Clubhouse work)
+
+**Surfaced:** v8.16.2 post-push CTO observation. Parked per P23.
+
 ### B.19 — Kudos icon redesign consultation
 **Scope:** S · **Target:** Ship 5+3 Activity Feed B-tier (design bot scope)
 
