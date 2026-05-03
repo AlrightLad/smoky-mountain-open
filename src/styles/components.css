@@ -1074,7 +1074,10 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--sp-4);
-  margin: 0 auto;
+  /* v8.16.1 Item 2 — 16px breathing below the masthead's border-bottom rule.
+     Pairs with masthead's padding-bottom: 44px (was 28px) for 16px breathing
+     above the rule. Net effect: 16px on each side of the rule line. */
+  margin: 16px auto 0;
 }
 .hq-grid__rail-right {
   display: none;
@@ -1108,6 +1111,21 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   margin-top: 16px;
 }
 
+/* Page-shell sticky footer (v8.16.1 Item 4 · Q-AUDIT-FOOTER Option B).
+   Container is flex-column with min-height:100vh so the page fills the
+   viewport even when content is short. .page-shell__main grows (flex:1),
+   pushing the footer to viewport-bottom when content is short and to
+   content-end when content is tall. Applies to ALL page-shell consumers
+   (HQ Home, Members, Spotlight, etc.) — every page benefits. */
+.page-shell__container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.page-shell__main {
+  flex: 1;
+}
+
 /* HQ Home activity feed scrollbox (v8.16.0 polish · Item 2).
    Shell hosts a 24px chalk fade gradient at the bottom, hinting that the
    feed scrolls. Inner .hq-activity-feed bounds the rendered list height
@@ -1119,6 +1137,10 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .hq-activity-feed {
   max-height: 480px;
   overflow-y: auto;
+  /* v8.16.1 Item 5 — 8px gutter so the browser scrollbar doesn't overlap
+     feed card content text. Predictable across browsers; doesn't require
+     scrollbar-gutter capability. */
+  padding-right: 8px;
 }
 .hq-activity-feed-shell::after {
   content: "";

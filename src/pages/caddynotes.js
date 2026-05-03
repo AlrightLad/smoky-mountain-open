@@ -19,19 +19,30 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Polish & calibration</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Polish + service worker hotfix</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Improved breathing room between the top utility icons and the Home masthead.", tag: "IMPROVED" },
-    { item: "Activity feed in the right rail now scrolls within a bounded height — keeps the page tidy whether the feed is short or long.", tag: "IMPROVED" },
-    { item: "Empty Tee Times state now offers a link to propose one. An \u201cAdd another\u201d affordance also appears below the list when tee times are scheduled.", tag: "IMPROVED" },
-    { item: "Activity feed terminology updated: \u201cKudos\u201d replaces \u201cLike\u201d throughout the app.", tag: "IMPROVED" }
+    { item: "Background caching system now installs correctly. Previously, the app was running without active offline-cache support due to a broken asset reference; this is now resolved across all members.", tag: "FIXED" },
+    { item: "Activity feed scrollbar no longer overlaps content text.", tag: "FIXED" },
+    { item: "Recent rounds in the main view now extend to 6 entries (up from 3) \u2014 more of your golf history visible at a glance.", tag: "IMPROVED" },
+    { item: "Improved spacing around the divider line below the masthead.", tag: "IMPROVED" },
+    { item: "Page footer now anchors at the bottom under all content rather than floating mid-page.", tag: "IMPROVED" },
+    { item: "Activity feed action buttons removed temporarily \u2014 they\u2019ll return with full functionality (kudos persistence, comments, sharing) in a future release.", tag: "IMPROVED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.16.0", date: "May 2026", headline: "Polish & calibration",
+      items: [
+        { item: "Improved breathing room between the top utility icons and the Home masthead.", tag: "IMPROVED" },
+        { item: "Activity feed in the right rail now scrolls within a bounded height \u2014 keeps the page tidy whether the feed is short or long.", tag: "IMPROVED" },
+        { item: "Empty Tee Times state now offers a link to propose one. An \u201cAdd another\u201d affordance also appears below the list when tee times are scheduled.", tag: "IMPROVED" },
+        { item: "Activity feed terminology updated: \u201cKudos\u201d replaces \u201cLike\u201d throughout the app.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.15.3", date: "May 2026", headline: "Home, simplified",
       items: [

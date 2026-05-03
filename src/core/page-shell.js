@@ -119,7 +119,7 @@
     var date = slotData && slotData.date ? slotData.date : "";
     var weatherId = slotData && slotData.weatherSiteId ? slotData.weatherSiteId : "";
 
-    var h = '<header class="page-shell__masthead page-shell__masthead--hq-home" style="background:var(--cb-chalk);border-bottom:1px solid var(--cb-chalk-3);padding:32px 24px 28px">';
+    var h = '<header class="page-shell__masthead page-shell__masthead--hq-home" style="background:var(--cb-chalk);border-bottom:1px solid var(--cb-chalk-3);padding:32px 24px 44px">';
     // Inner row spans two columns at standard+: editorial stack on left, scope+weather cluster on right.
     h += '<div style="max-width:1380px;margin:0 auto;display:flex;align-items:flex-start;justify-content:space-between;gap:24px">';
     // Left: editorial stack
@@ -264,9 +264,16 @@
     // components.css (.page-shell__container declaration is always-on; only
     // pages that author @container hq-content rules respond, so non-HQ-Home
     // consumers are unaffected). Per Q-AUDIT-A ruling Option A.
+    // Ship 5 polish v8.16.1 Item 4 — sticky-footer architecture per Q-AUDIT-FOOTER
+    // Option B. Container is flex-column with min-height:100vh (CSS in
+    // components.css). Content portion wraps in .page-shell__main with flex:1
+    // so it grows and pushes footer to viewport-bottom when content is short,
+    // and footer flows naturally to content-end when content is tall.
     var maxWidthCss = (maxWidth && maxWidth !== "none") ? "max-width:" + maxWidth + ";" : "";
     h += '<div class="page-shell__container" style="' + maxWidthCss + 'margin:0 auto;padding:0 24px">';
+    h += '<div class="page-shell__main">';
     h += _renderContentRow(contentHtml, leftRailHtml, rightRailHtml);
+    h += '</div>';
     if (footerHtml) h += footerHtml;
     h += '</div>';
 

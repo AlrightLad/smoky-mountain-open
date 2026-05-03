@@ -1661,12 +1661,10 @@ function _renderActivityFeedCompact(ctx, limit) {
       if (it.photoUrl) {
         b += '<div class="hq-feed-card__photo"><img src="' + escHtml(it.photoUrl) + '" alt=""></div>';
       }
-      // Actions row — markup-only per §12(f) deferral (B.12 wires persistence).
-      b += '<div class="hq-feed-card__actions" aria-hidden="true">';
-      b += '<button class="hq-feed-card__action" type="button" tabindex="-1">Kudos</button>';
-      b += '<button class="hq-feed-card__action" type="button" tabindex="-1">Comment</button>';
-      b += '<button class="hq-feed-card__action" type="button" tabindex="-1">Share</button>';
-      b += '</div>';
+      // v8.16.1 Item 3 — actions row markup REMOVED. Stubs were active confusion
+      // (looked tappable, weren't). Returns in Ship 5+3 with kudos persistence,
+      // comment threading, share functionality. CSS rules .hq-feed-card__actions
+      // and .hq-feed-card__action preserved in components.css for re-use.
       b += '</article>';
     });
     return b;
@@ -1742,7 +1740,9 @@ function _renderHQLeadColumnIdle(ctx) {
   h += _renderEditorialGreetingHero(ctx);
   h += _renderStatsSnapshotQuartet(ctx);
   h += _renderSeasonLadderTop10(ctx);
-  var recent = (ctx.myRounds || []).slice(0, 3);
+  // v8.16.1 Item 1 — idle state shows 6 recent rounds (was 3). Active state
+  // stays at 2 per Q-AUDIT-Q1A ruling (live round is the focus when active).
+  var recent = (ctx.myRounds || []).slice(0, 6);
   if (recent.length > 0) {
     h += '<div style="display:flex;flex-direction:column">';
     recent.forEach(function(r) { h += _renderRecentRoundRow(r); });
