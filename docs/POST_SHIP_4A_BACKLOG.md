@@ -197,6 +197,44 @@ Ship 5 Gate 2 added markup-only actions row (Like / Comment / Share buttons) to 
 
 **Surfaced:** Ship 5 Gate 2 audit V7. Deferred per Q-AUDIT-D Option A ruling + §12(f).
 
+### B.23 — Date duplication on HQ Home masthead
+**Scope:** S · **Target:** HQ holistic polish ship (post-feature-complete per P23)
+
+"SATURDAY · MAY 2, 2026" date stamp appears in TWO places on HQ Home: in the masthead's editorial date row AND in the rule-line row directly below ("SATURDAY EVENING · 54° AND OVERCAST"). Should appear only once. Resolution: pick one location, remove from the other. Recommended approach: keep the editorial masthead date stamp; reduce the rule-line row to weather/conditions only.
+
+**Surfaced:** v8.16.2 post-push smoke. Parked per P23 (polish defers to feature-complete).
+
+### B.24 — Weather duplication on HQ Home masthead
+**Scope:** S · **Target:** HQ holistic polish ship (post-feature-complete per P23)
+
+Weather appears in TWO places on HQ Home: as a "54° · OVERCAST" pill in the top-right of the editorial masthead AND as part of the "SATURDAY EVENING · 54° AND OVERCAST" rule-line row. Should appear only once. Recommended approach: keep the masthead pill (tighter integration with chrome); remove from rule-line row OR repurpose rule-line row entirely.
+
+**Surfaced:** v8.16.2 post-push smoke. Parked per P23.
+
+### B.25 — Handicap trend chart polish + cleanup
+**Scope:** M · **Target:** HQ holistic polish ship · Design bot consultation required
+
+The handicap tracker chart on HQ Home (right rail) needs design and visual refinement. Specific issues TBD by design bot consultation, but likely candidates: axis label styling, data point markers, line treatment, legend, range toggle visual polish, chart container chrome (border/padding/background).
+
+**Surfaced:** v8.16.2 post-push CTO observation. Parked per P23.
+
+### B.26 — Profile pictures not propagating to activity feed + user-attribution surfaces
+**Scope:** M (touches multiple files but pattern is consistent — likely a shared avatar helper that needs swapping)
+**Target:** HQ holistic polish ship OR could split into "avatar consistency ship" if scope grows during audit
+
+Profile pictures (avatars) are not consistently rendering across all surfaces that display user actions or posts. Currently the activity feed cards in HQ Home right rail render an initials-letter avatar (e.g., "M" for Mr Parbaugh) regardless of whether the user has a profile picture set. Other surfaces likely affected: round detail pages, post detail surfaces, comment threads, member spotlight, leaderboard rows, anywhere a user's name+avatar appears.
+
+**Root cause likely:** avatar render logic uses initials fallback as primary path, doesn't check for `member.photoURL` / `member.profilePic` / similar field. OR profile picture upload flow exists but the URL isn't being propagated to all consuming surfaces.
+
+**Resolution plan (deferred):**
+1. Audit avatar rendering: identify every surface that renders a user avatar
+2. Identify the canonical photo URL field on member documents
+3. Audit each render path to use photo URL with initials fallback (not initials primary)
+4. Verify upload flow writes photo URL correctly
+5. Backfill if any members have photos that aren't propagating
+
+**Surfaced:** v8.16.2 post-push CTO observation. Parked per P23.
+
 ### B.19 — Kudos icon redesign consultation
 **Scope:** S · **Target:** Ship 5+3 Activity Feed B-tier (design bot scope)
 
