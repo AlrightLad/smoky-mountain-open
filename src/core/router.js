@@ -1809,7 +1809,7 @@ function feedTimeAgo(ts) {
 }
 
 function likeFeedRound(roundId, el) {
-  if (!db || !currentUser) { Router.toast("Sign in to like"); return; }
+  if (!db || !currentUser) { Router.toast("Sign in to give kudos"); return; }
   var uid = currentUser.uid;
   window._suppressRoundsRerender = true; // Don't re-render on this Firestore update
   db.collection("rounds").doc(roundId).get().then(function(doc) {
@@ -1829,7 +1829,7 @@ function likeFeedRound(roundId, el) {
       }
       setTimeout(function() { window._suppressRoundsRerender = false; }, 2000);
     });
-  }).catch(function() { window._suppressRoundsRerender = false; Router.toast("Could not like round"); });
+  }).catch(function() { window._suppressRoundsRerender = false; Router.toast("Could not give kudos to round"); });
 }
 
 // Golf-themed reactions popup

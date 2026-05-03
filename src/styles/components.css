@@ -1099,6 +1099,38 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   }
 }
 
+/* HQ Home masthead breathing room (v8.16.0 polish · Item 1).
+   16px gap above the editorial masthead so the user-utility icon row in
+   #profileBar (sticky at viewport top) has visible separation from the
+   "HQ · SATURDAY EDITION" eyebrow. HQ-Home-specific so non-HQ pages
+   keep their existing 41px gap. */
+.page-shell__masthead--hq-home {
+  margin-top: 16px;
+}
+
+/* HQ Home activity feed scrollbox (v8.16.0 polish · Item 2).
+   Shell hosts a 24px chalk fade gradient at the bottom, hinting that the
+   feed scrolls. Inner .hq-activity-feed bounds the rendered list height
+   so the right rail doesn't grow tall when many items are present.
+   Goal: ~5-7 visible feed cards (each ~70-80px including borders + actions). */
+.hq-activity-feed-shell {
+  position: relative;
+}
+.hq-activity-feed {
+  max-height: 480px;
+  overflow-y: auto;
+}
+.hq-activity-feed-shell::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--cb-chalk));
+}
+
 /* ──────────────────────────────────────────────────────────────────────────
    HQ Home feed card (Ship 5 Gate 2 · v8.15.1)
    Per design bot §12(d) — entity chip, conditional photo slot, actions

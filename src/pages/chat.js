@@ -555,7 +555,7 @@ function renderChatMessages(messages) {
 }
 
 function toggleLike(docId) {
-  if (!db || !currentUser) { Router.toast("Sign in to like"); return; }
+  if (!db || !currentUser) { Router.toast("Sign in to give kudos"); return; }
   var uid = currentUser.uid;
   
   // Optimistic UI update — update local data immediately
@@ -583,8 +583,8 @@ function toggleLike(docId) {
         var myName = currentProfile ? PB.getDisplayName(currentProfile) : "Someone";
         sendNotification(data.authorId, {
           type: "feed_like",
-          title: "New Like",
-          message: myName + " liked your post",
+          title: "New Kudos",
+          message: myName + " gave kudos to your post",
           linkPage: "chat"
         });
       }
@@ -677,7 +677,7 @@ function submitComment(docId) {
 }
 
 function toggleCommentLike(docId, commentIdx) {
-  if (!db || !currentUser) { Router.toast("Sign in to like"); return; }
+  if (!db || !currentUser) { Router.toast("Sign in to give kudos"); return; }
   var uid = currentUser.uid;
   
   // Optimistic update
@@ -710,8 +710,8 @@ function toggleCommentLike(docId, commentIdx) {
         var myName = currentProfile ? PB.getDisplayName(currentProfile) : "Someone";
         sendNotification(comments[commentIdx].uid, {
           type: "comment_like",
-          title: "Comment Liked",
-          message: myName + " liked your comment",
+          title: "Comment Kudos",
+          message: myName + " gave kudos to your comment",
           linkPage: "chat"
         });
       }

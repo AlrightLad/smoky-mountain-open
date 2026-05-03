@@ -1596,8 +1596,11 @@ function _renderHandicapTrendSeries(rangeFiltered, allRounds, chartWidth) {
 // TODO v1.x: upgrade to loadHomeActivityFeed (Firestore-backed, richer set).
 function _renderActivityFeedCompact(ctx, limit) {
   var items = _hqBuildActivityItems(limit || 12);
+  // v8.16.0 Item 2 — wrapped in .hq-activity-feed-shell + .hq-activity-feed
+  // for bounded scrollbox + bottom fade gradient. Header lives outside the
+  // scroll area so it stays visible while the bucket list scrolls.
   var h = '<div>';
-  // Header
+  // Header (outside scrollbox)
   h += '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px">';
   h += '<div>';
   h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:4px">ACTIVITY</div>';
@@ -1611,6 +1614,10 @@ function _renderActivityFeedCompact(ctx, limit) {
     h += '</div>';
     return h;
   }
+
+  // Open scrollbox shell + scroll surface around the bucket list below.
+  h += '<div class="hq-activity-feed-shell">';
+  h += '<div class="hq-activity-feed">';
 
   // Bucket by relative time
   var now = Date.now();
@@ -1656,7 +1663,7 @@ function _renderActivityFeedCompact(ctx, limit) {
       }
       // Actions row — markup-only per §12(f) deferral (B.12 wires persistence).
       b += '<div class="hq-feed-card__actions" aria-hidden="true">';
-      b += '<button class="hq-feed-card__action" type="button" tabindex="-1">Like</button>';
+      b += '<button class="hq-feed-card__action" type="button" tabindex="-1">Kudos</button>';
       b += '<button class="hq-feed-card__action" type="button" tabindex="-1">Comment</button>';
       b += '<button class="hq-feed-card__action" type="button" tabindex="-1">Share</button>';
       b += '</div>';
@@ -1665,14 +1672,14 @@ function _renderActivityFeedCompact(ctx, limit) {
     return b;
   }
 
-  h += '<div>';
   h += renderBucket("TODAY", buckets.today, true);
   h += renderBucket("YESTERDAY", buckets.yesterday, false);
   h += renderBucket("THIS WEEK", buckets.week, false);
   h += renderBucket("EARLIER", buckets.earlier, false);
-  h += '</div>';
 
-  h += '</div>';
+  h += '</div>';   // close .hq-activity-feed (scroll surface)
+  h += '</div>';   // close .hq-activity-feed-shell (gradient host)
+  h += '</div>';   // close outer wrapper
   return h;
 }
 
@@ -1922,6 +1929,9 @@ function _renderUpcomingTeeTimes(ctx) {
 
   if (!upcoming.length) {
     h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase;padding:var(--sp-2) 0">NOTHING SCHEDULED</div>';
+    // v8.16.0 Item 3 — empty-state CTA. Routes to existing /teetimes page;
+    // does NOT implement invitation/RSVP flow (Ship 5+2 territory).
+    h += '<div onclick="Router.go(\'teetimes\')" style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;color:var(--cb-brass);text-transform:uppercase;cursor:pointer;margin-top:12px">PROPOSE A TEE TIME →</div>';
     h += '</div>';
     return h;
   }
@@ -1952,6 +1962,9 @@ function _renderUpcomingTeeTimes(ctx) {
     h += '<div style="flex-shrink:0;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:1px;color:' + spotsColor + ';text-transform:uppercase">' + escHtml(spotsLabel) + '</div>';
     h += '</div>';
   });
+  // v8.16.0 Item 3 — "+ Add another" affordance. Lower-emphasis treatment
+  // (mute color, smaller padding) since the list above is the primary content.
+  h += '<div onclick="Router.go(\'teetimes\')" style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;color:var(--cb-brass);text-transform:uppercase;cursor:pointer;padding-top:10px">+ ADD ANOTHER</div>';
   h += '</div>';
   return h;
 }

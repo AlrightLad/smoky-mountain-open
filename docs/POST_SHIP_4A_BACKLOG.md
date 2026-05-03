@@ -197,6 +197,15 @@ Ship 5 Gate 2 added markup-only actions row (Like / Comment / Share buttons) to 
 
 **Surfaced:** Ship 5 Gate 2 audit V7. Deferred per Q-AUDIT-D Option A ruling + §12(f).
 
+### B.19 — Kudos icon redesign consultation
+**Scope:** S · **Target:** Ship 5+3 Activity Feed B-tier (design bot scope)
+
+v8.16.0 swapped "Like" → "Kudos" terminology platform-wide (feed card action button + chat.js toast/notification copy) but preserved the existing heart SVG glyph. Per CTO Q-AUDIT-A ruling: "icon redesign is design bot territory." Heart is universal kudos/recognition glyph but might benefit from a more distinct treatment when notifications + Activity Feed B-tier features (kudos persistence, kudos count display, kudos history) ship.
+
+Future work: consult design bot on icon options when Ship 5+3 enters audit. Decision criteria: distinct from "like" (Twitter/Instagram heart connotation), distinct from "applause" emoji, readable at 9-11px size, fits Clubhouse aesthetic.
+
+**Surfaced:** v8.16.0 audit Q-AUDIT-A. Deferred per CTO ruling.
+
 ### B.13 — Vestigial `chartWidth` parameter cleanup
 **Scope:** S · **Target:** Cleanup ship
 

@@ -19,16 +19,25 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Home, simplified</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Polish & calibration</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Right-rail content (handicap chart, activity feed, online now, tee times, member spotlight) now appears reliably on desktop screens. The previous architectural approach proved unnecessarily complex for this layout.", tag: "FIXED" }
+    { item: "Improved breathing room between the top utility icons and the Home masthead.", tag: "IMPROVED" },
+    { item: "Activity feed in the right rail now scrolls within a bounded height — keeps the page tidy whether the feed is short or long.", tag: "IMPROVED" },
+    { item: "Empty Tee Times state now offers a link to propose one. An \u201cAdd another\u201d affordance also appears below the list when tee times are scheduled.", tag: "IMPROVED" },
+    { item: "Activity feed terminology updated: \u201cKudos\u201d replaces \u201cLike\u201d throughout the app.", tag: "IMPROVED" }
   ];
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.15.3", date: "May 2026", headline: "Home, simplified",
+      items: [
+        { item: "Right-rail content (handicap chart, activity feed, online now, tee times, member spotlight) now appears reliably on desktop screens. The previous architectural approach proved unnecessarily complex for this layout.", tag: "FIXED" }
+      ]
+    },
     {
       version: "v8.15.2", date: "May 2026", headline: "Home, calibrated",
       items: [
