@@ -257,6 +257,89 @@ Current logo on HQ Home (top-left in left-rail navigation, "P" inside a chalk sq
 
 **Surfaced:** v8.16.2 post-push CTO observation. Parked per P23.
 
+### B.28 — HQ Home stat strip course name truncation
+**Scope:** S — UX adjustment + possibly small data layer addition (course shortName field)
+**Target:** HQ holistic polish ship · Possible design bot consultation if course-shortName approach is chosen
+
+The "BEST" stat cell shows the course where the user's best round was logged, but long course names get truncated mid-word with ellipsis (e.g., "OCEAN PINES GOLF & CO..."). Full course name should always fit within the cell, OR truncation should fall back to a shorter canonical course name (e.g., abbreviation, just "OCEAN PINES" without "GOLF & COUNTRY CLUB" suffix).
+
+Resolution options (TBD by design bot):
+- Larger cell width / wrap to 2 lines
+- Use shortened/abbreviated course name field if available on course documents
+- Add a "displayName" or "shortName" field to courses collection for compact contexts
+- Smaller font in this cell only
+
+**Surfaced:** 2026-05-04 post-v8.16.2 smoke.
+
+### B.29 — Activity feed posts missing hole count + format type
+**Scope:** S — pure home.js _hqBuildActivityItems string composition fix
+**Target:** HQ holistic polish ship · Could ship in Ship 5+3 Activity Feed B-tier if scope already touching feed render
+
+Activity feed cards in HQ Home right rail (League Pulse) currently show "[Member] logged [score] at [course]" with optional sub-line for "9 holes" or format type ("Stableford (1.5x)"), but inconsistently. Per CTO requirement, every round entry in League Pulse should always display:
+- Hole count: 9 HOLES or 18 HOLES
+- Format type: STROKE, STABLEFORD, MATCH, SCRAMBLE, etc.
+
+Format ideally: "9 HOLES · STROKE" or "18 HOLES · STABLEFORD (1.5x)" as a consistent subline below the main "X logged Y at Z" text.
+
+Current state per audit (home.js _hqBuildActivityItems):
+- Logic exists for format and holesPlayed but emits inconsistently — only shows when format !== "stroke" OR holesPlayed <= 9
+- Format defaults to empty string when stroke
+- Result: 18-hole stroke rounds show no subline at all
+
+Resolution: update _hqBuildActivityItems sub-line logic to always emit hole count + format, with consistent label format. Default 18 if holesPlayed is undefined or matches full course holes. Default "STROKE" if format is missing.
+
+**Surfaced:** 2026-05-04 post-v8.16.2 smoke.
+
+### B.30 — HQ Home greeting hero shows partial display name
+**Scope:** S — single-function string handling fix in home.js
+**Target:** HQ holistic polish ship
+
+The "Welcome back, [Name]" greeting on HQ Home renders an abbreviated or partial form of the user's display name. Screenshot shows "Welcome back, Parbaugh." for a user whose full display name appears to be "Mr Parbaugh" (or similar with prefix). Greeting should always render the FULL display name as configured by the user — including any prefix (Mr/Mrs/Dr), suffix, or whitespace.
+
+Likely cause: greeting helper is doing string manipulation (e.g., split on space and take last token, or strip prefix) instead of using the canonical full display name field as-is.
+
+Resolution: locate `_renderEditorialGreetingHero` or similar function in home.js, identify how the greeting name is computed, verify it uses the user's canonical displayName field directly without transformation. Render whatever the user configured in their profile.
+
+**Note:** this also relates to memory's Part C (Discord-style usernames as identity primitive). When Part C ships, display name semantics become more rigorous (canonical ID = displayname#XXXX, plus optional title prefix). This polish item is a near-term fix; Part C will rationalize the system holistically. Don't pre-empt Part C with one-off display logic here — just render the displayName field correctly.
+
+**Surfaced:** 2026-05-04 post-v8.16.2 smoke.
+
+### B.31 — HQ Home stat strip "MTD" appears inaccurate
+**Scope:** S (label change) OR M (data investigation + computation fix)
+**Severity:** HIGH if real bug (data accuracy issue affects user trust), LOW if label/definition issue
+**Target:** depends on root cause — real bug fixes can jump P23 polish-deferral queue if affecting data integrity
+**Status:** Pending CTO clarification on root cause
+
+The "ROUNDS / MTD: 0" stat cell shows 0 rounds month-to-date. CTO reports having played at least 2 rounds in the last 30 days.
+
+Diagnostic question: did the 2+ recent rounds fall in May 2026 (current month, MTD applies) or in late April 2026 (prior month, would not count for MTD)?
+
+If May rounds exist and aren't counting → real data bug, root cause investigation needed:
+- Wrong date range in MTD computation
+- Timezone offset issue (round createdAt timestamps stored UTC, MTD computed against local month boundary)
+- Filtering on wrong condition (e.g., only "official" rounds, only certain formats, only rounds from current league scope)
+- Field name mismatch on round documents
+
+If only April rounds → metric label vs definition mismatch:
+- "MTD" suggests month-to-date which is correct empty value for early May
+- User expectation aligns with "last 30 days" rolling window
+- Resolution: rename label to "LAST 30D" or change underlying calculation to rolling 30-day window
+
+**Surfaced:** 2026-05-04 post-v8.16.2 smoke.
+
+### B.32 — Custom scrollbar treatment for HQ Home activity feed
+**Scope:** S (CSS-only treatment, scoped to one component)
+**Target:** HQ holistic polish ship
+**Status:** Design spec delivered — ready for implementation reference
+
+Design direction locked: **D1(a) Editorial-clean** — 6px brass-tinted thin strip with chalk-3 track, claret accent on active drag, hover-revealed at rest. No golf motif (rejected for high-frequency surface; novelty becomes noise). Phase 1 scoped to `.hq-activity-feed` only; promote to `.cb-scroll` utility in a follow-up ship after production validation.
+
+Spec covers: cross-browser implementation (Chromium/Safari `::-webkit-scrollbar` + Firefox `scrollbar-color` graceful degradation), interaction states (rest/hover-area/hover-thumb/active/disabled), prefers-reduced-motion, WCAG 1.4.11 non-text contrast (3:1+), 32px thumb min-height, gradient coexistence (pull `.hq-activity-feed-shell::after` 8px off the scrollbar gutter), token-only references for theme variant inheritance, and QA checklist.
+
+**Full spec:** [docs/B_32_-_Custom_Scrollbar_Spec.md](B_32_-_Custom_Scrollbar_Spec.md)
+
+**Surfaced:** 2026-05-04 post-v8.16.2 smoke. Design spec delivered 2026-05-04.
+
 ### B.19 — Kudos icon redesign consultation
 **Scope:** S · **Target:** Ship 5+3 Activity Feed B-tier (design bot scope)
 
