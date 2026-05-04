@@ -260,6 +260,10 @@ Router.register("records", function() {
       }
     });
     Object.values(fbMemberCache).forEach(function(m) {
+      // v8.17.0 Path B+ hardening — defensive visibility check (currently
+      // safe-by-inheritance via bestByUsername above, but explicit guard
+      // protects against future regressions).
+      if (PB.isMemberVisibleToViewer && !PB.isMemberVisibleToViewer(m)) return;
       if (m.id && !seenAvgIds[m.id]) {
         if (m.claimedFrom && !m.username && realAccounts[m.claimedFrom]) return;
         if (m.username && bestByUsername[m.username.toLowerCase()] !== m) return;

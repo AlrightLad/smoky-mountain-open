@@ -20,12 +20,16 @@ function renderMemberList() {
       var fbMembers = [];
       var claimedFromIds = [];
       var seenDocIds = {}; // dedup by Firestore doc ID — prevents double-render artifacts
-      snap.forEach(function(doc) { 
+      snap.forEach(function(doc) {
         if (seenDocIds[doc.id]) return;
         seenDocIds[doc.id] = true;
         var d = doc.data();
         d.id = d.id || doc.id;
-        fbMembers.push(d); 
+        // v8.17.0 Path B+ hardening — direct Firestore query bypasses
+        // PB.getPlayers() filter; apply visibility check explicitly here.
+        // (V13.3 audit miss — patched in immediate followup.)
+        if (PB.isMemberVisibleToViewer && !PB.isMemberVisibleToViewer(d)) return;
+        fbMembers.push(d);
         if (d.claimedFrom) claimedFromIds.push(d.claimedFrom);
       });
       

@@ -171,10 +171,19 @@ function submitTeeTime() {
   if (currentUser) tee.responses[currentUser.uid] = "accepted";
   db.collection("teetimes").add(leagueDoc("teetimes", tee)).then(function() {
     Router.toast("Tee time posted!");
-    // Notify all members about the new tee time
+    // Notify members about the new tee time.
+    // v8.17.0 Path B+ hardening — two-layer scope (league + test/real boundary),
+    // same pattern as rounds.js:387 round_posted broadcast. (V13.3 audit miss —
+    // patched in immediate followup; teetimes.js wasn't covered by a8709bc.)
     var _teeCreatorName = currentProfile ? (currentProfile.name||currentProfile.username) : "A Parbaugh";
+    var _teeLeagueId = (typeof getActiveLeague === "function" ? getActiveLeague() : null);
+    var _writerIsTest = !!(currentProfile && currentProfile.isTestAccount);
     PB.getPlayers().forEach(function(p) {
       if (p.id === (currentUser ? currentUser.uid : "") || isBannedRole(p)) return;
+      // 1. League scope: only notify members of the tee time's league
+      if (_teeLeagueId && (!p.leagues || p.leagues.indexOf(_teeLeagueId) === -1)) return;
+      // 2. Don't broadcast across the test/real account boundary
+      if (!!p.isTestAccount !== _writerIsTest) return;
       sendNotification(p.id, { type: "tee_posted", title: "New Tee Time", message: _teeCreatorName + " posted: " + (course?course.name:"") + " · " + date + " · " + timeStr, page: "teetimes" });
     });
     Router.go("teetimes");
