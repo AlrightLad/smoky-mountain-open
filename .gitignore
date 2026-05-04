@@ -1,7 +1,35 @@
+# ─── SECURITY: credential exposure prevention ─────────────────────────────
+# This repo is PUBLIC on GitHub. Anything matching the patterns below must
+# never be committed. If you add a new credential file, add a pattern here
+# (and the pre-commit hook in .husky/pre-commit blocks credential-shaped
+# strings even when files aren't ignored).
+
+# Environment files (all variants)
+.env
+.env.*
+!.env.example
+*.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Service account / admin SDK keys
+serviceAccountKey.json
+*-serviceAccountKey.json
+firebase-adminsdk-*.json
+scripts/.service-account.json
+
+# Private keys + certificates
+*.pem
+*.key
+
+# Browser profile dirs (may persist auth cookies/tokens)
+/tests/smoke/.profiles/
+
+# ─── Build + tooling ──────────────────────────────────────────────────────
 node_modules/
 dist/
-serviceAccountKey.json
-scripts/.service-account.json
 logs/
 /emulator-data/
 /test-results/
@@ -12,3 +40,4 @@ logs/
 /firebase-debug.log
 /firestore-debug.log
 /pubsub-debug.log
+/tests/smoke/output/

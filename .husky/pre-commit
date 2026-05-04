@@ -6,6 +6,55 @@
 # intent was clearly "lint-staged failure blocks the commit" (Test 2).
 set -e
 
+# ─── Credential leak prevention (v8.17.0 / Ship 5+1 hardening) ─────────
+# This repo is PUBLIC on GitHub. The pre-commit hook scans staged ADDED
+# lines for credential-shaped strings and blocks the commit on match.
+#
+# Patterns checked:
+#   • High-entropy provider tokens: AWS (AKIA…), Stripe (sk_live_…),
+#     GitHub PAT (ghp_…), Google OAuth (ya29.…), Anthropic (sk-…)
+#   • Suspicious var names with a quoted value >=8 chars:
+#     SMOKE_PASSWORD, FIREBASE_PRIVATE_KEY, ADMIN_PASSWORD,
+#     SERVICE_ACCOUNT_KEY, GITHUB_TOKEN, password, secret,
+#     client_secret, access_token
+#
+# NOT checked (intentional):
+#   • Firebase web apiKey AIzaSy... — public-by-design (V2.3 audit)
+#   • tests/e2e/setup/fixtures/** — emulator-only synthetic data
+#   • The pattern definition in this hook itself
+#
+# False-positive override (use with caution):
+#   git commit --no-verify
+#
+# To refine: edit LEAK_PATTERNS below. After edit, sanity-test by
+# staging a fake credential and confirming the hook blocks.
+
+LEAK_PATTERNS="(AKIA[0-9A-Z]{16}|sk_live_[0-9a-zA-Z]{20,}|ghp_[0-9a-zA-Z]{30,}|ya29\\.[0-9A-Za-z_-]{30,}|sk-[A-Za-z0-9]{40,}|(SMOKE_PASSWORD|FIREBASE_PRIVATE_KEY|ADMIN_PASSWORD|SERVICE_ACCOUNT_KEY|GITHUB_TOKEN|password|secret|client_secret|access_token)[[:space:]]*[:=][[:space:]]*[\"'][^\"']{8,}[\"'])"
+
+LEAK_HITS=$(git diff --cached --unified=0 \
+  -- ':!tests/e2e/setup/fixtures/**' ':!.husky/pre-commit' \
+  | grep -E '^\+[^+]' \
+  | grep -inE "$LEAK_PATTERNS" || true)
+
+if [ -n "$LEAK_HITS" ]; then
+  echo ""
+  echo "POTENTIAL CREDENTIAL LEAK DETECTED IN STAGED CHANGES"
+  echo ""
+  echo "A pattern matched something that looks like a credential."
+  echo ""
+  echo "Matched lines:"
+  echo "$LEAK_HITS" | head -10
+  echo ""
+  echo "Options:"
+  echo "  1. Remove the credential, use environment variable instead"
+  echo "  2. If false positive (schema field name, doc text, etc.),"
+  echo "     refine the LEAK_PATTERNS regex in .husky/pre-commit"
+  echo "  3. Override (NOT RECOMMENDED): git commit --no-verify"
+  echo ""
+  exit 1
+fi
+# ─── End credential leak prevention ────────────────────────────────────
+
 npx lint-staged
 
 # Version sync check — mirrors v7.8.1 Hook 5, but fires for any
