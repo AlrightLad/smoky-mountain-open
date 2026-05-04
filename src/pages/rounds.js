@@ -381,13 +381,24 @@ function submitRound() {
         }
       }
     }
-    // Notify other members about this round (rival posted a round)
+    // Notify other members about this round (rival posted a round).
+    // v8.17.0 Path B+ hardening — two-layer scope for the broadcast:
+    //   1. League scope: only notify members of the round's league.
+    //   2. Test/real isolation: don't broadcast across the test/real boundary
+    //      (defensive — also prevents test account from spam-pushing real members).
+    // Architectural multi-league filter is B.36 / Phase 2 territory.
     if (currentUser && round.visibility !== "private") {
       var _roundPlayerName = currentProfile ? (currentProfile.name || currentProfile.username) : "A Parbaugh";
+      var _roundLeagueId = round.leagueId || (typeof getActiveLeague === "function" ? getActiveLeague() : null);
+      var _writerIsTest = !!(currentProfile && currentProfile.isTestAccount);
       PB.getPlayers().forEach(function(p) {
         var pUid = p.id;
         if (pUid === currentUser.uid) return;
         if (isBannedRole(p)) return;
+        // 1. Skip members not in the round's league
+        if (_roundLeagueId && (!p.leagues || p.leagues.indexOf(_roundLeagueId) === -1)) return;
+        // 2. Don't broadcast across the test/real account boundary
+        if (!!p.isTestAccount !== _writerIsTest) return;
         sendNotification(pUid, {
           type: "round_posted",
           title: _roundPlayerName + " posted a round",

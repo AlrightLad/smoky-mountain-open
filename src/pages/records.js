@@ -204,6 +204,7 @@ Router.register("records", function() {
   var allKnownPlayers = players.slice();
   if (typeof fbMemberCache !== "undefined") {
     Object.values(fbMemberCache).forEach(function(m) {
+      if (PB.isMemberVisibleToViewer && !PB.isMemberVisibleToViewer(m)) return;
       if (m.id && !allKnownPlayers.find(function(p){return p.id===m.id||p.id===m.claimedFrom;})) {
         allKnownPlayers.push(m);
       }
@@ -232,6 +233,7 @@ Router.register("records", function() {
   var claimedSeedIds = {};
   if (typeof fbMemberCache !== "undefined") {
     Object.values(fbMemberCache).forEach(function(m) {
+      if (PB.isMemberVisibleToViewer && !PB.isMemberVisibleToViewer(m)) return;
       if (m.claimedFrom) claimedSeedIds[m.claimedFrom] = true;
     });
   }
@@ -249,6 +251,7 @@ Router.register("records", function() {
     var realAccounts = {};
     var bestByUsername = {};
     Object.values(fbMemberCache).forEach(function(m) {
+      if (PB.isMemberVisibleToViewer && !PB.isMemberVisibleToViewer(m)) return;
       if (m.claimedFrom && m.username) realAccounts[m.claimedFrom] = true;
       if (m.username) {
         var key = m.username.toLowerCase();

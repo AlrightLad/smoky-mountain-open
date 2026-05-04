@@ -363,6 +363,28 @@ Cleanup: remove `opts.width` / `chartWidth` parameter from both functions; viewB
 
 Per `§9.02 §11`, 8 quiet states (pre-round, post-round, abandoned, paused, stale, F1 missing, F2 abandoned, F3 host-offline) need design pass for both desktop + mobile band. Some states already have chrome (F2, F3 from Gate 7); others need authoring.
 
+### B.36 — Multi-league member-filtering architecture
+**Scope:** L (architectural, ~200-400 LOC across 6+ surfaces)
+**Target:** Phase 2 multi-league architecture work
+
+The codebase was implicitly assumed-single-league for years. CLAUDE.md "League Scoping Rules" documents *"Members list shows only members of your ACTIVE league"* but the implementation never landed — `members` is a global collection (correct architecture per Data Scoping table) and most surfaces that consume `PB.getPlayers()` or `db.collection("members").get()` for league-scoped UI render the entire global cache without filtering by league membership. This wasn't visible in production because every Parbaughs member was always in `the-parbaughs` (the only league).
+
+The smoke test account (created 2026-05-04 for Ship 5+1 smoke automation) is the first member ever NOT in The Parbaughs and surfaced this bug in the members list. v8.17.0 Path B+ hardening (commit forthcoming) patches the symptom by hiding test accounts from real-account viewers via an `isTestAccount` flag — but this is a defensive workaround, not the architectural fix.
+
+Surfaces requiring proper league filtering (audited V13 during smoke setup):
+- `members.js:19` — primary leak (members list)
+- `dms.js:110` — DM partner picker
+- `records.js:206, 234, 251` — direct `Object.values(fbMemberCache).forEach` iterations
+- `richlist.js:37` — ParCoin leaderboard
+- `home.js:1975-1995` — member spotlight (architectural risk only; founding-filter currently masks it)
+- `rounds.js:387` — round_posted broadcast (PARTIALLY fixed in v8.17.0 hardening with league filter, but the broader pattern across all `PB.getPlayers().forEach` notify-everyone loops needs the same treatment)
+
+Resolution shape: introduce `PB.getLeagueMembers(leagueId)` helper alongside the existing global `PB.getPlayers()`. Each consumer chooses appropriate semantics. Update CLAUDE.md "League Scoping Rules" implementation status. Migrate ~6 surfaces. Remove the `isTestAccount` defensive filter from `data.js` once the proper league filter is in place — keep the flag as forward-compat metadata.
+
+**Surfaced:** 2026-05-04 V12 + V13 audit during smoke setup (Ship 5+1)
+**Dependency:** None — can ship independently of v8.17.0 / Ship 5+1.
+**Why deferred:** P21 simplest tool for scope. v8.17.0 + smoke automation + Part 2 are higher priority and the Path B+ symptom-fix unblocks all three. Architectural fix lives in its own scoped ship.
+
 ---
 
 ## C — Carryover from Gate 8a (deferred per CTO Q-B)

@@ -20,8 +20,10 @@ Router.register("dms", function() {
   var renderDmList = function(members) {
     var myUid = currentUser.uid;
     var myClaimedFrom = currentProfile ? currentProfile.claimedFrom : null;
-    var filtered = members.filter(function(m) { 
+    var filtered = members.filter(function(m) {
       if (isBannedRole(m)) return false;
+      // v8.17.0 Path B+ hardening — hide test accounts from real-account viewers
+      if (PB.isMemberVisibleToViewer && !PB.isMemberVisibleToViewer(m)) return false;
       if (m.id === myUid) return false;
       if (myClaimedFrom && m.id === myClaimedFrom) return false;
       if (m.claimedFrom && m.claimedFrom === myClaimedFrom && myClaimedFrom) return false;

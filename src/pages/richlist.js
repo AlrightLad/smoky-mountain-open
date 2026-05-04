@@ -38,6 +38,8 @@ Router.register("richlist", function() {
       var players = [];
       snap.forEach(function(doc) {
         var d = doc.data();
+        // v8.17.0 Path B+ hardening — hide test accounts from real-account viewers
+        if (PB.isMemberVisibleToViewer && !PB.isMemberVisibleToViewer(d)) return;
         if (d.parcoinsLifetime > 0) players.push(Object.assign({_id: doc.id}, d));
       });
       var el = document.getElementById("rich-list-content");

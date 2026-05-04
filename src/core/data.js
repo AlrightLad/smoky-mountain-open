@@ -108,6 +108,21 @@ var PB = (function() {
   }
 
   /* ---------- PLAYER OPS (Firestore-first) ---------- */
+
+  // Visibility filter for cross-account isolation. Hides test accounts from
+  // real-account viewers (smoke isolation). Test viewers see all accounts.
+  // v8.17.0 Path B+ hardening — predates the Phase 2 multi-league member-
+  // scoping work captured as B.36. Symptom-level fix; architectural fix is
+  // Phase 2 territory.
+  function _isMemberVisibleToCurrentViewer(m) {
+    if (!m) return false;
+    if (m.isTestAccount === true) {
+      var viewer = (typeof currentProfile !== "undefined") ? currentProfile : null;
+      if (!viewer || viewer.isTestAccount !== true) return false;
+    }
+    return true;
+  }
+
   function getPlayer(id) {
     if (!id) return null;
     // 1. Check Firestore cache first (authoritative)
@@ -138,6 +153,7 @@ var PB = (function() {
     Object.keys(fbMemberCache).forEach(function(key) {
       var m = fbMemberCache[key];
       if (!m || !m.id || isBannedRole(m)) return;
+      if (!_isMemberVisibleToCurrentViewer(m)) return;
       if (m.claimedFrom) claimedSeedIds[m.claimedFrom] = true;
       // Only add once per unique ID (fbMemberCache stores both uid and claimedFrom keys)
       if (seenIds[m.id]) return;
@@ -2082,6 +2098,7 @@ var PB = (function() {
   /* ---------- PUBLIC API ---------- */
   return {
     getPlayer:getPlayer, getPlayers:getPlayers, addPlayer:addPlayer, updatePlayer:updatePlayer, removePlayer:removePlayer,
+    isMemberVisibleToViewer: _isMemberVisibleToCurrentViewer,
     getCourse:getCourse, getCourses:getCourses, getCourseByName:getCourseByName, addCourse:addCourse, updateCourse:updateCourse, deleteCourse:deleteCourse, setCoursesFromFirestore:setCoursesFromFirestore, addCourseReview:addCourseReview, searchCourses:searchCourses,
     getRounds:getRounds, getPlayerRounds:getPlayerRounds, getCourseRounds:getCourseRounds, addRound:addRound, deleteRound:deleteRound, setRoundsFromFirestore:setRoundsFromFirestore,
     getTrips:getTrips, getTrip:getTrip, addTrip:addTrip, addTripFromFirestore:addTripFromFirestore, updateTrip:updateTrip, addTripPhoto:addTripPhoto,
