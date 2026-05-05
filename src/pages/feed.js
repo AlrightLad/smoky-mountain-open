@@ -72,7 +72,13 @@ Router.register("feed", function(params) {
           date: r.date || "",
           ts: r.createdAt ? r.createdAt.toMillis() : 0,
           roundId: rid,
-          isScramble: isScramble
+          isScramble: isScramble,
+          // v8.20.0 (Ship 5+5) — engagement fields surfaced for Kudos / Comment
+          // action row + thread render. Defaults preserve back-compat with rounds
+          // logged before the fields existed.
+          likes: r.likes || [],
+          comments: r.comments || [],
+          commentLikes: r.commentLikes || {}
         });
       });
       pending--; tryRender();
@@ -235,12 +241,47 @@ function _renderRoundCard(item) {
   // AI quip
   if (item.quip) h += '<div style="padding:6px 14px 0;font-size:11px;color:var(--gold);font-style:italic;line-height:1.4">' + escHtml(item.quip) + '</div>';
 
-  // Action row
-  h += '<div style="display:flex;gap:0;padding:8px 14px 10px;border-top:1px solid var(--border);margin-top:8px">';
-  h += '<div onclick="' + roundClick + '" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--muted)" stroke-width="1.3"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 6h6M5 8h4M5 10h5"/></svg><span style="font-size:10px;color:var(--muted)">Scorecard</span></div>';
-  h += '<div onclick="event.stopPropagation();Router.go(\'chat\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--muted)" stroke-width="1.3"><path d="M14 10a1.5 1.5 0 01-1.5 1.5H5L2 14V3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5z"/></svg><span style="font-size:10px;color:var(--muted)">Comment</span></div>';
-  h += '<div onclick="event.stopPropagation();if(typeof shareScorecard===\'function\')shareScorecard(\'' + item.roundId + '\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--muted)" stroke-width="1.3"><path d="M4 12V8l4-6 4 6v4"/><path d="M4 8h8"/></svg><span style="font-size:10px;color:var(--muted)">Share</span></div>';
-  // Reaction button removed per commissioner request
+  // v8.20.0 (Ship 5+5) — Action row restored to 4 buttons per Option B:
+  // Scorecard | Kudos | Comment | Share. Kudos was removed in an older ship;
+  // Comment used to navigate to /chat (stub); Share used to call an undefined
+  // function (silent no-op). Now all 4 are functional. Counts shown when > 0.
+  var likes = item.likes || [];
+  var comments = item.comments || [];
+  var iLiked = currentUser && likes.indexOf(currentUser.uid) !== -1;
+  var likeColor = iLiked ? "var(--gold)" : "var(--muted)";
+  var likeLabel = "Kudos" + (likes.length ? " " + likes.length : "");
+  var commentLabel = "Comment" + (comments.length ? " " + comments.length : "");
+
+  h += '<div data-feed-action-row="1" data-round-id="' + item.roundId + '" style="display:flex;gap:0;padding:8px 14px 10px;border-top:1px solid var(--border);margin-top:8px">';
+  h += '<div data-action="scorecard" onclick="event.stopPropagation();' + roundClick + '" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--muted)" stroke-width="1.3"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 6h6M5 8h4M5 10h5"/></svg><span style="font-size:10px;color:var(--muted)">Scorecard</span></div>';
+  h += '<div data-action="kudos" onclick="event.stopPropagation();feedToggleLike(\'' + item.roundId + '\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px"><svg viewBox="0 0 16 16" width="14" height="14" fill="' + (iLiked ? "var(--gold)" : "none") + '" stroke="' + likeColor + '" stroke-width="1.3"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg><span style="font-size:10px;color:' + likeColor + '">' + likeLabel + '</span></div>';
+  h += '<div data-action="comment" onclick="event.stopPropagation();feedShowCommentInput(\'' + item.roundId + '\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--muted)" stroke-width="1.3"><path d="M14 10a1.5 1.5 0 01-1.5 1.5H5L2 14V3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5z"/></svg><span style="font-size:10px;color:var(--muted)">' + commentLabel + '</span></div>';
+  h += '<div data-action="share" onclick="event.stopPropagation();shareScorecard(\'' + item.roundId + '\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--muted)" stroke-width="1.3"><path d="M4 12V8l4-6 4 6v4"/><path d="M4 8h8"/></svg><span style="font-size:10px;color:var(--muted)">Share</span></div>';
+  h += '</div>';
+
+  // Comments thread (visible when count > 0)
+  if (comments.length) {
+    h += '<div style="padding:0 14px 4px">';
+    comments.forEach(function(c, ci) {
+      var cLikes = (item.commentLikes && item.commentLikes[String(ci)]) || [];
+      var iLikedC = currentUser && cLikes.indexOf(currentUser.uid) !== -1;
+      var ownComment = currentUser && c.uid === currentUser.uid;
+      h += '<div style="display:flex;gap:6px;align-items:flex-start;padding:4px 0;font-size:11px">';
+      h += '<span style="color:var(--gold);font-weight:700;flex-shrink:0">' + escHtml(c.name || "Member") + '</span>';
+      h += '<span style="color:var(--cream);flex:1;min-width:0;line-height:1.4">' + escHtml(c.text || "") + '</span>';
+      h += '<span onclick="event.stopPropagation();feedToggleCommentLike(\'' + item.roundId + '\',' + ci + ')" style="cursor:pointer;color:' + (iLikedC ? "var(--gold)" : "var(--muted2)") + ';font-size:10px;flex-shrink:0">♥' + (cLikes.length ? ' ' + cLikes.length : '') + '</span>';
+      if (ownComment) {
+        h += '<span onclick="event.stopPropagation();feedConfirmDeleteComment(this,\'' + item.roundId + '\',' + ci + ')" data-armed="false" style="cursor:pointer;color:var(--muted2);font-size:12px;flex-shrink:0">×</span>';
+      }
+      h += '</div>';
+    });
+    h += '</div>';
+  }
+
+  // Comment input (hidden by default)
+  h += '<div id="feedComment-' + item.roundId + '" style="display:none;padding:6px 14px 8px;gap:6px">';
+  h += '<input type="text" class="ff-input" style="flex:1;padding:6px 10px;font-size:11px" id="feedCommentText-' + item.roundId + '" placeholder="Add a comment..." onkeydown="if(event.key===\'Enter\')feedSubmitComment(\'' + item.roundId + '\')">';
+  h += '<button class="btn-sm green" style="font-size:10px;padding:6px 10px" onclick="event.stopPropagation();feedSubmitComment(\'' + item.roundId + '\')">Post</button>';
   h += '</div>';
 
   h += '</div>';
@@ -313,16 +354,295 @@ function applyFeedFilter() {
   });
 }
 
-function feedReact(roundId) {
-  if (!db || !currentUser || !roundId) { Router.toast("Sign in to react"); return; }
+// ─────────────────────────────────────────────────────────────────────────
+// v8.20.0 (Ship 5+5) — Round post engagement writers.
+//
+// Mirror chat.js patterns (toggleLike / submitComment / toggleCommentLike /
+// deleteComment): optimistic UI, snapshot-then-revert on rejection, toast,
+// and cluster-typed sendNotification with v8.17.0 two-layer broadcast
+// hardening (league + test/real boundary) on the comment-reply cascade.
+//
+// Why these wrappers exist on /feed instead of router.js: kudos/comment writes
+// target /rounds — same collection as the round detail page would write to,
+// but the specific UI lives on /feed. Helpers stay co-located with the surface
+// that drives them. HQ Home League Pulse cards reuse these same functions
+// (shared engagement model per Ship 5+5 ruling Option B).
+// ─────────────────────────────────────────────────────────────────────────
+
+function _findFeedRoundItem(roundId) {
+  if (!window._feedItems) return null;
+  return window._feedItems.find(function(it) { return it.type === "round" && it.roundId === roundId; }) || null;
+}
+
+function _feedRoundFromCache(roundId) {
+  // For HQ Home callers — fall back to a minimal stub if not on /feed.
+  return _findFeedRoundItem(roundId) || null;
+}
+
+function feedToggleLike(roundId) {
+  if (!db || !currentUser) { Router.toast("Sign in to give kudos"); return; }
+  if (!roundId) return;
+  var uid = currentUser.uid;
+
+  var localItem = _findFeedRoundItem(roundId);
+  var prevLikes = (localItem && localItem.likes) ? localItem.likes.slice() : null;
+
+  if (localItem) {
+    if (!localItem.likes) localItem.likes = [];
+    var localIdx = localItem.likes.indexOf(uid);
+    if (localIdx !== -1) localItem.likes.splice(localIdx, 1);
+    else localItem.likes.push(uid);
+    _renderFeedItems();
+  }
+
+  function _revertLikes() {
+    if (localItem) {
+      if (prevLikes === null) delete localItem.likes;
+      else localItem.likes = prevLikes;
+      _renderFeedItems();
+    }
+  }
+
   db.collection("rounds").doc(roundId).get().then(function(doc) {
     if (!doc.exists) return;
-    var likes = doc.data().likes || [];
-    var uid = currentUser.uid;
+    var data = doc.data();
+    var likes = data.likes || [];
     var idx = likes.indexOf(uid);
-    if (idx !== -1) { likes.splice(idx, 1); } else { likes.push(uid); }
-    return db.collection("rounds").doc(roundId).update({ likes: likes });
-  }).then(function() {
-    Router.toast("Nice!");
-  }).catch(function() {});
+    var isLiking = idx === -1;
+    if (idx !== -1) likes.splice(idx, 1);
+    else likes.push(uid);
+    return db.collection("rounds").doc(roundId).update({ likes: likes }).then(function() {
+      if (isLiking && data.player && data.player !== uid) {
+        var myName = currentProfile ? PB.getDisplayName(currentProfile) : "Someone";
+        var courseLabel = data.course ? " at " + data.course : "";
+        sendNotification(data.player, {
+          type: "round_like",
+          title: "New Kudos",
+          message: myName + " gave kudos to your round" + courseLabel,
+          page: "feed"
+        });
+      }
+    });
+  }).catch(function(err) {
+    if (typeof pbWarn === "function") pbWarn("[feed] toggleLike failed:", err && err.message);
+    _revertLikes();
+    Router.toast("Couldn't add kudos — please try again");
+  });
+}
+
+function feedShowCommentInput(roundId) {
+  // Close all other open feed comment inputs
+  document.querySelectorAll('[id^="feedComment-"]').forEach(function(el) {
+    if (el.id.indexOf("feedCommentText") !== -1) return;
+    if (el.id !== "feedComment-" + roundId) {
+      el.style.display = "none";
+    }
+  });
+  var el = document.getElementById("feedComment-" + roundId);
+  if (!el) return;
+  var isHidden = el.style.display === "none" || el.style.display === "";
+  el.style.display = isHidden ? "flex" : "none";
+  if (isHidden) {
+    var input = document.getElementById("feedCommentText-" + roundId);
+    if (input) input.focus();
+  }
+}
+
+function feedSubmitComment(roundId) {
+  if (!db || !currentUser) { Router.toast("Sign in to comment"); return; }
+  if (!roundId) return;
+  var input = document.getElementById("feedCommentText-" + roundId);
+  var text = input ? input.value.trim() : "";
+  if (!text) return;
+
+  var name = currentProfile ? PB.getDisplayName(currentProfile) : "Anon";
+  var newComment = { uid: currentUser.uid, name: name, text: text, at: new Date().toISOString() };
+
+  var localItem = _findFeedRoundItem(roundId);
+  var prevComments = (localItem && localItem.comments) ? localItem.comments.slice() : null;
+
+  if (localItem) {
+    if (!localItem.comments) localItem.comments = [];
+    localItem.comments.push(newComment);
+    _renderFeedItems();
+    if (input) input.value = "";
+    var commentEl = document.getElementById("feedComment-" + roundId);
+    if (commentEl) commentEl.style.display = "flex";
+    var newInput = document.getElementById("feedCommentText-" + roundId);
+    if (newInput) { newInput.value = ""; newInput.focus(); }
+  } else if (input) {
+    input.value = "";
+  }
+
+  function _revertComments() {
+    if (localItem) {
+      if (prevComments === null) delete localItem.comments;
+      else localItem.comments = prevComments;
+      _renderFeedItems();
+    }
+  }
+
+  db.collection("rounds").doc(roundId).get().then(function(doc) {
+    if (!doc.exists) return;
+    var data = doc.data();
+    var comments = data.comments || [];
+    comments.push(newComment);
+    return db.collection("rounds").doc(roundId).update({ comments: comments }).then(function() {
+      var courseLabel = data.course ? " at " + data.course : "";
+      // Notify round owner
+      if (data.player && data.player !== currentUser.uid) {
+        sendNotification(data.player, {
+          type: "round_comment",
+          title: "New Comment",
+          message: name + " commented on your round" + courseLabel + ": \"" + text.substring(0, 40) + (text.length > 40 ? "..." : "") + "\"",
+          page: "feed"
+        });
+      }
+      // Cascade to prior commenters — v8.17.0 two-layer hardening
+      var _writerIsTest = !!(currentProfile && currentProfile.isTestAccount);
+      var _roundLeagueId = data.leagueId || (typeof getActiveLeague === "function" ? getActiveLeague() : null);
+      var notified = {};
+      notified[currentUser.uid] = true;
+      if (data.player) notified[data.player] = true;
+      comments.forEach(function(c) {
+        if (c.uid && !notified[c.uid]) {
+          notified[c.uid] = true;
+          var p = (typeof PB !== "undefined" && PB.getPlayer) ? PB.getPlayer(c.uid) : null;
+          if (!p) return;
+          if (_roundLeagueId && (!p.leagues || p.leagues.indexOf(_roundLeagueId) === -1)) return;
+          if (!!p.isTestAccount !== _writerIsTest) return;
+          sendNotification(c.uid, {
+            type: "round_reply",
+            title: "New Reply",
+            message: name + " also commented on a round you commented on",
+            page: "feed"
+          });
+        }
+      });
+    });
+  }).catch(function(err) {
+    if (typeof pbWarn === "function") pbWarn("[feed] submitComment failed:", err && err.message);
+    _revertComments();
+    Router.toast("Couldn't post comment — please try again");
+  });
+}
+
+function feedToggleCommentLike(roundId, commentIdx) {
+  if (!db || !currentUser) { Router.toast("Sign in to give kudos"); return; }
+  if (!roundId) return;
+  var uid = currentUser.uid;
+
+  var localItem = _findFeedRoundItem(roundId);
+  var prevCommentLikes = (localItem && localItem.commentLikes)
+    ? JSON.parse(JSON.stringify(localItem.commentLikes))
+    : null;
+
+  if (localItem) {
+    if (!localItem.commentLikes) localItem.commentLikes = {};
+    var key = String(commentIdx);
+    if (!localItem.commentLikes[key]) localItem.commentLikes[key] = [];
+    var idx = localItem.commentLikes[key].indexOf(uid);
+    if (idx !== -1) localItem.commentLikes[key].splice(idx, 1);
+    else localItem.commentLikes[key].push(uid);
+    _renderFeedItems();
+  }
+
+  function _revertCommentLikes() {
+    if (localItem) {
+      if (prevCommentLikes === null) delete localItem.commentLikes;
+      else localItem.commentLikes = prevCommentLikes;
+      _renderFeedItems();
+    }
+  }
+
+  db.collection("rounds").doc(roundId).get().then(function(doc) {
+    if (!doc.exists) return;
+    var data = doc.data();
+    var commentLikes = data.commentLikes || {};
+    var key = String(commentIdx);
+    if (!commentLikes[key]) commentLikes[key] = [];
+    var idx = commentLikes[key].indexOf(uid);
+    if (idx !== -1) commentLikes[key].splice(idx, 1);
+    else commentLikes[key].push(uid);
+    return db.collection("rounds").doc(roundId).update({ commentLikes: commentLikes }).then(function() {
+      var comments = data.comments || [];
+      if (comments[commentIdx] && comments[commentIdx].uid && comments[commentIdx].uid !== uid) {
+        var myName = currentProfile ? PB.getDisplayName(currentProfile) : "Someone";
+        sendNotification(comments[commentIdx].uid, {
+          type: "round_comment_like",
+          title: "Comment Kudos",
+          message: myName + " gave kudos to your comment",
+          page: "feed"
+        });
+      }
+    });
+  }).catch(function(err) {
+    if (typeof pbWarn === "function") pbWarn("[feed] toggleCommentLike failed:", err && err.message);
+    _revertCommentLikes();
+    Router.toast("Couldn't add kudos — please try again");
+  });
+}
+
+function feedConfirmDeleteComment(el, roundId, commentIdx) {
+  if (el.dataset.armed === "true") {
+    feedDeleteComment(roundId, commentIdx);
+    return;
+  }
+  el.dataset.armed = "true";
+  el.style.color = "var(--alert)";
+  setTimeout(function() {
+    if (el) { el.dataset.armed = "false"; el.style.color = "var(--muted2)"; }
+  }, 3000);
+}
+
+function feedDeleteComment(roundId, commentIdx) {
+  if (!db || !currentUser) return;
+  if (!roundId) return;
+
+  var localItem = _findFeedRoundItem(roundId);
+  var prevComments = (localItem && localItem.comments) ? localItem.comments.slice() : null;
+
+  if (localItem && localItem.comments && commentIdx >= 0 && commentIdx < localItem.comments.length) {
+    localItem.comments.splice(commentIdx, 1);
+    _renderFeedItems();
+  }
+
+  function _revertComments() {
+    if (localItem) {
+      if (prevComments === null) delete localItem.comments;
+      else localItem.comments = prevComments;
+      _renderFeedItems();
+    }
+  }
+
+  db.collection("rounds").doc(roundId).get().then(function(doc) {
+    if (!doc.exists) return;
+    var data = doc.data();
+    var comments = data.comments || [];
+    if (commentIdx >= 0 && commentIdx < comments.length) {
+      comments.splice(commentIdx, 1);
+      return db.collection("rounds").doc(roundId).update({ comments: comments });
+    }
+  }).catch(function(err) {
+    if (typeof pbWarn === "function") pbWarn("[feed] deleteComment failed:", err && err.message);
+    _revertComments();
+    Router.toast("Couldn't delete comment — please try again");
+  });
+}
+
+// v8.20.0 (Ship 5+5) — shareScorecard previously called nothing (typeof ===
+// 'function' guard always false). Now copies the round detail URL to the
+// clipboard. Native Share API (Capacitor) deferred to post-native shell.
+function shareScorecard(roundId) {
+  if (!roundId) return;
+  var url = window.location.origin + window.location.pathname + '?roundId=' + encodeURIComponent(roundId);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(function() {
+      Router.toast("Link copied");
+    }).catch(function() {
+      Router.toast("Couldn't copy link");
+    });
+  } else {
+    Router.toast("Share not supported on this browser");
+  }
 }

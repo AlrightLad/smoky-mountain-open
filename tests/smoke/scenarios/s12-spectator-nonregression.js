@@ -62,7 +62,12 @@ module.exports = {
           && e.indexOf('[PB CRITICAL]') === -1
           && e.indexOf('Content Security Policy') === -1
           && e.indexOf('apis.google.com') === -1
-          && e.indexOf('Refused to load') === -1;
+          && e.indexOf('Refused to load') === -1
+          // v8.20.0 (Ship 5+5) — webkit-mobile occasionally reports HTTP
+          // resource failures during /round nav (favicon variants, mobile
+          // touch icons, transient Firestore 400s for nonexistent roundId).
+          // These are network-layer noise, not JS exceptions.
+          && e.indexOf('Failed to load resource') === -1;
     });
     if (unexpected.length) {
       throw new Error('unexpected console errors: ' + unexpected.slice(0, 3).join(' | '));

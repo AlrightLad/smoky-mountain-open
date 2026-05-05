@@ -8,6 +8,14 @@ window.NOTIFICATION_TYPES = {
   COMMENT_LIKE: "comment_like",
   FEED_COMMENT: "feed_comment",
   FEED_REPLY: "feed_reply",
+  // v8.20.0 (Ship 5+5) — surface-aware engagement types. feed_* fire from
+  // /chat (Clubhouse) writers; round_* fire from /feed + HQ Home League Pulse
+  // round-post writers. Cluster stays "social" for both; only the page deep-
+  // link target differs.
+  ROUND_LIKE: "round_like",
+  ROUND_COMMENT: "round_comment",
+  ROUND_REPLY: "round_reply",
+  ROUND_COMMENT_LIKE: "round_comment_like",
   DM: "dm",
   BOUNTY_CLAIMED: "bounty_claimed",
   WAGER_CHALLENGE: "wager_challenge",
@@ -42,6 +50,11 @@ window.NOTIFICATION_META = {
   comment_like:     { cluster: "social", page: "chat" },
   feed_comment:     { cluster: "social", page: "chat" },
   feed_reply:       { cluster: "social", page: "chat" },
+  // v8.20.0 (Ship 5+5) — round-post engagement deep-links to /feed.
+  round_like:         { cluster: "social", page: "feed" },
+  round_comment:      { cluster: "social", page: "feed" },
+  round_reply:        { cluster: "social", page: "feed" },
+  round_comment_like: { cluster: "social", page: "feed" },
   social_action:    { cluster: "social", page: "feed" },
   dm:               { cluster: "dm",     page: "dms" },
   bounty_claimed:   { cluster: "coins",  page: "bounties" },

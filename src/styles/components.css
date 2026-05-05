@@ -1263,15 +1263,23 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .hq-feed-card__action {
   background: transparent;
   border: 0;
-  padding: 0;
+  padding: 4px 6px;
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 1.2px;
   color: var(--cb-mute);
   text-transform: uppercase;
-  cursor: default; /* markup-only — no handler wired in Gate 2 */
-  pointer-events: none;
+  /* v8.20.0 (Ship 5+5) — wired up. Gate 2 placeholders replaced by real
+     handlers in home.js round-type cards. */
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color var(--duration-fast) var(--ease-default);
+}
+.hq-feed-card__action:hover {
+  color: var(--cb-brass);
 }
 
 /* ──────────────────────────────────────────────────────────────────────────

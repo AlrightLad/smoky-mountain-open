@@ -23,8 +23,8 @@ module.exports = {
     var version = await nav.readVersion(page);
     await capture.screenshot('initial-load');
 
-    if (version !== '8.19.0') {
-      throw new Error('APP_VERSION mismatch — expected 8.19.0, got "' + version + '"');
+    if (version !== '8.20.0') {
+      throw new Error('APP_VERSION mismatch — expected 8.20.0, got "' + version + '"');
     }
 
     return { passed: true, details: 'APP_VERSION=' + version };

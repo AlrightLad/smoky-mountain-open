@@ -1664,10 +1664,26 @@ function _renderActivityFeedCompact(ctx, limit) {
       if (it.photoUrl) {
         b += '<div class="hq-feed-card__photo"><img src="' + escHtml(it.photoUrl) + '" alt=""></div>';
       }
-      // v8.16.1 Item 3 — actions row markup REMOVED. Stubs were active confusion
-      // (looked tappable, weren't). Returns in Ship 5+3 with kudos persistence,
-      // comment threading, share functionality. CSS rules .hq-feed-card__actions
-      // and .hq-feed-card__action preserved in components.css for re-use.
+      // v8.20.0 (Ship 5+5) — Action row restored on round-type cards per
+      // Option B (2 actions: Kudos | Comment). Wired to /feed engagement
+      // writers (feedToggleLike, feedShowCommentInput) — shared model. Card-
+      // level tap still navigates to round detail (clickAttr above), so
+      // Scorecard equivalent is the card body itself. Per V12.8: state.activity
+      // items now also have dest plumbing, so their cards tap-navigate too —
+      // they don't show an action row (no engagement target).
+      var isRoundType = (it.entityType === "ROUND" || it.entityType === "SCRAMBLE") && it.roundId;
+      if (isRoundType) {
+        var rLikes = it.likes || [];
+        var rComments = it.comments || [];
+        var iLikedR = (typeof currentUser !== "undefined" && currentUser) && rLikes.indexOf(currentUser.uid) !== -1;
+        var rLikeColor = iLikedR ? "var(--cb-brass)" : "var(--cb-mute)";
+        var rLikeLabel = "Kudos" + (rLikes.length ? " " + rLikes.length : "");
+        var rCommentLabel = "Comment" + (rComments.length ? " " + rComments.length : "");
+        b += '<div class="hq-feed-card__actions" data-round-id="' + it.roundId + '">';
+        b += '<button data-action="kudos" type="button" class="hq-feed-card__action" onclick="event.stopPropagation();feedToggleLike(\'' + it.roundId + '\')" style="color:' + rLikeColor + '"><svg viewBox="0 0 16 16" width="11" height="11" fill="' + (iLikedR ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="1.3"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg><span>' + rLikeLabel + '</span></button>';
+        b += '<button data-action="comment" type="button" class="hq-feed-card__action" onclick="event.stopPropagation();Router.go(\'feed\')"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M14 10a1.5 1.5 0 01-1.5 1.5H5L2 14V3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5z"/></svg><span>' + rCommentLabel + '</span></button>';
+        b += '</div>';
+      }
       b += '</article>';
     });
     return b;
@@ -1707,7 +1723,10 @@ function _hqBuildActivityItems(limit) {
       // Ship 5 Gate 2 (v8.15.1) — entityType chip per Q-AUDIT-D Option A.
       // Scramble rounds chip as "SCRAMBLE"; otherwise plain "ROUND".
       var entityType = (fmt === "scramble" || fmt === "scramble4") ? "SCRAMBLE" : "ROUND";
-      items.push({ ts: ts, actorName: actor, actorUid: r.player || "", text: text, sub: sub.replace(/^ · /, ""), timeAgo: feedTimeAgo(ts), dest: r.id ? "Router.go('rounds',{roundId:'" + r.id + "'})" : "", entityType: entityType });
+      // v8.20.0 (Ship 5+5) — roundId / likes / comments surfaced for League
+      // Pulse 2-action row (Kudos | Comment) on round-type cards. Reuses the
+      // same /feed engagement model + writers (feedToggleLike, feedSubmitComment).
+      items.push({ ts: ts, actorName: actor, actorUid: r.player || "", text: text, sub: sub.replace(/^ · /, ""), timeAgo: feedTimeAgo(ts), dest: r.id ? "Router.go('rounds',{roundId:'" + r.id + "'})" : "", entityType: entityType, roundId: r.id || "", likes: r.likes || [], comments: r.comments || [] });
     });
   }
   // state.activity (in-memory events)
@@ -1718,12 +1737,15 @@ function _hqBuildActivityItems(limit) {
       var text = actor;
       // Ship 5 Gate 2 (v8.15.1) — entityType chip derivation per Q-AUDIT-D.
       var entityType = "";
-      if (a.type === "post") { text += " posted: " + (a.text || "").slice(0, 60); entityType = "POST"; }
-      else if (a.type === "trip_created") { text += " started a trip"; entityType = "TRIP"; }
-      else if (a.type === "review") { text += " reviewed " + (a.course || "a course"); entityType = "REVIEW"; }
-      else if (a.type === "member_joined") { text += " joined the league"; entityType = "JOINED"; }
+      // v8.20.0 (Ship 5+5 / V12.8) — dest plumbing so non-round activity
+      // items also tap-navigate. Previously orphan cards (no onclick).
+      var dest = "";
+      if (a.type === "post") { text += " posted: " + (a.text || "").slice(0, 60); entityType = "POST"; dest = "Router.go('feed')"; }
+      else if (a.type === "trip_created") { text += " started a trip"; entityType = "TRIP"; dest = "Router.go('trips')"; }
+      else if (a.type === "review") { text += " reviewed " + (a.course || "a course"); entityType = "REVIEW"; dest = "Router.go('courses')"; }
+      else if (a.type === "member_joined") { text += " joined the league"; entityType = "JOINED"; dest = "Router.go('members')"; }
       else text += " did something";
-      items.push({ ts: a.ts, actorName: actor, actorUid: a.uid || a.playerId || "", text: text, sub: "", timeAgo: feedTimeAgo(a.ts), dest: "", entityType: entityType });
+      items.push({ ts: a.ts, actorName: actor, actorUid: a.uid || a.playerId || "", text: text, sub: "", timeAgo: feedTimeAgo(a.ts), dest: dest, entityType: entityType });
     });
   }
   items.sort(function(a, b) { return b.ts - a.ts; });

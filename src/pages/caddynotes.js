@@ -19,11 +19,12 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Clubhouse revival</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Engagement architecture</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Kudos and comments stick now. Tap a heart, post a comment \u2014 it stays. Notifications fire to the original poster.", tag: "FIXED" },
-    { item: "Profile photos show in the HQ Home activity feed. Single-letter placeholders are gone.", tag: "IMPROVED" }
+    { item: "Round posts are social now. Kudos and comment on rounds in your activity feed and on HQ Home League Pulse. The poster gets a notification when someone reacts.", tag: "NEW" },
+    { item: "Share a round \u2014 copy a direct link to any scorecard with one tap.", tag: "NEW" },
+    { item: "HQ Home activity cards now navigate where they should. Tap a trip card to see the trip, a course review to see the course, etc.", tag: "FIXED" }
   ];
 
   currentNotes.forEach(function(r) { h += renderEntry(r); });
@@ -31,6 +32,13 @@ Router.register("caddynotes", function() {
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.19.0", date: "May 2026", headline: "Clubhouse revival",
+      items: [
+        { item: "Kudos and comments stick now. Tap a heart, post a comment — it stays. Notifications fire to the original poster.", tag: "FIXED" },
+        { item: "Profile photos show in the HQ Home activity feed. Single-letter placeholders are gone.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.18.0", date: "May 2026", headline: "Tee Times revival",
       items: [

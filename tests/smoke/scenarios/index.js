@@ -14,5 +14,12 @@ module.exports = [
   require('./s9-mark-read-promotion.js'),
   require('./s10-dismiss-delete.js'),
   require('./s12-spectator-nonregression.js'),
+  // v8.20.0 (Ship 5+5) — engagement architecture surface coverage. P3 process
+  // correction: smoke MUST validate user-visible surfaces, not just code paths.
+  require('./s13-feed-action-row.js'),
+  require('./s14-feed-kudos-persistence.js'),
+  require('./s15-feed-comment-persistence.js'),
+  require('./s16-hq-home-action-row.js'),
+  require('./s17-hq-home-state-activity-clickable.js'),
   require('./s11-logout-cleanup.js')
 ];
