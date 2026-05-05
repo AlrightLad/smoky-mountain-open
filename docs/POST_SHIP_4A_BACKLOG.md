@@ -398,6 +398,38 @@ Resolution shape: introduce `PB.getLeagueMembers(leagueId)` helper alongside the
 **Dependency:** None — can ship independently of v8.17.0 / Ship 5+1.
 **Why deferred:** P21 simplest tool for scope. v8.17.0 + smoke automation + Part 2 are higher priority and the Path B+ symptom-fix unblocks all three. Architectural fix lives in its own scoped ship.
 
+### B.38 — Ship 5+5 (Engagement) deferred items
+**Scope:** Mixed (S to M)
+**Target:** Future ships
+**Source:** Ship 5+5 ruling — see docs/SHIP_5_5_SPEC.md
+
+Deferred from v8.20.0:
+- Native Share API integration (post-Capacitor shell)
+- Notification batching on high-engagement rounds (e.g., 10+ kudos in 5 min)
+- Achievement integration (kudos count triggering achievements)
+- Mobile-specific tap target polish on HQ Home action row
+- Tiered action row variants by viewport band
+- Engagement on additional post types — range sessions, tee times in /feed, photos, achievements (likely Ship 5+4 absorbed scope)
+
+**Surfaced:** 2026-05-05 Ship 5+5 ruling.
+
+### B.39 — Webkit smoke flake investigation
+**Scope:** M (test infrastructure)
+**Target:** Backlog cleanup ship
+
+Webkit + webkit-mobile Firestore SDK shows replication latency that occasionally exceeds smoke wait budgets. Known since v7.x. Surfaces in S7, S10, S13, S14, S15 intermittently.
+
+Hypotheses to investigate:
+- WebKit-specific Firestore SDK transport (WebChannel vs long-polling)
+- Network throttling differences in Playwright webkit launcher
+- onSnapshot callback timing differences across browser engines
+- Whether bumping all webkit timeouts to 30s+ resolves cleanly
+- Whether a different Firestore client config (e.g., experimentalForceLongPolling) improves consistency
+
+Goal: 17/17 across all 4 browsers consistently. Currently 96-97% with confined-to-webkit pattern.
+
+**Surfaced:** 2026-05-05 Ship 5+5 verification phase.
+
 ---
 
 ## C — Carryover from Gate 8a (deferred per CTO Q-B)
