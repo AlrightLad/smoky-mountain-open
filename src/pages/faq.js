@@ -90,7 +90,7 @@ function openFeatureRequest() {
           type: "feature_request",
           title: "Feature Request",
           message: name + ": " + feature.substring(0, 80) + (feature.length > 80 ? "..." : ""),
-          linkPage: "admin"
+          page: "admin"
         });
       });
     });

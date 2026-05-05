@@ -380,9 +380,15 @@ function _getFcmToken() {
 
 function sendNotification(toUserId, notif) {
   if (!db) return;
-  notif.toUserId = toUserId; notif.read = false; notif.createdAt = fsTimestamp();
+  notif.toUserId = toUserId;
+  notif.read = false;
+  notif.createdAt = fsTimestamp();
+  // Optional leagueId on new writes — null when no active league context.
+  // Existing reads ignore unknown fields; backward-compatible.
+  var lid = (window.currentProfile && window.currentProfile.activeLeague) || null;
+  if (lid) notif.leagueId = lid;
   db.collection("notifications").add(notif).catch(function(){});
-  // Queue push notification for delivery via Cloud Function
+  // pendingPush bridge — DO NOT modify shape; FCM Cloud Function reads it.
   db.collection("pendingPush").add({
     toUserId: toUserId,
     title: notif.title || (window._activeLeagueName || "Parbaughs"),
@@ -391,15 +397,48 @@ function sendNotification(toUserId, notif) {
     createdAt: fsTimestamp()
   }).catch(function(){});
 }
+
+// ─────────────────────────────────────────────────────────────────────────
+// Notification listener + click-handoff infrastructure (v8.17.0 / Ship 5+1)
+// ─────────────────────────────────────────────────────────────────────────
+// Schema: { toUserId, type, title, message, page?, params?, read, readAt?, leagueId?, createdAt }
+// Legacy: { linkPage, linkParams, body } — read paths alias both shapes.
+// Reader-side resolution at indexNotifInMap below establishes click destination
+// + params for each notification; renderNotifPanel reads from the map only.
+
+function indexNotifInMap(n) {
+  if (!n || !n._id) return;
+  var meta = window.NOTIFICATION_META && window.NOTIFICATION_META[n.type];
+  var dest = n.page || n.linkPage || (meta && meta.page) || "home";
+  var params = n.params || n.linkParams || {};
+  if (!window._notifById) window._notifById = {};
+  window._notifById[n._id] = { dest: dest, params: params, isRead: !!n.read };
+}
+
 function startNotificationListener() {
   if (!db || !currentUser) return;
   if (window._notifUnsub) window._notifUnsub();
-  window._notifUnsub = db.collection("notifications").where("toUserId","==",currentUser.uid).where("read","==",false).limit(20)
+  window._notifUnsub = db.collection("notifications")
+    .where("toUserId","==",currentUser.uid)
+    .where("read","==",false)
+    .limit(30)
     .onSnapshot(function(snap) {
       liveNotifications = [];
-      snap.forEach(function(doc) { liveNotifications.push(Object.assign({_id:doc.id}, doc.data())); });
-      liveNotifications.sort(function(a,b) { return (b.createdAt||0) - (a.createdAt||0); });
-      if (liveNotifications.length > 0 && liveNotifications[0].message) Router.toast(liveNotifications[0].message);
+      window._notifById = {};
+      snap.forEach(function(doc) {
+        var n = Object.assign({_id:doc.id}, doc.data());
+        liveNotifications.push(n);
+        indexNotifInMap(n);
+      });
+      // Re-merge readHistory entries — both share the same map for click handoff.
+      (readHistory || []).forEach(indexNotifInMap);
+      liveNotifications.sort(function(a,b) {
+        var at = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate().getTime() : 0;
+        var bt = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate().getTime() : 0;
+        return bt - at;
+      });
+      updateNotifBadge();
+      if (notifPanelOpen) renderNotifPanel();
     }, function(err) { pbWarn("[Notify] Listener error:", err.message); });
 }
 
@@ -412,6 +451,12 @@ var ROUND_GRACE_HOURS = 48;
 
 // ========== NOTIFICATION PANEL ==========
 var notifPanelOpen = false;
+// Read-history scroll-back state (v8.17.0). Persists across panel toggles;
+// reset only on logout via authoritative cleanup site (see firebase.js).
+var readHistory = [];
+var readHistoryCursor = null;   // Firestore cursor (last doc createdAt) | "end" sentinel
+var _readHistoryObserver = null;
+var _readHistoryFetching = false;
 
 function openNotifPanel() {
   notifPanelOpen = true;
@@ -420,6 +465,10 @@ function openNotifPanel() {
   if (panel) { panel.classList.add("open"); panel.style.pointerEvents = "auto"; }
   if (overlay) { overlay.classList.add("open"); overlay.style.pointerEvents = "auto"; }
   renderNotifPanel();
+  // Lazy first-fetch only — readHistory persists across toggles.
+  if (readHistory.length === 0 && readHistoryCursor !== "end") {
+    loadMoreReadHistory();
+  }
 }
 
 function closeNotifPanel() {
@@ -428,6 +477,7 @@ function closeNotifPanel() {
   var overlay = document.getElementById("notifOverlay");
   if (panel) { panel.classList.remove("open"); panel.style.pointerEvents = "none"; }
   if (overlay) { overlay.classList.remove("open"); overlay.style.pointerEvents = "none"; }
+  if (_readHistoryObserver) { _readHistoryObserver.disconnect(); _readHistoryObserver = null; }
 }
 
 function toggleNotifPanel() {
@@ -438,59 +488,123 @@ function toggleNotifPanel() {
 function renderNotifPanel() {
   var el = document.getElementById("notifList");
   if (!el) return;
-  if (!liveNotifications.length) {
+
+  var unread = liveNotifications || [];
+  var read = readHistory || [];
+
+  if (!unread.length && !read.length) {
     el.innerHTML = '<div class="empty" style="padding:40px 16px"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div><div class="empty-text">All caught up</div><div style="font-size:10px;color:var(--muted2);margin-top:4px">You\'ll see likes, comments, messages, and tee times here</div></div>';
     return;
   }
+
   var h = '';
-  liveNotifications.forEach(function(n) {
-    var icon = n.type === "feed_like" ? "<svg viewBox='0 0 16 16' width='10' height='10' fill='var(--gold)' stroke='none'><path d='M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z'/></svg>" : n.type === "feed_comment" || n.type === "feed_reply" ? "" : n.type === "dm" ? "" : n.type === "tee_rsvp" ? "" : n.type === "tee_cancelled" ? "" : n.type === "tee_withdrawal" ? "" : n.type === "welcome" ? "" : n.type === "report" ? "" : "";
-    var linkPage = n.linkPage || "home";
-    // Better deep linking based on notification type
-    if (n.type === "dm") linkPage = "dms";
-    else if (n.type === "feed_like" || n.type === "feed_comment" || n.type === "feed_reply") linkPage = "chat";
-    else if (n.type === "tee_rsvp" || n.type === "tee_cancelled" || n.type === "tee_withdrawal") linkPage = "teetimes";
-    
-    h += '<div class="notif-item unread" style="position:relative">';
-    h += '<div onclick="handleNotifClick(\'' + (n._id||"") + '\',\'' + linkPage + '\')" style="display:flex;gap:10px;align-items:flex-start;padding-right:28px">';
-    h += '<div style="font-size:16px;flex-shrink:0;margin-top:2px">' + icon + '</div>';
-    h += '<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(n.title||"Notification") + '</div>';
-    h += '<div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">' + escHtml(n.message||"") + '</div>';
-    h += '<div style="display:flex;align-items:center;gap:10px;margin-top:6px">';
-    if (n.createdAt && n.createdAt.toDate) {
-      h += '<span class="notif-time" style="margin:0">' + formatDmTime(n.createdAt.toDate()) + '</span>';
-    }
-    h += '<span style="font-size:9px;color:var(--gold);cursor:pointer;font-weight:600" onclick="event.stopPropagation();handleNotifClick(\'' + (n._id||"") + '\',\'' + linkPage + '\')">View →</span>';
-    h += '</div></div></div>';
-    // Dismiss X button — top right of each notification
-    h += '<div onclick="event.stopPropagation();dismissNotif(\'' + (n._id||"") + '\')" style="position:absolute;top:10px;right:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted2);font-size:14px;border-radius:4px;transition:background .15s" onmouseover="this.style.background=\'var(--bg3)\'" onmouseout="this.style.background=\'transparent\'">×</div>';
-    h += '</div>';
-  });
+  unread.forEach(function(n) { h += renderNotifItem(n, false); });
+
+  if (read.length) {
+    h += '<div class="notif-section-divider">EARLIER</div>';
+    read.forEach(function(n) { h += renderNotifItem(n, true); });
+  }
+
+  if (readHistoryCursor !== "end" && (read.length > 0 || unread.length > 0)) {
+    h += '<div class="notif-loading-more" id="notifSentinel">LOADING EARLIER…</div>';
+  } else if (read.length > 0) {
+    h += '<div class="notif-loading-more">NO EARLIER NOTIFICATIONS</div>';
+  }
+
   el.innerHTML = h;
+  _wireReadHistoryObserver();
 }
 
-function handleNotifClick(notifId, linkPage) {
-  if (notifId && db) {
-    db.collection("notifications").doc(notifId).update({ read: true }).catch(function(){});
+function renderNotifItem(n, isRead) {
+  var meta = (window.NOTIFICATION_META && window.NOTIFICATION_META[n.type]) || { cluster: "misc" };
+  var clusterIcon = (window.NOTIFICATION_CLUSTER_ICON && window.NOTIFICATION_CLUSTER_ICON[meta.cluster]) || "";
+  var stateClass = isRead ? "" : " unread";
+  var idEsc = (n._id || "").replace(/'/g, "\\'");
+  var h = '<div class="notif-item' + stateClass + '" style="position:relative">';
+  h += '<div onclick="handleNotifClick(\'' + idEsc + '\')" style="display:flex;gap:10px;align-items:flex-start;padding-right:28px">';
+  h += '<div class="notif-item-icon notif-item-icon--' + meta.cluster + '">' + clusterIcon + '</div>';
+  h += '<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(n.title || "Notification") + '</div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">' + escHtml(n.message || "") + '</div>';
+  h += '<div style="display:flex;align-items:center;gap:10px;margin-top:6px">';
+  if (n.createdAt && n.createdAt.toDate) {
+    h += '<span class="notif-time" style="margin:0">' + formatDmTime(n.createdAt.toDate()) + '</span>';
+  }
+  h += '<span style="font-size:9px;color:var(--gold);cursor:pointer;font-weight:600" onclick="event.stopPropagation();handleNotifClick(\'' + idEsc + '\')">View →</span>';
+  h += '</div></div></div>';
+  // Dismiss X — read items DELETE; unread items mark read.
+  h += '<div onclick="event.stopPropagation();dismissNotif(\'' + idEsc + '\',' + (isRead ? 'true' : 'false') + ')" style="position:absolute;top:10px;right:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted2);font-size:14px;border-radius:4px;transition:background .15s" onmouseover="this.style.background=\'var(--bg3)\'" onmouseout="this.style.background=\'transparent\'">×</div>';
+  h += '</div>';
+  return h;
+}
+
+function handleNotifClick(notifId) {
+  if (!notifId) return;
+  var stash = window._notifById && window._notifById[notifId];
+  var dest = stash ? stash.dest : "home";
+  var params = stash ? stash.params : {};
+  if (db) {
+    db.collection("notifications").doc(notifId).update({
+      read: true,
+      readAt: fsTimestamp()
+    }).catch(function(){});
+  }
+  // Promote: if it was unread, splice from liveNotifications and prepend to readHistory
+  // so the panel reflects the move on next render without a Firestore round-trip.
+  var idx = -1;
+  for (var i = 0; i < liveNotifications.length; i++) {
+    if (liveNotifications[i]._id === notifId) { idx = i; break; }
+  }
+  if (idx >= 0) {
+    var promoted = liveNotifications.splice(idx, 1)[0];
+    promoted.read = true;
+    readHistory.unshift(promoted);
+    indexNotifInMap(promoted);
   }
   closeNotifPanel();
-  if (linkPage) Router.go(linkPage);
+  Router.go(dest, params);
 }
 
-function dismissNotif(notifId) {
+function dismissNotif(notifId, isRead) {
   if (!notifId || !db) return;
-  db.collection("notifications").doc(notifId).update({ read: true }).catch(function(){});
-  // Remove from local array immediately for instant UI feedback
-  liveNotifications = liveNotifications.filter(function(n) { return n._id !== notifId; });
-  updateNotifBadge();
+  if (isRead) {
+    // Read items: permanently delete the doc. Rules allow owner-delete.
+    db.collection("notifications").doc(notifId).delete().catch(function(){});
+    readHistory = readHistory.filter(function(n) { return n._id !== notifId; });
+    if (window._notifById) delete window._notifById[notifId];
+  } else {
+    // Unread items: mark read + capture readAt + promote to readHistory front.
+    db.collection("notifications").doc(notifId).update({
+      read: true,
+      readAt: fsTimestamp()
+    }).catch(function(){});
+    var idx = -1;
+    for (var i = 0; i < liveNotifications.length; i++) {
+      if (liveNotifications[i]._id === notifId) { idx = i; break; }
+    }
+    if (idx >= 0) {
+      var promoted = liveNotifications.splice(idx, 1)[0];
+      promoted.read = true;
+      readHistory.unshift(promoted);
+      indexNotifInMap(promoted);
+    }
+    updateNotifBadge();
+  }
   renderNotifPanel();
 }
 
 function markAllNotifsRead() {
   if (!db || !liveNotifications.length) return;
-  liveNotifications.forEach(function(n) {
-    if (n._id) db.collection("notifications").doc(n._id).update({ read: true }).catch(function(){});
-  });
+  var stamp = fsTimestamp();
+  // Iterate descending so unshift preserves newest-first order in readHistory.
+  for (var i = liveNotifications.length - 1; i >= 0; i--) {
+    var n = liveNotifications[i];
+    if (n._id) {
+      db.collection("notifications").doc(n._id).update({ read: true, readAt: stamp }).catch(function(){});
+    }
+    n.read = true;
+    readHistory.unshift(n);
+    indexNotifInMap(n);
+  }
   liveNotifications = [];
   updateNotifBadge();
   renderNotifPanel();
@@ -551,24 +665,57 @@ function updateDmBadge() {
   }
 }
 
-// Override the notification listener to also update badge
-var _origNotifListener = startNotificationListener;
-startNotificationListener = function() {
-  if (!db || !currentUser) return;
-  if (window._notifUnsub) window._notifUnsub();
-  window._notifUnsub = db.collection("notifications").where("toUserId","==",currentUser.uid).where("read","==",false).limit(30)
-    .onSnapshot(function(snap) {
-      liveNotifications = [];
-      snap.forEach(function(doc) { liveNotifications.push(Object.assign({_id:doc.id}, doc.data())); });
-      liveNotifications.sort(function(a,b) { 
-        var at = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate().getTime() : 0;
-        var bt = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate().getTime() : 0;
-        return bt - at; 
+// Read-history scroll-back fetcher (v8.17.0 / Ship 5+1).
+// Lazy-paginates read notifications using composite index #2 (read, toUserId, createdAt).
+// Cursor is the last fetched doc's createdAt; "end" sentinel halts further fetches.
+function loadMoreReadHistory() {
+  if (!db || !currentUser || _readHistoryFetching || readHistoryCursor === "end") return;
+  _readHistoryFetching = true;
+  var q = db.collection("notifications")
+    .where("toUserId","==",currentUser.uid)
+    .where("read","==",true)
+    .orderBy("createdAt","desc")
+    .limit(20);
+  if (readHistoryCursor && readHistoryCursor !== "end") q = q.startAfter(readHistoryCursor);
+  q.get().then(function(snap) {
+    if (snap.empty) {
+      readHistoryCursor = "end";
+    } else {
+      snap.forEach(function(doc) {
+        var n = Object.assign({_id: doc.id}, doc.data());
+        // Skip if this doc already lives in readHistory (locally promoted via mark-read).
+        var dup = false;
+        for (var k = 0; k < readHistory.length; k++) {
+          if (readHistory[k]._id === n._id) { dup = true; break; }
+        }
+        if (!dup) {
+          readHistory.push(n);
+          indexNotifInMap(n);
+        }
       });
-      updateNotifBadge();
-      if (notifPanelOpen) renderNotifPanel();
-    }, function(err) { pbWarn("[Notify] Listener error:", err.message); });
-};
+      readHistoryCursor = snap.docs[snap.docs.length - 1].data().createdAt;
+    }
+    _readHistoryFetching = false;
+    if (notifPanelOpen) renderNotifPanel();
+  }).catch(function(err) {
+    pbWarn("[Notify] Read history fetch error:", err.message);
+    _readHistoryFetching = false;
+  });
+}
+
+function _wireReadHistoryObserver() {
+  if (_readHistoryObserver) { _readHistoryObserver.disconnect(); _readHistoryObserver = null; }
+  var sentinel = document.getElementById("notifSentinel");
+  if (!sentinel) return;
+  var panel = document.getElementById("notifPanel");
+  if (!panel || typeof IntersectionObserver === "undefined") return;
+  _readHistoryObserver = new IntersectionObserver(function(entries) {
+    if (entries[0] && entries[0].isIntersecting) {
+      loadMoreReadHistory();
+    }
+  }, { root: panel, threshold: 0.1 });
+  _readHistoryObserver.observe(sentinel);
+}
 
 
 // ========== AI TOURNAMENT GENERATOR ==========
@@ -1479,15 +1626,15 @@ function checkAndAwardNewAchievements() {
           showAchievementCelebration(ach);
           // Also push a notification to the bell
           if (db && currentUser) {
-            db.collection("notifications").add({
-              toUserId: currentUser.uid,
+            // v8.17.0 / Q7: migrated from direct .add() to sendNotification helper.
+            // Achievement notifications now route through pendingPush → FCM phone push.
+            // body → message rename so FCM payload picks up the description (helper reads notif.message).
+            // icon field dropped — cluster icon (round) takes over via NOTIFICATION_META.
+            sendNotification(currentUser.uid, {
               type: "achievement",
               title: "Achievement unlocked: " + ach.name,
-              body: ach.desc + " (+" + ach.xp + " XP)",
-              icon: ach.icon,
-              createdAt: fsTimestamp(),
-              read: false
-            }).catch(function(){});
+              message: ach.desc + " (+" + ach.xp + " XP)"
+            });
           }
           // ── ParCoin: award coins for achievement unlock ──
           if (currentUser) {
@@ -2754,8 +2901,8 @@ enterApp = function() {
       type: "profile_reminder",
       title: "Complete Your Profile",
       message: "Add your bio, score range, and home course to earn XP and unlock the Getting Settled achievement!",
-      linkPage: "members",
-      linkParams: {edit: currentUser.uid}
+      page: "members",
+      params: {edit: currentUser.uid}
     });
   }, 5000); // Delay 5s so it doesn't fire on initial load
 };

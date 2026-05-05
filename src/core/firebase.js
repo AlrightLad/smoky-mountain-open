@@ -704,6 +704,15 @@ function exitApp() {
   if (window._presenceUnsub) { window._presenceUnsub(); window._presenceUnsub = null; }
   if (window._chatFeedUnsub) { window._chatFeedUnsub(); window._chatFeedUnsub = null; }
   if (window._rangeUnsub) { window._rangeUnsub(); window._rangeUnsub = null; }
+  // v8.17.0 / Ship 5+1 V16 — reset notification read-history + click-handoff state
+  if (typeof liveNotifications !== "undefined") liveNotifications = [];
+  if (typeof readHistory !== "undefined") readHistory = [];
+  if (typeof readHistoryCursor !== "undefined") readHistoryCursor = null;
+  window._notifById = {};
+  if (typeof _readHistoryObserver !== "undefined" && _readHistoryObserver) {
+    _readHistoryObserver.disconnect();
+    _readHistoryObserver = null;
+  }
   document.getElementById("authScreen").classList.remove("hidden");
   document.getElementById("mainApp").classList.add("hidden");
   // Check for invite code in URL params — auto-fill and show register form

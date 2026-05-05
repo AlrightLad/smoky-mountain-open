@@ -188,7 +188,7 @@ function sendDM() {
         type: "dm",
         title: "New Message",
         message: myName + ": " + text.substring(0, 50) + (text.length > 50 ? "..." : ""),
-        linkPage: "dms"
+        page: "dms"
       });
     })
     .catch(function(){Router.toast("Failed to send")});

@@ -12,6 +12,7 @@ const admin = require('firebase-admin');
 const users = require('./fixtures/users.js').users;
 const rounds = require('./fixtures/rounds.js').rounds;
 const leagues = require('./fixtures/leagues.js').leagues;
+const notifications = require('./fixtures/notifications.js').notifications;
 
 const PROJECT_ID = 'parbaughs';
 
@@ -114,18 +115,30 @@ async function seedLeagues(db) {
   }
 }
 
+async function seedNotifications(db) {
+  let batch = db.batch();
+  let pending = 0;
+  for (const n of notifications) {
+    batch.set(db.collection('notifications').doc(), n);
+    pending++;
+    if (pending === 400) { await batch.commit(); batch = db.batch(); pending = 0; }
+  }
+  if (pending > 0) await batch.commit();
+}
+
 async function run() {
   await assertEmulator();
   const db = app().firestore();
 
   console.log('[seed] Clearing existing test data…');
-  const [m, r, l] = await Promise.all([
+  const [m, r, l, n] = await Promise.all([
     clearCollection(db, 'members'),
     clearCollection(db, 'rounds'),
     clearCollection(db, 'leagues'),
+    clearCollection(db, 'notifications'),
   ]);
   const a = await clearAllAuth();
-  console.log('[seed]   cleared: ' + m + ' members, ' + r + ' rounds, ' + l + ' leagues, ' + a + ' auth users');
+  console.log('[seed]   cleared: ' + m + ' members, ' + r + ' rounds, ' + l + ' leagues, ' + n + ' notifications, ' + a + ' auth users');
 
   console.log('[seed] Seeding auth users…');
   await seedAuth();
@@ -134,8 +147,9 @@ async function run() {
   await seedMembers(db);
   await seedRounds(db);
   await seedLeagues(db);
+  await seedNotifications(db);
 
-  console.log('[seed] Seeded ' + users.length + ' users, ' + rounds.length + ' rounds, ' + leagues.length + ' leagues');
+  console.log('[seed] Seeded ' + users.length + ' users, ' + rounds.length + ' rounds, ' + leagues.length + ' leagues, ' + notifications.length + ' notifications');
 }
 
 module.exports = { run };

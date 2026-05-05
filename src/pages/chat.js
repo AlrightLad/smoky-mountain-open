@@ -585,7 +585,7 @@ function toggleLike(docId) {
           type: "feed_like",
           title: "New Kudos",
           message: myName + " gave kudos to your post",
-          linkPage: "chat"
+          page: "chat"
         });
       }
     });
@@ -654,7 +654,7 @@ function submitComment(docId) {
           type: "feed_comment",
           title: "New Comment",
           message: name + " commented: \"" + text.substring(0, 40) + (text.length > 40 ? "..." : "") + "\"",
-          linkPage: "chat"
+          page: "chat"
         });
       }
       // Notify other commenters
@@ -668,7 +668,7 @@ function submitComment(docId) {
             type: "feed_reply",
             title: "New Reply",
             message: name + " also commented on a post you commented on",
-            linkPage: "chat"
+            page: "chat"
           });
         }
       });
@@ -712,7 +712,7 @@ function toggleCommentLike(docId, commentIdx) {
           type: "comment_like",
           title: "Comment Kudos",
           message: myName + " gave kudos to your comment",
-          linkPage: "chat"
+          page: "chat"
         });
       }
     });

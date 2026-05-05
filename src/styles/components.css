@@ -693,6 +693,17 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .notif-item:active{background:var(--bg3)}
 .notif-item.unread{background:rgba(var(--gold-rgb),.04);border-left:3px solid var(--gold)}
 .notif-time{font-size:var(--text-xs);color:var(--muted2);margin-top:4px}
+.notif-item-icon{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;flex-shrink:0;margin-top:2px}
+.notif-item-icon--social{color:var(--gold)}
+.notif-item-icon--dm{color:var(--blue)}
+.notif-item-icon--coins{color:var(--gold)}
+.notif-item-icon--league{color:var(--cb-brass)}
+.notif-item-icon--round{color:var(--gold)}
+.notif-item-icon--tee{color:var(--blue)}
+.notif-item-icon--admin{color:var(--alert)}
+.notif-item-icon--misc{color:var(--cb-mute-2)}
+.notif-section-divider{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-2);padding:16px 16px 8px;border-top:1px solid var(--border)}
+.notif-loading-more{font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-2);padding:12px 16px;text-align:center}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    HOME PAGE WRAPPER

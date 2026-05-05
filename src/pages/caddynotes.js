@@ -19,21 +19,31 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Polish + service worker hotfix</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Bell upgrades, smarter routing, achievements on your phone</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Background caching system now installs correctly. Previously, the app was running without active offline-cache support due to a broken asset reference; this is now resolved across all members.", tag: "FIXED" },
-    { item: "Activity feed scrollbar no longer overlaps content text.", tag: "FIXED" },
-    { item: "Recent rounds in the main view now extend to 6 entries (up from 3) \u2014 more of your golf history visible at a glance.", tag: "IMPROVED" },
-    { item: "Improved spacing around the divider line below the masthead.", tag: "IMPROVED" },
-    { item: "Page footer now anchors at the bottom under all content rather than floating mid-page.", tag: "IMPROVED" },
-    { item: "Activity feed action buttons removed temporarily \u2014 they\u2019ll return with full functionality (kudos persistence, comments, sharing) in a future release.", tag: "IMPROVED" }
+    { item: "Tapping a notification now takes you to the right place \u2014 wagers, bounties, league updates, and others previously sent you home. Fixed.", tag: "FIXED" },
+    { item: "Scroll past your unread notifications to browse earlier history. The bell now shows everything, not just what\u2019s new.", tag: "NEW" },
+    { item: "Each notification type now shows its own icon \u2014 likes, comments, messages, tee times, league actions, and more.", tag: "IMPROVED" },
+    { item: "Achievement unlocks now reach your phone if push notifications are enabled \u2014 not just the in-app celebration.", tag: "NEW" }
   ];
+
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.16.2", date: "May 2026", headline: "Polish + service worker hotfix",
+      items: [
+        { item: "Background caching system now installs correctly. Previously, the app was running without active offline-cache support due to a broken asset reference; this is now resolved across all members.", tag: "FIXED" },
+        { item: "Activity feed scrollbar no longer overlaps content text.", tag: "FIXED" },
+        { item: "Recent rounds in the main view now extend to 6 entries (up from 3) \u2014 more of your golf history visible at a glance.", tag: "IMPROVED" },
+        { item: "Improved spacing around the divider line below the masthead.", tag: "IMPROVED" },
+        { item: "Page footer now anchors at the bottom under all content rather than floating mid-page.", tag: "IMPROVED" },
+        { item: "Activity feed action buttons removed temporarily \u2014 they\u2019ll return with full functionality (kudos persistence, comments, sharing) in a future release.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.16.0", date: "May 2026", headline: "Polish & calibration",
       items: [
