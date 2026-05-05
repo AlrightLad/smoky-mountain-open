@@ -430,6 +430,26 @@ Goal: 17/17 across all 4 browsers consistently. Currently 96-97% with confined-t
 
 **Surfaced:** 2026-05-05 Ship 5+5 verification phase.
 
+### H4 — League context legibility on HQ Home landing
+**Scope:** S/M (TBD after design bot D2 spec)
+**Target:** Ship 5+6 Phase 5 (BLOCKED on design bot D2)
+**Source:** CTO usage observation 2026-05-05
+
+Beginner/new golfer landing on HQ Home cannot quickly identify (a) what platform they're on, (b) what their league is, (c) whether content is league-scoped vs platform-scoped. The league name "The Parbaughs" is underweighted in current visual hierarchy. Constraint: solution must maintain ALL existing data on page — fix wayfinding without removing content.
+
+Engaged design bot D2 for direction on 2026-05-05.
+
+### B.40 — Dead code cleanup on home.js
+**Scope:** S
+**Target:** Backlog cleanup ship (post-Ship 5+6)
+**Source:** V1 audit 2026-05-05
+
+Dead/legacy bundle weight surfaced during V1 audit:
+- `_renderHQGridInner` (home.js:482) — DEPRECATED v8.15.0, ~30 LOC
+- `_renderHQPlaceholder` (home.js:518) — Ship 1b-i debug helper, ~7 LOC
+
+Total ~37 LOC dead bundle. Not user-visible but adds bundle weight + cognitive load on home.js maintenance. Removable when next pass through home.js architecture cleanup.
+
 ---
 
 ## C — Carryover from Gate 8a (deferred per CTO Q-B)
