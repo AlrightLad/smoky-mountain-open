@@ -450,6 +450,13 @@ Dead/legacy bundle weight surfaced during V1 audit:
 
 Total ~37 LOC dead bundle. Not user-visible but adds bundle weight + cognitive load on home.js maintenance. Removable when next pass through home.js architecture cleanup.
 
+### B.41 — Rename `_firstName` helper to `_displayName`
+**Scope:** S
+**Target:** Backlog cleanup ship (post-Ship 5+6)
+**Source:** Phase 1 implementation observation 2026-05-06
+
+The `_firstName` helper at `home.js:393` now returns full displayName as-is per B.30 fix. Function name no longer describes behavior. Four call sites at home.js (greeting hero, welcome hero, initials extraction, ctx.firstName in context build). Rename + update callers in single follow-up commit.
+
 ---
 
 ## C — Carryover from Gate 8a (deferred per CTO Q-B)
