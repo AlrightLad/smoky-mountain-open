@@ -104,6 +104,8 @@ HQ Home foundation work (v8.5.x – v8.6.x) added CSS rules under various select
 
 ## B — Feature backlog (do not ship early)
 
+_Note: Section B has numbering gaps (B.14–B.18, B.20–B.22, B.33–B.35) — these are reserved or closed pre-2026-05; not actively tracked._
+
 ### B.1 — Play Now: hole par/yardage adjustment during live play
 **Scope:** M · **Target:** No current target
 
@@ -140,11 +142,6 @@ The handicap chart's natural unit is monthly snapshots, not raw rounds. The 30D 
 
 **Surfaced:** v8.14.4 Q-RULING-A — spec assumed buildHandicapGraph had an existing 30D/90D/1Y toggle to replace; audit confirmed no toggle exists. Deferred to keep v8.14.4 scope reasonable.
 
-### B.6 — Design bot follow-up: HQ Home v1 handicap chart toggle (Ship 5 territory)
-**Scope:** S investigation · **Target:** Ship 5 prep
-
-**RESOLVED v8.14.5**: audit located `_renderHandicapTrendChart` in home.js:1359 — that's the chart shown in Image 2. Stub 30D/90D/1Y pills replaced with functional 30D/SEASON/ANNUAL toggle in v8.14.5. Item closed; left in backlog as historical reference.
-
 ### B.7 — HQ Home stat strip alignment + course name truncation
 **Scope:** S · **Target:** Ship 5 (HQ Home v1 implementation)
 
@@ -172,9 +169,6 @@ Multiple competing constraints (card chrome consistency, chart readability, visu
 CTO smoke surfaced clipping on WHS HANDICAP INDEX label rendering at members.js:497-507 (div-only, not chart SVG). Pending DevTools inspection of accordion/section parent ancestor chain. Likely interacts with section card chrome that Ship 5 addresses. Bundle DOM diagnostic into Ship 5 prep rather than separate ship.
 
 **Surfaced:** v8.14.3 Q-CHART-4. Deferred through v8.14.4 / v8.14.5 / v8.14.6 (skipped). Investigation rolls into Ship 5 prep phase.
-
-### Chart bug arc — CLOSED
-v8.14.3 → v8.14.4 → v8.14.5 closed the chart rendering issues surfaced post-Ship-4a. v8.14.6 SKIPPED per CTO decision (diminishing returns on legacy surface polish). Outstanding chart-adjacent items (B.8, B.9, plus bar chart container caps) deferred to Ship 5+ where holistic redesign covers them naturally.
 
 ### B.10 — Stat strip computed delta line
 **Scope:** S · **Target:** Future ship (post-Ship 5)
@@ -388,7 +382,7 @@ The Ship 5+2 audit (v8.18.0) explicitly deferred the following items in favor of
 
 The codebase was implicitly assumed-single-league for years. CLAUDE.md "League Scoping Rules" documents *"Members list shows only members of your ACTIVE league"* but the implementation never landed — `members` is a global collection (correct architecture per Data Scoping table) and most surfaces that consume `PB.getPlayers()` or `db.collection("members").get()` for league-scoped UI render the entire global cache without filtering by league membership. This wasn't visible in production because every Parbaughs member was always in `the-parbaughs` (the only league).
 
-The smoke test account (created 2026-05-04 for Ship 5+1 smoke automation) is the first member ever NOT in The Parbaughs and surfaced this bug in the members list. v8.17.0 Path B+ hardening (commit forthcoming) patches the symptom by hiding test accounts from real-account viewers via an `isTestAccount` flag — but this is a defensive workaround, not the architectural fix.
+The smoke test account (created 2026-05-04 for Ship 5+1 smoke automation) is the first member ever NOT in The Parbaughs and surfaced this bug in the members list. v8.17.0 Path B+ hardening (commits a8709bc + 51fb064, 2026-05-04) patches the symptom by hiding test accounts from real-account viewers via an `isTestAccount` flag — but this is a defensive workaround, not the architectural fix.
 
 Surfaces requiring proper league filtering (audited V13 during smoke setup):
 - `members.js:19` — primary leak (members list)
@@ -483,6 +477,17 @@ CLAUDE.md line 37: "Clubhouse is leaner than the 8-theme system it replaced" —
 - **Forward-looking CSS appendix** (KEEP classes from Gate 9 audit): see `/memory/SHIP_4A_PRINCIPLES.md` "Forward-looking CSS appendix" section
 - **Memory rules P1–P15**: see `/memory/SHIP_4A_PRINCIPLES.md`
 - **Ship 4a recap**: see `/docs/SHIP_4A_RECAP.md`
+
+---
+
+## CLOSED — Historical Reference
+
+Items shipped/resolved that are kept for audit trail. Future shipped items get archived here rather than deleted.
+
+### B.6 (CLOSED v8.14.5) — Design bot follow-up: handicap chart toggle
+**Originally scoped:** S investigation · **Originally targeted:** Ship 5 prep
+
+Audit located `_renderHandicapTrendChart` in home.js:1359 — the chart shown in the v8.14.4 smoke screenshot Image 2. Stub 30D/90D/1Y pills replaced with functional 30D/SEASON/ANNUAL toggle in v8.14.5. (Note: members.js `buildHandicapGraph` still lacks the toggle — see B.5 for that pending item.)
 
 ---
 
