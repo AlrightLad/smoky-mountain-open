@@ -2380,16 +2380,29 @@ function _renderPulses(pulses) {
   return h;
 }
 
+// v8.18.0 / Ship 5+2 (V10.2) — time field is a formatted string
+// ("h:mm AM/PM"); lexical sort produces wrong order for same-date tees
+// (e.g. "11:00 AM" < "1:00 AM" lexically because ':' > '1'). Parse to
+// minutes-since-midnight for correct ordering.
+function _parseTimeMinutes(t) {
+  if (!t) return 0;
+  var m = String(t).match(/^(\d+):(\d+)\s*(AM|PM)$/i);
+  if (!m) return 0;
+  var h = parseInt(m[1], 10) % 12;
+  if (/PM/i.test(m[3])) h += 12;
+  return h * 60 + parseInt(m[2], 10);
+}
+
 function _getUpcomingTeeTimes(limit) {
   if (typeof liveTeeTimes === "undefined" || !liveTeeTimes) return null;
   var today = localDateStr();
   var upcoming = liveTeeTimes.filter(function(t) {
     return t.date && t.date >= today && t.status !== "cancelled";
   });
-  // Sort by date (ascending), then time
+  // Sort by date (ascending), then time-of-day (parsed)
   upcoming.sort(function(a, b) {
     if (a.date !== b.date) return a.date < b.date ? -1 : 1;
-    return (a.time || "") < (b.time || "") ? -1 : 1;
+    return _parseTimeMinutes(a.time) - _parseTimeMinutes(b.time);
   });
   return upcoming.slice(0, limit || 3);
 }

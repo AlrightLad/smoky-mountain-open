@@ -19,13 +19,12 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Bell upgrades, smarter routing, achievements on your phone</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Tee Times revival</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Tapping a notification now takes you to the right place \u2014 wagers, bounties, league updates, and others previously sent you home. Fixed.", tag: "FIXED" },
-    { item: "Scroll past your unread notifications to browse earlier history. The bell now shows everything, not just what\u2019s new.", tag: "NEW" },
-    { item: "Each notification type now shows its own icon \u2014 likes, comments, messages, tee times, league actions, and more.", tag: "IMPROVED" },
-    { item: "Achievement unlocks now reach your phone if push notifications are enabled \u2014 not just the in-app celebration.", tag: "NEW" }
+    { item: "RSVP to tee times now actually works. Tap In, Maybe, or Out and your response sticks. Your friends see the live count of who\u2019s coming.", tag: "FIXED" },
+    { item: "When someone RSVPs to your tee time, you get a notification on your phone. No more guessing if anyone\u2019s actually coming.", tag: "NEW" },
+    { item: "Tee time list now respects \u201cprivate\u201d visibility \u2014 only the host and league commissioners see private tees.", tag: "FIXED" }
   ];
 
   currentNotes.forEach(function(r) { h += renderEntry(r); });
@@ -33,6 +32,15 @@ Router.register("caddynotes", function() {
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.17.0", date: "May 2026", headline: "Bell upgrades, smarter routing, achievements on your phone",
+      items: [
+        { item: "Tapping a notification now takes you to the right place — wagers, bounties, league updates, and others previously sent you home. Fixed.", tag: "FIXED" },
+        { item: "Scroll past your unread notifications to browse earlier history. The bell now shows everything, not just what’s new.", tag: "NEW" },
+        { item: "Each notification type now shows its own icon — likes, comments, messages, tee times, league actions, and more.", tag: "IMPROVED" },
+        { item: "Achievement unlocks now reach your phone if push notifications are enabled — not just the in-app celebration.", tag: "NEW" }
+      ]
+    },
     {
       version: "v8.16.2", date: "May 2026", headline: "Polish + service worker hotfix",
       items: [

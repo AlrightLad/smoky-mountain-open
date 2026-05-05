@@ -518,14 +518,27 @@ service cloud.firestore {
     match /teetimes/{teeId} {
       allow read: if amIReadable()
                  && amILeagueMember(resource.data.leagueId);
+      // v8.18.0 / Ship 5+2 — added int+range check on spots to block
+      // malicious clients setting absurd values (V11.3 hardening).
       allow create: if amIActive()
                    && request.resource.data.createdBy == uid()
                    && amILeagueMember(request.resource.data.leagueId)
-                   && !isBannedFromLeague(request.resource.data.leagueId, uid());
+                   && !isBannedFromLeague(request.resource.data.leagueId, uid())
+                   && request.resource.data.spots is int
+                   && request.resource.data.spots >= 2
+                   && request.resource.data.spots <= 5;
+      // v8.18.0 / Ship 5+2 — F3 RSVP fix. Adds 4th OR-clause permitting
+      // any active league member to write the responses field exclusively.
+      // Preserves all existing creator/leadership/founder permissions.
+      // diff().affectedKeys().hasOnly(['responses']) ensures the write
+      // mutates ONLY the responses map (rejects spots/status/etc. tampering
+      // bundled with an RSVP).
       allow update: if amIActive() && (
         resource.data.createdBy == uid()
         || amILeagueLeadership(resource.data.leagueId)
         || amIFounder()
+        || (amILeagueMember(resource.data.leagueId)
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['responses']))
       );
       allow delete: if amIActive() && (
         resource.data.createdBy == uid()

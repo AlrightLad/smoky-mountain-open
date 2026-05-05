@@ -363,6 +363,25 @@ Cleanup: remove `opts.width` / `chartWidth` parameter from both functions; viewB
 
 Per `§9.02 §11`, 8 quiet states (pre-round, post-round, abandoned, paused, stale, F1 missing, F2 abandoned, F3 host-offline) need design pass for both desktop + mobile band. Some states already have chrome (F2, F3 from Gate 7); others need authoring.
 
+### B.37 — Ship 5+2 (Tee Times) deferred items
+**Scope:** Mixed (each sub-item ranges S to L)
+**Target:** Future ships as priorities surface
+**Source:** Ship 5+2 audit (V1-V11) + scope ruling — see `docs/SHIP_5_2_SPEC.md`
+
+The Ship 5+2 audit (v8.18.0) explicitly deferred the following items in favor of the F3 RSVP fix as the dominant value:
+
+- **F4 edit capability** (M) — edit tee time fields after creation; needs schema additions (`editedAt`, `editedBy`, possibly `version`); UI work for edit form
+- **Recurring tee times** (M-L) — schema additions (`recurrence` rule, `parentTeeId`, etc.); generation logic
+- **`status: "completed"` dead state cleanup** (S) — auto-transition past tees to `completed` OR remove the field entirely
+- **Notification digest / batching** (M) — fatigue mitigation; aggregate multiple tee notifications within a window
+- **Calendar conflict detection** (S) — warn when posting a tee that overlaps an existing one for any RSVPer
+- **`time` as Timestamp / `cancelledAt` as Timestamp** (M, migration) — schema unification; less urgent given empty production state
+- **Stale RSVP cleanup on member leave** (S) — GC entries in `responses` map for users who left the league
+- **Deep-link via `params: { id: tee._id }` on tee notifications** (S) — UX polish; scroll/highlight specific tee from notification click
+- **`tee_rsvp` to a notify-tier broader than just creator** (S) — currently only creator sees RSVP confirmations; could optionally notify already-accepted members of new joiners
+
+**Surfaced:** 2026-05-04 Ship 5+2 audit + scope ruling. Ship 5+2 (v8.18.0) bundles the F3 RSVP fix + V4 broadcast hardening + 3 missing `.catch()` handlers + visibility enforcement + tee_rsvp writer + same-date time sort fix.
+
 ### B.36 — Multi-league member-filtering architecture
 **Scope:** L (architectural, ~200-400 LOC across 6+ surfaces)
 **Target:** Phase 2 multi-league architecture work

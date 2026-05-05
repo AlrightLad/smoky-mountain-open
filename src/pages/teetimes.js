@@ -19,11 +19,23 @@ Router.register("teetimes", function() {
   var now = localDateStr();
   var threeDaysAgo = new Date(Date.now() - 3 * 86400000).toISOString().split("T")[0];
   
-  var upcoming = liveTeeTimes.filter(function(t) { return t.date >= now && t.status !== "cancelled"; });
+  // v8.18.0 / Ship 5+2 — visibility="private" enforcement.
+  // Private tees visible only to creator + commissioner/admin/founder.
+  var _myUid = currentUser ? currentUser.uid : null;
+  var _amCommish = isFounderRole(currentProfile);
+  function _canSeePrivate(t) {
+    return t.visibility !== "private" || t.createdBy === _myUid || _amCommish;
+  }
+
+  var upcoming = liveTeeTimes.filter(function(t) {
+    return t.date >= now && t.status !== "cancelled" && _canSeePrivate(t);
+  });
   var pastLimit = Math.max(3, 10 - upcoming.length);
-  var past = liveTeeTimes.filter(function(t) { return (t.date < now || t.status === "completed") && t.status !== "cancelled"; }).slice(0, pastLimit);
-  var recentlyCancelled = liveTeeTimes.filter(function(t) { 
-    return t.status === "cancelled" && t.cancelledAt && t.cancelledAt >= threeDaysAgo;
+  var past = liveTeeTimes.filter(function(t) {
+    return (t.date < now || t.status === "completed") && t.status !== "cancelled" && _canSeePrivate(t);
+  }).slice(0, pastLimit);
+  var recentlyCancelled = liveTeeTimes.filter(function(t) {
+    return t.status === "cancelled" && t.cancelledAt && t.cancelledAt >= threeDaysAgo && _canSeePrivate(t);
   });
 
   var h = '<div class="sh"><h2>Tee Times</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'home\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'tee-create\')">+ Post</button></div></div>';
@@ -102,7 +114,7 @@ function renderTeeCard(t, isPast, isCancelled) {
   if (!isPast && !isCancelled && t.status !== "cancelled" && t.status !== "completed") {
     h += '<div class="tee-rsvp-row">';
     h += '<button class="tee-rsvp-btn accept' + (myResponse==="accepted"?" selected":"") + '" onclick="rsvpTeeTime(\'' + t._id + '\',\'accepted\')">In</button>';
-    h += '<button class="tee-rsvp-btn maybe' + (myResponse==="maybe"?" selected":"") + '" onclick="rsvpTeeTime(\'' + t._id + '\',\'maybe\')">Maybe/button>';
+    h += '<button class="tee-rsvp-btn maybe' + (myResponse==="maybe"?" selected":"") + '" onclick="rsvpTeeTime(\'' + t._id + '\',\'maybe\')">Maybe</button>';
     h += '<button class="tee-rsvp-btn decline' + (myResponse==="declined"?" selected":"") + '" onclick="rsvpTeeTime(\'' + t._id + '\',\'declined\')">Out</button>';
     h += '</div>';
 
@@ -194,14 +206,49 @@ function rsvpTeeTime(teeId, response) {
   if (!currentUser || !db) return;
   var tee = liveTeeTimes.find(function(t){return t._id===teeId});
   var wasAccepted = tee && tee.responses && tee.responses[currentUser.uid] === "accepted";
-  var field = "responses." + currentUser.uid; var update = {}; update[field] = response;
+  var field = "responses." + currentUser.uid;
+  var update = {};
+  update[field] = response;
   db.collection("teetimes").doc(teeId).update(update).then(function() {
     Router.toast(response === "accepted" ? "You're in!" : response === "maybe" ? "Marked maybe" : "You're out");
-    if (wasAccepted && response !== "accepted" && tee) {
-      var others = Object.keys(tee.responses).filter(function(k){return tee.responses[k]==="accepted"&&k!==currentUser.uid});
-      var name = currentProfile ? (currentProfile.name||currentProfile.username) : "A member";
-      others.forEach(function(uid) { sendNotification(uid, { type:"tee_withdrawal", title:"Player Withdrew", message:name + " withdrew from " + (tee.courseName||"tee time") }); });
+
+    // v8.18.0 / Ship 5+2 — tee_rsvp notification to creator on accepted RSVP.
+    // Suppress when creator RSVPs to own tee (auto-RSVP at create time).
+    if (response === "accepted" && tee && tee.createdBy && tee.createdBy !== currentUser.uid) {
+      var rsvperName = currentProfile ? (currentProfile.name || currentProfile.username) : "A member";
+      sendNotification(tee.createdBy, {
+        type: "tee_rsvp",
+        title: rsvperName + " is in",
+        message: (tee.courseName || "Tee time") + " · " + tee.date + " · " + (tee.time || ""),
+        page: "teetimes"
+      });
     }
+
+    // Withdrawal cascade — when an accepted RSVP changes to maybe/declined.
+    // v8.18.0 / Ship 5+2 — two-layer filter (league + test/real boundary)
+    // matches v8.17.0 tee_posted hardening pattern. Defense-in-depth.
+    if (wasAccepted && response !== "accepted" && tee) {
+      var _writerIsTest = !!(currentProfile && currentProfile.isTestAccount);
+      var _teeLeagueId = tee.leagueId || (typeof getActiveLeague === "function" ? getActiveLeague() : null);
+      var name = currentProfile ? (currentProfile.name || currentProfile.username) : "A member";
+      Object.keys(tee.responses).forEach(function(uid) {
+        if (tee.responses[uid] !== "accepted") return;
+        if (uid === currentUser.uid) return;
+        var p = PB.getPlayer(uid);
+        if (!p) return;
+        if (_teeLeagueId && (!p.leagues || p.leagues.indexOf(_teeLeagueId) === -1)) return;
+        if (!!p.isTestAccount !== _writerIsTest) return;
+        sendNotification(uid, {
+          type: "tee_withdrawal",
+          title: "Player Withdrew",
+          message: name + " withdrew from " + (tee.courseName || "tee time"),
+          page: "teetimes"
+        });
+      });
+    }
+  }).catch(function(err) {
+    pbWarn("[teetimes] RSVP failed:", err && err.message);
+    Router.toast("Couldn't RSVP — please try again");
   });
 }
 
@@ -210,10 +257,31 @@ function cancelTeeTime(teeId) {
   var tee = liveTeeTimes.find(function(t){return t._id===teeId});
   db.collection("teetimes").doc(teeId).update({status:"cancelled", cancelledAt: localDateStr()}).then(function() {
     Router.toast("Cancelled");
+    // v8.18.0 / Ship 5+2 — two-layer filter (league + test/real boundary)
+    // matches v8.17.0 tee_posted hardening. Adds explicit page: field
+    // (was relying on NOTIFICATION_META fallback).
     if (tee && tee.responses) {
-      var ids = Object.keys(tee.responses).filter(function(k){return(tee.responses[k]==="accepted"||tee.responses[k]==="maybe")&&k!==(currentUser?currentUser.uid:"")});
-      ids.forEach(function(uid) { sendNotification(uid, { type:"tee_cancelled", title:"Tee Time Cancelled", message:(tee.courseName||"Tee time") + " on " + tee.date + " was cancelled" }); });
+      var _writerIsTest = !!(currentProfile && currentProfile.isTestAccount);
+      var _teeLeagueId = tee.leagueId || (typeof getActiveLeague === "function" ? getActiveLeague() : null);
+      Object.keys(tee.responses).forEach(function(uid) {
+        var st = tee.responses[uid];
+        if (st !== "accepted" && st !== "maybe") return;
+        if (uid === (currentUser ? currentUser.uid : "")) return;
+        var p = PB.getPlayer(uid);
+        if (!p) return;
+        if (_teeLeagueId && (!p.leagues || p.leagues.indexOf(_teeLeagueId) === -1)) return;
+        if (!!p.isTestAccount !== _writerIsTest) return;
+        sendNotification(uid, {
+          type: "tee_cancelled",
+          title: "Tee Time Cancelled",
+          message: (tee.courseName || "Tee time") + " on " + tee.date + " was cancelled",
+          page: "teetimes"
+        });
+      });
     }
+  }).catch(function(err) {
+    pbWarn("[teetimes] cancel failed:", err && err.message);
+    Router.toast("Couldn't cancel — please try again");
   });
 }
 
@@ -225,6 +293,13 @@ function deleteTeeTime(teeId) {
   }).catch(function() { Router.toast("Failed to delete"); });
 }
 
-function markOfficial(teeId) { db.collection("teetimes").doc(teeId).update({official:true}).then(function(){Router.toast("Marked official")}); }
+function markOfficial(teeId) {
+  db.collection("teetimes").doc(teeId).update({official:true}).then(function() {
+    Router.toast("Marked official");
+  }).catch(function(err) {
+    pbWarn("[teetimes] markOfficial failed:", err && err.message);
+    Router.toast("Couldn't mark official — please try again");
+  });
+}
 
 
