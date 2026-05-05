@@ -1645,8 +1645,11 @@ function _renderActivityFeedCompact(ctx, limit) {
       b += '<article class="hq-feed-card"' + clickAttr + '>';
       // Top row: avatar + body + timeAgo
       b += '<div class="hq-feed-card__top">';
-      var initial = (it.actorName.charAt(0) || "?").toUpperCase();
-      b += '<div class="hq-feed-card__avatar">' + escHtml(initial) + '</div>';
+      // v8.19.0 (Ship 5+3 / B.26) — replace single-letter placeholder with
+      // renderAvatar() to surface profile photos. Synthesizes a player from
+      // actorName when no UID lookup exists (state.activity events).
+      var actorPlayer = (it.actorUid && typeof PB !== "undefined" && PB.getPlayer) ? PB.getPlayer(it.actorUid) : null;
+      b += renderAvatar(actorPlayer || { name: it.actorName || "?", id: "" }, 32, !!actorPlayer);
       b += '<div class="hq-feed-card__body">';
       // Chip (entityType) — only when defined
       if (it.entityType) {
@@ -1704,7 +1707,7 @@ function _hqBuildActivityItems(limit) {
       // Ship 5 Gate 2 (v8.15.1) — entityType chip per Q-AUDIT-D Option A.
       // Scramble rounds chip as "SCRAMBLE"; otherwise plain "ROUND".
       var entityType = (fmt === "scramble" || fmt === "scramble4") ? "SCRAMBLE" : "ROUND";
-      items.push({ ts: ts, actorName: actor, text: text, sub: sub.replace(/^ · /, ""), timeAgo: feedTimeAgo(ts), dest: r.id ? "Router.go('rounds',{roundId:'" + r.id + "'})" : "", entityType: entityType });
+      items.push({ ts: ts, actorName: actor, actorUid: r.player || "", text: text, sub: sub.replace(/^ · /, ""), timeAgo: feedTimeAgo(ts), dest: r.id ? "Router.go('rounds',{roundId:'" + r.id + "'})" : "", entityType: entityType });
     });
   }
   // state.activity (in-memory events)
@@ -1720,7 +1723,7 @@ function _hqBuildActivityItems(limit) {
       else if (a.type === "review") { text += " reviewed " + (a.course || "a course"); entityType = "REVIEW"; }
       else if (a.type === "member_joined") { text += " joined the league"; entityType = "JOINED"; }
       else text += " did something";
-      items.push({ ts: a.ts, actorName: actor, text: text, sub: "", timeAgo: feedTimeAgo(a.ts), dest: "", entityType: entityType });
+      items.push({ ts: a.ts, actorName: actor, actorUid: a.uid || a.playerId || "", text: text, sub: "", timeAgo: feedTimeAgo(a.ts), dest: "", entityType: entityType });
     });
   }
   items.sort(function(a, b) { return b.ts - a.ts; });

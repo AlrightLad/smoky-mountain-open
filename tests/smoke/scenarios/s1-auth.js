@@ -12,8 +12,8 @@ module.exports = {
     await nav.waitForAppBoot(ctx.page);
     var version = await nav.readVersion(ctx.page);
     await ctx.capture.screenshot('S1-home-post-login');
-    if (version !== '8.18.0') {
-      throw new Error('APP_VERSION mismatch — expected 8.18.0, got "' + version + '"');
+    if (version !== '8.19.0') {
+      throw new Error('APP_VERSION mismatch — expected 8.19.0, got "' + version + '"');
     }
     return { passed: true, details: 'logged in; APP_VERSION=' + version };
   }

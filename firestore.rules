@@ -338,8 +338,17 @@ service cloud.firestore {
                    && amILeagueMember(request.resource.data.leagueId)
                    && !isBannedFromLeague(request.resource.data.leagueId, uid())
                    && request.resource.data.authorId == uid();
-      allow update: if amIActive()
-                   && resource.data.authorId == uid();
+      // v8.19.0 (Ship 5+3) — author retains full update authority. League
+      // members may update engagement subfields ('likes', 'comments',
+      // 'commentLikes') without owning the doc. Same diff().affectedKeys()
+      // pattern as Ship 5+2's /teetimes responses-only path. Fixes the
+      // silent-failure introduced by the v8.0 author-only rules rewrite.
+      allow update: if amIActive() && (
+        resource.data.authorId == uid()
+        || (amILeagueMember(resource.data.leagueId)
+            && request.resource.data.diff(resource.data).affectedKeys()
+                  .hasOnly(['likes', 'comments', 'commentLikes']))
+      );
       allow delete: if amIActive() && (
         resource.data.authorId == uid()
         || amILeagueLeadership(resource.data.leagueId)

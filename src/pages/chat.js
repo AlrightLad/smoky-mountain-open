@@ -557,9 +557,12 @@ function renderChatMessages(messages) {
 function toggleLike(docId) {
   if (!db || !currentUser) { Router.toast("Sign in to give kudos"); return; }
   var uid = currentUser.uid;
-  
-  // Optimistic UI update — update local data immediately
+
+  // v8.19.0 (Ship 5+3) — snapshot pre-write state for rollback on rejection.
   var localMsg = liveChat.find(function(m) { return m._docId === docId; });
+  var prevLikes = (localMsg && localMsg.likes) ? localMsg.likes.slice() : null;
+
+  // Optimistic UI update — update local data immediately
   if (localMsg) {
     if (!localMsg.likes) localMsg.likes = [];
     var localIdx = localMsg.likes.indexOf(uid);
@@ -569,7 +572,16 @@ function toggleLike(docId) {
     var feed = document.getElementById("chatFeed");
     if (feed) feed.innerHTML = renderChatMessages(liveChat);
   }
-  
+
+  function _revertLikes() {
+    if (localMsg) {
+      if (prevLikes === null) delete localMsg.likes;
+      else localMsg.likes = prevLikes;
+      var feed = document.getElementById("chatFeed");
+      if (feed) feed.innerHTML = renderChatMessages(liveChat);
+    }
+  }
+
   // Then sync to Firestore
   db.collection("chat").doc(docId).get().then(function(doc) {
     if (!doc.exists) return;
@@ -578,7 +590,7 @@ function toggleLike(docId) {
     var idx = likes.indexOf(uid);
     var isLiking = idx === -1;
     if (idx !== -1) { likes.splice(idx, 1); } else { likes.push(uid); }
-    db.collection("chat").doc(docId).update({ likes: likes }).then(function() {
+    return db.collection("chat").doc(docId).update({ likes: likes }).then(function() {
       if (isLiking && data.authorId && data.authorId !== uid && data.authorId !== "system") {
         var myName = currentProfile ? PB.getDisplayName(currentProfile) : "Someone";
         sendNotification(data.authorId, {
@@ -589,6 +601,10 @@ function toggleLike(docId) {
         });
       }
     });
+  }).catch(function(err) {
+    if (typeof pbWarn === "function") pbWarn("[chat] toggleLike failed:", err && err.message);
+    _revertLikes();
+    Router.toast("Couldn't add kudos — please try again");
   });
 }
 
@@ -624,8 +640,11 @@ function submitComment(docId) {
   var name = currentProfile ? PB.getDisplayName(currentProfile) : "Anon";
   var newComment = { uid: currentUser.uid, name: name, text: text, at: new Date().toISOString() };
 
-  // Optimistic local update — append comment to liveChat immediately so it renders before Firestore roundtrip
+  // v8.19.0 (Ship 5+3) — snapshot pre-write state for rollback on rejection.
   var localMsg = liveChat.find(function(m) { return m._docId === docId; });
+  var prevComments = (localMsg && localMsg.comments) ? localMsg.comments.slice() : null;
+
+  // Optimistic local update — append comment to liveChat immediately so it renders before Firestore roundtrip
   if (localMsg) {
     if (!localMsg.comments) localMsg.comments = [];
     localMsg.comments.push(newComment);
@@ -639,6 +658,15 @@ function submitComment(docId) {
     if (newInput) { newInput.value = ""; newInput.focus(); }
   } else if (input) {
     input.value = "";
+  }
+
+  function _revertComments() {
+    if (localMsg) {
+      if (prevComments === null) delete localMsg.comments;
+      else localMsg.comments = prevComments;
+      var feed = document.getElementById("chatFeed");
+      if (feed) feed.innerHTML = renderChatMessages(liveChat);
+    }
   }
 
   // Write to Firestore (snapshot listener will reconcile if needed)
@@ -657,13 +685,21 @@ function submitComment(docId) {
           page: "chat"
         });
       }
-      // Notify other commenters
+      // v8.19.0 (Ship 5+3) — feed_reply cascade hardened with v8.17.0 two-layer
+      // filter: drop recipients outside the chat's league, and drop recipients
+      // on the wrong side of the test/real account boundary.
+      var _writerIsTest = !!(currentProfile && currentProfile.isTestAccount);
+      var _chatLeagueId = data.leagueId || (typeof getActiveLeague === "function" ? getActiveLeague() : null);
       var notified = {};
       notified[currentUser.uid] = true;
       if (data.authorId) notified[data.authorId] = true;
       comments.forEach(function(c) {
         if (c.uid && !notified[c.uid]) {
           notified[c.uid] = true;
+          var p = (typeof PB !== "undefined" && PB.getPlayer) ? PB.getPlayer(c.uid) : null;
+          if (!p) return;
+          if (_chatLeagueId && (!p.leagues || p.leagues.indexOf(_chatLeagueId) === -1)) return;
+          if (!!p.isTestAccount !== _writerIsTest) return;
           sendNotification(c.uid, {
             type: "feed_reply",
             title: "New Reply",
@@ -673,15 +709,24 @@ function submitComment(docId) {
         }
       });
     });
+  }).catch(function(err) {
+    if (typeof pbWarn === "function") pbWarn("[chat] submitComment failed:", err && err.message);
+    _revertComments();
+    Router.toast("Couldn't post comment — please try again");
   });
 }
 
 function toggleCommentLike(docId, commentIdx) {
   if (!db || !currentUser) { Router.toast("Sign in to give kudos"); return; }
   var uid = currentUser.uid;
-  
-  // Optimistic update
+
+  // v8.19.0 (Ship 5+3) — snapshot pre-write state for rollback on rejection.
   var localMsg = liveChat.find(function(m) { return m._docId === docId; });
+  var prevCommentLikes = (localMsg && localMsg.commentLikes)
+    ? JSON.parse(JSON.stringify(localMsg.commentLikes))
+    : null;
+
+  // Optimistic update
   if (localMsg) {
     if (!localMsg.commentLikes) localMsg.commentLikes = {};
     var key = String(commentIdx);
@@ -692,7 +737,16 @@ function toggleCommentLike(docId, commentIdx) {
     var feed = document.getElementById("chatFeed");
     if (feed) feed.innerHTML = renderChatMessages(liveChat);
   }
-  
+
+  function _revertCommentLikes() {
+    if (localMsg) {
+      if (prevCommentLikes === null) delete localMsg.commentLikes;
+      else localMsg.commentLikes = prevCommentLikes;
+      var feed = document.getElementById("chatFeed");
+      if (feed) feed.innerHTML = renderChatMessages(liveChat);
+    }
+  }
+
   // Sync to Firestore
   db.collection("chat").doc(docId).get().then(function(doc) {
     if (!doc.exists) return;
@@ -703,7 +757,7 @@ function toggleCommentLike(docId, commentIdx) {
     var idx = commentLikes[key].indexOf(uid);
     if (idx !== -1) commentLikes[key].splice(idx, 1);
     else commentLikes[key].push(uid);
-    db.collection("chat").doc(docId).update({ commentLikes: commentLikes }).then(function() {
+    return db.collection("chat").doc(docId).update({ commentLikes: commentLikes }).then(function() {
       // Notify comment author
       var comments = data.comments || [];
       if (comments[commentIdx] && comments[commentIdx].uid && comments[commentIdx].uid !== uid) {
@@ -716,6 +770,10 @@ function toggleCommentLike(docId, commentIdx) {
         });
       }
     });
+  }).catch(function(err) {
+    if (typeof pbWarn === "function") pbWarn("[chat] toggleCommentLike failed:", err && err.message);
+    _revertCommentLikes();
+    Router.toast("Couldn't add kudos — please try again");
   });
 }
 
@@ -771,14 +829,39 @@ function confirmDeleteComment(el, docId, commentIndex) {
 
 function deleteComment(docId, commentIndex) {
   if (!db || !currentUser) return;
+
+  // v8.19.0 (Ship 5+3) — snapshot pre-write state for rollback on rejection.
+  var localMsg = liveChat.find(function(m) { return m._docId === docId; });
+  var prevComments = (localMsg && localMsg.comments) ? localMsg.comments.slice() : null;
+
+  // Optimistic local splice — match the other writers' UX.
+  if (localMsg && localMsg.comments && commentIndex >= 0 && commentIndex < localMsg.comments.length) {
+    localMsg.comments.splice(commentIndex, 1);
+    var feed = document.getElementById("chatFeed");
+    if (feed) feed.innerHTML = renderChatMessages(liveChat);
+  }
+
+  function _revertComments() {
+    if (localMsg) {
+      if (prevComments === null) delete localMsg.comments;
+      else localMsg.comments = prevComments;
+      var feed = document.getElementById("chatFeed");
+      if (feed) feed.innerHTML = renderChatMessages(liveChat);
+    }
+  }
+
   db.collection("chat").doc(docId).get().then(function(doc) {
     if (!doc.exists) return;
     var data = doc.data();
     var comments = data.comments || [];
     if (commentIndex >= 0 && commentIndex < comments.length) {
       comments.splice(commentIndex, 1);
-      db.collection("chat").doc(docId).update({ comments: comments });
+      return db.collection("chat").doc(docId).update({ comments: comments });
     }
+  }).catch(function(err) {
+    if (typeof pbWarn === "function") pbWarn("[chat] deleteComment failed:", err && err.message);
+    _revertComments();
+    Router.toast("Couldn't delete comment — please try again");
   });
 }
 
