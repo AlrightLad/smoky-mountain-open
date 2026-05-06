@@ -464,6 +464,24 @@ The `_firstName` helper at `home.js:393` now returns full displayName as-is per 
 
 The "98" numeric value in the RECENT FORM panel (lead column idle state) renders small relative to panel real estate. Should anchor visual weight as the panel's headline number. Deferred to HQ-wide design pass per P7 (functional-first HQ-wide, design pass at end).
 
+### B.42 — League Pulse engagement re-render optimization
+**Scope:** S/M
+**Target:** Backlog cleanup ship (post-Ship 5+6)
+**Source:** Ship 5+6 Phase 5 / S1.1 observation 2026-05-06
+
+Ship 5+6 wired League Pulse engagement (kudos, comment, X-button) to
+fire `_refreshAfterEngagement()` which dispatches to either
+`_renderFeedItems()` (/feed) or `Router.go("home", ..., true)` (/home).
+The /home path is a full page re-render — fine at current scale (CTO's
+7 rounds, ~150 league rounds, sub-100ms render). At 1000+ rounds or
+multi-league members aggregating across leagues, the full re-render
+becomes perceptible jank.
+
+Future fix: narrow the /home re-render to a `_refreshLeaguePulseOnly`
+helper that rebuilds only the activity feed shell, not the full HQ Home
+(greeting hero, stats quartet, ladder, recent rounds, handicap chart,
+etc.). Aligns with B.25's memoization lineage.
+
 ---
 
 ## C — Carryover from Gate 8a (deferred per CTO Q-B)
