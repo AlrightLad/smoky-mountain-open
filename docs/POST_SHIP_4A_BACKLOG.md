@@ -464,23 +464,41 @@ The `_firstName` helper at `home.js:393` now returns full displayName as-is per 
 
 The "98" numeric value in the RECENT FORM panel (lead column idle state) renders small relative to panel real estate. Should anchor visual weight as the panel's headline number. Deferred to HQ-wide design pass per P7 (functional-first HQ-wide, design pass at end).
 
-### B.42 — League Pulse engagement re-render optimization
-**Scope:** S/M
-**Target:** Backlog cleanup ship (post-Ship 5+6)
-**Source:** Ship 5+6 Phase 5 / S1.1 observation 2026-05-06
+### B.44 — Round timestamp uses Date.now() not user-supplied date
+**Scope:** S
+**Target:** Folded into Ship 5+7 (writer chain already in scope)
+**Source:** Ship 5+7 V11.3 audit hidden invariant 2026-05-07
 
-Ship 5+6 wired League Pulse engagement (kudos, comment, X-button) to
-fire `_refreshAfterEngagement()` which dispatches to either
-`_renderFeedItems()` (/feed) or `Router.go("home", ..., true)` (/home).
-The /home path is a full page re-render — fine at current scale (CTO's
-7 rounds, ~150 league rounds, sub-100ms render). At 1000+ rounds or
-multi-league members aggregating across leagues, the full re-render
-becomes perceptible jank.
+`PB.addRound()` in `src/core/data.js:363` sets `timestamp: Date.now()`
+unconditionally. For retroactive rounds (member typing in a paper
+scorecard from days/weeks ago), the user-supplied `date` field is
+correct but `timestamp` is the moment they hit submit — not when the
+round actually happened.
 
-Future fix: narrow the /home re-render to a `_refreshLeaguePulseOnly`
-helper that rebuilds only the activity feed shell, not the full HQ Home
-(greeting hero, stats quartet, ladder, recent rounds, handicap chart,
-etc.). Aligns with B.25's memoization lineage.
+Failure mode: any feed/window/sort code that keys on `timestamp` will
+mis-order retroactive entries. Concretely:
+- LAST 30D rolling window (`home.js:751-754`) prefers `timestamp` over
+  `date`-derived fallback when both present, so a round dated 60 days
+  ago but logged today reads as "in the last 30." Wrong.
+- Streak math, activity-feed timeline sort, any `.orderBy("timestamp")`
+  reader.
+
+Display surfaces are correct (they read `date`). The bug only manifests
+in sort/window code paths.
+
+Fix (~5 LOC at `data.js:363`):
+```js
+timestamp: roundData.date
+  ? new Date(roundData.date + "T12:00:00").getTime()
+  : Date.now()
+```
+Noon-local prevents calendar-day drift from timezone fuzz on
+day-boundary reads. Live-play writers pass current `date`, so the same
+expression handles both the live-play and retroactive cases.
+
+Out of scope as a standalone ship — the fix is a one-line writer
+change folded into Ship 5+7 since that ship is touching the round
+writer chain anyway.
 
 ### B.43 — Webkit-mobile smoke timing fragility
 **Scope:** S/M
@@ -597,6 +615,11 @@ Items shipped/resolved that are kept for audit trail. Future shipped items get a
 **Originally scoped:** S investigation · **Originally targeted:** Ship 5 prep
 
 Audit located `_renderHandicapTrendChart` in home.js:1359 — the chart shown in the v8.14.4 smoke screenshot Image 2. Stub 30D/90D/1Y pills replaced with functional 30D/SEASON/ANNUAL toggle in v8.14.5. (Note: members.js `buildHandicapGraph` still lacks the toggle — see B.5 for that pending item.)
+
+### B.42 (CLOSED v8.21.0) — League Pulse engagement re-render optimization
+**Originally scoped:** S/M · **Originally targeted:** Backlog cleanup ship (post-Ship 5+6)
+
+Resolved by Ship 5+6 itself. The proposed fix was to narrow the /home re-render to a `_refreshLeaguePulseOnly` helper. Ship 5+6 went further: S1.2 replaced render-driven engagement with surgical DOM patches (`_patchKudosButton`, `_patchCommentCount`, `_appendCommentRowToDOM`, `_removeCommentRowFromDOM`, `_patchCommentLike` in `feed.js`), shared between `/feed` and `home.js` League Pulse via `_renderCommentThread`. There is no full re-render to optimize — engagement updates the DOM in place. B.42's failure mode (perceptible jank at 1000+ rounds) cannot occur with the current architecture.
 
 ---
 
