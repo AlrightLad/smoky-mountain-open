@@ -482,6 +482,31 @@ helper that rebuilds only the activity feed shell, not the full HQ Home
 (greeting hero, stats quartet, ladder, recent rounds, handicap chart,
 etc.). Aligns with B.25's memoization lineage.
 
+### B.43 — Webkit-mobile smoke timing fragility
+**Scope:** S/M
+**Target:** Smoke infrastructure ship (post-Ship 5+6)
+**Source:** Ship 5+6 Phase 7 cross-browser smoke results 2026-05-06
+
+S10 (dismiss deletes read items) and S13 (feed action row markup)
+fail intermittently on webkit-mobile (iPhone 14 Pro profile) due to
+waitForFunction timeouts. Cause is Firestore snapshot listener
+replication latency + mobile viewport profile + WebKit engine combo.
+Both fail BEFORE the assertion lines execute, so the actual scenario
+contract is uncertain on this profile.
+
+Three options for fix:
+1. Raise waitForFunction timeouts (15s → 30s) — quick patch, brittle
+2. Replace waitForFunction with page.waitForSelector + retry pattern
+   — more idiomatic Playwright
+3. Add webkit-mobile-specific seed settle padding (extra 4-6s post-
+   seed) — addresses replication directly
+
+Lean: Option 2 — idiomatic, accepts that mobile profiles need different
+wait strategies than desktop browsers.
+
+Out of scope for Ship 5+6 — Phase 7 added 6 new scenarios that all
+pass on webkit-mobile, demonstrating new code is sound.
+
 ---
 
 ## C — Carryover from Gate 8a (deferred per CTO Q-B)
