@@ -233,13 +233,31 @@ function _renderHQHome(ctx) {
       };
     },
     scope: function() {
-      // Ship 5 Gate 1 (v8.15.0) — scope slot returns empty string per Q-RULING-A.
-      // Hides production scope switcher (League/All Parbaughs pill toggle) per
-      // design bot Q3 ruling. Mock chip row markup (All / This week / This month)
-      // is deferred per §12(f). Empty string is no-op visually — masthead chrome
-      // intact, just no scope pill rendered.
-      // Pre-Gate-1 wiring lived in this slot — see git history.
-      return "";
+      // v8.21.0 (Ship 5+6 Phase 3 / D2 League wayfinding) — League chip in
+      // masthead right cluster, parallel to weather pill (V8.4 verified slot
+      // positioning matches D2 directive). Wayfinding for new/beginner
+      // golfers landing on HQ Home so they understand they're in a league
+      // context. Cold-cache async race per V8.1: chip may flash default
+      // "Parbaughs" briefly before window._activeLeagueName resolves from
+      // /leagues/{id}.name — acceptable per design.
+      //
+      // Multi-league users (currentProfile.leagues.length > 1) get a chevron
+      // affordance signaling the chip is a switcher. Single-league users see
+      // a pure label — chip still routes to /leagues for create-or-join.
+      var leagueName = (typeof window !== "undefined" && window._activeLeagueName) || "Parbaughs";
+      var multiLeague = !!(typeof currentProfile !== "undefined" && currentProfile && currentProfile.leagues && currentProfile.leagues.length > 1);
+      // A5 amendment (Ship 5+6 Phase 3): aria-label conditionalized — single-
+      // league users see "Manage leagues" (chip opens league management for
+      // create/join); multi-league sees "Switch league" (chip is a switcher).
+      var ariaLabel = multiLeague ? "Switch league" : "Manage leagues";
+      var chip = '<button class="hq-league-chip" type="button" onclick="Router.go(\'leagues\')" aria-label="' + escHtml(ariaLabel) + '">';
+      chip += '<span class="hq-league-chip__dot" aria-hidden="true">◉</span>';
+      chip += '<span class="hq-league-chip__name" data-league-name>' + escHtml(String(leagueName).toUpperCase()) + '</span>';
+      if (multiLeague) {
+        chip += '<svg class="hq-league-chip__chevron" viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>';
+      }
+      chip += '</button>';
+      return chip;
     },
     content: function() {
       // Location banner inside content wrapper preserves pre-refactor band-
@@ -308,33 +326,29 @@ function _renderHQLocationBanner() {
   return h;
 }
 
-// Populate the three weather sites (masthead pill, Band A caption, hero eyebrow)
-// after innerHTML is set. Each site emits a "—°" placeholder; this fires
-// PB.weather.getDisplay() and patches the DOM when data resolves. Failures are
-// silent — pill hides if first-ever fetch fails with no cache; Band A + eyebrow
-// retain their "—°" placeholder.
+// Populate the masthead weather pill after innerHTML is set. Emits "—°"
+// placeholder; this fires PB.weather.getDisplay() and patches the DOM when
+// data resolves. Failures are silent — pill hides if first-ever fetch fails
+// with no cache.
+//
+// v8.21.0 (Ship 5+6 Phase 1 / B.24): hq-weather-caption + hq-weather-eyebrow
+// site population removed. Weather is now single-source via the masthead pill;
+// the caption + eyebrow elements are no longer rendered.
 function _initWeatherDisplays() {
   if (typeof PB === "undefined" || !PB.weather) return;
-  var sites = [
-    { id: "hq-weather-pill", format: "pill", includeWind: true, withTooltip: true },
-    { id: "hq-weather-caption", format: "caption", includeWind: false, withTooltip: false },
-    { id: "hq-weather-eyebrow", format: "eyebrow", includeWind: false, withTooltip: false }
-  ];
-  sites.forEach(function(site) {
-    var el = document.getElementById(site.id);
-    if (!el) return;
-    PB.weather.getDisplay({ format: site.format, includeWind: site.includeWind }).then(function(w) {
+  var el = document.getElementById("hq-weather-pill");
+  if (el) {
+    PB.weather.getDisplay({ format: "pill", includeWind: true }).then(function(w) {
       if (!w) {
-        // First-fetch fail with no cache — only the pill hides; caption + eyebrow stay as "—"
-        if (site.id === "hq-weather-pill" && el.textContent === "—°") el.style.display = "none";
+        if (el.textContent === "—°") el.style.display = "none";
         return;
       }
       el.textContent = w.displayString;
-      if (site.withTooltip && w.locationName) {
+      if (w.locationName) {
         el.title = w.locationName.toUpperCase() + " · WEATHER UPDATES EVERY 30 MIN";
       }
     });
-  });
+  }
   // v8.11.1 — Background staleness check (silent, granted-only, ≥7d gate, once-per-session).
   // Deferred so it never blocks the synchronous render path or visible weather paint.
   if (typeof PB.weather.checkStaleness === "function") {
@@ -385,20 +399,18 @@ function _greetingForTime() {
   return "Good evening";
 }
 
+// v8.21.0 (Ship 5+6 Phase 1 / B.30): return the full displayName as-is.
+// Previously stripped Mr/Mrs/Dr titles via a `titles` array — but CTO uses
+// "Mr Parbaugh" as a deliberate displayname and the strip was rendering
+// just "Parbaugh." Members configure their displayname; greeting renders
+// what they configured, no transform. Function name kept (`_firstName`)
+// because 4 callers reference it; renaming would be a separate cleanup.
+// Note: the avatar-initial extraction at line 824 now uses the first char
+// of the full displayName ("M" for "Mr Parbaugh"), which is acceptable —
+// matches what members see in their own profile chrome.
 function _firstName(profile) {
   if (!profile) return "Friend";
-  var name = profile.name || profile.username || "";
-  if (!name) return "Friend";
-  var words = String(name).trim().split(/\s+/);
-  if (words.length === 0) return "Friend";
-
-  // Skip common titles if present as first word AND there are more words
-  var titles = ["mr","mrs","ms","miss","dr","prof","sir","madam","mx"];
-  var firstWordLower = words[0].replace(/\./g, "").toLowerCase();
-  if (words.length > 1 && titles.indexOf(firstWordLower) !== -1) {
-    return words[1];
-  }
-  return words[0] || "Friend";
+  return profile.name || profile.username || "Friend";
 }
 
 function _formatDateEyebrow() {
@@ -598,18 +610,12 @@ function _hqDaysSinceLastRound(myRounds) {
 
 // ─── Lead column · State 2 (idle) ──────────────────────────────────────────
 
-// Editorial greeting hero — Fraunces 56 with italic name, eyebrow with date/weather,
-// data-derived subhead, inline pull-quote stat block.
+// Editorial greeting hero — Fraunces 56 with italic name + data-derived subhead +
+// inline pull-quote stat block. v8.21.0 (Ship 5+6 Phase 1 / B.23+B.24): eyebrow
+// with date/weather prefix REMOVED — date lives in masthead chrome (page-shell
+// hqHome variant), weather lives in masthead pill. Both are now single-source.
 function _renderEditorialGreetingHero(ctx) {
-  var d = new Date();
-  var dayParts = ["MORNING","MORNING","MORNING","MORNING","MORNING","MORNING","MORNING","MORNING","MORNING","MORNING","MORNING","MORNING","AFTERNOON","AFTERNOON","AFTERNOON","AFTERNOON","AFTERNOON","EVENING","EVENING","EVENING","EVENING","EVENING","EVENING","EVENING"];
-  var dayName = ["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"][d.getDay()];
-  // Date+time prefix renders static; weather portion populated post-render via PB.weather (v8.10.0).
-  var eyebrowPrefix = dayName + " " + dayParts[d.getHours()] + " · ";
-
   var h = '<div>';
-  // Eyebrow
-  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:18px">' + escHtml(eyebrowPrefix) + '<span id="hq-weather-eyebrow" data-weather-site="eyebrow">—</span></div>';
   // Headline — Fraunces, scales 36/44/52/56 across bands
   h += '<div style="font-family:var(--font-display);font-size:var(--hq-hero-size);font-weight:var(--hq-hero-weight);line-height:1.05;letter-spacing:-2px;color:var(--cb-ink);margin-bottom:14px">';
   h += 'Welcome back, <em style="font-style:italic;font-weight:700">' + escHtml(ctx.firstName) + '</em>.';
@@ -704,6 +710,26 @@ function _truncateCaption(s, max) {
   return s.length > max ? s.slice(0, max - 1) + '…' : s;
 }
 
+// v8.21.0 (Ship 5+6 Phase 2 / B.28): shorten common golf-club name suffixes
+// so long course names fit the BEST cell width without mid-word ellipsis
+// truncation. Strips "Golf & Country Club", "Golf Club", "Golf Links",
+// "Golf Course", "Golf Resort", "Resort", trailing "GC". Names ≤18 chars
+// pass through unchanged. Edge cases (e.g., "Pebble Beach Golf Links" still
+// 23 chars after strip; "The Old Course at St Andrews") may still truncate;
+// addressing those would need a course shortName field per B.28 deferred.
+function _shortenCourseName(name) {
+  if (!name) return "";
+  if (name.length <= 18) return name;
+  return name
+    .replace(/\s+golf\s+(&\s+)?country\s+club\s*$/i, "")
+    .replace(/\s+golf\s+club\s*$/i, "")
+    .replace(/\s+golf\s+links\s*$/i, "")
+    .replace(/\s+golf\s+(course|resort)\s*$/i, "")
+    .replace(/\s+gc\s*$/i, "")
+    .replace(/\s+resort\s*$/i, "")
+    .trim();
+}
+
 // Stats snapshot quartet — 4 cells, no card chrome, vertical chalk-3 dividers
 // between cells. Baseball box-score feel. Some cells are clickable.
 function _renderStatsSnapshotQuartet(ctx) {
@@ -715,21 +741,35 @@ function _renderStatsSnapshotQuartet(ctx) {
   else if (ctx.myRounds && ctx.myRounds.length) { hcapDelta = "PROVISIONAL"; hcapDeltaColor = "var(--cb-mute)"; }
 
   var rounds = ctx.totalRounds != null ? ctx.totalRounds : 0;
-  var thisMonth = (ctx.myRounds || []).filter(function(r) {
-    if (!r.date) return false;
-    var d = new Date(r.date + "T00:00:00");
-    var now = new Date();
-    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+  // v8.21.0 (Ship 5+6 Phase 2 / B.31): rolling 30-day window, replaces calendar-
+  // MTD per V7 ruling. Calendar-MTD reset to 0 on the 1st of each month, which
+  // didn't match members' mental model of "recent activity." Rolling 30D keeps
+  // recent activity visible across month boundaries. Uses r.timestamp (epoch ms)
+  // primarily; falls back to r.date parsing for legacy rounds without timestamp.
+  var THIRTY_DAYS_MS = 30 * 86400000;
+  var cutoff = Date.now() - THIRTY_DAYS_MS;
+  var last30 = (ctx.myRounds || []).filter(function(r) {
+    var t = r.timestamp || (r.date ? new Date(r.date + "T00:00:00").getTime() : 0);
+    return t >= cutoff;
   }).length;
-  var roundsCaption = "MTD: " + thisMonth;
+  var roundsCaption = "LAST 30D: " + last30;
 
   var best = ctx.bestRound != null ? String(ctx.bestRound) : "—";
-  var bestCourse = "";
-  if (ctx.bestRoundId) {
+  // v8.21.0 (Ship 5+6 Phase 2 / B.7+B.28): always-truthy caption fallback chain
+  // prevents row-count drift across cells (root cause of strip alignment bug).
+  // Course names shortened via _shortenCourseName to fit cell width without
+  // ellipsis truncation on common Golf-suffix patterns.
+  var bestCaption;
+  if (!ctx.bestRoundId) {
+    bestCaption = "NO ROUNDS YET";
+  } else {
     var br = (ctx.myRounds || []).find(function(r){ return r.id === ctx.bestRoundId; });
-    if (br && br.course) bestCourse = br.course.toUpperCase();
+    if (br && br.course) {
+      bestCaption = _shortenCourseName(br.course).toUpperCase();
+    } else {
+      bestCaption = "COURSE UNKNOWN";
+    }
   }
-  var bestCaption = bestCourse || "";
 
   var streak = _hqStreakCount(ctx.myRounds);
   var streakVal = streak > 0 ? String(streak) : "—";
@@ -1449,6 +1489,34 @@ function _renderSeasonPositionStrip(ctx) {
 
 // ─── Features column components ─────────────────────────────────────────────
 
+// v8.21.0 (Ship 5+6 Phase 4 / D1): handicap delta vs. start of current
+// calendar month. Returns { value, direction } or null.
+// - direction "down" = handicap improved (current < prior)
+// - direction "up"   = handicap worsened (current > prior)
+// - null when insufficient history (< 5 total rounds, < 3 prior-month rounds)
+//   or delta is below noise threshold (< 0.05).
+// Calendar-month boundary chosen per CTO ruling D2 — "vs last month" reads
+// as calendar semantics. (V7 rolling-window semantics apply to LAST 30D
+// rounds count, a different metric.)
+function _calcHandicapDelta(rounds) {
+  if (!rounds || rounds.length < 5) return null;
+  if (typeof PB === "undefined" || !PB.calcHandicap) return null;
+  var current = PB.calcHandicap(rounds);
+  if (current == null) return null;
+  var now = new Date();
+  var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  var priorRounds = rounds.filter(function(r) {
+    var t = r.timestamp || (r.date ? new Date(r.date + "T00:00:00").getTime() : 0);
+    return t < monthStart;
+  });
+  if (priorRounds.length < 3) return null;
+  var prior = PB.calcHandicap(priorRounds);
+  if (prior == null) return null;
+  var delta = current - prior;
+  if (Math.abs(delta) < 0.05) return null;
+  return { value: Math.abs(delta), direction: delta < 0 ? "down" : "up" };
+}
+
 // Handicap trend chart for HQ Home (Features column / Band B lead column).
 // v8.14.5 — Stub 30D/90D/1Y pills replaced with functional 30D/SEASON/ANNUAL
 // toggle (P17 pattern). Toggle state persists via PB.getChartRange/setChartRange
@@ -1456,10 +1524,12 @@ function _renderSeasonPositionStrip(ctx) {
 // (delegated click handler app-wide). SVG modernized to Approach B per P16
 // (preserveAspectRatio="none" + width:100% + fixed pixel height).
 //
-// Theme-aware via CSS custom-property in style attr (presentation attributes
-// don't resolve var(), so color wires through the SVG root's style and uses
-// currentColor on plot elements). Chart width configurable via opts.width
-// (defaults 400 for features column; 600 when promoted into Band B lead column).
+// v8.21.0 (Ship 5+6 Phase 4 / D1): chart polish per design bot directive.
+// Card chrome stripped → hairline rules. Header derived delta sub-stat added.
+// Range pills brass-underline-on-active (scoped to .hq-handicap-chart so
+// Members chart at members.js:2023 keeps current visual treatment until B.8
+// ships). Empty state replaced with dashed-line placeholder at same dimensions
+// as populated chart (zero layout shift on data arrival).
 function _renderHandicapTrendChart(ctx, opts) {
   opts = opts || {};
   var chartWidth = opts.width || 400;
@@ -1476,13 +1546,28 @@ function _renderHandicapTrendChart(ctx, opts) {
   var pidForToggle = (typeof currentUser !== "undefined" && currentUser && currentUser.uid) ? currentUser.uid
                    : (typeof currentProfile !== "undefined" && currentProfile && currentProfile.claimedFrom) ? currentProfile.claimedFrom : '';
 
-  var h = '<div>';
+  // v8.21.0 (Ship 5+6 Phase 4 / D1): wrap in .hq-handicap-chart so the new
+  // brass-underline range pill CSS scopes to this chart only. Members chart
+  // at members.js:2023 keeps current treatment until B.8 ships.
+  var h = '<div class="hq-handicap-chart">';
   // Header
   var current = ctx.handicap != null ? Number(ctx.handicap).toFixed(1) : "—";
   h += '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px">';
   h += '<div>';
   h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:4px">HANDICAP</div>';
   h += '<div style="font-family:var(--font-display);font-size:var(--hq-section-header-size);font-weight:700;color:var(--cb-ink);line-height:1.2">' + current + '</div>';
+  // v8.21.0 (Ship 5+6 Phase 4 / D1): derived delta sub-stat. Renders only
+  // when there's enough history + a non-trivial change vs start of current
+  // calendar month. Per RULING 3 Option C: brass for "down" (improved —
+  // lower handicap, rewarded by spotlight color), cb-mute for "up" (worsened
+  // — subdued, no alarm-state color).
+  var deltaInfo = _calcHandicapDelta(rounds);
+  if (deltaInfo) {
+    var arrow = deltaInfo.direction === "down" ? "↘" : "↗";
+    var sign = deltaInfo.direction === "down" ? "−" : "+";
+    var deltaColor = deltaInfo.direction === "down" ? "var(--cb-brass)" : "var(--cb-mute)";
+    h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1px;color:' + deltaColor + ';margin-top:6px">' + arrow + ' ' + sign + deltaInfo.value.toFixed(1) + ' vs. last month</div>';
+  }
   h += '</div>';
   // v8.14.5 — Functional toggle pills using shared P17 .chart-range-toggle/.chart-range-pill
   // classes. Replaces v8.14.4 stub UI (90D/1Y were "Coming in a future update"
@@ -1507,6 +1592,25 @@ function _renderHandicapTrendChart(ctx, opts) {
   return h;
 }
 
+// v8.21.0 (Ship 5+6 Phase 4 / D1 / A6 amendment): empty-state SVG renderer.
+// Extracted from _renderHandicapTrendSeries which had two branches emitting
+// the same dashed-line placeholder shape. Helper enforces visual consistency
+// across both call sites (recent.length < 3 guard + post-series-build sparse
+// case) and prevents future drift between them. Same viewBox + height as the
+// populated chart so layout is identical regardless of branch.
+function _renderEmptySeriesState(w, height, pad, chartW, chartH, count) {
+  var midY = pad.t + chartH / 2;
+  var s = '<svg viewBox="0 0 ' + w + ' ' + height + '" preserveAspectRatio="none" style="width:100%;height:' + height + 'px;display:block">';
+  // Dashed baseline
+  s += '<line x1="0" y1="' + (pad.t + chartH) + '" x2="' + chartW + '" y2="' + (pad.t + chartH) + '" stroke="var(--cb-chalk-3)" stroke-width="1" stroke-dasharray="4 4"/>';
+  // Dashed mid-line (placeholder for "where the trend will live")
+  s += '<line x1="0" y1="' + midY + '" x2="' + chartW + '" y2="' + midY + '" stroke="var(--cb-chalk-3)" stroke-width="1" stroke-dasharray="4 4"/>';
+  // Centered progress copy
+  s += '<text x="' + (chartW / 2) + '" y="' + (midY - 8) + '" font-family="ui-monospace,monospace" font-size="11" font-weight="600" fill="var(--cb-mute)" text-anchor="middle" letter-spacing="1.5">' + count + ' OF 3 ROUNDS LOGGED</text>';
+  s += '</svg>';
+  return s;
+}
+
 // v8.14.5 — Extracted handicap series rendering helper. Reused by initial
 // home.js render AND surgical rerender via members.js _rerenderTrendChart's
 // 'handicap_home' branch on toggle change. Returns chart body HTML (chrome
@@ -1523,9 +1627,18 @@ function _renderHandicapTrendSeries(rangeFiltered, allRounds, chartWidth) {
     return ax - bx;
   });
 
-  var emptyState = '<div style="height:140px;background:var(--cb-chalk-2);border-radius:var(--r-2);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">TREND APPEARS AFTER 3 ROUNDS</div>';
+  // v8.21.0 (Ship 5+6 Phase 4 / D1): empty state engineered for ZERO layout
+  // shift. Same SVG container + viewBox + height as populated chart. Dashed
+  // baseline + dashed mid-line act as visual placeholder. Progress copy
+  // "N OF 3 ROUNDS LOGGED" centers in the chart area. When the 3rd round
+  // arrives, the SVG content swaps but outer dimensions stay identical.
+  var w = width, height = 140;
+  var pad = { t: 14, b: 22, l: 0, r: 32 };
+  var chartW = w - pad.l - pad.r, chartH = height - pad.t - pad.b;
 
-  if (recent.length < 3) return emptyState;
+  if (recent.length < 3) {
+    return _renderEmptySeriesState(w, height, pad, chartW, chartH, recent.length);
+  }
 
   // Build cumulative-handicap series. Each point = handicap as of that round
   // date. Iterates allRounds (NOT filtered) for the upTo computation — handicap
@@ -1546,12 +1659,11 @@ function _renderHandicapTrendSeries(rangeFiltered, allRounds, chartWidth) {
     if (hcap !== null && Number.isFinite(hcap)) series.push({ value: hcap, ts: rt });
   });
 
-  if (series.length < 2) return emptyState;
+  if (series.length < 2) {
+    // Series too sparse to render a trend — same shape as the recent < 3 guard.
+    return _renderEmptySeriesState(w, height, pad, chartW, chartH, recent.length);
+  }
 
-  // Render inline SVG with currentColor + style-defined accent.
-  var w = width, height = 140;
-  var pad = { t: 14, b: 22, l: 0, r: 32 };
-  var chartW = w - pad.l - pad.r, chartH = height - pad.t - pad.b;
   var values = series.map(function(p){return p.value});
   var yMin = Math.min.apply(null, values), yMax = Math.max.apply(null, values);
   if (yMax - yMin < 1) { yMin -= 0.5; yMax += 0.5; } // floor minimum span
@@ -1563,32 +1675,42 @@ function _renderHandicapTrendSeries(rangeFiltered, allRounds, chartWidth) {
   // + preserveAspectRatio="none". Container governs render width (max-width
   // cap via .chart-container); height stays at declared px so chart doesn't
   // grow proportionally tall on wider parents.
-  var svg = '<svg viewBox="0 0 ' + w + ' ' + height + '" preserveAspectRatio="none" style="width:100%;height:' + height + 'px;display:block;color:var(--cb-brass)">';
-  // Baseline
+  //
+  // v8.21.0 (Ship 5+6 Phase 4 / D1): card chrome wrapper stripped — chart
+  // renders as a bare SVG against page background. Line uses ink color +
+  // 1.5px width (1.75 at chartWidth >= 600). Area fill explicit brass at
+  // 12% opacity. Last-point dot now has a chalk halo BEHIND it (rendered
+  // before the dot in SVG z-order).
+  var lineWidth = (chartWidth >= 600) ? 1.75 : 1.5;
+  var lastIdx = series.length - 1;
+  var svg = '<svg viewBox="0 0 ' + w + ' ' + height + '" preserveAspectRatio="none" style="width:100%;height:' + height + 'px;display:block">';
+  // Baseline (hairline rule)
   svg += '<line x1="0" y1="' + (pad.t + chartH) + '" x2="' + chartW + '" y2="' + (pad.t + chartH) + '" stroke="var(--cb-chalk-3)" stroke-width="1"/>';
-  // Area fill
+  // Area fill — explicit brass at 12% opacity
   var areaPath = 'M' + px(0) + ',' + py(series[0].value);
   for (var i = 1; i < series.length; i++) areaPath += 'L' + px(i) + ',' + py(series[i].value);
-  areaPath += 'L' + px(series.length-1) + ',' + (pad.t + chartH) + 'L' + px(0) + ',' + (pad.t + chartH) + 'Z';
-  svg += '<path d="' + areaPath + '" fill="currentColor" opacity="0.08"/>';
-  // Line
+  areaPath += 'L' + px(lastIdx) + ',' + (pad.t + chartH) + 'L' + px(0) + ',' + (pad.t + chartH) + 'Z';
+  svg += '<path d="' + areaPath + '" fill="var(--cb-brass)" opacity="0.12"/>';
+  // Line — ink, 1.5/1.75 px
   var linePath = 'M' + px(0) + ',' + py(series[0].value);
   for (var li = 1; li < series.length; li++) linePath += 'L' + px(li) + ',' + py(series[li].value);
-  svg += '<path d="' + linePath + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+  svg += '<path d="' + linePath + '" fill="none" stroke="var(--cb-ink)" stroke-width="' + lineWidth + '" stroke-linecap="round" stroke-linejoin="round"/>';
+  // Last-point chalk halo (BEHIND the dot in SVG z-order)
+  svg += '<circle cx="' + px(lastIdx) + '" cy="' + py(series[lastIdx].value) + '" r="7" fill="var(--cb-chalk)" opacity="0.30"/>';
   // Last-point dot
-  svg += '<circle cx="' + px(series.length-1) + '" cy="' + py(series[series.length-1].value) + '" r="4" fill="currentColor"/>';
-  // Y annotations (right edge)
-  svg += '<text x="' + (chartW + 6) + '" y="' + (pad.t + 4) + '" font-family="Fraunces,serif" font-size="10" fill="var(--cb-mute)">' + yMax.toFixed(1) + '</text>';
-  svg += '<text x="' + (chartW + 6) + '" y="' + (pad.t + chartH) + '" font-family="Fraunces,serif" font-size="10" fill="var(--cb-mute)">' + yMin.toFixed(1) + '</text>';
+  svg += '<circle cx="' + px(lastIdx) + '" cy="' + py(series[lastIdx].value) + '" r="4" fill="var(--cb-brass)"/>';
+  // Y annotations (right edge) — mono per D1
+  svg += '<text x="' + (chartW + 6) + '" y="' + (pad.t + 4) + '" font-family="ui-monospace,monospace" font-size="10" fill="var(--cb-mute)">' + yMax.toFixed(1) + '</text>';
+  svg += '<text x="' + (chartW + 6) + '" y="' + (pad.t + chartH) + '" font-family="ui-monospace,monospace" font-size="10" fill="var(--cb-mute)">' + yMin.toFixed(1) + '</text>';
   // X month markers (first + last)
   var monthShort = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
   var firstM = monthShort[new Date(series[0].ts).getMonth()];
-  var lastM = monthShort[new Date(series[series.length-1].ts).getMonth()];
+  var lastM = monthShort[new Date(series[lastIdx].ts).getMonth()];
   svg += '<text x="0" y="' + (height - 4) + '" font-family="ui-monospace,monospace" font-size="9" fill="var(--cb-mute)" letter-spacing="1">' + firstM + '</text>';
   svg += '<text x="' + chartW + '" y="' + (height - 4) + '" font-family="ui-monospace,monospace" font-size="9" fill="var(--cb-mute)" text-anchor="end" letter-spacing="1">' + lastM + '</text>';
   svg += '</svg>';
 
-  return '<div style="background:var(--cb-chalk-2);border-radius:var(--r-2);padding:14px 16px">' + svg + '</div>';
+  return svg;
 }
 
 // Compact league activity feed. Synchronous: reads PB.getRounds() last 30 +
@@ -1603,7 +1725,11 @@ function _renderActivityFeedCompact(ctx, limit) {
   // Header (outside scrollbox)
   h += '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px">';
   h += '<div>';
-  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:4px">ACTIVITY</div>';
+  // v8.21.0 (Ship 5+6 Phase 3 / D2): League name prefixes the ACTIVITY eyebrow
+  // as secondary wayfinding anchor. Member sees "THE PARBAUGHS · ACTIVITY"
+  // reinforcing league context. Fallback chain matches the masthead chip.
+  var _eyebrowLeague = (typeof window !== "undefined" && window._activeLeagueName) || "Parbaughs";
+  h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:4px">' + escHtml(String(_eyebrowLeague).toUpperCase()) + ' · ACTIVITY</div>';
   h += '<div style="font-family:var(--font-display);font-size:var(--hq-section-header-size);font-weight:700;color:var(--cb-ink);line-height:1.2">League pulse</div>';
   h += '</div>';
   h += '<div onclick="Router.go(\'feed\')" style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--cb-brass);cursor:pointer;text-transform:uppercase">Full feed →</div>';
@@ -1679,9 +1805,28 @@ function _renderActivityFeedCompact(ctx, limit) {
         var rLikeColor = iLikedR ? "var(--cb-brass)" : "var(--cb-mute)";
         var rLikeLabel = "Kudos" + (rLikes.length ? " " + rLikes.length : "");
         var rCommentLabel = "Comment" + (rComments.length ? " " + rComments.length : "");
-        b += '<div class="hq-feed-card__actions" data-round-id="' + it.roundId + '">';
-        b += '<button data-action="kudos" type="button" class="hq-feed-card__action" onclick="event.stopPropagation();feedToggleLike(\'' + it.roundId + '\')" style="color:' + rLikeColor + '"><svg viewBox="0 0 16 16" width="11" height="11" fill="' + (iLikedR ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="1.3"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg><span>' + rLikeLabel + '</span></button>';
-        b += '<button data-action="comment" type="button" class="hq-feed-card__action" onclick="event.stopPropagation();Router.go(\'feed\')"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M14 10a1.5 1.5 0 01-1.5 1.5H5L2 14V3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5z"/></svg><span>' + rCommentLabel + '</span></button>';
+        // S1.2: data-feed-action-row="1" added so cross-surface DOM patches
+        // (feed.js _patchKudosButton, _appendCommentRowToDOM, etc.) target
+        // both /feed and League Pulse via a single selector.
+        b += '<div class="hq-feed-card__actions" data-feed-action-row="1" data-round-id="' + it.roundId + '">';
+        // S1.2: kudos button carries data-i-liked + data-likes-count for
+        // revert state. Uses `data-likes-count` (not `data-count`) to avoid
+        // collision with src/core/animate.js initCountAnimations.
+        b += '<button data-action="kudos" data-i-liked="' + (iLikedR ? '1' : '0') + '" data-likes-count="' + rLikes.length + '" type="button" class="hq-feed-card__action" onclick="event.stopPropagation();feedToggleLike(\'' + it.roundId + '\')" style="color:' + rLikeColor + '"><svg viewBox="0 0 16 16" width="11" height="11" fill="' + (iLikedR ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="1.3"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg><span>' + rLikeLabel + '</span></button>';
+        // v8.21.0 (Ship 5+6 Phase 5 / H1): Comment button opens inline input
+        // on this card via feedShowCommentInput. Members no longer leave the
+        // page to comment.
+        b += '<button data-action="comment" type="button" class="hq-feed-card__action" onclick="event.stopPropagation();feedShowCommentInput(\'' + it.roundId + '\')"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M14 10a1.5 1.5 0 01-1.5 1.5H5L2 14V3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5z"/></svg><span>' + rCommentLabel + '</span></button>';
+        b += '</div>';
+
+        // S1.2: comment thread via shared helper (feed.js _renderCommentThread).
+        // Single source of truth across /feed and HQ Home League Pulse —
+        // prevents data-attribute drift between surfaces that the surgical
+        // DOM patches depend on.
+        b += _renderCommentThread(it.roundId, rComments, it.commentLikes);
+        b += '<div id="feedComment-' + it.roundId + '" style="display:none;padding:6px 14px 8px;gap:6px">';
+        b += '<input type="text" class="ff-input" style="flex:1;padding:6px 10px;font-size:11px" id="feedCommentText-' + it.roundId + '" placeholder="Add a comment..." onkeydown="if(event.key===\'Enter\')feedSubmitComment(\'' + it.roundId + '\')">';
+        b += '<button class="btn-sm green" style="font-size:10px;padding:6px 10px" onclick="event.stopPropagation();feedSubmitComment(\'' + it.roundId + '\')">Post</button>';
         b += '</div>';
       }
       b += '</article>';
@@ -1717,16 +1862,24 @@ function _hqBuildActivityItems(limit) {
       if (!ts) return;
       var actor = r.playerName || (r.player && PB.getPlayer ? (PB.getPlayer(r.player) || {}).name : "") || "A Parbaugh";
       var text = actor + " logged " + (r.score || "—") + " at " + (r.course || "a course");
-      var fmt = r.format && r.format !== "stroke" ? r.format : "";
-      var holes = r.holesPlayed && r.holesPlayed <= 9 ? " · 9 holes" : "";
-      var sub = (fmt ? fmt.charAt(0).toUpperCase() + fmt.slice(1) : "") + holes;
+      // v8.21.0 (Ship 5+6 Phase 5 / B.29): always-emit hole count + format
+      // sub-line. Pre-fix logic dropped the format when "stroke" and dropped
+      // the hole count when 18 — leading to silent (no sub-line) cards for
+      // 18-hole stroke rounds. Now every round card shows "18 holes · Stroke"
+      // or "9 holes · Stableford (1.5x)" consistently.
+      var fmtRaw = r.format || "stroke";
+      var fmt = fmtRaw.charAt(0).toUpperCase() + fmtRaw.slice(1);
+      var holesNum = (r.holesPlayed && r.holesPlayed < 18) ? r.holesPlayed : 18;
+      var sub = holesNum + " holes · " + fmt;
       // Ship 5 Gate 2 (v8.15.1) — entityType chip per Q-AUDIT-D Option A.
       // Scramble rounds chip as "SCRAMBLE"; otherwise plain "ROUND".
-      var entityType = (fmt === "scramble" || fmt === "scramble4") ? "SCRAMBLE" : "ROUND";
+      var entityType = (fmtRaw === "scramble" || fmtRaw === "scramble4") ? "SCRAMBLE" : "ROUND";
       // v8.20.0 (Ship 5+5) — roundId / likes / comments surfaced for League
       // Pulse 2-action row (Kudos | Comment) on round-type cards. Reuses the
       // same /feed engagement model + writers (feedToggleLike, feedSubmitComment).
-      items.push({ ts: ts, actorName: actor, actorUid: r.player || "", text: text, sub: sub.replace(/^ · /, ""), timeAgo: feedTimeAgo(ts), dest: r.id ? "Router.go('rounds',{roundId:'" + r.id + "'})" : "", entityType: entityType, roundId: r.id || "", likes: r.likes || [], comments: r.comments || [] });
+      // v8.21.0 (Ship 5+6 Phase 5 / H1+H3): commentLikes added so League Pulse
+      // comment thread can render heart counts per comment.
+      items.push({ ts: ts, actorName: actor, actorUid: r.player || "", text: text, sub: sub, timeAgo: feedTimeAgo(ts), dest: r.id ? "Router.go('rounds',{roundId:'" + r.id + "'})" : "", entityType: entityType, roundId: r.id || "", likes: r.likes || [], comments: r.comments || [], commentLikes: r.commentLikes || {} });
     });
   }
   // state.activity (in-memory events)

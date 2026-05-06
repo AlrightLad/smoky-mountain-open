@@ -21,5 +21,15 @@ module.exports = [
   require('./s15-feed-comment-persistence.js'),
   require('./s16-hq-home-action-row.js'),
   require('./s17-hq-home-state-activity-clickable.js'),
+  // v8.21.0 (Ship 5+6 Phase 7) — surface coverage for HQ Home polish + the
+  // S1.2 surgical-engagement architecture. P8 process correction (locked
+  // alongside the v8.21.0 kudos heart regression diagnosis): visual-layer
+  // assertions on engagement surfaces, not just data writes.
+  require('./s18-hq-greeting-hero.js'),
+  require('./s19-hq-stats-strip-alignment.js'),
+  require('./s20-hq-stats-last-30d.js'),
+  require('./s21-masthead-league-chip.js'),
+  require('./s22-hq-handicap-chart.js'),
+  require('./s23-hq-engagement-no-rerender.js'),
   require('./s11-logout-cleanup.js')
 ];

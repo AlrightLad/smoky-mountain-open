@@ -8,6 +8,7 @@
 // ship gap (P2 process correction: annotation capture).
 
 const seedRounds = require('../setup/seed-rounds.js');
+const visual = require('../helpers/visual.js');
 
 module.exports = {
   id: 'S16',
@@ -71,6 +72,14 @@ module.exports = {
       throw new Error('action row missing buttons: ' + probe.withKudos + ' kudos, ' + probe.withComment + ' comment');
     }
 
-    return { passed: true, details: probe.actionRowCount + ' action rows rendered, all with kudos+comment buttons' };
+    // P8 (Ship 5+6 Phase 7): visual integrity on the first League Pulse
+    // kudos button. Catches namespace-collision regressions like the
+    // v8.21.0 data-count → animate.js textContent wipe.
+    await visual.assertEngagementSurfaceVisible(page, {
+      selector: '.hq-feed-card__actions [data-action="kudos"]',
+      label: 'HQ Home League Pulse kudos button'
+    });
+
+    return { passed: true, details: probe.actionRowCount + ' action rows rendered + kudos visual integrity OK' };
   }
 };

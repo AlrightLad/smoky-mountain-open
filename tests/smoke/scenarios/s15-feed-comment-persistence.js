@@ -4,6 +4,7 @@
 // /rounds doc comments[] array updated.
 
 const seedRounds = require('../setup/seed-rounds.js');
+const visual = require('../helpers/visual.js');
 
 module.exports = {
   id: 'S15',
@@ -57,7 +58,28 @@ module.exports = {
       throw new Error('comment with smoke uid + test text not found (comments=' + JSON.stringify(comments).slice(0, 200) + ')');
     }
 
+    // P8 (Ship 5+6 Phase 7): if comment-like hearts surfaced after the
+    // surgical patch, assert visual integrity. data-likes-count attribute
+    // also lives on per-comment hearts and is at the same risk of being
+    // wiped by an animate.js textContent overwrite.
+    var heartPresent = await page.evaluate(function(rid) {
+      return !!document.querySelector('[data-comment-row="1"][data-round-id="' + rid + '"] [data-action="comment-like"]');
+    }, roundId);
+    if (heartPresent) {
+      await visual.assertEngagementSurfaceVisible(page, {
+        selector: '[data-comment-row="1"][data-round-id="' + roundId + '"] [data-action="comment-like"]',
+        label: '/feed comment-like heart',
+        // Comment hearts are a span with a ♥ glyph — no SVG, no inner
+        // span. The glyph IS the asset at risk if textContent gets
+        // overwritten, so assert it via requireTextMatch.
+        minSize: 8,
+        requireSvg: false,
+        requireSpan: false,
+        requireTextMatch: /♥/
+      });
+    }
+
     await ctx.capture.screenshot('S15-after-comment');
-    return { passed: true, details: 'comment persisted; ' + comments.length + ' total' };
+    return { passed: true, details: 'comment persisted; ' + comments.length + ' total; heart visible=' + heartPresent };
   }
 };

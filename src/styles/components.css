@@ -837,6 +837,30 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .chart-range-pill:hover{color:var(--cb-ink);border-color:var(--cb-brass)}
 .chart-range-pill--active{color:var(--cb-ink);background:var(--cb-chalk-2);border-color:var(--cb-brass)}
 
+/* Ship 5+6 Phase 4 / D1 — handicap chart range pills scoped to HQ Home only.
+   Members chart at members.js:2023 inherits the base .chart-range-pill rules
+   above; B.8 (Members chart polish) ships separately. Brass-underline-on-
+   active replaces border + background chrome. No at-rest borders — pills
+   read as type until activated. */
+.hq-handicap-chart .chart-range-pill {
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  padding: 4px 8px;
+  color: var(--cb-mute);
+}
+.hq-handicap-chart .chart-range-pill:hover {
+  color: var(--cb-ink);
+  border-bottom-color: var(--cb-brass-3);
+  background: transparent;
+}
+.hq-handicap-chart .chart-range-pill--active {
+  color: var(--cb-ink);
+  background: transparent;
+  border-bottom: 2px solid var(--cb-brass);
+}
+
 /* ── Spectator HUD connection-state chrome (v8.13.8 · Ship 4a Gate 7 · D2/F3) ── */
 .sphud-hero-card{transition:opacity var(--duration-fast) var(--ease-default)}
 .sphud-hero-card--dimmed{opacity:0.85}
@@ -1122,6 +1146,51 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   margin-top: 16px;
 }
 
+/* HQ league chip — masthead right cluster (Ship 5+6 Phase 3 / D2).
+   Sibling to weather pill in the masthead right cluster. 28px height
+   matches weather pill chrome (page-shell.js:143) so they sit on the
+   same horizontal baseline. Brass border + mono font distinguish chip
+   from pill (chrome differs; height matches). Wayfinding for new
+   golfers landing on HQ Home so they know what league they're in. */
+.hq-league-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  background: transparent;
+  border: 1px solid var(--cb-brass);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--cb-brass);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-default), color var(--duration-fast) var(--ease-default);
+}
+.hq-league-chip:hover {
+  background: var(--cb-brass);
+  color: var(--cb-chalk);
+}
+.hq-league-chip:focus-visible {
+  outline: 2px solid var(--cb-brass);
+  outline-offset: 2px;
+}
+.hq-league-chip__dot {
+  font-size: 10px;
+  line-height: 1;
+}
+.hq-league-chip__name {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+.hq-league-chip__chevron {
+  margin-left: 2px;
+}
+
 /* Page-shell sticky footer (v8.16.1 Item 4 · Q-AUDIT-FOOTER Option B).
    Container is flex-column with min-height:100vh so the page fills the
    viewport even when content is short. .page-shell__main grows (flex:1),
@@ -1157,11 +1226,64 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   content: "";
   position: absolute;
   left: 0;
-  right: 0;
+  /* B.32 — pulled 8px off the right edge so the gradient stops short
+     of the custom scrollbar gutter. The gradient and scrollbar both
+     cue "more content below"; overlapping them washes out the thumb's
+     lower portion at exactly the moment the user reaches for it. */
+  right: 8px;
   bottom: 0;
   height: 24px;
   pointer-events: none;
   background: linear-gradient(to bottom, transparent, var(--cb-chalk));
+}
+
+/* B.32 — Custom scrollbar for HQ activity feed (League Pulse).
+   Direction D1(a) Editorial-clean per docs/B_32_-_Custom_Scrollbar_Spec.md.
+   Scoped to .hq-activity-feed only — promote to platform-wide via a
+   .cb-scroll utility class in a follow-up ship. Tokens only (no hex)
+   so theme variants inherit the palette via color-mix. */
+.hq-activity-feed {
+  /* Firefox — graceful degradation, no hover/active distinction */
+  scrollbar-width: thin;
+  scrollbar-color:
+    color-mix(in oklab, var(--cb-brass) 50%, transparent)
+    color-mix(in oklab, var(--cb-chalk-3) 30%, transparent);
+}
+.hq-activity-feed::-webkit-scrollbar {
+  width: 6px;
+}
+.hq-activity-feed::-webkit-scrollbar-track {
+  background: color-mix(in oklab, var(--cb-chalk-3) 30%, transparent);
+  border-radius: 3px;
+  transition: background 120ms var(--ease-default);
+}
+.hq-activity-feed::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--cb-brass) 50%, transparent);
+  border-radius: 3px;
+  min-height: 32px;
+  transition: background 120ms var(--ease-default), box-shadow 120ms var(--ease-default);
+}
+/* Hover on the scrollable area (not the bar itself — more reliable detection) */
+.hq-activity-feed:hover::-webkit-scrollbar-track {
+  background: color-mix(in oklab, var(--cb-chalk-3) 50%, transparent);
+}
+.hq-activity-feed:hover::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--cb-brass) 80%, transparent);
+}
+/* Hover directly on thumb */
+.hq-activity-feed::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklab, var(--cb-brass) 90%, transparent);
+}
+/* Active drag — claret ring is the only place claret appears here */
+.hq-activity-feed::-webkit-scrollbar-thumb:active {
+  background: var(--cb-brass);
+  box-shadow: inset 0 0 0 1px var(--cb-claret);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hq-activity-feed::-webkit-scrollbar-track,
+  .hq-activity-feed::-webkit-scrollbar-thumb {
+    transition: none;
+  }
 }
 
 /* ──────────────────────────────────────────────────────────────────────────

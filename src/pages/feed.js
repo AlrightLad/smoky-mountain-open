@@ -252,31 +252,21 @@ function _renderRoundCard(item) {
   var likeLabel = "Kudos" + (likes.length ? " " + likes.length : "");
   var commentLabel = "Comment" + (comments.length ? " " + comments.length : "");
 
+  // S1.2: kudos button carries data-i-liked + data-likes-count for revert-state
+  // capture in feedToggleLike. _patchKudosButton keeps these in sync after
+  // surgical patches. Attribute is `data-likes-count` (not `data-count`) to
+  // avoid namespace collision with src/core/animate.js initCountAnimations,
+  // which scans `[data-count]` and overwrites textContent (wipes child SVG).
   h += '<div data-feed-action-row="1" data-round-id="' + item.roundId + '" style="display:flex;gap:0;padding:8px 14px 10px;border-top:1px solid var(--border);margin-top:8px">';
   h += '<div data-action="scorecard" onclick="event.stopPropagation();' + roundClick + '" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--muted)" stroke-width="1.3"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 6h6M5 8h4M5 10h5"/></svg><span style="font-size:10px;color:var(--muted)">Scorecard</span></div>';
-  h += '<div data-action="kudos" onclick="event.stopPropagation();feedToggleLike(\'' + item.roundId + '\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px"><svg viewBox="0 0 16 16" width="14" height="14" fill="' + (iLiked ? "var(--gold)" : "none") + '" stroke="' + likeColor + '" stroke-width="1.3"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg><span style="font-size:10px;color:' + likeColor + '">' + likeLabel + '</span></div>';
+  h += '<div data-action="kudos" data-i-liked="' + (iLiked ? '1' : '0') + '" data-likes-count="' + likes.length + '" onclick="event.stopPropagation();feedToggleLike(\'' + item.roundId + '\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px;color:' + likeColor + '"><svg viewBox="0 0 16 16" width="14" height="14" fill="' + (iLiked ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="1.3"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg><span style="font-size:10px;color:' + likeColor + '">' + likeLabel + '</span></div>';
   h += '<div data-action="comment" onclick="event.stopPropagation();feedShowCommentInput(\'' + item.roundId + '\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--muted)" stroke-width="1.3"><path d="M14 10a1.5 1.5 0 01-1.5 1.5H5L2 14V3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5z"/></svg><span style="font-size:10px;color:var(--muted)">' + commentLabel + '</span></div>';
   h += '<div data-action="share" onclick="event.stopPropagation();shareScorecard(\'' + item.roundId + '\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--muted)" stroke-width="1.3"><path d="M4 12V8l4-6 4 6v4"/><path d="M4 8h8"/></svg><span style="font-size:10px;color:var(--muted)">Share</span></div>';
   h += '</div>';
 
-  // Comments thread (visible when count > 0)
-  if (comments.length) {
-    h += '<div style="padding:0 14px 4px">';
-    comments.forEach(function(c, ci) {
-      var cLikes = (item.commentLikes && item.commentLikes[String(ci)]) || [];
-      var iLikedC = currentUser && cLikes.indexOf(currentUser.uid) !== -1;
-      var ownComment = currentUser && c.uid === currentUser.uid;
-      h += '<div style="display:flex;gap:6px;align-items:flex-start;padding:4px 0;font-size:11px">';
-      h += '<span style="color:var(--gold);font-weight:700;flex-shrink:0">' + escHtml(c.name || "Member") + '</span>';
-      h += '<span style="color:var(--cream);flex:1;min-width:0;line-height:1.4">' + escHtml(c.text || "") + '</span>';
-      h += '<span onclick="event.stopPropagation();feedToggleCommentLike(\'' + item.roundId + '\',' + ci + ')" style="cursor:pointer;color:' + (iLikedC ? "var(--gold)" : "var(--muted2)") + ';font-size:10px;flex-shrink:0">♥' + (cLikes.length ? ' ' + cLikes.length : '') + '</span>';
-      if (ownComment) {
-        h += '<span onclick="event.stopPropagation();feedConfirmDeleteComment(this,\'' + item.roundId + '\',' + ci + ')" data-armed="false" style="cursor:pointer;color:var(--muted2);font-size:12px;flex-shrink:0">×</span>';
-      }
-      h += '</div>';
-    });
-    h += '</div>';
-  }
+  // S1.2: comment thread via shared helper. Single source of truth across
+  // /feed and HQ Home League Pulse.
+  h += _renderCommentThread(item.roundId, comments, item.commentLikes);
 
   // Comment input (hidden by default)
   h += '<div id="feedComment-' + item.roundId + '" style="display:none;padding:6px 14px 8px;gap:6px">';
@@ -369,14 +359,155 @@ function applyFeedFilter() {
 // (shared engagement model per Ship 5+5 ruling Option B).
 // ─────────────────────────────────────────────────────────────────────────
 
-function _findFeedRoundItem(roundId) {
-  if (!window._feedItems) return null;
-  return window._feedItems.find(function(it) { return it.type === "round" && it.roundId === roundId; }) || null;
+// ─────────────────────────────────────────────────────────────────────────
+// v8.21.0 (Ship 5+6 Phase 5 / S1.2): SURGICAL DOM PATCHES.
+//
+// CTO ruling: kudos/comment must feel like Instagram/Strava — element-level
+// patches, no page rebuild, no scroll jump, no flicker. S1.1 (full re-render
+// dispatch via _refreshAfterEngagement) was rejected as a sledgehammer.
+//
+// New architecture:
+//   - Render helpers (_renderCommentThread, _renderCommentRow) — shared between
+//     /feed and HQ Home League Pulse so attributes stay in sync (no drift).
+//   - DOM patch helpers (_patchKudosButton, _patchCommentCount,
+//     _appendCommentRowToDOM, _removeCommentRowFromDOM, _patchCommentLike) —
+//     querySelectorAll across both surfaces, mutate elements in place.
+//   - Writers do optimistic patch → Firestore write → reconcile or revert.
+//   - window._suppressRoundsRerender still set during write so the snapshot
+//     listener (sync.js:283) doesn't blow away patches with a re-render echo.
+//   - state.rounds NOT manually mutated — listener will pull canonical state
+//     from Firestore in background; future page renders read it then.
+//
+// All engagement targets carry data attributes so cross-surface selectors
+// work uniformly:
+//   - Action row: [data-feed-action-row="1"][data-round-id="X"]
+//   - Kudos btn:  [data-action="kudos"] (descendant of action row);
+//                 carries data-i-liked + data-likes-count for revert state
+//   - Comment btn: [data-action="comment"] (descendant of action row)
+//   - Thread:     [data-comment-thread="1"][data-round-id="X"]
+//   - Comment row: [data-comment-row="1"][data-round-id="X"][data-comment-idx="N"]
+//   - Heart span:  [data-action="comment-like"][data-round-id="X"][data-comment-idx="N"]
+//   - Delete X:    [data-action="comment-delete"][data-round-id="X"][data-comment-idx="N"]
+// ─────────────────────────────────────────────────────────────────────────
+
+// ── Render helpers (shared between /feed round card + League Pulse card) ──
+
+function _renderCommentThread(roundId, comments, commentLikes) {
+  if (!comments || !comments.length) return '';
+  var h = '<div data-comment-thread="1" data-round-id="' + roundId + '" style="padding:0 14px 4px">';
+  comments.forEach(function(c, ci) {
+    h += _renderCommentRow(roundId, c, ci, commentLikes);
+  });
+  h += '</div>';
+  return h;
 }
 
-function _feedRoundFromCache(roundId) {
-  // For HQ Home callers — fall back to a minimal stub if not on /feed.
-  return _findFeedRoundItem(roundId) || null;
+function _renderCommentRow(roundId, c, ci, commentLikes) {
+  var cLikes = (commentLikes && commentLikes[String(ci)]) || [];
+  var iLikedC = (typeof currentUser !== "undefined" && currentUser) && cLikes.indexOf(currentUser.uid) !== -1;
+  var ownComment = (typeof currentUser !== "undefined" && currentUser) && c.uid === currentUser.uid;
+  var likeColor = iLikedC ? "var(--gold)" : "var(--muted2)";
+  var h = '<div data-comment-row="1" data-round-id="' + roundId + '" data-comment-idx="' + ci + '" style="display:flex;gap:6px;align-items:flex-start;padding:4px 0;font-size:11px">';
+  h += '<span style="color:var(--gold);font-weight:700;flex-shrink:0">' + escHtml(c.name || "Member") + '</span>';
+  h += '<span style="color:var(--cream);flex:1;min-width:0;line-height:1.4">' + escHtml(c.text || "") + '</span>';
+  h += '<span data-action="comment-like" data-round-id="' + roundId + '" data-comment-idx="' + ci + '" data-i-liked="' + (iLikedC ? '1' : '0') + '" data-likes-count="' + cLikes.length + '" onclick="event.stopPropagation();feedToggleCommentLike(\'' + roundId + '\',' + ci + ')" style="cursor:pointer;color:' + likeColor + ';font-size:10px;flex-shrink:0">♥' + (cLikes.length ? ' ' + cLikes.length : '') + '</span>';
+  if (ownComment) {
+    h += '<span data-action="comment-delete" data-round-id="' + roundId + '" data-comment-idx="' + ci + '" data-armed="false" onclick="event.stopPropagation();feedConfirmDeleteComment(this,\'' + roundId + '\',' + ci + ')" style="cursor:pointer;color:var(--muted2);font-size:12px;flex-shrink:0">×</span>';
+  }
+  h += '</div>';
+  return h;
+}
+
+// ── DOM patch helpers ──
+
+// Patch all kudos buttons for this roundId across surfaces (typically only one
+// is in DOM since Router renders one page at a time, but querySelectorAll
+// handles the multi-element case defensively).
+function _patchKudosButton(roundId, isLiked, count) {
+  var rows = document.querySelectorAll('[data-round-id="' + roundId + '"]');
+  var color = isLiked ? "var(--cb-brass)" : "var(--cb-mute)";
+  rows.forEach(function(row) {
+    var btn = row.querySelector('[data-action="kudos"]');
+    if (!btn) return;
+    btn.setAttribute('data-i-liked', isLiked ? '1' : '0');
+    btn.setAttribute('data-likes-count', count);
+    btn.style.color = color;
+    var svg = btn.querySelector('svg');
+    if (svg) {
+      svg.setAttribute('fill', isLiked ? 'currentColor' : 'none');
+      svg.style.color = color;
+    }
+    var span = btn.querySelector('span');
+    if (span) {
+      span.style.color = color;
+      span.textContent = "Kudos" + (count > 0 ? " " + count : "");
+    }
+  });
+}
+
+function _patchCommentCount(roundId, count) {
+  var rows = document.querySelectorAll('[data-round-id="' + roundId + '"]');
+  rows.forEach(function(row) {
+    var btn = row.querySelector('[data-action="comment"]');
+    if (!btn) return;
+    var span = btn.querySelector('span');
+    if (span) span.textContent = "Comment" + (count > 0 ? " " + count : "");
+  });
+}
+
+// Append a comment row to the thread. If the thread doesn't exist yet (first
+// comment on this round), create it after the action row.
+function _appendCommentRowToDOM(roundId, comment, newIdx, commentLikes) {
+  var threads = document.querySelectorAll('[data-comment-thread="1"][data-round-id="' + roundId + '"]');
+  if (threads.length > 0) {
+    threads.forEach(function(t) {
+      t.insertAdjacentHTML('beforeend', _renderCommentRow(roundId, comment, newIdx, commentLikes));
+    });
+    return;
+  }
+  // First comment: create thread container after action row.
+  var actionRows = document.querySelectorAll('[data-feed-action-row="1"][data-round-id="' + roundId + '"]');
+  actionRows.forEach(function(ar) {
+    var threadHtml = _renderCommentThread(roundId, [comment], commentLikes);
+    ar.insertAdjacentHTML('afterend', threadHtml);
+  });
+}
+
+// Remove a specific comment row + re-index subsequent rows so onclick / data
+// attributes stay aligned with the new array indices. If the thread is now
+// empty, remove the thread container too (cosmetic — keeps DOM tidy).
+function _removeCommentRowFromDOM(roundId, commentIdx) {
+  var rows = document.querySelectorAll('[data-comment-row="1"][data-round-id="' + roundId + '"][data-comment-idx="' + commentIdx + '"]');
+  rows.forEach(function(r) { r.remove(); });
+  // Re-index subsequent rows in each thread instance.
+  var threads = document.querySelectorAll('[data-comment-thread="1"][data-round-id="' + roundId + '"]');
+  threads.forEach(function(thread) {
+    var allRows = thread.querySelectorAll('[data-comment-row="1"]');
+    allRows.forEach(function(r, idx) {
+      r.setAttribute('data-comment-idx', idx);
+      var likeSpan = r.querySelector('[data-action="comment-like"]');
+      var deleteSpan = r.querySelector('[data-action="comment-delete"]');
+      if (likeSpan) {
+        likeSpan.setAttribute('data-comment-idx', idx);
+        likeSpan.setAttribute('onclick', "event.stopPropagation();feedToggleCommentLike('" + roundId + "'," + idx + ")");
+      }
+      if (deleteSpan) {
+        deleteSpan.setAttribute('data-comment-idx', idx);
+        deleteSpan.setAttribute('onclick', "event.stopPropagation();feedConfirmDeleteComment(this,'" + roundId + "'," + idx + ")");
+      }
+    });
+    if (allRows.length === 0) thread.remove();
+  });
+}
+
+function _patchCommentLike(roundId, commentIdx, isLiked, count) {
+  var spans = document.querySelectorAll('[data-action="comment-like"][data-round-id="' + roundId + '"][data-comment-idx="' + commentIdx + '"]');
+  spans.forEach(function(s) {
+    s.setAttribute('data-i-liked', isLiked ? '1' : '0');
+    s.setAttribute('data-likes-count', count);
+    s.style.color = isLiked ? "var(--gold)" : "var(--muted2)";
+    s.textContent = "♥" + (count > 0 ? " " + count : "");
+  });
 }
 
 function feedToggleLike(roundId) {
@@ -384,25 +515,21 @@ function feedToggleLike(roundId) {
   if (!roundId) return;
   var uid = currentUser.uid;
 
-  var localItem = _findFeedRoundItem(roundId);
-  var prevLikes = (localItem && localItem.likes) ? localItem.likes.slice() : null;
+  // S1.2: read current button state from DOM for revert. data-i-liked +
+  // data-likes-count are set at render time and kept in sync by _patchKudosButton.
+  var btn = document.querySelector('[data-round-id="' + roundId + '"] [data-action="kudos"]');
+  var prevLiked = btn ? (btn.getAttribute('data-i-liked') === '1') : false;
+  var prevCount = btn ? parseInt(btn.getAttribute('data-likes-count') || '0', 10) : 0;
 
-  if (localItem) {
-    if (!localItem.likes) localItem.likes = [];
-    var localIdx = localItem.likes.indexOf(uid);
-    if (localIdx !== -1) localItem.likes.splice(localIdx, 1);
-    else localItem.likes.push(uid);
-    _renderFeedItems();
-  }
+  // S1.2: optimistic surgical patch — toggle DOM state immediately.
+  var newLiked = !prevLiked;
+  var newCount = prevCount + (newLiked ? 1 : -1);
+  if (newCount < 0) newCount = 0;
+  _patchKudosButton(roundId, newLiked, newCount);
 
-  function _revertLikes() {
-    if (localItem) {
-      if (prevLikes === null) delete localItem.likes;
-      else localItem.likes = prevLikes;
-      _renderFeedItems();
-    }
-  }
-
+  // S1.2: suppress rounds snapshot listener re-render so the write echo
+  // doesn't blow away our patch via Router.go('home'). Cleared 2s post-write.
+  window._suppressRoundsRerender = true;
   db.collection("rounds").doc(roundId).get().then(function(doc) {
     if (!doc.exists) return;
     var data = doc.data();
@@ -412,6 +539,10 @@ function feedToggleLike(roundId) {
     if (idx !== -1) likes.splice(idx, 1);
     else likes.push(uid);
     return db.collection("rounds").doc(roundId).update({ likes: likes }).then(function() {
+      // Reconcile DOM with canonical state (in case our optimistic prediction
+      // disagreed with the .get() result — e.g., if another user liked
+      // simultaneously, the count from likes.length is authoritative).
+      _patchKudosButton(roundId, isLiking, likes.length);
       if (isLiking && data.player && data.player !== uid) {
         var myName = currentProfile ? PB.getDisplayName(currentProfile) : "Someone";
         var courseLabel = data.course ? " at " + data.course : "";
@@ -422,10 +553,12 @@ function feedToggleLike(roundId) {
           page: "feed"
         });
       }
+      setTimeout(function() { window._suppressRoundsRerender = false; }, 2000);
     });
   }).catch(function(err) {
+    window._suppressRoundsRerender = false;
     if (typeof pbWarn === "function") pbWarn("[feed] toggleLike failed:", err && err.message);
-    _revertLikes();
+    _patchKudosButton(roundId, prevLiked, prevCount);
     Router.toast("Couldn't add kudos — please try again");
   });
 }
@@ -458,29 +591,31 @@ function feedSubmitComment(roundId) {
   var name = currentProfile ? PB.getDisplayName(currentProfile) : "Anon";
   var newComment = { uid: currentUser.uid, name: name, text: text, at: new Date().toISOString() };
 
-  var localItem = _findFeedRoundItem(roundId);
-  var prevComments = (localItem && localItem.comments) ? localItem.comments.slice() : null;
-
-  if (localItem) {
-    if (!localItem.comments) localItem.comments = [];
-    localItem.comments.push(newComment);
-    _renderFeedItems();
-    if (input) input.value = "";
-    var commentEl = document.getElementById("feedComment-" + roundId);
-    if (commentEl) commentEl.style.display = "flex";
-    var newInput = document.getElementById("feedCommentText-" + roundId);
-    if (newInput) { newInput.value = ""; newInput.focus(); }
-  } else if (input) {
-    input.value = "";
+  // S1.2: read current comment count from comment button for the new index +
+  // for the post-write reconcile. Count is read from the span text via regex
+  // (the comment button doesn't carry data-likes-count — that attribute lives
+  // on kudos buttons + per-comment hearts).
+  var commentBtn = document.querySelector('[data-round-id="' + roundId + '"] [data-action="comment"]');
+  var prevCommentCount = 0;
+  if (commentBtn) {
+    var span = commentBtn.querySelector('span');
+    var m = span && span.textContent.match(/Comment\s+(\d+)/);
+    if (m) prevCommentCount = parseInt(m[1], 10);
   }
+  var newIdx = prevCommentCount;  // appending at end → new index = current count
 
-  function _revertComments() {
-    if (localItem) {
-      if (prevComments === null) delete localItem.comments;
-      else localItem.comments = prevComments;
-      _renderFeedItems();
-    }
-  }
+  // S1.2: surgical optimistic patch — append row + bump count + clear input.
+  // commentLikes is empty for a brand-new comment so heart count = 0.
+  _appendCommentRowToDOM(roundId, newComment, newIdx, {});
+  _patchCommentCount(roundId, prevCommentCount + 1);
+  if (input) input.value = "";
+  var commentEl = document.getElementById("feedComment-" + roundId);
+  if (commentEl) commentEl.style.display = "flex";
+  var newInput = document.getElementById("feedCommentText-" + roundId);
+  if (newInput) { newInput.value = ""; newInput.focus(); }
+
+  // S1.2: suppress snapshot-listener re-render echo
+  window._suppressRoundsRerender = true;
 
   db.collection("rounds").doc(roundId).get().then(function(doc) {
     if (!doc.exists) return;
@@ -519,10 +654,17 @@ function feedSubmitComment(roundId) {
           });
         }
       });
+      // Reconcile count with canonical state (in case another user commented
+      // simultaneously, comments.length may differ from our prediction).
+      _patchCommentCount(roundId, comments.length);
+      setTimeout(function() { window._suppressRoundsRerender = false; }, 2000);
     });
   }).catch(function(err) {
+    window._suppressRoundsRerender = false;
     if (typeof pbWarn === "function") pbWarn("[feed] submitComment failed:", err && err.message);
-    _revertComments();
+    // Revert: remove the optimistically-appended row + restore count.
+    _removeCommentRowFromDOM(roundId, newIdx);
+    _patchCommentCount(roundId, prevCommentCount);
     Router.toast("Couldn't post comment — please try again");
   });
 }
@@ -532,29 +674,19 @@ function feedToggleCommentLike(roundId, commentIdx) {
   if (!roundId) return;
   var uid = currentUser.uid;
 
-  var localItem = _findFeedRoundItem(roundId);
-  var prevCommentLikes = (localItem && localItem.commentLikes)
-    ? JSON.parse(JSON.stringify(localItem.commentLikes))
-    : null;
+  // S1.2: read current heart state from DOM for revert.
+  var heart = document.querySelector('[data-action="comment-like"][data-round-id="' + roundId + '"][data-comment-idx="' + commentIdx + '"]');
+  var prevLiked = heart ? (heart.getAttribute('data-i-liked') === '1') : false;
+  var prevCount = heart ? parseInt(heart.getAttribute('data-likes-count') || '0', 10) : 0;
 
-  if (localItem) {
-    if (!localItem.commentLikes) localItem.commentLikes = {};
-    var key = String(commentIdx);
-    if (!localItem.commentLikes[key]) localItem.commentLikes[key] = [];
-    var idx = localItem.commentLikes[key].indexOf(uid);
-    if (idx !== -1) localItem.commentLikes[key].splice(idx, 1);
-    else localItem.commentLikes[key].push(uid);
-    _renderFeedItems();
-  }
+  // S1.2: optimistic surgical patch.
+  var newLiked = !prevLiked;
+  var newCount = prevCount + (newLiked ? 1 : -1);
+  if (newCount < 0) newCount = 0;
+  _patchCommentLike(roundId, commentIdx, newLiked, newCount);
 
-  function _revertCommentLikes() {
-    if (localItem) {
-      if (prevCommentLikes === null) delete localItem.commentLikes;
-      else localItem.commentLikes = prevCommentLikes;
-      _renderFeedItems();
-    }
-  }
-
+  // S1.2: suppress snapshot-listener re-render echo
+  window._suppressRoundsRerender = true;
   db.collection("rounds").doc(roundId).get().then(function(doc) {
     if (!doc.exists) return;
     var data = doc.data();
@@ -562,11 +694,14 @@ function feedToggleCommentLike(roundId, commentIdx) {
     var key = String(commentIdx);
     if (!commentLikes[key]) commentLikes[key] = [];
     var idx = commentLikes[key].indexOf(uid);
+    var isLiking = idx === -1;
     if (idx !== -1) commentLikes[key].splice(idx, 1);
     else commentLikes[key].push(uid);
     return db.collection("rounds").doc(roundId).update({ commentLikes: commentLikes }).then(function() {
+      // Reconcile DOM with canonical state.
+      _patchCommentLike(roundId, commentIdx, isLiking, commentLikes[key].length);
       var comments = data.comments || [];
-      if (comments[commentIdx] && comments[commentIdx].uid && comments[commentIdx].uid !== uid) {
+      if (isLiking && comments[commentIdx] && comments[commentIdx].uid && comments[commentIdx].uid !== uid) {
         var myName = currentProfile ? PB.getDisplayName(currentProfile) : "Someone";
         sendNotification(comments[commentIdx].uid, {
           type: "round_comment_like",
@@ -575,10 +710,12 @@ function feedToggleCommentLike(roundId, commentIdx) {
           page: "feed"
         });
       }
+      setTimeout(function() { window._suppressRoundsRerender = false; }, 2000);
     });
   }).catch(function(err) {
+    window._suppressRoundsRerender = false;
     if (typeof pbWarn === "function") pbWarn("[feed] toggleCommentLike failed:", err && err.message);
-    _revertCommentLikes();
+    _patchCommentLike(roundId, commentIdx, prevLiked, prevCount);
     Router.toast("Couldn't add kudos — please try again");
   });
 }
@@ -599,33 +736,71 @@ function feedDeleteComment(roundId, commentIdx) {
   if (!db || !currentUser) return;
   if (!roundId) return;
 
-  var localItem = _findFeedRoundItem(roundId);
-  var prevComments = (localItem && localItem.comments) ? localItem.comments.slice() : null;
-
-  if (localItem && localItem.comments && commentIdx >= 0 && commentIdx < localItem.comments.length) {
-    localItem.comments.splice(commentIdx, 1);
-    _renderFeedItems();
+  // S1.2: capture original comment + count for revert. We read from the .get()
+  // canonical state inside the .catch, but for the optimistic patch we rely on
+  // the DOM count. Original comment object cached via DOM scrape (name + text
+  // are in spans) so we can re-append on failure — visual order on revert is
+  // append-to-end (acceptable per S1.2 audit, simpler than insert-at-original).
+  var commentBtn = document.querySelector('[data-round-id="' + roundId + '"] [data-action="comment"]');
+  var prevCommentCount = 0;
+  if (commentBtn) {
+    var span = commentBtn.querySelector('span');
+    var m = span && span.textContent.match(/Comment\s+(\d+)/);
+    if (m) prevCommentCount = parseInt(m[1], 10);
   }
 
-  function _revertComments() {
-    if (localItem) {
-      if (prevComments === null) delete localItem.comments;
-      else localItem.comments = prevComments;
-      _renderFeedItems();
+  // Snapshot the comment row's content for potential revert (re-append on
+  // failure). Read from the row before we remove it.
+  var rowEl = document.querySelector('[data-comment-row="1"][data-round-id="' + roundId + '"][data-comment-idx="' + commentIdx + '"]');
+  var snapshotComment = null;
+  if (rowEl) {
+    var spans = rowEl.querySelectorAll('span');
+    if (spans.length >= 2) {
+      snapshotComment = {
+        uid: currentUser.uid,
+        name: spans[0].textContent || "Member",
+        text: spans[1].textContent || "",
+        at: new Date().toISOString()
+      };
     }
   }
 
+  // S1.2: surgical optimistic patch — remove row + decrement count.
+  _removeCommentRowFromDOM(roundId, commentIdx);
+  var newCount = prevCommentCount - 1;
+  if (newCount < 0) newCount = 0;
+  _patchCommentCount(roundId, newCount);
+
+  // S1.2: suppress snapshot-listener re-render echo
+  window._suppressRoundsRerender = true;
   db.collection("rounds").doc(roundId).get().then(function(doc) {
-    if (!doc.exists) return;
+    if (!doc.exists) {
+      window._suppressRoundsRerender = false;
+      return;
+    }
     var data = doc.data();
     var comments = data.comments || [];
     if (commentIdx >= 0 && commentIdx < comments.length) {
       comments.splice(commentIdx, 1);
-      return db.collection("rounds").doc(roundId).update({ comments: comments });
+      return db.collection("rounds").doc(roundId).update({ comments: comments }).then(function() {
+        // Reconcile count with canonical state.
+        _patchCommentCount(roundId, comments.length);
+        setTimeout(function() { window._suppressRoundsRerender = false; }, 2000);
+      });
+    } else {
+      window._suppressRoundsRerender = false;
     }
   }).catch(function(err) {
+    window._suppressRoundsRerender = false;
     if (typeof pbWarn === "function") pbWarn("[feed] deleteComment failed:", err && err.message);
-    _revertComments();
+    // Revert: re-append the snapshotted comment at the END of the thread.
+    // Index = current visible row count. Visual order is wrong vs original
+    // position, but this is a rare failure path and member can re-tap delete.
+    if (snapshotComment) {
+      var visibleRows = document.querySelectorAll('[data-comment-row="1"][data-round-id="' + roundId + '"]');
+      _appendCommentRowToDOM(roundId, snapshotComment, visibleRows.length, {});
+    }
+    _patchCommentCount(roundId, prevCommentCount);
     Router.toast("Couldn't delete comment — please try again");
   });
 }

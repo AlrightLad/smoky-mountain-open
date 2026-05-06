@@ -8,8 +8,12 @@
 // Kudos was absent). Pure DOM assertion — no Firestore writes.
 //
 // P3 surface-coverage scenario per Ship 5+5 process correction.
+// P8 retrofit (Ship 5+6 Phase 7): visual-layer assertion on kudos button —
+// catches namespace-collision regressions like the data-count / animate.js
+// textContent wipe that wiped the heart SVG between Phase 5 and Phase 7.
 
 const seedRounds = require('../setup/seed-rounds.js');
+const visual = require('../helpers/visual.js');
 
 module.exports = {
   id: 'S13',
@@ -60,7 +64,14 @@ module.exports = {
       }
     }
 
+    // P8 visual-layer assertion — kudos button's heart SVG renders with
+    // dimensions, color, intact child nodes, and valid data attributes.
+    await visual.assertEngagementSurfaceVisible(page, {
+      selector: '[data-feed-action-row="1"] [data-action="kudos"]',
+      label: '/feed kudos button'
+    });
+
     await ctx.capture.screenshot('S13-feed-action-row');
-    return { passed: true, details: '4 buttons (scorecard/kudos/comment/share) all wired on round ' + actionRow.roundId };
+    return { passed: true, details: '4 buttons wired + kudos visual integrity OK on round ' + actionRow.roundId };
   }
 };

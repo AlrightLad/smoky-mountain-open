@@ -24,7 +24,13 @@ module.exports = {
       var cards = document.querySelectorAll('.hq-feed-card');
       var orphans = [];
       var clickable = 0;
+      // P8 (Ship 5+6 Phase 7): light visual integrity — count any cards
+      // that rendered with zero size, which would indicate CSS collapse,
+      // missing children, or broken markup.
+      var zeroSize = 0;
       cards.forEach(function(card) {
+        var rect = card.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) zeroSize++;
         var click = card.getAttribute('onclick') || '';
         if (!click.trim()) {
           var chip = card.querySelector('.hq-feed-card__chip');
@@ -33,7 +39,7 @@ module.exports = {
           clickable++;
         }
       });
-      return { totalCards: cards.length, clickable: clickable, orphans: orphans };
+      return { totalCards: cards.length, clickable: clickable, orphans: orphans, zeroSize: zeroSize };
     });
 
     await ctx.capture.screenshot('S17-hq-home-clickability');
@@ -47,7 +53,10 @@ module.exports = {
     if (probe.orphans.length) {
       throw new Error(probe.orphans.length + ' orphan card(s) without onclick: [' + probe.orphans.join(', ') + ']');
     }
+    if (probe.zeroSize > 0) {
+      throw new Error(probe.zeroSize + ' of ' + probe.totalCards + ' cards rendered with zero size (CSS collapse or missing children)');
+    }
 
-    return { passed: true, details: probe.clickable + '/' + probe.totalCards + ' cards clickable, no orphans' };
+    return { passed: true, details: probe.clickable + '/' + probe.totalCards + ' cards clickable + non-zero size' };
   }
 };

@@ -5,6 +5,7 @@
 // members to write hasOnly(['likes','comments','commentLikes']).
 
 const seedRounds = require('../setup/seed-rounds.js');
+const visual = require('../helpers/visual.js');
 
 module.exports = {
   id: 'S14',
@@ -29,6 +30,22 @@ module.exports = {
     await page.waitForFunction(function() {
       return typeof db !== 'undefined' && db && typeof currentUser !== 'undefined' && currentUser;
     }, null, { timeout: 15000 });
+
+    // P8 (Ship 5+6 Phase 7): if the kudos button is in DOM, assert visual
+    // integrity before firing the writer. The /feed kudos card depends on
+    // a snapshot listener that may not have populated by this point —
+    // skip if absent (the data-layer write below still validates the
+    // primary contract). When present, assertion catches namespace-
+    // collision regressions like the v8.21.0 data-count / animate.js wipe.
+    var kudosPresent = await page.evaluate(function(rid) {
+      return !!document.querySelector('[data-feed-action-row="1"][data-round-id="' + rid + '"] [data-action="kudos"]');
+    }, roundId);
+    if (kudosPresent) {
+      await visual.assertEngagementSurfaceVisible(page, {
+        selector: '[data-feed-action-row="1"][data-round-id="' + roundId + '"] [data-action="kudos"]',
+        label: '/feed kudos button (pre-write)'
+      });
+    }
 
     // Click Kudos via the public writer (avoids DOM coordinate flakiness +
     // local cache dependency).

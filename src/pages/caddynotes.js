@@ -19,12 +19,16 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Engagement architecture</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · League Pulse polish</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Round posts are social now. Kudos and comment on rounds in your activity feed and on HQ Home League Pulse. The poster gets a notification when someone reacts.", tag: "NEW" },
-    { item: "Share a round \u2014 copy a direct link to any scorecard with one tap.", tag: "NEW" },
-    { item: "HQ Home activity cards now navigate where they should. Tap a trip card to see the trip, a course review to see the course, etc.", tag: "FIXED" }
+    { item: "Kudos and comments on League Pulse appear the instant you tap. No spinning, no jump back to the top.", tag: "IMPROVED" },
+    { item: "Comment on rounds without leaving HQ Home \u2014 tap Comment, type, hit Enter.", tag: "NEW" },
+    { item: "Delete your own comments with a quick double-tap on the X.", tag: "NEW" },
+    { item: "Handicap chart got an editorial refresh \u2014 cleaner lines, plus a monthly change indicator when your handicap moves.", tag: "IMPROVED" },
+    { item: "Stats strip got cleaner. Best round shows the course name, and round count is now LAST 30 days \u2014 what you actually think about.", tag: "IMPROVED" },
+    { item: "Custom scrollbar on League Pulse for that finishing-touch feel.", tag: "NEW" },
+    { item: "League name now shows in the masthead so you know which league you're looking at.", tag: "NEW" }
   ];
 
   currentNotes.forEach(function(r) { h += renderEntry(r); });
@@ -32,6 +36,14 @@ Router.register("caddynotes", function() {
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.20.0", date: "May 2026", headline: "Engagement architecture",
+      items: [
+        { item: "Round posts are social now. Kudos and comment on rounds in your activity feed and on HQ Home League Pulse. The poster gets a notification when someone reacts.", tag: "NEW" },
+        { item: "Share a round — copy a direct link to any scorecard with one tap.", tag: "NEW" },
+        { item: "HQ Home activity cards now navigate where they should. Tap a trip card to see the trip, a course review to see the course, etc.", tag: "FIXED" }
+      ]
+    },
     {
       version: "v8.19.0", date: "May 2026", headline: "Clubhouse revival",
       items: [
