@@ -457,6 +457,13 @@ Total ~37 LOC dead bundle. Not user-visible but adds bundle weight + cognitive l
 
 The `_firstName` helper at `home.js:393` now returns full displayName as-is per B.30 fix. Function name no longer describes behavior. Four call sites at home.js (greeting hero, welcome hero, initials extraction, ctx.firstName in context build). Rename + update callers in single follow-up commit.
 
+### H5 — RECENT FORM panel value font sizing
+**Scope:** S
+**Target:** HQ-wide design pass (post-functional completion per P7)
+**Source:** CTO visual review 2026-05-06 post-Ship-5+6 Phase 4
+
+The "98" numeric value in the RECENT FORM panel (lead column idle state) renders small relative to panel real estate. Should anchor visual weight as the panel's headline number. Deferred to HQ-wide design pass per P7 (functional-first HQ-wide, design pass at end).
+
 ---
 
 ## C — Carryover from Gate 8a (deferred per CTO Q-B)
