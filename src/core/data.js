@@ -360,7 +360,16 @@ var PB = (function() {
       highlights: data.highlights || [],
       blunders: data.blunders || [],
       scorecardPhoto: data.scorecardPhoto || "",
-      timestamp: Date.now(),
+      // B.44 (Ship 5+7) — derive timestamp from user-supplied date so
+      // retroactive rounds (paper scorecard logged from desktop days
+      // later) sort to their actual play time, not write time. Noon-
+      // local prevents calendar-day drift on timezone reads. Live-play
+      // writers pass current `date`, so the same expression handles
+      // both cases. Falls back to Date.now() only when date is absent
+      // (defensive — every writer in the codebase passes a date).
+      timestamp: data.date
+        ? new Date(data.date + "T12:00:00").getTime()
+        : Date.now(),
       visibility: data.visibility || "public"
     };
     // Preserve Play Now / Log a Round fields when present

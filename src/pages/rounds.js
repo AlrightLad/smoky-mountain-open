@@ -1,12 +1,282 @@
-/* ================================================
+/* ════════════════════════════════════════════════════════════════════════
    PAGE: ROUNDS
-   ================================================ */
+   ════════════════════════════════════════════════════════════════════════
+   Ship 5+7 (v8.22.0) — Rounds is the canonical retroactive logging surface.
+   Replaces the prior /rounds → /activity redirect. Multi-mode dispatch:
+
+     /rounds                       → renderRoundsList    (handicap + history + CTA)
+     /rounds?action=new            → renderRoundNewForm  (entry form, blank)
+     /rounds?roundId=X             → renderRoundDetail   (existing detail view)
+     /rounds?roundId=X&action=edit → renderRoundEditForm (Phase 3 — stub
+                                       forwards to detail in Phase 2)
+
+   The activity.js page is now Range-only. Form HTML extracted from
+   activity.js:44-71 lives here in `_renderRoundEntryForm(prefill)` so
+   Phase 3 edit reuses it with a populated prefill object. Form-input IDs
+   (rf-player, rf-course, rf-rating, etc.) preserved so the in-rounds.js
+   helpers (renderLogHoleGrid, getLogHoleData, submitRound,
+   showRoundCourseSearch, quickAddCourseForRound) keep working without
+   relocations.
+   ════════════════════════════════════════════════════════════════════════ */
 Router.register("rounds", function(params) {
-  if (params.roundId) { renderRoundDetail(params.roundId); return; }
-  // Redirect to new Activity page
-  rangeActiveView = "rounds";
-  Router.go("activity");
+  if (params && params.roundId) {
+    if (params.action === "edit") return renderRoundEditForm(params.roundId);
+    return renderRoundDetail(params.roundId);
+  }
+  if (params && params.action === "new") return renderRoundNewForm();
+  return renderRoundsList();
 });
+
+// List view — handicap header + scramble-grouped history + "Log a round"
+// CTA. Ports the renderActivityRounds() history-rendering pattern from
+// the legacy Activity Rounds tab so members lose nothing in the move.
+function renderRoundsList() {
+  var rounds = PB.getRounds();
+  var myId = currentUser ? currentUser.uid : null;
+  var myLocal = currentProfile ? currentProfile.claimedFrom : null;
+  var myRounds = rounds.filter(function(r) { return r.player === myId || r.player === myLocal || r.player === "zach"; });
+  var hcap = PB.calcHandicap(myRounds);
+
+  var h = '<div class="sh"><h2>Rounds</h2>';
+  h += '<button class="btn-sm green" onclick="Router.go(\'rounds\',{action:\'new\'})">+ Log a round</button>';
+  h += '</div>';
+
+  // Handicap (mirrors the legacy activity.js:38-42 treatment so the
+  // member-visible header is unchanged across the surface migration).
+  if (hcap !== null) {
+    h += '<div class="hcap-box"><div class="hcap-val" data-count="' + (+hcap).toFixed(1) + '" data-count-decimals="1">0.0</div><div class="hcap-label">Your handicap index</div></div>';
+  } else {
+    h += '<div class="hcap-box"><div class="hcap-val">—</div><div class="hcap-label">Your handicap index</div></div>';
+  }
+
+  // History — scramble-grouped, sorted, share buttons. Mirrors the
+  // legacy renderActivityRounds() history block (activity.js:74-126).
+  if (rounds.length) {
+    var sortedRounds = rounds.slice().sort(function(a,b){return (b.timestamp||0)-(a.timestamp||0) || ((b.date||"")>(a.date||"")?1:-1);});
+    var scrambleGroups = {};
+    var historyItems = [];
+
+    sortedRounds.forEach(function(r) {
+      var isScramble = r.format === "scramble" || r.format === "scramble4";
+      if (isScramble) {
+        var gk = (r.course||"") + "|" + (r.date||"");
+        if (!scrambleGroups[gk]) {
+          scrambleGroups[gk] = { course: r.course, date: r.date, score: r.score, tee: r.tee, format: r.format, players: [], ts: r.timestamp || 0, id: r.id };
+        }
+        scrambleGroups[gk].players.push(r.playerName || "Parbaugh");
+        return;
+      }
+      historyItems.push({ type: "individual", round: r, ts: r.timestamp || 0 });
+    });
+
+    Object.values(scrambleGroups).forEach(function(g) {
+      var teamObj = PB.getScrambleTeams().find(function(t){ return g.players.some(function(pn){ return t.members.some(function(mid){ var mp = PB.getPlayer(mid); return mp && mp.name === pn; }); }); });
+      g.teamName = teamObj ? teamObj.name : "Scramble Team";
+      historyItems.push({ type: "scramble", group: g, ts: g.ts });
+    });
+
+    historyItems.sort(function(a,b){ return (b.ts||0) - (a.ts||0); });
+
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Round history</span><span class="sec-link">' + rounds.length + ' total</span></div>';
+    h += '<div style="max-height:500px;overflow-y:auto;-webkit-overflow-scrolling:touch">';
+    historyItems.forEach(function(item) {
+      if (item.type === "individual") {
+        var r = item.round;
+        var c = PB.generateRoundCommentary(r);
+        var quip = c.roasts.length ? c.roasts[0] : (c.highlights.length ? c.highlights[0] : "");
+        var histCourse = PB.getCourseByName(r.course);
+        var histTee = r.tee || (histCourse ? histCourse.tee : "") || "";
+        var fmtLabel = r.format && r.format !== 'stroke' ? ' · ' + r.format.charAt(0).toUpperCase() + r.format.slice(1) : "";
+        h += '<div class="card"><div class="round-card"><div class="rc-top"><div onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer;flex:1"><div class="rc-course">' + escHtml(r.course) + '</div><div class="rc-date">' + r.date + ' · ' + escHtml(r.playerName||"") + (histTee ? ' · ' + histTee : '') + (r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? ' · Back 9' : ' · Front 9') : '') + fmtLabel + '</div></div>';
+        h += '<div style="display:flex;align-items:center;gap:8px"><div class="rc-score">' + r.score + '</div>';
+        h += '<button class="btn-sm outline" style="font-size:9px;padding:4px 8px;flex-shrink:0" onclick="event.stopPropagation();showRoundShareCard(\'' + r.id + '\')">Share</button>';
+        h += '</div></div>';
+        if (quip) h += '<div class="rc-quip">' + quip + '</div>';
+        h += '</div></div>';
+      } else {
+        var g = item.group;
+        h += '<div class="card"><div class="round-card"><div class="rc-top"><div style="flex:1"><div class="rc-course" style="color:var(--gold)">' + escHtml(g.teamName) + ' · Scramble</div><div class="rc-date">' + escHtml(g.course) + ' · ' + g.date + (g.tee ? ' · ' + g.tee : '') + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">' + g.players.join(", ") + '</div></div>';
+        h += '<div style="display:flex;align-items:center;gap:8px"><div class="rc-score">' + g.score + '</div>';
+        h += '<button class="btn-sm outline" style="font-size:9px;padding:4px 8px;flex-shrink:0" onclick="event.stopPropagation();showRoundShareCard(\'' + g.id + '\')">Share</button>';
+        h += '</div></div></div></div>';
+      }
+    });
+    h += '</div></div>';
+  } else {
+    h += '<div class="section"><div class="card"><div class="empty"><div class="empty-text">No rounds logged yet. Tap "+ Log a round" above to add one.</div></div></div></div>';
+  }
+
+  h += renderPageFooter();
+  document.querySelector('[data-page="rounds"]').innerHTML = h;
+}
+
+// New-round entry surface. Reuses _renderRoundEntryForm with no prefill.
+// Async hole-grid render mirrors the activity.js:25 setTimeout pattern —
+// renderLogHoleGrid reads from #rf-course value which only resolves after
+// course selection (or via prefill in Phase 3 edit mode).
+function renderRoundNewForm() {
+  var h = '<div class="sh"><h2>Log a round</h2>';
+  h += '<button class="back" onclick="Router.back(\'rounds\')">← Back</button>';
+  h += '</div>';
+  h += _renderRoundEntryForm(null);
+  h += renderPageFooter();
+  document.querySelector('[data-page="rounds"]').innerHTML = h;
+  setTimeout(renderLogHoleGrid, 50);
+}
+
+// v8.22.0 (Ship 5+7 Phase 3) — Edit-existing-round surface. Fetches the
+// round doc directly from Firestore (not from local cache — local may
+// lag a recent write), renders the form prefilled via the Phase 2
+// _renderRoundEntryForm helper, then populates the hole grid via the
+// _populateHoleGridFromRound helper after the grid mounts.
+//
+// Failure modes:
+//   - missing roundId param → list view
+//   - round doc not found   → list view + toast
+//   - permission denied / network error → list view + error toast
+//
+// Author guard: the round detail's Edit button is already author-gated
+// client-side. Firestore rules (firestore.rules /rounds allow update)
+// enforce server-side: only author / league leadership / founder /
+// engagement-only writers can update. A spectator who guesses the URL
+// and submits will be rejected at write time, surfacing as the generic
+// "couldn't save" toast — not a silent corruption.
+function renderRoundEditForm(roundId) {
+  if (!roundId) { Router.go("rounds"); return; }
+  if (typeof db === "undefined" || !db) { Router.go("rounds"); return; }
+
+  var pageEl = document.querySelector('[data-page="rounds"]');
+  if (pageEl) {
+    pageEl.innerHTML = '<div class="sh"><h2>Edit round</h2><button class="back" onclick="Router.back(\'rounds\')">← Back</button></div><div style="padding:24px;text-align:center;color:var(--muted);font-size:12px">Loading…</div>';
+  }
+
+  db.collection("rounds").doc(roundId).get().then(function(doc) {
+    if (!doc.exists) {
+      Router.toast("Round not found");
+      Router.go("rounds");
+      return;
+    }
+    var round = Object.assign({ id: doc.id }, doc.data());
+    var h = '<div class="sh"><h2>Edit round</h2>';
+    h += '<button class="back" onclick="Router.go(\'rounds\',{roundId:\'' + roundId + '\'})">← Back</button>';
+    h += '</div>';
+    h += _renderRoundEntryForm(round);
+    h += renderPageFooter();
+    document.querySelector('[data-page="rounds"]').innerHTML = h;
+    // Mount hole grid then populate from the round doc. The grid build
+    // depends on #rf-course value which the form helper has already
+    // prefilled, so renderLogHoleGrid produces a valid grid on first
+    // call. _populateHoleGridFromRound runs after to fill the inputs.
+    setTimeout(function() {
+      renderLogHoleGrid();
+      _populateHoleGridFromRound(round);
+    }, 50);
+  }).catch(function(err) {
+    if (typeof pbWarn === "function") pbWarn("[rounds] edit fetch failed:", err && err.message);
+    Router.toast("Couldn't load round — please try again");
+    Router.go("rounds");
+  });
+}
+
+// Form helper. Accepts optional prefill (a round doc shape) for Phase 3
+// edit reuse. With prefill === null, renders a blank form with today's
+// date and default Stroke / 18-hole / public-visibility values. With a
+// populated prefill, every field gets its prefill value.
+//
+// Field IDs (rf-player, rf-course, rf-rating, etc.) preserved from the
+// activity.js origin so the existing form helpers below — renderLogHoleGrid,
+// getLogHoleData, submitRound, showRoundCourseSearch — keep working
+// without rename. Migration is markup-only.
+function _renderRoundEntryForm(prefill) {
+  prefill = prefill || {};
+  var myRoundPlayer = currentUser ? PB.getPlayer(currentUser.uid) : null;
+  var myRoundLocal = PB.getPlayers().find(function(p) { return currentProfile && (p.id === currentProfile.claimedFrom || p.name === currentProfile.name || p.id === currentProfile.id); });
+  if (!myRoundPlayer && !myRoundLocal && currentUser && typeof fbMemberCache !== "undefined" && fbMemberCache[currentUser.uid]) myRoundLocal = fbMemberCache[currentUser.uid];
+  if (!myRoundPlayer && !myRoundLocal && currentProfile && currentProfile.name) myRoundLocal = currentProfile;
+  var roundAs = myRoundPlayer || myRoundLocal;
+  var isEdit = !!(prefill && prefill.id);
+
+  var h = '<div class="form-section"><div class="form-title">' + (isEdit ? "Edit round" : "Log a round") + '</div>';
+  h += '<div class="ff"><label class="ff-label">Player</label>';
+  if (!roundAs) {
+    h += '<div style="font-size:12px;color:var(--red)">Could not identify your player profile.</div></div>';
+  } else {
+    h += '<div class="ff-input" style="background:var(--bg4);color:var(--gold);font-weight:600">' + escHtml(roundAs.name) + '</div><input type="hidden" id="rf-player" value="' + (prefill.player || roundAs.id) + '"></div>';
+  }
+
+  // Course
+  var prefillCourse = prefill.course ? escHtml(prefill.course) : "";
+  h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="rf-course" placeholder="Search courses..." autocomplete="off" oninput="showRoundCourseSearch(this);renderLogHoleGrid()" value="' + prefillCourse + '"><div id="search-round-course" class="search-results"></div></div>';
+
+  // Format + Holes
+  function _opt(val, label, selected) { return '<option value="' + val + '"' + (selected ? ' selected' : '') + '>' + label + '</option>'; }
+  var fmt = prefill.format || "stroke";
+  var hm = prefill.holesMode || "18";
+  h += '<div class="ff-row" style="grid-template-columns:1fr 1fr">';
+  h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="rf-format">';
+  h += _opt("stroke","Stroke play",fmt==="stroke") + _opt("parbaugh","Parbaugh Stroke Play",fmt==="parbaugh") + _opt("stableford","Modified Stableford",fmt==="stableford");
+  h += _opt("scramble","Scramble (2-man)",fmt==="scramble") + _opt("scramble4","Scramble (4-man)",fmt==="scramble4") + _opt("bestball","Best ball",fmt==="bestball");
+  h += _opt("alternate","Alternate shot",fmt==="alternate") + _opt("skins","Skins",fmt==="skins") + _opt("match","Match play",fmt==="match");
+  h += '</select></div>';
+  h += '<div class="ff"><label class="ff-label">Holes</label><select class="ff-input" id="rf-holes" onchange="renderLogHoleGrid()">' + _opt("18","18 holes",hm==="18") + _opt("front9","Front 9",hm==="front9") + _opt("back9","Back 9",hm==="back9") + '</select></div>';
+  h += '</div>';
+
+  // Date + Score
+  var dateVal = prefill.date || localDateStr();
+  var scoreVal = (prefill.score != null) ? prefill.score : "";
+  h += '<div class="ff-row" style="grid-template-columns:1fr 1fr">';
+  h += '<div class="ff"><label class="ff-label">Date</label><input type="date" class="ff-input" id="rf-date" value="' + dateVal + '" style="min-width:0"></div>';
+  h += '<div class="ff"><label class="ff-label">Score (auto)</label><input type="number" inputmode="numeric" class="ff-input" id="rf-score" placeholder="auto" value="' + scoreVal + '" style="min-width:0;background:var(--bg4);color:var(--gold)" readonly></div>';
+  h += '</div>';
+
+  // Rating + Slope
+  var ratingVal = prefill.rating != null ? prefill.rating : "";
+  var slopeVal = prefill.slope != null ? prefill.slope : "";
+  h += '<div class="ff-row" style="grid-template-columns:1fr 1fr">';
+  h += '<div class="ff"><label class="ff-label">Rating</label><input type="number" step="0.1" class="ff-input" id="rf-rating" placeholder="auto" value="' + ratingVal + '" style="min-width:0"></div>';
+  h += '<div class="ff"><label class="ff-label">Slope</label><input type="number" class="ff-input" id="rf-slope" placeholder="auto" value="' + slopeVal + '" style="min-width:0"></div>';
+  h += '</div>';
+
+  // Hole-by-hole grid mounts here async via renderLogHoleGrid() after the
+  // course is selected (or after DOM mount when prefill.course is set).
+  h += '<div id="rf-hbh-section" style="margin-top:4px"></div>';
+
+  // Photo input — Phase 2 always blank, even on edit. Re-uploading the
+  // scorecard photo on edit is out of scope for v8.22.0 (file inputs
+  // can't be prefilled via JS; would need a separate "replace photo"
+  // affordance — defer to a follow-up).
+  h += '<div class="ff"><label class="ff-label">Scorecard photo (optional)</label><input type="file" accept="image/*" id="rf-photo" style="color:var(--muted);font-size:12px"></div>';
+
+  // Submit. Phase 3 (Ship 5+7) wires the edit branch: when prefill.id
+  // is present (edit mode), the button calls submitRoundEdit(roundId)
+  // which writes via _submitRoundEntry's edit path and skips create-
+  // only side effects. Otherwise (create mode), submitRound() handles
+  // the full create + side-effect chain.
+  if (isEdit) {
+    h += '<button class="btn full green" onclick="submitRoundEdit(\'' + prefill.id + '\')">Save changes</button></div>';
+  } else {
+    h += '<button class="btn full green" onclick="submitRound()">+ Log round</button></div>';
+  }
+  return h;
+}
+
+// Phase 2 (Ship 5+7) — submit-handler scaffold for Phase 3 edit reuse.
+// PB.addRound is synchronous (data.js:344-384); syncRound is the Firestore
+// write side. We wrap both in Promise.resolve so callers get a Promise-like
+// regardless of branch — the edit path returns a native Promise from
+// db.update; the create path returns Promise.resolve(localRound) for
+// caller-side symmetry. Out of scope for this ship: refactoring PB.addRound
+// to be Promise-returning (would touch every existing caller across
+// playnow.js / sync.js / syncround.js).
+function _submitRoundEntry(formData, options) {
+  options = options || {};
+  if (options.isEdit && options.roundId) {
+    return db.collection("rounds").doc(options.roundId).update(formData);
+  }
+  var r = PB.addRound(formData);
+  syncRound(r);
+  return Promise.resolve(r);
+}
 
 function shareRoundCard(roundId) {
   var rounds = PB.getRounds();
@@ -96,13 +366,36 @@ function renderRoundDetail(roundId) {
   h += '<button class="btn full green" onclick="captureShareCard()" style="font-size:13px;padding:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;width:100%"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><rect x="1" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="9" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 4l1-2h3l1 2" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>Save image &amp; share to socials</button>';
   h += '</div></div>';
 
-  // Delete round
-  h += '<div class="section">';
-  h += '<div id="del-confirm" style="display:none;margin-bottom:8px;padding:12px;background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);border-radius:var(--radius);text-align:center">';
-  h += '<div style="font-size:12px;color:var(--red);margin-bottom:8px">Delete this round?</div>';
-  h += '<div style="display:flex;gap:8px"><button class="btn outline" style="flex:1;font-size:11px" onclick="document.getElementById(\'del-confirm\').style.display=\'none\'">Cancel</button>';
-  h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(var(--red-rgb),.15);color:var(--red)" onclick="(function(){PB.deleteRound(\'' + roundId + '\');if(db)db.collection(\'rounds\').doc(\'' + roundId + '\').delete().catch(function(){});setTimeout(function(){persistPlayerStats(currentUser?currentUser.uid:null);},1500);Router.toast(\'Round deleted\');Router.go(\'rounds\');})()">Delete</button></div></div>';
-  h += '<button class="btn full" style="background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);color:var(--red)" onclick="document.getElementById(\'del-confirm\').style.display=\'block\'">Delete round</button></div>';
+  // v8.22.0 (Ship 5+7 Phase 4) — "Manage round" grouped section. Three-
+  // tier visibility model that mirrors firestore.rules /rounds:
+  //   - Author (round.player === uid)              → eyebrow + Edit + Delete
+  //   - Founder (isFounderRole(currentProfile))    → eyebrow + Delete only
+  //   - Spectator (neither)                        → entire section hidden
+  // Server-side rules (V11.3 audit) for delete: author OR founder.
+  // For update: author OR leadership OR founder OR engagement-only.
+  // We narrow the UI Edit path to author-only since leadership-edit on
+  // behalf of members is a rare commissioner workflow that warrants its
+  // own dedicated UI ship rather than mixing into per-round detail.
+  var isAuthor = !!(currentUser && round.player === currentUser.uid);
+  var isFounder = (typeof isFounderRole === "function") && isFounderRole(currentProfile);
+  var canManage = isAuthor || isFounder;
+  if (canManage) {
+    h += '<div class="section">';
+    h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px">Manage round</div>';
+    if (isAuthor) {
+      h += '<button class="btn full" style="background:transparent;border:1px solid var(--gold);color:var(--gold);margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px" onclick="Router.go(\'rounds\',{roundId:\'' + roundId + '\',action:\'edit\'})">';
+      h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0"><path d="M11 2l3 3-9 9H2v-3l9-9z"/></svg>';
+      h += '<span>Edit round</span></button>';
+    }
+    h += '<div id="del-confirm" style="display:none;margin-bottom:8px;padding:12px;background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);border-radius:var(--radius);text-align:center">';
+    h += '<div style="font-size:12px;color:var(--red);margin-bottom:8px">Delete this round?</div>';
+    h += '<div style="display:flex;gap:8px"><button class="btn outline" style="flex:1;font-size:11px" onclick="document.getElementById(\'del-confirm\').style.display=\'none\'">Cancel</button>';
+    h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(var(--red-rgb),.15);color:var(--red)" onclick="(function(){PB.deleteRound(\'' + roundId + '\');if(db)db.collection(\'rounds\').doc(\'' + roundId + '\').delete().catch(function(){});setTimeout(function(){persistPlayerStats(currentUser?currentUser.uid:null);},1500);Router.toast(\'Round deleted\');Router.go(\'rounds\');})()">Delete</button></div></div>';
+    h += '<button class="btn full" style="background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);color:var(--red);display:flex;align-items:center;justify-content:center;gap:8px" onclick="document.getElementById(\'del-confirm\').style.display=\'block\'">';
+    h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0"><path d="M3 5h10M6 5V3h4v2M5 5l1 9h4l1-9"/></svg>';
+    h += '<span>Delete round</span></button>';
+    h += '</div>';
+  }
 
   // ── The Caddie's Take (post-round analysis) ──
   if (typeof caddieAnalyzeRound === "function" && round.holeScores && round.holeScores.length >= 9) {
@@ -308,6 +601,67 @@ function getLogHoleData() {
   } : null;
 }
 
+// v8.22.0 (Ship 5+7 Phase 3) — Populate hole-grid inputs from a round
+// doc. Inverse of getLogHoleData. One-shot post-mount call — runs after
+// renderLogHoleGrid has built the grid for the round's course. Skipped
+// silently if a course-driven re-render later wipes the grid (changing
+// course/holes-mode mid-edit is rare, and starting fresh is correct UX).
+function _populateHoleGridFromRound(round) {
+  if (!round) return;
+  var holeScores = round.holeScores || [];
+  var firData = round.firData || [];
+  var girData = round.girData || [];
+  var puttsData = round.puttsData || [];
+  var bunkerData = round.bunkerData || [];
+  var sandData = round.sandData || [];
+  var upDownData = round.upDownData || [];
+  var missData = round.missData || [];
+  var penaltyData = round.penaltyData || [];
+
+  document.querySelectorAll(".rf-hole-score").forEach(function(inp) {
+    var i = parseInt(inp.dataset.hole);
+    if (holeScores[i] !== undefined && holeScores[i] !== null && holeScores[i] !== "") inp.value = holeScores[i];
+  });
+  document.querySelectorAll(".rf-hole-fir").forEach(function(inp) {
+    var i = parseInt(inp.dataset.hole);
+    inp.checked = !!firData[i];
+  });
+  document.querySelectorAll(".rf-hole-gir").forEach(function(inp) {
+    var i = parseInt(inp.dataset.hole);
+    inp.checked = !!girData[i];
+  });
+  document.querySelectorAll(".rf-hole-putts").forEach(function(inp) {
+    var i = parseInt(inp.dataset.hole);
+    if (puttsData[i] !== undefined && puttsData[i] !== null && puttsData[i] !== "") inp.value = puttsData[i];
+  });
+  document.querySelectorAll(".rf-hole-bunker").forEach(function(sel) {
+    var i = parseInt(sel.dataset.hole);
+    if (bunkerData[i] === true) sel.value = "Yes";
+    else if (bunkerData[i] === false) sel.value = "No";
+  });
+  document.querySelectorAll(".rf-hole-sand").forEach(function(sel) {
+    var i = parseInt(sel.dataset.hole);
+    if (sandData[i] === true) sel.value = "Yes";
+    else if (sandData[i] === false) sel.value = "No";
+  });
+  document.querySelectorAll(".rf-hole-updown").forEach(function(sel) {
+    var i = parseInt(sel.dataset.hole);
+    if (upDownData[i] === true) sel.value = "Yes";
+    else if (upDownData[i] === false) sel.value = "No";
+  });
+  document.querySelectorAll(".rf-hole-miss").forEach(function(sel) {
+    var i = parseInt(sel.dataset.hole);
+    if (missData[i]) sel.value = missData[i];
+  });
+  document.querySelectorAll(".rf-hole-penalty").forEach(function(inp) {
+    var i = parseInt(inp.dataset.hole);
+    if (penaltyData[i] !== undefined && penaltyData[i] !== null) inp.value = penaltyData[i];
+  });
+  // Refresh the hole-by-hole total + the auto-filled score field after
+  // populating, so the form's running tally reflects the prefill state.
+  if (typeof updateLogTotal === "function") updateLogTotal();
+}
+
 function submitRound() {
   var player = document.getElementById("rf-player").value;
   var courseName = document.getElementById("rf-course").value;
@@ -364,7 +718,9 @@ function submitRound() {
   }
 
   function _afterRoundSubmit(round) {
-    syncRound(round);
+    // v8.22.0 (Ship 5+7) — persistence (PB.addRound + syncRound) lives in
+    // _submitRoundEntry; this hook only handles post-submit side effects
+    // (haptics, XP, notifications, wager/bounty resolution, story prompt).
     // Haptic success on round finish (Ship 0b-iii)
     if (typeof hapticSuccess === "function") hapticSuccess();
     setTimeout(function() { persistPlayerStats(player); }, 2000);
@@ -415,15 +771,123 @@ function submitRound() {
     showRoundCommentary(round);
   }
 
+  // v8.22.0 (Ship 5+7) — persistence routed through _submitRoundEntry so
+  // Phase 3 edit can reuse the same chain via { isEdit, roundId } options.
   if (photoInput && photoInput.files && photoInput.files[0]) {
     var reader = new FileReader();
     reader.onload = function(e) {
       addRoundData.scorecardPhoto = e.target.result;
-      _afterRoundSubmit(PB.addRound(addRoundData));
+      _submitRoundEntry(addRoundData).then(_afterRoundSubmit);
     };
     reader.readAsDataURL(photoInput.files[0]);
   } else {
-    _afterRoundSubmit(PB.addRound(addRoundData));
+    _submitRoundEntry(addRoundData).then(_afterRoundSubmit);
+  }
+}
+
+// v8.22.0 (Ship 5+7 Phase 3) — Edit-existing-round submit handler.
+// Mirrors submitRound's form-data gathering but writes via the edit
+// branch of _submitRoundEntry (db.update instead of PB.addRound +
+// syncRound) and SKIPS all _afterRoundSubmit side effects.
+//
+// Side-effect preservation invariant (CTO ruling): once a side effect
+// has fired (notifications sent, ParCoins awarded, XP granted, wagers
+// resolved, bounties claimed, story created), it stays fired. Edits
+// change round data going forward but do NOT roll back already-
+// triggered events. Members making material changes that invalidate
+// resolution outcomes should escalate to the commissioner for manual
+// handling. Matches platform conventions (Twitter, Strava, etc. —
+// edits don't unwind notifications or reactions).
+//
+// Photo handling: file inputs cannot be prefilled via JS, so the form
+// always renders the photo input empty on edit. We only include
+// scorecardPhoto in the update payload when the member selects a new
+// file — otherwise the existing photo is preserved on the server.
+//
+// Preserved fields (NOT in update payload): id, player, playerName,
+// leagueId, createdAt, visibility, highlights, blunders, story,
+// storyPhoto, notes, attestedBy. Identity + audit + side-effect-
+// generated fields are immutable through this path.
+function submitRoundEdit(roundId) {
+  if (!roundId) return;
+  var courseName = document.getElementById("rf-course").value;
+  if (!courseName) { Router.toast("Pick a course"); return; }
+
+  var hbhData = getLogHoleData();
+  if (!hbhData) { Router.toast("Enter your hole-by-hole scores"); return; }
+
+  var filledScores = hbhData.holeScores.filter(function(s) { return s !== ""; });
+  if (filledScores.length < 9) { Router.toast("Enter at least 9 holes"); return; }
+
+  var score = 0;
+  filledScores.forEach(function(s) { score += parseInt(s) || 0; });
+
+  var course = PB.getCourseByName(courseName);
+  var holesMode = document.getElementById("rf-holes") ? document.getElementById("rf-holes").value : "18";
+  var is9hole = holesMode === "front9" || holesMode === "back9";
+  var rating = parseFloat(document.getElementById("rf-rating").value) || (course ? course.rating : 72);
+  var slope = parseInt(document.getElementById("rf-slope").value) || (course ? course.slope : 113);
+  if (is9hole && rating > 50) rating = rating / 2;
+
+  var dateVal = document.getElementById("rf-date").value;
+
+  // Editable fields only. B.44 alignment: re-derive timestamp from the
+  // edited date so retroactive edits keep correct sort order in feed
+  // / window / streak code paths.
+  var updatePayload = {
+    course: courseName,
+    score: score,
+    date: dateVal,
+    timestamp: dateVal ? new Date(dateVal + "T12:00:00").getTime() : Date.now(),
+    rating: rating,
+    slope: slope,
+    format: document.getElementById("rf-format").value,
+    holesPlayed: filledScores.length,
+    holesMode: holesMode,
+    holeScores: hbhData.holeScores,
+    firData: hbhData.firData,
+    girData: hbhData.girData,
+    puttsData: hbhData.puttsData,
+    bunkerData: hbhData.bunkerData,
+    sandData: hbhData.sandData,
+    upDownData: hbhData.upDownData,
+    missData: hbhData.missData,
+    penaltyData: hbhData.penaltyData
+  };
+  if (course) {
+    updatePayload.tee = course.tee || "";
+    updatePayload.yards = course.yards || 0;
+  }
+
+  function _commitEdit() {
+    _submitRoundEntry(updatePayload, { isEdit: true, roundId: roundId }).then(function() {
+      // Refresh local in-memory round so the detail view reflects edits
+      // immediately (snapshot listener will reconcile in the background).
+      if (typeof PB !== "undefined" && PB.getRounds) {
+        var localRound = PB.getRounds().find(function(r) { return r.id === roundId; });
+        if (localRound) Object.assign(localRound, updatePayload);
+      }
+      Router.toast("Round updated");
+      Router.go("rounds", { roundId: roundId });
+    }).catch(function(err) {
+      if (typeof pbWarn === "function") pbWarn("[rounds] edit submit failed:", err && err.message);
+      Router.toast("Couldn't save changes — please try again");
+      // Form stays open; member's edits are preserved in the DOM for retry.
+    });
+  }
+
+  // Photo: include in update only when a new file is selected. Empty
+  // file input = preserve existing scorecardPhoto on the server.
+  var photoInput = document.getElementById("rf-photo");
+  if (photoInput && photoInput.files && photoInput.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      updatePayload.scorecardPhoto = e.target.result;
+      _commitEdit();
+    };
+    reader.readAsDataURL(photoInput.files[0]);
+  } else {
+    _commitEdit();
   }
 }
 

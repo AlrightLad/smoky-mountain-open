@@ -1,131 +1,20 @@
+// v8.22.0 (Ship 5+7) — Activity page is now Range-only. The "Rounds" tab
+// + form moved to /rounds (renderRoundsList + renderRoundNewForm in
+// rounds.js) per the locked HQ-vs-Clubhouse architecture: HQ owns
+// retroactive logging and history, mobile Clubhouse owns active play.
+//
+// `rangeActiveView` global (declared in range.js:10) is left intact —
+// chat.js / range.js / rangelive.js still set it to "range" before
+// navigating here, which is now a no-op. Cleanup deferred to a
+// follow-on rangeActiveView removal sweep (low priority).
 Router.register("activity", function() {
-  var h = '<div class="sh"><h2>Activity</h2>';
-  if (rangeActiveView === "range") {
-    h += '<button class="btn-sm green" onclick="startRangeSession()">Hit the Range</button>';
-  } else {
-    h += '<button class="btn-sm green" onclick="Router.go(\'playnow\')">Play now</button>';
-  }
+  var h = '<div class="sh"><h2>Range</h2>';
+  h += '<button class="btn-sm green" onclick="startRangeSession()">Hit the Range</button>';
   h += '</div>';
-
-  // Toggle bar
-  h += '<div class="activity-toggle">';
-  h += '<button class="' + (rangeActiveView==="rounds"?"active":"") + '" onclick="rangeActiveView=\'rounds\';Router.go(\'activity\')">Rounds</button>';
-  h += '<button class="' + (rangeActiveView==="range"?"active":"") + '" onclick="rangeActiveView=\'range\';Router.go(\'activity\')">Range</button>';
-  h += '</div>';
-
-  if (rangeActiveView === "rounds") {
-    h += renderActivityRounds();
-  } else {
-    h += renderActivityRange();
-  }
+  h += renderActivityRange();
   h += renderPageFooter();
   document.querySelector('[data-page="activity"]').innerHTML = h;
-  // Auto-render hole-by-hole grid for Log a Round
-  if (rangeActiveView === "rounds") {
-    setTimeout(renderLogHoleGrid, 50);
-  }
 });
-
-function renderActivityRounds() {
-  var rounds = PB.getRounds();
-  var myId = currentUser ? currentUser.uid : null;
-  var myLocal = currentProfile ? currentProfile.claimedFrom : null;
-  var myRounds = rounds.filter(function(r) { return r.player === myId || r.player === myLocal || r.player === "zach"; });
-  var hcap = PB.calcHandicap(myRounds);
-  var h = '';
-
-  // Handicap
-  if (hcap !== null) {
-    h += '<div class="hcap-box"><div class="hcap-val" data-count="' + (+hcap).toFixed(1) + '" data-count-decimals="1">0.0</div><div class="hcap-label">Your handicap index</div></div>';
-  } else {
-    h += '<div class="hcap-box"><div class="hcap-val">—</div><div class="hcap-label">Your handicap index</div></div>';
-  }
-
-  // Form
-  h += '<div class="form-section"><div class="form-title">Log a round</div>';
-  h += '<div class="ff"><label class="ff-label">Player</label>';
-  var myRoundPlayer = currentUser ? PB.getPlayer(currentUser.uid) : null;
-  var myRoundLocal = PB.getPlayers().find(function(p) { return currentProfile && (p.id === currentProfile.claimedFrom || p.name === currentProfile.name || p.id === currentProfile.id); });
-  if (!myRoundPlayer && !myRoundLocal && currentUser && typeof fbMemberCache !== "undefined" && fbMemberCache[currentUser.uid]) myRoundLocal = fbMemberCache[currentUser.uid];
-  if (!myRoundPlayer && !myRoundLocal && currentProfile && currentProfile.name) myRoundLocal = currentProfile;
-  var roundAs = myRoundPlayer || myRoundLocal;
-  if (!roundAs) {
-    h += '<div style="font-size:12px;color:var(--red)">Could not identify your player profile.</div></div>';
-  } else {
-    h += '<div class="ff-input" style="background:var(--bg4);color:var(--gold);font-weight:600">' + escHtml(roundAs.name) + '</div><input type="hidden" id="rf-player" value="' + roundAs.id + '"></div>';
-  }
-  h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="rf-course" placeholder="Search courses..." autocomplete="off" oninput="showRoundCourseSearch(this);renderLogHoleGrid()"><div id="search-round-course" class="search-results"></div></div>';
-  h += '<div class="ff-row" style="grid-template-columns:1fr 1fr">';
-  h += '<div class="ff"><label class="ff-label">Format</label><select class="ff-input" id="rf-format"><option value="stroke">Stroke play</option><option value="parbaugh">Parbaugh Stroke Play</option><option value="stableford">Modified Stableford</option><option value="scramble">Scramble (2-man)</option><option value="scramble4">Scramble (4-man)</option><option value="bestball">Best ball</option><option value="alternate">Alternate shot</option><option value="skins">Skins</option><option value="match">Match play</option></select></div>';
-  h += '<div class="ff"><label class="ff-label">Holes</label><select class="ff-input" id="rf-holes" onchange="renderLogHoleGrid()"><option value="18">18 holes</option><option value="front9">Front 9</option><option value="back9">Back 9</option></select></div>';
-  h += '</div>';
-  h += '<div class="ff-row" style="grid-template-columns:1fr 1fr">';
-  h += '<div class="ff"><label class="ff-label">Date</label><input type="date" class="ff-input" id="rf-date" value="' + localDateStr() + '" style="min-width:0"></div>';
-  h += '<div class="ff"><label class="ff-label">Score (auto)</label><input type="number" inputmode="numeric" class="ff-input" id="rf-score" placeholder="auto" style="min-width:0;background:var(--bg4);color:var(--gold)" readonly></div>';
-  h += '</div><div class="ff-row" style="grid-template-columns:1fr 1fr">';
-  h += '<div class="ff"><label class="ff-label">Rating</label><input type="number" step="0.1" class="ff-input" id="rf-rating" placeholder="auto" style="min-width:0"></div>';
-  h += '<div class="ff"><label class="ff-label">Slope</label><input type="number" class="ff-input" id="rf-slope" placeholder="auto" style="min-width:0"></div>';
-  h += '</div>';
-  h += '<div id="rf-hbh-section" style="margin-top:4px"></div>';
-  h += '<div class="ff"><label class="ff-label">Scorecard photo (optional)</label><input type="file" accept="image/*" id="rf-photo" style="color:var(--muted);font-size:12px"></div>';
-  h += '<button class="btn full green" onclick="submitRound()">+ Log round</button></div>';
-
-  // History — group scramble rounds like home feed
-  if (rounds.length) {
-    // Separate individual and scramble, group scramble by course+date
-    var sortedRounds = rounds.slice().sort(function(a,b){return (b.timestamp||0)-(a.timestamp||0) || ((b.date||"")>(a.date||"")?1:-1);});
-    var scrambleGroups = {};
-    var historyItems = [];
-    
-    sortedRounds.forEach(function(r) {
-      var isScramble = r.format === "scramble" || r.format === "scramble4";
-      if (isScramble) {
-        var gk = (r.course||"") + "|" + (r.date||"");
-        if (!scrambleGroups[gk]) {
-          scrambleGroups[gk] = { course: r.course, date: r.date, score: r.score, tee: r.tee, format: r.format, players: [], ts: r.timestamp || 0, id: r.id };
-        }
-        scrambleGroups[gk].players.push(r.playerName || "Parbaugh");
-        return;
-      }
-      historyItems.push({ type: "individual", round: r, ts: r.timestamp || 0 });
-    });
-    
-    Object.values(scrambleGroups).forEach(function(g) {
-      var teamObj = PB.getScrambleTeams().find(function(t){ return g.players.some(function(pn){ return t.members.some(function(mid){ var mp = PB.getPlayer(mid); return mp && mp.name === pn; }); }); });
-      g.teamName = teamObj ? teamObj.name : "Scramble Team";
-      historyItems.push({ type: "scramble", group: g, ts: g.ts });
-    });
-    
-    historyItems.sort(function(a,b){ return (b.ts||0) - (a.ts||0); });
-    
-    h += '<div class="section"><div class="sec-head"><span class="sec-title">Round history</span><span class="sec-link">' + rounds.length + ' total</span></div>';
-    h += '<div style="max-height:500px;overflow-y:auto;-webkit-overflow-scrolling:touch">';
-    historyItems.forEach(function(item) {
-      if (item.type === "individual") {
-        var r = item.round;
-        var c = PB.generateRoundCommentary(r);
-        var quip = c.roasts.length ? c.roasts[0] : (c.highlights.length ? c.highlights[0] : "");
-        var histCourse = PB.getCourseByName(r.course);
-        var histTee = r.tee || (histCourse ? histCourse.tee : "") || "";
-        var fmtLabel = r.format && r.format !== 'stroke' ? ' · ' + r.format.charAt(0).toUpperCase() + r.format.slice(1) : "";
-        h += '<div class="card"><div class="round-card"><div class="rc-top"><div onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer;flex:1"><div class="rc-course">' + escHtml(r.course) + '</div><div class="rc-date">' + r.date + ' · ' + escHtml(r.playerName||"") + (histTee ? ' · ' + histTee : '') + (r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? ' · Back 9' : ' · Front 9') : '') + fmtLabel + '</div></div>';
-        h += '<div style="display:flex;align-items:center;gap:8px"><div class="rc-score">' + r.score + '</div>';
-        h += '<button class="btn-sm outline" style="font-size:9px;padding:4px 8px;flex-shrink:0" onclick="event.stopPropagation();showRoundShareCard(\'' + r.id + '\')">Share</button>';
-        h += '</div></div>';
-        if (quip) h += '<div class="rc-quip">' + quip + '</div>';
-        h += '</div></div>';
-      } else {
-        var g = item.group;
-        h += '<div class="card"><div class="round-card"><div class="rc-top"><div style="flex:1"><div class="rc-course" style="color:var(--gold)">' + escHtml(g.teamName) + ' · Scramble</div><div class="rc-date">' + escHtml(g.course) + ' · ' + g.date + (g.tee ? ' · ' + g.tee : '') + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">' + g.players.join(", ") + '</div></div>';
-        h += '<div style="display:flex;align-items:center;gap:8px"><div class="rc-score">' + g.score + '</div>';
-        h += '<button class="btn-sm outline" style="font-size:9px;padding:4px 8px;flex-shrink:0" onclick="event.stopPropagation();showRoundShareCard(\'' + g.id + '\')">Share</button>';
-        h += '</div></div></div></div>';
-      }
-    });
-    h += '</div></div>';
-  }
-  return h;
-}
 
 function renderActivityRange() {
   var h = '';

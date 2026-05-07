@@ -29,13 +29,21 @@ module.exports = {
     await page.evaluate(function() { Router.go('feed'); });
     await page.waitForFunction(function() { return Router.getPage() === 'feed'; }, null, { timeout: 5000 });
 
-    // Wait for at least one round card action row to render
+    // Wait for at least one round card action row to render WITHIN the
+    // /feed page container. The same `[data-feed-action-row="1"]` selector
+    // is used by HQ Home League Pulse cards (S1.2 cross-surface contract);
+    // when both DOMs contain matching rows (e.g. after PB.getRounds caches
+    // a seed round, home re-renders a 2-button League Pulse row, and its
+    // stale DOM persists across the navigation to /feed), an unscoped
+    // selector can return the home League Pulse row first and assert on
+    // the wrong pattern (2 buttons vs feed's 4). Scope to [data-page="feed"]
+    // so this test only sees the live /feed action row.
     await page.waitForFunction(function() {
-      return document.querySelector('[data-feed-action-row="1"]') !== null;
+      return document.querySelector('[data-page="feed"] [data-feed-action-row="1"]') !== null;
     }, null, { timeout: 15000 });
 
     var actionRow = await page.evaluate(function() {
-      var row = document.querySelector('[data-feed-action-row="1"]');
+      var row = document.querySelector('[data-page="feed"] [data-feed-action-row="1"]');
       if (!row) return null;
       var buttons = row.querySelectorAll('[data-action]');
       var out = { count: buttons.length, actions: [], roundId: row.getAttribute('data-round-id') };
@@ -66,8 +74,10 @@ module.exports = {
 
     // P8 visual-layer assertion — kudos button's heart SVG renders with
     // dimensions, color, intact child nodes, and valid data attributes.
+    // Scoped to [data-page="feed"] for the same reason as the row selector
+    // above (HQ Home League Pulse stale DOM may match the unscoped form).
     await visual.assertEngagementSurfaceVisible(page, {
-      selector: '[data-feed-action-row="1"] [data-action="kudos"]',
+      selector: '[data-page="feed"] [data-feed-action-row="1"] [data-action="kudos"]',
       label: '/feed kudos button'
     });
 

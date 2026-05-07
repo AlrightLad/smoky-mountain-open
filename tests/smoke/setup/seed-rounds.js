@@ -37,11 +37,22 @@ async function clearSmokeRounds() {
 
 // Insert a single test round in smoke-test-league. Returns the new doc ID.
 // Defaults produce a minimal valid round visible on /feed and HQ Home League Pulse.
+//
+// Production-shape parity (Ship 5+7): pre-generates an ID and uses
+// .doc(id).set(doc) so the round doc carries an `id` field. The
+// rounds snapshot listener (src/core/sync.js:280) filters on `d.id`
+// before pushing into PB.setRoundsFromFirestore — pre-Ship-5+7 the
+// seed used .add() which never set the field, so seeded rounds never
+// landed in PB.getRounds() local cache. Production writes via
+// PB.addRound + syncRound always set `id` (see data.js:350), so this
+// brings the seed in line with what real members generate.
 async function insertSmokeRound(opts) {
   var admin = getAdmin();
   var db = admin.firestore();
   opts = opts || {};
+  var id = opts.id || (Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
   var doc = {
+    id: id,
     player: opts.player || SMOKE_OTHER_UID,
     playerName: opts.playerName || '[TEST] Round Owner',
     leagueId: SMOKE_LEAGUE_ID,
@@ -62,8 +73,8 @@ async function insertSmokeRound(opts) {
     date: opts.date || new Date().toISOString().slice(0, 10),
     createdAt: opts.createdAt || admin.firestore.FieldValue.serverTimestamp()
   };
-  var ref = await db.collection('rounds').add(doc);
-  return ref.id;
+  await db.collection('rounds').doc(id).set(doc);
+  return id;
 }
 
 // Read back a round by ID. Useful for asserting engagement persistence.

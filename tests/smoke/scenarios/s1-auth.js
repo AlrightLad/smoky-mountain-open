@@ -12,7 +12,7 @@ module.exports = {
     await nav.waitForAppBoot(ctx.page);
     var version = await nav.readVersion(ctx.page);
     await ctx.capture.screenshot('S1-home-post-login');
-    if (version !== '8.21.0') {
+    if (version !== '8.22.0') {
       throw new Error('APP_VERSION mismatch — expected 8.20.0, got "' + version + '"');
     }
     return { passed: true, details: 'logged in; APP_VERSION=' + version };

@@ -123,7 +123,13 @@ function startRangeSessionListener() {
   window._rangeUnsub = leagueQuery("rangeSessions").orderBy("startedAt","desc").limit(100).onSnapshot(function(snap) {
     liveRangeSessions = [];
     snap.forEach(function(doc) { liveRangeSessions.push(Object.assign({_id:doc.id}, doc.data())); });
-    if (Router.getPage() === "activity" && rangeActiveView === "range") Router.go("activity", Router.getParams(), true);
+    // v8.22.0 (Ship 5+7) — Activity page is Range-only post-consolidation,
+    // so the legacy `&& rangeActiveView === "range"` guard is dropped. The
+    // guard formerly suppressed re-render when the Rounds tab was active;
+    // there's no Rounds tab now, so always re-render when on /activity.
+    // Side benefit: closes the discardRangeSession edge case where the
+    // global could remain at its declaration default of "rounds".
+    if (Router.getPage() === "activity") Router.go("activity", Router.getParams(), true);
   });
 }
 

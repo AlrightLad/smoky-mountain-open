@@ -2191,7 +2191,12 @@ function renderRipBanner() {
 // Sidebar markup lives in index.html. Below 960px viewport the sidebar is
 // hidden via CSS; helpers still run (cheap) so state stays correct if the
 // viewport widens post-init.
-var _sidebarRoutes = ["home","playnow","rounds","feed","standings","members","shop","trophyroom"];
+// v8.22.0 (Ship 5+7) — "playnow" removed from sidebar nav per locked HQ-vs-
+// Clubhouse architecture (live round logging belongs to mobile Clubhouse).
+// Resume banner (line ~2176), home-page CTAs (home.js Bands B/C/D hero
+// cards), and the spectator entry path remain — only the persistent sidebar
+// link is removed.
+var _sidebarRoutes = ["home","rounds","feed","standings","members","shop","trophyroom"];
 
 function _wireSidebar() {
   var sidebar = document.getElementById("rrSidebar");

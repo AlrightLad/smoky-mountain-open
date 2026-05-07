@@ -31,5 +31,13 @@ module.exports = [
   require('./s21-masthead-league-chip.js'),
   require('./s22-hq-handicap-chart.js'),
   require('./s23-hq-engagement-no-rerender.js'),
+  // v8.22.0 (Ship 5+7) — Rounds page consolidation + Manage section.
+  // S24 covers list/dispatch surface; S25 covers Manage section visibility
+  // tiers (author + spectator). P8 visual assertions on both.
+  require('./s24-rounds-page-dispatch.js'),
+  require('./s25-manage-section-tiers.js'),
+  // v8.22.0 (Ship 5+7) — automated E2E replacing the manual 4-step
+  // walkthrough. B.44 timestamp + edit + delete + non-author rejection.
+  require('./s26-rounds-ship-5-7-e2e.js'),
   require('./s11-logout-cleanup.js')
 ];

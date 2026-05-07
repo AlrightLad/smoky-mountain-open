@@ -19,16 +19,15 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · League Pulse polish</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Rounds reborn</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Kudos and comments on League Pulse appear the instant you tap. No spinning, no jump back to the top.", tag: "IMPROVED" },
-    { item: "Comment on rounds without leaving HQ Home \u2014 tap Comment, type, hit Enter.", tag: "NEW" },
-    { item: "Delete your own comments with a quick double-tap on the X.", tag: "NEW" },
-    { item: "Handicap chart got an editorial refresh \u2014 cleaner lines, plus a monthly change indicator when your handicap moves.", tag: "IMPROVED" },
-    { item: "Stats strip got cleaner. Best round shows the course name, and round count is now LAST 30 days \u2014 what you actually think about.", tag: "IMPROVED" },
-    { item: "Custom scrollbar on League Pulse for that finishing-touch feel.", tag: "NEW" },
-    { item: "League name now shows in the masthead so you know which league you're looking at.", tag: "NEW" }
+    { item: "Log a round from your desk after the fact \u2014 paper scorecard in hand, type it in any time.", tag: "NEW" },
+    { item: "Edit any round you've logged. Fix that mis-keyed hole 7 score, change the format, swap the date.", tag: "NEW" },
+    { item: "Rounds got their own home \u2014 handicap, history, and the log form all live on one page now.", tag: "IMPROVED" },
+    { item: "Round detail has a clear \"Manage round\" section with Edit + Delete grouped together.", tag: "IMPROVED" },
+    { item: "\"Play Now\" no longer in the sidebar. The green live-round cards on Today are how you start or resume a round.", tag: "IMPROVED" },
+    { item: "Retroactive rounds now sort to their actual play date \u2014 log a Tuesday round on Friday and it appears on Tuesday in your feed.", tag: "IMPROVED" }
   ];
 
   currentNotes.forEach(function(r) { h += renderEntry(r); });
@@ -36,6 +35,18 @@ Router.register("caddynotes", function() {
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.21.0", date: "May 2026", headline: "League Pulse polish",
+      items: [
+        { item: "Kudos and comments on League Pulse appear the instant you tap. No spinning, no jump back to the top.", tag: "IMPROVED" },
+        { item: "Comment on rounds without leaving HQ Home — tap Comment, type, hit Enter.", tag: "NEW" },
+        { item: "Delete your own comments with a quick double-tap on the X.", tag: "NEW" },
+        { item: "Handicap chart got an editorial refresh — cleaner lines, plus a monthly change indicator when your handicap moves.", tag: "IMPROVED" },
+        { item: "Stats strip got cleaner. Best round shows the course name, and round count is now LAST 30 days — what you actually think about.", tag: "IMPROVED" },
+        { item: "Custom scrollbar on League Pulse for that finishing-touch feel.", tag: "NEW" },
+        { item: "League name now shows in the masthead so you know which league you're looking at.", tag: "NEW" }
+      ]
+    },
     {
       version: "v8.20.0", date: "May 2026", headline: "Engagement architecture",
       items: [
