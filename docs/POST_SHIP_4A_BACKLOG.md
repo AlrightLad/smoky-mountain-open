@@ -500,6 +500,74 @@ Out of scope as a standalone ship — the fix is a one-line writer
 change folded into Ship 5+7 since that ship is touching the round
 writer chain anyway.
 
+### B.45 — rangeActiveView global removal sweep
+**Scope:** S
+**Target:** Backlog cleanup ship (post-Ship 5+7)
+**Source:** Ship 5+7 Phase 2 audit observation 2026-05-07
+
+Post-Ship 5+7, `rangeActiveView` (declared at `range.js:10`) survives
+as a write-only global with no readers. Phase 2 removed the only
+read site (`range.js:126` — Option C ruling) since Activity is now
+Range-only and the legacy guard's optimization rationale was gone.
+
+Remaining write sites (all now no-ops):
+- `range.js:179` — `abandonRangeSession()` write before `Router.go("activity")`
+- `range.js:364` — second internal range-nav write site
+- `chat.js:403` — range-session chat card onclick (inline `rangeActiveView='range'`)
+- `rangelive.js:6` — back-button onclick (inline `rangeActiveView='range'`)
+
+Cleanup: remove the four writes + remove the declaration at
+`range.js:10`. ~5-10 LOC across 4 files. Low priority — pure dead
+code, not user-visible.
+
+### B.46 — Smoke selector audit for unscoped DOM matching
+**Scope:** S
+**Target:** Smoke infrastructure ship (post-Ship 5+7)
+**Source:** Ship 5+7 Phase 5 observation 2026-05-07
+
+The seed-shape parity fix in `tests/smoke/setup/seed-rounds.js`
+(production-shape rounds now enter `PB.getRounds()` cache, since
+the rounds snapshot listener at `src/core/sync.js:280` filters on
+`d.id`) could expose latent unscoped-selector bugs in other smoke
+scenarios that previously masked errors via empty cache state.
+S13 was caught and fixed in Phase 5 (selector scoped to
+`[data-page="feed"]` — the same `[data-feed-action-row="1"]`
+attribute is used by both /feed cards and HQ Home League Pulse
+cards per S1.2 cross-surface contract; with stale HQ Home DOM
+persisting across page navigations, an unscoped match could land
+on the wrong surface).
+
+Future audit: grep for `document.querySelector(... [data-...])`
+patterns without page-scope in `tests/smoke/scenarios/`, validate
+each against cross-page DOM state. ~5-10 LOC per affected scenario.
+
+### B.47 — Smoke coverage for non-author edit rejection
+**Scope:** S
+**Target:** Smoke infrastructure ship (post-Ship 5+7)
+**Source:** Ship 5+7 Phase 5 / S26 sub-test 4 architectural constraint 2026-05-07
+
+S26 sub-test 4 originally targeted the `firestore.rules` `/rounds`
+non-author rejection path: a regular member attempting to edit
+another member's round via URL hack should hit the rule denial,
+trigger `submitRoundEdit`'s catch block, and surface the "Couldn't
+save changes — please try again" toast with the form preserved.
+
+The smoke account can't drive that test as currently configured.
+Per `scripts/create-smoke-account.js:155-156` it is the commissioner
++ admin of smoke-test-league, which means
+`amILeagueLeadership(smoke-test-league)` returns true and the
+`/rounds` update rule permits the smoke account to edit ANY round in
+its own league. S26 sub-test 4 was redirected to exercise the
+missing-round error branch of `renderRoundEditForm` instead.
+
+To cover the rejection path, smoke needs a second test account at
+regular-member tier — a sibling of the smoke account, member of
+smoke-test-league but not commissioner/admin. ~30-50 LOC: extend
+`scripts/create-smoke-account.js` (or add a new helper) to provision
+the second account, store its credentials in `.env.local`, add a
+helper to auth as that account in S26 sub-test 4. Production rules
+remain unchanged; this is purely a smoke-coverage gap.
+
 ### B.43 — Webkit-mobile smoke timing fragility
 **Scope:** S/M
 **Target:** Smoke infrastructure ship (post-Ship 5+6)
@@ -524,6 +592,16 @@ wait strategies than desktop browsers.
 
 Out of scope for Ship 5+6 — Phase 7 added 6 new scenarios that all
 pass on webkit-mobile, demonstrating new code is sound.
+
+Update (2026-05-07): Phase 5 + S26 cross-browser revealed the
+intermittent timing fragility now affects webkit (desktop) in
+addition to webkit-mobile. Same root cause (Firestore replication
+latency), now amplified by larger snapshot streams from production-
+shape seeded rounds + S26's longer multi-step E2E. Currently
+affected:
+- webkit (desktop): S8, S13, S15, S26 (all toggle)
+- webkit-mobile: S10 (consistent), S13/S14/S15/S25/S26 (toggle)
+Same three fix options as originally documented.
 
 ---
 
