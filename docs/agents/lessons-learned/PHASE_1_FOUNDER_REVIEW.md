@@ -110,3 +110,49 @@ Items surfaced during Phase 1 setup that need Founder ruling at morning retrospe
 ## Phase 1 disposition
 
 None of Q1–Q7 block Phase 1 setup commit + autonomous push. All decidable at morning retrospective. Phase 1 proceeds with the listed inferred options; reversals adjust subsequent work.
+
+---
+
+## Q8 — Vision authoring missing for W1.I4, W1.S3, W1.S1 (TRUE BLOCKER)
+
+**Captured:** 2026-05-12 (post-Phase 1, ~5h after Phase 1 commit `5ef9833` landed)
+
+**Context:** Founder issued an 8-hour autonomous run window for 3 ships:
+- W1.I4 (staging environment)
+- W1.S3 (Members + Find Players)
+- W1.S1 (Design system codification)
+
+The directive said "Vision authored above" for each. No Vision content present in the conversation. Verified state:
+
+| Ship | Ship Plan file | Vision content |
+|---|---|---|
+| W1.I4 | `docs/agents/ships/W1.I4.md` (exists; drafted Phase 1) | placeholder `<Vision — Founder authors before engineering begins>` |
+| W1.S3 | not yet drafted | not present (no ship plan file) |
+| W1.S1 | not yet drafted | not present (no ship plan file) |
+
+**Per just-shipped governance** (commit `5ef9833`):
+
+- `GRADUATED_AUTONOMY.md` lists "Vision section content — Founder authority on every ship, forever" as permanent-Founder-approval; NEVER graduates regardless of tier
+- `CTO_INTERFACE.md` lists Vision authoring as Founder authority (permanent)
+- `ORCHESTRATOR.md`: "Solicit Vision from Founder before any engineering work begins"
+- `SHIP_PLAN_TEMPLATE.md` Vision section: "Authored by Founder before agent work begins. Agents do not modify this section."
+- The Phase 1 directive itself: "DO NOT fire Ship 5+8 yet (Vision required). Stand by for Founder to author Wave 1 Visions in the morning."
+
+**Decision rule applied:** the 8-hour autonomous run directive includes the exit condition *"OR until permanent-Founder-approval blocker"*. Vision authoring IS the first permanent-approval category. Halting engineering work for all 3 ships per directive.
+
+**What was done in the autonomous window despite the blocker:**
+
+Orchestrator prep work that does NOT require Vision:
+- Drafted `docs/agents/ships/W1.S3.md` with placeholder Vision (Members + Find Players scope per ROADMAP.md + V11 audit findings from prior session preserved)
+- Drafted `docs/agents/ships/W1.S1.md` with placeholder Vision (Design system codification scope per CLUBHOUSE_SPEC Part 1 + wave-2a-ratification)
+- All 3 ship plans now sit in `Drafting` status, awaiting Founder Vision authoring → Ratified → Engineering fires
+
+**Possible Founder readings of "Vision authored above":**
+
+A. The directive intends roadmap one-line descriptions to serve as Vision. **Not the contract** — Vision per template is "what does success look like to members, why is this worth doing now"; roadmap entries are scope-only.
+B. Founder expects Orchestrator to author Vision under autonomous mode. **Direct contradiction with permanent-approval rule shipped 5h ago.** No agent action without explicit Founder override of the rule.
+C. Founder believes Vision was authored in a prior unseen prompt. **Likeliest. Resolution: Founder authors Vision in the morning per Phase 1 close-out plan.**
+
+**Recommendation:** Founder authors Vision section in each of the 3 Ship Plans (now drafted with placeholders). Once Vision lands, Critic pre-engineering review fires, then Engineer + Critic + autonomous push as directed for each ship in order.
+
+**Founder decision needed:** author Visions, OR explicitly override the permanent-approval rule with documented rationale (governance demotion of "Vision = permanent" would itself be a Roadmap-level decision and require explicit ratification).
