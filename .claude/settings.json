@@ -25,14 +25,19 @@
         "matcher": "Bash",
         "hooks": [
           { "type": "command", "command": "bash .claude/hooks/pre-commit-version-sync.sh" },
-          { "type": "command", "command": "bash .claude/hooks/pre-commit-lint.sh" }
+          { "type": "command", "command": "bash .claude/hooks/pre-commit-lint.sh" },
+          { "type": "command", "command": "bash .claude/hooks/push-protection.sh" }
         ]
       },
       {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
           { "type": "command", "command": "bash .claude/hooks/gate-assertions.sh" },
-          { "type": "command", "command": "bash .claude/hooks/gate-protected.sh" }
+          { "type": "command", "command": "bash .claude/hooks/gate-protected.sh" },
+          { "type": "command", "command": "bash .claude/hooks/secrets-scanner.sh" },
+          { "type": "command", "command": "bash .claude/hooks/schema-mutation-alarm.sh" },
+          { "type": "command", "command": "bash .claude/hooks/governance-protection.sh" },
+          { "type": "command", "command": "bash .claude/hooks/skill-approval-gate.sh" }
         ]
       }
     ],
