@@ -1,4 +1,24 @@
 {
+  "permissions": {
+    "allow": [
+      "Read(*)",
+      "Edit(*)",
+      "Write(*)",
+      "MultiEdit(*)",
+      "Bash(*)",
+      "Glob(*)",
+      "Grep(*)",
+      "TodoWrite(*)",
+      "WebFetch(*)",
+      "WebSearch(*)"
+    ],
+    "deny": [
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~*)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)"
+    ]
+  },
   "hooks": {
     "PreToolUse": [
       {
