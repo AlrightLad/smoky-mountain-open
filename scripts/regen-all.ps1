@@ -76,7 +76,7 @@ $endTs = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 if ($failed.Count -ne 0) {
     Pop-Location
     Write-Host ""
-    Write-Host "PARTIAL FAILURE at $endTs — failed steps: $($failed -join ', ')" -ForegroundColor Red
+    Write-Host "PARTIAL FAILURE at $endTs -failed steps: $($failed -join ', ')" -ForegroundColor Red
     exit 1
 }
 
@@ -100,7 +100,7 @@ if ($testRc -ne 0) {
     }
     Pop-Location
     Write-Host ""
-    Write-Host "REGEN ROLLED BACK at $endTs — round-trip test failed; consult the test output above" -ForegroundColor Red
+    Write-Host "REGEN ROLLED BACK at $endTs -round-trip test failed; consult the test output above" -ForegroundColor Red
     exit 2
 }
 Pop-Location
