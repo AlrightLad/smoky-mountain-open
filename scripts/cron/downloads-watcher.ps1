@@ -37,7 +37,13 @@ function Log {
 # Shared helpers (Resolve-GitBash, Resolve-Python, Should-SkipCron, etc.)
 . "$PSScriptRoot\common.ps1"
 
-Log "START $startedIso  repoRoot=$repoRoot"
+$runId = [Guid]::NewGuid().ToString("N").Substring(0, 12)
+$script:cronSuccess = $true
+$script:cronExitReason = "ok"
+Log "START $startedIso  repoRoot=$repoRoot  runId=$runId"
+Emit-CronTelemetry -repoRoot $repoRoot -eventType "cron.downloads-watcher.start" -data @{
+    cron_source = "downloads-watcher"; run_id = $runId; claude_invoked = $false
+}
 
 # Locate python
 $pythonCandidates = @(
@@ -51,6 +57,8 @@ if (-not $python) {
 }
 if (-not $python) {
     Log "FATAL no python.exe found"
+    $script:cronSuccess = $false
+    $script:cronExitReason = "no-python"
     exit 2
 }
 Log "python=$python"
@@ -61,6 +69,7 @@ try {
     $cronPaused = Join-Path $repoRoot ".claude\state\cron-paused.json"
     if (Test-Path $cronPaused) {
         Log "SKIP cron-paused.json present (governance pause respected)"
+        $script:cronExitReason = "skip-paused"
         exit 0
     }
 
@@ -73,6 +82,7 @@ try {
             if ($lv.resume_after) { $resumeAfter = [DateTime]::Parse($lv.resume_after).ToUniversalTime() }
             if ($resumeAfter -and $started -lt $resumeAfter) {
                 Log "SKIP last-verify.json present and resume_after=$($lv.resume_after) not yet passed"
+                $script:cronExitReason = "skip-verify-pending"
                 exit 0
             }
         } catch {
@@ -87,6 +97,7 @@ try {
     $stagedDirty = ($LASTEXITCODE -ne 0)
     if ($dirty -or $stagedDirty) {
         Log "SKIP working tree dirty (refuse to apply on top of in-flight work)"
+        $script:cronExitReason = "skip-dirty"
         exit 0
     }
 
@@ -94,6 +105,8 @@ try {
     $downloads = Join-Path $env:USERPROFILE "Downloads"
     if (-not (Test-Path $downloads)) {
         Log "FATAL Downloads folder not found: $downloads"
+        $script:cronSuccess = $false
+        $script:cronExitReason = "no-downloads-folder"
         exit 1
     }
     $marker = Join-Path $repoRoot ".claude\state\proposals\.last-processed-decisions.json"
@@ -114,6 +127,7 @@ try {
 
     if ($candidates.Count -eq 0) {
         Log "DONE no new decisions files"
+        $script:cronExitReason = "no-new-files"
         exit 0
     }
 
@@ -161,6 +175,8 @@ try {
 
     if ($applyFailures -gt 0) {
         Log "FAIL $applyFailures apply-decisions.sh failures"
+        $script:cronSuccess = $false
+        $script:cronExitReason = "apply-failures"
         exit 1
     }
 
@@ -171,14 +187,31 @@ try {
         $regenRc = $LASTEXITCODE
         if ($regenRc -ne 0) {
             Log "regen-all FAILED with exit $regenRc - apply-decisions changes are committed by the apply script; regen output may be stale"
+            $script:cronSuccess = $false
+            $script:cronExitReason = "regen-all-failed"
             exit 1
         }
         Log "regen-all OK"
     }
 
     Log "DONE applied=$appliedAnything"
+    $script:cronExitReason = if ($appliedAnything) { "applied" } else { "no-op" }
     exit 0
 }
 finally {
     Pop-Location
+    try {
+        $endedAt = (Get-Date).ToUniversalTime()
+        $durationMs = [int]($endedAt - $started).TotalMilliseconds
+        Emit-CronTelemetry -repoRoot $repoRoot -eventType "cron.downloads-watcher.end" -data @{
+            cron_source    = "downloads-watcher"
+            run_id         = $runId
+            duration_ms    = $durationMs
+            success        = $script:cronSuccess
+            exit_reason    = $script:cronExitReason
+            claude_invoked = $false
+        }
+    } catch {
+        # Best-effort - never let telemetry break the cron exit
+    }
 }

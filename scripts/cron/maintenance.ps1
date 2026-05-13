@@ -60,7 +60,13 @@ function Record-Step {
 # Shared helpers (Resolve-GitBash, Resolve-Python, Should-SkipCron, etc.)
 . "$PSScriptRoot\common.ps1"
 
-Log "START $startedIso  repoRoot=$repoRoot"
+$runId = [Guid]::NewGuid().ToString("N").Substring(0, 12)
+$script:cronSuccess = $true
+$script:cronExitReason = "ok"
+Log "START $startedIso  repoRoot=$repoRoot  runId=$runId"
+Emit-CronTelemetry -repoRoot $repoRoot -eventType "cron.maintenance.start" -data @{
+    cron_source = "maintenance"; run_id = $runId; claude_invoked = $false
+}
 Push-Location $repoRoot
 try {
 
@@ -73,6 +79,7 @@ try {
         if (Test-Path ".claude\state\cron-paused.json") {
             Log "  SKIP cron-paused.json present (governance pause respected)"
             Record-Step "preflight" "skipped" "cron-paused.json present"
+            $script:cronExitReason = "skip-paused"
             Log "  exiting clean"
             return
         }
@@ -81,6 +88,8 @@ try {
     } catch {
         Log "  ERROR preflight: $_"
         Record-Step "preflight" "error" $_.Exception.Message
+        $script:cronSuccess = $false
+        $script:cronExitReason = "preflight-error"
         return
     }
 
@@ -409,4 +418,29 @@ try {
 }
 finally {
     Pop-Location
+    try {
+        # Derive success: any step status of "error" flips success to false.
+        $errorSteps = @()
+        foreach ($name in $script:stepResults.Keys) {
+            if ($script:stepResults[$name].status -eq "error") { $errorSteps += $name }
+        }
+        if ($errorSteps.Count -gt 0) {
+            $script:cronSuccess = $false
+            if ($script:cronExitReason -eq "ok") {
+                $script:cronExitReason = "step-errors:" + ($errorSteps -join ",")
+            }
+        }
+        $endedAt = (Get-Date).ToUniversalTime()
+        $durationMs = [int]($endedAt - $started).TotalMilliseconds
+        Emit-CronTelemetry -repoRoot $repoRoot -eventType "cron.maintenance.end" -data @{
+            cron_source    = "maintenance"
+            run_id         = $runId
+            duration_ms    = $durationMs
+            success        = $script:cronSuccess
+            exit_reason    = $script:cronExitReason
+            claude_invoked = $false
+        }
+    } catch {
+        # Best-effort - never let telemetry break the cron exit
+    }
 }

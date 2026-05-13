@@ -93,6 +93,33 @@ function Should-SkipCron {
     return $false
 }
 
+# Emit a telemetry event to .claude/state/telemetry/events/<date>.ndjson.
+# Used by every cron pipeline for start/end markers. Source B (cron-log
+# heuristic) of the token-usage ingestor cross-references these events
+# with session log timestamps to compute estimated tokens.
+function Emit-CronTelemetry {
+    param(
+        [string]$repoRoot,
+        [string]$eventType,
+        [hashtable]$data
+    )
+    try {
+        $eventsDir = Join-Path $repoRoot ".claude\state\telemetry\events"
+        $null = New-Item -ItemType Directory -Path $eventsDir -Force -ErrorAction SilentlyContinue
+        $today = (Get-Date).ToString("yyyy-MM-dd")
+        $eventFile = Join-Path $eventsDir "$today.ndjson"
+        $obj = @{
+            event_type = $eventType
+            timestamp = (Get-Date).ToUniversalTime().ToString("o")
+            data = $data
+        }
+        $line = ($obj | ConvertTo-Json -Compress -Depth 6)
+        Add-Content -Path $eventFile -Value $line -Encoding utf8
+    } catch {
+        # Best-effort - don't fail the cron just because telemetry can't write
+    }
+}
+
 # HALT 24 check: last-verify.json present with resume_after passed by > 1 hour.
 # Returns $true if HALT 24 should fire. Caller writes the halt evidence and
 # exits non-zero.

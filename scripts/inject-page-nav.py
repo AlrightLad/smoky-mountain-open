@@ -33,6 +33,10 @@ TARGETS = [
     ("activity.html",          "activity.html"),
     ("proposals.html",         "proposals.html"),
     ("discussion-bubbles.html","discussion-bubbles.html"),
+    ("main-flows.html",        "main-flows.html"),
+    ("design-system.html",     "design-system.html"),
+    ("token-usage.html",       "token-usage.html"),
+    ("index.html",             "index.html"),
 ]
 
 NAV_LINKS = [
@@ -41,6 +45,8 @@ NAV_LINKS = [
     ("discussion-bubbles.html","Discussion Bubbles"),
     ("proposals.html",         "Proposals"),
     ("main-flows.html",        "Main Flows"),
+    ("design-system.html",     "Design System"),
+    ("token-usage.html",       "Tokens"),
     ("index.html",             "Index"),
 ]
 

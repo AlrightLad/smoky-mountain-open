@@ -514,13 +514,15 @@ def main():
     # Test runs against REPORTS_SRC (the real docs/reports/), not the test workspace —
     # the nav lives in the production templates, not in seeded synthetic state.
     print(cyan("\n[nav] Cross-dashboard navigation audit..."))
-    NAV_LINKS_REQUIRED = ["dashboard.html", "activity.html", "discussion-bubbles.html", "proposals.html", "main-flows.html", "index.html"]
+    NAV_LINKS_REQUIRED = ["dashboard.html", "activity.html", "discussion-bubbles.html", "proposals.html", "main-flows.html", "design-system.html", "token-usage.html", "index.html"]
     NAV_PAGES = [
         ("dashboard.html",         "dashboard.html"),
         ("activity.html",          "activity.html"),
         ("discussion-bubbles.html","discussion-bubbles.html"),
         ("proposals.html",         "proposals.html"),
         ("main-flows.html",        "main-flows.html"),
+        ("design-system.html",     "design-system.html"),
+        ("token-usage.html",       "token-usage.html"),
         ("index.html",             "index.html"),
     ]
     nav_re = re.compile(r'<nav class="page-nav">(.*?)</nav>', re.DOTALL)
@@ -549,7 +551,7 @@ def main():
             print(red(f"  ✗ {page:32s} is-active should be '{expected_active}', got '{actual}'"))
             failures.append((f"nav:{page}", f"is-active mismatch: expected={expected_active} actual={actual}"))
             continue
-        print(green(f"  ✓ {page:32s} 6 links, is-active='{expected_active}'"))
+        print(green(f"  ✓ {page:32s} {len(NAV_LINKS_REQUIRED)} links, is-active='{expected_active}'"))
 
     # main-flows.html + index.html data-block parse — verify production files (not test workspace).
     # main-flows.html schema is the architecture+flows shape: columns[], flows[] with steps[] referencing component IDs.
@@ -925,6 +927,111 @@ def main():
                 print(cyan(f"     {name:30s}  raw-hex={h:3d}  raw-px={px:3d}  raw-ms={ms:3d}"))
     else:
         print(cyan("  design-tokens.css not yet authored; skipping discipline check"))
+
+    # Token-usage dashboard: validate data block + cross-panel reconciliation.
+    # Solid=real, hatched=estimated, asterisk-prefix=manual. Never blend totals.
+    print(cyan("\n[token-usage] Verifying production data block + cross-panel reconciliation..."))
+    TU_PROD = REPORTS_SRC / "token-usage.html"
+    if not TU_PROD.exists():
+        print(red("  ✗ token-usage.html (production) MISSING"))
+        failures.append(("token-usage.html", "production file missing"))
+    else:
+        html = TU_PROD.read_text(encoding="utf-8")
+        m = DATA_BLOCK_RE.search(html)
+        if not m:
+            print(red("  ✗ token-usage.html no data block"))
+            failures.append(("token-usage.html", "no data block"))
+        else:
+            try:
+                tu = json.loads(m.group(2))
+            except json.JSONDecodeError as e:
+                print(red(f"  ✗ token-usage.html JSON parse: {e}"))
+                failures.append(("token-usage.html", f"JSON parse: {e}"))
+                tu = None
+            if tu is not None:
+                required_top = ["by_agent", "by_cron", "by_ship", "all_time"]
+                missing_top = [k for k in required_top if k not in tu]
+                if missing_top:
+                    print(red(f"  ✗ token-usage.html missing top-level keys: {missing_top}"))
+                    failures.append(("token-usage.html", f"missing keys: {missing_top}"))
+                else:
+                    # Each panel bucket must have real / estimated / manual buckets, each numeric.
+                    def panel_ok(panel_name, panel):
+                        if not isinstance(panel, dict):
+                            return False, f"{panel_name} is not an object"
+                        for entry_key, entry in panel.items():
+                            if entry_key == "_meta":
+                                continue
+                            if not isinstance(entry, dict):
+                                return False, f"{panel_name}.{entry_key} is not an object"
+                            for sub in ("real", "estimated", "manual"):
+                                if sub not in entry:
+                                    return False, f"{panel_name}.{entry_key} missing '{sub}' bucket"
+                                if not isinstance(entry[sub], (int, float)):
+                                    return False, f"{panel_name}.{entry_key}.{sub} not numeric"
+                        return True, None
+
+                    panel_failures = []
+                    for k in ("by_agent", "by_cron", "by_ship"):
+                        ok, err = panel_ok(k, tu[k])
+                        if not ok:
+                            panel_failures.append(err)
+                    # all_time must be a flat object with real / estimated / manual
+                    at = tu.get("all_time", {})
+                    if not isinstance(at, dict):
+                        panel_failures.append("all_time is not an object")
+                    else:
+                        for sub in ("real", "estimated", "manual"):
+                            if sub not in at:
+                                panel_failures.append(f"all_time missing '{sub}' bucket")
+                            elif not isinstance(at[sub], (int, float)):
+                                panel_failures.append(f"all_time.{sub} not numeric")
+
+                    if panel_failures:
+                        for pf in panel_failures:
+                            print(red(f"  ✗ {pf}"))
+                            failures.append(("token-usage:schema", pf))
+                    else:
+                        # Cross-panel reconciliation: sum of real across by_agent == sum across by_cron + by_ship
+                        # only when those panels overlap. Conservative check: each panel's real sum must
+                        # equal all_time.real OR be a strict subset (some sources only attribute to one axis).
+                        def sum_real(panel):
+                            return sum(v.get("real", 0) for k, v in panel.items() if k != "_meta" and isinstance(v, dict))
+                        def sum_est(panel):
+                            return sum(v.get("estimated", 0) for k, v in panel.items() if k != "_meta" and isinstance(v, dict))
+                        def sum_man(panel):
+                            return sum(v.get("manual", 0) for k, v in panel.items() if k != "_meta" and isinstance(v, dict))
+                        real_at = at["real"]
+                        est_at  = at["estimated"]
+                        man_at  = at["manual"]
+                        # Each panel's sum should match all_time (every event attributes to all three axes).
+                        # If an event is missing an attribution dimension, the aggregator must record it
+                        # under an "unattributed" bucket so the sum still reconciles.
+                        recon_failures = []
+                        for pname in ("by_agent", "by_cron", "by_ship"):
+                            sr = sum_real(tu[pname])
+                            se = sum_est(tu[pname])
+                            sm = sum_man(tu[pname])
+                            if sr != real_at:
+                                recon_failures.append(f"sum({pname}.real)={sr} != all_time.real={real_at}")
+                            if se != est_at:
+                                recon_failures.append(f"sum({pname}.estimated)={se} != all_time.estimated={est_at}")
+                            if sm != man_at:
+                                recon_failures.append(f"sum({pname}.manual)={sm} != all_time.manual={man_at}")
+                        if recon_failures:
+                            for rf in recon_failures:
+                                print(red(f"  ✗ token-usage cross-panel: {rf}"))
+                                failures.append(("token-usage:reconciliation", rf))
+                        else:
+                            print(green(f"  ✓ token-usage.html schema valid; all_time real={real_at} estimated={est_at} manual={man_at}; cross-panel sums match"))
+
+                # The dashboard MUST visually distinguish real vs estimated. Detect the
+                # hatched CSS pattern that marks estimated bars (load-bearing per spec).
+                if "hatch" not in html.lower() and "stripe" not in html.lower():
+                    print(red("  ✗ token-usage.html missing hatched/striped pattern for estimated bars"))
+                    failures.append(("token-usage:visual-distinction", "no hatch/stripe pattern in CSS"))
+                else:
+                    print(green("  ✓ token-usage.html visual distinction (hatched/striped) present"))
 
     # Wiring assertions: cross-check that scenarios in activity data match canonical CSS classes
     print(cyan("\n[wiring] Cross-checking scenario tokens against CSS + dropdown..."))

@@ -36,10 +36,12 @@ echo "[regen-all] START $START_TS   python=$PYTHON"
 STEPS=(
     "scan-shipped-proposals|scripts/scan-shipped-proposals.py"
     "aggregate-telemetry|scripts/aggregate-telemetry.py"
+    "aggregate-token-usage|scripts/aggregate-token-usage.py"
     "regen-proposals|scripts/regen-proposals.py"
     "regen-dashboard|scripts/regen-dashboard.py"
     "regen-ops-views|scripts/dry-run-regen-ops-views.py"
     "regen-main-flows|scripts/regen-main-flows.py"
+    "regen-token-usage|scripts/regen-token-usage.py"
     "regen-index|scripts/regen-index.py"
 )
 
@@ -80,7 +82,8 @@ if [ "$TEST_RC" -ne 0 ]; then
     echo "$TEST_OUT" | tail -20 | sed 's/^/    /'
     # Roll back each affected HTML to last committed version. Quiet on files that aren't tracked yet.
     for f in docs/reports/dashboard.html docs/reports/activity.html docs/reports/proposals.html \
-             docs/reports/discussion-bubbles.html docs/reports/index.html docs/reports/main-flows.html; do
+             docs/reports/discussion-bubbles.html docs/reports/index.html docs/reports/main-flows.html \
+             docs/reports/token-usage.html; do
         if [ -f "$f" ]; then
             git checkout HEAD -- "$f" 2>/dev/null || echo "[regen-all] could not roll back $f (not tracked or no HEAD)"
         fi

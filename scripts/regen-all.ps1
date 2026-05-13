@@ -49,13 +49,15 @@ $startTs = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 Write-Host "[regen-all] START $startTs   python=$python" -ForegroundColor Cyan
 
 $steps = @(
-    @{ Name = "scan-shipped-proposals"; Script = "scripts/scan-shipped-proposals.py" },
-    @{ Name = "aggregate-telemetry";    Script = "scripts/aggregate-telemetry.py" },
-    @{ Name = "regen-proposals";        Script = "scripts/regen-proposals.py" },
-    @{ Name = "regen-dashboard";        Script = "scripts/regen-dashboard.py" },
-    @{ Name = "regen-ops-views";        Script = "scripts/dry-run-regen-ops-views.py" },
-    @{ Name = "regen-main-flows";       Script = "scripts/regen-main-flows.py" },
-    @{ Name = "regen-index";            Script = "scripts/regen-index.py" }
+    @{ Name = "scan-shipped-proposals";  Script = "scripts/scan-shipped-proposals.py" },
+    @{ Name = "aggregate-telemetry";     Script = "scripts/aggregate-telemetry.py" },
+    @{ Name = "aggregate-token-usage";   Script = "scripts/aggregate-token-usage.py" },
+    @{ Name = "regen-proposals";         Script = "scripts/regen-proposals.py" },
+    @{ Name = "regen-dashboard";         Script = "scripts/regen-dashboard.py" },
+    @{ Name = "regen-ops-views";         Script = "scripts/dry-run-regen-ops-views.py" },
+    @{ Name = "regen-main-flows";        Script = "scripts/regen-main-flows.py" },
+    @{ Name = "regen-token-usage";       Script = "scripts/regen-token-usage.py" },
+    @{ Name = "regen-index";             Script = "scripts/regen-index.py" }
 )
 
 $failed = @()
@@ -90,7 +92,8 @@ if ($testRc -ne 0) {
     $files = @(
         "docs/reports/dashboard.html", "docs/reports/activity.html",
         "docs/reports/proposals.html", "docs/reports/discussion-bubbles.html",
-        "docs/reports/index.html", "docs/reports/main-flows.html"
+        "docs/reports/index.html", "docs/reports/main-flows.html",
+        "docs/reports/token-usage.html"
     )
     foreach ($f in $files) {
         if (Test-Path $f) {

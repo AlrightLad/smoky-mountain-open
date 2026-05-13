@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Usage - PARBAUGHS Orchestration</title>
+    <link rel="stylesheet" href="_assets/dashboard.css">
+    <link rel="stylesheet" href="_assets/design-tokens.css">
+    <style>
+        body { background: var(--bg-page); color: var(--text-primary); font-family: var(--font-body); }
+
+        /* Page chrome - matches other dashboards */
+        .page-header { background: var(--bg-surface); border-bottom: 1px solid var(--border-subtle); }
+        .page-nav { max-width: var(--max-content, 1280px); margin: 0 auto; padding: var(--space-3) var(--space-4); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+        .nav-brand { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--accent-achievement); text-decoration: none; letter-spacing: var(--tracking-wide); }
+        .nav-links { display: flex; gap: var(--space-3); font-size: var(--text-sm); flex-wrap: wrap; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); transition: color var(--duration-fast) var(--ease-out); }
+        .nav-links a:hover { color: var(--text-primary); }
+        .nav-links a.is-active { color: var(--accent-achievement); }
+
+        main { max-width: var(--max-content, 1280px); margin: 0 auto; padding: var(--space-5) var(--space-4); }
+
+        .tu-hero { padding-bottom: var(--space-4); margin-bottom: var(--space-5); border-bottom: 1px solid var(--border-subtle); }
+        .tu-hero h1 { font-family: var(--font-display); font-size: var(--text-2xl); font-weight: var(--weight-bold); margin: 0 0 var(--space-2); letter-spacing: var(--tracking-tight); }
+        .tu-hero p { color: var(--text-secondary); font-size: var(--text-base); margin: 0; max-width: 800px; line-height: var(--lh-normal); }
+
+        /* All-time sticky summary */
+        .tu-all-time { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-4); margin-bottom: var(--space-5); display: flex; flex-wrap: wrap; gap: var(--space-5); align-items: center; }
+        .tu-stat { display: flex; flex-direction: column; gap: var(--space-1); }
+        .tu-stat-label { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--text-faint); text-transform: uppercase; letter-spacing: var(--tracking-wider); }
+        .tu-stat-value { font-family: var(--font-numeric); font-variant-numeric: tabular-nums; font-size: var(--text-xl); font-weight: var(--weight-semibold); }
+        .tu-stat-value.is-real { color: var(--text-primary); }
+        .tu-stat-value.is-estimated { color: var(--pb-warning); }
+        .tu-stat-value.is-manual { color: var(--accent-achievement); }
+        .tu-stat-value.is-estimated::before { content: ""; }
+        .tu-stat-value.is-manual::before { content: "* "; font-weight: var(--weight-bold); }
+
+        .tu-refresh-btn { margin-left: auto; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3); font-family: var(--font-mono); font-size: var(--text-xs); cursor: pointer; transition: border-color var(--duration-fast) var(--ease-out); }
+        .tu-refresh-btn:hover { border-color: var(--accent-achievement); color: var(--accent-achievement); }
+        .tu-refresh-help { font-size: var(--text-2xs); color: var(--text-faint); margin-top: var(--space-1); }
+
+        /* Panels */
+        .tu-panel { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-4); margin-bottom: var(--space-5); }
+        .tu-panel-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: var(--space-3); gap: var(--space-3); flex-wrap: wrap; }
+        .tu-panel-title { font-family: var(--font-display); font-size: var(--text-xl); font-weight: var(--weight-semibold); margin: 0; }
+        .tu-panel-sub { font-size: var(--text-sm); color: var(--text-secondary); margin: 0; }
+
+        .tu-chart-canvas { width: 100%; max-width: 100%; height: 280px; }
+
+        .tu-legend { display: flex; gap: var(--space-4); font-size: var(--text-xs); color: var(--text-secondary); margin-top: var(--space-2); flex-wrap: wrap; }
+        .tu-legend-item { display: flex; align-items: center; gap: var(--space-1); }
+        .tu-legend-swatch { width: 12px; height: 12px; border-radius: 2px; background: var(--pb-billiard-green-500); }
+        .tu-legend-swatch.is-estimated { background: repeating-linear-gradient(45deg, var(--pb-warning), var(--pb-warning) 3px, transparent 3px, transparent 6px); border: 1px solid var(--pb-warning); }
+        .tu-legend-swatch.is-manual { background: transparent; border: 2px solid var(--accent-achievement); }
+
+        /* Drill-down table */
+        .tu-table { width: 100%; border-collapse: collapse; margin-top: var(--space-3); font-size: var(--text-sm); }
+        .tu-table th { text-align: left; padding: var(--space-2); border-bottom: 1px solid var(--border-strong); font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--text-faint); text-transform: uppercase; letter-spacing: var(--tracking-wide); font-weight: var(--weight-regular); }
+        .tu-table td { padding: var(--space-2); border-bottom: 1px solid var(--border-subtle); }
+        .tu-table tr:last-child td { border-bottom: none; }
+        .tu-table td.is-num { font-family: var(--font-numeric); font-variant-numeric: tabular-nums; text-align: right; }
+        .tu-table tr.is-warning { background: rgba(212,168,87,0.08); }
+        .tu-table .tu-cell-warning { color: var(--pb-warning); font-weight: var(--weight-semibold); }
+
+        /* Footnotes */
+        .tu-footnote { font-size: var(--text-xs); color: var(--text-faint); margin-top: var(--space-3); padding: var(--space-2); border-left: 2px solid var(--pb-warning); }
+        .tu-footnote strong { color: var(--pb-warning); }
+    </style>
+</head>
+<body>
+
+<header class="page-header">
+    <nav class="page-nav">
+        <a href="index.html" class="nav-brand">PARBAUGHS Orchestration</a>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="activity.html">Activity</a>
+            <a href="discussion-bubbles.html">Discussion Bubbles</a>
+            <a href="proposals.html">Proposals</a>
+            <a href="main-flows.html">Main Flows</a>
+            <a href="design-system.html">Design System</a>
+            <a href="token-usage.html" class="is-active">Tokens</a>
+            <a href="index.html">Index</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <section class="tu-hero">
+        <h1>Token usage</h1>
+        <p>Where Claude tokens have gone, by agent / cron / ship. <strong>Solid</strong> = real (telemetry-derived). <strong>Hatched</strong> = estimated from cron session duration. <strong>* Asterisk</strong> = Founder-anchored from claude.ai billing paste. The all-time totals always show three distinct numbers, never blended.</p>
+    </section>
+
+    <section class="tu-all-time">
+        <div class="tu-stat">
+            <span class="tu-stat-label">Real</span>
+            <span class="tu-stat-value is-real" data-stat="all-time-real">-</span>
+        </div>
+        <div class="tu-stat">
+            <span class="tu-stat-label">Estimated</span>
+            <span class="tu-stat-value is-estimated" data-stat="all-time-estimated">-</span>
+        </div>
+        <div class="tu-stat">
+            <span class="tu-stat-label">Manual-anchored</span>
+            <span class="tu-stat-value is-manual" data-stat="all-time-manual">-</span>
+        </div>
+        <div class="tu-stat">
+            <span class="tu-stat-label">Since</span>
+            <span class="tu-stat-value is-real" data-stat="first-event" style="font-size: var(--text-base); font-weight: var(--weight-medium);">-</span>
+        </div>
+        <div class="tu-stat">
+            <span class="tu-stat-label">Last refresh</span>
+            <span class="tu-stat-value is-real" data-stat="generated-at" style="font-size: var(--text-base); font-weight: var(--weight-medium);">-</span>
+        </div>
+        <button class="tu-refresh-btn" id="tu-refresh-btn" type="button" title="Run scripts/aggregate-token-usage.py + regen this page locally">
+            Refresh now
+            <div class="tu-refresh-help">runs scripts/regen-all</div>
+        </button>
+    </section>
+
+    <!-- PANEL 1: by agent -->
+    <section class="tu-panel">
+        <div class="tu-panel-header">
+            <h2 class="tu-panel-title">Tokens by agent</h2>
+            <p class="tu-panel-sub">Stacked by agent role; solid=real, hatched=estimated.</p>
+        </div>
+        <canvas class="tu-chart-canvas" id="tu-chart-by-agent"></canvas>
+        <div class="tu-legend">
+            <span class="tu-legend-item"><span class="tu-legend-swatch"></span>Real</span>
+            <span class="tu-legend-item"><span class="tu-legend-swatch is-estimated"></span>Estimated</span>
+            <span class="tu-legend-item"><span class="tu-legend-swatch is-manual"></span>Manual-anchored</span>
+        </div>
+        <table class="tu-table" id="tu-table-by-agent">
+            <thead><tr><th>Agent</th><th>Real</th><th>Estimated</th><th>Manual</th><th>Total (real+est)</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <!-- PANEL 2: by cron -->
+    <section class="tu-panel">
+        <div class="tu-panel-header">
+            <h2 class="tu-panel-title">Tokens by cron source</h2>
+            <p class="tu-panel-sub">downloads-watcher + maintenance should be at 0 (no Claude API). overnight-triage uses Source-B estimation.</p>
+        </div>
+        <canvas class="tu-chart-canvas" id="tu-chart-by-cron"></canvas>
+        <table class="tu-table" id="tu-table-by-cron">
+            <thead><tr><th>Cron source</th><th>Real</th><th>Estimated</th><th>Manual</th><th>Total (real+est)</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <!-- PANEL 3: by ship -->
+    <section class="tu-panel">
+        <div class="tu-panel-header">
+            <h2 class="tu-panel-title">Tokens by ship</h2>
+            <p class="tu-panel-sub">"unattributed" is everything outside an explicit ship_id cycle.</p>
+        </div>
+        <canvas class="tu-chart-canvas" id="tu-chart-by-ship"></canvas>
+        <table class="tu-table" id="tu-table-by-ship">
+            <thead><tr><th>Ship</th><th>Real</th><th>Estimated</th><th>Manual</th><th>Total (real+est)</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <p class="tu-footnote">
+        <strong>How estimation works:</strong> when a cron session invokes Claude Code, the session's start+end timestamps from the log file give a duration in seconds. We estimate input tokens at <code>duration_seconds * 100</code> and output tokens at <code>duration_seconds * 30</code>. Constants live at the top of <code>scripts/aggregate-token-usage.py</code> as <code>INPUT_RATE_TOKENS_PER_SEC</code> / <code>OUTPUT_RATE_TOKENS_PER_SEC</code> - recalibrate against the first Founder manual paste if needed.
+    </p>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script id="report-data" type="application/json">
+{
+  "generated_at": "2026-05-13T22:28:59.716123+00:00",
+  "constants": {
+    "INPUT_RATE_TOKENS_PER_SEC": 100,
+    "OUTPUT_RATE_TOKENS_PER_SEC": 30
+  },
+  "by_agent": {
+    "cron-runner": {
+      "real": 0,
+      "estimated": 0,
+      "manual": 0,
+      "total_real_plus_estimated": 0,
+      "by_day": {
+        "2026-05-13": {
+          "real": 0,
+          "estimated": 0
+        }
+      }
+    }
+  },
+  "by_cron": {
+    "downloads-watcher": {
+      "real": 0,
+      "estimated": 0,
+      "manual": 0,
+      "total_real_plus_estimated": 0,
+      "by_day": {
+        "2026-05-13": {
+          "real": 0,
+          "estimated": 0
+        }
+      }
+    }
+  },
+  "by_ship": {
+    "unattributed": {
+      "real": 0,
+      "estimated": 0,
+      "manual": 0,
+      "total_real_plus_estimated": 0,
+      "by_day": {
+        "2026-05-13": {
+          "real": 0,
+          "estimated": 0
+        }
+      }
+    }
+  },
+  "all_time": {
+    "real": 0,
+    "estimated": 0,
+    "manual": 0,
+    "first_event_at": "2026-05-13T22:20:48+00:00",
+    "last_event_at": "2026-05-13T22:25:48+00:00"
+  },
+  "_counts": {
+    "real_events": 0,
+    "estimated_events": 2,
+    "manual_entries": 0
+  }
+}
+</script>
+<script>
+(function () {
+    "use strict";
+
+    function getData() {
+        try { return JSON.parse(document.getElementById('report-data').textContent); }
+        catch (e) { console.error('token-usage: data parse failed', e); return null; }
+    }
+
+    function fmtTokens(n) {
+        if (n === null || n === undefined) return '-';
+        if (n === 0) return '0';
+        if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+        if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(1) + 'k';
+        return String(n);
+    }
+
+    function fmtAgo(iso) {
+        if (!iso) return 'never';
+        var d = new Date(iso);
+        if (isNaN(d)) return iso;
+        var diff = (Date.now() - d.getTime()) / 1000;
+        if (diff < 60) return Math.floor(diff) + 's ago';
+        if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+        if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+        return Math.floor(diff / 86400) + 'd ago';
+    }
+
+    function fmtDate(iso) {
+        if (!iso) return '-';
+        return iso.slice(0, 10);
+    }
+
+    function setStats(data) {
+        var at = data.all_time || {};
+        document.querySelector('[data-stat="all-time-real"]').textContent = fmtTokens(at.real);
+        document.querySelector('[data-stat="all-time-estimated"]').textContent = fmtTokens(at.estimated);
+        document.querySelector('[data-stat="all-time-manual"]').textContent = fmtTokens(at.manual);
+        document.querySelector('[data-stat="first-event"]').textContent = fmtDate(at.first_event_at);
+        document.querySelector('[data-stat="generated-at"]').textContent = fmtAgo(data.generated_at);
+    }
+
+    function buildStackedBarConfig(data, bucketName) {
+        var bucket = data[bucketName] || {};
+        var keys = Object.keys(bucket).sort(function (a, b) {
+            return (bucket[b].total_real_plus_estimated || 0) - (bucket[a].total_real_plus_estimated || 0);
+        });
+        var realData = keys.map(function (k) { return bucket[k].real || 0; });
+        var estData = keys.map(function (k) { return bucket[k].estimated || 0; });
+        return {
+            type: 'bar',
+            data: {
+                labels: keys,
+                datasets: [
+                    { label: 'Real', data: realData, backgroundColor: '#0f3d2e', borderColor: '#228763', borderWidth: 1 },
+                    { label: 'Estimated', data: estData, backgroundColor: 'rgba(212,168,87,0.4)', borderColor: '#d4a857', borderWidth: 1, borderDash: [4,3] }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: true, ticks: { color: '#b8ad95', callback: function (v) { return fmtTokens(v); } }, grid: { color: 'rgba(216,208,192,0.08)' } },
+                    y: { stacked: true, ticks: { color: '#d8d0c0' }, grid: { display: false } }
+                },
+                plugins: {
+                    legend: { labels: { color: '#d8d0c0', font: { family: 'inherit', size: 12 } } },
+                    tooltip: { callbacks: { label: function (ctx) { return ctx.dataset.label + ': ' + fmtTokens(ctx.parsed.x); } } }
+                }
+            }
+        };
+    }
+
+    function fillTable(tableId, data, bucketName, isCron) {
+        var bucket = data[bucketName] || {};
+        var tbody = document.querySelector('#' + tableId + ' tbody');
+        if (!tbody) return;
+        var keys = Object.keys(bucket).sort(function (a, b) {
+            return (bucket[b].total_real_plus_estimated || 0) - (bucket[a].total_real_plus_estimated || 0);
+        });
+        if (keys.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--text-faint); padding: var(--space-4);">No data yet. Run scripts/aggregate-token-usage.py.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = keys.map(function (k) {
+            var b = bucket[k];
+            // Cron-source warning: downloads-watcher OR maintenance with > 0 tokens
+            var warningClass = '';
+            var nameCell = k;
+            if (isCron && (k === 'downloads-watcher' || k === 'maintenance')) {
+                var total = (b.real || 0) + (b.estimated || 0);
+                if (total > 0) {
+                    warningClass = ' is-warning';
+                    nameCell = '<span class="tu-cell-warning">! ' + k + '</span>';
+                }
+            }
+            return '<tr class="' + warningClass + '">' +
+                '<td>' + nameCell + '</td>' +
+                '<td class="is-num">' + fmtTokens(b.real) + '</td>' +
+                '<td class="is-num">' + fmtTokens(b.estimated) + '</td>' +
+                '<td class="is-num">' + fmtTokens(b.manual) + '</td>' +
+                '<td class="is-num">' + fmtTokens(b.total_real_plus_estimated) + '</td>' +
+                '</tr>';
+        }).join('');
+    }
+
+    function render() {
+        var data = getData();
+        if (!data) return;
+        setStats(data);
+        if (typeof Chart !== 'undefined') {
+            new Chart(document.getElementById('tu-chart-by-agent'), buildStackedBarConfig(data, 'by_agent'));
+            new Chart(document.getElementById('tu-chart-by-cron'),  buildStackedBarConfig(data, 'by_cron'));
+            new Chart(document.getElementById('tu-chart-by-ship'),  buildStackedBarConfig(data, 'by_ship'));
+        }
+        fillTable('tu-table-by-agent', data, 'by_agent', false);
+        fillTable('tu-table-by-cron',  data, 'by_cron',  true);
+        fillTable('tu-table-by-ship',  data, 'by_ship',  false);
+
+        // Refresh button
+        var btn = document.getElementById('tu-refresh-btn');
+        if (btn) {
+            btn.addEventListener('click', function () {
+                btn.textContent = 'Run scripts/regen-all.ps1 in PowerShell';
+                btn.disabled = true;
+                setTimeout(function () { btn.disabled = false; btn.innerHTML = 'Refresh now<div class="tu-refresh-help">runs scripts/regen-all</div>'; }, 4000);
+            });
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', render);
+    } else { render(); }
+})();
+</script>
+</body>
+</html>
