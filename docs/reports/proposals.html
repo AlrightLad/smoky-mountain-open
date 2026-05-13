@@ -305,6 +305,20 @@
   "proposals": {
     "pending": [
       {
+        "id": "PROP-TEST-001",
+        "title": "Synthetic test proposal for Downloads watcher pipeline verification",
+        "lane": 1,
+        "lane_label": "Test infrastructure",
+        "rationale": "Pipeline verification only. This proposal exists solely to exercise the Downloads watcher + apply-decisions.sh + regen-all chain end-to-end before trusting real approvals.",
+        "scope": "No actual scope. Synthetic test artifact.",
+        "estimate": {
+          "cost_tokens": 0
+        },
+        "files_affected": [],
+        "ship_target": "TEST",
+        "created_at": "2026-05-13T20:50:00Z"
+      },
+      {
         "id": "PROP-004",
         "title": "Add `org-monthly` as 4th quota_type in PAUSE_DISCIPLINE schema",
         "lane": 2,
@@ -395,13 +409,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 2,
+    "pending": 3,
     "approved": 1,
     "deferred": 0,
     "shipped_total": 0,
     "rejected_total": 0
   },
-  "as_of": "2026-05-13T20:11:43.710555+00:00",
+  "as_of": "2026-05-13T20:52:32.374170+00:00",
   "schema_version": 2,
   "archive_display_cap": 50
 }
