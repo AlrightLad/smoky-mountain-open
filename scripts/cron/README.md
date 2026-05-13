@@ -66,6 +66,51 @@ powershell -ExecutionPolicy Bypass -File scripts/cron/uninstall-maintenance.ps1
 - Log archive: `scripts/cron/logs/archive/<YYYY-MM>.zip`
 - Telemetry event: `cycle.maintenance.complete` in `.claude/state/telemetry/events/<date>.ndjson`
 
+## 3. Overnight triage — 03:00 local (daily)
+
+Launches Claude Code with the fixed prompt at `scripts/cron/overnight-triage-prompt.txt`. Claude processes `.claude/state/founder-input-queue/` + `.claude/state/bug-reports/inbox/`, runs heartbeat (regen-all), commits locally. 4-hour wall-clock timeout; kill on exceed.
+
+### Install (Founder, as Administrator — REQUIRES PASSWORD + Claude Code installed)
+
+```powershell
+# Verify Claude Code is on PATH first
+claude --version
+
+# Then install the task
+powershell -ExecutionPolicy Bypass -File scripts/cron/install-overnight-triage.ps1
+```
+
+Founder enters Windows password when prompted (separate from the maintenance task's credential — each Scheduled Task stores its own encrypted password copy).
+
+### Test manually
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/cron/test-overnight-triage.ps1
+```
+
+This LAUNCHES Claude Code. Cancel with Ctrl-C if you don't want a real overnight run on demand.
+
+### Uninstall
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/cron/uninstall-overnight-triage.ps1
+```
+
+### Outputs
+
+- Logs: `scripts/cron/logs/<ts>-overnight-triage.log` + `.stdout` + `.stderr`
+- Session journal: `.claude/state/cron/<YYYY-MM-DD>-overnight-run.md`
+- Telemetry: `cron.overnight-triage.complete` (with `exit_code`, `duration_seconds`, `stdout_lines`, `stderr_lines`)
+- Any HALT 24 fires: `.claude/state/halts/halt-24-auto-resume-failure-<ts>.json`
+
+### Dependencies (must be installed before first run)
+
+| Dependency | Resolved via |
+|------------|--------------|
+| Claude Code CLI | `Resolve-ClaudeCode` (in `common.ps1`) — checks `$env:APPDATA\npm\claude.cmd` + similar |
+| Git Bash | `Resolve-GitBash` — same as other crons; NOT WSL |
+| Python 3.12 | `Resolve-Python` |
+
 ## Pause both crons
 
 Write `.claude/state/cron-paused.json`:
@@ -103,6 +148,7 @@ If you add a new PS script that touches `.sh` files, copy this function in and u
 
 | File | Purpose |
 |------|---------|
+| `common.ps1` | Shared helpers (Resolve-GitBash, Resolve-Python, Resolve-ClaudeCode, Should-SkipCron, Should-FireHalt24) — dot-sourced by all launchers |
 | `downloads-watcher.ps1` | Watcher script — every 5 min |
 | `install-downloads-watcher.ps1` | Register the watcher Scheduled Task (admin) |
 | `uninstall-downloads-watcher.ps1` | Remove the watcher task (admin) |
@@ -111,6 +157,11 @@ If you add a new PS script that touches `.sh` files, copy this function in and u
 | `install-maintenance.ps1` | Register the maintenance Scheduled Task (admin + password) |
 | `uninstall-maintenance.ps1` | Remove the maintenance task (admin) |
 | `test-maintenance.ps1` | Manual single-run of maintenance |
+| `overnight-triage.ps1` | Launches Claude Code with the overnight-triage prompt (daily 03:00) |
+| `overnight-triage-prompt.txt` | Fixed prompt Claude Code reads — changes go through normal review |
+| `install-overnight-triage.ps1` | Register the overnight-triage task (admin + password) |
+| `uninstall-overnight-triage.ps1` | Remove the overnight-triage task (admin) |
+| `test-overnight-triage.ps1` | Manual single-run; LAUNCHES Claude Code, up to 4h |
 | `logs/` | Per-run log files (`<ts>-<task>.log`) |
 | `logs/archive/` | Compressed logs > 30 days old |
 | `quarantine/` | Junk files moved here for 30-day recovery |

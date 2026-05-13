@@ -1,0 +1,114 @@
+OVERNIGHT TRIAGE RUN - autonomous, no Founder available.
+
+Read first (skim if you've seen them in this session):
+  docs/agents/WAVE_ZERO_DRY_RUN_RUNBOOK.md
+  docs/agents/FIRST_PROACTIVE_CYCLE_KICKOFF.md
+  docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md
+  docs/agents/METRIC_INTEGRITY_PROTOCOL.md
+  docs/agents/FIQ_QUALITY_RUBRIC.md
+  docs/agents/HALT_CRITERIA_v8.1_ADDENDUM.md (item 25 in particular)
+  .claude/state/wave-zero-dry-run/remediation/F1a-token-meter-gap-diagnostic.md
+
+Work to do:
+
+  1. Scan .claude/state/founder-input-queue/ for entries without a
+     triaged_at field. For each:
+       a. Grade per FIQ_QUALITY_RUBRIC (5 dimensions, 5 points each,
+          A-F letter from total).
+       b. If grade < B (i.e., C/D/F): demote to .claude/state/proactive-
+          backlog.md with a note explaining the rubric dimensions that
+          failed. Move the file out of founder-input-queue/.
+       c. If grade >= B: keep in queue. Set triaged_at to the current
+          ISO-8601 UTC. Optionally append a brief analysis/context block
+          that helps Founder decide faster.
+
+  2. Scan .claude/state/bug-reports/inbox/ for *.md files. For each:
+       a. Open a discussion bubble per P3e (voters: Engineer + Critic +
+          Data-Integrity; bubble-only: Devil's-Advocate). Authentic
+          deliberation - no rubber-stamping. If a vote feels easy, dig
+          deeper before casting.
+       b. Diagnose - confirmed vs hypothesis. Cite line numbers + file
+          paths + error strings verbatim. NO inventing. If the bug
+          report references a file that doesn't exist or a function
+          that grep can't find, flag as "report-quality issue" and
+          escalate to Founder via FIQ rather than guessing.
+       c. If fix is clear AND small (< 200 LOC, single area, revertible):
+          author a proposal at .claude/state/proposals/pending/PROP-NNN-
+          *.md with full §amendment.4 schema (id, title, lane:int,
+          lane_label, created_at, rationale, scope, estimate:nested,
+          files_affected, ship_target).
+       d. If Founder decision is needed (architectural, scope, priority):
+          append to FIQ as new entry with full FIQ_QUALITY_RUBRIC
+          dimensions filled. Self-grade; if your draft scores below B,
+          revise before submitting (FIQ depth metric only counts B+
+          entries).
+       e. Move processed bug report from inbox/ to bug-reports/triaged/.
+
+  3. Run heartbeat activities:
+       a. powershell -ExecutionPolicy Bypass -File scripts/regen-all.ps1
+          (this is the gating wrapper - it runs scan-shipped-proposals,
+          aggregate-telemetry, regen-proposals, regen-dashboard, regen-
+          ops-views, regen-main-flows, regen-index, and the round-trip
+          test in sequence; round-trip MUST pass at the end).
+       b. Refresh wellness state files at .claude/state/wellness/ for any
+          agent that participated tonight (engineer, critic, data-
+          integrity, design-bot, etc.).
+
+  4. Write session journal entry at
+     .claude/state/cron/<YYYY-MM-DD>-overnight-run.md summarizing:
+       - FIQ entries triaged (count by grade A/B/C/D/F, with IDs)
+       - Bug reports processed (IDs, dispositions)
+       - New proposals authored (PROP-NNN IDs + lanes + sizes)
+       - Wellness state changes (which agents pushed past which threshold)
+       - Any blockers requiring Founder attention (HALT criteria, scope-
+         creep candidates, decisions awaiting Founder)
+       - Critic's metric-integrity attestation (the substantive-vs-fluff
+         check from step below)
+
+  5. Commit all state changes with this exact message format:
+       "Overnight triage <date> - <N> reports, <M> proposals, <K> FIQ
+        entries graded"
+     where <date> is YYYY-MM-DD, <N> is bug reports processed (incl.
+     zero), <M> is new proposals authored, <K> is FIQ entries graded.
+
+  6. Exit clean.
+
+Discipline:
+
+  - Defensive pause heuristic (F1a token-meter gap is real until
+    PROP-003 sidecar ships): pause every 5 atomic operations OR on any
+    API error / org-cap signal in a tool result. "Atomic operation"
+    here is one Edit/Write/Bash that changes state. Reads don't count.
+    On pause: write .claude/state/last-verify.json with reason "pause-
+    rate-limit", resume_after set to "next-cron-fire", and exit clean.
+    Do NOT try to retry through a quota wall.
+
+  - DO NOT push commits. Founder reviews local diff first.
+
+  - DO NOT modify docs/agents/* directly. Governance hook blocks the
+    write. Author proposals at .claude/state/proposals/pending/ for
+    Founder application.
+
+  - DO NOT auto-merge, auto-deploy, auto-approve, auto-clear-halts, or
+    auto-anything that crosses a Founder-decision boundary.
+
+  - Critic metric-integrity check before close (per
+    METRIC_INTEGRITY_PROTOCOL § 3.1): "Was this run's work substantive
+    or did I generate fluff to look productive?" Concrete questions to
+    answer:
+       - Did every bug report processed get a real diagnosis with cited
+         evidence, or were any waved off with "looks fine"?
+       - Did every new proposal cite a specific screen/state/edge-case
+         it improves, or were any vague "refactor for code health"?
+       - Did the FIQ grades reflect rubric dimensions honestly, or did
+         I inflate grades to clear inbox count?
+     If Critic cannot attest cleanly to all three: ship doesn't close.
+     Write a Scenario 2 handoff to next cycle's Critic naming the
+     specific concern. Set last-verify.json with reason "metric-
+     integrity-deferred" and exit non-zero so the next cron cycle picks
+     up the reconciliation.
+
+If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only
+and exit. Heartbeat alone is valuable - it keeps dashboards current and
+the round-trip test verified. The session-journal entry in step 4
+records "inbox empty; heartbeat only" for that night.

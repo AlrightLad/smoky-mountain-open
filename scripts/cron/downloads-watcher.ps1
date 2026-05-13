@@ -34,26 +34,8 @@ function Log {
     Write-Host $line
 }
 
-# Resolve Git Bash explicitly. Fix C: never let Windows pick a bash - the
-# default resolution order on Windows includes System32\bash.exe (WSL launcher)
-# and WindowsApps\bash.exe (WSL store wrapper). We do NOT want WSL.
-function Resolve-GitBash {
-    $candidates = @(
-        "C:\Program Files\Git\bin\bash.exe",
-        "C:\Program Files (x86)\Git\bin\bash.exe",
-        "$env:LOCALAPPDATA\Programs\Git\bin\bash.exe",
-        "C:\Program Files\Git\usr\bin\bash.exe"
-    )
-    foreach ($p in $candidates) {
-        if (Test-Path $p) { return $p }
-    }
-    # Fallback: where.exe bash - but filter out WSL paths.
-    $found = & where.exe bash 2>$null | Where-Object {
-        $_ -notmatch "System32" -and $_ -notmatch "WindowsApps"
-    } | Select-Object -First 1
-    if ($found -and (Test-Path $found)) { return $found }
-    return $null
-}
+# Shared helpers (Resolve-GitBash, Resolve-Python, Should-SkipCron, etc.)
+. "$PSScriptRoot\common.ps1"
 
 Log "START $startedIso  repoRoot=$repoRoot"
 

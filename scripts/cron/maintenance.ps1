@@ -57,31 +57,8 @@ function Record-Step {
     $script:stepResults[$name] = @{ status = $status; detail = $detail }
 }
 
-function Resolve-GitBash {
-    $candidates = @(
-        "C:\Program Files\Git\bin\bash.exe",
-        "C:\Program Files (x86)\Git\bin\bash.exe",
-        "$env:LOCALAPPDATA\Programs\Git\bin\bash.exe",
-        "C:\Program Files\Git\usr\bin\bash.exe"
-    )
-    foreach ($p in $candidates) { if (Test-Path $p) { return $p } }
-    $found = & where.exe bash 2>$null | Where-Object {
-        $_ -notmatch "System32" -and $_ -notmatch "WindowsApps"
-    } | Select-Object -First 1
-    if ($found -and (Test-Path $found)) { return $found }
-    return $null
-}
-
-function Resolve-Python {
-    $candidates = @(
-        "$env:LOCALAPPDATA\Programs\Python\Python312\python.exe",
-        "$env:LOCALAPPDATA\Programs\Python\Python311\python.exe"
-    )
-    foreach ($p in $candidates) { if (Test-Path $p) { return $p } }
-    $cmd = Get-Command python.exe -ErrorAction SilentlyContinue
-    if ($cmd) { return $cmd.Source }
-    return $null
-}
+# Shared helpers (Resolve-GitBash, Resolve-Python, Should-SkipCron, etc.)
+. "$PSScriptRoot\common.ps1"
 
 Log "START $startedIso  repoRoot=$repoRoot"
 Push-Location $repoRoot
