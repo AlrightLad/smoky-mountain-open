@@ -1080,14 +1080,16 @@ def main():
             print(red(f"  ✗ {fname:32s} does not import dashboard-shell.css"))
             failures.append((f"theme:{fname}:shell-import", "dashboard-shell.css not imported"))
 
-    # Wiring assertions: cross-check that scenarios in activity data match canonical CSS classes
+    # Wiring assertions: cross-check that scenarios in activity data match canonical CSS classes.
+    # Accept either legacy `.activity-item.scenario-X` or new `.act-item.scenario-X` during migration.
     print(cyan("\n[wiring] Cross-checking scenario tokens against CSS + dropdown..."))
     activity_html = (test_reports / "activity.html").read_text()
     scenarios_in_data = {h["scenario"] for h in activity_data["handoffs"]}
     for scenario in scenarios_in_data:
-        css_class = f".activity-item.scenario-{scenario}::before"
+        legacy_class = f".activity-item.scenario-{scenario}::before"
+        new_class    = f".act-item.scenario-{scenario}::before"
         dropdown = f'<option value="{scenario}">'
-        css_ok = css_class in activity_html
+        css_ok = (legacy_class in activity_html) or (new_class in activity_html)
         drop_ok = dropdown in activity_html
         if css_ok and drop_ok:
             print(green(f"  ✓ {scenario:32s} has CSS class + dropdown option"))

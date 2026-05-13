@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discussion Bubbles — PARBAUGHS Orchestration</title>
-    <link rel="stylesheet" href="_assets/dashboard.css">
     <link rel="stylesheet" href="_assets/dashboard-shell.css">
     <style>
         /* Browser default [hidden] = display:none, but explicit `display: flex/grid/block`
@@ -362,7 +361,7 @@
         }
     </style>
 </head>
-<body>
+<body class="pb-app">
     <header class="pb-page-header">
         <nav class="pb-page-nav">
             <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
@@ -379,14 +378,44 @@
         </nav>
     </header>
 
-    <main class="page-main">
-        <div class="page-header-row">
+    <main class="pb-page-main">
+        <div class="pb-page-title-row">
             <div>
-                <h1 class="page-title">Discussion Bubbles</h1>
-                <p class="page-subtitle">Threaded transcripts of every multi-agent deliberation. Click a thread to read who said what.</p>
+                <h1 class="pb-page-title">Discussion Bubbles</h1>
+                <p class="pb-page-subtitle">Threaded transcripts of every multi-agent deliberation. Click a thread to read who said what. The 2-panel layout below is the working reading interface &mdash; KPIs above summarize counts.</p>
+            </div>
+            <div class="pb-page-meta">
+                <span>Generated <span data-meta="generated-at">&mdash;</span></span>
             </div>
         </div>
 
+        <section class="pb-section">
+            <h2 class="pb-section-title">Bubble counts</h2>
+            <div class="pb-kpi-grid">
+                <div class="pb-kpi-card">
+                    <span class="pb-kpi-label">Total bubbles</span>
+                    <span class="pb-kpi-value" data-kpi="bubbles-total">&mdash;</span>
+                    <span class="pb-kpi-sub">recorded threads</span>
+                </div>
+                <div class="pb-kpi-card is-warning">
+                    <span class="pb-kpi-label">Open</span>
+                    <span class="pb-kpi-value" data-kpi="bubbles-open">&mdash;</span>
+                    <span class="pb-kpi-sub">awaiting decision</span>
+                </div>
+                <div class="pb-kpi-card is-positive">
+                    <span class="pb-kpi-label">Closed (7d)</span>
+                    <span class="pb-kpi-value" data-kpi="bubbles-closed-7d">&mdash;</span>
+                    <span class="pb-kpi-sub">approved or rejected this week</span>
+                </div>
+                <div class="pb-kpi-card is-info">
+                    <span class="pb-kpi-label">Approved w/ dissent</span>
+                    <span class="pb-kpi-value" data-kpi="bubbles-dissent">&mdash;</span>
+                    <span class="pb-kpi-sub">non-unanimous outcomes</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROTECTED LAYOUT: 2-panel master/detail (Phase 6.5). Do NOT flatten. -->
         <div class="db-app" id="db-app">
             <aside class="db-rail">
                 <div class="db-rail-header">
@@ -806,6 +835,26 @@
             // ----- Read embedded data -----
             const data = JSON.parse(document.getElementById('report-data').textContent);
             const bubbles = data.discussion_bubbles || [];
+
+            // ----- KPI strip above 2-panel layout -----
+            (function populateKpis() {
+                function setText(sel, value) { var el = document.querySelector(sel); if (el != null) el.textContent = value; }
+                var total = bubbles.length;
+                var open = bubbles.filter(function (b) { return b.status === 'open'; }).length;
+                var dissent = bubbles.filter(function (b) { return b.status === 'approved-with-dissent'; }).length;
+                var cutoff = Date.now() - 7 * 86400 * 1000;
+                var closed7d = bubbles.filter(function (b) {
+                    if (b.status === 'open') return false;
+                    var ts = b.closed_at || b.last_message_at || b.created_at;
+                    if (!ts) return false;
+                    return new Date(ts).getTime() >= cutoff;
+                }).length;
+                setText('[data-kpi="bubbles-total"]',     String(total));
+                setText('[data-kpi="bubbles-open"]',      String(open));
+                setText('[data-kpi="bubbles-closed-7d"]', String(closed7d));
+                setText('[data-kpi="bubbles-dissent"]',   String(dissent));
+                setText('[data-meta="generated-at"]', new Date().toISOString().slice(0,16).replace('T',' ') + ' UTC');
+            })();
 
             // ----- Author → initials (for avatar) -----
             const authorInitials = function (name) {
