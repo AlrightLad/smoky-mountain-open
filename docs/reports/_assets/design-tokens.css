@@ -466,7 +466,22 @@
 
   --col-gap:      var(--space-5);   /* horizontal gap in grids */
   --row-gap:      var(--space-5);   /* vertical gap in grids */
-  --max-content:  1440px;            /* maximum content width on wide screens */
+
+  /*
+   * --max-content (1280px) — canonical dashboard width
+   * Used by .pb-page-main and every standard dashboard. The Founder's reading
+   * width target; KPI grids fit 4 cells at this width without compression.
+   */
+  --max-content:      1280px;
+
+  /*
+   * --max-content-wide (1480px) — opt-in wider variant
+   * Used by .pb-page-main.is-wide on dashboards whose content genuinely needs
+   * more horizontal room (currently: main-flows.html, where the 6-column
+   * architecture grid + right rail does not fit at 1280). Opt-in only —
+   * no dashboard should reach for this without a specific layout reason.
+   */
+  --max-content-wide: 1480px;
 
 
   /* ==========================================================================
