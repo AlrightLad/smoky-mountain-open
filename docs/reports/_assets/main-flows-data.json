@@ -1,0 +1,240 @@
+{
+  "schema_version": 1,
+  "generated_by": "scripts/regen-main-flows.py — source-of-truth maintained here, NOT in HTML",
+  "source_doc": ".claude/state/wave-zero-dry-run/remediation/proposed-MAIN_FLOWS.md",
+  "architecture_audit": ".claude/state/wave-zero-dry-run/architecture-audit.md",
+  "columns": [
+    {
+      "id": "actor",
+      "label": "Actors",
+      "subtitle": "Who interacts with PARBAUGHS",
+      "color_token": "--col-actor",
+      "components": [
+        { "id": "actor.member",       "label": "Member",       "subtitle": "Auth'd league member" },
+        { "id": "actor.commissioner", "label": "Commissioner", "subtitle": "Per-league admin" },
+        { "id": "actor.founder",      "label": "Founder",      "subtitle": "Platform-level (Zach)" },
+        { "id": "actor.invitee",      "label": "Invitee",      "subtitle": "Pre-claim link recipient" },
+        { "id": "actor.guest",        "label": "Guest",        "subtitle": "Unauth visitor" }
+      ]
+    },
+    {
+      "id": "client",
+      "label": "Client surfaces",
+      "subtitle": "src/pages/* + Capacitor",
+      "color_token": "--col-client",
+      "components": [
+        { "id": "client.hq-home",         "label": "HQ Home",          "subtitle": "src/pages/home.js" },
+        { "id": "client.hq-playnow",      "label": "Play Now",         "subtitle": "src/pages/playnow.js" },
+        { "id": "client.hq-roundhistory", "label": "Round detail",     "subtitle": "src/pages/round.js" },
+        { "id": "client.hq-leagues",      "label": "Leagues + standings","subtitle": "src/pages/leagues.js" },
+        { "id": "client.hq-members",      "label": "Members + Find",   "subtitle": "src/pages/members.js" },
+        { "id": "client.hq-feed",         "label": "Activity feed",    "subtitle": "src/pages/feed.js" },
+        { "id": "client.hq-wagers",       "label": "Wagers + bounties","subtitle": "src/pages/wagers.js" },
+        { "id": "client.hq-teetimes",     "label": "Calendar + tee",   "subtitle": "src/pages/calendar.js" },
+        { "id": "client.hq-trophy",       "label": "Trophy Room",      "subtitle": "src/pages/trophyroom.js" },
+        { "id": "client.hq-range",        "label": "Range",            "subtitle": "src/pages/range.js" },
+        { "id": "client.hq-spectator",    "label": "Spectator HUD",    "subtitle": "src/pages/spectator.js" },
+        { "id": "client.hq-settings",     "label": "Settings",         "subtitle": "src/pages/settings.js" },
+        { "id": "client.hq-admin",        "label": "Admin",            "subtitle": "src/pages/admin.js" },
+        { "id": "client.mobile-capacitor","label": "Mobile (Capacitor)","subtitle": "iOS + Android wrapper" }
+      ]
+    },
+    {
+      "id": "fn",
+      "label": "Auth + Functions",
+      "subtitle": "Firebase Auth + 8 Cloud Functions",
+      "color_token": "--col-auth-fn",
+      "components": [
+        { "id": "fn.auth",                  "label": "Firebase Auth",      "subtitle": "Email/password" },
+        { "id": "fn.search-courses",        "label": "searchCourses",      "subtitle": "Proxy → GolfCourseAPI" },
+        { "id": "fn.validate-invite",       "label": "validateInvite",     "subtitle": "onRequest" },
+        { "id": "fn.send-push",             "label": "sendPushNotification","subtitle": "onCreate(pendingPush)" },
+        { "id": "fn.on-member-role-change", "label": "onMemberRoleChange", "subtitle": "onUpdate(members)" },
+        { "id": "fn.on-league-delete",      "label": "onLeagueDelete",     "subtitle": "onDelete(leagues)" },
+        { "id": "fn.join-league",           "label": "joinLeague",         "subtitle": "onCall" },
+        { "id": "fn.on-founder-access-log", "label": "onFounderAccessLog", "subtitle": "onCreate(founder_access_logs)" },
+        { "id": "fn.expire-suspensions",    "label": "expireSuspensions",  "subtitle": "Scheduled" }
+      ]
+    },
+    {
+      "id": "data",
+      "label": "Firestore (data)",
+      "subtitle": "30 collections, 12 groups",
+      "color_token": "--col-data",
+      "components": [
+        { "id": "data.members",         "label": "members",         "subtitle": "Profiles, handicaps, leagues[]" },
+        { "id": "data.leagues",         "label": "leagues",         "subtitle": "League docs + memberUids" },
+        { "id": "data.rounds",          "label": "rounds (+live)",  "subtitle": "rounds, liverounds, syncrounds, scramble_rounds" },
+        { "id": "data.dms",             "label": "dms + chat",      "subtitle": "DMs, messages, chat threads" },
+        { "id": "data.notifications",   "label": "notifications",   "subtitle": "+ pendingPush queue" },
+        { "id": "data.parcoins",        "label": "parcoin ledger",  "subtitle": "parcoin_transactions" },
+        { "id": "data.wagers-bounties", "label": "wagers + bounties","subtitle": "bounties + partygames" },
+        { "id": "data.events",          "label": "events + tee",    "subtitle": "calendar_events, teetimes, trips" },
+        { "id": "data.courses",         "label": "courses + reviews","subtitle": "courses + course_reviews" },
+        { "id": "data.social",          "label": "social + photos", "subtitle": "social_actions + photos" },
+        { "id": "data.config",          "label": "config + misc",   "subtitle": "config, errors, reports, presence" },
+        { "id": "data.invites",         "label": "invites",         "subtitle": "Invite codes" }
+      ]
+    },
+    {
+      "id": "dist",
+      "label": "Distribution",
+      "subtitle": "GitHub Pages + Capacitor",
+      "color_token": "--col-distribution",
+      "components": [
+        { "id": "dist.gh-pages",         "label": "GitHub Pages",   "subtitle": "alrightlad.github.io/smoky-mountain-open" },
+        { "id": "dist.capacitor-ios",    "label": "iOS (Capacitor)","subtitle": ".github/workflows/ios-build.yml" },
+        { "id": "dist.capacitor-android","label": "Android (Capacitor)","subtitle": ".github/workflows/android-build.yml" }
+      ]
+    },
+    {
+      "id": "ext",
+      "label": "External services",
+      "subtitle": "Outbound API integrations",
+      "color_token": "--col-external",
+      "components": [
+        { "id": "ext.golfcourseapi", "label": "GolfCourseAPI", "subtitle": "Course search (via fn proxy)" },
+        { "id": "ext.open-meteo",    "label": "Open-Meteo",    "subtitle": "Weather + geocoding" },
+        { "id": "ext.fcm",           "label": "FCM",           "subtitle": "Push notifications" },
+        { "id": "ext.anthropic",     "label": "Anthropic API", "subtitle": "Phase 4 — AI Caddie (planned)" }
+      ]
+    }
+  ],
+  "flows": [
+    {
+      "id": "F1",
+      "name": "Log a round",
+      "primary_user_goal": "Member captures a round in progress or after play, sees handicap update on Home.",
+      "actor": "actor.member",
+      "served_by_ships": ["W1.S4", "W1.S2"],
+      "status": "shipped-on-current-system",
+      "path": ["actor.member", "client.hq-home", "client.hq-playnow", "data.courses", "data.rounds", "data.members", "dist.gh-pages"],
+      "steps": [
+        { "n": 1, "from": "actor.member",      "to": "client.hq-home",         "label": "Open Home",                     "description": "Member lands on HQ Home (home.js) after auth; League Pulse + active-round override render from current league context." },
+        { "n": 2, "from": "client.hq-home",    "to": "client.hq-playnow",      "label": "Tap 'Log a round'",            "description": "Router.go('playnow') routes to src/pages/playnow.js. Form scaffolds via renderLogHoleGrid() (rounds.js:369)." },
+        { "n": 3, "from": "client.hq-playnow", "to": "data.courses",           "label": "Course lookup",                 "description": "PB.getCourseByName(name) hits in-memory cache (data.js:285); on miss, route to searchCourses fn." },
+        { "n": 4, "from": "client.hq-playnow", "to": "data.rounds",            "label": "Submit round",                  "description": "_submitRoundEntry(formData) writes round doc with score, holeScores[], firData, girData, puttsData, etc. Timestamp = date_noon_local (B.44)." },
+        { "n": 5, "from": "data.rounds",       "to": "data.members",           "label": "Handicap recompute",            "description": "Round write triggers handicap recompute via WHS calc in src/core/handicap.js; members doc updated with new differential." },
+        { "n": 6, "from": "data.members",      "to": "client.hq-home",         "label": "Home reflects new handicap",    "description": "Home re-renders on next visit (Router.go('home')) showing updated handicap + last-round summary." },
+        { "n": 7, "from": "client.hq-home",    "to": "dist.gh-pages",          "label": "Static serve via GH Pages",     "description": "All client surfaces serve from alrightlad.github.io/smoky-mountain-open per deploy.yml workflow." }
+      ]
+    },
+    {
+      "id": "F2",
+      "name": "View League Pulse / leaderboard",
+      "primary_user_goal": "Member sees recent league activity, hot streaks, and standings.",
+      "actor": "actor.member",
+      "served_by_ships": ["W1.S2", "W1.S11", "W1.S13"],
+      "status": "shipped-on-current-system",
+      "path": ["actor.member", "client.hq-home", "client.hq-feed", "client.hq-leagues", "data.rounds", "data.leagues", "data.members"],
+      "steps": [
+        { "n": 1, "from": "actor.member",         "to": "client.hq-home",     "label": "Open Home",              "description": "Home renders League Pulse band above the fold (home.js:1842+)." },
+        { "n": 2, "from": "client.hq-home",       "to": "data.rounds",        "label": "Pulse pulls rounds",     "description": "PB.getRounds() returns recent rounds, filtered by activeLeague leagueId field (per CLAUDE.md league-scoping rules)." },
+        { "n": 3, "from": "client.hq-home",       "to": "data.members",       "label": "Resolves player names", "description": "fbMemberCache populated at auth; rounds[].player resolves via PB.getPlayer(uid)." },
+        { "n": 4, "from": "client.hq-home",       "to": "client.hq-feed",     "label": "Tap pulse card",         "description": "Pulse card click → Router.go('feed') for full activity stream." },
+        { "n": 5, "from": "client.hq-feed",       "to": "client.hq-leagues",  "label": "Tap leagues",            "description": "Bottom nav 'Leagues' → src/pages/leagues.js; standings table renders." },
+        { "n": 6, "from": "client.hq-leagues",    "to": "data.leagues",       "label": "Read standings",         "description": "Leagues page reads league.memberUids[] + computes per-member season points." }
+      ]
+    },
+    {
+      "id": "F3",
+      "name": "Find a player + add as friend",
+      "primary_user_goal": "Member discovers another PARBAUGHS member, sends friend request, builds cross-league social graph.",
+      "actor": "actor.member",
+      "served_by_ships": ["W1.S3"],
+      "status": "shipping-W1.S3",
+      "path": ["actor.member", "client.hq-members", "data.members", "data.notifications", "ext.fcm", "fn.send-push"],
+      "steps": [
+        { "n": 1, "from": "actor.member",       "to": "client.hq-members",   "label": "Open Members",          "description": "Router.go('members') loads src/pages/members.js — A-Z directory with public profiles." },
+        { "n": 2, "from": "client.hq-members",  "to": "data.members",        "label": "Read member rows",      "description": "Members page queries members collection filtered by privacy=public OR friend-of-current-user." },
+        { "n": 3, "from": "client.hq-members",  "to": "data.members",        "label": "Send friend request",   "description": "Tap CTA → write friend-request doc; recipient's members doc gets pending friend entry (W1.S3 redesigns this)." },
+        { "n": 4, "from": "data.members",       "to": "data.notifications",  "label": "Notification queued",   "description": "Recipient gets a notifications entry; pendingPush doc enqueues a push." },
+        { "n": 5, "from": "data.notifications", "to": "fn.send-push",        "label": "sendPushNotification fires", "description": "Cloud Function onCreate(pendingPush) reads recipient's fcmToken and dispatches FCM payload." },
+        { "n": 6, "from": "fn.send-push",       "to": "ext.fcm",             "label": "Deliver to FCM",        "description": "FCM admin SDK ships the payload; pendingPush doc deleted post-send." }
+      ]
+    },
+    {
+      "id": "F4",
+      "name": "Post + settle a ParCoin wager",
+      "primary_user_goal": "Member challenges another member for stakes; coins escrow, round plays, winner takes both.",
+      "actor": "actor.member",
+      "served_by_ships": ["W1.S6", "W1.S4"],
+      "status": "planned-W1.S6",
+      "path": ["actor.member", "client.hq-wagers", "data.wagers-bounties", "data.parcoins", "client.hq-playnow", "data.rounds"],
+      "steps": [
+        { "n": 1, "from": "actor.member",            "to": "client.hq-wagers",       "label": "Open Wagers",             "description": "Router.go('wagers') → src/pages/wagers.js; current league's open wagers list." },
+        { "n": 2, "from": "client.hq-wagers",        "to": "data.wagers-bounties",   "label": "Compose wager",            "description": "Member fills opponent + stakes + terms; writes pending wager doc to bounties collection." },
+        { "n": 3, "from": "data.wagers-bounties",    "to": "data.parcoins",          "label": "Escrow coins (on accept)",  "description": "Opponent accept triggers parcoin_transactions entries: BOTH players' balances debited; wager flagged escrowed." },
+        { "n": 4, "from": "actor.member",            "to": "client.hq-playnow",      "label": "Play the round",            "description": "Both players log a round (F1) for the stakes course." },
+        { "n": 5, "from": "client.hq-playnow",       "to": "data.rounds",            "label": "Round outcome",             "description": "Submitted rounds resolve the wager (lower score wins, etc. — settlement logic per W1.S6 spec)." },
+        { "n": 6, "from": "data.rounds",             "to": "data.parcoins",          "label": "Settle winnings",            "description": "Winner's balance credited 2× stakes; loser's already-debited; ledger entry on both sides." },
+        { "n": 7, "from": "data.parcoins",           "to": "actor.member",           "label": "Notification + Home update", "description": "Wager outcome notification fires; Home reflects new balance + W/L record." }
+      ]
+    },
+    {
+      "id": "F5",
+      "name": "Book or RSVP to a tee time",
+      "primary_user_goal": "Member posts a tee time or RSVPs to a peer's posted slot.",
+      "actor": "actor.member",
+      "served_by_ships": ["W1.S8"],
+      "status": "shipped-on-current-system",
+      "path": ["actor.member", "client.hq-teetimes", "data.events", "client.hq-feed", "data.notifications", "fn.send-push", "ext.fcm"],
+      "steps": [
+        { "n": 1, "from": "actor.member",       "to": "client.hq-teetimes",   "label": "Open Calendar / Tee",       "description": "src/pages/calendar.js + teetimes.js; upcoming slots render with RSVP CTAs." },
+        { "n": 2, "from": "client.hq-teetimes", "to": "data.events",          "label": "Post tee time",              "description": "writeTeeTime(date, course, openings) → teetimes collection doc with leagueId scope." },
+        { "n": 3, "from": "data.events",        "to": "client.hq-feed",       "label": "Surfaces in feed",           "description": "Feed activity stream picks up tee time event card; visible to league members." },
+        { "n": 4, "from": "client.hq-feed",     "to": "data.events",          "label": "RSVP click",                 "description": "Other member taps RSVP → tee time doc's rsvps[] array updated." },
+        { "n": 5, "from": "data.events",        "to": "data.notifications",   "label": "Host notified of fill",       "description": "When openings_count reaches threshold, host gets a notifications entry + ParCoin reward (15 coins per CLAUDE.md economy)." },
+        { "n": 6, "from": "data.notifications", "to": "fn.send-push",         "label": "Push fires",                  "description": "Standard send-push path (same as F3 step 5)." }
+      ]
+    },
+    {
+      "id": "F6",
+      "name": "Earn an achievement / see Trophy Room update",
+      "primary_user_goal": "Member crosses a milestone (PB, season champ, range streak); celebration toast + Trophy Room entry.",
+      "actor": "actor.member",
+      "served_by_ships": ["W1.S9", "W1.S4", "W1.S6", "W1.S10"],
+      "status": "shipped-on-current-system",
+      "path": ["actor.member", "client.hq-playnow", "data.rounds", "data.parcoins", "client.hq-trophy", "data.config"],
+      "steps": [
+        { "n": 1, "from": "actor.member",         "to": "client.hq-playnow",  "label": "Trigger action",         "description": "Member completes round / range session / wager — any can trigger an achievement check." },
+        { "n": 2, "from": "client.hq-playnow",    "to": "data.rounds",        "label": "Submit triggers check",  "description": "On round submit, achievement engine evaluates against earned vs unearned. PB detection: this round's score < member.personalBest18." },
+        { "n": 3, "from": "data.rounds",          "to": "data.parcoins",      "label": "ParCoin reward",          "description": "Achievement unlock → parcoin_transactions credit per CLAUDE.md economy table (100 for 18H PB, 50 for 9H PB)." },
+        { "n": 4, "from": "data.rounds",          "to": "client.hq-trophy",   "label": "Toast + Trophy Room",     "description": "Toast renders inline (ach-celebrate keyframe, respecting prefers-reduced-motion per v8.1.3). Trophy Room (trophyroom.js) gains the new entry on next visit." },
+        { "n": 5, "from": "client.hq-trophy",     "to": "data.config",        "label": "Achievement state",       "description": "Some achievement data lives in members.achievements[] or pending_celebrations collection for cross-device sync." }
+      ]
+    },
+    {
+      "id": "F7",
+      "name": "Range session log",
+      "primary_user_goal": "Member logs a practice session with drill focus + feel rating; aggregates render on Range page.",
+      "actor": "actor.member",
+      "served_by_ships": ["W1.S10"],
+      "status": "shipped-on-current-system",
+      "path": ["actor.member", "client.hq-home", "client.hq-range", "data.rounds", "data.parcoins", "client.hq-feed"],
+      "steps": [
+        { "n": 1, "from": "actor.member",      "to": "client.hq-home",  "label": "Tap 'Log range'",   "description": "Home CTA → Router.go('range') → src/pages/range.js." },
+        { "n": 2, "from": "client.hq-home",    "to": "client.hq-range", "label": "Start session timer","description": "Range session timer (start/pause/stop) + drill tags + feel rating (1-5)." },
+        { "n": 3, "from": "client.hq-range",   "to": "data.rounds",     "label": "Submit session",     "description": "Range session doc written (separate from rounds — uses syncrounds or rangelive collection per page mode)." },
+        { "n": 4, "from": "data.rounds",       "to": "data.parcoins",   "label": "Reward if ≥30 min",  "description": "If session duration ≥ 30 min, ParCoin reward (10 coins) per CLAUDE.md economy." },
+        { "n": 5, "from": "data.rounds",       "to": "client.hq-feed",  "label": "Surfaces in feed",   "description": "Activity feed picks up the session as a feed entry, visible to league members." }
+      ]
+    },
+    {
+      "id": "F8",
+      "name": "Spectator + Caddy verify",
+      "primary_user_goal": "Member (or friend cross-league) watches a live round, Caddy surfaces insights, replay survives after round closes.",
+      "actor": "actor.member",
+      "served_by_ships": ["W1.S5", "W1.S11"],
+      "status": "shipping-W1.S5",
+      "path": ["actor.member", "client.hq-feed", "client.hq-spectator", "data.rounds", "data.social", "data.notifications"],
+      "steps": [
+        { "n": 1, "from": "actor.member",        "to": "client.hq-feed",      "label": "See live-round card",     "description": "Feed surfaces an in-progress round; live-now indicator visible (per W1.S3 member detail line spec)." },
+        { "n": 2, "from": "client.hq-feed",      "to": "client.hq-spectator", "label": "Tap to spectate",         "description": "Router.go('spectator?roundId=X') → src/pages/spectator.js; Spectator HUD overlays score + hole + last shot." },
+        { "n": 3, "from": "client.hq-spectator", "to": "data.rounds",         "label": "Subscribe to liverounds", "description": "Spectator subscribes to liverounds collection updates for the specific round; hole-by-hole updates stream." },
+        { "n": 4, "from": "client.hq-spectator", "to": "data.social",         "label": "Caddy insight",            "description": "AI Caddie (rule-based for non-Pro, Anthropic-backed for Pro per Phase 4) surfaces per-hole context. Currently rule-based via src/core/caddie.js." },
+        { "n": 5, "from": "data.rounds",         "to": "data.notifications",  "label": "Round closes",             "description": "Player's _submitRoundEntry completes the round; spectator's view transitions to final card; optional 'watched X play Y' social action recorded." }
+      ]
+    }
+  ]
+}

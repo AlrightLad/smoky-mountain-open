@@ -551,8 +551,8 @@ def main():
             continue
         print(green(f"  ✓ {page:32s} 6 links, is-active='{expected_active}'"))
 
-    # main-flows.html + index.html data-block parse — verify production files (not test workspace)
-    # since these aren't seeded by the synthetic state tree but Founder regens them with their own scripts
+    # main-flows.html + index.html data-block parse — verify production files (not test workspace).
+    # main-flows.html schema is the architecture+flows shape: columns[], flows[] with steps[] referencing component IDs.
     print(cyan("\n[main-flows+index] Verifying production data blocks..."))
     MF_PROD = REPORTS_SRC / "main-flows.html"
     if MF_PROD.exists():
@@ -564,24 +564,57 @@ def main():
         else:
             try:
                 data = json.loads(m.group(2))
-                missing = [k for k in ("flows", "last_amended", "doc_source") if k not in data]
+                # New architecture+flows schema requires columns + flows
+                missing = [k for k in ("columns", "flows", "last_amended", "doc_source") if k not in data]
                 if missing:
-                    print(red(f"  ✗ main-flows.html missing data keys: {missing}"))
+                    print(red(f"  ✗ main-flows.html missing top-level keys: {missing}"))
                     failures.append(("main-flows.html", f"missing keys: {missing}"))
                 else:
+                    columns = data.get("columns") or []
                     flows = data.get("flows") or []
-                    if not isinstance(flows, list):
-                        print(red("  ✗ main-flows.html 'flows' is not a list"))
-                        failures.append(("main-flows.html", "flows not a list"))
-                    elif flows:
-                        flow_keys_ok = all(isinstance(f, dict) and "id" in f and "name" in f for f in flows)
-                        if not flow_keys_ok:
-                            print(red("  ✗ main-flows.html flows missing id/name fields"))
-                            failures.append(("main-flows.html", "flow items missing id/name"))
-                        else:
-                            print(green(f"  ✓ main-flows.html              data block valid, {len(flows)} flows, doc_source='{data.get('doc_source')}'"))
+                    if not isinstance(columns, list) or not isinstance(flows, list):
+                        print(red("  ✗ main-flows.html columns/flows not lists"))
+                        failures.append(("main-flows.html", "columns/flows not lists"))
                     else:
-                        print(green("  ✓ main-flows.html              data block valid (0 flows — bare template OK)"))
+                        # Build component-ID set from columns
+                        comp_ids = set()
+                        for col in columns:
+                            for c in (col.get("components") or []):
+                                cid = c.get("id")
+                                if cid:
+                                    comp_ids.add(cid)
+                        if not flows:
+                            print(green(f"  ✓ main-flows.html              {len(columns)} cols, {len(comp_ids)} components, 0 flows (bare template)"))
+                        else:
+                            # Every flow.path component + every step.from/to must resolve
+                            unresolved = []
+                            empty_steps = []
+                            for f in flows:
+                                if not isinstance(f, dict) or "id" not in f or "name" not in f:
+                                    unresolved.append(f"flow missing id/name: {f}")
+                                    continue
+                                for p in (f.get("path") or []):
+                                    if p not in comp_ids:
+                                        unresolved.append(f"flow {f['id']} path '{p}' not in grid")
+                                steps = f.get("steps") or []
+                                if not steps:
+                                    empty_steps.append(f["id"])
+                                for s in steps:
+                                    for fk in ("from", "to"):
+                                        v = s.get(fk)
+                                        if v not in comp_ids:
+                                            unresolved.append(f"flow {f['id']} step {s.get('n')} {fk}='{v}' not in grid")
+                            if unresolved:
+                                print(red(f"  ✗ main-flows.html unresolved references ({len(unresolved)}):"))
+                                for u in unresolved[:5]:
+                                    print(red(f"     - {u}"))
+                                failures.append(("main-flows.html", f"unresolved component refs: {len(unresolved)}"))
+                            elif empty_steps:
+                                print(red(f"  ✗ main-flows.html flows with empty steps: {empty_steps}"))
+                                failures.append(("main-flows.html", f"empty steps: {empty_steps}"))
+                            else:
+                                total_steps = sum(len(f.get("steps") or []) for f in flows)
+                                print(green(f"  ✓ main-flows.html              {len(columns)} cols, {len(comp_ids)} components, {len(flows)} flows, {total_steps} steps — all refs resolve"))
             except json.JSONDecodeError as e:
                 print(red(f"  ✗ main-flows.html JSON parse: {e}"))
                 failures.append(("main-flows.html", f"JSON parse: {e}"))

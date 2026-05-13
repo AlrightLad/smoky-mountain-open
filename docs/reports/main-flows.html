@@ -3,236 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Flows — PARBAUGHS Orchestration</title>
+    <title>Architecture & Flows — PARBAUGHS Orchestration</title>
     <link rel="stylesheet" href="_assets/dashboard.css">
     <style>
         body { background: var(--bg-page); color: var(--text-primary); }
 
-        /* ============== Shared page chrome ============== */
-        .page-header {
-            background: var(--bg-elevated);
-            border-bottom: 1px solid var(--border-subtle);
+        /* Column color tokens (referenced from columns[].color_token in data block) */
+        :root {
+            --col-actor:        #c9a961;
+            --col-client:       #4a8a9c;
+            --col-auth-fn:      #6b5b8c;
+            --col-data:         #4a8067;
+            --col-distribution: #d4a857;
+            --col-external:     #9c4a4a;
         }
-        .page-nav {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: var(--space-3) var(--space-4);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: var(--space-4);
-            flex-wrap: wrap;
-        }
-        .nav-brand {
-            font-family: var(--font-mono);
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--accent-brass);
-            text-decoration: none;
-            letter-spacing: 0.04em;
-        }
-        .nav-links {
-            display: flex;
-            gap: var(--space-3);
-            font-size: 0.875rem;
-            flex-wrap: wrap;
-        }
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            padding: var(--space-1) var(--space-2);
-            border-radius: var(--radius-sm);
-            transition: color var(--duration-default) var(--ease-default), background var(--duration-default) var(--ease-default);
-        }
+
+        /* === Shared page chrome === */
+        .page-header { background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle); }
+        .page-nav { max-width: 1480px; margin: 0 auto; padding: var(--space-3) var(--space-4); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+        .nav-brand { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; color: var(--accent-brass); text-decoration: none; letter-spacing: 0.04em; }
+        .nav-links { display: flex; gap: var(--space-3); font-size: 0.875rem; flex-wrap: wrap; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); transition: color var(--duration-default) var(--ease-default), background var(--duration-default) var(--ease-default); }
         .nav-links a:hover { color: var(--text-primary); background: var(--bg-card); }
-        .nav-links a.is-active {
-            color: var(--accent-brass);
-            background: rgba(201,169,97,0.10);
-            border: 1px solid rgba(201,169,97,0.30);
+        .nav-links a.is-active { color: var(--accent-brass); background: rgba(201,169,97,0.10); border: 1px solid rgba(201,169,97,0.30); }
+
+        .page-main { max-width: 1480px; margin: 0 auto; padding: var(--space-4) var(--space-4); }
+        .page-header-row { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--space-4); margin-bottom: var(--space-3); flex-wrap: wrap; }
+        .page-title { font-size: 1.75rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+        .page-subtitle { color: var(--text-secondary); font-size: 0.9375rem; margin-top: var(--space-1); max-width: 920px; line-height: 1.5; }
+
+        /* === Legend === */
+        .mf-legend { display: flex; flex-wrap: wrap; gap: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); margin-bottom: var(--space-4); font-size: 0.75rem; }
+        .mf-legend-item { display: flex; align-items: center; gap: var(--space-1); }
+        .mf-legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+        /* === Workspace layout === */
+        .mf-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: var(--space-4); align-items: start; }
+        @media (max-width: 1100px) {
+            .mf-workspace { grid-template-columns: 1fr; }
+            .mf-rail { order: 2; }
         }
 
-        .page-main {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: var(--space-5) var(--space-4);
+        /* === Grid (left) === */
+        .mf-grid-wrap { position: relative; overflow-x: auto; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-3); }
+        .mf-grid { display: grid; grid-template-columns: repeat(6, minmax(140px, 1fr)); gap: var(--space-3); position: relative; min-width: 900px; }
+        @media (max-width: 1100px) {
+            .mf-grid { grid-template-columns: repeat(6, 160px); }
         }
-        .page-header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            gap: var(--space-4);
-            margin-bottom: var(--space-5);
-            flex-wrap: wrap;
+        .mf-column { display: flex; flex-direction: column; gap: var(--space-2); position: relative; z-index: 2; }
+        .mf-column-header { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; padding: var(--space-1) 0; border-bottom: 2px solid var(--col-actor); margin-bottom: var(--space-1); color: var(--text-secondary); font-weight: 600; }
+        .mf-column[data-col="actor"]        .mf-column-header { border-bottom-color: var(--col-actor); }
+        .mf-column[data-col="client"]       .mf-column-header { border-bottom-color: var(--col-client); }
+        .mf-column[data-col="fn"]           .mf-column-header { border-bottom-color: var(--col-auth-fn); }
+        .mf-column[data-col="data"]         .mf-column-header { border-bottom-color: var(--col-data); }
+        .mf-column[data-col="dist"]         .mf-column-header { border-bottom-color: var(--col-distribution); }
+        .mf-column[data-col="ext"]          .mf-column-header { border-bottom-color: var(--col-external); }
+        .mf-column-subtitle { font-size: 0.6875rem; color: var(--text-tertiary); margin-bottom: var(--space-2); font-style: italic; }
+
+        .mf-node { background: var(--bg-elevated); border: 1px solid var(--border-subtle); border-left: 3px solid var(--col-actor); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-2); font-size: 0.75rem; transition: opacity var(--duration-default) var(--ease-default), border-color var(--duration-default) var(--ease-default), box-shadow var(--duration-default) var(--ease-default), transform var(--duration-default) var(--ease-default); position: relative; }
+        .mf-column[data-col="actor"]        .mf-node { border-left-color: var(--col-actor); }
+        .mf-column[data-col="client"]       .mf-node { border-left-color: var(--col-client); }
+        .mf-column[data-col="fn"]           .mf-node { border-left-color: var(--col-auth-fn); }
+        .mf-column[data-col="data"]         .mf-node { border-left-color: var(--col-data); }
+        .mf-column[data-col="dist"]         .mf-node { border-left-color: var(--col-distribution); }
+        .mf-column[data-col="ext"]          .mf-node { border-left-color: var(--col-external); }
+        .mf-node-label { font-weight: 600; color: var(--text-primary); font-size: 0.8125rem; }
+        .mf-node-subtitle { color: var(--text-tertiary); font-size: 0.6875rem; margin-top: 2px; line-height: 1.3; font-family: var(--font-mono); word-break: break-word; }
+
+        /* Flow selection states */
+        .mf-grid.has-selection .mf-node { opacity: 0.25; }
+        .mf-grid.has-selection .mf-node.is-on-path { opacity: 1; box-shadow: 0 0 0 1px var(--accent-brass), 0 4px 12px rgba(201,169,97,0.18); }
+        .mf-node.is-pulse { animation: mfPulse 700ms ease-out 1; }
+        @keyframes mfPulse {
+            0%   { box-shadow: 0 0 0 0   rgba(201,169,97,0.55); }
+            50%  { box-shadow: 0 0 0 8px rgba(201,169,97,0.15); }
+            100% { box-shadow: 0 0 0 1px var(--accent-brass), 0 4px 12px rgba(201,169,97,0.18); }
         }
-        .page-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin: 0;
-        }
-        .page-subtitle {
-            color: var(--text-secondary);
-            font-size: 0.9375rem;
-            margin-top: var(--space-2);
-            max-width: 700px;
-            line-height: 1.5;
+        @media (prefers-reduced-motion: reduce) {
+            .mf-node, .mf-node.is-pulse { animation: none !important; transition: none !important; }
         }
 
-        /* ============== Caveats banner ============== */
-        .mf-caveats {
-            background: rgba(74,138,156,0.10);
-            border: 1px solid var(--accent-teal);
-            border-radius: var(--radius-md);
-            padding: var(--space-3) var(--space-4);
-            margin-bottom: var(--space-5);
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
+        /* SVG arrow overlay */
+        .mf-arrows { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+        .mf-arrow-line { fill: none; stroke: var(--accent-brass); stroke-width: 1.5; stroke-dasharray: 5 4; opacity: 0.85; }
+        .mf-arrow-head { fill: var(--accent-brass); }
+        .mf-arrow-badge-bg { fill: var(--accent-brass); }
+        .mf-arrow-badge-text { fill: var(--bg-page); font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+
+        /* === Right rail === */
+        .mf-rail { display: flex; flex-direction: column; gap: var(--space-3); position: sticky; top: var(--space-3); max-height: calc(100vh - 100px); }
+        @media (max-width: 1100px) { .mf-rail { position: static; max-height: none; } }
+
+        .mf-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); overflow: hidden; }
+        .mf-card-header { display: flex; justify-content: space-between; align-items: center; padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border-subtle); background: var(--bg-elevated); }
+        .mf-card-title { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-tertiary); font-weight: 600; }
+        .mf-card-meta { font-size: 0.6875rem; color: var(--text-tertiary); font-family: var(--font-mono); }
+
+        .mf-flows-list { list-style: none; margin: 0; padding: 0; max-height: 50vh; overflow-y: auto; }
+        .mf-flows-item { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border-subtle); cursor: pointer; transition: background var(--duration-default) var(--ease-default); }
+        .mf-flows-item:last-child { border-bottom: none; }
+        .mf-flows-item:hover { background: var(--bg-elevated); }
+        .mf-flows-item.is-active { background: rgba(201,169,97,0.12); border-left: 3px solid var(--accent-brass); padding-left: calc(var(--space-3) - 3px); }
+        .mf-flows-id { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--accent-brass); }
+        .mf-flows-name { font-size: 0.875rem; color: var(--text-primary); font-weight: 600; margin-top: 2px; }
+        .mf-flows-goal { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; line-height: 1.4; }
+        .mf-flows-status { font-size: 0.625rem; font-family: var(--font-mono); padding: 1px 6px; border-radius: 999px; margin-top: var(--space-1); display: inline-block; }
+        .mf-flows-status.is-shipped  { background: rgba(74,128,103,0.18); color: var(--accent-moss); }
+        .mf-flows-status.is-shipping { background: rgba(74,138,156,0.18); color: var(--accent-teal); }
+        .mf-flows-status.is-planned  { background: rgba(212,168,87,0.18); color: var(--accent-amber); }
+
+        .mf-steps-empty { padding: var(--space-3); color: var(--text-tertiary); font-size: 0.8125rem; line-height: 1.55; }
+        .mf-steps-list { list-style: none; margin: 0; padding: 0; max-height: 40vh; overflow-y: auto; }
+        .mf-steps-item { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border-subtle); display: grid; grid-template-columns: 28px 1fr; gap: var(--space-2); cursor: pointer; transition: background var(--duration-default) var(--ease-default); }
+        .mf-steps-item:last-child { border-bottom: none; }
+        .mf-steps-item:hover { background: var(--bg-elevated); }
+        .mf-step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--accent-brass); color: var(--bg-page); font-family: var(--font-mono); font-weight: 700; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+        .mf-step-from-to { font-size: 0.6875rem; color: var(--text-secondary); font-family: var(--font-mono); }
+        .mf-step-label { font-size: 0.8125rem; color: var(--text-primary); font-weight: 600; margin-top: 1px; }
+        .mf-step-desc { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; line-height: 1.45; }
+
+        /* Caveats banner */
+        .mf-caveats { background: rgba(74,138,156,0.08); border: 1px solid var(--accent-teal); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3); font-size: 0.75rem; color: var(--text-secondary); line-height: 1.55; }
         .mf-caveats strong { color: var(--accent-teal); }
-        .mf-caveats-list {
-            margin: var(--space-2) 0 0 var(--space-4);
-            padding: 0;
-        }
-        .mf-caveats-list li { margin-bottom: var(--space-1); }
-
-        /* ============== Flow grid ============== */
-        .flow-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: var(--space-4);
-        }
-        @media (min-width: 980px) {
-            .flow-grid { grid-template-columns: 1fr 1fr; }
-        }
-
-        .flow-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-left: 4px solid var(--accent-brass);
-            border-radius: var(--radius-md);
-            padding: var(--space-4);
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-3);
-        }
-        .flow-card-header {
-            display: flex;
-            align-items: baseline;
-            justify-content: space-between;
-            gap: var(--space-3);
-        }
-        .flow-id {
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
-            color: var(--accent-brass);
-            letter-spacing: 0.08em;
-        }
-        .flow-name {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-top: var(--space-1);
-        }
-        .flow-status-badge {
-            font-size: 0.6875rem;
-            font-family: var(--font-mono);
-            padding: 2px 8px;
-            border-radius: 999px;
-            background: rgba(74,128,103,0.18);
-            color: var(--accent-moss);
-            white-space: nowrap;
-        }
-        .flow-status-badge.is-planned { background: rgba(212,168,87,0.18); color: var(--accent-amber); }
-        .flow-status-badge.is-inflight { background: rgba(74,138,156,0.18); color: var(--accent-teal); }
-
-        .flow-goal {
-            color: var(--text-secondary);
-            font-size: 0.9375rem;
-            line-height: 1.55;
-            padding: var(--space-2) 0;
-            border-bottom: 1px solid var(--border-subtle);
-        }
-        .flow-goal-label {
-            font-size: 0.6875rem;
-            color: var(--text-tertiary);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            margin-bottom: var(--space-1);
-        }
-
-        .flow-section { display: flex; flex-direction: column; gap: var(--space-1); }
-        .flow-section-label {
-            font-size: 0.6875rem;
-            color: var(--accent-brass);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
-        .flow-screens {
-            list-style: decimal inside;
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            line-height: 1.6;
-            padding-left: var(--space-1);
-        }
-        .flow-screens li { padding: 2px 0; }
-        .flow-edge-cases {
-            list-style: disc inside;
-            color: var(--text-secondary);
-            font-size: 0.8125rem;
-            line-height: 1.55;
-            padding-left: var(--space-1);
-        }
-        .flow-edge-cases li { padding: 1px 0; }
-
-        .flow-ship-badges {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--space-1);
-            margin-top: var(--space-1);
-        }
-        .ship-badge {
-            font-family: var(--font-mono);
-            font-size: 0.6875rem;
-            padding: 2px 8px;
-            border-radius: var(--radius-sm);
-            background: var(--bg-elevated);
-            color: var(--text-secondary);
-            border: 1px solid var(--border-subtle);
-            white-space: nowrap;
-        }
-        .ship-badge.is-primary {
-            color: var(--accent-brass);
-            border-color: rgba(201,169,97,0.35);
-            background: rgba(201,169,97,0.06);
-        }
-
-        .flow-status-line {
-            font-size: 0.8125rem;
-            color: var(--text-secondary);
-            line-height: 1.5;
-            padding-top: var(--space-2);
-            border-top: 1px solid var(--border-subtle);
-            font-style: italic;
-        }
-
-        /* ============== Source / footer ============== */
-        .mf-footer {
-            margin-top: var(--space-6);
-            padding-top: var(--space-4);
-            border-top: 1px solid var(--border-subtle);
-            color: var(--text-tertiary);
-            font-size: 0.8125rem;
-            line-height: 1.55;
-        }
-        .mf-footer a { color: var(--accent-teal); }
-        .mf-footer code {
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
-            padding: 1px 5px;
-            background: var(--bg-elevated);
-            border-radius: var(--radius-sm);
-        }
     </style>
 </head>
 <body>
@@ -253,307 +145,1090 @@
     <main class="page-main">
         <div class="page-header-row">
             <div>
-                <h1 class="page-title">Main Flows</h1>
-                <p class="page-subtitle">The critical user journeys through PARBAUGHS. Every engineering proposal answers: which flow does this serve, and which specific screen / state / edge case in that flow does it improve?</p>
+                <h1 class="page-title">Architecture & Flows</h1>
+                <p class="page-subtitle">Six columns from member action to external service. Pick a flow on the right; the path lights up, arrows draw between nodes, and the steps panel walks the journey. Every node and step is grep-evidenced (see the <a href="../../.claude/state/wave-zero-dry-run/architecture-audit.md">architecture audit</a>).</p>
             </div>
         </div>
 
         <aside class="mf-caveats">
             <strong>Read this artifact correctly</strong> (binding caveats from <code>db-2026-05-13-004</code>):
-            <ul class="mf-caveats-list">
-                <li>This is the orchestration team's <strong>recommendation</strong>. Founder is the product source of truth.</li>
-                <li>This is <strong>NOT a roadmap</strong>. <a href="../agents/ROADMAP.md">ROADMAP.md</a> answers "what ships next, in what order." This answers "what does the product DO for members."</li>
-                <li>Single source of truth is <code>docs/agents/MAIN_FLOWS.md</code> (currently drafted at <code>.claude/state/wave-zero-dry-run/remediation/proposed-MAIN_FLOWS.md</code> pending Founder ratification). This HTML is generator-driven from the doc; never hand-edit.</li>
-                <li>"Served by" lists the ships contributing to a flow. Each ship answers to ROADMAP for execution detail.</li>
-            </ul>
+            this is the orchestration team's recommendation — Founder is the product source of truth.
+            <strong>NOT a roadmap</strong> (read <a href="../agents/ROADMAP.md">ROADMAP.md</a> for shipping order). Single source of truth is <code>docs/reports/_assets/main-flows-data.json</code>; HTML is generator-driven via <code>scripts/regen-main-flows.py</code>.
         </aside>
 
-        <section class="flow-grid" id="flow-grid">
-            <!-- Cards rendered by inline script below from <script id="report-data"> -->
-        </section>
+        <div class="mf-legend" id="mf-legend"></div>
 
-        <footer class="mf-footer">
-            <p>Last regenerated: <span id="last-amended">—</span></p>
-            <p>Doc source: <code id="doc-source">—</code></p>
-            <p>Bubble of record: <code>.claude/state/discussion-bubbles/db-2026-05-13-004.md</code> (approved-with-dissent, 3-1-1)</p>
-        </footer>
+        <section class="mf-workspace">
+            <div class="mf-grid-wrap">
+                <div class="mf-grid" id="mf-grid"></div>
+                <svg class="mf-arrows" id="mf-arrows" preserveAspectRatio="xMinYMin meet"></svg>
+            </div>
+
+            <aside class="mf-rail">
+                <div class="mf-card">
+                    <div class="mf-card-header">
+                        <span class="mf-card-title">Flows</span>
+                        <span class="mf-card-meta" id="mf-flows-count">—</span>
+                    </div>
+                    <ul class="mf-flows-list" id="mf-flows-list"></ul>
+                </div>
+
+                <div class="mf-card">
+                    <div class="mf-card-header">
+                        <span class="mf-card-title">Steps</span>
+                        <span class="mf-card-meta" id="mf-steps-meta">no flow selected</span>
+                    </div>
+                    <div class="mf-steps-empty" id="mf-steps-empty">Select a flow on the right to see the path through the system.</div>
+                    <ol class="mf-steps-list" id="mf-steps-list" hidden></ol>
+                </div>
+            </aside>
+        </section>
     </main>
 
     <script id="report-data" type="application/json">
 {
+  "columns": [
+    {
+      "id": "actor",
+      "label": "Actors",
+      "subtitle": "Who interacts with PARBAUGHS",
+      "color_token": "--col-actor",
+      "components": [
+        {
+          "id": "actor.member",
+          "label": "Member",
+          "subtitle": "Auth'd league member"
+        },
+        {
+          "id": "actor.commissioner",
+          "label": "Commissioner",
+          "subtitle": "Per-league admin"
+        },
+        {
+          "id": "actor.founder",
+          "label": "Founder",
+          "subtitle": "Platform-level (Zach)"
+        },
+        {
+          "id": "actor.invitee",
+          "label": "Invitee",
+          "subtitle": "Pre-claim link recipient"
+        },
+        {
+          "id": "actor.guest",
+          "label": "Guest",
+          "subtitle": "Unauth visitor"
+        }
+      ]
+    },
+    {
+      "id": "client",
+      "label": "Client surfaces",
+      "subtitle": "src/pages/* + Capacitor",
+      "color_token": "--col-client",
+      "components": [
+        {
+          "id": "client.hq-home",
+          "label": "HQ Home",
+          "subtitle": "src/pages/home.js"
+        },
+        {
+          "id": "client.hq-playnow",
+          "label": "Play Now",
+          "subtitle": "src/pages/playnow.js"
+        },
+        {
+          "id": "client.hq-roundhistory",
+          "label": "Round detail",
+          "subtitle": "src/pages/round.js"
+        },
+        {
+          "id": "client.hq-leagues",
+          "label": "Leagues + standings",
+          "subtitle": "src/pages/leagues.js"
+        },
+        {
+          "id": "client.hq-members",
+          "label": "Members + Find",
+          "subtitle": "src/pages/members.js"
+        },
+        {
+          "id": "client.hq-feed",
+          "label": "Activity feed",
+          "subtitle": "src/pages/feed.js"
+        },
+        {
+          "id": "client.hq-wagers",
+          "label": "Wagers + bounties",
+          "subtitle": "src/pages/wagers.js"
+        },
+        {
+          "id": "client.hq-teetimes",
+          "label": "Calendar + tee",
+          "subtitle": "src/pages/calendar.js"
+        },
+        {
+          "id": "client.hq-trophy",
+          "label": "Trophy Room",
+          "subtitle": "src/pages/trophyroom.js"
+        },
+        {
+          "id": "client.hq-range",
+          "label": "Range",
+          "subtitle": "src/pages/range.js"
+        },
+        {
+          "id": "client.hq-spectator",
+          "label": "Spectator HUD",
+          "subtitle": "src/pages/spectator.js"
+        },
+        {
+          "id": "client.hq-settings",
+          "label": "Settings",
+          "subtitle": "src/pages/settings.js"
+        },
+        {
+          "id": "client.hq-admin",
+          "label": "Admin",
+          "subtitle": "src/pages/admin.js"
+        },
+        {
+          "id": "client.mobile-capacitor",
+          "label": "Mobile (Capacitor)",
+          "subtitle": "iOS + Android wrapper"
+        }
+      ]
+    },
+    {
+      "id": "fn",
+      "label": "Auth + Functions",
+      "subtitle": "Firebase Auth + 8 Cloud Functions",
+      "color_token": "--col-auth-fn",
+      "components": [
+        {
+          "id": "fn.auth",
+          "label": "Firebase Auth",
+          "subtitle": "Email/password"
+        },
+        {
+          "id": "fn.search-courses",
+          "label": "searchCourses",
+          "subtitle": "Proxy \u2192 GolfCourseAPI"
+        },
+        {
+          "id": "fn.validate-invite",
+          "label": "validateInvite",
+          "subtitle": "onRequest"
+        },
+        {
+          "id": "fn.send-push",
+          "label": "sendPushNotification",
+          "subtitle": "onCreate(pendingPush)"
+        },
+        {
+          "id": "fn.on-member-role-change",
+          "label": "onMemberRoleChange",
+          "subtitle": "onUpdate(members)"
+        },
+        {
+          "id": "fn.on-league-delete",
+          "label": "onLeagueDelete",
+          "subtitle": "onDelete(leagues)"
+        },
+        {
+          "id": "fn.join-league",
+          "label": "joinLeague",
+          "subtitle": "onCall"
+        },
+        {
+          "id": "fn.on-founder-access-log",
+          "label": "onFounderAccessLog",
+          "subtitle": "onCreate(founder_access_logs)"
+        },
+        {
+          "id": "fn.expire-suspensions",
+          "label": "expireSuspensions",
+          "subtitle": "Scheduled"
+        }
+      ]
+    },
+    {
+      "id": "data",
+      "label": "Firestore (data)",
+      "subtitle": "30 collections, 12 groups",
+      "color_token": "--col-data",
+      "components": [
+        {
+          "id": "data.members",
+          "label": "members",
+          "subtitle": "Profiles, handicaps, leagues[]"
+        },
+        {
+          "id": "data.leagues",
+          "label": "leagues",
+          "subtitle": "League docs + memberUids"
+        },
+        {
+          "id": "data.rounds",
+          "label": "rounds (+live)",
+          "subtitle": "rounds, liverounds, syncrounds, scramble_rounds"
+        },
+        {
+          "id": "data.dms",
+          "label": "dms + chat",
+          "subtitle": "DMs, messages, chat threads"
+        },
+        {
+          "id": "data.notifications",
+          "label": "notifications",
+          "subtitle": "+ pendingPush queue"
+        },
+        {
+          "id": "data.parcoins",
+          "label": "parcoin ledger",
+          "subtitle": "parcoin_transactions"
+        },
+        {
+          "id": "data.wagers-bounties",
+          "label": "wagers + bounties",
+          "subtitle": "bounties + partygames"
+        },
+        {
+          "id": "data.events",
+          "label": "events + tee",
+          "subtitle": "calendar_events, teetimes, trips"
+        },
+        {
+          "id": "data.courses",
+          "label": "courses + reviews",
+          "subtitle": "courses + course_reviews"
+        },
+        {
+          "id": "data.social",
+          "label": "social + photos",
+          "subtitle": "social_actions + photos"
+        },
+        {
+          "id": "data.config",
+          "label": "config + misc",
+          "subtitle": "config, errors, reports, presence"
+        },
+        {
+          "id": "data.invites",
+          "label": "invites",
+          "subtitle": "Invite codes"
+        }
+      ]
+    },
+    {
+      "id": "dist",
+      "label": "Distribution",
+      "subtitle": "GitHub Pages + Capacitor",
+      "color_token": "--col-distribution",
+      "components": [
+        {
+          "id": "dist.gh-pages",
+          "label": "GitHub Pages",
+          "subtitle": "alrightlad.github.io/smoky-mountain-open"
+        },
+        {
+          "id": "dist.capacitor-ios",
+          "label": "iOS (Capacitor)",
+          "subtitle": ".github/workflows/ios-build.yml"
+        },
+        {
+          "id": "dist.capacitor-android",
+          "label": "Android (Capacitor)",
+          "subtitle": ".github/workflows/android-build.yml"
+        }
+      ]
+    },
+    {
+      "id": "ext",
+      "label": "External services",
+      "subtitle": "Outbound API integrations",
+      "color_token": "--col-external",
+      "components": [
+        {
+          "id": "ext.golfcourseapi",
+          "label": "GolfCourseAPI",
+          "subtitle": "Course search (via fn proxy)"
+        },
+        {
+          "id": "ext.open-meteo",
+          "label": "Open-Meteo",
+          "subtitle": "Weather + geocoding"
+        },
+        {
+          "id": "ext.fcm",
+          "label": "FCM",
+          "subtitle": "Push notifications"
+        },
+        {
+          "id": "ext.anthropic",
+          "label": "Anthropic API",
+          "subtitle": "Phase 4 \u2014 AI Caddie (planned)"
+        }
+      ]
+    }
+  ],
   "flows": [
     {
-      "id": "MF-01",
-      "name": "Log a round (start \u2192 score \u2192 close \u2192 see handicap update)",
-      "primary_user_goal": "Capture an 18-hole (or 9-hole) round during or after play, see the score reflected in personal stats and league context.",
-      "screens": [
-        "Home \u2192 \"Log a round\" tap (or active-round resume)",
-        "Course selection (GolfCourseAPI search \u2192 local-cache hit)",
-        "Tee selection + scorecard layout",
-        "Hole-by-hole entry \u2014 score, FIR, GIR, putts per hole",
-        "Submit confirmation",
-        "Round detail view (player, score, handicap differential)",
-        "Home returns showing updated handicap + last-round summary"
-      ],
-      "edge_cases": [
-        "9-hole round (don't render holes 10-18 in summary)",
-        "Joined players in a Parbaugh Round must show on host's scorecard (Known Bug #9)",
-        "Sub-noon timestamp rounding for \"Xd ago\" feedTimeAgo (S26 sub-test 1 issue)",
-        "Offline-entered round: localStorage `pb_liveState` resume after browser crash",
-        "Course not in API: manual par-array entry forbidden per CLAUDE.md \"Zero guessing on course/par data\""
-      ],
+      "id": "F1",
+      "name": "Log a round",
+      "primary_user_goal": "Member captures a round in progress or after play, sees handicap update on Home.",
+      "actor": "actor.member",
       "served_by_ships": [
-        "W1.S1",
-        "W1.S2",
-        "W1.S4"
+        "W1.S4",
+        "W1.S2"
       ],
-      "served_by_primary": "W1.S4",
-      "status_served": "Built in v8.0-pre-Wave-1 form; W1.S4 redesigns on the Clubhouse system + adds hole-by-hole capture as default."
+      "status": "shipped-on-current-system",
+      "path": [
+        "actor.member",
+        "client.hq-home",
+        "client.hq-playnow",
+        "data.courses",
+        "data.rounds",
+        "data.members",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-home",
+          "label": "Open Home",
+          "description": "Member lands on HQ Home (home.js) after auth; League Pulse + active-round override render from current league context."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-home",
+          "to": "client.hq-playnow",
+          "label": "Tap 'Log a round'",
+          "description": "Router.go('playnow') routes to src/pages/playnow.js. Form scaffolds via renderLogHoleGrid() (rounds.js:369)."
+        },
+        {
+          "n": 3,
+          "from": "client.hq-playnow",
+          "to": "data.courses",
+          "label": "Course lookup",
+          "description": "PB.getCourseByName(name) hits in-memory cache (data.js:285); on miss, route to searchCourses fn."
+        },
+        {
+          "n": 4,
+          "from": "client.hq-playnow",
+          "to": "data.rounds",
+          "label": "Submit round",
+          "description": "_submitRoundEntry(formData) writes round doc with score, holeScores[], firData, girData, puttsData, etc. Timestamp = date_noon_local (B.44)."
+        },
+        {
+          "n": 5,
+          "from": "data.rounds",
+          "to": "data.members",
+          "label": "Handicap recompute",
+          "description": "Round write triggers handicap recompute via WHS calc in src/core/handicap.js; members doc updated with new differential."
+        },
+        {
+          "n": 6,
+          "from": "data.members",
+          "to": "client.hq-home",
+          "label": "Home reflects new handicap",
+          "description": "Home re-renders on next visit (Router.go('home')) showing updated handicap + last-round summary."
+        },
+        {
+          "n": 7,
+          "from": "client.hq-home",
+          "to": "dist.gh-pages",
+          "label": "Static serve via GH Pages",
+          "description": "All client surfaces serve from alrightlad.github.io/smoky-mountain-open per deploy.yml workflow."
+        }
+      ]
     },
     {
-      "id": "MF-02",
-      "name": "View the League Pulse / leaderboard",
-      "primary_user_goal": "See what my league is doing right now \u2014 recent rounds, who's hot, where I stand.",
-      "screens": [
-        "Home \u2192 League Pulse band (above the fold)",
-        "Tap a Pulse card \u2192 round detail OR member profile",
-        "Leagues tab \u2192 standings \u2192 per-season points",
-        "Per-member detail line (handicap, last score, live-now indicator)"
-      ],
-      "edge_cases": [
-        "Empty league (founder is sole member) \u2014 empty-state copy not \"0 rounds\"",
-        "9-hole vs 18-hole rounds in same standings (split column per known bug #4)",
-        "Multi-league member sees only ACTIVE league's standings; not concatenation",
-        "Spectator mode (W1.S5) treats non-league-members as read-only"
-      ],
+      "id": "F2",
+      "name": "View League Pulse / leaderboard",
+      "primary_user_goal": "Member sees recent league activity, hot streaks, and standings.",
+      "actor": "actor.member",
       "served_by_ships": [
+        "W1.S2",
         "W1.S11",
-        "W1.S13",
-        "W1.S2",
-        "W1.S3",
-        "W1.S5"
+        "W1.S13"
       ],
-      "served_by_primary": "W1.S2",
-      "status_served": "Built in v8.22.0 (Ship 5+7) state for HQ Home Pulse; Wave 1 ships rebuild on the new design system."
+      "status": "shipped-on-current-system",
+      "path": [
+        "actor.member",
+        "client.hq-home",
+        "client.hq-feed",
+        "client.hq-leagues",
+        "data.rounds",
+        "data.leagues",
+        "data.members"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-home",
+          "label": "Open Home",
+          "description": "Home renders League Pulse band above the fold (home.js:1842+)."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-home",
+          "to": "data.rounds",
+          "label": "Pulse pulls rounds",
+          "description": "PB.getRounds() returns recent rounds, filtered by activeLeague leagueId field (per CLAUDE.md league-scoping rules)."
+        },
+        {
+          "n": 3,
+          "from": "client.hq-home",
+          "to": "data.members",
+          "label": "Resolves player names",
+          "description": "fbMemberCache populated at auth; rounds[].player resolves via PB.getPlayer(uid)."
+        },
+        {
+          "n": 4,
+          "from": "client.hq-home",
+          "to": "client.hq-feed",
+          "label": "Tap pulse card",
+          "description": "Pulse card click \u2192 Router.go('feed') for full activity stream."
+        },
+        {
+          "n": 5,
+          "from": "client.hq-feed",
+          "to": "client.hq-leagues",
+          "label": "Tap leagues",
+          "description": "Bottom nav 'Leagues' \u2192 src/pages/leagues.js; standings table renders."
+        },
+        {
+          "n": 6,
+          "from": "client.hq-leagues",
+          "to": "data.leagues",
+          "label": "Read standings",
+          "description": "Leagues page reads league.memberUids[] + computes per-member season points."
+        }
+      ]
     },
     {
-      "id": "MF-03",
+      "id": "F3",
       "name": "Find a player + add as friend",
-      "primary_user_goal": "Search for / discover another PARBAUGHS member, see their public profile, send a friend request.",
-      "screens": [
-        "Members directory (A-Z by username)",
-        "Profile tap \u2192 public-profile view",
-        "Friend-request CTA \u2192 request sent state",
-        "Recipient's notification \u2192 accept / decline",
-        "Bidirectional friend relationship visible in both friend lists"
-      ],
-      "edge_cases": [
-        "Privacy default is PUBLIC per locked Founder decision; per-member opt-OUT to private",
-        "Friend request to a private member: still allowed; respondent decides",
-        "Cross-league friendship (any member can friend any member)",
-        "Founding 20 are auto-friended per memory #28 \u2014 no manual request needed",
-        "Discord-style `username#discriminator` per W4.I1 future schema (renumbering main flow OK if v9.1 ships)"
-      ],
+      "primary_user_goal": "Member discovers another PARBAUGHS member, sends friend request, builds cross-league social graph.",
+      "actor": "actor.member",
       "served_by_ships": [
         "W1.S3"
       ],
-      "served_by_primary": "W1.S3",
-      "status_served": "Built in legacy form; W1.S3 rebuilds with public-default + friend-system at Firestore rule layer."
+      "status": "shipping-W1.S3",
+      "path": [
+        "actor.member",
+        "client.hq-members",
+        "data.members",
+        "data.notifications",
+        "ext.fcm",
+        "fn.send-push"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-members",
+          "label": "Open Members",
+          "description": "Router.go('members') loads src/pages/members.js \u2014 A-Z directory with public profiles."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-members",
+          "to": "data.members",
+          "label": "Read member rows",
+          "description": "Members page queries members collection filtered by privacy=public OR friend-of-current-user."
+        },
+        {
+          "n": 3,
+          "from": "client.hq-members",
+          "to": "data.members",
+          "label": "Send friend request",
+          "description": "Tap CTA \u2192 write friend-request doc; recipient's members doc gets pending friend entry (W1.S3 redesigns this)."
+        },
+        {
+          "n": 4,
+          "from": "data.members",
+          "to": "data.notifications",
+          "label": "Notification queued",
+          "description": "Recipient gets a notifications entry; pendingPush doc enqueues a push."
+        },
+        {
+          "n": 5,
+          "from": "data.notifications",
+          "to": "fn.send-push",
+          "label": "sendPushNotification fires",
+          "description": "Cloud Function onCreate(pendingPush) reads recipient's fcmToken and dispatches FCM payload."
+        },
+        {
+          "n": 6,
+          "from": "fn.send-push",
+          "to": "ext.fcm",
+          "label": "Deliver to FCM",
+          "description": "FCM admin SDK ships the payload; pendingPush doc deleted post-send."
+        }
+      ]
     },
     {
-      "id": "MF-04",
-      "name": "Post and settle a wager (ParCoin)",
-      "primary_user_goal": "Challenge another member to a stakes round (any amount the poster has), watch the round play out, claim winnings or pay out cleanly.",
-      "screens": [
-        "Wagers section \u2192 \"Post a wager\" CTA",
-        "Wager composition (opponent, stakes, terms)",
-        "Opponent's notification \u2192 accept / decline",
-        "On accept: ParCoins escrowed from BOTH players' balances",
-        "Round played (MF-01) \u2192 outcome determines winner",
-        "Settlement screen \u2192 winner takes both stacks; ledger entry on both sides"
-      ],
-      "edge_cases": [
-        "Wager cancelled before acceptance \u2192 no escrow ever happened, no refund needed",
-        "Wager accepted then opponent never plays the round \u2192 expiry policy (currently manual; Bounty-expiry-refund TODO from CLAUDE.md \"Known TODOs\" applies here too)",
-        "Wager between members of different leagues \u2192 cross-league wagers allowed per friend system"
-      ],
+      "id": "F4",
+      "name": "Post + settle a ParCoin wager",
+      "primary_user_goal": "Member challenges another member for stakes; coins escrow, round plays, winner takes both.",
+      "actor": "actor.member",
       "served_by_ships": [
-        "W1.S3",
-        "W1.S6"
+        "W1.S6",
+        "W1.S4"
       ],
-      "served_by_primary": "W1.S6",
-      "status_served": "Wagers exist in legacy form; W1.S6 lands the consolidated economy with escrow integrity."
+      "status": "planned-W1.S6",
+      "path": [
+        "actor.member",
+        "client.hq-wagers",
+        "data.wagers-bounties",
+        "data.parcoins",
+        "client.hq-playnow",
+        "data.rounds"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-wagers",
+          "label": "Open Wagers",
+          "description": "Router.go('wagers') \u2192 src/pages/wagers.js; current league's open wagers list."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-wagers",
+          "to": "data.wagers-bounties",
+          "label": "Compose wager",
+          "description": "Member fills opponent + stakes + terms; writes pending wager doc to bounties collection."
+        },
+        {
+          "n": 3,
+          "from": "data.wagers-bounties",
+          "to": "data.parcoins",
+          "label": "Escrow coins (on accept)",
+          "description": "Opponent accept triggers parcoin_transactions entries: BOTH players' balances debited; wager flagged escrowed."
+        },
+        {
+          "n": 4,
+          "from": "actor.member",
+          "to": "client.hq-playnow",
+          "label": "Play the round",
+          "description": "Both players log a round (F1) for the stakes course."
+        },
+        {
+          "n": 5,
+          "from": "client.hq-playnow",
+          "to": "data.rounds",
+          "label": "Round outcome",
+          "description": "Submitted rounds resolve the wager (lower score wins, etc. \u2014 settlement logic per W1.S6 spec)."
+        },
+        {
+          "n": 6,
+          "from": "data.rounds",
+          "to": "data.parcoins",
+          "label": "Settle winnings",
+          "description": "Winner's balance credited 2\u00d7 stakes; loser's already-debited; ledger entry on both sides."
+        },
+        {
+          "n": 7,
+          "from": "data.parcoins",
+          "to": "actor.member",
+          "label": "Notification + Home update",
+          "description": "Wager outcome notification fires; Home reflects new balance + W/L record."
+        }
+      ]
     },
     {
-      "id": "MF-05",
+      "id": "F5",
       "name": "Book or RSVP to a tee time",
-      "primary_user_goal": "Find a posted tee time matching your availability, RSVP, see who else is in.",
-      "screens": [
-        "Calendar tab \u2192 upcoming tee times",
-        "Post a tee time \u2192 date / course / openings count",
-        "Other members see the posted tee time in feed \u2192 RSVP button",
-        "Tee time fills \u2192 ParCoin reward to poster (15 coins per CLAUDE.md economy table)",
-        "Day of: tee time event card surfaces in Home"
-      ],
-      "edge_cases": [
-        "Tee time host cancels \u2192 all RSVPs notified, ParCoin reward NOT awarded",
-        "Tee time conflict with another tee time \u2192 no auto-conflict-detection (Founder discretion)",
-        "Spectator mode users see tee times for their leagues only"
-      ],
+      "primary_user_goal": "Member posts a tee time or RSVPs to a peer's posted slot.",
+      "actor": "actor.member",
       "served_by_ships": [
         "W1.S8"
       ],
-      "served_by_primary": "W1.S8",
-      "status_served": "Built in legacy form; W1.S8 rebuilds with the new Calendar surface."
+      "status": "shipped-on-current-system",
+      "path": [
+        "actor.member",
+        "client.hq-teetimes",
+        "data.events",
+        "client.hq-feed",
+        "data.notifications",
+        "fn.send-push",
+        "ext.fcm"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-teetimes",
+          "label": "Open Calendar / Tee",
+          "description": "src/pages/calendar.js + teetimes.js; upcoming slots render with RSVP CTAs."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-teetimes",
+          "to": "data.events",
+          "label": "Post tee time",
+          "description": "writeTeeTime(date, course, openings) \u2192 teetimes collection doc with leagueId scope."
+        },
+        {
+          "n": 3,
+          "from": "data.events",
+          "to": "client.hq-feed",
+          "label": "Surfaces in feed",
+          "description": "Feed activity stream picks up tee time event card; visible to league members."
+        },
+        {
+          "n": 4,
+          "from": "client.hq-feed",
+          "to": "data.events",
+          "label": "RSVP click",
+          "description": "Other member taps RSVP \u2192 tee time doc's rsvps[] array updated."
+        },
+        {
+          "n": 5,
+          "from": "data.events",
+          "to": "data.notifications",
+          "label": "Host notified of fill",
+          "description": "When openings_count reaches threshold, host gets a notifications entry + ParCoin reward (15 coins per CLAUDE.md economy)."
+        },
+        {
+          "n": 6,
+          "from": "data.notifications",
+          "to": "fn.send-push",
+          "label": "Push fires",
+          "description": "Standard send-push path (same as F3 step 5)."
+        }
+      ]
     },
     {
-      "id": "MF-06",
+      "id": "F6",
       "name": "Earn an achievement / see Trophy Room update",
-      "primary_user_goal": "Hit a milestone (personal best, season champion, range-session-streak, etc.), see the celebration, browse the Trophy Room.",
-      "screens": [
-        "Round / range session / wager-win triggers an achievement",
-        "Toast celebration (post-action, before navigation)",
-        "Achievement card lands in Activity / Feed",
-        "Trophy Room tab shows the new achievement in the \"Recent\" rail",
-        "ParCoin reward credited per CLAUDE.md economy table"
-      ],
-      "edge_cases": [
-        "Achievement deduplication (a member who plays 2 personal-best rounds in a week earns ONE PB achievement, not two)",
-        "Reduced-motion accessibility \u2014 `ach-celebrate` keyframe respects `prefers-reduced-motion` per v8.1.3",
-        "Achievement earned in spectator-mode round (W1.S5) is the SPECTATOR's achievement or the player's \u2014 locked Founder decision pending",
-        "Achievement loss / restoration (Nick achievement restore script precedent in scripts/)"
-      ],
+      "primary_user_goal": "Member crosses a milestone (PB, season champ, range streak); celebration toast + Trophy Room entry.",
+      "actor": "actor.member",
       "served_by_ships": [
-        "W1.S9"
+        "W1.S9",
+        "W1.S4",
+        "W1.S6",
+        "W1.S10"
       ],
-      "served_by_primary": "W1.S9",
-      "status_served": "Built in legacy form; W1.S9 lands the redesigned room + records."
+      "status": "shipped-on-current-system",
+      "path": [
+        "actor.member",
+        "client.hq-playnow",
+        "data.rounds",
+        "data.parcoins",
+        "client.hq-trophy",
+        "data.config"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-playnow",
+          "label": "Trigger action",
+          "description": "Member completes round / range session / wager \u2014 any can trigger an achievement check."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-playnow",
+          "to": "data.rounds",
+          "label": "Submit triggers check",
+          "description": "On round submit, achievement engine evaluates against earned vs unearned. PB detection: this round's score < member.personalBest18."
+        },
+        {
+          "n": 3,
+          "from": "data.rounds",
+          "to": "data.parcoins",
+          "label": "ParCoin reward",
+          "description": "Achievement unlock \u2192 parcoin_transactions credit per CLAUDE.md economy table (100 for 18H PB, 50 for 9H PB)."
+        },
+        {
+          "n": 4,
+          "from": "data.rounds",
+          "to": "client.hq-trophy",
+          "label": "Toast + Trophy Room",
+          "description": "Toast renders inline (ach-celebrate keyframe, respecting prefers-reduced-motion per v8.1.3). Trophy Room (trophyroom.js) gains the new entry on next visit."
+        },
+        {
+          "n": 5,
+          "from": "client.hq-trophy",
+          "to": "data.config",
+          "label": "Achievement state",
+          "description": "Some achievement data lives in members.achievements[] or pending_celebrations collection for cross-device sync."
+        }
+      ]
     },
     {
-      "id": "MF-07",
+      "id": "F7",
       "name": "Range session log",
-      "primary_user_goal": "Log a practice session (range, putting green, short game), track drill focus, see range-history aggregate.",
-      "screens": [
-        "Home \u2192 \"Log a range session\" CTA",
-        "Session timer (start / pause / stop)",
-        "Focus areas + drill tags",
-        "Feel rating (1-5 stars)",
-        "Submit \u2192 session summary card \u2192 activity feed entry",
-        "Range tab shows per-week aggregates (CLAUDE.md \"Season Recap + Range\" features)"
-      ],
-      "edge_cases": [
-        "Session < 30 min: ParCoin reward not awarded (per CLAUDE.md economy table \u2014 \"Range session (30+ min)\")",
-        "Session paused for > 60 min: prompt to discard or commit",
-        "Multi-day range tracker \u2014 sessions don't aggregate across calendar days"
-      ],
+      "primary_user_goal": "Member logs a practice session with drill focus + feel rating; aggregates render on Range page.",
+      "actor": "actor.member",
       "served_by_ships": [
         "W1.S10"
       ],
-      "served_by_primary": "W1.S10",
-      "status_served": "Built in legacy form; W1.S10 redesigns with Clubhouse tokens + adds drill-focus visualization."
+      "status": "shipped-on-current-system",
+      "path": [
+        "actor.member",
+        "client.hq-home",
+        "client.hq-range",
+        "data.rounds",
+        "data.parcoins",
+        "client.hq-feed"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-home",
+          "label": "Tap 'Log range'",
+          "description": "Home CTA \u2192 Router.go('range') \u2192 src/pages/range.js."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-home",
+          "to": "client.hq-range",
+          "label": "Start session timer",
+          "description": "Range session timer (start/pause/stop) + drill tags + feel rating (1-5)."
+        },
+        {
+          "n": 3,
+          "from": "client.hq-range",
+          "to": "data.rounds",
+          "label": "Submit session",
+          "description": "Range session doc written (separate from rounds \u2014 uses syncrounds or rangelive collection per page mode)."
+        },
+        {
+          "n": 4,
+          "from": "data.rounds",
+          "to": "data.parcoins",
+          "label": "Reward if \u226530 min",
+          "description": "If session duration \u2265 30 min, ParCoin reward (10 coins) per CLAUDE.md economy."
+        },
+        {
+          "n": 5,
+          "from": "data.rounds",
+          "to": "client.hq-feed",
+          "label": "Surfaces in feed",
+          "description": "Activity feed picks up the session as a feed entry, visible to league members."
+        }
+      ]
     },
     {
-      "id": "MF-08",
+      "id": "F8",
       "name": "Spectator + Caddy verify",
-      "primary_user_goal": "As a non-league-member, watch a member's round live (per league privacy rules), let \"the Caddy\" surface insights.",
-      "screens": [
-        "Live round in progress in any public-or-friend league",
-        "Spectator HUD overlay \u2192 score, hole, last shot",
-        "Caddy Notes inline (rule-based insights for non-Pro tier, AI-Caddie for Pro per Phase 4 roadmap)",
-        "End of round: spectator sees same final card as player",
-        "Spectator's own activity feed shows \"watched X play Y\" if opted-in"
-      ],
-      "edge_cases": [
-        "Private league round visible only to league members; spectator who isn't gets the access-denied empty state",
-        "Caddy Notes verify (W1.S5) \u2014 the AI Caddie's \"verify\" pass cross-checks rule-based output against round data before showing",
-        "Live round vs replayed-after-completion round \u2014 different visual treatment"
-      ],
+      "primary_user_goal": "Member (or friend cross-league) watches a live round, Caddy surfaces insights, replay survives after round closes.",
+      "actor": "actor.member",
       "served_by_ships": [
-        "W1.S11",
-        "W1.S5"
+        "W1.S5",
+        "W1.S11"
       ],
-      "served_by_primary": "W1.S5",
-      "status_served": "Spectator HUD built in v8.21.0; W1.S5 lands the formal Caddy verify protocol."
+      "status": "shipping-W1.S5",
+      "path": [
+        "actor.member",
+        "client.hq-feed",
+        "client.hq-spectator",
+        "data.rounds",
+        "data.social",
+        "data.notifications"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-feed",
+          "label": "See live-round card",
+          "description": "Feed surfaces an in-progress round; live-now indicator visible (per W1.S3 member detail line spec)."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-feed",
+          "to": "client.hq-spectator",
+          "label": "Tap to spectate",
+          "description": "Router.go('spectator?roundId=X') \u2192 src/pages/spectator.js; Spectator HUD overlays score + hole + last shot."
+        },
+        {
+          "n": 3,
+          "from": "client.hq-spectator",
+          "to": "data.rounds",
+          "label": "Subscribe to liverounds",
+          "description": "Spectator subscribes to liverounds collection updates for the specific round; hole-by-hole updates stream."
+        },
+        {
+          "n": 4,
+          "from": "client.hq-spectator",
+          "to": "data.social",
+          "label": "Caddy insight",
+          "description": "AI Caddie (rule-based for non-Pro, Anthropic-backed for Pro per Phase 4) surfaces per-hole context. Currently rule-based via src/core/caddie.js."
+        },
+        {
+          "n": 5,
+          "from": "data.rounds",
+          "to": "data.notifications",
+          "label": "Round closes",
+          "description": "Player's _submitRoundEntry completes the round; spectator's view transitions to final card; optional 'watched X play Y' social action recorded."
+        }
+      ]
     }
   ],
-  "last_amended": "2026-05-13T19:50:42.623867+00:00",
-  "doc_source": ".claude/state/wave-zero-dry-run/remediation/proposed-MAIN_FLOWS.md",
-  "doc_kind": "proposed-draft"
+  "last_amended": "2026-05-13T20:02:01.932640+00:00",
+  "doc_source": "docs/reports/_assets/main-flows-data.json",
+  "schema_version": 1,
+  "_counts": {
+    "columns": 6,
+    "components_total": 47,
+    "flows": 8,
+    "orphan_components": [
+      "actor.commissioner",
+      "actor.founder",
+      "actor.guest",
+      "actor.invitee",
+      "client.hq-admin",
+      "client.hq-roundhistory",
+      "client.hq-settings",
+      "client.mobile-capacitor",
+      "data.dms",
+      "data.invites",
+      "dist.capacitor-android",
+      "dist.capacitor-ios",
+      "ext.anthropic",
+      "ext.golfcourseapi",
+      "ext.open-meteo",
+      "fn.auth",
+      "fn.expire-suspensions",
+      "fn.join-league",
+      "fn.on-founder-access-log",
+      "fn.on-league-delete",
+      "fn.on-member-role-change",
+      "fn.search-courses",
+      "fn.validate-invite"
+    ]
+  }
 }
     </script>
 
     <script>
         (function () {
+            "use strict";
+            var GRID = document.getElementById('mf-grid');
+            var ARROWS = document.getElementById('mf-arrows');
+            var LEGEND = document.getElementById('mf-legend');
+            var FLOWS_LIST = document.getElementById('mf-flows-list');
+            var FLOWS_COUNT = document.getElementById('mf-flows-count');
+            var STEPS_EMPTY = document.getElementById('mf-steps-empty');
+            var STEPS_LIST = document.getElementById('mf-steps-list');
+            var STEPS_META = document.getElementById('mf-steps-meta');
+
+            var data = null;
+            var selectedFlowId = null;
+
             function esc(s) {
                 if (s == null) return '';
-                return String(s)
-                    .replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;');
+                return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
             }
-            function statusClass(status) {
+            function statusBadge(status) {
                 if (!status) return '';
-                var s = status.toLowerCase();
-                if (s.indexOf('planned') !== -1) return 'is-planned';
-                if (s.indexOf('in-flight') !== -1 || s.indexOf('in flight') !== -1) return 'is-inflight';
-                return '';
+                if (status.indexOf('shipped') !== -1)  return '<span class="mf-flows-status is-shipped">' + esc(status) + '</span>';
+                if (status.indexOf('shipping') !== -1) return '<span class="mf-flows-status is-shipping">' + esc(status) + '</span>';
+                if (status.indexOf('planned') !== -1)  return '<span class="mf-flows-status is-planned">' + esc(status) + '</span>';
+                return '<span class="mf-flows-status">' + esc(status) + '</span>';
             }
-            function shortStatus(status) {
-                if (!status) return 'unknown';
-                var s = status.toLowerCase();
-                if (s.indexOf('built') !== -1) return 'served';
-                if (s.indexOf('planned') !== -1) return 'planned';
-                if (s.indexOf('in-flight') !== -1 || s.indexOf('in flight') !== -1) return 'in-flight';
-                return status.length > 24 ? status.slice(0, 21) + '…' : status;
-            }
-            function render() {
+
+            function loadData() {
                 try {
                     var raw = document.getElementById('report-data').textContent;
-                    var data = JSON.parse(raw);
-                    var grid = document.getElementById('flow-grid');
-                    if (!grid) return;
-                    var flows = (data && data.flows) || [];
-                    if (!flows.length) {
-                        grid.innerHTML = '<div class="flow-card"><div class="flow-name">No flows yet</div><div class="flow-goal">Run <code>scripts/regen-main-flows.py</code> to populate from <code>' + esc(data && data.doc_source ? data.doc_source : 'MAIN_FLOWS.md') + '</code>.</div></div>';
-                    } else {
-                        grid.innerHTML = flows.map(function (f) {
-                            var screens = (f.screens || []).map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('');
-                            var edges = (f.edge_cases || []).map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('');
-                            var primary = f.served_by_primary;
-                            var ships = (f.served_by_ships || []).map(function (sh) {
-                                var cls = sh === primary ? 'ship-badge is-primary' : 'ship-badge';
-                                return '<span class="' + cls + '">' + esc(sh) + '</span>';
-                            }).join('');
-                            var statusCls = statusClass(f.status_served);
-                            return ''
-                                + '<article class="flow-card">'
-                                + '  <div class="flow-card-header">'
-                                + '    <div>'
-                                + '      <div class="flow-id">' + esc(f.id || '') + '</div>'
-                                + '      <h2 class="flow-name">' + esc(f.name || 'Unnamed flow') + '</h2>'
-                                + '    </div>'
-                                + '    <span class="flow-status-badge ' + statusCls + '">' + esc(shortStatus(f.status_served || '')) + '</span>'
-                                + '  </div>'
-                                + '  <div>'
-                                + '    <div class="flow-goal-label">Primary user goal</div>'
-                                + '    <div class="flow-goal">' + esc(f.primary_user_goal || '') + '</div>'
-                                + '  </div>'
-                                + (screens ? '<div class="flow-section"><div class="flow-section-label">Screens / states</div><ol class="flow-screens">' + screens + '</ol></div>' : '')
-                                + (edges ? '<div class="flow-section"><div class="flow-section-label">Known edge cases</div><ul class="flow-edge-cases">' + edges + '</ul></div>' : '')
-                                + (ships ? '<div class="flow-section"><div class="flow-section-label">Served by</div><div class="flow-ship-badges">' + ships + '</div></div>' : '')
-                                + (f.status_served ? '<div class="flow-status-line">' + esc(f.status_served) + '</div>' : '')
-                                + '</article>';
-                        }).join('');
-                    }
-                    var la = document.getElementById('last-amended');
-                    if (la) la.textContent = data && data.last_amended ? data.last_amended : '—';
-                    var ds = document.getElementById('doc-source');
-                    if (ds) ds.textContent = data && data.doc_source ? data.doc_source : '—';
-                } catch (err) {
-                    console.error('main-flows render failed', err);
+                    return JSON.parse(raw);
+                } catch (e) {
+                    console.error('main-flows: data parse failed', e);
+                    return { columns: [], flows: [] };
                 }
             }
+
+            function renderLegend() {
+                if (!data.columns || !data.columns.length) {
+                    LEGEND.innerHTML = '<div class="mf-legend-item">Empty data — run <code>scripts/regen-main-flows.py</code></div>';
+                    return;
+                }
+                LEGEND.innerHTML = data.columns.map(function (col) {
+                    return '<div class="mf-legend-item"><div class="mf-legend-dot" style="background: var(' + esc(col.color_token) + ');"></div><span>' + esc(col.label) + '</span></div>';
+                }).join('');
+            }
+
+            function renderGrid() {
+                if (!data.columns || !data.columns.length) {
+                    GRID.innerHTML = '<div style="padding: var(--space-4); color: var(--text-tertiary);">No components. Update <code>docs/reports/_assets/main-flows-data.json</code> and re-regen.</div>';
+                    return;
+                }
+                GRID.innerHTML = data.columns.map(function (col) {
+                    var nodes = (col.components || []).map(function (c) {
+                        return ''
+                            + '<div class="mf-node" data-component-id="' + esc(c.id) + '">'
+                            +   '<div class="mf-node-label">' + esc(c.label) + '</div>'
+                            +   '<div class="mf-node-subtitle">' + esc(c.subtitle || '') + '</div>'
+                            + '</div>';
+                    }).join('');
+                    return ''
+                        + '<div class="mf-column" data-col="' + esc(col.id) + '">'
+                        +   '<div class="mf-column-header">' + esc(col.label) + '</div>'
+                        +   '<div class="mf-column-subtitle">' + esc(col.subtitle || '') + '</div>'
+                        +   nodes
+                        + '</div>';
+                }).join('');
+            }
+
+            function renderFlowsList() {
+                FLOWS_LIST.innerHTML = (data.flows || []).map(function (f) {
+                    return ''
+                        + '<li class="mf-flows-item" data-flow-id="' + esc(f.id) + '">'
+                        +   '<span class="mf-flows-id">' + esc(f.id) + '</span>'
+                        +   '<div class="mf-flows-name">' + esc(f.name) + '</div>'
+                        +   '<div class="mf-flows-goal">' + esc(f.primary_user_goal || '') + '</div>'
+                        +   statusBadge(f.status)
+                        + '</li>';
+                }).join('');
+                FLOWS_COUNT.textContent = (data.flows || []).length + ' flows';
+                FLOWS_LIST.querySelectorAll('.mf-flows-item').forEach(function (li) {
+                    li.addEventListener('click', function () { selectFlow(li.getAttribute('data-flow-id')); });
+                });
+            }
+
+            function renderStepsForFlow(flowId) {
+                var flow = (data.flows || []).find(function (f) { return f.id === flowId; });
+                if (!flow) {
+                    STEPS_EMPTY.hidden = false;
+                    STEPS_LIST.hidden = true;
+                    STEPS_META.textContent = 'no flow selected';
+                    return;
+                }
+                STEPS_META.textContent = flow.id + ' · ' + (flow.steps || []).length + ' steps';
+                STEPS_EMPTY.hidden = true;
+                STEPS_LIST.hidden = false;
+                STEPS_LIST.innerHTML = (flow.steps || []).map(function (s) {
+                    return ''
+                        + '<li class="mf-steps-item" data-step-from="' + esc(s.from) + '" data-step-to="' + esc(s.to) + '">'
+                        +   '<div class="mf-step-num">' + s.n + '</div>'
+                        +   '<div>'
+                        +     '<div class="mf-step-from-to">' + esc(s.from) + ' → ' + esc(s.to) + '</div>'
+                        +     '<div class="mf-step-label">' + esc(s.label) + '</div>'
+                        +     '<div class="mf-step-desc">' + esc(s.description) + '</div>'
+                        +   '</div>'
+                        + '</li>';
+                }).join('');
+                STEPS_LIST.querySelectorAll('.mf-steps-item').forEach(function (li) {
+                    li.addEventListener('click', function () {
+                        pulseNodes([li.getAttribute('data-step-from'), li.getAttribute('data-step-to')]);
+                    });
+                });
+            }
+
+            function selectFlow(flowId) {
+                selectedFlowId = flowId;
+                FLOWS_LIST.querySelectorAll('.mf-flows-item').forEach(function (li) {
+                    li.classList.toggle('is-active', li.getAttribute('data-flow-id') === flowId);
+                });
+                renderStepsForFlow(flowId);
+                highlightPath(flowId);
+                requestAnimationFrame(function () { drawArrowsForFlow(flowId); });
+            }
+
+            function highlightPath(flowId) {
+                var flow = (data.flows || []).find(function (f) { return f.id === flowId; });
+                var pathSet = {};
+                if (flow && flow.path) flow.path.forEach(function (id) { pathSet[id] = true; });
+                GRID.classList.toggle('has-selection', !!flow);
+                GRID.querySelectorAll('.mf-node').forEach(function (node) {
+                    node.classList.toggle('is-on-path', !!pathSet[node.getAttribute('data-component-id')]);
+                });
+            }
+
+            function pulseNodes(ids) {
+                ids.forEach(function (id) {
+                    var n = GRID.querySelector('[data-component-id="' + id + '"]');
+                    if (!n) return;
+                    n.classList.remove('is-pulse');
+                    void n.offsetWidth;
+                    n.classList.add('is-pulse');
+                });
+            }
+
+            function nodeCenter(id) {
+                var n = GRID.querySelector('[data-component-id="' + id + '"]');
+                if (!n) return null;
+                var wrap = GRID.parentElement;
+                var nRect = n.getBoundingClientRect();
+                var wRect = wrap.getBoundingClientRect();
+                return {
+                    x: nRect.left - wRect.left + nRect.width / 2 + wrap.scrollLeft,
+                    y: nRect.top  - wRect.top  + nRect.height / 2,
+                    rx: nRect.width / 2,
+                    ry: nRect.height / 2
+                };
+            }
+
+            function drawArrowsForFlow(flowId) {
+                ARROWS.innerHTML = '';
+                if (!flowId) return;
+                var wrap = GRID.parentElement;
+                var w = wrap.scrollWidth;
+                var h = wrap.scrollHeight;
+                ARROWS.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+                ARROWS.setAttribute('width', w);
+                ARROWS.setAttribute('height', h);
+
+                var flow = (data.flows || []).find(function (f) { return f.id === flowId; });
+                if (!flow || !flow.steps) return;
+
+                var ns = 'http://www.w3.org/2000/svg';
+                var defs = document.createElementNS(ns, 'defs');
+                defs.innerHTML = '<marker id="mf-arrow-head-marker" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="mf-arrow-head" d="M 0 0 L 10 5 L 0 10 z"/></marker>';
+                ARROWS.appendChild(defs);
+
+                flow.steps.forEach(function (s) {
+                    var a = nodeCenter(s.from);
+                    var b = nodeCenter(s.to);
+                    if (!a || !b) return;
+                    var dx = b.x - a.x;
+                    var ax = a.x + Math.sign(dx) * (a.rx + 4);
+                    var ay = a.y;
+                    var bx = b.x - Math.sign(dx) * (b.rx + 8);
+                    var by = b.y;
+                    var mx = (ax + bx) / 2;
+                    var my = (ay + by) / 2 + (Math.abs(dx) > 1 ? 0 : 40);
+                    var path = document.createElementNS(ns, 'path');
+                    path.setAttribute('class', 'mf-arrow-line');
+                    path.setAttribute('d', 'M ' + ax + ' ' + ay + ' Q ' + mx + ' ' + my + ' ' + bx + ' ' + by);
+                    path.setAttribute('marker-end', 'url(#mf-arrow-head-marker)');
+                    ARROWS.appendChild(path);
+
+                    var badge = document.createElementNS(ns, 'g');
+                    var cx = mx, cy = my;
+                    var circle = document.createElementNS(ns, 'circle');
+                    circle.setAttribute('class', 'mf-arrow-badge-bg');
+                    circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', 10);
+                    badge.appendChild(circle);
+                    var text = document.createElementNS(ns, 'text');
+                    text.setAttribute('class', 'mf-arrow-badge-text');
+                    text.setAttribute('x', cx); text.setAttribute('y', cy);
+                    text.textContent = s.n;
+                    badge.appendChild(text);
+                    ARROWS.appendChild(badge);
+                });
+            }
+
+            function render() {
+                data = loadData();
+                renderLegend();
+                renderGrid();
+                renderFlowsList();
+                renderStepsForFlow(null);
+                window.addEventListener('resize', function () {
+                    if (selectedFlowId) requestAnimationFrame(function () { drawArrowsForFlow(selectedFlowId); });
+                });
+            }
+
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', render);
             } else {

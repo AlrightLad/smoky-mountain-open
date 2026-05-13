@@ -2,13 +2,17 @@
 """
 Regenerate docs/reports/main-flows.html via data-block swap.
 
-Reads the source-of-truth doc (currently the dry-run draft at
-`.claude/state/wave-zero-dry-run/remediation/proposed-MAIN_FLOWS.md`;
-will become `docs/agents/MAIN_FLOWS.md` once Founder ratifies) and parses
-each "### MF-NN — <name>" section into a structured flow record.
+Source of truth: docs/reports/_assets/main-flows-data.json
+Sub-source (for flow status overrides): .claude/state/ship-progress/*.json
 
-Generator-driven, per binding caveat from db-2026-05-13-004: single source
-of truth is the markdown doc. HTML is rebuilt from it; never hand-edit.
+Generator-driven per db-2026-05-13-004 binding caveats — never hand-edit
+the data block inside the HTML; edit the JSON sidecar + re-run this.
+
+Validation:
+- Every flow.path component must exist in columns[].components[]
+- Every step.from / step.to component must exist in columns[].components[]
+- Every flow has at least 1 step
+- Orphan components (in grid but in no flow's path) emit warning, not error
 """
 import json
 import re
@@ -18,80 +22,71 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DASHBOARD = ROOT / "docs" / "reports" / "main-flows.html"
-PROPOSED_DOC = ROOT / ".claude" / "state" / "wave-zero-dry-run" / "remediation" / "proposed-MAIN_FLOWS.md"
-RATIFIED_DOC = ROOT / "docs" / "agents" / "MAIN_FLOWS.md"
+DATA_SOURCE = ROOT / "docs" / "reports" / "_assets" / "main-flows-data.json"
+SHIP_PROGRESS = ROOT / ".claude" / "state" / "ship-progress"
 
 DATA_BLOCK_RE = re.compile(
     r'(<script id="report-data" type="application/json">\s*)(.*?)(\s*</script>)',
     re.DOTALL,
 )
-# Heading shape (line begins at column 0): ### MF-NN — <name>
-FLOW_HEAD_RE = re.compile(r'^### (MF-\d+) [—\-:] (.+?)\s*$', re.MULTILINE)
 
 
-def pick_source():
-    if RATIFIED_DOC.exists():
-        return RATIFIED_DOC, "ratified"
-    if PROPOSED_DOC.exists():
-        return PROPOSED_DOC, "proposed-draft"
-    return None, None
+def load_source():
+    if not DATA_SOURCE.exists():
+        sys.stderr.write(f"[regen-main-flows] FATAL: source missing at {DATA_SOURCE}\n")
+        sys.exit(2)
+    return json.loads(DATA_SOURCE.read_text(encoding="utf-8"))
 
 
-def parse_main_flows(doc_text: str):
-    """Parse one flow per `### MF-NN — <name>` heading."""
-    flows = []
-    matches = list(FLOW_HEAD_RE.finditer(doc_text))
-    for i, m in enumerate(matches):
-        start = m.end()
-        end = matches[i + 1].start() if i + 1 < len(matches) else len(doc_text)
-        section = doc_text[start:end]
-        flow = {
-            "id": m.group(1),
-            "name": m.group(2).strip(),
-            "primary_user_goal": "",
-            "screens": [],
-            "edge_cases": [],
-            "served_by_ships": [],
-            "served_by_primary": None,
-            "status_served": "",
-        }
-        # Primary user goal
-        pg = re.search(r'\*\*Primary user goal:\*\*\s*(.+?)(?:\n\n|\n\*\*)', section, re.DOTALL)
-        if pg:
-            flow["primary_user_goal"] = " ".join(pg.group(1).split())
-        # Screens / states (numbered list)
-        sc = re.search(r'\*\*Screens / states[^*]*\*\*\s*\n((?:\d+\..+\n?)+)', section)
-        if sc:
-            for line in sc.group(1).splitlines():
-                line = line.strip()
-                m_li = re.match(r'^\d+\.\s+(.+)$', line)
-                if m_li:
-                    flow["screens"].append(m_li.group(1).strip())
-        # Edge cases (bulleted list under "Known edge cases" or "Edge cases")
-        ec = re.search(r'\*\*(?:Known edge cases|Edge cases)[^*]*\*\*\s*\n((?:[\-\*] .+\n?)+)', section)
-        if ec:
-            for line in ec.group(1).splitlines():
-                line = line.strip()
-                m_li = re.match(r'^[\-\*]\s+(.+)$', line)
-                if m_li:
-                    flow["edge_cases"].append(m_li.group(1).strip())
-        # Served by ships — pull all "W1.SN" / "M-N" / "W1.IN" tokens
-        sb = re.search(r'\*\*Served by ships:\*\*\s*(.+?)(?:\n\n|\n\*\*)', section, re.DOTALL)
-        if sb:
-            text = sb.group(1)
-            ships = sorted(set(re.findall(r'\b(W\d+\.[SIM]\d+|M\d+\.?\d*)\b', text)))
-            flow["served_by_ships"] = ships
-            if ships:
-                # Primary = first one mentioned in source order, not sorted
-                first = re.search(r'\b(W\d+\.[SIM]\d+|M\d+\.?\d*)\b', text)
-                if first:
-                    flow["served_by_primary"] = first.group(1)
-        # Status served
-        ss = re.search(r'\*\*Status served:\*\*\s*(.+?)(?:\n\n|\n###|\Z|\n---)', section, re.DOTALL)
-        if ss:
-            flow["status_served"] = " ".join(ss.group(1).split())
-        flows.append(flow)
+def apply_ship_progress(flows):
+    """If a flow's served_by_ships includes a ship whose ship-progress is 'complete',
+    upgrade the flow's status to 'shipped-on-current-system'. Defensive: don't
+    DOWNgrade explicitly-set statuses.
+    """
+    if not SHIP_PROGRESS.exists():
+        return flows
+    complete_ships = set()
+    for f in SHIP_PROGRESS.glob("*.json"):
+        try:
+            s = json.loads(f.read_text(encoding="utf-8"))
+            if (s.get("status") or "").lower() == "complete":
+                ship_id = s.get("ship_id") or s.get("id")
+                if ship_id:
+                    complete_ships.add(ship_id)
+        except Exception:
+            continue
+    for fl in flows:
+        if fl.get("status") in (None, "planned", "shipping"):
+            served = set(fl.get("served_by_ships", []) or [])
+            if served and served.issubset(complete_ships):
+                fl["status"] = "shipped-on-current-system"
     return flows
+
+
+def validate(data):
+    issues = []
+    comp_ids = set()
+    for col in data.get("columns", []):
+        for c in col.get("components", []):
+            comp_ids.add(c["id"])
+
+    referenced = set()
+    for fl in data.get("flows", []):
+        if not fl.get("steps"):
+            issues.append(f"flow {fl.get('id')} has no steps")
+        for p in fl.get("path", []):
+            referenced.add(p)
+            if p not in comp_ids:
+                issues.append(f"flow {fl['id']} path references unknown component '{p}'")
+        for s in fl.get("steps", []):
+            for fk in ("from", "to"):
+                v = s.get(fk)
+                referenced.add(v)
+                if v not in comp_ids:
+                    issues.append(f"flow {fl['id']} step {s.get('n')} {fk}='{v}' is unknown component")
+
+    orphans = comp_ids - referenced
+    return issues, orphans
 
 
 def swap_data_block(html_path: Path, new_data: dict):
@@ -109,27 +104,43 @@ def swap_data_block(html_path: Path, new_data: dict):
 
 
 def main():
-    src, kind = pick_source()
-    if not src:
-        print("[regen-main-flows] FATAL: no source doc found", file=sys.stderr)
-        print(f"  expected one of: {RATIFIED_DOC.relative_to(ROOT)} OR {PROPOSED_DOC.relative_to(ROOT)}", file=sys.stderr)
-        return 2
-    print(f"[regen-main-flows] source: {src.relative_to(ROOT)} ({kind})")
-    flows = parse_main_flows(src.read_text(encoding="utf-8"))
-    print(f"[regen-main-flows] parsed {len(flows)} flows: {[f['id'] for f in flows]}")
-    data = {
-        "flows": flows,
+    src = load_source()
+    src["flows"] = apply_ship_progress(src.get("flows", []))
+
+    issues, orphans = validate(src)
+    if issues:
+        print(f"[regen-main-flows] VALIDATION FAILED ({len(issues)} issues):")
+        for i in issues:
+            print(f"  - {i}")
+        return 1
+    if orphans:
+        print(f"[regen-main-flows] WARN: {len(orphans)} orphan components in grid (referenced by no flow's path):")
+        for o in sorted(orphans):
+            print(f"    {o}")
+
+    # Build the data block — copy validated source + add timestamp + counts
+    data_block = {
+        "columns": src.get("columns", []),
+        "flows": src.get("flows", []),
         "last_amended": datetime.now(timezone.utc).isoformat(),
-        "doc_source": str(src.relative_to(ROOT)).replace("\\", "/"),
-        "doc_kind": kind,
+        "doc_source": str(DATA_SOURCE.relative_to(ROOT)).replace("\\", "/"),
+        "schema_version": src.get("schema_version", 1),
+        "_counts": {
+            "columns": len(src.get("columns", [])),
+            "components_total": sum(len(c.get("components", [])) for c in src.get("columns", [])),
+            "flows": len(src.get("flows", [])),
+            "orphan_components": sorted(list(orphans)),
+        },
     }
-    ok, err = swap_data_block(DASHBOARD, data)
+
+    ok, err = swap_data_block(DASHBOARD, data_block)
     if ok:
         print(f"[regen-main-flows] OK   {DASHBOARD.name}")
+        c = data_block["_counts"]
+        print(f"[regen-main-flows] {c['columns']} columns, {c['components_total']} components, {c['flows']} flows; orphans={len(c['orphan_components'])}")
         return 0
-    else:
-        print(f"[regen-main-flows] FAIL {DASHBOARD.name}: {err}")
-        return 1
+    print(f"[regen-main-flows] FAIL {DASHBOARD.name}: {err}")
+    return 1
 
 
 if __name__ == "__main__":
