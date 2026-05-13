@@ -3,9 +3,13 @@
    ----------------------------------------------------------------------------
    Single source of truth for the visual standard called out in the Phase 3
    directive: page header + brand line + nav + page title + KPI grid + table.
-   Every dashboard imports this AFTER design-tokens.css and BEFORE any
-   page-specific CSS. Page-specific style is restricted to a 30-line inline
-   budget; anything beyond gets extracted to its own _assets/*.css.
+   Every dashboard imports this; the shell pulls in design-tokens.css
+   transitively, so consumers only need a single <link> to dashboard-shell.css
+   (legacy dashboards may still import dashboard.css alongside until they
+   migrate to .pb-* primitives, but the alias layer below ensures their
+   legacy `var(--bg-*)` / `var(--accent-*)` calls resolve to PARBAUGHS palette).
+   Page-specific style is restricted to a 30-line inline budget; anything
+   beyond gets extracted to its own _assets/*.css.
 
    Visual standard (locked):
      - Background: --pb-billiard-green-900 (page) / --pb-billiard-green-800 (surface)
@@ -25,6 +29,78 @@
      - Tables horizontal-scroll inside .pb-table-wrap on narrow widths
      - Tables can sticky their first column via .is-sticky-col
    ============================================================================ */
+
+
+/* Pull in the canonical PARBAUGHS palette (`--pb-*` family + semantic
+ * aliases). Every dashboard inherits this through dashboard-shell.css
+ * regardless of which other stylesheets it imports. */
+@import url("design-tokens.css");
+
+
+/* ============================================================================
+   LEGACY ALIAS LAYER — TEMPORARY
+   ----------------------------------------------------------------------------
+   These aliases let pre-migration inline `<style>` blocks (and the legacy
+   dashboard.css token declarations) continue working while individual
+   dashboards migrate to `var(--pb-*)` directly. Each legacy token name
+   in active use by any dashboard maps to its canonical PARBAUGHS
+   equivalent — Theme A converges to Theme B without any HTML edit.
+
+   Cascade order matters: dashboards that import dashboard.css get its
+   legacy hex declarations first (`--bg-page: #0f1419`), then this
+   alias block in dashboard-shell.css redeclares them as `var(--pb-*)`
+   references. The shell wins because it loads after.
+
+   SUNSET CRITERION: when no dashboard HTML references the alias tokens
+   in <style> blocks or style="..." attributes, this block can be
+   deleted. Tracked at .claude/state/design-system/alias-sunset.md.
+
+   Mappings rationale documented at
+   .claude/state/wave-zero-dry-run/theme-migration-audit.md.
+   ============================================================================ */
+:root {
+    /* Surfaces */
+    --bg-page:     var(--pb-billiard-green-900);
+    --bg-card:     var(--pb-billiard-green-800);
+    --bg-elevated: var(--pb-billiard-green-700);
+    --bg-input:    var(--pb-billiard-green-700);
+
+    /* Text — semantic */
+    --text-primary:   var(--pb-chalk-50);
+    --text-secondary: var(--pb-chalk-200);
+    --text-tertiary:  var(--pb-chalk-400);
+    --text-inverse:   var(--pb-billiard-green-900);
+
+    /* Accents — color names */
+    --accent-brass:       var(--pb-brass-500);
+    --accent-achievement: var(--pb-brass-500);
+    --accent-moss:        var(--pb-success);
+    --accent-claret:      var(--pb-error);
+    --accent-teal:        var(--pb-info);
+    --accent-amber:       var(--pb-warning);
+    --accent-violet:      var(--pb-leather-700);
+
+    /* Semantic aliases — status */
+    --success: var(--pb-success);
+    --warning: var(--pb-warning);
+    --danger:  var(--pb-error);
+    --info:    var(--pb-info);
+
+    /* Borders — override dashboard.css's solid hex hairlines with the
+     * canonical chalk-rgba hairlines from design-tokens.css. */
+    --border-subtle: rgba(216, 208, 192, 0.08);
+    --border-strong: rgba(216, 208, 192, 0.16);
+
+    /* Type stacks */
+    --font-sans: var(--font-body);
+
+    /* Motion */
+    --duration-default: var(--duration-medium);
+    --ease-default:     var(--ease-out);
+
+    /* Shadows */
+    --shadow-card: var(--shadow-md);
+}
 
 
 /* ----------------------------------------------------------------------------

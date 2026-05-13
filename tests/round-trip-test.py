@@ -1039,6 +1039,47 @@ def main():
                 else:
                     print(green(f"  ✓ token-usage.html visual distinction present: {', '.join(found)}"))
 
+    # Theme convergence guard: every dashboard's <style> blocks + style="..." attrs
+    # must reference colors via var(--*) only — no raw hex. design-system.html is
+    # exempt because it displays hex values as documentation. main-flows.html has
+    # 6 documented column-color hex declarations inside :root (col-actor/-client/
+    # -auth-fn/-data/-distribution/-external) which are page-specific data tokens,
+    # not theme colors. Test allows those scoped column-color tokens explicitly.
+    print(cyan("\n[theme] Theme convergence guard (no raw hex in dashboard <style>)..."))
+    HEX_IN_CSS_RE = re.compile(r"#[0-9a-fA-F]{3,8}\b")
+    THEME_PAGES = [
+        ("dashboard.html",          0),
+        ("activity.html",           0),
+        ("proposals.html",          0),
+        ("discussion-bubbles.html", 0),
+        ("main-flows.html",         6),  # 6 documented --col-* column-color tokens
+        ("token-usage.html",        0),
+        ("index.html",              0),
+    ]
+    # design-system.html is the documentation page — it deliberately shows hex
+    # values in text content as the swatch labels. Round-trip already validates
+    # design-system.html CSS-context hex separately (the [design-tokens] block).
+    for fname, allowed_hex in THEME_PAGES:
+        p = REPORTS_SRC / fname
+        if not p.exists():
+            continue
+        text = p.read_text(encoding="utf-8")
+        style_blocks = re.findall(r"<style[^>]*>(.*?)</style>", text, flags=re.DOTALL)
+        style_attrs  = re.findall(r'style="([^"]*)"', text)
+        css_text = "\n".join(style_blocks) + "\n" + "\n".join(style_attrs)
+        hex_in_css = HEX_IN_CSS_RE.findall(css_text)
+        if len(hex_in_css) > allowed_hex:
+            print(red(f"  ✗ {fname:32s} {len(hex_in_css)} raw hex value(s) in CSS contexts (allowed: {allowed_hex})"))
+            print(red(f"     samples: {hex_in_css[:5]}"))
+            failures.append((f"theme:{fname}", f"raw hex count {len(hex_in_css)} > allowed {allowed_hex}"))
+        else:
+            tag = "ok" if allowed_hex == 0 else f"ok ({len(hex_in_css)}/{allowed_hex} documented)"
+            print(green(f"  ✓ {fname:32s} {tag}"))
+        # Must import dashboard-shell.css (transitively imports design-tokens.css).
+        if 'href="_assets/dashboard-shell.css"' not in text:
+            print(red(f"  ✗ {fname:32s} does not import dashboard-shell.css"))
+            failures.append((f"theme:{fname}:shell-import", "dashboard-shell.css not imported"))
+
     # Wiring assertions: cross-check that scenarios in activity data match canonical CSS classes
     print(cyan("\n[wiring] Cross-checking scenario tokens against CSS + dropdown..."))
     activity_html = (test_reports / "activity.html").read_text()
