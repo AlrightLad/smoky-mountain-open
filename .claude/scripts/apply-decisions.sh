@@ -226,18 +226,23 @@ while IFS='|' read -r PID TYPE NOTE DECIDED_AT; do
         fi
     fi
 
-    # Append decision-log entry
-    LOG_ENTRY=$("$PYTHON_BIN" -c "
-import json, sys
+    # Append decision-log entry.
+    # Use env vars instead of shell substitution into the Python source to
+    # avoid breakage on values containing quotes, backslashes, or newlines
+    # (Founder's live watcher hit this with a multi-line note).
+    export LE_TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    export LE_PID="$PID" LE_TYPE="$TYPE" LE_NOTE="$NOTE" LE_DECIDED_AT="$DECIDED_AT" LE_DST="$DST"
+    LOG_ENTRY=$("$PYTHON_BIN" -c '
+import json, os
 print(json.dumps({
-    'ts': '$(date -u +%Y-%m-%dT%H:%M:%SZ)',
-    'proposal_id': '$PID',
-    'decision': '$TYPE',
-    'note': '''$NOTE''',
-    'decided_at': '$DECIDED_AT',
-    'moved_to': '$DST'
+    "ts": os.environ.get("LE_TS",""),
+    "proposal_id": os.environ.get("LE_PID",""),
+    "decision": os.environ.get("LE_TYPE",""),
+    "note": os.environ.get("LE_NOTE",""),
+    "decided_at": os.environ.get("LE_DECIDED_AT",""),
+    "moved_to": os.environ.get("LE_DST",""),
 }))
-")
+')
     echo "$LOG_ENTRY" >> "$LOG"
 
     echo "  ✓ $TYPE $PID  →  $DST${NOTE:+  (note appended)}"
