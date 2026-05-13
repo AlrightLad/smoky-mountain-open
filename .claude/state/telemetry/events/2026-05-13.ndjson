@@ -9,3 +9,6 @@
 {"event_type":"cycle.end","timestamp":"2026-05-13T11:50:16Z","cycle_id":"wave-zero-dry-run-V5-synthetic-cycle-RESUMED","data":{"outcome":"complete","returncode":0,"atomic_units_completed":2,"atomic_units_remaining":0}}
 {"event_type":"cycle.paused","timestamp":"2026-05-13T11:55:00Z","cycle_id":"wave-zero-dry-run-V6-synthetic-cycle","data":{"reason":"wellness-rest","quota_type":null,"usage_pct":null,"resume_after":"2026-05-13T12:25:00Z","agent":"engineer","threshold_crossed":"tokens_consumed","tokens_consumed_since_last_rest":102000}}
 {"event_type":"cycle.resumed","timestamp":"2026-05-13T11:55:30Z","cycle_id":"wave-zero-dry-run-V6-synthetic-cycle-RESUMED","data":{"reason":"wellness-rest","pause_duration_seconds":1800,"_dry_run_collapsed_to":"30s for in-session continuation","usage_pct_at_resume":null,"agent":"engineer"}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-13T20:07:08.337495+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-13T20:11:43.186944+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-13T20:11:43.704049+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}

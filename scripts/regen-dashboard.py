@@ -86,17 +86,31 @@ def proposals_pending_count():
     return sum(1 for f in d.iterdir() if f.name.endswith(".md"))
 
 
+def proposals_state_counts():
+    """Return counts across all 5 proposal states (per PROPOSAL_LIFECYCLE_v8.2)."""
+    out = {"pending": 0, "approved": 0, "deferred": 0, "shipped": 0, "rejected": 0}
+    for k in out:
+        d = STATE / "proposals" / k
+        if d.exists():
+            out[k] = sum(1 for f in d.iterdir() if f.name.endswith(".md"))
+    out["shipped_total"]  = out["shipped"]
+    out["rejected_total"] = out["rejected"]
+    return out
+
+
 def build_dashboard_data():
     if not SNAPSHOT.exists():
         sys.stderr.write(f"[regen-dashboard] FATAL snapshot missing: {SNAPSHOT}\n"
                          f"  Run: python scripts/aggregate-telemetry.py\n")
         sys.exit(2)
     snap = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
+    pc = proposals_state_counts()
     return {
         "weekly_tokens": snap.get("weekly_tokens", 0),
         "weekly_cost": snap.get("weekly_cost", 0.0),
         "ships_this_week": snap.get("ships_this_week", 0),
-        "proposals_pending": proposals_pending_count(),
+        "proposals_pending": pc["pending"],
+        "proposals_counts": pc,
         "halts_this_week": snap.get("halts_this_week", 0),
         "fiq_depth": snap.get("fiq_depth", 0),
         "budget_pct": snap.get("budget_pct", 0.0),

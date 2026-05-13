@@ -89,9 +89,13 @@ Work to do:
 8. Update existing FIQ entries with `triaged_at` field once handled.
 9. Run heartbeat activities at end (per V9 spec):
    - Invoke `scripts/regen-all.ps1` (Windows) OR `scripts/regen-all.sh` (bash). This runs
-     aggregate-telemetry → regen-dashboard → regen-ops-views → regen-main-flows →
-     regen-index in sequence, with a final summary line "ALL DASHBOARDS REGENERATED at
-     <ts>" on success or "PARTIAL FAILURE — failed steps: ..." on partial failure.
+     scan-shipped-proposals → aggregate-telemetry → regen-proposals → regen-dashboard →
+     regen-ops-views → regen-main-flows → regen-index in sequence, with a final summary
+     line "ALL DASHBOARDS REGENERATED at <ts>" on success or "PARTIAL FAILURE — failed
+     steps: ..." on partial failure. Round-trip test gates the final summary.
+   - Per PROPOSAL_LIFECYCLE_v8.2: the scan-shipped step inside regen-all auto-promotes
+     any approved/ proposals whose implementing commit landed today. Overnight-triage
+     therefore catches all "shipped today" transitions without separate invocation.
    - Refresh wellness state files (separate step; not part of regen-all).
 10. Write session journal entry at
     .claude/state/cron/<YYYY-MM-DD>-overnight-run.md summarizing

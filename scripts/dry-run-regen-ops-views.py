@@ -123,13 +123,14 @@ def main():
     agents = sorted({h.get("from_agent","") for h in handoffs} | {h.get("to_agent","") for h in handoffs})
     ships = sorted({h.get("ship_id","") for h in handoffs if h.get("ship_id")})
 
+    # PROPOSAL_LIFECYCLE_v8.2: proposals.html now owned by scripts/regen-proposals.py
+    # (which handles the 5-state schema). This script handles bubbles + activity only.
     targets = [
         (REPORTS / "discussion-bubbles.html", {"discussion_bubbles": bubbles}),
         (REPORTS / "activity.html",           {"handoffs": handoffs, "agents": agents, "ships": ships}),
-        (REPORTS / "proposals.html",          {"proposals": proposals}),
     ]
 
-    print(f"[regen] {len(bubbles)} bubbles, {len(handoffs)} handoffs, {len(proposals)} proposals")
+    print(f"[regen] {len(bubbles)} bubbles, {len(handoffs)} handoffs (proposals.html owned by regen-proposals.py)")
     failed = 0
     for path, data in targets:
         ok, err = swap_data_block(path, data)

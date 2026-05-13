@@ -34,7 +34,9 @@ START_TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 echo "[regen-all] START $START_TS   python=$PYTHON"
 
 STEPS=(
+    "scan-shipped-proposals|scripts/scan-shipped-proposals.py"
     "aggregate-telemetry|scripts/aggregate-telemetry.py"
+    "regen-proposals|scripts/regen-proposals.py"
     "regen-dashboard|scripts/regen-dashboard.py"
     "regen-ops-views|scripts/dry-run-regen-ops-views.py"
     "regen-main-flows|scripts/regen-main-flows.py"

@@ -697,15 +697,84 @@ def main():
             sources = ", ".join(f"{s}={v}" for s, v in candidates)
             print(green(f"  ✓ {label:40s} ground={ground}  all={sources}"))
 
-    # proposals_pending: dashboard.html data block + proposals.html proposals[] length + index.html status + on-disk
+    # proposals_pending: dashboard.html data block + proposals.html (handles both legacy array + new 5-state object) + index.html status + on-disk
+    def proposals_html_pending_len(d):
+        if d is None: return None
+        p = d.get("proposals")
+        if isinstance(p, list):
+            return len(p)  # legacy
+        if isinstance(p, dict):
+            return len(p.get("pending") or [])  # PROPOSAL_LIFECYCLE_v8.2 shape
+        return None
     cands = []
     if dash_data is not None:
         cands.append(("dashboard.html data.proposals_pending", dash_data.get("proposals_pending")))
     if prop_data is not None:
-        cands.append(("proposals.html data.proposals.length", len(prop_data.get("proposals", []))))
+        cands.append(("proposals.html pending length", proposals_html_pending_len(prop_data)))
     if idx_data is not None:
         cands.append(("index.html data.status.proposals_pending", idx_data.get("status", {}).get("proposals_pending")))
     check_eq("proposals_pending", truth_pending, cands)
+
+    # Proposal lifecycle v8.2 schema: when proposals.html is in the 5-state shape, verify all keys + counts
+    if prop_data is not None and isinstance(prop_data.get("proposals"), dict):
+        print(cyan("\n[lifecycle] PROPOSAL_LIFECYCLE_v8.2 schema validation..."))
+        plp = prop_data["proposals"]
+        required_keys = ("pending", "approved", "deferred", "shipped", "rejected")
+        missing = [k for k in required_keys if k not in plp]
+        if missing:
+            print(red(f"  ✗ proposals.html proposals.* missing keys: {missing}"))
+            failures.append(("lifecycle:proposals.html", f"missing keys: {missing}"))
+        else:
+            counts = prop_data.get("counts") or {}
+            # On-disk truth for each state
+            on_disk_counts = {
+                "pending":  sum(1 for _ in (real_state / "proposals" / "pending" ).glob("*.md")) if (real_state / "proposals" / "pending").exists()  else 0,
+                "approved": sum(1 for _ in (real_state / "proposals" / "approved").glob("*.md")) if (real_state / "proposals" / "approved").exists() else 0,
+                "deferred": sum(1 for _ in (real_state / "proposals" / "deferred").glob("*.md")) if (real_state / "proposals" / "deferred").exists() else 0,
+                "shipped":  sum(1 for _ in (real_state / "proposals" / "shipped" ).glob("*.md")) if (real_state / "proposals" / "shipped").exists()  else 0,
+                "rejected": sum(1 for _ in (real_state / "proposals" / "rejected").glob("*.md")) if (real_state / "proposals" / "rejected").exists() else 0,
+            }
+            ok = True
+            # Verify data block bucket length matches on-disk (for the inline-display caps: pending/approved/deferred uncapped; shipped/rejected capped at 50)
+            for key in ("pending", "approved", "deferred"):
+                if len(plp[key]) != on_disk_counts[key]:
+                    print(red(f"  ✗ proposals.{key}: data block has {len(plp[key])}, on-disk has {on_disk_counts[key]}"))
+                    failures.append((f"lifecycle:{key}", f"data={len(plp[key])} on-disk={on_disk_counts[key]}"))
+                    ok = False
+            # shipped/rejected: inline-bucket length is min(on_disk, 50); but counts.*_total must match on-disk
+            for key, count_key in (("shipped", "shipped_total"), ("rejected", "rejected_total")):
+                if counts.get(count_key) != on_disk_counts[key]:
+                    print(red(f"  ✗ counts.{count_key}: data block has {counts.get(count_key)}, on-disk has {on_disk_counts[key]}"))
+                    failures.append((f"lifecycle:counts.{count_key}", f"data={counts.get(count_key)} on-disk={on_disk_counts[key]}"))
+                    ok = False
+                # inline bucket must be ≤ 50 and ≤ on_disk
+                if len(plp[key]) > 50 or len(plp[key]) > on_disk_counts[key]:
+                    print(red(f"  ✗ proposals.{key} inline bucket has {len(plp[key])} (cap is min(50, {on_disk_counts[key]}))"))
+                    failures.append((f"lifecycle:{key}-inline-cap", f"inline={len(plp[key])}"))
+                    ok = False
+            # Every shipped proposal must have shipped_at + shipped_in_commit (immutability contract per § 3 rule 5)
+            for p in plp["shipped"]:
+                if "shipped_at" not in p or "shipped_in_commit" not in p:
+                    print(red(f"  ✗ shipped proposal {p.get('id')} missing shipped_at/shipped_in_commit"))
+                    failures.append((f"lifecycle:shipped-fields", f"prop={p.get('id')}"))
+                    ok = False
+            if ok:
+                summary = f"counts pending={counts.get('pending')} approved={counts.get('approved')} deferred={counts.get('deferred')} shipped={counts.get('shipped_total')} rejected={counts.get('rejected_total')}"
+                print(green(f"  ✓ PROPOSAL_LIFECYCLE_v8.2 schema valid; {summary}"))
+
+        # Dashboard banner must surface proposals_counts (new schema)
+        if dash_data is not None:
+            pc = dash_data.get("proposals_counts")
+            if not isinstance(pc, dict):
+                print(red("  ✗ dashboard.html missing proposals_counts object (needed for banner)"))
+                failures.append(("lifecycle:dashboard.proposals_counts", "missing"))
+            else:
+                for k in ("pending", "approved", "shipped_total"):
+                    if k not in pc:
+                        print(red(f"  ✗ dashboard.proposals_counts missing {k}"))
+                        failures.append((f"lifecycle:dashboard.proposals_counts.{k}", "missing"))
+                if all(k in pc for k in ("pending", "approved", "shipped_total")):
+                    print(green(f"  ✓ dashboard.html proposals_counts present: pending={pc['pending']} approved={pc['approved']} shipped={pc.get('shipped_total')}"))
 
     # discussion_bubbles_total: discussion-bubbles.html data block + index.html status + on-disk
     cands = []

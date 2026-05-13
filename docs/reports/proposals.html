@@ -247,8 +247,39 @@
         </section>
 
         <section>
-            <div class="section-header">Pending proposals</div>
+            <div class="section-header">Pending review <span class="section-count" data-section-count="pending">—</span></div>
+            <p class="text-muted" style="font-size: 0.8125rem; margin-bottom: var(--space-3);">Founder's active workspace. Mark each as approve / reject / defer, then export decisions.</p>
             <div id="proposal-list"></div>
+        </section>
+
+        <section class="mt-4">
+            <div class="section-header">Approved — in flight <span class="section-count" data-section-count="approved">—</span></div>
+            <p class="text-muted" style="font-size: 0.8125rem; margin-bottom: var(--space-3);">Past Founder's decision point. No buttons — these are awaiting an implementing commit ("Implements PROP-NNN") which auto-promotes to shipped.</p>
+            <div id="proposal-list-approved"></div>
+        </section>
+
+        <section class="mt-4">
+            <details>
+                <summary class="section-header" style="cursor: pointer;">Deferred <span class="section-count" data-section-count="deferred">—</span></summary>
+                <p class="text-muted" style="font-size: 0.8125rem; margin: var(--space-2) 0 var(--space-3);">Founder deferred for later consideration. Un-deferring is a future feature.</p>
+                <div id="proposal-list-deferred"></div>
+            </details>
+        </section>
+
+        <section class="mt-4">
+            <details>
+                <summary class="section-header" style="cursor: pointer;">Shipped — archive <span class="section-count" data-section-count="shipped">—</span></summary>
+                <p class="text-muted" style="font-size: 0.8125rem; margin: var(--space-2) 0 var(--space-3);">Last 50 shown. Append-only audit trail in <code>.claude/state/proposals/shipped-log.md</code>. Each card cites the implementing commit (short sha).</p>
+                <div id="proposal-list-shipped"></div>
+            </details>
+        </section>
+
+        <section class="mt-4">
+            <details>
+                <summary class="section-header" style="cursor: pointer;">Rejected — archive <span class="section-count" data-section-count="rejected">—</span></summary>
+                <p class="text-muted" style="font-size: 0.8125rem; margin: var(--space-2) 0 var(--space-3);">Last 50 shown. Terminal archive.</p>
+                <div id="proposal-list-rejected"></div>
+            </details>
         </section>
 
         <section class="mt-5">
@@ -271,59 +302,108 @@
 
     <script id="report-data" type="application/json">
 {
-  "proposals": [
-    {
-      "id": "PROP-003",
-      "title": "Token-meter-wiring sidecar \u2014 substantive heuristic-sunset path for HALT 25",
-      "lane": 3,
-      "lane_label": "Performance",
-      "created_at": "2026-05-13T15:00:00Z",
-      "rationale": "F1 diagnostic confirms Claude Code agents cannot introspect their own token consumption from inside the tool surface. The PAUSE_DISCIPLINE 90% trigger cannot fire without a meter. The defensive heuristic (agent-feel pacing) is a band-aid; this proposal is the real fix \u2014 a sidecar process that writes usage snapshots to a watched file the agent reads each turn. Data-Integrity's forcing-function dissent on db-003 is resolved by this substantive draft (NOT a stub).",
-      "scope": "Author scripts/cron/usage-snapshot.ps1 + integration in PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 2.1 + auto-read in scripts/aggregate-telemetry.py.",
-      "estimate": {
-        "cost_tokens": 45000,
-        "duration_minutes": 90,
-        "risk": "medium"
+  "proposals": {
+    "pending": [
+      {
+        "id": "PROP-004",
+        "title": "Add `org-monthly` as 4th quota_type in PAUSE_DISCIPLINE schema",
+        "lane": 2,
+        "lane_label": "Bug Discovery",
+        "created_at": "2026-05-13T15:05:00Z",
+        "rationale": "PAUSE_DISCIPLINE_v8.1_ADDENDUM \u00a7 5 enumerates `quota_type` as 'weekly-tokens | daily-tokens | hourly-requests'. The prior session's failure was at the org-monthly cap, which is not in the enum. The discipline cannot pause for a quota it doesn't model. F1 finding (b) explicit: 'org-level monthly cap is a DIFFERENT quota than weekly-tokens.'",
+        "scope": "Schema amendment: add `org-monthly` to the enum + document the reset boundary as configurable (Anthropic billing-cycle, not necessarily UTC midnight on the 1st). Update last-verify.json schema example. Update telemetry event schema (cycle.budget.checkpoint emits quota_type which now includes the new value).",
+        "estimate": {
+          "cost_tokens": 8000,
+          "duration_minutes": 20,
+          "risk": "low"
+        },
+        "files_affected": [
+          "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 5 (enum + example state file)",
+          "docs/agents/TELEMETRY_PROTOCOL.md (cycle.budget.checkpoint + cycle.paused + cycle.resumed event schemas)",
+          "scripts/aggregate-telemetry.py (handle the new quota_type in event aggregation \u2014 defensive: existing events keep working)",
+          "scripts/cron/usage-snapshot-config.json (per PROP-003 \u2014 defines the org-monthly reset boundary)"
+        ],
+        "evidence_paths": [
+          ".claude/state/wave-zero-dry-run/remediation/F1a-token-meter-gap-diagnostic.md",
+          ".claude/state/discussion-bubbles/db-2026-05-13-003.md"
+        ],
+        "ship_target": "Post-Wave-Zero remediation ratification. Lightweight; could ship same-day as Founder applies the schema amendment."
       },
-      "files_affected": [
-        "scripts/cron/usage-snapshot.ps1 (new)",
-        "scripts/cron/usage-snapshot-config.json (new \u2014 what to poll, how often, reset boundary)",
-        "scripts/aggregate-telemetry.py (read .claude/state/usage-snapshot.json; populate weekly_tokens / weekly_cost / org_monthly_pct from real data)",
-        ".claude/state/usage-snapshot.json (new \u2014 sidecar writes here; agent reads each turn)",
-        "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 2.1 (Founder-applied amendment: meter read via .claude/state/usage-snapshot.json)"
-      ],
-      "evidence_paths": [
-        ".claude/state/wave-zero-dry-run/remediation/F1a-token-meter-gap-diagnostic.md",
-        ".claude/state/discussion-bubbles/db-2026-05-13-003.md"
-      ],
-      "ship_target": "Post-Wave-Zero remediation ratification + cron-paused.json clear. Cycle 2 or earlier if Founder prioritizes."
-    },
-    {
-      "id": "PROP-004",
-      "title": "Add `org-monthly` as 4th quota_type in PAUSE_DISCIPLINE schema",
-      "lane": 2,
-      "lane_label": "Bug Discovery",
-      "created_at": "2026-05-13T15:05:00Z",
-      "rationale": "PAUSE_DISCIPLINE_v8.1_ADDENDUM \u00a7 5 enumerates `quota_type` as 'weekly-tokens | daily-tokens | hourly-requests'. The prior session's failure was at the org-monthly cap, which is not in the enum. The discipline cannot pause for a quota it doesn't model. F1 finding (b) explicit: 'org-level monthly cap is a DIFFERENT quota than weekly-tokens.'",
-      "scope": "Schema amendment: add `org-monthly` to the enum + document the reset boundary as configurable (Anthropic billing-cycle, not necessarily UTC midnight on the 1st). Update last-verify.json schema example. Update telemetry event schema (cycle.budget.checkpoint emits quota_type which now includes the new value).",
-      "estimate": {
-        "cost_tokens": 8000,
-        "duration_minutes": 20,
-        "risk": "low"
-      },
-      "files_affected": [
-        "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 5 (enum + example state file)",
-        "docs/agents/TELEMETRY_PROTOCOL.md (cycle.budget.checkpoint + cycle.paused + cycle.resumed event schemas)",
-        "scripts/aggregate-telemetry.py (handle the new quota_type in event aggregation \u2014 defensive: existing events keep working)",
-        "scripts/cron/usage-snapshot-config.json (per PROP-003 \u2014 defines the org-monthly reset boundary)"
-      ],
-      "evidence_paths": [
-        ".claude/state/wave-zero-dry-run/remediation/F1a-token-meter-gap-diagnostic.md",
-        ".claude/state/discussion-bubbles/db-2026-05-13-003.md"
-      ],
-      "ship_target": "Post-Wave-Zero remediation ratification. Lightweight; could ship same-day as Founder applies the schema amendment."
-    }
-  ]
+      {
+        "id": "PROP-003",
+        "title": "Token-meter-wiring sidecar \u2014 substantive heuristic-sunset path for HALT 25",
+        "lane": 3,
+        "lane_label": "Performance",
+        "created_at": "2026-05-13T15:00:00Z",
+        "rationale": "F1 diagnostic confirms Claude Code agents cannot introspect their own token consumption from inside the tool surface. The PAUSE_DISCIPLINE 90% trigger cannot fire without a meter. The defensive heuristic (agent-feel pacing) is a band-aid; this proposal is the real fix \u2014 a sidecar process that writes usage snapshots to a watched file the agent reads each turn. Data-Integrity's forcing-function dissent on db-003 is resolved by this substantive draft (NOT a stub).",
+        "scope": "Author scripts/cron/usage-snapshot.ps1 + integration in PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 2.1 + auto-read in scripts/aggregate-telemetry.py.",
+        "estimate": {
+          "cost_tokens": 45000,
+          "duration_minutes": 90,
+          "risk": "medium"
+        },
+        "files_affected": [
+          "scripts/cron/usage-snapshot.ps1 (new)",
+          "scripts/cron/usage-snapshot-config.json (new \u2014 what to poll, how often, reset boundary)",
+          "scripts/aggregate-telemetry.py (read .claude/state/usage-snapshot.json; populate weekly_tokens / weekly_cost / org_monthly_pct from real data)",
+          ".claude/state/usage-snapshot.json (new \u2014 sidecar writes here; agent reads each turn)",
+          "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 2.1 (Founder-applied amendment: meter read via .claude/state/usage-snapshot.json)"
+        ],
+        "evidence_paths": [
+          ".claude/state/wave-zero-dry-run/remediation/F1a-token-meter-gap-diagnostic.md",
+          ".claude/state/discussion-bubbles/db-2026-05-13-003.md"
+        ],
+        "ship_target": "Post-Wave-Zero remediation ratification + cron-paused.json clear. Cycle 2 or earlier if Founder prioritizes."
+      }
+    ],
+    "approved": [
+      {
+        "id": "PROP-002",
+        "title": "main-flows.html \u2014 4th operational view (generator-driven from MAIN_FLOWS.md)",
+        "lane": 4,
+        "lane_label": "Design System Extension",
+        "created_at": "2026-05-13T13:50:00Z",
+        "rationale": "Founder's referent (Dave Janowiak's 'main flows' pattern) is visual + browseable, not only a markdown doc. MAIN_FLOWS.md will be authored as F4 deliverable; this proposal converts it into a Founder-facing operational view so the artifact is consulted (not just read once). Binding caveats from db-2026-05-13-005: single source of truth is MAIN_FLOWS.md; HTML is generator-driven; non-overlapping purpose with dashboard.html.",
+        "scope": "Author scripts/regen-main-flows.py (parses MAIN_FLOWS.md \u2192 data block) + docs/reports/main-flows.html (template w/ hero / per-flow drill-in / served-by ship badges / last-amended timestamp). Add main-flows.html to docs/reports/index.html. Add hourly regen to heartbeat cycle's operational-view-regen activity.",
+        "estimate": {
+          "cost_tokens": 35000,
+          "duration_minutes": 75,
+          "risk": "low"
+        },
+        "files_affected": [
+          "scripts/regen-main-flows.py",
+          "docs/reports/main-flows.html",
+          "docs/reports/index.html",
+          "docs/agents/PROTOCOLS_v8.1_ADDENDUM.md (P18 operational view list \u2014 add 4th view)"
+        ],
+        "evidence_paths": [
+          ".claude/state/discussion-bubbles/db-2026-05-13-004.md",
+          ".claude/state/discussion-bubbles/db-2026-05-13-005.md",
+          ".claude/state/wave-zero-dry-run/remediation/proposed-MAIN_FLOWS.md"
+        ],
+        "ship_target": "Proactive cycle 2 (next Monday 01:00 UTC after Founder ratifies cycle 1)",
+        "binding_conditions_from_db_005": [
+          "Single source of truth: MAIN_FLOWS.md. HTML is generator-driven from the doc; no hand-authored HTML content.",
+          "Non-overlapping purpose with dashboard.html stated in the proposal body. main-flows.html answers 'what does the product DO for members'; dashboard.html answers 'what's the orchestration team's operational state.' If overlap appears at implementation, kill main-flows.html instead of duplicating.",
+          "F5 metric-integrity check at PROP review: 'whose metrics does this view flatter?' If the answer is 'orchestration team productivity,' reject.",
+          "Token-budget delta estimated: +4-6k tokens per heartbeat cycle for the 4th regen surface."
+        ]
+      }
+    ],
+    "deferred": [],
+    "shipped": [],
+    "rejected": []
+  },
+  "counts": {
+    "pending": 2,
+    "approved": 1,
+    "deferred": 0,
+    "shipped_total": 0,
+    "rejected_total": 0
+  },
+  "as_of": "2026-05-13T20:11:43.710555+00:00",
+  "schema_version": 2,
+  "archive_display_cap": 50
 }
     </script>
 
@@ -442,12 +522,87 @@
                 }, 100);
             }
 
+            // PROPOSAL_LIFECYCLE_v8.2: data.proposals may be (a) the old array shape (pending only)
+            // or (b) the new object shape {pending, approved, deferred, shipped, rejected}. Normalize.
+            function bucketedProposals() {
+                const p = data.proposals;
+                if (Array.isArray(p)) {
+                    return { pending: p, approved: [], deferred: [], shipped: [], rejected: [] };
+                }
+                return {
+                    pending:  Array.isArray(p && p.pending)  ? p.pending  : [],
+                    approved: Array.isArray(p && p.approved) ? p.approved : [],
+                    deferred: Array.isArray(p && p.deferred) ? p.deferred : [],
+                    shipped:  Array.isArray(p && p.shipped)  ? p.shipped  : [],
+                    rejected: Array.isArray(p && p.rejected) ? p.rejected : [],
+                };
+            }
+
+            function safeCost(p) {
+                return (p && p.estimate && typeof p.estimate.cost_tokens === 'number') ? p.estimate.cost_tokens : 0;
+            }
+
+            function renderCompactCard(p, mode) {
+                // mode = "approved" | "deferred" | "shipped" | "rejected"
+                const lane = (p && p.lane != null) ? p.lane : '—';
+                const laneLabel = escapeHtml(p && p.lane_label || '');
+                const tsRaw = (mode === 'shipped')  ? p.shipped_at
+                            : (mode === 'approved') ? (p.approved_at || p.created_at)
+                            : (mode === 'rejected') ? (p.rejected_at || p.created_at)
+                            : (mode === 'deferred') ? (p.deferred_at || p.created_at)
+                            : p.created_at;
+                const tsLabel = tsRaw ? formatTime(tsRaw) : '—';
+                const tsKind  = mode === 'shipped'  ? 'shipped'
+                              : mode === 'rejected' ? 'rejected'
+                              : mode === 'deferred' ? 'deferred'
+                              : 'approved';
+                const note  = (mode === 'shipped'  && p.shipped_in_commit) ? `commit <code>${escapeHtml(p.shipped_in_commit)}</code>`
+                            : (mode === 'rejected' && p.rejected_note)     ? escapeHtml(p.rejected_note)
+                            : (mode === 'deferred' && p.deferred_note)     ? escapeHtml(p.deferred_note)
+                            : '';
+                const badge = mode === 'approved' ? '<span class="proposal-lane" style="background: rgba(74,128,103,0.18); color: var(--accent-moss);">WORKING</span>'
+                            : mode === 'shipped'  ? '<span class="proposal-lane" style="background: rgba(74,128,103,0.18); color: var(--accent-moss);">SHIPPED</span>'
+                            : mode === 'rejected' ? '<span class="proposal-lane" style="background: rgba(156,74,74,0.18); color: var(--accent-claret);">REJECTED</span>'
+                            : '<span class="proposal-lane" style="background: rgba(212,168,87,0.18); color: var(--accent-amber);">DEFERRED</span>';
+                return `
+                    <div class="proposal-card decided-${mode === 'approved' ? 'approved' : mode === 'rejected' ? 'rejected' : mode === 'deferred' ? 'deferred' : 'approved'}" data-id="${escapeHtml(p.id || '')}" style="padding: var(--space-3);">
+                        <div class="proposal-header">
+                            <div style="flex: 1;">
+                                <div class="proposal-id">${escapeHtml(p.id || '')}</div>
+                                <div class="proposal-title">${escapeHtml(p.title || '')}</div>
+                                <div class="proposal-meta">
+                                    <span class="proposal-lane lane-${escapeHtml(String(lane))}">Lane ${escapeHtml(String(lane))} · ${laneLabel}</span>
+                                    ${badge}
+                                    <span>${tsKind}: ${tsLabel}</span>
+                                    <span>Target: <code>${escapeHtml(p.ship_target || '—')}</code></span>
+                                    ${note ? `<span>${note}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderList(elId, items, mode, limit) {
+                const el = document.getElementById(elId);
+                if (!el) return;
+                let arr = items || [];
+                if (typeof limit === 'number' && arr.length > limit) arr = arr.slice(0, limit);
+                if (!arr.length) {
+                    el.innerHTML = `<div class="card" style="text-align: center; padding: var(--space-4); color: var(--text-tertiary); font-size: 0.875rem;">No ${mode} proposals.</div>`;
+                    return;
+                }
+                el.innerHTML = arr.map(p => renderCompactCard(p, mode)).join('');
+            }
+
             function render() {
                 const fLane = document.getElementById('filter-lane').value;
                 const fStatus = document.getElementById('filter-status').value;
                 const sort = document.getElementById('sort-by').value;
+                const buckets = bucketedProposals();
 
-                let filtered = data.proposals.filter(p => {
+                // Pending — apply filter + sort + intent-capture rendering
+                let filtered = buckets.pending.filter(p => {
                     if (fLane !== 'all' && String(p.lane) !== fLane) return false;
                     const dec = decisions[p.id];
                     const isDecided = dec && dec.type && dec.type !== 'undecided';
@@ -455,21 +610,57 @@
                     if (fStatus === 'decided' && !isDecided) return false;
                     return true;
                 });
-
                 filtered.sort((a, b) => {
                     switch (sort) {
-                        case 'cost-asc':  return a.estimate.cost_tokens - b.estimate.cost_tokens;
-                        case 'cost-desc': return b.estimate.cost_tokens - a.estimate.cost_tokens;
-                        case 'lane':      return a.lane - b.lane;
-                        case 'newest':    return new Date(b.created_at) - new Date(a.created_at);
+                        case 'cost-asc':  return safeCost(a) - safeCost(b);
+                        case 'cost-desc': return safeCost(b) - safeCost(a);
+                        case 'lane':      return (a.lane || 0) - (b.lane || 0);
+                        case 'newest':    return new Date(b.created_at || 0) - new Date(a.created_at || 0);
                     }
                     return 0;
                 });
-
                 const list = document.getElementById('proposal-list');
                 list.innerHTML = filtered.length === 0
                     ? '<div class="card" style="text-align: center; padding: var(--space-5); color: var(--text-tertiary);">No proposals match current filters.</div>'
                     : filtered.map(p => renderProposal(p)).join('');
+
+                // Approved — sort newest-first by approved_at OR created_at
+                const approvedSorted = [...buckets.approved].sort((a, b) =>
+                    new Date(b.approved_at || b.created_at || 0) - new Date(a.approved_at || a.created_at || 0));
+                renderList('proposal-list-approved', approvedSorted, 'approved');
+
+                // Deferred — sort newest-first by deferred_at OR created_at
+                const deferredSorted = [...buckets.deferred].sort((a, b) =>
+                    new Date(b.deferred_at || b.created_at || 0) - new Date(a.deferred_at || a.created_at || 0));
+                renderList('proposal-list-deferred', deferredSorted, 'deferred');
+
+                // Shipped — sort newest-first by shipped_at; cap at 50
+                const shippedSorted = [...buckets.shipped].sort((a, b) =>
+                    new Date(b.shipped_at || 0) - new Date(a.shipped_at || 0));
+                renderList('proposal-list-shipped', shippedSorted, 'shipped', 50);
+
+                // Rejected — sort newest-first by rejected_at; cap at 50
+                const rejectedSorted = [...buckets.rejected].sort((a, b) =>
+                    new Date(b.rejected_at || b.created_at || 0) - new Date(a.rejected_at || a.created_at || 0));
+                renderList('proposal-list-rejected', rejectedSorted, 'rejected', 50);
+
+                // Section counts (in headers)
+                const counts = (data.counts) || {
+                    pending: buckets.pending.length,
+                    approved: buckets.approved.length,
+                    deferred: buckets.deferred.length,
+                    shipped_total: buckets.shipped.length,
+                    rejected_total: buckets.rejected.length,
+                };
+                const setSec = (key, value) => {
+                    const el = document.querySelector(`[data-section-count="${key}"]`);
+                    if (el) el.textContent = '(' + value + ')';
+                };
+                setSec('pending',  counts.pending != null ? counts.pending : buckets.pending.length);
+                setSec('approved', counts.approved != null ? counts.approved : buckets.approved.length);
+                setSec('deferred', counts.deferred != null ? counts.deferred : buckets.deferred.length);
+                setSec('shipped',  counts.shipped_total != null ? counts.shipped_total : buckets.shipped.length);
+                setSec('rejected', counts.rejected_total != null ? counts.rejected_total : buckets.rejected.length);
 
                 wireInputs();
                 updateCounts();
@@ -572,10 +763,14 @@
             }
 
             function updateCounts() {
-                const total = data.proposals.length;
+                // PROPOSAL_LIFECYCLE_v8.2: summary bar reflects the PENDING bucket's intent-capture state only.
+                // (Approved/deferred/shipped/rejected sections each have their own section-count badges.)
+                const buckets = bucketedProposals();
+                const pendingList = buckets.pending || [];
+                const total = pendingList.length;
                 let a = 0, r = 0, d = 0;
-                data.proposals.forEach(p => {
-                    const t = decisions[p.id]?.type;
+                pendingList.forEach(p => {
+                    const t = (decisions[p.id] && decisions[p.id].type);
                     if (t === 'approve') a++;
                     else if (t === 'reject') r++;
                     else if (t === 'defer') d++;
