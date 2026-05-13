@@ -191,7 +191,7 @@ This IS a halt (unlike the underlying rate-limit pause) because if the auto-resu
 
 ---
 
-## HALT criteria consolidation summary (1-24)
+## HALT criteria consolidation summary (1-25)
 
 | # | Trigger | Source | Type |
 |---|---|---|---|
@@ -208,6 +208,7 @@ This IS a halt (unlike the underlying rate-limit pause) because if the auto-resu
 | 22 | Telemetry integrity (5 subtypes) | v8 | HALT |
 | 23 | Operational view source-state (7 subtypes) | v8.1 | HALT |
 | **24** | **Pause auto-resume failure (3 subtypes)** | **v8.1** | **HALT** |
+| **25** | **Pause meter unavailable (3 subtypes)** | **v8.1.x** | **HALT** |
 
 PAUSE items (13, 17) preserve numbering for backward compat but are governed by PAUSE_DISCIPLINE_v8.1_ADDENDUM.md, not the halt protocols.
 
@@ -311,4 +312,3 @@ Until then, HALT 25 is permanent.
 ---
 
 *Draft authored 2026-05-13 by orchestration-team during Wave Zero Dry-Run remediation pass F1. Awaiting Founder review + ratification + move to `docs/agents/HALT_CRITERIA_v8.1_ADDENDUM.md` as item 25.*
-
