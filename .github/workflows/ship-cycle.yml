@@ -1,0 +1,76 @@
+name: Ship Cycle (Daily)
+
+on:
+  schedule:
+    - cron: '0 11 * * *'      # 11:00 UTC daily (~6 AM ET)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  ship:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150       # 2.5 hours (cycle cap is 2; safety margin)
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check cron-paused state
+        id: pause_check
+        run: |
+          if [ -f .claude/state/cron-paused.json ]; then
+            echo "paused=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "paused=false" >> $GITHUB_OUTPUT
+
+      - name: Check cycle-config for ship enabled
+        if: steps.pause_check.outputs.paused == 'false'
+        id: cycle_check
+        run: |
+          if [ -f .claude/state/cycle-config.json ]; then
+            enabled=$(jq -r '.ship.enabled' .claude/state/cycle-config.json 2>/dev/null || echo "true")
+            echo "enabled=$enabled" >> $GITHUB_OUTPUT
+          else
+            echo "enabled=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Acquire cycle lock
+        if: steps.pause_check.outputs.paused == 'false' && steps.cycle_check.outputs.enabled == 'true'
+        run: bash .claude/scripts/acquire-lock.sh ship
+
+      - name: Run ship cycle
+        if: steps.pause_check.outputs.paused == 'false' && steps.cycle_check.outputs.enabled == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+          CYCLE_TYPE: ship
+          CYCLE_TOKEN_CAP: 200000
+          CYCLE_DURATION_CAP: 7200
+        run: bash .claude/scripts/cron-ship.sh
+
+      - name: Release cycle lock
+        if: always() && steps.pause_check.outputs.paused == 'false' && steps.cycle_check.outputs.enabled == 'true'
+        run: bash .claude/scripts/release-lock.sh ship
+
+      - name: Commit changes
+        if: steps.pause_check.outputs.paused == 'false' && steps.cycle_check.outputs.enabled == 'true'
+        run: |
+          git config user.name "Parbaughs Orchestration"
+          git config user.email "orchestration@parbaughs.local"
+          git add .
+          git diff --staged --quiet || git commit -m "feat(ship): cycle $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push

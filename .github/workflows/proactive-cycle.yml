@@ -1,0 +1,84 @@
+name: Proactive Cycle (Weekly)
+
+on:
+  schedule:
+    - cron: '0 1 * * 1'        # 01:00 UTC Monday (~8 PM ET Sunday)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  proactive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100       # 1h40m (cycle cap is 1h30m; safety margin)
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check cron-paused state
+        id: pause_check
+        run: |
+          if [ -f .claude/state/cron-paused.json ]; then
+            echo "paused=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "paused=false" >> $GITHUB_OUTPUT
+
+      - name: Check cycle-config for proactive enabled
+        if: steps.pause_check.outputs.paused == 'false'
+        id: cycle_check
+        run: |
+          if [ -f .claude/state/cycle-config.json ]; then
+            enabled=$(jq -r '.proactive.enabled' .claude/state/cycle-config.json 2>/dev/null || echo "true")
+            echo "enabled=$enabled" >> $GITHUB_OUTPUT
+          else
+            echo "enabled=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Acquire cycle lock
+        if: steps.pause_check.outputs.paused == 'false' && steps.cycle_check.outputs.enabled == 'true'
+        run: bash .claude/scripts/acquire-lock.sh proactive
+
+      - name: Run proactive cycle
+        if: steps.pause_check.outputs.paused == 'false' && steps.cycle_check.outputs.enabled == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CYCLE_TYPE: proactive
+          CYCLE_TOKEN_CAP: 120000
+          CYCLE_DURATION_CAP: 5400
+        run: bash .claude/scripts/cron-proactive.sh
+
+      - name: Release cycle lock
+        if: always() && steps.pause_check.outputs.paused == 'false' && steps.cycle_check.outputs.enabled == 'true'
+        run: bash .claude/scripts/release-lock.sh proactive
+
+      - name: Notify Founder of new proposals
+        if: steps.pause_check.outputs.paused == 'false' && steps.cycle_check.outputs.enabled == 'true'
+        run: |
+          QUEUE_FILE=".claude/state/proactive-proposals/$(date -u +%Y-%m-%d).md"
+          if [ -f "$QUEUE_FILE" ]; then
+            PROPOSAL_COUNT=$(grep -c "^### PROP-" "$QUEUE_FILE" || echo "0")
+            echo "Proactive cycle generated $PROPOSAL_COUNT proposals."
+            echo "Review at: $QUEUE_FILE"
+          fi
+
+      - name: Commit proposal queue
+        if: steps.pause_check.outputs.paused == 'false' && steps.cycle_check.outputs.enabled == 'true'
+        run: |
+          git config user.name "Parbaughs Orchestration"
+          git config user.email "orchestration@parbaughs.local"
+          git add .claude/state/ docs/agents/SESSION_JOURNAL.md
+          git diff --staged --quiet || git commit -m "chore(cycle): proactive proposal queue $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push
