@@ -41,3 +41,7 @@ logs/
 /firestore-debug.log
 /pubsub-debug.log
 /tests/smoke/output/
+
+# Pre-watcher-test artifacts (remove after test rollback)
+/.claude/state/cron-paused.json.bak-test
+/.test-rollback-target
