@@ -65,17 +65,51 @@ done
 LOG="$PROPOSALS_DIR/decisions-log.ndjson"
 touch "$LOG"
 
-# Validate JSON with python (most reliable; available on macOS/Linux/WSL)
-if ! command -v python3 >/dev/null 2>&1; then
-    echo "Error: python3 not found. Required for JSON parsing." >&2
+# Locate a Python interpreter. Prefer python3 (POSIX), fall back to python
+# (Windows / Git Bash where there's no python3 symlink), then probe known
+# Windows install paths.
+PYTHON_BIN=""
+for cand in python3 python py; do
+    if command -v "$cand" >/dev/null 2>&1; then PYTHON_BIN="$cand"; break; fi
+done
+if [ -z "$PYTHON_BIN" ]; then
+    # USER (POSIX) and USERNAME (Windows) — either may be unset under set -u; guard both.
+    USER_NAME="${USER:-${USERNAME:-}}"
+    if [ -n "$USER_NAME" ]; then
+        for p in \
+            "/c/Users/${USER_NAME}/AppData/Local/Programs/Python/Python312/python.exe" \
+            "/c/Users/${USER_NAME}/AppData/Local/Programs/Python/Python311/python.exe"; do
+            if [ -x "$p" ]; then PYTHON_BIN="$p"; break; fi
+        done
+    fi
+fi
+if [ -z "$PYTHON_BIN" ]; then
+    echo "Error: no Python interpreter found (tried python3, python, py, and known Windows install paths)." >&2
     exit 4
 fi
+export PYTHONIOENCODING=utf-8
+export PYTHONUTF8=1
+
+# If PYTHON_BIN is a Windows .exe but JSON_PATH is a Git-Bash POSIX path
+# (/c/Users/...), the Windows python can't resolve the path. Convert via
+# cygpath when available, otherwise do a manual translation.
+JSON_PATH_FOR_PY="$JSON_PATH"
+case "$PYTHON_BIN" in
+    *.exe|*.EXE)
+        if command -v cygpath >/dev/null 2>&1; then
+            JSON_PATH_FOR_PY=$(cygpath -w "$JSON_PATH")
+        else
+            # Manual: /c/foo/bar → C:/foo/bar
+            JSON_PATH_FOR_PY=$(echo "$JSON_PATH" | sed -E 's|^/([a-zA-Z])/|\1:/|')
+        fi
+        ;;
+esac
 
 # Parse + validate JSON
-PARSED=$(python3 <<PYEOF
+PARSED=$("$PYTHON_BIN" <<PYEOF
 import json, sys
 try:
-    with open("$JSON_PATH") as f:
+    with open(r"$JSON_PATH_FOR_PY") as f:
         data = json.load(f)
 except Exception as e:
     print(f"PARSE_ERROR: {e}", file=sys.stderr)
@@ -193,7 +227,7 @@ while IFS='|' read -r PID TYPE NOTE DECIDED_AT; do
     fi
 
     # Append decision-log entry
-    LOG_ENTRY=$(python3 -c "
+    LOG_ENTRY=$("$PYTHON_BIN" -c "
 import json, sys
 print(json.dumps({
     'ts': '$(date -u +%Y-%m-%dT%H:%M:%SZ)',
