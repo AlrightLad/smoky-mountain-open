@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Architecture & Flows — PARBAUGHS Orchestration</title>
     <link rel="stylesheet" href="_assets/dashboard.css">
+    <link rel="stylesheet" href="_assets/dashboard-shell.css">
     <style>
         body { background: var(--bg-page); color: var(--text-primary); }
 
@@ -19,13 +20,6 @@
         }
 
         /* === Shared page chrome === */
-        .page-header { background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle); }
-        .page-nav { max-width: 1480px; margin: 0 auto; padding: var(--space-3) var(--space-4); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
-        .nav-brand { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; color: var(--accent-brass); text-decoration: none; letter-spacing: 0.04em; }
-        .nav-links { display: flex; gap: var(--space-3); font-size: 0.875rem; flex-wrap: wrap; }
-        .nav-links a { color: var(--text-secondary); text-decoration: none; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); transition: color var(--duration-default) var(--ease-default), background var(--duration-default) var(--ease-default); }
-        .nav-links a:hover { color: var(--text-primary); background: var(--bg-card); }
-        .nav-links a.is-active { color: var(--accent-brass); background: rgba(201,169,97,0.10); border: 1px solid rgba(201,169,97,0.30); }
 
         .page-main { max-width: 1480px; margin: 0 auto; padding: var(--space-4) var(--space-4); }
         .page-header-row { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--space-4); margin-bottom: var(--space-3); flex-wrap: wrap; }
@@ -128,18 +122,18 @@
     </style>
 </head>
 <body>
-    <header class="page-header">
-        <nav class="page-nav">
-            <a href="index.html" class="nav-brand">PARBAUGHS Orchestration</a>
-            <div class="nav-links">
-            <a href="dashboard.html">Dashboard</a>
-            <a href="activity.html">Activity</a>
-            <a href="discussion-bubbles.html">Discussion Bubbles</a>
-            <a href="proposals.html">Proposals</a>
-            <a href="main-flows.html" class="is-active">Main Flows</a>
-            <a href="design-system.html">Design System</a>
-            <a href="token-usage.html">Tokens</a>
-            <a href="index.html">Index</a>
+    <header class="pb-page-header is-wide">
+        <nav class="pb-page-nav">
+            <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
+            <div class="pb-page-nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="activity.html">Activity</a>
+                <a href="discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="proposals.html">Proposals</a>
+                <a href="main-flows.html" class="is-active">Main Flows</a>
+                <a href="design-system.html">Design System</a>
+                <a href="token-usage.html">Tokens</a>
+                <a href="index.html">Index</a>
             </div>
         </nav>
     </header>
@@ -976,7 +970,7 @@
       ]
     }
   ],
-  "last_amended": "2026-05-13T22:29:00.133416+00:00",
+  "last_amended": "2026-05-13T23:08:49.632414+00:00",
   "doc_source": "docs/reports/_assets/main-flows-data.json",
   "schema_version": 1,
   "_counts": {

@@ -525,7 +525,8 @@ def main():
         ("token-usage.html",       "token-usage.html"),
         ("index.html",             "index.html"),
     ]
-    nav_re = re.compile(r'<nav class="page-nav">(.*?)</nav>', re.DOTALL)
+    # Match either legacy .page-nav or canonical .pb-page-nav while migration is in progress.
+    nav_re = re.compile(r'<nav class="(?:pb-)?page-nav">(.*?)</nav>', re.DOTALL)
     active_re = re.compile(r'href="([^"]+)"[^>]*\bclass="is-active"')
     for page, expected_active in NAV_PAGES:
         p = REPORTS_SRC / page

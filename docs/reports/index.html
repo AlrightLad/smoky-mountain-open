@@ -5,51 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PARBAUGHS Orchestration — Index</title>
     <link rel="stylesheet" href="_assets/dashboard.css">
+    <link rel="stylesheet" href="_assets/dashboard-shell.css">
     <style>
         body { background: var(--bg-page); color: var(--text-primary); }
 
         /* ============== Shared page chrome (matches main-flows.html) ============== */
-        .page-header {
-            background: var(--bg-elevated);
-            border-bottom: 1px solid var(--border-subtle);
-        }
-        .page-nav {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: var(--space-3) var(--space-4);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: var(--space-4);
-            flex-wrap: wrap;
-        }
-        .nav-brand {
-            font-family: var(--font-mono);
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--accent-brass);
-            text-decoration: none;
-            letter-spacing: 0.04em;
-        }
-        .nav-links {
-            display: flex;
-            gap: var(--space-3);
-            font-size: 0.875rem;
-            flex-wrap: wrap;
-        }
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            padding: var(--space-1) var(--space-2);
-            border-radius: var(--radius-sm);
-            transition: color var(--duration-default) var(--ease-default), background var(--duration-default) var(--ease-default);
-        }
-        .nav-links a:hover { color: var(--text-primary); background: var(--bg-card); }
-        .nav-links a.is-active {
-            color: var(--accent-brass);
-            background: rgba(201,169,97,0.10);
-            border: 1px solid rgba(201,169,97,0.30);
-        }
 
         .page-main {
             max-width: 1280px;
@@ -202,18 +162,18 @@
     </style>
 </head>
 <body>
-    <header class="page-header">
-        <nav class="page-nav">
-            <a href="index.html" class="nav-brand">PARBAUGHS Orchestration</a>
-            <div class="nav-links">
-            <a href="dashboard.html">Dashboard</a>
-            <a href="activity.html">Activity</a>
-            <a href="discussion-bubbles.html">Discussion Bubbles</a>
-            <a href="proposals.html">Proposals</a>
-            <a href="main-flows.html">Main Flows</a>
-            <a href="design-system.html">Design System</a>
-            <a href="token-usage.html">Tokens</a>
-            <a href="index.html" class="is-active">Index</a>
+    <header class="pb-page-header">
+        <nav class="pb-page-nav">
+            <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
+            <div class="pb-page-nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="activity.html">Activity</a>
+                <a href="discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="proposals.html">Proposals</a>
+                <a href="main-flows.html">Main Flows</a>
+                <a href="design-system.html">Design System</a>
+                <a href="token-usage.html">Tokens</a>
+                <a href="index.html" class="is-active">Index</a>
             </div>
         </nav>
     </header>
@@ -309,8 +269,8 @@
 
     <script id="report-data" type="application/json">
 {
-  "as_of": "2026-05-13T22:29:00.318629+00:00",
-  "git_sha": "27ba9094",
+  "as_of": "2026-05-13T23:08:49.789063+00:00",
+  "git_sha": "328ae5cc",
   "status": {
     "ships_this_week": 0,
     "proposals_pending": 0,
@@ -330,27 +290,27 @@
   },
   "dashboards": {
     "dashboard.html": {
-      "mtime_utc": "2026-05-13T22:28:59.981186+00:00",
+      "mtime_utc": "2026-05-13T23:08:49.531557+00:00",
       "badge": "meter gap-per-F1a"
     },
     "activity.html": {
-      "mtime_utc": "2026-05-13T22:29:00.082226+00:00",
+      "mtime_utc": "2026-05-13T23:08:49.583852+00:00",
       "badge": "1 handoffs"
     },
     "discussion-bubbles.html": {
-      "mtime_utc": "2026-05-13T22:29:00.062045+00:00",
+      "mtime_utc": "2026-05-13T23:08:49.583852+00:00",
       "badge": "5 threads"
     },
     "proposals.html": {
-      "mtime_utc": "2026-05-13T22:28:59.903539+00:00",
+      "mtime_utc": "2026-05-13T23:08:49.475075+00:00",
       "badge": "0 pending"
     },
     "main-flows.html": {
-      "mtime_utc": "2026-05-13T22:29:00.162385+00:00",
+      "mtime_utc": "2026-05-13T23:08:49.634413+00:00",
       "badge": "8 flows"
     }
   },
-  "last_orchestration_action": ".claude/state/telemetry/aggregates/.token-usage-cursor.json at 2026-05-13T22:28:59.717124+00:00"
+  "last_orchestration_action": ".claude/state/telemetry/aggregates/token-usage-snapshot.json at 2026-05-13T23:08:49.309452+00:00"
 }
     </script>
     <script>

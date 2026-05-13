@@ -4,219 +4,175 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — PARBAUGHS Orchestration</title>
-    <link rel="stylesheet" href="_assets/dashboard.css">
-    <style>
-        /* === Cross-dashboard nav (injected by scripts/inject-page-nav.py) === */
-        .page-header { background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle); }
-        .page-nav { max-width: 1280px; margin: 0 auto; padding: var(--space-3) var(--space-4); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
-        .nav-brand { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; color: var(--accent-brass); text-decoration: none; letter-spacing: 0.04em; }
-        .nav-links { display: flex; gap: var(--space-3); font-size: 0.875rem; flex-wrap: wrap; }
-        .nav-links a { color: var(--text-secondary); text-decoration: none; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); transition: color var(--duration-default) var(--ease-default), background var(--duration-default) var(--ease-default); }
-        .nav-links a:hover { color: var(--text-primary); background: var(--bg-card); }
-        .nav-links a.is-active { color: var(--accent-brass); background: rgba(201,169,97,0.10); border: 1px solid rgba(201,169,97,0.30); }
-    </style>
+    <link rel="stylesheet" href="_assets/design-tokens.css">
+    <link rel="stylesheet" href="_assets/dashboard-shell.css">
 </head>
-<body>
-        <header class="page-header">
-        <nav class="page-nav">
-            <a href="index.html" class="nav-brand">PARBAUGHS Orchestration</a>
-            <div class="nav-links">
-            <a href="dashboard.html" class="is-active">Dashboard</a>
-            <a href="activity.html">Activity</a>
-            <a href="discussion-bubbles.html">Discussion Bubbles</a>
-            <a href="proposals.html">Proposals</a>
-            <a href="main-flows.html">Main Flows</a>
-            <a href="design-system.html">Design System</a>
-            <a href="token-usage.html">Tokens</a>
-            <a href="index.html">Index</a>
+<body class="pb-app">
+    <header class="pb-page-header">
+        <nav class="pb-page-nav">
+            <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
+            <div class="pb-page-nav-links">
+                <a href="dashboard.html" class="is-active">Dashboard</a>
+                <a href="activity.html">Activity</a>
+                <a href="discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="proposals.html">Proposals</a>
+                <a href="main-flows.html">Main Flows</a>
+                <a href="design-system.html">Design System</a>
+                <a href="token-usage.html">Tokens</a>
+                <a href="index.html">Index</a>
             </div>
         </nav>
     </header>
-<button class="theme-toggle" title="Toggle theme" aria-label="Toggle theme">☀</button>
 
-    <header class="report-header">
-        <div class="container">
-            <div class="report-meta">
-                <span class="report-type">DASHBOARD</span>
-                <span class="report-generated">Generated 2026-05-13 04:25 UTC</span>
+    <main class="pb-page-main">
+        <div class="pb-page-title-row">
+            <div>
+                <h1 class="pb-page-title">Dashboard</h1>
+                <p class="pb-page-subtitle">Current snapshot of weekly orchestration state &mdash; tokens, ships, halts, FIQ depth, proposals, recent activity. Numbers from <code>.claude/state/telemetry/aggregates/</code>.</p>
             </div>
-            <h1 class="report-title">PARBAUGHS Orchestration</h1>
-            <div class="report-subtitle">Current snapshot &middot; Wave 1 in progress &middot; W1.S3 active</div>
+            <div class="pb-page-meta">
+                <span>Generated <span data-meta="generated-at">&mdash;</span></span>
+            </div>
         </div>
-    </header>
 
-    <main class="container">
-        <section>
-            <div class="section-header">Key metrics — this week</div>
-            <div class="metrics-grid">
-                <div class="metric">
-                    <div class="metric-label">Weekly tokens</div>
-                    <div class="metric-value" data-metric="weekly-tokens">—</div>
-                    <div class="metric-trend up">▲ 8% vs last week</div>
+        <section class="pb-section">
+            <h2 class="pb-section-title">This week</h2>
+            <div class="pb-kpi-grid">
+                <div class="pb-kpi-card is-neutral">
+                    <span class="pb-kpi-label">Weekly tokens</span>
+                    <span class="pb-kpi-value" data-kpi="weekly-tokens">&mdash;</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="weekly-tokens">&mdash;</span>
                 </div>
-                <div class="metric">
-                    <div class="metric-label">Weekly cost</div>
-                    <div class="metric-value" data-metric="weekly-cost">—</div>
-                    <div class="metric-trend up">▲ 6% vs last week</div>
+                <div class="pb-kpi-card is-neutral">
+                    <span class="pb-kpi-label">Weekly remaining</span>
+                    <span class="pb-kpi-value" data-kpi="weekly-remaining">&mdash;</span>
+                    <span class="pb-kpi-sub">of 3.5M cap</span>
                 </div>
-                <div class="metric">
-                    <div class="metric-label">Ships this week</div>
-                    <div class="metric-value success" data-metric="ships-week">—</div>
-                    <div class="metric-trend up">▲ 1 vs last week</div>
+                <div class="pb-kpi-card is-neutral">
+                    <span class="pb-kpi-label">Budget</span>
+                    <span class="pb-kpi-value" data-kpi="budget-pct">&mdash;</span>
+                    <span class="pb-kpi-sub">consumed this week</span>
                 </div>
-                <div class="metric">
-                    <div class="metric-label">Pending proposals</div>
-                    <div class="metric-value" data-metric="proposals-pending">—</div>
-                    <div class="metric-trend flat">— same as last week</div>
+                <div class="pb-kpi-card is-positive">
+                    <span class="pb-kpi-label">Ships this week</span>
+                    <span class="pb-kpi-value" data-kpi="ships-week">&mdash;</span>
+                    <span class="pb-kpi-sub">approved &amp; shipped</span>
                 </div>
-                <div class="metric">
-                    <div class="metric-label">Halts this week</div>
-                    <div class="metric-value success" data-metric="halt-count">—</div>
-                    <div class="metric-trend down">▼ clean</div>
+            </div>
+
+            <div class="pb-kpi-grid">
+                <div class="pb-kpi-card is-positive">
+                    <span class="pb-kpi-label">Halts this week</span>
+                    <span class="pb-kpi-value" data-kpi="halts-week">&mdash;</span>
+                    <span class="pb-kpi-sub">clean = good</span>
                 </div>
-                <div class="metric">
-                    <div class="metric-label">FIQ depth</div>
-                    <div class="metric-value warning" data-metric="fiq-depth">—</div>
-                    <div class="metric-trend up">▲ 1 since last review</div>
+                <div class="pb-kpi-card is-warning">
+                    <span class="pb-kpi-label">FIQ depth</span>
+                    <span class="pb-kpi-value" data-kpi="fiq-depth">&mdash;</span>
+                    <span class="pb-kpi-sub">open questions for Founder</span>
+                </div>
+                <div class="pb-kpi-card is-positive">
+                    <span class="pb-kpi-label">Cycles complete (7d)</span>
+                    <span class="pb-kpi-value" data-kpi="cycles-complete">&mdash;</span>
+                    <span class="pb-kpi-sub">ran to completion</span>
+                </div>
+                <div class="pb-kpi-card is-warning">
+                    <span class="pb-kpi-label">Cycles paused (7d)</span>
+                    <span class="pb-kpi-value" data-kpi="cycles-paused">&mdash;</span>
+                    <span class="pb-kpi-sub">resumed after defensive pause</span>
+                </div>
+            </div>
+
+            <div class="pb-kpi-grid">
+                <div class="pb-kpi-card is-danger">
+                    <span class="pb-kpi-label">Cycles halted (7d)</span>
+                    <span class="pb-kpi-value" data-kpi="cycles-halted">&mdash;</span>
+                    <span class="pb-kpi-sub">unresolved halt evidence</span>
+                </div>
+                <div class="pb-kpi-card">
+                    <span class="pb-kpi-label">Proposals pending</span>
+                    <span class="pb-kpi-value" data-kpi="proposals-pending">&mdash;</span>
+                    <span class="pb-kpi-sub">awaiting Founder review</span>
+                </div>
+                <div class="pb-kpi-card is-info">
+                    <span class="pb-kpi-label">Proposals in flight</span>
+                    <span class="pb-kpi-value" data-kpi="proposals-in-flight">&mdash;</span>
+                    <span class="pb-kpi-sub">approved, awaiting commit</span>
+                </div>
+                <div class="pb-kpi-card is-positive">
+                    <span class="pb-kpi-label">Proposals shipped</span>
+                    <span class="pb-kpi-value" data-kpi="proposals-shipped">&mdash;</span>
+                    <span class="pb-kpi-sub">total terminal</span>
                 </div>
             </div>
         </section>
 
-        <section data-banner="proposals">
-            <div class="card" style="border: 1px solid var(--accent-amber); background: linear-gradient(90deg, rgba(212,168,87,.08) 0%, var(--bg-card) 60%); display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap;">
-                <div>
-                    <div class="card-title text-brass"><span data-banner-text="proposals-count">—</span> pending · <span data-banner-text="proposals-in-flight">—</span> in flight · <span data-banner-text="proposals-shipped">—</span> shipped</div>
-                    <div class="card-subtitle mt-2">Pending = awaiting Founder review. In flight = approved, awaiting implementing commit. Shipped = terminal, archived.</div>
-                </div>
-                <a href="proposals.html" class="btn primary">Open proposal review →</a>
+        <section class="pb-section">
+            <h2 class="pb-section-title">Recent 7 days</h2>
+            <p class="pb-section-subtitle">Daily activity for the trailing week. Bubbles/handoffs/ships per-day counts come from the snapshot; today's row may lag by one event cycle.</p>
+            <div class="pb-table-wrap">
+                <table class="pb-table" id="recent-7-days-table">
+                    <thead>
+                        <tr>
+                            <th class="is-sticky-col">Date</th>
+                            <th class="is-num">Tokens</th>
+                            <th class="is-num">Complete</th>
+                            <th class="is-num">Paused</th>
+                            <th class="is-num">Halted</th>
+                            <th class="is-num">Handoffs</th>
+                            <th class="is-num">Ships</th>
+                            <th class="is-num">Bubbles</th>
+                        </tr>
+                    </thead>
+                    <tbody><!-- populated by JS --></tbody>
+                </table>
             </div>
         </section>
 
-        <section>
-            <div class="section-header">Quick links</div>
-            <div class="charts-grid">
-                <div class="card"><div class="card-title"><a href="discussion-bubbles.html">Discussion Bubbles</a></div><div class="card-subtitle mt-2" data-quicklink="bubbles-summary">—</div></div>
-                <div class="card"><div class="card-title"><a href="activity.html">Activity feed</a></div><div class="card-subtitle mt-2" data-quicklink="activity-summary">—</div></div>
-                <div class="card"><div class="card-title"><a href="proposals.html">Proposals</a></div><div class="card-subtitle mt-2" data-quicklink="proposals-summary">—</div></div>
+        <section class="pb-section">
+            <h2 class="pb-section-title">Recent handoffs</h2>
+            <div class="pb-table-wrap">
+                <table class="pb-table" id="recent-handoffs-table">
+                    <thead>
+                        <tr>
+                            <th class="is-sticky-col">Scenario</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>When</th>
+                        </tr>
+                    </thead>
+                    <tbody><!-- populated by JS --></tbody>
+                </table>
             </div>
         </section>
 
-        <section>
-            <div class="section-header">Weekly budget</div>
-            <div class="card">
-                <div class="progress-label">
-                    <span>Token budget consumption (3.5M weekly cap)</span>
-                    <span data-progress="weekly-budget-pct">—</span>
-                </div>
-                <div class="progress" data-progress="weekly-budget">
-                    <div class="progress-bar" style="width: 68%;"></div>
-                </div>
-                <div class="text-faint mt-2">~1.12M tokens remaining this week &middot; resets Sunday 00:00 UTC</div>
-            </div>
-        </section>
-
-        <section>
-            <div class="section-header">Trends &amp; breakdowns</div>
-            <div class="charts-grid">
-                <div class="chart-container">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-title">Tokens by role</div>
-                            <div class="card-subtitle">Current week</div>
-                        </div>
-                    </div>
-                    <div class="chart-canvas"><canvas id="chart-tokens-by-role"></canvas></div>
-                </div>
-                <div class="chart-container">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-title">Token trend</div>
-                            <div class="card-subtitle">Last 7 days</div>
-                        </div>
-                    </div>
-                    <div class="chart-canvas"><canvas id="chart-token-trend"></canvas></div>
-                </div>
-                <div class="chart-container wide">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-title">Cycle outcomes</div>
-                            <div class="card-subtitle">Last 7 days &middot; complete / halted / partial</div>
-                        </div>
-                    </div>
-                    <div class="chart-canvas"><canvas id="chart-cycle-outcomes"></canvas></div>
-                </div>
-            </div>
-        </section>
-
-        <section>
-            <div class="section-header">Recent activity</div>
-            <div class="tables-grid">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Recent handoffs</div>
-                    </div>
-                    <table class="data-table" data-table="handoffs">
-                        <thead>
-                            <tr>
-                                <th class="sortable">Scenario</th>
-                                <th class="sortable">From</th>
-                                <th class="sortable">To</th>
-                                <th class="sortable">When</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Recent ships</div>
-                    </div>
-                    <table class="data-table" data-table="ships">
-                        <thead>
-                            <tr>
-                                <th class="sortable">Ship</th>
-                                <th class="sortable">Title</th>
-                                <th class="sortable">Status</th>
-                                <th class="sortable">Tokens</th>
-                                <th class="sortable">Cost</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <section class="mt-5">
-            <h3 class="collapsible collapsed">Raw data (debug)</h3>
-            <div class="collapsible-content">
-                <div class="card">
-                    <pre id="raw-data-display" style="overflow-x: auto; max-height: 400px; color: var(--text-secondary); font-size: 0.75rem;"></pre>
-                </div>
+        <section class="pb-section">
+            <h2 class="pb-section-title">Recent ships</h2>
+            <div class="pb-table-wrap">
+                <table class="pb-table" id="recent-ships-table">
+                    <thead>
+                        <tr>
+                            <th class="is-sticky-col">Ship</th>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th class="is-num">Tokens</th>
+                            <th class="is-num">Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody><!-- populated by JS --></tbody>
+                </table>
             </div>
         </section>
     </main>
 
-    <footer class="report-footer">
-        <div class="container">
-            <p>Generated by <code>parbaughs-report-generate</code> from <code>.claude/state/telemetry/aggregates/</code></p>
-            <p>
-                <a href="index.html">All reports</a>
-                &middot;
-                <a href="discussion-bubbles.html">Discussion Bubbles</a>
-                &middot;
-                <a href="activity.html">Activity</a>
-                &middot;
-                <a href="proposals.html">Proposals</a>
-                &middot;
-                <a href="https://github.com/AlrightLad/smoky-mountain-open">Repo</a>
-            </p>
-            <p class="text-faint">PARBAUGHS Orchestration governance v8.1 &middot; Seed data shown — overwritten on first real cycle</p>
-        </div>
+    <footer class="pb-page-footer">
+        Source: <code>.claude/state/telemetry/aggregates/</code> &middot;
+        <a href="index.html">All reports</a> &middot;
+        <a href="proposals.html">Proposals</a> &middot;
+        <a href="https://github.com/AlrightLad/smoky-mountain-open">Repo</a>
     </footer>
 
-    <!-- Embedded telemetry data (seed values for first-render demo) -->
+    <!-- Embedded telemetry data (regenerated by scripts/regen-dashboard.py) -->
     <script id="report-data" type="application/json">
 {
   "weekly_tokens": 0,
@@ -327,7 +283,7 @@
   "_meter_status": "gap-per-F1a",
   "_meter_note": "Token meter is not wired (F1 finding). tokens_by_role / weekly_tokens / weekly_cost / token_trend_7d will show synthesized event-attributed values ONLY for events that carry agent + tokens fields. Until a real meter wires up (db-2026-05-13-003 outcome pending Founder ratification), treat these fields as a lower bound, not the actual consumption.",
   "_aggregate_counts": {
-    "events_total": 28,
+    "events_total": 48,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
@@ -343,69 +299,136 @@
 }
     </script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="_assets/dashboard.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             try {
-                var raw = document.getElementById('report-data').textContent;
-                var data = JSON.parse(raw);
-                var pre = document.getElementById('raw-data-display');
-                if (pre) pre.textContent = JSON.stringify(data, null, 2);
-                if (typeof ParbaughsReports === 'undefined') {
-                    document.querySelector('main').insertAdjacentHTML('afterbegin',
-                        '<div class="card"><div class="card-title text-warning">Chart.js failed to load</div>' +
-                        '<p class="mt-2 text-muted">Charts unavailable. Embedded data is visible in the raw data section below.</p></div>');
-                    return;
-                }
-                ParbaughsReports.render('dashboard', data);
+                var data = JSON.parse(document.getElementById('report-data').textContent);
 
-                // Wire up data-bound elements not covered by the shared renderer.
-                // These were previously hardcoded static text; now read from data block.
-                // Fix landed 2026-05-13 after Founder caught banner-vs-page divergence.
+                function esc(s) { return s == null ? '' : String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
                 function setText(sel, value) {
                     var el = document.querySelector(sel);
                     if (el != null) el.textContent = value;
                 }
-                function pluralize(n, singular, plural) {
-                    return (n === 1) ? singular : (plural || (singular + 's'));
+                function fmtNum(n) {
+                    if (n == null || isNaN(n)) return '—';
+                    if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+                    if (n >= 1e3) return (n / 1e3).toFixed(1) + 'k';
+                    return String(n);
                 }
-                // PROPOSAL_LIFECYCLE_v8.2 banner: pending · in-flight (approved) · shipped
-                var pending = data.proposals_pending != null ? data.proposals_pending : 0;
-                var pc = (data && data.proposals_counts) || {};
+                function fmtPct(n) {
+                    if (n == null || isNaN(n)) return '—';
+                    return (n * 100).toFixed(n < 0.1 ? 1 : 0) + '%';
+                }
+                function fmtTime(iso) {
+                    if (!iso) return '—';
+                    return iso.replace('T', ' ').slice(0, 16) + ' UTC';
+                }
+
+                // KPI strip: row 1
+                var weeklyCap = 3500000;
+                var weeklyUsed = data.weekly_tokens || 0;
+                var weeklyRemaining = Math.max(0, weeklyCap - weeklyUsed);
+                setText('[data-kpi="weekly-tokens"]', fmtNum(weeklyUsed));
+                setText('[data-kpi-sub="weekly-tokens"]', '$' + (data.weekly_cost || 0).toFixed(2) + ' spend');
+                setText('[data-kpi="weekly-remaining"]', fmtNum(weeklyRemaining));
+                setText('[data-kpi="budget-pct"]', fmtPct(data.budget_pct));
+                setText('[data-kpi="ships-week"]', String(data.ships_this_week || 0));
+
+                // KPI strip: row 2
+                setText('[data-kpi="halts-week"]', String(data.halts_this_week || 0));
+                setText('[data-kpi="fiq-depth"]', String(data.fiq_depth || 0));
+
+                var co = data.cycle_outcomes_7d || { datasets: [] };
+                function sumDataset(label) {
+                    var ds = (co.datasets || []).find(function (d) { return d.label === label; });
+                    if (!ds || !Array.isArray(ds.data)) return 0;
+                    return ds.data.reduce(function (a, b) { return a + (b || 0); }, 0);
+                }
+                setText('[data-kpi="cycles-complete"]', String(sumDataset('Complete')));
+                setText('[data-kpi="cycles-paused"]',   String(sumDataset('Paused')));
+                setText('[data-kpi="cycles-halted"]',   String(sumDataset('Halted')));
+
+                // KPI strip: row 3 (proposals)
+                var pc = data.proposals_counts || {};
+                var pending  = data.proposals_pending != null ? data.proposals_pending : (pc.pending || 0);
                 var inFlight = pc.approved != null ? pc.approved : 0;
                 var shipped  = pc.shipped_total != null ? pc.shipped_total
                              : pc.shipped != null      ? pc.shipped
                              : 0;
-                setText('[data-banner-text="proposals-count"]', String(pending));
-                setText('[data-banner-text="proposals-in-flight"]', String(inFlight));
-                setText('[data-banner-text="proposals-shipped"]', String(shipped));
+                setText('[data-kpi="proposals-pending"]',   String(pending));
+                setText('[data-kpi="proposals-in-flight"]', String(inFlight));
+                setText('[data-kpi="proposals-shipped"]',   String(shipped));
 
-                var ac = data._aggregate_counts || {};
-                var bubblesTotal = ac.bubbles_total != null ? ac.bubbles_total : 0;
-                setText('[data-quicklink="bubbles-summary"]',
-                    bubblesTotal + ' ' + pluralize(bubblesTotal, 'thread', 'threads') + ' recorded');
+                // Generated-at meta line
+                var now = new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+                setText('[data-meta="generated-at"]', now);
 
+                // Recent 7 days table — derive from data already in the snapshot.
+                var tt = data.token_trend_7d || { labels: [], values: [] };
+                function dsAt(label, i) {
+                    var ds = (co.datasets || []).find(function (d) { return d.label === label; });
+                    return (ds && Array.isArray(ds.data) && ds.data[i] != null) ? ds.data[i] : 0;
+                }
+                var rows = (tt.labels || []).map(function (label, i) {
+                    return {
+                        date:     label,
+                        tokens:   (tt.values && tt.values[i] != null) ? tt.values[i] : null,
+                        complete: dsAt('Complete', i),
+                        paused:   dsAt('Paused', i),
+                        halted:   dsAt('Halted', i),
+                        handoffs: null,
+                        ships:    null,
+                        bubbles:  null
+                    };
+                });
+                var tbody = document.querySelector('#recent-7-days-table tbody');
+                tbody.innerHTML = rows.map(function (r) {
+                    return '<tr>'
+                        + '<td class="is-sticky-col">' + esc(r.date) + '</td>'
+                        + '<td class="is-num">' + fmtNum(r.tokens) + '</td>'
+                        + '<td class="is-num">' + r.complete + '</td>'
+                        + '<td class="is-num">' + r.paused + '</td>'
+                        + '<td class="is-num">' + r.halted + '</td>'
+                        + '<td class="is-num">' + (r.handoffs == null ? '—' : r.handoffs) + '</td>'
+                        + '<td class="is-num">' + (r.ships    == null ? '—' : r.ships)    + '</td>'
+                        + '<td class="is-num">' + (r.bubbles  == null ? '—' : r.bubbles)  + '</td>'
+                        + '</tr>';
+                }).join('');
+
+                // Recent handoffs
                 var handoffs = Array.isArray(data.recent_handoffs) ? data.recent_handoffs : [];
+                var hbody = document.querySelector('#recent-handoffs-table tbody');
                 if (handoffs.length === 0) {
-                    setText('[data-quicklink="activity-summary"]', 'No handoffs yet');
+                    hbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:var(--space-5);color:var(--pb-chalk-400);font-style:italic;">No recent handoffs.</td></tr>';
                 } else {
-                    var h = handoffs[0];
-                    var when = h.created_at ? h.created_at.replace('T', ' ').slice(0, 16) + ' UTC' : '—';
-                    setText('[data-quicklink="activity-summary"]',
-                        'Last handoff: ' + when + ' — ' + (h.from || '?') + ' → ' + (h.to || '?'));
+                    hbody.innerHTML = handoffs.map(function (h) {
+                        return '<tr>'
+                            + '<td class="is-sticky-col"><code>' + esc(h.scenario) + '</code></td>'
+                            + '<td>' + esc(h.from) + '</td>'
+                            + '<td>' + esc(h.to)   + '</td>'
+                            + '<td>' + esc(fmtTime(h.created_at)) + '</td>'
+                            + '</tr>';
+                    }).join('');
                 }
 
-                setText('[data-quicklink="proposals-summary"]',
-                    pending + ' pending · ' + inFlight + ' in flight · ' + shipped + ' shipped');
-
-                // Budget pct (the shared renderer only updates the bar; the text label was static)
-                var budgetPct = data.budget_pct != null ? data.budget_pct : 0;
-                var pctLabel = (budgetPct * 100).toFixed(budgetPct < 0.1 ? 1 : 0) + '%';
-                setText('[data-progress="weekly-budget-pct"]', pctLabel);
+                // Recent ships
+                var ships = Array.isArray(data.recent_ships) ? data.recent_ships : [];
+                var sbody = document.querySelector('#recent-ships-table tbody');
+                if (ships.length === 0) {
+                    sbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:var(--space-5);color:var(--pb-chalk-400);font-style:italic;">No recent ships.</td></tr>';
+                } else {
+                    sbody.innerHTML = ships.map(function (s) {
+                        return '<tr>'
+                            + '<td class="is-sticky-col"><code>' + esc(s.id || s.ship || '') + '</code></td>'
+                            + '<td>' + esc(s.title || '') + '</td>'
+                            + '<td>' + esc(s.status || '') + '</td>'
+                            + '<td class="is-num">' + fmtNum(s.tokens) + '</td>'
+                            + '<td class="is-num">$' + ((s.cost || 0).toFixed ? s.cost.toFixed(2) : '0.00') + '</td>'
+                            + '</tr>';
+                    }).join('');
+                }
             } catch (err) {
-                console.error('Render failed:', err);
+                console.error('Dashboard render failed:', err);
             }
         });
     </script>

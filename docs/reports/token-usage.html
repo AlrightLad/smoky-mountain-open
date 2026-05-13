@@ -5,18 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Token Usage - PARBAUGHS Orchestration</title>
     <link rel="stylesheet" href="_assets/dashboard.css">
+    <link rel="stylesheet" href="_assets/dashboard-shell.css">
     <link rel="stylesheet" href="_assets/design-tokens.css">
     <style>
         body { background: var(--bg-page); color: var(--text-primary); font-family: var(--font-body); }
 
         /* Page chrome - matches other dashboards */
-        .page-header { background: var(--bg-surface); border-bottom: 1px solid var(--border-subtle); }
-        .page-nav { max-width: var(--max-content, 1280px); margin: 0 auto; padding: var(--space-3) var(--space-4); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
-        .nav-brand { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--accent-achievement); text-decoration: none; letter-spacing: var(--tracking-wide); }
-        .nav-links { display: flex; gap: var(--space-3); font-size: var(--text-sm); flex-wrap: wrap; }
-        .nav-links a { color: var(--text-secondary); text-decoration: none; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); transition: color var(--duration-fast) var(--ease-out); }
-        .nav-links a:hover { color: var(--text-primary); }
-        .nav-links a.is-active { color: var(--accent-achievement); }
 
         main { max-width: var(--max-content, 1280px); margin: 0 auto; padding: var(--space-5) var(--space-4); }
 
@@ -69,21 +63,21 @@
 </head>
 <body>
 
-<header class="page-header">
-    <nav class="page-nav">
-        <a href="index.html" class="nav-brand">PARBAUGHS Orchestration</a>
-        <div class="nav-links">
-            <a href="dashboard.html">Dashboard</a>
-            <a href="activity.html">Activity</a>
-            <a href="discussion-bubbles.html">Discussion Bubbles</a>
-            <a href="proposals.html">Proposals</a>
-            <a href="main-flows.html">Main Flows</a>
-            <a href="design-system.html">Design System</a>
-            <a href="token-usage.html" class="is-active">Tokens</a>
-            <a href="index.html">Index</a>
-        </div>
-    </nav>
-</header>
+    <header class="pb-page-header">
+        <nav class="pb-page-nav">
+            <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
+            <div class="pb-page-nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="activity.html">Activity</a>
+                <a href="discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="proposals.html">Proposals</a>
+                <a href="main-flows.html">Main Flows</a>
+                <a href="design-system.html">Design System</a>
+                <a href="token-usage.html" class="is-active">Tokens</a>
+                <a href="index.html">Index</a>
+            </div>
+        </nav>
+    </header>
 
 <main>
     <section class="tu-hero">
@@ -170,63 +164,24 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script id="report-data" type="application/json">
 {
-  "generated_at": "2026-05-13T22:28:59.716123+00:00",
+  "generated_at": "2026-05-13T23:08:49.308448+00:00",
   "constants": {
     "INPUT_RATE_TOKENS_PER_SEC": 100,
     "OUTPUT_RATE_TOKENS_PER_SEC": 30
   },
-  "by_agent": {
-    "cron-runner": {
-      "real": 0,
-      "estimated": 0,
-      "manual": 0,
-      "total_real_plus_estimated": 0,
-      "by_day": {
-        "2026-05-13": {
-          "real": 0,
-          "estimated": 0
-        }
-      }
-    }
-  },
-  "by_cron": {
-    "downloads-watcher": {
-      "real": 0,
-      "estimated": 0,
-      "manual": 0,
-      "total_real_plus_estimated": 0,
-      "by_day": {
-        "2026-05-13": {
-          "real": 0,
-          "estimated": 0
-        }
-      }
-    }
-  },
-  "by_ship": {
-    "unattributed": {
-      "real": 0,
-      "estimated": 0,
-      "manual": 0,
-      "total_real_plus_estimated": 0,
-      "by_day": {
-        "2026-05-13": {
-          "real": 0,
-          "estimated": 0
-        }
-      }
-    }
-  },
+  "by_agent": {},
+  "by_cron": {},
+  "by_ship": {},
   "all_time": {
     "real": 0,
     "estimated": 0,
     "manual": 0,
-    "first_event_at": "2026-05-13T22:20:48+00:00",
-    "last_event_at": "2026-05-13T22:25:48+00:00"
+    "first_event_at": null,
+    "last_event_at": null
   },
   "_counts": {
     "real_events": 0,
-    "estimated_events": 2,
+    "estimated_events": 0,
     "manual_entries": 0
   }
 }

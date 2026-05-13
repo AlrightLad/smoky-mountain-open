@@ -13,13 +13,6 @@
         body { background: var(--bg-page); color: var(--text-primary); font-family: var(--font-body); line-height: var(--lh-normal); margin: 0; }
 
         /* Shared page nav (matches other ops dashboards) */
-        .page-header { background: var(--bg-surface); border-bottom: 1px solid var(--border-subtle); }
-        .page-nav { max-width: var(--max-content); margin: 0 auto; padding: var(--space-3) var(--space-4); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
-        .nav-brand { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--accent-achievement); text-decoration: none; letter-spacing: var(--tracking-wide); }
-        .nav-links { display: flex; gap: var(--space-3); font-size: var(--text-sm); flex-wrap: wrap; }
-        .nav-links a { color: var(--text-secondary); text-decoration: none; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); transition: color var(--duration-fast) var(--ease-out); }
-        .nav-links a:hover { color: var(--text-primary); }
-        .nav-links a.is-active { color: var(--accent-achievement); }
 
         main { max-width: var(--max-content); margin: 0 auto; padding: var(--space-6) var(--space-4); }
 
@@ -100,21 +93,22 @@
         .ds-lb-name { font-size: var(--text-sm); color: var(--text-primary); }
         .ds-lb-score { font-family: var(--font-numeric); font-variant-numeric: tabular-nums; font-size: var(--text-sm); color: var(--text-secondary); text-align: right; }
     </style>
+    <link rel="stylesheet" href="_assets/dashboard-shell.css">
 </head>
 <body>
 
-<header class="page-header">
-        <nav class="page-nav">
-            <a href="index.html" class="nav-brand">PARBAUGHS Orchestration</a>
-            <div class="nav-links">
-            <a href="dashboard.html">Dashboard</a>
-            <a href="activity.html">Activity</a>
-            <a href="discussion-bubbles.html">Discussion Bubbles</a>
-            <a href="proposals.html">Proposals</a>
-            <a href="main-flows.html">Main Flows</a>
-            <a href="design-system.html" class="is-active">Design System</a>
-            <a href="token-usage.html">Tokens</a>
-            <a href="index.html">Index</a>
+    <header class="pb-page-header">
+        <nav class="pb-page-nav">
+            <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
+            <div class="pb-page-nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="activity.html">Activity</a>
+                <a href="discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="proposals.html">Proposals</a>
+                <a href="main-flows.html">Main Flows</a>
+                <a href="design-system.html" class="is-active">Design System</a>
+                <a href="token-usage.html">Tokens</a>
+                <a href="index.html">Index</a>
             </div>
         </nav>
     </header>

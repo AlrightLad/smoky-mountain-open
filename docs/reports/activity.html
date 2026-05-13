@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Activity Feed — PARBAUGHS Orchestration</title>
     <link rel="stylesheet" href="_assets/dashboard.css">
+    <link rel="stylesheet" href="_assets/dashboard-shell.css">
     <style>
         .activity-stream { position: relative; padding-left: var(--space-4); border-left: 2px solid var(--border-subtle); }
         .activity-item { position: relative; margin-bottom: var(--space-4); padding-left: var(--space-4); }
@@ -29,30 +30,21 @@
         .activity-detail { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--border-subtle); font-size: 0.875rem; }
         .activity-detail-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); margin-bottom: var(--space-1); }
         .day-divider { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-brass); margin: var(--space-5) 0 var(--space-3); padding-bottom: var(--space-2); border-bottom: 1px solid var(--border-subtle); }
-    
-        /* === Cross-dashboard nav (injected by scripts/inject-page-nav.py) === */
-        .page-header { background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle); }
-        .page-nav { max-width: 1280px; margin: 0 auto; padding: var(--space-3) var(--space-4); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
-        .nav-brand { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; color: var(--accent-brass); text-decoration: none; letter-spacing: 0.04em; }
-        .nav-links { display: flex; gap: var(--space-3); font-size: 0.875rem; flex-wrap: wrap; }
-        .nav-links a { color: var(--text-secondary); text-decoration: none; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); transition: color var(--duration-default) var(--ease-default), background var(--duration-default) var(--ease-default); }
-        .nav-links a:hover { color: var(--text-primary); background: var(--bg-card); }
-        .nav-links a.is-active { color: var(--accent-brass); background: rgba(201,169,97,0.10); border: 1px solid rgba(201,169,97,0.30); }
     </style>
 </head>
 <body>
-        <header class="page-header">
-        <nav class="page-nav">
-            <a href="index.html" class="nav-brand">PARBAUGHS Orchestration</a>
-            <div class="nav-links">
-            <a href="dashboard.html">Dashboard</a>
-            <a href="activity.html" class="is-active">Activity</a>
-            <a href="discussion-bubbles.html">Discussion Bubbles</a>
-            <a href="proposals.html">Proposals</a>
-            <a href="main-flows.html">Main Flows</a>
-            <a href="design-system.html">Design System</a>
-            <a href="token-usage.html">Tokens</a>
-            <a href="index.html">Index</a>
+    <header class="pb-page-header">
+        <nav class="pb-page-nav">
+            <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
+            <div class="pb-page-nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="activity.html" class="is-active">Activity</a>
+                <a href="discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="proposals.html">Proposals</a>
+                <a href="main-flows.html">Main Flows</a>
+                <a href="design-system.html">Design System</a>
+                <a href="token-usage.html">Tokens</a>
+                <a href="index.html">Index</a>
             </div>
         </nav>
     </header>
