@@ -1026,13 +1026,18 @@ def main():
                         else:
                             print(green(f"  ✓ token-usage.html schema valid; all_time real={real_at} estimated={est_at} manual={man_at}; cross-panel sums match"))
 
-                # The dashboard MUST visually distinguish real vs estimated. Detect the
-                # hatched CSS pattern that marks estimated bars (load-bearing per spec).
-                if "hatch" not in html.lower() and "stripe" not in html.lower():
-                    print(red("  ✗ token-usage.html missing hatched/striped pattern for estimated bars"))
-                    failures.append(("token-usage:visual-distinction", "no hatch/stripe pattern in CSS"))
+                # The dashboard MUST visually distinguish real vs estimated vs manual.
+                # Accepted markers (post Dashboard Consolidation):
+                #   - is-manual / is-estimated CSS classes on stat cells + asterisk prefix
+                #   - SVG donut with at least one tu-arc element (3 colors)
+                #   - Legacy hatch/stripe pattern (pre-consolidation token-usage)
+                markers = ["is-manual", "is-estimated", "tu-arc", "tu-donut", "hatch", "stripe"]
+                found = [m for m in markers if m in html]
+                if not found:
+                    print(red("  ✗ token-usage.html missing visual-distinction markers (donut/is-manual/is-estimated/hatch)"))
+                    failures.append(("token-usage:visual-distinction", "no visual-distinction marker in HTML"))
                 else:
-                    print(green("  ✓ token-usage.html visual distinction (hatched/striped) present"))
+                    print(green(f"  ✓ token-usage.html visual distinction present: {', '.join(found)}"))
 
     # Wiring assertions: cross-check that scenarios in activity data match canonical CSS classes
     print(cyan("\n[wiring] Cross-checking scenario tokens against CSS + dropdown..."))

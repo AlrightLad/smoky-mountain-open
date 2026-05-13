@@ -4,184 +4,237 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Token Usage - PARBAUGHS Orchestration</title>
-    <link rel="stylesheet" href="_assets/dashboard.css">
-    <link rel="stylesheet" href="_assets/dashboard-shell.css">
     <link rel="stylesheet" href="_assets/design-tokens.css">
+    <link rel="stylesheet" href="_assets/dashboard-shell.css">
     <style>
-        body { background: var(--bg-page); color: var(--text-primary); font-family: var(--font-body); }
-
-        /* Page chrome - matches other dashboards */
-
-        main { max-width: var(--max-content, 1280px); margin: 0 auto; padding: var(--space-5) var(--space-4); }
-
-        .tu-hero { padding-bottom: var(--space-4); margin-bottom: var(--space-5); border-bottom: 1px solid var(--border-subtle); }
-        .tu-hero h1 { font-family: var(--font-display); font-size: var(--text-2xl); font-weight: var(--weight-bold); margin: 0 0 var(--space-2); letter-spacing: var(--tracking-tight); }
-        .tu-hero p { color: var(--text-secondary); font-size: var(--text-base); margin: 0; max-width: 800px; line-height: var(--lh-normal); }
-
-        /* All-time sticky summary */
-        .tu-all-time { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-4); margin-bottom: var(--space-5); display: flex; flex-wrap: wrap; gap: var(--space-5); align-items: center; }
-        .tu-stat { display: flex; flex-direction: column; gap: var(--space-1); }
-        .tu-stat-label { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--text-faint); text-transform: uppercase; letter-spacing: var(--tracking-wider); }
-        .tu-stat-value { font-family: var(--font-numeric); font-variant-numeric: tabular-nums; font-size: var(--text-xl); font-weight: var(--weight-semibold); }
-        .tu-stat-value.is-real { color: var(--text-primary); }
-        .tu-stat-value.is-estimated { color: var(--pb-warning); }
-        .tu-stat-value.is-manual { color: var(--accent-achievement); }
-        .tu-stat-value.is-estimated::before { content: ""; }
-        .tu-stat-value.is-manual::before { content: "* "; font-weight: var(--weight-bold); }
-
-        .tu-refresh-btn { margin-left: auto; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3); font-family: var(--font-mono); font-size: var(--text-xs); cursor: pointer; transition: border-color var(--duration-fast) var(--ease-out); }
-        .tu-refresh-btn:hover { border-color: var(--accent-achievement); color: var(--accent-achievement); }
-        .tu-refresh-help { font-size: var(--text-2xs); color: var(--text-faint); margin-top: var(--space-1); }
-
-        /* Panels */
-        .tu-panel { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-4); margin-bottom: var(--space-5); }
-        .tu-panel-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: var(--space-3); gap: var(--space-3); flex-wrap: wrap; }
-        .tu-panel-title { font-family: var(--font-display); font-size: var(--text-xl); font-weight: var(--weight-semibold); margin: 0; }
-        .tu-panel-sub { font-size: var(--text-sm); color: var(--text-secondary); margin: 0; }
-
-        .tu-chart-canvas { width: 100%; max-width: 100%; height: 280px; }
-
-        .tu-legend { display: flex; gap: var(--space-4); font-size: var(--text-xs); color: var(--text-secondary); margin-top: var(--space-2); flex-wrap: wrap; }
-        .tu-legend-item { display: flex; align-items: center; gap: var(--space-1); }
-        .tu-legend-swatch { width: 12px; height: 12px; border-radius: 2px; background: var(--pb-billiard-green-500); }
-        .tu-legend-swatch.is-estimated { background: repeating-linear-gradient(45deg, var(--pb-warning), var(--pb-warning) 3px, transparent 3px, transparent 6px); border: 1px solid var(--pb-warning); }
-        .tu-legend-swatch.is-manual { background: transparent; border: 2px solid var(--accent-achievement); }
-
-        /* Drill-down table */
-        .tu-table { width: 100%; border-collapse: collapse; margin-top: var(--space-3); font-size: var(--text-sm); }
-        .tu-table th { text-align: left; padding: var(--space-2); border-bottom: 1px solid var(--border-strong); font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--text-faint); text-transform: uppercase; letter-spacing: var(--tracking-wide); font-weight: var(--weight-regular); }
-        .tu-table td { padding: var(--space-2); border-bottom: 1px solid var(--border-subtle); }
-        .tu-table tr:last-child td { border-bottom: none; }
-        .tu-table td.is-num { font-family: var(--font-numeric); font-variant-numeric: tabular-nums; text-align: right; }
-        .tu-table tr.is-warning { background: rgba(212,168,87,0.08); }
-        .tu-table .tu-cell-warning { color: var(--pb-warning); font-weight: var(--weight-semibold); }
-
-        /* Footnotes */
-        .tu-footnote { font-size: var(--text-xs); color: var(--text-faint); margin-top: var(--space-3); padding: var(--space-2); border-left: 2px solid var(--pb-warning); }
-        .tu-footnote strong { color: var(--pb-warning); }
+        /* Page-specific style — token-usage donut + all-time stats. 30-line budget. */
+        .tu-summary {
+            display: grid;
+            grid-template-columns: minmax(320px, 400px) 1fr;
+            gap: var(--space-5);
+            background: var(--pb-billiard-green-800);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-5);
+            align-items: center;
+        }
+        @media (max-width: 768px) { .tu-summary { grid-template-columns: 1fr; gap: var(--space-4); } }
+        .tu-donut-wrap { display: flex; justify-content: center; align-items: center; min-height: 240px; }
+        .tu-donut { width: 100%; max-width: 240px; height: auto; }
+        .tu-donut-total { font-family: var(--font-numeric); font-variant-numeric: tabular-nums; font-size: 32px; font-weight: 700; fill: var(--pb-chalk-50); }
+        .tu-donut-total-label { font-family: var(--font-mono); font-size: 10px; fill: var(--pb-chalk-400); letter-spacing: 0.12em; text-transform: uppercase; }
+        .tu-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--space-3); }
+        .tu-stat-cell { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-2) var(--space-3); border-left: 3px solid var(--pb-chalk-500); }
+        .tu-stat-cell.is-real { border-left-color: var(--pb-billiard-green-500); }
+        .tu-stat-cell.is-estimated { border-left-color: var(--pb-brass-500); }
+        .tu-stat-cell.is-manual { border-left-color: var(--pb-chalk-300); }
+        .tu-stat-cell-label { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--pb-chalk-400); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+        .tu-stat-cell-value { font-family: var(--font-numeric); font-variant-numeric: tabular-nums; font-size: var(--text-xl); font-weight: 600; color: var(--pb-chalk-50); }
+        .tu-stat-cell.is-manual .tu-stat-cell-value::before { content: '* '; color: var(--pb-chalk-300); font-weight: 700; }
+        .tu-refresh-row { display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap; justify-content: space-between; margin-bottom: var(--space-4); }
+        .tu-refresh-btn { background: transparent; color: var(--pb-chalk-200); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3); font-family: var(--font-mono); font-size: var(--text-xs); cursor: pointer; transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out); }
+        .tu-refresh-btn:hover { border-color: var(--pb-brass-500); color: var(--pb-brass-500); }
     </style>
 </head>
-<body>
+<body class="pb-app">
 
-    <header class="pb-page-header">
-        <nav class="pb-page-nav">
-            <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
-            <div class="pb-page-nav-links">
-                <a href="dashboard.html">Dashboard</a>
-                <a href="activity.html">Activity</a>
-                <a href="discussion-bubbles.html">Discussion Bubbles</a>
-                <a href="proposals.html">Proposals</a>
-                <a href="main-flows.html">Main Flows</a>
-                <a href="design-system.html">Design System</a>
-                <a href="token-usage.html" class="is-active">Tokens</a>
-                <a href="index.html">Index</a>
+<header class="pb-page-header">
+    <nav class="pb-page-nav">
+        <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
+        <div class="pb-page-nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="activity.html">Activity</a>
+            <a href="discussion-bubbles.html">Discussion Bubbles</a>
+            <a href="proposals.html">Proposals</a>
+            <a href="main-flows.html">Main Flows</a>
+            <a href="design-system.html">Design System</a>
+            <a href="token-usage.html" class="is-active">Tokens</a>
+            <a href="index.html">Index</a>
+        </div>
+    </nav>
+</header>
+
+<main class="pb-page-main">
+    <div class="pb-page-title-row">
+        <div>
+            <h1 class="pb-page-title">Token usage</h1>
+            <p class="pb-page-subtitle">Where Claude tokens have gone, by agent / cron / ship. Real (telemetry-derived) and Estimated (cron session duration heuristic) shown separately; manual entries (Founder-anchored from claude.ai billing) prefixed with <code>*</code>. Totals never blended.</p>
+        </div>
+        <div class="pb-page-meta">
+            <span>Since <span data-stat="first-event">&mdash;</span></span>
+            <span>Refreshed <span data-stat="generated-at">&mdash;</span></span>
+        </div>
+    </div>
+
+    <section class="tu-summary">
+        <div class="tu-donut-wrap">
+            <!-- Single donut covering Real / Estimated / Manual breakdown. -->
+            <!-- Built by JS; viewBox preserved here so empty-state has graceful fallback. -->
+            <svg class="tu-donut" id="tu-donut" viewBox="0 0 200 200" aria-label="Token source breakdown donut">
+                <circle cx="100" cy="100" r="80" fill="none" stroke="var(--pb-billiard-green-700)" stroke-width="22" />
+                <text class="tu-donut-total" x="100" y="98" text-anchor="middle" dominant-baseline="central" data-donut="total">0</text>
+                <text class="tu-donut-total-label" x="100" y="118" text-anchor="middle" data-donut="label">All-time tokens</text>
+            </svg>
+        </div>
+        <div>
+            <div class="tu-stats">
+                <div class="tu-stat-cell is-real">
+                    <span class="tu-stat-cell-label">Real</span>
+                    <span class="tu-stat-cell-value" data-stat="all-time-real">&mdash;</span>
+                </div>
+                <div class="tu-stat-cell is-estimated">
+                    <span class="tu-stat-cell-label">Estimated</span>
+                    <span class="tu-stat-cell-value" data-stat="all-time-estimated">&mdash;</span>
+                </div>
+                <div class="tu-stat-cell is-manual">
+                    <span class="tu-stat-cell-label">Manual</span>
+                    <span class="tu-stat-cell-value" data-stat="all-time-manual">&mdash;</span>
+                </div>
             </div>
-        </nav>
-    </header>
-
-<main>
-    <section class="tu-hero">
-        <h1>Token usage</h1>
-        <p>Where Claude tokens have gone, by agent / cron / ship. <strong>Solid</strong> = real (telemetry-derived). <strong>Hatched</strong> = estimated from cron session duration. <strong>* Asterisk</strong> = Founder-anchored from claude.ai billing paste. The all-time totals always show three distinct numbers, never blended.</p>
+            <div class="tu-refresh-row" style="margin-top: var(--space-4);">
+                <small style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--pb-chalk-400);">
+                    Real = telemetry events. Estimated = cron session duration &times; rate constants.
+                    Manual = Founder claude.ai billing paste.
+                </small>
+                <button class="tu-refresh-btn" id="tu-refresh-btn" type="button" title="Run scripts/regen-all.ps1 locally">
+                    Refresh now
+                </button>
+            </div>
+        </div>
     </section>
 
-    <section class="tu-all-time">
-        <div class="tu-stat">
-            <span class="tu-stat-label">Real</span>
-            <span class="tu-stat-value is-real" data-stat="all-time-real">-</span>
+    <section class="pb-section">
+        <h2 class="pb-section-title">Tokens by agent</h2>
+        <p class="pb-section-subtitle">Click a column header to sort. Manual values prefixed with <code>*</code>.</p>
+        <div class="pb-table-wrap">
+            <table class="pb-table" id="tu-table-by-agent" data-bucket="by_agent">
+                <thead>
+                    <tr>
+                        <th class="is-sticky-col is-sortable" data-col="key" data-type="text">Agent</th>
+                        <th class="is-num is-sortable" data-col="real" data-type="num">Real</th>
+                        <th class="is-num is-sortable" data-col="estimated" data-type="num">Estimated</th>
+                        <th class="is-num is-sortable" data-col="manual" data-type="num">Manual</th>
+                        <th class="is-num is-sortable" data-col="total" data-type="num">Total (real+est)</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
-        <div class="tu-stat">
-            <span class="tu-stat-label">Estimated</span>
-            <span class="tu-stat-value is-estimated" data-stat="all-time-estimated">-</span>
-        </div>
-        <div class="tu-stat">
-            <span class="tu-stat-label">Manual-anchored</span>
-            <span class="tu-stat-value is-manual" data-stat="all-time-manual">-</span>
-        </div>
-        <div class="tu-stat">
-            <span class="tu-stat-label">Since</span>
-            <span class="tu-stat-value is-real" data-stat="first-event" style="font-size: var(--text-base); font-weight: var(--weight-medium);">-</span>
-        </div>
-        <div class="tu-stat">
-            <span class="tu-stat-label">Last refresh</span>
-            <span class="tu-stat-value is-real" data-stat="generated-at" style="font-size: var(--text-base); font-weight: var(--weight-medium);">-</span>
-        </div>
-        <button class="tu-refresh-btn" id="tu-refresh-btn" type="button" title="Run scripts/aggregate-token-usage.py + regen this page locally">
-            Refresh now
-            <div class="tu-refresh-help">runs scripts/regen-all</div>
-        </button>
     </section>
 
-    <!-- PANEL 1: by agent -->
-    <section class="tu-panel">
-        <div class="tu-panel-header">
-            <h2 class="tu-panel-title">Tokens by agent</h2>
-            <p class="tu-panel-sub">Stacked by agent role; solid=real, hatched=estimated.</p>
+    <section class="pb-section">
+        <h2 class="pb-section-title">Tokens by cron source</h2>
+        <p class="pb-section-subtitle"><code>downloads-watcher</code> + <code>maintenance</code> should be at <strong>0</strong> &mdash; they do not invoke Claude. <code>overnight-triage</code> uses estimation.</p>
+        <div class="pb-table-wrap">
+            <table class="pb-table" id="tu-table-by-cron" data-bucket="by_cron">
+                <thead>
+                    <tr>
+                        <th class="is-sticky-col is-sortable" data-col="key" data-type="text">Cron source</th>
+                        <th class="is-num is-sortable" data-col="real" data-type="num">Real</th>
+                        <th class="is-num is-sortable" data-col="estimated" data-type="num">Estimated</th>
+                        <th class="is-num is-sortable" data-col="manual" data-type="num">Manual</th>
+                        <th class="is-num is-sortable" data-col="total" data-type="num">Total (real+est)</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
-        <canvas class="tu-chart-canvas" id="tu-chart-by-agent"></canvas>
-        <div class="tu-legend">
-            <span class="tu-legend-item"><span class="tu-legend-swatch"></span>Real</span>
-            <span class="tu-legend-item"><span class="tu-legend-swatch is-estimated"></span>Estimated</span>
-            <span class="tu-legend-item"><span class="tu-legend-swatch is-manual"></span>Manual-anchored</span>
-        </div>
-        <table class="tu-table" id="tu-table-by-agent">
-            <thead><tr><th>Agent</th><th>Real</th><th>Estimated</th><th>Manual</th><th>Total (real+est)</th></tr></thead>
-            <tbody></tbody>
-        </table>
     </section>
 
-    <!-- PANEL 2: by cron -->
-    <section class="tu-panel">
-        <div class="tu-panel-header">
-            <h2 class="tu-panel-title">Tokens by cron source</h2>
-            <p class="tu-panel-sub">downloads-watcher + maintenance should be at 0 (no Claude API). overnight-triage uses Source-B estimation.</p>
+    <section class="pb-section">
+        <h2 class="pb-section-title">Tokens by ship</h2>
+        <p class="pb-section-subtitle"><code>unattributed</code> is everything outside an explicit <code>ship_id</code> cycle.</p>
+        <div class="pb-table-wrap">
+            <table class="pb-table" id="tu-table-by-ship" data-bucket="by_ship">
+                <thead>
+                    <tr>
+                        <th class="is-sticky-col is-sortable" data-col="key" data-type="text">Ship</th>
+                        <th class="is-num is-sortable" data-col="real" data-type="num">Real</th>
+                        <th class="is-num is-sortable" data-col="estimated" data-type="num">Estimated</th>
+                        <th class="is-num is-sortable" data-col="manual" data-type="num">Manual</th>
+                        <th class="is-num is-sortable" data-col="total" data-type="num">Total (real+est)</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
-        <canvas class="tu-chart-canvas" id="tu-chart-by-cron"></canvas>
-        <table class="tu-table" id="tu-table-by-cron">
-            <thead><tr><th>Cron source</th><th>Real</th><th>Estimated</th><th>Manual</th><th>Total (real+est)</th></tr></thead>
-            <tbody></tbody>
-        </table>
     </section>
 
-    <!-- PANEL 3: by ship -->
-    <section class="tu-panel">
-        <div class="tu-panel-header">
-            <h2 class="tu-panel-title">Tokens by ship</h2>
-            <p class="tu-panel-sub">"unattributed" is everything outside an explicit ship_id cycle.</p>
-        </div>
-        <canvas class="tu-chart-canvas" id="tu-chart-by-ship"></canvas>
-        <table class="tu-table" id="tu-table-by-ship">
-            <thead><tr><th>Ship</th><th>Real</th><th>Estimated</th><th>Manual</th><th>Total (real+est)</th></tr></thead>
-            <tbody></tbody>
-        </table>
-    </section>
-
-    <p class="tu-footnote">
-        <strong>How estimation works:</strong> when a cron session invokes Claude Code, the session's start+end timestamps from the log file give a duration in seconds. We estimate input tokens at <code>duration_seconds * 100</code> and output tokens at <code>duration_seconds * 30</code>. Constants live at the top of <code>scripts/aggregate-token-usage.py</code> as <code>INPUT_RATE_TOKENS_PER_SEC</code> / <code>OUTPUT_RATE_TOKENS_PER_SEC</code> - recalibrate against the first Founder manual paste if needed.
+    <p style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--pb-chalk-400); padding: var(--space-3); border-left: 2px solid var(--pb-warning); margin-top: var(--space-5); line-height: 1.55;">
+        <strong style="color: var(--pb-warning);">How estimation works:</strong>
+        when a cron session invokes Claude, the session's start/end timestamps give a duration in seconds. Input tokens estimated as
+        <code>duration_seconds &times; 100</code>; output tokens as <code>duration_seconds &times; 30</code>.
+        Constants at top of <code>scripts/aggregate-token-usage.py</code> as
+        <code>INPUT_RATE_TOKENS_PER_SEC</code> / <code>OUTPUT_RATE_TOKENS_PER_SEC</code> &mdash; recalibrate against the first Founder manual paste if needed.
     </p>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<footer class="pb-page-footer">
+    Source: <code>.claude/state/telemetry/aggregates/token-usage-snapshot.json</code> &middot;
+    <a href="index.html">All reports</a> &middot;
+    <a href="dashboard.html">Dashboard</a>
+</footer>
+
 <script id="report-data" type="application/json">
 {
-  "generated_at": "2026-05-13T23:08:49.308448+00:00",
+  "generated_at": "2026-05-13T23:11:44.375931+00:00",
   "constants": {
     "INPUT_RATE_TOKENS_PER_SEC": 100,
     "OUTPUT_RATE_TOKENS_PER_SEC": 30
   },
-  "by_agent": {},
-  "by_cron": {},
-  "by_ship": {},
+  "by_agent": {
+    "cron-runner": {
+      "real": 0,
+      "estimated": 0,
+      "manual": 0,
+      "total_real_plus_estimated": 0,
+      "by_day": {
+        "2026-05-13": {
+          "real": 0,
+          "estimated": 0
+        }
+      }
+    }
+  },
+  "by_cron": {
+    "downloads-watcher": {
+      "real": 0,
+      "estimated": 0,
+      "manual": 0,
+      "total_real_plus_estimated": 0,
+      "by_day": {
+        "2026-05-13": {
+          "real": 0,
+          "estimated": 0
+        }
+      }
+    }
+  },
+  "by_ship": {
+    "unattributed": {
+      "real": 0,
+      "estimated": 0,
+      "manual": 0,
+      "total_real_plus_estimated": 0,
+      "by_day": {
+        "2026-05-13": {
+          "real": 0,
+          "estimated": 0
+        }
+      }
+    }
+  },
   "all_time": {
     "real": 0,
     "estimated": 0,
     "manual": 0,
-    "first_event_at": null,
-    "last_event_at": null
+    "first_event_at": "2026-05-13T23:10:48+00:00",
+    "last_event_at": "2026-05-13T23:10:48+00:00"
   },
   "_counts": {
     "real_events": 0,
-    "estimated_events": 0,
+    "estimated_events": 1,
     "manual_entries": 0
   }
 }
@@ -202,7 +255,6 @@
         if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(1) + 'k';
         return String(n);
     }
-
     function fmtAgo(iso) {
         if (!iso) return 'never';
         var d = new Date(iso);
@@ -213,10 +265,48 @@
         if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
         return Math.floor(diff / 86400) + 'd ago';
     }
-
     function fmtDate(iso) {
         if (!iso) return '-';
         return iso.slice(0, 10);
+    }
+
+    /* SVG donut renderer (no Chart.js, no D3 — single circle per arc with
+     * stroke-dasharray + stroke-dashoffset for arc length + start position).
+     * Real arc starts at 12 o'clock (rotate -90), Estimated continues, Manual continues. */
+    function renderDonut(real, estimated, manual) {
+        var svg = document.getElementById('tu-donut');
+        if (!svg) return;
+        var total = real + estimated + manual;
+        // Remove any previous arcs (the placeholder ring stays).
+        Array.prototype.slice.call(svg.querySelectorAll('.tu-arc')).forEach(function (n) { svg.removeChild(n); });
+        var totalEl = svg.querySelector('[data-donut="total"]');
+        if (totalEl) totalEl.textContent = fmtTokens(total);
+        if (total === 0) return;
+        var r = 80, C = 2 * Math.PI * r;  // circumference 502.65
+        var segments = [
+            { val: real, color: 'var(--pb-billiard-green-500)' },
+            { val: estimated, color: 'var(--pb-brass-500)' },
+            { val: manual, color: 'var(--pb-chalk-300)' }
+        ];
+        var offset = 0;
+        segments.forEach(function (seg) {
+            if (seg.val <= 0) return;
+            var len = (seg.val / total) * C;
+            var arc = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            arc.setAttribute('class', 'tu-arc');
+            arc.setAttribute('cx', '100');
+            arc.setAttribute('cy', '100');
+            arc.setAttribute('r', String(r));
+            arc.setAttribute('fill', 'none');
+            arc.setAttribute('stroke', seg.color);
+            arc.setAttribute('stroke-width', '22');
+            arc.setAttribute('stroke-dasharray', len + ' ' + (C - len));
+            arc.setAttribute('stroke-dashoffset', String(-offset));
+            arc.setAttribute('transform', 'rotate(-90 100 100)');
+            // Insert arcs before the text so text stays on top.
+            svg.insertBefore(arc, svg.querySelector('text'));
+            offset += len;
+        });
     }
 
     function setStats(data) {
@@ -226,92 +316,99 @@
         document.querySelector('[data-stat="all-time-manual"]').textContent = fmtTokens(at.manual);
         document.querySelector('[data-stat="first-event"]').textContent = fmtDate(at.first_event_at);
         document.querySelector('[data-stat="generated-at"]').textContent = fmtAgo(data.generated_at);
+        renderDonut(at.real || 0, at.estimated || 0, at.manual || 0);
     }
 
-    function buildStackedBarConfig(data, bucketName) {
-        var bucket = data[bucketName] || {};
-        var keys = Object.keys(bucket).sort(function (a, b) {
-            return (bucket[b].total_real_plus_estimated || 0) - (bucket[a].total_real_plus_estimated || 0);
-        });
-        var realData = keys.map(function (k) { return bucket[k].real || 0; });
-        var estData = keys.map(function (k) { return bucket[k].estimated || 0; });
-        return {
-            type: 'bar',
-            data: {
-                labels: keys,
-                datasets: [
-                    { label: 'Real', data: realData, backgroundColor: '#0f3d2e', borderColor: '#228763', borderWidth: 1 },
-                    { label: 'Estimated', data: estData, backgroundColor: 'rgba(212,168,87,0.4)', borderColor: '#d4a857', borderWidth: 1, borderDash: [4,3] }
-                ]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true, maintainAspectRatio: false,
-                scales: {
-                    x: { stacked: true, ticks: { color: '#b8ad95', callback: function (v) { return fmtTokens(v); } }, grid: { color: 'rgba(216,208,192,0.08)' } },
-                    y: { stacked: true, ticks: { color: '#d8d0c0' }, grid: { display: false } }
-                },
-                plugins: {
-                    legend: { labels: { color: '#d8d0c0', font: { family: 'inherit', size: 12 } } },
-                    tooltip: { callbacks: { label: function (ctx) { return ctx.dataset.label + ': ' + fmtTokens(ctx.parsed.x); } } }
-                }
-            }
-        };
+    function totalOf(b) {
+        // Sort/total uses real + estimated + manual (everything actually attributed to the row).
+        return (b.real || 0) + (b.estimated || 0) + (b.manual || 0);
     }
 
-    function fillTable(tableId, data, bucketName, isCron) {
-        var bucket = data[bucketName] || {};
-        var tbody = document.querySelector('#' + tableId + ' tbody');
-        if (!tbody) return;
-        var keys = Object.keys(bucket).sort(function (a, b) {
-            return (bucket[b].total_real_plus_estimated || 0) - (bucket[a].total_real_plus_estimated || 0);
+    // Build sortable rows from a bucket. Returns array of row objects.
+    function buildRows(bucket) {
+        return Object.keys(bucket || {}).map(function (k) {
+            var b = bucket[k] || {};
+            return {
+                key: k,
+                real: b.real || 0,
+                estimated: b.estimated || 0,
+                manual: b.manual || 0,
+                total: totalOf(b)
+            };
         });
-        if (keys.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--text-faint); padding: var(--space-4);">No data yet. Run scripts/aggregate-token-usage.py.</td></tr>';
+    }
+
+    function renderTable(tableEl, rows, isCron) {
+        var tbody = tableEl.querySelector('tbody');
+        if (rows.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:var(--space-5);color:var(--pb-chalk-400);font-style:italic;">No data yet. Run scripts/aggregate-token-usage.py.</td></tr>';
             return;
         }
-        tbody.innerHTML = keys.map(function (k) {
-            var b = bucket[k];
-            // Cron-source warning: downloads-watcher OR maintenance with > 0 tokens
-            var warningClass = '';
-            var nameCell = k;
-            if (isCron && (k === 'downloads-watcher' || k === 'maintenance')) {
-                var total = (b.real || 0) + (b.estimated || 0);
-                if (total > 0) {
-                    warningClass = ' is-warning';
-                    nameCell = '<span class="tu-cell-warning">! ' + k + '</span>';
-                }
+        tbody.innerHTML = rows.map(function (r) {
+            var trClass = '';
+            var keyCell = r.key;
+            if (isCron && (r.key === 'downloads-watcher' || r.key === 'maintenance') && r.total > 0) {
+                trClass = ' class="is-warning"';
+                keyCell = '<strong>! ' + r.key + '</strong>';
             }
-            return '<tr class="' + warningClass + '">' +
-                '<td>' + nameCell + '</td>' +
-                '<td class="is-num">' + fmtTokens(b.real) + '</td>' +
-                '<td class="is-num">' + fmtTokens(b.estimated) + '</td>' +
-                '<td class="is-num">' + fmtTokens(b.manual) + '</td>' +
-                '<td class="is-num">' + fmtTokens(b.total_real_plus_estimated) + '</td>' +
-                '</tr>';
+            var manualCell = r.manual > 0 ? ('* ' + fmtTokens(r.manual)) : fmtTokens(r.manual);
+            return '<tr' + trClass + '>'
+                + '<td class="is-sticky-col"><code>' + keyCell + '</code></td>'
+                + '<td class="is-num">' + fmtTokens(r.real) + '</td>'
+                + '<td class="is-num">' + fmtTokens(r.estimated) + '</td>'
+                + '<td class="is-num">' + manualCell + '</td>'
+                + '<td class="is-num">' + fmtTokens(r.total) + '</td>'
+                + '</tr>';
         }).join('');
+    }
+
+    function wireSorting(tableEl, rowsState, isCron) {
+        var ths = Array.prototype.slice.call(tableEl.querySelectorAll('th.is-sortable'));
+        ths.forEach(function (th) {
+            th.addEventListener('click', function () {
+                var col = th.getAttribute('data-col');
+                var type = th.getAttribute('data-type');
+                var current = th.classList.contains('is-sorted-desc') ? 'desc' : (th.classList.contains('is-sorted-asc') ? 'asc' : null);
+                var nextDir = current === 'desc' ? 'asc' : 'desc';
+                ths.forEach(function (other) { other.classList.remove('is-sorted-asc', 'is-sorted-desc'); });
+                th.classList.add('is-sorted-' + nextDir);
+                rowsState.sort(function (a, b) {
+                    var va = a[col], vb = b[col];
+                    if (type === 'num') { return nextDir === 'asc' ? va - vb : vb - va; }
+                    return nextDir === 'asc'
+                        ? String(va).localeCompare(String(vb))
+                        : String(vb).localeCompare(String(va));
+                });
+                renderTable(tableEl, rowsState, isCron);
+            });
+        });
+    }
+
+    function setupPanel(tableId, bucket, isCron) {
+        var tableEl = document.getElementById(tableId);
+        if (!tableEl) return;
+        var rows = buildRows(bucket).sort(function (a, b) { return b.total - a.total; });
+        // Default sort: total desc.
+        var totalTh = tableEl.querySelector('th[data-col="total"]');
+        if (totalTh) totalTh.classList.add('is-sorted-desc');
+        renderTable(tableEl, rows, isCron);
+        wireSorting(tableEl, rows, isCron);
     }
 
     function render() {
         var data = getData();
         if (!data) return;
         setStats(data);
-        if (typeof Chart !== 'undefined') {
-            new Chart(document.getElementById('tu-chart-by-agent'), buildStackedBarConfig(data, 'by_agent'));
-            new Chart(document.getElementById('tu-chart-by-cron'),  buildStackedBarConfig(data, 'by_cron'));
-            new Chart(document.getElementById('tu-chart-by-ship'),  buildStackedBarConfig(data, 'by_ship'));
-        }
-        fillTable('tu-table-by-agent', data, 'by_agent', false);
-        fillTable('tu-table-by-cron',  data, 'by_cron',  true);
-        fillTable('tu-table-by-ship',  data, 'by_ship',  false);
+        setupPanel('tu-table-by-agent', data.by_agent || {}, false);
+        setupPanel('tu-table-by-cron',  data.by_cron  || {}, true);
+        setupPanel('tu-table-by-ship',  data.by_ship  || {}, false);
 
-        // Refresh button
         var btn = document.getElementById('tu-refresh-btn');
         if (btn) {
             btn.addEventListener('click', function () {
-                btn.textContent = 'Run scripts/regen-all.ps1 in PowerShell';
+                btn.textContent = 'Run scripts/regen-all.ps1 locally';
                 btn.disabled = true;
-                setTimeout(function () { btn.disabled = false; btn.innerHTML = 'Refresh now<div class="tu-refresh-help">runs scripts/regen-all</div>'; }, 4000);
+                setTimeout(function () { btn.disabled = false; btn.textContent = 'Refresh now'; }, 4000);
             });
         }
     }
