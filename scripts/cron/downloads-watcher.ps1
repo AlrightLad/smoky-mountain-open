@@ -34,6 +34,27 @@ function Log {
     Write-Host $line
 }
 
+# Resolve Git Bash explicitly. Fix C: never let Windows pick a bash — the
+# default resolution order on Windows includes System32\bash.exe (WSL launcher)
+# and WindowsApps\bash.exe (WSL store wrapper). We do NOT want WSL.
+function Resolve-GitBash {
+    $candidates = @(
+        "C:\Program Files\Git\bin\bash.exe",
+        "C:\Program Files (x86)\Git\bin\bash.exe",
+        "$env:LOCALAPPDATA\Programs\Git\bin\bash.exe",
+        "C:\Program Files\Git\usr\bin\bash.exe"
+    )
+    foreach ($p in $candidates) {
+        if (Test-Path $p) { return $p }
+    }
+    # Fallback: where.exe bash - but filter out WSL paths.
+    $found = & where.exe bash 2>$null | Where-Object {
+        $_ -notmatch "System32" -and $_ -notmatch "WindowsApps"
+    } | Select-Object -First 1
+    if ($found -and (Test-Path $found)) { return $found }
+    return $null
+}
+
 Log "START $startedIso  repoRoot=$repoRoot"
 
 # Locate python
@@ -127,17 +148,17 @@ try {
         Copy-Item -Path $f.FullName -Destination $dest -Force
         Log "  copied to $dest"
 
-        # Run apply-decisions.sh via bash (Git Bash on Windows)
-        $bash = Get-Command bash.exe -ErrorAction SilentlyContinue
-        if (-not $bash) {
-            Log "  FATAL bash.exe not on PATH (need Git Bash for apply-decisions.sh)"
+        # Run apply-decisions.sh via Git Bash explicitly (Fix C: no WSL).
+        $gitBash = Resolve-GitBash
+        if (-not $gitBash) {
+            Log "  FATAL Git Bash not found at any known install path; cannot run apply-decisions.sh"
             $applyFailures++
             break
         }
         # Convert Windows path to bash-style for apply-decisions.sh
         $bashPath = $dest -replace '\\', '/' -replace '^([A-Za-z]):', '/$1'
         $bashPath = $bashPath.Substring(0,2).ToLower() + $bashPath.Substring(2)
-        & $bash.Source -c ".claude/scripts/apply-decisions.sh '$bashPath'" 2>&1 | ForEach-Object { Log "    [apply] $_" }
+        & $gitBash -c ".claude/scripts/apply-decisions.sh '$bashPath'" 2>&1 | ForEach-Object { Log "    [apply] $_" }
         if ($LASTEXITCODE -ne 0) {
             Log "  apply-decisions.sh FAILED for $($f.Name)"
             $applyFailures++
