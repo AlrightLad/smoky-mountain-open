@@ -1,14 +1,14 @@
 #requires -Version 5.1
 <#
 .SYNOPSIS
-    PARBAUGHS Downloads Watcher — scans %USERPROFILE%\Downloads for
+    PARBAUGHS Downloads Watcher - scans %USERPROFILE%\Downloads for
     decisions-*.json files exported from proposals.html, applies them
     via .claude/scripts/apply-decisions.sh, regenerates dashboards,
     and commits locally (does NOT push).
 
 .DESCRIPTION
     Per PROPOSAL_LIFECYCLE_v8.2. Designed to run every 5 minutes via
-    Windows Task Scheduler. Idempotent — re-runs are safe.
+    Windows Task Scheduler. Idempotent - re-runs are safe.
 
 .NOTES
     Install: scripts/cron/install-downloads-watcher.ps1 (Founder runs as Admin)
@@ -167,7 +167,7 @@ try {
         & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $regenScript 2>&1 | ForEach-Object { Log "    [regen] $_" }
         $regenRc = $LASTEXITCODE
         if ($regenRc -ne 0) {
-            Log "regen-all FAILED with exit $regenRc — apply-decisions changes are committed by the apply script; regen output may be stale"
+            Log "regen-all FAILED with exit $regenRc - apply-decisions changes are committed by the apply script; regen output may be stale"
             exit 1
         }
         Log "regen-all OK"

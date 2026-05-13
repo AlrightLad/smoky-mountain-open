@@ -2,16 +2,12 @@
 <#
 .SYNOPSIS
     Installs (or updates) the PARBAUGHS-Downloads-Watcher Scheduled Task.
-
 .DESCRIPTION
     Must be run as Administrator. Registers a daily task that fires every
     5 minutes invoking scripts/cron/downloads-watcher.ps1.
-
 .NOTES
-    Idempotent: if the task already exists, it gets updated rather than
-    failing.
+    Idempotent: if the task already exists, it gets updated rather than failing.
 #>
-
 $ErrorActionPreference = "Stop"
 
 $taskName = "PARBAUGHS-Downloads-Watcher"
@@ -28,7 +24,7 @@ $isAdmin = ([Security.Principal.WindowsPrincipal] `
     [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
         [Security.Principal.WindowsBuiltInRole]::Administrator)
 if (-not $isAdmin) {
-    Write-Host "[install] FATAL must run as Administrator. Right-click PowerShell -> Run as Administrator." -ForegroundColor Red
+    Write-Host "[install] FATAL must run as Administrator." -ForegroundColor Red
     exit 1
 }
 
@@ -37,7 +33,7 @@ Write-Host "[install] task=$taskName  watcher=$watcher"
 # Remove existing task if present (idempotent re-install)
 $existing = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
 if ($existing) {
-    Write-Host "[install] existing task found — unregistering for clean re-install"
+    Write-Host "[install] existing task found - unregistering for clean re-install"
     Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
 }
 
@@ -59,7 +55,7 @@ $settings = New-ScheduledTaskSettingsSet `
     -AllowStartIfOnBatteries `
     -DontStopIfGoingOnBatteries
 
-# Principal: current user, run with highest available permissions (interactive)
+# Principal: current user, run with highest available permissions
 $principal = New-ScheduledTaskPrincipal `
     -UserId $env:USERNAME `
     -LogonType Interactive `
@@ -71,7 +67,7 @@ Register-ScheduledTask `
     -Trigger $trigger `
     -Settings $settings `
     -Principal $principal `
-    -Description "PARBAUGHS — scans Downloads for decisions-*.json, applies via apply-decisions.sh, regenerates dashboards. Per PROPOSAL_LIFECYCLE_v8.2."
+    -Description "PARBAUGHS - scans Downloads for decisions-*.json, applies via apply-decisions.sh, regenerates dashboards. Per PROPOSAL_LIFECYCLE_v8.2."
 
 $created = Get-ScheduledTask -TaskName $taskName
 Write-Host "[install] OK task registered: $($created.TaskName)" -ForegroundColor Green
