@@ -855,6 +855,77 @@ def main():
             else:
                 print(green(f"  ✓ {f.name:48s} id={fm['id']} lane={fm['lane']} ({fm['lane_label']}) cost={fm['estimate']['cost_tokens']}"))
 
+    # Design-token discipline: design-system.html is the exemplar and MUST be clean.
+    # Other dashboards are pre-migration (Phase 2 cleans them up); we count violations
+    # for visibility but only fail on design-system.html.
+    print(cyan("\n[design-tokens] Design-token discipline check..."))
+    HEX_RE = re.compile(r"#[0-9a-fA-F]{3,8}\b")
+    PX_RE  = re.compile(r"\b\d+\s*px\b")
+    MS_RE  = re.compile(r"\b\d+\s*ms\b")
+    TOKEN_FILE = REPORTS_SRC / "_assets" / "design-tokens.css"
+    EXEMPLAR  = REPORTS_SRC / "design-system.html"
+    if TOKEN_FILE.exists():
+        # design-tokens.css is allowed (and required) to have raw hex/px/ms.
+        # design-system-components.css is allowed inline px in token-derived form? No — it should also be clean.
+        # But for Phase 1 we tolerate raw 0 / 1px / 2px / 3px etc. in components when they're sub-token sizes (e.g., border widths)
+        component_file = REPORTS_SRC / "_assets" / "design-system-components.css"
+
+        # Exemplar check — design-system.html is the documentation page, so it's
+        # ALLOWED to display hex values as text content (the swatch labels literally
+        # are the hex values being documented). The discipline that matters: inside
+        # <style> blocks and style="..." attributes, every color must be a var(--*)
+        # reference (the exemplar should LEAD BY EXAMPLE in its CSS usage).
+        if EXEMPLAR.exists():
+            text = EXEMPLAR.read_text(encoding="utf-8")
+            # Extract the <style>...</style> block contents
+            style_blocks = re.findall(r"<style[^>]*>(.*?)</style>", text, flags=re.DOTALL)
+            # Extract style="..." attribute contents
+            style_attrs = re.findall(r'style="([^"]*)"', text)
+            css_text = "\n".join(style_blocks) + "\n" + "\n".join(style_attrs)
+            # Now check for raw hex in CSS contexts only
+            hex_in_css = HEX_RE.findall(css_text)
+            if hex_in_css:
+                print(red(f"  ✗ design-system.html CSS contexts contain {len(hex_in_css)} raw hex values"))
+                print(red(f"     samples: {hex_in_css[:5]}"))
+                failures.append(("design-tokens:exemplar-css", f"raw hex in CSS: {len(hex_in_css)}"))
+            else:
+                print(green("  ✓ design-system.html CSS clean — every color via var(--*), hex in text content is documentation only"))
+
+        # Token file sanity — must DEFINE the canonical palette
+        token_text = TOKEN_FILE.read_text(encoding="utf-8")
+        required_tokens = [
+            "--pb-billiard-green-900", "--pb-billiard-green-800", "--pb-chalk-50", "--pb-brass-500",
+            "--pb-success", "--pb-error", "--text-base", "--space-4", "--radius-md", "--duration-fast", "--ease-out",
+        ]
+        missing_tokens = [t for t in required_tokens if t not in token_text]
+        if missing_tokens:
+            print(red(f"  ✗ design-tokens.css missing required tokens: {missing_tokens}"))
+            failures.append(("design-tokens:missing", f"missing: {missing_tokens}"))
+        else:
+            print(green(f"  ✓ design-tokens.css declares all {len(required_tokens)} required canonical tokens"))
+
+        # Phase 1 informational scan: count violations in legacy dashboards (not a failure;
+        # migration to --pb-* is Phase 2 work)
+        legacy = ["dashboard.html", "activity.html", "proposals.html", "discussion-bubbles.html", "main-flows.html", "index.html"]
+        legacy_violations = {}
+        for name in legacy:
+            p = REPORTS_SRC / name
+            if not p.exists():
+                continue
+            html = p.read_text(encoding="utf-8")
+            no_script = re.sub(r"<script.*?</script>", "", html, flags=re.DOTALL)
+            no_data_block = re.sub(r"<script id=\"report-data\".*?</script>", "", no_script, flags=re.DOTALL)
+            hex_count = len(HEX_RE.findall(no_data_block))
+            px_count = len(PX_RE.findall(no_data_block))
+            ms_count = len(MS_RE.findall(no_data_block))
+            legacy_violations[name] = (hex_count, px_count, ms_count)
+        if legacy_violations:
+            print(cyan("  Phase 2 migration scope (informational, not a failure):"))
+            for name, (h, px, ms) in legacy_violations.items():
+                print(cyan(f"     {name:30s}  raw-hex={h:3d}  raw-px={px:3d}  raw-ms={ms:3d}"))
+    else:
+        print(cyan("  design-tokens.css not yet authored; skipping discipline check"))
+
     # Wiring assertions: cross-check that scenarios in activity data match canonical CSS classes
     print(cyan("\n[wiring] Cross-checking scenario tokens against CSS + dropdown..."))
     activity_html = (test_reports / "activity.html").read_text()

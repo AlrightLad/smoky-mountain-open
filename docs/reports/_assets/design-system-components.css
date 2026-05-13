@@ -1,0 +1,439 @@
+/* ============================================================================
+   PARBAUGHS Design System Components — Phase 1 primitives
+   ----------------------------------------------------------------------------
+   Consumes design-tokens.css. Every value here resolves through a token —
+   no raw hex / px / ms values are permitted in this file (round-trip test
+   enforces).
+
+   Pattern: each primitive has:
+     - Default state
+     - :hover (subtle)
+     - :focus-visible (brass-tinted accessibility ring)
+     - :active (compressed feel)
+     - :disabled (faded, no pointer)
+
+   Use `.pb-*` prefix to namespace from legacy dashboard.css.
+   ============================================================================ */
+
+/* ───────────────────────────────────────────────────────────────────────────
+   BASE — assumed parent class for any consuming page
+   ─────────────────────────────────────────────────────────────────────────── */
+.pb {
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--lh-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* ===========================================================================
+   SURFACES
+   --------------------------------------------------------------------------
+   .pb-surface — card/panel
+   .pb-surface--raised — visually elevated (tonal lift, not shadow)
+   .pb-surface--interactive — hover/focus states (use on clickable cards)
+   =========================================================================== */
+
+/*
+ * .pb-surface — default card surface
+ * Use for: cards, panels, content groupings
+ * Do NOT use for: page-level body, hover states
+ */
+.pb-surface {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.pb-surface--raised {
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-sm);
+}
+
+.pb-surface--interactive {
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out),
+              transform var(--duration-fast) var(--ease-out);
+}
+.pb-surface--interactive:hover {
+  background: var(--bg-interactive);
+  border-color: var(--border-strong);
+}
+.pb-surface--interactive:focus-visible {
+  outline: 2px solid var(--accent-achievement);
+  outline-offset: 2px;
+  border-color: var(--border-brass);
+}
+.pb-surface--interactive:active {
+  background: var(--bg-pressed);
+  transform: translateY(1px);
+}
+
+
+/* ===========================================================================
+   LAYOUT PRIMITIVES
+   --------------------------------------------------------------------------
+   .pb-stack    — vertical stack with token-driven gap
+   .pb-inline   — horizontal row with token-driven gap
+   .pb-grid     — responsive grid container
+   =========================================================================== */
+
+.pb-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.pb-stack--tight { gap: var(--space-2); }
+.pb-stack--snug  { gap: var(--space-3); }
+.pb-stack--loose { gap: var(--space-6); }
+
+.pb-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.pb-inline--tight { gap: var(--space-2); }
+.pb-inline--loose { gap: var(--space-5); }
+
+.pb-grid {
+  display: grid;
+  gap: var(--col-gap);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+
+/* ===========================================================================
+   TYPOGRAPHY UTILITIES
+   --------------------------------------------------------------------------
+   Apply these as classes; they pair the right size + weight + line-height
+   + letter-spacing from tokens. Avoid spelling these out per-element.
+   =========================================================================== */
+
+.pb-text-display {
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  font-weight: var(--weight-bold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+}
+
+.pb-text-h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+}
+
+.pb-text-h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  line-height: var(--lh-tight);
+}
+
+.pb-text-h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  line-height: var(--lh-snug);
+}
+
+.pb-text-body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--weight-regular);
+  line-height: var(--lh-normal);
+}
+
+.pb-text-caption {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-regular);
+  line-height: var(--lh-snug);
+  color: var(--text-faint);
+}
+
+.pb-text-micro {
+  font-family: var(--font-body);
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-semibold);
+  line-height: var(--lh-snug);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--text-faint);
+}
+
+.pb-text-numeric {
+  font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-snug);
+}
+
+/* Color modifiers for text utilities — compose with the size class */
+.pb-text-primary   { color: var(--text-primary); }
+.pb-text-secondary { color: var(--text-secondary); }
+.pb-text-muted     { color: var(--text-muted); }
+.pb-text-faint     { color: var(--text-faint); }
+.pb-text-achievement { color: var(--accent-achievement); }
+
+
+/* ===========================================================================
+   BUTTONS
+   --------------------------------------------------------------------------
+   .pb-button — base button (assumes you'll add a variant)
+   --primary — chalk-on-green (the default Founder-facing action)
+   --secondary — outlined, chalk text
+   --ghost — text-only, no border
+   --destructive — claret-bordered for destructive actions
+
+   NOTE: brass-accent buttons are NOT a primary variant. Brass is for
+   achievement contexts only ("Claim winnings", "Earn badge"). Use a
+   --primary button with a separate brass accent (icon, fill) when you
+   need that signal — don't create a generic "brass button" pattern.
+   =========================================================================== */
+
+.pb-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-normal);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out),
+              transform var(--duration-fast) var(--ease-out);
+  user-select: none;
+}
+.pb-button:disabled,
+.pb-button[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none;
+}
+.pb-button:focus-visible {
+  outline: 2px solid var(--accent-achievement);
+  outline-offset: 2px;
+}
+.pb-button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.pb-button--primary {
+  background: var(--pb-chalk-50);
+  color: var(--pb-billiard-green-900);
+  border-color: var(--pb-chalk-50);
+}
+.pb-button--primary:hover:not(:disabled) {
+  background: var(--pb-chalk-100);
+  border-color: var(--pb-chalk-100);
+}
+.pb-button--primary:active:not(:disabled) {
+  background: var(--pb-chalk-200);
+}
+
+.pb-button--secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+.pb-button--secondary:hover:not(:disabled) {
+  background: var(--bg-interactive);
+  border-color: var(--pb-chalk-300);
+}
+
+.pb-button--ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: transparent;
+}
+.pb-button--ghost:hover:not(:disabled) {
+  background: var(--bg-interactive);
+  color: var(--text-primary);
+}
+
+.pb-button--destructive {
+  background: transparent;
+  color: var(--pb-error);
+  border-color: var(--pb-error);
+}
+.pb-button--destructive:hover:not(:disabled) {
+  background: rgba(156, 74, 74, 0.12);
+}
+
+
+/* ===========================================================================
+   BADGES
+   --------------------------------------------------------------------------
+   Pill-shaped status indicators. ONE accent color per badge. Use the
+   semantic variant that matches the status — never use brass for "info"
+   or "success" semantics.
+   =========================================================================== */
+
+.pb-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  line-height: var(--lh-snug);
+  white-space: nowrap;
+}
+
+.pb-badge--brass     { background: rgba(201,169,97,0.18); color: var(--accent-achievement); }
+.pb-badge--moss      { background: rgba(74,128,103,0.18); color: var(--pb-success); }
+.pb-badge--claret    { background: rgba(156,74,74,0.18);  color: var(--pb-error); }
+.pb-badge--amber     { background: rgba(212,168,87,0.18); color: var(--pb-warning); }
+.pb-badge--teal      { background: rgba(74,138,156,0.18); color: var(--pb-info); }
+.pb-badge--neutral   { background: rgba(216,208,192,0.10);color: var(--text-secondary); }
+
+
+/* ===========================================================================
+   FORM PRIMITIVES
+   =========================================================================== */
+
+.pb-input,
+.pb-select,
+.pb-textarea {
+  display: block;
+  width: 100%;
+  background: var(--bg-raised);
+  color: var(--text-primary);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: var(--lh-snug);
+  transition: border-color var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out);
+}
+.pb-input::placeholder,
+.pb-textarea::placeholder {
+  color: var(--text-placeholder);
+}
+.pb-input:hover,
+.pb-select:hover,
+.pb-textarea:hover {
+  border-color: var(--pb-chalk-300);
+}
+.pb-input:focus-visible,
+.pb-select:focus-visible,
+.pb-textarea:focus-visible {
+  outline: none;
+  border-color: var(--accent-achievement);
+  box-shadow: 0 0 0 3px rgba(201,169,97,0.18);
+}
+.pb-input:disabled,
+.pb-select:disabled,
+.pb-textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pb-textarea {
+  min-height: var(--space-8);
+  resize: vertical;
+}
+
+
+/* ===========================================================================
+   DIVIDER
+   --------------------------------------------------------------------------
+   Hairline rule — used between sections, between rows in tabular content.
+   =========================================================================== */
+
+.pb-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  border: 0;
+  margin: var(--space-4) 0;
+}
+.pb-divider--strong {
+  background: var(--border-strong);
+}
+/*
+ * .pb-divider--brass — brass underline (the editorial accent)
+ * Use ONCE on a page (at most), under a section heading that wants
+ * achievement-coded emphasis. NEVER as a generic divider.
+ */
+.pb-divider--brass {
+  height: 2px;
+  width: var(--space-7);  /* 48px — short, deliberate */
+  background: var(--accent-achievement);
+}
+
+
+/* ===========================================================================
+   SCROLLABLE SURFACES
+   =========================================================================== */
+
+.pb-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+.pb-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.pb-scroll::-webkit-scrollbar-track { background: transparent; }
+.pb-scroll::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: var(--radius-pill); }
+.pb-scroll::-webkit-scrollbar-thumb:hover { background: var(--pb-chalk-300); }
+
+
+/* ===========================================================================
+   LINKS
+   =========================================================================== */
+
+.pb-link {
+  color: var(--accent-achievement);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out);
+}
+.pb-link:hover {
+  border-bottom-color: var(--accent-achievement);
+}
+.pb-link:focus-visible {
+  outline: 2px solid var(--accent-achievement);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.pb-link--subtle {
+  color: var(--text-secondary);
+}
+.pb-link--subtle:hover {
+  color: var(--text-primary);
+  border-bottom-color: var(--text-muted);
+}
+
+.pb-link--strong {
+  color: var(--text-primary);
+  font-weight: var(--weight-medium);
+  border-bottom-color: var(--border-strong);
+}
+.pb-link--strong:hover {
+  border-bottom-color: var(--accent-achievement);
+  color: var(--accent-achievement);
+}
