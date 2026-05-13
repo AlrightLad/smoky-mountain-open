@@ -2,15 +2,25 @@
 {
   "id": "PROP-004",
   "title": "Add `org-monthly` as 4th quota_type in PAUSE_DISCIPLINE schema",
-  "lane": "Lane 2 — Information Architecture / Governance schema",
+  "lane": 2,
+  "lane_label": "Bug Discovery",
+  "created_at": "2026-05-13T15:05:00Z",
   "rationale": "PAUSE_DISCIPLINE_v8.1_ADDENDUM § 5 enumerates `quota_type` as 'weekly-tokens | daily-tokens | hourly-requests'. The prior session's failure was at the org-monthly cap, which is not in the enum. The discipline cannot pause for a quota it doesn't model. F1 finding (b) explicit: 'org-level monthly cap is a DIFFERENT quota than weekly-tokens.'",
   "scope": "Schema amendment: add `org-monthly` to the enum + document the reset boundary as configurable (Anthropic billing-cycle, not necessarily UTC midnight on the 1st). Update last-verify.json schema example. Update telemetry event schema (cycle.budget.checkpoint emits quota_type which now includes the new value).",
-  "estimate_tokens": 8000,
+  "estimate": {
+    "cost_tokens": 8000,
+    "duration_minutes": 20,
+    "risk": "low"
+  },
   "files_affected": [
     "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md § 5 (enum + example state file)",
     "docs/agents/TELEMETRY_PROTOCOL.md (cycle.budget.checkpoint + cycle.paused + cycle.resumed event schemas)",
     "scripts/aggregate-telemetry.py (handle the new quota_type in event aggregation — defensive: existing events keep working)",
     "scripts/cron/usage-snapshot-config.json (per PROP-003 — defines the org-monthly reset boundary)"
+  ],
+  "evidence_paths": [
+    ".claude/state/wave-zero-dry-run/remediation/F1a-token-meter-gap-diagnostic.md",
+    ".claude/state/discussion-bubbles/db-2026-05-13-003.md"
   ],
   "ship_target": "Post-Wave-Zero remediation ratification. Lightweight; could ship same-day as Founder applies the schema amendment."
 }

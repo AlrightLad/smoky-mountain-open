@@ -619,6 +619,140 @@ def main():
         print(red("  ✗ index.html (production) MISSING"))
         failures.append(("index.html", "production file missing"))
 
+    # Cross-dashboard count consistency: every dashboard that surfaces a count for the
+    # same metric MUST show the same number. Founder caught a banner-vs-page divergence
+    # by eye on 2026-05-13; this check catches the class going forward.
+    print(cyan("\n[cross-dash] Cross-dashboard count consistency..."))
+    def get_data_block(path):
+        if not path.exists():
+            return None
+        html = path.read_text(encoding="utf-8")
+        m = DATA_BLOCK_RE.search(html)
+        if not m:
+            return None
+        try:
+            return json.loads(m.group(2))
+        except json.JSONDecodeError:
+            return None
+
+    dash_data = get_data_block(REPORTS_SRC / "dashboard.html")
+    prop_data = get_data_block(REPORTS_SRC / "proposals.html")
+    idx_data = get_data_block(REPORTS_SRC / "index.html")
+    bub_data = get_data_block(REPORTS_SRC / "discussion-bubbles.html")
+    act_data = get_data_block(REPORTS_SRC / "activity.html")
+
+    # On-disk truth — counted directly from state dirs in the real repo (not test workspace)
+    real_state = ROOT / ".claude" / "state"
+    truth_pending = sum(1 for _ in (real_state / "proposals" / "pending").glob("*.md")) if (real_state / "proposals" / "pending").exists() else 0
+    truth_bubbles_total = sum(1 for _ in (real_state / "discussion-bubbles").glob("*.md")) if (real_state / "discussion-bubbles").exists() else 0
+    truth_handoffs_total = 0
+    handoffs_dir = real_state / "handoffs"
+    if handoffs_dir.exists():
+        for folder in handoffs_dir.iterdir():
+            if folder.is_dir():
+                truth_handoffs_total += sum(1 for _ in folder.rglob("*.md"))
+
+    def check_eq(label, ground, candidates):
+        """`candidates` is list of (source_name, value). All must equal ground."""
+        nonlocal failures
+        diverging = [(s, v) for s, v in candidates if v != ground]
+        if diverging:
+            div_str = ", ".join(f"{s}={v}" for s, v in diverging)
+            print(red(f"  ✗ {label:40s} ground={ground}  DIVERGENT: {div_str}"))
+            failures.append((f"cross-dash:{label}", f"ground={ground} divergent={div_str}"))
+        else:
+            sources = ", ".join(f"{s}={v}" for s, v in candidates)
+            print(green(f"  ✓ {label:40s} ground={ground}  all={sources}"))
+
+    # proposals_pending: dashboard.html data block + proposals.html proposals[] length + index.html status + on-disk
+    cands = []
+    if dash_data is not None:
+        cands.append(("dashboard.html data.proposals_pending", dash_data.get("proposals_pending")))
+    if prop_data is not None:
+        cands.append(("proposals.html data.proposals.length", len(prop_data.get("proposals", []))))
+    if idx_data is not None:
+        cands.append(("index.html data.status.proposals_pending", idx_data.get("status", {}).get("proposals_pending")))
+    check_eq("proposals_pending", truth_pending, cands)
+
+    # discussion_bubbles_total: discussion-bubbles.html data block + index.html status + on-disk
+    cands = []
+    if bub_data is not None:
+        cands.append(("discussion-bubbles.html data.discussion_bubbles.length", len(bub_data.get("discussion_bubbles", []))))
+    if idx_data is not None:
+        # index status reports open count, but also surfaces total_bubbles in extended field
+        total_or_open = idx_data.get("status", {}).get("total_bubbles")
+        if total_or_open is None:
+            total_or_open = idx_data.get("status", {}).get("open_discussion_bubbles")
+        cands.append(("index.html status.total_bubbles", total_or_open))
+    check_eq("discussion_bubbles_total", truth_bubbles_total, cands)
+
+    # handoffs_total
+    cands = []
+    if act_data is not None:
+        cands.append(("activity.html data.handoffs.length", len(act_data.get("handoffs", []))))
+    if dash_data is not None:
+        cands.append(("dashboard.html data.recent_handoffs.length", len(dash_data.get("recent_handoffs", []))))
+    # NOTE: dashboard.recent_handoffs is capped at 5 by design; only compare against truth if truth <= 5
+    if truth_handoffs_total <= 5:
+        check_eq("handoffs_total", truth_handoffs_total, cands)
+    else:
+        # Truth >5 — only assert activity.html count == truth; dashboard is "recent" subset
+        act_count = len(act_data.get("handoffs", [])) if act_data else 0
+        if act_count == truth_handoffs_total:
+            print(green(f"  ✓ {'handoffs_total':40s} ground={truth_handoffs_total} activity.html={act_count} (dashboard.recent_handoffs is design-capped at 5, skipped)"))
+        else:
+            print(red(f"  ✗ {'handoffs_total':40s} ground={truth_handoffs_total} activity.html={act_count}"))
+            failures.append(("cross-dash:handoffs_total", f"ground={truth_handoffs_total} activity={act_count}"))
+
+    # Banner text on dashboard.html must NOT contain a hardcoded count (would diverge)
+    print(cyan("\n[banner-text] dashboard.html banner must be data-bound, not hardcoded..."))
+    dash_html = (REPORTS_SRC / "dashboard.html").read_text(encoding="utf-8")
+    # Look for the pattern "<N> proposals awaiting" where <N> is a literal digit (not "—" or span)
+    bad_banner = re.search(r'<div class="card-title text-brass">\s*\d+\s+proposals\s+awaiting', dash_html)
+    if bad_banner:
+        print(red(f"  ✗ dashboard.html banner contains hardcoded digit count: '{bad_banner.group(0)[:80]}'"))
+        failures.append(("dashboard.html banner", "hardcoded digit count in banner card-title"))
+    else:
+        print(green("  ✓ dashboard.html banner uses data-bound placeholder (no hardcoded count)"))
+
+    # Proposal-card field rendering: every proposal in pending/ must have id/title/lane parseable from data block
+    # AND the renderer's required fields (per §amendment.4) must be present in each proposal.
+    print(cyan("\n[proposal-cards] Each pending proposal has full §amendment.4 schema..."))
+    PROPOSAL_RENDER_FIELDS = ["id", "title", "lane", "lane_label", "created_at", "rationale", "scope", "ship_target", "estimate", "files_affected"]
+    real_pending_dir = real_state / "proposals" / "pending"
+    if real_pending_dir.exists():
+        for f in sorted(real_pending_dir.glob("*.md")):
+            body = f.read_text(encoding="utf-8")
+            m = re.match(r"^---\n(.*?)\n---", body, re.DOTALL)
+            if not m:
+                print(red(f"  ✗ {f.name} no frontmatter"))
+                failures.append((f"proposal-card:{f.name}", "no frontmatter"))
+                continue
+            try:
+                fm = json.loads(m.group(1))
+            except json.JSONDecodeError as e:
+                print(red(f"  ✗ {f.name} JSON parse: {e}"))
+                failures.append((f"proposal-card:{f.name}", f"JSON parse: {e}"))
+                continue
+            missing_fields = [k for k in PROPOSAL_RENDER_FIELDS if k not in fm]
+            type_issues = []
+            if "lane" in fm and not isinstance(fm["lane"], int):
+                type_issues.append(f"lane is {type(fm['lane']).__name__}, expected int per §amendment.4")
+            if "estimate" in fm:
+                est = fm["estimate"]
+                if not isinstance(est, dict):
+                    type_issues.append(f"estimate is {type(est).__name__}, expected object")
+                else:
+                    for sub in ("cost_tokens", "duration_minutes", "risk"):
+                        if sub not in est:
+                            type_issues.append(f"estimate.{sub} missing")
+            if missing_fields or type_issues:
+                problems = (missing_fields or []) + (type_issues or [])
+                print(red(f"  ✗ {f.name} schema issues: {problems}"))
+                failures.append((f"proposal-card:{f.name}", f"schema: {problems}"))
+            else:
+                print(green(f"  ✓ {f.name:48s} id={fm['id']} lane={fm['lane']} ({fm['lane_label']}) cost={fm['estimate']['cost_tokens']}"))
+
     # Wiring assertions: cross-check that scenarios in activity data match canonical CSS classes
     print(cyan("\n[wiring] Cross-checking scenario tokens against CSS + dropdown..."))
     activity_html = (test_reports / "activity.html").read_text()

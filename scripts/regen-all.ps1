@@ -70,14 +70,39 @@ foreach ($s in $steps) {
 }
 
 $endTs = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-Pop-Location
 
-if ($failed.Count -eq 0) {
-    Write-Host ""
-    Write-Host "ALL DASHBOARDS REGENERATED at $endTs" -ForegroundColor Green
-    exit 0
-} else {
+if ($failed.Count -ne 0) {
+    Pop-Location
     Write-Host ""
     Write-Host "PARTIAL FAILURE at $endTs — failed steps: $($failed -join ', ')" -ForegroundColor Red
     exit 1
 }
+
+# Sanity-gate: run round-trip-test before declaring success.
+Write-Host ""
+Write-Host "[regen-all] running round-trip sanity test..." -ForegroundColor Cyan
+& $python "tests/round-trip-test.py"
+$testRc = $LASTEXITCODE
+if ($testRc -ne 0) {
+    Write-Host "[regen-all] ROUND-TRIP TEST FAILED (exit $testRc). Dashboards will be rolled back." -ForegroundColor Red
+    $files = @(
+        "docs/reports/dashboard.html", "docs/reports/activity.html",
+        "docs/reports/proposals.html", "docs/reports/discussion-bubbles.html",
+        "docs/reports/index.html", "docs/reports/main-flows.html"
+    )
+    foreach ($f in $files) {
+        if (Test-Path $f) {
+            git checkout HEAD -- $f 2>$null
+            if ($LASTEXITCODE -ne 0) { Write-Host "[regen-all] could not roll back $f (not tracked or no HEAD)" }
+        }
+    }
+    Pop-Location
+    Write-Host ""
+    Write-Host "REGEN ROLLED BACK at $endTs — round-trip test failed; consult the test output above" -ForegroundColor Red
+    exit 2
+}
+Pop-Location
+Write-Host "[regen-all] round-trip test PASS" -ForegroundColor Green
+Write-Host ""
+Write-Host "ALL DASHBOARDS REGENERATED at $endTs" -ForegroundColor Green
+exit 0

@@ -2,15 +2,26 @@
 {
   "id": "PROP-002",
   "title": "main-flows.html — 4th operational view (generator-driven from MAIN_FLOWS.md)",
-  "lane": "Lane 2 — Information Architecture",
+  "lane": 4,
+  "lane_label": "Design System Extension",
+  "created_at": "2026-05-13T13:50:00Z",
   "rationale": "Founder's referent (Dave Janowiak's 'main flows' pattern) is visual + browseable, not only a markdown doc. MAIN_FLOWS.md will be authored as F4 deliverable; this proposal converts it into a Founder-facing operational view so the artifact is consulted (not just read once). Binding caveats from db-2026-05-13-005: single source of truth is MAIN_FLOWS.md; HTML is generator-driven; non-overlapping purpose with dashboard.html.",
   "scope": "Author scripts/regen-main-flows.py (parses MAIN_FLOWS.md → data block) + docs/reports/main-flows.html (template w/ hero / per-flow drill-in / served-by ship badges / last-amended timestamp). Add main-flows.html to docs/reports/index.html. Add hourly regen to heartbeat cycle's operational-view-regen activity.",
-  "estimate_tokens": 35000,
+  "estimate": {
+    "cost_tokens": 35000,
+    "duration_minutes": 75,
+    "risk": "low"
+  },
   "files_affected": [
     "scripts/regen-main-flows.py",
     "docs/reports/main-flows.html",
     "docs/reports/index.html",
     "docs/agents/PROTOCOLS_v8.1_ADDENDUM.md (P18 operational view list — add 4th view)"
+  ],
+  "evidence_paths": [
+    ".claude/state/discussion-bubbles/db-2026-05-13-004.md",
+    ".claude/state/discussion-bubbles/db-2026-05-13-005.md",
+    ".claude/state/wave-zero-dry-run/remediation/proposed-MAIN_FLOWS.md"
   ],
   "ship_target": "Proactive cycle 2 (next Monday 01:00 UTC after Founder ratifies cycle 1)",
   "binding_conditions_from_db_005": [

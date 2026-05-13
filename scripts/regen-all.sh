@@ -60,12 +60,34 @@ for step in "${STEPS[@]}"; do
 done
 
 END_TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-if [ ${#FAILED[@]} -eq 0 ]; then
-    echo ""
-    echo "ALL DASHBOARDS REGENERATED at $END_TS"
-    exit 0
-else
+if [ ${#FAILED[@]} -ne 0 ]; then
     echo ""
     echo "PARTIAL FAILURE at $END_TS — failed steps: ${FAILED[*]}"
     exit 1
 fi
+
+# Sanity-gate: run round-trip-test before declaring success. If the test fails,
+# the regenerated dashboards are inconsistent with state — roll back via git
+# checkout so Founder never sees a divergent dashboard.
+echo ""
+echo "[regen-all] running round-trip sanity test..."
+TEST_OUT="$("$PYTHON" tests/round-trip-test.py 2>&1)"
+TEST_RC=$?
+if [ "$TEST_RC" -ne 0 ]; then
+    echo "[regen-all] ROUND-TRIP TEST FAILED (exit $TEST_RC). Dashboards will be rolled back."
+    echo "$TEST_OUT" | tail -20 | sed 's/^/    /'
+    # Roll back each affected HTML to last committed version. Quiet on files that aren't tracked yet.
+    for f in docs/reports/dashboard.html docs/reports/activity.html docs/reports/proposals.html \
+             docs/reports/discussion-bubbles.html docs/reports/index.html docs/reports/main-flows.html; do
+        if [ -f "$f" ]; then
+            git checkout HEAD -- "$f" 2>/dev/null || echo "[regen-all] could not roll back $f (not tracked or no HEAD)"
+        fi
+    done
+    echo ""
+    echo "REGEN ROLLED BACK at $END_TS — round-trip test failed; consult the test output above"
+    exit 2
+fi
+echo "[regen-all] round-trip test PASS"
+echo ""
+echo "ALL DASHBOARDS REGENERATED at $END_TS"
+exit 0

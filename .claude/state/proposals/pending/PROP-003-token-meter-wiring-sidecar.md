@@ -2,16 +2,26 @@
 {
   "id": "PROP-003",
   "title": "Token-meter-wiring sidecar — substantive heuristic-sunset path for HALT 25",
-  "lane": "Lane 3 — Performance / Infrastructure",
+  "lane": 3,
+  "lane_label": "Performance",
+  "created_at": "2026-05-13T15:00:00Z",
   "rationale": "F1 diagnostic confirms Claude Code agents cannot introspect their own token consumption from inside the tool surface. The PAUSE_DISCIPLINE 90% trigger cannot fire without a meter. The defensive heuristic (agent-feel pacing) is a band-aid; this proposal is the real fix — a sidecar process that writes usage snapshots to a watched file the agent reads each turn. Data-Integrity's forcing-function dissent on db-003 is resolved by this substantive draft (NOT a stub).",
   "scope": "Author scripts/cron/usage-snapshot.ps1 + integration in PAUSE_DISCIPLINE_v8.1_ADDENDUM.md § 2.1 + auto-read in scripts/aggregate-telemetry.py.",
-  "estimate_tokens": 45000,
+  "estimate": {
+    "cost_tokens": 45000,
+    "duration_minutes": 90,
+    "risk": "medium"
+  },
   "files_affected": [
     "scripts/cron/usage-snapshot.ps1 (new)",
     "scripts/cron/usage-snapshot-config.json (new — what to poll, how often, reset boundary)",
     "scripts/aggregate-telemetry.py (read .claude/state/usage-snapshot.json; populate weekly_tokens / weekly_cost / org_monthly_pct from real data)",
     ".claude/state/usage-snapshot.json (new — sidecar writes here; agent reads each turn)",
     "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md § 2.1 (Founder-applied amendment: meter read via .claude/state/usage-snapshot.json)"
+  ],
+  "evidence_paths": [
+    ".claude/state/wave-zero-dry-run/remediation/F1a-token-meter-gap-diagnostic.md",
+    ".claude/state/discussion-bubbles/db-2026-05-13-003.md"
   ],
   "ship_target": "Post-Wave-Zero remediation ratification + cron-paused.json clear. Cycle 2 or earlier if Founder prioritizes."
 }

@@ -80,6 +80,26 @@ This is a binary attestation. Critic produces a sentence: "The work product refl
 
 **Why Critic specifically:** Critic is already the friction agent in the protocol. Adding the metric-integrity question to Critic's existing pre-close discipline is the natural attachment point. Engineer cannot self-attest on integrity — by construction, the question is "did the producer game the metric?"
 
+### 3.1 Dashboard-consistency checkbox (added 2026-05-13 after Founder-caught divergence)
+
+Any work that touches a dashboard or any surface displaying a number gets a 3-item dashboard-consistency check appended to Critic's pre-close audit:
+
+```markdown
+### Dashboard consistency check
+
+- [ ] All counts displayed on dashboards verified against on-disk state
+- [ ] Cross-dashboard consistency verified (same number everywhere)
+- [ ] Round-trip test cross-dashboard section passed post-regen
+```
+
+**When this fires:** any ship that modifies `docs/reports/*.html`, any `scripts/regen-*.py`, or any state directory whose count surfaces on a dashboard (proposals, bubbles, handoffs, ship-progress, halts, FIQ).
+
+**How a failure escalates:** if Critic cannot attest, the ship does not close. Two paths:
+1. Fix the divergence in this cycle, re-run `regen-all.sh` (which gates on the test), re-attest.
+2. Hand off to next cycle via Scenario 2 handoff with the divergence named.
+
+**Why this is locked in:** Founder caught a banner-vs-page divergence by eye on 2026-05-13 (dashboard banner showed "5 proposals" while page showed 2). The Step 0 diagnostic in the prior fix-pass only checked data-block correctness, not rendered markup. Two bugs slipped (banner hardcoded; proposal schema drifted from §amendment.4). The new round-trip test sections + this Critic checklist together prevent the recurrence.
+
 ---
 
 ## 4 — Devil's-Advocate standing question (new bubble convention)

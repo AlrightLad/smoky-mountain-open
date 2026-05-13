@@ -275,10 +275,16 @@
     {
       "id": "PROP-003",
       "title": "Token-meter-wiring sidecar \u2014 substantive heuristic-sunset path for HALT 25",
-      "lane": "Lane 3 \u2014 Performance / Infrastructure",
+      "lane": 3,
+      "lane_label": "Performance",
+      "created_at": "2026-05-13T15:00:00Z",
       "rationale": "F1 diagnostic confirms Claude Code agents cannot introspect their own token consumption from inside the tool surface. The PAUSE_DISCIPLINE 90% trigger cannot fire without a meter. The defensive heuristic (agent-feel pacing) is a band-aid; this proposal is the real fix \u2014 a sidecar process that writes usage snapshots to a watched file the agent reads each turn. Data-Integrity's forcing-function dissent on db-003 is resolved by this substantive draft (NOT a stub).",
       "scope": "Author scripts/cron/usage-snapshot.ps1 + integration in PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 2.1 + auto-read in scripts/aggregate-telemetry.py.",
-      "estimate_tokens": 45000,
+      "estimate": {
+        "cost_tokens": 45000,
+        "duration_minutes": 90,
+        "risk": "medium"
+      },
       "files_affected": [
         "scripts/cron/usage-snapshot.ps1 (new)",
         "scripts/cron/usage-snapshot-config.json (new \u2014 what to poll, how often, reset boundary)",
@@ -286,20 +292,34 @@
         ".claude/state/usage-snapshot.json (new \u2014 sidecar writes here; agent reads each turn)",
         "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 2.1 (Founder-applied amendment: meter read via .claude/state/usage-snapshot.json)"
       ],
+      "evidence_paths": [
+        ".claude/state/wave-zero-dry-run/remediation/F1a-token-meter-gap-diagnostic.md",
+        ".claude/state/discussion-bubbles/db-2026-05-13-003.md"
+      ],
       "ship_target": "Post-Wave-Zero remediation ratification + cron-paused.json clear. Cycle 2 or earlier if Founder prioritizes."
     },
     {
       "id": "PROP-004",
       "title": "Add `org-monthly` as 4th quota_type in PAUSE_DISCIPLINE schema",
-      "lane": "Lane 2 \u2014 Information Architecture / Governance schema",
+      "lane": 2,
+      "lane_label": "Bug Discovery",
+      "created_at": "2026-05-13T15:05:00Z",
       "rationale": "PAUSE_DISCIPLINE_v8.1_ADDENDUM \u00a7 5 enumerates `quota_type` as 'weekly-tokens | daily-tokens | hourly-requests'. The prior session's failure was at the org-monthly cap, which is not in the enum. The discipline cannot pause for a quota it doesn't model. F1 finding (b) explicit: 'org-level monthly cap is a DIFFERENT quota than weekly-tokens.'",
       "scope": "Schema amendment: add `org-monthly` to the enum + document the reset boundary as configurable (Anthropic billing-cycle, not necessarily UTC midnight on the 1st). Update last-verify.json schema example. Update telemetry event schema (cycle.budget.checkpoint emits quota_type which now includes the new value).",
-      "estimate_tokens": 8000,
+      "estimate": {
+        "cost_tokens": 8000,
+        "duration_minutes": 20,
+        "risk": "low"
+      },
       "files_affected": [
         "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 5 (enum + example state file)",
         "docs/agents/TELEMETRY_PROTOCOL.md (cycle.budget.checkpoint + cycle.paused + cycle.resumed event schemas)",
         "scripts/aggregate-telemetry.py (handle the new quota_type in event aggregation \u2014 defensive: existing events keep working)",
         "scripts/cron/usage-snapshot-config.json (per PROP-003 \u2014 defines the org-monthly reset boundary)"
+      ],
+      "evidence_paths": [
+        ".claude/state/wave-zero-dry-run/remediation/F1a-token-meter-gap-diagnostic.md",
+        ".claude/state/discussion-bubbles/db-2026-05-13-003.md"
       ],
       "ship_target": "Post-Wave-Zero remediation ratification. Lightweight; could ship same-day as Founder applies the schema amendment."
     }
