@@ -34,7 +34,7 @@ function Log {
     Write-Host $line
 }
 
-# Resolve Git Bash explicitly. Fix C: never let Windows pick a bash — the
+# Resolve Git Bash explicitly. Fix C: never let Windows pick a bash - the
 # default resolution order on Windows includes System32\bash.exe (WSL launcher)
 # and WindowsApps\bash.exe (WSL store wrapper). We do NOT want WSL.
 function Resolve-GitBash {
