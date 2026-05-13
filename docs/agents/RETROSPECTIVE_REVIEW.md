@@ -122,9 +122,31 @@ Per-ship lessons aggregated into `docs/agents/lessons-learned/WAVE_N_LESSONS.md`
 ### 4. Backlog reconciliation
 
 - Items added during wave
-- Items resolved during wave
+- Items resolved during wave (including opportunistic resolution per END_OF_WAVE_BUG_SCAN.md)
 - Items rescoped or deferred
 - Items that should reshape next wave's plan
+
+### 4a. End-of-wave bug scan
+
+Per END_OF_WAVE_BUG_SCAN.md: Critic + Engineer scan all surfaces touched during the wave for bugs not caught in ship-level smoke. Severity classified; in-scope fixes addressed pre-gate; out-of-scope captured to backlog with opportunistic resolution flag. Output: `WAVE_N_BUG_SCAN.md`.
+
+### 4b. Development grade
+
+Per DEVELOPMENT_GRADING.md: Orchestrator + Critic produce wave grade across 7 weighted categories with letter grade A-F. Target B+ or higher. Output: `WAVE_N_GRADE.md`. Cumulative trend updated in `DEVELOPMENT_GRADE_LOG.md`.
+
+If grade declined from previous wave AND below B+: trend response protocol fires.
+
+### 4c. Parallel authority findings review
+
+Per AGENT_NETWORK.md: parallel authorities (Flow Documenter, UI Polisher, End User) submit findings that get reviewed at retrospective.
+
+- **Flow Documenter findings:** drift between `flows.json` and code; architectural coupling discovered. Review whether amendments to skills/hooks/Ship Plan template could catch the pattern earlier.
+- **UI Polisher findings:** sessions called during wave; outcomes; any patterns suggesting where design bot involvement is or isn't worth the manual intervention cost.
+- **End User findings:** sub-agent reports per ship + wave-gate sweep. Cross-profile patterns; persistent friction items; sub-agent profile refinements warranted.
+
+### 4d. Agent disputes
+
+Per AGENT_NETWORK.md: any agent dispute logged to `docs/agents/lessons-learned/AGENT_DISPUTE_<SHIP_ID>.md` reviewed at retrospective. Founder rules; ruling captured to INFERRED_DECISIONS.md if novel pattern.
 
 ### 5. Inter-wave activities
 

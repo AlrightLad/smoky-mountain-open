@@ -1,6 +1,13 @@
 # CTO Interface
 
-How Founder interacts with the three-agent orchestration team. The Founder is the CTO; this document defines what Founder owns, what Founder hands off, and how interactions flow.
+How Founder interacts with the agent network. The Founder is the CTO; this document defines what Founder owns, what Founder hands off, and how interactions flow.
+
+The orchestration network consists of three core agents (Orchestrator + Engineer + Critic, hierarchical) plus parallel authorities that activate at different milestones:
+- **Phase 1 active:** Flow Documenter + UI Polisher + End User (6 agents total)
+- **Wave 2 entry adds:** Performance/Load Testing + Data Integrity (8 agents total)
+- **Launch Phase A adds:** Security/Auditor (9 agents total)
+
+See [AGENT_NETWORK.md](./AGENT_NETWORK.md) for full structure.
 
 ## Founder authority — permanent
 
@@ -10,11 +17,35 @@ These decisions never graduate to agent autonomy. They are Founder-only forever:
 - **Critical Feature Registry triggers** — all 11 categories require Founder approval
 - **Sanity Halt severity calls** — all 9 categories require Founder ratification
 - **Roadmap structure changes** — Founder edits ROADMAP.md; agents acknowledge
-- **Cost-incurring architecture** — per Q44 Lock 3
+- **Cost-incurring architecture** — per refined cost-halt thresholds in HALT_CRITERIA_AND_AUTONOMY_DISCIPLINE.md
 - **Wave-to-wave gate ratifications** — Founder ratifies wave gates
-- **P0/P1 production rollback decisions** — Founder synchronous presence required for severity P0 (production down / data loss) and P1 (significant member impact). P2/P3 corrective work autonomous, ratified at retrospective.
+- **P0/P1 production rollback decisions** — Founder synchronous presence required for P0 (production down / data loss) and P1 (significant member impact). P2/P3 corrective autonomous, ratified at retrospective.
 
 **Push graduates** (not on permanent-Founder-approval list). Autonomous push authorized when smoke + lint + visual verification all green. See "Autonomous push protocol" below.
+
+## What is NOT escalated to Founder
+
+Per HALT_CRITERIA_AND_AUTONOMY_DISCIPLINE.md, the following decisions are explicitly outside Founder escalation territory. Agents handle these via decision bubble (collaborative vote) or inferred decision (within graduated autonomy tier):
+
+- **Operational decisions within current Tier** — skill modifications, hook adjustments, ship plan phase breakdowns, Caddy Notes copy, backlog severity tagging
+- **Implementation choices** — file paths, naming, code style, test organization, helper extraction, smoke spec organization
+- **Free-tier dependencies and tools** — NPM dependencies, free third-party APIs within free tier, free Firebase services within Blaze free quota, Playwright browsers
+- **Internal coordination** — inter-agent disputes within graduated autonomy, decision bubble opening/closing, retrospective preparation, skill performance review
+- **Backlog and lessons-learned activities** — adding/closing backlog items, capturing lessons, updating SESSION_JOURNAL.md, INFERRED_DECISIONS.md, DEVELOPMENT_GRADE_LOG.md
+
+If a decision is ambiguous about whether to escalate, agents run the 5-question pre-halt self-check before bringing to Founder. Most ambiguous decisions resolve via decision bubble.
+
+## Decision bubble protocol — Founder perspective
+
+When agents open a decision bubble (collaborative vote on an ambiguous decision):
+
+- Founder is NOT pinged in real-time
+- The bubble file at `docs/agents/decision-bubbles/` documents the vote
+- Founder reviews at next retrospective
+- Founder ratifies or reverses the executed decision
+- Reversal patterns adjust pattern recognition for future bubbles
+
+This is the explicit anti-halt mechanism. Agents collaborate among themselves; Founder reviews aggregated outcomes; bandwidth scales.
 
 ## Founder authority — graduates per Tier system
 
@@ -63,6 +94,60 @@ Founder generally does NOT interact with Critic directly. Critic routes through 
 - CFR triggers identified by Critic escalate to Founder via Orchestrator
 - Critic-Engineer disputes outside graduated autonomy tier escalate to Founder
 
+### With Flow Documenter
+
+Founder rarely interacts directly. Flow Documenter is a parallel authority that maintains `docs/flows/` and surfaces architectural findings at retrospective. Founder reviews findings; ratifies any skill/hook amendments proposed.
+
+**Founder action triggers:**
+- Flow Documenter discovers coupling that Ship Plan template should catch — Founder rules on template amendment
+- Flow Documenter disputes core orchestration finding — Founder rules at retrospective
+
+### With UI Polisher
+
+UI Polisher = the Claude Design conversation. Manual intervention only. Founder is the human in the loop for this agent specifically; Founder participates in the design conversation when it's called.
+
+**Founder action triggers:**
+- Orchestration team identifies UX gap requiring UI Polisher — Founder participates in the design session
+- Design output requires Founder ratification before implementation (per Q31b 1:1 fidelity confirmation lock)
+
+### With End User
+
+Founder reviews End User findings at retrospective; does not direct sub-agent testing in real-time.
+
+**Founder action triggers:**
+- End User-Critic dispute over whether ship friction is acceptable — Founder rules
+- Sub-agent profile drift surfaces (real members behave differently than profile assumed) — Founder approves profile refinement
+- End User finds member-trust issue Critic missed — Founder rules on severity
+
+### With Performance/Load Testing (Wave 2 entry onwards)
+
+Founder reviews performance findings at retrospective. Performance Agent autonomously blocks push when critical failures detected.
+
+**Founder action triggers:**
+- Performance Agent finding requires tooling investment (load runner, custom instrumentation) — Founder ratifies cost-incurring infrastructure per CFR category 11
+- Performance Agent dispute with Critic over whether budget violation blocks ship — Founder rules
+- Sustained budget violations across multiple ships — Founder reviews architectural implications
+
+### With Security/Auditor (Launch Phase A onwards)
+
+Founder reviews security findings at retrospective. Security Auditor autonomously blocks push when critical or high failures detected; default behavior favors security finding over Critic.
+
+**Founder action triggers:**
+- Security risk acceptance — Founder may explicitly accept documented risk, captured to `lessons-learned/SECURITY_RISK_ACCEPTED_<SHIP_ID>.md`
+- External security review recommendation — Security Auditor recommends; Founder decides
+- Compliance-affecting finding (PCI, GDPR, CCPA) — Founder rules per CFR category 10
+- Tooling investment for security testing — Founder ratifies
+
+### With Data Integrity (Wave 2 entry onwards)
+
+Founder reviews integrity findings at retrospective. Data Integrity Agent autonomously blocks push when critical failures detected (data corruption, escrow imbalance, member document corruption).
+
+**Founder action triggers:**
+- Schema migration plan ratification — Founder approves migration path before execution
+- Daily continuous monitoring escalation (Wave 3 onwards) — critical drift surfaced via Cloud Function alerts requires Founder ruling
+- Cross-platform sync invariant violation — Founder rules on architectural response
+- Tooling investment for integrity validators — Founder ratifies per CFR category 5
+
 ## Founder communication style
 
 The agents have a defined communication protocol with Founder:
@@ -92,14 +177,14 @@ Founder direction:
 
 1. Founder authors Vision section for next ship
 2. Orchestrator drafts Ship Plan against Vision
-3. Founder ratifies Ship Plan (or agents proceed under Tier 1 ratification authority for non-CFR items)
+3. Founder ratifies Ship Plan
 4. Engineering work proceeds
-5. Founder available for escalations on permanent-approval categories only
-6. Critic approves implementation (including visual verification screenshots)
-7. Autonomous push fires if smoke + lint + visual all green (Founder reviews via committed artifacts at retrospective)
-8. Caddy Notes published by Orchestrator
-9. Retrospective with Orchestrator — Founder reviews inferred decisions log + push artifacts
-10. Inferred decisions ratified, reversed, or deferred
+5. Founder available for escalations per protocols
+6. Critic approves implementation
+7. Founder reviews + ratifies final ship before close
+8. Founder pushes to remote
+9. Retrospective with Orchestrator
+10. Inferred decisions ratified or reversed
 
 ### Per wave
 
@@ -122,39 +207,19 @@ The Orchestrator tracks decision-match accuracy automatically:
 - Founder is notified at retrospective when a category becomes eligible for graduation
 - Founder can defer graduation, accept it, or reverse a prior graduation
 
-## Autonomous push protocol
+## Founder push discipline
 
-Push is no longer permanent-Founder-only. Per Correction 1 (Phase 1 commit):
+Per locked decision: push is Founder-only. The PreToolUse hook in `.claude/settings.json` blocks `git push` for agents.
 
-**Push is authorized autonomously when all of these are green:**
-1. Smoke tests pass (cross-browser P8 coverage on chromium + firefox + webkit + msedge)
-2. Lint tests pass (`npm run lint`)
-3. Visual screenshot verification passes (per state per page per browser — see P8 expanded)
-4. Critic approval recorded
-5. Ship Plan acceptance criteria met
-6. Version triple bump applied (utils.js APP_VERSION + package.json + sw.js CACHE_NAME)
-7. Caddy Notes entry drafted
-
-The PreToolUse "push protection" hook in `.claude/settings.json` enforces this: `git push` blocks only when smoke, lint, or visual verification has failed (last-run state checked via `.claude/state/last-verify.json`).
-
-**Founder push override** remains available — Founder may push manually at any time, regardless of agent state. The override is not removed; it's no longer the default.
-
-**Founder push checklist** (when Founder overrides or pushes manually):
+Founder push checklist:
 1. Ship Plan ratified, Critic approved, status Shipped
-2. Caddy Notes entry published
-3. Version triple bump verified
+2. Caddy Notes entry published (or staged for publication)
+3. Version triple bump verified (utils.js APP_VERSION + package.json + sw.js CACHE_NAME)
 4. Smoke green on staging or local
 5. Push to main
 6. Verify production deploy succeeded via GitHub Pages
 7. Verify smoke green on production
 8. Ship status advances to Closed; file moves to `docs/agents/ship-reports/`
-
-**Autonomous push checklist** (Engineer/Orchestrator pushes after green-on-all-three):
-1-3. As above
-4. Visual verification artifacts (Playwright screenshots) committed to `tests/visual-verify/<ship-id>/`
-5-8. As above
-
-Production rollback after autonomous push: P0/P1 severities escalate to Founder synchronous; P2/P3 corrective stays autonomous (per P5 revised).
 
 ## What Founder does NOT do
 

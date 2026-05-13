@@ -36,9 +36,40 @@ Commit `docs/agents/lessons-learned/WAVE_N_LESSONS.md` capturing wave themes:
 - Items deferred or rescoped → updated in INDEX.md
 - New items captured during wave → severity tagged
 
-### 4. Founder explicit "Wave N closed, Wave N+1 fires" ratification
+### 4. End-of-wave bug scan
+
+Per END_OF_WAVE_BUG_SCAN.md: Critic + Engineer run comprehensive bug scan across all surfaces touched during the wave. Bugs classified by severity + effort; in-scope fixes addressed before wave gate; out-of-scope fixes captured to backlog with opportunistic resolution flag.
+
+Output committed to `docs/agents/lessons-learned/WAVE_N_BUG_SCAN.md`. Severity counts feed wave grade Category 5.
+
+### 5. Development grade
+
+Per DEVELOPMENT_GRADING.md: Orchestrator + Critic produce wave grade across 7 weighted categories. Letter grade A-F + numeric score 0-100. Target: B+ or higher.
+
+Per-wave grade committed to `docs/agents/lessons-learned/WAVE_N_GRADE.md`. Cumulative log updated at `docs/agents/lessons-learned/DEVELOPMENT_GRADE_LOG.md` including trend chart.
+
+If wave grade < previous wave grade AND below B+ threshold: trend response protocol fires (per DEVELOPMENT_GRADING.md). Pause / adjust skills+hooks+protocols / accept and monitor based on analysis.
+
+### 6. Flow doc verification
+
+Per FLOW_DOCUMENTATION.md: Flow Documenter (or Critic on its behalf) verifies `docs/flows/flows.json` matches actual code paths across all flows touched during the wave. Drift findings committed to wave bug scan report. Drift detected at wave gate is blocking — wave does not advance until flow doc reconciled.
+
+### 7. End User wave-gate sweep
+
+Per END_USER_TESTING.md: End User agent runs full sub-agent sweep across all wave ships at once (not per-ship — this is the wave-gate integration test). Goal: catch friction that works per-ship but feels jarring across the wave's scope.
+
+Output: `docs/agents/lessons-learned/WAVE_N_END_USER.md`. High-severity findings may delay wave gate ratification.
+
+### 8. Founder explicit "Wave N closed, Wave N+1 fires" ratification
 
 Founder records explicit ratification in the closing ship's report or in `lessons-learned/WAVE_N_LESSONS.md`. Until ratification, no Wave N+1 ship fires.
+
+Wave gate ratification considers:
+- Wave-specific gate criteria from ROADMAP.md
+- Bug scan results (no unresolved P0/P1)
+- Wave grade (trending healthy)
+- Inferred decisions reviewed
+- Backlog reconciled
 
 ---
 

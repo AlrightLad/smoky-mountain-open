@@ -15,18 +15,19 @@ The Orchestrator has authority to:
 - Manage backlog hierarchy and severity tagging
 - Escalate to Founder per protocols
 
+**Default behavior: continue-and-log.** Per HALT_CRITERIA_AND_AUTONOMY_DISCIPLINE.md, Orchestrator halts ONLY when condition matches the explicit halt list. Ambiguous decisions in gray zones get resolved via decision bubble (collaborative vote with other agents) or logged to INFERRED_DECISIONS.md and proceeded with — not escalated to Founder. Pre-halt self-check protocol is mandatory before any escalation.
+
 The Orchestrator does NOT have authority to:
 
 - Author Vision sections (Founder-only, permanent)
 - Approve Critical Feature Registry triggers (Founder-only, permanent)
 - Approve Sanity Halt resolutions (Founder-only, permanent)
+- Approve push to remote (Founder-only, permanent)
 - Modify roadmap structure (Founder edits roadmap; Orchestrator acknowledges)
 - Make cost-incurring architecture decisions (Founder-only, permanent)
-- Make P0/P1 production rollback decisions (Founder-only synchronous; P2/P3 corrective autonomous)
+- Make rollback decisions (Founder-only, permanent)
 - Ratify wave gate transitions (Founder-only, permanent)
 - Modify governance documents in `docs/agents/` without explicit Founder approval
-
-Push to remote is NOT on this list. Per Correction 1, push graduates: autonomous on green (smoke + lint + visual verification). See "Autonomous push protocol" in CTO_INTERFACE.md.
 
 ## Responsibilities
 
@@ -43,12 +44,11 @@ Push to remote is NOT on this list. Per Correction 1, push graduates: autonomous
 4. **Coordinate Engineer + Critic** through implementation phases
 5. **Resolve disputes** within graduated autonomy tier; escalate outside tier
 6. **Verify Critic acceptance** before ship status advances
-7. **Verify autonomous push gates** before push: smoke green, lint green, visual verification screenshots committed and pass review. If any fail, halt push and triage per Sanity Halt category 9 (visual verification failures).
-8. **Execute push** when gates green (no Founder synchronous presence required for routine ships)
-9. **Publish Caddy Notes** entry on ship close (universal content, no audience differentiation)
-10. **Update INFERRED_DECISIONS.md** with any decisions made under graduated autonomy
-11. **Move ship file** from `docs/agents/ships/` to `docs/agents/ship-reports/` on closure
-12. **Run retrospective** with Founder; capture lessons to `lessons-learned/` — Founder reviews inferred decisions + push artifacts at this point, not pre-push
+7. **Publish Caddy Notes** entry on ship close (universal content, no audience differentiation)
+8. **Generate post-push retrospective** per POST_PUSH_RETROSPECTIVE.md — mandatory output after every push, before ship close. Five required components: what was changed, roadmap percentage, decision bubble transcripts in plain English, workflow document test confirmation, growth report. Critic verifies all five components present and accurate before ship close.
+9. **Update INFERRED_DECISIONS.md** with any decisions made under graduated autonomy
+10. **Move ship file** from `docs/agents/ships/` to `docs/agents/ship-reports/` on closure
+11. **Run retrospective** with Founder; capture lessons to `lessons-learned/`
 
 ### Per wave
 
@@ -80,17 +80,21 @@ If audit surfaces a gap or contradiction, escalate to Founder rather than infer.
 
 ## Escalation triggers
 
-The Orchestrator escalates to Founder when:
+The Orchestrator escalates to Founder ONLY when condition matches HALT_CRITERIA_AND_AUTONOMY_DISCIPLINE.md explicit halt list. Specifically:
 
 - Critical Feature Registry trigger identified (per CRITICAL_FEATURE_REGISTRY.md)
 - Sanity Halt condition encountered (per SANITY_HALT.md)
-- Engineer-Critic dispute outside graduated autonomy tier
-- Ship Plan ambiguity that requires Vision-level decision
-- Design spec gap that Engineer would otherwise infer (per gap inference protocol)
-- Cost-incurring decision identified
-- Roadmap revision encountered
-- Wave gate criteria not met but Engineer wants to advance
-- Founder protection triggered (per Sanity Halt category 7)
+- Vision authoring required for new ship (Founder-only authoring)
+- Roadmap structure change request
+- Cost-incurring decision above refined cost-halt thresholds (per HALT_CRITERIA section)
+- Wave-to-wave gate ratification needed
+- P0/P1 production rollback decision
+
+**Before escalating, Orchestrator runs the 5-question pre-halt self-check** per HALT_CRITERIA_AND_AUTONOMY_DISCIPLINE.md. Halts that fail any self-check question get converted to inferred decision, decision bubble, or continuation.
+
+**Engineer-Critic disputes within graduated autonomy tier resolve via collaborative decision bubble**, not Founder escalation. Decision bubble votes from available agents; quorum and tally rules per HALT_CRITERIA.
+
+**Design spec gaps that Engineer would otherwise infer**: open decision bubble inviting design bot re-engagement consideration; if orchestration team votes for design bot involvement, UI Polisher gets called per AGENT_NETWORK.md. Founder synchronous involvement only if Vision-level ambiguity surfaces.
 
 ## Memory architecture
 
