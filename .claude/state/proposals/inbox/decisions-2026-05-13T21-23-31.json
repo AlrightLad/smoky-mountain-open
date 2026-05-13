@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-05-13T21:23:31.233Z",
+  "decisions": [
+    {
+      "proposal_id": "PROP-004",
+      "decision": "approve",
+      "note": "",
+      "decided_at": "2026-05-13T19:52:55.722Z"
+    },
+    {
+      "proposal_id": "PROP-003",
+      "decision": "approve",
+      "note": "",
+      "decided_at": "2026-05-13T19:54:01.539Z"
+    }
+  ]
+}
