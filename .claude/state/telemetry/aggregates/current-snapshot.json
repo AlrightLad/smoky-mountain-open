@@ -1,0 +1,106 @@
+{
+  "as_of": "2026-05-13T19:35:47.612430+00:00",
+  "_meter_status": "gap-per-F1a",
+  "_meter_note": "Token meter is not wired (F1 finding). tokens_by_role / weekly_tokens / weekly_cost / token_trend_7d will show synthesized event-attributed values ONLY for events that carry agent + tokens fields. Until a real meter wires up (db-2026-05-13-003 outcome pending Founder ratification), treat these fields as a lower bound, not the actual consumption.",
+  "weekly_tokens": 0,
+  "weekly_cost": 0.0,
+  "ships_this_week": 0,
+  "halts_this_week": 0,
+  "fiq_depth": 0,
+  "budget_pct": 0.0,
+  "tokens_by_role": {
+    "labels": [
+      "(meter unwired)"
+    ],
+    "values": [
+      0
+    ]
+  },
+  "token_trend_7d": {
+    "labels": [
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed"
+    ],
+    "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "cycle_outcomes_7d": {
+    "labels": [
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed"
+    ],
+    "datasets": [
+      {
+        "label": "Complete",
+        "data": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "color": "#4a8067"
+      },
+      {
+        "label": "Paused",
+        "data": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "color": "#d4a857"
+      },
+      {
+        "label": "Halted",
+        "data": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "color": "#9c4a4a"
+      }
+    ]
+  },
+  "recent_ships": [],
+  "_aggregate_counts": {
+    "events_total": 11,
+    "cycles_started": 2,
+    "cycles_paused": 2,
+    "cycles_resumed": 2,
+    "handoffs_total": 1,
+    "bubbles_total": 5,
+    "proposals_pending": 2,
+    "proposals_approved": 1,
+    "pause_durations_sec": [
+      10,
+      1800
+    ]
+  }
+}

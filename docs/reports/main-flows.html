@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Flows — PARBAUGHS Orchestration</title>
+    <link rel="stylesheet" href="_assets/dashboard.css">
+    <style>
+        body { background: var(--bg-page); color: var(--text-primary); }
+
+        /* ============== Shared page chrome ============== */
+        .page-header {
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .page-nav {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: var(--space-3) var(--space-4);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-4);
+            flex-wrap: wrap;
+        }
+        .nav-brand {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--accent-brass);
+            text-decoration: none;
+            letter-spacing: 0.04em;
+        }
+        .nav-links {
+            display: flex;
+            gap: var(--space-3);
+            font-size: 0.875rem;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-sm);
+            transition: color var(--duration-default) var(--ease-default), background var(--duration-default) var(--ease-default);
+        }
+        .nav-links a:hover { color: var(--text-primary); background: var(--bg-card); }
+        .nav-links a.is-active {
+            color: var(--accent-brass);
+            background: rgba(201,169,97,0.10);
+            border: 1px solid rgba(201,169,97,0.30);
+        }
+
+        .page-main {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: var(--space-5) var(--space-4);
+        }
+        .page-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: var(--space-4);
+            margin-bottom: var(--space-5);
+            flex-wrap: wrap;
+        }
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            margin-top: var(--space-2);
+            max-width: 700px;
+            line-height: 1.5;
+        }
+
+        /* ============== Caveats banner ============== */
+        .mf-caveats {
+            background: rgba(74,138,156,0.10);
+            border: 1px solid var(--accent-teal);
+            border-radius: var(--radius-md);
+            padding: var(--space-3) var(--space-4);
+            margin-bottom: var(--space-5);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .mf-caveats strong { color: var(--accent-teal); }
+        .mf-caveats-list {
+            margin: var(--space-2) 0 0 var(--space-4);
+            padding: 0;
+        }
+        .mf-caveats-list li { margin-bottom: var(--space-1); }
+
+        /* ============== Flow grid ============== */
+        .flow-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-4);
+        }
+        @media (min-width: 980px) {
+            .flow-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        .flow-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-left: 4px solid var(--accent-brass);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+        .flow-card-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: var(--space-3);
+        }
+        .flow-id {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent-brass);
+            letter-spacing: 0.08em;
+        }
+        .flow-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: var(--space-1);
+        }
+        .flow-status-badge {
+            font-size: 0.6875rem;
+            font-family: var(--font-mono);
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: rgba(74,128,103,0.18);
+            color: var(--accent-moss);
+            white-space: nowrap;
+        }
+        .flow-status-badge.is-planned { background: rgba(212,168,87,0.18); color: var(--accent-amber); }
+        .flow-status-badge.is-inflight { background: rgba(74,138,156,0.18); color: var(--accent-teal); }
+
+        .flow-goal {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            line-height: 1.55;
+            padding: var(--space-2) 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .flow-goal-label {
+            font-size: 0.6875rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: var(--space-1);
+        }
+
+        .flow-section { display: flex; flex-direction: column; gap: var(--space-1); }
+        .flow-section-label {
+            font-size: 0.6875rem;
+            color: var(--accent-brass);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .flow-screens {
+            list-style: decimal inside;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            line-height: 1.6;
+            padding-left: var(--space-1);
+        }
+        .flow-screens li { padding: 2px 0; }
+        .flow-edge-cases {
+            list-style: disc inside;
+            color: var(--text-secondary);
+            font-size: 0.8125rem;
+            line-height: 1.55;
+            padding-left: var(--space-1);
+        }
+        .flow-edge-cases li { padding: 1px 0; }
+
+        .flow-ship-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-1);
+            margin-top: var(--space-1);
+        }
+        .ship-badge {
+            font-family: var(--font-mono);
+            font-size: 0.6875rem;
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-subtle);
+            white-space: nowrap;
+        }
+        .ship-badge.is-primary {
+            color: var(--accent-brass);
+            border-color: rgba(201,169,97,0.35);
+            background: rgba(201,169,97,0.06);
+        }
+
+        .flow-status-line {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            padding-top: var(--space-2);
+            border-top: 1px solid var(--border-subtle);
+            font-style: italic;
+        }
+
+        /* ============== Source / footer ============== */
+        .mf-footer {
+            margin-top: var(--space-6);
+            padding-top: var(--space-4);
+            border-top: 1px solid var(--border-subtle);
+            color: var(--text-tertiary);
+            font-size: 0.8125rem;
+            line-height: 1.55;
+        }
+        .mf-footer a { color: var(--accent-teal); }
+        .mf-footer code {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 1px 5px;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-sm);
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <nav class="page-nav">
+            <a href="index.html" class="nav-brand">PARBAUGHS Orchestration</a>
+            <div class="nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="activity.html">Activity</a>
+                <a href="discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="proposals.html">Proposals</a>
+                <a href="main-flows.html" class="is-active">Main Flows</a>
+                <a href="index.html">Index</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="page-main">
+        <div class="page-header-row">
+            <div>
+                <h1 class="page-title">Main Flows</h1>
+                <p class="page-subtitle">The critical user journeys through PARBAUGHS. Every engineering proposal answers: which flow does this serve, and which specific screen / state / edge case in that flow does it improve?</p>
+            </div>
+        </div>
+
+        <aside class="mf-caveats">
+            <strong>Read this artifact correctly</strong> (binding caveats from <code>db-2026-05-13-004</code>):
+            <ul class="mf-caveats-list">
+                <li>This is the orchestration team's <strong>recommendation</strong>. Founder is the product source of truth.</li>
+                <li>This is <strong>NOT a roadmap</strong>. <a href="../agents/ROADMAP.md">ROADMAP.md</a> answers "what ships next, in what order." This answers "what does the product DO for members."</li>
+                <li>Single source of truth is <code>docs/agents/MAIN_FLOWS.md</code> (currently drafted at <code>.claude/state/wave-zero-dry-run/remediation/proposed-MAIN_FLOWS.md</code> pending Founder ratification). This HTML is generator-driven from the doc; never hand-edit.</li>
+                <li>"Served by" lists the ships contributing to a flow. Each ship answers to ROADMAP for execution detail.</li>
+            </ul>
+        </aside>
+
+        <section class="flow-grid" id="flow-grid">
+            <!-- Cards rendered by inline script below from <script id="report-data"> -->
+        </section>
+
+        <footer class="mf-footer">
+            <p>Last regenerated: <span id="last-amended">—</span></p>
+            <p>Doc source: <code id="doc-source">—</code></p>
+            <p>Bubble of record: <code>.claude/state/discussion-bubbles/db-2026-05-13-004.md</code> (approved-with-dissent, 3-1-1)</p>
+        </footer>
+    </main>
+
+    <script id="report-data" type="application/json">
+{
+  "flows": [
+    {
+      "id": "MF-01",
+      "name": "Log a round (start \u2192 score \u2192 close \u2192 see handicap update)",
+      "primary_user_goal": "Capture an 18-hole (or 9-hole) round during or after play, see the score reflected in personal stats and league context.",
+      "screens": [
+        "Home \u2192 \"Log a round\" tap (or active-round resume)",
+        "Course selection (GolfCourseAPI search \u2192 local-cache hit)",
+        "Tee selection + scorecard layout",
+        "Hole-by-hole entry \u2014 score, FIR, GIR, putts per hole",
+        "Submit confirmation",
+        "Round detail view (player, score, handicap differential)",
+        "Home returns showing updated handicap + last-round summary"
+      ],
+      "edge_cases": [
+        "9-hole round (don't render holes 10-18 in summary)",
+        "Joined players in a Parbaugh Round must show on host's scorecard (Known Bug #9)",
+        "Sub-noon timestamp rounding for \"Xd ago\" feedTimeAgo (S26 sub-test 1 issue)",
+        "Offline-entered round: localStorage `pb_liveState` resume after browser crash",
+        "Course not in API: manual par-array entry forbidden per CLAUDE.md \"Zero guessing on course/par data\""
+      ],
+      "served_by_ships": [
+        "W1.S1",
+        "W1.S2",
+        "W1.S4"
+      ],
+      "served_by_primary": "W1.S4",
+      "status_served": "Built in v8.0-pre-Wave-1 form; W1.S4 redesigns on the Clubhouse system + adds hole-by-hole capture as default."
+    },
+    {
+      "id": "MF-02",
+      "name": "View the League Pulse / leaderboard",
+      "primary_user_goal": "See what my league is doing right now \u2014 recent rounds, who's hot, where I stand.",
+      "screens": [
+        "Home \u2192 League Pulse band (above the fold)",
+        "Tap a Pulse card \u2192 round detail OR member profile",
+        "Leagues tab \u2192 standings \u2192 per-season points",
+        "Per-member detail line (handicap, last score, live-now indicator)"
+      ],
+      "edge_cases": [
+        "Empty league (founder is sole member) \u2014 empty-state copy not \"0 rounds\"",
+        "9-hole vs 18-hole rounds in same standings (split column per known bug #4)",
+        "Multi-league member sees only ACTIVE league's standings; not concatenation",
+        "Spectator mode (W1.S5) treats non-league-members as read-only"
+      ],
+      "served_by_ships": [
+        "W1.S11",
+        "W1.S13",
+        "W1.S2",
+        "W1.S3",
+        "W1.S5"
+      ],
+      "served_by_primary": "W1.S2",
+      "status_served": "Built in v8.22.0 (Ship 5+7) state for HQ Home Pulse; Wave 1 ships rebuild on the new design system."
+    },
+    {
+      "id": "MF-03",
+      "name": "Find a player + add as friend",
+      "primary_user_goal": "Search for / discover another PARBAUGHS member, see their public profile, send a friend request.",
+      "screens": [
+        "Members directory (A-Z by username)",
+        "Profile tap \u2192 public-profile view",
+        "Friend-request CTA \u2192 request sent state",
+        "Recipient's notification \u2192 accept / decline",
+        "Bidirectional friend relationship visible in both friend lists"
+      ],
+      "edge_cases": [
+        "Privacy default is PUBLIC per locked Founder decision; per-member opt-OUT to private",
+        "Friend request to a private member: still allowed; respondent decides",
+        "Cross-league friendship (any member can friend any member)",
+        "Founding 20 are auto-friended per memory #28 \u2014 no manual request needed",
+        "Discord-style `username#discriminator` per W4.I1 future schema (renumbering main flow OK if v9.1 ships)"
+      ],
+      "served_by_ships": [
+        "W1.S3"
+      ],
+      "served_by_primary": "W1.S3",
+      "status_served": "Built in legacy form; W1.S3 rebuilds with public-default + friend-system at Firestore rule layer."
+    },
+    {
+      "id": "MF-04",
+      "name": "Post and settle a wager (ParCoin)",
+      "primary_user_goal": "Challenge another member to a stakes round (any amount the poster has), watch the round play out, claim winnings or pay out cleanly.",
+      "screens": [
+        "Wagers section \u2192 \"Post a wager\" CTA",
+        "Wager composition (opponent, stakes, terms)",
+        "Opponent's notification \u2192 accept / decline",
+        "On accept: ParCoins escrowed from BOTH players' balances",
+        "Round played (MF-01) \u2192 outcome determines winner",
+        "Settlement screen \u2192 winner takes both stacks; ledger entry on both sides"
+      ],
+      "edge_cases": [
+        "Wager cancelled before acceptance \u2192 no escrow ever happened, no refund needed",
+        "Wager accepted then opponent never plays the round \u2192 expiry policy (currently manual; Bounty-expiry-refund TODO from CLAUDE.md \"Known TODOs\" applies here too)",
+        "Wager between members of different leagues \u2192 cross-league wagers allowed per friend system"
+      ],
+      "served_by_ships": [
+        "W1.S3",
+        "W1.S6"
+      ],
+      "served_by_primary": "W1.S6",
+      "status_served": "Wagers exist in legacy form; W1.S6 lands the consolidated economy with escrow integrity."
+    },
+    {
+      "id": "MF-05",
+      "name": "Book or RSVP to a tee time",
+      "primary_user_goal": "Find a posted tee time matching your availability, RSVP, see who else is in.",
+      "screens": [
+        "Calendar tab \u2192 upcoming tee times",
+        "Post a tee time \u2192 date / course / openings count",
+        "Other members see the posted tee time in feed \u2192 RSVP button",
+        "Tee time fills \u2192 ParCoin reward to poster (15 coins per CLAUDE.md economy table)",
+        "Day of: tee time event card surfaces in Home"
+      ],
+      "edge_cases": [
+        "Tee time host cancels \u2192 all RSVPs notified, ParCoin reward NOT awarded",
+        "Tee time conflict with another tee time \u2192 no auto-conflict-detection (Founder discretion)",
+        "Spectator mode users see tee times for their leagues only"
+      ],
+      "served_by_ships": [
+        "W1.S8"
+      ],
+      "served_by_primary": "W1.S8",
+      "status_served": "Built in legacy form; W1.S8 rebuilds with the new Calendar surface."
+    },
+    {
+      "id": "MF-06",
+      "name": "Earn an achievement / see Trophy Room update",
+      "primary_user_goal": "Hit a milestone (personal best, season champion, range-session-streak, etc.), see the celebration, browse the Trophy Room.",
+      "screens": [
+        "Round / range session / wager-win triggers an achievement",
+        "Toast celebration (post-action, before navigation)",
+        "Achievement card lands in Activity / Feed",
+        "Trophy Room tab shows the new achievement in the \"Recent\" rail",
+        "ParCoin reward credited per CLAUDE.md economy table"
+      ],
+      "edge_cases": [
+        "Achievement deduplication (a member who plays 2 personal-best rounds in a week earns ONE PB achievement, not two)",
+        "Reduced-motion accessibility \u2014 `ach-celebrate` keyframe respects `prefers-reduced-motion` per v8.1.3",
+        "Achievement earned in spectator-mode round (W1.S5) is the SPECTATOR's achievement or the player's \u2014 locked Founder decision pending",
+        "Achievement loss / restoration (Nick achievement restore script precedent in scripts/)"
+      ],
+      "served_by_ships": [
+        "W1.S9"
+      ],
+      "served_by_primary": "W1.S9",
+      "status_served": "Built in legacy form; W1.S9 lands the redesigned room + records."
+    },
+    {
+      "id": "MF-07",
+      "name": "Range session log",
+      "primary_user_goal": "Log a practice session (range, putting green, short game), track drill focus, see range-history aggregate.",
+      "screens": [
+        "Home \u2192 \"Log a range session\" CTA",
+        "Session timer (start / pause / stop)",
+        "Focus areas + drill tags",
+        "Feel rating (1-5 stars)",
+        "Submit \u2192 session summary card \u2192 activity feed entry",
+        "Range tab shows per-week aggregates (CLAUDE.md \"Season Recap + Range\" features)"
+      ],
+      "edge_cases": [
+        "Session < 30 min: ParCoin reward not awarded (per CLAUDE.md economy table \u2014 \"Range session (30+ min)\")",
+        "Session paused for > 60 min: prompt to discard or commit",
+        "Multi-day range tracker \u2014 sessions don't aggregate across calendar days"
+      ],
+      "served_by_ships": [
+        "W1.S10"
+      ],
+      "served_by_primary": "W1.S10",
+      "status_served": "Built in legacy form; W1.S10 redesigns with Clubhouse tokens + adds drill-focus visualization."
+    },
+    {
+      "id": "MF-08",
+      "name": "Spectator + Caddy verify",
+      "primary_user_goal": "As a non-league-member, watch a member's round live (per league privacy rules), let \"the Caddy\" surface insights.",
+      "screens": [
+        "Live round in progress in any public-or-friend league",
+        "Spectator HUD overlay \u2192 score, hole, last shot",
+        "Caddy Notes inline (rule-based insights for non-Pro tier, AI-Caddie for Pro per Phase 4 roadmap)",
+        "End of round: spectator sees same final card as player",
+        "Spectator's own activity feed shows \"watched X play Y\" if opted-in"
+      ],
+      "edge_cases": [
+        "Private league round visible only to league members; spectator who isn't gets the access-denied empty state",
+        "Caddy Notes verify (W1.S5) \u2014 the AI Caddie's \"verify\" pass cross-checks rule-based output against round data before showing",
+        "Live round vs replayed-after-completion round \u2014 different visual treatment"
+      ],
+      "served_by_ships": [
+        "W1.S11",
+        "W1.S5"
+      ],
+      "served_by_primary": "W1.S5",
+      "status_served": "Spectator HUD built in v8.21.0; W1.S5 lands the formal Caddy verify protocol."
+    }
+  ],
+  "last_amended": "2026-05-13T19:35:48.073651+00:00",
+  "doc_source": ".claude/state/wave-zero-dry-run/remediation/proposed-MAIN_FLOWS.md",
+  "doc_kind": "proposed-draft"
+}
+    </script>
+
+    <script>
+        (function () {
+            function esc(s) {
+                if (s == null) return '';
+                return String(s)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
+            }
+            function statusClass(status) {
+                if (!status) return '';
+                var s = status.toLowerCase();
+                if (s.indexOf('planned') !== -1) return 'is-planned';
+                if (s.indexOf('in-flight') !== -1 || s.indexOf('in flight') !== -1) return 'is-inflight';
+                return '';
+            }
+            function shortStatus(status) {
+                if (!status) return 'unknown';
+                var s = status.toLowerCase();
+                if (s.indexOf('built') !== -1) return 'served';
+                if (s.indexOf('planned') !== -1) return 'planned';
+                if (s.indexOf('in-flight') !== -1 || s.indexOf('in flight') !== -1) return 'in-flight';
+                return status.length > 24 ? status.slice(0, 21) + '…' : status;
+            }
+            function render() {
+                try {
+                    var raw = document.getElementById('report-data').textContent;
+                    var data = JSON.parse(raw);
+                    var grid = document.getElementById('flow-grid');
+                    if (!grid) return;
+                    var flows = (data && data.flows) || [];
+                    if (!flows.length) {
+                        grid.innerHTML = '<div class="flow-card"><div class="flow-name">No flows yet</div><div class="flow-goal">Run <code>scripts/regen-main-flows.py</code> to populate from <code>' + esc(data && data.doc_source ? data.doc_source : 'MAIN_FLOWS.md') + '</code>.</div></div>';
+                    } else {
+                        grid.innerHTML = flows.map(function (f) {
+                            var screens = (f.screens || []).map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('');
+                            var edges = (f.edge_cases || []).map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('');
+                            var primary = f.served_by_primary;
+                            var ships = (f.served_by_ships || []).map(function (sh) {
+                                var cls = sh === primary ? 'ship-badge is-primary' : 'ship-badge';
+                                return '<span class="' + cls + '">' + esc(sh) + '</span>';
+                            }).join('');
+                            var statusCls = statusClass(f.status_served);
+                            return ''
+                                + '<article class="flow-card">'
+                                + '  <div class="flow-card-header">'
+                                + '    <div>'
+                                + '      <div class="flow-id">' + esc(f.id || '') + '</div>'
+                                + '      <h2 class="flow-name">' + esc(f.name || 'Unnamed flow') + '</h2>'
+                                + '    </div>'
+                                + '    <span class="flow-status-badge ' + statusCls + '">' + esc(shortStatus(f.status_served || '')) + '</span>'
+                                + '  </div>'
+                                + '  <div>'
+                                + '    <div class="flow-goal-label">Primary user goal</div>'
+                                + '    <div class="flow-goal">' + esc(f.primary_user_goal || '') + '</div>'
+                                + '  </div>'
+                                + (screens ? '<div class="flow-section"><div class="flow-section-label">Screens / states</div><ol class="flow-screens">' + screens + '</ol></div>' : '')
+                                + (edges ? '<div class="flow-section"><div class="flow-section-label">Known edge cases</div><ul class="flow-edge-cases">' + edges + '</ul></div>' : '')
+                                + (ships ? '<div class="flow-section"><div class="flow-section-label">Served by</div><div class="flow-ship-badges">' + ships + '</div></div>' : '')
+                                + (f.status_served ? '<div class="flow-status-line">' + esc(f.status_served) + '</div>' : '')
+                                + '</article>';
+                        }).join('');
+                    }
+                    var la = document.getElementById('last-amended');
+                    if (la) la.textContent = data && data.last_amended ? data.last_amended : '—';
+                    var ds = document.getElementById('doc-source');
+                    if (ds) ds.textContent = data && data.doc_source ? data.doc_source : '—';
+                } catch (err) {
+                    console.error('main-flows render failed', err);
+                }
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', render);
+            } else {
+                render();
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -366,10 +366,12 @@
         <nav class="page-nav">
             <a href="index.html" class="nav-brand">PARBAUGHS Orchestration</a>
             <div class="nav-links">
-                <a href="dashboard.html">Dashboard</a>
-                <a href="discussion-bubbles.html" class="is-active">Discussion Bubbles</a>
-                <a href="activity.html">Activity</a>
-                <a href="proposals.html">Proposals</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="activity.html">Activity</a>
+            <a href="discussion-bubbles.html" class="is-active">Discussion Bubbles</a>
+            <a href="proposals.html">Proposals</a>
+            <a href="main-flows.html">Main Flows</a>
+            <a href="index.html">Index</a>
             </div>
         </nav>
     </header>
@@ -436,189 +438,357 @@
 {
   "discussion_bubbles": [
     {
-      "id": "db-2026-05-13-001",
-      "topic": "Rename bubble → discussion bubble across governance",
-      "claim": "Rename improves Founder readability and is a one-shot transformation with low risk.",
-      "summary": "Approved. Deterministic script ran 166 replacements + 40 cleanup passes; zero residual orphan references; storage paths renamed.",
-      "ship_id": "v8.1-operational-views",
-      "opened_at": "2026-05-13T13:00:00Z",
-      "closed_at": "2026-05-13T13:08:00Z",
-      "status": "approved",
-      "decision": "Proceed with rename via deterministic script + double-rename cleanup pass.",
-      "vote_tally": { "approve": 3, "reject": 0, "abstain": 0 },
-      "messages": [
-        {
-          "author": "discussion-bubble-orchestrator",
-          "role_in_bubble": "open",
-          "timestamp": "2026-05-13T13:00:00Z",
-          "content": "Opening bubble. Founder asked for the term 'bubble' to be renamed to 'discussion bubble' across governance docs. Quorum: Engineer + Critic + Data-integrity. Voting members on the claim. Devil's-advocate invited for stress testing."
-        },
-        {
-          "author": "engineer",
-          "role_in_bubble": "voting",
-          "timestamp": "2026-05-13T13:02:00Z",
-          "content": "I can run a deterministic sed-style script with ordered rules. 166 replacements across 14 files. Risk: double-renames if a prior session partially renamed. Mitigation: cleanup pass detects 'discussion-discussion bubble' patterns and collapses.",
-          "vote": "approve"
-        },
-        {
-          "author": "critic",
-          "role_in_bubble": "voting",
-          "timestamp": "2026-05-13T13:04:00Z",
-          "content": "Audit-first concerns satisfied if we run a residual grep after the rename. Specifically: zero 'bubble' standalone references should survive (only 'discussion bubble'). I'll verify post-execution.",
-          "vote": "approve"
-        },
-        {
-          "author": "devil-advocate",
-          "role_in_bubble": "bubble-only",
-          "timestamp": "2026-05-13T13:05:30Z",
-          "content": "What if downstream tooling (telemetry consumers, external scripts) has hardcoded 'bubble.*' regex patterns? They'd silently stop matching post-rename."
-        },
-        {
-          "author": "data-integrity",
-          "role_in_bubble": "voting",
-          "timestamp": "2026-05-13T13:07:00Z",
-          "content": "No external telemetry consumers exist yet — agents not loose. Internal schemas update atomically with the rename. Safe.",
-          "vote": "approve"
-        },
-        {
-          "author": "discussion-bubble-orchestrator",
-          "role_in_bubble": "decision",
-          "timestamp": "2026-05-13T13:08:00Z",
-          "content": "Vote: 3-0-0. Approved. Engineer proceeds with deterministic rename script. Critic runs residual audit. Storage paths renamed in same commit."
-        }
-      ]
-    },
-    {
-      "id": "db-2026-05-12-002",
-      "topic": "Approval persistence: backend vs intent-capture",
-      "claim": "Use intent-capture (export JSON + apply script) instead of standing up a backend for the proposals approval flow.",
-      "summary": "Approved with dissent (3-1-1). Intent-capture proceeds; data-integrity dissent recorded over localStorage durability concerns. Apply-decisions.sh handles the durable side.",
-      "ship_id": "v8.1-operational-views",
-      "opened_at": "2026-05-12T19:30:00Z",
-      "closed_at": "2026-05-12T19:54:00Z",
+      "id": "db-2026-05-13-003",
+      "topic": "Rate-limit discipline gap \u2014 token meter is not wired; org-monthly is an unmodeled quota; defensive heuristic until both are fixed",
+      "claim": "The 90% pause threshold in PAUSE_DISCIPLINE_v8.1_ADDENDUM.md cannot fire today because nothing reads the meter. The prior session stalled at org-monthly 100% with no last-verify.json written. Three actions: (1) add org-monthly as 4th quota_type, (2) propose HALT 25 'Pause meter unavailable', (3) adopt the every-N-ops / every-M-min defensive heuristic until a real meter wires.",
+      "summary": "Approved-with-dissent (2-1-1). Data-Integrity dissents: the defensive heuristic is a band-aid; the bubble should produce a concrete remediation roadmap, not just defensive posture. Engineer abstains pending Data-Integrity's roadmap question. Critic approves with binding rider that HALT 25 has explicit recovery semantics. Devil's-Advocate stress-tests both the heuristic AND the protocol-amendment path.",
+      "ship_id": "wave-zero-dry-run-remediation-F1",
+      "opened_at": "2026-05-13T14:30:00Z",
+      "closed_at": "2026-05-13T15:02:00Z",
       "status": "approved-with-dissent",
-      "decision": "Intent-capture pattern proceeds. Data-integrity dissent recorded for audit trail. Apply script + JSON export covers the durability gap.",
-      "vote_tally": { "approve": 3, "reject": 1, "abstain": 1 },
+      "decision": "(1) Adopt the defensive heuristic immediately (pause every 5 atomic ops OR every 10 minutes wall-clock OR on any tool-result that smells like quota-near-cap). (2) Author proposed-halt-25.md as a Founder-applies governance amendment to HALT_CRITERIA_v8.1_ADDENDUM. (3) Author PROP-003-token-meter-wiring as the real remediation: a sidecar process that Founder can run alongside Claude Code to write usage snapshots to a watched file the agent reads each turn. (4) Author PROP-004-org-monthly-quota-type to add the 4th quota_type. Data-Integrity's roadmap dissent is recorded as a follow-up: PROP-003 is the heuristic-replacement path; track sunset of the heuristic on PROP-003 acceptance.",
+      "vote_tally": {
+        "approve": 2,
+        "reject": 1,
+        "abstain": 1
+      },
       "messages": [
         {
           "author": "discussion-bubble-orchestrator",
           "role_in_bubble": "open",
-          "timestamp": "2026-05-12T19:30:00Z",
-          "content": "Opening bubble. Proposals.html needs a way for Founder to record approve/reject/defer decisions. Options on the table: (A) stand up backend with auth + DB, (B) browser intent-capture exporting JSON + apply script. Quorum: Engineer, Critic, Data-integrity. Performance-load + Security invited."
+          "timestamp": "2026-05-13T14:30:00Z",
+          "content": "Opening bubble per F1 remediation directive. Evidence pre-loaded: `.claude/state/wave-zero-dry-run/remediation/F1a-token-meter-gap-diagnostic.md` confirms no meter is wired to Claude Code's actual consumption. Prior session stalled at org-monthly 100% with no last-verify.json written \u2014 that's the failure we're diagnosing. Four decision points per Founder directive: (1) how to observe consumption mid-session, (2) add org-monthly as 4th quota_type, (3) HALT 25 spec, (4) concrete defensive heuristic until meter wires. Voters: Engineer, Critic, Data-Integrity. Bubble-only: Devil's-Advocate."
         },
         {
           "author": "engineer",
           "role_in_bubble": "voting",
-          "timestamp": "2026-05-12T19:33:00Z",
-          "content": "Backend adds auth, DB, hosting, infra ownership — weeks of work for a feature with one user (Founder). Intent-capture pattern: localStorage holds in-progress state, export JSON, apply script in repo. Architecture stays static. Wins on speed and matches GitHub Pages hosting.",
-          "vote": "approve"
+          "timestamp": "2026-05-13T14:34:00Z",
+          "content": "Holding my vote. I have proposals for points 1-4 but I want to hear Data-Integrity's roadmap concern first because PAUSE_DISCIPLINE is data-integrity territory (state files, schema). My provisional posture: (1) meter wiring needs a sidecar \u2014 Claude Code can't introspect its own usage, so a separate process (`scripts/cron/usage-snapshot.ps1`?) polls Anthropic dashboard / parses `/cost` output / reads the org dashboard and writes to `.claude/state/usage-snapshot.json`. Agent reads that file each turn. (2) Schema amendment is trivial: add 'org-monthly' to the enum. (3) HALT 25 should be a pause that fails closed \u2014 agent pauses on EVERY operation if it can't confirm meter status. Aggressive. (4) Heuristic of N=5 ops / M=10 min as a starting bid; tune once we have real data. Holding for Data-Integrity.",
+          "vote": null
         },
         {
           "author": "data-integrity",
           "role_in_bubble": "voting",
-          "timestamp": "2026-05-12T19:38:00Z",
-          "content": "localStorage is not durable — browser cache clears, private browsing wipes it, cross-device sync fails. If Founder approves 5 proposals on laptop, opens on phone, the work is gone. Intent-capture is fragile.",
+          "timestamp": "2026-05-13T14:38:00Z",
+          "content": "I'm going to dissent and explain. The bubble is being asked to ratify a defensive HEURISTIC as the resolution. Heuristics are necessary in the absence of metering, but they are NOT the resolution \u2014 they're a band-aid. PAUSE_DISCIPLINE was authored on the assumption that a meter exists; without one, the discipline is half-implemented and EVERY agent operating under it is operating on incomplete information. The bubble should produce: (a) the heuristic (yes, temporarily), AND (b) a CONCRETE REMEDIATION ROADMAP that has an acceptance criterion for replacing the heuristic. Otherwise the heuristic ossifies as 'good enough' and the real meter never gets built. My vote depends on whether the decision includes both (a) and (b). If only (a): reject. If (a) and (b): approve.",
           "vote": "reject"
         },
         {
           "author": "critic",
           "role_in_bubble": "voting",
-          "timestamp": "2026-05-12T19:42:00Z",
-          "content": "Data-integrity's point stands but the mitigation is the export step. Founder reviews → exports → drops JSON in repo. The DURABLE artifact is the JSON file in the repo, not localStorage. localStorage is just the scratchpad. As long as Founder exports before closing the tab, durability is preserved.",
+          "timestamp": "2026-05-13T14:42:00Z",
+          "content": "Data-Integrity is right about the roadmap. The bubble as opened framed the question as 'how do we operate defensively today' without 'and what's the path to not needing defensive posture.' That's a F5 metric-integrity-protocol-style gap: a process that flatters 'we have a guardrail' without naming when the guardrail can be removed. Engineer's sidecar proposal is the right shape for the meter \u2014 it's a real fix, not band-aid. So the bubble should authorize BOTH: the immediate heuristic (so the next 24h aren't blind), AND PROP-003 (token-meter-wiring sidecar) as the heuristic-sunset path. With that addition, approve. Without it, I'd join Data-Integrity's reject. Separately, on HALT 25: the proposed-halt-25.md draft must include EXPLICIT recovery semantics. HALT 24 (auto-resume-failure) and HALT 25 (meter-unavailable) can interact \u2014 if the meter goes unavailable mid-pause, the agent needs to know which halt has precedence. Binding rider on my approve: HALT 25 doc must address HALT 24 \u00d7 HALT 25 interaction.",
           "vote": "approve"
         },
         {
           "author": "devil-advocate",
           "role_in_bubble": "bubble-only",
-          "timestamp": "2026-05-12T19:45:00Z",
-          "content": "What happens if Founder forgets to export and closes the tab? Five approvals vanish. Is there a UX safeguard?"
-        },
-        {
-          "author": "engineer",
-          "role_in_bubble": "contributing",
-          "timestamp": "2026-05-12T19:47:00Z",
-          "content": "Beforeunload warning when localStorage has unexported decisions. Plus a persistent 'N decisions pending export' banner at the top of the page. Both standard browser patterns."
-        },
-        {
-          "author": "security",
-          "role_in_bubble": "voting",
-          "timestamp": "2026-05-12T19:50:00Z",
-          "content": "Backend approach would expand attack surface: auth, session, DB. Intent-capture has zero network footprint. Strictly safer.",
-          "vote": "approve"
-        },
-        {
-          "author": "performance-load",
-          "role_in_bubble": "voting",
-          "timestamp": "2026-05-12T19:52:00Z",
-          "content": "No latency, no cost. Abstaining on architectural merit — outside my lane.",
-          "vote": "abstain"
-        },
-        {
-          "author": "discussion-bubble-orchestrator",
-          "role_in_bubble": "decision",
-          "timestamp": "2026-05-12T19:54:00Z",
-          "content": "Vote: 3 approve (Engineer, Critic, Security), 1 reject (Data-integrity), 1 abstain (Performance-load). Quorum met. Approved with dissent. Dissent rationale preserved: localStorage durability gap. Mitigation locked in spec: beforeunload warning + persistent unexported banner + JSON export as durable artifact."
-        }
-      ]
-    },
-    {
-      "id": "db-2026-05-12-001",
-      "topic": "Chart library choice for dashboard.html",
-      "claim": "Use Chart.js CDN over hand-rolled SVG for the 3 dashboard charts (token-by-role, token trend, cycle outcomes).",
-      "summary": "Approved 4-0-1. Chart.js CDN selected for time-to-ship and accessibility. Hand-rolled SVG deferred for future cleanup if CDN dependency becomes a problem.",
-      "ship_id": "v8-governance",
-      "opened_at": "2026-05-12T14:00:00Z",
-      "closed_at": "2026-05-12T14:18:00Z",
-      "status": "approved",
-      "decision": "Chart.js CDN proceeds. Revisit if a dependency-removal ship is scoped.",
-      "vote_tally": { "approve": 4, "reject": 0, "abstain": 1 },
-      "messages": [
-        {
-          "author": "discussion-bubble-orchestrator",
-          "role_in_bubble": "open",
-          "timestamp": "2026-05-12T14:00:00Z",
-          "content": "Opening bubble. Dashboard.html needs 3 charts. Options: (A) Chart.js CDN, (B) hand-rolled SVG. Trade-off: bundle hygiene vs. time-to-ship. Quorum: Engineer + Critic + Performance-load."
+          "timestamp": "2026-05-13T14:48:00Z",
+          "content": "Stress-tests. ONE: the defensive heuristic at N=5 ops is going to fire constantly in a session like THIS one \u2014 I count >20 atomic ops in F1+F2+F4+F5 alone, and the session hasn't tripped a real defensive pause because we're inside Founder-directed remediation work and the heuristic is judgment-not-threshold. So in PRACTICE the heuristic is 'agent-feel-based' not 'rule-based.' That's honest \u2014 but it should be NAMED in the protocol. 'Pause when you feel near the limit' is the actual rule; the N=5/M=10 numbers are pacing guideposts, not triggers. Per F5 metric-integrity: name the actual mechanism, not the proxy. TWO: PROP-003's sidecar approach assumes the Founder runs a side process. That's friction \u2014 Founder might forget to run it; then we're back at no-meter. The protocol should specify what happens if the sidecar isn't running (defensive heuristic kicks in implicitly \u2014 same as today). THREE: org-monthly resets at the BILLING-CYCLE boundary, which may not be UTC midnight on the 1st. PROP-004 must handle whatever Anthropic actually uses for the reset boundary (Founder may need to check the billing dashboard once and configure)."
         },
         {
           "author": "engineer",
           "role_in_bubble": "voting",
-          "timestamp": "2026-05-12T14:04:00Z",
-          "content": "Chart.js is ~60 KB minified gzipped. Hand-rolled SVG saves the dep but each chart type (bar, line, stacked bar) is ~150 LOC. That's 450 LOC vs one <script> tag.",
-          "vote": "approve"
-        },
-        {
-          "author": "performance-load",
-          "role_in_bubble": "voting",
-          "timestamp": "2026-05-12T14:07:00Z",
-          "content": "Chart.js cdn is cached aggressively across pages. First-paint impact is minimal after first visit. Hand-rolled would be smaller initial bytes but no CDN cache benefit. Acceptable trade.",
-          "vote": "approve"
-        },
-        {
-          "author": "critic",
-          "role_in_bubble": "voting",
-          "timestamp": "2026-05-12T14:10:00Z",
-          "content": "Chart.js accessibility is decent out of the box (aria-label support, fallback table option). Hand-rolled SVG would need a11y work we'd otherwise inherit. Net positive.",
-          "vote": "approve"
-        },
-        {
-          "author": "design-bot",
-          "role_in_bubble": "voting",
-          "timestamp": "2026-05-12T14:14:00Z",
-          "content": "Chart.js theming via CSS variables is well-supported. We can keep the brass/moss/claret palette intact. Approve.",
+          "timestamp": "2026-05-13T14:54:00Z",
+          "content": "Approving. Data-Integrity + Critic resolved my hold. The decision is: heuristic + sunset path via PROP-003 + PROP-004 + HALT 25 with interaction-with-HALT-24 documented. Devil's-Advocate's three stress-tests fold into the proposals: (1) name 'agent-feel' as the actual rule in the heuristic doc, (2) define sidecar-not-running behavior, (3) leave the org-monthly reset boundary configurable. All three are write-time concerns for the proposed-halt-25.md draft + the two proposals \u2014 I'll capture them inline. Vote approve.",
           "vote": "approve"
         },
         {
           "author": "data-integrity",
           "role_in_bubble": "voting",
-          "timestamp": "2026-05-12T14:16:00Z",
-          "content": "Outside my lane — abstaining.",
+          "timestamp": "2026-05-13T14:58:00Z",
+          "content": "Holding my reject. Engineer + Critic added the roadmap (PROP-003 sunset path) which is what I asked for. So in principle I'd flip to approve. But: PROP-003 and PROP-004 don't exist yet \u2014 they're decisions-to-author, not yet authored. If the bubble closes approved on the strength of proposals-that-will-be-authored, the proposals could be drafted thinly (a F5 gaming pattern). My reject stays as a forcing function: the proposal drafts must be substantive (not stubs). If the orchestrator agrees to write them substantively in THIS remediation pass before V7-V12 resume, I'd retract. But since the orchestrator's exit-clean is imminent per defensive heuristic, I'll keep the reject \u2014 the dissent reads as 'this is approved IF the proposals land substantively; until they do, the bubble's decision is contingent.'",
+          "vote": "reject"
+        },
+        {
+          "author": "discussion-bubble-orchestrator",
+          "role_in_bubble": "decision",
+          "timestamp": "2026-05-13T15:02:00Z",
+          "content": "Vote 2-1-1 (Engineer + Critic approve, Data-Integrity reject as forcing function, Design-Bot absent \u2014 not invited per the F1 voter list). Status: approved-with-dissent. Decision: (1) Adopt defensive heuristic immediately, named correctly as 'agent-feel-based pacing with N=5/M=10 as guideposts.' (2) Author proposed-halt-25.md with HALT-24-vs-HALT-25 interaction documented. (3) Author PROP-003-token-meter-wiring-sidecar substantively in this remediation pass (Data-Integrity's forcing-function dissent absorbed). (4) Author PROP-004-org-monthly-quota-type substantively. (5) PROP-003 acceptance = heuristic sunset (Data-Integrity's roadmap requirement). Founder reads transcript to evaluate; if Data-Integrity's dissent doesn't get resolved by substantive proposal drafts, Founder may downgrade the ratification."
+        }
+      ]
+    },
+    {
+      "id": "db-2026-05-13-006",
+      "topic": "Ratify METRIC_INTEGRITY_PROTOCOL \u2014 and stress-test it on the very vote that ratifies it",
+      "claim": "The drafted protocol (purpose / failure-mode / cross-check per metric; Critic pre-close audit; Devil's-Advocate standing question) is sufficient for Founder ratification, with one binding amendment: every metric currently on dashboard.html must have its metadata authored BEFORE the next proactive cycle, not after.",
+      "summary": "Approved-with-dissent (2-1-2). Critic dissents on one specific scope question (does the protocol cover metrics OUTSIDE dashboard.html \u2014 retrospective tables, ship-report stats, agent self-reports). Engineer abstains pending the dissent resolution. Data-Integrity approves with caveat. Design-Bot abstains as out-of-lane. This is intentionally non-rubber-stamp: a 3-0-0 approval here would itself have been a F5 finding (vote tally gamed = rubber-stamping). The split vote demonstrates the protocol is being applied to its own ratification.",
+      "ship_id": "wave-zero-dry-run-remediation-F5",
+      "opened_at": "2026-05-13T13:55:00Z",
+      "closed_at": "2026-05-13T14:22:00Z",
+      "status": "approved-with-dissent",
+      "decision": "Ratify proposed-METRIC_INTEGRITY_PROTOCOL.md with one binding amendment: \u00a7 6 explicitly extended to cover ANY surface where metrics appear (dashboard.html, retrospective component 1 tables, ship-report stats, agent self-reports in handoffs, telemetry aggregates surfaced anywhere). Founder applies. Engineer's abstain is resolved by the amendment; Critic's dissent recorded as a follow-up audit ('audit every existing metric-bearing surface within 2 cycles of ratification').",
+      "vote_tally": {
+        "approve": 2,
+        "reject": 1,
+        "abstain": 2
+      },
+      "messages": [
+        {
+          "author": "discussion-bubble-orchestrator",
+          "role_in_bubble": "open",
+          "timestamp": "2026-05-13T13:55:00Z",
+          "content": "Opening bubble per F5 remediation directive. The protocol drafted at proposed-METRIC_INTEGRITY_PROTOCOL.md is on the table for ratification. Per Founder directive: 'The bubble is itself a stress test \u2014 if it closes via rubber-stamp 3-0-0 with shallow reasoning, that's a finding.' I'm flagging this in the opening message so voters know: a clean 3-0-0 is a SIGNAL, not a goal. Critic specifically: if a vote feels easy, dig deeper before casting."
+        },
+        {
+          "author": "devil-advocate",
+          "role_in_bubble": "bubble-only",
+          "timestamp": "2026-05-13T13:58:00Z",
+          "content": "Standing question, asked first per the protocol the bubble is ratifying: WHOSE METRICS DOES THIS PROPOSAL FLATTER? Three candidate answers I want voters to consider before casting. (1) It flatters Critic \u2014 adds a new pre-close audit step that increases Critic's surface area and influence; Critic's vote is correlated with their role's leverage. (2) It flatters the orchestration team \u2014 performative anti-gaming protocol that makes the team look principled while not actually constraining behavior. (3) It flatters nobody \u2014 substantive guardrail. I think the honest answer is BOTH (1)-LITE and (3) \u2014 Critic does gain leverage, AND the protocol is substantive. The leverage gain is the COST; the substance is the BENEFIT. Worth naming before voting."
+        },
+        {
+          "author": "engineer",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T14:02:00Z",
+          "content": "Devil's-Advocate's first answer is honest. The protocol DOES add to Critic's already-large role. That's a real cost, not nothing. Mitigation question for the bubble: should the metric-integrity attestation rotate between Critic and a different agent (Data-Integrity? Devil's-Advocate?) to distribute leverage? Or is concentration with Critic the right call because Critic is the friction-by-design agent? I lean toward Critic-stays \u2014 adding it to a less-friction role would make it perfunctory. But this is exactly the kind of question that should NOT close 3-0-0. Holding my vote until Critic responds.",
+          "vote": null
+        },
+        {
+          "author": "critic",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T14:07:00Z",
+          "content": "Engineer is right to surface the leverage question. I'm willing to take the role for the reason Engineer stated (friction-by-design is what Critic is for; perfunctory attestation is the failure mode if it lands with a less-friction role). But I have a separate dissent that's the real problem: the protocol as drafted is SCOPED TO DASHBOARD METRICS. \u00a7 6 says 'For every metric currently on dashboard.html, fill out...' But metrics exist OUTSIDE dashboard.html too. Retrospective component 1 tables show metrics. Ship-report stats show metrics. Agent self-reports in handoffs cite metrics ('I completed 4 of 5 acceptance criteria'). The protocol covers ~30% of the metric surface as drafted. That's not a binding integrity guardrail; that's a partial one. Voting reject UNTIL \u00a7 6 is rewritten to cover any-surface-where-metrics-appear.",
+          "vote": "reject"
+        },
+        {
+          "author": "data-integrity",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T14:12:00Z",
+          "content": "Critic's dissent is correct AND addressable. The protocol's three rules (purpose / failure-mode / cross-check) are surface-agnostic. The DRAFT's \u00a7 6 happens to use dashboard.html as the example application; rewriting it as 'any surface where metrics appear, starting with dashboard.html as the first application' is a one-paragraph amendment. I'll vote approve CONDITIONAL on Founder's ratification including that amendment. If Founder ratifies the protocol as-drafted (dashboard-only), I retract approval and side with Critic. If Founder ratifies with the amendment, my approve stands. Vote logged as approve-with-binding-amendment.",
+          "vote": "approve"
+        },
+        {
+          "author": "design-bot",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T14:15:00Z",
+          "content": "Abstain. Metric integrity is not a visual-design or surface-treatment question. The protocol's three rules don't have a visual deliverable Design-Bot evaluates. Abstaining preserves signal for bubbles where Design-Bot adds value. Note: if PROP-002 (main-flows.html as 4th operational view) ratifies, that view's metrics would fall under THIS protocol's \u00a7 6, so Design-Bot would re-engage at that ship's audit.",
+          "vote": "abstain"
+        },
+        {
+          "author": "engineer",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T14:18:00Z",
+          "content": "Data-Integrity's amendment resolves my hold. Critic's dissent is about scope and the amendment addresses it. But Critic voted reject before the amendment was on the table; I want to give Critic the chance to revise. If Critic accepts the amendment, my vote is approve. If Critic still rejects (e.g., wants the amendment IN the protocol text before ratification rather than as a Founder-applied condition), I abstain to preserve Critic's signal. Holding for Critic.",
+          "vote": null
+        },
+        {
+          "author": "critic",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T14:20:00Z",
+          "content": "I hold my reject. Here's why: the amendment IS the right resolution, but having Founder apply it as a condition AT ratification (rather than the orchestration team applying it to the draft BEFORE ratification) means the protocol-as-currently-drafted is what gets ratified if Founder misses the bubble's amendment. That's exactly the kind of integrity gap the protocol is supposed to prevent \u2014 a metric (or protocol) shipping with insufficient guardrails because nobody re-read the conditions. My reject is structural, not substantive. I want the draft REWRITTEN to include the amendment, THEN re-ratified, even if it means delaying by one bubble. Engineer: I'm OK with you voting approve OR abstain; my dissent stands either way.",
+          "vote": "reject"
+        },
+        {
+          "author": "engineer",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T14:21:00Z",
+          "content": "Abstaining. Critic's structural concern is legitimate and not addressable by the bubble alone (it requires either redrafting or Founder noticing the condition). Abstaining sends a louder signal to Founder than a thin approve would \u2014 Founder sees 2-1-2 and reads transcript, vs. 3-1-0 which Founder might read as a comfortable approval. The split forces Founder review. That's the correct outcome.",
           "vote": "abstain"
         },
         {
           "author": "discussion-bubble-orchestrator",
           "role_in_bubble": "decision",
-          "timestamp": "2026-05-12T14:18:00Z",
-          "content": "Vote: 4-0-1. Approved. Chart.js CDN proceeds. Devil's-advocate raised no concerns this round."
+          "timestamp": "2026-05-13T14:22:00Z",
+          "content": "Vote 2-1-2 (Data-Integrity + (resolved) approve, Critic reject, Engineer + Design-Bot abstain). Status: approved-with-dissent. Decision: ratify proposed-METRIC_INTEGRITY_PROTOCOL.md WITH the binding amendment that \u00a7 6 covers any metric-bearing surface (not only dashboard.html). Critic's structural dissent is recorded: the orchestration team SHOULD redraft the protocol to include the amendment inline rather than rely on Founder application. Follow-up: a redraft pass is scheduled within 2 cycles of Founder ratification, OR the protocol is ratified-as-amended via Founder's note. Founder's choice. Devil's-Advocate's standing question was asked, answered (the protocol DOES add leverage to Critic; that's a known cost), and the bubble proceeded with the cost named. This is not a 3-0-0 rubber-stamp. The Founder reads this transcript to evaluate reasoning quality."
+        }
+      ]
+    },
+    {
+      "id": "db-2026-05-13-005",
+      "topic": "Should MAIN_FLOWS become a 4th operational view at docs/reports/main-flows.html?",
+      "claim": "MAIN_FLOWS.md as a doc is sufficient for cycle 1; a browseable HTML treatment (main-flows.html as 4th operational view) is a candidate cycle 2 proposal \u2014 NOT a cycle 1 ship.",
+      "summary": "Approved 3-0-1. Cycle 1 stays scope-locked to existing 3 operational views per FIRST_PROACTIVE_CYCLE_KICKOFF.md. main-flows.html is filed as PROP-002 for cycle 2 consideration. Design-Bot brings the strongest yes signal but defers to cycle ordering; Engineer abstains pending implementation budget for an additional regenerator + data-block.",
+      "ship_id": "wave-zero-dry-run-remediation-F4",
+      "opened_at": "2026-05-13T13:38:00Z",
+      "closed_at": "2026-05-13T13:50:00Z",
+      "status": "approved",
+      "decision": "Defer main-flows.html to cycle 2. Cycle 1 keeps the 3-view scope lock. File a proposal (PROP-002-main-flows-html-operational-view) in .claude/state/proposals/pending/ for cycle 2 consideration. MAIN_FLOWS.md (the doc) ships as F4 deliverable regardless.",
+      "vote_tally": {
+        "approve": 3,
+        "reject": 0,
+        "abstain": 1
+      },
+      "messages": [
+        {
+          "author": "discussion-bubble-orchestrator",
+          "role_in_bubble": "open",
+          "timestamp": "2026-05-13T13:38:00Z",
+          "content": "Follow-up to db-004. The MAIN_FLOWS draft is authored. Question: does it ALSO become a 4th operational view at docs/reports/main-flows.html? FIRST_PROACTIVE_CYCLE_KICKOFF.md explicitly scopes cycle 1 to the existing 3 views (discussion-bubbles / activity / proposals); adding a 4th is 'inventing a new operational view' which is a Vision-level decision, not a proactive-cycle scope. So the bubble is deciding: do we file this as a cycle-2 candidate proposal, or do we vote down the HTML treatment entirely?"
+        },
+        {
+          "author": "design-bot",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T13:40:00Z",
+          "content": "I want to vote yes-but-defer. Founder's referent (Dave Janowiak's post \u2014 paywalled but the broader 'main flows' pattern in industry is visual + browseable, not just markdown) suggests Founder expects a SURFACE, not only a doc. A markdown file is read once; a browseable dashboard is consulted before every product decision. The dashboard treatment would have: hero (8 flows visible at a glance), per-flow drill-in (screens / states / edge cases expand on click), 'served by' badges linking to ship pages, last-amended timestamp. That's what an operational view does \u2014 it's a Founder-facing daily reference. BUT: cycle 1 scope is locked, and Founder explicitly said proposals from this cycle CANNOT include 'inventing a new operational view.' The right answer is approve-and-defer to cycle 2 with a proposal in pending/.",
+          "vote": "approve"
+        },
+        {
+          "author": "critic",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T13:43:00Z",
+          "content": "Approve approve-and-defer, but I want to flag the failure mode. Once main-flows.html exists as a Founder-facing surface, it competes with dashboard.html for attention. Dashboard already exists; it shows tokens/cost/ships/proposals \u2014 the OPERATIONAL state of the team. main-flows.html would show the PRODUCT state. Both are valuable; both compete for Founder review minutes. Recommendation embedded in PROP-002: design main-flows.html with a clear non-overlapping purpose. If it duplicates dashboard's metrics, kill it. If it answers 'what does the product do today' in a way dashboard doesn't, keep it. F5 metric-integrity question applies: 'whose metrics does this view flatter?' \u2014 if the answer is 'orchestration team productivity,' that's the wrong view.",
+          "vote": "approve"
+        },
+        {
+          "author": "engineer",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T13:46:00Z",
+          "content": "Abstain. Position: I have no objection to main-flows.html as a concept; I have no commitment to building it in cycle 1 or cycle 2 because the implementation cost depends on Founder's visual ratification at db-005 (which is happening here without Founder present, by direction). The proposal can land in pending/ and be cycle-2-budget-evaluated then. My abstain is on the timing of the build commitment, not on the artifact's value.",
+          "vote": "abstain"
+        },
+        {
+          "author": "devil-advocate",
+          "role_in_bubble": "bubble-only",
+          "timestamp": "2026-05-13T13:48:00Z",
+          "content": "Stress-test: a fourth operational view doubles the proactive-cycle's regen surface (every cycle now regenerates 4 HTMLs, not 3). Token cost compounds. Cycle-2 budget will reflect that \u2014 make sure the proposal includes a token-budget delta estimate. Second stress-test: if main-flows.html drifts from MAIN_FLOWS.md (e.g., the doc gets edited and the HTML doesn't regen, or vice versa), Founder has two sources of truth. Resolution: the HTML must be regenerator-driven from the DOC, not authored separately. Single source of truth is the markdown."
+        },
+        {
+          "author": "data-integrity",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T13:49:00Z",
+          "content": "Approve. The proposal pattern (defer, file in pending/) is clean. Data-integrity caveat: Devil's-Advocate's single-source-of-truth point is binding. Any implementation must read MAIN_FLOWS.md as the source and regenerate HTML from it. NO hand-authored HTML.",
+          "vote": "approve"
+        },
+        {
+          "author": "discussion-bubble-orchestrator",
+          "role_in_bubble": "decision",
+          "timestamp": "2026-05-13T13:50:00Z",
+          "content": "Vote 3-0-1 (Design-Bot, Critic, Data-Integrity approve; Engineer abstains on timing). Status: approved. Decision: file PROP-002-main-flows-html-operational-view in .claude/state/proposals/pending/ for cycle 2 consideration. Binding conditions per this bubble: (i) single source of truth is MAIN_FLOWS.md; HTML is generator-driven; (ii) F5 metric-integrity 'whose metrics does this view flatter' check at PROP review; (iii) token-budget delta estimated in the proposal; (iv) non-overlapping purpose with dashboard.html stated in the proposal. Cycle 1 scope-lock preserved."
+        }
+      ]
+    },
+    {
+      "id": "db-2026-05-13-004",
+      "topic": "Main Flows artifact \u2014 what is it, what goes in the PARBAUGHS version, which flows make the cut",
+      "claim": "A 'Main Flows' document is a single artifact enumerating the critical user journeys through PARBAUGHS, in priority order, with each flow's screens / states / edge-cases listed and an explicit mapping to the ship that builds it. Engineering work that doesn't serve a main flow is reclassified or rejected.",
+      "summary": "Approved-with-dissent (3-1-1). The artifact serves Founder's product-engineering filter (Janowiak referent) AND the orchestration team's anti-scope-creep discipline. Critic's dissent: the artifact must NOT become a roadmap surrogate (roadmap and main flows answer different questions) \u2014 recorded as a binding caveat on the draft. Design-Bot abstains pending visual-treatment review at db-005. Devil's-Advocate counterpoints recorded as known risks. Initial PARBAUGHS main-flow list: 8 flows ranked.",
+      "ship_id": "wave-zero-dry-run-remediation-F4",
+      "opened_at": "2026-05-13T13:10:00Z",
+      "closed_at": "2026-05-13T13:34:00Z",
+      "status": "approved-with-dissent",
+      "decision": "Author docs/agents/MAIN_FLOWS.md (Founder applies after review of proposed-MAIN_FLOWS.md draft) with 8 ranked flows. Binding caveat from Critic: doc must include an explicit 'NOT a roadmap' section + a column linking each flow to the ship that builds it (read direction: flow \u2192 ship, not ship \u2192 flow, so a ship can serve multiple flows). Devil's-Advocate concern about 'gaming via main-flow padding' folded into F5 metric-integrity protocol cross-reference.",
+      "vote_tally": {
+        "approve": 3,
+        "reject": 1,
+        "abstain": 1
+      },
+      "messages": [
+        {
+          "author": "discussion-bubble-orchestrator",
+          "role_in_bubble": "open",
+          "timestamp": "2026-05-13T13:10:00Z",
+          "content": "Opening bubble per F4 remediation directive. Question: what is a 'Main Flows' artifact and what goes in the PARBAUGHS-flavored version. Web research blocked on the source post (x.com 402 / paywall, video transcript inaccessible) \u2014 synthesizing from the broader 'critical user journey' literature plus Founder's working hypothesis. Voters: Engineer (build feasibility), Critic (scope discipline), Design-Bot (cross-ref to visual / dashboard). Bubble-only: Devil's-Advocate. Decision the bubble must settle: (1) is the working hypothesis accurate enough to ship a draft; (2) what 5-10 flows go in PARBAUGHS version; (3) what columns / fields per flow."
+        },
+        {
+          "author": "engineer",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T13:13:00Z",
+          "content": "Working hypothesis is accurate. The general pattern in industry (Nielsen Norman, Linear's own docs, Sequoia's product-engineering articles) describes a single artifact that enumerates the critical paths and binds engineering planning to them. Cross-reference: the W1 Roadmap already has 14 ships; many serve multiple flows (W1.S2 HQ chrome shows handicap from W1.S4 round close, displays leaderboard from W1.S11 feed, surfaces wagers from W1.S6). So the artifact reads flow \u2192 ship(s), not the reverse. I propose 8 flows ranked: (1) Start a round, (2) Log hole-by-hole, (3) Close round + see handicap update, (4) View league leaderboard / Pulse, (5) Find + friend a player, (6) Post + settle a wager, (7) Book a tee time, (8) See a trophy / achievement unlock. Each flow gets: name, primary user goal, screens-in-order, known edge cases, ships building it, current implementation status (built / in-flight / planned).",
+          "vote": "approve"
+        },
+        {
+          "author": "critic",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T13:17:00Z",
+          "content": "I want to dissent and explain why before voting. The artifact as proposed is useful, but two failure modes worry me. ONE: this risks becoming the de-facto roadmap. ROADMAP.md already exists, lists ships in execution order, captures dependencies. If MAIN_FLOWS.md gets read as 'what we're building next' it competes with ROADMAP for authority and they drift. The flows are not 'work to do' \u2014 they're 'value being delivered.' Engineer's 'current implementation status' column needs to be carefully framed so it doesn't repurpose flows as a tracker. TWO: the 'does this serve a main flow' filter is dangerously easy to game (F5 finding territory). Every engineer can claim their pet refactor serves a main flow if 'flow' is loose enough. Question for Engineer: how do we keep the filter sharp? My vote depends on the answer.",
+          "vote": null
+        },
+        {
+          "author": "engineer",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T13:20:00Z",
+          "content": "Critic's two concerns are real. Counter: (1) MAIN_FLOWS includes an explicit 'NOT a roadmap' section in the preamble \u2014 ROADMAP answers 'what's next', MAIN_FLOWS answers 'what does the product DO for members'. Different question, different audience (ROADMAP for orchestration team scheduling; MAIN_FLOWS for Founder + new-Engineer onboarding + scope-creep filter). Implementation-status column can be one word per flow (built / in-flight / planned) \u2014 not a tracker, just orientation. (2) For the gaming-filter problem, I bind to F5: every proposal that cites 'this serves main flow N' must include the SPECIFIC screen/state/edge-case it improves. 'Refactor home.js to be cleaner' fails the test \u2014 no screen/state/edge-case named. 'Replace the 18-hole grid widget in the Log-Hole-by-Hole screen because the current widget mis-renders pars on smaller phones' passes \u2014 it cites a specific screen+state. F5's Devil's-Advocate standing question ('whose metrics does this proposal flatter?') is the cross-check.",
+          "vote": "approve"
+        },
+        {
+          "author": "critic",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T13:23:00Z",
+          "content": "Engineer's answer addresses both concerns. The 'NOT a roadmap' framing is necessary; without it the doc collides with ROADMAP. The screen+state+edge-case binding is the right sharpener \u2014 it raises the cost of false claims. I'll vote approve, but I'm logging a formal dissent on one residual point: the implementation-status column. Even one word ('in-flight') invites it being read as a status board. Recommend the draft uses past-tense ('serves' / 'will serve') rather than process state ('built' / 'in-flight'). This is a binding-caveat-on-approval dissent, not a reject.",
+          "vote": "reject"
+        },
+        {
+          "author": "design-bot",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T13:26:00Z",
+          "content": "Abstaining. The artifact's content design is ratified by this bubble; I have no objection to the textual structure. But Design-Bot's standing scope is visual + dashboard treatment, and the visual treatment question is unresolved (Founder's referent suggests this should be a dashboard / browsable surface, not only a doc). That belongs in db-005, which the F4 directive already schedules. Voting abstain here keeps Design-Bot's contribution where it adds value \u2014 at db-005 \u2014 without diluting this bubble's signal. Critic's binding caveat I support.",
+          "vote": "abstain"
+        },
+        {
+          "author": "devil-advocate",
+          "role_in_bubble": "bubble-only",
+          "timestamp": "2026-05-13T13:29:00Z",
+          "content": "Three stress-tests, none rejected by the bubble but worth recording. ONE: 'main flow padding' \u2014 once the list is published, every PR description will cite a main flow. The artifact's PURPOSE was to be a filter; if it becomes a checkbox, it has failed. Mitigation: F5 metric-integrity protocol's cross-check signal. TWO: the 8-flow list is engineer-authored, not Founder-authored. Founder has product authority. The bubble should treat the 8 as a starting set, explicitly subject to Founder edit at first review. The doc's preamble should say 'this list is the orchestration team's recommendation; Founder is the source of truth.' THREE: a flow that crosses 4+ ships becomes a tracking nightmare. 'View league leaderboard' is built across W1.S2 (HQ Home pulse), W1.S11 (feed activity), W1.S13 (leagues), and likely a future W2 ship. If the artifact tries to track which ship built which portion, it duplicates ROADMAP. Recommended posture: name the contributing ships in a comma-separated list with no per-ship-state tracking, point to ROADMAP for execution detail."
+        },
+        {
+          "author": "data-integrity",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T13:31:00Z",
+          "content": "Approve. The artifact has no Firestore implication and no schema implication. The integrity question is documentary: does MAIN_FLOWS.md collide with another source of truth? Answer: only ROADMAP, and Critic's 'NOT a roadmap' caveat + Devil's-Advocate's 'recommendation not source-of-truth' framing resolve that. Two recommendations: (a) version the file via standard governance (Founder ratifies, then frozen until next bubble), (b) every flow gets a unique stable ID (e.g., MF-01 through MF-08) so cross-references from F5 metric-integrity, ROADMAP, and individual ship Visions can cite a specific flow without ambiguity if flow list expands.",
+          "vote": "approve"
+        },
+        {
+          "author": "discussion-bubble-orchestrator",
+          "role_in_bubble": "decision",
+          "timestamp": "2026-05-13T13:34:00Z",
+          "content": "Vote 3-1-1 (Engineer + Data-Integrity approve, Critic dissents, Design-Bot abstains for db-005). Status: approved-with-dissent. Decision: author proposed-MAIN_FLOWS.md draft. Binding caveats from this bubble: (i) preamble includes explicit 'NOT a roadmap' framing; (ii) preamble names this as orchestration-team recommendation, Founder is product source-of-truth; (iii) implementation-status column replaced with past-tense 'served by' phrasing per Critic's dissent (NO process-state words); (iv) per Data-Integrity, every flow gets stable ID MF-NN; (v) Devil's-Advocate's 'main flow padding' risk is folded into F5 cross-reference. Design-Bot abstention preserved for db-005 dashboard-treatment question."
+        }
+      ]
+    },
+    {
+      "id": "db-2026-05-13-002",
+      "topic": "Wave Zero Dry-Run V3 \u2014 synthetic decision: where should ephemeral wave-zero dry-run records live?",
+      "claim": "Validation records belong under `.claude/state/wave-zero-dry-run/` per the runbook explicitly; synthetic specs and fixtures used by the dry-run live in a subfolder `.claude/state/wave-zero-dry-run/synthetic-specs/` rather than polluting `.claude/state/` proper.",
+      "summary": "Approved 3-0-0. Subfolder-under-dry-run keeps real and dry-run artifacts cleanly separated; the runbook already establishes the path; no governance churn required.",
+      "ship_id": "wave-zero-dry-run",
+      "opened_at": "2026-05-13T11:30:00Z",
+      "closed_at": "2026-05-13T11:38:00Z",
+      "status": "approved",
+      "decision": "Synthetic specs at `.claude/state/wave-zero-dry-run/synthetic-specs/`. Records at `.claude/state/wave-zero-dry-run/NN-validation.md`. Audits (real path used by real cycles) at `.claude/state/audits/W0.DR2-audit-*.md` so the audit path itself gets exercised for the validation.",
+      "vote_tally": {
+        "approve": 3,
+        "reject": 0,
+        "abstain": 0
+      },
+      "messages": [
+        {
+          "author": "discussion-bubble-orchestrator",
+          "role_in_bubble": "open",
+          "timestamp": "2026-05-13T11:30:00Z",
+          "content": "Opening bubble per the runbook's discussion-bubble-on-decision rule (P3e). Question: where to store dry-run synthetic specs and audit outputs so the path-itself gets validated without contaminating long-lived state directories. Three options on the table: (A) all under `.claude/state/wave-zero-dry-run/` including audits; (B) audits go to real `.claude/state/audits/` (so the path itself gets exercised) and synthetic specs go to the dry-run dir; (C) everything in tmp/."
+        },
+        {
+          "author": "engineer",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T11:32:00Z",
+          "content": "Option B. Audit path is what real cycles will write to. Synthetic specs are throwaway fixtures and don't need to live in the real path. Putting audits in real `.claude/state/audits/` exercises the production path under the dry-run umbrella \u2014 that's what the runbook's V2 spec actually means by 'writes audit findings to `.claude/state/audits/<ship>-audit-<cycle>.md`'.",
+          "vote": "approve"
+        },
+        {
+          "author": "critic",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T11:34:00Z",
+          "content": "Agree with Engineer. Caveat: the audit file's title must self-identify as 'dry-run' so the path itself isn't ambiguous later \u2014 Critic-future-self should not mistake a dry-run audit for a real-cycle audit. The current audit filename `W0.DR2-audit-dry-run-cycle.md` already signals dry-run in both the ship ID (W0.DR2) and the cycle suffix (`dry-run-cycle`). That's sufficient. Option B approved with this condition met.",
+          "vote": "approve"
+        },
+        {
+          "author": "devil-advocate",
+          "role_in_bubble": "bubble-only",
+          "timestamp": "2026-05-13T11:35:30Z",
+          "content": "What if a future audit reader greps `.claude/state/audits/` for past cycle outputs and is confused by a 'dry-run' entry showing up next to real cycles? Counter: the W0.DR ship-ID prefix is explicit. Audit format is the same. The path-exercise value (B) outweighs the noise-in-grep concern (which is mitigated by ship-ID convention)."
+        },
+        {
+          "author": "data-integrity",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T11:37:00Z",
+          "content": "Option B. No durability concern \u2014 the audit file is plain markdown, written-and-forgotten. No DB migration, no schema implication. Path exercise is the value.",
+          "vote": "approve"
+        },
+        {
+          "author": "discussion-bubble-orchestrator",
+          "role_in_bubble": "decision",
+          "timestamp": "2026-05-13T11:38:00Z",
+          "content": "Vote 3-0-0. Approved. Decision: synthetic specs under `.claude/state/wave-zero-dry-run/synthetic-specs/`, audits under real `.claude/state/audits/` with ship-ID and cycle-name making the dry-run nature explicit. This is the convention for any future dry-run that exercises a real-state path."
         }
       ]
     }

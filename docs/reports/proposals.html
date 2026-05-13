@@ -142,10 +142,32 @@
         @media (max-width: 600px) {
             .summary-bar { position: relative; }
         }
+    
+        /* === Cross-dashboard nav (injected by scripts/inject-page-nav.py) === */
+        .page-header { background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle); }
+        .page-nav { max-width: 1280px; margin: 0 auto; padding: var(--space-3) var(--space-4); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+        .nav-brand { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; color: var(--accent-brass); text-decoration: none; letter-spacing: 0.04em; }
+        .nav-links { display: flex; gap: var(--space-3); font-size: 0.875rem; flex-wrap: wrap; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); transition: color var(--duration-default) var(--ease-default), background var(--duration-default) var(--ease-default); }
+        .nav-links a:hover { color: var(--text-primary); background: var(--bg-card); }
+        .nav-links a.is-active { color: var(--accent-brass); background: rgba(201,169,97,0.10); border: 1px solid rgba(201,169,97,0.30); }
     </style>
 </head>
 <body>
-    <button class="theme-toggle" title="Toggle theme">☀</button>
+        <header class="page-header">
+        <nav class="page-nav">
+            <a href="index.html" class="nav-brand">PARBAUGHS Orchestration</a>
+            <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="activity.html">Activity</a>
+            <a href="discussion-bubbles.html">Discussion Bubbles</a>
+            <a href="proposals.html" class="is-active">Proposals</a>
+            <a href="main-flows.html">Main Flows</a>
+            <a href="index.html">Index</a>
+            </div>
+        </nav>
+    </header>
+<button class="theme-toggle" title="Toggle theme">☀</button>
 
     <header class="report-header">
         <div class="container">
@@ -249,121 +271,37 @@
 
     <script id="report-data" type="application/json">
 {
-  "generated_at": "2026-05-13T04:25:00Z",
   "proposals": [
     {
-      "id": "PROP-008-css-token-cleanup",
-      "title": "Consolidate --el-0 through --el-4 + --ease-standard tokens",
-      "lane": 4,
-      "lane_label": "Design System Extension",
-      "created_at": "2026-05-12T01:14:00Z",
-      "rationale": "v8.9.0 left --el-0..4 and --ease-standard defined-but-unconsumed. Strict exact-match policy yielded zero migrations. Either alias legacy → spec, migrate consumers, or accept dual coexistence. Stranded tokens add maintenance overhead with no payoff.",
-      "scope": "Audit references for --el-* and --ease-standard across src/, then either remove unused tokens or migrate consumers. Same class as --duration-*/--dur-* drift from v8.7.0.",
-      "estimate": {
-        "cost_tokens": 14000,
-        "duration_minutes": 25,
-        "risk": "low"
-      },
+      "id": "PROP-003",
+      "title": "Token-meter-wiring sidecar \u2014 substantive heuristic-sunset path for HALT 25",
+      "lane": "Lane 3 \u2014 Performance / Infrastructure",
+      "rationale": "F1 diagnostic confirms Claude Code agents cannot introspect their own token consumption from inside the tool surface. The PAUSE_DISCIPLINE 90% trigger cannot fire without a meter. The defensive heuristic (agent-feel pacing) is a band-aid; this proposal is the real fix \u2014 a sidecar process that writes usage snapshots to a watched file the agent reads each turn. Data-Integrity's forcing-function dissent on db-003 is resolved by this substantive draft (NOT a stub).",
+      "scope": "Author scripts/cron/usage-snapshot.ps1 + integration in PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 2.1 + auto-read in scripts/aggregate-telemetry.py.",
+      "estimate_tokens": 45000,
       "files_affected": [
-        "src/styles/base.css",
-        "src/styles/components.css",
-        "src/styles/utilities.css"
+        "scripts/cron/usage-snapshot.ps1 (new)",
+        "scripts/cron/usage-snapshot-config.json (new \u2014 what to poll, how often, reset boundary)",
+        "scripts/aggregate-telemetry.py (read .claude/state/usage-snapshot.json; populate weekly_tokens / weekly_cost / org_monthly_pct from real data)",
+        ".claude/state/usage-snapshot.json (new \u2014 sidecar writes here; agent reads each turn)",
+        "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 2.1 (Founder-applied amendment: meter read via .claude/state/usage-snapshot.json)"
       ],
-      "evidence_paths": [
-        ".claude/state/proactive-research/008-token-audit-grep-results.md"
-      ],
-      "ship_target": "W1.S4 or defer to next ship"
+      "ship_target": "Post-Wave-Zero remediation ratification + cron-paused.json clear. Cycle 2 or earlier if Founder prioritizes."
     },
     {
-      "id": "PROP-009-skeleton-deletion",
-      "title": "Delete legacy .skeleton/.spinner/.skel-card CSS + helpers",
-      "lane": 4,
-      "lane_label": "Design System Extension",
-      "created_at": "2026-05-12T01:32:00Z",
-      "rationale": "Per memory backlog: components.css lines ~642-681 + router.js lines ~2199-2222 contain pre-Chalk Dry loading primitives. All pages migrated to Chalk Dry primitives (skelHeader/skelRow/skelStat) in v8.3.4. Grep confirms zero remaining page references.",
-      "scope": "Remove CSS classes and JS helper functions for legacy loading system. Verify with build + smoke run.",
-      "estimate": {
-        "cost_tokens": 8000,
-        "duration_minutes": 15,
-        "risk": "low"
-      },
+      "id": "PROP-004",
+      "title": "Add `org-monthly` as 4th quota_type in PAUSE_DISCIPLINE schema",
+      "lane": "Lane 2 \u2014 Information Architecture / Governance schema",
+      "rationale": "PAUSE_DISCIPLINE_v8.1_ADDENDUM \u00a7 5 enumerates `quota_type` as 'weekly-tokens | daily-tokens | hourly-requests'. The prior session's failure was at the org-monthly cap, which is not in the enum. The discipline cannot pause for a quota it doesn't model. F1 finding (b) explicit: 'org-level monthly cap is a DIFFERENT quota than weekly-tokens.'",
+      "scope": "Schema amendment: add `org-monthly` to the enum + document the reset boundary as configurable (Anthropic billing-cycle, not necessarily UTC midnight on the 1st). Update last-verify.json schema example. Update telemetry event schema (cycle.budget.checkpoint emits quota_type which now includes the new value).",
+      "estimate_tokens": 8000,
       "files_affected": [
-        "src/styles/components.css",
-        "src/core/router.js"
+        "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 5 (enum + example state file)",
+        "docs/agents/TELEMETRY_PROTOCOL.md (cycle.budget.checkpoint + cycle.paused + cycle.resumed event schemas)",
+        "scripts/aggregate-telemetry.py (handle the new quota_type in event aggregation \u2014 defensive: existing events keep working)",
+        "scripts/cron/usage-snapshot-config.json (per PROP-003 \u2014 defines the org-monthly reset boundary)"
       ],
-      "evidence_paths": [
-        ".claude/state/proactive-research/009-skeleton-references-grep.md"
-      ],
-      "ship_target": "W1.S4"
-    },
-    {
-      "id": "PROP-010-home-helpers-extract",
-      "title": "Extract shared helpers from home.js → src/core/page-helpers.js",
-      "lane": 4,
-      "lane_label": "Design System Extension",
-      "created_at": "2026-05-12T01:48:00Z",
-      "rationale": "renderPageFooter (11+ importers), showRivalryDetail, doCopy, doRestore live in home.js by historical accident. Moving to a dedicated module reduces home.js bundle size and clarifies module boundaries.",
-      "scope": "Create src/core/page-helpers.js. Move four helpers. Update import paths across consumers. No behavior change.",
-      "estimate": {
-        "cost_tokens": 22000,
-        "duration_minutes": 40,
-        "risk": "medium"
-      },
-      "files_affected": [
-        "src/pages/home.js",
-        "src/core/page-helpers.js (new)",
-        "src/pages/members.js",
-        "src/pages/scorecard.js",
-        "src/pages/settings.js"
-      ],
-      "evidence_paths": [
-        ".claude/state/proactive-research/010-home-helper-import-graph.md"
-      ],
-      "ship_target": "W1.S5 or W1.S6"
-    },
-    {
-      "id": "PROP-011-handicap-trend-perf",
-      "title": "Memoize PB.calcHandicap differentials for trend chart",
-      "lane": 3,
-      "lane_label": "Performance",
-      "created_at": "2026-05-12T02:05:00Z",
-      "rationale": "Memory flags 1000+ round case → ~300ms render cliff. Not urgent for 20-member league, but Lane 3 surfaced opportunity to cache differentials once per round add, reducing re-render cost from O(n) to O(1) on repeated chart renders.",
-      "scope": "Add memoization layer to PB.calcHandicap. Verify trend chart still renders correctly. Add unit test for cache invalidation.",
-      "estimate": {
-        "cost_tokens": 28000,
-        "duration_minutes": 55,
-        "risk": "medium"
-      },
-      "files_affected": [
-        "src/core/handicap.js",
-        "src/pages/home.js",
-        "tests/handicap.test.js (new)"
-      ],
-      "evidence_paths": [
-        ".claude/state/proactive-research/011-handicap-perf-profile.md"
-      ],
-      "ship_target": "Deferred — revisit after season 2 data accumulates"
-    },
-    {
-      "id": "PROP-012-sidebar-footer-dedup",
-      "title": "Remove duplicate .rr-sidebar__footer rules in components.css",
-      "lane": 4,
-      "lane_label": "Design System Extension",
-      "created_at": "2026-05-12T02:22:00Z",
-      "rationale": "v8.7.1 found duplicate .rr-sidebar__footer rules at components.css:858 and :928. Same specificity, source-order wins. Stranded artifact from v8.6.2 cleanup. Tech debt with no functional impact.",
-      "scope": "Audit components.css for duplicate selector rules at identical specificity. Remove or consolidate. Visual regression check.",
-      "estimate": {
-        "cost_tokens": 6000,
-        "duration_minutes": 12,
-        "risk": "low"
-      },
-      "files_affected": [
-        "src/styles/components.css"
-      ],
-      "evidence_paths": [
-        ".claude/state/proactive-research/012-css-duplicate-rules-audit.md"
-      ],
-      "ship_target": "W1.S4 (bundle with PROP-008)"
+      "ship_target": "Post-Wave-Zero remediation ratification. Lightweight; could ship same-day as Founder applies the schema amendment."
     }
   ]
 }

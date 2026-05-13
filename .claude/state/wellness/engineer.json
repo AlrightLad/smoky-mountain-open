@@ -1,0 +1,26 @@
+{
+  "agent": "engineer",
+  "_dry_run_note": "V6 wellness checkpoint synthetic state. Real wellness state files will live at this path; this is the dry-run instance.",
+  "ships_closed_since_last_rest": 4,
+  "tokens_consumed_since_last_rest": 102000,
+  "hours_active_since_last_rest": 6.4,
+  "thresholds": {
+    "ships_closed": 5,
+    "tokens_consumed": 100000,
+    "hours_active": 8
+  },
+  "thresholds_crossed": ["tokens_consumed"],
+  "last_wellness_checkpoint_at": "2026-05-12T18:00:00Z",
+  "current_wellness_checkpoint_at": "2026-05-13T11:55:00Z",
+  "status": "resumed",
+  "rest_started_at": "2026-05-13T11:55:00Z",
+  "min_rest_duration_seconds": 1800,
+  "rest_ends_after": "2026-05-13T12:25:00Z",
+  "rest_actually_ended_at_synthetic": "2026-05-13T11:55:30Z (dry-run compressed for in-session continuation; real wellness rest would respect the full 30 min)",
+  "counters_reset_on_resume": {
+    "ships_closed_since_last_rest": 0,
+    "tokens_consumed_since_last_rest": 0,
+    "hours_active_since_last_rest": 0
+  },
+  "substantive_output_at_checkpoint": "Engineer crossed 100k-tokens threshold during ship-cycle synthetic-V6 mid-iteration on the 'V5-file-2-of-2.md' write. Tokens-consumed counter advanced from 99,800 to 102,000 between checkpoint emits. Per AGENT_WORKING_MODE_v7 wellness threshold rule and PAUSE_DISCIPLINE § 2.2, Engineer finished the in-flight atomic op (V5 file 2 write was already complete; checkpoint caught at op boundary), wrote last-verify.json with reason=wellness-rest, wrote this wellness state file, exited clean. Pause is the flow-control boundary; output here is the substantive lifecycle entry, not an emotional disclosure (wellness-rest discipline rule: 'substantive — not just I am tired')."
+}

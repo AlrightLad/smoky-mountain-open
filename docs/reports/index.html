@@ -3,122 +3,412 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PARBAUGHS Orchestration Reports</title>
+    <title>PARBAUGHS Orchestration — Index</title>
     <link rel="stylesheet" href="_assets/dashboard.css">
+    <style>
+        body { background: var(--bg-page); color: var(--text-primary); }
+
+        /* ============== Shared page chrome (matches main-flows.html) ============== */
+        .page-header {
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .page-nav {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: var(--space-3) var(--space-4);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-4);
+            flex-wrap: wrap;
+        }
+        .nav-brand {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--accent-brass);
+            text-decoration: none;
+            letter-spacing: 0.04em;
+        }
+        .nav-links {
+            display: flex;
+            gap: var(--space-3);
+            font-size: 0.875rem;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-sm);
+            transition: color var(--duration-default) var(--ease-default), background var(--duration-default) var(--ease-default);
+        }
+        .nav-links a:hover { color: var(--text-primary); background: var(--bg-card); }
+        .nav-links a.is-active {
+            color: var(--accent-brass);
+            background: rgba(201,169,97,0.10);
+            border: 1px solid rgba(201,169,97,0.30);
+        }
+
+        .page-main {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: var(--space-5) var(--space-4);
+        }
+        .page-header-row { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--space-4); margin-bottom: var(--space-5); flex-wrap: wrap; }
+        .page-title { font-size: 2rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+        .page-subtitle { color: var(--text-secondary); font-size: 0.9375rem; margin-top: var(--space-2); max-width: 700px; line-height: 1.5; }
+
+        /* ============== Status panel ============== */
+        .status-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-5);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: var(--space-3);
+        }
+        .status-tile {
+            background: var(--bg-elevated);
+            border-radius: var(--radius-sm);
+            padding: var(--space-3);
+            border-left: 3px solid var(--accent-brass);
+        }
+        .status-tile.is-positive { border-left-color: var(--accent-moss); }
+        .status-tile.is-warning { border-left-color: var(--accent-amber); }
+        .status-tile.is-danger { border-left-color: var(--accent-claret); }
+        .status-tile-label {
+            font-size: 0.6875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-tertiary);
+        }
+        .status-tile-value {
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: var(--space-1);
+            line-height: 1;
+        }
+        .status-tile-sub {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: var(--space-1);
+        }
+
+        /* ============== Dashboards grid ============== */
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-3);
+            padding-bottom: var(--space-2);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .dashboards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: var(--space-3);
+            margin-bottom: var(--space-5);
+        }
+        .dashboard-card {
+            display: block;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: transform var(--duration-default) var(--ease-default), border-color var(--duration-default) var(--ease-default);
+        }
+        .dashboard-card:hover {
+            border-color: var(--accent-brass);
+            transform: translateY(-2px);
+        }
+        .dashboard-card-name {
+            font-size: 1.0625rem;
+            font-weight: 600;
+            color: var(--accent-brass);
+            margin-bottom: var(--space-2);
+        }
+        .dashboard-card-purpose {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: var(--space-3);
+        }
+        .dashboard-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            font-family: var(--font-mono);
+        }
+        .dashboard-card-badge {
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: rgba(201,169,97,0.18);
+            color: var(--accent-brass);
+            font-weight: 600;
+        }
+
+        /* ============== Quick links ============== */
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: var(--space-2);
+            margin-bottom: var(--space-5);
+        }
+        .quick-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-2);
+            background: var(--bg-elevated);
+            border-radius: var(--radius-sm);
+            padding: var(--space-2) var(--space-3);
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.8125rem;
+            font-family: var(--font-mono);
+            border: 1px solid var(--border-subtle);
+            transition: color var(--duration-default) var(--ease-default), border-color var(--duration-default) var(--ease-default);
+        }
+        .quick-link:hover { color: var(--accent-teal); border-color: var(--accent-teal); }
+        .quick-link-arrow { color: var(--text-tertiary); }
+
+        /* ============== Footer ============== */
+        .index-footer {
+            margin-top: var(--space-6);
+            padding-top: var(--space-4);
+            border-top: 1px solid var(--border-subtle);
+            color: var(--text-tertiary);
+            font-size: 0.8125rem;
+            line-height: 1.6;
+        }
+        .index-footer code {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 1px 5px;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-sm);
+        }
+    </style>
 </head>
 <body>
-    <button class="theme-toggle" title="Toggle theme" aria-label="Toggle theme">☀</button>
-
-    <header class="report-header">
-        <div class="container">
-            <div class="report-meta">
-                <span class="report-type">REPORTS INDEX</span>
-                <span class="report-generated">Updated 2026-05-13 04:25 UTC</span>
+    <header class="page-header">
+        <nav class="page-nav">
+            <a href="index.html" class="nav-brand">PARBAUGHS Orchestration</a>
+            <div class="nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="activity.html">Activity</a>
+                <a href="discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="proposals.html">Proposals</a>
+                <a href="main-flows.html">Main Flows</a>
+                <a href="index.html" class="is-active">Index</a>
             </div>
-            <h1 class="report-title">PARBAUGHS Orchestration</h1>
-            <div class="report-subtitle">All reports generated by the 14-agent orchestration team</div>
-        </div>
+        </nav>
     </header>
 
-    <main class="container">
-        <section class="landing-hero">
-            <h2>Current dashboard</h2>
-            <a href="dashboard.html" class="big-link">Open dashboard →</a>
-            <div class="meta">Snapshot of the current week &middot; regenerated every heartbeat cycle (4h)</div>
-        </section>
+    <main class="page-main">
+        <div class="page-header-row">
+            <div>
+                <h1 class="page-title">PARBAUGHS Orchestration</h1>
+                <p class="page-subtitle">Founder's morning landing pad — status at a glance, every dashboard one click away. Last updated <span id="last-updated-inline">—</span> · git <code id="git-sha-inline">—</code></p>
+            </div>
+        </div>
 
-        <section class="report-list-section">
-            <div class="section-header">Operational views</div>
-            <div class="charts-grid mt-3">
-                <div class="card" style="border-left: 3px solid var(--accent-brass);">
-                    <div class="card-title text-brass">Dashboard</div>
-                    <div class="card-subtitle mt-2">Live snapshot of current week. Regenerated every heartbeat cycle (4h).</div>
-                    <p class="mt-3"><a href="dashboard.html">Open current →</a></p>
-                </div>
-                <div class="card" style="border-left: 3px solid var(--accent-violet);">
-                    <div class="card-title text-brass">Discussion bubble archive</div>
-                    <div class="card-subtitle mt-2">Archive of every multi-agent debate. Claims, votes, dissent, outcomes. Read-only.</div>
-                    <p class="mt-3"><a href="discussion-bubbles.html">Open archive →</a></p>
-                </div>
-                <div class="card" style="border-left: 3px solid var(--accent-teal);">
-                    <div class="card-title text-brass">Activity feed</div>
-                    <div class="card-subtitle mt-2">Chronological log of every agent handoff. Chat-style stream, filterable by agent/ship/scenario.</div>
-                    <p class="mt-3"><a href="activity.html">Open feed →</a></p>
-                </div>
-                <div class="card" style="border-left: 3px solid var(--accent-amber);">
-                    <div class="card-title text-brass">Proposal review</div>
-                    <div class="card-subtitle mt-2">Pending proactive proposals. Approve / reject / defer with browser-local intent capture; export decisions JSON; apply via script.</div>
-                    <p class="mt-3"><a href="proposals.html">Open review →</a></p>
-                </div>
+        <h2 class="section-title">Status</h2>
+        <section class="status-panel" id="status-panel">
+            <div class="status-tile" id="tile-ships">
+                <div class="status-tile-label">Ships this week</div>
+                <div class="status-tile-value">—</div>
+                <div class="status-tile-sub">via ship-progress/*.json</div>
+            </div>
+            <div class="status-tile" id="tile-proposals">
+                <div class="status-tile-label">Proposals pending</div>
+                <div class="status-tile-value">—</div>
+                <div class="status-tile-sub">awaiting Founder review</div>
+            </div>
+            <div class="status-tile" id="tile-fiq">
+                <div class="status-tile-label">FIQ depth (B+)</div>
+                <div class="status-tile-value">—</div>
+                <div class="status-tile-sub" id="fiq-grades">grade distribution</div>
+            </div>
+            <div class="status-tile" id="tile-bubbles">
+                <div class="status-tile-label">Discussion bubbles</div>
+                <div class="status-tile-value">—</div>
+                <div class="status-tile-sub">via discussion-bubbles/</div>
+            </div>
+            <div class="status-tile" id="tile-cron">
+                <div class="status-tile-label">Last cron run</div>
+                <div class="status-tile-value">—</div>
+                <div class="status-tile-sub">substrate pending build</div>
+            </div>
+            <div class="status-tile" id="tile-halt">
+                <div class="status-tile-label">HALT state</div>
+                <div class="status-tile-value">—</div>
+                <div class="status-tile-sub">via halts/</div>
             </div>
         </section>
 
-        <section class="report-list-section">
-            <div class="section-header">Report types</div>
-            <div class="card mt-3">
-                <p class="text-muted">Reports auto-generated by <code>parbaughs-report-generate</code> after each cycle. Each has a markdown version (<code>.claude/state/reports/</code>) and an interactive HTML version (<code>docs/reports/</code>).</p>
-            </div>
-
-            <div class="charts-grid mt-3">
-                <div class="card"><div class="card-title text-brass">Daily reports</div><div class="card-subtitle mt-2">One per day. Heartbeat at 00:00 UTC.</div><p class="mt-3 text-faint">First appears after Wave Zero Dry-Run.</p></div>
-                <div class="card"><div class="card-title text-brass">Weekly reports</div><div class="card-subtitle mt-2">One per ISO week. Proactive cycle Monday 01:00 UTC.</div><p class="mt-3 text-faint">No weekly reports yet.</p></div>
-                <div class="card"><div class="card-title text-brass">Ship reports</div><div class="card-subtitle mt-2">One per ship close.</div><p class="mt-3 text-faint">No ship reports yet.</p></div>
-                <div class="card"><div class="card-title text-brass">Wave reports</div><div class="card-subtitle mt-2">One per wave close.</div><p class="mt-3 text-faint">No wave reports yet.</p></div>
-                <div class="card"><div class="card-title text-brass">Quarterly reports</div><div class="card-subtitle mt-2">First Monday after quarter close.</div><p class="mt-3 text-faint">No quarterly reports yet.</p></div>
-            </div>
+        <h2 class="section-title">Dashboards</h2>
+        <section class="dashboards-grid" id="dashboards-grid">
+            <a class="dashboard-card" href="dashboard.html">
+                <div class="dashboard-card-name">Dashboard</div>
+                <div class="dashboard-card-purpose">Operational state: tokens, costs, ships, charts. Orchestration team's overview.</div>
+                <div class="dashboard-card-meta"><span data-meta="dashboard-mtime">—</span><span class="dashboard-card-badge" data-meta="dashboard-badge">—</span></div>
+            </a>
+            <a class="dashboard-card" href="activity.html">
+                <div class="dashboard-card-name">Activity</div>
+                <div class="dashboard-card-purpose">Handoff feed. Every scenario-1-through-11 transition across cycles.</div>
+                <div class="dashboard-card-meta"><span data-meta="activity-mtime">—</span><span class="dashboard-card-badge" data-meta="activity-badge">—</span></div>
+            </a>
+            <a class="dashboard-card" href="discussion-bubbles.html">
+                <div class="dashboard-card-name">Discussion Bubbles</div>
+                <div class="dashboard-card-purpose">Threaded transcripts of every multi-agent deliberation. Read who said what.</div>
+                <div class="dashboard-card-meta"><span data-meta="discussion-bubbles-mtime">—</span><span class="dashboard-card-badge" data-meta="discussion-bubbles-badge">—</span></div>
+            </a>
+            <a class="dashboard-card" href="proposals.html">
+                <div class="dashboard-card-name">Proposals</div>
+                <div class="dashboard-card-purpose">Review queue: approve / reject / defer pending proposals from the proactive cycle.</div>
+                <div class="dashboard-card-meta"><span data-meta="proposals-mtime">—</span><span class="dashboard-card-badge" data-meta="proposals-badge">—</span></div>
+            </a>
+            <a class="dashboard-card" href="main-flows.html">
+                <div class="dashboard-card-name">Main Flows</div>
+                <div class="dashboard-card-purpose">Critical user journeys through PARBAUGHS. Filter for "does this serve a main flow?"</div>
+                <div class="dashboard-card-meta"><span data-meta="main-flows-mtime">—</span><span class="dashboard-card-badge" data-meta="main-flows-badge">—</span></div>
+            </a>
         </section>
 
-        <section class="report-list-section">
-            <div class="section-header">Recent reports</div>
-            <div class="report-list">
-                <div class="report-list-item"><div class="report-list-type">Dashboard</div><div class="report-list-title">Current snapshot</div><div class="report-list-date">2026-05-13 04:25</div><a class="btn" href="dashboard.html">Open</a></div>
-                <div class="report-list-item"><div class="report-list-type">Proposals</div><div class="report-list-title">Pending proactive proposals (5)</div><div class="report-list-date">2026-05-13 04:25</div><a class="btn" href="proposals.html">Review</a></div>
-                <div class="report-list-item"><div class="report-list-type">Activity</div><div class="report-list-title">Agent handoff feed</div><div class="report-list-date">2026-05-13 04:25</div><a class="btn" href="activity.html">Open</a></div>
-                <div class="report-list-item"><div class="report-list-type">Discussion bubbles</div><div class="report-list-title">Discussion bubble archive (3 recorded)</div><div class="report-list-date">2026-05-13 04:25</div><a class="btn" href="discussion-bubbles.html">Open</a></div>
-            </div>
-            <p class="text-faint mt-3">More reports populate as cycles run. Markdown versions live at <code>.claude/state/reports/</code>.</p>
-        </section>
+        <h2 class="section-title">Governance &amp; reference</h2>
+        <div class="quick-links">
+            <a class="quick-link" href="../agents/ROADMAP.md"><span>ROADMAP.md</span><span class="quick-link-arrow">→</span></a>
+            <a class="quick-link" href="../agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md"><span>PAUSE_DISCIPLINE</span><span class="quick-link-arrow">→</span></a>
+            <a class="quick-link" href="../agents/HALT_CRITERIA_AND_AUTONOMY_DISCIPLINE.md"><span>HALT_CRITERIA</span><span class="quick-link-arrow">→</span></a>
+            <a class="quick-link" href="../agents/SESSION_JOURNAL.md"><span>SESSION_JOURNAL</span><span class="quick-link-arrow">→</span></a>
+            <a class="quick-link" href="../agents/WAVE_ZERO_DRY_RUN_RUNBOOK.md"><span>Wave Zero Runbook</span><span class="quick-link-arrow">→</span></a>
+            <a class="quick-link" href="../../.claude/state/wave-zero-dry-run/remediation/proposed-MAIN_FLOWS.md"><span>MAIN_FLOWS draft</span><span class="quick-link-arrow">→</span></a>
+            <a class="quick-link" href="../../.claude/state/wave-zero-dry-run/remediation/proposed-METRIC_INTEGRITY_PROTOCOL.md"><span>METRIC_INTEGRITY draft</span><span class="quick-link-arrow">→</span></a>
+            <a class="quick-link" href="../../.claude/state/wave-zero-dry-run/remediation/proposed-FIQ_QUALITY_RUBRIC.md"><span>FIQ_QUALITY_RUBRIC draft</span><span class="quick-link-arrow">→</span></a>
+        </div>
 
-        <section class="report-list-section">
-            <div class="section-header">Founder workflow</div>
-            <div class="card">
-                <p class="mt-2 text-muted"><strong class="text-brass">Daily glance (~3 min):</strong> <a href="dashboard.html">Dashboard</a>. Skim metric cards, check budget bar, scan recent handoffs.</p>
-                <p class="mt-2 text-muted"><strong class="text-brass">Weekly review (~20-30 min):</strong> <a href="proposals.html">Proposals</a>. Mark approve/reject/defer, export JSON, run <code>.claude/scripts/apply-decisions.sh</code>. Read latest weekly report.</p>
-                <p class="mt-2 text-muted"><strong class="text-brass">Per-ship review (15-30 min):</strong> Ship report when closed. <a href="discussion-bubbles.html">Discussion Bubbles</a> for contested decisions, <a href="activity.html">activity</a> for agent conversation trace.</p>
-                <p class="mt-2 text-muted"><strong class="text-brass">Per-wave review (1-2 hours):</strong> Wave report, decision dissent, proposal impact.</p>
-            </div>
-
-            <div class="card mt-3">
-                <div class="card-title">Markdown access</div>
-                <p class="mt-3 text-muted">Same data lives in <code>.claude/state/reports/</code> in the repo. Grep, edit, reference from chat sessions.</p>
-                <p class="mt-2 text-muted">HTML reports are <strong>read-only</strong> — <em>except</em> <a href="proposals.html">proposals.html</a>, which captures intent in browser-local storage and exports JSON you apply via script.</p>
-            </div>
-        </section>
+        <footer class="index-footer" id="index-footer">
+            <p>Last orchestration action: <span id="last-action">—</span></p>
+            <p>Data freshness: this page is regenerated by <code>scripts/regen-index.py</code> as part of <code>scripts/regen-all.ps1</code>. Cards reflect file timestamps + on-disk state counts at last regen.</p>
+        </footer>
     </main>
 
-    <footer class="report-footer">
-        <div class="container">
-            <p>Generated by <code>parbaughs-report-generate</code> from <code>.claude/state/telemetry/aggregates/</code></p>
-            <p><a href="https://github.com/AlrightLad/smoky-mountain-open">Repo</a> &middot; <a href="https://github.com/AlrightLad/smoky-mountain-open/tree/main/.claude/state/reports">Markdown reports</a> &middot; <a href="https://github.com/AlrightLad/smoky-mountain-open/tree/main/docs/agents">Governance docs</a></p>
-            <p class="text-faint">PARBAUGHS Orchestration governance v8.1</p>
-        </div>
-    </footer>
-
+    <script id="report-data" type="application/json">
+{
+  "as_of": "2026-05-13T19:35:48.327944+00:00",
+  "git_sha": "78e0c29a",
+  "status": {
+    "ships_this_week": 0,
+    "proposals_pending": 2,
+    "fiq_depth_b_plus": 0,
+    "fiq_grade_distribution": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0,
+      "F": 0
+    },
+    "open_discussion_bubbles": 5,
+    "open_bubbles_explicit": 0,
+    "total_bubbles": 5,
+    "last_cron_run": null,
+    "halt_state": "none"
+  },
+  "dashboards": {
+    "dashboard.html": {
+      "mtime_utc": "2026-05-13T19:35:47.769227+00:00",
+      "badge": "meter gap-per-F1a"
+    },
+    "activity.html": {
+      "mtime_utc": "2026-05-13T19:35:47.920146+00:00",
+      "badge": "1 handoffs"
+    },
+    "discussion-bubbles.html": {
+      "mtime_utc": "2026-05-13T19:35:47.920146+00:00",
+      "badge": "5 threads"
+    },
+    "proposals.html": {
+      "mtime_utc": "2026-05-13T19:35:47.921649+00:00",
+      "badge": "2 pending"
+    },
+    "main-flows.html": {
+      "mtime_utc": "2026-05-13T19:35:48.074651+00:00",
+      "badge": "8 flows"
+    }
+  },
+  "last_orchestration_action": ".claude/state/telemetry/aggregates/current-snapshot.json at 2026-05-13T19:35:47.613431+00:00"
+}
+    </script>
     <script>
         (function () {
-            var btn = document.querySelector('.theme-toggle');
-            var root = document.documentElement;
-            try { var s = localStorage.getItem('parbaughs-reports-theme'); if (s) root.setAttribute('data-theme', s); } catch (e) {}
-            function refresh() { btn.textContent = (root.getAttribute('data-theme') || 'dark') === 'dark' ? '☀' : '☾'; }
-            btn.addEventListener('click', function () {
-                var c = root.getAttribute('data-theme') || 'dark';
-                var n = c === 'dark' ? 'light' : 'dark';
-                root.setAttribute('data-theme', n);
-                try { localStorage.setItem('parbaughs-reports-theme', n); } catch (e) {}
-                refresh();
-            });
-            refresh();
-        }());
+            function fmtMTime(iso) {
+                if (!iso) return 'never';
+                var d = new Date(iso);
+                if (isNaN(d)) return iso;
+                var diff = (Date.now() - d.getTime()) / 1000;
+                if (diff < 60) return Math.floor(diff) + 's ago';
+                if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+                if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+                return Math.floor(diff / 86400) + 'd ago';
+            }
+            function setTile(id, value, sub, cls) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                var v = el.querySelector('.status-tile-value');
+                var s = el.querySelector('.status-tile-sub');
+                if (v) v.textContent = value;
+                if (s && sub != null) s.textContent = sub;
+                if (cls) el.classList.add(cls);
+            }
+            function render() {
+                try {
+                    var raw = document.getElementById('report-data').textContent;
+                    var data = JSON.parse(raw);
+                    var lu = document.getElementById('last-updated-inline');
+                    if (lu) lu.textContent = data.as_of ? fmtMTime(data.as_of) : '—';
+                    var gs = document.getElementById('git-sha-inline');
+                    if (gs) gs.textContent = data.git_sha || '—';
+                    var st = data.status || {};
+                    setTile('tile-ships', st.ships_this_week != null ? st.ships_this_week : 0, 'via ship-progress/*.json', (st.ships_this_week || 0) > 0 ? 'is-positive' : null);
+                    setTile('tile-proposals', st.proposals_pending != null ? st.proposals_pending : 0, 'awaiting Founder review');
+                    var fiq = st.fiq_grade_distribution || {};
+                    setTile('tile-fiq', st.fiq_depth_b_plus != null ? st.fiq_depth_b_plus : 0, 'A:' + (fiq.A||0) + ' B:' + (fiq.B||0) + ' C:' + (fiq.C||0) + ' D:' + (fiq.D||0) + ' F:' + (fiq.F||0));
+                    setTile('tile-bubbles', st.open_discussion_bubbles != null ? st.open_discussion_bubbles : 0, 'via discussion-bubbles/');
+                    setTile('tile-cron', st.last_cron_run ? fmtMTime(st.last_cron_run) : 'never', 'substrate pending build', !st.last_cron_run ? 'is-warning' : null);
+                    setTile('tile-halt', st.halt_state || 'none', 'via halts/', st.halt_state && st.halt_state !== 'none' ? 'is-danger' : 'is-positive');
+
+                    var dbs = data.dashboards || {};
+                    Object.keys(dbs).forEach(function (key) {
+                        var slug = key.replace('.html', '');
+                        var mtEl = document.querySelector('[data-meta="' + slug + '-mtime"]');
+                        var bgEl = document.querySelector('[data-meta="' + slug + '-badge"]');
+                        if (mtEl) mtEl.textContent = dbs[key].mtime_utc ? fmtMTime(dbs[key].mtime_utc) : '—';
+                        if (bgEl) bgEl.textContent = dbs[key].badge || '';
+                    });
+                    var la = document.getElementById('last-action');
+                    if (la) la.textContent = data.last_orchestration_action || 'no recorded action';
+                } catch (err) {
+                    console.error('index render failed', err);
+                }
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', render);
+            } else {
+                render();
+            }
+        })();
     </script>
 </body>
 </html>

@@ -5,9 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — PARBAUGHS Orchestration</title>
     <link rel="stylesheet" href="_assets/dashboard.css">
+    <style>
+        /* === Cross-dashboard nav (injected by scripts/inject-page-nav.py) === */
+        .page-header { background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle); }
+        .page-nav { max-width: 1280px; margin: 0 auto; padding: var(--space-3) var(--space-4); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+        .nav-brand { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; color: var(--accent-brass); text-decoration: none; letter-spacing: 0.04em; }
+        .nav-links { display: flex; gap: var(--space-3); font-size: 0.875rem; flex-wrap: wrap; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); transition: color var(--duration-default) var(--ease-default), background var(--duration-default) var(--ease-default); }
+        .nav-links a:hover { color: var(--text-primary); background: var(--bg-card); }
+        .nav-links a.is-active { color: var(--accent-brass); background: rgba(201,169,97,0.10); border: 1px solid rgba(201,169,97,0.30); }
+    </style>
 </head>
 <body>
-    <button class="theme-toggle" title="Toggle theme" aria-label="Toggle theme">☀</button>
+        <header class="page-header">
+        <nav class="page-nav">
+            <a href="index.html" class="nav-brand">PARBAUGHS Orchestration</a>
+            <div class="nav-links">
+            <a href="dashboard.html" class="is-active">Dashboard</a>
+            <a href="activity.html">Activity</a>
+            <a href="discussion-bubbles.html">Discussion Bubbles</a>
+            <a href="proposals.html">Proposals</a>
+            <a href="main-flows.html">Main Flows</a>
+            <a href="index.html">Index</a>
+            </div>
+        </nav>
+    </header>
+<button class="theme-toggle" title="Toggle theme" aria-label="Toggle theme">☀</button>
 
     <header class="report-header">
         <div class="container">
@@ -194,43 +217,118 @@
     <!-- Embedded telemetry data (seed values for first-render demo) -->
     <script id="report-data" type="application/json">
 {
-  "weekly_tokens": 2380000,
-  "weekly_cost": 19.85,
-  "ships_this_week": 2,
-  "proposals_pending": 5,
+  "weekly_tokens": 0,
+  "weekly_cost": 0.0,
+  "ships_this_week": 0,
+  "proposals_pending": 2,
   "halts_this_week": 0,
-  "fiq_depth": 3,
-  "budget_pct": 0.68,
+  "fiq_depth": 0,
+  "budget_pct": 0.0,
   "tokens_by_role": {
-    "labels": ["Orchestrator", "Engineer", "Critic", "Discussion Bubble", "Design Bot", "End User"],
-    "values": [420000, 980000, 540000, 180000, 150000, 110000]
+    "labels": [
+      "(meter unwired)"
+    ],
+    "values": [
+      0
+    ]
   },
   "token_trend_7d": {
-    "labels": ["Wed", "Thu", "Fri", "Sat", "Sun", "Mon", "Tue"],
-    "values": [340000, 380000, 290000, 310000, 410000, 360000, 290000]
+    "labels": [
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed"
+    ],
+    "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   "cycle_outcomes_7d": {
-    "labels": ["Wed", "Thu", "Fri", "Sat", "Sun", "Mon", "Tue"],
+    "labels": [
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed"
+    ],
     "datasets": [
-      {"label": "Complete", "data": [6, 7, 5, 5, 7, 6, 6], "color": "#4a8067"},
-      {"label": "Partial",  "data": [1, 0, 2, 1, 0, 1, 1], "color": "#d4a857"},
-      {"label": "Halted",   "data": [0, 0, 0, 0, 0, 0, 0], "color": "#9c4a4a"}
+      {
+        "label": "Complete",
+        "data": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "color": "#4a8067"
+      },
+      {
+        "label": "Paused",
+        "data": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "color": "#d4a857"
+      },
+      {
+        "label": "Halted",
+        "data": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "color": "#9c4a4a"
+      }
     ]
   },
   "recent_handoffs": [
-    {"scenario": "cycle-to-cycle", "from": "ship-cycle 042", "to": "ship-cycle 043", "created_at": "2026-05-13T03:00:00Z"},
-    {"scenario": "agent-to-agent", "from": "critic", "to": "engineer", "created_at": "2026-05-13T02:14:00Z"},
-    {"scenario": "discussion-bubble-to-caller", "from": "discussion-bubble-orchestrator", "to": "engineer", "created_at": "2026-05-13T01:45:00Z"},
-    {"scenario": "proactive-to-ship", "from": "proactive-cycle 008", "to": "ship-cycle 042", "created_at": "2026-05-12T11:15:00Z"},
-    {"scenario": "subagent-to-parent", "from": "end-user-persona", "to": "orchestrator", "created_at": "2026-05-12T09:30:00Z"}
+    {
+      "scenario": "discussion-bubble-to-caller",
+      "from": "discussion-bubble-orchestrator",
+      "to": "wave-zero-dry-run-orchestrator",
+      "created_at": "2026-05-13T11:38:00Z"
+    }
   ],
-  "recent_ships": [
-    {"id": "W1.S1", "title": "Component foundations", "status": "complete", "tokens": 1240000, "cost": 9.85},
-    {"id": "W1.S2", "title": "Page chrome + bands", "status": "complete", "tokens": 980000, "cost": 7.92},
-    {"id": "W1.S3", "title": "Round flow + scoring", "status": "in-progress", "tokens": 620000, "cost": 4.95},
-    {"id": "W1.I1", "title": "Test infrastructure", "status": "complete", "tokens": 410000, "cost": 3.21},
-    {"id": "W1.I2", "title": "Smoke automation", "status": "complete", "tokens": 320000, "cost": 2.48}
-  ]
+  "recent_ships": [],
+  "_meter_status": "gap-per-F1a",
+  "_meter_note": "Token meter is not wired (F1 finding). tokens_by_role / weekly_tokens / weekly_cost / token_trend_7d will show synthesized event-attributed values ONLY for events that carry agent + tokens fields. Until a real meter wires up (db-2026-05-13-003 outcome pending Founder ratification), treat these fields as a lower bound, not the actual consumption.",
+  "_aggregate_counts": {
+    "events_total": 11,
+    "cycles_started": 2,
+    "cycles_paused": 2,
+    "cycles_resumed": 2,
+    "handoffs_total": 1,
+    "bubbles_total": 5,
+    "proposals_pending": 2,
+    "proposals_approved": 1,
+    "pause_durations_sec": [
+      10,
+      1800
+    ]
+  }
 }
     </script>
 

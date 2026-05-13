@@ -29,10 +29,32 @@
         .activity-detail { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--border-subtle); font-size: 0.875rem; }
         .activity-detail-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); margin-bottom: var(--space-1); }
         .day-divider { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-brass); margin: var(--space-5) 0 var(--space-3); padding-bottom: var(--space-2); border-bottom: 1px solid var(--border-subtle); }
+    
+        /* === Cross-dashboard nav (injected by scripts/inject-page-nav.py) === */
+        .page-header { background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle); }
+        .page-nav { max-width: 1280px; margin: 0 auto; padding: var(--space-3) var(--space-4); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+        .nav-brand { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; color: var(--accent-brass); text-decoration: none; letter-spacing: 0.04em; }
+        .nav-links { display: flex; gap: var(--space-3); font-size: 0.875rem; flex-wrap: wrap; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); transition: color var(--duration-default) var(--ease-default), background var(--duration-default) var(--ease-default); }
+        .nav-links a:hover { color: var(--text-primary); background: var(--bg-card); }
+        .nav-links a.is-active { color: var(--accent-brass); background: rgba(201,169,97,0.10); border: 1px solid rgba(201,169,97,0.30); }
     </style>
 </head>
 <body>
-    <button class="theme-toggle" title="Toggle theme">☀</button>
+        <header class="page-header">
+        <nav class="page-nav">
+            <a href="index.html" class="nav-brand">PARBAUGHS Orchestration</a>
+            <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="activity.html" class="is-active">Activity</a>
+            <a href="discussion-bubbles.html">Discussion Bubbles</a>
+            <a href="proposals.html">Proposals</a>
+            <a href="main-flows.html">Main Flows</a>
+            <a href="index.html">Index</a>
+            </div>
+        </nav>
+    </header>
+<button class="theme-toggle" title="Toggle theme">☀</button>
     <header class="report-header">
         <div class="container">
             <div class="report-meta"><span class="report-type">ACTIVITY FEED</span><span class="report-generated">Generated 2026-05-13 04:25 UTC</span></div>
@@ -72,14 +94,35 @@
     <script id="report-data" type="application/json">
 {
   "handoffs": [
-    {"id":"cycle-to-cycle-20260513-040000-w1s3-impl-handoff","scenario":"cycle-to-cycle","from_agent":"engineer","to_agent":"next-cycle","created_at":"2026-05-13T03:58:00Z","cycle_id":"ship-cycle-042","ship_id":"W1.S3","scope_completed":["Round flow scaffold","Score input component","Hole-by-hole navigation"],"scope_remaining":["Putt count widget","Live HUD pairing","Tee time linkage"],"next_action":"Resume Putt count widget implementation per W1.S3 Vision section 3.2.","blockers":"none","context_required":["src/pages/playnow.js","docs/ship-visions/W1.S3.md"]},
-    {"id":"agent-to-agent-20260513-021400-critic-handoff","scenario":"agent-to-agent","from_agent":"critic","to_agent":"engineer","created_at":"2026-05-13T02:14:00Z","cycle_id":"ship-cycle-042","ship_id":"W1.S3","scope_completed":["Audit of playnow.js diff vs Vision section 3.1"],"scope_remaining":["Engineer applies 3 corrections noted in audit"],"next_action":"Apply line 142 type guard, line 218 missing await, line 304 stale state reference.","blockers":"none","context_required":[".claude/state/audits/W1.S3-audit-cycle-042.md"]},
-    {"id":"discussion-bubble-to-caller-20260513-014500-scoring-validation","scenario":"discussion-bubble-to-caller","from_agent":"discussion-bubble-orchestrator","to_agent":"engineer","created_at":"2026-05-13T01:45:00Z","cycle_id":"ship-cycle-042","ship_id":"W1.S3","scope_completed":["Discussion bubble closed: scoring validation approach"],"scope_remaining":["Engineer implements per discussion bubble outcome"],"next_action":"Implement write-time hole-par validation against masters config per discussion bubble outcome.","blockers":"none","context_required":[".claude/state/decisions/decision-20260512-0945-w1s3-scoring-validation.md"]},
-    {"id":"proactive-to-ship-20260512-111500-css-token-cleanup","scenario":"proactive-to-ship","from_agent":"proactive-orchestrator","to_agent":"ship-orchestrator","created_at":"2026-05-12T11:15:00Z","cycle_id":"proactive-cycle-008","ship_id":"W1.S3","scope_completed":["Proposal approved by Founder: consolidate --el-0..4 unused tokens"],"scope_remaining":["Implementation queued for next ship cycle"],"next_action":"Schedule Lane 4 token cleanup as part of W1.S3 if budget permits, else defer to W1.S4.","blockers":"none","context_required":[".claude/state/proposals/approved/proposal-008-css-token-cleanup.md"]},
-    {"id":"subagent-to-parent-20260512-093000-end-user-feedback","scenario":"subagent-to-parent","from_agent":"end-user-persona","to_agent":"orchestrator","created_at":"2026-05-12T09:30:00Z","cycle_id":"ship-cycle-041","ship_id":"W1.S2","scope_completed":["UX simulation of band-A drawer interaction"],"scope_remaining":["Orchestrator reviews 2 UX findings"],"next_action":"Review End User finding F1 (drawer modal a11y gap) and F2 (sidebar nav order on mobile band).","blockers":"none","context_required":[".claude/state/personas/end-user-W1.S2-report.md"]}
+    {
+      "id": "discussion-bubble-to-caller-20260513-113800-V3-storage-convention",
+      "from_agent": "discussion-bubble-orchestrator",
+      "to_agent": "wave-zero-dry-run-orchestrator",
+      "created_at": "2026-05-13T11:38:00Z",
+      "cycle_id": "wave-zero-dry-run-cycle",
+      "ship_id": "wave-zero-dry-run",
+      "scope_completed": [
+        "Discussion bubble db-2026-05-13-002 closed: dry-run storage convention decided"
+      ],
+      "scope_remaining": [
+        "Wave-zero-dry-run orchestrator applies the convention to V4-V12 setup steps"
+      ],
+      "next_action": "Use `.claude/state/wave-zero-dry-run/synthetic-specs/` for synthetic specs and real `.claude/state/audits/` (with W0.DR ship-ID + dry-run cycle suffix) for audits. Same pattern for any future dry-run path-exercise need.",
+      "blockers": "none",
+      "context_required": [
+        ".claude/state/discussion-bubbles/db-2026-05-13-002.md",
+        ".claude/state/wave-zero-dry-run/03-discussion-bubble.md"
+      ],
+      "scenario": "discussion-bubble-to-caller"
+    }
   ],
-  "agents": ["orchestrator","engineer","critic","discussion-bubble-orchestrator","performance-load","data-integrity","security","design-bot","end-user-persona","fiq-triage","proactive-orchestrator","ship-orchestrator","devil-advocate","plain-english-translator"],
-  "ships": ["W1.S1","W1.S2","W1.S3","W1.I1","W1.I2"]
+  "agents": [
+    "discussion-bubble-orchestrator",
+    "wave-zero-dry-run-orchestrator"
+  ],
+  "ships": [
+    "wave-zero-dry-run"
+  ]
 }
     </script>
     <script src="_assets/dashboard.js"></script>

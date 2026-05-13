@@ -510,6 +510,115 @@ def main():
         else:
             print(green(f"  ✓ {bid:24s} {len(msgs)} messages, tally {actual['approve']}-{actual['reject']}-{actual['abstain']} matches messages, status '{b.get('status')}'"))
 
+    # Cross-dashboard nav structure: verify all 6 production dashboards carry the canonical 6-link nav
+    # Test runs against REPORTS_SRC (the real docs/reports/), not the test workspace —
+    # the nav lives in the production templates, not in seeded synthetic state.
+    print(cyan("\n[nav] Cross-dashboard navigation audit..."))
+    NAV_LINKS_REQUIRED = ["dashboard.html", "activity.html", "discussion-bubbles.html", "proposals.html", "main-flows.html", "index.html"]
+    NAV_PAGES = [
+        ("dashboard.html",         "dashboard.html"),
+        ("activity.html",          "activity.html"),
+        ("discussion-bubbles.html","discussion-bubbles.html"),
+        ("proposals.html",         "proposals.html"),
+        ("main-flows.html",        "main-flows.html"),
+        ("index.html",             "index.html"),
+    ]
+    nav_re = re.compile(r'<nav class="page-nav">(.*?)</nav>', re.DOTALL)
+    active_re = re.compile(r'href="([^"]+)"[^>]*\bclass="is-active"')
+    for page, expected_active in NAV_PAGES:
+        p = REPORTS_SRC / page
+        if not p.exists():
+            print(red(f"  ✗ {page:32s} file missing"))
+            failures.append((f"nav:{page}", "file missing"))
+            continue
+        html = p.read_text(encoding="utf-8")
+        m = nav_re.search(html)
+        if not m:
+            print(red(f"  ✗ {page:32s} no <nav class=\"page-nav\"> block"))
+            failures.append((f"nav:{page}", "no page-nav block"))
+            continue
+        inside = m.group(1)
+        missing_links = [lnk for lnk in NAV_LINKS_REQUIRED if f'href="{lnk}"' not in inside]
+        if missing_links:
+            print(red(f"  ✗ {page:32s} missing nav links: {missing_links}"))
+            failures.append((f"nav:{page}", f"missing links: {missing_links}"))
+            continue
+        am = active_re.search(inside)
+        if not am or am.group(1) != expected_active:
+            actual = am.group(1) if am else "(none)"
+            print(red(f"  ✗ {page:32s} is-active should be '{expected_active}', got '{actual}'"))
+            failures.append((f"nav:{page}", f"is-active mismatch: expected={expected_active} actual={actual}"))
+            continue
+        print(green(f"  ✓ {page:32s} 6 links, is-active='{expected_active}'"))
+
+    # main-flows.html + index.html data-block parse — verify production files (not test workspace)
+    # since these aren't seeded by the synthetic state tree but Founder regens them with their own scripts
+    print(cyan("\n[main-flows+index] Verifying production data blocks..."))
+    MF_PROD = REPORTS_SRC / "main-flows.html"
+    if MF_PROD.exists():
+        html = MF_PROD.read_text(encoding="utf-8")
+        m = DATA_BLOCK_RE.search(html)
+        if not m:
+            print(red("  ✗ main-flows.html no data block"))
+            failures.append(("main-flows.html", "no data block"))
+        else:
+            try:
+                data = json.loads(m.group(2))
+                missing = [k for k in ("flows", "last_amended", "doc_source") if k not in data]
+                if missing:
+                    print(red(f"  ✗ main-flows.html missing data keys: {missing}"))
+                    failures.append(("main-flows.html", f"missing keys: {missing}"))
+                else:
+                    flows = data.get("flows") or []
+                    if not isinstance(flows, list):
+                        print(red("  ✗ main-flows.html 'flows' is not a list"))
+                        failures.append(("main-flows.html", "flows not a list"))
+                    elif flows:
+                        flow_keys_ok = all(isinstance(f, dict) and "id" in f and "name" in f for f in flows)
+                        if not flow_keys_ok:
+                            print(red("  ✗ main-flows.html flows missing id/name fields"))
+                            failures.append(("main-flows.html", "flow items missing id/name"))
+                        else:
+                            print(green(f"  ✓ main-flows.html              data block valid, {len(flows)} flows, doc_source='{data.get('doc_source')}'"))
+                    else:
+                        print(green("  ✓ main-flows.html              data block valid (0 flows — bare template OK)"))
+            except json.JSONDecodeError as e:
+                print(red(f"  ✗ main-flows.html JSON parse: {e}"))
+                failures.append(("main-flows.html", f"JSON parse: {e}"))
+    else:
+        print(red("  ✗ main-flows.html (production) MISSING"))
+        failures.append(("main-flows.html", "production file missing"))
+
+    IDX_PROD = REPORTS_SRC / "index.html"
+    if IDX_PROD.exists():
+        html = IDX_PROD.read_text(encoding="utf-8")
+        m = DATA_BLOCK_RE.search(html)
+        if not m:
+            print(red("  ✗ index.html no data block"))
+            failures.append(("index.html", "no data block"))
+        else:
+            try:
+                data = json.loads(m.group(2))
+                missing = [k for k in ("as_of", "status", "dashboards") if k not in data]
+                if missing:
+                    print(red(f"  ✗ index.html missing data keys: {missing}"))
+                    failures.append(("index.html", f"missing keys: {missing}"))
+                else:
+                    dashboards = data.get("dashboards", {})
+                    expected_dashes = {"dashboard.html", "activity.html", "discussion-bubbles.html", "proposals.html", "main-flows.html"}
+                    missing_dashes = expected_dashes - set(dashboards.keys())
+                    if missing_dashes:
+                        print(red(f"  ✗ index.html dashboards missing: {missing_dashes}"))
+                        failures.append(("index.html", f"missing dashboards: {missing_dashes}"))
+                    else:
+                        print(green(f"  ✓ index.html                   data block valid, status + 5 dashboard entries present"))
+            except json.JSONDecodeError as e:
+                print(red(f"  ✗ index.html JSON parse: {e}"))
+                failures.append(("index.html", f"JSON parse: {e}"))
+    else:
+        print(red("  ✗ index.html (production) MISSING"))
+        failures.append(("index.html", "production file missing"))
+
     # Wiring assertions: cross-check that scenarios in activity data match canonical CSS classes
     print(cyan("\n[wiring] Cross-checking scenario tokens against CSS + dropdown..."))
     activity_html = (test_reports / "activity.html").read_text()

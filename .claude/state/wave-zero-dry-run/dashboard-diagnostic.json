@@ -1,0 +1,109 @@
+{
+  "captured_at": "2026-05-13T19:25:08.163731+00:00",
+  "files": {
+    "dashboard.html": {
+      "exists": true,
+      "size_bytes": 13199,
+      "mtime_utc": "2026-05-13T19:16:51.324538+00:00",
+      "sha256": "14c23f859d3dc1b7991cf3a1d3a731f037c17dd41bf1edf56a9e1cc08c22fcef",
+      "has_data_block": true,
+      "data_block_parse_error": null,
+      "data_summary": {
+        "weekly_tokens": 0,
+        "weekly_cost": 0.0,
+        "ships_this_week": 0,
+        "proposals_pending": 3,
+        "halts_this_week": 0,
+        "fiq_depth": 0
+      }
+    },
+    "activity.html": {
+      "exists": true,
+      "size_bytes": 12610,
+      "mtime_utc": "2026-05-13T19:16:51.390484+00:00",
+      "sha256": "5b46122dccf7ca3e5007d2bcd078bdd149e78544ac8ab285c111e750604fc195",
+      "has_data_block": true,
+      "data_block_parse_error": null,
+      "data_summary": {
+        "handoffs": "<list len=1>",
+        "agents": "<list len=2>",
+        "ships": "<list len=1>"
+      }
+    },
+    "proposals.html": {
+      "exists": true,
+      "size_bytes": 32578,
+      "mtime_utc": "2026-05-13T19:16:51.391487+00:00",
+      "sha256": "0f77fe8f5a550c63426f8c2726484fd8d39dd3d199cc8cef1a78e422e4d0cd34",
+      "has_data_block": true,
+      "data_block_parse_error": null,
+      "data_summary": {
+        "proposals": "<list len=3>"
+      }
+    },
+    "discussion-bubbles.html": {
+      "exists": true,
+      "size_bytes": 71962,
+      "mtime_utc": "2026-05-13T19:16:51.390484+00:00",
+      "sha256": "043531e1748d6275f5b1a16bec9bef3c82b84a29f960b215bef8a12612a8df56",
+      "has_data_block": true,
+      "data_block_parse_error": null,
+      "data_summary": {
+        "discussion_bubbles": "<list len=5>"
+      }
+    },
+    "index.html": {
+      "exists": true,
+      "size_bytes": 9131,
+      "mtime_utc": "2026-05-13T14:50:27.286865+00:00",
+      "sha256": "e4b1ee332ccdea49a3cc29fb1dead7a829e87f82be0d7c84c8e8b16f5ac18256",
+      "has_data_block": false,
+      "data_block_parse_error": null,
+      "data_summary": null
+    }
+  },
+  "on_disk": {
+    "discussion_bubbles_dir_count": 5,
+    "discussion_bubbles_ids": [
+      "db-2026-05-13-002",
+      "db-2026-05-13-003",
+      "db-2026-05-13-004",
+      "db-2026-05-13-005",
+      "db-2026-05-13-006"
+    ],
+    "proposals_pending_count": 3,
+    "proposals_pending_ids": [
+      "PROP-002-main-flows-html-operational-view",
+      "PROP-003-token-meter-wiring-sidecar",
+      "PROP-004-org-monthly-quota-type"
+    ],
+    "handoffs_total": 1,
+    "handoffs_by_folder": {
+      "discussion-bubbles": 1
+    },
+    "snapshot_exists": true,
+    "snapshot_aggregate_counts": {
+      "events_total": 11,
+      "cycles_started": 2,
+      "cycles_paused": 2,
+      "cycles_resumed": 2,
+      "handoffs_total": 1,
+      "bubbles_total": 5,
+      "proposals_pending": 3,
+      "proposals_approved": 0,
+      "pause_durations_sec": [
+        10,
+        1800
+      ]
+    },
+    "snapshot_as_of": "2026-05-13T19:16:51.254510+00:00",
+    "snapshot_meter_status": "gap-per-F1a"
+  },
+  "findings": [
+    "discussion-bubbles.html: data=5 on-disk=5 -> OK",
+    "proposals.html: data=3 on-disk=3 -> OK",
+    "activity.html: data=1 on-disk=1 -> OK",
+    "dashboard.html: proposals_pending=3 on-disk=3 | recent_handoffs=1 on-disk=1 | meter=gap-per-F1a",
+    "index.html: NO data block \u2014 stale or hand-authored (expected per Founder note)"
+  ]
+}
