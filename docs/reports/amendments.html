@@ -181,6 +181,28 @@
         "status": "pending",
         "_body_preview": "# MAIN_FLOWS \u2014 v2\n\nThe team operationally uses this document as the canonical pointer to\nflow definitions. v1 (pre-2026-05-14) ranked 8 MF-NN flows as the\nmember-of-MAIN-FLOWS set. v2 reframes:\n\n- **Inventory is canonical:** every flow lives in\n  `.claude/state/main-flows-v2/flow-inventory.json`. 62 flows at\n  authoring; append-only per the stability invariant (F-IDs are\n  permanent).\n- **Renderin",
         "_filename": "AMD-010-MAIN_FLOWS_v2.md"
+      },
+      {
+        "id": "AMD-011",
+        "title": "Auto-execute approved proposals when AMD-009-compliant (the auto-implementation gate)",
+        "target_canonical_path": "docs/agents/AUTO_EXECUTE_PROTOCOL.md",
+        "source_draft_path": ".claude/state/amendments/pending/AMD-011-auto-execute-approved-proposals.md",
+        "scope_summary": "Closes db-2026-05-14-002 (auto-implementation eligibility) with Founder directive. The gate for auto-execution is NOT per-proposal Founder review \u2014 it's ship-completeness per AMD-009 Senior Engineering Standard. Approved proposals meeting the 8-criteria readiness gate auto-execute; those failing the gate queue in a new ship-readiness-deferred state with enumerated gaps. Scanner runs every 2 hours + at every ship-close commit. No mid-ship halts. Founder Review Queue surfaces ready/in-flight/deferred/completed states.",
+        "type": "new-file",
+        "section_anchor": null,
+        "depends_on": [
+          "AMD-009"
+        ],
+        "authored_by": "claude-code (orchestration team)",
+        "authored_at": "2026-05-14T03:50:00Z",
+        "bubble_of_record": "db-2026-05-14-002",
+        "estimate_tokens_to_apply": "5500",
+        "rollback_strategy": "git revert; the document is new. Implementation deliverables (scanner, cron, dashboard extension) ship separately AFTER this amendment applies \u2014 rolling back the amendment also un-authorizes any subsequent execution that depends on it.",
+        "status": "pending",
+        "operating_status": "ADVISORY \u2014 operates as guidance until Founder applies via amendments.html. Per the commit sequence in the directive, infrastructure (Step 2) is GATED behind Founder approval of this amendment.",
+        "id_conflict_note": "Founder directive specified filename AMD-010-*; AMD-010 was authored earlier in this session as MAIN_FLOWS_v2 (commit 68771a9). Using AMD-011 to preserve the monotonic-ID invariant per AMD-006 P18.5.2 schema discipline. Title and content match Founder's directive verbatim. Same collision-resolution pattern as AMD-007 earlier this session.",
+        "_body_preview": "# Auto-execute approved proposals (the auto-implementation gate)\n\n## Founder directive (recorded verbatim)\n\n> \"The agent executes any proposal Founder has approved, BUT ONLY when\n> the proposal can be shipped completely per AMD-009 Senior Engineering\n> Standard. The gate isn't Founder review per execution. The gate is\n> ship-completeness. Thoroughly scoped + deliberated proposals execute.\n> Non-re",
+        "_filename": "AMD-011-auto-execute-approved-proposals.md"
       }
     ],
     "approved": [],
@@ -347,13 +369,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 2,
+    "pending": 3,
     "approved": 0,
     "deferred": 0,
     "applied_total": 8,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T03:37:50.266524+00:00",
+  "as_of": "2026-05-14T04:11:43.043983+00:00",
   "schema_version": 1,
   "archive_display_cap": 50
 }
