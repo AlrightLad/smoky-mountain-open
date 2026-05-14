@@ -118,3 +118,9 @@
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T05:06:40.483926+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T05:09:01.239767+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T05:09:02.111906+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T05:09:46.562739+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T05:09:47.199988+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.readiness.ready", "timestamp": "2026-05-14T05:09:49.340789+00:00", "data": {"proposal_id": "PROP-003.a", "criteria_passed": 8}}
+{"event_type": "proposal.readiness.deferred", "timestamp": "2026-05-14T05:09:49.342792+00:00", "data": {"proposal_id": "PROP-003.b", "criteria_failed": ["cross_cutting_dependency: depends on unshipped/unapplied ['PROP-003.a']"]}}
+{"event_type": "proposal.readiness.deferred", "timestamp": "2026-05-14T05:09:49.344791+00:00", "data": {"proposal_id": "PROP-004", "criteria_failed": ["cross_cutting_dependency: depends on unshipped/unapplied ['PROP-003.b']"]}}
+{"event_type":"ship.close.scanner-dispatched","timestamp":"2026-05-14T05:09:49Z","data":{"head_commit_subject":"Ship 2 ship close: wire ship-close-commit scanner dispatch into regen-all","ready_count":1,"deferred_count":2,"scanner_exit":0}}
