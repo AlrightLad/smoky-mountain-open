@@ -148,23 +148,66 @@
   "amendments": {
     "pending": [
       {
-        "id": "AMD-018",
-        "title": "Self-governed push authorization",
-        "type": "edit-section",
-        "target_canonical_path": "docs/agents/PROTOCOLS.md",
-        "target_section": "Push authorization",
-        "authored_by": "claude-code",
-        "authored_at": "2026-05-14T21:35:00Z",
-        "status": "pending",
-        "operating_status": "ACTIVE \u2014 operating immediately per Founder directive 2026-05-14 \"SELF-GOVERNED PUSH AUTHORIZATION\". Team pushes to origin/main when 10-gate criteria green; exceptions require Founder pre-authorization.",
+        "id": "AMD-019",
+        "title": "Dashboard freshness per commit",
+        "target_canonical_path": "docs/agents/DASHBOARD_FRESHNESS.md",
+        "source_draft_path": ".claude/state/amendments/pending/AMD-019-dashboard-freshness-per-commit.md",
+        "scope_summary": "Every git commit triggers regen-all + emits session.team-work.summary event with ship_id + token snapshot. Dashboard reflects current state within seconds of commit, not \"eventually after cron\". Adds Gate 11 to AMD-018 push authorization.",
+        "type": "new-file",
+        "section_anchor": null,
         "depends_on": "",
-        "_body_preview": "# AMD-018 \u2014 Self-governed push authorization\n\nAuthored 2026-05-14 per Founder directive: \"DO NOT push commits\"\ncaution accumulated across iterations is now structural waste \u2014 team\nverification is mature enough that Founder gate adds latency, not\nsafety. Self-government is the correct evolution.\n\n## What changes\n\n\"DO NOT push commits\" rule REVOKED in favor of 10-gate (now 11-gate\nper AMD-019) self-",
-        "_filename": "AMD-018-self-governed-push-authorization.md"
+        "authored_by": "claude-code",
+        "authored_at": "2026-05-14T21:50:00Z",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": "3000",
+        "rollback_strategy": "Remove `.git/hooks/post-commit`. Cron continues independent background regen at 5-min cadence (no dashboard drift past 5 min). 11-gate push authorization reverts to 10-gate.",
+        "status": "pending",
+        "operating_status": "ACTIVE \u2014 operating immediately per Founder directive 2026-05-14 \"DASHBOARD MUST REFRESH PER COMMIT\". Post-commit hook installed; Gate 11 operative.",
+        "_body_preview": "# Dashboard freshness per commit\n\nFounder directive 2026-05-14: dashboard data must reflect current\nstate within seconds of every commit. Not \"eventually after cron\".\n\n## What changes\n\nAdd `.git/hooks/post-commit` that runs after every commit:\n\n1. Reads `.claude/state/current-ship.json` for ship_id (per ESC-003)\n2. Emits `session.team-work.summary` event tagged with ship_id\n3. Invokes `regen-all` ",
+        "_filename": "AMD-019-dashboard-freshness-per-commit.md"
+      },
+      {
+        "id": "AMD-020",
+        "title": "Auto-clean dirty tree protocol",
+        "target_canonical_path": "docs/agents/AUTO_CLEAN_TREE.md",
+        "source_draft_path": ".claude/state/amendments/pending/AMD-020-auto-clean-dirty-tree.md",
+        "scope_summary": "Codifies the continuous-clean-tree invariant. Every continuation cycle classifies dirty files A/B/C/D (auto-resolve) vs X/Y/Z/W (surface to Founder). Auto-resolve via commit with appropriate ship_id; surface ambiguous via AMD-015 propose-first. Integrates with AMD-018 push authorization Gate 9.",
+        "type": "new-file",
+        "section_anchor": null,
+        "depends_on": "",
+        "authored_by": "claude-code",
+        "authored_at": "2026-05-14T21:55:00Z",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": "2500",
+        "rollback_strategy": "git revert. Tree-cleanup behavior reverts to manual; dirty tree accumulates as background state until manual intervention.",
+        "status": "pending",
+        "operating_status": "ACTIVE \u2014 operating immediately per Founder directive 2026-05-14 \"AUTO-CLEAN DIRTY WORKING TREE\". Team auto-resolves Class A-D files on every continuation cycle.",
+        "_body_preview": "# Auto-clean dirty tree protocol\n\nFounder directive 2026-05-14: dirty working tree is operational debt\nthat compounds. The watcher SKIPS processing on dirty tree (P0 stalled\n7 proposals). Push authorization Gate 9 blocks on dirty tree.\nContinuous clean is the operational baseline.\n\n## Classification criteria\n\n### Auto-resolve (commit with appropriate ship_id)\n\n**Class A \u2014 State file drift (regener",
+        "_filename": "AMD-020-auto-clean-dirty-tree.md"
       }
     ],
     "approved": [],
     "deferred": [],
     "applied": [
+      {
+        "id": "AMD-018",
+        "title": "Self-governed push authorization",
+        "target_canonical_path": "docs/agents/PUSH_AUTHORIZATION.md",
+        "source_draft_path": ".claude/state/amendments/pending/AMD-018-self-governed-push-authorization.md",
+        "scope_summary": "Codifies the 11-gate self-governed push authorization. Team pushes to origin/main without Founder pre-authorization when all gates green (round-trip / scroll-reachability / user-context / click-through / click-every / visual review / Critic / design-bot / tree clean / no deferred debt / dashboard freshness). Exception list (Firestore rules, Cloud Functions, auth, payments, secrets) still requires Founder pre-auth.",
+        "type": "new-file",
+        "section_anchor": null,
+        "depends_on": "",
+        "authored_by": "claude-code",
+        "authored_at": "2026-05-14T21:35:00Z",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": "2500",
+        "rollback_strategy": "git revert; team reverts to \"DO NOT push commits\" + Founder per-push gate.",
+        "status": "pending",
+        "operating_status": "ACTIVE \u2014 operating immediately per Founder directive 2026-05-14 \"SELF-GOVERNED PUSH AUTHORIZATION\". Team pushes to origin/main when 11-gate criteria green; exception list still requires Founder pre-authorization.",
+        "_body_preview": "# AMD-018 \u2014 Self-governed push authorization\n\nAuthored 2026-05-14 per Founder directive: \"DO NOT push commits\"\ncaution accumulated across iterations is now structural waste \u2014 team\nverification is mature enough that Founder gate adds latency, not\nsafety. Self-government is the correct evolution.\n\n## What changes\n\n\"DO NOT push commits\" rule REVOKED in favor of 10-gate (now 11-gate\nper AMD-019) self-",
+        "_filename": "AMD-018-self-governed-push-authorization.md"
+      },
       {
         "id": "AMD-016",
         "title": "Infrastructure must answer its operational question",
@@ -522,13 +565,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 1,
+    "pending": 2,
     "approved": 0,
     "deferred": 0,
-    "applied_total": 17,
+    "applied_total": 18,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T21:38:56.245543+00:00",
+  "as_of": "2026-05-14T22:25:38.748589+00:00",
   "schema_version": 1,
   "archive_display_cap": 50
 }

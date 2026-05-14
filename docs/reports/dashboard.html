@@ -351,10 +351,10 @@
 {
   "weekly_tokens": 7302000,
   "weekly_cost": 175.25,
-  "ships_this_week": 24,
-  "proposals_pending": 0,
+  "ships_this_week": 25,
+  "proposals_pending": 1,
   "proposals_counts": {
-    "pending": 0,
+    "pending": 1,
     "approved": 8,
     "deferred": 0,
     "shipped": 4,
@@ -363,12 +363,12 @@
     "rejected_total": 0
   },
   "amendments_counts": {
-    "pending": 1,
+    "pending": 2,
     "approved": 0,
     "deferred": 0,
-    "applied": 17,
+    "applied": 18,
     "rejected": 0,
-    "applied_total": 17,
+    "applied_total": 18,
     "rejected_total": 0
   },
   "halts_this_week": 0,
@@ -473,7 +473,7 @@
       0,
       0,
       4,
-      20
+      21
     ]
   },
   "handoffs_trend_7d": {
@@ -518,77 +518,89 @@
   },
   "recent_handoffs": [
     {
+      "scenario": "team-commit",
+      "from": "Zach Boogher",
+      "to": "main",
+      "created_at": "2026-05-14T18:17:40-04:00",
+      "subject": "stop-decision log: Q1.E borderline organic capacity (15+ commits this turn)"
+    },
+    {
       "scenario": "cron-auto-commit",
       "from": "cron",
       "to": "Zach Boogher",
-      "created_at": "2026-05-14T17:35:39-04:00",
-      "subject": "Apply proposal decisions (7 total)"
+      "created_at": "2026-05-14T18:16:14-04:00",
+      "subject": "cron(routine): post-commit hook telemetry roll (AMD-020 Class A)"
+    },
+    {
+      "scenario": "cron-auto-commit",
+      "from": "cron",
+      "to": "PARBAUGHS Cron",
+      "created_at": "2026-05-14T18:15:50-04:00",
+      "subject": "cron(routine): auto-commit telemetry output before watcher preflight (2026-05-14"
     },
     {
       "scenario": "team-commit",
       "from": "Zach Boogher",
       "to": "main",
-      "created_at": "2026-05-14T17:35:26-04:00",
-      "subject": "P0 cleanup: stage accumulated captures + audits + AMD-018 to unblock watcher"
+      "created_at": "2026-05-14T18:15:40-04:00",
+      "subject": "PROP-013 authored: button coverage gate (scripts already operating; formal codif"
     },
     {
       "scenario": "team-commit",
       "from": "Zach Boogher",
       "to": "main",
-      "created_at": "2026-05-14T17:29:55-04:00",
-      "subject": "P2 iter 16: invite link auto-apply fix (cross-league regression)"
+      "created_at": "2026-05-14T18:14:26-04:00",
+      "subject": "P3 SUMMARY update: H1 data-layer fix + H2 likely already fixed + H3 scope refine"
+    },
+    {
+      "scenario": "cron-auto-commit",
+      "from": "cron",
+      "to": "Zach Boogher",
+      "created_at": "2026-05-14T18:12:17-04:00",
+      "subject": "cron(routine): post-commit hook telemetry roll (AMD-019 + AMD-020 Class A)"
     },
     {
       "scenario": "team-commit",
       "from": "Zach Boogher",
       "to": "main",
-      "created_at": "2026-05-14T17:26:00-04:00",
-      "subject": "P1 iter 16: main-flows reference match \u2014 F1 default + F9-F62 paths"
+      "created_at": "2026-05-14T18:11:53-04:00",
+      "subject": "P4 H1: getPlayerBest9 data layer (UI consumers follow-on)"
+    },
+    {
+      "scenario": "cron-auto-commit",
+      "from": "cron",
+      "to": "PARBAUGHS Cron",
+      "created_at": "2026-05-14T18:10:50-04:00",
+      "subject": "cron(routine): auto-commit telemetry output before watcher preflight (2026-05-14"
+    },
+    {
+      "scenario": "cron-auto-commit",
+      "from": "cron",
+      "to": "Zach Boogher",
+      "created_at": "2026-05-14T18:08:52-04:00",
+      "subject": "cron(routine): post-commit hook telemetry roll (AMD-019 + AMD-020 Class A)"
     },
     {
       "scenario": "team-commit",
       "from": "Zach Boogher",
       "to": "main",
-      "created_at": "2026-05-14T17:05:34-04:00",
-      "subject": "iter 15: PROP-012 + dashboard design-review + regen-all.sh bug fix"
-    },
-    {
-      "scenario": "team-commit",
-      "from": "Zach Boogher",
-      "to": "main",
-      "created_at": "2026-05-14T16:47:49-04:00",
-      "subject": "iter 14 + PROP-011: vision capability install (Anthropic skills + Z.AI deferred)"
-    },
-    {
-      "scenario": "team-commit",
-      "from": "Zach Boogher",
-      "to": "main",
-      "created_at": "2026-05-14T16:32:08-04:00",
-      "subject": "iter 13: rail-jitter root-cause fix + design-bot formalization (PROP-010)"
-    },
-    {
-      "scenario": "team-commit",
-      "from": "Zach Boogher",
-      "to": "main",
-      "created_at": "2026-05-14T16:16:09-04:00",
-      "subject": "iter 12: perceptual color fix + click-through user-journey audit (PROP-009)"
-    },
-    {
-      "scenario": "team-commit",
-      "from": "Zach Boogher",
-      "to": "main",
-      "created_at": "2026-05-14T15:53:38-04:00",
-      "subject": "ESC-003 applied: per-ship token attribution (Approach A)"
-    },
-    {
-      "scenario": "team-commit",
-      "from": "Zach Boogher",
-      "to": "main",
-      "created_at": "2026-05-14T15:49:05-04:00",
-      "subject": "weekly_cost: compute honest estimate instead of hardcoded $0.00"
+      "created_at": "2026-05-14T18:08:38-04:00",
+      "subject": "Token sidecar: discoverable README documenting populate-then-use flow"
     }
   ],
   "recent_ships": [
+    {
+      "id": "AMD-018",
+      "title": "Self-governed push authorization",
+      "kind": "amendment",
+      "status": "applied",
+      "completed_at": "2026-05-14T21:35:00Z",
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
+      "source_path": ".claude/state/amendments/applied/AMD-018-self-governed-push-authorization.md"
+    },
     {
       "id": "ESC-003",
       "title": "Per-ship token attribution \u2014 going-forward instrumentation approach",
@@ -696,30 +708,18 @@
       "tokens_events_matched": 0,
       "cost_usd": null,
       "source_path": ".claude/state/amendments/applied/AMD-012-smoke-testing-governance.md"
-    },
-    {
-      "id": "AMD-011",
-      "title": "Auto-execute approved proposals when AMD-009-compliant (the auto-implementation gate)",
-      "kind": "amendment",
-      "status": "applied",
-      "completed_at": "2026-05-14T03:50:00Z",
-      "tokens": null,
-      "tokens_source": "unknown",
-      "tokens_events_matched": 0,
-      "cost_usd": null,
-      "source_path": ".claude/state/amendments/applied/AMD-011-auto-execute-approved-proposals.md"
     }
   ],
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "_aggregate_counts": {
-    "events_total": 851,
+    "events_total": 892,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
     "handoffs_total": 1,
     "bubbles_total": 7,
-    "proposals_pending": 0,
+    "proposals_pending": 1,
     "proposals_approved": 8,
     "pause_durations_sec": [
       10,
@@ -728,8 +728,8 @@
   },
   "quota_status": {
     "state": "empty",
-    "as_of": "2026-05-14T21:37:13.1511240Z",
-    "age_seconds": 102,
+    "as_of": "2026-05-14T22:22:13.2170738Z",
+    "age_seconds": 204,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -740,22 +740,22 @@
     "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
   },
   "founder_queue": {
-    "as_of": "2026-05-14T21:38:56.615194+00:00",
+    "as_of": "2026-05-14T22:25:39.137752+00:00",
     "last_founder_visit": null,
     "governance_gates": {
-      "amendments_pending": 1,
+      "amendments_pending": 2,
       "amendments_link": "amendments.html",
       "bubbles_flagged": 0,
       "bubbles_link": "discussion-bubbles.html",
-      "proposals_pending": 0,
+      "proposals_pending": 1,
       "proposals_link": "proposals.html",
       "open_escalations": []
     },
     "system_health": {
       "crons": {
         "downloads-watcher": {
-          "last_run": "2026-05-14T21-35-49Z",
-          "last_log": "2026-05-14T21-35-49Z-downloads-watcher.log"
+          "last_run": "2026-05-14T22-20-49Z",
+          "last_log": "2026-05-14T22-20-49Z-downloads-watcher.log"
         },
         "maintenance": {
           "last_run": "2026-05-14T06-55-01Z",
@@ -766,12 +766,12 @@
           "last_log": "2026-05-13T22-12-35Z-overnight-triage.log"
         },
         "proposal-readiness": {
-          "last_run": "2026-05-14T20-00-02Z",
-          "last_log": "2026-05-14T20-00-02Z-proposal-readiness.log"
+          "last_run": "2026-05-14T22-00-02Z",
+          "last_log": "2026-05-14T22-00-02Z-proposal-readiness.log"
         },
         "sidecar": {
-          "last_run": "2026-05-14T21-37-12Z",
-          "last_log": "2026-05-14T21-37-12Z-sidecar.log"
+          "last_run": "2026-05-14T22-22-13Z",
+          "last_log": "2026-05-14T22-22-13Z-sidecar.log"
         }
       },
       "cron_install_status": [
@@ -780,10 +780,10 @@
           "task_name": "PARBAUGHS-Downloads-Watcher",
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-downloads-watcher.ps1",
-          "last_fire_iso": "2026-05-14T21:35:49.899737+00:00",
-          "age_minutes": 3.1,
+          "last_fire_iso": "2026-05-14T22:20:49.915674+00:00",
+          "age_minutes": 4.8,
           "status": "firing",
-          "label": "firing \u00b7 last fire 3.1min ago",
+          "label": "firing \u00b7 last fire 4.8min ago",
           "os_state": "Ready",
           "is_installed": true
         },
@@ -793,9 +793,9 @@
           "cadence_minutes": 1440,
           "install_script": "scripts/cron/install-maintenance.ps1",
           "last_fire_iso": "2026-05-14T06:55:19.949406+00:00",
-          "age_minutes": 883.6,
+          "age_minutes": 930.3,
           "status": "firing",
-          "label": "firing \u00b7 last fire 883.6min ago",
+          "label": "firing \u00b7 last fire 930.3min ago",
           "os_state": "Ready",
           "is_installed": true
         },
@@ -816,10 +816,10 @@
           "task_name": "PARBAUGHS-Proposal-Readiness-Scanner",
           "cadence_minutes": 120,
           "install_script": "scripts/cron/install-proposal-readiness-scanner.ps1",
-          "last_fire_iso": "2026-05-14T20:00:02.583490+00:00",
-          "age_minutes": 98.9,
+          "last_fire_iso": "2026-05-14T22:00:02.737515+00:00",
+          "age_minutes": 25.6,
           "status": "firing",
-          "label": "firing \u00b7 last fire 98.9min ago",
+          "label": "firing \u00b7 last fire 25.6min ago",
           "os_state": "Ready",
           "is_installed": true
         },
@@ -828,10 +828,10 @@
           "task_name": "PARBAUGHS-Token-Sidecar",
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-sidecar.ps1",
-          "last_fire_iso": "2026-05-14T21:37:13.220284+00:00",
-          "age_minutes": 1.7,
+          "last_fire_iso": "2026-05-14T22:22:13.286253+00:00",
+          "age_minutes": 3.5,
           "status": "firing",
-          "label": "firing \u00b7 last fire 1.7min ago",
+          "label": "firing \u00b7 last fire 3.5min ago",
           "os_state": "Ready",
           "is_installed": true
         }
@@ -840,16 +840,16 @@
         "ts": "2026-05-14 18:15 UTC",
         "ts_iso": "2026-05-14T18:15:58.4395875Z",
         "status": "STALE",
-        "age_minutes": 203.0,
+        "age_minutes": 249.7,
         "source": "heartbeat"
       },
       "working_tree": {
         "state": "dirty-cycling",
-        "label": "dirty (17 files) \u00b7 watcher cycling",
+        "label": "dirty (13 files) \u00b7 watcher cycling",
         "color": "var(--pb-warning)",
-        "dirty_count": 17,
-        "watcher_last_fire": "2026-05-14T21:35:49.899737+00:00",
-        "watcher_minutes_ago": 3.1
+        "dirty_count": 13,
+        "watcher_last_fire": "2026-05-14T22:20:49.915674+00:00",
+        "watcher_minutes_ago": 4.8
       },
       "halts": [],
       "round_trip_last_pass": "2026-05-14T18:15:58.4395875Z"
@@ -879,7 +879,13 @@
         }
       ],
       "amendments_applied": [],
-      "proposals_pending_new": []
+      "proposals_pending_new": [
+        {
+          "id": "PROP-013",
+          "title": "Button coverage gate (click-every-interactive per page)",
+          "ts": "2026-05-14T22:25:00Z"
+        }
+      ]
     },
     "exceptions": []
   }
@@ -1360,8 +1366,8 @@
                         + rows
                         + (installCmds.length > 0
                             ? '<details style="margin-top: var(--space-2);" open><summary style="cursor: pointer; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--accent-brass);">Install command (admin PowerShell - single entry point)</summary>'
-                              + '<pre style="margin-top: var(--space-2); padding: var(--space-2); background: var(--pb-billiard-green-700); border-radius: var(--radius-sm); font-size: var(--text-xs); color: var(--text-primary); overflow-x: auto;"># Run as Administrator (right-click PowerShell -> Run as Administrator):\nSet-Location \'C:\\Users\\Zach\\smoky-mountain-open\'\nPowerShell -ExecutionPolicy Bypass -File .\\scripts\\cron\\install-all.ps1</pre>'
-                              + '<p style="margin-top: var(--space-2); font-size: var(--text-xs); color: var(--text-secondary);">install-all.ps1 is idempotent - checks each PARBAUGHS-* task, installs missing, skips already-installed, prints summary table.</p>'
+                              + '<pre style="margin-top: var(--space-2); padding: var(--space-2); background: var(--pb-billiard-green-700); border-radius: var(--radius-sm); font-size: var(--text-xs); color: var(--text-primary); overflow-x: auto;"># Run as Administrator (right-click PowerShell -> Run as Administrator):\nSet-Location \'C:\\Users\\Zach\\smoky-mountain-open\'\n.\\scripts\\cron\\install-all.ps1</pre>'
+                              + '<p style="margin-top: var(--space-2); font-size: var(--text-xs); color: var(--text-secondary);">install-all.ps1 is idempotent - checks each PARBAUGHS-* task, installs missing, skips already-installed, prints summary table. First run prompts to set ExecutionPolicy=RemoteSigned at CurrentUser scope (one-time fix) so future runs work without -ExecutionPolicy Bypass. Decline to keep bypass-per-run pattern instead.</p>'
                               + '</details>'
                             : '')
                         + '</div>';

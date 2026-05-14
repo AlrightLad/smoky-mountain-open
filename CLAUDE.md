@@ -247,6 +247,29 @@ Learned during v8.0.5: `firebase.json` runtime bump to `nodejs22` deployed succe
 
 See also: Cutover Playbook section for migration-specific patterns.
 
+### PowerShell ExecutionPolicy: one-time CurrentUser fix vs per-run Bypass
+
+Default Windows PowerShell ExecutionPolicy on a fresh install is `Restricted` (Undefined at all scopes). Local `.ps1` scripts won't run without explicit policy work. Two patterns surfaced in this repo:
+
+- **Per-run Bypass** (legacy, still works): `PowerShell -ExecutionPolicy Bypass -File <script>.ps1`. Each invocation declares the bypass. Founder used this for several iterations.
+- **One-time CurrentUser fix** (preferred, iter 16): `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`. After this single command, all `.ps1` invocation in user context works directly — no per-run flag.
+
+`scripts/cron/install-all.ps1` now detects the policy state on first interactive run and offers to set CurrentUser=RemoteSigned with Founder consent. Decline keeps the bypass-per-run pattern. Accept eliminates the friction for all future runs.
+
+### Git push schannel error with large pushes: HTTP/1.1 fallback
+
+Windows git defaults to `http.sslBackend=schannel` and HTTP/2 for transport. Large pushes (>100 commits or >10MB pack) can hit `SEC_E_MESSAGE_ALTERED (0x8009030f)` mid-transfer. This is a known interaction between schannel's TLS implementation and HTTP/2 multiplexing under load.
+
+Fix (applied at repo scope in iter 16):
+```
+git config http.version HTTP/1.1
+git config http.postBuffer 524288000
+```
+
+HTTP/1.1 is more conservative with schannel + serial chunk handling avoids the multiplexing bug. postBuffer raise also helps with large pack uploads.
+
+If the error recurs, batch the push: `git push origin <commit-sha>:main` first, then `git push origin main` to catch up.
+
 ## Cutover Playbook
 
 Captured from v8.0.0 production cutover (April 21, 2026). These patterns turn multi-ship cutovers into single-ship cutovers. Apply to any future migration that touches firestore.rules, schema, or both.

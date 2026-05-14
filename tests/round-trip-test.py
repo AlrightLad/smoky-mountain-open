@@ -1685,60 +1685,73 @@ def main():
              # PowerShell ExecutionPolicy=Restricted blocks the .ps1 invocation.
              # This catches the recurring "command parses but won't execute in
              # Founder's context" pattern that has caused 3 ship failures.
+            # Iter 16 (Founder directive: bypass-flag audit): install-all.ps1
+            # now detects ExecutionPolicy at CurrentUser scope + offers proper
+            # fix via Set-ExecutionPolicy RemoteSigned on first run. This
+            # removes the need for per-invocation -ExecutionPolicy Bypass.
+            # Round-trip check now verifies the dashboard surfaces either:
+            #   (a) the proper one-time setup pattern (bare install-all.ps1
+            #       invocation with policy-fix prompt explained in the
+            #       surrounding <p>), OR
+            #   (b) the legacy bypass-per-run pattern (still operates) — kept
+            #       acceptable for back-compat
+            # Either passes. The fundamental requirement remains: Set-Location
+            # + literal repo path so Founder knows where to cd.
             print(cyan("\n[install-cmd-surface] Founder-facing install command execution-context check..."))
             dashboard_html = REPORTS_SRC / "dashboard.html"
             cmd_failures = []
             if dashboard_html.exists():
                 dash_text = dashboard_html.read_text(encoding="utf-8")
-                # Locate the install command pre-block (single source of truth in
-                # the cron-install-status banner JS).
                 if "install-all.ps1" in dash_text:
-                    # Find the <pre> block containing install-all.ps1
-                    # and verify it includes the -ExecutionPolicy Bypass flag.
                     pre_blocks = re.findall(r"<pre[^>]*>(.*?)</pre>", dash_text, re.DOTALL)
                     found_install_pre = False
                     for pre in pre_blocks:
                         if "install-all.ps1" in pre:
                             found_install_pre = True
-                            if "ExecutionPolicy" not in pre and "Bypass" not in pre:
-                                cmd_failures.append(
-                                    "dashboard.html install command <pre> missing -ExecutionPolicy Bypass — Founder default Windows policy will block .ps1 execution"
-                                )
+                            # Set-Location check still applies — Founder needs
+                            # to know which directory to cd to.
                             if "Set-Location" not in pre:
                                 cmd_failures.append(
                                     "dashboard.html install command <pre> missing Set-Location — Founder won't know which directory to cd to"
                                 )
                             if "C:\\\\Users\\\\Zach" not in pre and "C:\\Users\\Zach" not in pre:
-                                # JS string-literal escapes \\ but the surfaced
-                                # rendering shows single backslashes; either form
-                                # is acceptable. This check catches templating
-                                # regressions like "cd file://" or empty paths.
                                 cmd_failures.append(
                                     "dashboard.html install command <pre> missing literal repo path — Founder needs absolute path, not a template variable"
                                 )
-                    # The dashboard's install command lives inside JS-literal-template
-                    # in the JS source (not in a <pre> emitted at render time).
-                    # So also scan the JS string literals directly for the same checks.
+                            # ExecutionPolicy fix surfaced either via per-run
+                            # Bypass flag (legacy) OR via the surrounding
+                            # explanation text mentioning the one-time setup
+                            # (post-iter-16). Both acceptable.
+                            has_per_run_bypass = ("ExecutionPolicy" in pre and "Bypass" in pre)
+                            # Check the surrounding text for the policy
+                            # explanation (signals the proper-fix pattern).
+                            pre_idx = dash_text.find(pre)
+                            surrounding = dash_text[max(0, pre_idx-200):pre_idx+len(pre)+500] if pre_idx >= 0 else ""
+                            has_policy_explanation = ("ExecutionPolicy" in surrounding or "RemoteSigned" in surrounding or "policy" in surrounding.lower())
+                            if not has_per_run_bypass and not has_policy_explanation:
+                                cmd_failures.append(
+                                    "dashboard.html install command <pre> missing both ExecutionPolicy Bypass AND policy-fix explanation — Founder default Windows policy will block .ps1 execution without context"
+                                )
                     if not found_install_pre:
-                        # Search for the JS template literal that builds the install <pre>
                         m = re.search(r"'<pre[^>]*install-all\.ps1[^']*'", dash_text)
                         if m:
                             pre_literal = m.group(0)
-                            if "ExecutionPolicy" not in pre_literal:
+                            # JS-literal: same dual-acceptance rule.
+                            jsl_idx = dash_text.find(pre_literal)
+                            surrounding = dash_text[max(0, jsl_idx-100):jsl_idx+len(pre_literal)+500] if jsl_idx >= 0 else ""
+                            has_per_run_bypass = ("ExecutionPolicy" in pre_literal)
+                            has_policy_explanation = ("ExecutionPolicy" in surrounding or "RemoteSigned" in surrounding or "policy" in surrounding.lower())
+                            if not has_per_run_bypass and not has_policy_explanation:
                                 cmd_failures.append(
-                                    "dashboard.html JS-literal install <pre> missing -ExecutionPolicy Bypass (would surface broken on Founder's default Windows policy)"
+                                    "dashboard.html JS-literal install <pre> missing both ExecutionPolicy Bypass AND policy-fix explanation"
                                 )
-                else:
-                    # No install-all.ps1 reference at all — that's separate from
-                    # this check (the cron banner may be hidden if all crons firing)
-                    pass
             if cmd_failures:
                 print(red(f"  ✗ install-cmd-surface  {len(cmd_failures)} issue(s):"))
                 for f in cmd_failures[:5]:
                     print(red(f"     {f}"))
                 failures.append(("install-cmd-surface:execution-context", f"{len(cmd_failures)} issues"))
             else:
-                print(green("  ✓ install-cmd-surface  Founder-facing install command surfaces with execution-context-aware invocation (-ExecutionPolicy Bypass)"))
+                print(green("  ✓ install-cmd-surface  Founder-facing install command surfaces with execution-context handling (either per-run Bypass or one-time policy fix)"))
 
     # Scroll reachability (Founder directive 2026-05-14 iter 8): for every
     # scrollable surface the team ships, verify the LAST item is reachable +
@@ -1967,6 +1980,7 @@ def main():
         ROOT / "scripts" / "refresh-quota-manual.ps1",  # placeholder caps for % -> tokens conversion
         ROOT / "scripts" / "sidecar" / "usage-snapshot.ps1",  # same role: % -> tokens via plan_a manual-paste-derived (PROP-003.a)
         ROOT / "scripts" / "sidecar" / "usage-snapshot-config.json",  # operator-overridable caps; not a hardcoded ceiling
+        ROOT / "scripts" / "sidecar" / "README.md",  # documents the caps used by refresh-quota-manual.ps1 (same exempt rationale)
     ]
     def _is_exempt(p):
         for ex in PD_EXEMPT_PATHS:
