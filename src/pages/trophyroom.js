@@ -45,8 +45,12 @@ function renderTrophyRoom(p) {
   h += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:12px 16px">';
   h += '<div class="stat-box" id="trophyFilterBtn" onclick="toggleTrophyFilter(\'' + pid + '\')" style="cursor:pointer;border:1px solid var(--border);transition:border-color .15s"><div class="stat-val" style="font-size:18px">' + achievements.length + '</div><div class="stat-label">Unlocked</div></div>';
   h += '<div class="stat-box"><div class="stat-val" style="font-size:18px">' + rounds.length + '</div><div class="stat-label">Rounds</div></div>';
+  // P4 H1 (iter 16, 2026-05-14): show Best 18 with 9-hole secondary if present.
+  // Same pattern as members.js stat-box treatment. Layout stays 4-col.
   var best = PB.getPlayerBest(pid);
-  h += '<div class="stat-box"><div class="stat-val" style="font-size:18px">' + (best ? best.score : "—") + '</div><div class="stat-label">Best</div></div>';
+  var best9 = PB.getPlayerBest9(pid);
+  var best9Sub = best9 ? '<div class="stat-sub" style="font-size:9px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px">9-hole · ' + best9.score + (best9.holesMode === "back9" ? " · B9" : " · F9") + '</div>' : '';
+  h += '<div class="stat-box"><div class="stat-val" style="font-size:18px">' + (best ? best.score : "—") + '</div><div class="stat-label">' + (best9 ? "Best 18" : "Best") + '</div>' + best9Sub + '</div>';
   var unique = PB.getUniqueCourses(pid);
   h += '<div class="stat-box"><div class="stat-val" style="font-size:18px">' + unique + '</div><div class="stat-label">Courses</div></div>';
   h += '</div>';
