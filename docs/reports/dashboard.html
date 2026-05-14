@@ -250,15 +250,15 @@
             <div data-fq-section="health" style="margin-bottom: var(--space-3);">
                 <div style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); font-weight: 600; margin-bottom: var(--space-1);">System health</div>
                 <div class="pb-kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
-                    <div class="pb-kpi-card" data-fq-health="round-trip">
+                    <div class="pb-kpi-card" data-fq-health="round-trip" title="Last successful round-trip pass from regen-all heartbeat. Persisted at .claude/state/heartbeats/regen-all-last-pass.json on every PASS. STALE if more than 60 minutes old.">
                         <span class="pb-kpi-label">Round-trip last pass</span>
-                        <span class="pb-kpi-value is-small" data-fq="round-trip">&mdash;</span>
-                        <span class="pb-kpi-sub">regen-all heartbeat</span>
+                        <span class="pb-kpi-value is-small" data-fq="round-trip" style="white-space: nowrap;">&mdash;</span>
+                        <span class="pb-kpi-sub" data-fq="round-trip-status">regen-all heartbeat</span>
                     </div>
-                    <div class="pb-kpi-card" data-fq-health="working-tree">
+                    <div class="pb-kpi-card" data-fq-health="working-tree" title="Working tree state. Clean means autonomous work can proceed. Dirty means uncommitted changes pending. The substrate-watcher auto-commits routine cron output to keep tree clean between ships; if it goes silent, autonomous work blocks.">
                         <span class="pb-kpi-label">Working tree</span>
-                        <span class="pb-kpi-value is-small" data-fq="working-tree">&mdash;</span>
-                        <span class="pb-kpi-sub">substrate-watcher managed</span>
+                        <span class="pb-kpi-value is-small" data-fq="working-tree" style="white-space: normal; word-break: break-word; line-height: 1.3;">&mdash;</span>
+                        <span class="pb-kpi-sub" data-fq="working-tree-sub">checking&hellip;</span>
                     </div>
                     <div class="pb-kpi-card" data-fq-health="halts">
                         <span class="pb-kpi-label">Active halts</span>
@@ -266,6 +266,10 @@
                         <span class="pb-kpi-sub" data-fq="halts-summary">unresolved system faults</span>
                     </div>
                 </div>
+                <!-- Cron install status — surfaces any scheduled task that hasn't fired
+                     within 3x its cadence as REQUIRES INSTALL with the admin powershell
+                     command needed. Per Founder directive 2026-05-14 DASHBOARD FIDELITY item 3. -->
+                <div data-fq="cron-install-status" style="margin-top: var(--space-3);"></div>
                 <div data-fq="crons" style="margin-top: var(--space-2); font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-secondary);"></div>
             </div>
 
@@ -559,7 +563,7 @@
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "_aggregate_counts": {
-    "events_total": 587,
+    "events_total": 595,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
@@ -575,7 +579,7 @@
   "quota_status": {
     "state": "empty",
     "as_of": "2026-05-14T15:24:53.5950065Z",
-    "age_seconds": 5275,
+    "age_seconds": 5588,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -586,7 +590,7 @@
     "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
   },
   "founder_queue": {
-    "as_of": "2026-05-14T16:52:49.680057+00:00",
+    "as_of": "2026-05-14T16:58:02.051655+00:00",
     "last_founder_visit": null,
     "governance_gates": {
       "amendments_pending": 1,
@@ -600,8 +604,8 @@
     "system_health": {
       "crons": {
         "downloads-watcher": {
-          "last_run": "2026-05-14T16-50-49Z",
-          "last_log": "2026-05-14T16-50-49Z-downloads-watcher.log"
+          "last_run": "2026-05-14T16-55-49Z",
+          "last_log": "2026-05-14T16-55-49Z-downloads-watcher.log"
         },
         "maintenance": {
           "last_run": "2026-05-14T06-55-01Z",
@@ -620,14 +624,75 @@
           "last_log": "2026-05-14T15-24-53Z-sidecar.log"
         }
       },
+      "cron_install_status": [
+        {
+          "name": "downloads-watcher",
+          "task_name": "PARBAUGHS-Downloads-Watcher",
+          "cadence_minutes": 5,
+          "install_script": "scripts/cron/install-downloads-watcher.ps1",
+          "last_fire_iso": "2026-05-14T16:55:49.498896+00:00",
+          "age_minutes": 2.2,
+          "status": "firing",
+          "label": "firing \u00b7 last fire 2.2min ago"
+        },
+        {
+          "name": "maintenance",
+          "task_name": "PARBAUGHS-Daily-Maintenance",
+          "cadence_minutes": 1440,
+          "install_script": "scripts/cron/install-maintenance.ps1",
+          "last_fire_iso": "2026-05-14T06:55:19.949406+00:00",
+          "age_minutes": 602.7,
+          "status": "firing",
+          "label": "firing \u00b7 last fire 602.7min ago"
+        },
+        {
+          "name": "overnight-triage",
+          "task_name": "PARBAUGHS-Overnight-Triage",
+          "cadence_minutes": 1440,
+          "install_script": "scripts/cron/install-overnight-triage.ps1",
+          "last_fire_iso": null,
+          "age_minutes": null,
+          "status": "missing-or-silent",
+          "label": "missing \u2014 no telemetry events found"
+        },
+        {
+          "name": "proposal-readiness",
+          "task_name": "PARBAUGHS-Proposal-Readiness-Scanner",
+          "cadence_minutes": 120,
+          "install_script": "scripts/cron/install-proposal-readiness-scanner.ps1",
+          "last_fire_iso": "2026-05-14T05:04:49.834159+00:00",
+          "age_minutes": 713.2,
+          "status": "stale",
+          "label": "stale \u00b7 last fire 713.2min ago (cadence 120min)"
+        },
+        {
+          "name": "token-sidecar",
+          "task_name": "PARBAUGHS-Token-Sidecar",
+          "cadence_minutes": 5,
+          "install_script": "scripts/cron/install-sidecar.ps1",
+          "last_fire_iso": "2026-05-14T15:24:53.642316+00:00",
+          "age_minutes": 93.1,
+          "status": "stale",
+          "label": "stale \u00b7 last fire 93.1min ago (cadence 5min)"
+        }
+      ],
       "last_regen_all": {
-        "file": "maintenance-2026-05-14.md",
-        "ts": "2026-05-14",
-        "status": "PASS"
+        "ts": "2026-05-14 16:56 UTC",
+        "ts_iso": "2026-05-14T16:56:58.6941746Z",
+        "status": "PASS",
+        "age_minutes": 1.1,
+        "source": "heartbeat"
       },
-      "working_tree": "auto-clean (substrate-watcher managed)",
+      "working_tree": {
+        "state": "dirty-cycling",
+        "label": "dirty (14 files) \u00b7 watcher cycling",
+        "color": "var(--pb-warning)",
+        "dirty_count": 14,
+        "watcher_last_fire": "2026-05-14T16:55:49.498896+00:00",
+        "watcher_minutes_ago": 2.2
+      },
       "halts": [],
-      "round_trip_last_pass": "2026-05-14"
+      "round_trip_last_pass": "2026-05-14T16:56:58.6941746Z"
     },
     "activity_since_last_visit": {
       "_note": "Counts since last_founder_visit (null = since-forever)",
@@ -899,8 +964,81 @@
 
             // System health
             var hh = fq.system_health || {};
-            setText('[data-fq="round-trip"]', hh.round_trip_last_pass || 'unknown');
-            setText('[data-fq="working-tree"]', hh.working_tree || 'unknown');
+            // Round-trip last pass — use structured last_regen_all dict if available
+            var lr = hh.last_regen_all || {};
+            var lrTs = lr.ts || hh.round_trip_last_pass || 'unknown';
+            var lrStatus = lr.status || 'UNKNOWN';
+            var lrAge = lr.age_minutes;
+            setText('[data-fq="round-trip"]', lrTs);
+            var lrSub = (lrStatus === 'PASS') ? ('regen-all heartbeat · ' + (lrAge != null ? lrAge + 'min ago' : 'fresh'))
+                      : (lrStatus === 'STALE') ? ('STALE · last pass ' + (lrAge != null ? lrAge + 'min' : 'unknown') + ' ago')
+                      : 'unknown';
+            setText('[data-fq="round-trip-status"]', lrSub);
+            var rtCard = document.querySelector('[data-fq-health="round-trip"]');
+            if (rtCard) {
+                rtCard.style.borderLeftColor = (lrStatus === 'STALE') ? 'var(--pb-warning)' : (lrStatus === 'PASS' ? 'var(--pb-success)' : 'var(--pb-error)');
+                rtCard.style.borderLeftWidth = '3px';
+                rtCard.style.borderLeftStyle = 'solid';
+            }
+
+            // Working tree — structured dict with state/label/color
+            var wt = hh.working_tree || {};
+            if (typeof wt === 'string') {
+                // Back-compat for pre-2026-05-14 string format
+                setText('[data-fq="working-tree"]', wt);
+                setText('[data-fq="working-tree-sub"]', 'legacy stub');
+            } else {
+                setText('[data-fq="working-tree"]', wt.label || 'unknown');
+                var wtCard = document.querySelector('[data-fq-health="working-tree"]');
+                if (wtCard && wt.color) {
+                    wtCard.style.borderLeftColor = wt.color;
+                    wtCard.style.borderLeftWidth = '3px';
+                    wtCard.style.borderLeftStyle = 'solid';
+                }
+                var wtSubText = (wt.state === 'clean') ? 'autonomous work can proceed'
+                              : (wt.state === 'dirty-cycling') ? 'commits pending; watcher will catch up'
+                              : (wt.state === 'dirty-blocked') ? 'requires Founder intervention'
+                              : (wt.state === 'clean-no-watcher') ? 'tree clean but watcher silent'
+                              : (wt.state === 'watcher-silent') ? 'cron may need restart'
+                              : 'unknown';
+                setText('[data-fq="working-tree-sub"]', wtSubText);
+            }
+
+            // Cron install status — REQUIRES INSTALL surfaces for missing tasks
+            var cronStatus = hh.cron_install_status || [];
+            var cisEl = document.querySelector('[data-fq="cron-install-status"]');
+            if (cisEl) {
+                var missing = cronStatus.filter(function (c) { return c.status === 'missing-or-silent' || c.status === 'stale'; });
+                if (missing.length === 0) {
+                    cisEl.innerHTML = '<div style="font-size: var(--text-xs); color: var(--accent-positive); font-family: var(--font-mono);">✓ all 5 cron tasks firing within expected cadence</div>';
+                } else {
+                    var installCmds = missing.filter(function (c) { return c.status === 'missing-or-silent'; })
+                                              .map(function (c) { return c.install_script; });
+                    var rows = missing.map(function (c) {
+                        var color = (c.status === 'missing-or-silent') ? 'var(--pb-error)' : 'var(--pb-warning)';
+                        var statusLabel = (c.status === 'missing-or-silent') ? 'REQUIRES INSTALL' : 'STALE';
+                        return '<div style="display:flex; gap:var(--space-2); align-items:baseline; padding:var(--space-1) 0; border-bottom:1px solid var(--border-subtle); font-family: var(--font-mono); font-size: var(--text-xs);">'
+                            + '  <span style="color:' + color + '; font-weight:700; min-width:140px;">' + statusLabel + '</span>'
+                            + '  <span style="color: var(--text-primary); min-width:200px;">' + (c.task_name || c.name) + '</span>'
+                            + '  <span style="color: var(--text-secondary); flex:1;">' + (c.label || '') + '</span>'
+                            + '  <code style="color: var(--accent-brass); font-size: var(--text-2xs);">' + (c.install_script || '') + '</code>'
+                            + '</div>';
+                    }).join('');
+                    var banner = '<div style="padding: var(--space-3); background: rgba(156,74,74,0.06); border: 1px solid var(--pb-error); border-radius: var(--radius-sm); margin-bottom: var(--space-2);">'
+                        + '<div style="font-family: var(--font-mono); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--pb-error); font-weight: 700; margin-bottom: var(--space-2);">'
+                        + '  ' + missing.length + ' cron task' + (missing.length > 1 ? 's' : '') + ' need Founder action</div>'
+                        + rows
+                        + (installCmds.length > 0
+                            ? '<details style="margin-top: var(--space-2);"><summary style="cursor: pointer; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--accent-brass);">Show consolidated install command (admin PowerShell)</summary>'
+                              + '<pre style="margin-top: var(--space-2); padding: var(--space-2); background: var(--pb-billiard-green-700); border-radius: var(--radius-sm); font-size: var(--text-xs); color: var(--text-primary); overflow-x: auto;"># Run as Administrator:\ncd ' + window.location.origin.replace(/^file:\/\/\//, '').split('/docs/')[0].replace(/%20/g, ' ') + '\n'
+                              + installCmds.map(function (s) { return '.\\' + s.replace(/\//g, '\\'); }).join('\n')
+                              + '</pre></details>'
+                            : '')
+                        + '</div>';
+                    cisEl.innerHTML = banner;
+                }
+            }
+
             var halts = hh.halts || [];
             setText('[data-fq="halts-count"]', String(halts.length));
             setText('[data-fq="halts-summary"]', halts.length === 0 ? 'no active halts' : 'unresolved');

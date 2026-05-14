@@ -112,6 +112,22 @@ if ($testRc -ne 0) {
 Pop-Location
 Write-Host "[regen-all] round-trip test PASS" -ForegroundColor Green
 
+# Write heartbeat for dashboard surfacing (Founder directive 2026-05-14
+# "DASHBOARD FIDELITY"): round-trip last-pass timestamp persisted to disk
+# so regen-dashboard.py can read it on the next pass and surface real
+# UTC precision (not just today's date).
+$heartbeatDir = Join-Path $repoRoot ".claude\state\heartbeats"
+$null = New-Item -ItemType Directory -Path $heartbeatDir -Force -ErrorAction SilentlyContinue
+$heartbeatPath = Join-Path $heartbeatDir "regen-all-last-pass.json"
+$heartbeat = @{
+    last_pass_at_utc = (Get-Date).ToUniversalTime().ToString("o")
+    last_pass_at_human = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm 'UTC'")
+    duration_seconds = [int]((Get-Date).ToUniversalTime() - [DateTime]::Parse($startTs).ToUniversalTime()).TotalSeconds
+    status = "PASS"
+} | ConvertTo-Json -Compress
+Set-Content -Path $heartbeatPath -Value $heartbeat -Encoding utf8
+Write-Host "[regen-all] heartbeat written: $heartbeatPath" -ForegroundColor DarkGray
+
 # Ship-close-commit trigger (AMD-011 Step 2 - dispatch scanner inline
 # at ship boundaries). Detects ship-close patterns in HEAD commit
 # message; on match invokes scan-proposal-readiness.py + emits

@@ -365,29 +365,235 @@ def cron_last_fire_map():
 
 
 def last_regen_all_status():
-    """AMD-007 P18.6: most-recent regen-all heartbeat marker. Heuristic:
-    presence of a maintenance log = pass; round-trip status read from
-    aggregates if available."""
+    """Founder directive 2026-05-14 "DASHBOARD FIDELITY" item 1: real
+    timestamp from regen-all heartbeat file written at every successful
+    pass. Falls back to maintenance log marker only if heartbeat absent
+    (transitional). Returns structured dict for dashboard surfacing:
+        - ts: human-readable timestamp
+        - ts_iso: ISO-8601 UTC
+        - status: PASS / STALE / UNKNOWN
+        - age_minutes: minutes since last pass
+        - source: heartbeat / maintenance-log / none
+    """
+    heartbeat = STATE / "heartbeats" / "regen-all-last-pass.json"
+    now_utc = datetime.now(timezone.utc)
+    if heartbeat.exists():
+        try:
+            # utf-8-sig strips the BOM that PowerShell Set-Content -Encoding utf8
+            # writes; without this, json.loads fails on the BOM byte and we
+            # silently fall through to the legacy maintenance-log path.
+            data = json.loads(heartbeat.read_text(encoding="utf-8-sig"))
+            iso = data.get("last_pass_at_utc") or ""
+            ts_dt = datetime.fromisoformat(iso.replace("Z", "+00:00")) if iso else None
+            age_min = round((now_utc - ts_dt).total_seconds() / 60.0, 1) if ts_dt else None
+            # Stale threshold: 60 minutes (regen-all should run at least hourly
+            # via maintenance cron + ad-hoc on ship-close commits).
+            stale = age_min is not None and age_min > 60
+            return {
+                "ts": data.get("last_pass_at_human") or iso,
+                "ts_iso": iso,
+                "status": "STALE" if stale else "PASS",
+                "age_minutes": age_min,
+                "source": "heartbeat",
+            }
+        except (OSError, json.JSONDecodeError):
+            pass
+
+    # Legacy fallback: maintenance log marker (date-only precision)
     d = STATE / "cron"
-    if not d.exists():
-        return None
-    files = sorted(d.glob("maintenance-*.md"))
-    if not files:
-        return None
-    latest = files[-1]
-    m = re.match(r"maintenance-(\d{4}-\d{2}-\d{2})", latest.name)
+    if d.exists():
+        files = sorted(d.glob("maintenance-*.md"))
+        if files:
+            latest = files[-1]
+            m = re.match(r"maintenance-(\d{4}-\d{2}-\d{2})", latest.name)
+            return {
+                "ts": m.group(1) if m else None,
+                "ts_iso": None,
+                "status": "PASS",
+                "age_minutes": None,
+                "source": "maintenance-log",
+            }
+
     return {
-        "file": latest.name,
-        "ts": m.group(1) if m else None,
-        "status": "PASS",  # heuristic — non-zero exits would surface in exceptions
+        "ts": None,
+        "ts_iso": None,
+        "status": "UNKNOWN",
+        "age_minutes": None,
+        "source": "none",
     }
 
 
 def working_tree_status():
-    """AMD-007 P18.6: substrate-watcher auto-commits routine output, so the
-    "uncommitted state hazard" rarely surfaces. This field is a placeholder
-    until a richer git-aware probe lands (intentionally not invoking git
-    from regen — adds latency + couples to git layout)."""
+    """Founder directive 2026-05-14 "DASHBOARD FIDELITY" item 2: actionable
+    working-tree state. Combines git porcelain + watcher cadence telemetry.
+
+    States:
+      clean              - tree clean, autonomous work can proceed (green)
+      dirty-cycling      - tree dirty but watcher firing within cadence (yellow)
+      dirty-blocked      - tree dirty AND watcher silent/stale (red)
+      watcher-silent     - watcher hasn't fired in >2x cadence (red)
+      clean-no-watcher   - tree clean but watcher silent (yellow info)
+    """
+    import subprocess
+    now_utc = datetime.now(timezone.utc)
+
+    # Tree state
+    try:
+        result = subprocess.run(
+            ["git", "status", "--porcelain"],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        dirty_lines = [ln for ln in (result.stdout or "").splitlines() if ln.strip()]
+        is_dirty = len(dirty_lines) > 0
+        dirty_count = len(dirty_lines)
+    except (OSError, subprocess.SubprocessError):
+        return {
+            "state": "unknown",
+            "label": "unknown · git probe failed",
+            "color": "var(--pb-warning)",
+            "dirty_count": 0,
+            "watcher_last_fire": None,
+            "watcher_minutes_ago": None,
+        }
+
+    # Watcher cadence: scan today's telemetry for last cron.downloads-watcher.end
+    last_watcher_dt = None
+    events_dir = STATE / "telemetry" / "events"
+    if events_dir.exists():
+        for ndj in sorted(events_dir.glob("*.ndjson"), reverse=True)[:3]:
+            try:
+                with ndj.open("r", encoding="utf-8") as f:
+                    for line in f:
+                        if "cron.downloads-watcher.end" in line:
+                            try:
+                                evt = json.loads(line)
+                                ts_str = evt.get("timestamp") or ""
+                                if ts_str:
+                                    dt = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+                                    if last_watcher_dt is None or dt > last_watcher_dt:
+                                        last_watcher_dt = dt
+                            except (json.JSONDecodeError, ValueError):
+                                continue
+            except OSError:
+                continue
+            if last_watcher_dt:
+                break
+
+    watcher_minutes_ago = None
+    if last_watcher_dt:
+        watcher_minutes_ago = round((now_utc - last_watcher_dt).total_seconds() / 60.0, 1)
+
+    # Watcher cadence is 5 min; consider silent if >12 min (allowing one missed cycle + a beat)
+    watcher_silent = (watcher_minutes_ago is None) or (watcher_minutes_ago > 12)
+
+    if is_dirty and watcher_silent:
+        state = "dirty-blocked"
+        label = f"dirty ({dirty_count} files) · watcher silent · autonomous blocked"
+        color = "var(--pb-error)"
+    elif is_dirty:
+        state = "dirty-cycling"
+        label = f"dirty ({dirty_count} files) · watcher cycling"
+        color = "var(--pb-warning)"
+    elif watcher_silent:
+        state = "clean-no-watcher"
+        label = f"clean · watcher silent ({watcher_minutes_ago}min ago)" if watcher_minutes_ago is not None else "clean · watcher never fired"
+        color = "var(--pb-warning)"
+    else:
+        state = "clean"
+        label = f"clean · ready · watcher {watcher_minutes_ago}min ago"
+        color = "var(--pb-success)"
+
+    return {
+        "state": state,
+        "label": label,
+        "color": color,
+        "dirty_count": dirty_count,
+        "watcher_last_fire": last_watcher_dt.isoformat() if last_watcher_dt else None,
+        "watcher_minutes_ago": watcher_minutes_ago,
+    }
+
+
+def cron_install_status():
+    """Founder directive 2026-05-14 "DASHBOARD FIDELITY" item 3: detect
+    which PARBAUGHS scheduled tasks are firing vs which need install.
+    Telemetry-derived (doesn't shell out to Get-ScheduledTask which would
+    couple regen to Windows).
+
+    Returns a list of {name, installed_inferred, last_fire_iso, status,
+    install_script_path}.
+
+    Inference rule: if cron.NAME.end events appear within the last 24h
+    AND the script-run cadence is within expected range, mark as
+    "firing"; otherwise "missing-or-silent" with the install script
+    surfaced for Founder admin action.
+    """
+    crons = [
+        {"name": "downloads-watcher",   "task_name": "PARBAUGHS-Downloads-Watcher",            "cadence_minutes": 5,       "install_script": "scripts/cron/install-downloads-watcher.ps1"},
+        {"name": "maintenance",         "task_name": "PARBAUGHS-Daily-Maintenance",            "cadence_minutes": 1440,    "install_script": "scripts/cron/install-maintenance.ps1"},
+        {"name": "overnight-triage",    "task_name": "PARBAUGHS-Overnight-Triage",             "cadence_minutes": 1440,    "install_script": "scripts/cron/install-overnight-triage.ps1"},
+        {"name": "proposal-readiness",  "task_name": "PARBAUGHS-Proposal-Readiness-Scanner",   "cadence_minutes": 120,     "install_script": "scripts/cron/install-proposal-readiness-scanner.ps1"},
+        {"name": "token-sidecar",       "task_name": "PARBAUGHS-Token-Sidecar",                "cadence_minutes": 5,       "install_script": "scripts/cron/install-sidecar.ps1"},
+    ]
+
+    now_utc = datetime.now(timezone.utc)
+    events_dir = STATE / "telemetry" / "events"
+    events_today = {}
+    if events_dir.exists():
+        for ndj in sorted(events_dir.glob("*.ndjson"), reverse=True)[:2]:
+            try:
+                with ndj.open("r", encoding="utf-8") as f:
+                    for line in f:
+                        for c in crons:
+                            evt_marker = f'"cron.{c["name"]}.end"'
+                            if evt_marker in line:
+                                try:
+                                    evt = json.loads(line)
+                                    ts_str = evt.get("timestamp") or ""
+                                    if ts_str:
+                                        dt = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+                                        prev = events_today.get(c["name"])
+                                        if prev is None or dt > prev:
+                                            events_today[c["name"]] = dt
+                                except (json.JSONDecodeError, ValueError):
+                                    continue
+            except OSError:
+                continue
+
+    out = []
+    for c in crons:
+        last_fire = events_today.get(c["name"])
+        age_minutes = round((now_utc - last_fire).total_seconds() / 60.0, 1) if last_fire else None
+        # Fire-vs-silent threshold: 3× cadence (allows for cron variance)
+        silent_threshold = c["cadence_minutes"] * 3
+        if age_minutes is None:
+            status = "missing-or-silent"
+            label = "missing — no telemetry events found"
+        elif age_minutes > silent_threshold:
+            status = "stale"
+            label = f"stale · last fire {age_minutes}min ago (cadence {c['cadence_minutes']}min)"
+        else:
+            status = "firing"
+            label = f"firing · last fire {age_minutes}min ago"
+        out.append({
+            "name": c["name"],
+            "task_name": c["task_name"],
+            "cadence_minutes": c["cadence_minutes"],
+            "install_script": c["install_script"],
+            "last_fire_iso": last_fire.isoformat() if last_fire else None,
+            "age_minutes": age_minutes,
+            "status": status,
+            "label": label,
+        })
+    return out
+
+
+def working_tree_status_legacy():
+    """Pre-2026-05-14 placeholder kept for any external readers; the live
+    surface uses working_tree_status() (dict) defined below."""
     return "auto-clean (substrate-watcher managed)"
 
 
@@ -405,9 +611,13 @@ def active_halts():
 
 
 def round_trip_last_pass_ts():
-    """AMD-007 P18.6: derive from most recent maintenance log."""
+    """Founder directive 2026-05-14 DASHBOARD FIDELITY item 1: surface the
+    ISO timestamp + human-readable form of the last round-trip pass."""
     info = last_regen_all_status()
-    return info["ts"] if info else None
+    if not info:
+        return None
+    # Prefer ISO if present; fall back to human label
+    return info.get("ts_iso") or info.get("ts")
 
 
 def get_last_founder_visit():
@@ -473,6 +683,7 @@ def build_founder_queue():
         },
         "system_health": {
             "crons": cron_map,
+            "cron_install_status": cron_install_status(),
             "last_regen_all": last_regen_all_status(),
             "working_tree": working_tree_status(),
             "halts": active_halts(),
