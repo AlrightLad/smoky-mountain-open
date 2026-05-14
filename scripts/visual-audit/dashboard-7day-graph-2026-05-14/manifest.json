@@ -1,0 +1,266 @@
+{
+  "captured_at": "2026-05-14T17:33:51.061Z",
+  "repo_root": "C:\\Users\\Zach\\smoky-mountain-open",
+  "reports_dir": "C:\\Users\\Zach\\smoky-mountain-open\\docs\\reports",
+  "browsers": [
+    "chromium"
+  ],
+  "viewports": [
+    {
+      "name": "desktop-wide",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "name": "tablet",
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "name": "mobile",
+      "width": 375,
+      "height": 812
+    }
+  ],
+  "pages": [
+    "dashboard.html",
+    "activity.html",
+    "proposals.html",
+    "discussion-bubbles.html",
+    "main-flows.html",
+    "design-system.html",
+    "token-usage.html",
+    "index.html"
+  ],
+  "files": [
+    {
+      "browser": "chromium",
+      "page": "dashboard.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/dashboard-desktop-wide.png",
+      "size_bytes": 247267
+    },
+    {
+      "browser": "chromium",
+      "page": "activity.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/activity-desktop-wide.png",
+      "size_bytes": 71546
+    },
+    {
+      "browser": "chromium",
+      "page": "proposals.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/proposals-desktop-wide.png",
+      "size_bytes": 187418
+    },
+    {
+      "browser": "chromium",
+      "page": "discussion-bubbles.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/discussion-bubbles-desktop-wide.png",
+      "size_bytes": 273509
+    },
+    {
+      "browser": "chromium",
+      "page": "main-flows.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/main-flows-desktop-wide.png",
+      "size_bytes": 472644
+    },
+    {
+      "browser": "chromium",
+      "page": "design-system.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/design-system-desktop-wide.png",
+      "size_bytes": 561994
+    },
+    {
+      "browser": "chromium",
+      "page": "token-usage.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/token-usage-desktop-wide.png",
+      "size_bytes": 123359
+    },
+    {
+      "browser": "chromium",
+      "page": "index.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/index-desktop-wide.png",
+      "size_bytes": 97221
+    },
+    {
+      "browser": "chromium",
+      "page": "dashboard.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/dashboard-desktop.png",
+      "size_bytes": 235217
+    },
+    {
+      "browser": "chromium",
+      "page": "activity.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/activity-desktop.png",
+      "size_bytes": 67151
+    },
+    {
+      "browser": "chromium",
+      "page": "proposals.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/proposals-desktop.png",
+      "size_bytes": 177068
+    },
+    {
+      "browser": "chromium",
+      "page": "discussion-bubbles.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/discussion-bubbles-desktop.png",
+      "size_bytes": 214771
+    },
+    {
+      "browser": "chromium",
+      "page": "main-flows.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/main-flows-desktop.png",
+      "size_bytes": 418296
+    },
+    {
+      "browser": "chromium",
+      "page": "design-system.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/design-system-desktop.png",
+      "size_bytes": 527838
+    },
+    {
+      "browser": "chromium",
+      "page": "token-usage.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/token-usage-desktop.png",
+      "size_bytes": 117461
+    },
+    {
+      "browser": "chromium",
+      "page": "index.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/index-desktop.png",
+      "size_bytes": 94175
+    },
+    {
+      "browser": "chromium",
+      "page": "dashboard.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/dashboard-tablet.png",
+      "size_bytes": 243044
+    },
+    {
+      "browser": "chromium",
+      "page": "activity.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/activity-tablet.png",
+      "size_bytes": 68825
+    },
+    {
+      "browser": "chromium",
+      "page": "proposals.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/proposals-tablet.png",
+      "size_bytes": 165599
+    },
+    {
+      "browser": "chromium",
+      "page": "discussion-bubbles.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/discussion-bubbles-tablet.png",
+      "size_bytes": 325990
+    },
+    {
+      "browser": "chromium",
+      "page": "main-flows.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/main-flows-tablet.png",
+      "size_bytes": 389322
+    },
+    {
+      "browser": "chromium",
+      "page": "design-system.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/design-system-tablet.png",
+      "size_bytes": 527462
+    },
+    {
+      "browser": "chromium",
+      "page": "token-usage.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/token-usage-tablet.png",
+      "size_bytes": 111705
+    },
+    {
+      "browser": "chromium",
+      "page": "index.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/index-tablet.png",
+      "size_bytes": 95198
+    },
+    {
+      "browser": "chromium",
+      "page": "dashboard.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/dashboard-mobile.png",
+      "size_bytes": 292788
+    },
+    {
+      "browser": "chromium",
+      "page": "activity.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/activity-mobile.png",
+      "size_bytes": 69606
+    },
+    {
+      "browser": "chromium",
+      "page": "proposals.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/proposals-mobile.png",
+      "size_bytes": 157318
+    },
+    {
+      "browser": "chromium",
+      "page": "discussion-bubbles.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/discussion-bubbles-mobile.png",
+      "size_bytes": 302664
+    },
+    {
+      "browser": "chromium",
+      "page": "main-flows.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/main-flows-mobile.png",
+      "size_bytes": 318820
+    },
+    {
+      "browser": "chromium",
+      "page": "design-system.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/design-system-mobile.png",
+      "size_bytes": 552440
+    },
+    {
+      "browser": "chromium",
+      "page": "token-usage.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/token-usage-mobile.png",
+      "size_bytes": 109118
+    },
+    {
+      "browser": "chromium",
+      "page": "index.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/dashboard-7day-graph-2026-05-14/index-mobile.png",
+      "size_bytes": 102190
+    }
+  ]
+}
