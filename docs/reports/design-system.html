@@ -304,6 +304,47 @@
         </div>
     </section>
 
+    <!-- ============= FORM CONTROLS ============= -->
+    <section class="ds-section">
+        <h2 class="ds-section-h">Form controls</h2>
+        <div class="pb-divider pb-divider--brass"></div>
+        <p class="ds-section-sub">Filter bars, search inputs, and select dropdowns share one canonical look. <code>.pb-select</code>, <code>.pb-input</code>, and <code>.pb-textarea</code> all use the same border / focus / hover pattern; only the chevron differs for selects. Live in <code>_assets/dashboard-shell.css</code>.</p>
+
+        <div class="pb-filter-bar" style="margin-bottom: var(--space-5);">
+            <div class="pb-filter-group">
+                <label class="pb-filter-label" for="ds-select-demo">Lane</label>
+                <select class="pb-select" id="ds-select-demo">
+                    <option>All lanes</option>
+                    <option>Lane 1 &mdash; UI Polish</option>
+                    <option>Lane 2 &mdash; Bug Discovery</option>
+                </select>
+            </div>
+            <div class="pb-filter-group">
+                <label class="pb-filter-label" for="ds-input-demo">Search</label>
+                <input class="pb-input" id="ds-input-demo" type="text" placeholder="filter by id, title, file&hellip;">
+            </div>
+            <div class="pb-filter-group">
+                <label class="pb-filter-label" for="ds-select-demo-2">Sort</label>
+                <select class="pb-select" id="ds-select-demo-2">
+                    <option>Newest first</option>
+                    <option>Cost &uarr;</option>
+                    <option>Cost &darr;</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="pb-filter-bar" style="align-items: flex-start;">
+            <div class="pb-filter-group" style="flex: 1; min-width: 280px;">
+                <label class="pb-filter-label" for="ds-textarea-demo">Decision note</label>
+                <textarea class="pb-textarea" id="ds-textarea-demo" placeholder="Optional context for Founder review&hellip;"></textarea>
+            </div>
+            <div class="pb-filter-group">
+                <label class="pb-filter-label" for="ds-input-disabled">Disabled state</label>
+                <input class="pb-input" id="ds-input-disabled" type="text" value="pending review" disabled>
+            </div>
+        </div>
+    </section>
+
     <!-- ============= COMPOSITION EXAMPLES ============= -->
     <section class="ds-section">
         <h2 class="ds-section-h">Composition examples</h2>

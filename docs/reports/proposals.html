@@ -204,30 +204,30 @@
         </aside>
 
         <section>
-            <div class="filters">
-                <div class="filter-group">
-                    <span class="filter-label">Lane</span>
-                    <select id="filter-lane">
+            <div class="pb-filter-bar">
+                <div class="pb-filter-group">
+                    <label class="pb-filter-label" for="filter-lane">Lane</label>
+                    <select class="pb-select" id="filter-lane">
                         <option value="all">All lanes</option>
-                        <option value="1">Lane 1 — UI Polish</option>
-                        <option value="2">Lane 2 — Bug Discovery</option>
-                        <option value="3">Lane 3 — Performance</option>
-                        <option value="4">Lane 4 — Design System</option>
+                        <option value="1">Lane 1 &mdash; UI Polish</option>
+                        <option value="2">Lane 2 &mdash; Bug Discovery</option>
+                        <option value="3">Lane 3 &mdash; Performance</option>
+                        <option value="4">Lane 4 &mdash; Design System</option>
                     </select>
                 </div>
-                <div class="filter-group">
-                    <span class="filter-label">Status</span>
-                    <select id="filter-status">
+                <div class="pb-filter-group">
+                    <label class="pb-filter-label" for="filter-status">Status</label>
+                    <select class="pb-select" id="filter-status">
                         <option value="all">All</option>
                         <option value="undecided">Undecided</option>
                         <option value="decided">Decided</option>
                     </select>
                 </div>
-                <div class="filter-group">
-                    <span class="filter-label">Sort</span>
-                    <select id="sort-by">
-                        <option value="cost-asc">Cost ↑</option>
-                        <option value="cost-desc">Cost ↓</option>
+                <div class="pb-filter-group">
+                    <label class="pb-filter-label" for="sort-by">Sort</label>
+                    <select class="pb-select" id="sort-by">
+                        <option value="cost-asc">Cost &uarr;</option>
+                        <option value="cost-desc">Cost &darr;</option>
                         <option value="lane">By lane</option>
                         <option value="newest">Newest first</option>
                     </select>
@@ -236,20 +236,20 @@
         </section>
 
         <section>
-            <div class="section-header">Pending review <span class="section-count" data-section-count="pending">—</span></div>
+            <div class="pb-section-title">Pending review <span class="section-count" data-section-count="pending">—</span></div>
             <p class="text-muted" style="font-size: 0.8125rem; margin-bottom: var(--space-3);">Founder's active workspace. Mark each as approve / reject / defer, then export decisions.</p>
             <div id="proposal-list"></div>
         </section>
 
         <section class="mt-4">
-            <div class="section-header">Approved — in flight <span class="section-count" data-section-count="approved">—</span></div>
+            <div class="pb-section-title">Approved — in flight <span class="section-count" data-section-count="approved">—</span></div>
             <p class="text-muted" style="font-size: 0.8125rem; margin-bottom: var(--space-3);">Past Founder's decision point. No buttons — these are awaiting an implementing commit ("Implements PROP-NNN") which auto-promotes to shipped.</p>
             <div id="proposal-list-approved"></div>
         </section>
 
         <section class="mt-4">
             <details>
-                <summary class="section-header" style="cursor: pointer;">Deferred <span class="section-count" data-section-count="deferred">—</span></summary>
+                <summary class="pb-section-title" style="cursor: pointer;">Deferred <span class="section-count" data-section-count="deferred">—</span></summary>
                 <p class="text-muted" style="font-size: 0.8125rem; margin: var(--space-2) 0 var(--space-3);">Founder deferred for later consideration. Un-deferring is a future feature.</p>
                 <div id="proposal-list-deferred"></div>
             </details>
@@ -257,7 +257,7 @@
 
         <section class="mt-4">
             <details>
-                <summary class="section-header" style="cursor: pointer;">Shipped — archive <span class="section-count" data-section-count="shipped">—</span></summary>
+                <summary class="pb-section-title" style="cursor: pointer;">Shipped — archive <span class="section-count" data-section-count="shipped">—</span></summary>
                 <p class="text-muted" style="font-size: 0.8125rem; margin: var(--space-2) 0 var(--space-3);">Last 50 shown. Append-only audit trail in <code>.claude/state/proposals/shipped-log.md</code>. Each card cites the implementing commit (short sha).</p>
                 <div id="proposal-list-shipped"></div>
             </details>
@@ -265,7 +265,7 @@
 
         <section class="mt-4">
             <details>
-                <summary class="section-header" style="cursor: pointer;">Rejected — archive <span class="section-count" data-section-count="rejected">—</span></summary>
+                <summary class="pb-section-title" style="cursor: pointer;">Rejected — archive <span class="section-count" data-section-count="rejected">—</span></summary>
                 <p class="text-muted" style="font-size: 0.8125rem; margin: var(--space-2) 0 var(--space-3);">Last 50 shown. Terminal archive.</p>
                 <div id="proposal-list-rejected"></div>
             </details>
@@ -389,7 +389,7 @@
     "shipped_total": 0,
     "rejected_total": 0
   },
-  "as_of": "2026-05-13T23:55:24.923776+00:00",
+  "as_of": "2026-05-14T00:29:56.398614+00:00",
   "schema_version": 2,
   "archive_display_cap": 50
 }
