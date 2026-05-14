@@ -258,6 +258,11 @@ function renderMemberDetailWithData(p) {
   var rounds = PB.getPlayerRounds(pid).filter(function(r){return r.status !== "abandoned";});
   var avg = PB.getPlayerAvg(pid);
   var best = PB.getPlayerBest(pid);
+  // P4 H1 (iter 16, 2026-05-14): 9-hole best surfaces alongside 18-hole
+  // best per CLAUDE.md Known Bug #4. records.js already inlines this
+  // split; data.js getPlayerBest9 makes it a reusable accessor (commit
+  // 7c3b5ba).
+  var best9 = PB.getPlayerBest9(pid);
   var ghinHcap = PB.calcHandicap(rounds);
   var hcap = ghinHcap; // Only show GHIN-calculated handicap — manual handicap is for reference only
   var unique = PB.getUniqueCourses(pid);
@@ -391,10 +396,17 @@ function renderMemberDetailWithData(p) {
   h += statBox(avg || "—", "Avg Score");
   var bestScore = best ? best.score : "—";
   var bestRoundId = best ? best.roundId : null;
+  // P4 H1: include 9-hole best as small secondary value if a 9-hole round
+  // exists. Keeps the 3-column grid intact (visual rhythm); adds info density
+  // only in the existing Best tile.
+  var best9Score = best9 ? best9.score : null;
+  var best9Suffix = best9Score !== null
+    ? '<div class="stat-sub" style="font-size:9px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px">9-hole · ' + best9Score + (best9 && best9.holesMode === "back9" ? " · B9" : " · F9") + '</div>'
+    : '';
   if (bestRoundId) {
-    h += '<div class="stat-box" style="cursor:pointer" onclick="Router.go(\'rounds\',{roundId:\'' + bestRoundId + '\'})"><div class="stat-val" data-count="' + bestScore + '" style="color:var(--birdie)">' + bestScore + '</div><div class="stat-label">Best <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div></div>';
+    h += '<div class="stat-box" style="cursor:pointer" onclick="Router.go(\'rounds\',{roundId:\'' + bestRoundId + '\'})"><div class="stat-val" data-count="' + bestScore + '" style="color:var(--birdie)">' + bestScore + '</div><div class="stat-label">Best 18 <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div>' + best9Suffix + '</div>';
   } else {
-    h += statBox(bestScore, "Best");
+    h += '<div class="stat-box"><div class="stat-val"' + (bestScore !== "—" ? ' data-count="' + bestScore + '"' : '') + '>' + (bestScore !== "—" ? '0' : bestScore) + '</div><div class="stat-label">' + (best9Score !== null ? "Best 18" : "Best") + '</div>' + best9Suffix + '</div>';
   }
   // Render the Rounds stat-box inline so data-stat and data-count sit on the
   // .stat-val div (the count-up animation target). The prior <span> wrapper
