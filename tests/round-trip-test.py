@@ -1513,7 +1513,12 @@ def main():
         # in the data block so display-layer regressions surface immediately.
         ("expected components (data)", expected_total_components is not None and expected_total_components >= 40),
         ("expected steps (data)",      expected_total_steps is not None and expected_total_steps >= 30),
-        ("8 path-rich flows",          mf_data is not None and len((mf_data.get("flows") or [])) == 8),
+        # P1 iter 16 (2026-05-14): expanded from 8 hand-authored flows to all
+        # 62 via scripts/generate-flow-paths.py per Founder directive "every
+        # rail click must light up the diagram". F1-F8 retain detailed
+        # hand-authored steps; F9-F62 have generated paths derived from
+        # flow_rail metadata + architecture component inventory.
+        ("62 path-rich flows",         mf_data is not None and len((mf_data.get("flows") or [])) == 62),
         ("62 rail entries",            mf_data is not None and len((mf_data.get("flow_rail") or [])) == 62),
     ]
     # Iter 6 (2026-05-14, Founder directive): negative-presence sentinels.
