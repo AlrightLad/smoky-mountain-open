@@ -158,3 +158,4 @@
 {"event_type": "proposal.readiness.ready", "timestamp": "2026-05-14T05:28:43.367812+00:00", "data": {"proposal_id": "PROP-003.b", "criteria_passed": 8}}
 {"event_type": "proposal.readiness.deferred", "timestamp": "2026-05-14T05:28:43.368817+00:00", "data": {"proposal_id": "PROP-004", "criteria_failed": ["cross_cutting_dependency: depends on unshipped/unapplied ['PROP-003.b']"]}}
 {"event_type":"ship.close.scanner-dispatched","timestamp":"2026-05-14T05:28:43Z","data":{"head_commit_subject":"Shipped PROP-003.a: token meter sidecar mechanics","ready_count":1,"deferred_count":1,"scanner_exit":0}}
+{"timestamp":"2026-05-14T05:30:49.0465336Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"fe674a7e4982","cron_source":"downloads-watcher"}}
