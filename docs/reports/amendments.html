@@ -144,7 +144,10 @@
     <script id="report-data" type="application/json">
 {
   "amendments": {
-    "pending": [
+    "pending": [],
+    "approved": [],
+    "deferred": [],
+    "applied": [
       {
         "id": "AMD-014",
         "title": "PAUSE_DISCIPLINE section 2.1 reactivation - meter-gated rate-limit threshold",
@@ -152,7 +155,7 @@
         "source_draft_path": ".claude/state/amendments/pending/AMD-014-pause-discipline-reactivation.md",
         "scope_summary": "Amends section 2.1 of PAUSE_DISCIPLINE_v8.2 to reactivate the percentage-based rate-limit threshold WHEN quota-status.json from PROP-003.a is fresh (<6h old). When stale or absent, the section stays in its current dormant state (op-count-only). Bridges meter-wired vs meter-unwired states honestly.",
         "type": "edit-section",
-        "section_anchor": "Section 2.1 - Rate-limit threshold (REPLACED)",
+        "section_anchor": "Section 2.1 \u2014 Rate-limit threshold (REPLACED)",
         "depends_on": [
           "PROP-003.a"
         ],
@@ -166,11 +169,7 @@
         "split_lineage": "Founder Option A 2026-05-14 - PROP-003 split into PROP-003.a + AMD-014 + PROP-003.b. This amendment is the governance piece.",
         "_body_preview": "# AMD-014 \u2014 PAUSE_DISCIPLINE section 2.1 reactivation\n\nPer Founder Option A 2026-05-14 (PROP-003 split). Reactivates the\npercentage-based rate-limit threshold conditionally on quota-status.json\nfreshness.\n\n## Section 2.1 \u2014 Rate-limit threshold (RE-REACTIVATED with meter gate)\n\nWhen `.claude/state/quota-status.json` from PROP-003.a is FRESH\n(`stale_seconds` < 21600 = 6 hours):\n\nThe agent pauses at ",
         "_filename": "AMD-014-pause-discipline-reactivation.md"
-      }
-    ],
-    "approved": [],
-    "deferred": [],
-    "applied": [
+      },
       {
         "id": "AMD-013",
         "title": "ROADMAP v2 \u2014 Wave Plan Re-validation 2026-05-14 (W1.S1 split + W1.I2 re-scope + 5 new ships)",
@@ -439,13 +438,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 1,
+    "pending": 0,
     "approved": 0,
     "deferred": 0,
-    "applied_total": 13,
+    "applied_total": 14,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T04:59:47.635508+00:00",
+  "as_of": "2026-05-14T05:06:40.666207+00:00",
   "schema_version": 1,
   "archive_display_cap": 50
 }

@@ -162,6 +162,41 @@ If you add a new PS script that touches `.sh` files, copy this function in and u
 | `install-overnight-triage.ps1` | Register the overnight-triage task (admin + password) |
 | `uninstall-overnight-triage.ps1` | Remove the overnight-triage task (admin) |
 | `test-overnight-triage.ps1` | Manual single-run; LAUNCHES Claude Code, up to 4h |
+| `proposal-readiness.ps1` | Scanner cron — every 2 hours. Invokes `.claude/scripts/scan-proposal-readiness.py` against approved/ queue per AMD-011 |
+| `install-proposal-readiness-scanner.ps1` | Register the proposal-readiness Scheduled Task (admin) |
+| `uninstall-proposal-readiness-scanner.ps1` | Remove the proposal-readiness task (admin) |
 | `logs/` | Per-run log files (`<ts>-<task>.log`) |
 | `logs/archive/` | Compressed logs > 30 days old |
 | `quarantine/` | Junk files moved here for 30-day recovery |
+
+## 4. Proposal readiness scanner — every 2 hours
+
+Per AMD-011 Auto-Execute Protocol. Reads `.claude/state/proposals/approved/PROP-*.md`, evaluates against AMD-009 8-criteria readiness gate. Writes marker JSON to `.claude/state/proposals/ship-readiness-deferred/<PROP-ID>.json` for non-ready proposals; READY proposals enter the auto-execute eligible state via `proposal.readiness.ready` telemetry events.
+
+### Install (Founder, as Administrator)
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/cron/install-proposal-readiness-scanner.ps1
+```
+
+### Test manually (no admin needed)
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/cron/proposal-readiness.ps1
+```
+
+### Uninstall
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/cron/uninstall-proposal-readiness-scanner.ps1
+```
+
+### Trigger sources
+
+- **Cron — every 2 hours** via this Scheduled Task.
+- **Ship-close commits** — `scripts/regen-all.{ps1,sh}` detect ship-close pattern in HEAD commit message and dispatch the scanner inline. Combined effect: proposals get evaluated within 2 hours of approval OR immediately at ship boundaries, whichever comes first.
+
+### Pre-flight checks (skip if any fail)
+
+- `.claude/state/cron/cron-paused.json` absent
+- `.claude/state/last-verify.json` resume_after passed (if file present)

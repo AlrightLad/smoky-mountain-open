@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T04:59:47.350481+00:00",
+  "generated_at": "2026-05-14T05:06:40.140283+00:00",
   "constants": {
     "INPUT_RATE_TOKENS_PER_SEC": 100,
     "OUTPUT_RATE_TOKENS_PER_SEC": 30
@@ -106,6 +106,18 @@
           "estimated": 130
         }
       }
+    },
+    "proposal-readiness": {
+      "real": 0,
+      "estimated": 0,
+      "manual": 0,
+      "total_real_plus_estimated": 0,
+      "by_day": {
+        "2026-05-14": {
+          "real": 0,
+          "estimated": 0
+        }
+      }
     }
   },
   "by_ship": {
@@ -143,11 +155,11 @@
     "estimated": 4200130,
     "manual": 0,
     "first_event_at": "2026-05-13T11:55:00+00:00",
-    "last_event_at": "2026-05-14T04:59:47+00:00"
+    "last_event_at": "2026-05-14T05:05:49+00:00"
   },
   "_counts": {
     "real_events": 1,
-    "estimated_events": 118,
+    "estimated_events": 123,
     "manual_entries": 0
   }
 }
