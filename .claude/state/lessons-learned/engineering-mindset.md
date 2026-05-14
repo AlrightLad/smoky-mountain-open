@@ -251,6 +251,123 @@ Unacceptable:
 If team cannot resolve a verification question autonomously → AMD-015
 escalation with proposed answer + rationale, NOT "look at this for me".
 
+---
+
+## Addendum (iter 9, 2026-05-14): the agent-context vs user-context gap
+
+After iter 8 shipped its scroll fix + side-by-side artifact +
+checklist + 4 PASS verifications, Founder reported the page STILL
+shows broken state in actual use. This is the ninth iteration where
+agent-context PASS does not match user-context FAIL.
+
+### Observation 6 — Agent context ≠ user context
+
+What the team verifies in:
+
+| Layer | Agent context | User context |
+|---|---|---|
+| Browser | Playwright Chromium (bundled) | Founder's installed Chrome / Edge / Brave / Firefox |
+| Headless vs headed | Often headless | Always headed |
+| Viewport | Synthetic (1920×1080) | Real (varies — 1440? 2560? 1920?) |
+| Scroll mechanism | `element.scrollTop = N` (programmatic) | Mouse wheel / trackpad / keyboard |
+| OS scrollbar | Linux/CI default (overlay or reserved varies) | Windows scrollbar styling Founder sees |
+| Zoom | 100% | Whatever Founder set |
+| Fonts | Playwright bundled | Founder's installed system fonts |
+| DPR | 1 (typical CI) | 1, 1.25, 1.5, 2 — varies by display |
+| Hardware accel | Disabled or stubbed | Real GPU compositing |
+
+When a bug shows in user context but not agent context, the
+team's verification is incorrect REGARDLESS of how many
+checklist rows pass. Agent-context PASS means nothing in
+isolation for user-facing surfaces.
+
+### Root cause
+
+The team has been operating as if agent-context tests are a
+sufficient proxy for user-context behavior. They're not. The
+9-iteration main-flows pattern is the structural proof.
+
+The engineering equivalent of "test in production" the team has
+been missing: VERIFY ON THE ACTUAL TARGET ENVIRONMENT, not a
+nearby-but-different proxy.
+
+### Fix 8 — User-context verification gate (PROP-007)
+
+Plan A (operative): Founder runs ONE command per user-facing
+ship-close: `node scripts/visual-audit/founder-context-capture.mjs`.
+Script:
+- Launches headed `channel: "chrome"` Playwright (Founder's
+  installed Chrome binary, not bundled Chromium) — same Chrome
+  version, fonts, OS scrollbar treatment, DPR
+- Falls back to Playwright Chromium headed if channel:chrome
+  unavailable
+- Captures 4 screenshots at scroll positions (top, mid, bottom,
+  full-page bottom)
+- Writes capture-meta.json with browser version, OS, viewport,
+  DPR, file checksums
+- Output to `.claude/state/<area>/founder-real-context/<ts>/`
+
+Team picks up via existing watcher pattern (commit → next agent
+loop diffs the capture against expected reference).
+
+Plan B (reserved): if Plan A fidelity proves insufficient,
+install Playwright MCP server to drive Founder's profiled Chrome
+over CDP. Higher fidelity, more setup.
+
+Plan C (reserved): if Plan B insufficient, fall back to Claude
+Code --remote-control during ship-close verification phases.
+Highest cognitive cost; only used when Plans A+B surface
+false-negatives.
+
+### Fix 9 — Round-trip [user-context-gate] block
+
+`tests/round-trip-test.py` extended with `[user-context-gate]`:
+when a user-facing surface (currently `main-flows.html`; expand
+roster per future PROPs) has been modified after the most recent
+Founder-context capture, round-trip FAILS with message:
+"user-context capture required — run founder-context-capture.mjs
+before ship-close".
+
+Catches the iter-9 pattern automatically: any agent who modifies
+main-flows.html without obtaining a fresh Founder-context
+capture cannot ship-close.
+
+### Fix 10 — Critic vocabulary expansion
+
+"Agent-context PASS" alone is BANNED as ship-close evidence for
+user-facing surfaces.
+
+Acceptable evidence for user-facing surfaces (post-PROP-007):
+1. Round-trip + scroll-reachability (agent-context smoke) — necessary
+2. Side-by-side comparison + checklist (visual reference match) — necessary
+3. **User-context capture from
+   `.claude/state/<area>/founder-real-context/<ts>/` (channel:chrome
+   headed Playwright run by Founder) — necessary**
+
+All three required for user-facing ship-close. Any one missing =
+ship blocks. (This is the gate that the 9-iteration main-flows
+work has been missing.)
+
+### What this looks like in practice
+
+After PROP-007 applies + Founder runs `node scripts/visual-audit/
+founder-context-capture.mjs` once per user-facing ship:
+
+- Ship work proceeds normally (CSS edits, structural changes, etc.)
+- Before declaring ship-close, agent confirms a fresh capture
+  exists in `.claude/state/<area>/founder-real-context/<ts>/`
+- Agent diffs the capture against expected (reference frames for
+  match-the-reference ships, or the prior capture for regression-
+  catch ships)
+- Agent reports user-context observations as the FIRST evidence,
+  agent-context PASS as supporting evidence
+- Round-trip blocks if capture is stale relative to surface
+  modification
+
+The 9-iteration main-flows pattern cannot recur for any surface
+PROP-007 covers, because agent-context-only PASS will fail the
+user-context-gate.
+
 ## Cross-references
 
 - `docs/agents/AUTONOMOUS_FAILURE_RECOVERY_v8.3.md` (3+ attempts

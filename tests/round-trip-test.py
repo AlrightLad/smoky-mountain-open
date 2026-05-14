@@ -47,10 +47,11 @@ DATA_BLOCK_RE = re.compile(
 )
 
 # ---------- ANSI helpers ----------
-def green(s): return f"\033[32m{s}\033[0m"
-def red(s):   return f"\033[31m{s}\033[0m"
-def cyan(s):  return f"\033[36m{s}\033[0m"
-def bold(s):  return f"\033[1m{s}\033[0m"
+def green(s):  return f"\033[32m{s}\033[0m"
+def red(s):    return f"\033[31m{s}\033[0m"
+def cyan(s):   return f"\033[36m{s}\033[0m"
+def yellow(s): return f"\033[33m{s}\033[0m"
+def bold(s):   return f"\033[1m{s}\033[0m"
 
 
 # ---------- Fixture seeding ----------
@@ -1779,6 +1780,62 @@ def main():
             failures.append(("scroll-reachability", "timeout"))
         except FileNotFoundError:
             print(yellow("  ~ scroll-reachability  node not on PATH; skipping (CI-only)"))
+
+    # User-context verification gate (Founder directive 2026-05-14 iter 9,
+    # PROP-007): for any user-facing surface, a recent Founder-context
+    # capture (channel:chrome headed Playwright, run by Founder) must
+    # exist that is NEWER than the most recent surface modification.
+    # Catches the 9-iteration main-flows pattern where agent-context
+    # tests PASS while Founder's real Chrome shows broken state.
+    #
+    # Scoped narrowly to main-flows.html for the immediate ship; expand
+    # to additional user-facing surfaces once Founder has confirmed the
+    # pattern works.
+    print(cyan("\n[user-context-gate] User-context capture present for modified user-facing surfaces..."))
+    USER_CTX_ROOT = ROOT / ".claude" / "state" / "main-flows-v2" / "founder-real-context"
+    user_ctx_failures = []
+    user_ctx_skips = []
+    USER_FACING_SURFACES = [
+        (ROOT / "docs" / "reports" / "main-flows.html", "main-flows.html"),
+        # Future expansion: add other user-facing surfaces here when
+        # PROP-007 expands coverage (members-facing app pages, etc.)
+    ]
+    if not USER_CTX_ROOT.exists():
+        # No captures yet — first run after PROP-007 lands. Don't fail;
+        # surface a warning so the Founder can run the diagnostic.
+        print(yellow(f"  ~ user-context-gate  no captures yet at {USER_CTX_ROOT.relative_to(ROOT)} — Founder runs `node scripts/visual-audit/founder-context-capture.mjs` to seed"))
+    else:
+        capture_dirs = sorted([d for d in USER_CTX_ROOT.iterdir() if d.is_dir()], key=lambda d: d.name, reverse=True)
+        if not capture_dirs:
+            print(yellow(f"  ~ user-context-gate  founder-real-context/ exists but has no capture dirs yet"))
+        else:
+            latest_capture_dir = capture_dirs[0]
+            try:
+                latest_capture_mtime = (latest_capture_dir / "capture-meta.json").stat().st_mtime if (latest_capture_dir / "capture-meta.json").exists() else latest_capture_dir.stat().st_mtime
+            except OSError:
+                latest_capture_mtime = 0
+
+            for surface_path, surface_name in USER_FACING_SURFACES:
+                if not surface_path.exists():
+                    user_ctx_skips.append(f"{surface_name}: surface file missing — skipping")
+                    continue
+                surface_mtime = surface_path.stat().st_mtime
+                if surface_mtime > latest_capture_mtime:
+                    delta_minutes = (surface_mtime - latest_capture_mtime) / 60
+                    user_ctx_failures.append(
+                        f"{surface_name}: modified {delta_minutes:.1f} min after most recent user-context capture ({latest_capture_dir.name}) — Founder runs `node scripts/visual-audit/founder-context-capture.mjs` to seed fresh capture before ship-close"
+                    )
+                else:
+                    delta_hours = (latest_capture_mtime - surface_mtime) / 3600
+                    print(green(f"  ✓ user-context-gate  {surface_name} — capture {latest_capture_dir.name} is fresh ({delta_hours:.1f}h after last surface edit)"))
+
+    if user_ctx_failures:
+        for msg in user_ctx_failures:
+            print(red(f"  ✗ user-context-gate  {msg}"))
+        failures.append(("user-context-gate", f"{len(user_ctx_failures)} surface(s) modified after last capture"))
+    if user_ctx_skips:
+        for msg in user_ctx_skips:
+            print(yellow(f"  ~ user-context-gate  {msg}"))
 
     # Escalations lifecycle discipline (Founder directive 2026-05-14):
     # 5-state lifecycle, schema integrity, no orphan markers, dashboard

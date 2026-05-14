@@ -297,6 +297,42 @@
   "proposals": {
     "pending": [
       {
+        "id": "PROP-007",
+        "title": "User-context verification gate (bridge agent-context to user-context)",
+        "lane": 1,
+        "lane_label": "Substrate Discipline",
+        "ship_target": "Substrate",
+        "created_at": "2026-05-14T19:15:00Z",
+        "rationale": "Nine iterations of main-flows.html have shipped 'fixed' in agent context (Playwright headless Chromium, DOM sentinels, computed CSS) while Founder eyes catch regressions in user context (real Chrome, real OS scrollbar treatment, real fonts, real DPR). Per Founder directive 2026-05-14: agent-context PASS is meaningless when user-context shows broken. This proposal codifies the bridge as a hard gate before any user-facing surface ships.",
+        "scope": "Five deliverables: (1) Author scripts/visual-audit/founder-context-capture.mjs as the canonical Founder-run-once-per-ship diagnostic (channel:chrome headed Playwright; falls back to Playwright Chromium headed if channel:chrome unavailable). (2) Add round-trip [user-context-gate] block that checks for a recent founder-real-context capture before declaring user-facing dashboards ship-ready. (3) Update Critic protocol: any user-facing surface (.html under docs/reports/, plus members-facing app pages once Wave 1+ ships) requires user-context-capture before ship-close. (4) Surface the single command to Founder this ship for diagnosing the current main-flows main-flows bug. (5) Lessons-learned addendum + Critic vocabulary purge ('agent-context PASS' alone is BANNED as ship-close evidence).",
+        "estimate": {
+          "cost_tokens": 6000,
+          "duration_minutes": 15,
+          "risk": "low"
+        },
+        "files_affected": [
+          "scripts/visual-audit/founder-context-capture.mjs (new, already authored under this proposal)",
+          "tests/round-trip-test.py \u2014 new [user-context-gate] block",
+          "docs/agents/CRITIC.md or peer addendum \u2014 user-context gate at apply-time",
+          ".claude/state/lessons-learned/engineering-mindset.md \u2014 agent-vs-user-context addendum",
+          ".claude/state/proposals/pending/PROP-007-user-context-verification-gate.md (this file)"
+        ],
+        "fallback_plan": "Plan A (chosen): Option C from Founder's directive \u2014 Founder-run-once-per-ship diagnostic. channel:chrome headed Playwright closes most of the agent/user gap; Founder runs ONE command per user-facing ship-close. Plan B: Option B \u2014 install Playwright MCP server so agent can drive headed browser without Founder action. Adds MCP setup complexity; marginal gain over channel:chrome headed. Plan C: Option A \u2014 remote control of Founder's machine. Highest fidelity but highest ongoing cognitive cost. Abandon: if even channel:chrome headed Playwright produces meaningfully different rendering than Founder's actual Chrome \u2014 unlikely (same Blink engine, same Chrome version when channel:chrome resolves).",
+        "rollback_strategy": "git revert; user-context-capture script is opt-in (Founder runs it manually); the round-trip [user-context-gate] block is additive and gracefully skips if no recent capture is found.",
+        "round_trip_coverage": "New [user-context-gate] block in tests/round-trip-test.py \u2014 checks .claude/state/main-flows-v2/founder-real-context/ for a capture within the last 7 days when main-flows.html has been modified in the same window. Round-trip fails (and ship blocks) if main-flows.html was modified post-last-Founder-capture without a new capture.",
+        "depends_on": [
+          "AMD-009",
+          "AMD-015",
+          "AMD-016",
+          "PROP-006"
+        ],
+        "authored_by": "claude-code",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": 2000,
+        "status": "pending",
+        "operating_status": "Script + Critic gate operate immediately per Founder directive even before formal approval. This proposal codifies it for the next agent loop."
+      },
+      {
         "id": "PROP-006",
         "title": "Author outcome-vs-task skill (engineering-mindset gate)",
         "lane": 1,
@@ -609,13 +645,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 1,
+    "pending": 2,
     "approved": 1,
     "deferred": 0,
     "shipped_total": 4,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T18:42:36.133320+00:00",
+  "as_of": "2026-05-14T19:12:57.425885+00:00",
   "schema_version": 2,
   "archive_display_cap": 50
 }
