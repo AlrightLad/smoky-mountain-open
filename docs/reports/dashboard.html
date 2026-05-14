@@ -286,11 +286,11 @@
   "proposals_pending": 0,
   "proposals_counts": {
     "pending": 0,
-    "approved": 2,
+    "approved": 0,
     "deferred": 0,
-    "shipped": 2,
+    "shipped": 4,
     "rejected": 0,
-    "shipped_total": 2,
+    "shipped_total": 4,
     "rejected_total": 0
   },
   "amendments_counts": {
@@ -399,14 +399,14 @@
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "_aggregate_counts": {
-    "events_total": 376,
+    "events_total": 531,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
     "handoffs_total": 1,
     "bubbles_total": 7,
     "proposals_pending": 0,
-    "proposals_approved": 2,
+    "proposals_approved": 0,
     "pause_durations_sec": [
       10,
       1800
@@ -414,10 +414,10 @@
   },
   "quota_status": {
     "state": "empty",
-    "as_of": "2026-05-14T05:22:21.0965935Z",
-    "age_seconds": 4729,
+    "as_of": "2026-05-14T15:24:53.5950065Z",
+    "age_seconds": 14,
     "weekly_tokens": 0,
-    "weekly_cap": 3500000,
+    "weekly_cap": null,
     "weekly_pct": null,
     "org_monthly_tokens": 0,
     "org_monthly_cap": null,
@@ -426,7 +426,7 @@
     "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
   },
   "founder_queue": {
-    "as_of": "2026-05-14T06:51:24.260877+00:00",
+    "as_of": "2026-05-14T15:25:08.958981+00:00",
     "last_founder_visit": null,
     "governance_gates": {
       "amendments_pending": 0,
@@ -453,12 +453,12 @@
     "system_health": {
       "crons": {
         "downloads-watcher": {
-          "last_run": "2026-05-14T06-50-49Z",
-          "last_log": "2026-05-14T06-50-49Z-downloads-watcher.log"
+          "last_run": "2026-05-14T15-20-48Z",
+          "last_log": "2026-05-14T15-20-48Z-downloads-watcher.log"
         },
         "maintenance": {
-          "last_run": "2026-05-13T22-02-53Z",
-          "last_log": "2026-05-13T22-02-53Z-maintenance.log"
+          "last_run": "2026-05-14T06-55-01Z",
+          "last_log": "2026-05-14T06-55-01Z-maintenance.log"
         },
         "overnight-triage": {
           "last_run": "2026-05-13T22-12-35Z",
@@ -469,18 +469,18 @@
           "last_log": "2026-05-14T05-04-49Z-proposal-readiness.log"
         },
         "sidecar": {
-          "last_run": "2026-05-14T05-22-20Z",
-          "last_log": "2026-05-14T05-22-20Z-sidecar.log"
+          "last_run": "2026-05-14T15-24-53Z",
+          "last_log": "2026-05-14T15-24-53Z-sidecar.log"
         }
       },
       "last_regen_all": {
-        "file": "maintenance-2026-05-13.md",
-        "ts": "2026-05-13",
+        "file": "maintenance-2026-05-14.md",
+        "ts": "2026-05-14",
         "status": "PASS"
       },
       "working_tree": "auto-clean (substrate-watcher managed)",
       "halts": [],
-      "round_trip_last_pass": "2026-05-13"
+      "round_trip_last_pass": "2026-05-14"
     },
     "activity_since_last_visit": {
       "_note": "Counts since last_founder_visit (null = since-forever)",
@@ -494,6 +494,16 @@
           "id": "PROP-003.a",
           "title": "Token meter sidecar mechanics (scope-isolated from dashboards + governance)",
           "ts": "2026-05-14T01:25:53-04:00"
+        },
+        {
+          "id": "PROP-003.b",
+          "title": "Token meter dashboard + telemetry integration (consumes quota-status.json)",
+          "ts": "2026-05-14T02:43:29-04:00"
+        },
+        {
+          "id": "PROP-004",
+          "title": "Add `org-monthly` as 4th quota_type in PAUSE_DISCIPLINE schema",
+          "ts": "2026-05-14T02:47:38-04:00"
         }
       ],
       "amendments_applied": [],

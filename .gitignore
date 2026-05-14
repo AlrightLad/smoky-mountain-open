@@ -58,3 +58,10 @@ logs/
 /.claude/state/amendments/inbox-archive/
 /.claude/state/quota-status.json
 /tests/round-trip-workspace/
+
+# DASH video segments + harness from main-flows-v2 x-probe (scratch source
+# material; the static PNG frames in the same directory are the tracked
+# reference deliverables).
+/.claude/state/main-flows-v2/reference-frames/_harness.html
+/.claude/state/main-flows-v2/reference-frames/*.mp4
+/.claude/state/main-flows-v2/reference-frames/*.m4s

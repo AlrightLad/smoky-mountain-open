@@ -88,9 +88,14 @@ try {
 $staleDataThreshold = $config.stale_data_threshold_seconds
 if (-not $staleDataThreshold) { $staleDataThreshold = 86400 }
 
-# Default quota caps (must mirror QUOTA_CAPS in scripts/aggregate-token-usage.py
-# for plan_a translation consistency). Overridable via config.
-$weeklyCap = if ($config.weekly_cap_override) { $config.weekly_cap_override } else { 3500000 }
+# Default quota caps - emit null when no override is set so downstream
+# consumers render an honest 'unknown' state rather than a fictional cap.
+# Per AMD-001/AMD-002/AMD-014 pause-discipline reactivation: production tree
+# must not contain references to the fictional 3.5M weekly cap. The cap can
+# only enter via $config.weekly_cap_override (operator-confirmed) or a future
+# automated source that supplies a real value. When the cap is null the
+# weekly_tokens conversion is skipped (weekly_pct still emitted from paste).
+$weeklyCap = if ($config.weekly_cap_override) { $config.weekly_cap_override } else { $null }
 $orgMonthlyCap = if ($config.org_monthly_cap_override) { $config.org_monthly_cap_override } else { $null }
 
 # Read the latest manual-quota-log entries (one entry per scope per paste)
@@ -161,7 +166,7 @@ if (-not (Test-Path $logFile)) {
     if ($weeklyEntry) {
         $pct = [double]$weeklyEntry.percentage / 100.0
         $status.weekly_pct = [math]::Round($pct, 6)
-        $status.weekly_tokens = [int]($pct * $weeklyCap)
+        if ($weeklyCap) { $status.weekly_tokens = [int]($pct * $weeklyCap) }
     }
     if ($orgMonthlyEntry) {
         $pct = [double]$orgMonthlyEntry.percentage / 100.0

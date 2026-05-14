@@ -1323,9 +1323,12 @@ def main():
     # Theme convergence guard: every dashboard's <style> blocks + style="..." attrs
     # must reference colors via var(--*) only — no raw hex. design-system.html is
     # exempt because it displays hex values as documentation. main-flows.html has
-    # 6 documented column-color hex declarations inside :root (col-actor/-client/
-    # -auth-fn/-data/-distribution/-external) which are page-specific data tokens,
-    # not theme colors. Test allows those scoped column-color tokens explicitly.
+    # 8 documented hex declarations inside :root (6 column-color tokens
+    # col-actor/-client/-auth-fn/-data/-distribution/-external + 2 page-local
+    # surface tokens --bg-page (#000000) and --accent-brass (#F5C518), introduced
+    # by Ships R1-R3 2026-05-14 for Dave Jeffery reference replication). All 8
+    # are page-specific data tokens, not theme colors. Test allows those scoped
+    # tokens explicitly; any other raw hex in CSS contexts fails.
     print(cyan("\n[theme] Theme convergence guard (no raw hex in dashboard <style>)..."))
     HEX_IN_CSS_RE = re.compile(r"#[0-9a-fA-F]{3,8}\b")
     THEME_PAGES = [
@@ -1333,7 +1336,7 @@ def main():
         ("activity.html",           0),
         ("proposals.html",          0),
         ("discussion-bubbles.html", 0),
-        ("main-flows.html",         6),  # 6 documented --col-* column-color tokens
+        ("main-flows.html",         8),  # 6 col-* + --bg-page + --accent-brass
         ("token-usage.html",        0),
         ("index.html",              0),
     ]

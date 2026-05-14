@@ -40,7 +40,7 @@
             --border-strong: rgba(255, 255, 255, 0.20);
 
             /* === Ship R2/R3 (2026-05-14) — Active accent color flip ===
-             * Brass (#c9a961) → bright yellow (#F5C518) for the active path,
+             * Default brass replaced with bright yellow for the active path,
              * SVG arrows, step badges, "active" flow row, rail chips, search
              * focus. Single token override cascades through everywhere that
              * reads var(--accent-brass). See reference-spec.md § 5-7 + § 9.
@@ -51,9 +51,9 @@
 
         /* Body + page-header use RAW palette tokens in dashboard-shell.css
          * (not the semantic --bg-page), so override at the element level. */
-        body.pb-app { background: #000000; }
+        body.pb-app { background: var(--bg-page); }
         .pb-page-header {
-            background: #000000;
+            background: var(--bg-page);
             border-bottom-color: rgba(255, 255, 255, 0.10);
         }
         /* Ship-2 inlined .pb-list base styling pinned to billiard-green-800
@@ -129,7 +129,7 @@
         .mf-arrow-line { fill: none; stroke: var(--accent-brass); stroke-width: 1.5; stroke-dasharray: none; opacity: 1; }
         .mf-arrow-head { fill: var(--accent-brass); }
         .mf-arrow-badge-bg { fill: var(--accent-brass); }
-        .mf-arrow-badge-text { fill: #000000; font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+        .mf-arrow-badge-text { fill: var(--bg-page); font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
 
         /* === Right rail === */
         .mf-rail { display: flex; flex-direction: column; gap: var(--space-3); position: sticky; top: var(--space-3); max-height: calc(100vh - 100px); }
@@ -1305,7 +1305,7 @@
       ]
     }
   ],
-  "last_amended": "2026-05-14T05:37:08.227428+00:00",
+  "last_amended": "2026-05-14T15:25:09.129135+00:00",
   "doc_source": "docs/reports/_assets/main-flows-data.json",
   "schema_version": 1,
   "flow_rail": [

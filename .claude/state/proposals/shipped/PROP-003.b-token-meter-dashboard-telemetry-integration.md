@@ -31,7 +31,7 @@
   "cost_tokens": {
     "low": 80000,
     "high": 200000,
-    "methodology": "Low end: aggregator updates + dashboard data-binding + 1 round-trip extension. High end: smoke tests for the dashboard real-vs-estimated distinction (AMD-012 binding for user-facing surface — dashboard.html is internal team-facing per AMD-012 scope so smoke is optional but recommended)."
+    "methodology": "Low end: aggregator updates + dashboard data-binding + 1 round-trip extension. High end: smoke tests for the dashboard real-vs-estimated distinction (AMD-012 binding for user-facing surface \u2014 dashboard.html is internal team-facing per AMD-012 scope so smoke is optional but recommended)."
   },
   "bubble_voter_unanimity": {
     "bubble_id": "db-2026-05-13-003",
@@ -56,12 +56,14 @@
     "value": true,
     "rationale": "PROP-003.b is AMD-009-compliant. Scanner WILL defer it on cross_cutting_dependency until BOTH dependencies ship: PROP-003.a (PROP scanner check) AND AMD-014 (governance amendment applied; check via .claude/state/amendments/applied/AMD-014-*.md presence)."
   },
-  "ship_target": "Wave 1 — after PROP-003.a ships + AMD-014 applies via amendments.html.",
+  "ship_target": "Wave 1 \u2014 after PROP-003.a ships + AMD-014 applies via amendments.html.",
   "estimate": {
     "cost_tokens": 120000,
     "duration_minutes": 90,
     "risk": "low"
-  }
+  },
+  "shipped_at": "2026-05-14T02:43:29-04:00",
+  "shipped_in_commit": "2361e06"
 }
 ---
 

@@ -5,7 +5,7 @@
   "lane": 2,
   "lane_label": "Bug Discovery",
   "created_at": "2026-05-13T15:05:00Z",
-  "rationale": "PAUSE_DISCIPLINE_v8.1_ADDENDUM § 5 enumerates `quota_type` as 'weekly-tokens | daily-tokens | hourly-requests'. The prior session's failure was at the org-monthly cap, which is not in the enum. The discipline cannot pause for a quota it doesn't model. F1 finding (b) explicit: 'org-level monthly cap is a DIFFERENT quota than weekly-tokens.'",
+  "rationale": "PAUSE_DISCIPLINE_v8.1_ADDENDUM \u00a7 5 enumerates `quota_type` as 'weekly-tokens | daily-tokens | hourly-requests'. The prior session's failure was at the org-monthly cap, which is not in the enum. The discipline cannot pause for a quota it doesn't model. F1 finding (b) explicit: 'org-level monthly cap is a DIFFERENT quota than weekly-tokens.'",
   "scope": "Schema amendment: add `org-monthly` to the enum + document the reset boundary as configurable (Anthropic billing-cycle, not necessarily UTC midnight on the 1st). Update last-verify.json schema example. Update telemetry event schema (cycle.budget.checkpoint emits quota_type which now includes the new value).",
   "estimate": {
     "cost_tokens": 8000,
@@ -13,10 +13,10 @@
     "risk": "low"
   },
   "files_affected": [
-    "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md § 5 (enum + example state file)",
+    "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 5 (enum + example state file)",
     "docs/agents/TELEMETRY_PROTOCOL.md (cycle.budget.checkpoint + cycle.paused + cycle.resumed event schemas)",
-    "scripts/aggregate-telemetry.py (handle the new quota_type in event aggregation — defensive: existing events keep working)",
-    "scripts/cron/usage-snapshot-config.json (per PROP-003 — defines the org-monthly reset boundary)"
+    "scripts/aggregate-telemetry.py (handle the new quota_type in event aggregation \u2014 defensive: existing events keep working)",
+    "scripts/cron/usage-snapshot-config.json (per PROP-003 \u2014 defines the org-monthly reset boundary)"
   ],
   "evidence_paths": [
     ".claude/state/wave-zero-dry-run/remediation/F1a-token-meter-gap-diagnostic.md",
@@ -24,10 +24,10 @@
   ],
   "ship_target": "Post-Wave-Zero remediation ratification. Lightweight; could ship same-day as Founder applies the schema amendment.",
   "scope_files_affected": [
-    "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md § 5 (enum + example state file)",
+    "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 5 (enum + example state file)",
     "docs/agents/TELEMETRY_PROTOCOL.md (cycle.budget.checkpoint + cycle.paused + cycle.resumed event schemas)",
-    "scripts/aggregate-telemetry.py (handle the new quota_type in event aggregation — defensive: existing events keep working)",
-    "scripts/cron/usage-snapshot-config.json (per PROP-003 — defines the org-monthly reset boundary)"
+    "scripts/aggregate-telemetry.py (handle the new quota_type in event aggregation \u2014 defensive: existing events keep working)",
+    "scripts/cron/usage-snapshot-config.json (per PROP-003 \u2014 defines the org-monthly reset boundary)"
   ],
   "fallback_plan": {
     "plan_a": "Schema amendment: add 'org-monthly' to PAUSE_DISCIPLINE section 5 enum + TELEMETRY_PROTOCOL.md event examples. Defensive aggregator update (existing weekly-tokens events keep working).",
@@ -63,7 +63,9 @@
     "value": false,
     "rationale": "PROP-004 depends_on PROP-003 (unshipped). Scanner correctly defers on P4 (cross-cutting + unshipped dep). Ships AFTER PROP-003 lands."
   },
-  "depends_on_split_update": "Updated 2026-05-14 per Founder split directive: depends_on changed from PROP-003 to PROP-003.b. PROP-004 consumes integrated token data (AMD-014's reactivation + PROP-003.b's dashboards), not raw sidecar output."
+  "depends_on_split_update": "Updated 2026-05-14 per Founder split directive: depends_on changed from PROP-003 to PROP-003.b. PROP-004 consumes integrated token data (AMD-014's reactivation + PROP-003.b's dashboards), not raw sidecar output.",
+  "shipped_at": "2026-05-14T02:47:38-04:00",
+  "shipped_in_commit": "7fdcf7e"
 }
 ---
 
