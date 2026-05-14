@@ -1,9 +1,9 @@
 {
   "proposal_id": "PROP-004",
-  "deferred_at": "2026-05-14T04:44:47.984195+00:00",
+  "deferred_at": "2026-05-14T04:52:51.245787+00:00",
   "criteria_failed": [
-    "cross_cutting_dependency: depends on unshipped proposals ['PROP-003']"
+    "cross_cutting_dependency: depends on unshipped/unapplied ['PROP-003.b']"
   ],
   "resolution_path": "team or Founder authors missing fields; scanner re-evaluates next cycle",
-  "scanner_run_id": "20260514T044447Z"
+  "scanner_run_id": "20260514T045251Z"
 }

@@ -85,3 +85,11 @@
 {"timestamp":"2026-05-14T04:45:49.0224924Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"c18e1c472b2f","cron_source":"downloads-watcher"}}
 {"timestamp":"2026-05-14T04:45:49.2479145Z","event_type":"cron.downloads-watcher.end","data":{"success":true,"exit_reason":"skip-dirty","cron_source":"downloads-watcher","duration_ms":290,"claude_invoked":false,"run_id":"c18e1c472b2f"}}
 {"timestamp":"2026-05-14T04:50:48.9780765Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"2a9ed677b481","cron_source":"downloads-watcher"}}
+{"timestamp":"2026-05-14T04:50:51.7648773Z","event_type":"cron.downloads-watcher.end","data":{"success":true,"exit_reason":"no-new-files","cron_source":"downloads-watcher","duration_ms":2850,"claude_invoked":false,"run_id":"2a9ed677b481"}}
+{"event_type": "proposal.readiness.ready", "timestamp": "2026-05-14T04:52:51.224692+00:00", "data": {"proposal_id": "PROP-003.a", "criteria_passed": 8}}
+{"event_type": "proposal.readiness.deferred", "timestamp": "2026-05-14T04:52:51.238789+00:00", "data": {"proposal_id": "PROP-003.b", "criteria_failed": ["cross_cutting_dependency: depends on unshipped/unapplied ['PROP-003.a', 'AMD-014']"]}}
+{"event_type": "proposal.readiness.deferred", "timestamp": "2026-05-14T04:52:51.245787+00:00", "data": {"proposal_id": "PROP-004", "criteria_failed": ["cross_cutting_dependency: depends on unshipped/unapplied ['PROP-003.b']"]}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T04:52:59.659388+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T04:53:00.380532+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T04:53:46.918606+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T04:53:47.611323+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}

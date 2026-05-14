@@ -61,6 +61,16 @@
   "frontmatter_declares_auto_implement": {
     "value": false,
     "rationale": "PROP-003 is honestly cross-cutting (see cross_cutting_assessment). Per AMD-011 + AMD-009 P4, the scanner will defer it. Setting auto_implement=False is the honest declaration; Founder explicitly authorizes either a split or a P4 waiver before this ships under the auto-execute path."
+  },
+  "split_status": {
+    "split_at": "2026-05-14T04:50:00Z",
+    "split_by": "founder-directive-2026-05-14-option-A",
+    "split_into": [
+      "PROP-003.a",
+      "AMD-014",
+      "PROP-003.b"
+    ],
+    "note": "Split into PROP-003.a (sidecar mechanics) + AMD-014 (PAUSE_DISCIPLINE section 2.1 reactivation governance) + PROP-003.b (dashboard + telemetry integration) per Founder directive. Each ship is AMD-009-compliant; each is independently reversible. Original proposal preserved here for audit trail."
   }
 }
 ---

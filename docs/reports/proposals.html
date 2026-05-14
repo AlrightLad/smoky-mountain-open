@@ -296,6 +296,132 @@
     "pending": [],
     "approved": [
       {
+        "id": "PROP-003.a",
+        "title": "Token meter sidecar mechanics (scope-isolated from dashboards + governance)",
+        "lane": 3,
+        "lane_label": "Performance",
+        "parent_proposal": "PROP-003",
+        "split_rationale": "Per Founder directive 2026-05-14: PROP-003 split into 3 coherent ships. PROP-003.a is the pure-infrastructure half \u2014 backend script + cron + tests producing quota-status.json. NO dashboards, NO telemetry consumers, NO governance docs.",
+        "created_at": "2026-05-14T04:50:00Z",
+        "rationale": "Sidecar process on Founder's machine polls Anthropic-side usage and writes a snapshot file the agent reads each turn. Scope-isolated from downstream consumers so the data-production path can ship + verify before any consumer wiring lands.",
+        "scope": "Author scripts/sidecar/usage-snapshot.ps1 + scripts/cron/install-sidecar.ps1 + tests/checks/quota-status-schema.py (new). Produce .claude/state/quota-status.json on a 5-minute cron cadence with the schema documented below.",
+        "scope_files_affected": [
+          "scripts/sidecar/usage-snapshot.ps1 (new)",
+          "scripts/sidecar/usage-snapshot-config.json (new)",
+          "scripts/cron/install-sidecar.ps1 (new)",
+          "scripts/cron/uninstall-sidecar.ps1 (new)",
+          "tests/checks/quota-status-schema.py (new)",
+          ".claude/state/quota-status.json (new file the sidecar writes)"
+        ],
+        "evidence_paths": [
+          ".claude/state/wave-zero-dry-run/remediation/F1a-token-meter-gap-diagnostic.md",
+          ".claude/state/discussion-bubbles/db-2026-05-13-003.md",
+          ".claude/state/proposals/split-archived/PROP-003-original.md (the pre-split full proposal)"
+        ],
+        "fallback_plan": {
+          "plan_a": "Manual paste via refresh-quota-manual.ps1 (existing). Sidecar invokes refresh-quota-manual.ps1 on a cron, prompting Founder; Founder pastes the dashboard number; sidecar writes quota-status.json. Lowest friction.",
+          "plan_b": "Headless Claude Code /cost invocation. Requires Claude Code to support non-interactive /cost output. If unsupported at ship-time: defer to plan_a indefinitely.",
+          "plan_c": "Console scrape via WebDriver. Brittle, last resort.",
+          "abandon_criteria": "3 plans fail with distinct root causes within a single ship cycle. Escalate per criterion #5; the sidecar mechanics ship as a stub that emits a 'no-data' quota-status.json until a data source lands."
+        },
+        "rollback_strategy": "git revert <ship-closing-sha>; PowerShell Unregister-ScheduledTask -TaskName 'PARBAUGHS-Token-Sidecar' -Confirm:$false; rm .claude/state/quota-status.json. Risk-of-rollback LOW (pure additive, no consumer exists yet to break).",
+        "cost_tokens": {
+          "low": 120000,
+          "high": 250000,
+          "methodology": "Low end: plan_a only (manual paste wrapper) + cron scaffolding + schema check + smoke. High end: plan_b investigation + headless integration if available. No dashboard or telemetry integration in this scope (that's PROP-003.b)."
+        },
+        "bubble_voter_unanimity": {
+          "bubble_id": "db-2026-05-13-003",
+          "bubble_status": "approved-with-dissent",
+          "vote_tally": {
+            "approve": 2,
+            "reject": 1,
+            "abstain": 1
+          },
+          "dissent_note": "Inherits db-003 lineage from parent PROP-003. Founder ratified approval-with-dissent; the dissent (heuristic-only is insufficient) is resolved BY shipping the meter, which this proposal is part of."
+        },
+        "cross_cutting_assessment": {
+          "category": "single-component: cron substrate only",
+          "rationale": "PROP-003.a is intentionally scope-isolated to pass AMD-009 P4 cleanly. New cron task is the only substrate touched. Dashboards/telemetry/governance pieces ship in PROP-003.b + AMD-014 separately. Founder Option A explicitly authorized this split for this purpose."
+        },
+        "test_strategy_before_after": "BEFORE: no .claude/state/quota-status.json exists; agent has no real meter reads. AFTER: file present with valid schema; tests/checks/quota-status-schema.py asserts shape on every round-trip; smoke test confirms cron fires + file appears + schema matches. No downstream dashboard impact yet (intentional).",
+        "depends_on": [],
+        "frontmatter_declares_auto_implement": {
+          "value": true,
+          "rationale": "PROP-003.a is AMD-009-compliant, single-component, no unshipped dependencies, smoke-testable. Scanner will mark READY; auto-execute is appropriate."
+        },
+        "ship_target": "Wave 1 parallel work \u2014 no Wave 1 ship blocks PROP-003.a since it's pure cron infrastructure.",
+        "estimate": {
+          "cost_tokens": 200000,
+          "duration_minutes": 120,
+          "risk": "low"
+        }
+      },
+      {
+        "id": "PROP-003.b",
+        "title": "Token meter dashboard + telemetry integration (consumes quota-status.json)",
+        "lane": 3,
+        "lane_label": "Performance",
+        "parent_proposal": "PROP-003",
+        "split_rationale": "Per Founder directive 2026-05-14 Option A. PROP-003.b consumes PROP-003.a's quota-status.json + reflects real data in dashboards + flips _meter_status from 'wired-estimated' to 'wired-real'. Depends on .a (sidecar must produce data) and AMD-014 (governance flip).",
+        "created_at": "2026-05-14T04:50:00Z",
+        "rationale": "Once PROP-003.a produces quota-status.json on a cron schedule + AMD-014 governance applies, the dashboards + telemetry aggregators consume the real data. Replaces the operator-asserted session-summary fallback (commit 8b7e117) as the canonical real-data source for the token-usage dashboard.",
+        "scope": "Update aggregate-telemetry.py + aggregate-token-usage.py to read .claude/state/quota-status.json when fresh. Update dashboard.html + token-usage.html data binding to surface real percentages. Flip _meter_status: 'wired-estimated' -> 'wired-real' when sidecar fresh.",
+        "scope_files_affected": [
+          "scripts/aggregate-telemetry.py (read quota-status.json; populate weekly_tokens / org_monthly_pct from real data when fresh)",
+          "scripts/aggregate-token-usage.py (real-source path consumes quota-status.json; estimated fallback when stale)",
+          "docs/reports/dashboard.html (meter widget surfaces real percentage when wired-real)",
+          "docs/reports/token-usage.html (real column populated; operator-asserted estimate demoted to fallback panel)",
+          "tests/round-trip-test.py ([meter-wiring] block: validate freshness gate + wired-real status transition)"
+        ],
+        "evidence_paths": [
+          ".claude/state/proposals/approved/PROP-003.a-token-meter-sidecar-mechanics.md",
+          ".claude/state/amendments/pending/AMD-014-pause-discipline-reactivation.md",
+          ".claude/state/proposals/split-archived/PROP-003-original.md"
+        ],
+        "fallback_plan": {
+          "plan_a": "When quota-status.json fresh: real data populates dashboards. When stale or absent: existing operator-asserted session-summary path stays as fallback (no regression).",
+          "plan_b": "If quota-status.json schema differs from PROP-003.a actually-shipped output, align this ship's reader to the shipped schema. Adds ~50k tokens.",
+          "plan_c": "If integration breaks downstream dashboards, scope-reduce to telemetry-only (no UI updates); ship UI integration as a follow-on.",
+          "abandon_criteria": "PROP-003.a doesn't ship within reasonable time (>2 weeks) OR AMD-014 doesn't get Founder approval; PROP-003.b stays deferred indefinitely. Re-scope or abandon as separate decision."
+        },
+        "rollback_strategy": "git revert <ship-closing-sha>; aggregator falls back to operator-asserted estimate path automatically (defensive design). Risk-of-rollback LOW.",
+        "cost_tokens": {
+          "low": 80000,
+          "high": 200000,
+          "methodology": "Low end: aggregator updates + dashboard data-binding + 1 round-trip extension. High end: smoke tests for the dashboard real-vs-estimated distinction (AMD-012 binding for user-facing surface \u2014 dashboard.html is internal team-facing per AMD-012 scope so smoke is optional but recommended)."
+        },
+        "bubble_voter_unanimity": {
+          "bubble_id": "db-2026-05-13-003",
+          "bubble_status": "approved-with-dissent",
+          "vote_tally": {
+            "approve": 2,
+            "reject": 1,
+            "abstain": 1
+          },
+          "dissent_note": "Inherits db-003 lineage."
+        },
+        "cross_cutting_assessment": {
+          "category": "single-stream: telemetry + dashboards (read-side only; no governance, no cron)",
+          "rationale": "PROP-003.b's touch is read-side: consume quota-status.json + render. No new cron task. Governance change is AMD-014 (separate). Cleanly scoped to telemetry + dashboard via the data-block-swap pattern."
+        },
+        "test_strategy_before_after": "BEFORE: dashboard.html weekly_tokens shows operator-asserted estimate (4.2M); _meter_status='wired-estimated'. AFTER: when quota-status.json fresh, dashboard shows real percentages; _meter_status='wired-real'. Round-trip [meter-wiring] validates the freshness gate + status transition.",
+        "depends_on": [
+          "PROP-003.a",
+          "AMD-014"
+        ],
+        "frontmatter_declares_auto_implement": {
+          "value": true,
+          "rationale": "PROP-003.b is AMD-009-compliant. Scanner WILL defer it on cross_cutting_dependency until BOTH dependencies ship: PROP-003.a (PROP scanner check) AND AMD-014 (governance amendment applied; check via .claude/state/amendments/applied/AMD-014-*.md presence)."
+        },
+        "ship_target": "Wave 1 \u2014 after PROP-003.a ships + AMD-014 applies via amendments.html.",
+        "estimate": {
+          "cost_tokens": 120000,
+          "duration_minutes": 90,
+          "risk": "low"
+        }
+      },
+      {
         "id": "PROP-004",
         "title": "Add `org-monthly` as 4th quota_type in PAUSE_DISCIPLINE schema",
         "lane": 2,
@@ -353,76 +479,13 @@
         },
         "test_strategy_before_after": "BEFORE: cycle.budget.checkpoint events with quota_type='org-monthly' fail aggregator validation (unknown enum value). AFTER: aggregator parses + reports org-monthly events. Round-trip new [quota-type-enum] block enumerates valid quota_type values; emits warning if any event uses a value outside the enum.",
         "depends_on": [
-          "PROP-003"
+          "PROP-003.b"
         ],
         "frontmatter_declares_auto_implement": {
           "value": false,
           "rationale": "PROP-004 depends_on PROP-003 (unshipped). Scanner correctly defers on P4 (cross-cutting + unshipped dep). Ships AFTER PROP-003 lands."
-        }
-      },
-      {
-        "id": "PROP-003",
-        "title": "Token-meter-wiring sidecar \u2014 substantive heuristic-sunset path for HALT 25",
-        "lane": 3,
-        "lane_label": "Performance",
-        "created_at": "2026-05-13T15:00:00Z",
-        "rationale": "F1 diagnostic confirms Claude Code agents cannot introspect their own token consumption from inside the tool surface. The PAUSE_DISCIPLINE 90% trigger cannot fire without a meter. The defensive heuristic (agent-feel pacing) is a band-aid; this proposal is the real fix \u2014 a sidecar process that writes usage snapshots to a watched file the agent reads each turn. Data-Integrity's forcing-function dissent on db-003 is resolved by this substantive draft (NOT a stub).",
-        "scope": "Author scripts/cron/usage-snapshot.ps1 + integration in PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 2.1 + auto-read in scripts/aggregate-telemetry.py.",
-        "estimate": {
-          "cost_tokens": 45000,
-          "duration_minutes": 90,
-          "risk": "medium"
         },
-        "files_affected": [
-          "scripts/cron/usage-snapshot.ps1 (new)",
-          "scripts/cron/usage-snapshot-config.json (new \u2014 what to poll, how often, reset boundary)",
-          "scripts/aggregate-telemetry.py (read .claude/state/usage-snapshot.json; populate weekly_tokens / weekly_cost / org_monthly_pct from real data)",
-          ".claude/state/usage-snapshot.json (new \u2014 sidecar writes here; agent reads each turn)",
-          "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 2.1 (Founder-applied amendment: meter read via .claude/state/usage-snapshot.json)"
-        ],
-        "evidence_paths": [
-          ".claude/state/wave-zero-dry-run/remediation/F1a-token-meter-gap-diagnostic.md",
-          ".claude/state/discussion-bubbles/db-2026-05-13-003.md"
-        ],
-        "ship_target": "Post-Wave-Zero remediation ratification + cron-paused.json clear. Cycle 2 or earlier if Founder prioritizes.",
-        "scope_files_affected": [
-          "scripts/cron/usage-snapshot.ps1 (new)",
-          "scripts/cron/usage-snapshot-config.json (new \u2014 what to poll, how often, reset boundary)",
-          "scripts/aggregate-telemetry.py (read .claude/state/usage-snapshot.json; populate weekly_tokens / weekly_cost / org_monthly_pct from real data)",
-          ".claude/state/usage-snapshot.json (new \u2014 sidecar writes here; agent reads each turn)",
-          "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 2.1 (Founder-applied amendment: meter read via .claude/state/usage-snapshot.json)"
-        ],
-        "fallback_plan": {
-          "plan_a": "Source data via manual paste (refresh-quota-manual.ps1 already in repo). Sidecar prompts Founder once a day; agent reads .claude/state/usage-snapshot.json. Lowest infrastructure cost; bootstrap path.",
-          "plan_b": "Source data via second Claude Code instance in headless mode invoking /cost periodically. Requires Claude Code to support headless /cost (uncertain at authoring). If unsupported: stay on plan_a indefinitely.",
-          "plan_c": "Anthropic console scrape (login + parse). Brittle, breaks on UI changes. Last resort.",
-          "abandon_criteria": "3 plans fail with distinct root causes within a single ship cycle, escalate per criterion #5 (cross-cutting architecture). The PAUSE_DISCIPLINE section 2.1 amendment piece becomes a separate AMD that can ship independently."
-        },
-        "rollback_strategy": "git revert <ship-closing-sha>; rm .claude/state/usage-snapshot.json (clean stale state); PAUSE_DISCIPLINE section 2.1 amendment rolled back separately via its own AMD revert. Risk-of-rollback LOW for sidecar mechanics (additive); MEDIUM for the governance amendment.",
-        "cost_tokens": {
-          "low": 150000,
-          "high": 350000,
-          "methodology": "Low end assumes plan_a (manual paste) only: sidecar PowerShell loop + aggregate-telemetry.py read integration + dashboard regen test ~150k. High end adds plan_b investigation + headless /cost integration if available (~200k additional). Original 45k estimate predated AMD-009; reflects raw code authoring without test/verification/round-trip discipline scope."
-        },
-        "bubble_voter_unanimity": {
-          "bubble_id": "db-2026-05-13-003",
-          "bubble_status": "approved-with-dissent",
-          "vote_tally": {
-            "approve": 2,
-            "reject": 1,
-            "abstain": 1
-          },
-          "dissent_note": "Data-Integrity's forcing-function dissent was that the heuristic-only approach (PAUSE_DISCIPLINE) wasn't sufficient. PROP-003 IS the substantive response to that dissent. By shipping the meter, the dissent is resolved. Founder ratified approval-with-dissent on this basis. Scanner should accept per PARBAUGHS lifecycle (approved-with-dissent is a valid approval state)."
-        },
-        "cross_cutting_assessment": {
-          "category": "cross-cutting: dashboards + telemetry + cron + governance amendment",
-          "rationale": "PROP-003 touches: (a) cron substrate via new usage-snapshot.ps1; (b) telemetry aggregator via aggregate-telemetry.py snapshot read; (c) dashboards downstream via populated weekly_tokens / org_monthly_pct fields; (d) governance via PAUSE_DISCIPLINE section 2.1 amendment that documents the meter as the canonical pause trigger. AMD-009 P4 forbids cross-cutting changes in a single proposal. Honest assessment: scanner WILL defer PROP-003 on P4 grounds. Founder may (a) split PROP-003 into PROP-003.a (mechanics) + AMD-XXX (governance), or (b) explicitly waive P4 for this one. Auto-execute pattern then runs the bundled work as one unit, with Critic gating each sub-deliverable to ship-complete."
-        },
-        "test_strategy_before_after": "BEFORE: dashboard weekly_tokens shows 0 OR the operator-asserted estimate (4.2M from session-summary, commit 8b7e117). aggregate-token-usage shows estimated=4.2M / real=0. AFTER: dashboard weekly_tokens reflects real meter reads when sidecar runs; operator-asserted source stays as a fallback when sidecar is stale > 600s. Round-trip extension: new [meter-wiring] block validating usage-snapshot.json schema + freshness gates. Token-usage dashboard 'real' column becomes non-zero for the first time in PARBAUGHS history.",
-        "frontmatter_declares_auto_implement": {
-          "value": false,
-          "rationale": "PROP-003 is honestly cross-cutting (see cross_cutting_assessment). Per AMD-011 + AMD-009 P4, the scanner will defer it. Setting auto_implement=False is the honest declaration; Founder explicitly authorizes either a split or a P4 waiver before this ships under the auto-execute path."
-        }
+        "depends_on_split_update": "Updated 2026-05-14 per Founder split directive: depends_on changed from PROP-003 to PROP-003.b. PROP-004 consumes integrated token data (AMD-014's reactivation + PROP-003.b's dashboards), not raw sidecar output."
       }
     ],
     "deferred": [],
@@ -468,12 +531,12 @@
   },
   "counts": {
     "pending": 0,
-    "approved": 2,
+    "approved": 3,
     "deferred": 0,
     "shipped_total": 1,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T04:45:03.224204+00:00",
+  "as_of": "2026-05-14T04:53:47.618343+00:00",
   "schema_version": 2,
   "archive_display_cap": 50
 }

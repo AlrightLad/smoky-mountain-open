@@ -57,12 +57,13 @@
   },
   "test_strategy_before_after": "BEFORE: cycle.budget.checkpoint events with quota_type='org-monthly' fail aggregator validation (unknown enum value). AFTER: aggregator parses + reports org-monthly events. Round-trip new [quota-type-enum] block enumerates valid quota_type values; emits warning if any event uses a value outside the enum.",
   "depends_on": [
-    "PROP-003"
+    "PROP-003.b"
   ],
   "frontmatter_declares_auto_implement": {
     "value": false,
     "rationale": "PROP-004 depends_on PROP-003 (unshipped). Scanner correctly defers on P4 (cross-cutting + unshipped dep). Ships AFTER PROP-003 lands."
-  }
+  },
+  "depends_on_split_update": "Updated 2026-05-14 per Founder split directive: depends_on changed from PROP-003 to PROP-003.b. PROP-004 consumes integrated token data (AMD-014's reactivation + PROP-003.b's dashboards), not raw sidecar output."
 }
 ---
 

@@ -107,7 +107,8 @@ def evaluate_readiness(fm, body):
         fails.append("rollback_absent: rollback_strategy/rollback field missing from frontmatter")
 
     # P4 — no cross-cutting architecture changes. Frontmatter must NOT
-    # depend_on unshipped proposals/amendments.
+    # depend_on unshipped proposals OR unapplied amendments. PROP-* deps
+    # check shipped/; AMD-* deps check applied/.
     deps = fm.get("depends_on") or fm.get("dependencies") or []
     if isinstance(deps, str):
         deps = [deps]
@@ -116,15 +117,25 @@ def evaluate_readiness(fm, body):
         shipped_ids = set()
         if SHIPPED_DIR.exists():
             for f in SHIPPED_DIR.glob("*.md"):
-                m_sid = re.match(r"(PROP-\d+)", f.stem)
+                m_sid = re.match(r"(PROP-\d+(?:\.\w+)?)", f.stem)
                 if m_sid:
                     shipped_ids.add(m_sid.group(1))
+        applied_amd_ids = set()
+        applied_dir = ROOT / ".claude" / "state" / "amendments" / "applied"
+        if applied_dir.exists():
+            for f in applied_dir.glob("AMD-*.md"):
+                m_aid = re.match(r"(AMD-\d+(?:\.\w+)?)", f.stem)
+                if m_aid:
+                    applied_amd_ids.add(m_aid.group(1))
         for d in deps:
-            if d and d.startswith("PROP-"):
-                if d not in shipped_ids:
-                    unshipped_deps.append(d)
+            if not d:
+                continue
+            if d.startswith("PROP-") and d not in shipped_ids:
+                unshipped_deps.append(d)
+            elif d.startswith("AMD-") and d not in applied_amd_ids:
+                unshipped_deps.append(d)
     if unshipped_deps:
-        fails.append(f"cross_cutting_dependency: depends on unshipped proposals {unshipped_deps}")
+        fails.append(f"cross_cutting_dependency: depends on unshipped/unapplied {unshipped_deps}")
 
     # P5 — round-trip test before/after coverage planned. Accept any of:
     # round_trip_coverage / test_strategy_before_after (Founder-spec) / body mentions.
@@ -202,8 +213,9 @@ def scan_proposal(path):
     text = path.read_text(encoding="utf-8")
     fm = parse_frontmatter(text) or {}
     body = text[text.find("---", 3) + 3:] if "---" in text[3:] else text
-    # Extract PROP-NNN from filename (e.g. 'PROP-001-foo.md' → 'PROP-001')
-    m_id = re.match(r"(PROP-\d+)", path.stem)
+    # Extract PROP-NNN or PROP-NNN.suffix from filename
+    # e.g. 'PROP-001-foo.md' -> 'PROP-001'; 'PROP-003.a-foo.md' -> 'PROP-003.a'
+    m_id = re.match(r"(PROP-\d+(?:\.\w+)?)", path.stem)
     prop_id = fm.get("id") or (m_id.group(1) if m_id else path.stem)
     fails = evaluate_readiness(fm, body)
     return prop_id, fails
