@@ -158,7 +158,12 @@ Router.register("standings", function(params) {
 
   // Season Recap, Courses & Awards links
   h += '<div class="section" style="padding:0 16px 16px;display:flex;gap:8px;flex-wrap:wrap">';
-  h += '<button class="btn full outline" onclick="Router.go(\'courses\')" style="flex:1;min-width:45%"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7z"/><path d="M9 4v13M15 7v13"/></svg> Courses</button>';
+  // M3 fix (iter 16, 2026-05-14, CLAUDE.md Known Bug #6): Courses button on
+  // season standings should land users in the "Our Courses" view (courses
+  // where PARBAUGHS has played rounds), not the unfiltered "All Courses"
+  // catalog. Sets window._courseViewMode='ours' before navigation (same
+  // mechanism the courses page's own Our/All toggle uses).
+  h += '<button class="btn full outline" onclick="window._courseViewMode=\'ours\';Router.go(\'courses\')" style="flex:1;min-width:45%"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7z"/><path d="M9 4v13M15 7v13"/></svg> Courses</button>';
   h += '<button class="btn full outline" onclick="Router.go(\'seasonrecap\',{year:' + year + '})" style="flex:1;min-width:45%"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle"><path d="M18 20V10M12 20V4M6 20v-6"/></svg> Season Recap</button>';
   h += '<button class="btn full outline" onclick="Router.go(\'awards\',{year:' + year + '})" style="flex:1;min-width:45%"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle"><path d="M6 9H4a2 2 0 01-2-2V5h4M18 9h2a2 2 0 002-2V5h-4M4 5h16v4a6 6 0 01-6 6h-4a6 6 0 01-6-6V5z"/><path d="M12 15v3M8 21h8"/></svg> Awards Night</button>';
   h += '</div>';
