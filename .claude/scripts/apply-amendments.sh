@@ -93,10 +93,17 @@ fi
 export PYTHONIOENCODING=utf-8
 export PYTHONUTF8=1
 
-# Windows .exe + Git-Bash POSIX path → cygpath translation
+# Windows Python + Git-Bash POSIX path → cygpath translation.
+# Detect environment via uname -s (MINGW*/MSYS*/CYGWIN* = Git-Bash on Windows)
+# rather than PYTHON_BIN suffix. The .exe-suffix check from earlier versions
+# missed cases where PYTHON_BIN is a bare command name like 'python3' (when
+# resolved from PATH); cygpath was skipped, Python received POSIX path
+# /c/Users/... which Windows Python cannot open. Concrete failure:
+# scripts/cron/logs/2026-05-14T04-20-48Z-downloads-watcher.log lines 8-19,
+# all 3 amendment JSONs failed with PARSE_ERROR [Errno 2].
 JSON_PATH_FOR_PY="$JSON_PATH"
-case "$PYTHON_BIN" in
-    *.exe|*.EXE)
+case "$(uname -s 2>/dev/null)" in
+    MINGW*|MSYS*|CYGWIN*)
         if command -v cygpath >/dev/null 2>&1; then
             JSON_PATH_FOR_PY=$(cygpath -w "$JSON_PATH")
         else
@@ -184,19 +191,15 @@ apply_amendment_via_python() {
     local LE_NOTE="$3"
     local LE_DECIDED_AT="$4"
 
-    # Convert SRC path if necessary
+    # Convert SRC + TOUCHED_LOG paths if running under Git-Bash on Windows.
+    # Same uname-based detection as the JSON_PATH block above (replaces the
+    # earlier PYTHON_BIN *.exe-suffix check which missed bare command names).
     local SRC_FOR_PY="$SRC"
     local TOUCHED_LOG_FOR_PY="$TOUCHED_LOG"
-    case "$PYTHON_BIN" in
-        *.exe|*.EXE)
+    case "$(uname -s 2>/dev/null)" in
+        MINGW*|MSYS*|CYGWIN*)
             if command -v cygpath >/dev/null 2>&1; then
                 SRC_FOR_PY=$(cygpath -w "$SRC")
-                # The TOUCHED_LOG is a POSIX /tmp path under Git-Bash; Windows
-                # Python sees it as a relative path and writes the touched log
-                # into the wrong place. cygpath -w is mandatory here — without
-                # it, the bash stage-loop reads an empty TOUCHED_LOG and skips
-                # staging the actual touched files. (Class of bug: same as
-                # AMD_SRC_PATH conversion above.)
                 TOUCHED_LOG_FOR_PY=$(cygpath -w "$TOUCHED_LOG")
             else
                 SRC_FOR_PY=$(echo "$SRC" | sed -E 's|^/([a-zA-Z])/|\1:/|')

@@ -90,12 +90,14 @@ fi
 export PYTHONIOENCODING=utf-8
 export PYTHONUTF8=1
 
-# If PYTHON_BIN is a Windows .exe but JSON_PATH is a Git-Bash POSIX path
-# (/c/Users/...), the Windows python can't resolve the path. Convert via
-# cygpath when available, otherwise do a manual translation.
+# Detect Git-Bash on Windows via uname -s, not PYTHON_BIN suffix.
+# Earlier *.exe-suffix check missed the case where command -v finds python3
+# on PATH and PYTHON_BIN is a bare name (no .exe). cygpath got skipped,
+# Windows Python received POSIX /c/Users/... paths which it cannot open.
+# Same class-of-bug fix as apply-amendments.sh 2026-05-14.
 JSON_PATH_FOR_PY="$JSON_PATH"
-case "$PYTHON_BIN" in
-    *.exe|*.EXE)
+case "$(uname -s 2>/dev/null)" in
+    MINGW*|MSYS*|CYGWIN*)
         if command -v cygpath >/dev/null 2>&1; then
             JSON_PATH_FOR_PY=$(cygpath -w "$JSON_PATH")
         else
