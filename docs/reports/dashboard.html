@@ -353,7 +353,7 @@
 {
   "weekly_tokens": 7302000,
   "weekly_cost": 175.25,
-  "ships_this_week": 23,
+  "ships_this_week": 24,
   "proposals_pending": 3,
   "proposals_counts": {
     "pending": 3,
@@ -475,7 +475,7 @@
       0,
       0,
       4,
-      19
+      20
     ]
   },
   "handoffs_trend_7d": {
@@ -519,6 +519,13 @@
     ]
   },
   "recent_handoffs": [
+    {
+      "scenario": "team-commit",
+      "from": "Zach Boogher",
+      "to": "main",
+      "created_at": "2026-05-14T15:49:05-04:00",
+      "subject": "weekly_cost: compute honest estimate instead of hardcoded $0.00"
+    },
     {
       "scenario": "team-commit",
       "from": "Zach Boogher",
@@ -581,16 +588,21 @@
       "to": "PARBAUGHS Cron",
       "created_at": "2026-05-14T14:12:12-04:00",
       "subject": "cron(routine): auto-commit telemetry output before watcher preflight (2026-05-14"
-    },
-    {
-      "scenario": "team-commit",
-      "from": "Zach Boogher",
-      "to": "main",
-      "created_at": "2026-05-14T14:11:52-04:00",
-      "subject": "Phase 2 smoke fix: apply-escalations.sh mkdir -p state dirs + .gitkeep for pendi"
     }
   ],
   "recent_ships": [
+    {
+      "id": "ESC-003",
+      "title": "Per-ship token attribution \u2014 going-forward instrumentation approach",
+      "kind": "escalation",
+      "status": "applied",
+      "completed_at": "2026-05-14T19:51:56.843644+00:00",
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
+      "source_path": ".claude/state/escalations/applied/ESC-003-per-ship-token-attribution-instrumentation.md"
+    },
     {
       "id": "AMD-016",
       "title": "Infrastructure must answer its operational question",
@@ -698,24 +710,12 @@
       "tokens_events_matched": 0,
       "cost_usd": null,
       "source_path": ".claude/state/amendments/applied/AMD-011-auto-execute-approved-proposals.md"
-    },
-    {
-      "id": "AMD-010",
-      "title": "MAIN_FLOWS v2 \u2014 62-flow inventory + Taxonomy E + filterable rail",
-      "kind": "amendment",
-      "status": "applied",
-      "completed_at": "2026-05-14T03:35:00Z",
-      "tokens": null,
-      "tokens_source": "unknown",
-      "tokens_events_matched": 0,
-      "cost_usd": null,
-      "source_path": ".claude/state/amendments/applied/AMD-010-MAIN_FLOWS_v2.md"
     }
   ],
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "_aggregate_counts": {
-    "events_total": 764,
+    "events_total": 768,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
@@ -731,7 +731,7 @@
   "quota_status": {
     "state": "empty",
     "as_of": "2026-05-14T19:47:13.8094687Z",
-    "age_seconds": 34,
+    "age_seconds": 289,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -742,7 +742,7 @@
     "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
   },
   "founder_queue": {
-    "as_of": "2026-05-14T19:47:48.865478+00:00",
+    "as_of": "2026-05-14T19:52:03.982504+00:00",
     "last_founder_visit": null,
     "governance_gates": {
       "amendments_pending": 0,
@@ -756,8 +756,8 @@
     "system_health": {
       "crons": {
         "downloads-watcher": {
-          "last_run": "2026-05-14T19-45-49Z",
-          "last_log": "2026-05-14T19-45-49Z-downloads-watcher.log"
+          "last_run": "2026-05-14T19-50-49Z",
+          "last_log": "2026-05-14T19-50-49Z-downloads-watcher.log"
         },
         "maintenance": {
           "last_run": "2026-05-14T06-55-01Z",
@@ -782,10 +782,10 @@
           "task_name": "PARBAUGHS-Downloads-Watcher",
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-downloads-watcher.ps1",
-          "last_fire_iso": "2026-05-14T19:45:49.813338+00:00",
-          "age_minutes": 2.0,
+          "last_fire_iso": "2026-05-14T19:50:49.775642+00:00",
+          "age_minutes": 1.3,
           "status": "firing",
-          "label": "firing \u00b7 last fire 2.0min ago",
+          "label": "firing \u00b7 last fire 1.3min ago",
           "os_state": "Ready",
           "is_installed": true
         },
@@ -795,9 +795,9 @@
           "cadence_minutes": 1440,
           "install_script": "scripts/cron/install-maintenance.ps1",
           "last_fire_iso": "2026-05-14T06:55:19.949406+00:00",
-          "age_minutes": 772.5,
+          "age_minutes": 776.8,
           "status": "firing",
-          "label": "firing \u00b7 last fire 772.5min ago",
+          "label": "firing \u00b7 last fire 776.8min ago",
           "os_state": "Ready",
           "is_installed": true
         },
@@ -819,9 +819,9 @@
           "cadence_minutes": 120,
           "install_script": "scripts/cron/install-proposal-readiness-scanner.ps1",
           "last_fire_iso": "2026-05-14T18:00:01.582523+00:00",
-          "age_minutes": 107.8,
+          "age_minutes": 112.1,
           "status": "firing",
-          "label": "firing \u00b7 last fire 107.8min ago",
+          "label": "firing \u00b7 last fire 112.1min ago",
           "os_state": "Ready",
           "is_installed": true
         },
@@ -831,9 +831,9 @@
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-sidecar.ps1",
           "last_fire_iso": "2026-05-14T19:47:13.854152+00:00",
-          "age_minutes": 0.6,
+          "age_minutes": 4.9,
           "status": "firing",
-          "label": "firing \u00b7 last fire 0.6min ago",
+          "label": "firing \u00b7 last fire 4.9min ago",
           "os_state": "Ready",
           "is_installed": true
         }
@@ -842,16 +842,16 @@
         "ts": "2026-05-14 18:15 UTC",
         "ts_iso": "2026-05-14T18:15:58.4395875Z",
         "status": "STALE",
-        "age_minutes": 91.9,
+        "age_minutes": 96.1,
         "source": "heartbeat"
       },
       "working_tree": {
         "state": "dirty-cycling",
-        "label": "dirty (10 files) \u00b7 watcher cycling",
+        "label": "dirty (13 files) \u00b7 watcher cycling",
         "color": "var(--pb-warning)",
-        "dirty_count": 10,
-        "watcher_last_fire": "2026-05-14T19:45:49.813338+00:00",
-        "watcher_minutes_ago": 2.0
+        "dirty_count": 13,
+        "watcher_last_fire": "2026-05-14T19:50:49.775642+00:00",
+        "watcher_minutes_ago": 1.3
       },
       "halts": [],
       "round_trip_last_pass": "2026-05-14T18:15:58.4395875Z"

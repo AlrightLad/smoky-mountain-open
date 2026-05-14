@@ -67,6 +67,8 @@ source_artifact_paths:
 founder_decision: approve
 founder_decision_options: [a]
 approved_at: 2026-05-14T17:55:52.031878+00:00
+applied_at: 2026-05-14T19:51:56.843644+00:00
+applied_via: scripts/emit-team-work-summary.py + .claude/state/current-ship.json (ESC-003 Approach A operative)
 ---
 
 # ESC-003 — Per-ship token attribution instrumentation approach
