@@ -24,74 +24,18 @@
              * ~170px each → ~200px each. Only main-flows.html uses .is-wide,
              * so this override is contained to this page. */
             --max-content-wide: 1640px;
-
-            /* === Ship R1 (2026-05-14, Founder reference brief) ===
-             * Replicate Dave Jeffery's reference visual: pure black canvas,
-             * transparent cards, hairline white borders. Page-local — does
-             * NOT affect other dashboards (each one defines its own surface
-             * via design-tokens.css + dashboard-shell.css).
-             * Reference: .claude/state/main-flows-v2/reference-spec.md § 2-3. */
-            --bg-page:       #000000;
-            --bg-card:       transparent;
-            --bg-elevated:   transparent;
-            --bg-surface:    transparent;
-            --bg-raised:     rgba(255, 255, 255, 0.02);
-            --border-subtle: rgba(255, 255, 255, 0.10);
-            --border-strong: rgba(255, 255, 255, 0.20);
-
-            /* === Ship R2/R3 (2026-05-14) — Active accent color flip ===
-             * Default brass replaced with bright yellow for the active path,
-             * SVG arrows, step badges, "active" flow row, rail chips, search
-             * focus. Single token override cascades through everywhere that
-             * reads var(--accent-brass). See reference-spec.md § 5-7 + § 9.
-             * SVG arrow stroke-dasharray (solid vs dashed) is fixed in
-             * the .mf-arrow-line rule below. */
-            --accent-brass:  #F5C518;
-
-            /* === Ship R5 (2026-05-14, Founder directive — 'theme is wrong') ===
-             * The architecture section (top) was already on the Janowiak black/
-             * yellow theme via R1-R4. The 62-flow catalog section (below)
-             * had retained PARBAUGHS Clubhouse green/brass tokens which broke
-             * the page mid-scroll. These overrides remap the dashboard-shared
-             * --pb-* tokens (defined in docs/reports/_assets/design-tokens.css)
-             * at page-local :root so the catalog inherits the Janowiak theme.
-             * Underlying global tokens untouched (shared with every other
-             * dashboard). */
-            --pb-billiard-green-900: var(--bg-page);
-            --pb-billiard-green-800: var(--bg-page);
-            --pb-billiard-green-700: rgba(255, 255, 255, 0.05);
-            --pb-billiard-green-600: rgba(255, 255, 255, 0.08);
-            --pb-billiard-green-500: rgba(255, 255, 255, 0.12);
-            --pb-chalk-50:  rgba(255, 255, 255, 0.95);
-            --pb-chalk-100: rgba(255, 255, 255, 0.85);
-            --pb-chalk-200: rgba(255, 255, 255, 0.72);
-            --pb-chalk-300: rgba(255, 255, 255, 0.58);
-            --pb-chalk-400: rgba(255, 255, 255, 0.45);
-            --pb-chalk-500: rgba(255, 255, 255, 0.32);
-            --pb-brass-300: var(--accent-brass);
-            --pb-brass-500: var(--accent-brass);
-            --pb-brass-700: rgba(245, 197, 24, 0.65);
-            --pb-success: var(--accent-brass);
-            --pb-warning: rgba(255, 255, 255, 0.55);
-            --pb-info:    rgba(255, 255, 255, 0.55);
         }
 
-        /* Body + page-header use RAW palette tokens in dashboard-shell.css
-         * (not the semantic --bg-page), so override at the element level. */
-        body.pb-app { background: var(--bg-page); }
-        .pb-page-header {
-            background: var(--bg-page);
-            border-bottom-color: rgba(255, 255, 255, 0.10);
-        }
-        /* Ship-2 inlined .pb-list base styling pinned to billiard-green-800
-         * for the catalog rows; transparent it on this page so the catalog
-         * rests directly on the black canvas. Rows still divide via the
-         * hairline --border-subtle rule (now white at 10%). */
-        #flow-rail-section .pb-list { background: transparent; }
-
-        /* Page chrome (.pb-page-*) lives in dashboard-shell.css.
-         * DC-8 cleanup deleted dead .page-main / .page-header-row /
-         * .page-title / .page-subtitle rules that no longer matched markup. */
+        /* Iter 6 (2026-05-14, Founder directive — "theme is divorced from
+         * the rest of the dashboard"): all R1/R2/R3/R5 page-local theme
+         * overrides (--bg-page → black, --accent-brass → pure yellow,
+         * --pb-* remaps to white-on-black) DELETED. The page now inherits
+         * dashboard-shell.css + design-tokens.css exactly like every other
+         * dashboard — billiard-green felt + brass accents + chalk text.
+         * The 6 --col-* tokens above are kept because they encode category
+         * meaning (actor/client/auth-fn/data/distribution/external) and
+         * appear only in legend dots / column headers, not as page surface
+         * colors. */
 
         /* === Legend === */
         .mf-legend { display: flex; flex-wrap: wrap; gap: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); margin-bottom: var(--space-4); font-size: 0.75rem; }
@@ -337,7 +281,7 @@
              diagnostic so the PRIMARY architecture view is visually anchored
              vs the SECONDARY 62-flow filterable catalog below. -->
         <h2 class="pb-section-title" style="margin-top: var(--space-6);">Architecture diagram</h2>
-        <p class="pb-section-subtitle">6-column grid: member action through external service. Pick a flow on the right rail; the path lights up, arrows draw between nodes, the steps panel walks the journey. The 62-flow filterable catalog is BELOW this section.</p>
+        <p class="pb-section-subtitle">6-column grid: member action through external service. Pick a flow on the right rail (search + actor + tier filters surface all 62 flows in the scrollable rail panel); the path lights up, arrows draw between nodes, the steps panel walks the journey.</p>
         <section class="mf-workspace">
             <div class="mf-grid-wrap">
                 <div class="mf-grid" id="mf-grid"></div>
@@ -384,199 +328,20 @@
             </aside>
         </section>
 
-        <!-- ====================================================================
-             FLOW RAIL (W1 main-flows v2 Phase 3 iter 1)
-             62-flow inventory, filterable. Taxonomy E: tier primary + status
-             secondary. Source: .claude/state/main-flows-v2/flow-inventory.json
-             via data_block.flow_rail. Speculative flows: dashed-border treatment.
-             ==================================================================== -->
-        <section class="pb-section" id="flow-rail-section" style="margin-top: var(--space-8);">
-            <div class="pb-page-title-row">
-                <div>
-                    <h2 class="pb-section-title">All flows &middot; <span id="rail-total-count">—</span></h2>
-                    <p class="pb-section-subtitle">Every user-facing + system flow across PARBAUGHS. Grouped by tier (Core / Supplementary / Admin / System). Filter by actor, status, or search by name. Decision rationale at <code>.claude/state/main-flows-v2/taxonomy-decision.md</code>.</p>
-                </div>
-            </div>
-
-            <div class="rail-filters" style="display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-3); align-items: center;">
-                <input type="search" id="rail-search" placeholder="Search flow id or name…" style="flex: 1 1 220px; min-width: 200px; padding: var(--space-2) var(--space-3); background: var(--pb-billiard-green-800); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--pb-chalk-50); font-family: var(--font-body); font-size: var(--text-sm);">
-                <div class="rail-chip-group" data-axis="actor" style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
-                    <button class="rail-chip is-on" data-actor="">all actors</button>
-                    <button class="rail-chip" data-actor="member">member</button>
-                    <button class="rail-chip" data-actor="commissioner">commissioner</button>
-                    <button class="rail-chip" data-actor="founder">founder</button>
-                    <button class="rail-chip" data-actor="system">system</button>
-                    <button class="rail-chip" data-actor="agent">agent</button>
-                </div>
-                <div class="rail-chip-group" data-axis="status" style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
-                    <button class="rail-chip is-on" data-status="">all statuses</button>
-                    <button class="rail-chip" data-status="shipped">shipped</button>
-                    <button class="rail-chip" data-status="shipping">shipping</button>
-                    <button class="rail-chip" data-status="planned">planned</button>
-                    <button class="rail-chip" data-status="speculative">speculative</button>
-                </div>
-            </div>
-
-            <div id="rail-groups"></div>
-        </section>
+        <!-- Iter 6 (2026-05-14, Founder directive): bottom "ALL FLOWS · 62"
+             filterable catalog section DELETED. The right-rail flow filter
+             inside the architecture diagram above already provides search +
+             actor/tier filters + all 62 flows scrollable; the bottom catalog
+             was redundant duplication. -->
     </main>
 
-    <style>
-        /* Flow rail (Phase 3 iter 1). Builds on .pb-list / .pb-list-row /
-           .pb-avatar / .pb-badge primitives. Per-card decorations + filter
-           chip styling live here; primitives stay primitive.
-           Founder diagnostic 2026-05-14 (Q1C): densified to bring catalog
-           share of page from 78% → ~50%. Goal text hidden at all widths;
-           row padding tightened; tier spacing tightened. */
-        .rail-tier-group { margin-bottom: var(--space-3); }
-        .rail-tier-h { font-family: var(--font-display); font-size: var(--text-base); color: var(--pb-chalk-50); margin: 0 0 var(--space-1) 0; display: flex; align-items: baseline; gap: var(--space-2); }
-        .rail-tier-h .rail-tier-count { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--pb-chalk-400); text-transform: uppercase; letter-spacing: 0.06em; }
-        .rail-tier-h--core          { color: var(--pb-brass-500); }
-        .rail-tier-h--supplementary { color: var(--pb-chalk-50); }
-        .rail-tier-h--admin         { color: var(--pb-warning); }
-        .rail-tier-h--system        { color: var(--pb-info); }
-
-        /* Per-card extras. Goal line removed from catalog at desktop — flow
-           id + name + actor + status chip carry enough signal; the full goal
-           still surfaces in the arch rail card on the right when a flow is
-           selected. NOTE: dashboard-shell.css does NOT import
-           design-system-components.css, so .pb-list / .pb-list-row base
-           styling doesn't apply on this page — we declare it inline. */
-        #flow-rail-section .pb-list {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            background: var(--pb-billiard-green-800);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-        }
-        #flow-rail-section .pb-list-row {
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-            padding: 6px var(--space-3);
-            border-bottom: 1px solid var(--border-subtle);
-            transition: background var(--duration-fast) var(--ease-out);
-        }
-        #flow-rail-section .pb-list-row:last-child { border-bottom: none; }
-        #flow-rail-section .pb-list-row:hover { background: var(--pb-billiard-green-700); }
-        .rail-card { display: flex; align-items: center; gap: var(--space-3); }
-        .rail-id { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--pb-chalk-400); width: 40px; text-align: right; font-variant-numeric: tabular-nums; }
-        .rail-name { flex: 1; min-width: 0; color: var(--pb-chalk-50); font-size: var(--text-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .rail-goal { display: none; }
-        .rail-actor-badge { font-family: var(--font-mono); font-size: var(--text-2xs); text-transform: uppercase; letter-spacing: 0.06em; color: var(--pb-chalk-300); padding: 2px 6px; background: rgba(245,241,232,0.06); border-radius: 4px; }
-        .rail-status-chip { font-family: var(--font-mono); font-size: var(--text-2xs); text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 6px; border-radius: 4px; }
-        .rail-status-chip--shipped     { background: rgba(74,128,103,0.18); color: var(--pb-success); }
-        .rail-status-chip--shipping    { background: rgba(201,169,97,0.18); color: var(--pb-brass-500); }
-        .rail-status-chip--planned     { background: rgba(74,138,156,0.18); color: var(--pb-info); }
-        .rail-status-chip--speculative { background: rgba(216,208,192,0.10); color: var(--pb-chalk-400); }
-
-        /* Speculative card treatment — dashed border + muted */
-        .rail-card-row[data-status="speculative"] { border-style: dashed; opacity: 0.78; }
-
-        /* Filter chips */
-        .rail-chip { background: var(--pb-billiard-green-800); color: var(--pb-chalk-300); border: 1px solid var(--border-subtle); border-radius: var(--radius-pill); padding: 4px 12px; font-family: var(--font-mono); font-size: var(--text-2xs); text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: all var(--duration-fast) var(--ease-out); }
-        .rail-chip:hover { color: var(--pb-chalk-50); border-color: var(--pb-brass-500); }
-        .rail-chip.is-on { background: var(--pb-brass-500); color: var(--pb-billiard-green-900); border-color: var(--pb-brass-500); }
-        .rail-chip-group { display: flex; gap: var(--space-1); padding: 4px 8px; background: rgba(0,0,0,0.15); border-radius: var(--radius-pill); align-items: center; }
-
-        /* Hide cards excluded by filter without breaking layout */
-        .rail-card-row.is-hidden { display: none; }
-        .rail-tier-group.is-empty { display: none; }
-
-        /* Responsive: stack the row content tighter at narrow viewports.
-           .rail-goal is already display:none at all widths post-densification. */
-        @media (max-width: 720px) {
-            .rail-id { width: 32px; font-size: var(--text-2xs); }
-        }
-        @media (max-width: 480px) {
-            .rail-actor-badge { display: none; }
-        }
-    </style>
-
-    <script>
-        (function () {
-            'use strict';
-            function esc(s) { return s == null ? '' : String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
-            function renderRail(data) {
-                var rail = (data && data.flow_rail) || [];
-                document.getElementById('rail-total-count').textContent = String(rail.length);
-                var TIERS = ['core', 'supplementary', 'admin', 'system'];
-                var groupsHost = document.getElementById('rail-groups');
-                if (!groupsHost) return;
-                groupsHost.innerHTML = TIERS.map(function (tier) {
-                    var inTier = rail.filter(function (f) { return f.tier === tier; });
-                    var rowsHtml = inTier.map(function (f) {
-                        var ships = (f.served_by_ships || []).join(', ');
-                        var goal = esc((f.primary_user_goal || '').slice(0, 80));
-                        return ''
-                            + '<li class="pb-list-row rail-card-row" '
-                                + 'data-id="' + esc(f.id) + '" '
-                                + 'data-name="' + esc((f.name || '').toLowerCase()) + '" '
-                                + 'data-actor="' + esc(f.actor) + '" '
-                                + 'data-status="' + esc(f.status) + '">'
-                            + '  <span class="rail-id">' + esc(f.id) + '</span>'
-                            + '  <div class="rail-name">' + esc(f.name)
-                            + '    <div class="rail-goal">' + goal + '</div>'
-                            + '  </div>'
-                            + '  <span class="rail-actor-badge">' + esc(f.actor) + '</span>'
-                            + '  <span class="rail-status-chip rail-status-chip--' + esc(f.status) + '">' + esc(f.status) + '</span>'
-                            + '</li>';
-                    }).join('');
-                    var tierLabel = tier.charAt(0).toUpperCase() + tier.slice(1);
-                    return ''
-                        + '<div class="rail-tier-group" data-tier="' + tier + '">'
-                        + '  <h3 class="rail-tier-h rail-tier-h--' + tier + '">' + tierLabel + ' <span class="rail-tier-count">' + inTier.length + ' flows</span></h3>'
-                        + '  <ol class="pb-list" role="list">' + rowsHtml + '</ol>'
-                        + '</div>';
-                }).join('');
-                bindFilters();
-            }
-            function applyFilters() {
-                var search = (document.getElementById('rail-search').value || '').toLowerCase().trim();
-                var actorBtn = document.querySelector('.rail-chip[data-actor].is-on');
-                var statusBtn = document.querySelector('.rail-chip[data-status].is-on');
-                var actor = actorBtn ? (actorBtn.getAttribute('data-actor') || '') : '';
-                var status = statusBtn ? (statusBtn.getAttribute('data-status') || '') : '';
-                document.querySelectorAll('.rail-card-row').forEach(function (row) {
-                    var rowActor = row.getAttribute('data-actor') || '';
-                    var rowStatus = row.getAttribute('data-status') || '';
-                    var name = row.getAttribute('data-name') || '';
-                    var id = (row.getAttribute('data-id') || '').toLowerCase();
-                    var actorOk = !actor || rowActor === actor;
-                    var statusOk = !status || rowStatus === status;
-                    var searchOk = !search || name.indexOf(search) !== -1 || id.indexOf(search) !== -1;
-                    row.classList.toggle('is-hidden', !(actorOk && statusOk && searchOk));
-                });
-                document.querySelectorAll('.rail-tier-group').forEach(function (g) {
-                    var hasVisible = g.querySelectorAll('.rail-card-row:not(.is-hidden)').length > 0;
-                    g.classList.toggle('is-empty', !hasVisible);
-                });
-            }
-            function bindFilters() {
-                document.getElementById('rail-search').addEventListener('input', applyFilters);
-                document.querySelectorAll('.rail-chip-group').forEach(function (group) {
-                    group.addEventListener('click', function (ev) {
-                        var btn = ev.target.closest('.rail-chip');
-                        if (!btn) return;
-                        group.querySelectorAll('.rail-chip').forEach(function (b) { b.classList.remove('is-on'); });
-                        btn.classList.add('is-on');
-                        applyFilters();
-                    });
-                });
-            }
-            function go() {
-                try {
-                    var raw = document.getElementById('report-data').textContent;
-                    var data = JSON.parse(raw);
-                    renderRail(data);
-                } catch (e) { console.error('flow-rail render failed', e); }
-            }
-            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go);
-            else go();
-        })();
-    </script>
+    <!-- Iter 6 (2026-05-14, Founder directive): bottom catalog style + script
+         IIFE (renderRail, applyFilters, bindFilters) DELETED alongside the
+         duplicate flow rail section markup above. The architecture diagram's
+         mf-rail-search + mf-rail-chips + mf-flows-list (rendered by the IIFE
+         later in the page) continue to provide all 62 flows filterable in
+         the right rail panel. Round-trip iter6 negative assertions prevent
+         re-introduction. -->
 
     <script id="report-data" type="application/json">
 {
@@ -1367,7 +1132,7 @@
       ]
     }
   ],
-  "last_amended": "2026-05-14T17:54:50.926986+00:00",
+  "last_amended": "2026-05-14T18:15:54.561687+00:00",
   "doc_source": "docs/reports/_assets/main-flows-data.json",
   "schema_version": 1,
   "flow_rail": [

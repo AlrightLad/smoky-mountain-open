@@ -1330,12 +1330,19 @@ def main():
     # Theme convergence guard: every dashboard's <style> blocks + style="..." attrs
     # must reference colors via var(--*) only — no raw hex. design-system.html is
     # exempt because it displays hex values as documentation. main-flows.html has
-    # 8 documented hex declarations inside :root (6 column-color tokens
-    # col-actor/-client/-auth-fn/-data/-distribution/-external + 2 page-local
-    # surface tokens --bg-page (#000000) and --accent-brass (#F5C518), introduced
-    # by Ships R1-R3 2026-05-14 for Dave Jeffery reference replication). All 8
-    # are page-specific data tokens, not theme colors. Test allows those scoped
-    # tokens explicitly; any other raw hex in CSS contexts fails.
+    # 6 documented hex declarations inside :root (the --col-* category tokens
+    # col-actor/-client/-auth-fn/-data/-distribution/-external — encode category
+    # meaning, appear only in legend dots / column headers). All 6 are page-
+    # specific data tokens, not theme colors.
+    #
+    # Iter 6 (2026-05-14, Founder directive): the prior R1-R5 ships had added 2
+    # more documented hex declarations (--bg-page: #000000 + --accent-brass:
+    # #F5C518) that overrode the entire dashboard theme to a Dave-Jeffery-
+    # reference black/yellow. Founder direction: "page is theme-divorced from
+    # the rest of the dashboard". Those 2 declarations + downstream --pb-*
+    # remaps were DELETED in iter 6; page now inherits dashboard-shell.css
+    # billiard-green + brass exactly like every other dashboard. Allowed hex
+    # count returns to 6 (the --col-* tokens only).
     print(cyan("\n[theme] Theme convergence guard (no raw hex in dashboard <style>)..."))
     HEX_IN_CSS_RE = re.compile(r"#[0-9a-fA-F]{3,8}\b")
     THEME_PAGES = [
@@ -1343,7 +1350,7 @@ def main():
         ("activity.html",           0),
         ("proposals.html",          0),
         ("discussion-bubbles.html", 0),
-        ("main-flows.html",         8),  # 6 col-* + --bg-page + --accent-brass
+        ("main-flows.html",         6),  # 6 col-* only (--bg-page/--accent-brass removed iter 6)
         ("token-usage.html",        0),
         ("index.html",              0),
     ]
@@ -1436,12 +1443,37 @@ def main():
 
     # main-flows.html: 6-col grid + SVG arrows + flow rail + steps panel
     mf_html = (REPORTS_SRC / "main-flows.html").read_text(encoding="utf-8")
-    # Order check (Issue-1 2026-05-14): architecture diagram (mf-workspace) MUST
-    # appear BEFORE the 62-flow filterable list (flow-rail-section). Phase 3
-    # spec: arch diagram is hero/PRIMARY, flow rail is catalog/SECONDARY.
+    # Iter 6 (2026-05-14, Founder directive — "two specific failures"):
+    #   1. Theme: page must NOT override --bg-page or --accent-brass at page-
+    #      local :root. Page must inherit dashboard-shell.css billiard-green +
+    #      brass exactly like every other dashboard.
+    #   2. Composition: bottom #flow-rail-section catalog DELETED. Architecture
+    #      diagram's mf-rail-search + mf-rail-chips already carry all 62 flows
+    #      filterable in the right rail; bottom section was duplication.
+    #
+    # The prior order-check sentinel (architecture-before-rail) is preserved
+    # for archaeology — it still passes when flow-rail-section is absent
+    # (the .find returns -1 which short-circuits the arch_first check), but
+    # the more important guard is the iter-6 NEGATIVE assertions below.
     mf_idx_workspace = mf_html.find('class="mf-workspace"')
     mf_idx_flowrail = mf_html.find('id="flow-rail-section"')
     arch_first = (mf_idx_workspace > 0 and (mf_idx_flowrail < 0 or mf_idx_workspace < mf_idx_flowrail))
+
+    # Iter 6 negative assertions — these prevent iteration 7 from re-introducing
+    # the same two failure modes. Sentinels run on raw page text against the
+    # specific strings that comprised each failure.
+    mf_iter6_negatives = [
+        # (name, must_be_absent_token, why)
+        ("no flow-rail-section",       'id="flow-rail-section"',  "bottom 62-flow catalog DELETED — duplicate of arch rail"),
+        ("no rail-search id",          'id="rail-search"',        "bottom catalog search input gone"),
+        ("no rail-chip class",         'class="rail-chip',         "bottom catalog filter chips gone"),
+        ("no rail-groups host",        'id="rail-groups"',        "bottom catalog group host gone"),
+        ("no rail-total-count",        'id="rail-total-count"',   "bottom catalog header counter gone"),
+        ("no renderRail IIFE",         "function renderRail(",    "bottom catalog JS gone"),
+        ("no --bg-page override",      "--bg-page:       #000",   "page-local Janowiak black-canvas override DELETED"),
+        ("no --accent-brass override", "--accent-brass:  #F5C518","page-local Janowiak yellow-accent override DELETED"),
+        ("no --pb-billiard-green-900 override", "--pb-billiard-green-900: var(--bg-page)", "page-local --pb-* remap to white-on-black DELETED"),
+    ]
 
     # Ship 4 (Founder diagnostic 2026-05-14): the prior sentinel check
     # passed while the page was visually wrong — sentinels only prove
@@ -1483,6 +1515,10 @@ def main():
         ("8 path-rich flows",          mf_data is not None and len((mf_data.get("flows") or [])) == 8),
         ("62 rail entries",            mf_data is not None and len((mf_data.get("flow_rail") or [])) == 62),
     ]
+    # Iter 6 (2026-05-14, Founder directive): negative-presence sentinels.
+    # Each check passes when the named token is ABSENT from the page.
+    for name, token, _why in mf_iter6_negatives:
+        mf_checks.append((f"iter6:{name}", token not in mf_html))
     mf_pass = all(ok for _, ok in mf_checks)
     if mf_pass:
         cc_note = f" ({expected_total_components} components, {expected_total_steps} steps)" if expected_total_components else ""
