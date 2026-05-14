@@ -42,9 +42,9 @@ NOT yet covered by this scaffolding:
 
 | # | Finding | Source | Status |
 |---|---|---|---|
-| H1 | All-time records best rounds — needs split into 9-hole vs 18-hole columns | CLAUDE.md Known Bugs #4 | Diagnosed; not yet fixed |
-| H2 | Shareable scorecards for 9-hole rounds — currently renders all 18 cells with empty back-9 | CLAUDE.md Known Bugs #5 | Diagnosed; not yet fixed |
-| H3 | Parbaugh Round joined players not appearing on scorecard (host-only display) | CLAUDE.md Known Bugs #9 | Diagnosed; not yet fixed |
+| H1 | All-time records best rounds — needs split into 9-hole vs 18-hole columns | CLAUDE.md Known Bugs #4 | **Data layer FIXED iter 16 (commit 7c3b5ba — getPlayerBest9 added)**; UI consumer updates deferred (members.js:260, trophyroom.js:48 still display 18-only) |
+| H2 | Shareable scorecards for 9-hole rounds — currently renders all 18 cells with empty back-9 | CLAUDE.md Known Bugs #5 | **Likely ALREADY FIXED** — buildScorecardHTML (src/core/router.js:1109+) computes `is9only` from front9count/back9count and only renders nines where score data exists. Needs verification via live 9-hole round share-card capture. CLAUDE.md Known Bug entry may be stale. |
+| H3 | Parbaugh Round joined players not appearing on scorecard (host-only display) | CLAUDE.md Known Bugs #9 | Diagnosed in code scan: live `renderLiveScorecard` (src/pages/syncround.js:128-205) DOES render all `playerIds` — multi-player display works in live view. The "host-only" filter must be on the EXPORT/SHARE scorecard path or the completed-round detail view. Needs investigation. |
 
 ### MEDIUM (4)
 
