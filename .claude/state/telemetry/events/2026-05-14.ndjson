@@ -37,3 +37,5 @@
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T03:06:22.358839+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T03:08:15.077181+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T03:08:15.785488+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T03:33:05.590739+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T03:33:06.394539+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}

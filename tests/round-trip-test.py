@@ -1268,6 +1268,36 @@ def main():
         print(red(f"  ✗ design-system.html           missing sentinels: {missing}"))
         failures.append(("protected:design-system", f"missing: {missing}"))
 
+    # W1.S1 iteration 1: 3 spike-surfaced primitives must be declared
+    # in components.css AND demonstrated in design-system.html showcase.
+    # Added 2026-05-14 per W1.S1 ship plan acceptance criteria.
+    components_css = (REPORTS_SRC / "_assets" / "design-system-components.css").read_text(encoding="utf-8")
+    w1s1_primitives = [
+        ("pb-avatar",       ".pb-avatar {",       "pb-avatar"),
+        ("pb-list",         ".pb-list {",         "pb-list"),
+        ("pb-list-row",     ".pb-list-row {",     "pb-list-row"),
+        ("pb-trend-delta",  ".pb-trend-delta {",  "pb-trend-delta"),
+    ]
+    w1s1_checks = []
+    for name, css_selector, html_class in w1s1_primitives:
+        css_ok = css_selector in components_css
+        showcase_ok = html_class in ds_html
+        w1s1_checks.append((f"{name} declared in components.css", css_ok))
+        w1s1_checks.append((f"{name} shown in design-system.html", showcase_ok))
+    # Additional discipline: variants for leader-ring + up/down/flat
+    w1s1_checks.append(("pb-avatar--leader-ring variant", "pb-avatar--leader-ring" in components_css))
+    w1s1_checks.append(("pb-list-row--is-leader variant", "pb-list-row--is-leader" in components_css))
+    w1s1_checks.append(("pb-trend-delta--up variant",    "pb-trend-delta--up" in components_css))
+    w1s1_checks.append(("pb-trend-delta--down variant",  "pb-trend-delta--down" in components_css))
+    w1s1_checks.append(("pb-trend-delta--flat variant",  "pb-trend-delta--flat" in components_css))
+    w1s1_pass = all(ok for _, ok in w1s1_checks)
+    if w1s1_pass:
+        print(green(f"  ✓ W1.S1 primitives             4 primitives + 5 variants declared in components.css + demonstrated in showcase"))
+    else:
+        missing = [name for name, ok in w1s1_checks if not ok]
+        print(red(f"  ✗ W1.S1 primitives             missing: {missing}"))
+        failures.append(("w1s1:primitives", f"missing: {missing}"))
+
     # Pause-discipline guard (Phase 6.6): no production-tree references to the
     # fictional 3.5M cap or budget_pct. The audit doc + governance drafts +
     # historical proposals are explicitly exempt.

@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-05-14T03:08:15.253292+00:00",
+  "as_of": "2026-05-14T03:33:05.835214+00:00",
   "_meter_status": "wired-estimated",
   "_meter_note": "Token meter is not wired (F1 finding). tokens_by_role / weekly_tokens / weekly_cost / token_trend_7d will show synthesized event-attributed values ONLY for events that carry agent + tokens fields. Until a real meter wires up (db-2026-05-13-003 outcome pending Founder ratification), treat these fields as a lower bound, not the actual consumption.",
   "weekly_tokens": 4302000,
@@ -92,7 +92,7 @@
   },
   "recent_ships": [],
   "_aggregate_counts": {
-    "events_total": 195,
+    "events_total": 207,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
