@@ -1,0 +1,70 @@
+# Example overnight-agent prompt
+#
+# Copy this file, customize for your specific overnight task, then queue with:
+#     scripts/overnight-agent/queue-prompt.sh path/to/your-prompt.txt
+#
+# Lines starting with # at the top of the file are ignored by the wrapper
+# (they're embedded as comments in the queued prompt). The validator
+# checks that all required ## sections exist before accepting.
+
+## SCOPE
+
+Bounded scope of work this overnight run is authorized to perform. State
+what the run should accomplish in 1-3 sentences. Be specific. Example:
+
+Investigate and close P3 audit finding M1 (course directory average display
+needs to derive front/back/18-hole from holesMode field). Implementation
+should follow H1 pattern (data-layer helper + UI consumer updates).
+
+## STOP CONDITIONS
+
+Hard constraints that cause the agent to stop work and log the decision.
+At minimum one bullet. AMD-017 stop conditions Q1.A-G are operative in
+addition to whatever you list here.
+
+- Any commit fails round-trip-test.py
+- Working tree dirty for >30 min with no progress
+- Q1.E ambiguity: design intent unclear (stop and log; do not guess)
+- Q1.A scope expansion: target surface drifts beyond ALLOWED SURFACES
+- Q1.D missing pre-auth: discovering the task needs deploy/rules edit
+  (AMD-018 exception list)
+
+## TOKEN BUDGET
+
+Dollar cap for this run. Default $5 (~2-3h of Opus work). Override with
+OVERNIGHT_BUDGET env var before launch. Reach 90% → stop work, commit
+progress, log remaining items for next slot.
+
+$5
+
+## ALLOWED SURFACES
+
+Paths the run may edit. Anything outside this list requires the run to
+stop and log. Example:
+
+- src/pages/courses.js
+- src/pages/members.js
+- src/pages/trophyroom.js
+- src/core/data.js
+- .claude/state/app-audit-2026-05-14/SUMMARY.md
+- tests/round-trip-test.py (read-only verification)
+
+## DELIVERABLE
+
+What "done" looks like. Specific enough that the morning Founder review
+can verify completion without ambiguity.
+
+- M1 fix committed with [P4 M1] tag
+- SUMMARY.md updated to reflect FULLY CLOSED state
+- round-trip-test.py passes (logged in wrapper output)
+- 11-gate AMD-018 push criteria status report appended to run log
+- NO PUSH (Founder reviews + pushes morning)
+
+## CONTEXT (optional, free-form)
+
+Anything additional the agent should know. Memory references, related
+ships, prior decisions. Example:
+
+H1 (which M1 patterns after) was closed in commits 7c3b5ba, 94e4340, 66a6e19.
+H1's data-layer addition is `getPlayerBest9(pid)` in src/core/data.js.
+M1's parallel will be `getCourseAvg9(courseName)` returning {f9, b9}.

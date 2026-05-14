@@ -288,6 +288,44 @@ try {
     }
 
     # -----------------------------------------------------------------------
+    # STEP 6b - Overnight-agent morning report
+    # -----------------------------------------------------------------------
+    # Generates .claude/state/overnight-agent/reports/<date>.md aggregating
+    # the most recent overnight bounded-scope run outcome. Surfaces to the
+    # dashboard banner via regen-all (Step 7). Generator is bash; resolved
+    # via Resolve-GitBash from common.ps1. No-op (idle report) if no
+    # overnight run record found.
+    Log ""
+    Log "==[6b/10]== Overnight-agent morning report"
+    try {
+        $morningReportScript = Join-Path $repoRoot "scripts\overnight-agent\morning-report-generator.sh"
+        if (Test-Path $morningReportScript) {
+            $bashExe = Resolve-GitBash
+            if ($bashExe) {
+                & $bashExe -lc "cd '$($repoRoot.Path.Replace('\','/'))' && bash scripts/overnight-agent/morning-report-generator.sh" 2>&1 |
+                    ForEach-Object { Log "    [morning-report] $_" }
+                $morningRc = $LASTEXITCODE
+                if ($morningRc -ne 0) {
+                    Log "  morning-report exit=$morningRc"
+                    Record-Step "morning-report" "error" "exit=$morningRc"
+                } else {
+                    Log "  morning-report OK"
+                    Record-Step "morning-report" "ok" ""
+                }
+            } else {
+                Log "  Git Bash not found; skipping"
+                Record-Step "morning-report" "skipped" "no git-bash"
+            }
+        } else {
+            Log "  morning-report-generator.sh missing; skipping"
+            Record-Step "morning-report" "skipped" "script missing"
+        }
+    } catch {
+        Log "  ERROR morning-report: $_"
+        Record-Step "morning-report" "error" $_.Exception.Message
+    }
+
+    # -----------------------------------------------------------------------
     # STEP 7 - Regen-all sanity
     # -----------------------------------------------------------------------
     Log ""
