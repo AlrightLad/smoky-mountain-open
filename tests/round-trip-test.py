@@ -1354,6 +1354,35 @@ def main():
         marker_count = len(list(DEFERRED_DIR.glob("*.json"))) if DEFERRED_DIR.exists() else 0
         print(green(f"  ✓ proposal-readiness        {marker_count} deferred marker(s); schema valid; no orphans"))
 
+    # PROP-003.a quota-status.json schema discipline. The sidecar writes
+    # this file on a 5-min cron cadence; consumers (PROP-003.b, future
+    # PAUSE_DISCIPLINE meter-gate per AMD-014) depend on a stable schema.
+    # File is gitignored (regenerated state); --absent-ok handles the
+    # case where the sidecar hasn't run in this clone yet.
+    print(cyan("\n[quota-status] PROP-003.a sidecar schema discipline..."))
+    quota_schema_check = ROOT / "tests" / "checks" / "quota-status-schema.py"
+    if quota_schema_check.exists():
+        try:
+            import subprocess
+            r = subprocess.run(
+                [sys.executable, str(quota_schema_check), "--absent-ok"],
+                cwd=str(ROOT), capture_output=True, text=True, timeout=30,
+            )
+            if r.returncode == 0:
+                line = (r.stdout.strip().splitlines() or ["(no output)"])[-1]
+                print(green(f"  ✓ quota-status        {line}"))
+            else:
+                print(red(f"  ✗ quota-status        validator exit={r.returncode}"))
+                for ln in (r.stdout + r.stderr).strip().splitlines()[-5:]:
+                    print(red(f"     {ln}"))
+                failures.append(("quota-status:schema", f"validator exit {r.returncode}"))
+        except Exception as e:
+            print(red(f"  ✗ quota-status        validator invocation failed: {e}"))
+            failures.append(("quota-status:invocation", str(e)))
+    else:
+        print(red(f"  ✗ quota-status        validator missing at {quota_schema_check.relative_to(ROOT)}"))
+        failures.append(("quota-status:validator-missing", str(quota_schema_check)))
+
     # Pause-discipline guard (Phase 6.6): no production-tree references to the
     # fictional 3.5M cap or budget_pct. The audit doc + governance drafts +
     # historical proposals are explicitly exempt.
@@ -1371,6 +1400,8 @@ def main():
         ROOT / "docs" / "reports" / "amendments.html",  # rendered AMD drafts (body previews mirror exempt sources)
         ROOT / "scripts" / "cron" / "quarantine",   # maintenance script holding area
         ROOT / "scripts" / "refresh-quota-manual.ps1",  # placeholder caps for % -> tokens conversion
+        ROOT / "scripts" / "sidecar" / "usage-snapshot.ps1",  # same role: % -> tokens via plan_a manual-paste-derived (PROP-003.a)
+        ROOT / "scripts" / "sidecar" / "usage-snapshot-config.json",  # operator-overridable caps; not a hardcoded ceiling
     ]
     def _is_exempt(p):
         for ex in PD_EXEMPT_PATHS:

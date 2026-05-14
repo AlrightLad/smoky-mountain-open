@@ -104,10 +104,14 @@ echo "[regen-all] round-trip test PASS"
 # When matched: invokes scan-proposal-readiness.py + emits
 # ship.close.scanner-dispatched telemetry event. Does NOT auto-execute
 # ready proposals — dispatch != execute (separate ship plans the launcher).
-HEAD_MSG=$(git log -1 --pretty=%B 2>/dev/null || echo "")
+# Match against SUBJECT ONLY (--pretty=%s) — using %B (full message)
+# previously matched body text from prior commit messages that quoted
+# the trigger output, causing recursive false-positives. Subject-only
+# is the contract per AMD-011 ship-close convention.
+HEAD_MSG=$(git log -1 --pretty=%s 2>/dev/null || echo "")
 SHIP_CLOSE_RE='(W[0-9]+\.[SIMm][0-9a-z]+ ship (close|complete)|Shipped PROP-[0-9]+(\.[a-z])?|[Ss]hip (close|complete):)'
 if echo "$HEAD_MSG" | grep -qE "$SHIP_CLOSE_RE"; then
-    SHIP_HEAD_LINE=$(echo "$HEAD_MSG" | head -1)
+    SHIP_HEAD_LINE="$HEAD_MSG"
     echo ""
     echo "[regen-all] SHIP-CLOSE DETECTED: $SHIP_HEAD_LINE"
     echo "[regen-all] dispatching proposal-readiness scanner..."

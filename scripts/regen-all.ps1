@@ -115,11 +115,14 @@ Write-Host "[regen-all] round-trip test PASS" -ForegroundColor Green
 # at ship boundaries). Detects ship-close patterns in HEAD commit
 # message; on match invokes scan-proposal-readiness.py + emits
 # ship.close.scanner-dispatched telemetry. Dispatch != execute.
-$headMsg = & git log -1 --pretty=%B 2>$null
+# Subject-only (--pretty=%s) prevents recursive false-positives when a
+# prior commit's BODY quotes the trigger output. Per AMD-011: only the
+# SUBJECT is the ship-close contract.
+$headMsg = & git log -1 --pretty=%s 2>$null
 if (-not $headMsg) { $headMsg = "" }
 $shipCloseRe = '(W\d+\.[SIMm][0-9a-z]+ ship (close|complete)|Shipped PROP-\d+(\.[a-z])?|[Ss]hip (close|complete):)'
 if ($headMsg -match $shipCloseRe) {
-    $shipHeadLine = ($headMsg -split "`n")[0]
+    $shipHeadLine = $headMsg
     Write-Host ""
     Write-Host "[regen-all] SHIP-CLOSE DETECTED: $shipHeadLine" -ForegroundColor Cyan
     Write-Host "[regen-all] dispatching proposal-readiness scanner..." -ForegroundColor Cyan

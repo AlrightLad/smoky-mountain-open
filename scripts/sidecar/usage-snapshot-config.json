@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "poll_interval_minutes": 5,
+  "stale_threshold_seconds": 600,
+  "stale_data_threshold_seconds": 86400,
+  "data_source_priority": ["headless-cost", "manual-paste"],
+  "weekly_cap_override": null,
+  "org_monthly_cap_override": null,
+  "org_monthly_reset_boundary_override": null,
+  "notes": [
+    "Per PROP-003.a token meter sidecar mechanics.",
+    "poll_interval_minutes: cron cadence (5 min default per proposal)",
+    "stale_threshold_seconds: emit _warning when last snapshot older than this (10 min default)",
+    "stale_data_threshold_seconds: when manual-quota-log entry is older than this, mark data_source 'manual-paste-stale' (24h default)",
+    "data_source_priority: source preference order; sidecar tries each in turn. headless-cost not yet implemented (Plan B per proposal); manual-paste is the active source (Plan A)",
+    "*_override fields let Founder pin specific caps without editing the script. null = use script defaults (matches QUOTA_CAPS in aggregate-token-usage.py)"
+  ]
+}
