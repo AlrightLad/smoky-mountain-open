@@ -388,6 +388,154 @@ def list_open_phase_escalations():
     return out
 
 
+def read_health_banner(name: str):
+    """Read .claude/state/aggregates/<name>-health.json (written by
+    specialist agents — Test/QA at Terminal 4, Security/Compliance at
+    Terminal 5). Returns a normalized dict for dashboard rendering.
+
+    Tolerant by design: missing file → status="missing"; malformed JSON
+    → status="error"; stale (as_of >24h) → status="unknown" with stale
+    flag. Never raises — dashboard renders gracefully no matter what
+    state the source agents are in.
+
+    See .claude/state/aggregates/README.md for the schema.
+    """
+    path = STATE / "aggregates" / f"{name}-health.json"
+    if not path.exists():
+        return {
+            "available": False,
+            "status": "missing",
+            "summary": f"no {name}-health.json — source agent not yet writing",
+            "as_of": None,
+            "stale": False,
+            "age_hours": None,
+            "counts": {},
+            "details": [],
+            "links": [],
+            "source_path": str(path.relative_to(ROOT)).replace("\\", "/"),
+        }
+    try:
+        data = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return {
+            "available": False,
+            "status": "error",
+            "summary": f"failed to read {path.name}: {exc.__class__.__name__}",
+            "as_of": None,
+            "stale": False,
+            "age_hours": None,
+            "counts": {},
+            "details": [],
+            "links": [],
+            "source_path": str(path.relative_to(ROOT)).replace("\\", "/"),
+        }
+    if not isinstance(data, dict):
+        return {
+            "available": False,
+            "status": "error",
+            "summary": f"{path.name} did not contain a JSON object",
+            "as_of": None,
+            "stale": False,
+            "age_hours": None,
+            "counts": {},
+            "details": [],
+            "links": [],
+            "source_path": str(path.relative_to(ROOT)).replace("\\", "/"),
+        }
+
+    now_utc = datetime.now(timezone.utc)
+    # Accept either `as_of` (my spec) or `timestamp` (Test/QA + Security
+    # agents' own convention). Both are ISO-8601 UTC.
+    as_of_raw = data.get("as_of") or data.get("timestamp")
+    age_hours = None
+    stale = False
+    if as_of_raw:
+        try:
+            as_of_dt = datetime.fromisoformat(str(as_of_raw).replace("Z", "+00:00"))
+            age_hours = round((now_utc - as_of_dt).total_seconds() / 3600.0, 2)
+            stale = age_hours > 24
+        except (ValueError, TypeError):
+            pass
+
+    status_raw = data.get("status") or "unknown"
+    # Override status to "unknown" when stale so a long-dead green banner doesn't
+    # silently misrepresent the system.
+    effective_status = "unknown" if stale else status_raw
+
+    # Summary — accept `summary` (my spec) OR `status_reason` (Security agent)
+    # OR build a synthetic summary from check counts (Test/QA agent has no
+    # single summary string but has descriptive count fields).
+    summary = data.get("summary") or data.get("status_reason") or ""
+    if not summary:
+        # Synthesize from known shapes
+        if "checks_run" in data:
+            parts = []
+            passed = data.get("checks_passed")
+            run = data.get("checks_run")
+            if isinstance(run, int) and isinstance(passed, int):
+                parts.append(f"{passed}/{run} checks passing")
+            skipped = data.get("checks_skipped")
+            if isinstance(skipped, int) and skipped > 0:
+                parts.append(f"{skipped} skipped")
+            known_fail = data.get("checks_with_known_failure")
+            if isinstance(known_fail, int) and known_fail > 0:
+                parts.append(f"{known_fail} known failure" + ("s" if known_fail != 1 else ""))
+            regressions = data.get("regressions") or []
+            if isinstance(regressions, list) and regressions:
+                parts.append(f"{len(regressions)} regression" + ("s" if len(regressions) != 1 else ""))
+            summary = " · ".join(parts) if parts else ""
+
+    # Counts — prefer `counts` dict; fall back to `active_findings` (Security)
+    # or build from individual `checks_*` numeric fields (Test/QA).
+    counts = data.get("counts") or {}
+    if not counts:
+        if isinstance(data.get("active_findings"), dict):
+            counts = {k: v for k, v in data["active_findings"].items() if isinstance(v, (int, float))}
+        else:
+            # Test/QA convention: top-level checks_* integers
+            for k in ("checks_run", "checks_passed", "checks_failed",
+                      "checks_skipped", "checks_with_known_failure"):
+                v = data.get(k)
+                if isinstance(v, (int, float)):
+                    label = k.replace("checks_", "")
+                    counts[label] = v
+
+    # Details — prefer explicit `details` array; otherwise combine known
+    # category arrays (known_failures + regressions for Test/QA, vulnerable_deps
+    # + credential_leaks for Security). Each item is preserved with a `category`
+    # tag so the dashboard can render heterogeneous rows cleanly.
+    details = list(data.get("details") or [])
+    if not details:
+        for key in ("known_failures", "regressions", "vulnerable_deps",
+                    "credential_leaks", "findings", "issues"):
+            arr = data.get(key)
+            if not isinstance(arr, list):
+                continue
+            for item in arr:
+                if isinstance(item, dict):
+                    row = dict(item)
+                    row.setdefault("category", key)
+                    details.append(row)
+                elif item is not None:
+                    details.append({"category": key, "name": str(item)})
+
+    return {
+        "available": True,
+        "status": effective_status,
+        "raw_status": status_raw,
+        "summary": summary,
+        "as_of": as_of_raw,
+        "stale": stale,
+        "age_hours": age_hours,
+        "counts": counts,
+        "details": details,
+        "links": data.get("links") or [],
+        "schema_version": data.get("schema_version"),
+        "head_sha": data.get("head_sha") or data.get("head_short"),
+        "source_path": str(path.relative_to(ROOT)).replace("\\", "/"),
+    }
+
+
 def cron_last_fire_map():
     """AMD-007 P18.6: most-recent log per cron name. Filename pattern
     `<isoZ>-<cron-name>.log` per scripts/cron/logs/."""
@@ -786,6 +934,12 @@ def build_founder_queue():
             "working_tree": working_tree_status(),
             "halts": active_halts(),
             "round_trip_last_pass": round_trip_last_pass_ts(),
+            # Cross-agent health banners (Founder directive 2026-05-14
+            # "TWO NEW SESSIONS"). Files written by specialist agents
+            # at .claude/state/aggregates/{test,security}-health.json.
+            # Dashboard health agent reads + renders; does not write.
+            "test_health": read_health_banner("test"),
+            "security_health": read_health_banner("security"),
         },
         "activity_since_last_visit": {
             "_note": "Counts since last_founder_visit (null = since-forever)",
