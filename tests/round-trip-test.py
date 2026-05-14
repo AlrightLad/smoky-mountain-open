@@ -21,6 +21,20 @@ import sys
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
+# Force UTF-8 stdout/stderr — Windows cp1252 default crashes on the
+# checkmark + arrow chars used in status prints below. Companion to the
+# 6eadb56 fix which addressed read_text/write_text encoding.
+if sys.stdout and hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+if sys.stderr and hasattr(sys.stderr, "reconfigure"):
+    try:
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 ROOT = Path(__file__).resolve().parents[1]
 TEST_WORKSPACE = ROOT / "tests" / "round-trip-workspace"
 REPORTS_SRC = ROOT / "docs" / "reports"
