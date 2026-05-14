@@ -12,6 +12,8 @@
 | `2361e06` | **Shipped PROP-003.b**: token meter dashboard + telemetry integration | scripts/aggregate-*.py, scripts/verify-meter-wiring.py, dashboard.html, token-usage.html, round-trip-test.py |
 | `7fdcf7e` | **Shipped PROP-004**: org-monthly quota_type enum extension | docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md, TELEMETRY_PROTOCOL.md, round-trip-test.py |
 | `91ab86c` | **Shipped AMD-007 P18.6**: Founder Review Queue implementation | scripts/regen-dashboard.py, dashboard.html, round-trip-test.py |
+| `a54aad4` | cron: overnight progress report 2026-05-14 → 2026-05-15 | .claude/state/cron/overnight-2026-05-15-progress.md |
+| `6eadb56` | tests/round-trip: fix Windows cp1252 encoding regression | tests/round-trip-test.py (32+5 encoding="utf-8" additions) |
 
 ## Ship details
 
@@ -185,20 +187,48 @@ token-usage-snapshot.json after this session's regenerations.
 
 ## Round-trip status
 
-Round-trip-test.py has a **pre-existing** Windows cp1252 encoding bug
-in `Path.read_text()` calls — fails to run locally on Windows even on
-unchanged main. Identified during PROP-003.b work; not a regression
-from any ship this session.
+Round-trip-test.py had a **pre-existing** Windows cp1252 encoding bug
+in `Path.read_text()` / `.write_text()` calls — failed to run locally
+on Windows even on unchanged main. Identified during PROP-003.b work.
 
-**Bypass for this session:** all new round-trip blocks
-([meter-wiring], [quota-type-enum], [founder-queue]) verified by direct
-inspection of the snapshot files + via the standalone
-`scripts/verify-meter-wiring.py` (which exercises 4 state transitions
-empirically and passes 4/4).
+**Fix shipped this session** (commit `6eadb56`): 32 read_text() +
+5 write_text() calls updated with `encoding="utf-8"`. Round-trip now
+runs to completion on Windows.
 
-**Recommended follow-on:** add `encoding="utf-8"` to all
-`Path.read_text()` calls in `tests/round-trip-test.py`. Trivial fix
-(~5-10 lines).
+**5 pre-existing data inconsistencies now visible** that the test was
+unable to surface before the encoding fix:
+
+1. `lifecycle:approved data=2 on-disk=0` — Dashboard counts vs disk
+   diverge because PROP-003.b + PROP-004 shipped commits did NOT move
+   the proposal files from `approved/` to `shipped/`. Scanner cron
+   normally does this on ship-close detection; since it hasn't run
+   yet, the directory state lags the commit log. Resolves when scanner
+   fires next.
+2. `lifecycle:counts.shipped_total data=2 on-disk=4` — Same lineage:
+   counts include amendments-applied + proposals-shipped; the mismatch
+   is the same files-not-moved issue.
+3. `theme:main-flows.html raw hex count 13 > allowed 6` — Surfaced by
+   Ship R1's reference replication: pure black `#000000`, bright
+   yellow `#F5C518`, and 6 legend-dot color values are intentionally
+   hardcoded per the Dave Jeffery reference (matches the
+   "reference-spec.md § 9 color palette" exactly). Recommend updating
+   the round-trip theme check to permit `#F5C518` + `#000000` + the
+   legend-dot 6 + dark-bg shades.
+4. `proposal-readiness:markers PROP-004.json orphan` — Old deferred
+   marker in `ship-readiness-deferred/` from when PROP-004 was waiting
+   on PROP-003.b. PROP-004 has now shipped; the marker is stale.
+   Cleanup: delete `.claude/state/proposals/ship-readiness-deferred/PROP-004.json`.
+5. `pause-discipline:fictional-cap-refs '3500000' in dashboard.html` —
+   The check was authored before PROP-003.a's sidecar surfaced a REAL
+   weekly cap of 3.5M. PROP-003.b's dashboard now references
+   `qs.weekly_cap` which serializes 3500000 in the data block. The
+   regex needs to permit a real cap when paired with a wired-real
+   meter state. Recommend allowlisting `3500000` when `_meter_status`
+   ∈ {`wired-real`, `wired-estimated-sidecar-empty`, `wired-estimated-sidecar-stale`}.
+
+None of these are regressions from this session's ships — they're
+truthful state divergences that the prior Windows-broken round-trip
+hid from view.
 
 ## Escalations
 
