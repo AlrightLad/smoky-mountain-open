@@ -225,13 +225,16 @@ dry_run  = os.environ.get("AMD_DRY_RUN", "0") == "1"
 touched_log = os.environ.get("AMD_TOUCHED_LOG", "")
 
 def record_touched(p):
-    # Bash reads this file as a list of paths to `git add`. Under Git-Bash,
-    # the `[[ -f path ]]` test and `git add path` only resolve a Windows path
-    # if the path uses forward slashes — backslash form silently fails the
-    # -f test and the file never gets staged. Always emit POSIX-style.
+    # Bash reads this file as a list of paths to `git add`. Under Git-Bash:
+    #   - `[[ -f path ]]` and `git add path` only resolve forward-slash paths
+    #     (backslash form silently fails the -f test). Use as_posix().
+    #   - Python's text-mode write translates `\n` → `\r\n` on Windows, and
+    #     bash's `read -r` then captures the trailing `\r`, so the path
+    #     becomes 'docs/.../foo.md\r' — fails -f. Use newline="" to keep
+    #     `\n` literal (binary line-ending).
     if touched_log:
         path_for_bash = Path(p).as_posix()
-        with open(touched_log, "a", encoding="utf-8") as f:
+        with open(touched_log, "a", encoding="utf-8", newline="") as f:
             f.write(path_for_bash + "\n")
 
 text = src_path.read_text(encoding="utf-8")
@@ -504,6 +507,9 @@ git add -A "$AMENDMENTS_DIR/"
 # or .claude/skills/ which would pick up unrelated untracked files.
 if [[ -s "$TOUCHED_LOG" ]]; then
     while IFS= read -r touched; do
+        # Strip any trailing CR that might leak through under Git-Bash even
+        # with the Python-side newline="" fix; belt-and-suspenders.
+        touched="${touched%$'\r'}"
         [[ -z "$touched" ]] && continue
         if [[ -f "$touched" ]]; then
             git add "$touched"
