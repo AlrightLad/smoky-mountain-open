@@ -47,6 +47,33 @@
              * SVG arrow stroke-dasharray (solid vs dashed) is fixed in
              * the .mf-arrow-line rule below. */
             --accent-brass:  #F5C518;
+
+            /* === Ship R5 (2026-05-14, Founder directive — 'theme is wrong') ===
+             * The architecture section (top) was already on the Janowiak black/
+             * yellow theme via R1-R4. The 62-flow catalog section (below)
+             * had retained PARBAUGHS Clubhouse green/brass tokens which broke
+             * the page mid-scroll. These overrides remap the dashboard-shared
+             * --pb-* tokens (defined in docs/reports/_assets/design-tokens.css)
+             * at page-local :root so the catalog inherits the Janowiak theme.
+             * Underlying global tokens untouched (shared with every other
+             * dashboard). */
+            --pb-billiard-green-900: var(--bg-page);
+            --pb-billiard-green-800: var(--bg-page);
+            --pb-billiard-green-700: rgba(255, 255, 255, 0.05);
+            --pb-billiard-green-600: rgba(255, 255, 255, 0.08);
+            --pb-billiard-green-500: rgba(255, 255, 255, 0.12);
+            --pb-chalk-50:  rgba(255, 255, 255, 0.95);
+            --pb-chalk-100: rgba(255, 255, 255, 0.85);
+            --pb-chalk-200: rgba(255, 255, 255, 0.72);
+            --pb-chalk-300: rgba(255, 255, 255, 0.58);
+            --pb-chalk-400: rgba(255, 255, 255, 0.45);
+            --pb-chalk-500: rgba(255, 255, 255, 0.32);
+            --pb-brass-300: var(--accent-brass);
+            --pb-brass-500: var(--accent-brass);
+            --pb-brass-700: rgba(245, 197, 24, 0.65);
+            --pb-success: var(--accent-brass);
+            --pb-warning: rgba(255, 255, 255, 0.55);
+            --pb-info:    rgba(255, 255, 255, 0.55);
         }
 
         /* Body + page-header use RAW palette tokens in dashboard-shell.css
@@ -89,13 +116,12 @@
             .mf-grid { grid-template-columns: repeat(6, 180px); min-width: 0; }
         }
         .mf-column { display: flex; flex-direction: column; gap: var(--space-2); position: relative; z-index: 2; }
-        .mf-column-header { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; padding: var(--space-1) 0; border-bottom: 2px solid var(--col-actor); margin-bottom: var(--space-1); color: var(--text-secondary); font-weight: 600; }
-        .mf-column[data-col="actor"]        .mf-column-header { border-bottom-color: var(--col-actor); }
-        .mf-column[data-col="client"]       .mf-column-header { border-bottom-color: var(--col-client); }
-        .mf-column[data-col="fn"]           .mf-column-header { border-bottom-color: var(--col-auth-fn); }
-        .mf-column[data-col="data"]         .mf-column-header { border-bottom-color: var(--col-data); }
-        .mf-column[data-col="dist"]         .mf-column-header { border-bottom-color: var(--col-distribution); }
-        .mf-column[data-col="ext"]          .mf-column-header { border-bottom-color: var(--col-external); }
+        /* Ship R6 (2026-05-14): column headers drop the colored 2px bottom-
+         * border per reference-spec.md § 8 (Janowiak ref: uppercase, weight
+         * 400, no border-bottom). Legend dots carry the column-color identity
+         * now. Header weight reduced from 600 → 500 to match the reference's
+         * lighter tone; uppercase + letter-spacing preserved. */
+        .mf-column-header { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; padding: var(--space-1) 0; margin-bottom: var(--space-1); color: var(--text-secondary); font-weight: 500; }
         .mf-column-subtitle { font-size: 0.6875rem; color: var(--text-tertiary); margin-bottom: var(--space-2); font-style: italic; }
 
         /* Ship R4 (2026-05-14): node component box re-style per
@@ -179,6 +205,26 @@
         .mf-rail-chip.is-on { background: var(--accent-brass); color: var(--bg-page); border-color: var(--accent-brass); }
 
         .mf-flows-list { list-style: none; margin: var(--space-2) 0 0; padding: 0; max-height: 55vh; overflow-y: auto; }
+        /* Ship R9: clear-selection link at bottom of rail per reference-spec.md § 19.
+         * Visible only when a flow is selected (toggled by JS). Subtle, mono, dim — no visual weight when off. */
+        .mf-rail-clear {
+            display: block;
+            width: calc(100% - var(--space-6));
+            margin: var(--space-2) var(--space-3) var(--space-2) var(--space-3);
+            padding: 6px var(--space-2);
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-tertiary);
+            font-family: var(--font-mono);
+            font-size: var(--text-2xs);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+            transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+        }
+        .mf-rail-clear:hover { color: var(--accent-brass); border-color: var(--accent-brass); }
+        .mf-rail-clear:focus-visible { outline: 2px solid var(--accent-brass); outline-offset: 1px; }
         .mf-flows-item {
             display: flex;
             align-items: center;
@@ -227,7 +273,11 @@
         .mf-step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--accent-brass); color: var(--bg-page); font-family: var(--font-mono); font-weight: 700; font-size: 11px; display: flex; align-items: center; justify-content: center; }
         .mf-step-from-to { font-size: 0.6875rem; color: var(--text-secondary); font-family: var(--font-mono); }
         .mf-step-label { font-size: 0.8125rem; color: var(--text-primary); font-weight: 600; margin-top: 1px; }
-        .mf-step-desc { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; line-height: 1.45; }
+        /* Ship R7 (2026-05-14): step description switches from sans body to
+         * monospace per reference-spec.md § 23. Mono signals "technical/data"
+         * which matches the reference's treatment of step descriptions as
+         * code-like notation. */
+        .mf-step-desc { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; line-height: 1.45; font-family: var(--font-mono); }
 
         /* Caveats banner */
         .mf-caveats { background: rgba(74,138,156,0.08); border: 1px solid var(--accent-teal); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3); font-size: 0.75rem; color: var(--text-secondary); line-height: 1.55; }
@@ -276,7 +326,7 @@
              Issue-1 (2026-05-14): added clarifying section heading per Founder
              diagnostic so the PRIMARY architecture view is visually anchored
              vs the SECONDARY 62-flow filterable catalog below. -->
-        <h2 class="pb-section-title" style="margin-top: var(--space-6);">Architecture diagram <span class="pb-kpi-label" style="margin-left: var(--space-2); font-weight: normal;">PRIMARY · system topology + 8 main flows</span></h2>
+        <h2 class="pb-section-title" style="margin-top: var(--space-6);">Architecture diagram</h2>
         <p class="pb-section-subtitle">6-column grid: member action through external service. Pick a flow on the right rail; the path lights up, arrows draw between nodes, the steps panel walks the journey. The 62-flow filterable catalog is BELOW this section.</p>
         <section class="mf-workspace">
             <div class="mf-grid-wrap">
@@ -309,6 +359,8 @@
                         <button class="mf-rail-chip" data-tier="system">system</button>
                     </div>
                     <ul class="mf-flows-list" id="mf-flows-list"></ul>
+                    <!-- Ship R9: "Clear selection" affordance at bottom of rail per reference-spec.md § 19 -->
+                    <button type="button" class="mf-rail-clear" id="mf-rail-clear" hidden>Clear selection</button>
                 </div>
 
                 <div class="mf-card">
@@ -331,7 +383,7 @@
         <section class="pb-section" id="flow-rail-section" style="margin-top: var(--space-8);">
             <div class="pb-page-title-row">
                 <div>
-                    <h2 class="pb-section-title">All flows · <span id="rail-total-count">—</span> <span class="pb-kpi-label" style="margin-left: var(--space-2); font-weight: normal;">SECONDARY · 62-flow filterable catalog</span></h2>
+                    <h2 class="pb-section-title">All flows &middot; <span id="rail-total-count">—</span></h2>
                     <p class="pb-section-subtitle">Every user-facing + system flow across PARBAUGHS. Grouped by tier (Core / Supplementary / Admin / System). Filter by actor, status, or search by name. Decision rationale at <code>.claude/state/main-flows-v2/taxonomy-decision.md</code>.</p>
                 </div>
             </div>
@@ -1305,7 +1357,7 @@
       ]
     }
   ],
-  "last_amended": "2026-05-14T16:27:54.814936+00:00",
+  "last_amended": "2026-05-14T16:35:26.656774+00:00",
   "doc_source": "docs/reports/_assets/main-flows-data.json",
   "schema_version": 1,
   "flow_rail": [
@@ -2358,7 +2410,16 @@
                 renderStepsForFlow(flowId);
                 highlightPath(flowId);
                 requestAnimationFrame(function () { drawArrowsForFlow(flowId); });
+                // Ship R9: clear-selection button visibility tracks selection state
+                var clearBtn = document.getElementById('mf-rail-clear');
+                if (clearBtn) clearBtn.hidden = !flowId;
             }
+
+            // Ship R9: wire clear-selection click
+            (function () {
+                var btn = document.getElementById('mf-rail-clear');
+                if (btn) btn.addEventListener('click', function () { selectFlow(null); });
+            })();
 
             function highlightPath(flowId) {
                 var flow = (data.flows || []).find(function (f) { return f.id === flowId; });
