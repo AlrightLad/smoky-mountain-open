@@ -1,0 +1,108 @@
+{
+  "captured_at": "2026-05-14T06:32:42.893Z",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "page_url": "file:///C:/Users/Zach/smoky-mountain-open/docs/reports/main-flows.html",
+  "flow_selected_in_capture": true,
+  "measurements": {
+    "mf_grid": {
+      "exists": true,
+      "bbox": {
+        "x": 153,
+        "y": 176.375,
+        "width": 1238,
+        "height": 890.15625
+      },
+      "grid_template_columns": "200px 200px 200px 200px 200px 200px",
+      "columns_count": 6
+    },
+    "mf_columns": [
+      {
+        "data_col": "actor",
+        "header": "Actors",
+        "node_count": 5
+      },
+      {
+        "data_col": "client",
+        "header": "Client surfaces",
+        "node_count": 14
+      },
+      {
+        "data_col": "fn",
+        "header": "Auth + Functions",
+        "node_count": 9
+      },
+      {
+        "data_col": "data",
+        "header": "Firestore (data)",
+        "node_count": 12
+      },
+      {
+        "data_col": "dist",
+        "header": "Distribution",
+        "node_count": 3
+      },
+      {
+        "data_col": "ext",
+        "header": "External services",
+        "node_count": 4
+      }
+    ],
+    "mf_arrows": {
+      "exists": true,
+      "bbox": {
+        "x": 141,
+        "y": 164.375,
+        "width": 1272,
+        "height": 914
+      },
+      "line_count": 8,
+      "head_count": 1,
+      "badge_count": 7,
+      "children_total": 15
+    },
+    "mf_flows_list": {
+      "exists": true,
+      "bbox": {
+        "x": 1421,
+        "y": 320.375,
+        "width": 358,
+        "height": 594
+      },
+      "item_count": 62
+    },
+    "mf_workspace": {
+      "exists": true,
+      "bbox": {
+        "x": 140,
+        "y": 163.375,
+        "width": 1640,
+        "height": 980
+      },
+      "grid_template_columns": "1264px 360px",
+      "display": "grid"
+    },
+    "mf_steps": {
+      "meta_text": "F1 · 7 steps",
+      "items_visible": true,
+      "items_count": 7
+    },
+    "section_order": {
+      "arch_top": 409.375,
+      "catalog_top": 1453.375,
+      "arch_before_catalog": true
+    },
+    "flow_rail": {
+      "total_count_text": "62",
+      "tier_group_count": 4,
+      "card_count": 62
+    },
+    "page": {
+      "scroll_height": 3784,
+      "viewport_width": 1920,
+      "viewport_height": 1080
+    }
+  }
+}

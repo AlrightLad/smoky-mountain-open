@@ -1,0 +1,102 @@
+{
+  "target": "https://x.com/DaveJ/status/2053867258653339746",
+  "article_info": {
+    "posters": [
+      "https://pbs.twimg.com/profile_images/1717867459816931328/e0smI0C1_normal.jpg"
+    ],
+    "videos": [
+      {
+        "src": "blob:https://x.com/0b159cfa-86dc-444d-ade6-44fedaf39256",
+        "poster": "https://pbs.twimg.com/amplify_video_thumb/2053865860108894208/img/Zctgw6RxMYYW7yjH.jpg",
+        "duration": 18.199999
+      }
+    ],
+    "imgs_in_tweet": [],
+    "og_image": null,
+    "twitter_image": null
+  },
+  "all_media_responses": [
+    {
+      "url": "https://pbs.twimg.com/profile_images/1717867459816931328/e0smI0C1_normal.jpg",
+      "status": 200,
+      "type": "image/jpeg"
+    },
+    {
+      "url": "https://pbs.twimg.com/amplify_video_thumb/2053865860108894208/img/Zctgw6RxMYYW7yjH.jpg",
+      "status": 200,
+      "type": "image/jpeg"
+    },
+    {
+      "url": "https://accounts.google.com/gsi/button?theme=outline&size=large&shape=circle&logo_alignment=center&text=signup_with&width=300&is_fedcm_supported=true&client_id=49625052041-kgt0hghf445lmcmhijv46b715m2mpbct.apps.googleusercontent.com&iframe_id=gsi_648567_666003&cas=hH5bcPXFS9NHvnvFw603nGXAuOPKQDtROw5jJOm%2BjfA&hl=en",
+      "status": 200,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://video.twimg.com/amplify_video/2053865860108894208/pl/AUpMN-X76nl2mjUo.m3u8?tag=27&variant_version=1",
+      "status": 200,
+      "type": "application/x-mpegURL"
+    },
+    {
+      "url": "https://video.twimg.com/amplify_video/2053865860108894208/pl/avc1/442x270/1blkJsK6T0sxBuR8.m3u8",
+      "status": 200,
+      "type": "application/x-mpegURL"
+    },
+    {
+      "url": "https://video.twimg.com/amplify_video/2053865860108894208/vid/avc1/0/3000/442x270/eyBgsz0Qckx6FaA_.m4s",
+      "status": 200,
+      "type": "video/mp4"
+    },
+    {
+      "url": "https://video.twimg.com/amplify_video/2053865860108894208/pl/avc1/1768x1080/uwuVmcmB2lzQpzkT.m3u8",
+      "status": 200,
+      "type": "application/x-mpegURL"
+    },
+    {
+      "url": "https://video.twimg.com/amplify_video/2053865860108894208/vid/avc1/0/0/1768x1080/ZNGcp4djKvdO2qXM.mp4",
+      "status": 200,
+      "type": "video/mp4"
+    },
+    {
+      "url": "https://video.twimg.com/amplify_video/2053865860108894208/vid/avc1/0/3000/1768x1080/YUWlA4Y1J7bJ9EUY.m4s",
+      "status": 200,
+      "type": "video/mp4"
+    },
+    {
+      "url": "https://video.twimg.com/amplify_video/2053865860108894208/pl/avc1/3538x2160/tr0x341rEFUKYzYE.m3u8",
+      "status": 200,
+      "type": "application/x-mpegURL"
+    },
+    {
+      "url": "https://video.twimg.com/amplify_video/2053865860108894208/vid/avc1/0/0/3538x2160/NKVod2zUos99GavH.mp4",
+      "status": 200,
+      "type": "video/mp4"
+    },
+    {
+      "url": "https://video.twimg.com/amplify_video/2053865860108894208/vid/avc1/3000/6000/3538x2160/-CedC-k2q7pIAt7K.m4s",
+      "status": 200,
+      "type": "video/mp4"
+    },
+    {
+      "url": "https://video.twimg.com/amplify_video/2053865860108894208/vid/avc1/6000/9000/3538x2160/9EYrVRw1vWG3AH5S.m4s",
+      "status": 200,
+      "type": "video/mp4"
+    },
+    {
+      "url": "https://video.twimg.com/amplify_video/2053865860108894208/vid/avc1/9000/12000/3538x2160/TFgue0_0mYXo5NER.m4s",
+      "status": 200,
+      "type": "video/mp4"
+    },
+    {
+      "url": "https://video.twimg.com/amplify_video/2053865860108894208/vid/avc1/12000/15000/3538x2160/JsdLm9NWK2OigCpK.m4s",
+      "status": 200,
+      "type": "video/mp4"
+    },
+    {
+      "url": "https://video.twimg.com/amplify_video/2053865860108894208/vid/avc1/15000/18216/3538x2160/cedCwXDKLnEJVMBZ.m4s",
+      "status": 200,
+      "type": "video/mp4"
+    }
+  ],
+  "article_screenshot": "C:\\Users\\Zach\\smoky-mountain-open\\.claude\\state\\main-flows-v2\\reference-frames\\x-tweet-article.png",
+  "timestamp": "2026-05-14T06:20:53.098Z"
+}

@@ -6,15 +6,61 @@
     <title>Architecture & Flows — PARBAUGHS Orchestration</title>
     <link rel="stylesheet" href="_assets/dashboard-shell.css">
     <style>
-        /* Column color tokens (referenced from columns[].color_token in data block) */
+        /* Column color tokens (referenced from columns[].color_token in data block).
+         * Updated 2026-05-14 (Ship R1, Dave Jeffery reference fidelity) to the
+         * legend dot palette in reference-spec.md § 9. These appear only in
+         * the legend dots — they do not paint anything else on the page. */
         :root {
-            --col-actor:        #c9a961;
-            --col-client:       #4a8a9c;
-            --col-auth-fn:      #6b5b8c;
-            --col-data:         #4a8067;
-            --col-distribution: #d4a857;
-            --col-external:     #9c4a4a;
+            --col-actor:        #E91E63;  /* magenta — Actor */
+            --col-client:       #4F8FF7;  /* blue — Client surfaces */
+            --col-auth-fn:      #9C5BB8;  /* purple — Auth + Functions */
+            --col-data:         #3FB07F;  /* teal-green — Firestore (data) */
+            --col-distribution: #3DAEDB;  /* cyan — Distribution */
+            --col-external:     #D6483B;  /* red — External services */
+
+            /* Page-local override: bump max-content-wide from 1480 → 1640 so
+             * the 6-column architecture grid has room to breathe at 1920px.
+             * Founder diagnostic 2026-05-14 (Q1C): columns rebalanced from
+             * ~170px each → ~200px each. Only main-flows.html uses .is-wide,
+             * so this override is contained to this page. */
+            --max-content-wide: 1640px;
+
+            /* === Ship R1 (2026-05-14, Founder reference brief) ===
+             * Replicate Dave Jeffery's reference visual: pure black canvas,
+             * transparent cards, hairline white borders. Page-local — does
+             * NOT affect other dashboards (each one defines its own surface
+             * via design-tokens.css + dashboard-shell.css).
+             * Reference: .claude/state/main-flows-v2/reference-spec.md § 2-3. */
+            --bg-page:       #000000;
+            --bg-card:       transparent;
+            --bg-elevated:   transparent;
+            --bg-surface:    transparent;
+            --bg-raised:     rgba(255, 255, 255, 0.02);
+            --border-subtle: rgba(255, 255, 255, 0.10);
+            --border-strong: rgba(255, 255, 255, 0.20);
+
+            /* === Ship R2/R3 (2026-05-14) — Active accent color flip ===
+             * Brass (#c9a961) → bright yellow (#F5C518) for the active path,
+             * SVG arrows, step badges, "active" flow row, rail chips, search
+             * focus. Single token override cascades through everywhere that
+             * reads var(--accent-brass). See reference-spec.md § 5-7 + § 9.
+             * SVG arrow stroke-dasharray (solid vs dashed) is fixed in
+             * the .mf-arrow-line rule below. */
+            --accent-brass:  #F5C518;
         }
+
+        /* Body + page-header use RAW palette tokens in dashboard-shell.css
+         * (not the semantic --bg-page), so override at the element level. */
+        body.pb-app { background: #000000; }
+        .pb-page-header {
+            background: #000000;
+            border-bottom-color: rgba(255, 255, 255, 0.10);
+        }
+        /* Ship-2 inlined .pb-list base styling pinned to billiard-green-800
+         * for the catalog rows; transparent it on this page so the catalog
+         * rests directly on the black canvas. Rows still divide via the
+         * hairline --border-subtle rule (now white at 10%). */
+        #flow-rail-section .pb-list { background: transparent; }
 
         /* Page chrome (.pb-page-*) lives in dashboard-shell.css.
          * DC-8 cleanup deleted dead .page-main / .page-header-row /
@@ -34,9 +80,13 @@
 
         /* === Grid (left) === */
         .mf-grid-wrap { position: relative; overflow-x: auto; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-3); }
-        .mf-grid { display: grid; grid-template-columns: repeat(6, minmax(140px, 1fr)); gap: var(--space-3); position: relative; min-width: 900px; }
+        /* Founder diagnostic 2026-05-14: widened track minmax 140 → 200 and
+         * min-width 900 → 1180 so columns are ~200px at 1920 viewport (up from
+         * ~170). Below 1100px the workspace stacks vertically and the grid
+         * scrolls horizontally — narrow column variant preserved. */
+        .mf-grid { display: grid; grid-template-columns: repeat(6, minmax(200px, 1fr)); gap: var(--space-3); position: relative; min-width: 1180px; }
         @media (max-width: 1100px) {
-            .mf-grid { grid-template-columns: repeat(6, 160px); }
+            .mf-grid { grid-template-columns: repeat(6, 180px); min-width: 0; }
         }
         .mf-column { display: flex; flex-direction: column; gap: var(--space-2); position: relative; z-index: 2; }
         .mf-column-header { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; padding: var(--space-1) 0; border-bottom: 2px solid var(--col-actor); margin-bottom: var(--space-1); color: var(--text-secondary); font-weight: 600; }
@@ -48,19 +98,21 @@
         .mf-column[data-col="ext"]          .mf-column-header { border-bottom-color: var(--col-external); }
         .mf-column-subtitle { font-size: 0.6875rem; color: var(--text-tertiary); margin-bottom: var(--space-2); font-style: italic; }
 
-        .mf-node { background: var(--bg-elevated); border: 1px solid var(--border-subtle); border-left: 3px solid var(--col-actor); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-2); font-size: 0.75rem; transition: opacity var(--duration-default) var(--ease-default), border-color var(--duration-default) var(--ease-default), box-shadow var(--duration-default) var(--ease-default), transform var(--duration-default) var(--ease-default); position: relative; }
-        .mf-column[data-col="actor"]        .mf-node { border-left-color: var(--col-actor); }
-        .mf-column[data-col="client"]       .mf-node { border-left-color: var(--col-client); }
-        .mf-column[data-col="fn"]           .mf-node { border-left-color: var(--col-auth-fn); }
-        .mf-column[data-col="data"]         .mf-node { border-left-color: var(--col-data); }
-        .mf-column[data-col="dist"]         .mf-node { border-left-color: var(--col-distribution); }
-        .mf-column[data-col="ext"]          .mf-node { border-left-color: var(--col-external); }
+        /* Ship R4 (2026-05-14): node component box re-style per
+         * reference-spec.md § 4. No left-border accent, no bg fill — just
+         * a hairline border on all 4 sides, yellow when on-path, dim gray
+         * when off-path. Removed column-specific border-left rules; the
+         * legend dots carry the column color identity now. */
+        .mf-node { background: transparent; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-2); font-size: 0.75rem; transition: opacity var(--duration-default) var(--ease-default), border-color var(--duration-default) var(--ease-default), transform var(--duration-default) var(--ease-default); position: relative; }
         .mf-node-label { font-weight: 600; color: var(--text-primary); font-size: 0.8125rem; }
         .mf-node-subtitle { color: var(--text-tertiary); font-size: 0.6875rem; margin-top: 2px; line-height: 1.3; font-family: var(--font-mono); word-break: break-word; }
 
-        /* Flow selection states */
-        .mf-grid.has-selection .mf-node { opacity: 0.25; }
-        .mf-grid.has-selection .mf-node.is-on-path { opacity: 1; box-shadow: 0 0 0 1px var(--accent-brass), 0 4px 12px rgba(201,169,97,0.18); }
+        /* Flow selection states (Ship R4 + R5):
+         * Off-path nodes dim to ~0.18 (was 0.25) per reference-spec.md § 4.
+         * On-path nodes get a crisp yellow border, no glow shadow — Dave's
+         * reference uses sharp yellow borders rather than soft halos. */
+        .mf-grid.has-selection .mf-node { opacity: 0.18; }
+        .mf-grid.has-selection .mf-node.is-on-path { opacity: 1; border-color: var(--accent-brass); box-shadow: none; }
         .mf-node.is-pulse { animation: mfPulse 700ms ease-out 1; }
         @keyframes mfPulse {
             0%   { box-shadow: 0 0 0 0   rgba(201,169,97,0.55); }
@@ -71,12 +123,13 @@
             .mf-node, .mf-node.is-pulse { animation: none !important; transition: none !important; }
         }
 
-        /* SVG arrow overlay */
+        /* SVG arrow overlay. Ship R2 (2026-05-14): solid (not dashed) +
+         * full opacity to match Dave Jeffery reference § 5. */
         .mf-arrows { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
-        .mf-arrow-line { fill: none; stroke: var(--accent-brass); stroke-width: 1.5; stroke-dasharray: 5 4; opacity: 0.85; }
+        .mf-arrow-line { fill: none; stroke: var(--accent-brass); stroke-width: 1.5; stroke-dasharray: none; opacity: 1; }
         .mf-arrow-head { fill: var(--accent-brass); }
         .mf-arrow-badge-bg { fill: var(--accent-brass); }
-        .mf-arrow-badge-text { fill: var(--bg-page); font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+        .mf-arrow-badge-text { fill: #000000; font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
 
         /* === Right rail === */
         .mf-rail { display: flex; flex-direction: column; gap: var(--space-3); position: sticky; top: var(--space-3); max-height: calc(100vh - 100px); }
@@ -87,18 +140,84 @@
         .mf-card-title { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-tertiary); font-weight: 600; }
         .mf-card-meta { font-size: 0.6875rem; color: var(--text-tertiary); font-family: var(--font-mono); }
 
-        .mf-flows-list { list-style: none; margin: 0; padding: 0; max-height: 50vh; overflow-y: auto; }
-        .mf-flows-item { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border-subtle); cursor: pointer; transition: background var(--duration-default) var(--ease-default); }
-        .mf-flows-item:last-child { border-bottom: none; }
+        /* Rail search + filter chips (Ship 3, 2026-05-14) — Founder Q2:
+         * rail shows all 62 flows scrollable, with search + actor + tier
+         * chips. F1-F8 clicks still highlight paths; F9-F62 clicks show
+         * metadata-only state in the Steps panel. */
+        .mf-rail-search-wrap { padding: var(--space-2) var(--space-3) 0; }
+        .mf-rail-search {
+            width: 100%;
+            padding: 6px var(--space-2);
+            background: var(--bg-page);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.8125rem;
+            font-family: var(--font-ui, inherit);
+        }
+        .mf-rail-search:focus-visible { outline: 2px solid var(--accent-brass); outline-offset: 1px; }
+        .mf-rail-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            padding: var(--space-2) var(--space-3) 0;
+        }
+        .mf-rail-chip {
+            background: var(--bg-page);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 999px;
+            padding: 2px 8px;
+            font-family: var(--font-mono);
+            font-size: 0.6875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: all var(--duration-fast, 150ms) ease;
+        }
+        .mf-rail-chip:hover { color: var(--text-primary); border-color: var(--accent-brass); }
+        .mf-rail-chip.is-on { background: var(--accent-brass); color: var(--bg-page); border-color: var(--accent-brass); }
+
+        .mf-flows-list { list-style: none; margin: var(--space-2) 0 0; padding: 0; max-height: 55vh; overflow-y: auto; }
+        .mf-flows-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: 6px var(--space-3);
+            border-top: 1px solid var(--border-subtle);
+            cursor: pointer;
+            transition: background var(--duration-default) var(--ease-default);
+        }
+        .mf-flows-item.is-hidden { display: none; }
         .mf-flows-item:hover { background: var(--bg-elevated); }
         .mf-flows-item.is-active { background: rgba(201,169,97,0.12); border-left: 3px solid var(--accent-brass); padding-left: calc(var(--space-3) - 3px); }
-        .mf-flows-id { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--accent-brass); }
-        .mf-flows-name { font-size: 0.875rem; color: var(--text-primary); font-weight: 600; margin-top: 2px; }
-        .mf-flows-goal { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; line-height: 1.4; }
-        .mf-flows-status { font-size: 0.625rem; font-family: var(--font-mono); padding: 1px 6px; border-radius: 999px; margin-top: var(--space-1); display: inline-block; }
+        .mf-flows-item.has-path::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-brass);
+            flex-shrink: 0;
+            opacity: 0.8;
+        }
+        .mf-flows-item:not(.has-path)::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            border: 1px dashed var(--border-subtle);
+            box-sizing: border-box;
+            flex-shrink: 0;
+            opacity: 0.6;
+        }
+        .mf-flows-id { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--accent-brass); min-width: 32px; flex-shrink: 0; }
+        .mf-flows-name { font-size: 0.8125rem; color: var(--text-primary); font-weight: 600; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mf-flows-tier-badge { font-family: var(--font-mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-tertiary); flex-shrink: 0; }
+        .mf-flows-status { font-size: 0.625rem; font-family: var(--font-mono); padding: 1px 6px; border-radius: 999px; flex-shrink: 0; }
         .mf-flows-status.is-shipped  { background: rgba(74,128,103,0.18); color: var(--accent-moss); }
         .mf-flows-status.is-shipping { background: rgba(74,138,156,0.18); color: var(--accent-teal); }
         .mf-flows-status.is-planned  { background: rgba(212,168,87,0.18); color: var(--accent-amber); }
+        .mf-flows-status.is-speculative { background: rgba(216,208,192,0.10); color: var(--text-tertiary); }
 
         .mf-steps-empty { padding: var(--space-3); color: var(--text-tertiary); font-size: 0.8125rem; line-height: 1.55; }
         .mf-steps-list { list-style: none; margin: 0; padding: 0; max-height: 40vh; overflow-y: auto; }
@@ -171,6 +290,24 @@
                         <span class="mf-card-title">Flows</span>
                         <span class="mf-card-meta" id="mf-flows-count">—</span>
                     </div>
+                    <div class="mf-rail-search-wrap">
+                        <input type="search" id="mf-rail-search" class="mf-rail-search" placeholder="Search flow id or name…" aria-label="Search flows">
+                    </div>
+                    <div class="mf-rail-chips" data-axis="actor" aria-label="Filter by actor">
+                        <button class="mf-rail-chip is-on" data-actor="">all</button>
+                        <button class="mf-rail-chip" data-actor="member">member</button>
+                        <button class="mf-rail-chip" data-actor="commissioner">commish</button>
+                        <button class="mf-rail-chip" data-actor="founder">founder</button>
+                        <button class="mf-rail-chip" data-actor="system">system</button>
+                        <button class="mf-rail-chip" data-actor="agent">agent</button>
+                    </div>
+                    <div class="mf-rail-chips" data-axis="tier" aria-label="Filter by tier">
+                        <button class="mf-rail-chip is-on" data-tier="">all tiers</button>
+                        <button class="mf-rail-chip" data-tier="core">core</button>
+                        <button class="mf-rail-chip" data-tier="supplementary">supp</button>
+                        <button class="mf-rail-chip" data-tier="admin">admin</button>
+                        <button class="mf-rail-chip" data-tier="system">system</button>
+                    </div>
                     <ul class="mf-flows-list" id="mf-flows-list"></ul>
                 </div>
 
@@ -199,7 +336,7 @@
                 </div>
             </div>
 
-            <div class="rail-filters" style="display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-4); align-items: center;">
+            <div class="rail-filters" style="display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-3); align-items: center;">
                 <input type="search" id="rail-search" placeholder="Search flow id or name…" style="flex: 1 1 220px; min-width: 200px; padding: var(--space-2) var(--space-3); background: var(--pb-billiard-green-800); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--pb-chalk-50); font-family: var(--font-body); font-size: var(--text-sm);">
                 <div class="rail-chip-group" data-axis="actor" style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
                     <button class="rail-chip is-on" data-actor="">all actors</button>
@@ -225,20 +362,47 @@
     <style>
         /* Flow rail (Phase 3 iter 1). Builds on .pb-list / .pb-list-row /
            .pb-avatar / .pb-badge primitives. Per-card decorations + filter
-           chip styling live here; primitives stay primitive. */
-        .rail-tier-group { margin-bottom: var(--space-6); }
-        .rail-tier-h { font-family: var(--font-display); font-size: var(--text-lg); color: var(--pb-chalk-50); margin: 0 0 var(--space-2) 0; display: flex; align-items: baseline; gap: var(--space-2); }
-        .rail-tier-h .rail-tier-count { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--pb-chalk-400); text-transform: uppercase; letter-spacing: 0.06em; }
+           chip styling live here; primitives stay primitive.
+           Founder diagnostic 2026-05-14 (Q1C): densified to bring catalog
+           share of page from 78% → ~50%. Goal text hidden at all widths;
+           row padding tightened; tier spacing tightened. */
+        .rail-tier-group { margin-bottom: var(--space-3); }
+        .rail-tier-h { font-family: var(--font-display); font-size: var(--text-base); color: var(--pb-chalk-50); margin: 0 0 var(--space-1) 0; display: flex; align-items: baseline; gap: var(--space-2); }
+        .rail-tier-h .rail-tier-count { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--pb-chalk-400); text-transform: uppercase; letter-spacing: 0.06em; }
         .rail-tier-h--core          { color: var(--pb-brass-500); }
         .rail-tier-h--supplementary { color: var(--pb-chalk-50); }
         .rail-tier-h--admin         { color: var(--pb-warning); }
         .rail-tier-h--system        { color: var(--pb-info); }
 
-        /* Per-card extras layered on .pb-list-row */
+        /* Per-card extras. Goal line removed from catalog at desktop — flow
+           id + name + actor + status chip carry enough signal; the full goal
+           still surfaces in the arch rail card on the right when a flow is
+           selected. NOTE: dashboard-shell.css does NOT import
+           design-system-components.css, so .pb-list / .pb-list-row base
+           styling doesn't apply on this page — we declare it inline. */
+        #flow-rail-section .pb-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            background: var(--pb-billiard-green-800);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        #flow-rail-section .pb-list-row {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: 6px var(--space-3);
+            border-bottom: 1px solid var(--border-subtle);
+            transition: background var(--duration-fast) var(--ease-out);
+        }
+        #flow-rail-section .pb-list-row:last-child { border-bottom: none; }
+        #flow-rail-section .pb-list-row:hover { background: var(--pb-billiard-green-700); }
         .rail-card { display: flex; align-items: center; gap: var(--space-3); }
         .rail-id { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--pb-chalk-400); width: 40px; text-align: right; font-variant-numeric: tabular-nums; }
-        .rail-name { flex: 1; min-width: 0; color: var(--pb-chalk-50); font-size: var(--text-sm); }
-        .rail-goal { font-size: var(--text-2xs); color: var(--pb-chalk-400); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+        .rail-name { flex: 1; min-width: 0; color: var(--pb-chalk-50); font-size: var(--text-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .rail-goal { display: none; }
         .rail-actor-badge { font-family: var(--font-mono); font-size: var(--text-2xs); text-transform: uppercase; letter-spacing: 0.06em; color: var(--pb-chalk-300); padding: 2px 6px; background: rgba(245,241,232,0.06); border-radius: 4px; }
         .rail-status-chip { font-family: var(--font-mono); font-size: var(--text-2xs); text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 6px; border-radius: 4px; }
         .rail-status-chip--shipped     { background: rgba(74,128,103,0.18); color: var(--pb-success); }
@@ -259,10 +423,10 @@
         .rail-card-row.is-hidden { display: none; }
         .rail-tier-group.is-empty { display: none; }
 
-        /* Responsive: stack the row content tighter at narrow viewports */
+        /* Responsive: stack the row content tighter at narrow viewports.
+           .rail-goal is already display:none at all widths post-densification. */
         @media (max-width: 720px) {
             .rail-id { width: 32px; font-size: var(--text-2xs); }
-            .rail-goal { display: none; }
         }
         @media (max-width: 480px) {
             .rail-actor-badge { display: none; }
@@ -1985,10 +2149,18 @@
             }
             function statusBadge(status) {
                 if (!status) return '';
-                if (status.indexOf('shipped') !== -1)  return '<span class="mf-flows-status is-shipped">' + esc(status) + '</span>';
-                if (status.indexOf('shipping') !== -1) return '<span class="mf-flows-status is-shipping">' + esc(status) + '</span>';
-                if (status.indexOf('planned') !== -1)  return '<span class="mf-flows-status is-planned">' + esc(status) + '</span>';
-                return '<span class="mf-flows-status">' + esc(status) + '</span>';
+                var short = String(status);
+                if (short.indexOf('shipped') !== -1)     return '<span class="mf-flows-status is-shipped">shipped</span>';
+                if (short.indexOf('shipping') !== -1)    return '<span class="mf-flows-status is-shipping">shipping</span>';
+                if (short.indexOf('planned') !== -1)     return '<span class="mf-flows-status is-planned">planned</span>';
+                if (short.indexOf('speculative') !== -1) return '<span class="mf-flows-status is-speculative">spec</span>';
+                return '<span class="mf-flows-status">' + esc(short) + '</span>';
+            }
+            // Normalize actor: data.flows uses "actor.member", data.flow_rail uses "member"
+            function actorShort(a) {
+                if (!a) return '';
+                var s = String(a);
+                return s.indexOf('.') !== -1 ? s.split('.').pop() : s;
             }
 
             function loadData() {
@@ -2033,49 +2205,149 @@
                 }).join('');
             }
 
+            // Ship 3 (2026-05-14, Founder Q2): source flow_rail (62) not flows (8).
+            // F1-F8 entries retain path/steps data via lookup in data.flows.
+            // F9-F62 entries are metadata-only — clicking shows their goal +
+            // served-by-ships in the Steps panel but does NOT highlight a path.
+            function railEntries() {
+                var rail = (data && data.flow_rail) || [];
+                if (rail.length) return rail;
+                // Fallback: derive from data.flows so the rail still renders if
+                // the data file is somehow missing flow_rail.
+                return (data.flows || []).map(function (f) {
+                    return {
+                        id: f.id, name: f.name, actor: actorShort(f.actor),
+                        tier: 'core', status: 'shipping',
+                        primary_user_goal: f.primary_user_goal,
+                        estimated_steps_count: (f.steps || []).length,
+                    };
+                });
+            }
+            function flowHasPath(id) {
+                return !!(data.flows || []).find(function (f) { return f.id === id; });
+            }
             function renderFlowsList() {
-                FLOWS_LIST.innerHTML = (data.flows || []).map(function (f) {
+                var rows = railEntries();
+                FLOWS_LIST.innerHTML = rows.map(function (f) {
+                    var hasPath = flowHasPath(f.id);
+                    var actor = actorShort(f.actor);
+                    var tier = (f.tier || '').toLowerCase();
                     return ''
-                        + '<li class="mf-flows-item" data-flow-id="' + esc(f.id) + '">'
+                        + '<li class="mf-flows-item' + (hasPath ? ' has-path' : '') + '"'
+                        +   ' data-flow-id="' + esc(f.id) + '"'
+                        +   ' data-actor="' + esc(actor) + '"'
+                        +   ' data-tier="' + esc(tier) + '"'
+                        +   ' data-status="' + esc(f.status || '') + '"'
+                        +   ' data-name="' + esc((f.name || '').toLowerCase()) + '"'
+                        +   ' title="' + esc(f.primary_user_goal || f.name || '') + '">'
                         +   '<span class="mf-flows-id">' + esc(f.id) + '</span>'
-                        +   '<div class="mf-flows-name">' + esc(f.name) + '</div>'
-                        +   '<div class="mf-flows-goal">' + esc(f.primary_user_goal || '') + '</div>'
+                        +   '<span class="mf-flows-name">' + esc(f.name) + '</span>'
+                        +   '<span class="mf-flows-tier-badge">' + esc(tier) + '</span>'
                         +   statusBadge(f.status)
                         + '</li>';
                 }).join('');
-                FLOWS_COUNT.textContent = (data.flows || []).length + ' flows';
+                FLOWS_COUNT.textContent = rows.length + ' flows';
                 FLOWS_LIST.querySelectorAll('.mf-flows-item').forEach(function (li) {
                     li.addEventListener('click', function () { selectFlow(li.getAttribute('data-flow-id')); });
+                });
+                bindRailFilters();
+            }
+
+            function applyRailFilters() {
+                var searchEl = document.getElementById('mf-rail-search');
+                var search = (searchEl && searchEl.value || '').toLowerCase().trim();
+                var actorBtn = document.querySelector('.mf-rail-chips[data-axis="actor"] .mf-rail-chip.is-on');
+                var tierBtn = document.querySelector('.mf-rail-chips[data-axis="tier"] .mf-rail-chip.is-on');
+                var actor = actorBtn ? (actorBtn.getAttribute('data-actor') || '') : '';
+                var tier = tierBtn ? (tierBtn.getAttribute('data-tier') || '') : '';
+                var visibleCount = 0;
+                FLOWS_LIST.querySelectorAll('.mf-flows-item').forEach(function (li) {
+                    var rowActor = li.getAttribute('data-actor') || '';
+                    var rowTier = li.getAttribute('data-tier') || '';
+                    var rowName = li.getAttribute('data-name') || '';
+                    var rowId = (li.getAttribute('data-flow-id') || '').toLowerCase();
+                    var actorOk = !actor || rowActor === actor;
+                    var tierOk = !tier || rowTier === tier;
+                    var searchOk = !search || rowName.indexOf(search) !== -1 || rowId.indexOf(search) !== -1;
+                    var show = actorOk && tierOk && searchOk;
+                    li.classList.toggle('is-hidden', !show);
+                    if (show) visibleCount++;
+                });
+                FLOWS_COUNT.textContent = visibleCount + ' of ' + FLOWS_LIST.querySelectorAll('.mf-flows-item').length;
+            }
+
+            function bindRailFilters() {
+                var searchEl = document.getElementById('mf-rail-search');
+                if (searchEl && !searchEl.dataset.bound) {
+                    searchEl.addEventListener('input', applyRailFilters);
+                    searchEl.dataset.bound = '1';
+                }
+                document.querySelectorAll('.mf-rail-chips').forEach(function (group) {
+                    if (group.dataset.bound) return;
+                    group.dataset.bound = '1';
+                    group.addEventListener('click', function (ev) {
+                        var btn = ev.target.closest('.mf-rail-chip');
+                        if (!btn) return;
+                        group.querySelectorAll('.mf-rail-chip').forEach(function (b) { b.classList.remove('is-on'); });
+                        btn.classList.add('is-on');
+                        applyRailFilters();
+                    });
                 });
             }
 
             function renderStepsForFlow(flowId) {
-                var flow = (data.flows || []).find(function (f) { return f.id === flowId; });
-                if (!flow) {
+                if (!flowId) {
                     STEPS_EMPTY.hidden = false;
+                    STEPS_EMPTY.textContent = 'Select a flow on the right to see the path through the system.';
                     STEPS_LIST.hidden = true;
                     STEPS_META.textContent = 'no flow selected';
                     return;
                 }
-                STEPS_META.textContent = flow.id + ' · ' + (flow.steps || []).length + ' steps';
-                STEPS_EMPTY.hidden = true;
-                STEPS_LIST.hidden = false;
-                STEPS_LIST.innerHTML = (flow.steps || []).map(function (s) {
-                    return ''
-                        + '<li class="mf-steps-item" data-step-from="' + esc(s.from) + '" data-step-to="' + esc(s.to) + '">'
-                        +   '<div class="mf-step-num">' + s.n + '</div>'
-                        +   '<div>'
-                        +     '<div class="mf-step-from-to">' + esc(s.from) + ' → ' + esc(s.to) + '</div>'
-                        +     '<div class="mf-step-label">' + esc(s.label) + '</div>'
-                        +     '<div class="mf-step-desc">' + esc(s.description) + '</div>'
-                        +   '</div>'
-                        + '</li>';
-                }).join('');
-                STEPS_LIST.querySelectorAll('.mf-steps-item').forEach(function (li) {
-                    li.addEventListener('click', function () {
-                        pulseNodes([li.getAttribute('data-step-from'), li.getAttribute('data-step-to')]);
+                var flow = (data.flows || []).find(function (f) { return f.id === flowId; });
+                if (flow && flow.steps && flow.steps.length) {
+                    // F1–F8 — full path + steps
+                    STEPS_META.textContent = flow.id + ' · ' + flow.steps.length + ' steps';
+                    STEPS_EMPTY.hidden = true;
+                    STEPS_LIST.hidden = false;
+                    STEPS_LIST.innerHTML = flow.steps.map(function (s) {
+                        return ''
+                            + '<li class="mf-steps-item" data-step-from="' + esc(s.from) + '" data-step-to="' + esc(s.to) + '">'
+                            +   '<div class="mf-step-num">' + s.n + '</div>'
+                            +   '<div>'
+                            +     '<div class="mf-step-from-to">' + esc(s.from) + ' → ' + esc(s.to) + '</div>'
+                            +     '<div class="mf-step-label">' + esc(s.label) + '</div>'
+                            +     '<div class="mf-step-desc">' + esc(s.description) + '</div>'
+                            +   '</div>'
+                            + '</li>';
+                    }).join('');
+                    STEPS_LIST.querySelectorAll('.mf-steps-item').forEach(function (li) {
+                        li.addEventListener('click', function () {
+                            pulseNodes([li.getAttribute('data-step-from'), li.getAttribute('data-step-to')]);
+                        });
                     });
-                });
+                    return;
+                }
+                // F9–F62 — metadata only (no path/steps authored)
+                var meta = ((data.flow_rail) || []).find(function (f) { return f.id === flowId; });
+                if (!meta) {
+                    renderStepsForFlow(null);
+                    return;
+                }
+                var ships = (meta.served_by_ships || []).join(', ') || '—';
+                STEPS_META.textContent = meta.id + ' · metadata only';
+                STEPS_LIST.hidden = true;
+                STEPS_EMPTY.hidden = false;
+                STEPS_EMPTY.innerHTML = ''
+                    + '<div style="font-size:0.8125rem;color:var(--text-primary);font-weight:600;margin-bottom:6px;">' + esc(meta.name) + '</div>'
+                    + '<div style="font-size:0.75rem;color:var(--text-secondary);line-height:1.5;margin-bottom:8px;">' + esc(meta.primary_user_goal || '') + '</div>'
+                    + '<div style="font-size:0.6875rem;color:var(--text-tertiary);font-family:var(--font-mono);line-height:1.55;">'
+                    +   '<div>actor &middot; ' + esc(actorShort(meta.actor)) + '</div>'
+                    +   '<div>tier &middot; ' + esc(meta.tier || '') + '</div>'
+                    +   '<div>status &middot; ' + esc(meta.status || '') + '</div>'
+                    +   '<div>served by &middot; ' + esc(ships) + '</div>'
+                    +   '<div>est. steps &middot; ' + esc(String(meta.estimated_steps_count || '—')) + '</div>'
+                    + '</div>'
+                    + '<div style="margin-top:10px;font-size:0.6875rem;color:var(--text-tertiary);font-style:italic;">Detailed step path not yet authored. F1–F8 (core member flows) have full step paths; the remaining flows live in the rail for navigation/filtering.</div>';
             }
 
             function selectFlow(flowId) {
