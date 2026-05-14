@@ -95,10 +95,39 @@ try {
     # on every cron cycle. Without auto-commit, the watcher refuses Founder
     # decisions indefinitely. We tolerate dirt ONLY when every dirty path
     # matches the routine-output allowlist; anything else still triggers skip.
+    # Widened 2026-05-14 per approval-pipeline-trace findings: prior narrow
+    # allowlist (telemetry + package-lock) caused recurring SKIP on every
+    # cron tick whenever agent work emitted user-context captures, audit
+    # outputs, heartbeats, deferred markers, or python bytecode. Stalled
+    # 8 approvals (PROP-005..PROP-012) in approved/ during this session.
+    # AMD-023 codifies the protocol; allowlist below covers Class A
+    # artifacts per AMD-020.
     $routinePatterns = @(
+        # Pre-existing telemetry
         '^\.claude/state/telemetry/events/.+\.ndjson$',
         '^\.claude/state/telemetry/aggregates/.+\.json$',
-        '^package-lock\.json$'
+        '^package-lock\.json$',
+
+        # User-context + audit outputs (Class A per AMD-020)
+        '^\.claude/state/main-flows-v2/founder-real-context/.+\.(png|json)$',
+        '^\.claude/state/main-flows-v2/iter-.+\.(png|json)$',
+        '^\.claude/state/main-flows-v2/reference-frames/.+\.(png|jpg|jpeg|mp4|m4s)$',
+        '^\.claude/state/user-journey-audits/.+\.(png|md|json)$',
+        '^\.claude/state/heartbeats/.+\.json$',
+        '^\.claude/state/dashboard-health/.+\.(ndjson|json)$',
+        '^\.claude/state/security/cycles/.+\.ndjson$',
+        '^\.claude/state/proposals/ship-readiness-deferred/.+\.json$',
+        '^\.claude/state/overnight-agent/(logs|runs|reports)/.+',
+
+        # Python bytecode (also gitignored where possible)
+        '^scripts/__pycache__/.+\.pyc$',
+        '^tests/__pycache__/.+\.pyc$',
+
+        # Inbox processing artifacts (file moved into inbox/ after consume)
+        '^\.claude/state/proposals/inbox/.+\.json$',
+        '^\.claude/state/amendments/inbox/.+\.json$',
+        '^\.claude/state/escalations/inbox/.+\.json$',
+        '^\.claude/state/proposals/\.last-processed-decisions\.json$'
     )
     $allDirtyRaw = @()
     $allDirtyRaw += (& git diff --name-only HEAD 2>$null)
