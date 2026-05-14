@@ -73,26 +73,43 @@ async function main() {
     console.log(`[founder-ctx] output: ${OUT_DIR.replace(REPO_ROOT + "\\", "").replace(REPO_ROOT + "/", "")}`);
     console.log(`[founder-ctx] launching headed Chrome (channel: chrome) — your real Chrome binary, not Playwright's bundled Chromium`);
 
-    let browser, browserVersion = "unknown", launchMode = "channel:chrome";
+    // Agent-context test mode: set PLAYWRIGHT_HEADLESS=1 to run the
+    // capture script in CI / agent context without opening a window.
+    // Production use (Founder running locally) is always headed.
+    const forcedHeadless = process.env.PLAYWRIGHT_HEADLESS === "1";
+
+    let browser, browserVersion = "unknown", launchMode = forcedHeadless ? "playwright-chromium-headless" : "channel:chrome";
     try {
         browser = await chromium.launch({
-            channel: "chrome",
-            headless: false,
-            args: ["--start-maximized"],
+            channel: forcedHeadless ? undefined : "chrome",
+            headless: forcedHeadless,
+            args: forcedHeadless ? [] : ["--start-maximized"],
         });
     } catch (err) {
         console.log(`[founder-ctx] channel:chrome unavailable (${err.message.split('\n')[0]}); falling back to Playwright Chromium headed`);
         launchMode = "playwright-chromium-headed";
-        browser = await chromium.launch({ headless: false, args: ["--start-maximized"] });
+        browser = await chromium.launch({
+            headless: forcedHeadless,
+            args: forcedHeadless ? [] : ["--start-maximized"],
+        });
     }
     try {
         browserVersion = await browser.version();
     } catch (_) {}
 
-    const ctx = await browser.newContext({
-        viewport: null, // use full window size
-        deviceScaleFactor: 1,
-    });
+    // Bug fix iter 10 (2026-05-14): Playwright errors when `viewport: null`
+    // is combined with `deviceScaleFactor`. The two are mutually exclusive
+    // — viewport:null means "track window size" and deviceScaleFactor only
+    // applies when viewport is explicitly set. Removing deviceScaleFactor
+    // since the goal is to capture Founder's REAL DPR (read from
+    // window.devicePixelRatio at runtime), not override it.
+    //
+    // Headed context: viewport: null tracks the maximized window.
+    // Headless context: must explicitly set viewport (no window).
+    const ctxOpts = forcedHeadless
+        ? { viewport: { width: 1920, height: 1080 } }
+        : { viewport: null };
+    const ctx = await browser.newContext(ctxOpts);
     const page = await ctx.newPage();
 
     const meta = {
