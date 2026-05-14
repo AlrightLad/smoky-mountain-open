@@ -146,42 +146,30 @@
   "amendments": {
     "pending": [
       {
-        "id": "AMD-009",
-        "title": "Senior Engineering Standard (dominant operating principle)",
-        "target_canonical_path": "docs/agents/SENIOR_ENGINEERING_STANDARD.md",
-        "source_draft_path": ".claude/state/amendments/pending/AMD-009-senior-engineering-standard.md",
-        "scope_summary": "Establishes the senior engineering standard as the dominant operating principle, supersedes prior \"ship MVP iterate later\" patterns. Eight codified behaviors covering diagnosis discipline, root-cause vs symptom, ship-complete-or-don't, test-before-done, honest language, no-punt-to-future, acknowledge-what-breaks, and Critic empowerment. Operates retroactively to in-flight work.",
+        "id": "AMD-012",
+        "title": "Smoke-testing governance (binding Critic gate across all Wave 1+ user-facing ships)",
+        "target_canonical_path": "docs/agents/SMOKE_TESTING_GOVERNANCE.md",
+        "source_draft_path": ".claude/state/amendments/pending/AMD-012-smoke-testing-governance.md",
+        "scope_summary": "Codifies smoke testing as governance, not per-ship negotiation. Every user-facing ship in Wave 1+ MUST author smoke-test coverage as part of definition-of-done; Critic blocks \"ship complete\" determination without it. Builds on the v8.17.0 Playwright + real-Firebase framework rather than parallel infrastructure. Exceptions require explicit Founder waiver documented in the ship plan as a known risk.",
         "type": "new-file",
         "section_anchor": null,
-        "depends_on": [],
-        "authored_by": "claude-code",
-        "authored_at": "2026-05-14T03:05:00Z",
-        "bubble_of_record": null,
-        "estimate_tokens_to_apply": "6500",
-        "rollback_strategy": "git revert; the document is new, removal restores prior governance posture. Note that the principles will continue to operate informally per Founder's directive even if the formal artifact is rolled back.",
-        "status": "pending",
-        "operating_status": "ACTIVE \u2014 operating immediately per Founder directive 2026-05-14. Conflicts with prior amendments resolve in favor of this one for quality questions. Applies retroactively to in-flight work (AMD-008 application failure, token usage dashboard, anything currently broken must be brought to working state per these principles before new work begins).",
-        "_body_preview": "# Senior Engineering Standard\n\nThe dominant operating principle for the PARBAUGHS orchestration team.\nSupersedes the \"ship MVP, iterate later\" pattern that was implicit in\nearlier protocols. When this principle conflicts with another, this one\nwins for quality questions. Founder is the only override.\n\n## 1. Diagnose to evidence, not to hypothesis\n\nWhen a system isn't working, the team produces EVI",
-        "_filename": "AMD-009-senior-engineering-standard.md"
-      },
-      {
-        "id": "AMD-010",
-        "title": "MAIN_FLOWS v2 \u2014 62-flow inventory + Taxonomy E + filterable rail",
-        "target_canonical_path": "docs/agents/MAIN_FLOWS.md",
-        "source_draft_path": ".claude/state/amendments/pending/AMD-010-MAIN_FLOWS_v2.md",
-        "scope_summary": "Updates MAIN_FLOWS.md to reflect the v2 audit. Replaces the 8-MF-NN ranked baseline with a reference to the 62-flow inventory at .claude/state/main-flows-v2/flow-inventory.json, documents the chosen taxonomy (E hybrid; tier primary + status secondary) and visual approach (Option 1 filterable rail), and amends the F5 Metric Integrity Protocol cross-reference. The 8 MF-NN flows remain documented in the inventory as the highest-priority Core tier entries; their ordering is preserved per the stability invariant.",
-        "type": "replace-existing",
-        "section_anchor": null,
-        "depends_on": [],
+        "depends_on": [
+          "AMD-009"
+        ],
         "authored_by": "claude-code (orchestration team)",
-        "authored_at": "2026-05-14T03:35:00Z",
-        "bubble_of_record": "db-2026-05-14-001",
-        "estimate_tokens_to_apply": "3500",
-        "rollback_strategy": "git revert; MAIN_FLOWS.md is a documentation artifact, the inventory JSON + rendered dashboard are unaffected by rollback.",
+        "authored_at": "2026-05-14T04:25:00Z",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": "4500",
+        "rollback_strategy": "git revert; the document is new. Implementation impact is policy-only \u2014 existing smoke framework continues to function regardless of this amendment's state.",
         "status": "pending",
-        "_body_preview": "# MAIN_FLOWS \u2014 v2\n\nThe team operationally uses this document as the canonical pointer to\nflow definitions. v1 (pre-2026-05-14) ranked 8 MF-NN flows as the\nmember-of-MAIN-FLOWS set. v2 reframes:\n\n- **Inventory is canonical:** every flow lives in\n  `.claude/state/main-flows-v2/flow-inventory.json`. 62 flows at\n  authoring; append-only per the stability invariant (F-IDs are\n  permanent).\n- **Renderin",
-        "_filename": "AMD-010-MAIN_FLOWS_v2.md"
-      },
+        "operating_status": "ADVISORY \u2014 operates as guidance until Founder applies via amendments.html. AMD-009 Principle 4 (test before declaring done) already implies smoke testing for user-facing ships; this amendment codifies the specific coverage standard + Critic-gate teeth.",
+        "_body_preview": "# Smoke-Testing Governance\n\n## Founder principle (recorded verbatim)\n\n> \"Smoke testing is governance, not per-ship negotiation. Codify what\n> smoke testing means for Wave 1 features so it's binding across all\n> ships.\"\n\n## Definition\n\n**Smoke testing** = automated cross-browser scenarios that verify a\nuser-facing feature works end-to-end from a member's perspective.\nFor Wave 1 (HQ web; later Wave ",
+        "_filename": "AMD-012-smoke-testing-governance.md"
+      }
+    ],
+    "approved": [],
+    "deferred": [],
+    "applied": [
       {
         "id": "AMD-011",
         "title": "Auto-execute approved proposals when AMD-009-compliant (the auto-implementation gate)",
@@ -203,11 +191,44 @@
         "id_conflict_note": "Founder directive specified filename AMD-010-*; AMD-010 was authored earlier in this session as MAIN_FLOWS_v2 (commit 68771a9). Using AMD-011 to preserve the monotonic-ID invariant per AMD-006 P18.5.2 schema discipline. Title and content match Founder's directive verbatim. Same collision-resolution pattern as AMD-007 earlier this session.",
         "_body_preview": "# Auto-execute approved proposals (the auto-implementation gate)\n\n## Founder directive (recorded verbatim)\n\n> \"The agent executes any proposal Founder has approved, BUT ONLY when\n> the proposal can be shipped completely per AMD-009 Senior Engineering\n> Standard. The gate isn't Founder review per execution. The gate is\n> ship-completeness. Thoroughly scoped + deliberated proposals execute.\n> Non-re",
         "_filename": "AMD-011-auto-execute-approved-proposals.md"
-      }
-    ],
-    "approved": [],
-    "deferred": [],
-    "applied": [
+      },
+      {
+        "id": "AMD-010",
+        "title": "MAIN_FLOWS v2 \u2014 62-flow inventory + Taxonomy E + filterable rail",
+        "target_canonical_path": "docs/agents/MAIN_FLOWS.md",
+        "source_draft_path": ".claude/state/amendments/pending/AMD-010-MAIN_FLOWS_v2.md",
+        "scope_summary": "Updates MAIN_FLOWS.md to reflect the v2 audit. Replaces the 8-MF-NN ranked baseline with a reference to the 62-flow inventory at .claude/state/main-flows-v2/flow-inventory.json, documents the chosen taxonomy (E hybrid; tier primary + status secondary) and visual approach (Option 1 filterable rail), and amends the F5 Metric Integrity Protocol cross-reference. The 8 MF-NN flows remain documented in the inventory as the highest-priority Core tier entries; their ordering is preserved per the stability invariant.",
+        "type": "replace-existing",
+        "section_anchor": null,
+        "depends_on": [],
+        "authored_by": "claude-code (orchestration team)",
+        "authored_at": "2026-05-14T03:35:00Z",
+        "bubble_of_record": "db-2026-05-14-001",
+        "estimate_tokens_to_apply": "3500",
+        "rollback_strategy": "git revert; MAIN_FLOWS.md is a documentation artifact, the inventory JSON + rendered dashboard are unaffected by rollback.",
+        "status": "pending",
+        "_body_preview": "# MAIN_FLOWS \u2014 v2\n\nThe team operationally uses this document as the canonical pointer to\nflow definitions. v1 (pre-2026-05-14) ranked 8 MF-NN flows as the\nmember-of-MAIN-FLOWS set. v2 reframes:\n\n- **Inventory is canonical:** every flow lives in\n  `.claude/state/main-flows-v2/flow-inventory.json`. 62 flows at\n  authoring; append-only per the stability invariant (F-IDs are\n  permanent).\n- **Renderin",
+        "_filename": "AMD-010-MAIN_FLOWS_v2.md"
+      },
+      {
+        "id": "AMD-009",
+        "title": "Senior Engineering Standard (dominant operating principle)",
+        "target_canonical_path": "docs/agents/SENIOR_ENGINEERING_STANDARD.md",
+        "source_draft_path": ".claude/state/amendments/pending/AMD-009-senior-engineering-standard.md",
+        "scope_summary": "Establishes the senior engineering standard as the dominant operating principle, supersedes prior \"ship MVP iterate later\" patterns. Eight codified behaviors covering diagnosis discipline, root-cause vs symptom, ship-complete-or-don't, test-before-done, honest language, no-punt-to-future, acknowledge-what-breaks, and Critic empowerment. Operates retroactively to in-flight work.",
+        "type": "new-file",
+        "section_anchor": null,
+        "depends_on": [],
+        "authored_by": "claude-code",
+        "authored_at": "2026-05-14T03:05:00Z",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": "6500",
+        "rollback_strategy": "git revert; the document is new, removal restores prior governance posture. Note that the principles will continue to operate informally per Founder's directive even if the formal artifact is rolled back.",
+        "status": "pending",
+        "operating_status": "ACTIVE \u2014 operating immediately per Founder directive 2026-05-14. Conflicts with prior amendments resolve in favor of this one for quality questions. Applies retroactively to in-flight work (AMD-008 application failure, token usage dashboard, anything currently broken must be brought to working state per these principles before new work begins).",
+        "_body_preview": "# Senior Engineering Standard\n\nThe dominant operating principle for the PARBAUGHS orchestration team.\nSupersedes the \"ship MVP, iterate later\" pattern that was implicit in\nearlier protocols. When this principle conflicts with another, this one\nwins for quality questions. Founder is the only override.\n\n## 1. Diagnose to evidence, not to hypothesis\n\nWhen a system isn't working, the team produces EVI",
+        "_filename": "AMD-009-senior-engineering-standard.md"
+      },
       {
         "id": "AMD-008",
         "title": "apply-amendments.sh edit-section substring-fallback must be bounded",
@@ -369,13 +390,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 3,
+    "pending": 1,
     "approved": 0,
     "deferred": 0,
-    "applied_total": 8,
+    "applied_total": 11,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T04:11:43.043983+00:00",
+  "as_of": "2026-05-14T04:27:42.394103+00:00",
   "schema_version": 1,
   "archive_display_cap": 50
 }
