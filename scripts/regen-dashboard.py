@@ -183,52 +183,168 @@ def _read_proposed_answer(source_path: Path):
     return {"proposed_answer": proposed, "decision_form": form, "source_missing": False}
 
 
-def list_open_phase_escalations():
-    """AMD-007 P18.6: until structured .claude/state/founder/escalations/ lands,
-    surface escalations from the manually-maintained queue stub.
-
-    AMD-007 P18.6 + Founder directive 2026-05-14 (escalation panel
-    needs functionality): enrich each escalation with the team's
-    proposed answer + decision form parsed from its source markdown
-    file, plus age + stale flag. Dashboard renders these inline so
-    Founder doesn't navigate to source files to see what's asked.
-    """
-    p = STATE / "founder" / "review-queue.json"
-    if not p.exists():
-        return []
+def _read_yaml_frontmatter(path: Path):
+    """Parse YAML frontmatter from a markdown file. Returns dict or None.
+    Lightweight pyyaml-free parser sufficient for the escalations schema
+    (top-level scalars, lists, and simple nested objects)."""
+    if not path.exists():
+        return None
     try:
-        stub = json.loads(p.read_text(encoding="utf-8"))
-        gov = stub.get("governance_gates", {}) or {}
-        raw = gov.get("open_escalations", []) or []
-    except (OSError, json.JSONDecodeError):
-        return []
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return None
+    m = re.match(r"^---\n(.*?)\n---", text, re.DOTALL)
+    if not m:
+        return None
+    raw = m.group(1)
+    # Try pyyaml if available; fall back to a tiny ad-hoc parser otherwise.
+    try:
+        import yaml  # type: ignore
+        return yaml.safe_load(raw)
+    except ImportError:
+        pass
 
+    out = {}
+    lines = raw.split("\n")
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if not line.strip() or line.lstrip().startswith("#"):
+            i += 1
+            continue
+        # key: value | OR | key: |
+        m2 = re.match(r"^([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$", line)
+        if m2:
+            key, val = m2.group(1), m2.group(2)
+            if val == "|" or val == "":
+                # Multiline block scalar or empty -> consume indented lines
+                i += 1
+                buf = []
+                while i < len(lines) and (lines[i].startswith("  ") or lines[i].strip() == ""):
+                    if lines[i].startswith("  "):
+                        buf.append(lines[i][2:])
+                    elif lines[i].strip() == "":
+                        buf.append("")
+                    i += 1
+                # If this looks like a list (lines starting with "- ")
+                if buf and buf[0].lstrip().startswith("- "):
+                    items = []
+                    j = 0
+                    while j < len(buf):
+                        b = buf[j]
+                        if b.lstrip().startswith("- "):
+                            item_buf = [b.lstrip()[2:]]
+                            j += 1
+                            while j < len(buf) and (buf[j].startswith("  ") or buf[j].strip() == ""):
+                                if buf[j].startswith("  "):
+                                    item_buf.append(buf[j][2:])
+                                else:
+                                    item_buf.append("")
+                                j += 1
+                            # Parse item — if it has key: value form, dict; else scalar
+                            if any(re.match(r"^[A-Za-z_][A-Za-z0-9_]*:", x) for x in item_buf):
+                                obj = {}
+                                for x in item_buf:
+                                    mx = re.match(r"^([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$", x)
+                                    if mx:
+                                        obj[mx.group(1)] = mx.group(2).strip()
+                                items.append(obj)
+                            else:
+                                items.append("\n".join(item_buf).strip())
+                        else:
+                            j += 1
+                    out[key] = items
+                else:
+                    out[key] = "\n".join(buf).rstrip()
+                continue
+            else:
+                # Inline value
+                v = val.strip()
+                # Strip quotes
+                if (v.startswith('"') and v.endswith('"')) or (v.startswith("'") and v.endswith("'")):
+                    v = v[1:-1]
+                # Bool / null / number
+                if v.lower() == "true": v = True
+                elif v.lower() == "false": v = False
+                elif v.lower() in ("null", "none", "~"): v = None
+                elif re.match(r"^-?\d+$", v): v = int(v)
+                out[key] = v
+        i += 1
+    return out
+
+
+def list_open_phase_escalations():
+    """Founder directive 2026-05-14 (escalations lifecycle): canonical source
+    is now .claude/state/escalations/pending/ — frontmatter per ESC-NNN schema.
+    Each pending escalation surfaces on dashboard.html with the team's
+    proposed answer + decision options.
+
+    Back-compat: also reads any lingering entries in
+    .claude/state/founder/review-queue.json's open_escalations (kept empty
+    going forward but preserved for tooling that hasn't migrated yet).
+    """
+    out = []
     now_utc = datetime.now(timezone.utc)
-    enriched = []
-    for e in raw:
-        link = e.get("link") or ""
-        source_path = ROOT / link if link else None
-        meta = {"proposed_answer": "", "decision_form": "", "source_missing": True}
-        age_days = None
-        if source_path and source_path.exists():
-            meta = _read_proposed_answer(source_path)
+
+    # Canonical source: state directory
+    esc_dir = STATE / "escalations" / "pending"
+    if esc_dir.exists():
+        for f in sorted(esc_dir.glob("ESC-*.md")):
+            fm = _read_yaml_frontmatter(f)
+            if not fm:
+                continue
             try:
-                mtime = datetime.fromtimestamp(source_path.stat().st_mtime, tz=timezone.utc)
-                age_days = round((now_utc - mtime).total_seconds() / 86400.0, 2)
-            except OSError:
+                authored_iso = fm.get("authored_at") or ""
+                authored_dt = datetime.fromisoformat(authored_iso.replace("Z", "+00:00")) if authored_iso else None
+                age_days = round((now_utc - authored_dt).total_seconds() / 86400.0, 2) if authored_dt else None
+            except (ValueError, TypeError):
                 age_days = None
-        enriched.append({
-            "id": e.get("id"),
-            "type": e.get("type"),
-            "summary": e.get("summary"),
-            "link": link,
-            "proposed_answer": meta["proposed_answer"],
-            "decision_form": meta["decision_form"],
-            "source_missing": meta["source_missing"],
-            "age_days": age_days,
-            "stale": (age_days is not None and age_days > 1.0),  # Founder directive: stale > 24h flagged
-        })
-    return enriched
+            window_hours = fm.get("default_window_hours") or 24
+            stale_threshold_days = (float(window_hours) if isinstance(window_hours, (int, float)) else 24.0) / 24.0
+            out.append({
+                "id": fm.get("id"),
+                "title": fm.get("title"),
+                "type": fm.get("type"),
+                "question": fm.get("question"),
+                "summary": fm.get("context_summary"),
+                "proposed_answer": fm.get("proposed_answer"),
+                "rationale": fm.get("rationale"),
+                "options": fm.get("options") or [],
+                "default_if_no_response": fm.get("default_if_no_response"),
+                "default_window_hours": fm.get("default_window_hours"),
+                "blocks_ship": bool(fm.get("blocks_ship")),
+                "estimated_decision_complexity": fm.get("estimated_decision_complexity"),
+                "source_artifact_paths": fm.get("source_artifact_paths") or [],
+                "authored_at": fm.get("authored_at"),
+                "authored_by": fm.get("authored_by"),
+                "link": f"escalations.html#{fm.get('id')}",
+                "source_file": str(f.relative_to(ROOT)).replace("\\", "/"),
+                "age_days": age_days,
+                "stale": (age_days is not None and age_days > stale_threshold_days),
+            })
+
+    # Back-compat: legacy stub entries (kept empty going forward)
+    p = STATE / "founder" / "review-queue.json"
+    if p.exists():
+        try:
+            stub = json.loads(p.read_text(encoding="utf-8"))
+            gov = stub.get("governance_gates", {}) or {}
+            raw = gov.get("open_escalations", []) or []
+            for e in raw:
+                # Skip entries already covered by state-dir
+                if any(o.get("id") == e.get("id") for o in out):
+                    continue
+                out.append({
+                    "id": e.get("id"),
+                    "type": e.get("type"),
+                    "summary": e.get("summary"),
+                    "link": e.get("link") or "",
+                    "_source": "legacy-stub",
+                })
+        except (OSError, json.JSONDecodeError):
+            pass
+
+    return out
 
 
 def cron_last_fire_map():

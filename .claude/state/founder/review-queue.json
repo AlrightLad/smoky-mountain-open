@@ -13,20 +13,8 @@
     "bubbles_note": "Both long-running with deliberate pacing. db-001 UI/UX maturity gap (design-bot spike evidence appended today). db-002 auto-implementation eligibility (research artifacts still pending from voters).",
     "proposals_pending": 0,
     "proposals_link": "docs/reports/proposals.html",
-    "open_escalations": [
-      {
-        "id": "main-flows-v2-taxonomy",
-        "type": "cross-cutting architecture decision (escalation criterion #5)",
-        "summary": "Phase 2 taxonomy + visual + speculative-flows decisions; defaults documented at .claude/state/main-flows-v2/taxonomy-proposals.md",
-        "link": ".claude/state/main-flows-v2/taxonomy-proposals.md"
-      },
-      {
-        "id": "wave-1-ship-1-selection",
-        "type": "Founder authorization needed",
-        "summary": "Design Tooling Spike complete; recommendation locked (Approach A native). Founder selects which Wave 1 ship goes first.",
-        "link": ".claude/state/design-spike/comparison.md"
-      }
-    ]
+    "open_escalations": [],
+    "_open_escalations_migrated_note": "Escalations lifecycle 2026-05-14 (Founder directive): open_escalations migrated from manual stub into .claude/state/escalations/{pending,approved,applied,deferred,rejected}/ canonical directories. ESC-001 (main-flows-v2 taxonomy) + ESC-002 (wave-1 ship 1) both pre-resolved as applied/ on migration per Founder pre-direction. Dashboard counts now sourced from .claude/state/escalations/pending/ frontmatter via regen-dashboard.py. This array is preserved for back-compat but kept empty going forward; any future escalation lives in the state directories with full frontmatter schema."
   },
   "system_health": {
     "crons": {

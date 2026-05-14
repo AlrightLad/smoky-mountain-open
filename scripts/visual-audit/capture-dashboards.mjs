@@ -17,7 +17,7 @@
  * normalization across activity / bubbles / proposals / index / etc.
  */
 
-import { chromium } from "playwright";
+import { chromium, firefox } from "playwright";
 import { mkdir, stat, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -56,66 +56,109 @@ function todayIso() {
 }
 
 async function main() {
-    const dateDir = process.argv[2] || todayIso();
+    // First positional arg (NOT a --flag) is the date dir override.
+    const positionals = process.argv.slice(2).filter(a => !a.startsWith("--"));
+    const dateDir = positionals[0] || todayIso();
     const outDir = resolve(__dirname, dateDir);
     await mkdir(outDir, { recursive: true });
 
-    console.log(`[capture] output: ${outDir}`);
-    console.log(`[capture] pages: ${PAGES.length}, viewports: ${VIEWPORTS.length}, total: ${PAGES.length * VIEWPORTS.length}`);
+    // Per Founder directive 2026-05-14 (Directive 1 + Phase C definition-of-
+    // done): cross-browser smoke for all dashboard pages (chromium + firefox).
+    // Browsers honored via PLAYWRIGHT_BROWSERS env var (comma-separated) OR
+    // --browsers=chromium,firefox flag. Default = chromium-only for back-compat
+    // with prior 2026-05-13 baselines. Each browser produces its own subset
+    // of files under outDir, suffixed with the browser name.
+    const browserArg = process.argv.find(a => a.startsWith("--browsers="));
+    const browserList = browserArg
+        ? browserArg.replace("--browsers=", "").split(",").map(s => s.trim()).filter(Boolean)
+        : (process.env.PLAYWRIGHT_BROWSERS || "chromium").split(",").map(s => s.trim()).filter(Boolean);
+    const launchers = { chromium, firefox };
+    const targets = browserList.map(name => ({ name, launcher: launchers[name] })).filter(t => t.launcher);
+    if (targets.length === 0) {
+        console.error(`[capture] no recognized browsers in: ${browserList.join(",")}; got: chromium|firefox`);
+        process.exit(2);
+    }
 
-    const browser = await chromium.launch();
+    console.log(`[capture] output: ${outDir}`);
+    console.log(`[capture] browsers: ${targets.map(t => t.name).join(", ")}`);
+    console.log(`[capture] pages: ${PAGES.length}, viewports: ${VIEWPORTS.length}, files: ${PAGES.length * VIEWPORTS.length * targets.length}`);
+
     const manifest = {
         captured_at: new Date().toISOString(),
         repo_root: REPO_ROOT,
         reports_dir: REPORTS_DIR,
+        browsers: targets.map(t => t.name),
         viewports: VIEWPORTS,
         pages: PAGES,
         files: [],
     };
 
-    try {
-        for (const vp of VIEWPORTS) {
-            const ctx = await browser.newContext({
-                viewport: { width: vp.width, height: vp.height },
-                deviceScaleFactor: 1,
-                colorScheme: "dark",
-            });
-            for (const page of PAGES) {
-                const pageObj = await ctx.newPage();
-                const fileUrl = pathToFileURL(resolve(REPORTS_DIR, page)).toString();
-                const slug = page.replace(/\.html$/, "");
-                const screenshotPath = resolve(outDir, `${slug}-${vp.name}.png`);
-                try {
-                    await pageObj.goto(fileUrl, { waitUntil: "load", timeout: 15000 });
-                    // Inline JS on the dashboards renders KPIs + tables from the
-                    // data block on DOMContentLoaded. Give it a beat to settle
-                    // before snapshotting.
-                    await pageObj.waitForTimeout(400);
-                    await pageObj.screenshot({ path: screenshotPath, fullPage: true });
-                    const s = await stat(screenshotPath);
+    for (const { name: browserName, launcher } of targets) {
+        console.log(`\n[capture] === ${browserName} ===`);
+        let browser;
+        try {
+            browser = await launcher.launch();
+        } catch (err) {
+            console.error(`[capture] FAIL to launch ${browserName}: ${err.message}`);
+            // Record skip for every file we would have produced
+            for (const vp of VIEWPORTS) {
+                for (const page of PAGES) {
                     manifest.files.push({
+                        browser: browserName,
                         page,
                         viewport: vp.name,
-                        path: `scripts/visual-audit/${dateDir}/${slug}-${vp.name}.png`,
-                        size_bytes: s.size,
+                        error: `browser launch failed: ${err.message}`,
                     });
-                    console.log(`  ${slug}-${vp.name}.png  ${(s.size / 1024).toFixed(1)} KB`);
-                } catch (err) {
-                    console.error(`  FAIL ${slug}-${vp.name}: ${err.message}`);
-                    manifest.files.push({
-                        page,
-                        viewport: vp.name,
-                        path: `scripts/visual-audit/${dateDir}/${slug}-${vp.name}.png`,
-                        error: err.message,
-                    });
-                } finally {
-                    await pageObj.close();
                 }
             }
-            await ctx.close();
+            continue;
         }
-    } finally {
-        await browser.close();
+        try {
+            for (const vp of VIEWPORTS) {
+                const ctx = await browser.newContext({
+                    viewport: { width: vp.width, height: vp.height },
+                    deviceScaleFactor: 1,
+                    colorScheme: "dark",
+                });
+                for (const page of PAGES) {
+                    const pageObj = await ctx.newPage();
+                    const fileUrl = pathToFileURL(resolve(REPORTS_DIR, page)).toString();
+                    const slug = page.replace(/\.html$/, "");
+                    // Suffix browser name only when multi-browser run (preserves
+                    // back-compat for chromium-only baseline runs).
+                    const browserSuffix = targets.length > 1 ? `-${browserName}` : "";
+                    const screenshotPath = resolve(outDir, `${slug}-${vp.name}${browserSuffix}.png`);
+                    try {
+                        await pageObj.goto(fileUrl, { waitUntil: "load", timeout: 15000 });
+                        await pageObj.waitForTimeout(400);
+                        await pageObj.screenshot({ path: screenshotPath, fullPage: true });
+                        const s = await stat(screenshotPath);
+                        manifest.files.push({
+                            browser: browserName,
+                            page,
+                            viewport: vp.name,
+                            path: `scripts/visual-audit/${dateDir}/${slug}-${vp.name}${browserSuffix}.png`,
+                            size_bytes: s.size,
+                        });
+                        console.log(`  ${slug}-${vp.name}${browserSuffix}.png  ${(s.size / 1024).toFixed(1)} KB`);
+                    } catch (err) {
+                        console.error(`  FAIL ${slug}-${vp.name}${browserSuffix}: ${err.message}`);
+                        manifest.files.push({
+                            browser: browserName,
+                            page,
+                            viewport: vp.name,
+                            path: `scripts/visual-audit/${dateDir}/${slug}-${vp.name}${browserSuffix}.png`,
+                            error: err.message,
+                        });
+                    } finally {
+                        await pageObj.close();
+                    }
+                }
+                await ctx.close();
+            }
+        } finally {
+            await browser.close();
+        }
     }
 
     const manifestPath = resolve(outDir, "manifest.json");

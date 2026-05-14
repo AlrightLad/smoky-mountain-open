@@ -16,6 +16,17 @@
         .pb-kpi-card--clickable:focus-visible { outline: 2px solid var(--accent-brass); outline-offset: 2px; }
         .pb-kpi-card--clickable[aria-expanded="true"] { background: rgba(201,169,97,0.10); border-color: var(--accent-brass); }
 
+        /* Escalation detail panel layout. Applied only when not hidden so the
+           HTML `hidden` attribute (display:none) keeps the panel collapsed by
+           default. Cross-browser smoke 2026-05-14 caught the regression where
+           `display: grid` inline overrode `hidden`. */
+        #fq-escalation-detail:not([hidden]) {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-3);
+            margin-top: var(--space-3);
+        }
+
         .fq-escalation-card {
             background: var(--surface-secondary);
             border: 1px solid var(--border-subtle);
@@ -235,7 +246,7 @@
                      proposed answer (per AMD-015), decision form, source link, age, and a Mark Resolved
                      button that exports an escalation-decisions JSON file mirroring the amendments
                      approval flow. -->
-                <div id="fq-escalation-detail" data-fq-section="escalation-detail" hidden role="region" aria-label="Escalation detail" style="margin-top: var(--space-3); display: grid; grid-template-columns: 1fr; gap: var(--space-3);"></div>
+                <div id="fq-escalation-detail" data-fq-section="escalation-detail" hidden role="region" aria-label="Escalation detail"></div>
             </div>
 
             <!-- Sub-section: system health -->
@@ -551,7 +562,7 @@
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "_aggregate_counts": {
-    "events_total": 569,
+    "events_total": 579,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
@@ -567,7 +578,7 @@
   "quota_status": {
     "state": "empty",
     "as_of": "2026-05-14T15:24:53.5950065Z",
-    "age_seconds": 4232,
+    "age_seconds": 4850,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -578,7 +589,7 @@
     "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
   },
   "founder_queue": {
-    "as_of": "2026-05-14T16:35:26.546977+00:00",
+    "as_of": "2026-05-14T16:45:44.100709+00:00",
     "last_founder_visit": null,
     "governance_gates": {
       "amendments_pending": 1,
@@ -587,36 +598,13 @@
       "bubbles_link": "discussion-bubbles.html",
       "proposals_pending": 0,
       "proposals_link": "proposals.html",
-      "open_escalations": [
-        {
-          "id": "main-flows-v2-taxonomy",
-          "type": "cross-cutting architecture decision (escalation criterion #5)",
-          "summary": "Phase 2 taxonomy + visual + speculative-flows decisions; defaults documented at .claude/state/main-flows-v2/taxonomy-proposals.md",
-          "link": ".claude/state/main-flows-v2/taxonomy-proposals.md",
-          "proposed_answer": "**Taxonomy E (hybrid: tier primary + status secondary + lifecycle chip)** + **Option 1 visual (single-page rail with filter chips)**.\n\nReasoning:\n- Tier as primary preserves the F5 Main Flow filter rule clarity\n- Status secondary surfaces roadmap progress without dominating\n- Lifecycle chip gives Founder a \"what part of the product\" reading lane\n- Single-page rail at 62 flows is tight but viable with filters; doesn't fragment context across pages\n- Architecture grid stays (protected layout per Phase 6.5)",
-          "decision_form": "\u2014 escalation per criterion #5\n\nThree decisions required:\n- **Decision (a) \u2014 Taxonomy:** A / B / C / D / **E (recommended hybrid)**\n- **Decision (b) \u2014 Visual:** Option 1 single-page filtered rail (recommended) / Option 2 accordion / Option 3 multi-page\n- **Decision (c) \u2014 Speculative flows:** **(a) Include + render with treatment** (recommended) / (b) include data, hide UI / (c) remove\n\n**Default if no response within reasonable window:** team proceeds with **Taxonomy E + Option 1 + Speculative (a)**. The inventory at `.claude/state/main-flows-v2/flow-inventory.json` is permanent regardless of taxonomy choice; only the visual organization is gated.",
-          "source_missing": false,
-          "age_days": 0.62,
-          "stale": false
-        },
-        {
-          "id": "wave-1-ship-1-selection",
-          "type": "Founder authorization needed",
-          "summary": "Design Tooling Spike complete; recommendation locked (Approach A native). Founder selects which Wave 1 ship goes first.",
-          "link": ".claude/state/design-spike/comparison.md",
-          "proposed_answer": "**Wave 1 ship 1 should use Approach A \u2014 PARBAUGHS native primitives.**\n\nThree reasons:\n\n1. **Polish ceiling isn't the constraint.** A scored 7/10 raw; C scored\n   8/10 raw but 6/10 IN PARBAUGHS' aesthetic context. The gap between\n   \"competent native\" and \"ideal aesthetic\" is not closed by switching\n   tools \u2014 it's closed by reference library (H4) + iteration\n   speed (H3). Both are cheaper than a framework migration.\n\n2. **Migration tax is real and load-bearing.** B would consume\n   ~600k-1M tokens just to migrate the dashboard build pipeline before\n   the first React component lands. Wave 1 ship 1 is design system\n   codification; adding \"and also rewrite the build in React\" doubles\n   the ship's scope.\n\n3. **Generative defaults read foreign.** C's gradients + glow + trend\n   deltas are the \"Vercel premium\" aesthetic. PARBAUGHS' is the\n   Augusta-leaderboard / country-club ledger aesthetic. They're\n   different design languages. Using v0's defaults imports a tonal\n   mismatch we'd then have to back-edit out, which is wasted motion.\n\n**However: the spike surfaced two things worth doing alongside Wave 1\nship 1.**\n\n- **Add the 3 missing primitives to design-system-components.css:**\n  `.pb-avatar` (with --leader-ring variant), `.pb-list` + `.pb-list-row`\n  (with hover + leader-row gradient variants), `.pb-trend-delta` (up /\n  down / flat with proper a11y). Authored fresh ~150 tokens; pays\n  dividends every Wave 1 component that comes after.\n\n- **Build a reference-library state\u2026",
-          "decision_form": "1. **Does the leaderboard-row spec want trend-deltas at all?** Approach C\n   added rank-change indicators (up 2, down 1) because Strava has them.\n   PARBAUGHS doesn't have rank-change data wired today \u2014 the\n   substrate would need a snapshot-prev-week step. Worth it?\n\n2. **Is \"this looks shadcn\" actually a bad outcome?** Approach B's\n   identity score was MEDIUM because the pattern is recognizable. But\n   shadcn-derived UIs are everywhere in 2026; \"recognizable\" might be\n   \"fits the era.\" Open question whether PARBAUGHS' chosen\n   distinctiveness should fight that.\n\n3. **Should the spike try other tools the team COULD reach?** Magic-UI\n   and aceternity (cited in db-2026-05-14-001 H1) are reachable as\n   copy-paste-from-docs, similar to shadcn. They produce more\n   motion-heavy aesthetics. Worth a follow-on spike if Founder wants\n   evidence on motion-rich variants.",
-          "source_missing": false,
-          "age_days": 0.57,
-          "stale": false
-        }
-      ]
+      "open_escalations": []
     },
     "system_health": {
       "crons": {
         "downloads-watcher": {
-          "last_run": "2026-05-14T16-30-49Z",
-          "last_log": "2026-05-14T16-30-49Z-downloads-watcher.log"
+          "last_run": "2026-05-14T16-40-49Z",
+          "last_log": "2026-05-14T16-40-49Z-downloads-watcher.log"
         },
         "maintenance": {
           "last_run": "2026-05-14T06-55-01Z",
