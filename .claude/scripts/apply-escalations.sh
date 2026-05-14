@@ -63,12 +63,11 @@ fi
 ESC_DIR=".claude/state/escalations"
 LOG_FILE=".claude/state/founder/escalation-decisions-log.ndjson"
 
+# State directories are tracked but can become empty (git doesn't track empty
+# dirs). Create on demand so the script tolerates rmdir cleanup or fresh
+# clones where only some buckets have markdown files.
 for sub in pending approved applied rejected deferred; do
-    if [[ ! -d "$ESC_DIR/$sub" ]]; then
-        echo "Error: $ESC_DIR/$sub directory not found" >&2
-        echo "Run from repo root; ensure escalations lifecycle is set up." >&2
-        exit 2
-    fi
+    mkdir -p "$ESC_DIR/$sub"
 done
 
 # Locate python.exe
