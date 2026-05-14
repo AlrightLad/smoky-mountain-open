@@ -45,3 +45,15 @@ logs/
 # Pre-watcher-test artifacts (remove after test rollback)
 /.claude/state/cron-paused.json.bak-test
 /.test-rollback-target
+
+# ─── Cron / watcher routine state (must not dirty working tree) ───────────
+# Per AUTONOMOUS_FAILURE_RECOVERY v8.3: routine cron output must NEVER dirty
+# the tree, or the downloads-watcher preflight refuses to apply Founder
+# decisions. The watcher cursor + tests/round-trip-workspace/ are scratch
+# artifacts that re-create themselves on every run; they must never block
+# the apply path.
+/.claude/state/proposals/.last-processed-decisions.json
+/.claude/state/proposals/inbox/
+/.claude/state/amendments/inbox/
+/.claude/state/amendments/inbox-archive/
+/tests/round-trip-workspace/

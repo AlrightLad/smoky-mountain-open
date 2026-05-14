@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussion Bubbles — PARBAUGHS Orchestration</title>
+    <link rel="stylesheet" href="_assets/dashboard.css">
+    <style>
+        /* Browser default [hidden] = display:none, but explicit `display: flex/grid/block`
+           overrides it. Restore the precedence so hidden actually hides. */
+        [hidden] { display: none !important; }
+
+        /* ============== Layout: rail + transcript ============== */
+        .db-app {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 0;
+            height: calc(100vh - 140px);
+            min-height: 600px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+        @media (max-width: 900px) {
+            .db-app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; height: auto; }
+            .db-rail { max-height: 40vh; border-right: none; border-bottom: 1px solid var(--border-subtle); }
+        }
+
+        /* ============== Left rail: filters + thread list ============== */
+        .db-rail {
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-subtle);
+            background: var(--bg-page);
+            overflow: hidden;
+        }
+        .db-rail-header {
+            padding: var(--space-3);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+            flex-shrink: 0;
+        }
+        .db-rail-header h2 {
+            margin: 0;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-tertiary);
+        }
+        .db-rail-filters {
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+        }
+        .db-rail-filters select {
+            flex: 1 1 auto;
+            min-width: 0;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            font-family: inherit;
+        }
+        .db-rail-count {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+        .db-thread-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            overflow-y: auto;
+            flex: 1 1 auto;
+        }
+        .db-day-divider {
+            padding: var(--space-2) var(--space-3);
+            font-size: 0.6875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-tertiary);
+            background: var(--bg-page);
+            border-bottom: 1px solid var(--border-subtle);
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        .db-thread-item {
+            padding: var(--space-3);
+            border-bottom: 1px solid var(--border-subtle);
+            cursor: pointer;
+            display: grid;
+            grid-template-columns: 12px 1fr;
+            gap: var(--space-2);
+            align-items: start;
+            transition: background 0.12s ease;
+            user-select: none;
+        }
+        .db-thread-item:hover { background: var(--bg-card); }
+        .db-thread-item.is-active { background: var(--bg-card); border-left: 3px solid var(--accent-brass); padding-left: calc(var(--space-3) - 3px); }
+        .db-thread-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-top: 4px;
+            background: var(--accent-brass);
+        }
+        .db-thread-item[data-status="approved"]              .db-thread-dot { background: var(--accent-moss); }
+        .db-thread-item[data-status="approved-with-dissent"] .db-thread-dot { background: var(--accent-amber); }
+        .db-thread-item[data-status="rejected"]              .db-thread-dot { background: var(--accent-claret); }
+        .db-thread-item[data-status="tied"]                  .db-thread-dot { background: var(--accent-violet); }
+        .db-thread-item[data-status="open"]                  .db-thread-dot { background: var(--accent-teal); animation: db-pulse 2s ease-in-out infinite; }
+        @keyframes db-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        .db-thread-meta { min-width: 0; }
+        .db-thread-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.3;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .db-thread-sub {
+            font-size: 0.6875rem;
+            color: var(--text-tertiary);
+            margin-bottom: 4px;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .db-thread-sub .db-status-text { font-weight: 600; }
+        .db-thread-item[data-status="approved"]              .db-status-text { color: var(--accent-moss); }
+        .db-thread-item[data-status="approved-with-dissent"] .db-status-text { color: var(--accent-amber); }
+        .db-thread-item[data-status="rejected"]              .db-status-text { color: var(--accent-claret); }
+        .db-thread-item[data-status="tied"]                  .db-status-text { color: var(--accent-violet); }
+        .db-thread-item[data-status="open"]                  .db-status-text { color: var(--accent-teal); }
+        .db-thread-snippet {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* ============== Right pane: transcript ============== */
+        .db-detail {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--bg-card);
+        }
+        .db-detail-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-3);
+            color: var(--text-tertiary);
+            text-align: center;
+            padding: var(--space-4);
+        }
+        .db-detail-empty .icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--bg-page);
+            border: 2px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: var(--text-tertiary);
+        }
+        .db-detail-empty h3 { margin: 0; color: var(--text-secondary); font-size: 1rem; font-weight: 500; }
+        .db-detail-empty p { margin: 0; font-size: 0.875rem; max-width: 320px; }
+
+        .db-detail-thread {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+        .db-detail-header {
+            padding: var(--space-3) var(--space-4);
+            border-bottom: 1px solid var(--border-subtle);
+            background: var(--bg-card);
+            flex-shrink: 0;
+        }
+        .db-detail-title {
+            margin: 0 0 4px 0;
+            font-size: 1.0625rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            line-height: 1.3;
+        }
+        .db-detail-meta {
+            display: flex;
+            gap: var(--space-3);
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .db-detail-meta .db-id { font-family: var(--font-mono); color: var(--text-secondary); }
+        .db-detail-meta .db-vote { padding: 2px 8px; border-radius: var(--radius-sm); font-weight: 600; font-family: var(--font-mono); }
+        .db-detail-meta .db-vote[data-status="approved"]              { background: rgba(74, 128, 103, 0.18); color: var(--accent-moss); }
+        .db-detail-meta .db-vote[data-status="approved-with-dissent"] { background: rgba(212, 168, 87, 0.18); color: var(--accent-amber); }
+        .db-detail-meta .db-vote[data-status="rejected"]              { background: rgba(156, 74, 74, 0.18); color: var(--accent-claret); }
+        .db-detail-meta .db-vote[data-status="tied"]                  { background: rgba(107, 91, 140, 0.18); color: var(--accent-violet); }
+        .db-detail-meta .db-vote[data-status="open"]                  { background: rgba(74, 138, 156, 0.18); color: var(--accent-teal); }
+
+        .db-detail-claim {
+            margin: var(--space-3) var(--space-4);
+            padding: var(--space-3);
+            background: var(--bg-page);
+            border-left: 3px solid var(--accent-brass);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            flex-shrink: 0;
+        }
+        .db-detail-claim .label {
+            font-size: 0.6875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-tertiary);
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .db-detail-claim .text { font-style: italic; line-height: 1.5; }
+
+        .db-message-stream {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            padding: var(--space-3) var(--space-4);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+        .db-msg {
+            display: grid;
+            grid-template-columns: 32px 1fr;
+            gap: var(--space-3);
+            --msg-color: var(--accent-brass);
+        }
+        .db-msg[data-author="engineer"]                       { --msg-color: var(--accent-brass); }
+        .db-msg[data-author="critic"]                         { --msg-color: var(--accent-claret); }
+        .db-msg[data-author="orchestrator"]                   { --msg-color: var(--accent-moss); }
+        .db-msg[data-author="performance-load"]               { --msg-color: var(--accent-amber); }
+        .db-msg[data-author="data-integrity"]                 { --msg-color: var(--accent-teal); }
+        .db-msg[data-author="security"]                       { --msg-color: var(--accent-claret); }
+        .db-msg[data-author="design-bot"]                     { --msg-color: var(--accent-violet); }
+        .db-msg[data-author="devil-advocate"]                 { --msg-color: var(--accent-claret); }
+        .db-msg[data-author="plain-english-translator"]       { --msg-color: var(--accent-teal); }
+        .db-msg[data-author="historical-pattern"]             { --msg-color: var(--accent-moss); }
+        .db-msg[data-author="future-self"]                    { --msg-color: var(--accent-violet); }
+        .db-msg[data-author="end-user-persona"]               { --msg-color: var(--accent-amber); }
+        .db-msg[data-author="flow-doc"]                       { --msg-color: var(--accent-moss); }
+        .db-msg[data-author="ui-polisher"]                    { --msg-color: var(--accent-violet); }
+        .db-msg[data-author="fiq-triage"]                     { --msg-color: var(--accent-amber); }
+        .db-msg[data-author="discussion-bubble-orchestrator"] { --msg-color: var(--accent-brass); }
+
+        .db-msg-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-page);
+            border: 2px solid var(--msg-color);
+            color: var(--msg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .db-msg-body { min-width: 0; }
+        .db-msg-head {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+        }
+        .db-msg-author {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--msg-color);
+            font-family: var(--font-mono);
+        }
+        .db-msg-role {
+            font-size: 0.6875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-tertiary);
+            padding: 1px 6px;
+            background: var(--bg-page);
+            border-radius: var(--radius-sm);
+        }
+        .db-msg-vote {
+            font-size: 0.6875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-mono);
+        }
+        .db-msg-vote[data-vote="approve"] { background: rgba(74, 128, 103, 0.18); color: var(--accent-moss); }
+        .db-msg-vote[data-vote="reject"]  { background: rgba(156, 74, 74, 0.18); color: var(--accent-claret); }
+        .db-msg-vote[data-vote="abstain"] { background: var(--bg-page); color: var(--text-tertiary); }
+        .db-msg-time {
+            font-size: 0.6875rem;
+            color: var(--text-tertiary);
+            font-family: var(--font-mono);
+            margin-left: auto;
+        }
+        .db-msg-content {
+            font-size: 0.875rem;
+            line-height: 1.55;
+            color: var(--text-primary);
+            background: var(--bg-page);
+            border-radius: var(--radius-md);
+            padding: var(--space-2) var(--space-3);
+            border-left: 2px solid var(--msg-color);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .db-msg[data-role-in-bubble="open"] .db-msg-content,
+        .db-msg[data-role-in-bubble="decision"] .db-msg-content,
+        .db-msg[data-role-in-bubble="summary"] .db-msg-content {
+            background: rgba(201, 169, 97, 0.06);
+            border-left-color: var(--accent-brass);
+            font-weight: 500;
+        }
+
+        .db-back-button {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+            padding: var(--space-2) var(--space-3);
+            cursor: pointer;
+            text-align: left;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        @media (max-width: 900px) {
+            .db-back-button.is-visible { display: block; }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <nav class="page-nav">
+            <a href="index.html" class="nav-brand">PARBAUGHS Orchestration</a>
+            <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="activity.html">Activity</a>
+            <a href="discussion-bubbles.html" class="is-active">Discussion Bubbles</a>
+            <a href="proposals.html">Proposals</a>
+            <a href="main-flows.html">Main Flows</a>
+            <a href="index.html">Index</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="page-main">
+        <div class="page-header-row">
+            <div>
+                <h1 class="page-title">Discussion Bubbles</h1>
+                <p class="page-subtitle">Threaded transcripts of every multi-agent deliberation. Click a thread to read who said what.</p>
+            </div>
+        </div>
+
+        <div class="db-app" id="db-app">
+            <aside class="db-rail">
+                <div class="db-rail-header">
+                    <h2>Threads</h2>
+                    <div class="db-rail-filters">
+                        <select id="filter-status" aria-label="Filter by status">
+                            <option value="all">All statuses</option>
+                            <option value="open">Open</option>
+                            <option value="approved">Approved</option>
+                            <option value="approved-with-dissent">Approved w/ dissent</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="tied">Tied</option>
+                        </select>
+                        <select id="filter-ship" aria-label="Filter by ship">
+                            <option value="all">All ships</option>
+                        </select>
+                    </div>
+                    <div class="db-rail-count" id="rail-count">— threads</div>
+                </div>
+                <ul class="db-thread-list" id="thread-list"></ul>
+            </aside>
+
+            <section class="db-detail" id="detail-pane">
+                <button class="db-back-button" id="back-button" type="button">← Back to threads</button>
+                <div class="db-detail-empty" id="detail-empty">
+                    <div class="icon">💬</div>
+                    <h3>Select a discussion bubble</h3>
+                    <p>Pick a thread from the list to read the full transcript — every agent's contribution, vote, and the closing decision.</p>
+                </div>
+                <article class="db-detail-thread" id="detail-thread" hidden>
+                    <header class="db-detail-header">
+                        <h2 class="db-detail-title" id="detail-title">—</h2>
+                        <div class="db-detail-meta">
+                            <span class="db-id" id="detail-id">—</span>
+                            <span id="detail-date">—</span>
+                            <span class="db-vote" id="detail-vote">—</span>
+                            <span id="detail-ship">—</span>
+                            <span id="detail-msg-count">—</span>
+                        </div>
+                    </header>
+                    <div class="db-detail-claim">
+                        <div class="label">Claim under deliberation</div>
+                        <div class="text" id="detail-claim">—</div>
+                    </div>
+                    <div class="db-message-stream" id="message-stream"></div>
+                </article>
+            </section>
+        </div>
+    </main>
+
+    <script id="report-data" type="application/json">
+{
+  "discussion_bubbles": [
+    {
+      "id": "db-2026-05-13-001",
+      "topic": "Rename bubble \u2192 discussion bubble across governance",
+      "claim": "Rename improves Founder readability; deterministic script low risk.",
+      "summary": "Approved 3-0-0. Rename script + cleanup pass + residual audit.",
+      "ship_id": "v8.1-operational-views",
+      "opened_at": "2026-05-13T13:00:00Z",
+      "closed_at": "2026-05-13T13:08:00Z",
+      "status": "approved",
+      "decision": "Proceed with deterministic rename script + cleanup pass",
+      "vote_tally": {
+        "approve": 3,
+        "reject": 0,
+        "abstain": 0
+      },
+      "messages": [
+        {
+          "author": "discussion-bubble-orchestrator",
+          "role_in_bubble": "open",
+          "timestamp": "2026-05-13T13:00:00Z",
+          "content": "Opening bubble. Founder requested bubble \u2192 discussion bubble rename."
+        },
+        {
+          "author": "engineer",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T13:02:00Z",
+          "content": "Deterministic sed-style script handles it. 166 replacements.",
+          "vote": "approve"
+        },
+        {
+          "author": "critic",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T13:04:00Z",
+          "content": "Audit-first: residual grep after the rename.",
+          "vote": "approve"
+        },
+        {
+          "author": "devil-advocate",
+          "role_in_bubble": "bubble-only",
+          "timestamp": "2026-05-13T13:05:30Z",
+          "content": "What about hardcoded regex consumers downstream?"
+        },
+        {
+          "author": "data-integrity",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-13T13:07:00Z",
+          "content": "No external consumers yet \u2014 agents not loose.",
+          "vote": "approve"
+        },
+        {
+          "author": "discussion-bubble-orchestrator",
+          "role_in_bubble": "decision",
+          "timestamp": "2026-05-13T13:08:00Z",
+          "content": "Vote 3-0-0. Approved."
+        }
+      ]
+    },
+    {
+      "id": "db-2026-05-12-002",
+      "topic": "Approval persistence: backend vs intent-capture",
+      "claim": "Use intent-capture (export JSON + apply script) instead of standing up a backend.",
+      "summary": "Approved with dissent (3-1-1). Intent-capture proceeds; data-integrity dissent recorded.",
+      "ship_id": "v8.1-operational-views",
+      "opened_at": "2026-05-12T19:30:00Z",
+      "closed_at": "2026-05-12T19:54:00Z",
+      "status": "approved-with-dissent",
+      "decision": "Intent-capture (proceed; data-integrity dissent recorded)",
+      "vote_tally": {
+        "approve": 3,
+        "reject": 1,
+        "abstain": 1
+      },
+      "messages": [
+        {
+          "author": "discussion-bubble-orchestrator",
+          "role_in_bubble": "open",
+          "timestamp": "2026-05-12T19:30:00Z",
+          "content": "Opening bubble. Proposals.html durability question."
+        },
+        {
+          "author": "engineer",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-12T19:33:00Z",
+          "content": "Backend overkill. Intent-capture matches static-arch.",
+          "vote": "approve"
+        },
+        {
+          "author": "data-integrity",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-12T19:38:00Z",
+          "content": "localStorage not durable.",
+          "vote": "reject"
+        },
+        {
+          "author": "critic",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-12T19:42:00Z",
+          "content": "Durable artifact is the exported JSON.",
+          "vote": "approve"
+        },
+        {
+          "author": "devil-advocate",
+          "role_in_bubble": "bubble-only",
+          "timestamp": "2026-05-12T19:45:00Z",
+          "content": "What if Founder forgets to export?"
+        },
+        {
+          "author": "engineer",
+          "role_in_bubble": "contributing",
+          "timestamp": "2026-05-12T19:47:00Z",
+          "content": "beforeunload + persistent banner."
+        },
+        {
+          "author": "security",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-12T19:50:00Z",
+          "content": "Backend expands attack surface.",
+          "vote": "approve"
+        },
+        {
+          "author": "performance-load",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-12T19:52:00Z",
+          "content": "Abstaining; outside lane.",
+          "vote": "abstain"
+        },
+        {
+          "author": "discussion-bubble-orchestrator",
+          "role_in_bubble": "decision",
+          "timestamp": "2026-05-12T19:54:00Z",
+          "content": "Vote 3-1-1. Approved with dissent."
+        }
+      ]
+    },
+    {
+      "id": "db-2026-05-12-001",
+      "topic": "Chart library choice for dashboard.html",
+      "claim": "Use Chart.js CDN over hand-rolled SVG for the 3 dashboard charts.",
+      "summary": "Approved 4-0-1. Chart.js CDN selected for time-to-ship.",
+      "ship_id": "v8-governance",
+      "opened_at": "2026-05-12T14:00:00Z",
+      "closed_at": "2026-05-12T14:18:00Z",
+      "status": "approved",
+      "decision": "Chart.js CDN (proceed)",
+      "vote_tally": {
+        "approve": 4,
+        "reject": 0,
+        "abstain": 1
+      },
+      "messages": [
+        {
+          "author": "discussion-bubble-orchestrator",
+          "role_in_bubble": "open",
+          "timestamp": "2026-05-12T14:00:00Z",
+          "content": "Opening bubble. Dashboard needs 3 charts. Options A vs B."
+        },
+        {
+          "author": "engineer",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-12T14:04:00Z",
+          "content": "CDN is ~60KB, hand-rolled is ~450 LOC.",
+          "vote": "approve"
+        },
+        {
+          "author": "performance-load",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-12T14:07:00Z",
+          "content": "CDN cache amortizes cost.",
+          "vote": "approve"
+        },
+        {
+          "author": "critic",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-12T14:10:00Z",
+          "content": "Chart.js a11y is decent OOTB.",
+          "vote": "approve"
+        },
+        {
+          "author": "design-bot",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-12T14:14:00Z",
+          "content": "CSS-var theming supported.",
+          "vote": "approve"
+        },
+        {
+          "author": "data-integrity",
+          "role_in_bubble": "voting",
+          "timestamp": "2026-05-12T14:16:00Z",
+          "content": "Outside my lane.",
+          "vote": "abstain"
+        },
+        {
+          "author": "discussion-bubble-orchestrator",
+          "role_in_bubble": "decision",
+          "timestamp": "2026-05-12T14:18:00Z",
+          "content": "Vote 4-0-1. Approved."
+        }
+      ]
+    }
+  ]
+}
+    </script>
+
+    <script>
+        (function () {
+            'use strict';
+
+            // ----- Read embedded data -----
+            const data = JSON.parse(document.getElementById('report-data').textContent);
+            const bubbles = data.discussion_bubbles || [];
+
+            // ----- Author → initials (for avatar) -----
+            const authorInitials = function (name) {
+                const map = {
+                    'engineer': 'EN',
+                    'critic': 'CR',
+                    'orchestrator': 'OR',
+                    'performance-load': 'PL',
+                    'data-integrity': 'DI',
+                    'security': 'SE',
+                    'design-bot': 'DB',
+                    'devil-advocate': 'DA',
+                    'plain-english-translator': 'PE',
+                    'historical-pattern': 'HP',
+                    'future-self': 'FS',
+                    'end-user-persona': 'EU',
+                    'flow-doc': 'FD',
+                    'ui-polisher': 'UI',
+                    'fiq-triage': 'FQ',
+                    'discussion-bubble-orchestrator': 'DBO'
+                };
+                return map[name] || (name.slice(0, 2).toUpperCase());
+            };
+
+            // ----- Date helpers -----
+            const fmtDate = function (iso) {
+                const d = new Date(iso);
+                return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            };
+            const fmtTime = function (iso) {
+                const d = new Date(iso);
+                return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+            };
+            const fmtDateLong = function (iso) {
+                const d = new Date(iso);
+                return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+            };
+            const dayKey = function (iso) {
+                return iso.slice(0, 10);
+            };
+            const friendlyDay = function (iso) {
+                const d = new Date(iso);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const target = new Date(d); target.setHours(0, 0, 0, 0);
+                const diff = (today - target) / 86400000;
+                if (diff === 0) return 'Today';
+                if (diff === 1) return 'Yesterday';
+                if (diff < 7) return d.toLocaleDateString('en-US', { weekday: 'long' });
+                return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            };
+            const statusLabel = function (s) {
+                return ({
+                    'approved': 'Approved',
+                    'approved-with-dissent': 'Dissent',
+                    'rejected': 'Rejected',
+                    'tied': 'Tied',
+                    'open': 'Open'
+                })[s] || s;
+            };
+            const voteString = function (tally) {
+                if (!tally) return '—';
+                return `${tally.approve || 0}-${tally.reject || 0}-${tally.abstain || 0}`;
+            };
+
+            // ----- Populate ship filter -----
+            const shipFilter = document.getElementById('filter-ship');
+            const ships = Array.from(new Set(bubbles.map(function (b) { return b.ship_id; }).filter(Boolean))).sort();
+            ships.forEach(function (s) {
+                const opt = document.createElement('option');
+                opt.value = s;
+                opt.textContent = s;
+                shipFilter.appendChild(opt);
+            });
+
+            // ----- Render thread list -----
+            let activeBubbleId = null;
+            const threadList = document.getElementById('thread-list');
+            const railCount = document.getElementById('rail-count');
+
+            function getFilteredBubbles() {
+                const status = document.getElementById('filter-status').value;
+                const ship = shipFilter.value;
+                return bubbles.filter(function (b) {
+                    if (status !== 'all' && b.status !== status) return false;
+                    if (ship !== 'all' && b.ship_id !== ship) return false;
+                    return true;
+                }).sort(function (a, b) {
+                    return new Date(b.opened_at) - new Date(a.opened_at);
+                });
+            }
+
+            function renderThreadList() {
+                const filtered = getFilteredBubbles();
+                threadList.innerHTML = '';
+                railCount.textContent = `${filtered.length} thread${filtered.length === 1 ? '' : 's'}`;
+
+                let lastDay = null;
+                filtered.forEach(function (b) {
+                    const day = dayKey(b.opened_at);
+                    if (day !== lastDay) {
+                        const divider = document.createElement('li');
+                        divider.className = 'db-day-divider';
+                        divider.textContent = friendlyDay(b.opened_at);
+                        threadList.appendChild(divider);
+                        lastDay = day;
+                    }
+                    const li = document.createElement('li');
+                    li.className = 'db-thread-item';
+                    li.dataset.bubbleId = b.id;
+                    li.dataset.status = b.status;
+                    if (b.id === activeBubbleId) li.classList.add('is-active');
+
+                    const msgCount = (b.messages || []).length;
+                    li.innerHTML = `
+                        <span class="db-thread-dot"></span>
+                        <div class="db-thread-meta">
+                            <div class="db-thread-title">${escapeHtml(b.topic)}</div>
+                            <div class="db-thread-sub">
+                                <span>${fmtTime(b.opened_at)}</span>
+                                <span>·</span>
+                                <span>${msgCount} message${msgCount === 1 ? '' : 's'}</span>
+                                <span>·</span>
+                                <span class="db-status-text">${statusLabel(b.status)} ${voteString(b.vote_tally)}</span>
+                            </div>
+                            <div class="db-thread-snippet">${escapeHtml(b.summary || b.claim || '')}</div>
+                        </div>`;
+                    li.addEventListener('click', function () { selectBubble(b.id); });
+                    threadList.appendChild(li);
+                });
+            }
+
+            // ----- Render transcript -----
+            function selectBubble(id) {
+                activeBubbleId = id;
+                const b = bubbles.find(function (x) { return x.id === id; });
+                if (!b) return;
+
+                document.querySelectorAll('.db-thread-item').forEach(function (el) {
+                    el.classList.toggle('is-active', el.dataset.bubbleId === id);
+                });
+
+                document.getElementById('detail-empty').hidden = true;
+                const thread = document.getElementById('detail-thread');
+                thread.hidden = false;
+
+                document.getElementById('detail-title').textContent = b.topic;
+                document.getElementById('detail-id').textContent = b.id;
+                document.getElementById('detail-date').textContent = fmtDateLong(b.opened_at);
+                const voteEl = document.getElementById('detail-vote');
+                voteEl.textContent = `${statusLabel(b.status)} ${voteString(b.vote_tally)}`;
+                voteEl.dataset.status = b.status;
+                document.getElementById('detail-ship').textContent = b.ship_id ? `Ship ${b.ship_id}` : '';
+                const msgCount = (b.messages || []).length;
+                document.getElementById('detail-msg-count').textContent = `${msgCount} message${msgCount === 1 ? '' : 's'}`;
+                document.getElementById('detail-claim').textContent = b.claim || '—';
+
+                const stream = document.getElementById('message-stream');
+                stream.innerHTML = '';
+                (b.messages || []).forEach(function (m) {
+                    const msg = document.createElement('div');
+                    msg.className = 'db-msg';
+                    msg.dataset.author = m.author;
+                    msg.dataset.roleInBubble = m.role_in_bubble || 'contributing';
+
+                    const voteBadge = m.vote ? `<span class="db-msg-vote" data-vote="${escapeAttr(m.vote)}">${escapeHtml(m.vote)}</span>` : '';
+                    const roleBadge = m.role_in_bubble && m.role_in_bubble !== 'voting' ? `<span class="db-msg-role">${escapeHtml(m.role_in_bubble)}</span>` : '';
+
+                    msg.innerHTML = `
+                        <div class="db-msg-avatar">${authorInitials(m.author)}</div>
+                        <div class="db-msg-body">
+                            <div class="db-msg-head">
+                                <span class="db-msg-author">${escapeHtml(m.author)}</span>
+                                ${roleBadge}
+                                ${voteBadge}
+                                <span class="db-msg-time">${fmtTime(m.timestamp)}</span>
+                            </div>
+                            <div class="db-msg-content">${escapeHtml(m.content)}</div>
+                        </div>`;
+                    stream.appendChild(msg);
+                });
+
+                // Mobile: surface back button
+                document.getElementById('back-button').classList.add('is-visible');
+                document.getElementById('detail-pane').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            function escapeHtml(s) {
+                if (s === undefined || s === null) return '';
+                return String(s)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
+            }
+            function escapeAttr(s) {
+                return escapeHtml(s);
+            }
+
+            // ----- Filter handlers -----
+            document.getElementById('filter-status').addEventListener('change', renderThreadList);
+            shipFilter.addEventListener('change', renderThreadList);
+
+            // ----- Back button (mobile) -----
+            document.getElementById('back-button').addEventListener('click', function () {
+                document.getElementById('detail-empty').hidden = false;
+                document.getElementById('detail-thread').hidden = true;
+                document.getElementById('back-button').classList.remove('is-visible');
+                activeBubbleId = null;
+                renderThreadList();
+            });
+
+            // ----- Initial render: list + auto-select most recent -----
+            renderThreadList();
+            if (bubbles.length > 0) {
+                const sorted = bubbles.slice().sort(function (a, b) { return new Date(b.opened_at) - new Date(a.opened_at); });
+                selectBubble(sorted[0].id);
+            }
+        })();
+    </script>
+</body>
+</html>

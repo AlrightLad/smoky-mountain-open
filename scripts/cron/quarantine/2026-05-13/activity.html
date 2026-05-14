@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Feed — PARBAUGHS Orchestration</title>
+    <link rel="stylesheet" href="_assets/dashboard.css">
+    <style>
+        .activity-stream { position: relative; padding-left: var(--space-4); border-left: 2px solid var(--border-subtle); }
+        .activity-item { position: relative; margin-bottom: var(--space-4); padding-left: var(--space-4); }
+        .activity-item::before { content: ""; position: absolute; left: calc(-1 * var(--space-4) - 5px); top: 8px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-brass); border: 2px solid var(--bg-page); }
+        .activity-item.scenario-cycle-to-cycle::before  { background: var(--accent-brass); }
+        .activity-item.scenario-agent-to-agent::before  { background: var(--accent-teal); }
+        .activity-item.scenario-subagent-to-parent::before { background: var(--accent-violet); }
+        .activity-item.scenario-parent-to-subagent::before { background: var(--accent-teal); }
+        .activity-item.scenario-proactive-to-ship::before { background: var(--accent-moss); }
+        .activity-item.scenario-halt-to-resume::before { background: var(--accent-claret); }
+        .activity-item.scenario-founder-to-agent::before { background: var(--accent-amber); }
+        .activity-item.scenario-discussion-bubble-to-caller::before { background: var(--accent-violet); }
+        .activity-item.scenario-cross-ship::before { background: var(--accent-teal); }
+        .activity-item.scenario-wave-to-wave::before { background: var(--accent-amber); }
+        .activity-item.scenario-parallel-merge::before { background: var(--accent-moss); }
+        .activity-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-3); }
+        .activity-time { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-tertiary); margin-bottom: var(--space-1); }
+        .activity-flow { font-size: 0.875rem; color: var(--text-primary); margin: var(--space-1) 0 var(--space-2); }
+        .activity-flow .agent { font-family: var(--font-mono); color: var(--accent-brass); }
+        .activity-flow .arrow { color: var(--text-tertiary); margin: 0 var(--space-1); }
+        .activity-meta { display: flex; gap: var(--space-3); font-size: 0.75rem; color: var(--text-secondary); flex-wrap: wrap; }
+        .activity-detail { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--border-subtle); font-size: 0.875rem; }
+        .activity-detail-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); margin-bottom: var(--space-1); }
+        .day-divider { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-brass); margin: var(--space-5) 0 var(--space-3); padding-bottom: var(--space-2); border-bottom: 1px solid var(--border-subtle); }
+    
+        /* === Cross-dashboard nav (injected by scripts/inject-page-nav.py) === */
+        .page-header { background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle); }
+        .page-nav { max-width: 1280px; margin: 0 auto; padding: var(--space-3) var(--space-4); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+        .nav-brand { font-family: var(--font-mono); font-size: 0.875rem; font-weight: 600; color: var(--accent-brass); text-decoration: none; letter-spacing: 0.04em; }
+        .nav-links { display: flex; gap: var(--space-3); font-size: 0.875rem; flex-wrap: wrap; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); transition: color var(--duration-default) var(--ease-default), background var(--duration-default) var(--ease-default); }
+        .nav-links a:hover { color: var(--text-primary); background: var(--bg-card); }
+        .nav-links a.is-active { color: var(--accent-brass); background: rgba(201,169,97,0.10); border: 1px solid rgba(201,169,97,0.30); }
+    </style>
+</head>
+<body>
+        <header class="page-header">
+        <nav class="page-nav">
+            <a href="index.html" class="nav-brand">PARBAUGHS Orchestration</a>
+            <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="activity.html" class="is-active">Activity</a>
+            <a href="discussion-bubbles.html">Discussion Bubbles</a>
+            <a href="proposals.html">Proposals</a>
+            <a href="main-flows.html">Main Flows</a>
+            <a href="index.html">Index</a>
+            </div>
+        </nav>
+    </header>
+<button class="theme-toggle" title="Toggle theme">☀</button>
+    <header class="report-header">
+        <div class="container">
+            <div class="report-meta"><span class="report-type">ACTIVITY FEED</span><span class="report-generated">Generated 2026-05-13 04:25 UTC</span></div>
+            <h1 class="report-title">Agent Activity</h1>
+            <div class="report-subtitle">Chronological log of every handoff &middot; agent-to-agent communication thread</div>
+        </div>
+    </header>
+    <main class="container">
+        <section>
+            <div class="filters">
+                <div class="filter-group"><span class="filter-label">Scenario</span>
+                    <select id="filter-scenario">
+                        <option value="all">All scenarios</option><option value="cycle-to-cycle">Cycle-to-cycle</option><option value="agent-to-agent">Agent-to-agent</option><option value="subagent-to-parent">Subagent-to-parent</option><option value="parent-to-subagent">Parent-to-subagent (dispatch)</option><option value="proactive-to-ship">Proactive-to-ship</option><option value="halt-to-resume">Halt-to-resume</option><option value="founder-to-agent">Founder-to-agent</option><option value="discussion-bubble-to-caller">Discussion-bubble-to-caller</option><option value="cross-ship">Cross-ship</option><option value="wave-to-wave">Wave-to-wave</option><option value="parallel-merge">Parallel merge</option>
+                    </select>
+                </div>
+                <div class="filter-group"><span class="filter-label">Agent</span><select id="filter-agent"><option value="all">Any agent</option></select></div>
+                <div class="filter-group"><span class="filter-label">Ship</span><select id="filter-ship"><option value="all">All ships</option></select></div>
+                <div class="filter-group"><span class="filter-label">Range</span>
+                    <select id="filter-range"><option value="24h">Last 24h</option><option value="7d" selected>Last 7 days</option><option value="30d">Last 30 days</option><option value="all">All time</option></select>
+                </div>
+                <div class="filter-group" style="margin-left: auto;"><span class="filter-label" id="activity-count-display">— shown</span></div>
+            </div>
+        </section>
+        <section><div class="section-header">Stream</div><div id="activity-stream"></div></section>
+        <section class="mt-5">
+            <h3 class="collapsible collapsed">Raw data (debug)</h3>
+            <div class="collapsible-content"><div class="card"><pre id="raw-data-display" style="overflow-x: auto; max-height: 400px; color: var(--text-secondary); font-size: 0.75rem;"></pre></div></div>
+        </section>
+    </main>
+    <footer class="report-footer">
+        <div class="container">
+            <p>Source: <code>.claude/state/handoffs/</code> &middot; Generated by <code>parbaughs-report-generate</code></p>
+            <p><a href="index.html">All reports</a> &middot; <a href="dashboard.html">Dashboard</a> &middot; <a href="discussion-bubbles.html">Discussion Bubbles</a> &middot; <a href="proposals.html">Proposals</a></p>
+            <p class="text-faint">PARBAUGHS Orchestration governance v8.1</p>
+        </div>
+    </footer>
+    <script id="report-data" type="application/json">
+{
+  "handoffs": [
+    {
+      "id": "cycle-to-cycle-20260513-035800-w1s3-impl-handoff",
+      "from_agent": "engineer",
+      "to_agent": "next-cycle",
+      "created_at": "2026-05-13T03:58:00Z",
+      "cycle_id": "ship-cycle-042",
+      "ship_id": "W1.S3",
+      "scope_completed": [
+        "Round flow scaffold",
+        "Score input component",
+        "Hole-by-hole navigation"
+      ],
+      "scope_remaining": [
+        "Putt count widget",
+        "Live HUD pairing",
+        "Tee time linkage"
+      ],
+      "next_action": "Resume Putt count widget implementation per W1.S3 Vision section 3.2.",
+      "blockers": "none",
+      "context_required": [
+        "src/pages/playnow.js",
+        "docs/ship-visions/W1.S3.md"
+      ],
+      "scenario": "cycle-to-cycle"
+    },
+    {
+      "id": "agent-to-agent-20260513-021400-critic-handoff",
+      "from_agent": "critic",
+      "to_agent": "engineer",
+      "created_at": "2026-05-13T02:14:00Z",
+      "cycle_id": "ship-cycle-042",
+      "ship_id": "W1.S3",
+      "scope_completed": [
+        "Audit of playnow.js diff vs Vision section 3.1"
+      ],
+      "scope_remaining": [
+        "Engineer applies 3 corrections noted in audit"
+      ],
+      "next_action": "Apply line 142 type guard, line 218 missing await, line 304 stale state reference.",
+      "blockers": "none",
+      "context_required": [
+        ".claude/state/audits/W1.S3-audit-cycle-042.md"
+      ],
+      "scenario": "agent-to-agent"
+    },
+    {
+      "id": "discussion-bubble-to-caller-20260513-014500-scoring-validation",
+      "from_agent": "discussion-bubble-orchestrator",
+      "to_agent": "engineer",
+      "created_at": "2026-05-13T01:45:00Z",
+      "cycle_id": "ship-cycle-042",
+      "ship_id": "W1.S3",
+      "scope_completed": [
+        "Discussion bubble closed: scoring validation approach"
+      ],
+      "scope_remaining": [
+        "Engineer implements per discussion bubble outcome"
+      ],
+      "next_action": "Implement write-time hole-par validation against masters config per discussion bubble outcome.",
+      "blockers": "none",
+      "context_required": [
+        ".claude/state/decisions/decision-20260512-0945-w1s3-scoring-validation.md"
+      ],
+      "scenario": "discussion-bubble-to-caller"
+    },
+    {
+      "id": "proactive-to-ship-20260512-111500-css-token-cleanup",
+      "from_agent": "proactive-orchestrator",
+      "to_agent": "ship-orchestrator",
+      "created_at": "2026-05-12T11:15:00Z",
+      "cycle_id": "proactive-cycle-008",
+      "ship_id": "W1.S3",
+      "scope_completed": [
+        "Proposal approved by Founder: consolidate --el-0..4 unused tokens"
+      ],
+      "scope_remaining": [
+        "Implementation queued for next ship cycle"
+      ],
+      "next_action": "Schedule Lane 4 token cleanup as part of W1.S3 if budget permits, else defer to W1.S4.",
+      "blockers": "none",
+      "context_required": [
+        ".claude/state/proposals/approved/proposal-008-css-token-cleanup.md"
+      ],
+      "scenario": "proactive-to-ship"
+    },
+    {
+      "id": "subagent-to-parent-20260512-093000-end-user-feedback",
+      "from_agent": "end-user-persona",
+      "to_agent": "orchestrator",
+      "created_at": "2026-05-12T09:30:00Z",
+      "cycle_id": "ship-cycle-041",
+      "ship_id": "W1.S2",
+      "scope_completed": [
+        "UX simulation of band-A drawer interaction"
+      ],
+      "scope_remaining": [
+        "Orchestrator reviews 2 UX findings"
+      ],
+      "next_action": "Review End User finding F1 (drawer modal a11y gap) and F2 (sidebar nav order on mobile band).",
+      "blockers": "none",
+      "context_required": [
+        ".claude/state/personas/end-user-W1.S2-report.md"
+      ],
+      "scenario": "subagent-to-parent"
+    }
+  ],
+  "agents": [
+    "critic",
+    "discussion-bubble-orchestrator",
+    "end-user-persona",
+    "engineer",
+    "next-cycle",
+    "orchestrator",
+    "proactive-orchestrator",
+    "ship-orchestrator"
+  ],
+  "ships": [
+    "W1.S2",
+    "W1.S3"
+  ]
+}
+    </script>
+    <script src="_assets/dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const data = JSON.parse(document.getElementById('report-data').textContent);
+            document.getElementById('raw-data-display').textContent = JSON.stringify(data, null, 2);
+            const agentSel=document.getElementById('filter-agent');data.agents.forEach(a=>{const o=document.createElement('option');o.value=a;o.textContent=a;agentSel.appendChild(o);});
+            const shipSel=document.getElementById('filter-ship');data.ships.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;shipSel.appendChild(o);});
+            function esc(s){return s==null?'':String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');}
+            function fmt(iso){return new Date(iso).toISOString().replace('T',' ').slice(0,16)+' UTC';}
+            function render(){
+                const fS=document.getElementById('filter-scenario').value;
+                const fA=document.getElementById('filter-agent').value;
+                const fSh=document.getElementById('filter-ship').value;
+                const fR=document.getElementById('filter-range').value;
+                const now=new Date();
+                const co={'24h':new Date(now-24*3600*1000),'7d':new Date(now-7*86400*1000),'30d':new Date(now-30*86400*1000),'all':new Date(0)};
+                const fil=data.handoffs.filter(h=>{
+                    if(fS!=='all'&&h.scenario!==fS)return false;
+                    if(fA!=='all'&&h.from_agent!==fA&&h.to_agent!==fA)return false;
+                    if(fSh!=='all'&&h.ship_id!==fSh)return false;
+                    if(new Date(h.created_at)<co[fR])return false;
+                    return true;
+                }).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+                document.getElementById('activity-count-display').textContent=fil.length+' shown';
+                let lastDay='',html='<div class="activity-stream">';
+                fil.forEach(h=>{
+                    const day=new Date(h.created_at).toISOString().slice(0,10);
+                    if(day!==lastDay){html+='</div><div class="day-divider">'+day+'</div><div class="activity-stream">';lastDay=day;}
+                    html+='<div class="activity-item scenario-'+esc(h.scenario)+'"><div class="activity-card"><div class="activity-time">'+fmt(h.created_at)+'</div><div class="activity-flow"><span class="agent">'+esc(h.from_agent)+'</span><span class="arrow">→</span><span class="agent">'+esc(h.to_agent)+'</span></div><div class="activity-meta"><span><span class="badge neutral">'+esc(h.scenario)+'</span></span>'+(h.ship_id?'<span>Ship: <code>'+esc(h.ship_id)+'</code></span>':'')+(h.cycle_id?'<span>Cycle: <code>'+esc(h.cycle_id)+'</code></span>':'')+'</div><div class="activity-detail"><div class="activity-detail-label">Next action</div><div>'+esc(h.next_action)+'</div><div class="activity-detail-label mt-3">Scope</div><div class="text-muted">✓ '+h.scope_completed.map(esc).join('<br>✓ ')+'</div>'+(h.scope_remaining.length?'<div class="text-faint mt-2">○ '+h.scope_remaining.map(esc).join('<br>○ ')+'</div>':'')+(h.context_required&&h.context_required.length?'<div class="activity-detail-label mt-3">Context</div><div class="text-faint">'+h.context_required.map(p=>'<code>'+esc(p)+'</code>').join(' &middot; ')+'</div>':'')+(h.blockers&&h.blockers!=='none'?'<div class="activity-detail-label mt-3 text-warning">Blockers</div><div class="text-warning">'+esc(h.blockers)+'</div>':'')+'</div></div></div>';
+                });
+                html+='</div>';
+                document.getElementById('activity-stream').innerHTML=html;
+                document.querySelectorAll('.collapsible').forEach(el=>{el.removeEventListener('click',toggle);el.addEventListener('click',toggle);});
+            }
+            function toggle(e){e.currentTarget.classList.toggle('collapsed');}
+            ['filter-scenario','filter-agent','filter-ship','filter-range'].forEach(id=>document.getElementById(id).addEventListener('change',render));
+            render();
+            const btn=document.querySelector('.theme-toggle'),root=document.documentElement;
+            try{const s=localStorage.getItem('parbaughs-reports-theme');if(s)root.setAttribute('data-theme',s);}catch(e){}
+            function refreshT(){btn.textContent=(root.getAttribute('data-theme')||'dark')==='dark'?'☀':'☾';}
+            btn.addEventListener('click',()=>{const c=root.getAttribute('data-theme')||'dark';const n=c==='dark'?'light':'dark';root.setAttribute('data-theme',n);try{localStorage.setItem('parbaughs-reports-theme',n);}catch(e){}refreshT();});
+            refreshT();
+        });
+    </script>
+</body>
+</html>
