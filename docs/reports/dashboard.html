@@ -663,6 +663,20 @@
       "scenario": "team-commit",
       "from": "Zach Boogher",
       "to": "main",
+      "created_at": "2026-05-14T13:37:17-04:00",
+      "subject": "Fix: aggregator handoffs_per_day + bubbles_per_day wasn't staged in 312c72d"
+    },
+    {
+      "scenario": "team-commit",
+      "from": "Zach Boogher",
+      "to": "main",
+      "created_at": "2026-05-14T13:34:59-04:00",
+      "subject": "Dashboard 7-day graph: replaced table with SVG sub-charts (tokens + activity cou"
+    },
+    {
+      "scenario": "team-commit",
+      "from": "Zach Boogher",
+      "to": "main",
       "created_at": "2026-05-14T13:30:20-04:00",
       "subject": "Dashboard 7-day table \u2014 ships/handoffs/bubbles columns wired + honest \"\u2014\" tokens"
     },
@@ -714,20 +728,6 @@
       "to": "PARBAUGHS Cron",
       "created_at": "2026-05-14T13:05:54-04:00",
       "subject": "Apply governance amendments via amendments.html watcher"
-    },
-    {
-      "scenario": "cron-auto-commit",
-      "from": "cron",
-      "to": "PARBAUGHS Cron",
-      "created_at": "2026-05-14T13:05:49-04:00",
-      "subject": "cron(routine): auto-commit telemetry output before watcher preflight (2026-05-14"
-    },
-    {
-      "scenario": "team-commit",
-      "from": "Zach Boogher",
-      "to": "main",
-      "created_at": "2026-05-14T13:03:28-04:00",
-      "subject": "Install flow + escalations Step 4: install-all.ps1 + round-trip parseability smo"
     }
   ],
   "recent_ships": [
@@ -855,7 +855,7 @@
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "_aggregate_counts": {
-    "events_total": 639,
+    "events_total": 645,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
@@ -871,7 +871,7 @@
   "quota_status": {
     "state": "empty",
     "as_of": "2026-05-14T15:24:53.5950065Z",
-    "age_seconds": 7725,
+    "age_seconds": 8076,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -882,7 +882,7 @@
     "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
   },
   "founder_queue": {
-    "as_of": "2026-05-14T17:33:39.194624+00:00",
+    "as_of": "2026-05-14T17:39:30.483933+00:00",
     "last_founder_visit": null,
     "governance_gates": {
       "amendments_pending": 1,
@@ -891,13 +891,55 @@
       "bubbles_link": "discussion-bubbles.html",
       "proposals_pending": 1,
       "proposals_link": "proposals.html",
-      "open_escalations": []
+      "open_escalations": [
+        {
+          "id": "ESC-003",
+          "title": "Per-ship token attribution \u2014 going-forward instrumentation approach",
+          "type": "architecture-decision",
+          "question": "Per Founder directive 2026-05-14 \"PER-SHIP TOKEN ATTRIBUTION\", every ship's\ntokens + cost should populate in the dashboard Recent Ships table. Current\nstate: aggregator scans session.team-work.summary events for ship_id matching\nthe artifact ID. Historical events carry ship_id like \"substrate-build-day-3\"\nrather than PROP-NNN / AMD-NNN / ESC-NNN, so all artifacts surface \"\u2014\" (honest\nper AMD-009 P5).\n\nGoing-forward instrumentation requires picking HOW session.team-work.summary\nevents get tagged with the correct artifact ID. Three architecturally-\ndistinct approaches; team lacks high confidence on which is correct.",
+          "summary": "Today's events have ship_id=\"substrate-build-day-3\" for ~7M tokens of\norchestration work that produced 21 shipped artifacts. The team can't\nretroactively attribute those tokens to specific artifacts without\nfabricating a mapping. Going forward, every emit point needs to know which\nartifact (if any) it's contributing to.",
+          "proposed_answer": "Approach A \u2014 Session-scoped current_ship_id state file",
+          "rationale": "Lowest infrastructure overhead. Single source of truth. Agent 3 sets the\ncurrent_ship_id at ship-plan-author time and clears at ship-close commit.\nEvery session.team-work.summary emit reads from the file. Compatible with\nthe existing manual-emit pattern. Migrates cleanly to automated meter\nwhen PROP-003.a sidecar wires real per-call attribution.",
+          "options": [
+            {
+              "id": "a",
+              "label": "Approach A \u2014 Session-scoped current_ship_id state file [team recommendation]",
+              "rationale": "|"
+            },
+            {
+              "id": "b",
+              "label": "Approach B \u2014 Per-emit explicit ship_id parameter",
+              "rationale": "|"
+            },
+            {
+              "id": "c",
+              "label": "Approach C \u2014 Git-commit-based retroactive attribution",
+              "rationale": "|"
+            }
+          ],
+          "default_if_no_response": "Approach A",
+          "default_window_hours": 168,
+          "blocks_ship": false,
+          "estimated_decision_complexity": "deep",
+          "source_artifact_paths": [
+            "scripts/aggregate-telemetry.py",
+            "scripts/lib/anthropic-pricing.json",
+            ".claude/state/telemetry/events/2026-05-14.ndjson"
+          ],
+          "authored_at": "2026-05-14T17:39:00Z",
+          "authored_by": "claude-code",
+          "link": "escalations.html#ESC-003",
+          "source_file": ".claude/state/escalations/pending/ESC-003-per-ship-token-attribution-instrumentation.md",
+          "age_days": 0.0,
+          "stale": false
+        }
+      ]
     },
     "system_health": {
       "crons": {
         "downloads-watcher": {
-          "last_run": "2026-05-14T17-30-49Z",
-          "last_log": "2026-05-14T17-30-49Z-downloads-watcher.log"
+          "last_run": "2026-05-14T17-35-49Z",
+          "last_log": "2026-05-14T17-35-49Z-downloads-watcher.log"
         },
         "maintenance": {
           "last_run": "2026-05-14T06-55-01Z",
@@ -922,10 +964,10 @@
           "task_name": "PARBAUGHS-Downloads-Watcher",
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-downloads-watcher.ps1",
-          "last_fire_iso": "2026-05-14T17:30:49.454570+00:00",
-          "age_minutes": 2.8,
+          "last_fire_iso": "2026-05-14T17:35:49.459163+00:00",
+          "age_minutes": 3.7,
           "status": "firing",
-          "label": "firing \u00b7 last fire 2.8min ago"
+          "label": "firing \u00b7 last fire 3.7min ago"
         },
         {
           "name": "maintenance",
@@ -933,9 +975,9 @@
           "cadence_minutes": 1440,
           "install_script": "scripts/cron/install-maintenance.ps1",
           "last_fire_iso": "2026-05-14T06:55:19.949406+00:00",
-          "age_minutes": 638.3,
+          "age_minutes": 644.2,
           "status": "firing",
-          "label": "firing \u00b7 last fire 638.3min ago"
+          "label": "firing \u00b7 last fire 644.2min ago"
         },
         {
           "name": "overnight-triage",
@@ -953,9 +995,9 @@
           "cadence_minutes": 120,
           "install_script": "scripts/cron/install-proposal-readiness-scanner.ps1",
           "last_fire_iso": "2026-05-14T05:04:49.834159+00:00",
-          "age_minutes": 748.8,
+          "age_minutes": 754.7,
           "status": "stale",
-          "label": "stale \u00b7 last fire 748.8min ago (cadence 120min)"
+          "label": "stale \u00b7 last fire 754.7min ago (cadence 120min)"
         },
         {
           "name": "token-sidecar",
@@ -963,28 +1005,28 @@
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-sidecar.ps1",
           "last_fire_iso": "2026-05-14T15:24:53.642316+00:00",
-          "age_minutes": 128.8,
+          "age_minutes": 134.6,
           "status": "stale",
-          "label": "stale \u00b7 last fire 128.8min ago (cadence 5min)"
+          "label": "stale \u00b7 last fire 134.6min ago (cadence 5min)"
         }
       ],
       "last_regen_all": {
-        "ts": "2026-05-14 17:29 UTC",
-        "ts_iso": "2026-05-14T17:29:13.4185117Z",
+        "ts": "2026-05-14 17:38 UTC",
+        "ts_iso": "2026-05-14T17:38:28.6451259Z",
         "status": "PASS",
-        "age_minutes": 4.4,
+        "age_minutes": 1.0,
         "source": "heartbeat"
       },
       "working_tree": {
         "state": "dirty-cycling",
-        "label": "dirty (9 files) \u00b7 watcher cycling",
+        "label": "dirty (13 files) \u00b7 watcher cycling",
         "color": "var(--pb-warning)",
-        "dirty_count": 9,
-        "watcher_last_fire": "2026-05-14T17:30:49.454570+00:00",
-        "watcher_minutes_ago": 2.8
+        "dirty_count": 13,
+        "watcher_last_fire": "2026-05-14T17:35:49.459163+00:00",
+        "watcher_minutes_ago": 3.7
       },
       "halts": [],
-      "round_trip_last_pass": "2026-05-14T17:29:13.4185117Z"
+      "round_trip_last_pass": "2026-05-14T17:38:28.6451259Z"
     },
     "activity_since_last_visit": {
       "_note": "Counts since last_founder_visit (null = since-forever)",
