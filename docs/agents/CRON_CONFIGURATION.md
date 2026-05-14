@@ -654,3 +654,19 @@ quota. Replacing them with the manual-paste-derived percentage means:
 
 Same as PAUSE_DISCIPLINE v8.2: pending PROP-003 ship for real
 telemetry-derived caps.
+
+---
+
+## 12 — Cross-references
+
+- `HEADLESS_OPERATION_PROTOCOL.md` (cycle definitions, activities)
+- `PROACTIVE_IMPROVEMENT_PROTOCOL.md` (proactive scope)
+- `HALT_CRITERIA_v7_ADDENDUM.md` (items 18-20)
+- `SESSION_JOURNAL_v7_ADDENDUM.md` (cycle entry types)
+- `WAVE_ZERO_DRY_RUN_v7_EXTENSION.md` (cycle dry-run validations)
+- `FOUNDER_INPUT_QUEUE.md` (FIQ creation from cycles)
+
+---
+
+*Document authored 2026-05-12. Locked Founder ratification. Configuration walkthrough for v7 headless operation.*
+*Section 11.2 amended 2026-05-14 (AMD-002): 3.5M / 4.5M weekly threshold deprecated in favor of manual-quota-derived percentage. Section 12 + footer restored via fix-up after the edit-section splice over-removed them; see AMD-008 follow-up for apply-amendments.sh edit-section logic fix.*

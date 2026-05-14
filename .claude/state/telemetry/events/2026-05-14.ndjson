@@ -28,3 +28,5 @@
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T01:59:48.530209+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T02:08:16.994326+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T02:08:17.747060+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T02:18:55.095871+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T02:18:55.854392+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}

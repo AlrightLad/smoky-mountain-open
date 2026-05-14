@@ -1,46 +1,70 @@
 {
   "schema_version": 1,
-  "as_of": "2026-05-14T02:05:00Z",
-  "purpose": "Manual queue stub maintained while AMD-007 dashboard.html implementation is pending. Honored by Critic gates per AMD-007 P18.6 'Operating discipline (immediate, pre-implementation)'. Replaced by automated regen-dashboard.py aggregation once W1.S?? Founder Review Queue implementation lands.",
+  "as_of": "2026-05-14T02:25:00Z",
+  "purpose": "Manual queue stub honoring AMD-007 P18.6 'Operating discipline (immediate, pre-implementation)'. Replaced by automated regen-dashboard.py aggregation once W1 Founder Review Queue implementation ship lands.",
   "governance_gates": {
-    "amendments_pending": 6,
+    "amendments_pending": 1,
     "amendments_link": "docs/reports/amendments.html",
-    "amendments_ids": ["AMD-001", "AMD-002", "AMD-003", "AMD-004", "AMD-005", "AMD-007"],
+    "amendments_ids": ["AMD-008"],
+    "amendments_note": "AMD-008 is a script-fix amendment authored after AMD-002 caused a regression in CRON_CONFIGURATION.md edit-section apply. Self-contained bug fix; approve at Founder's convenience — no urgency.",
     "bubbles_flagged": 1,
     "bubbles_link": "docs/reports/discussion-bubbles.html",
     "bubbles_ids": ["db-2026-05-14-001"],
-    "bubbles_note": "UI/UX maturity gap; long-running, no immediate Founder action required",
+    "bubbles_note": "UI/UX maturity gap; long-running, no immediate Founder action.",
     "proposals_pending": 0,
     "proposals_link": "docs/reports/proposals.html",
     "open_escalations": [
       {
         "id": "main-flows-v2-taxonomy",
         "type": "cross-cutting architecture decision (escalation criterion #5)",
-        "summary": "Phase 2 taxonomy + visual + speculative-flows decisions; defaults documented, awaiting Founder confirmation or override",
+        "summary": "Phase 2 taxonomy + visual + speculative-flows decisions; defaults documented at .claude/state/main-flows-v2/taxonomy-proposals.md",
         "link": ".claude/state/main-flows-v2/taxonomy-proposals.md"
       }
     ]
   },
   "system_health": {
     "crons": {
-      "downloads-watcher": "not_installed_yet",
-      "maintenance": "not_installed_yet",
-      "overnight-triage": "not_installed_yet"
+      "PARBAUGHS-Downloads-Watcher": {
+        "last_run": "2026-05-14T02:05:48Z",
+        "last_result": 0,
+        "state": "Ready",
+        "notes": "SKIPped 02:00 + 02:05 cycles on dirty tree. Tree now clean; cursor advanced past Founder's applied JSON. Next cycle (~02:25Z) should pass preflight cleanly."
+      },
+      "PARBAUGHS-Daily-Maintenance": {
+        "last_run": "2026-05-13T22:02:53Z",
+        "last_result": 0,
+        "state": "Ready"
+      },
+      "PARBAUGHS-Overnight-Triage": {
+        "state": "not_installed_yet"
+      }
     },
     "last_regen_all": {
       "status": "PASS",
-      "ts": "2026-05-14T01:59:50Z",
+      "ts": "2026-05-14T02:18:57Z",
       "round_trip": "PASS"
     },
-    "working_tree": "uncommitted (AMD-007 + this stub)",
+    "working_tree": "clean (post-resolution)",
     "halts": [],
-    "round_trip_last_pass": "2026-05-14T01:59:50Z"
+    "round_trip_last_pass": "2026-05-14T02:18:57Z"
   },
   "activity_since_last_visit": {
-    "note": "Will become accurate once founder/last-visit.json is wired by the implementation ship",
-    "commits_count": 18,
-    "amendments_applied": ["AMD-006"]
+    "note": "Will become accurate once founder/last-visit.json is wired by the implementation ship.",
+    "commits_since_last_directive": 3,
+    "amendments_applied": ["AMD-001", "AMD-002", "AMD-003", "AMD-004", "AMD-005", "AMD-007"],
+    "amendments_applied_with_regression_repair": ["AMD-002"],
+    "ships_closed": [],
+    "bubbles_closed": []
   },
-  "exceptions": [],
+  "exceptions": [
+    {
+      "id": "AMD-002-edit-section-fallback-regression",
+      "severity": "self-resolved",
+      "summary": "apply-amendments.sh edit-section substring-fallback deleted CRON_CONFIGURATION.md Section 12 + footer. Restored via fix-up. AMD-008 authored as script-fix follow-up.",
+      "status": "resolved",
+      "evidence": ".claude/state/cron/founder-resolution-2026-05-14.md"
+    }
+  ],
+  "latest_founder_report": ".claude/state/cron/founder-resolution-2026-05-14.md",
   "stub_acknowledged": "Team operates against this stub for the Critic gates until dashboard.html surfaces the queue natively."
 }
