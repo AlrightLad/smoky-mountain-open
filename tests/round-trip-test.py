@@ -757,6 +757,49 @@ def main():
         print(red(f"  ✗ meter-wiring                 failures: {missing}"))
         failures.append(("meter-wiring", f"checks failed: {missing}"))
 
+    # PROP-004 [quota-type-enum]: every cycle.paused / cycle.resumed event in
+    # the telemetry log must use a quota_type value from the canonical enum.
+    # PROP-004 (2026-05-14) added "org-monthly" to the enum so the discipline
+    # can pause for the Anthropic org-level monthly cap (F1a finding b).
+    print(cyan("\n[quota-type-enum] PROP-004 enum coverage..."))
+    VALID_QUOTA_TYPES = {
+        "weekly-tokens", "daily-tokens", "hourly-requests", "org-monthly", None,
+    }
+    events_dir = ROOT / ".claude" / "state" / "telemetry" / "events"
+    bad_quota_events = []
+    if events_dir.exists():
+        for ndj in sorted(events_dir.glob("*.ndjson")):
+            try:
+                for ln in ndj.read_text(encoding="utf-8").splitlines():
+                    ln = ln.strip()
+                    if not ln:
+                        continue
+                    try:
+                        ev = json.loads(ln)
+                    except json.JSONDecodeError:
+                        continue
+                    et = ev.get("event_type", "")
+                    if et not in ("cycle.paused", "cycle.resumed"):
+                        continue
+                    d = ev.get("data", {}) if isinstance(ev.get("data"), dict) else {}
+                    qt = d.get("quota_type", None)
+                    if qt not in VALID_QUOTA_TYPES:
+                        bad_quota_events.append({
+                            "file": ndj.name,
+                            "ts": ev.get("timestamp"),
+                            "event_type": et,
+                            "quota_type": qt,
+                        })
+            except OSError:
+                continue
+    if bad_quota_events:
+        print(red(f"  ✗ quota-type-enum              {len(bad_quota_events)} events with unknown quota_type"))
+        for b in bad_quota_events[:5]:
+            print(red(f"    · {b['file']} @ {b['ts']}: {b['event_type']} quota_type={b['quota_type']!r}"))
+        failures.append(("quota-type-enum", f"{len(bad_quota_events)} invalid events"))
+    else:
+        print(green(f"  ✓ quota-type-enum              all cycle.paused/resumed events use valid quota_type (enum: {sorted(VALID_QUOTA_TYPES - {None})})"))
+
     # Cross-dashboard count consistency: every dashboard that surfaces a count for the
     # same metric MUST show the same number. Founder caught a banner-vs-page divergence
     # by eye on 2026-05-13; this check catches the class going forward.

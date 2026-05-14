@@ -43,7 +43,7 @@
    {
      "paused_at": "<ISO-8601 UTC>",
      "reason": "rate-limit-90pct",
-     "quota_type": "weekly-tokens" | "daily-tokens" | "hourly-requests",
+     "quota_type": "weekly-tokens" | "daily-tokens" | "hourly-requests" | "org-monthly",
      "usage_pct": 0.91,
      "resume_after": "<ISO-8601 UTC, when quota resets>",
      "cycle_id": "<current cycle>",
@@ -77,6 +77,7 @@
 - Weekly tokens (3.5M cap): resets Sunday 00:00 UTC
 - Daily tokens (per heartbeat budget): resets at start of next UTC day
 - Hourly requests (proactive cycle): resets at top of next UTC hour
+- Org-monthly (PROP-004, 2026-05-14): resets at Anthropic billing-cycle boundary. NOT necessarily UTC midnight on the 1st. The reset boundary is account-specific; Founder configures once in `scripts/sidecar/usage-snapshot-config.json` (org_monthly_reset_boundary key) per the Anthropic billing dashboard. PROP-003.a sidecar surfaces the boundary in quota-status.json so dashboards + telemetry agree.
 - Each window has its own state file entry; multiple windows can be paused independently
 
 ### 2.2 — Wellness rest cycle (item 17 of HALT_CRITERIA)
@@ -132,7 +133,7 @@ The mistake to avoid: treating a rate-limit threshold as a halt. Founder explici
 {
   "paused_at": "2026-05-18T14:30:00Z",
   "reason": "rate-limit-90pct" | "wellness-rest" | "heartbeat-boundary",
-  "quota_type": "weekly-tokens" | "daily-tokens" | "hourly-requests" | null,
+  "quota_type": "weekly-tokens" | "daily-tokens" | "hourly-requests" | "org-monthly" | null,
   "usage_pct": 0.91,
   "resume_after": "2026-05-25T00:00:00Z",
   "cycle_id": "ship-cycle-042",

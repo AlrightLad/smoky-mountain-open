@@ -22,6 +22,8 @@ Captured at cycle lifecycle boundaries:
 - `cycle.activity.start` — activity within cycle begins
 - `cycle.activity.end` — activity within cycle ends
 - `cycle.budget.checkpoint` — 25%/50%/75%/90% budget consumed
+- `cycle.paused` — agent pauses on quota threshold (PAUSE_DISCIPLINE § 2.1). Payload includes `quota_type` ∈ {weekly-tokens, daily-tokens, hourly-requests, org-monthly}, `usage_pct`, `resume_after`.
+- `cycle.resumed` — paused cycle resumes after `resume_after`. Payload includes `pause_duration_seconds`.
 
 ### 1.2 Ship events
 Captured throughout ship execution:
