@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "head_sha": "fac33105a9aefc824dd9f48a6881bcd05e6125db",
+  "head_short": "fac3310",
+  "established_at": "2026-05-14T22:48:18Z",
+  "established_by": "test-qa-agent",
+  "notes": "Initial baseline establishing last-known-good state of verification suite at HEAD fac3310. click-every-interactive sample was rejected by Founder this cycle — will retry next cycle.",
+  "checks": {
+    "round-trip-test.py": {
+      "status": "known_failure",
+      "exit_code_observed": "see_log",
+      "total_subchecks_passing": "all_except_one",
+      "known_failures": [
+        {
+          "subcheck": "user-context-gate",
+          "detail": "main-flows.html modified 13.9 min after most recent user-context capture (2026-05-14T22-26-28Z)",
+          "resolution": "Founder runs `node scripts/visual-audit/founder-context-capture.mjs` to seed fresh capture before ship-close",
+          "category": "workflow-staleness-not-code-regression",
+          "first_seen": "2026-05-14T22:48:18Z"
+        }
+      ],
+      "command": "PYTHONIOENCODING=utf-8 python tests/round-trip-test.py"
+    },
+    "verify-scroll-reachability.mjs": {
+      "status": "pass",
+      "exit_code": 0,
+      "summary": "5 pass / 0 fail / 0 skip",
+      "surfaces_passing": [
+        "main-flows rail (62 flows)",
+        "dashboard recent ships table",
+        "amendments applied list",
+        "proposals shipped list",
+        "escalations applied list"
+      ],
+      "command": "node scripts/visual-audit/verify-scroll-reachability.mjs"
+    },
+    "verify-all-flows-light-up.mjs": {
+      "status": "pass",
+      "exit_code": 0,
+      "summary": "10/10 sample flows light up the diagram correctly",
+      "rail_count": 62,
+      "sample_ids": ["F1","F5","F9","F15","F22","F30","F38","F45","F55","F62"],
+      "command": "node scripts/visual-audit/verify-all-flows-light-up.mjs"
+    },
+    "verify-rail-stability.mjs": {
+      "status": "pass",
+      "exit_code": 0,
+      "summary": "STABLE (same maxH at every scroll position; 1 distinct value across 5 positions)",
+      "rail_max_height_observed": "746.219px",
+      "command": "node scripts/visual-audit/verify-rail-stability.mjs"
+    },
+    "click-every-interactive.mjs:main-flows.html": {
+      "status": "skipped",
+      "reason": "Founder rejected tool call this cycle — will retry next cycle",
+      "command": "node scripts/visual-audit/click-every-interactive.mjs main-flows.html"
+    },
+    "click-every-interactive.mjs:dashboard.html": {
+      "status": "skipped",
+      "reason": "Prerequisite missing: .claude/state/app-audit-2026-05-14/dashboard-interactives.json not generated; only main-flows-interactives.json exists. Need enumerate-interactives.mjs run on dashboard.html first.",
+      "command": "node scripts/visual-audit/click-every-interactive.mjs dashboard.html"
+    },
+    "npm run lint": {
+      "status": "pass",
+      "exit_code": 0,
+      "summary": "All files pass acorn syntax check",
+      "command": "npm run lint"
+    },
+    "python-syntax-checks": {
+      "status": "pass",
+      "exit_code": 0,
+      "summary": "All 19 Python scripts compile cleanly (round-trip-test.py + 18 scripts/*.py)",
+      "scripts_checked": [
+        "tests/round-trip-test.py",
+        "scripts/aggregate-telemetry.py",
+        "scripts/aggregate-token-usage.py",
+        "scripts/dashboard-diagnostic.py",
+        "scripts/dry-run-regen-ops-views.py",
+        "scripts/emit-session-event.py",
+        "scripts/emit-team-work-summary.py",
+        "scripts/generate-flow-paths.py",
+        "scripts/grade-fiq-entry.py",
+        "scripts/inject-page-nav.py",
+        "scripts/regen-amendments.py",
+        "scripts/regen-dashboard.py",
+        "scripts/regen-escalations.py",
+        "scripts/regen-index.py",
+        "scripts/regen-main-flows.py",
+        "scripts/regen-proposals.py",
+        "scripts/regen-token-usage.py",
+        "scripts/scan-shipped-proposals.py",
+        "scripts/verify-meter-wiring.py"
+      ],
+      "command": "python -m py_compile <each>"
+    }
+  }
+}

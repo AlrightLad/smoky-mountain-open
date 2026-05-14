@@ -1,0 +1,27 @@
+{
+  "timestamp": "2026-05-14T22:48:18Z",
+  "status": "yellow",
+  "head_sha": "fac33105a9aefc824dd9f48a6881bcd05e6125db",
+  "head_short": "fac3310",
+  "checks_run": 8,
+  "checks_passed": 5,
+  "checks_skipped": 2,
+  "checks_with_known_failure": 1,
+  "regressions": [],
+  "known_failures": [
+    {
+      "id": "user-context-gate",
+      "test": "round-trip-test.py",
+      "detail": "main-flows.html modified 13.9 min after most recent user-context capture",
+      "resolution_owner": "Founder",
+      "resolution_command": "node scripts/visual-audit/founder-context-capture.mjs",
+      "category": "workflow-staleness-not-code-regression",
+      "first_seen": "2026-05-14T22:48:18Z",
+      "cycles_observed": 1
+    }
+  ],
+  "fix_confirmed_this_cycle": [],
+  "last_baseline_update": "2026-05-14T22:48:18Z",
+  "agent": "test-qa",
+  "cycle_notes": "Initial baseline. Known failure is workflow staleness (Founder re-captures), not a code regression. click-every-interactive sample was rejected by Founder this cycle and will retry next cycle; dashboard.html click-every requires enumerate-interactives.mjs run first to produce dashboard-interactives.json."
+}
