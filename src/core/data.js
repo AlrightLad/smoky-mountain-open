@@ -646,6 +646,28 @@ var PB = (function() {
     return (cached && cached.bestRound) ? { score: cached.bestRound, roundId: null } : null;
   }
 
+  // P4 H1 fix (iter 16, 2026-05-14): Founder-flagged "All-time records best
+  // rounds — split into 9-hole and 18-hole columns". getPlayerBest filters
+  // 18-hole rounds only. Add getPlayerBest9 for the 9-hole counterpart.
+  // Members page + trophy room + playnow PB-detection callers can use both
+  // to surface 9 + 18 in parallel UI columns. Records page already splits
+  // (src/pages/records.js:78-79) — those use full18/nine filters inline;
+  // this exposes the same split as a reusable accessor.
+  function getPlayerBest9(pid) {
+    var r = getPlayerRounds(pid).filter(function(rd){
+      // 9-hole rounds: explicit holesPlayed === 9 OR holesMode "front9" / "back9"
+      if (rd.visibility === "private") return false;
+      if (rd.format === "scramble" || rd.format === "scramble4") return false;
+      var is9 = rd.holesPlayed === 9 || rd.holesMode === "front9" || rd.holesMode === "back9";
+      return is9;
+    });
+    if (r.length) {
+      var bestRound = r.reduce(function(best, x) { return x.score < best.score ? x : best; }, r[0]);
+      return { score: bestRound.score, roundId: bestRound.id, holesMode: bestRound.holesMode || "front9" };
+    }
+    return null;
+  }
+
 
   function getUniqueCourses(pid) {
     var r = getPlayerRounds(pid);
@@ -2117,7 +2139,7 @@ var PB = (function() {
     getScrambleTeams:getScrambleTeams, addScrambleTeam:addScrambleTeam, addScrambleTeamFromFirestore:addScrambleTeamFromFirestore, addScrambleMatch:addScrambleMatch,
     getRecords:getRecords, setRecord:setRecord,
     calcStableford:calcStableford, calcHandicap:calcHandicap, getHandicapDetails:getHandicapDetails,
-    getPlayerAvg:getPlayerAvg, getPlayerBest:getPlayerBest, getDisplayName:getDisplayName, getUniqueCourses:getUniqueCourses, normCourseName:normCourseName, getAllPlayerIds:getAllPlayerIds,
+    getPlayerAvg:getPlayerAvg, getPlayerBest:getPlayerBest, getPlayerBest9:getPlayerBest9, getDisplayName:getDisplayName, getUniqueCourses:getUniqueCourses, normCourseName:normCourseName, getAllPlayerIds:getAllPlayerIds,
     getTripStableford:getTripStableford, getTripTotal:getTripTotal,
     getMiniPoints:getMiniPoints, getBonusPoints:getBonusPoints, getTripPoints:getTripPoints,
     daysUntil:daysUntil, generateRoundCommentary:generateRoundCommentary, getActivity:getActivity, getAchievements:getAchievements, getPlayerXP:getPlayerXP, getPlayerLevel:getPlayerLevel, getPlayerXPForDisplay:getPlayerXPForDisplay, calcXPFromRounds:calcXPFromRounds, calcLevelFromXP:calcLevelFromXP,
