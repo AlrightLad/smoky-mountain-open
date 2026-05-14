@@ -42,19 +42,17 @@
         .r7-bar-paused { fill: var(--pb-warning); }
         .r7-bar-halted { fill: var(--pb-error); }
         .r7-bar-handoffs { fill: var(--pb-info); }
-        /* Iter 11 (2026-05-14, user-context inspection — first surface to bug):
-         * Ships was --pb-success (moss green) — IDENTICAL color to Complete.
-         * Bubbles was --accent-teal which resolves to --pb-info (teal) —
-         * IDENTICAL color to Handoffs. Two collisions; 5 series rendered as
-         * 3 distinguishable colors. Agent-context tests passed because the
-         * CSS variables were declared per-series; user-context inspection of
-         * the rendered SVG via getComputedStyle surfaced the collision.
-         * Fix: brass-stop variants give Ships + Bubbles distinct render
-         * colors without breaking the token system. brass-300 (light brass)
-         * and brass-700 (deep brass) are visually distinct from the moss,
-         * gold, teal, and error palette around them. */
-        .r7-bar-ships { fill: var(--pb-brass-300); }
-        .r7-bar-bubbles { fill: var(--pb-brass-700); }
+        /* Iter 12 (2026-05-14, user-journey-audit perceptual fix):
+         * Iter 11 mapped Ships → pb-brass-300 (hue 43°) and Bubbles →
+         * pb-brass-700 (hue 42°). RGB-distinct but perceptually similar
+         * to Paused (pb-warning, hue 39°) — all three landed in the 39-43°
+         * warm-yellow band. The user-journey audit computed HSL deltas
+         * and flagged 3-4° hue gaps with similar lightness as collisions.
+         * Fix: hue-distinct chart-specific tokens. cool-blue (hue 210°)
+         * for Ships and violet (hue 280°) for Bubbles — distinct from
+         * the yellow/green/teal/red existing palette. */
+        .r7-bar-ships { fill: var(--chart-rose); }
+        .r7-bar-bubbles { fill: var(--chart-violet); }
         .r7-bar-tokens, .r7-bar-complete, .r7-bar-paused, .r7-bar-halted, .r7-bar-handoffs, .r7-bar-ships, .r7-bar-bubbles { transition: opacity var(--duration-fast) var(--ease-out); }
         .r7-bar-tokens:hover, .r7-bar-complete:hover, .r7-bar-paused:hover, .r7-bar-halted:hover, .r7-bar-handoffs:hover, .r7-bar-ships:hover, .r7-bar-bubbles:hover { opacity: 0.7; }
         .r7-axis { fill: var(--pb-chalk-400); font-size: 10px; }
@@ -354,9 +352,9 @@
   "weekly_tokens": 7302000,
   "weekly_cost": 175.25,
   "ships_this_week": 24,
-  "proposals_pending": 3,
+  "proposals_pending": 4,
   "proposals_counts": {
-    "pending": 3,
+    "pending": 4,
     "approved": 1,
     "deferred": 0,
     "shipped": 4,
@@ -523,6 +521,13 @@
       "scenario": "team-commit",
       "from": "Zach Boogher",
       "to": "main",
+      "created_at": "2026-05-14T15:53:38-04:00",
+      "subject": "ESC-003 applied: per-ship token attribution (Approach A)"
+    },
+    {
+      "scenario": "team-commit",
+      "from": "Zach Boogher",
+      "to": "main",
       "created_at": "2026-05-14T15:49:05-04:00",
       "subject": "weekly_cost: compute honest estimate instead of hardcoded $0.00"
     },
@@ -580,13 +585,6 @@
       "from": "cron",
       "to": "PARBAUGHS Cron",
       "created_at": "2026-05-14T14:15:49-04:00",
-      "subject": "cron(routine): auto-commit telemetry output before watcher preflight (2026-05-14"
-    },
-    {
-      "scenario": "cron-auto-commit",
-      "from": "cron",
-      "to": "PARBAUGHS Cron",
-      "created_at": "2026-05-14T14:12:12-04:00",
       "subject": "cron(routine): auto-commit telemetry output before watcher preflight (2026-05-14"
     }
   ],
@@ -715,13 +713,13 @@
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "_aggregate_counts": {
-    "events_total": 768,
+    "events_total": 786,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
     "handoffs_total": 1,
     "bubbles_total": 7,
-    "proposals_pending": 3,
+    "proposals_pending": 4,
     "proposals_approved": 1,
     "pause_durations_sec": [
       10,
@@ -730,8 +728,8 @@
   },
   "quota_status": {
     "state": "empty",
-    "as_of": "2026-05-14T19:47:13.8094687Z",
-    "age_seconds": 289,
+    "as_of": "2026-05-14T20:12:13.8568351Z",
+    "age_seconds": 122,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -742,22 +740,22 @@
     "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
   },
   "founder_queue": {
-    "as_of": "2026-05-14T19:52:03.982504+00:00",
+    "as_of": "2026-05-14T20:14:17.856243+00:00",
     "last_founder_visit": null,
     "governance_gates": {
       "amendments_pending": 0,
       "amendments_link": "amendments.html",
       "bubbles_flagged": 0,
       "bubbles_link": "discussion-bubbles.html",
-      "proposals_pending": 3,
+      "proposals_pending": 4,
       "proposals_link": "proposals.html",
       "open_escalations": []
     },
     "system_health": {
       "crons": {
         "downloads-watcher": {
-          "last_run": "2026-05-14T19-50-49Z",
-          "last_log": "2026-05-14T19-50-49Z-downloads-watcher.log"
+          "last_run": "2026-05-14T20-10-49Z",
+          "last_log": "2026-05-14T20-10-49Z-downloads-watcher.log"
         },
         "maintenance": {
           "last_run": "2026-05-14T06-55-01Z",
@@ -768,12 +766,12 @@
           "last_log": "2026-05-13T22-12-35Z-overnight-triage.log"
         },
         "proposal-readiness": {
-          "last_run": "2026-05-14T18-00-01Z",
-          "last_log": "2026-05-14T18-00-01Z-proposal-readiness.log"
+          "last_run": "2026-05-14T20-00-02Z",
+          "last_log": "2026-05-14T20-00-02Z-proposal-readiness.log"
         },
         "sidecar": {
-          "last_run": "2026-05-14T19-47-13Z",
-          "last_log": "2026-05-14T19-47-13Z-sidecar.log"
+          "last_run": "2026-05-14T20-12-13Z",
+          "last_log": "2026-05-14T20-12-13Z-sidecar.log"
         }
       },
       "cron_install_status": [
@@ -782,10 +780,10 @@
           "task_name": "PARBAUGHS-Downloads-Watcher",
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-downloads-watcher.ps1",
-          "last_fire_iso": "2026-05-14T19:50:49.775642+00:00",
-          "age_minutes": 1.3,
+          "last_fire_iso": "2026-05-14T20:10:49.728086+00:00",
+          "age_minutes": 3.5,
           "status": "firing",
-          "label": "firing \u00b7 last fire 1.3min ago",
+          "label": "firing \u00b7 last fire 3.5min ago",
           "os_state": "Ready",
           "is_installed": true
         },
@@ -795,9 +793,9 @@
           "cadence_minutes": 1440,
           "install_script": "scripts/cron/install-maintenance.ps1",
           "last_fire_iso": "2026-05-14T06:55:19.949406+00:00",
-          "age_minutes": 776.8,
+          "age_minutes": 799.0,
           "status": "firing",
-          "label": "firing \u00b7 last fire 776.8min ago",
+          "label": "firing \u00b7 last fire 799.0min ago",
           "os_state": "Ready",
           "is_installed": true
         },
@@ -818,10 +816,10 @@
           "task_name": "PARBAUGHS-Proposal-Readiness-Scanner",
           "cadence_minutes": 120,
           "install_script": "scripts/cron/install-proposal-readiness-scanner.ps1",
-          "last_fire_iso": "2026-05-14T18:00:01.582523+00:00",
-          "age_minutes": 112.1,
+          "last_fire_iso": "2026-05-14T20:00:02.583490+00:00",
+          "age_minutes": 14.3,
           "status": "firing",
-          "label": "firing \u00b7 last fire 112.1min ago",
+          "label": "firing \u00b7 last fire 14.3min ago",
           "os_state": "Ready",
           "is_installed": true
         },
@@ -830,10 +828,10 @@
           "task_name": "PARBAUGHS-Token-Sidecar",
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-sidecar.ps1",
-          "last_fire_iso": "2026-05-14T19:47:13.854152+00:00",
-          "age_minutes": 4.9,
+          "last_fire_iso": "2026-05-14T20:12:13.902466+00:00",
+          "age_minutes": 2.1,
           "status": "firing",
-          "label": "firing \u00b7 last fire 4.9min ago",
+          "label": "firing \u00b7 last fire 2.1min ago",
           "os_state": "Ready",
           "is_installed": true
         }
@@ -842,16 +840,16 @@
         "ts": "2026-05-14 18:15 UTC",
         "ts_iso": "2026-05-14T18:15:58.4395875Z",
         "status": "STALE",
-        "age_minutes": 96.1,
+        "age_minutes": 118.4,
         "source": "heartbeat"
       },
       "working_tree": {
         "state": "dirty-cycling",
-        "label": "dirty (13 files) \u00b7 watcher cycling",
+        "label": "dirty (18 files) \u00b7 watcher cycling",
         "color": "var(--pb-warning)",
-        "dirty_count": 13,
-        "watcher_last_fire": "2026-05-14T19:50:49.775642+00:00",
-        "watcher_minutes_ago": 1.3
+        "dirty_count": 18,
+        "watcher_last_fire": "2026-05-14T20:10:49.728086+00:00",
+        "watcher_minutes_ago": 3.5
       },
       "halts": [],
       "round_trip_last_pass": "2026-05-14T18:15:58.4395875Z"
@@ -896,6 +894,11 @@
           "id": "PROP-008",
           "title": "Browser-control install (Playwright MCP)",
           "ts": "2026-05-14T19:25:00Z"
+        },
+        {
+          "id": "PROP-009",
+          "title": "Click-through user-journey gate (operation, not measurement)",
+          "ts": "2026-05-14T20:11:00Z"
         }
       ]
     },

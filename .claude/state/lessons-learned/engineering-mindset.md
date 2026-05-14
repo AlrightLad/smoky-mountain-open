@@ -337,6 +337,78 @@ capture cannot ship-close.
 "Agent-context PASS" alone is BANNED as ship-close evidence for
 user-facing surfaces.
 
+---
+
+## Addendum (iter 12, 2026-05-14): measurement is not operation
+
+Iter 11 shipped a Recent 7 Days legend fix that passed measurement
+(5 distinct RGB values per getComputedStyle) but failed perception
+(Paused/Ships/Bubbles all in hue 39-43° warm-yellow band, looked
+indistinguishable in usage). Founder caught the regression.
+
+### Observation 7 — Measurement ≠ Operation
+
+Playwright is capable of BOTH measurement AND user simulation. The
+team has only been using the measurement subset.
+
+| Activity | What it does | Catches |
+|---|---|---|
+| Measurement | getComputedStyle, getBoundingClientRect, element.scrollTop = N | Structural correctness |
+| Operation | page.mouse.wheel, page.click, page.keyboard, page.goto-via-link | Behavioral + perceptual correctness |
+
+Measurement-pass + Operation-pass is the bar for user-facing
+ship-close. Measurement alone is insufficient — it confirms data
+is computable about the rendered output, not that the rendered
+output works for users.
+
+### Fix 11 — Click-through user-journey audit (PROP-009)
+
+`scripts/visual-audit/user-journey-audit.mjs` (this ship):
+- Real mouse.wheel scrolling (not programmatic scrollTop)
+- Real page.click on interactive elements (legend swatches, rail
+  items, nav links)
+- Real page navigation via clicking links
+- Screenshot + transcript at each step
+- HSL-based perceptual color collision detection
+- Output: `.claude/state/user-journey-audits/<timestamp>/`
+
+### Fix 12 — Perceptual color check via HSL deltas
+
+The audit computes HSL from each chart legend swatch and flags
+collisions where:
+- Hue delta ≤ 25° (same visual family)
+- AND lightness delta ≤ 25 percentage points (similar brightness)
+
+Iter 11's "5 distinct RGB" passed because the check was RGB equality;
+the iter-12 check flags perceptual collision because RGB-distinct
+is not perception-distinct.
+
+### Fix 13 — Critic vocabulary update
+
+"Captured screenshot" is BANNED as ship-close evidence by itself.
+
+Acceptable evidence for user-facing surfaces (post-PROP-009):
+1. Round-trip + scroll-reachability (agent-context smoke) — necessary
+2. Side-by-side comparison + checklist (visual reference match) — necessary
+3. User-context capture (channel:chrome user-context) — necessary
+4. **Click-through user-journey transcript (operation, not
+   measurement) — necessary**
+
+All four required for user-facing ship-close. Any one missing =
+ship blocks.
+
+### Forward implications
+
+The pattern from iter 9 + 11 + 12 is the same: **agent-context PASS
+against the wrong axis**. Each axis the team adds (user-context,
+behavior, perceptual) raises the bar for what ship-complete actually
+means. The verification cost grows; so does the value-complete bar.
+
+The team's job is not to ship work that passes tests. It's to ship
+work that succeeds in actual user use. Tests are a proxy. When the
+proxy diverges from reality, fix the proxy AND fix the underlying
+gap — never just the proxy.
+
 Acceptable evidence for user-facing surfaces (post-PROP-007):
 1. Round-trip + scroll-reachability (agent-context smoke) — necessary
 2. Side-by-side comparison + checklist (visual reference match) — necessary

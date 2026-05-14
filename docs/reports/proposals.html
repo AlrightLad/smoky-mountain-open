@@ -297,6 +297,42 @@
   "proposals": {
     "pending": [
       {
+        "id": "PROP-009",
+        "title": "Click-through user-journey gate (operation, not measurement)",
+        "lane": 1,
+        "lane_label": "Substrate Discipline",
+        "ship_target": "Substrate",
+        "created_at": "2026-05-14T20:11:00Z",
+        "rationale": "Iter 11 shipped a Recent 7 Days legend fix that passed measurement tests (5 distinct RGB values per getComputedStyle) but failed perception \u2014 Paused, Ships, Bubbles all landed in hue 39-43\u00b0 (warm yellow). Founder caught the regression in actual usage. Root cause: team used Playwright as a measurement tool (getComputedStyle, getBoundingClientRect) instead of as a user-simulation tool (mouse.wheel, click events, navigation). PROP-009 codifies the click-through user-journey audit as a hard ship-close gate for user-facing surfaces.",
+        "scope": "Three deliverables: (1) Author scripts/visual-audit/user-journey-audit.mjs (already done this ship \u2014 Playwright script that performs real user actions: mouse wheel scrolling, clicks on interactive elements, navigation between pages, capture at each step + transcript.md output). (2) Add round-trip [user-journey-audit] block that requires a recent transcript for any modified user-facing surface. (3) Update Critic protocol: any user-facing surface ship-close requires (a) user-journey transcript exists, (b) all flagged anomalies addressed or accepted, (c) screenshots show actual rendered + interacted state.",
+        "estimate": {
+          "cost_tokens": 5000,
+          "duration_minutes": 15,
+          "risk": "low"
+        },
+        "files_affected": [
+          "scripts/visual-audit/user-journey-audit.mjs (new, authored this ship)",
+          "docs/reports/_assets/design-tokens.css \u2014 added --chart-rose + --chart-violet (chart-specific palette per perceptual fix)",
+          "docs/reports/dashboard.html \u2014 Ships/Bubbles fill via chart-rose/chart-violet (hue-distinct)",
+          "tests/round-trip-test.py \u2014 new [user-journey-audit] block at apply-time",
+          "docs/agents/CRITIC.md or peer addendum \u2014 click-through gate at apply-time",
+          ".claude/state/lessons-learned/engineering-mindset.md \u2014 measurement vs operation addendum",
+          ".claude/state/proposals/pending/PROP-009-click-through-user-journey-gate.md (this file)"
+        ],
+        "fallback_plan": "Plan A: ship the user-journey-audit.mjs script + Critic gate + round-trip block as one bundle. Plan B: ship the script only, defer Critic gate to follow-on if governance-protection blocks CRITIC.md edit at apply-time. Plan C: keep the lessons-learned doc as the authoritative source; team operates from lesson text alone. Abandon: Playwright's click/scroll APIs prove unreliable for surfacing perceptual issues \u2014 unlikely; iter 12 already demonstrated the HSL perceptual check works.",
+        "rollback_strategy": "git revert; the audit script is opt-in (runs on demand). The chart-rose/chart-violet tokens revert dashboard.html to the iter-11 brass-stop state. The round-trip [user-journey-audit] block is additive.",
+        "round_trip_coverage": "New [user-journey-audit] block at apply-time. Checks: when a user-facing surface mtime > most recent user-journey audit's transcript.md mtime, round-trip warns (not fails \u2014 audit is heavyweight). Failures (perceptual collisions, broken click handlers, unreachable items) block ship-close per Critic protocol.",
+        "depends_on": [
+          "PROP-007",
+          "PROP-008"
+        ],
+        "authored_by": "claude-code",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": 2000,
+        "status": "pending",
+        "operating_status": "Click-through audit operates immediately per Founder directive. The script is authored + tested + applied to dashboard + main-flows + amendments this ship."
+      },
+      {
         "id": "PROP-008",
         "title": "Browser-control install (Playwright MCP)",
         "lane": 1,
@@ -677,13 +713,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 3,
+    "pending": 4,
     "approved": 1,
     "deferred": 0,
     "shipped_total": 4,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T19:52:03.643262+00:00",
+  "as_of": "2026-05-14T20:14:17.481592+00:00",
   "schema_version": 2,
   "archive_display_cap": 50
 }
