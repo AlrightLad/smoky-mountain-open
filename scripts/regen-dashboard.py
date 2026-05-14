@@ -558,19 +558,57 @@ def working_tree_status():
     }
 
 
+def _query_scheduled_tasks_state():
+    """Shell out to Get-ScheduledTask on Windows to discover which
+    PARBAUGHS-* tasks are actually installed + their State. Returns
+    a dict of {task_name: state_string}. Empty dict on non-Windows
+    or if PowerShell is unavailable.
+
+    Iter 11 (2026-05-14, Founder directive "CRON BANNER STALE STATE"):
+    earlier implementation inferred install state from telemetry events
+    alone, conflating "installed but unfired" (new install) with "not
+    installed". This explicit OS query distinguishes the four real states:
+    missing / installed-but-unfired / firing / stale.
+    """
+    import subprocess
+    try:
+        proc = subprocess.run(
+            ["powershell.exe", "-NoProfile", "-Command",
+             "Get-ScheduledTask | Where-Object TaskName -Like 'PARBAUGHS-*' | "
+             "ForEach-Object { '{0}|{1}' -f $_.TaskName, $_.State }"],
+            capture_output=True, text=True, timeout=10
+        )
+        if proc.returncode != 0:
+            return {}
+        out = {}
+        for ln in (proc.stdout or "").splitlines():
+            ln = ln.strip()
+            if not ln or "|" not in ln:
+                continue
+            name, state = ln.split("|", 1)
+            out[name.strip()] = state.strip()
+        return out
+    except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
+        return {}
+
+
 def cron_install_status():
-    """Founder directive 2026-05-14 "DASHBOARD FIDELITY" item 3: detect
-    which PARBAUGHS scheduled tasks are firing vs which need install.
-    Telemetry-derived (doesn't shell out to Get-ScheduledTask which would
-    couple regen to Windows).
+    """Founder directive 2026-05-14 "DASHBOARD FIDELITY" + "CRON BANNER
+    STALE STATE": detect which PARBAUGHS scheduled tasks are missing,
+    newly-installed-but-unfired, firing normally, or stale.
 
-    Returns a list of {name, installed_inferred, last_fire_iso, status,
-    install_script_path}.
+    Iter 11 fix: shell out to Get-ScheduledTask to distinguish installed-
+    but-unfired (benign, just-registered) from missing (real install
+    needed). Falls back to telemetry-only inference if PowerShell is
+    unavailable (e.g. CI environment).
 
-    Inference rule: if cron.NAME.end events appear within the last 24h
-    AND the script-run cadence is within expected range, mark as
-    "firing"; otherwise "missing-or-silent" with the install script
-    surfaced for Founder admin action.
+    Four states:
+      - missing: not installed (Get-ScheduledTask returned nothing)
+        AND no recent telemetry events. SURFACE: requires install.
+      - installed-but-unfired: Get-ScheduledTask shows it BUT no recent
+        telemetry events yet. SURFACE: newly-installed benign label.
+      - firing: telemetry event within 3× cadence.
+      - stale: telemetry event but >3× cadence ago. SURFACE: stale warning.
     """
     crons = [
         {"name": "downloads-watcher",   "task_name": "PARBAUGHS-Downloads-Watcher",            "cadence_minutes": 5,       "install_script": "scripts/cron/install-downloads-watcher.ps1"},
@@ -579,6 +617,8 @@ def cron_install_status():
         {"name": "proposal-readiness",  "task_name": "PARBAUGHS-Proposal-Readiness-Scanner",   "cadence_minutes": 120,     "install_script": "scripts/cron/install-proposal-readiness-scanner.ps1"},
         {"name": "token-sidecar",       "task_name": "PARBAUGHS-Token-Sidecar",                "cadence_minutes": 5,       "install_script": "scripts/cron/install-sidecar.ps1"},
     ]
+
+    os_state = _query_scheduled_tasks_state()
 
     now_utc = datetime.now(timezone.utc)
     events_dir = STATE / "telemetry" / "events"
@@ -608,17 +648,32 @@ def cron_install_status():
     for c in crons:
         last_fire = events_today.get(c["name"])
         age_minutes = round((now_utc - last_fire).total_seconds() / 60.0, 1) if last_fire else None
-        # Fire-vs-silent threshold: 3× cadence (allows for cron variance)
         silent_threshold = c["cadence_minutes"] * 3
+        is_installed = c["task_name"] in os_state
+        os_task_state = os_state.get(c["task_name"], "")
+
         if age_minutes is None:
-            status = "missing-or-silent"
-            label = "missing — no telemetry events found"
+            # No telemetry events yet. Distinguish missing vs newly-installed.
+            if is_installed:
+                status = "installed-but-unfired"
+                label = f"installed · State={os_task_state} · awaiting first fire (cadence {c['cadence_minutes']}min)"
+            elif not os_state:
+                # OS query returned nothing (probably non-Windows or PowerShell unavailable).
+                # Fall back to telemetry-only inference: surface as missing-or-silent
+                # since we cannot distinguish here.
+                status = "missing-or-silent"
+                label = "missing — no telemetry events found (OS query unavailable)"
+            else:
+                # OS query worked AND returned some tasks but not this one.
+                status = "missing"
+                label = "missing — not installed on this machine"
         elif age_minutes > silent_threshold:
             status = "stale"
             label = f"stale · last fire {age_minutes}min ago (cadence {c['cadence_minutes']}min)"
         else:
             status = "firing"
             label = f"firing · last fire {age_minutes}min ago"
+
         out.append({
             "name": c["name"],
             "task_name": c["task_name"],
@@ -628,6 +683,8 @@ def cron_install_status():
             "age_minutes": age_minutes,
             "status": status,
             "label": label,
+            "os_state": os_task_state,
+            "is_installed": is_installed,
         })
     return out
 

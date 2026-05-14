@@ -101,8 +101,30 @@
         .mf-arrow-badge-bg { fill: var(--accent-brass); }
         .mf-arrow-badge-text { fill: var(--bg-page); font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
 
-        /* === Right rail === */
-        .mf-rail { display: flex; flex-direction: column; gap: var(--space-3); position: sticky; top: var(--space-3); max-height: calc(100vh - 100px); }
+        /* === Right rail ===
+         * Iter 11 (2026-05-14, user-context measurement diagnosis):
+         * the static max-height: calc(100vh - 100px) assumed the rail
+         * top sat ~100px below viewport top. ACTUAL measurement:
+         * rail.top = 381px at page-load (caveats + legend + title row
+         * push it down). Rail height 980px → rail.bottom = 1361px →
+         * extends 281px BELOW viewport bottom. .mf-flows-list F62
+         * sat at viewport y=1308, invisible. 10 iterations of agent-
+         * context "all 62 in DOM + scrollable" sentinels missed this
+         * because the test scrolled .mf-flows-list to its scrollHeight
+         * without measuring against viewport coordinates.
+         *
+         * Fix: JS dynamic max-height that recomputes on scroll +
+         * resize. Sets max-height = viewport.height - rail.top - 20.
+         * Sticky positioning still applies — at page-scroll-past, the
+         * rail's top becomes 12px (top: var(--space-3)) and max-height
+         * grows to ~1068px. At page-top, rail.top is ~381px and
+         * max-height is ~679px — fits inside viewport.
+         *
+         * Initial value here is a SAFE FALLBACK if JS fails to load.
+         * Calculated for the worst case (rail.top = 400px at 1080
+         * viewport on first paint): 100vh - 420px = 660px.
+         */
+        .mf-rail { display: flex; flex-direction: column; gap: var(--space-3); position: sticky; top: var(--space-3); max-height: calc(100vh - 420px); }
         @media (max-width: 1100px) { .mf-rail { position: static; max-height: none; } }
 
         .mf-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); overflow: hidden; }
@@ -1139,7 +1161,7 @@
       ]
     }
   ],
-  "last_amended": "2026-05-14T19:12:58.150166+00:00",
+  "last_amended": "2026-05-14T19:42:13.831087+00:00",
   "doc_source": "docs/reports/_assets/main-flows-data.json",
   "schema_version": 1,
   "flow_rail": [
@@ -2295,7 +2317,48 @@
                 renderStepsForFlow(null);
                 window.addEventListener('resize', function () {
                     if (selectedFlowId) requestAnimationFrame(function () { drawArrowsForFlow(selectedFlowId); });
+                    adjustRailHeight();
                 });
+                // Iter 11 (2026-05-14): dynamic rail max-height. The CSS
+                // fallback (calc(100vh - 420px)) handles initial paint;
+                // JS adjusts on every scroll/resize so the rail fits
+                // whatever space is available between rail.top (sticky-
+                // adjusted) and viewport.bottom. Catches the page-scroll
+                // state where sticky pins rail.top to 12px, opening
+                // ~1068px of available rail height.
+                window.addEventListener('scroll', function () { adjustRailHeight(); }, { passive: true });
+                adjustRailHeight();
+            }
+
+            function adjustRailHeight() {
+                var rail = document.querySelector('.mf-rail');
+                var list = document.querySelector('.mf-flows-list');
+                if (!rail) return;
+                if (window.innerWidth <= 1100) {
+                    // mobile breakpoint: rail un-sticks and goes static
+                    rail.style.maxHeight = '';
+                    if (list) list.style.maxHeight = '';
+                    return;
+                }
+                var rect = rail.getBoundingClientRect();
+                // Sticky positions clamp rail.top to var(--space-3) = 12px
+                // once the page scrolls past the rail's natural offset.
+                var effectiveTop = Math.max(rect.top, 12);
+                var railMaxH = Math.max(window.innerHeight - effectiveTop - 20, 320);
+                rail.style.maxHeight = railMaxH + 'px';
+                // The .mf-flows-list inside the Flows card has its own
+                // max-height (calc(100vh - 280px) ≈ 800px at 1080) which
+                // overflows when the rail is capped tighter. Cap the list
+                // explicitly: rail height minus flows-card chrome (header
+                // + search wrap + 2 chip rows + bottom padding ≈ 200px)
+                // minus the Steps card height below (header + empty state
+                // ≈ 80px) minus the inter-card gap (12px). The list
+                // shrinks naturally on small viewports + grows back on
+                // page-scroll when sticky pins rail.top to 12px.
+                if (list) {
+                    var listMaxH = Math.max(railMaxH - 200 - 80 - 12 - 36, 160);
+                    list.style.maxHeight = listMaxH + 'px';
+                }
             }
 
             if (document.readyState === 'loading') {

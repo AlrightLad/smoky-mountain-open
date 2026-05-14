@@ -297,6 +297,38 @@
   "proposals": {
     "pending": [
       {
+        "id": "PROP-008",
+        "title": "Browser-control install (Playwright MCP)",
+        "lane": 1,
+        "lane_label": "Substrate Discipline",
+        "ship_target": "Substrate",
+        "created_at": "2026-05-14T19:25:00Z",
+        "rationale": "PROP-007 established the agent-context vs user-context verification gap as a structural problem; the Founder-run-once capture closes it for ship-close evidence but not for routine in-session verification. Browser-control MCP closes that remaining gap: team can drive a real headed browser from any Claude Code session (no per-ship Founder action) using channel:chrome to launch the user's installed Chrome binary. Tonight's scope is INSTALL ONLY per Founder direction \u2014 no main-flows iteration; Founder verifies install quality fresh-eyes tomorrow before any usage.",
+        "scope": "Three deliverables: (1) Install @playwright/mcp via `claude mcp add playwright -- npx -y @playwright/mcp@latest`. (2) Verify install via `claude mcp list` showing playwright connected + healthy. (3) Author smoke command Founder runs tomorrow to confirm browser-control actually drives a real browser, not just that the package was placed.",
+        "estimate": {
+          "cost_tokens": 4000,
+          "duration_minutes": 12,
+          "risk": "low"
+        },
+        "files_affected": [
+          "scripts/visual-audit/founder-context-capture.mjs (deviceScaleFactor bug fix \u2014 already done this ship)",
+          ".claude/state/proposals/pending/PROP-008-browser-control-install.md (this file)",
+          "Founder's Claude Code MCP config (added via `claude mcp add`)",
+          "docs/agents/lessons-learned/SHIP_browser-control_install.md (post-Founder-verification, defer to tomorrow)"
+        ],
+        "fallback_plan": "Plan A: Option A \u2014 Playwright MCP (@playwright/mcp, microsoft/playwright-mcp). Standard install pattern via `claude mcp add`. Well-documented + maintained by Microsoft. Plan B: Option B \u2014 browser-use MCP or similar alternative. Reserved if @playwright/mcp install fails or proves unstable. Plan C: Option C \u2014 Claude Code --remote-control flag. Built-in capability, no install. Reserved if both MCP approaches fail. Abandon: all three fail in ways that block visual verification \u2014 escalate per AMD-015 with diagnostic evidence.",
+        "rollback_strategy": "`claude mcp remove playwright` \u2014 single command. No persistent state changes to revoke. Founder can revoke at any time without affecting any other tool.",
+        "round_trip_coverage": "No new round-trip block needed for the install itself \u2014 MCP servers are loaded by Claude Code at session start, not by round-trip-test.py. Tomorrow's verification ship (separate ship per Founder direction) will add round-trip [browser-control-gate] block once Founder approves usage of the new capability.",
+        "depends_on": [
+          "PROP-007"
+        ],
+        "authored_by": "claude-code",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": 1000,
+        "status": "pending",
+        "operating_status": "Install operative immediately (tonight's authorized scope). USAGE of the browser-control capability gated on Founder verification tomorrow morning \u2014 no main-flows iteration tonight."
+      },
+      {
         "id": "PROP-007",
         "title": "User-context verification gate (bridge agent-context to user-context)",
         "lane": 1,
@@ -645,13 +677,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 2,
+    "pending": 3,
     "approved": 1,
     "deferred": 0,
     "shipped_total": 4,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T19:12:57.425885+00:00",
+  "as_of": "2026-05-14T19:42:11.563837+00:00",
   "schema_version": 2,
   "archive_display_cap": 50
 }

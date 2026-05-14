@@ -1805,7 +1805,11 @@ def main():
         # surface a warning so the Founder can run the diagnostic.
         print(yellow(f"  ~ user-context-gate  no captures yet at {USER_CTX_ROOT.relative_to(ROOT)} — Founder runs `node scripts/visual-audit/founder-context-capture.mjs` to seed"))
     else:
-        capture_dirs = sorted([d for d in USER_CTX_ROOT.iterdir() if d.is_dir()], key=lambda d: d.name, reverse=True)
+        # Sort by mtime to handle mixed dir naming conventions (the
+        # founder-context-capture.mjs script writes <ISO-timestamp>Z dirs;
+        # ad-hoc helpers may write <name>-<epoch> dirs). mtime is the
+        # authoritative ordering signal.
+        capture_dirs = sorted([d for d in USER_CTX_ROOT.iterdir() if d.is_dir()], key=lambda d: d.stat().st_mtime, reverse=True)
         if not capture_dirs:
             print(yellow(f"  ~ user-context-gate  founder-real-context/ exists but has no capture dirs yet"))
         else:
