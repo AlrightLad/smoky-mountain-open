@@ -182,6 +182,58 @@ def _read_yaml_or_json_frontmatter(path: Path):
     return out
 
 
+def _load_anthropic_pricing():
+    """Load .claude/scripts/lib/anthropic-pricing.json — Anthropic per-
+    million-token pricing per model. Returns dict or empty fallback.
+    Founder directive 2026-05-14 PER-SHIP TOKEN ATTRIBUTION."""
+    pricing_path = ROOT / "scripts" / "lib" / "anthropic-pricing.json"
+    if not pricing_path.exists():
+        return {}
+    try:
+        return json.loads(pricing_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def _compute_ship_cost_usd(tokens, pricing):
+    """Best-effort cost calc using default-model input/output split.
+    Returns USD float or None. Honest gap (AMD-009 P5): without real
+    per-call input/output breakdown, this uses operator-asserted ratios
+    (85/15 from anthropic-pricing.json). Per-call data lands when
+    instrumentation is enabled."""
+    if not tokens or not pricing:
+        return None
+    models = pricing.get("models") or {}
+    default = pricing.get("default_model_for_estimation", "")
+    model_info = models.get(default) or {}
+    split = pricing.get("input_output_split_assumption") or {}
+    input_ratio = split.get("input_ratio", 0.85)
+    output_ratio = split.get("output_ratio", 0.15)
+    in_price = model_info.get("input_per_million_usd")
+    out_price = model_info.get("output_per_million_usd")
+    if in_price is None or out_price is None:
+        return None
+    return round(
+        (tokens * input_ratio * in_price + tokens * output_ratio * out_price) / 1_000_000,
+        2,
+    )
+
+
+def _ship_id_aliases(artifact_id):
+    """Founder directive PER-SHIP TOKEN ATTRIBUTION: session.team-work.summary
+    events carry ship_id values that may differ from the canonical PROP-NNN /
+    AMD-NNN / ESC-NNN ID. Return a list of ship_id strings that should be
+    matched against events for this artifact (case-insensitive contains)."""
+    if not artifact_id:
+        return []
+    aliases = [artifact_id]
+    # PROP-003.a → also match "PROP-003-a", "PROP-003.A", etc.
+    norm = artifact_id.replace(".", "-").upper()
+    if norm != artifact_id:
+        aliases.append(norm)
+    return aliases
+
+
 def walk_completed_artifacts():
     """Founder directive 2026-05-14 "DASHBOARD DATA PIPELINE BROKEN":
     real shipped artifacts live in proposals/shipped/, amendments/applied/,
@@ -563,19 +615,45 @@ def aggregate():
     # Falls back to git-history ship-close commit mining if all state
     # buckets are empty (transitional state).
     completed = walk_completed_artifacts()
-    recent_ships = [
-        {
-            "id": c.get("id"),
+
+    # PER-SHIP TOKEN ATTRIBUTION (Founder directive 2026-05-14): sum
+    # session.team-work.summary events whose ship_id matches the artifact's
+    # canonical id (with aliases). Display "—" (None) for unknowns per
+    # AMD-009 P5 honest language — never fabricate 0 when it means "no data".
+    pricing = _load_anthropic_pricing()
+    recent_ships = []
+    for c in completed[:10]:
+        artifact_id = c.get("id") or ""
+        aliases = [a.lower() for a in _ship_id_aliases(artifact_id)]
+        tokens_attributed = 0
+        events_matched = 0
+        for ev in events:
+            if ev.get("event_type") != "session.team-work.summary":
+                continue
+            data = ev.get("data") or {}
+            event_ship_id = (data.get("ship_id") or ev.get("ship_id") or "").lower()
+            if not event_ship_id:
+                continue
+            if any(a == event_ship_id for a in aliases):
+                t = data.get("tokens_estimated")
+                if isinstance(t, (int, float)) and t > 0:
+                    tokens_attributed += int(t)
+                    events_matched += 1
+        cost = _compute_ship_cost_usd(tokens_attributed, pricing) if tokens_attributed > 0 else None
+        recent_ships.append({
+            "id": artifact_id,
             "title": c.get("title") or "(no title)",
             "kind": c.get("kind"),
             "status": c.get("status") or "unknown",
             "completed_at": c.get("completed_at"),
-            "tokens": 0,    # Real per-ship token attribution lands when meter wired (PROP-003)
-            "cost": 0.0,
+            # tokens=None means "unknown" → dashboard displays "—".
+            # tokens=int means "attributed via matching ship_id events".
+            "tokens": tokens_attributed if tokens_attributed > 0 else None,
+            "tokens_source": "events" if tokens_attributed > 0 else "unknown",
+            "tokens_events_matched": events_matched,
+            "cost_usd": cost,
             "source_path": c.get("source_path"),
-        }
-        for c in completed[:10]
-    ]
+        })
 
     # 7-day per-day buckets — Founder directive 2026-05-14: was hardcoded
     # [0]*7 placeholder. Now buckets real events by their timestamp date.

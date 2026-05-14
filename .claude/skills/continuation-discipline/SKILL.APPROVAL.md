@@ -15,7 +15,7 @@ proposals.html; watcher catches; apply-decisions.sh ships the proposal
 through pending → shipped.
 
 **Related amendments:**
-- AMD-016 CONTINUATION_DISCIPLINE (policy doc this skill operationalizes)
+- AMD-017 CONTINUATION_DISCIPLINE (policy doc this skill operationalizes)
 - AMD-015 TEAM_PROPOSES_AGENT_2_RATIFIES (escalation discipline)
 - AMD-011 AUTO_EXECUTE_PROTOCOL (readiness pipeline)
 - AMD-009 SENIOR_ENGINEERING_STANDARD (foundation)

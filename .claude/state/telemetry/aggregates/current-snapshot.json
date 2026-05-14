@@ -1,11 +1,11 @@
 {
-  "as_of": "2026-05-14T17:17:14.427514+00:00",
+  "as_of": "2026-05-14T17:24:59.886220+00:00",
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "quota_status": {
     "state": "empty",
     "as_of": "2026-05-14T15:24:53.5950065Z",
-    "age_seconds": 6740,
+    "age_seconds": 7206,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -130,8 +130,10 @@
       "kind": "escalation",
       "status": "applied",
       "completed_at": "2026-05-14T16:42:00Z",
-      "tokens": 0,
-      "cost": 0.0,
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
       "source_path": ".claude/state/escalations/applied/ESC-001-main-flows-v2-taxonomy.md"
     },
     {
@@ -140,8 +142,10 @@
       "kind": "escalation",
       "status": "applied",
       "completed_at": "2026-05-14T16:42:00Z",
-      "tokens": 0,
-      "cost": 0.0,
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
       "source_path": ".claude/state/escalations/applied/ESC-002-wave-1-ship-1-selection.md"
     },
     {
@@ -150,8 +154,10 @@
       "kind": "amendment",
       "status": "applied",
       "completed_at": "2026-05-14T16:05:00Z",
-      "tokens": 0,
-      "cost": 0.0,
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
       "source_path": ".claude/state/amendments/applied/AMD-015-team-proposes-agent-2-ratifies.md"
     },
     {
@@ -160,8 +166,10 @@
       "kind": "amendment",
       "status": "applied",
       "completed_at": "2026-05-14T04:50:00Z",
-      "tokens": 0,
-      "cost": 0.0,
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
       "source_path": ".claude/state/amendments/applied/AMD-014-pause-discipline-reactivation.md"
     },
     {
@@ -170,8 +178,10 @@
       "kind": "amendment",
       "status": "applied",
       "completed_at": "2026-05-14T04:35:00Z",
-      "tokens": 0,
-      "cost": 0.0,
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
       "source_path": ".claude/state/amendments/applied/AMD-013-roadmap-v2.md"
     },
     {
@@ -180,8 +190,10 @@
       "kind": "amendment",
       "status": "applied",
       "completed_at": "2026-05-14T04:25:00Z",
-      "tokens": 0,
-      "cost": 0.0,
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
       "source_path": ".claude/state/amendments/applied/AMD-012-smoke-testing-governance.md"
     },
     {
@@ -190,8 +202,10 @@
       "kind": "amendment",
       "status": "applied",
       "completed_at": "2026-05-14T03:50:00Z",
-      "tokens": 0,
-      "cost": 0.0,
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
       "source_path": ".claude/state/amendments/applied/AMD-011-auto-execute-approved-proposals.md"
     },
     {
@@ -200,8 +214,10 @@
       "kind": "amendment",
       "status": "applied",
       "completed_at": "2026-05-14T03:35:00Z",
-      "tokens": 0,
-      "cost": 0.0,
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
       "source_path": ".claude/state/amendments/applied/AMD-010-MAIN_FLOWS_v2.md"
     },
     {
@@ -210,8 +226,10 @@
       "kind": "amendment",
       "status": "applied",
       "completed_at": "2026-05-14T03:05:00Z",
-      "tokens": 0,
-      "cost": 0.0,
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
       "source_path": ".claude/state/amendments/applied/AMD-009-senior-engineering-standard.md"
     },
     {
@@ -220,19 +238,21 @@
       "kind": "proposal",
       "status": "shipped",
       "completed_at": "2026-05-14T02:47:38-04:00",
-      "tokens": 0,
-      "cost": 0.0,
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
       "source_path": ".claude/state/proposals/shipped/PROP-004-org-monthly-quota-type.md"
     }
   ],
   "_aggregate_counts": {
-    "events_total": 621,
+    "events_total": 627,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
     "handoffs_total": 1,
     "bubbles_total": 7,
-    "proposals_pending": 0,
+    "proposals_pending": 1,
     "proposals_approved": 0,
     "pause_durations_sec": [
       10,

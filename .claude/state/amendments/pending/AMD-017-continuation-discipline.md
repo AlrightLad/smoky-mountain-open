@@ -1,5 +1,5 @@
 ---
-id: AMD-016
+id: AMD-017
 title: Continuation discipline — consolidated reports are checkpoints, not stop conditions
 target_canonical_path: docs/agents/CONTINUATION_DISCIPLINE.md
 source_draft_path: .claude/state/amendments/pending/AMD-016-continuation-discipline.md

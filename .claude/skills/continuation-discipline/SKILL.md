@@ -11,7 +11,7 @@ trigger: |
   - At ship-complete + post-commit moments
   - When tempted to end with "Founder reviews when ready"
   - When the immediate work resolves and next action is unclear
-authoritative_source: AMD-016 (continuation discipline)
+authoritative_source: AMD-017 (continuation discipline)
 governs: agent-3 (Claude Code) turn-end behavior
 ---
 
@@ -176,7 +176,7 @@ This is structural, not advisory.
   continuation
 - AMD-015 TEAM_PROPOSES_AGENT_2_RATIFIES — escalation discipline that
   pairs with continuation (LOW confidence → escalate, not stop)
-- AMD-016 CONTINUATION_DISCIPLINE — codifies the principle this skill
+- AMD-017 CONTINUATION_DISCIPLINE — codifies the principle this skill
   operationalizes
 - AUTONOMOUS_FAILURE_RECOVERY v8.3 — defines the real stop conditions
   this skill enumerates

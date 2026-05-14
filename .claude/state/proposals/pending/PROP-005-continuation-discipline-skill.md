@@ -4,8 +4,9 @@
   "title": "Author continuation-discipline skill + Critic protocol update",
   "lane": 1,
   "lane_label": "Substrate Discipline",
+  "ship_target": "Substrate",
   "created_at": "2026-05-14T17:18:00Z",
-  "rationale": "The team has habitually stopped at consolidated-report logical handoff points that aren't real stop conditions per AUTONOMOUS_FAILURE_RECOVERY v8.3. Founder has directed continuation discipline multiple times; AMD-016 codifies the principle but a SKILL is what the team consults at decision time. Without the skill, AMD-016 is a policy doc the team doesn't naturally reach for at the relevant moment.",
+  "rationale": "The team has habitually stopped at consolidated-report logical handoff points that aren't real stop conditions per AUTONOMOUS_FAILURE_RECOVERY v8.3. Founder has directed continuation discipline multiple times; AMD-017 codifies the principle but a SKILL is what the team consults at decision time. Without the skill, AMD-017 is a policy doc the team doesn't naturally reach for at the relevant moment.",
   "scope": "Three deliverables: (1) Author .claude/skills/continuation-discipline/SKILL.md with the 7 real stop conditions + 8 false signals + 4-step determination procedure + confidence framework + Critic gate. (2) Update Critic protocol to gate consolidated-reports — Critic verifies skill consultation + documented stop condition before allowing turn-end. (3) Operate the skill immediately per Founder directive even before formal approval; this proposal codifies it.",
   "estimate": {
     "cost_tokens": 4000,
@@ -17,10 +18,10 @@
     "docs/agents/CRITIC_PROTOCOL.md (or peer doc) — append continuation-skill gate",
     ".claude/state/proposals/pending/PROP-005-continuation-discipline-skill.md (this file)"
   ],
-  "fallback_plan": "Plan A: ship the skill + Critic protocol update as one bundle (this proposal). Plan B: ship the skill only, defer Critic protocol update to follow-on if doc location is unclear. Plan C: keep AMD-016 as the authoritative source; team operates from amendment text alone. Abandon: skill format itself becomes unworkable (unlikely — Claude Code skill format is well-defined).",
-  "rollback_strategy": "git revert; skill is new — removal restores prior implicit behavior. AMD-016 continues to operate as written.",
+  "fallback_plan": "Plan A: ship the skill + Critic protocol update as one bundle (this proposal). Plan B: ship the skill only, defer Critic protocol update to follow-on if doc location is unclear. Plan C: keep AMD-017 as the authoritative source; team operates from amendment text alone. Abandon: skill format itself becomes unworkable (unlikely — Claude Code skill format is well-defined).",
+  "rollback_strategy": "git revert; skill is new — removal restores prior implicit behavior. AMD-017 continues to operate as written.",
   "round_trip_coverage": "Existing [proposals] check verifies this proposal's frontmatter schema; no new round-trip block required (skills are loaded by Claude Code at session start, not by round-trip-test.py).",
-  "depends_on": ["AMD-009", "AMD-011", "AMD-015", "AMD-016"],
+  "depends_on": ["AMD-009", "AMD-011", "AMD-015", "AMD-017"],
   "authored_by": "claude-code",
   "bubble_of_record": null,
   "estimate_tokens_to_apply": 1000,
@@ -36,7 +37,7 @@ discipline".
 
 ## Why a skill (not just an amendment)
 
-AMD-016 (continuation discipline) codifies the principle. But amendments
+AMD-017 (continuation discipline) codifies the principle. But amendments
 are reference policy documents the team consults via cross-references.
 The team needs to encounter the discipline at the **decision moment** —
 when about to write "Tree clean. Round-trip green. Founder reviews when
@@ -99,5 +100,5 @@ When Founder approves via proposals.html:
 - AMD-009 SENIOR_ENGINEERING_STANDARD (foundation)
 - AMD-011 AUTO_EXECUTE_PROTOCOL (readiness pipeline)
 - AMD-015 TEAM_PROPOSES_AGENT_2_RATIFIES (escalation pattern)
-- AMD-016 CONTINUATION_DISCIPLINE (the policy this skill operationalizes)
+- AMD-017 CONTINUATION_DISCIPLINE (the policy this skill operationalizes)
 - AUTONOMOUS_FAILURE_RECOVERY v8.3 (stop condition definitions)

@@ -293,7 +293,42 @@
     <script id="report-data" type="application/json">
 {
   "proposals": {
-    "pending": [],
+    "pending": [
+      {
+        "id": "PROP-005",
+        "title": "Author continuation-discipline skill + Critic protocol update",
+        "lane": 1,
+        "lane_label": "Substrate Discipline",
+        "ship_target": "Substrate",
+        "created_at": "2026-05-14T17:18:00Z",
+        "rationale": "The team has habitually stopped at consolidated-report logical handoff points that aren't real stop conditions per AUTONOMOUS_FAILURE_RECOVERY v8.3. Founder has directed continuation discipline multiple times; AMD-017 codifies the principle but a SKILL is what the team consults at decision time. Without the skill, AMD-017 is a policy doc the team doesn't naturally reach for at the relevant moment.",
+        "scope": "Three deliverables: (1) Author .claude/skills/continuation-discipline/SKILL.md with the 7 real stop conditions + 8 false signals + 4-step determination procedure + confidence framework + Critic gate. (2) Update Critic protocol to gate consolidated-reports \u2014 Critic verifies skill consultation + documented stop condition before allowing turn-end. (3) Operate the skill immediately per Founder directive even before formal approval; this proposal codifies it.",
+        "estimate": {
+          "cost_tokens": 4000,
+          "duration_minutes": 10,
+          "risk": "low"
+        },
+        "files_affected": [
+          ".claude/skills/continuation-discipline/SKILL.md (new)",
+          "docs/agents/CRITIC_PROTOCOL.md (or peer doc) \u2014 append continuation-skill gate",
+          ".claude/state/proposals/pending/PROP-005-continuation-discipline-skill.md (this file)"
+        ],
+        "fallback_plan": "Plan A: ship the skill + Critic protocol update as one bundle (this proposal). Plan B: ship the skill only, defer Critic protocol update to follow-on if doc location is unclear. Plan C: keep AMD-017 as the authoritative source; team operates from amendment text alone. Abandon: skill format itself becomes unworkable (unlikely \u2014 Claude Code skill format is well-defined).",
+        "rollback_strategy": "git revert; skill is new \u2014 removal restores prior implicit behavior. AMD-017 continues to operate as written.",
+        "round_trip_coverage": "Existing [proposals] check verifies this proposal's frontmatter schema; no new round-trip block required (skills are loaded by Claude Code at session start, not by round-trip-test.py).",
+        "depends_on": [
+          "AMD-009",
+          "AMD-011",
+          "AMD-015",
+          "AMD-017"
+        ],
+        "authored_by": "claude-code",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": 1000,
+        "status": "pending",
+        "operating_status": "Skill operates immediately per Founder directive even before approval. This proposal codifies it for the next agent loop."
+      }
+    ],
     "approved": [],
     "deferred": [],
     "shipped": [
@@ -535,13 +570,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 0,
+    "pending": 1,
     "approved": 0,
     "deferred": 0,
     "shipped_total": 4,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T17:17:14.639482+00:00",
+  "as_of": "2026-05-14T17:25:00.093329+00:00",
   "schema_version": 2,
   "archive_display_cap": 50
 }
