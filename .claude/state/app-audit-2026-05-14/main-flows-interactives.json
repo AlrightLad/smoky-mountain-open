@@ -1,0 +1,4913 @@
+{
+  "page": "main-flows.html",
+  "captured_at": "2026-05-14T21:31:24.931Z",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "total_interactives": 377,
+  "by_type": {
+    "button": 12,
+    "link": 13,
+    "cursor-pointer": 352
+  },
+  "elements": [
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.mf-rail-chip.is-on[data-actor=\"\"]",
+      "text": "ALL",
+      "class": "mf-rail-chip is-on",
+      "location": {
+        "x": 1433,
+        "y": 461,
+        "w": 37,
+        "h": 19
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.mf-rail-chip[data-actor=\"member\"]",
+      "text": "MEMBER",
+      "class": "mf-rail-chip",
+      "location": {
+        "x": 1474,
+        "y": 461,
+        "w": 57,
+        "h": 19
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.mf-rail-chip[data-actor=\"commissioner\"]",
+      "text": "COMMISH",
+      "class": "mf-rail-chip",
+      "location": {
+        "x": 1535,
+        "y": 461,
+        "w": 63,
+        "h": 19
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.mf-rail-chip[data-actor=\"founder\"]",
+      "text": "FOUNDER",
+      "class": "mf-rail-chip",
+      "location": {
+        "x": 1603,
+        "y": 461,
+        "w": 63,
+        "h": 19
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.mf-rail-chip[data-actor=\"system\"]",
+      "text": "SYSTEM",
+      "class": "mf-rail-chip",
+      "location": {
+        "x": 1670,
+        "y": 461,
+        "w": 57,
+        "h": 19
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.mf-rail-chip[data-actor=\"agent\"]",
+      "text": "AGENT",
+      "class": "mf-rail-chip",
+      "location": {
+        "x": 1433,
+        "y": 484,
+        "w": 50,
+        "h": 19
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.mf-rail-chip.is-on[data-tier=\"\"]",
+      "text": "ALL TIERS",
+      "class": "mf-rail-chip is-on",
+      "location": {
+        "x": 1433,
+        "y": 511,
+        "w": 76,
+        "h": 19
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.mf-rail-chip[data-tier=\"core\"]",
+      "text": "CORE",
+      "class": "mf-rail-chip",
+      "location": {
+        "x": 1513,
+        "y": 511,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.mf-rail-chip[data-tier=\"supplementary\"]",
+      "text": "SUPP",
+      "class": "mf-rail-chip",
+      "location": {
+        "x": 1561,
+        "y": 511,
+        "w": 44,
+        "h": 19
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.mf-rail-chip[data-tier=\"admin\"]",
+      "text": "ADMIN",
+      "class": "mf-rail-chip",
+      "location": {
+        "x": 1609,
+        "y": 511,
+        "w": 50,
+        "h": 19
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.mf-rail-chip[data-tier=\"system\"]",
+      "text": "SYSTEM",
+      "class": "mf-rail-chip",
+      "location": {
+        "x": 1664,
+        "y": 511,
+        "w": 57,
+        "h": 19
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "#mf-rail-clear",
+      "text": "CLEAR SELECTION",
+      "id": "mf-rail-clear",
+      "class": "mf-rail-clear",
+      "location": {
+        "x": 1433,
+        "y": 909,
+        "w": 326,
+        "h": 26
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "href": "index.html",
+      "class": "pb-page-brand",
+      "location": {
+        "x": 140,
+        "y": 20,
+        "w": 185,
+        "h": 14
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "href": "dashboard.html",
+      "location": {
+        "x": 828,
+        "y": 12,
+        "w": 91,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Activity",
+      "href": "activity.html",
+      "location": {
+        "x": 924,
+        "y": 12,
+        "w": 69,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "href": "discussion-bubbles.html",
+      "location": {
+        "x": 997,
+        "y": 12,
+        "w": 142,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Proposals",
+      "href": "proposals.html",
+      "location": {
+        "x": 1143,
+        "y": 12,
+        "w": 84,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Amendments",
+      "href": "amendments.html",
+      "location": {
+        "x": 1230,
+        "y": 12,
+        "w": 107,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Escalations",
+      "href": "escalations.html",
+      "location": {
+        "x": 1341,
+        "y": 12,
+        "w": 91,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.is-active",
+      "text": "Main Flows",
+      "href": "main-flows.html",
+      "class": "is-active",
+      "location": {
+        "x": 1436,
+        "y": 12,
+        "w": 93,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Design System",
+      "href": "design-system.html",
+      "location": {
+        "x": 1534,
+        "y": 12,
+        "w": 114,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Tokens",
+      "href": "token-usage.html",
+      "location": {
+        "x": 1652,
+        "y": 12,
+        "w": 66,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Index",
+      "href": "index.html",
+      "location": {
+        "x": 1722,
+        "y": 12,
+        "w": 58,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "architecture audit",
+      "href": "../../.claude/state/wave-zero-dry-run/architecture-audit.md",
+      "location": {
+        "x": 380,
+        "y": 215,
+        "w": 124,
+        "h": 21
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "ROADMAP.md",
+      "href": "../agents/ROADMAP.md",
+      "location": {
+        "x": 1150,
+        "y": 272,
+        "w": 77,
+        "h": 16
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F1\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F1\nLog a round\nCORE\nshipping",
+      "class": "mf-flows-item has-path is-active",
+      "location": {
+        "x": 1421,
+        "y": 538,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F1",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 547,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Log a round",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 545,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 548,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 547,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F2\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F2\nView League Pulse / leaderboard\nCORE\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 568,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F2",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 577,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "View League Pulse / leaderboard",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 575,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 578,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 577,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F3\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F3\nFind a player + add as friend\nCORE\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 598,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F3",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 607,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Find a player + add as friend",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 605,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 608,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 607,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F4\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F4\nPost + settle a ParCoin wager\nCORE\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 628,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F4",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 637,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Post + settle a ParCoin wager",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 635,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 638,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 637,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F5\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F5\nBook or RSVP to a tee time\nCORE\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 658,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F5",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 667,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Book or RSVP to a tee time",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 665,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 668,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 667,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F6\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F6\nEarn an achievement + see Trophy Room update\nCORE\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 688,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F6",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 697,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Earn an achievement + see Trophy Room update",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 695,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 698,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 697,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F7\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F7\nLog a range session\nCORE\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 718,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F7",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 727,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Log a range session",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 725,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 728,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 727,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F8\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F8\nSpectator + Caddy verify\nCORE\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 748,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F8",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 757,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Spectator + Caddy verify",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 755,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 758,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 757,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F9\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F9\nMobile onboarding (first launch)\nCORE\nplanned",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 778,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F9",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 787,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Mobile onboarding (first launch)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 785,
+        "w": 175,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1670,
+        "y": 788,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "class": "mf-flows-status is-planned",
+      "location": {
+        "x": 1702,
+        "y": 787,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F10\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F10\nSettings — appearance + privacy + notifications\nSUPPLEMENTARY\nshipped",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 808,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F10",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 817,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Settings — appearance + privacy + notifications",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 815,
+        "w": 122,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1617,
+        "y": 818,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "class": "mf-flows-status is-shipped",
+      "location": {
+        "x": 1702,
+        "y": 817,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F11\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F11\nView Caddy Notes (member changelog)\nSUPPLEMENTARY\nshipped",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 838,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F11",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 847,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "View Caddy Notes (member changelog)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 845,
+        "w": 122,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1617,
+        "y": 848,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "class": "mf-flows-status is-shipped",
+      "location": {
+        "x": 1702,
+        "y": 847,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F12\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F12\nDirect message between members\nCORE\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 868,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F12",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 877,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Direct message between members",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 875,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 878,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 877,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F13\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F13\nLeague chat (group)\nCORE\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 898,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F13",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 907,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "League chat (group)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 905,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 908,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 907,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F14\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F14\nView Activity feed\nCORE\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 928,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F14",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 937,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "View Activity feed",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 935,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 938,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 937,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F15\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F15\nView season standings\nCORE\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 958,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F15",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 967,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "View season standings",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 965,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 968,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 967,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F16\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F16\nView Trophy Room\nSUPPLEMENTARY\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 988,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F16",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 997,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "View Trophy Room",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 995,
+        "w": 116,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1611,
+        "y": 998,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 997,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F17\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F17\nView course directory + course detail\nSUPPLEMENTARY\nshipped",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1018,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F17",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1027,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "View course directory + course detail",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1025,
+        "w": 122,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1617,
+        "y": 1028,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "class": "mf-flows-status is-shipped",
+      "location": {
+        "x": 1702,
+        "y": 1027,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F18\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F18\nSet up a scramble team\nSUPPLEMENTARY\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1048,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F18",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1057,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Set up a scramble team",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1055,
+        "w": 116,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1611,
+        "y": 1058,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 1057,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F19\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F19\nPlay a party game\nSUPPLEMENTARY\nplanned",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1078,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F19",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1087,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Play a party game",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1085,
+        "w": 122,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1617,
+        "y": 1088,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "class": "mf-flows-status is-planned",
+      "location": {
+        "x": 1702,
+        "y": 1087,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F20\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F20\nPost + claim a bounty\nSUPPLEMENTARY\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1108,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F20",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1117,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Post + claim a bounty",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1115,
+        "w": 116,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1611,
+        "y": 1118,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 1117,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F21\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F21\nChallenge another member\nSUPPLEMENTARY\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1138,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F21",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1147,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Challenge another member",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1145,
+        "w": 116,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1611,
+        "y": 1148,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 1147,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F22\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F22\nBuy cosmetic from shop\nSUPPLEMENTARY\nshipped",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1168,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F22",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1177,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Buy cosmetic from shop",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1175,
+        "w": 122,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1617,
+        "y": 1178,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "class": "mf-flows-status is-shipped",
+      "location": {
+        "x": 1702,
+        "y": 1177,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F23\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F23\nView rich list (top earners)\nSUPPLEMENTARY\nshipped",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1198,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F23",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1207,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "View rich list (top earners)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1205,
+        "w": 122,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1617,
+        "y": 1208,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "class": "mf-flows-status is-shipped",
+      "location": {
+        "x": 1702,
+        "y": 1207,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F24\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F24\nView round detail (any historical round)\nCORE\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1228,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F24",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1237,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "View round detail (any historical round)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1235,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 1238,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 1237,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F25\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F25\nView round history (my rounds list)\nSUPPLEMENTARY\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1258,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F25",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1267,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "View round history (my rounds list)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1265,
+        "w": 116,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1611,
+        "y": 1268,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 1267,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F26\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F26\nSync round (multi-player attestation)\nCORE\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1288,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F26",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1297,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Sync round (multi-player attestation)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1295,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 1298,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 1297,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F27\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F27\nTrip / multi-round event\nSUPPLEMENTARY\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1318,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F27",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1327,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Trip / multi-round event",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1325,
+        "w": 116,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1611,
+        "y": 1328,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 1327,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F28\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F28\nView Records (course records, season records)\nSUPPLEMENTARY\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1348,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F28",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1357,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "View Records (course records, season records)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1355,
+        "w": 116,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1611,
+        "y": 1358,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 1357,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F29\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F29\nView Aces (hole-in-one log)\nSUPPLEMENTARY\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1378,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F29",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1387,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "View Aces (hole-in-one log)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1385,
+        "w": 116,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1611,
+        "y": 1388,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 1387,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F30\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F30\nView season recap\nSUPPLEMENTARY\nplanned",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1408,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F30",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1417,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "View season recap",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1415,
+        "w": 122,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1617,
+        "y": 1418,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "class": "mf-flows-status is-planned",
+      "location": {
+        "x": 1702,
+        "y": 1417,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F31\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F31\nView FAQ / Rules\nSUPPLEMENTARY\nshipped",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1438,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F31",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1447,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "View FAQ / Rules",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1445,
+        "w": 122,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1617,
+        "y": 1448,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "class": "mf-flows-status is-shipped",
+      "location": {
+        "x": 1702,
+        "y": 1447,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F32\"][data-actor=\"commissioner\"][data-tier=\"admin\"]",
+      "text": "F32\nSend a member invite (sharable link)\nADMIN\nshipped",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1468,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F32",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1477,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Send a member invite (sharable link)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1475,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 1478,
+        "w": 30,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "class": "mf-flows-status is-shipped",
+      "location": {
+        "x": 1702,
+        "y": 1477,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F33\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F33\nView other member's public profile\nCORE\nshipping",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1498,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F33",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1507,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "View other member's public profile",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1505,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 1508,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 1507,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F34\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F34\nSocial action — trash talk / spotlight / victory lap\nSUPPLEMENTARY\nshipped",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1528,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F34",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1537,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Social action — trash talk / spotlight / victory lap",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1535,
+        "w": 122,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1617,
+        "y": 1538,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "class": "mf-flows-status is-shipped",
+      "location": {
+        "x": 1702,
+        "y": 1537,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F35\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F35\nToggle multi-league active state\nSUPPLEMENTARY\nshipped",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1558,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F35",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1567,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Toggle multi-league active state",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1565,
+        "w": 122,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1617,
+        "y": 1568,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "class": "mf-flows-status is-shipped",
+      "location": {
+        "x": 1702,
+        "y": 1567,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F36\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F36\nCreate or join an additional league\nSUPPLEMENTARY\nplanned",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1588,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F36",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1597,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Create or join an additional league",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1595,
+        "w": 122,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1617,
+        "y": 1598,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "class": "mf-flows-status is-planned",
+      "location": {
+        "x": 1702,
+        "y": 1597,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F37\"][data-actor=\"commissioner\"][data-tier=\"admin\"]",
+      "text": "F37\nCommissioner — approve / reject member application\nADMIN\nplanned",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1618,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F37",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1627,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Commissioner — approve / reject member application",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1625,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 1628,
+        "w": 30,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "class": "mf-flows-status is-planned",
+      "location": {
+        "x": 1702,
+        "y": 1627,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F38\"][data-actor=\"commissioner\"][data-tier=\"admin\"]",
+      "text": "F38\nCommissioner — suspend / restore member\nADMIN\nplanned",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1648,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F38",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1657,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Commissioner — suspend / restore member",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1655,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 1658,
+        "w": 30,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "class": "mf-flows-status is-planned",
+      "location": {
+        "x": 1702,
+        "y": 1657,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F39\"][data-actor=\"commissioner\"][data-tier=\"admin\"]",
+      "text": "F39\nCommissioner — transfer commissioner role\nADMIN\nplanned",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1678,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F39",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1687,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Commissioner — transfer commissioner role",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1685,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 1688,
+        "w": 30,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "class": "mf-flows-status is-planned",
+      "location": {
+        "x": 1702,
+        "y": 1687,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F40\"][data-actor=\"commissioner\"][data-tier=\"admin\"]",
+      "text": "F40\nCommissioner — delete league (cascade)\nADMIN\nplanned",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1708,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F40",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1717,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Commissioner — delete league (cascade)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1715,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 1718,
+        "w": 30,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "class": "mf-flows-status is-planned",
+      "location": {
+        "x": 1702,
+        "y": 1717,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F41\"][data-actor=\"founder\"][data-tier=\"admin\"]",
+      "text": "F41\nFounder — platform admin (cross-league)\nADMIN\nshipped",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1738,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F41",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1747,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Founder — platform admin (cross-league)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1745,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 1748,
+        "w": 30,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "class": "mf-flows-status is-shipped",
+      "location": {
+        "x": 1702,
+        "y": 1747,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F42\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F42\nFounder — report a member bug (in-app channel)\nSUPPLEMENTARY\nplanned",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1768,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F42",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1777,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Founder — report a member bug (in-app channel)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1775,
+        "w": 122,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1617,
+        "y": 1778,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "class": "mf-flows-status is-planned",
+      "location": {
+        "x": 1702,
+        "y": 1777,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F43\"][data-actor=\"founder\"][data-tier=\"admin\"]",
+      "text": "F43\nCrisis banner (founder remote toggle)\nADMIN\nplanned",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1798,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F43",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1807,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Crisis banner (founder remote toggle)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1805,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 1808,
+        "w": 30,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "class": "mf-flows-status is-planned",
+      "location": {
+        "x": 1702,
+        "y": 1807,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F44\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F44\nMobile Home screen (mobile Clubhouse Wave 3)\nCORE\nplanned",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1828,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F44",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1837,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Mobile Home screen (mobile Clubhouse Wave 3)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1835,
+        "w": 175,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1670,
+        "y": 1838,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "class": "mf-flows-status is-planned",
+      "location": {
+        "x": 1702,
+        "y": 1837,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F45\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F45\nMobile Play tab (start a round w/ GPS)\nCORE\nplanned",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1858,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F45",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1867,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Mobile Play tab (start a round w/ GPS)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1865,
+        "w": 175,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1670,
+        "y": 1868,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "class": "mf-flows-status is-planned",
+      "location": {
+        "x": 1702,
+        "y": 1867,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F46\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F46\nMobile Stats tab\nCORE\nplanned",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1888,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F46",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1897,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Mobile Stats tab",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1895,
+        "w": 175,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1670,
+        "y": 1898,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "class": "mf-flows-status is-planned",
+      "location": {
+        "x": 1702,
+        "y": 1897,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F47\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F47\nMobile Feed tab\nCORE\nplanned",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1918,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F47",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1927,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Mobile Feed tab",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1925,
+        "w": 175,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1670,
+        "y": 1928,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "class": "mf-flows-status is-planned",
+      "location": {
+        "x": 1702,
+        "y": 1927,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F48\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F48\nMobile More tab (Settings + Admin)\nSUPPLEMENTARY\nplanned",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1948,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F48",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1957,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Mobile More tab (Settings + Admin)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1955,
+        "w": 122,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1617,
+        "y": 1958,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "class": "mf-flows-status is-planned",
+      "location": {
+        "x": 1702,
+        "y": 1957,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F49\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F49\nIdentity — new-member signup (discriminator)\nCORE\nplanned",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 1978,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F49",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 1987,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Identity — new-member signup (discriminator)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 1985,
+        "w": 175,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1670,
+        "y": 1988,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "class": "mf-flows-status is-planned",
+      "location": {
+        "x": 1702,
+        "y": 1987,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F50\"][data-actor=\"founder\"][data-tier=\"admin\"]",
+      "text": "F50\nIdentity — founder-led migration of existing 20\nADMIN\nplanned",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 2008,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F50",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 2017,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Identity — founder-led migration of existing 20",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 2015,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 2018,
+        "w": 30,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "class": "mf-flows-status is-planned",
+      "location": {
+        "x": 1702,
+        "y": 2017,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F51\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F51\nSwing analyzer (video upload + analysis)\nCORE\nspec",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 2038,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F51",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 2047,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Swing analyzer (video upload + analysis)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 2045,
+        "w": 191,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1686,
+        "y": 2048,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-speculative",
+      "text": "spec",
+      "class": "mf-flows-status is-speculative",
+      "location": {
+        "x": 1718,
+        "y": 2047,
+        "w": 34,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F52\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F52\nTraining drills with dummy animations\nSUPPLEMENTARY\nspec",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 2068,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F52",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 2077,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Training drills with dummy animations",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 2075,
+        "w": 138,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1633,
+        "y": 2078,
+        "w": 77,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-speculative",
+      "text": "spec",
+      "class": "mf-flows-status is-speculative",
+      "location": {
+        "x": 1718,
+        "y": 2077,
+        "w": 34,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F53\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F53\nSubscription signup (Launch Phase A)\nCORE\nspec",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 2098,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F53",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 2107,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Subscription signup (Launch Phase A)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 2105,
+        "w": 191,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1686,
+        "y": 2108,
+        "w": 24,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-speculative",
+      "text": "spec",
+      "class": "mf-flows-status is-speculative",
+      "location": {
+        "x": 1718,
+        "y": 2107,
+        "w": 34,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F54\"][data-actor=\"founder\"][data-tier=\"admin\"]",
+      "text": "F54\nGrandfather logic for founding 20\nADMIN\nspec",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 2128,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F54",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 2137,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Grandfather logic for founding 20",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 2135,
+        "w": 186,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1681,
+        "y": 2138,
+        "w": 30,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-speculative",
+      "text": "spec",
+      "class": "mf-flows-status is-speculative",
+      "location": {
+        "x": 1718,
+        "y": 2137,
+        "w": 34,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F55\"][data-actor=\"system\"][data-tier=\"system\"]",
+      "text": "F55\nCron — Downloads watcher (decisions + amendments)\nSYSTEM\nshipped",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 2158,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F55",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 2167,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Cron — Downloads watcher (decisions + amendments)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 2165,
+        "w": 163,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SYSTEM",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1658,
+        "y": 2168,
+        "w": 35,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "class": "mf-flows-status is-shipped",
+      "location": {
+        "x": 1702,
+        "y": 2167,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F56\"][data-actor=\"system\"][data-tier=\"system\"]",
+      "text": "F56\nCron — Maintenance (daily 02:55)\nSYSTEM\nshipped",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 2188,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F56",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 2197,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Cron — Maintenance (daily 02:55)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 2195,
+        "w": 163,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SYSTEM",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1658,
+        "y": 2198,
+        "w": 35,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "class": "mf-flows-status is-shipped",
+      "location": {
+        "x": 1702,
+        "y": 2197,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F57\"][data-actor=\"agent\"][data-tier=\"system\"]",
+      "text": "F57\nCron — Overnight triage (daily 03:00)\nSYSTEM\nshipped",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 2218,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F57",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 2227,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Cron — Overnight triage (daily 03:00)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 2225,
+        "w": 163,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SYSTEM",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1658,
+        "y": 2228,
+        "w": 35,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "class": "mf-flows-status is-shipped",
+      "location": {
+        "x": 1702,
+        "y": 2227,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F58\"][data-actor=\"agent\"][data-tier=\"system\"]",
+      "text": "F58\nProposal lifecycle (proactive cycle → Founder review → apply)\nSYSTEM\nshipped",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 2248,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F58",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 2257,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Proposal lifecycle (proactive cycle → Founder review → apply)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 2255,
+        "w": 163,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SYSTEM",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1658,
+        "y": 2258,
+        "w": 35,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "class": "mf-flows-status is-shipped",
+      "location": {
+        "x": 1702,
+        "y": 2257,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F59\"][data-actor=\"agent\"][data-tier=\"system\"]",
+      "text": "F59\nAmendments lifecycle (governance change → Founder review → apply)\nSYSTEM\nshi",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 2278,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F59",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 2287,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Amendments lifecycle (governance change → Founder review → apply)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 2285,
+        "w": 158,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SYSTEM",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1653,
+        "y": 2288,
+        "w": 35,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "class": "mf-flows-status is-shipping",
+      "location": {
+        "x": 1696,
+        "y": 2287,
+        "w": 56,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F60\"][data-actor=\"agent\"][data-tier=\"system\"]",
+      "text": "F60\nDiscussion bubble lifecycle (open → vote → close)\nSYSTEM\nshipped",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 2308,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F60",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 2317,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Discussion bubble lifecycle (open → vote → close)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 2315,
+        "w": 163,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SYSTEM",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1658,
+        "y": 2318,
+        "w": 35,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "class": "mf-flows-status is-shipped",
+      "location": {
+        "x": 1702,
+        "y": 2317,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F61\"][data-actor=\"system\"][data-tier=\"system\"]",
+      "text": "F61\nHeartbeat cycle (regen-all chain)\nSYSTEM\nshipped",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 2338,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F61",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 2347,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Heartbeat cycle (regen-all chain)",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 2345,
+        "w": 163,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SYSTEM",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1658,
+        "y": 2348,
+        "w": 35,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "class": "mf-flows-status is-shipped",
+      "location": {
+        "x": 1702,
+        "y": 2347,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F62\"][data-actor=\"founder\"][data-tier=\"admin\"]",
+      "text": "F62\nToken observability + manual quota anchoring\nADMIN\nshipped",
+      "class": "mf-flows-item has-path",
+      "location": {
+        "x": 1421,
+        "y": 2368,
+        "w": 343,
+        "h": 30
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-id",
+      "text": "F62",
+      "class": "mf-flows-id",
+      "location": {
+        "x": 1447,
+        "y": 2377,
+        "w": 32,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-name",
+      "text": "Token observability + manual quota anchoring",
+      "class": "mf-flows-name",
+      "location": {
+        "x": 1487,
+        "y": 2375,
+        "w": 169,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "class": "mf-flows-tier-badge",
+      "location": {
+        "x": 1664,
+        "y": 2378,
+        "w": 30,
+        "h": 12
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "class": "mf-flows-status is-shipped",
+      "location": {
+        "x": 1702,
+        "y": 2377,
+        "w": 51,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-steps-item",
+      "text": "1\nactor.member → client.hq-home\nOpen Home\nMember lands on HQ Home (home.js) afte",
+      "class": "mf-steps-item",
+      "location": {
+        "x": 1421,
+        "y": 791,
+        "w": 358,
+        "h": 102
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-num",
+      "text": "1",
+      "class": "mf-step-num",
+      "location": {
+        "x": 1433,
+        "y": 799,
+        "w": 24,
+        "h": 24
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div",
+      "text": "actor.member → client.hq-home\nOpen Home\nMember lands on HQ Home (home.js) after ",
+      "location": {
+        "x": 1469,
+        "y": 799,
+        "w": 298,
+        "h": 85
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-from-to",
+      "text": "actor.member → client.hq-home",
+      "class": "mf-step-from-to",
+      "location": {
+        "x": 1469,
+        "y": 799,
+        "w": 298,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-label",
+      "text": "Open Home",
+      "class": "mf-step-label",
+      "location": {
+        "x": 1469,
+        "y": 813,
+        "w": 298,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-desc",
+      "text": "Member lands on HQ Home (home.js) after auth; League Pulse + active-round overri",
+      "class": "mf-step-desc",
+      "location": {
+        "x": 1469,
+        "y": 832,
+        "w": 298,
+        "h": 52
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-steps-item",
+      "text": "2\nclient.hq-home → client.hq-playnow\nTap 'Log a round'\nRouter.go('playnow') rout",
+      "class": "mf-steps-item",
+      "location": {
+        "x": 1421,
+        "y": 893,
+        "w": 358,
+        "h": 102
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-num",
+      "text": "2",
+      "class": "mf-step-num",
+      "location": {
+        "x": 1433,
+        "y": 901,
+        "w": 24,
+        "h": 24
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div",
+      "text": "client.hq-home → client.hq-playnow\nTap 'Log a round'\nRouter.go('playnow') routes",
+      "location": {
+        "x": 1469,
+        "y": 901,
+        "w": 298,
+        "h": 85
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-from-to",
+      "text": "client.hq-home → client.hq-playnow",
+      "class": "mf-step-from-to",
+      "location": {
+        "x": 1469,
+        "y": 901,
+        "w": 298,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-label",
+      "text": "Tap 'Log a round'",
+      "class": "mf-step-label",
+      "location": {
+        "x": 1469,
+        "y": 915,
+        "w": 298,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-desc",
+      "text": "Router.go('playnow') routes to src/pages/playnow.js. Form scaffolds via renderLo",
+      "class": "mf-step-desc",
+      "location": {
+        "x": 1469,
+        "y": 934,
+        "w": 298,
+        "h": 52
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-steps-item",
+      "text": "3\nclient.hq-playnow → data.courses\nCourse lookup\nPB.getCourseByName(name) hits i",
+      "class": "mf-steps-item",
+      "location": {
+        "x": 1421,
+        "y": 995,
+        "w": 358,
+        "h": 102
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-num",
+      "text": "3",
+      "class": "mf-step-num",
+      "location": {
+        "x": 1433,
+        "y": 1003,
+        "w": 24,
+        "h": 24
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div",
+      "text": "client.hq-playnow → data.courses\nCourse lookup\nPB.getCourseByName(name) hits in-",
+      "location": {
+        "x": 1469,
+        "y": 1003,
+        "w": 298,
+        "h": 85
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-from-to",
+      "text": "client.hq-playnow → data.courses",
+      "class": "mf-step-from-to",
+      "location": {
+        "x": 1469,
+        "y": 1003,
+        "w": 298,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-label",
+      "text": "Course lookup",
+      "class": "mf-step-label",
+      "location": {
+        "x": 1469,
+        "y": 1017,
+        "w": 298,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-desc",
+      "text": "PB.getCourseByName(name) hits in-memory cache (data.js:285); on miss, route to s",
+      "class": "mf-step-desc",
+      "location": {
+        "x": 1469,
+        "y": 1036,
+        "w": 298,
+        "h": 52
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-steps-item",
+      "text": "4\nclient.hq-playnow → data.rounds\nSubmit round\n_submitRoundEntry(formData) write",
+      "class": "mf-steps-item",
+      "location": {
+        "x": 1421,
+        "y": 1097,
+        "w": 358,
+        "h": 120
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-num",
+      "text": "4",
+      "class": "mf-step-num",
+      "location": {
+        "x": 1433,
+        "y": 1105,
+        "w": 24,
+        "h": 24
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div",
+      "text": "client.hq-playnow → data.rounds\nSubmit round\n_submitRoundEntry(formData) writes ",
+      "location": {
+        "x": 1469,
+        "y": 1105,
+        "w": 298,
+        "h": 103
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-from-to",
+      "text": "client.hq-playnow → data.rounds",
+      "class": "mf-step-from-to",
+      "location": {
+        "x": 1469,
+        "y": 1105,
+        "w": 298,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-label",
+      "text": "Submit round",
+      "class": "mf-step-label",
+      "location": {
+        "x": 1469,
+        "y": 1119,
+        "w": 298,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-desc",
+      "text": "_submitRoundEntry(formData) writes round doc with score, holeScores[], firData, ",
+      "class": "mf-step-desc",
+      "location": {
+        "x": 1469,
+        "y": 1138,
+        "w": 298,
+        "h": 70
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-steps-item",
+      "text": "5\ndata.rounds → data.members\nHandicap recompute\nRound write triggers handicap re",
+      "class": "mf-steps-item",
+      "location": {
+        "x": 1421,
+        "y": 1217,
+        "w": 358,
+        "h": 102
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-num",
+      "text": "5",
+      "class": "mf-step-num",
+      "location": {
+        "x": 1433,
+        "y": 1225,
+        "w": 24,
+        "h": 24
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div",
+      "text": "data.rounds → data.members\nHandicap recompute\nRound write triggers handicap reco",
+      "location": {
+        "x": 1469,
+        "y": 1225,
+        "w": 298,
+        "h": 85
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-from-to",
+      "text": "data.rounds → data.members",
+      "class": "mf-step-from-to",
+      "location": {
+        "x": 1469,
+        "y": 1225,
+        "w": 298,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-label",
+      "text": "Handicap recompute",
+      "class": "mf-step-label",
+      "location": {
+        "x": 1469,
+        "y": 1239,
+        "w": 298,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-desc",
+      "text": "Round write triggers handicap recompute via WHS calc in src/core/handicap.js; me",
+      "class": "mf-step-desc",
+      "location": {
+        "x": 1469,
+        "y": 1258,
+        "w": 298,
+        "h": 52
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-steps-item",
+      "text": "6\ndata.members → client.hq-home\nHome reflects new handicap\nHome re-renders on ne",
+      "class": "mf-steps-item",
+      "location": {
+        "x": 1421,
+        "y": 1319,
+        "w": 358,
+        "h": 102
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-num",
+      "text": "6",
+      "class": "mf-step-num",
+      "location": {
+        "x": 1433,
+        "y": 1327,
+        "w": 24,
+        "h": 24
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div",
+      "text": "data.members → client.hq-home\nHome reflects new handicap\nHome re-renders on next",
+      "location": {
+        "x": 1469,
+        "y": 1327,
+        "w": 298,
+        "h": 85
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-from-to",
+      "text": "data.members → client.hq-home",
+      "class": "mf-step-from-to",
+      "location": {
+        "x": 1469,
+        "y": 1327,
+        "w": 298,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-label",
+      "text": "Home reflects new handicap",
+      "class": "mf-step-label",
+      "location": {
+        "x": 1469,
+        "y": 1341,
+        "w": 298,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-desc",
+      "text": "Home re-renders on next visit (Router.go('home')) showing updated handicap + las",
+      "class": "mf-step-desc",
+      "location": {
+        "x": 1469,
+        "y": 1360,
+        "w": 298,
+        "h": 52
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.mf-steps-item",
+      "text": "7\nclient.hq-home → dist.gh-pages\nStatic serve via GH Pages\nAll client surfaces s",
+      "class": "mf-steps-item",
+      "location": {
+        "x": 1421,
+        "y": 1421,
+        "w": 358,
+        "h": 101
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-num",
+      "text": "7",
+      "class": "mf-step-num",
+      "location": {
+        "x": 1433,
+        "y": 1429,
+        "w": 24,
+        "h": 24
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div",
+      "text": "client.hq-home → dist.gh-pages\nStatic serve via GH Pages\nAll client surfaces ser",
+      "location": {
+        "x": 1469,
+        "y": 1429,
+        "w": 298,
+        "h": 85
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-from-to",
+      "text": "client.hq-home → dist.gh-pages",
+      "class": "mf-step-from-to",
+      "location": {
+        "x": 1469,
+        "y": 1429,
+        "w": 298,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-label",
+      "text": "Static serve via GH Pages",
+      "class": "mf-step-label",
+      "location": {
+        "x": 1469,
+        "y": 1443,
+        "w": 298,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.mf-step-desc",
+      "text": "All client surfaces serve from alrightlad.github.io/smoky-mountain-open per depl",
+      "class": "mf-step-desc",
+      "location": {
+        "x": 1469,
+        "y": 1462,
+        "w": 298,
+        "h": 52
+      }
+    }
+  ]
+}

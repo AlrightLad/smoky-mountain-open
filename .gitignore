@@ -67,3 +67,6 @@ logs/
 /.claude/state/main-flows-v2/reference-frames/_harness.html
 /.claude/state/main-flows-v2/reference-frames/*.mp4
 /.claude/state/main-flows-v2/reference-frames/*.m4s
+scripts/__pycache__/
+
+# Per AMD-020 auto-clean — exclude Python bytecode caches from tree

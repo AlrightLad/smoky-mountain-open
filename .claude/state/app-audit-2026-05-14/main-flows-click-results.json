@@ -1,0 +1,2684 @@
+{
+  "page": "main-flows.html",
+  "captured_at": "2026-05-14T21:46:56.930Z",
+  "enumeration_source": ".claude\\state\\app-audit-2026-05-14\\main-flows-interactives.json",
+  "summary": {
+    "total_attempted": 377,
+    "clicked": 25,
+    "navigated_skipped": 13,
+    "errored": 339,
+    "js_errors_emitted": 0
+  },
+  "js_errors": [],
+  "results": [
+    {
+      "selector_hint": "button.mf-rail-chip.is-on[data-actor=\"\"]",
+      "text": "ALL",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 201449,
+      "after_dom_size": 201449
+    },
+    {
+      "selector_hint": "button.mf-rail-chip[data-actor=\"member\"]",
+      "text": "MEMBER",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 201449,
+      "after_dom_size": 201619
+    },
+    {
+      "selector_hint": "button.mf-rail-chip[data-actor=\"commissioner\"]",
+      "text": "COMMISH",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 201619,
+      "after_dom_size": 202018
+    },
+    {
+      "selector_hint": "button.mf-rail-chip[data-actor=\"founder\"]",
+      "text": "FOUNDER",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 202018,
+      "after_dom_size": 202018
+    },
+    {
+      "selector_hint": "button.mf-rail-chip[data-actor=\"system\"]",
+      "text": "SYSTEM",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 202018,
+      "after_dom_size": 202038
+    },
+    {
+      "selector_hint": "button.mf-rail-chip[data-actor=\"agent\"]",
+      "text": "AGENT",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 202038,
+      "after_dom_size": 202028
+    },
+    {
+      "selector_hint": "button.mf-rail-chip.is-on[data-tier=\"\"]",
+      "text": "ALL TIERS",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 202028,
+      "after_dom_size": 202028
+    },
+    {
+      "selector_hint": "button.mf-rail-chip[data-tier=\"core\"]",
+      "text": "CORE",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 202028,
+      "after_dom_size": 202068
+    },
+    {
+      "selector_hint": "button.mf-rail-chip[data-tier=\"supplementary\"]",
+      "text": "SUPP",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 202068,
+      "after_dom_size": 202068
+    },
+    {
+      "selector_hint": "button.mf-rail-chip[data-tier=\"admin\"]",
+      "text": "ADMIN",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 202068,
+      "after_dom_size": 202068
+    },
+    {
+      "selector_hint": "button.mf-rail-chip[data-tier=\"system\"]",
+      "text": "SYSTEM",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 202068,
+      "after_dom_size": 202028
+    },
+    {
+      "selector_hint": "#mf-rail-clear",
+      "text": "CLEAR SELECTION",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 202028,
+      "after_dom_size": 199768
+    },
+    {
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "dashboard.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Activity",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "activity.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "discussion-bubbles.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Proposals",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "proposals.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Amendments",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "amendments.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Escalations",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "escalations.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.is-active",
+      "text": "Main Flows",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "main-flows.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Design System",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "design-system.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Tokens",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "token-usage.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Index",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "architecture audit",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../../.claude/state/wave-zero-dry-run/architecture-audit.md",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "ROADMAP.md",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../agents/ROADMAP.md",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F1\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F1\nLog a round\nCORE\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F1",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Log a round",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F2\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F2\nView League Pulse / leaderboard\nCORE\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F2",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "View League Pulse / leaderboard",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F3\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F3\nFind a player + add as friend\nCORE\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F3",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Find a player + add as friend",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F4\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F4\nPost + settle a ParCoin wager\nCORE\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F4",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Post + settle a ParCoin wager",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F5\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F5\nBook or RSVP to a tee time\nCORE\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F5",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Book or RSVP to a tee time",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F6\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F6\nEarn an achievement + see Trophy Room update\nCORE\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F6",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Earn an achievement + see Trophy Room update",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F7\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F7\nLog a range session\nCORE\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F7",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Log a range session",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F8\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F8\nSpectator + Caddy verify\nCORE\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F8",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Spectator + Caddy verify",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F9\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F9\nMobile onboarding (first launch)\nCORE\nplanned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F9",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Mobile onboarding (first launch)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F10\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F10\nSettings — appearance + privacy + notifications\nSUPPLEMENTARY\nshipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F10",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Settings — appearance + privacy + notifications",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F11\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F11\nView Caddy Notes (member changelog)\nSUPPLEMENTARY\nshipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F11",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "View Caddy Notes (member changelog)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F12\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F12\nDirect message between members\nCORE\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F12",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Direct message between members",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F13\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F13\nLeague chat (group)\nCORE\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F13",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "League chat (group)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F14\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F14\nView Activity feed\nCORE\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F14",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "View Activity feed",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F15\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F15\nView season standings\nCORE\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F15",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "View season standings",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F16\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F16\nView Trophy Room\nSUPPLEMENTARY\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F16",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "View Trophy Room",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F17\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F17\nView course directory + course detail\nSUPPLEMENTARY\nshipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F17",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "View course directory + course detail",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F18\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F18\nSet up a scramble team\nSUPPLEMENTARY\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F18",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Set up a scramble team",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F19\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F19\nPlay a party game\nSUPPLEMENTARY\nplanned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F19",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Play a party game",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F20\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F20\nPost + claim a bounty\nSUPPLEMENTARY\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F20",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Post + claim a bounty",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F21\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F21\nChallenge another member\nSUPPLEMENTARY\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F21",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Challenge another member",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F22\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F22\nBuy cosmetic from shop\nSUPPLEMENTARY\nshipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F22",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Buy cosmetic from shop",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F23\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F23\nView rich list (top earners)\nSUPPLEMENTARY\nshipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F23",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "View rich list (top earners)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F24\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F24\nView round detail (any historical round)\nCORE\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F24",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "View round detail (any historical round)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F25\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F25\nView round history (my rounds list)\nSUPPLEMENTARY\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F25",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "View round history (my rounds list)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F26\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F26\nSync round (multi-player attestation)\nCORE\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F26",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Sync round (multi-player attestation)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F27\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F27\nTrip / multi-round event\nSUPPLEMENTARY\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F27",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Trip / multi-round event",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F28\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F28\nView Records (course records, season records)\nSUPPLEMENTARY\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F28",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "View Records (course records, season records)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F29\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F29\nView Aces (hole-in-one log)\nSUPPLEMENTARY\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F29",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "View Aces (hole-in-one log)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F30\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F30\nView season recap\nSUPPLEMENTARY\nplanned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F30",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "View season recap",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F31\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F31\nView FAQ / Rules\nSUPPLEMENTARY\nshipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F31",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "View FAQ / Rules",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F32\"][data-actor=\"commissioner\"][data-tier=\"admin\"]",
+      "text": "F32\nSend a member invite (sharable link)\nADMIN\nshipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F32",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Send a member invite (sharable link)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F33\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F33\nView other member's public profile\nCORE\nshipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F33",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "View other member's public profile",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F34\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F34\nSocial action — trash talk / spotlight / victory lap\nSUPPLEMENTARY\nshipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F34",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Social action — trash talk / spotlight / victory lap",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F35\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F35\nToggle multi-league active state\nSUPPLEMENTARY\nshipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F35",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Toggle multi-league active state",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F36\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F36\nCreate or join an additional league\nSUPPLEMENTARY\nplanned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F36",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Create or join an additional league",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F37\"][data-actor=\"commissioner\"][data-tier=\"admin\"]",
+      "text": "F37\nCommissioner — approve / reject member application\nADMIN\nplanned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F37",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Commissioner — approve / reject member application",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F38\"][data-actor=\"commissioner\"][data-tier=\"admin\"]",
+      "text": "F38\nCommissioner — suspend / restore member\nADMIN\nplanned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F38",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Commissioner — suspend / restore member",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F39\"][data-actor=\"commissioner\"][data-tier=\"admin\"]",
+      "text": "F39\nCommissioner — transfer commissioner role\nADMIN\nplanned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F39",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Commissioner — transfer commissioner role",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F40\"][data-actor=\"commissioner\"][data-tier=\"admin\"]",
+      "text": "F40\nCommissioner — delete league (cascade)\nADMIN\nplanned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F40",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Commissioner — delete league (cascade)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F41\"][data-actor=\"founder\"][data-tier=\"admin\"]",
+      "text": "F41\nFounder — platform admin (cross-league)\nADMIN\nshipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F41",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Founder — platform admin (cross-league)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F42\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F42\nFounder — report a member bug (in-app channel)\nSUPPLEMENTARY\nplanned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F42",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Founder — report a member bug (in-app channel)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F43\"][data-actor=\"founder\"][data-tier=\"admin\"]",
+      "text": "F43\nCrisis banner (founder remote toggle)\nADMIN\nplanned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F43",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Crisis banner (founder remote toggle)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F44\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F44\nMobile Home screen (mobile Clubhouse Wave 3)\nCORE\nplanned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F44",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Mobile Home screen (mobile Clubhouse Wave 3)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F45\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F45\nMobile Play tab (start a round w/ GPS)\nCORE\nplanned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F45",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Mobile Play tab (start a round w/ GPS)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F46\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F46\nMobile Stats tab\nCORE\nplanned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F46",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Mobile Stats tab",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F47\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F47\nMobile Feed tab\nCORE\nplanned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F47",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Mobile Feed tab",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F48\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F48\nMobile More tab (Settings + Admin)\nSUPPLEMENTARY\nplanned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F48",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Mobile More tab (Settings + Admin)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F49\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F49\nIdentity — new-member signup (discriminator)\nCORE\nplanned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F49",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Identity — new-member signup (discriminator)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F50\"][data-actor=\"founder\"][data-tier=\"admin\"]",
+      "text": "F50\nIdentity — founder-led migration of existing 20\nADMIN\nplanned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F50",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Identity — founder-led migration of existing 20",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-planned",
+      "text": "planned",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F51\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F51\nSwing analyzer (video upload + analysis)\nCORE\nspec",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F51",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Swing analyzer (video upload + analysis)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-speculative",
+      "text": "spec",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F52\"][data-actor=\"member\"][data-tier=\"supplementary\"]",
+      "text": "F52\nTraining drills with dummy animations\nSUPPLEMENTARY\nspec",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F52",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Training drills with dummy animations",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SUPPLEMENTARY",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-speculative",
+      "text": "spec",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F53\"][data-actor=\"member\"][data-tier=\"core\"]",
+      "text": "F53\nSubscription signup (Launch Phase A)\nCORE\nspec",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F53",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Subscription signup (Launch Phase A)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "CORE",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-speculative",
+      "text": "spec",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F54\"][data-actor=\"founder\"][data-tier=\"admin\"]",
+      "text": "F54\nGrandfather logic for founding 20\nADMIN\nspec",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F54",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Grandfather logic for founding 20",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-speculative",
+      "text": "spec",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F55\"][data-actor=\"system\"][data-tier=\"system\"]",
+      "text": "F55\nCron — Downloads watcher (decisions + amendments)\nSYSTEM\nshipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F55",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Cron — Downloads watcher (decisions + amendments)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SYSTEM",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F56\"][data-actor=\"system\"][data-tier=\"system\"]",
+      "text": "F56\nCron — Maintenance (daily 02:55)\nSYSTEM\nshipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F56",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Cron — Maintenance (daily 02:55)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SYSTEM",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F57\"][data-actor=\"agent\"][data-tier=\"system\"]",
+      "text": "F57\nCron — Overnight triage (daily 03:00)\nSYSTEM\nshipped",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 199768,
+      "after_dom_size": 199194
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F57",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Cron — Overnight triage (daily 03:00)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SYSTEM",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F58\"][data-actor=\"agent\"][data-tier=\"system\"]",
+      "text": "F58\nProposal lifecycle (proactive cycle → Founder review → apply)\nSYSTEM\nshipped",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 199194,
+      "after_dom_size": 199254
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F58",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Proposal lifecycle (proactive cycle → Founder review → apply)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SYSTEM",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F59\"][data-actor=\"agent\"][data-tier=\"system\"]",
+      "text": "F59\nAmendments lifecycle (governance change → Founder review → apply)\nSYSTEM\nshi",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 199254,
+      "after_dom_size": 200554
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F59",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Amendments lifecycle (governance change → Founder review → apply)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SYSTEM",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipping",
+      "text": "shipping",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F60\"][data-actor=\"agent\"][data-tier=\"system\"]",
+      "text": "F60\nDiscussion bubble lifecycle (open → vote → close)\nSYSTEM\nshipped",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 200554,
+      "after_dom_size": 199212
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F60",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Discussion bubble lifecycle (open → vote → close)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SYSTEM",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F61\"][data-actor=\"system\"][data-tier=\"system\"]",
+      "text": "F61\nHeartbeat cycle (regen-all chain)\nSYSTEM\nshipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F61",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Heartbeat cycle (regen-all chain)",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "SYSTEM",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-flows-item.has-path[data-flow-id=\"F62\"][data-actor=\"founder\"][data-tier=\"admin\"]",
+      "text": "F62\nToken observability + manual quota anchoring\nADMIN\nshipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-id",
+      "text": "F62",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-name",
+      "text": "Token observability + manual quota anchoring",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-tier-badge",
+      "text": "ADMIN",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "span.mf-flows-status.is-shipped",
+      "text": "shipped",
+      "type": "cursor-pointer",
+      "outcome": "error",
+      "error": "locator.click: Timeout 1500ms exceeded."
+    },
+    {
+      "selector_hint": "li.mf-steps-item",
+      "text": "1\nactor.member → client.hq-home\nOpen Home\nMember lands on HQ Home (home.js) afte",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 199212,
+      "after_dom_size": 199230
+    },
+    {
+      "selector_hint": "div.mf-step-num",
+      "text": "1",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 199230,
+      "after_dom_size": 199230
+    },
+    {
+      "selector_hint": "div",
+      "text": "actor.member → client.hq-home\nOpen Home\nMember lands on HQ Home (home.js) after ",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 199230,
+      "after_dom_size": 78091
+    },
+    {
+      "selector_hint": "div.mf-step-from-to",
+      "text": "actor.member → client.hq-home",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-label",
+      "text": "Open Home",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-desc",
+      "text": "Member lands on HQ Home (home.js) after auth; League Pulse + active-round overri",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "li.mf-steps-item",
+      "text": "2\nclient.hq-home → client.hq-playnow\nTap 'Log a round'\nRouter.go('playnow') rout",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-num",
+      "text": "2",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div",
+      "text": "client.hq-home → client.hq-playnow\nTap 'Log a round'\nRouter.go('playnow') routes",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 78091,
+      "after_dom_size": 78091
+    },
+    {
+      "selector_hint": "div.mf-step-from-to",
+      "text": "client.hq-home → client.hq-playnow",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-label",
+      "text": "Tap 'Log a round'",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-desc",
+      "text": "Router.go('playnow') routes to src/pages/playnow.js. Form scaffolds via renderLo",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "li.mf-steps-item",
+      "text": "3\nclient.hq-playnow → data.courses\nCourse lookup\nPB.getCourseByName(name) hits i",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-num",
+      "text": "3",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div",
+      "text": "client.hq-playnow → data.courses\nCourse lookup\nPB.getCourseByName(name) hits in-",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 78091,
+      "after_dom_size": 78091
+    },
+    {
+      "selector_hint": "div.mf-step-from-to",
+      "text": "client.hq-playnow → data.courses",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-label",
+      "text": "Course lookup",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-desc",
+      "text": "PB.getCourseByName(name) hits in-memory cache (data.js:285); on miss, route to s",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "li.mf-steps-item",
+      "text": "4\nclient.hq-playnow → data.rounds\nSubmit round\n_submitRoundEntry(formData) write",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-num",
+      "text": "4",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div",
+      "text": "client.hq-playnow → data.rounds\nSubmit round\n_submitRoundEntry(formData) writes ",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 78091,
+      "after_dom_size": 78091
+    },
+    {
+      "selector_hint": "div.mf-step-from-to",
+      "text": "client.hq-playnow → data.rounds",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-label",
+      "text": "Submit round",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-desc",
+      "text": "_submitRoundEntry(formData) writes round doc with score, holeScores[], firData, ",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "li.mf-steps-item",
+      "text": "5\ndata.rounds → data.members\nHandicap recompute\nRound write triggers handicap re",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-num",
+      "text": "5",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div",
+      "text": "data.rounds → data.members\nHandicap recompute\nRound write triggers handicap reco",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 78091,
+      "after_dom_size": 78091
+    },
+    {
+      "selector_hint": "div.mf-step-from-to",
+      "text": "data.rounds → data.members",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-label",
+      "text": "Handicap recompute",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-desc",
+      "text": "Round write triggers handicap recompute via WHS calc in src/core/handicap.js; me",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "li.mf-steps-item",
+      "text": "6\ndata.members → client.hq-home\nHome reflects new handicap\nHome re-renders on ne",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-num",
+      "text": "6",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div",
+      "text": "data.members → client.hq-home\nHome reflects new handicap\nHome re-renders on next",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 78091,
+      "after_dom_size": 78091
+    },
+    {
+      "selector_hint": "div.mf-step-from-to",
+      "text": "data.members → client.hq-home",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-label",
+      "text": "Home reflects new handicap",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-desc",
+      "text": "Home re-renders on next visit (Router.go('home')) showing updated handicap + las",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "li.mf-steps-item",
+      "text": "7\nclient.hq-home → dist.gh-pages\nStatic serve via GH Pages\nAll client surfaces s",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-num",
+      "text": "7",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div",
+      "text": "client.hq-home → dist.gh-pages\nStatic serve via GH Pages\nAll client surfaces ser",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 78091,
+      "after_dom_size": 78091
+    },
+    {
+      "selector_hint": "div.mf-step-from-to",
+      "text": "client.hq-home → dist.gh-pages",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-label",
+      "text": "Static serve via GH Pages",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.mf-step-desc",
+      "text": "All client surfaces serve from alrightlad.github.io/smoky-mountain-open per depl",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    }
+  ]
+}
