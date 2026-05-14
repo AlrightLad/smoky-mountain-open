@@ -660,6 +660,13 @@
   },
   "recent_handoffs": [
     {
+      "scenario": "team-commit",
+      "from": "Zach Boogher",
+      "to": "main",
+      "created_at": "2026-05-14T13:41:53-04:00",
+      "subject": "main-flows R8: flow rail card style \u2014 transparent bg + hairline yellow ring when"
+    },
+    {
       "scenario": "cron-auto-commit",
       "from": "cron",
       "to": "PARBAUGHS Cron",
@@ -721,13 +728,6 @@
       "to": "PARBAUGHS Cron",
       "created_at": "2026-05-14T13:25:49-04:00",
       "subject": "cron(routine): auto-commit telemetry output before watcher preflight (2026-05-14"
-    },
-    {
-      "scenario": "team-commit",
-      "from": "Zach Boogher",
-      "to": "main",
-      "created_at": "2026-05-14T13:25:28-04:00",
-      "subject": "AMD-016 (operational question) + AMD-017 (continuation) + per-ship token attribu"
     }
   ],
   "recent_ships": [
@@ -855,7 +855,7 @@
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "_aggregate_counts": {
-    "events_total": 651,
+    "events_total": 659,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
@@ -871,7 +871,7 @@
   "quota_status": {
     "state": "empty",
     "as_of": "2026-05-14T15:24:53.5950065Z",
-    "age_seconds": 8191,
+    "age_seconds": 8347,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -882,7 +882,7 @@
     "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
   },
   "founder_queue": {
-    "as_of": "2026-05-14T17:41:26.126215+00:00",
+    "as_of": "2026-05-14T17:44:01.209666+00:00",
     "last_founder_visit": null,
     "governance_gates": {
       "amendments_pending": 0,
@@ -965,9 +965,9 @@
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-downloads-watcher.ps1",
           "last_fire_iso": "2026-05-14T17:41:05.927386+00:00",
-          "age_minutes": 0.3,
+          "age_minutes": 2.9,
           "status": "firing",
-          "label": "firing \u00b7 last fire 0.3min ago"
+          "label": "firing \u00b7 last fire 2.9min ago"
         },
         {
           "name": "maintenance",
@@ -975,9 +975,9 @@
           "cadence_minutes": 1440,
           "install_script": "scripts/cron/install-maintenance.ps1",
           "last_fire_iso": "2026-05-14T06:55:19.949406+00:00",
-          "age_minutes": 646.1,
+          "age_minutes": 648.7,
           "status": "firing",
-          "label": "firing \u00b7 last fire 646.1min ago"
+          "label": "firing \u00b7 last fire 648.7min ago"
         },
         {
           "name": "overnight-triage",
@@ -995,9 +995,9 @@
           "cadence_minutes": 120,
           "install_script": "scripts/cron/install-proposal-readiness-scanner.ps1",
           "last_fire_iso": "2026-05-14T05:04:49.834159+00:00",
-          "age_minutes": 756.6,
+          "age_minutes": 759.2,
           "status": "stale",
-          "label": "stale \u00b7 last fire 756.6min ago (cadence 120min)"
+          "label": "stale \u00b7 last fire 759.2min ago (cadence 120min)"
         },
         {
           "name": "token-sidecar",
@@ -1005,28 +1005,28 @@
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-sidecar.ps1",
           "last_fire_iso": "2026-05-14T15:24:53.642316+00:00",
-          "age_minutes": 136.5,
+          "age_minutes": 139.1,
           "status": "stale",
-          "label": "stale \u00b7 last fire 136.5min ago (cadence 5min)"
+          "label": "stale \u00b7 last fire 139.1min ago (cadence 5min)"
         }
       ],
       "last_regen_all": {
-        "ts": "2026-05-14 17:41 UTC",
-        "ts_iso": "2026-05-14T17:41:05.7853820Z",
+        "ts": "2026-05-14 17:43 UTC",
+        "ts_iso": "2026-05-14T17:43:34.7519367Z",
         "status": "PASS",
-        "age_minutes": 0.3,
+        "age_minutes": 0.4,
         "source": "heartbeat"
       },
       "working_tree": {
         "state": "dirty-cycling",
-        "label": "dirty (11 files) \u00b7 watcher cycling",
+        "label": "dirty (10 files) \u00b7 watcher cycling",
         "color": "var(--pb-warning)",
-        "dirty_count": 11,
+        "dirty_count": 10,
         "watcher_last_fire": "2026-05-14T17:41:05.927386+00:00",
-        "watcher_minutes_ago": 0.3
+        "watcher_minutes_ago": 2.9
       },
       "halts": [],
-      "round_trip_last_pass": "2026-05-14T17:41:05.7853820Z"
+      "round_trip_last_pass": "2026-05-14T17:43:34.7519367Z"
     },
     "activity_since_last_visit": {
       "_note": "Counts since last_founder_visit (null = since-forever)",

@@ -287,8 +287,9 @@
         .mf-step-desc { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; line-height: 1.45; font-family: var(--font-mono); }
 
         /* Caveats banner */
-        .mf-caveats { background: rgba(74,138,156,0.08); border: 1px solid var(--accent-teal); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3); font-size: 0.75rem; color: var(--text-secondary); line-height: 1.55; }
-        .mf-caveats strong { color: var(--accent-teal); }
+        /* Ship R11 (2026-05-14): caveats banner restyle for Janowiak theme fidelity â subtle gray bg + hairline border + brass strong text (was teal). Content preserved per Founder-lock db-2026-05-13-004. */
+        .mf-caveats { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3); font-size: 0.75rem; color: var(--text-secondary); line-height: 1.55; }
+        .mf-caveats strong { color: var(--accent-brass); }
     </style>
 </head>
 <body class="pb-app">
@@ -1364,7 +1365,7 @@
       ]
     }
   ],
-  "last_amended": "2026-05-14T17:41:26.302371+00:00",
+  "last_amended": "2026-05-14T17:44:01.369661+00:00",
   "doc_source": "docs/reports/_assets/main-flows-data.json",
   "schema_version": 1,
   "flow_rail": [
