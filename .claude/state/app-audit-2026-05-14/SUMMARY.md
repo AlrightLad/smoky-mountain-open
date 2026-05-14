@@ -53,13 +53,13 @@ NOT yet covered by this scaffolding:
 | M1 | Course directory average display — needs to derive front/back/18-hole from `holesMode` field | CLAUDE.md Known Bugs #1 | **FULLY CLOSED iter 16**: courses.js Member Stats section now derives `full18cr` + `front9cr` + `back9cr` separately. Primary "Members average (18)" stat-box gets "9-hole · F9 X · B9 Y" stat-sub when 9-hole rounds present. Courses with only 9-hole rounds show "Members average (9)" primary stat. Pattern matches H1 (members.js + trophyroom.js). |
 | M2 | Clubhouse calendar missing in-progress events — filter uses `startDate` only; needs end-date check | CLAUDE.md Known Bugs #2 | **STALE bug entry — ALREADY FIXED**: calendar.js:93 filter is `if(trip.startDate>=todayStr||ed>=todayStr)` where `ed=trip.endDate||trip.startDate` — correctly catches in-progress events (endDate>=today with startDate<today). Same line sets `time:"Happening now"` for in-progress. CLAUDE.md description is outdated. |
 | M3 | Courses button on season standings — should navigate to 2026 courses with rounds | CLAUDE.md Known Bugs #6 | Diagnosed; not yet fixed |
-| M4 | Courses button on player profiles — should show all courses with best round | CLAUDE.md Known Bugs #7 | Diagnosed; not yet fixed |
+| M4 | Courses button on player profiles — should show all courses with best round | CLAUDE.md Known Bugs #7 | **FULLY CLOSED iter 16**: members.js:419 + trophyroom.js:55 Courses stat-boxes now clickable; set `_courseViewMode='ours'` + navigate to courses page (shows all courses with league best round per course). Pattern matches M3 (standings Courses button). Per-player filter would be enhancement scope — current bug closure delivers "show all courses with best round" via Our Courses view. |
 
 ### LOW (2)
 
 | # | Finding | Source | Status |
 |---|---|---|---|
-| L1 | Sequoyah National finalization bar tap — missing iOS tap CSS properties | CLAUDE.md Known Bugs #3 | Diagnosed; not yet fixed |
+| L1 | Sequoyah National finalization bar tap — missing iOS tap CSS properties | CLAUDE.md Known Bugs #3 | **STALE bug entry — ALREADY FIXED**: scorecard.js:231 (`finishTripRound` button — the actual "Finalize" bar) has full iOS tap CSS: `-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none;min-height:48px`. Line 227 (Unlock) same. Home.js pending-finalize card uses `.tappable` class which provides `-webkit-tap-highlight-color:transparent + cursor:pointer + :active` (components.css:1693-1708). |
 | L2 | Scorecard logo — currently base64; should reference `logo.jpg` from repo | CLAUDE.md Known Bugs #8 | **STALE bug entry — ALREADY FIXED**: index.html:66 + 98 use `src="Logo.jpg"` (file reference). No base64 in scorecard logo path. The `data:image/jpeg;base64` in src/core/firebase.js:46 is `COURSE_DEFAULT_IMG` (default placeholder for missing course photos — different from scorecard logo). |
 
 ### POLISH (4, from iter 12-15 design-reviews)

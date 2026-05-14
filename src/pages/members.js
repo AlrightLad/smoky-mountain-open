@@ -413,7 +413,10 @@ function renderMemberDetailWithData(p) {
   // was destroyed by initCountAnimations setting textContent on it, which
   // wiped the inner stat-box entirely — v7.8.4 regression of v7.8.0's hook.
   h += '<div class="stat-box"><div class="stat-val" data-stat="round-count" data-count="' + rounds.length + '">0</div><div class="stat-label">Rounds</div></div>';
-  h += statBox(unique, "Courses");
+  // Courses stat is clickable — drops to Our Courses view (best rounds per course).
+  // Same pattern as M3 (standings Courses button).
+  var coursesIsNum = !isNaN(parseFloat(unique)) && isFinite(unique) && unique !== "—";
+  h += '<div class="stat-box" style="cursor:pointer" onclick="window._courseViewMode=\'ours\';Router.go(\'courses\')"><div class="stat-val"' + (coursesIsNum ? ' data-count="' + unique + '"' : '') + '>' + (coursesIsNum ? '0' : unique) + '</div><div class="stat-label">Courses <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div></div>';
   var ewIds = [pid]; if (p.claimedFrom) ewIds.push(p.claimedFrom);
   var eventWinsCount = PB.getTrips().filter(function(t){ return t.champion && ewIds.indexOf(t.champion) !== -1; }).length;
   h += statBox(eventWinsCount || p.wins || 0, "Wins");

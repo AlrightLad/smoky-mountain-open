@@ -52,7 +52,8 @@ function renderTrophyRoom(p) {
   var best9Sub = best9 ? '<div class="stat-sub" style="font-size:9px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px">9-hole · ' + best9.score + (best9.holesMode === "back9" ? " · B9" : " · F9") + '</div>' : '';
   h += '<div class="stat-box"><div class="stat-val" style="font-size:18px">' + (best ? best.score : "—") + '</div><div class="stat-label">' + (best9 ? "Best 18" : "Best") + '</div>' + best9Sub + '</div>';
   var unique = PB.getUniqueCourses(pid);
-  h += '<div class="stat-box"><div class="stat-val" style="font-size:18px">' + unique + '</div><div class="stat-label">Courses</div></div>';
+  // Courses stat-box is clickable — drops to Our Courses view (M4 fix iter 16).
+  h += '<div class="stat-box" style="cursor:pointer" onclick="window._courseViewMode=\'ours\';Router.go(\'courses\')"><div class="stat-val" style="font-size:18px">' + unique + '</div><div class="stat-label">Courses <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div></div>';
   h += '</div>';
   
   // Achievement grid container — will be re-rendered by filter toggle
