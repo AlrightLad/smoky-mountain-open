@@ -174,6 +174,7 @@
                 <a href="discussion-bubbles.html">Discussion Bubbles</a>
                 <a href="proposals.html">Proposals</a>
                 <a href="amendments.html">Amendments</a>
+                <a href="escalations.html">Escalations</a>
                 <a href="main-flows.html">Main Flows</a>
                 <a href="design-system.html">Design System</a>
                 <a href="token-usage.html">Tokens</a>
@@ -234,19 +235,15 @@
                         <span class="pb-kpi-value" data-fq="proposals-pending">&mdash;</span>
                         <span class="pb-kpi-sub">awaiting approval</span>
                     </a>
-                    <button type="button" class="pb-kpi-card pb-kpi-card--clickable" data-fq-gate="escalations" data-fq-toggle="escalation-detail" aria-expanded="false" aria-controls="fq-escalation-detail" style="cursor: pointer; text-align: left; border: 1px solid var(--border-subtle); background: transparent; font: inherit; color: inherit; padding: var(--space-3); border-radius: var(--radius-sm); transition: background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out); position: relative;">
+                    <a class="pb-kpi-card" data-fq-gate="escalations" href="escalations.html" style="text-decoration: none;">
                         <span class="pb-kpi-label">Open escalations</span>
                         <span class="pb-kpi-value" data-fq="escalations-count">&mdash;</span>
                         <span class="pb-kpi-sub" data-fq="escalations-summary">phase escalations</span>
-                        <span data-fq="escalations-chevron" aria-hidden="true" style="position: absolute; right: var(--space-2); top: var(--space-2); font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-tertiary); transition: transform var(--duration-fast) var(--ease-out);">&#9662;</span>
-                    </button>
+                    </a>
                 </div>
-                <!-- Rich escalation detail (Founder directive 2026-05-14: escalation panel needs functionality).
-                     Hidden by default; clicking the KPI card above toggles. Each card shows the team's
-                     proposed answer (per AMD-015), decision form, source link, age, and a Mark Resolved
-                     button that exports an escalation-decisions JSON file mirroring the amendments
-                     approval flow. -->
-                <div id="fq-escalation-detail" data-fq-section="escalation-detail" hidden role="region" aria-label="Escalation detail"></div>
+                <!-- Escalation lifecycle 2026-05-14: KPI card navigates to escalations.html
+                     mirroring amendments + proposals pattern. Inline-expansion UI (commit
+                     034a870) superseded; CSS + JS dead-code retained for Step 4 cleanup. -->
             </div>
 
             <!-- Sub-section: system health -->
@@ -562,7 +559,7 @@
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "_aggregate_counts": {
-    "events_total": 579,
+    "events_total": 587,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
@@ -578,7 +575,7 @@
   "quota_status": {
     "state": "empty",
     "as_of": "2026-05-14T15:24:53.5950065Z",
-    "age_seconds": 4850,
+    "age_seconds": 5275,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -589,7 +586,7 @@
     "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
   },
   "founder_queue": {
-    "as_of": "2026-05-14T16:45:44.100709+00:00",
+    "as_of": "2026-05-14T16:52:49.680057+00:00",
     "last_founder_visit": null,
     "governance_gates": {
       "amendments_pending": 1,
@@ -603,8 +600,8 @@
     "system_health": {
       "crons": {
         "downloads-watcher": {
-          "last_run": "2026-05-14T16-40-49Z",
-          "last_log": "2026-05-14T16-40-49Z-downloads-watcher.log"
+          "last_run": "2026-05-14T16-50-49Z",
+          "last_log": "2026-05-14T16-50-49Z-downloads-watcher.log"
         },
         "maintenance": {
           "last_run": "2026-05-14T06-55-01Z",

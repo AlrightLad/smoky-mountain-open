@@ -54,6 +54,7 @@ $steps = @(
     @{ Name = "aggregate-token-usage";   Script = "scripts/aggregate-token-usage.py" },
     @{ Name = "regen-proposals";         Script = "scripts/regen-proposals.py" },
     @{ Name = "regen-amendments";        Script = "scripts/regen-amendments.py" },
+    @{ Name = "regen-escalations";       Script = "scripts/regen-escalations.py" },
     @{ Name = "regen-dashboard";         Script = "scripts/regen-dashboard.py" },
     @{ Name = "regen-ops-views";         Script = "scripts/dry-run-regen-ops-views.py" },
     @{ Name = "regen-main-flows";        Script = "scripts/regen-main-flows.py" },
