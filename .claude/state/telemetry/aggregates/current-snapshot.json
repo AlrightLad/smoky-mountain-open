@@ -1,11 +1,11 @@
 {
-  "as_of": "2026-05-14T17:39:30.091096+00:00",
+  "as_of": "2026-05-14T17:41:25.572955+00:00",
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "quota_status": {
     "state": "empty",
     "as_of": "2026-05-14T15:24:53.5950065Z",
-    "age_seconds": 8076,
+    "age_seconds": 8191,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -17,7 +17,7 @@
   },
   "weekly_tokens": 7302000,
   "weekly_cost": 0.0,
-  "ships_this_week": 22,
+  "ships_this_week": 23,
   "ships_trend_7d": {
     "labels": [
       "Fri",
@@ -35,7 +35,7 @@
       0,
       0,
       4,
-      18
+      19
     ]
   },
   "handoffs_trend_7d": {
@@ -177,6 +177,18 @@
       "source_path": ".claude/state/amendments/applied/AMD-016-infrastructure-operational-question.md"
     },
     {
+      "id": "AMD-017",
+      "title": "Continuation discipline \u2014 consolidated reports are checkpoints, not stop conditions",
+      "kind": "amendment",
+      "status": "applied",
+      "completed_at": "2026-05-14T17:14:00Z",
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
+      "source_path": ".claude/state/amendments/applied/AMD-017-continuation-discipline.md"
+    },
+    {
       "id": "ESC-001",
       "title": "main-flows-v2 Phase 2 taxonomy + visual approach + speculative flows decisions",
       "kind": "escalation",
@@ -271,29 +283,17 @@
       "tokens_events_matched": 0,
       "cost_usd": null,
       "source_path": ".claude/state/amendments/applied/AMD-010-MAIN_FLOWS_v2.md"
-    },
-    {
-      "id": "AMD-009",
-      "title": "Senior Engineering Standard (dominant operating principle)",
-      "kind": "amendment",
-      "status": "applied",
-      "completed_at": "2026-05-14T03:05:00Z",
-      "tokens": null,
-      "tokens_source": "unknown",
-      "tokens_events_matched": 0,
-      "cost_usd": null,
-      "source_path": ".claude/state/amendments/applied/AMD-009-senior-engineering-standard.md"
     }
   ],
   "_aggregate_counts": {
-    "events_total": 645,
+    "events_total": 651,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
     "handoffs_total": 1,
     "bubbles_total": 7,
-    "proposals_pending": 1,
-    "proposals_approved": 0,
+    "proposals_pending": 0,
+    "proposals_approved": 1,
     "pause_durations_sec": [
       10,
       1800

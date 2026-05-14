@@ -236,7 +236,14 @@
         }
         .mf-flows-item.is-hidden { display: none; }
         .mf-flows-item:hover { background: var(--bg-elevated); }
-        .mf-flows-item.is-active { background: rgba(201,169,97,0.12); border-left: 3px solid var(--accent-brass); padding-left: calc(var(--space-3) - 3px); }
+        /* Ship R8 (2026-05-14): flow rail card style refinement per
+         * reference-spec.md § 14 — transparent bg + hairline yellow ring
+         * when active (was: brass-tint bg + 3px left-border). Preserves
+         * Founder-locked id chip + tier badge + status pill per Q2. */
+        .mf-flows-item.is-active {
+            background: transparent;
+            box-shadow: inset 0 0 0 1px var(--accent-brass);
+        }
         .mf-flows-item.has-path::before {
             content: "";
             width: 6px;
@@ -1357,7 +1364,7 @@
       ]
     }
   ],
-  "last_amended": "2026-05-14T17:39:30.642440+00:00",
+  "last_amended": "2026-05-14T17:41:26.302371+00:00",
   "doc_source": "docs/reports/_assets/main-flows-data.json",
   "schema_version": 1,
   "flow_rail": [
