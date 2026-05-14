@@ -119,6 +119,13 @@ try {
         '^\.claude/state/proposals/ship-readiness-deferred/.+\.json$',
         '^\.claude/state/overnight-agent/(logs|runs|reports)/.+',
 
+        # Cross-agent health aggregates (Founder directive 2026-05-14
+        # "TWO NEW SESSIONS"). Test/QA + Security agents write to
+        # .claude/state/aggregates/{test,security}-health.json. AMD-023's
+        # widening missed this newer path; adding now so watcher does not
+        # skip-dirty when either source agent has uncommitted writes.
+        '^\.claude/state/aggregates/.+\.(json|md)$',
+
         # Python bytecode (also gitignored where possible)
         '^scripts/__pycache__/.+\.pyc$',
         '^tests/__pycache__/.+\.pyc$',
