@@ -153,7 +153,12 @@
              + SVG arrow overlay + right rail (Flows list + Steps panel). This is the
              functional documentation interface. Do NOT flatten, do NOT replace with
              a table, do NOT remove the SVG arrows. Page-header standardization above
-             is the only allowed shell migration; the workspace below stays as-is. -->
+             is the only allowed shell migration; the workspace below stays as-is.
+             Issue-1 (2026-05-14): added clarifying section heading per Founder
+             diagnostic so the PRIMARY architecture view is visually anchored
+             vs the SECONDARY 62-flow filterable catalog below. -->
+        <h2 class="pb-section-title" style="margin-top: var(--space-6);">Architecture diagram <span class="pb-kpi-label" style="margin-left: var(--space-2); font-weight: normal;">PRIMARY · system topology + 8 main flows</span></h2>
+        <p class="pb-section-subtitle">6-column grid: member action through external service. Pick a flow on the right rail; the path lights up, arrows draw between nodes, the steps panel walks the journey. The 62-flow filterable catalog is BELOW this section.</p>
         <section class="mf-workspace">
             <div class="mf-grid-wrap">
                 <div class="mf-grid" id="mf-grid"></div>
@@ -189,7 +194,7 @@
         <section class="pb-section" id="flow-rail-section" style="margin-top: var(--space-8);">
             <div class="pb-page-title-row">
                 <div>
-                    <h2 class="pb-section-title">All flows · <span id="rail-total-count">—</span></h2>
+                    <h2 class="pb-section-title">All flows · <span id="rail-total-count">—</span> <span class="pb-kpi-label" style="margin-left: var(--space-2); font-weight: normal;">SECONDARY · 62-flow filterable catalog</span></h2>
                     <p class="pb-section-subtitle">Every user-facing + system flow across PARBAUGHS. Grouped by tier (Core / Supplementary / Admin / System). Filter by actor, status, or search by name. Decision rationale at <code>.claude/state/main-flows-v2/taxonomy-decision.md</code>.</p>
                 </div>
             </div>
@@ -1136,7 +1141,7 @@
       ]
     }
   ],
-  "last_amended": "2026-05-14T05:28:41.637876+00:00",
+  "last_amended": "2026-05-14T05:32:08.790078+00:00",
   "doc_source": "docs/reports/_assets/main-flows-data.json",
   "schema_version": 1,
   "flow_rail": [

@@ -1253,6 +1253,12 @@ def main():
 
     # main-flows.html: 6-col grid + SVG arrows + flow rail + steps panel
     mf_html = (REPORTS_SRC / "main-flows.html").read_text(encoding="utf-8")
+    # Order check (Issue-1 2026-05-14): architecture diagram (mf-workspace) MUST
+    # appear BEFORE the 62-flow filterable list (flow-rail-section). Phase 3
+    # spec: arch diagram is hero/PRIMARY, flow rail is catalog/SECONDARY.
+    mf_idx_workspace = mf_html.find('class="mf-workspace"')
+    mf_idx_flowrail = mf_html.find('id="flow-rail-section"')
+    arch_first = (mf_idx_workspace > 0 and (mf_idx_flowrail < 0 or mf_idx_workspace < mf_idx_flowrail))
     mf_checks = [
         ("mf-workspace",      'class="mf-workspace"' in mf_html),
         ("mf-grid",           'class="mf-grid"'      in mf_html or 'id="mf-grid"' in mf_html),
@@ -1260,6 +1266,7 @@ def main():
         ("SVG arrows",        '<svg class="mf-arrows"' in mf_html or 'id="mf-arrows"' in mf_html),
         ("flows list rail",   'class="mf-flows-list"' in mf_html or 'id="mf-flows-list"' in mf_html),
         ("steps panel",       'class="mf-steps-list"' in mf_html or 'id="mf-steps-list"' in mf_html),
+        ("arch-before-rail",  arch_first),
     ]
     mf_pass = all(ok for _, ok in mf_checks)
     if mf_pass:
