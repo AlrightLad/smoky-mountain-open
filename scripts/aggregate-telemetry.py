@@ -765,6 +765,38 @@ def aggregate():
         if d in date_to_idx:
             ships_per_day[date_to_idx[d]] += 1
 
+    # Handoffs per day — bucket walked-handoff markdown frontmatter entries
+    # (created_at) by event date. Per Founder directive 2026-05-14 DASHBOARD
+    # VIZ: ships/handoffs/bubbles 7-day table columns were hardcoded null
+    # in dashboard.html; now wire real per-day counts.
+    handoffs_per_day = [0] * 7
+    for h in handoffs:
+        ts = h.get("created_at") or ""
+        if not ts:
+            continue
+        try:
+            d = datetime.fromisoformat(ts.replace("Z", "+00:00")).date()
+        except (ValueError, TypeError):
+            continue
+        if d in date_to_idx:
+            handoffs_per_day[date_to_idx[d]] += 1
+
+    # Bubbles per day — count discussion bubble activity. Each bubble has
+    # opened_at (and possibly closed_at + flagged_for_founder). For the
+    # 7-day rollup we count opened-this-day events. (Closed/flagged events
+    # could be a separate column in future expansion.)
+    bubbles_per_day = [0] * 7
+    for b in bubbles:
+        ts = b.get("opened_at") or ""
+        if not ts:
+            continue
+        try:
+            d = datetime.fromisoformat(ts.replace("Z", "+00:00")).date()
+        except (ValueError, TypeError):
+            continue
+        if d in date_to_idx:
+            bubbles_per_day[date_to_idx[d]] += 1
+
     # Default weekly_tokens to the event-derived sum (lower bound).
     weekly_tokens = sum(tokens_by_role.values())  # 0 when meter is gap
     weekly_cost = 0.0  # No cost meter either
@@ -833,6 +865,8 @@ def aggregate():
         "weekly_cost": weekly_cost,
         "ships_this_week": sum(ships_per_day),
         "ships_trend_7d": {"labels": days, "values": ships_per_day},
+        "handoffs_trend_7d": {"labels": days, "values": handoffs_per_day},
+        "bubbles_trend_7d": {"labels": days, "values": bubbles_per_day},
         "halts_this_week": halts,
         "fiq_depth": _count_fiq_entries(ROOT),  # was hardcoded 0 (F3-era stub); now reads .claude/state/founder-input-queue/ entries per Issue-2 unstub 2026-05-14
         # Phase 6.6: no fictional cap. Real quota % comes from manual paste
