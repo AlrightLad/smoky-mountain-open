@@ -8,3 +8,4 @@
 {"ts": "2026-05-14T21:35:38Z", "proposal_id": "PROP-010", "decision": "approve", "note": "", "decided_at": "2026-05-14T20:35:42.362Z\r", "moved_to": ".claude/state/proposals/approved/PROP-010-design-bot-role-formalization.md"}
 {"ts": "2026-05-14T21:35:38Z", "proposal_id": "PROP-011", "decision": "approve", "note": "", "decided_at": "2026-05-14T20:49:05.813Z\r", "moved_to": ".claude/state/proposals/approved/PROP-011-vision-capability-install.md"}
 {"ts": "2026-05-14T21:35:39Z", "proposal_id": "PROP-012", "decision": "approve", "note": "", "decided_at": "2026-05-14T21:10:02.312Z", "moved_to": ".claude/state/proposals/approved/PROP-012-mandatory-visual-review-protocol.md"}
+{"ts": "2026-05-14T23:06:05Z", "proposal_id": "PROP-013", "decision": "approve", "note": "", "decided_at": "2026-05-14T22:30:12.823Z", "moved_to": ".claude/state/proposals/approved/PROP-013-button-coverage-gate.md"}
