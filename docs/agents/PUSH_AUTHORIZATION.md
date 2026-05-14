@@ -1,25 +1,3 @@
----
-id: AMD-018
-title: Self-governed push authorization
-type: edit-section
-target_canonical_path: docs/agents/PROTOCOLS.md
-target_section: Push authorization
-authored_by: claude-code
-authored_at: 2026-05-14T21:35:00Z
-status: pending
-operating_status: ACTIVE — operating immediately per Founder directive 2026-05-14 "SELF-GOVERNED PUSH AUTHORIZATION". Team pushes to origin/main when 10-gate criteria green; exceptions require Founder pre-authorization.
-depends_on:
-  - AMD-009
-  - AMD-016
-  - AMD-017
-  - PROP-006
-  - PROP-007
-  - PROP-008
-  - PROP-009
-  - PROP-010
-  - PROP-012
-  - PROP-013
----
 
 # AMD-018 — Self-governed push authorization
 
