@@ -71,3 +71,29 @@ scripts/__pycache__/
 
 # Per AMD-020 auto-clean — exclude Python bytecode caches from tree
 .playwright-mcp/
+
+# ─── Dashboard reports: local-only per Founder directive 2026-05-14 ─────
+# Dashboards in docs/reports/ are operational tooling for Founder's local
+# view only. Repo is PUBLIC on GitHub; committing dashboards exposes
+# proposal text, telemetry, agent activity to anyone with the repo URL.
+# Founder directive: "only I should have access to dashboard and it
+# should all be local not shared for anyone else to see".
+#
+# Regen pipeline (post-commit hook + cron) still writes these files; they
+# just stay local. Existing dashboards in git history are NOT removed by
+# this — that's a separate decision (filter-branch / BFG).
+/docs/reports/dashboard.html
+/docs/reports/amendments.html
+/docs/reports/proposals.html
+/docs/reports/escalations.html
+/docs/reports/activity.html
+/docs/reports/token-usage.html
+/docs/reports/discussion-bubbles.html
+/docs/reports/design-system.html
+/docs/reports/main-flows.html
+/docs/reports/index.html
+/docs/reports/_assets/
+/docs/reports/daily/
+/docs/reports/ships/
+/docs/reports/waves/
+/docs/reports/weekly/
