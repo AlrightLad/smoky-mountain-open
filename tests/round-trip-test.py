@@ -1734,6 +1734,52 @@ def main():
             else:
                 print(green("  ✓ install-cmd-surface  Founder-facing install command surfaces with execution-context-aware invocation (-ExecutionPolicy Bypass)"))
 
+    # Scroll reachability (Founder directive 2026-05-14 iter 8): for every
+    # scrollable surface the team ships, verify the LAST item is reachable +
+    # visible after scrolling. Behavior test (not just DOM presence) — catches
+    # scrollbar overlay covering last items, max-height too small for content
+    # plus chrome below, padding-bottom missing on scrollable container,
+    # collapsed <details> hiding last items. Implementation lives in
+    # scripts/visual-audit/verify-scroll-reachability.mjs; round-trip invokes
+    # it via node + parses exit code. Requires playwright (already installed
+    # for capture-dashboards.mjs).
+    print(cyan("\n[scroll-reachability] Last item reachable + visible on every scrollable surface..."))
+    import subprocess
+    scroll_script = ROOT / "scripts" / "visual-audit" / "verify-scroll-reachability.mjs"
+    if not scroll_script.exists():
+        print(yellow(f"  ~ scroll-reachability  script missing: {scroll_script.relative_to(ROOT)}"))
+    else:
+        try:
+            scroll_proc = subprocess.run(
+                ["node", str(scroll_script)],
+                capture_output=True, text=True, timeout=180,
+                cwd=str(ROOT),
+            )
+            if scroll_proc.returncode != 0:
+                # Stderr contains the failure detail; emit last few lines.
+                stderr_tail = (scroll_proc.stderr or "").strip().splitlines()[-6:]
+                stdout_tail = (scroll_proc.stdout or "").strip().splitlines()[-6:]
+                print(red(f"  ✗ scroll-reachability  exit {scroll_proc.returncode}"))
+                for ln in stdout_tail: print(red(f"      {ln}"))
+                for ln in stderr_tail: print(red(f"      {ln}"))
+                failures.append(("scroll-reachability", f"exit {scroll_proc.returncode}"))
+            else:
+                # Parse the summary line "[scroll-reachability] N pass / M fail / K skip"
+                summary = None
+                for ln in (scroll_proc.stdout or "").splitlines():
+                    if "pass /" in ln and "fail" in ln:
+                        summary = ln.strip()
+                        break
+                if summary:
+                    print(green(f"  ✓ scroll-reachability  {summary.split(']', 1)[-1].strip()}"))
+                else:
+                    print(green("  ✓ scroll-reachability  all surfaces pass"))
+        except subprocess.TimeoutExpired:
+            print(red("  ✗ scroll-reachability  timed out after 180s"))
+            failures.append(("scroll-reachability", "timeout"))
+        except FileNotFoundError:
+            print(yellow("  ~ scroll-reachability  node not on PATH; skipping (CI-only)"))
+
     # Escalations lifecycle discipline (Founder directive 2026-05-14):
     # 5-state lifecycle, schema integrity, no orphan markers, dashboard
     # count matches pending/ count.

@@ -147,6 +147,110 @@ conditions). The outcome-vs-task skill forces correct start
 conditions: before doing, the agent answers the 5 questions
 explicitly. See PROP-006 (this ship) for the skill proposal.
 
+---
+
+## Addendum (iter 8, 2026-05-14): two more failure modes + structural fixes
+
+After iter 7 shipped (the "frame-based replication"), Founder caught
+TWO more substrate-level gaps:
+
+### Observation 4 — "Founder eyes-test" still appearing as a verification step
+
+Iter 7 ship report literally ended with "Awaiting Founder eyes-test
+review of main-flows-desktop-wide.png against dave-frame-t000p5.png."
+Founder direction:
+
+> "The phrase 'Founder eyes-test' has appeared in every recent ship
+> report as the verification mechanism. That's a substrate failure.
+> Founder eyes are the LAST line of defense, not the primary verifier.
+> The team has captured main-flows screenshots, captured Janowiak
+> reference frames, full ability to render images side-by-side in
+> code. The team should be running side-by-side comparison ITSELF
+> and only escalating if visual gap analysis surfaces specific
+> concerns Founder must resolve."
+
+Root cause: the team treats Founder review as the verification
+TARGET when uncertain, instead of designing a more rigorous test.
+
+### Observation 5 — Scroll behavior not tested (only DOM presence)
+
+main-flows.html shipped with the rail scrollbar covering the last
+items (F58-F62 unreachable visually). Structural sentinels verified
+all 62 items in DOM but didn't verify a user could SEE them.
+
+Root cause: AMD-016 operational-question failure at sentinel-design
+time. "62 items in DOM" answers "are they declared?" not "can a user
+reach them?"
+
+### Fix 5 — Side-by-side comparison artifact as ship-close gate
+
+For any "match the reference" ship, before declaring ship-close:
+
+1. Capture current page screenshot at full viewport (1920x1080+)
+2. Open reference frame at native resolution
+3. Author an HTML side-by-side artifact at
+   `.claude/state/<area>/iter-N-side-by-side.html`:
+   - Two adjacent panes with both images
+   - Visual diff checklist table (composition / typography /
+     spacing / density / color discipline / active states /
+     subtle details — see iter 8 artifact for template)
+   - Each row marked PASS / APPROX / DEVIATION
+   - Summary count
+4. Render the HTML to PNG via
+   `node scripts/visual-audit/capture-side-by-side.mjs`
+5. Critic verifies:
+   - All rows PASS, or APPROX/DEVIATION explicitly rationalized
+   - Any unflagged DEVIATION blocks ship
+6. ONLY surface to Founder if:
+   - DEVIATION exists the team can't resolve autonomously
+   - Specific question with proposed answer per AMD-015
+   - Not "look at this for me"
+
+**"Founder eyes-test" is removed from Critic-protocol vocabulary.**
+The side-by-side artifact + checklist is the verification mechanism.
+
+### Fix 6 — Last-item-reachable smoke for scrollable surfaces
+
+Authored: `scripts/visual-audit/verify-scroll-reachability.mjs`
+
+Pattern: for every scrollable surface, scroll to its last item +
+verify ≥50% visible in viewport. Catches:
+- Scrollbar overlay covering last items
+- max-height too small for content + chrome below
+- Padding-bottom missing on scrollable container
+- Collapsed `<details>` hiding last items
+- Inner-container vs page-level scroll mistakes
+
+Surfaces currently covered:
+- main-flows.html `.mf-flows-list` (F62) — caught the iter 7 bug
+- dashboard.html `#recent-ships-table tbody`
+- amendments.html `#applied-list`
+- proposals.html `#proposal-list-shipped`
+- escalations.html `#applied-list`
+
+Wired into round-trip via new `[scroll-reachability]` block; ship
+blocks if any surface fails.
+
+### Fix 7 — Critic protocol vocabulary purge
+
+"Founder eyes-test" is BANNED in ship reports + Critic gates.
+
+Acceptable verification mechanisms in ship reports going forward:
+- Side-by-side comparison artifact + checklist (visual match)
+- Playwright behavior tests (scroll reachability, click handlers,
+  filters, etc.)
+- Round-trip sentinels (structural integrity)
+- Cross-browser smoke (chromium + firefox at 4 viewports)
+
+Unacceptable:
+- "Founder reviews..."
+- "Awaiting Founder eyes-test..."
+- "Trust-me-it-works"
+- Any phrasing that punts verification to manual Founder inspection
+
+If team cannot resolve a verification question autonomously → AMD-015
+escalation with proposed answer + rationale, NOT "look at this for me".
+
 ## Cross-references
 
 - `docs/agents/AUTONOMOUS_FAILURE_RECOVERY_v8.3.md` (3+ attempts

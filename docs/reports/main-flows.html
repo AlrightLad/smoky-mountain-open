@@ -148,7 +148,13 @@
         .mf-rail-chip:hover { color: var(--text-primary); border-color: var(--accent-brass); }
         .mf-rail-chip.is-on { background: var(--accent-brass); color: var(--bg-page); border-color: var(--accent-brass); }
 
-        .mf-flows-list { list-style: none; margin: var(--space-2) 0 0; padding: 0; max-height: 55vh; overflow-y: auto; }
+        /* Iter 8 (2026-05-14, Founder directive — F62 not visible past scrollbar):
+         * - padding-bottom gives last items clearance from the rail-clear button below
+         * - scrollbar-gutter: stable reserves scrollbar width so it does not overlay
+         *   the last row's content
+         * - increase max-height ceiling from 55vh to calc(100vh - 280px) so the list
+         *   uses available rail height instead of an arbitrary 55% cap */
+        .mf-flows-list { list-style: none; margin: var(--space-2) 0 0; padding: 0 0 var(--space-3) 0; max-height: calc(100vh - 280px); overflow-y: auto; scrollbar-gutter: stable; }
         /* Ship R9: clear-selection link at bottom of rail per reference-spec.md § 19.
          * Visible only when a flow is selected (toggled by JS). Subtle, mono, dim — no visual weight when off. */
         .mf-rail-clear {
