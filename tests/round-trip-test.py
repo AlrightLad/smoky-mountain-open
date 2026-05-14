@@ -621,6 +621,25 @@ def main():
                             else:
                                 total_steps = sum(len(f.get("steps") or []) for f in flows)
                                 print(green(f"  ✓ main-flows.html              {len(columns)} cols, {len(comp_ids)} components, {len(flows)} flows, {total_steps} steps — all refs resolve"))
+                # v2 Phase 3 iter 1: flow_rail must carry the 62-flow inventory.
+                rail = data.get("flow_rail")
+                if isinstance(rail, list):
+                    rail_required_fields = {"id", "name", "actor", "tier", "status"}
+                    bad_entries = [r for r in rail if not rail_required_fields.issubset(set(r.keys()))]
+                    if bad_entries:
+                        print(red(f"  ✗ main-flows.html flow_rail entries missing required fields: {len(bad_entries)}"))
+                        failures.append(("main-flows.html:flow_rail", f"missing fields in {len(bad_entries)} entries"))
+                    elif len(rail) != 62:
+                        print(red(f"  ✗ main-flows.html flow_rail has {len(rail)} entries (expected 62 per inventory)"))
+                        failures.append(("main-flows.html:flow_rail", f"count={len(rail)}"))
+                    else:
+                        tier_counts = {}
+                        for r in rail:
+                            tier_counts[r.get("tier", "?")] = tier_counts.get(r.get("tier", "?"), 0) + 1
+                        print(green(f"  ✓ main-flows.html flow_rail   62 entries · tiers {tier_counts}"))
+                else:
+                    print(red("  ✗ main-flows.html missing flow_rail (Phase 3 iter 1 required)"))
+                    failures.append(("main-flows.html:flow_rail", "missing flow_rail"))
             except json.JSONDecodeError as e:
                 print(red(f"  ✗ main-flows.html JSON parse: {e}"))
                 failures.append(("main-flows.html", f"JSON parse: {e}"))

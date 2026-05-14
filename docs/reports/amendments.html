@@ -163,6 +163,24 @@
         "operating_status": "ACTIVE \u2014 operating immediately per Founder directive 2026-05-14. Conflicts with prior amendments resolve in favor of this one for quality questions. Applies retroactively to in-flight work (AMD-008 application failure, token usage dashboard, anything currently broken must be brought to working state per these principles before new work begins).",
         "_body_preview": "# Senior Engineering Standard\n\nThe dominant operating principle for the PARBAUGHS orchestration team.\nSupersedes the \"ship MVP, iterate later\" pattern that was implicit in\nearlier protocols. When this principle conflicts with another, this one\nwins for quality questions. Founder is the only override.\n\n## 1. Diagnose to evidence, not to hypothesis\n\nWhen a system isn't working, the team produces EVI",
         "_filename": "AMD-009-senior-engineering-standard.md"
+      },
+      {
+        "id": "AMD-010",
+        "title": "MAIN_FLOWS v2 \u2014 62-flow inventory + Taxonomy E + filterable rail",
+        "target_canonical_path": "docs/agents/MAIN_FLOWS.md",
+        "source_draft_path": ".claude/state/amendments/pending/AMD-010-MAIN_FLOWS_v2.md",
+        "scope_summary": "Updates MAIN_FLOWS.md to reflect the v2 audit. Replaces the 8-MF-NN ranked baseline with a reference to the 62-flow inventory at .claude/state/main-flows-v2/flow-inventory.json, documents the chosen taxonomy (E hybrid; tier primary + status secondary) and visual approach (Option 1 filterable rail), and amends the F5 Metric Integrity Protocol cross-reference. The 8 MF-NN flows remain documented in the inventory as the highest-priority Core tier entries; their ordering is preserved per the stability invariant.",
+        "type": "replace-existing",
+        "section_anchor": null,
+        "depends_on": [],
+        "authored_by": "claude-code (orchestration team)",
+        "authored_at": "2026-05-14T03:35:00Z",
+        "bubble_of_record": "db-2026-05-14-001",
+        "estimate_tokens_to_apply": "3500",
+        "rollback_strategy": "git revert; MAIN_FLOWS.md is a documentation artifact, the inventory JSON + rendered dashboard are unaffected by rollback.",
+        "status": "pending",
+        "_body_preview": "# MAIN_FLOWS \u2014 v2\n\nThe team operationally uses this document as the canonical pointer to\nflow definitions. v1 (pre-2026-05-14) ranked 8 MF-NN flows as the\nmember-of-MAIN-FLOWS set. v2 reframes:\n\n- **Inventory is canonical:** every flow lives in\n  `.claude/state/main-flows-v2/flow-inventory.json`. 62 flows at\n  authoring; append-only per the stability invariant (F-IDs are\n  permanent).\n- **Renderin",
+        "_filename": "AMD-010-MAIN_FLOWS_v2.md"
       }
     ],
     "approved": [],
@@ -329,13 +347,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 1,
+    "pending": 2,
     "approved": 0,
     "deferred": 0,
     "applied_total": 8,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T03:33:06.583821+00:00",
+  "as_of": "2026-05-14T03:37:50.266524+00:00",
   "schema_version": 1,
   "archive_display_cap": 50
 }

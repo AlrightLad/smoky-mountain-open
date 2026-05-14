@@ -179,7 +179,173 @@
                 </div>
             </aside>
         </section>
+
+        <!-- ====================================================================
+             FLOW RAIL (W1 main-flows v2 Phase 3 iter 1)
+             62-flow inventory, filterable. Taxonomy E: tier primary + status
+             secondary. Source: .claude/state/main-flows-v2/flow-inventory.json
+             via data_block.flow_rail. Speculative flows: dashed-border treatment.
+             ==================================================================== -->
+        <section class="pb-section" id="flow-rail-section" style="margin-top: var(--space-8);">
+            <div class="pb-page-title-row">
+                <div>
+                    <h2 class="pb-section-title">All flows · <span id="rail-total-count">—</span></h2>
+                    <p class="pb-section-subtitle">Every user-facing + system flow across PARBAUGHS. Grouped by tier (Core / Supplementary / Admin / System). Filter by actor, status, or search by name. Decision rationale at <code>.claude/state/main-flows-v2/taxonomy-decision.md</code>.</p>
+                </div>
+            </div>
+
+            <div class="rail-filters" style="display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-4); align-items: center;">
+                <input type="search" id="rail-search" placeholder="Search flow id or name…" style="flex: 1 1 220px; min-width: 200px; padding: var(--space-2) var(--space-3); background: var(--pb-billiard-green-800); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--pb-chalk-50); font-family: var(--font-body); font-size: var(--text-sm);">
+                <div class="rail-chip-group" data-axis="actor" style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+                    <button class="rail-chip is-on" data-actor="">all actors</button>
+                    <button class="rail-chip" data-actor="member">member</button>
+                    <button class="rail-chip" data-actor="commissioner">commissioner</button>
+                    <button class="rail-chip" data-actor="founder">founder</button>
+                    <button class="rail-chip" data-actor="system">system</button>
+                    <button class="rail-chip" data-actor="agent">agent</button>
+                </div>
+                <div class="rail-chip-group" data-axis="status" style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+                    <button class="rail-chip is-on" data-status="">all statuses</button>
+                    <button class="rail-chip" data-status="shipped">shipped</button>
+                    <button class="rail-chip" data-status="shipping">shipping</button>
+                    <button class="rail-chip" data-status="planned">planned</button>
+                    <button class="rail-chip" data-status="speculative">speculative</button>
+                </div>
+            </div>
+
+            <div id="rail-groups"></div>
+        </section>
     </main>
+
+    <style>
+        /* Flow rail (Phase 3 iter 1). Builds on .pb-list / .pb-list-row /
+           .pb-avatar / .pb-badge primitives. Per-card decorations + filter
+           chip styling live here; primitives stay primitive. */
+        .rail-tier-group { margin-bottom: var(--space-6); }
+        .rail-tier-h { font-family: var(--font-display); font-size: var(--text-lg); color: var(--pb-chalk-50); margin: 0 0 var(--space-2) 0; display: flex; align-items: baseline; gap: var(--space-2); }
+        .rail-tier-h .rail-tier-count { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--pb-chalk-400); text-transform: uppercase; letter-spacing: 0.06em; }
+        .rail-tier-h--core          { color: var(--pb-brass-500); }
+        .rail-tier-h--supplementary { color: var(--pb-chalk-50); }
+        .rail-tier-h--admin         { color: var(--pb-warning); }
+        .rail-tier-h--system        { color: var(--pb-info); }
+
+        /* Per-card extras layered on .pb-list-row */
+        .rail-card { display: flex; align-items: center; gap: var(--space-3); }
+        .rail-id { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--pb-chalk-400); width: 40px; text-align: right; font-variant-numeric: tabular-nums; }
+        .rail-name { flex: 1; min-width: 0; color: var(--pb-chalk-50); font-size: var(--text-sm); }
+        .rail-goal { font-size: var(--text-2xs); color: var(--pb-chalk-400); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+        .rail-actor-badge { font-family: var(--font-mono); font-size: var(--text-2xs); text-transform: uppercase; letter-spacing: 0.06em; color: var(--pb-chalk-300); padding: 2px 6px; background: rgba(245,241,232,0.06); border-radius: 4px; }
+        .rail-status-chip { font-family: var(--font-mono); font-size: var(--text-2xs); text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 6px; border-radius: 4px; }
+        .rail-status-chip--shipped     { background: rgba(74,128,103,0.18); color: var(--pb-success); }
+        .rail-status-chip--shipping    { background: rgba(201,169,97,0.18); color: var(--pb-brass-500); }
+        .rail-status-chip--planned     { background: rgba(74,138,156,0.18); color: var(--pb-info); }
+        .rail-status-chip--speculative { background: rgba(216,208,192,0.10); color: var(--pb-chalk-400); }
+
+        /* Speculative card treatment — dashed border + muted */
+        .rail-card-row[data-status="speculative"] { border-style: dashed; opacity: 0.78; }
+
+        /* Filter chips */
+        .rail-chip { background: var(--pb-billiard-green-800); color: var(--pb-chalk-300); border: 1px solid var(--border-subtle); border-radius: var(--radius-pill); padding: 4px 12px; font-family: var(--font-mono); font-size: var(--text-2xs); text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: all var(--duration-fast) var(--ease-out); }
+        .rail-chip:hover { color: var(--pb-chalk-50); border-color: var(--pb-brass-500); }
+        .rail-chip.is-on { background: var(--pb-brass-500); color: var(--pb-billiard-green-900); border-color: var(--pb-brass-500); }
+        .rail-chip-group { display: flex; gap: var(--space-1); padding: 4px 8px; background: rgba(0,0,0,0.15); border-radius: var(--radius-pill); align-items: center; }
+
+        /* Hide cards excluded by filter without breaking layout */
+        .rail-card-row.is-hidden { display: none; }
+        .rail-tier-group.is-empty { display: none; }
+
+        /* Responsive: stack the row content tighter at narrow viewports */
+        @media (max-width: 720px) {
+            .rail-id { width: 32px; font-size: var(--text-2xs); }
+            .rail-goal { display: none; }
+        }
+        @media (max-width: 480px) {
+            .rail-actor-badge { display: none; }
+        }
+    </style>
+
+    <script>
+        (function () {
+            'use strict';
+            function esc(s) { return s == null ? '' : String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
+            function renderRail(data) {
+                var rail = (data && data.flow_rail) || [];
+                document.getElementById('rail-total-count').textContent = String(rail.length);
+                var TIERS = ['core', 'supplementary', 'admin', 'system'];
+                var groupsHost = document.getElementById('rail-groups');
+                if (!groupsHost) return;
+                groupsHost.innerHTML = TIERS.map(function (tier) {
+                    var inTier = rail.filter(function (f) { return f.tier === tier; });
+                    var rowsHtml = inTier.map(function (f) {
+                        var ships = (f.served_by_ships || []).join(', ');
+                        var goal = esc((f.primary_user_goal || '').slice(0, 80));
+                        return ''
+                            + '<li class="pb-list-row rail-card-row" '
+                                + 'data-id="' + esc(f.id) + '" '
+                                + 'data-name="' + esc((f.name || '').toLowerCase()) + '" '
+                                + 'data-actor="' + esc(f.actor) + '" '
+                                + 'data-status="' + esc(f.status) + '">'
+                            + '  <span class="rail-id">' + esc(f.id) + '</span>'
+                            + '  <div class="rail-name">' + esc(f.name)
+                            + '    <div class="rail-goal">' + goal + '</div>'
+                            + '  </div>'
+                            + '  <span class="rail-actor-badge">' + esc(f.actor) + '</span>'
+                            + '  <span class="rail-status-chip rail-status-chip--' + esc(f.status) + '">' + esc(f.status) + '</span>'
+                            + '</li>';
+                    }).join('');
+                    var tierLabel = tier.charAt(0).toUpperCase() + tier.slice(1);
+                    return ''
+                        + '<div class="rail-tier-group" data-tier="' + tier + '">'
+                        + '  <h3 class="rail-tier-h rail-tier-h--' + tier + '">' + tierLabel + ' <span class="rail-tier-count">' + inTier.length + ' flows</span></h3>'
+                        + '  <ol class="pb-list" role="list">' + rowsHtml + '</ol>'
+                        + '</div>';
+                }).join('');
+                bindFilters();
+            }
+            function applyFilters() {
+                var search = (document.getElementById('rail-search').value || '').toLowerCase().trim();
+                var actorBtn = document.querySelector('.rail-chip[data-actor].is-on');
+                var statusBtn = document.querySelector('.rail-chip[data-status].is-on');
+                var actor = actorBtn ? (actorBtn.getAttribute('data-actor') || '') : '';
+                var status = statusBtn ? (statusBtn.getAttribute('data-status') || '') : '';
+                document.querySelectorAll('.rail-card-row').forEach(function (row) {
+                    var rowActor = row.getAttribute('data-actor') || '';
+                    var rowStatus = row.getAttribute('data-status') || '';
+                    var name = row.getAttribute('data-name') || '';
+                    var id = (row.getAttribute('data-id') || '').toLowerCase();
+                    var actorOk = !actor || rowActor === actor;
+                    var statusOk = !status || rowStatus === status;
+                    var searchOk = !search || name.indexOf(search) !== -1 || id.indexOf(search) !== -1;
+                    row.classList.toggle('is-hidden', !(actorOk && statusOk && searchOk));
+                });
+                document.querySelectorAll('.rail-tier-group').forEach(function (g) {
+                    var hasVisible = g.querySelectorAll('.rail-card-row:not(.is-hidden)').length > 0;
+                    g.classList.toggle('is-empty', !hasVisible);
+                });
+            }
+            function bindFilters() {
+                document.getElementById('rail-search').addEventListener('input', applyFilters);
+                document.querySelectorAll('.rail-chip-group').forEach(function (group) {
+                    group.addEventListener('click', function (ev) {
+                        var btn = ev.target.closest('.rail-chip');
+                        if (!btn) return;
+                        group.querySelectorAll('.rail-chip').forEach(function (b) { b.classList.remove('is-on'); });
+                        btn.classList.add('is-on');
+                        applyFilters();
+                    });
+                });
+            }
+            function go() {
+                try {
+                    var raw = document.getElementById('report-data').textContent;
+                    var data = JSON.parse(raw);
+                    renderRail(data);
+                } catch (e) { console.error('flow-rail render failed', e); }
+            }
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go);
+            else go();
+        })();
+    </script>
 
     <script id="report-data" type="application/json">
 {
@@ -970,13 +1136,800 @@
       ]
     }
   ],
-  "last_amended": "2026-05-14T03:33:07.150853+00:00",
+  "last_amended": "2026-05-14T03:37:50.842152+00:00",
   "doc_source": "docs/reports/_assets/main-flows-data.json",
   "schema_version": 1,
+  "flow_rail": [
+    {
+      "id": "F1",
+      "name": "Log a round",
+      "actor": "member",
+      "tier": "core",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S4",
+        "W1.S2",
+        "W1.S1"
+      ],
+      "primary_user_goal": "Capture an 18- or 9-hole round during or after play and see it reflected in personal stats + league context.",
+      "estimated_steps_count": 7
+    },
+    {
+      "id": "F2",
+      "name": "View League Pulse / leaderboard",
+      "actor": "member",
+      "tier": "core",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S2",
+        "W1.S11",
+        "W1.S13",
+        "W1.S5",
+        "W1.S3"
+      ],
+      "primary_user_goal": "See what the league is doing right now \u2014 recent rounds, who is hot, where I stand.",
+      "estimated_steps_count": 4
+    },
+    {
+      "id": "F3",
+      "name": "Find a player + add as friend",
+      "actor": "member",
+      "tier": "core",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S3"
+      ],
+      "primary_user_goal": "Search for / discover another PARBAUGHS member, see their public profile, send a friend request.",
+      "estimated_steps_count": 5
+    },
+    {
+      "id": "F4",
+      "name": "Post + settle a ParCoin wager",
+      "actor": "member",
+      "tier": "core",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S6",
+        "W1.S3",
+        "W1.S4"
+      ],
+      "primary_user_goal": "Challenge another member to a stakes round, watch outcome, claim winnings or pay cleanly.",
+      "estimated_steps_count": 6
+    },
+    {
+      "id": "F5",
+      "name": "Book or RSVP to a tee time",
+      "actor": "member",
+      "tier": "core",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S8",
+        "W1.S11"
+      ],
+      "primary_user_goal": "Find a posted tee time matching availability, RSVP, see who else is in.",
+      "estimated_steps_count": 5
+    },
+    {
+      "id": "F6",
+      "name": "Earn an achievement + see Trophy Room update",
+      "actor": "member",
+      "tier": "core",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S9",
+        "W1.S4",
+        "W1.S6",
+        "W1.S10"
+      ],
+      "primary_user_goal": "Hit a milestone (PB, season champion, range-streak), see the celebration, browse Trophy Room.",
+      "estimated_steps_count": 5
+    },
+    {
+      "id": "F7",
+      "name": "Log a range session",
+      "actor": "member",
+      "tier": "core",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S10",
+        "W1.S2"
+      ],
+      "primary_user_goal": "Log a practice session (range, putting, short game), track drill focus, see aggregates.",
+      "estimated_steps_count": 6
+    },
+    {
+      "id": "F8",
+      "name": "Spectator + Caddy verify",
+      "actor": "member",
+      "tier": "core",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S5",
+        "W1.S11"
+      ],
+      "primary_user_goal": "As non-league-member, watch a member's round live and read Caddy Notes insights.",
+      "estimated_steps_count": 5
+    },
+    {
+      "id": "F9",
+      "name": "Mobile onboarding (first launch)",
+      "actor": "member",
+      "tier": "core",
+      "status": "planned",
+      "served_by_ships": [
+        "W1.S14",
+        "W3.M6"
+      ],
+      "primary_user_goal": "New invitee opens app for the first time, validates invite, completes signup, lands in product.",
+      "estimated_steps_count": 7
+    },
+    {
+      "id": "F10",
+      "name": "Settings \u2014 appearance + privacy + notifications",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "shipped",
+      "served_by_ships": [
+        "W1.S14"
+      ],
+      "primary_user_goal": "Adjust theme (light/dark), set public/private profile, configure push notifications.",
+      "estimated_steps_count": 4
+    },
+    {
+      "id": "F11",
+      "name": "View Caddy Notes (member changelog)",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "shipped",
+      "served_by_ships": [
+        "W1.I3"
+      ],
+      "primary_user_goal": "Read what changed in the app this week.",
+      "estimated_steps_count": 2
+    },
+    {
+      "id": "F12",
+      "name": "Direct message between members",
+      "actor": "member",
+      "tier": "core",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S12"
+      ],
+      "primary_user_goal": "Send a 1:1 message to another member (in-league or friend cross-league).",
+      "estimated_steps_count": 4
+    },
+    {
+      "id": "F13",
+      "name": "League chat (group)",
+      "actor": "member",
+      "tier": "core",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S12"
+      ],
+      "primary_user_goal": "Group conversation among all members of an active league.",
+      "estimated_steps_count": 3
+    },
+    {
+      "id": "F14",
+      "name": "View Activity feed",
+      "actor": "member",
+      "tier": "core",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S11",
+        "W1.S2"
+      ],
+      "primary_user_goal": "See chronological log of rounds, range sessions, achievements, chat highlights across the league.",
+      "estimated_steps_count": 3
+    },
+    {
+      "id": "F15",
+      "name": "View season standings",
+      "actor": "member",
+      "tier": "core",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S13",
+        "W1.S11"
+      ],
+      "primary_user_goal": "See per-season points (Stableford-style, handicap-adjusted) and where I rank.",
+      "estimated_steps_count": 3
+    },
+    {
+      "id": "F16",
+      "name": "View Trophy Room",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S9"
+      ],
+      "primary_user_goal": "Browse my earned achievements and progress toward unearned ones.",
+      "estimated_steps_count": 3
+    },
+    {
+      "id": "F17",
+      "name": "View course directory + course detail",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "shipped",
+      "served_by_ships": [
+        "W1.S13"
+      ],
+      "primary_user_goal": "Search for a course, see its layout, par, my history at it, league records there.",
+      "estimated_steps_count": 4
+    },
+    {
+      "id": "F18",
+      "name": "Set up a scramble team",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S7"
+      ],
+      "primary_user_goal": "Form a 2v2 / 3v3 / 4v4 team for an upcoming scramble round.",
+      "estimated_steps_count": 5
+    },
+    {
+      "id": "F19",
+      "name": "Play a party game",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "planned",
+      "served_by_ships": [
+        "W1.S7"
+      ],
+      "primary_user_goal": "Run a quick on-course game (e.g., closest-to-pin, longest drive) with the foursome.",
+      "estimated_steps_count": 4
+    },
+    {
+      "id": "F20",
+      "name": "Post + claim a bounty",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S6"
+      ],
+      "primary_user_goal": "Post a coin reward for a specific outcome (course record, hole-in-one, etc.); whoever achieves it claims.",
+      "estimated_steps_count": 5
+    },
+    {
+      "id": "F21",
+      "name": "Challenge another member",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S6"
+      ],
+      "primary_user_goal": "Issue a head-to-head challenge (different from wager \u2014 no ParCoin escrow required).",
+      "estimated_steps_count": 4
+    },
+    {
+      "id": "F22",
+      "name": "Buy cosmetic from shop",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "shipped",
+      "served_by_ships": [
+        "W1.I3"
+      ],
+      "primary_user_goal": "Spend earned ParCoins on a ring, banner, name effect, or title.",
+      "estimated_steps_count": 4
+    },
+    {
+      "id": "F23",
+      "name": "View rich list (top earners)",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "shipped",
+      "served_by_ships": [],
+      "primary_user_goal": "See league leaderboard of ParCoin lifetime earnings.",
+      "estimated_steps_count": 2
+    },
+    {
+      "id": "F24",
+      "name": "View round detail (any historical round)",
+      "actor": "member",
+      "tier": "core",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S4"
+      ],
+      "primary_user_goal": "Read scorecard, hole-by-hole, score relative to handicap, attestation status of any past round.",
+      "estimated_steps_count": 2
+    },
+    {
+      "id": "F25",
+      "name": "View round history (my rounds list)",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S4"
+      ],
+      "primary_user_goal": "Scroll my complete round history with filters by course / format / season.",
+      "estimated_steps_count": 3
+    },
+    {
+      "id": "F26",
+      "name": "Sync round (multi-player attestation)",
+      "actor": "member",
+      "tier": "core",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S4"
+      ],
+      "primary_user_goal": "Multiple players in the same round share a single scorecard with mutual attestation.",
+      "estimated_steps_count": 6
+    },
+    {
+      "id": "F27",
+      "name": "Trip / multi-round event",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S8"
+      ],
+      "primary_user_goal": "Group golf trip with multiple rounds tracked together (e.g., Smoky Mountain Open).",
+      "estimated_steps_count": 5
+    },
+    {
+      "id": "F28",
+      "name": "View Records (course records, season records)",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S9"
+      ],
+      "primary_user_goal": "Browse all-time records across courses and seasons.",
+      "estimated_steps_count": 3
+    },
+    {
+      "id": "F29",
+      "name": "View Aces (hole-in-one log)",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S9"
+      ],
+      "primary_user_goal": "Browse historical hole-in-one entries (rare achievement).",
+      "estimated_steps_count": 2
+    },
+    {
+      "id": "F30",
+      "name": "View season recap",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "planned",
+      "served_by_ships": [
+        "W1.S10"
+      ],
+      "primary_user_goal": "End-of-season retrospective: highlight reels, awards ceremony, season-stat aggregates.",
+      "estimated_steps_count": 4
+    },
+    {
+      "id": "F31",
+      "name": "View FAQ / Rules",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "shipped",
+      "served_by_ships": [],
+      "primary_user_goal": "Read how things work \u2014 handicaps, ParCoins, attestation, etiquette.",
+      "estimated_steps_count": 2
+    },
+    {
+      "id": "F32",
+      "name": "Send a member invite (sharable link)",
+      "actor": "commissioner",
+      "tier": "admin",
+      "status": "shipped",
+      "served_by_ships": [
+        "W1.S14"
+      ],
+      "primary_user_goal": "Generate an invite link for a prospective member; they validate and join.",
+      "estimated_steps_count": 3
+    },
+    {
+      "id": "F33",
+      "name": "View other member's public profile",
+      "actor": "member",
+      "tier": "core",
+      "status": "shipping",
+      "served_by_ships": [
+        "W1.S3"
+      ],
+      "primary_user_goal": "Read another member's public profile \u2014 avatar, handicap, level, home course, bio.",
+      "estimated_steps_count": 2
+    },
+    {
+      "id": "F34",
+      "name": "Social action \u2014 trash talk / spotlight / victory lap",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "shipped",
+      "served_by_ships": [
+        "W1.S6",
+        "W1.S11"
+      ],
+      "primary_user_goal": "Apply a coin-cost social effect to another member (Spotlight of Shame, Victory Lap, etc.).",
+      "estimated_steps_count": 4
+    },
+    {
+      "id": "F35",
+      "name": "Toggle multi-league active state",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "shipped",
+      "served_by_ships": [
+        "W1.S13"
+      ],
+      "primary_user_goal": "Switch which league is the 'active' lens for the app (per-league scoring + members visible).",
+      "estimated_steps_count": 3
+    },
+    {
+      "id": "F36",
+      "name": "Create or join an additional league",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "planned",
+      "served_by_ships": [
+        "W1.S13"
+      ],
+      "primary_user_goal": "Start a new league (any member can host) or accept invite to join another.",
+      "estimated_steps_count": 5
+    },
+    {
+      "id": "F37",
+      "name": "Commissioner \u2014 approve / reject member application",
+      "actor": "commissioner",
+      "tier": "admin",
+      "status": "planned",
+      "served_by_ships": [
+        "W1.S14"
+      ],
+      "primary_user_goal": "Review pending member applications, approve or reject with note.",
+      "estimated_steps_count": 4
+    },
+    {
+      "id": "F38",
+      "name": "Commissioner \u2014 suspend / restore member",
+      "actor": "commissioner",
+      "tier": "admin",
+      "status": "planned",
+      "served_by_ships": [
+        "W1.S14"
+      ],
+      "primary_user_goal": "Temporarily suspend a member (rule violation) or restore from suspension.",
+      "estimated_steps_count": 4
+    },
+    {
+      "id": "F39",
+      "name": "Commissioner \u2014 transfer commissioner role",
+      "actor": "commissioner",
+      "tier": "admin",
+      "status": "planned",
+      "served_by_ships": [
+        "W1.S14"
+      ],
+      "primary_user_goal": "Hand off commissioner role to another league member.",
+      "estimated_steps_count": 5
+    },
+    {
+      "id": "F40",
+      "name": "Commissioner \u2014 delete league (cascade)",
+      "actor": "commissioner",
+      "tier": "admin",
+      "status": "planned",
+      "served_by_ships": [
+        "W1.S14"
+      ],
+      "primary_user_goal": "Permanently delete a league (rare; requires confirmation + cascade).",
+      "estimated_steps_count": 6
+    },
+    {
+      "id": "F41",
+      "name": "Founder \u2014 platform admin (cross-league)",
+      "actor": "founder",
+      "tier": "admin",
+      "status": "shipped",
+      "served_by_ships": [
+        "W1.S14"
+      ],
+      "primary_user_goal": "Founder-only platform-wide admin actions (impersonate, cross-league audit).",
+      "estimated_steps_count": 4
+    },
+    {
+      "id": "F42",
+      "name": "Founder \u2014 report a member bug (in-app channel)",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "planned",
+      "served_by_ships": [
+        "W1.I1"
+      ],
+      "primary_user_goal": "Member files a bug report from inside the app (annotated screenshot + steps).",
+      "estimated_steps_count": 5
+    },
+    {
+      "id": "F43",
+      "name": "Crisis banner (founder remote toggle)",
+      "actor": "founder",
+      "tier": "admin",
+      "status": "planned",
+      "served_by_ships": [
+        "W1.I5"
+      ],
+      "primary_user_goal": "Founder displays a NOTICE / ALERT / CRITICAL banner to all members (e.g., maintenance window, outage).",
+      "estimated_steps_count": 3
+    },
+    {
+      "id": "F44",
+      "name": "Mobile Home screen (mobile Clubhouse Wave 3)",
+      "actor": "member",
+      "tier": "core",
+      "status": "planned",
+      "served_by_ships": [
+        "W3.M2"
+      ],
+      "primary_user_goal": "Mobile equivalent of Home \u2014 CTA card + headline stats + League Pulse + agate.",
+      "estimated_steps_count": 3
+    },
+    {
+      "id": "F45",
+      "name": "Mobile Play tab (start a round w/ GPS)",
+      "actor": "member",
+      "tier": "core",
+      "status": "planned",
+      "served_by_ships": [
+        "W3.M3"
+      ],
+      "primary_user_goal": "Mobile Play tab \u2014 course / format / players / settings; uses GPS, offline queue.",
+      "estimated_steps_count": 6
+    },
+    {
+      "id": "F46",
+      "name": "Mobile Stats tab",
+      "actor": "member",
+      "tier": "core",
+      "status": "planned",
+      "served_by_ships": [
+        "W3.M4"
+      ],
+      "primary_user_goal": "Mobile Stats \u2014 KPI row + handicap trend + drill-in section list + share-as-image.",
+      "estimated_steps_count": 4
+    },
+    {
+      "id": "F47",
+      "name": "Mobile Feed tab",
+      "actor": "member",
+      "tier": "core",
+      "status": "planned",
+      "served_by_ships": [
+        "W3.M5"
+      ],
+      "primary_user_goal": "Mobile Feed \u2014 sub-segmented (rounds / range / chat highlights) with image attachments + mentions + pin.",
+      "estimated_steps_count": 4
+    },
+    {
+      "id": "F48",
+      "name": "Mobile More tab (Settings + Admin)",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "planned",
+      "served_by_ships": [
+        "W3.M6"
+      ],
+      "primary_user_goal": "Mobile More \u2014 Play / League / You / League mgmt / About sections; settings, admin (commissioner-only).",
+      "estimated_steps_count": 3
+    },
+    {
+      "id": "F49",
+      "name": "Identity \u2014 new-member signup (discriminator)",
+      "actor": "member",
+      "tier": "core",
+      "status": "planned",
+      "served_by_ships": [
+        "W4.I4"
+      ],
+      "primary_user_goal": "New member signs up under the Discord-style displayname#XXXX identity primitive.",
+      "estimated_steps_count": 5
+    },
+    {
+      "id": "F50",
+      "name": "Identity \u2014 founder-led migration of existing 20",
+      "actor": "founder",
+      "tier": "admin",
+      "status": "planned",
+      "served_by_ships": [
+        "W4.I2"
+      ],
+      "primary_user_goal": "Founder runs production migration assigning discriminators to existing 20 members.",
+      "estimated_steps_count": 4
+    },
+    {
+      "id": "F51",
+      "name": "Swing analyzer (video upload + analysis)",
+      "actor": "member",
+      "tier": "core",
+      "status": "speculative",
+      "served_by_ships": [
+        "Launch.PhaseC"
+      ],
+      "primary_user_goal": "Upload swing video, receive AI analysis with form recommendations.",
+      "estimated_steps_count": 6
+    },
+    {
+      "id": "F52",
+      "name": "Training drills with dummy animations",
+      "actor": "member",
+      "tier": "supplementary",
+      "status": "speculative",
+      "served_by_ships": [
+        "Launch.PhaseC"
+      ],
+      "primary_user_goal": "Walk through animated practice drills (chip, putt, swing path).",
+      "estimated_steps_count": 4
+    },
+    {
+      "id": "F53",
+      "name": "Subscription signup (Launch Phase A)",
+      "actor": "member",
+      "tier": "core",
+      "status": "speculative",
+      "served_by_ships": [
+        "Launch.PhaseA"
+      ],
+      "primary_user_goal": "Member subscribes to Pro / League+ tier per Founder-defined pricing model.",
+      "estimated_steps_count": 5
+    },
+    {
+      "id": "F54",
+      "name": "Grandfather logic for founding 20",
+      "actor": "founder",
+      "tier": "admin",
+      "status": "speculative",
+      "served_by_ships": [
+        "Launch.PhaseA"
+      ],
+      "primary_user_goal": "Founding 20 retain free / discounted access per locked Q.",
+      "estimated_steps_count": 2
+    },
+    {
+      "id": "F55",
+      "name": "Cron \u2014 Downloads watcher (decisions + amendments)",
+      "actor": "system",
+      "tier": "system",
+      "status": "shipped",
+      "served_by_ships": [
+        "PLC-5",
+        "Amendments-2/4"
+      ],
+      "primary_user_goal": "Every 5 min, scan Founder's Downloads for decisions-*.json / amendments-*.json and apply.",
+      "estimated_steps_count": 6
+    },
+    {
+      "id": "F56",
+      "name": "Cron \u2014 Maintenance (daily 02:55)",
+      "actor": "system",
+      "tier": "system",
+      "status": "shipped",
+      "served_by_ships": [
+        "FIX-B"
+      ],
+      "primary_user_goal": "Daily git fetch + GC + junk quarantine + log rotation + dep updates + state audit + regen-all sanity + daily report + local commit.",
+      "estimated_steps_count": 10
+    },
+    {
+      "id": "F57",
+      "name": "Cron \u2014 Overnight triage (daily 03:00)",
+      "actor": "agent",
+      "tier": "system",
+      "status": "shipped",
+      "served_by_ships": [
+        "OT-2..5"
+      ],
+      "primary_user_goal": "Daily 4-hour-budget Claude Code launch to process FIQ + bug reports overnight.",
+      "estimated_steps_count": 5
+    },
+    {
+      "id": "F58",
+      "name": "Proposal lifecycle (proactive cycle \u2192 Founder review \u2192 apply)",
+      "actor": "agent",
+      "tier": "system",
+      "status": "shipped",
+      "served_by_ships": [
+        "PLC-1..7"
+      ],
+      "primary_user_goal": "Proactive orchestrator generates 1-3 proposals; Founder reviews via proposals.html; watcher applies decisions.",
+      "estimated_steps_count": 8
+    },
+    {
+      "id": "F59",
+      "name": "Amendments lifecycle (governance change \u2192 Founder review \u2192 apply)",
+      "actor": "agent",
+      "tier": "system",
+      "status": "shipping",
+      "served_by_ships": [
+        "Amendments-1..4"
+      ],
+      "primary_user_goal": "Agent authors governance amendment draft; Founder reviews via amendments.html; watcher applies via apply-amendments.sh.",
+      "estimated_steps_count": 8
+    },
+    {
+      "id": "F60",
+      "name": "Discussion bubble lifecycle (open \u2192 vote \u2192 close)",
+      "actor": "agent",
+      "tier": "system",
+      "status": "shipped",
+      "served_by_ships": [
+        "PLC-3"
+      ],
+      "primary_user_goal": "Multi-agent deliberation with voters / bubble-only participants; closes on quorum or stays open long-running.",
+      "estimated_steps_count": 6
+    },
+    {
+      "id": "F61",
+      "name": "Heartbeat cycle (regen-all chain)",
+      "actor": "system",
+      "tier": "system",
+      "status": "shipped",
+      "served_by_ships": [
+        "DC-5",
+        "regen-all chain"
+      ],
+      "primary_user_goal": "Every cron fire: telemetry aggregation \u2192 reports regen \u2192 ops views regen \u2192 round-trip test.",
+      "estimated_steps_count": 9
+    },
+    {
+      "id": "F62",
+      "name": "Token observability + manual quota anchoring",
+      "actor": "founder",
+      "tier": "admin",
+      "status": "shipped",
+      "served_by_ships": [
+        "TU-1..5",
+        "DC-9"
+      ],
+      "primary_user_goal": "Founder sees where tokens went (by agent / cron / ship) and anchors percentages via manual paste from claude.ai billing.",
+      "estimated_steps_count": 5
+    }
+  ],
+  "flow_rail_counts": {
+    "by_tier": {
+      "core": 23,
+      "supplementary": 22,
+      "admin": 10,
+      "system": 7
+    },
+    "by_actor": {
+      "member": 45,
+      "commissioner": 5,
+      "founder": 5,
+      "system": 3,
+      "agent": 4
+    },
+    "by_status": {
+      "shipping": 24,
+      "planned": 17,
+      "shipped": 17,
+      "speculative": 4
+    },
+    "total": 62
+  },
+  "taxonomy_decision": ".claude/state/main-flows-v2/taxonomy-decision.md",
   "_counts": {
     "columns": 6,
     "components_total": 47,
     "flows": 8,
+    "flow_rail_total": 62,
     "orphan_components": [
       "actor.commissioner",
       "actor.founder",
