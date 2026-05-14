@@ -63,6 +63,17 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-mute-2: #A8A395;         /* default mute (was #8A8478 — v8.14.0 lighter sage-tinted) */
   --cb-mute-3: #C9C5BD;         /* light mute, disabled states / hairline-on-chalk-3 */
 
+  /* W2.S0 reveal additions (W1.S1.b foundation per AMD-013) — 5 new tokens
+     consumed by HQ Pass 3 specs (CLUBHOUSE_SPEC-HQ-3a-Home.md, 3b-SpectatorHUD.md).
+     --cb-felt is canonical per CLUBHOUSE_SPEC.md §1.2 oklch(28% 0.04 155);
+     the 4 -soft/-faint variants ship as PLACEHOLDER values pending Agent 2
+     ship plan refinement. Not yet consumed by any production code path. */
+  --cb-felt: #0F3D2E;           /* primary dark surface — billiard green starting point; mobile CTA backgrounds + masthead overlay; HQ text-color usage per CLUBHOUSE_SPEC.md §1.1 */
+  --cb-ink-soft: #3A372F;       /* PLACEHOLDER — body text less prominent than --cb-ink (Fraunces 13.5px on chalk per HQ Pass 3 specs) */
+  --cb-ink-faint: #5F5C50;      /* PLACEHOLDER — tertiary text on chalk (mono conditions, empty-state italic per HQ Pass 3 specs) */
+  --cb-mute-soft: #928E80;      /* PLACEHOLDER — context lines (mono 11px) on chalk per HQ Pass 3 specs */
+  --cb-mute-faint: #BAB6A8;     /* PLACEHOLDER — empty-state italic, low-emphasis on chalk per HQ Pass 3 specs */
+
   /* Clubhouse · accents (v8.14.0 — brass family expanded for partner accents + live-pulse) */
   --cb-brass: #B4893E;
   --cb-brass-2: #C9A04A;        /* partner.you border accent (was #9A7434) */
