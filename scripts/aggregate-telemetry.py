@@ -139,6 +139,152 @@ def walk_ship_progress():
     return out
 
 
+def _read_yaml_or_json_frontmatter(path: Path):
+    """Tolerates both PROP-style JSON frontmatter and AMD/ESC-style YAML
+    frontmatter between '---' markers. Returns dict of top-level keys; for
+    YAML it handles simple scalars + inline lists (sufficient for the id /
+    title / *_at fields we need)."""
+    if not path.exists():
+        return None
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return None
+    m = re.search(r"^---\n(.*?)\n---", text, re.DOTALL)
+    if not m:
+        return None
+    raw = m.group(1)
+    # JSON first (PROP format)
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        pass
+    # YAML simple-scalar fallback (AMD + ESC format)
+    out = {}
+    for line in raw.split("\n"):
+        if not line.strip() or line.lstrip().startswith("#") or line.startswith(" "):
+            # Skip blank / comment / continuation lines (block scalars handled below)
+            continue
+        m2 = re.match(r"^([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$", line)
+        if not m2:
+            continue
+        key, val = m2.group(1), m2.group(2)
+        v = val.strip()
+        if (v.startswith('"') and v.endswith('"')) or (v.startswith("'") and v.endswith("'")):
+            v = v[1:-1]
+        if v.lower() == "true": v = True
+        elif v.lower() == "false": v = False
+        elif v.lower() in ("null", "none", "~"): v = None
+        elif re.match(r"^-?\d+$", v): v = int(v)
+        elif v == "|" or v == "":
+            v = None  # multiline block; skip for simplicity (fields we need are inline)
+        out[key] = v
+    return out
+
+
+def walk_completed_artifacts():
+    """Founder directive 2026-05-14 "DASHBOARD DATA PIPELINE BROKEN":
+    real shipped artifacts live in proposals/shipped/, amendments/applied/,
+    and escalations/applied/ — NOT in ship-progress/ (which is empty for
+    the orchestration substrate). Returns a unified list of completed
+    artifacts (proposals + amendments + escalations) with normalized
+    fields for dashboard recent_ships render + ships_this_week count.
+    Each item: {kind, id, title, status, completed_at, completed_at_iso,
+    source_path}. Sorted newest-first.
+
+    Uses _read_yaml_or_json_frontmatter() to tolerate both PROP-style JSON
+    frontmatter and AMD/ESC-style YAML frontmatter."""
+    out = []
+
+    # Shipped proposals
+    shipped_props_dir = ROOT / ".claude" / "state" / "proposals" / "shipped"
+    if shipped_props_dir.exists():
+        for f in sorted(shipped_props_dir.glob("PROP-*.md")):
+            fm = _read_yaml_or_json_frontmatter(f)
+            if not fm:
+                continue
+            ts = fm.get("shipped_at") or fm.get("applied_at") or fm.get("approved_at") or fm.get("authored_at") or ""
+            out.append({
+                "kind": "proposal",
+                "id": fm.get("id") or f.stem,
+                "title": fm.get("title") or fm.get("scope_summary") or f.stem,
+                "status": "shipped",
+                "completed_at": ts,
+                "completed_at_iso": ts,
+                "source_path": str(f.relative_to(ROOT)).replace("\\", "/"),
+            })
+
+    # Applied amendments
+    applied_amds_dir = ROOT / ".claude" / "state" / "amendments" / "applied"
+    if applied_amds_dir.exists():
+        for f in sorted(applied_amds_dir.glob("AMD-*.md")):
+            fm = _read_yaml_or_json_frontmatter(f)
+            if not fm:
+                continue
+            ts = fm.get("applied_at") or fm.get("approved_at") or fm.get("authored_at") or ""
+            out.append({
+                "kind": "amendment",
+                "id": fm.get("id") or f.stem,
+                "title": fm.get("title") or fm.get("scope_summary") or f.stem,
+                "status": "applied",
+                "completed_at": ts,
+                "completed_at_iso": ts,
+                "source_path": str(f.relative_to(ROOT)).replace("\\", "/"),
+            })
+
+    # Applied escalations
+    applied_escs_dir = ROOT / ".claude" / "state" / "escalations" / "applied"
+    if applied_escs_dir.exists():
+        for f in sorted(applied_escs_dir.glob("ESC-*.md")):
+            fm = _read_yaml_or_json_frontmatter(f)
+            if not fm:
+                continue
+            ts = fm.get("applied_at") or fm.get("approved_at") or fm.get("authored_at") or ""
+            out.append({
+                "kind": "escalation",
+                "id": fm.get("id") or f.stem,
+                "title": fm.get("title") or f.stem,
+                "status": "applied",
+                "completed_at": ts,
+                "completed_at_iso": ts,
+                "source_path": str(f.relative_to(ROOT)).replace("\\", "/"),
+            })
+
+    # If no shipped artifacts found, fall back to mining ship-close commits
+    # from git history so recent_ships still surfaces something useful
+    # during transitional state (e.g., before any proposals/escalations move
+    # through the new lifecycle).
+    if not out:
+        import subprocess
+        try:
+            r = subprocess.run(
+                ["git", "log", "--pretty=%H%x09%cI%x09%s", "--since=14.days"],
+                cwd=str(ROOT), capture_output=True, text=True, timeout=15, check=False,
+            )
+            ship_close_re = re.compile(r"(W\d+\.[SIMm][0-9a-z]+ ship (close|complete)|Shipped (PROP|AMD)-\d+(\.[a-z])?|[Ss]hip (close|complete):)")
+            for line in (r.stdout or "").splitlines():
+                parts = line.split("\t")
+                if len(parts) < 3:
+                    continue
+                sha, cdate, subject = parts[0], parts[1], parts[2]
+                if ship_close_re.search(subject):
+                    out.append({
+                        "kind": "commit",
+                        "id": sha[:7],
+                        "title": subject,
+                        "status": "committed",
+                        "completed_at": cdate,
+                        "completed_at_iso": cdate,
+                        "source_path": f"commit:{sha[:12]}",
+                    })
+        except (OSError, subprocess.SubprocessError):
+            pass
+
+    # Sort newest first
+    out.sort(key=lambda x: x.get("completed_at_iso") or "", reverse=True)
+    return out
+
+
 def _count_fiq_entries(repo_root: Path):
     """Count entries in .claude/state/founder-input-queue/ — Founder Input Queue.
     Per Issue-2 (2026-05-14): replaces the hardcoded 0 stub. Returns 0 honestly
@@ -363,34 +509,135 @@ def aggregate():
         for h in handoffs[:5]
     ]
 
-    # Recent ships (from ship-progress; fall back to empty list if dir is unpopulated)
+    # Recent ships — Founder directive 2026-05-14 fix: source from real
+    # shipped artifacts (proposals/shipped/ + amendments/applied/ +
+    # escalations/applied/), not the empty ship-progress/ directory.
+    # Falls back to git-history ship-close commit mining if all state
+    # buckets are empty (transitional state).
+    completed = walk_completed_artifacts()
     recent_ships = [
         {
-            "id": s.get("ship_id") or s.get("id"),
-            "title": s.get("title") or "(no title)",
-            "status": s.get("status") or "unknown",
-            "tokens": s.get("tokens_consumed") or 0,
-            "cost": s.get("cost") or 0.0,
+            "id": c.get("id"),
+            "title": c.get("title") or "(no title)",
+            "kind": c.get("kind"),
+            "status": c.get("status") or "unknown",
+            "completed_at": c.get("completed_at"),
+            "tokens": 0,    # Real per-ship token attribution lands when meter wired (PROP-003)
+            "cost": 0.0,
+            "source_path": c.get("source_path"),
         }
-        for s in ship_progress[:5]
+        for c in completed[:10]
     ]
 
-    # 7-day token trend — placeholder; needs real meter
+    # 7-day per-day buckets — Founder directive 2026-05-14: was hardcoded
+    # [0]*7 placeholder. Now buckets real events by their timestamp date.
     now = datetime.now(timezone.utc)
+    today = now.date()
     days = [(now - timedelta(days=i)).strftime("%a") for i in range(6, -1, -1)]
+    day_dates = [(now - timedelta(days=i)).date() for i in range(6, -1, -1)]
+    date_to_idx = {d: i for i, d in enumerate(day_dates)}
+
+    def _event_date(e):
+        ts = e.get("timestamp") or ""
+        if not ts:
+            return None
+        try:
+            return datetime.fromisoformat(ts.replace("Z", "+00:00")).date()
+        except (ValueError, TypeError):
+            return None
+
+    # Token trend per day — sum every event's per-event token contribution.
+    # Mirror the same fields tokens_by_role aggregation uses (legacy generic +
+    # session.team-work.summary + cycle.paused.tokens_consumed_since_last_rest
+    # + cycle.budget.checkpoint deltas).
+    token_per_day = [0] * 7
+    last_checkpoint_for_trend = None
+    for e in events:
+        d = _event_date(e)
+        if d is None or d not in date_to_idx:
+            # Still process for checkpoint state continuity across dates
+            data = e.get("data") or {}
+            et = e.get("event_type", "")
+            if et == "cycle.budget.checkpoint" and isinstance(data, dict):
+                v = data.get("weekly_tokens_consumed")
+                if isinstance(v, (int, float)):
+                    last_checkpoint_for_trend = int(v)
+            continue
+        idx = date_to_idx[d]
+        data = e.get("data") or {}
+        if not isinstance(data, dict):
+            continue
+        et = e.get("event_type", "")
+        legacy_tokens = data.get("tokens") or data.get("tokens_consumed")
+        if isinstance(legacy_tokens, (int, float)) and legacy_tokens > 0:
+            token_per_day[idx] += int(legacy_tokens)
+        if et == "session.team-work.summary":
+            t = data.get("tokens_estimated")
+            if isinstance(t, (int, float)) and t > 0:
+                token_per_day[idx] += int(t)
+        elif et == "cycle.paused":
+            t = data.get("tokens_consumed_since_last_rest")
+            if isinstance(t, (int, float)) and t > 0:
+                token_per_day[idx] += int(t)
+        elif et == "cycle.budget.checkpoint":
+            consumed = data.get("weekly_tokens_consumed")
+            if isinstance(consumed, (int, float)):
+                if last_checkpoint_for_trend is not None:
+                    delta = int(consumed) - last_checkpoint_for_trend
+                    if delta > 0:
+                        token_per_day[idx] += delta
+                last_checkpoint_for_trend = int(consumed)
+
     token_trend = {
         "labels": days,
-        "values": [0] * 7,
+        "values": token_per_day,
     }
+
+    # Cycle outcomes per day — Founder directive 2026-05-14 fix: was
+    # putting every outcome at index 0 (oldest day). Now buckets by
+    # event date.
+    cycle_complete_per_day = [0] * 7
+    cycle_paused_per_day = [0] * 7
+    cycle_halted_per_day = [0] * 7
+    for e in events:
+        d = _event_date(e)
+        if d is None or d not in date_to_idx:
+            continue
+        idx = date_to_idx[d]
+        et = e.get("event_type", "")
+        if et == "cycle.end":
+            outcome = (e.get("data") or {}).get("outcome", "unknown")
+            if outcome == "complete":
+                cycle_complete_per_day[idx] += 1
+            elif outcome == "paused":
+                cycle_paused_per_day[idx] += 1
+        elif et == "cycle.paused":
+            cycle_paused_per_day[idx] += 1
+        elif et.startswith("cycle.halt") or et.startswith("halt."):
+            cycle_halted_per_day[idx] += 1
 
     cycle_outcomes_7d = {
         "labels": days,
         "datasets": [
-            {"label": "Complete", "data": [cycle_outcomes.get("complete", 0)] + [0] * 6, "color": "#4a8067"},
-            {"label": "Paused",   "data": [cycle_outcomes.get("paused", 0)]   + [0] * 6, "color": "#d4a857"},
-            {"label": "Halted",   "data": [halts] + [0] * 6, "color": "#9c4a4a"},
+            {"label": "Complete", "data": cycle_complete_per_day, "color": "#4a8067"},
+            {"label": "Paused",   "data": cycle_paused_per_day,   "color": "#d4a857"},
+            {"label": "Halted",   "data": cycle_halted_per_day,   "color": "#9c4a4a"},
         ],
     }
+
+    # Ships per day — same bucketing for completed_at; surfaces in dashboard
+    # 7-day table even when token meter is empty.
+    ships_per_day = [0] * 7
+    for c in completed:
+        ts = c.get("completed_at_iso") or ""
+        if not ts:
+            continue
+        try:
+            d = datetime.fromisoformat(ts.replace("Z", "+00:00")).date()
+        except (ValueError, TypeError):
+            continue
+        if d in date_to_idx:
+            ships_per_day[date_to_idx[d]] += 1
 
     # Default weekly_tokens to the event-derived sum (lower bound).
     weekly_tokens = sum(tokens_by_role.values())  # 0 when meter is gap
@@ -458,7 +705,8 @@ def aggregate():
         "quota_status": quota_status_block,
         "weekly_tokens": weekly_tokens,
         "weekly_cost": weekly_cost,
-        "ships_this_week": len([s for s in ship_progress if s.get("status") == "complete"]),
+        "ships_this_week": sum(ships_per_day),
+        "ships_trend_7d": {"labels": days, "values": ships_per_day},
         "halts_this_week": halts,
         "fiq_depth": _count_fiq_entries(ROOT),  # was hardcoded 0 (F3-era stub); now reads .claude/state/founder-input-queue/ entries per Issue-2 unstub 2026-05-14
         # Phase 6.6: no fictional cap. Real quota % comes from manual paste

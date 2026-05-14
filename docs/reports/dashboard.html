@@ -446,7 +446,7 @@
 {
   "weekly_tokens": 7302000,
   "weekly_cost": 0.0,
-  "ships_this_week": 0,
+  "ships_this_week": 21,
   "proposals_pending": 0,
   "proposals_counts": {
     "pending": 0,
@@ -458,12 +458,12 @@
     "rejected_total": 0
   },
   "amendments_counts": {
-    "pending": 1,
+    "pending": 0,
     "approved": 0,
     "deferred": 0,
-    "applied": 14,
+    "applied": 15,
     "rejected": 0,
-    "applied_total": 14,
+    "applied_total": 15,
     "rejected_total": 0
   },
   "halts_this_week": 0,
@@ -495,8 +495,8 @@
       0,
       0,
       0,
-      0,
-      0
+      102000,
+      7200000
     ]
   },
   "cycle_outcomes_7d": {
@@ -513,12 +513,12 @@
       {
         "label": "Complete",
         "data": [
+          0,
+          0,
+          0,
+          0,
+          0,
           1,
-          0,
-          0,
-          0,
-          0,
-          0,
           0
         ],
         "color": "#4a8067"
@@ -526,12 +526,12 @@
       {
         "label": "Paused",
         "data": [
-          1,
           0,
           0,
           0,
           0,
           0,
+          3,
           0
         ],
         "color": "#d4a857"
@@ -559,11 +559,112 @@
       "created_at": "2026-05-13T11:38:00Z"
     }
   ],
-  "recent_ships": [],
+  "recent_ships": [
+    {
+      "id": "ESC-001",
+      "title": "main-flows-v2 Phase 2 taxonomy + visual approach + speculative flows decisions",
+      "kind": "escalation",
+      "status": "applied",
+      "completed_at": "2026-05-14T16:42:00Z",
+      "tokens": 0,
+      "cost": 0.0,
+      "source_path": ".claude/state/escalations/applied/ESC-001-main-flows-v2-taxonomy.md"
+    },
+    {
+      "id": "ESC-002",
+      "title": "Wave 1 ship 1 selection \u2014 design tooling approach (native vs framework vs generative)",
+      "kind": "escalation",
+      "status": "applied",
+      "completed_at": "2026-05-14T16:42:00Z",
+      "tokens": 0,
+      "cost": 0.0,
+      "source_path": ".claude/state/escalations/applied/ESC-002-wave-1-ship-1-selection.md"
+    },
+    {
+      "id": "AMD-015",
+      "title": "Team proposes; Agent 2 ratifies (default escalation pattern)",
+      "kind": "amendment",
+      "status": "applied",
+      "completed_at": "2026-05-14T16:05:00Z",
+      "tokens": 0,
+      "cost": 0.0,
+      "source_path": ".claude/state/amendments/applied/AMD-015-team-proposes-agent-2-ratifies.md"
+    },
+    {
+      "id": "AMD-014",
+      "title": "PAUSE_DISCIPLINE section 2.1 reactivation - meter-gated rate-limit threshold",
+      "kind": "amendment",
+      "status": "applied",
+      "completed_at": "2026-05-14T04:50:00Z",
+      "tokens": 0,
+      "cost": 0.0,
+      "source_path": ".claude/state/amendments/applied/AMD-014-pause-discipline-reactivation.md"
+    },
+    {
+      "id": "AMD-013",
+      "title": "ROADMAP v2 \u2014 Wave Plan Re-validation 2026-05-14 (W1.S1 split + W1.I2 re-scope + 5 new ships)",
+      "kind": "amendment",
+      "status": "applied",
+      "completed_at": "2026-05-14T04:35:00Z",
+      "tokens": 0,
+      "cost": 0.0,
+      "source_path": ".claude/state/amendments/applied/AMD-013-roadmap-v2.md"
+    },
+    {
+      "id": "AMD-012",
+      "title": "Smoke-testing governance (binding Critic gate across all Wave 1+ user-facing ships)",
+      "kind": "amendment",
+      "status": "applied",
+      "completed_at": "2026-05-14T04:25:00Z",
+      "tokens": 0,
+      "cost": 0.0,
+      "source_path": ".claude/state/amendments/applied/AMD-012-smoke-testing-governance.md"
+    },
+    {
+      "id": "AMD-011",
+      "title": "Auto-execute approved proposals when AMD-009-compliant (the auto-implementation gate)",
+      "kind": "amendment",
+      "status": "applied",
+      "completed_at": "2026-05-14T03:50:00Z",
+      "tokens": 0,
+      "cost": 0.0,
+      "source_path": ".claude/state/amendments/applied/AMD-011-auto-execute-approved-proposals.md"
+    },
+    {
+      "id": "AMD-010",
+      "title": "MAIN_FLOWS v2 \u2014 62-flow inventory + Taxonomy E + filterable rail",
+      "kind": "amendment",
+      "status": "applied",
+      "completed_at": "2026-05-14T03:35:00Z",
+      "tokens": 0,
+      "cost": 0.0,
+      "source_path": ".claude/state/amendments/applied/AMD-010-MAIN_FLOWS_v2.md"
+    },
+    {
+      "id": "AMD-009",
+      "title": "Senior Engineering Standard (dominant operating principle)",
+      "kind": "amendment",
+      "status": "applied",
+      "completed_at": "2026-05-14T03:05:00Z",
+      "tokens": 0,
+      "cost": 0.0,
+      "source_path": ".claude/state/amendments/applied/AMD-009-senior-engineering-standard.md"
+    },
+    {
+      "id": "PROP-004",
+      "title": "Add `org-monthly` as 4th quota_type in PAUSE_DISCIPLINE schema",
+      "kind": "proposal",
+      "status": "shipped",
+      "completed_at": "2026-05-14T02:47:38-04:00",
+      "tokens": 0,
+      "cost": 0.0,
+      "source_path": ".claude/state/proposals/shipped/PROP-004-org-monthly-quota-type.md"
+    }
+  ],
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "_aggregate_counts": {
-    "events_total": 603,
+    "events_total": 613,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
@@ -579,7 +680,7 @@
   "quota_status": {
     "state": "empty",
     "as_of": "2026-05-14T15:24:53.5950065Z",
-    "age_seconds": 5873,
+    "age_seconds": 6446,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -590,10 +691,10 @@
     "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
   },
   "founder_queue": {
-    "as_of": "2026-05-14T17:02:47.577902+00:00",
+    "as_of": "2026-05-14T17:12:20.683717+00:00",
     "last_founder_visit": null,
     "governance_gates": {
-      "amendments_pending": 1,
+      "amendments_pending": 0,
       "amendments_link": "amendments.html",
       "bubbles_flagged": 0,
       "bubbles_link": "discussion-bubbles.html",
@@ -604,8 +705,8 @@
     "system_health": {
       "crons": {
         "downloads-watcher": {
-          "last_run": "2026-05-14T17-00-49Z",
-          "last_log": "2026-05-14T17-00-49Z-downloads-watcher.log"
+          "last_run": "2026-05-14T17-10-49Z",
+          "last_log": "2026-05-14T17-10-49Z-downloads-watcher.log"
         },
         "maintenance": {
           "last_run": "2026-05-14T06-55-01Z",
@@ -630,10 +731,10 @@
           "task_name": "PARBAUGHS-Downloads-Watcher",
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-downloads-watcher.ps1",
-          "last_fire_iso": "2026-05-14T17:00:49.446121+00:00",
-          "age_minutes": 2.0,
+          "last_fire_iso": "2026-05-14T17:10:49.524221+00:00",
+          "age_minutes": 1.5,
           "status": "firing",
-          "label": "firing \u00b7 last fire 2.0min ago"
+          "label": "firing \u00b7 last fire 1.5min ago"
         },
         {
           "name": "maintenance",
@@ -641,9 +742,9 @@
           "cadence_minutes": 1440,
           "install_script": "scripts/cron/install-maintenance.ps1",
           "last_fire_iso": "2026-05-14T06:55:19.949406+00:00",
-          "age_minutes": 607.5,
+          "age_minutes": 617.0,
           "status": "firing",
-          "label": "firing \u00b7 last fire 607.5min ago"
+          "label": "firing \u00b7 last fire 617.0min ago"
         },
         {
           "name": "overnight-triage",
@@ -661,9 +762,9 @@
           "cadence_minutes": 120,
           "install_script": "scripts/cron/install-proposal-readiness-scanner.ps1",
           "last_fire_iso": "2026-05-14T05:04:49.834159+00:00",
-          "age_minutes": 718.0,
+          "age_minutes": 727.5,
           "status": "stale",
-          "label": "stale \u00b7 last fire 718.0min ago (cadence 120min)"
+          "label": "stale \u00b7 last fire 727.5min ago (cadence 120min)"
         },
         {
           "name": "token-sidecar",
@@ -671,28 +772,28 @@
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-sidecar.ps1",
           "last_fire_iso": "2026-05-14T15:24:53.642316+00:00",
-          "age_minutes": 97.9,
+          "age_minutes": 107.5,
           "status": "stale",
-          "label": "stale \u00b7 last fire 97.9min ago (cadence 5min)"
+          "label": "stale \u00b7 last fire 107.5min ago (cadence 5min)"
         }
       ],
       "last_regen_all": {
-        "ts": "2026-05-14 17:00 UTC",
-        "ts_iso": "2026-05-14T17:00:24.1629969Z",
+        "ts": "2026-05-14 17:10 UTC",
+        "ts_iso": "2026-05-14T17:10:33.0552077Z",
         "status": "PASS",
-        "age_minutes": 2.4,
+        "age_minutes": 1.8,
         "source": "heartbeat"
       },
       "working_tree": {
         "state": "dirty-cycling",
-        "label": "dirty (9 files) \u00b7 watcher cycling",
+        "label": "dirty (12 files) \u00b7 watcher cycling",
         "color": "var(--pb-warning)",
-        "dirty_count": 9,
-        "watcher_last_fire": "2026-05-14T17:00:49.446121+00:00",
-        "watcher_minutes_ago": 2.0
+        "dirty_count": 12,
+        "watcher_last_fire": "2026-05-14T17:10:49.524221+00:00",
+        "watcher_minutes_ago": 1.5
       },
       "halts": [],
-      "round_trip_last_pass": "2026-05-14T17:00:24.1629969Z"
+      "round_trip_last_pass": "2026-05-14T17:10:33.0552077Z"
     },
     "activity_since_last_visit": {
       "_note": "Counts since last_founder_visit (null = since-forever)",
