@@ -644,7 +644,11 @@ function renderCourseDetail(courseId) {
   if (courseRounds.length >= 3) {
     h += '<div class="section"><div class="sec-head"><span class="sec-title">Member Stats</span></div>';
     var full18cr = courseRounds.filter(function(r) { return !r.holesPlayed || r.holesPlayed >= 18; });
+    var front9cr = courseRounds.filter(function(r) { return (r.holesPlayed === 9 && (!r.holesMode || r.holesMode === "front9")) || r.holesMode === "front9"; });
+    var back9cr = courseRounds.filter(function(r) { return r.holesMode === "back9"; });
     var avgScore = full18cr.length ? Math.round(full18cr.reduce(function(a,r){return a+r.score},0) / full18cr.length) : null;
+    var avgFront9 = front9cr.length ? Math.round(front9cr.reduce(function(a,r){return a+r.score},0) / front9cr.length) : null;
+    var avgBack9 = back9cr.length ? Math.round(back9cr.reduce(function(a,r){return a+r.score},0) / back9cr.length) : null;
 
     // Most played by
     var playedBy = {};
@@ -652,7 +656,18 @@ function renderCourseDetail(courseId) {
     var topPlayer = Object.entries(playedBy).sort(function(a,b){return b[1]-a[1]})[0];
 
     h += '<div class="card"><div style="padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:12px">';
-    if (avgScore) h += '<div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Members average</div><div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--cream)">' + avgScore + '</div></div>';
+    if (avgScore) {
+      var nineSubParts = [];
+      if (avgFront9 !== null) nineSubParts.push("F9 " + avgFront9);
+      if (avgBack9 !== null) nineSubParts.push("B9 " + avgBack9);
+      var nineSubHTML = nineSubParts.length ? '<div class="stat-sub" style="font-size:9px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px">9-hole · ' + nineSubParts.join(" · ") + '</div>' : '';
+      h += '<div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Members average ' + (full18cr.length ? '(18)' : '') + '</div><div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--cream)">' + avgScore + '</div>' + nineSubHTML + '</div>';
+    } else if (avgFront9 !== null || avgBack9 !== null) {
+      var nineOnlyParts = [];
+      if (avgFront9 !== null) nineOnlyParts.push("F9 " + avgFront9);
+      if (avgBack9 !== null) nineOnlyParts.push("B9 " + avgBack9);
+      h += '<div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Members average (9)</div><div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--cream)">' + nineOnlyParts.join(" · ") + '</div></div>';
+    }
     h += '<div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Total rounds</div><div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--cream)">' + courseRounds.length + '</div></div>';
     if (topPlayer) h += '<div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Most played by</div><div style="font-size:13px;font-weight:600;color:var(--gold)">' + escHtml(topPlayer[0]) + ' <span style="font-size:10px;color:var(--muted)">(' + topPlayer[1] + ' rounds)</span></div></div>';
 

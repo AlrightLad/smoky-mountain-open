@@ -50,8 +50,8 @@ NOT yet covered by this scaffolding:
 
 | # | Finding | Source | Status |
 |---|---|---|---|
-| M1 | Course directory average display — needs to derive front/back/18-hole from `holesMode` field | CLAUDE.md Known Bugs #1 | Diagnosed; not yet fixed |
-| M2 | Clubhouse calendar missing in-progress events — filter uses `startDate` only; needs end-date check | CLAUDE.md Known Bugs #2 | Diagnosed; not yet fixed |
+| M1 | Course directory average display — needs to derive front/back/18-hole from `holesMode` field | CLAUDE.md Known Bugs #1 | **FULLY CLOSED iter 16**: courses.js Member Stats section now derives `full18cr` + `front9cr` + `back9cr` separately. Primary "Members average (18)" stat-box gets "9-hole · F9 X · B9 Y" stat-sub when 9-hole rounds present. Courses with only 9-hole rounds show "Members average (9)" primary stat. Pattern matches H1 (members.js + trophyroom.js). |
+| M2 | Clubhouse calendar missing in-progress events — filter uses `startDate` only; needs end-date check | CLAUDE.md Known Bugs #2 | **STALE bug entry — ALREADY FIXED**: calendar.js:93 filter is `if(trip.startDate>=todayStr||ed>=todayStr)` where `ed=trip.endDate||trip.startDate` — correctly catches in-progress events (endDate>=today with startDate<today). Same line sets `time:"Happening now"` for in-progress. CLAUDE.md description is outdated. |
 | M3 | Courses button on season standings — should navigate to 2026 courses with rounds | CLAUDE.md Known Bugs #6 | Diagnosed; not yet fixed |
 | M4 | Courses button on player profiles — should show all courses with best round | CLAUDE.md Known Bugs #7 | Diagnosed; not yet fixed |
 
