@@ -23,7 +23,45 @@
     ".claude/state/wave-zero-dry-run/remediation/F1a-token-meter-gap-diagnostic.md",
     ".claude/state/discussion-bubbles/db-2026-05-13-003.md"
   ],
-  "ship_target": "Post-Wave-Zero remediation ratification + cron-paused.json clear. Cycle 2 or earlier if Founder prioritizes."
+  "ship_target": "Post-Wave-Zero remediation ratification + cron-paused.json clear. Cycle 2 or earlier if Founder prioritizes.",
+  "scope_files_affected": [
+    "scripts/cron/usage-snapshot.ps1 (new)",
+    "scripts/cron/usage-snapshot-config.json (new — what to poll, how often, reset boundary)",
+    "scripts/aggregate-telemetry.py (read .claude/state/usage-snapshot.json; populate weekly_tokens / weekly_cost / org_monthly_pct from real data)",
+    ".claude/state/usage-snapshot.json (new — sidecar writes here; agent reads each turn)",
+    "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md § 2.1 (Founder-applied amendment: meter read via .claude/state/usage-snapshot.json)"
+  ],
+  "fallback_plan": {
+    "plan_a": "Source data via manual paste (refresh-quota-manual.ps1 already in repo). Sidecar prompts Founder once a day; agent reads .claude/state/usage-snapshot.json. Lowest infrastructure cost; bootstrap path.",
+    "plan_b": "Source data via second Claude Code instance in headless mode invoking /cost periodically. Requires Claude Code to support headless /cost (uncertain at authoring). If unsupported: stay on plan_a indefinitely.",
+    "plan_c": "Anthropic console scrape (login + parse). Brittle, breaks on UI changes. Last resort.",
+    "abandon_criteria": "3 plans fail with distinct root causes within a single ship cycle, escalate per criterion #5 (cross-cutting architecture). The PAUSE_DISCIPLINE section 2.1 amendment piece becomes a separate AMD that can ship independently."
+  },
+  "rollback_strategy": "git revert <ship-closing-sha>; rm .claude/state/usage-snapshot.json (clean stale state); PAUSE_DISCIPLINE section 2.1 amendment rolled back separately via its own AMD revert. Risk-of-rollback LOW for sidecar mechanics (additive); MEDIUM for the governance amendment.",
+  "cost_tokens": {
+    "low": 150000,
+    "high": 350000,
+    "methodology": "Low end assumes plan_a (manual paste) only: sidecar PowerShell loop + aggregate-telemetry.py read integration + dashboard regen test ~150k. High end adds plan_b investigation + headless /cost integration if available (~200k additional). Original 45k estimate predated AMD-009; reflects raw code authoring without test/verification/round-trip discipline scope."
+  },
+  "bubble_voter_unanimity": {
+    "bubble_id": "db-2026-05-13-003",
+    "bubble_status": "approved-with-dissent",
+    "vote_tally": {
+      "approve": 2,
+      "reject": 1,
+      "abstain": 1
+    },
+    "dissent_note": "Data-Integrity's forcing-function dissent was that the heuristic-only approach (PAUSE_DISCIPLINE) wasn't sufficient. PROP-003 IS the substantive response to that dissent. By shipping the meter, the dissent is resolved. Founder ratified approval-with-dissent on this basis. Scanner should accept per PARBAUGHS lifecycle (approved-with-dissent is a valid approval state)."
+  },
+  "cross_cutting_assessment": {
+    "category": "cross-cutting: dashboards + telemetry + cron + governance amendment",
+    "rationale": "PROP-003 touches: (a) cron substrate via new usage-snapshot.ps1; (b) telemetry aggregator via aggregate-telemetry.py snapshot read; (c) dashboards downstream via populated weekly_tokens / org_monthly_pct fields; (d) governance via PAUSE_DISCIPLINE section 2.1 amendment that documents the meter as the canonical pause trigger. AMD-009 P4 forbids cross-cutting changes in a single proposal. Honest assessment: scanner WILL defer PROP-003 on P4 grounds. Founder may (a) split PROP-003 into PROP-003.a (mechanics) + AMD-XXX (governance), or (b) explicitly waive P4 for this one. Auto-execute pattern then runs the bundled work as one unit, with Critic gating each sub-deliverable to ship-complete."
+  },
+  "test_strategy_before_after": "BEFORE: dashboard weekly_tokens shows 0 OR the operator-asserted estimate (4.2M from session-summary, commit 8b7e117). aggregate-token-usage shows estimated=4.2M / real=0. AFTER: dashboard weekly_tokens reflects real meter reads when sidecar runs; operator-asserted source stays as a fallback when sidecar is stale > 600s. Round-trip extension: new [meter-wiring] block validating usage-snapshot.json schema + freshness gates. Token-usage dashboard 'real' column becomes non-zero for the first time in PARBAUGHS history.",
+  "frontmatter_declares_auto_implement": {
+    "value": false,
+    "rationale": "PROP-003 is honestly cross-cutting (see cross_cutting_assessment). Per AMD-011 + AMD-009 P4, the scanner will defer it. Setting auto_implement=False is the honest declaration; Founder explicitly authorizes either a split or a P4 waiver before this ships under the auto-execute path."
+  }
 }
 ---
 

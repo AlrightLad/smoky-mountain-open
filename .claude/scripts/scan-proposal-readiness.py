@@ -42,12 +42,26 @@ EVENTS_DIR = ROOT / ".claude" / "state" / "telemetry" / "events"
 
 # ---------- frontmatter parsing ----------
 def parse_frontmatter(text):
-    """Extract YAML-ish frontmatter as a dict from a markdown file."""
+    """Extract frontmatter as a dict. Detects JSON vs YAML-ish and parses accordingly.
+
+    Proposals authored under PROPOSAL_LIFECYCLE_v8.2+ use JSON-formatted frontmatter
+    (starts with '{'). AMD-NNN amendments use YAML-ish key:value lines. This parser
+    handles both — JSON via json.loads (correct nested handling), YAML-ish via the
+    legacy line parser (acceptable for flat AMD schemas only).
+    """
     m = re.match(r"^---\n(.*?)\n---", text, re.DOTALL)
     if not m:
         return None
+    raw = m.group(1).strip()
+    # JSON frontmatter — used by PROP-NNN lifecycle.
+    if raw.startswith("{") and raw.endswith("}"):
+        try:
+            return json.loads(raw)
+        except json.JSONDecodeError:
+            pass  # fall through to YAML-ish; won't help but matches prior behavior
+    # YAML-ish line parser (legacy, used by AMD-NNN).
     fm = {}
-    for line in m.group(1).split("\n"):
+    for line in raw.split("\n"):
         if ":" not in line:
             continue
         k, _, v = line.partition(":")
@@ -71,11 +85,15 @@ def evaluate_readiness(fm, body):
     """Return list of failure messages. Empty list = READY (8/8 pass)."""
     fails = []
 
-    # P1 — scope bounded and enumerated. Frontmatter must declare
-    # 'files_affected' OR 'scope' field with a concrete enumeration.
-    files_affected = fm.get("files_affected") or fm.get("scope")
+    # P1 — scope bounded and enumerated. Accept any of:
+    # files_affected / scope_files_affected / scope (Founder-spec aliases).
+    files_affected = (fm.get("files_affected")
+                      or fm.get("scope_files_affected")
+                      or fm.get("scope"))
     if not files_affected or (isinstance(files_affected, str) and len(files_affected) < 8):
-        fails.append("scope_not_enumerated: frontmatter missing files_affected/scope with concrete file list")
+        fails.append("scope_not_enumerated: frontmatter missing files_affected/scope_files_affected/scope with concrete file list")
+    elif isinstance(files_affected, list) and len(files_affected) == 0:
+        fails.append("scope_not_enumerated: files_affected is empty list")
 
     # P2 — fallback plan documented. Frontmatter declares 'fallback_plan'
     # OR body contains Plan A/B/C/D structure.
@@ -108,23 +126,27 @@ def evaluate_readiness(fm, body):
     if unshipped_deps:
         fails.append(f"cross_cutting_dependency: depends on unshipped proposals {unshipped_deps}")
 
-    # P5 — round-trip test before/after coverage planned. Frontmatter
-    # declares 'round_trip_coverage' or body explicitly names test
-    # assertions.
+    # P5 — round-trip test before/after coverage planned. Accept any of:
+    # round_trip_coverage / test_strategy_before_after (Founder-spec) / body mentions.
     has_round_trip = (
         "round_trip_coverage" in fm
         or "round_trip" in fm
+        or "test_strategy_before_after" in fm
         or bool(re.search(r"round[- ]?trip|round_trip|tests/round-trip", body, re.IGNORECASE))
     )
     if not has_round_trip:
-        fails.append("round_trip_coverage_absent: no round_trip_coverage field or named test assertions")
+        fails.append("round_trip_coverage_absent: no round_trip_coverage/test_strategy_before_after field or named test assertions")
 
-    # P6 — unanimous high confidence from originating bubble voters (if
-    # the proposal originated from a bubble). Non-bubble proposals
-    # skip this gate.
+    # P6 — bubble approval. Recognizes the PARBAUGHS lifecycle statuses:
+    #   "approved" — unanimous pass
+    #   "approved-with-dissent" — passed with documented dissent; valid approval
+    #   "closed-by-founder-directive" — Founder closure; valid approval
+    #   "open" / "rejected" — not approved; fail P6
+    # Per AMD-009 P6 'unanimous high confidence' interpreted in PARBAUGHS context:
+    # the bubble's CLOSURE STATE (status) is the authoritative signal; vote_tally
+    # is informational. Founder-ratified approval-with-dissent IS approved.
     bubble = fm.get("bubble_of_record") or fm.get("originating_bubble")
     if bubble and bubble != "null":
-        # Read the bubble file; check vote_tally
         bubble_path = ROOT / ".claude" / "state" / "discussion-bubbles" / f"{bubble}.md"
         if bubble_path.exists():
             btext = bubble_path.read_text(encoding="utf-8")
@@ -132,39 +154,44 @@ def evaluate_readiness(fm, body):
             if mb:
                 try:
                     bdata = json.loads(mb.group(1))
-                    tally = bdata.get("vote_tally", {})
-                    approve = tally.get("approve", 0)
-                    reject = tally.get("reject", 0)
-                    abstain = tally.get("abstain", 0)
-                    quorum = bdata.get("quorum", 0)
-                    if reject > 0:
-                        fails.append(f"bubble_dissent: {bubble} has {reject} reject vote(s); unanimous required")
-                    elif approve < quorum:
-                        fails.append(f"bubble_quorum_not_met: {bubble} approve={approve} quorum={quorum}")
+                    status = bdata.get("status", "")
+                    accepted_states = ("approved", "approved-with-dissent", "closed-by-founder-directive")
+                    if status not in accepted_states:
+                        fails.append(f"bubble_not_approved: {bubble} status={status!r} (expected one of {accepted_states})")
                 except Exception:
                     pass
 
-    # P7 — frontmatter declares all of the above explicitly. This is a
-    # meta-check: if criteria P1-P5 passed because the body has the info
-    # but frontmatter doesn't, that's a P7 violation.
-    fm_required = ("files_affected", "fallback_plan", "rollback_strategy",
-                   "round_trip_coverage", "token_cost_estimate")
-    fm_missing = [k for k in fm_required if not fm.get(k)]
-    # Soft P7 — only fails if the proposal otherwise passed but frontmatter is sparse.
-    # If P1-P5 already added failures, P7 is redundant.
+    # P7 — frontmatter declares all of the above explicitly. Accept Founder-spec
+    # field-name aliases (introduced post-AMD-009). Each conceptual gate has
+    # multiple acceptable field names; P7 is satisfied if ANY of each group exists.
+    fm_required_aliases = {
+        "scope":         ("files_affected", "scope_files_affected", "scope"),
+        "fallback":      ("fallback_plan", "fallback_a"),
+        "rollback":      ("rollback_strategy", "rollback"),
+        "round_trip":    ("round_trip_coverage", "test_strategy_before_after"),
+        "token_cost":    ("token_cost_estimate", "cost_tokens", "estimate_tokens"),
+    }
+    fm_missing = [group for group, aliases in fm_required_aliases.items()
+                  if not any(fm.get(a) for a in aliases)]
     if not fails and fm_missing:
-        fails.append(f"frontmatter_sparse: required fields missing {fm_missing} (P7 declares-everything-explicitly)")
+        fails.append(f"frontmatter_sparse: required field groups missing {fm_missing} (P7 declares-everything-explicitly)")
 
-    # P8 — token-cost estimate has documented methodology. Frontmatter
-    # 'token_cost_estimate' must be present and structured (not just a
-    # single number).
-    tce = fm.get("token_cost_estimate") or fm.get("estimate_tokens")
+    # P8 — token-cost estimate has documented methodology. Accept any of:
+    # token_cost_estimate / cost_tokens (Founder-spec, dict with low/high/methodology) /
+    # estimate_tokens. Dict with methodology field passes; single number fails.
+    tce = (fm.get("token_cost_estimate")
+           or fm.get("cost_tokens")
+           or fm.get("estimate_tokens"))
     if tce is None:
-        fails.append("token_cost_methodology_absent: no token_cost_estimate field with documented range/methodology")
-    elif isinstance(tce, (int, str)) and not re.search(r"range|-|to|methodology|low|high", str(tce), re.IGNORECASE):
-        # Single number without range → not a methodology
-        if str(tce).replace(",", "").replace("k", "").replace("M", "").replace(".", "").isdigit():
-            fails.append("token_cost_methodology_absent: estimate is a single number without methodology/range")
+        fails.append("token_cost_methodology_absent: no token_cost_estimate/cost_tokens field with documented range/methodology")
+    elif isinstance(tce, dict):
+        # Founder-spec shape: {low, high, methodology}. Methodology must be present.
+        if not tce.get("methodology") and not (tce.get("low") and tce.get("high")):
+            fails.append("token_cost_methodology_absent: cost_tokens dict missing methodology or low/high range")
+    elif isinstance(tce, (int, str)):
+        if not re.search(r"range|-|to|methodology|low|high", str(tce), re.IGNORECASE):
+            if str(tce).replace(",", "").replace("k", "").replace("M", "").replace(".", "").isdigit():
+                fails.append("token_cost_methodology_absent: estimate is a single number without methodology/range")
 
     return fails
 

@@ -22,7 +22,47 @@
     ".claude/state/wave-zero-dry-run/remediation/F1a-token-meter-gap-diagnostic.md",
     ".claude/state/discussion-bubbles/db-2026-05-13-003.md"
   ],
-  "ship_target": "Post-Wave-Zero remediation ratification. Lightweight; could ship same-day as Founder applies the schema amendment."
+  "ship_target": "Post-Wave-Zero remediation ratification. Lightweight; could ship same-day as Founder applies the schema amendment.",
+  "scope_files_affected": [
+    "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md § 5 (enum + example state file)",
+    "docs/agents/TELEMETRY_PROTOCOL.md (cycle.budget.checkpoint + cycle.paused + cycle.resumed event schemas)",
+    "scripts/aggregate-telemetry.py (handle the new quota_type in event aggregation — defensive: existing events keep working)",
+    "scripts/cron/usage-snapshot-config.json (per PROP-003 — defines the org-monthly reset boundary)"
+  ],
+  "fallback_plan": {
+    "plan_a": "Schema amendment: add 'org-monthly' to PAUSE_DISCIPLINE section 5 enum + TELEMETRY_PROTOCOL.md event examples. Defensive aggregator update (existing weekly-tokens events keep working).",
+    "plan_b": "If PROP-003 sidecar config schema differs from PROP-004 assumption (reset boundary representation), align PROP-004 with what PROP-003 actually ships.",
+    "plan_c": "Drop 'configurable reset boundary' feature; hardcode org-monthly as a string-only enum value; defer the reset-boundary logic to a follow-on amendment.",
+    "abandon_criteria": "If PROP-003 fundamentally changes shape such that 'org-monthly' isn't a meaningful quota_type anymore, abandon PROP-004 and replace with a fresh proposal modeling whatever PROP-003 produces."
+  },
+  "rollback_strategy": "git revert <ship-closing-sha>; schema enum reverts cleanly; aggregate-telemetry.py defensive handling means rollback does not break existing events. Risk-of-rollback LOW (additive enum entry + defensive parser).",
+  "cost_tokens": {
+    "low": 30000,
+    "high": 80000,
+    "methodology": "Low end: schema amendment + aggregator update + one round-trip test extension. Original 8k estimate predated AMD-009; reflects raw amendment authoring without round-trip / test / governance amendment scope."
+  },
+  "bubble_voter_unanimity": {
+    "bubble_id": "db-2026-05-13-003",
+    "bubble_status": "approved-with-dissent",
+    "vote_tally": {
+      "approve": 2,
+      "reject": 1,
+      "abstain": 1
+    },
+    "dissent_note": "Shares bubble with PROP-003. Same dissent + same resolution rationale."
+  },
+  "cross_cutting_assessment": {
+    "category": "cross-cutting: governance amendment + telemetry aggregator + depends_on PROP-003",
+    "rationale": "PROP-004 amends PAUSE_DISCIPLINE schema (governance), updates aggregator (telemetry), and DEPENDS ON PROP-003 (per body: usage-snapshot-config.json defines the org-monthly reset boundary). Per AMD-009 P4, scanner WILL defer on (a) cross-cutting + (b) unshipped dependency on PROP-003. PROP-004 cannot auto-execute until PROP-003 is in shipped/."
+  },
+  "test_strategy_before_after": "BEFORE: cycle.budget.checkpoint events with quota_type='org-monthly' fail aggregator validation (unknown enum value). AFTER: aggregator parses + reports org-monthly events. Round-trip new [quota-type-enum] block enumerates valid quota_type values; emits warning if any event uses a value outside the enum.",
+  "depends_on": [
+    "PROP-003"
+  ],
+  "frontmatter_declares_auto_implement": {
+    "value": false,
+    "rationale": "PROP-004 depends_on PROP-003 (unshipped). Scanner correctly defers on P4 (cross-cutting + unshipped dep). Ships AFTER PROP-003 lands."
+  }
 }
 ---
 

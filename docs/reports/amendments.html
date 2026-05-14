@@ -144,28 +144,10 @@
     <script id="report-data" type="application/json">
 {
   "amendments": {
-    "pending": [
-      {
-        "id": "AMD-012",
-        "title": "Smoke-testing governance (binding Critic gate across all Wave 1+ user-facing ships)",
-        "target_canonical_path": "docs/agents/SMOKE_TESTING_GOVERNANCE.md",
-        "source_draft_path": ".claude/state/amendments/pending/AMD-012-smoke-testing-governance.md",
-        "scope_summary": "Codifies smoke testing as governance, not per-ship negotiation. Every user-facing ship in Wave 1+ MUST author smoke-test coverage as part of definition-of-done; Critic blocks \"ship complete\" determination without it. Builds on the v8.17.0 Playwright + real-Firebase framework rather than parallel infrastructure. Exceptions require explicit Founder waiver documented in the ship plan as a known risk.",
-        "type": "new-file",
-        "section_anchor": null,
-        "depends_on": [
-          "AMD-009"
-        ],
-        "authored_by": "claude-code (orchestration team)",
-        "authored_at": "2026-05-14T04:25:00Z",
-        "bubble_of_record": null,
-        "estimate_tokens_to_apply": "4500",
-        "rollback_strategy": "git revert; the document is new. Implementation impact is policy-only \u2014 existing smoke framework continues to function regardless of this amendment's state.",
-        "status": "pending",
-        "operating_status": "ADVISORY \u2014 operates as guidance until Founder applies via amendments.html. AMD-009 Principle 4 (test before declaring done) already implies smoke testing for user-facing ships; this amendment codifies the specific coverage standard + Critic-gate teeth.",
-        "_body_preview": "# Smoke-Testing Governance\n\n## Founder principle (recorded verbatim)\n\n> \"Smoke testing is governance, not per-ship negotiation. Codify what\n> smoke testing means for Wave 1 features so it's binding across all\n> ships.\"\n\n## Definition\n\n**Smoke testing** = automated cross-browser scenarios that verify a\nuser-facing feature works end-to-end from a member's perspective.\nFor Wave 1 (HQ web; later Wave ",
-        "_filename": "AMD-012-smoke-testing-governance.md"
-      },
+    "pending": [],
+    "approved": [],
+    "deferred": [],
+    "applied": [
       {
         "id": "AMD-013",
         "title": "ROADMAP v2 \u2014 Wave Plan Re-validation 2026-05-14 (W1.S1 split + W1.I2 re-scope + 5 new ships)",
@@ -192,11 +174,28 @@
         "operating_status": "ADVISORY \u2014 operates as guidance until Founder applies via amendments.html. Per the Founder ratification of the wave-plan audit 2026-05-14, the team operates against the validated plan immediately; the formal artifact lands when this amendment applies.",
         "_body_preview": "# Roadmap Revision \u2014 2026-05-14 (Wave Plan Re-validation)\n\nThe orchestration team audited the Wave 1-4 ship plan against current\nsubstrate state. Founder ratified the audit findings 2026-05-14.\nThis section appends the validated deltas to ROADMAP.md.\n\n**Source documents:**\n- Audit: `.claude/state/wave-validation/wave-plan-audit-2026-05-14.md`\n- Founder ratification: in-conversation, 2026-05-14\n- C",
         "_filename": "AMD-013-roadmap-v2.md"
-      }
-    ],
-    "approved": [],
-    "deferred": [],
-    "applied": [
+      },
+      {
+        "id": "AMD-012",
+        "title": "Smoke-testing governance (binding Critic gate across all Wave 1+ user-facing ships)",
+        "target_canonical_path": "docs/agents/SMOKE_TESTING_GOVERNANCE.md",
+        "source_draft_path": ".claude/state/amendments/pending/AMD-012-smoke-testing-governance.md",
+        "scope_summary": "Codifies smoke testing as governance, not per-ship negotiation. Every user-facing ship in Wave 1+ MUST author smoke-test coverage as part of definition-of-done; Critic blocks \"ship complete\" determination without it. Builds on the v8.17.0 Playwright + real-Firebase framework rather than parallel infrastructure. Exceptions require explicit Founder waiver documented in the ship plan as a known risk.",
+        "type": "new-file",
+        "section_anchor": null,
+        "depends_on": [
+          "AMD-009"
+        ],
+        "authored_by": "claude-code (orchestration team)",
+        "authored_at": "2026-05-14T04:25:00Z",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": "4500",
+        "rollback_strategy": "git revert; the document is new. Implementation impact is policy-only \u2014 existing smoke framework continues to function regardless of this amendment's state.",
+        "status": "pending",
+        "operating_status": "ADVISORY \u2014 operates as guidance until Founder applies via amendments.html. AMD-009 Principle 4 (test before declaring done) already implies smoke testing for user-facing ships; this amendment codifies the specific coverage standard + Critic-gate teeth.",
+        "_body_preview": "# Smoke-Testing Governance\n\n## Founder principle (recorded verbatim)\n\n> \"Smoke testing is governance, not per-ship negotiation. Codify what\n> smoke testing means for Wave 1 features so it's binding across all\n> ships.\"\n\n## Definition\n\n**Smoke testing** = automated cross-browser scenarios that verify a\nuser-facing feature works end-to-end from a member's perspective.\nFor Wave 1 (HQ web; later Wave ",
+        "_filename": "AMD-012-smoke-testing-governance.md"
+      },
       {
         "id": "AMD-011",
         "title": "Auto-execute approved proposals when AMD-009-compliant (the auto-implementation gate)",
@@ -417,13 +416,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 2,
+    "pending": 0,
     "approved": 0,
     "deferred": 0,
-    "applied_total": 11,
+    "applied_total": 13,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T04:33:12.077367+00:00",
+  "as_of": "2026-05-14T04:45:03.396768+00:00",
   "schema_version": 1,
   "archive_display_cap": 50
 }

@@ -318,7 +318,47 @@
           ".claude/state/wave-zero-dry-run/remediation/F1a-token-meter-gap-diagnostic.md",
           ".claude/state/discussion-bubbles/db-2026-05-13-003.md"
         ],
-        "ship_target": "Post-Wave-Zero remediation ratification. Lightweight; could ship same-day as Founder applies the schema amendment."
+        "ship_target": "Post-Wave-Zero remediation ratification. Lightweight; could ship same-day as Founder applies the schema amendment.",
+        "scope_files_affected": [
+          "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 5 (enum + example state file)",
+          "docs/agents/TELEMETRY_PROTOCOL.md (cycle.budget.checkpoint + cycle.paused + cycle.resumed event schemas)",
+          "scripts/aggregate-telemetry.py (handle the new quota_type in event aggregation \u2014 defensive: existing events keep working)",
+          "scripts/cron/usage-snapshot-config.json (per PROP-003 \u2014 defines the org-monthly reset boundary)"
+        ],
+        "fallback_plan": {
+          "plan_a": "Schema amendment: add 'org-monthly' to PAUSE_DISCIPLINE section 5 enum + TELEMETRY_PROTOCOL.md event examples. Defensive aggregator update (existing weekly-tokens events keep working).",
+          "plan_b": "If PROP-003 sidecar config schema differs from PROP-004 assumption (reset boundary representation), align PROP-004 with what PROP-003 actually ships.",
+          "plan_c": "Drop 'configurable reset boundary' feature; hardcode org-monthly as a string-only enum value; defer the reset-boundary logic to a follow-on amendment.",
+          "abandon_criteria": "If PROP-003 fundamentally changes shape such that 'org-monthly' isn't a meaningful quota_type anymore, abandon PROP-004 and replace with a fresh proposal modeling whatever PROP-003 produces."
+        },
+        "rollback_strategy": "git revert <ship-closing-sha>; schema enum reverts cleanly; aggregate-telemetry.py defensive handling means rollback does not break existing events. Risk-of-rollback LOW (additive enum entry + defensive parser).",
+        "cost_tokens": {
+          "low": 30000,
+          "high": 80000,
+          "methodology": "Low end: schema amendment + aggregator update + one round-trip test extension. Original 8k estimate predated AMD-009; reflects raw amendment authoring without round-trip / test / governance amendment scope."
+        },
+        "bubble_voter_unanimity": {
+          "bubble_id": "db-2026-05-13-003",
+          "bubble_status": "approved-with-dissent",
+          "vote_tally": {
+            "approve": 2,
+            "reject": 1,
+            "abstain": 1
+          },
+          "dissent_note": "Shares bubble with PROP-003. Same dissent + same resolution rationale."
+        },
+        "cross_cutting_assessment": {
+          "category": "cross-cutting: governance amendment + telemetry aggregator + depends_on PROP-003",
+          "rationale": "PROP-004 amends PAUSE_DISCIPLINE schema (governance), updates aggregator (telemetry), and DEPENDS ON PROP-003 (per body: usage-snapshot-config.json defines the org-monthly reset boundary). Per AMD-009 P4, scanner WILL defer on (a) cross-cutting + (b) unshipped dependency on PROP-003. PROP-004 cannot auto-execute until PROP-003 is in shipped/."
+        },
+        "test_strategy_before_after": "BEFORE: cycle.budget.checkpoint events with quota_type='org-monthly' fail aggregator validation (unknown enum value). AFTER: aggregator parses + reports org-monthly events. Round-trip new [quota-type-enum] block enumerates valid quota_type values; emits warning if any event uses a value outside the enum.",
+        "depends_on": [
+          "PROP-003"
+        ],
+        "frontmatter_declares_auto_implement": {
+          "value": false,
+          "rationale": "PROP-004 depends_on PROP-003 (unshipped). Scanner correctly defers on P4 (cross-cutting + unshipped dep). Ships AFTER PROP-003 lands."
+        }
       },
       {
         "id": "PROP-003",
@@ -344,8 +384,49 @@
           ".claude/state/wave-zero-dry-run/remediation/F1a-token-meter-gap-diagnostic.md",
           ".claude/state/discussion-bubbles/db-2026-05-13-003.md"
         ],
-        "ship_target": "Post-Wave-Zero remediation ratification + cron-paused.json clear. Cycle 2 or earlier if Founder prioritizes."
-      },
+        "ship_target": "Post-Wave-Zero remediation ratification + cron-paused.json clear. Cycle 2 or earlier if Founder prioritizes.",
+        "scope_files_affected": [
+          "scripts/cron/usage-snapshot.ps1 (new)",
+          "scripts/cron/usage-snapshot-config.json (new \u2014 what to poll, how often, reset boundary)",
+          "scripts/aggregate-telemetry.py (read .claude/state/usage-snapshot.json; populate weekly_tokens / weekly_cost / org_monthly_pct from real data)",
+          ".claude/state/usage-snapshot.json (new \u2014 sidecar writes here; agent reads each turn)",
+          "docs/agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md \u00a7 2.1 (Founder-applied amendment: meter read via .claude/state/usage-snapshot.json)"
+        ],
+        "fallback_plan": {
+          "plan_a": "Source data via manual paste (refresh-quota-manual.ps1 already in repo). Sidecar prompts Founder once a day; agent reads .claude/state/usage-snapshot.json. Lowest infrastructure cost; bootstrap path.",
+          "plan_b": "Source data via second Claude Code instance in headless mode invoking /cost periodically. Requires Claude Code to support headless /cost (uncertain at authoring). If unsupported: stay on plan_a indefinitely.",
+          "plan_c": "Anthropic console scrape (login + parse). Brittle, breaks on UI changes. Last resort.",
+          "abandon_criteria": "3 plans fail with distinct root causes within a single ship cycle, escalate per criterion #5 (cross-cutting architecture). The PAUSE_DISCIPLINE section 2.1 amendment piece becomes a separate AMD that can ship independently."
+        },
+        "rollback_strategy": "git revert <ship-closing-sha>; rm .claude/state/usage-snapshot.json (clean stale state); PAUSE_DISCIPLINE section 2.1 amendment rolled back separately via its own AMD revert. Risk-of-rollback LOW for sidecar mechanics (additive); MEDIUM for the governance amendment.",
+        "cost_tokens": {
+          "low": 150000,
+          "high": 350000,
+          "methodology": "Low end assumes plan_a (manual paste) only: sidecar PowerShell loop + aggregate-telemetry.py read integration + dashboard regen test ~150k. High end adds plan_b investigation + headless /cost integration if available (~200k additional). Original 45k estimate predated AMD-009; reflects raw code authoring without test/verification/round-trip discipline scope."
+        },
+        "bubble_voter_unanimity": {
+          "bubble_id": "db-2026-05-13-003",
+          "bubble_status": "approved-with-dissent",
+          "vote_tally": {
+            "approve": 2,
+            "reject": 1,
+            "abstain": 1
+          },
+          "dissent_note": "Data-Integrity's forcing-function dissent was that the heuristic-only approach (PAUSE_DISCIPLINE) wasn't sufficient. PROP-003 IS the substantive response to that dissent. By shipping the meter, the dissent is resolved. Founder ratified approval-with-dissent on this basis. Scanner should accept per PARBAUGHS lifecycle (approved-with-dissent is a valid approval state)."
+        },
+        "cross_cutting_assessment": {
+          "category": "cross-cutting: dashboards + telemetry + cron + governance amendment",
+          "rationale": "PROP-003 touches: (a) cron substrate via new usage-snapshot.ps1; (b) telemetry aggregator via aggregate-telemetry.py snapshot read; (c) dashboards downstream via populated weekly_tokens / org_monthly_pct fields; (d) governance via PAUSE_DISCIPLINE section 2.1 amendment that documents the meter as the canonical pause trigger. AMD-009 P4 forbids cross-cutting changes in a single proposal. Honest assessment: scanner WILL defer PROP-003 on P4 grounds. Founder may (a) split PROP-003 into PROP-003.a (mechanics) + AMD-XXX (governance), or (b) explicitly waive P4 for this one. Auto-execute pattern then runs the bundled work as one unit, with Critic gating each sub-deliverable to ship-complete."
+        },
+        "test_strategy_before_after": "BEFORE: dashboard weekly_tokens shows 0 OR the operator-asserted estimate (4.2M from session-summary, commit 8b7e117). aggregate-token-usage shows estimated=4.2M / real=0. AFTER: dashboard weekly_tokens reflects real meter reads when sidecar runs; operator-asserted source stays as a fallback when sidecar is stale > 600s. Round-trip extension: new [meter-wiring] block validating usage-snapshot.json schema + freshness gates. Token-usage dashboard 'real' column becomes non-zero for the first time in PARBAUGHS history.",
+        "frontmatter_declares_auto_implement": {
+          "value": false,
+          "rationale": "PROP-003 is honestly cross-cutting (see cross_cutting_assessment). Per AMD-011 + AMD-009 P4, the scanner will defer it. Setting auto_implement=False is the honest declaration; Founder explicitly authorizes either a split or a P4 waiver before this ships under the auto-execute path."
+        }
+      }
+    ],
+    "deferred": [],
+    "shipped": [
       {
         "id": "PROP-002",
         "title": "main-flows.html \u2014 4th operational view (generator-driven from MAIN_FLOWS.md)",
@@ -376,21 +457,23 @@
           "Non-overlapping purpose with dashboard.html stated in the proposal body. main-flows.html answers 'what does the product DO for members'; dashboard.html answers 'what's the orchestration team's operational state.' If overlap appears at implementation, kill main-flows.html instead of duplicating.",
           "F5 metric-integrity check at PROP review: 'whose metrics does this view flatter?' If the answer is 'orchestration team productivity,' reject.",
           "Token-budget delta estimated: +4-6k tokens per heartbeat cycle for the 4th regen surface."
-        ]
+        ],
+        "shipped_at": "2026-05-13T17:45:00Z",
+        "shipped_in_commit": "7a8a575",
+        "shipped_note": "Verified per git log --diff-filter=A: 7a8a575 added BOTH docs/reports/main-flows.html AND scripts/regen-main-flows.py. Subsequent commits (13e9f09, f8ea71e, 68771a9) refined it as main-flows v2 Phase 1/2/3. Original PROP-002 scope fully delivered + extended.",
+        "shipped_by": "orchestration team"
       }
     ],
-    "deferred": [],
-    "shipped": [],
     "rejected": []
   },
   "counts": {
     "pending": 0,
-    "approved": 3,
+    "approved": 2,
     "deferred": 0,
-    "shipped_total": 0,
+    "shipped_total": 1,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T04:33:11.919905+00:00",
+  "as_of": "2026-05-14T04:45:03.224204+00:00",
   "schema_version": 2,
   "archive_display_cap": 50
 }

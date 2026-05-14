@@ -29,7 +29,11 @@
     "Non-overlapping purpose with dashboard.html stated in the proposal body. main-flows.html answers 'what does the product DO for members'; dashboard.html answers 'what's the orchestration team's operational state.' If overlap appears at implementation, kill main-flows.html instead of duplicating.",
     "F5 metric-integrity check at PROP review: 'whose metrics does this view flatter?' If the answer is 'orchestration team productivity,' reject.",
     "Token-budget delta estimated: +4-6k tokens per heartbeat cycle for the 4th regen surface."
-  ]
+  ],
+  "shipped_at": "2026-05-13T17:45:00Z",
+  "shipped_in_commit": "7a8a575",
+  "shipped_note": "Verified per git log --diff-filter=A: 7a8a575 added BOTH docs/reports/main-flows.html AND scripts/regen-main-flows.py. Subsequent commits (13e9f09, f8ea71e, 68771a9) refined it as main-flows v2 Phase 1/2/3. Original PROP-002 scope fully delivered + extended.",
+  "shipped_by": "orchestration team"
 }
 ---
 
