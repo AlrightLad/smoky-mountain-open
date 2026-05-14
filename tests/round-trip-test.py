@@ -757,6 +757,56 @@ def main():
         print(red(f"  ✗ meter-wiring                 failures: {missing}"))
         failures.append(("meter-wiring", f"checks failed: {missing}"))
 
+    # AMD-007 P18.6 [founder-queue]: dashboard data block must always
+    # carry a founder_queue object with the four canonical sub-sections
+    # (governance_gates, system_health, activity_since_last_visit, exceptions).
+    # Counts in governance_gates must match the on-disk state directories.
+    print(cyan("\n[founder-queue] AMD-007 P18.6 dashboard surface..."))
+    dash_html = (REPORTS_SRC / "dashboard.html").read_text(encoding="utf-8")
+    dash_data_match = DATA_BLOCK_RE.search(dash_html)
+    fq_checks = []
+    if not dash_data_match:
+        failures.append(("founder-queue", "dashboard.html data block missing"))
+    else:
+        try:
+            dd = json.loads(dash_data_match.group(2))
+        except json.JSONDecodeError as e:
+            dd = None
+            failures.append(("founder-queue", f"dashboard JSON parse: {e}"))
+        if dd is not None:
+            fq = dd.get("founder_queue")
+            fq_checks.append(("founder_queue key present", isinstance(fq, dict)))
+            if isinstance(fq, dict):
+                fq_checks.append(("governance_gates sub-section", isinstance(fq.get("governance_gates"), dict)))
+                fq_checks.append(("system_health sub-section",    isinstance(fq.get("system_health"), dict)))
+                fq_checks.append(("activity_since_last_visit sub-section", isinstance(fq.get("activity_since_last_visit"), dict)))
+                fq_checks.append(("exceptions sub-section",       isinstance(fq.get("exceptions"), list)))
+                # Cross-check: amendments_pending count == on-disk pending count
+                gov = fq.get("governance_gates", {}) or {}
+                disk_amd_pending = 0
+                amd_pending_dir = ROOT / ".claude" / "state" / "amendments" / "pending"
+                if amd_pending_dir.exists():
+                    disk_amd_pending = sum(1 for f in amd_pending_dir.glob("AMD-*.md"))
+                fq_checks.append((
+                    f"amendments_pending matches on-disk ({disk_amd_pending})",
+                    gov.get("amendments_pending") == disk_amd_pending,
+                ))
+                # Same for proposals_pending
+                disk_prop_pending = 0
+                prop_pending_dir = ROOT / ".claude" / "state" / "proposals" / "pending"
+                if prop_pending_dir.exists():
+                    disk_prop_pending = sum(1 for f in prop_pending_dir.glob("PROP-*.md"))
+                fq_checks.append((
+                    f"proposals_pending matches on-disk ({disk_prop_pending})",
+                    gov.get("proposals_pending") == disk_prop_pending,
+                ))
+    if all(ok for _, ok in fq_checks):
+        print(green(f"  ✓ founder-queue                {len(fq_checks)} checks pass"))
+    else:
+        missing = [name for name, ok in fq_checks if not ok]
+        print(red(f"  ✗ founder-queue                failures: {missing}"))
+        failures.append(("founder-queue", f"checks failed: {missing}"))
+
     # PROP-004 [quota-type-enum]: every cycle.paused / cycle.resumed event in
     # the telemetry log must use a quota_type value from the canonical enum.
     # PROP-004 (2026-05-14) added "org-monthly" to the enum so the discipline

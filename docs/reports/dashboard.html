@@ -36,6 +36,92 @@
             </div>
         </div>
 
+        <!-- AMD-007 P18.6 Founder Review Queue — positioned at TOP of the
+             page per spec. Brass accent border + larger headline. Surfaces
+             governance gates, system health, activity-since-last-visit,
+             exceptions. Rendered by JS from data.founder_queue. Empty queue
+             renders an "All caught up" affirmative signal rather than
+             collapsing the section. Stale items (>3 days) flagged distinctly. -->
+        <section class="pb-section pb-section--founder-queue" id="founder-review-queue" style="border: 2px solid var(--accent-brass); border-radius: var(--radius-md); padding: var(--space-4); margin-bottom: var(--space-5); background: rgba(201,169,97,0.04);">
+            <div class="pb-page-title-row" style="margin-bottom: var(--space-3);">
+                <div>
+                    <h2 class="pb-section-title" style="font-size: var(--text-2xl, 1.5rem); color: var(--accent-brass); margin: 0;">Founder Review Queue</h2>
+                    <p class="pb-section-subtitle" data-fq="subtitle">checking review queue&hellip;</p>
+                </div>
+                <div class="pb-page-meta" style="font-family: var(--font-mono); font-size: var(--text-xs);">
+                    <span>Last visit: <span data-fq="last-visit">never recorded</span></span>
+                </div>
+            </div>
+
+            <!-- Empty-state banner (shown when nothing pending Founder eyes) -->
+            <div data-fq-empty hidden style="padding: var(--space-3); background: rgba(74,128,103,0.10); border-radius: var(--radius-sm); color: var(--accent-moss); font-weight: 600;">
+                &check; All caught up &mdash; no governance gates pending, no exceptions, no halts.
+            </div>
+
+            <!-- Sub-section: governance gates -->
+            <div data-fq-section="governance" style="margin-bottom: var(--space-3);">
+                <div style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); font-weight: 600; margin-bottom: var(--space-1);">Governance gates</div>
+                <div class="pb-kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                    <a class="pb-kpi-card" data-fq-gate="amendments" href="amendments.html" style="text-decoration: none;">
+                        <span class="pb-kpi-label">Amendments pending</span>
+                        <span class="pb-kpi-value" data-fq="amendments-pending">&mdash;</span>
+                        <span class="pb-kpi-sub">awaiting Founder ratification</span>
+                    </a>
+                    <a class="pb-kpi-card" data-fq-gate="bubbles" href="discussion-bubbles.html" style="text-decoration: none;">
+                        <span class="pb-kpi-label">Bubbles flagged</span>
+                        <span class="pb-kpi-value" data-fq="bubbles-flagged">&mdash;</span>
+                        <span class="pb-kpi-sub">tie-break or Founder weigh-in</span>
+                    </a>
+                    <a class="pb-kpi-card" data-fq-gate="proposals" href="proposals.html" style="text-decoration: none;">
+                        <span class="pb-kpi-label">Proposals pending</span>
+                        <span class="pb-kpi-value" data-fq="proposals-pending">&mdash;</span>
+                        <span class="pb-kpi-sub">awaiting approval</span>
+                    </a>
+                    <div class="pb-kpi-card" data-fq-gate="escalations">
+                        <span class="pb-kpi-label">Open escalations</span>
+                        <span class="pb-kpi-value" data-fq="escalations-count">&mdash;</span>
+                        <span class="pb-kpi-sub" data-fq="escalations-summary">phase escalations</span>
+                    </div>
+                </div>
+                <ul data-fq="escalations-list" style="margin-top: var(--space-2); padding-left: var(--space-4); list-style: disc; color: var(--text-secondary); font-size: var(--text-sm);"></ul>
+            </div>
+
+            <!-- Sub-section: system health -->
+            <div data-fq-section="health" style="margin-bottom: var(--space-3);">
+                <div style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); font-weight: 600; margin-bottom: var(--space-1);">System health</div>
+                <div class="pb-kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+                    <div class="pb-kpi-card" data-fq-health="round-trip">
+                        <span class="pb-kpi-label">Round-trip last pass</span>
+                        <span class="pb-kpi-value is-small" data-fq="round-trip">&mdash;</span>
+                        <span class="pb-kpi-sub">regen-all heartbeat</span>
+                    </div>
+                    <div class="pb-kpi-card" data-fq-health="working-tree">
+                        <span class="pb-kpi-label">Working tree</span>
+                        <span class="pb-kpi-value is-small" data-fq="working-tree">&mdash;</span>
+                        <span class="pb-kpi-sub">substrate-watcher managed</span>
+                    </div>
+                    <div class="pb-kpi-card" data-fq-health="halts">
+                        <span class="pb-kpi-label">Active halts</span>
+                        <span class="pb-kpi-value" data-fq="halts-count">&mdash;</span>
+                        <span class="pb-kpi-sub" data-fq="halts-summary">unresolved system faults</span>
+                    </div>
+                </div>
+                <div data-fq="crons" style="margin-top: var(--space-2); font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-secondary);"></div>
+            </div>
+
+            <!-- Sub-section: activity since last visit -->
+            <div data-fq-section="activity" style="margin-bottom: var(--space-3);">
+                <div style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); font-weight: 600; margin-bottom: var(--space-1);">Activity since last visit</div>
+                <div data-fq="activity-summary" style="font-size: var(--text-sm); color: var(--text-secondary);">Loading&hellip;</div>
+            </div>
+
+            <!-- Sub-section: exceptions -->
+            <div data-fq-section="exceptions">
+                <div style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); font-weight: 600; margin-bottom: var(--space-1);">Exceptions</div>
+                <div data-fq="exceptions-summary" style="font-size: var(--text-sm); color: var(--text-secondary);">none</div>
+            </div>
+        </section>
+
         <section class="pb-section">
             <h2 class="pb-section-title">This week</h2>
             <!--
@@ -310,10 +396,10 @@
     }
   ],
   "recent_ships": [],
-  "_meter_status": "wired-estimated",
-  "_meter_note": "Token meter is not wired (F1 finding). tokens_by_role / weekly_tokens / weekly_cost / token_trend_7d will show synthesized event-attributed values ONLY for events that carry agent + tokens fields. Until a real meter wires up (db-2026-05-13-003 outcome pending Founder ratification), treat these fields as a lower bound, not the actual consumption.",
+  "_meter_status": "wired-estimated-sidecar-empty",
+  "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "_aggregate_counts": {
-    "events_total": 349,
+    "events_total": 376,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
@@ -325,6 +411,95 @@
       10,
       1800
     ]
+  },
+  "quota_status": {
+    "state": "empty",
+    "as_of": "2026-05-14T05:22:21.0965935Z",
+    "age_seconds": 4729,
+    "weekly_tokens": 0,
+    "weekly_cap": 3500000,
+    "weekly_pct": null,
+    "org_monthly_tokens": 0,
+    "org_monthly_cap": null,
+    "org_monthly_pct": null,
+    "data_source": "none",
+    "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
+  },
+  "founder_queue": {
+    "as_of": "2026-05-14T06:51:24.260877+00:00",
+    "last_founder_visit": null,
+    "governance_gates": {
+      "amendments_pending": 0,
+      "amendments_link": "amendments.html",
+      "bubbles_flagged": 0,
+      "bubbles_link": "discussion-bubbles.html",
+      "proposals_pending": 0,
+      "proposals_link": "proposals.html",
+      "open_escalations": [
+        {
+          "id": "main-flows-v2-taxonomy",
+          "type": "cross-cutting architecture decision (escalation criterion #5)",
+          "summary": "Phase 2 taxonomy + visual + speculative-flows decisions; defaults documented at .claude/state/main-flows-v2/taxonomy-proposals.md",
+          "link": ".claude/state/main-flows-v2/taxonomy-proposals.md"
+        },
+        {
+          "id": "wave-1-ship-1-selection",
+          "type": "Founder authorization needed",
+          "summary": "Design Tooling Spike complete; recommendation locked (Approach A native). Founder selects which Wave 1 ship goes first.",
+          "link": ".claude/state/design-spike/comparison.md"
+        }
+      ]
+    },
+    "system_health": {
+      "crons": {
+        "downloads-watcher": {
+          "last_run": "2026-05-14T06-50-49Z",
+          "last_log": "2026-05-14T06-50-49Z-downloads-watcher.log"
+        },
+        "maintenance": {
+          "last_run": "2026-05-13T22-02-53Z",
+          "last_log": "2026-05-13T22-02-53Z-maintenance.log"
+        },
+        "overnight-triage": {
+          "last_run": "2026-05-13T22-12-35Z",
+          "last_log": "2026-05-13T22-12-35Z-overnight-triage.log"
+        },
+        "proposal-readiness": {
+          "last_run": "2026-05-14T05-04-49Z",
+          "last_log": "2026-05-14T05-04-49Z-proposal-readiness.log"
+        },
+        "sidecar": {
+          "last_run": "2026-05-14T05-22-20Z",
+          "last_log": "2026-05-14T05-22-20Z-sidecar.log"
+        }
+      },
+      "last_regen_all": {
+        "file": "maintenance-2026-05-13.md",
+        "ts": "2026-05-13",
+        "status": "PASS"
+      },
+      "working_tree": "auto-clean (substrate-watcher managed)",
+      "halts": [],
+      "round_trip_last_pass": "2026-05-13"
+    },
+    "activity_since_last_visit": {
+      "_note": "Counts since last_founder_visit (null = since-forever)",
+      "ships_closed": [
+        {
+          "id": "PROP-002",
+          "title": "main-flows.html \u2014 4th operational view (generator-driven from MAIN_FLOWS.md)",
+          "ts": "2026-05-13T17:45:00Z"
+        },
+        {
+          "id": "PROP-003.a",
+          "title": "Token meter sidecar mechanics (scope-isolated from dashboards + governance)",
+          "ts": "2026-05-14T01:25:53-04:00"
+        }
+      ],
+      "amendments_applied": [],
+      "proposals_pending_new": []
+    },
+    "exceptions": []
   }
 }
     </script>
@@ -524,10 +699,107 @@
                             + '</tr>';
                     }).join('');
                 }
+                // AMD-007 P18.6: Founder Review Queue.
+                renderFounderQueue(data.founder_queue || null);
             } catch (err) {
                 console.error('Dashboard render failed:', err);
             }
         });
+
+        function renderFounderQueue(fq) {
+            if (!fq) {
+                return;
+            }
+            function setText(sel, val) {
+                var el = document.querySelector(sel);
+                if (el) el.textContent = val;
+            }
+            function ageDaysAgo(iso) {
+                if (!iso) return null;
+                var d = new Date(iso);
+                if (isNaN(d)) return null;
+                return Math.floor((Date.now() - d.getTime()) / (24 * 3600 * 1000));
+            }
+            // Last visit
+            var lv = fq.last_founder_visit;
+            if (lv) {
+                var lvd = ageDaysAgo(lv);
+                setText('[data-fq="last-visit"]', lvd === 0 ? 'today' : (lvd === 1 ? 'yesterday' : (lvd != null ? lvd + ' days ago' : 'unknown')));
+            } else {
+                setText('[data-fq="last-visit"]', 'never recorded');
+            }
+
+            // Governance gates
+            var gov = fq.governance_gates || {};
+            setText('[data-fq="amendments-pending"]', String(gov.amendments_pending || 0));
+            setText('[data-fq="bubbles-flagged"]', String(gov.bubbles_flagged || 0));
+            setText('[data-fq="proposals-pending"]', String(gov.proposals_pending || 0));
+
+            var esc = gov.open_escalations || [];
+            setText('[data-fq="escalations-count"]', String(esc.length));
+            setText('[data-fq="escalations-summary"]', esc.length === 0 ? 'none open' : 'requiring Founder decision');
+            var listEl = document.querySelector('[data-fq="escalations-list"]');
+            if (listEl) {
+                listEl.innerHTML = esc.map(function (e) {
+                    var link = e.link ? '<a href="' + e.link + '" style="color:var(--accent-brass);">link</a>' : '';
+                    var title = (e.id || '') + (e.summary ? ' — ' + e.summary : '');
+                    return '<li><strong>' + title + '</strong> ' + link + '</li>';
+                }).join('');
+            }
+
+            // System health
+            var hh = fq.system_health || {};
+            setText('[data-fq="round-trip"]', hh.round_trip_last_pass || 'unknown');
+            setText('[data-fq="working-tree"]', hh.working_tree || 'unknown');
+            var halts = hh.halts || [];
+            setText('[data-fq="halts-count"]', String(halts.length));
+            setText('[data-fq="halts-summary"]', halts.length === 0 ? 'no active halts' : 'unresolved');
+
+            // Crons
+            var cronsEl = document.querySelector('[data-fq="crons"]');
+            if (cronsEl) {
+                var crons = hh.crons || {};
+                var names = Object.keys(crons).sort();
+                if (names.length === 0) {
+                    cronsEl.textContent = 'no cron logs found';
+                } else {
+                    cronsEl.innerHTML = names.map(function (n) {
+                        var c = crons[n];
+                        return '<span style="display:inline-block;margin-right:var(--space-3);">'
+                            + n + ' · ' + (c.last_run || '?')
+                            + '</span>';
+                    }).join('');
+                }
+            }
+
+            // Activity since last visit
+            var act = fq.activity_since_last_visit || {};
+            var actSummary = [];
+            if (act.ships_closed && act.ships_closed.length) actSummary.push(act.ships_closed.length + ' ships closed');
+            if (act.amendments_applied && act.amendments_applied.length) actSummary.push(act.amendments_applied.length + ' amendments applied');
+            if (act.proposals_pending_new && act.proposals_pending_new.length) actSummary.push(act.proposals_pending_new.length + ' new pending proposals');
+            setText('[data-fq="activity-summary"]', actSummary.length === 0 ? 'no activity since last visit' : actSummary.join(' · '));
+
+            // Exceptions
+            var ex = fq.exceptions || [];
+            setText('[data-fq="exceptions-summary"]', ex.length === 0 ? 'none' : (ex.length + ' open'));
+
+            // Empty-queue affirmative banner
+            var allEmpty = (gov.amendments_pending || 0) === 0
+                && (gov.bubbles_flagged || 0) === 0
+                && (gov.proposals_pending || 0) === 0
+                && esc.length === 0
+                && halts.length === 0
+                && ex.length === 0;
+            var emptyEl = document.querySelector('[data-fq-empty]');
+            if (emptyEl) emptyEl.hidden = !allEmpty;
+
+            // Subtitle reflects state
+            var subtitle = allEmpty
+                ? 'Everything Founder needs to see has been reviewed.'
+                : 'Items below need Founder review before next ship-close.';
+            setText('[data-fq="subtitle"]', subtitle);
+        }
     </script>
 </body>
 </html>
