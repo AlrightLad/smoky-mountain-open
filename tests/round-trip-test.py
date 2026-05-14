@@ -782,6 +782,92 @@ def main():
                 if all(k in pc for k in ("pending", "approved", "shipped_total")):
                     print(green(f"  ✓ dashboard.html proposals_counts present: pending={pc['pending']} approved={pc['approved']} shipped={pc.get('shipped_total')}"))
 
+    # AMENDMENTS lifecycle schema: mirror of PROPOSAL_LIFECYCLE_v8.2 for governance amendment drafts.
+    # 5-state (pending / approved / deferred / applied / rejected), AMD-NNN frontmatter, target_canonical_path
+    # required on every AMD. Applied + rejected capped at 50 inline; counts.*_total surfaces full count.
+    print(cyan("\n[amendments] AMENDMENTS lifecycle schema validation..."))
+    amd_data = get_data_block(REPORTS_SRC / "amendments.html")
+    if amd_data is None:
+        print(red("  ✗ amendments.html no data block"))
+        failures.append(("amendments.html", "no data block"))
+    else:
+        amend_required = ("amendments", "counts", "as_of", "schema_version")
+        amend_missing = [k for k in amend_required if k not in amd_data]
+        if amend_missing:
+            print(red(f"  ✗ amendments.html missing top-level keys: {amend_missing}"))
+            failures.append(("amendments.html", f"missing keys: {amend_missing}"))
+        else:
+            ab = amd_data["amendments"]
+            ac_block = amd_data["counts"]
+            amend_states = ("pending", "approved", "deferred", "applied", "rejected")
+            state_missing = [s for s in amend_states if s not in ab]
+            if state_missing:
+                print(red(f"  ✗ amendments.amendments missing states: {state_missing}"))
+                failures.append(("amendments.states", f"missing: {state_missing}"))
+            else:
+                # On-disk truth per state
+                amd_on_disk = {}
+                for s in amend_states:
+                    d = real_state / "amendments" / s
+                    amd_on_disk[s] = sum(1 for _ in d.glob("AMD-*.md")) if d.exists() else 0
+                ok = True
+                # Uncapped buckets: pending/approved/deferred — inline length == on-disk
+                for s in ("pending", "approved", "deferred"):
+                    if len(ab[s]) != amd_on_disk[s]:
+                        print(red(f"  ✗ amendments.{s}: data block has {len(ab[s])}, on-disk has {amd_on_disk[s]}"))
+                        failures.append((f"amendments:{s}", f"data={len(ab[s])} on-disk={amd_on_disk[s]}"))
+                        ok = False
+                # Applied + rejected: inline capped at 50, *_total surfaces full count
+                for s, count_key in (("applied", "applied_total"), ("rejected", "rejected_total")):
+                    if ac_block.get(count_key) != amd_on_disk[s]:
+                        print(red(f"  ✗ amendments.counts.{count_key}: data block has {ac_block.get(count_key)}, on-disk has {amd_on_disk[s]}"))
+                        failures.append((f"amendments:counts.{count_key}", f"data={ac_block.get(count_key)} on-disk={amd_on_disk[s]}"))
+                        ok = False
+                    if len(ab[s]) > 50 or len(ab[s]) > amd_on_disk[s]:
+                        print(red(f"  ✗ amendments.{s} inline bucket has {len(ab[s])} (cap is min(50, {amd_on_disk[s]}))"))
+                        failures.append((f"amendments:{s}-inline-cap", f"inline={len(ab[s])}"))
+                        ok = False
+                # Every pending AMD must have id + title + target_canonical_path + type (per AMD frontmatter schema)
+                AMD_REQ = ("id", "title", "target_canonical_path", "type")
+                AMD_TYPES = {"new-file", "replace-existing", "append-to-existing", "edit-section"}
+                for amd in ab["pending"]:
+                    missing_fields = [k for k in AMD_REQ if not amd.get(k)]
+                    if missing_fields:
+                        print(red(f"  ✗ AMD {amd.get('id') or amd.get('_filename')} missing fields: {missing_fields}"))
+                        failures.append((f"amendments:pending-fields", f"amd={amd.get('id')} missing={missing_fields}"))
+                        ok = False
+                    elif amd["type"] not in AMD_TYPES:
+                        print(red(f"  ✗ AMD {amd.get('id')} invalid type: {amd.get('type')} (expected one of {AMD_TYPES})"))
+                        failures.append((f"amendments:pending-type", f"amd={amd.get('id')} type={amd.get('type')}"))
+                        ok = False
+                if ok:
+                    summary = f"pending={ac_block.get('pending')} approved={ac_block.get('approved')} deferred={ac_block.get('deferred')} applied={ac_block.get('applied_total')} rejected={ac_block.get('rejected_total')}"
+                    print(green(f"  ✓ AMENDMENTS lifecycle schema valid; {summary}"))
+
+        # Dashboard must surface amendments_counts (counts wired into KPI tiles)
+        if dash_data is not None:
+            ac_dash = dash_data.get("amendments_counts")
+            if not isinstance(ac_dash, dict):
+                print(red("  ✗ dashboard.html missing amendments_counts object"))
+                failures.append(("amendments:dashboard.amendments_counts", "missing"))
+            else:
+                for k in ("pending", "applied_total"):
+                    if k not in ac_dash:
+                        print(red(f"  ✗ dashboard.amendments_counts missing {k}"))
+                        failures.append((f"amendments:dashboard.amendments_counts.{k}", "missing"))
+                if all(k in ac_dash for k in ("pending", "applied_total")):
+                    print(green(f"  ✓ dashboard.html amendments_counts present: pending={ac_dash['pending']} applied={ac_dash.get('applied_total')}"))
+
+    # amendments_pending cross-dashboard consistency
+    cands = []
+    truth_amd_pending = sum(1 for _ in (real_state / "amendments" / "pending").glob("AMD-*.md")) if (real_state / "amendments" / "pending").exists() else 0
+    if amd_data is not None:
+        cands.append(("amendments.html counts.pending", (amd_data.get("counts") or {}).get("pending")))
+    if dash_data is not None and isinstance(dash_data.get("amendments_counts"), dict):
+        cands.append(("dashboard.html amendments_counts.pending", dash_data["amendments_counts"].get("pending")))
+    if cands:
+        check_eq("amendments_pending", truth_amd_pending, cands)
+
     # discussion_bubbles_total: discussion-bubbles.html data block + index.html status + on-disk
     cands = []
     if bub_data is not None:

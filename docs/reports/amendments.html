@@ -245,6 +245,24 @@
         "operating_status": "ACTIVE \u2014 deprecation operates immediately per Founder PROTOCOL UPDATE 2026-05-14; formalization artifact only.",
         "_body_preview": "# AMD-005 \u2014 Deprecate op-count defensive pause heuristic\n\nThis amendment retires the \"defensive pause every 5 atomic ops\" rule\nthat appeared in earlier substrate directives. Founder trusts the\ncurrent substrate guardrails to handle real pause conditions without\narbitrary op-count throttling.\n\n## Why the heuristic existed\n\nThe op-count rule was a placeholder from when:\n- No real token metering exis",
         "_filename": "AMD-005-deprecate-op-count-pause.md"
+      },
+      {
+        "id": "AMD-006",
+        "title": "P18 amendments-lifecycle discipline (4th operational view)",
+        "target_canonical_path": "docs/agents/PROTOCOLS_v8.1_ADDENDUM.md",
+        "source_draft_path": ".claude/state/amendments/pending/AMD-006-P18-amendments-discipline.md",
+        "scope_summary": "Add P18.5 to PROTOCOLS_v8.1_ADDENDUM declaring amendments.html as the 4th operational view, with source-of-truth invariant (.claude/state/amendments/), JSON round-trip validation extended to AMD schema, and Critic checklist deltas for the new round-trip [amendments] section.",
+        "type": "append-to-existing",
+        "section_anchor": null,
+        "depends_on": [],
+        "authored_by": "claude-code",
+        "authored_at": "2026-05-14T01:50:00Z",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": "4000",
+        "rollback_strategy": "git revert; this section is additive (no existing P18 sub-section overwritten).",
+        "status": "pending",
+        "_body_preview": "# P18.5 \u2014 Amendments-lifecycle discipline\n\nExtends P18 (Operational View Discipline) to cover amendments.html, the\n4th operational view shipped 2026-05-14 alongside the AMD lifecycle.\n\n## P18.5.1 \u2014 Source-of-truth invariant\n\namendments.html projects state from `.claude/state/amendments/`:\n\n| View                | State store                            | Authoritative format                    |\n|-",
+        "_filename": "AMD-006-P18-amendments-discipline.md"
       }
     ],
     "approved": [],
@@ -253,13 +271,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 5,
+    "pending": 6,
     "approved": 0,
     "deferred": 0,
     "applied_total": 0,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T01:48:18.696150+00:00",
+  "as_of": "2026-05-14T01:51:26.925852+00:00",
   "schema_version": 1,
   "archive_display_cap": 50
 }
