@@ -166,54 +166,7 @@
 {
   "escalations": {
     "pending": [],
-    "approved": [
-      {
-        "id": "ESC-003",
-        "title": "Per-ship token attribution \u2014 going-forward instrumentation approach",
-        "type": "architecture-decision",
-        "origin_commit": "5e04b68",
-        "origin_ship": "per-ship-token-attribution",
-        "question": "Per Founder directive 2026-05-14 \"PER-SHIP TOKEN ATTRIBUTION\", every ship's\ntokens + cost should populate in the dashboard Recent Ships table. Current\nstate: aggregator scans session.team-work.summary events for ship_id matching\nthe artifact ID. Historical events carry ship_id like \"substrate-build-day-3\"\nrather than PROP-NNN / AMD-NNN / ESC-NNN, so all artifacts surface \"\u2014\" (honest\nper AMD-009 P5).\n\nGoing-forward instrumentation requires picking HOW session.team-work.summary\nevents get tagged with the correct artifact ID. Three architecturally-\ndistinct approaches; team lacks high confidence on which is correct.",
-        "context_summary": "Today's events have ship_id=\"substrate-build-day-3\" for ~7M tokens of\norchestration work that produced 21 shipped artifacts. The team can't\nretroactively attribute those tokens to specific artifacts without\nfabricating a mapping. Going forward, every emit point needs to know which\nartifact (if any) it's contributing to.",
-        "proposed_answer": "Approach A \u2014 Session-scoped current_ship_id state file",
-        "rationale": "Lowest infrastructure overhead. Single source of truth. Agent 3 sets the\ncurrent_ship_id at ship-plan-author time and clears at ship-close commit.\nEvery session.team-work.summary emit reads from the file. Compatible with\nthe existing manual-emit pattern. Migrates cleanly to automated meter\nwhen PROP-003.a sidecar wires real per-call attribution.",
-        "options": [
-          {
-            "id": "a",
-            "label": "Approach A \u2014 Session-scoped current_ship_id state file [team recommendation]",
-            "rationale": "|"
-          },
-          {
-            "id": "b",
-            "label": "Approach B \u2014 Per-emit explicit ship_id parameter",
-            "rationale": "|"
-          },
-          {
-            "id": "c",
-            "label": "Approach C \u2014 Git-commit-based retroactive attribution",
-            "rationale": "|"
-          }
-        ],
-        "default_if_no_response": "Approach A",
-        "default_window_hours": 168,
-        "authored_by": "claude-code",
-        "authored_at": "2026-05-14T17:39:00Z",
-        "estimated_decision_complexity": "deep",
-        "blocks_ship": false,
-        "source_artifact_paths": [
-          "scripts/aggregate-telemetry.py",
-          "scripts/lib/anthropic-pricing.json",
-          ".claude/state/telemetry/events/2026-05-14.ndjson"
-        ],
-        "founder_decision": "approve",
-        "founder_decision_options": [
-          "a"
-        ],
-        "approved_at": "2026-05-14T17:55:52.031878+00:00",
-        "_filename": "ESC-003-per-ship-token-attribution-instrumentation.md",
-        "_body_preview": "# ESC-003 \u2014 Per-ship token attribution instrumentation approach\n\nAuthored per AMD-015 propose-first + AMD-017 continuation-discipline skill\nStep 3 (LOW confidence \u2192 escalate, don't stop).\n\n## Why this is an escalation rather than direct execution\n\nPer AMD-017 + continuation-discipline skill: LOW confidence items go to\nescalation, the team continues to next eligible work. This is the\n\"feature-break"
-      }
-    ],
+    "approved": [],
     "applied": [
       {
         "id": "ESC-001",
@@ -359,6 +312,54 @@
         "applied_commit": "2953d54",
         "_filename": "ESC-002-wave-1-ship-1-selection.md",
         "_body_preview": "# ESC-002 \u2014 Wave 1 ship 1 selection\n\n## Status: APPLIED 2026-05-14\n\nThis escalation was migrated from the manual review-queue.json stub\n(per Founder directive 2026-05-14 'escalations lifecycle') to the\ncanonical `.claude/state/escalations/applied/` directory. Approach A\n(PARBAUGHS native primitives) was implicitly confirmed by Founder\nauthorization of Wave 1 + the execution of W1.S1.a using native"
+      },
+      {
+        "id": "ESC-003",
+        "title": "Per-ship token attribution \u2014 going-forward instrumentation approach",
+        "type": "architecture-decision",
+        "origin_commit": "5e04b68",
+        "origin_ship": "per-ship-token-attribution",
+        "question": "Per Founder directive 2026-05-14 \"PER-SHIP TOKEN ATTRIBUTION\", every ship's\ntokens + cost should populate in the dashboard Recent Ships table. Current\nstate: aggregator scans session.team-work.summary events for ship_id matching\nthe artifact ID. Historical events carry ship_id like \"substrate-build-day-3\"\nrather than PROP-NNN / AMD-NNN / ESC-NNN, so all artifacts surface \"\u2014\" (honest\nper AMD-009 P5).\n\nGoing-forward instrumentation requires picking HOW session.team-work.summary\nevents get tagged with the correct artifact ID. Three architecturally-\ndistinct approaches; team lacks high confidence on which is correct.",
+        "context_summary": "Today's events have ship_id=\"substrate-build-day-3\" for ~7M tokens of\norchestration work that produced 21 shipped artifacts. The team can't\nretroactively attribute those tokens to specific artifacts without\nfabricating a mapping. Going forward, every emit point needs to know which\nartifact (if any) it's contributing to.",
+        "proposed_answer": "Approach A \u2014 Session-scoped current_ship_id state file",
+        "rationale": "Lowest infrastructure overhead. Single source of truth. Agent 3 sets the\ncurrent_ship_id at ship-plan-author time and clears at ship-close commit.\nEvery session.team-work.summary emit reads from the file. Compatible with\nthe existing manual-emit pattern. Migrates cleanly to automated meter\nwhen PROP-003.a sidecar wires real per-call attribution.",
+        "options": [
+          {
+            "id": "a",
+            "label": "Approach A \u2014 Session-scoped current_ship_id state file [team recommendation]",
+            "rationale": "|"
+          },
+          {
+            "id": "b",
+            "label": "Approach B \u2014 Per-emit explicit ship_id parameter",
+            "rationale": "|"
+          },
+          {
+            "id": "c",
+            "label": "Approach C \u2014 Git-commit-based retroactive attribution",
+            "rationale": "|"
+          }
+        ],
+        "default_if_no_response": "Approach A",
+        "default_window_hours": 168,
+        "authored_by": "claude-code",
+        "authored_at": "2026-05-14T17:39:00Z",
+        "estimated_decision_complexity": "deep",
+        "blocks_ship": false,
+        "source_artifact_paths": [
+          "scripts/aggregate-telemetry.py",
+          "scripts/lib/anthropic-pricing.json",
+          ".claude/state/telemetry/events/2026-05-14.ndjson"
+        ],
+        "founder_decision": "approve",
+        "founder_decision_options": [
+          "a"
+        ],
+        "approved_at": "2026-05-14T17:55:52.031878+00:00",
+        "applied_at": "2026-05-14T19:51:56.843644+00:00",
+        "applied_via": "scripts/emit-team-work-summary.py + .claude/state/current-ship.json (ESC-003 Approach A operative)",
+        "_filename": "ESC-003-per-ship-token-attribution-instrumentation.md",
+        "_body_preview": "# ESC-003 \u2014 Per-ship token attribution instrumentation approach\n\nAuthored per AMD-015 propose-first + AMD-017 continuation-discipline skill\nStep 3 (LOW confidence \u2192 escalate, don't stop).\n\n## Why this is an escalation rather than direct execution\n\nPer AMD-017 + continuation-discipline skill: LOW confidence items go to\nescalation, the team continues to next eligible work. This is the\n\"feature-break"
       }
     ],
     "deferred": [],
@@ -366,8 +367,8 @@
   },
   "counts": {
     "pending": 0,
-    "approved": 1,
-    "applied_total": 2,
+    "approved": 0,
+    "applied_total": 3,
     "deferred": 0,
     "rejected_total": 0
   }

@@ -39,6 +39,7 @@ STEPS=(
     "aggregate-token-usage|scripts/aggregate-token-usage.py"
     "regen-proposals|scripts/regen-proposals.py"
     "regen-amendments|scripts/regen-amendments.py"
+    "regen-escalations|scripts/regen-escalations.py"
     "regen-dashboard|scripts/regen-dashboard.py"
     "regen-ops-views|scripts/dry-run-regen-ops-views.py"
     "regen-main-flows|scripts/regen-main-flows.py"
