@@ -58,9 +58,3 @@ quota. Replacing them with the manual-paste-derived percentage means:
 
 Same as PAUSE_DISCIPLINE v8.2: pending PROP-003 ship for real
 telemetry-derived caps.
-
----
-
-## Founder decision (defer — 2026-05-14T01:19:50Z)
-
-E2E test: defer AMD-002 to verify apply-amendments.sh moves to deferred/ dir without modifying CRON_CONFIGURATION.md. Will be re-approved through real UI workflow once amendments.html ships.
