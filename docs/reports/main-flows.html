@@ -16,12 +16,9 @@
             --col-external:     #9c4a4a;
         }
 
-        /* === Shared page chrome === */
-
-        .page-main { max-width: 1480px; margin: 0 auto; padding: var(--space-4) var(--space-4); }
-        .page-header-row { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--space-4); margin-bottom: var(--space-3); flex-wrap: wrap; }
-        .page-title { font-size: 1.75rem; font-weight: 700; color: var(--text-primary); margin: 0; }
-        .page-subtitle { color: var(--text-secondary); font-size: 0.9375rem; margin-top: var(--space-1); max-width: 920px; line-height: 1.5; }
+        /* Page chrome (.pb-page-*) lives in dashboard-shell.css.
+         * DC-8 cleanup deleted dead .page-main / .page-header-row /
+         * .page-title / .page-subtitle rules that no longer matched markup. */
 
         /* === Legend === */
         .mf-legend { display: flex; flex-wrap: wrap; gap: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); margin-bottom: var(--space-4); font-size: 0.75rem; }
@@ -972,7 +969,7 @@
       ]
     }
   ],
-  "last_amended": "2026-05-14T00:02:29.509041+00:00",
+  "last_amended": "2026-05-14T00:58:55.211823+00:00",
   "doc_source": "docs/reports/_assets/main-flows-data.json",
   "schema_version": 1,
   "_counts": {

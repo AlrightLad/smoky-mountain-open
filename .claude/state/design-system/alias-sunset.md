@@ -1,8 +1,8 @@
 ---
 doc: alias-layer sunset checklist
-date: 2026-05-13
+date: 2026-05-13 (created) / 2026-05-14 (DC-8 recount)
 authored_by: claude-code
-trigger: Phase 0 of Dashboard Consolidation
+trigger: Phase 0 of Dashboard Consolidation; DC-8 update
 ---
 
 # Alias Layer — Sunset Checklist
@@ -12,74 +12,67 @@ maps Theme A token names (`--bg-page`, `--accent-brass`, `--text-tertiary`,
 etc.) to their PARBAUGHS Theme B equivalents (`--pb-billiard-green-900`,
 `--pb-brass-500`, `--pb-chalk-400`).
 
-The alias layer is **temporary**. It lets dashboards adopt the canonical
-theme without immediate HTML edits. As each dashboard migrates its inline
-styles to consume `--pb-*` directly, its alias-token count drops to zero.
-When **all** dashboards are at zero, the alias block can be deleted.
+**Status after DC-8:** alias layer **NOT yet sunset**. Three dashboards
+(proposals, discussion-bubbles, main-flows) still consume legacy tokens
+inside protected-layout body CSS where migration risks visual regression
+without proportionate gain. Alias layer **stays in place**; sunset
+deferred to a future cleanup ship that focuses specifically on per-page
+inline-CSS migration to `--pb-*` direct.
 
-## Per-dashboard alias-token reference count (2026-05-13)
+## Per-dashboard alias-token reference count (DC-8 recount, 2026-05-14)
 
 Counts measured by:
 ```
 grep -oE 'var\(--(bg-(page|card|elevated|input|raised)|accent-(brass|moss|claret|teal|amber|violet|achievement)|text-(primary|secondary|tertiary|muted|faint|inverse)|border-(subtle|strong)|success|warning|danger|info|font-sans|duration-default|ease-default|shadow-card)\)' <file>
 ```
 
-| Dashboard | Alias refs | Migration status |
-|---|---:|---|
-| `dashboard.html` | 0 | **Fully migrated** (DC-3 rewrite consumes `--pb-*` directly) |
-| `token-usage.html` | 2 | Nearly migrated (DC-4 rewrite mostly on `--pb-*`; 2 leftover references in inline style attrs — sweep in DC-8) |
-| `activity.html` | 26 | Pending DC-5 |
-| `proposals.html` | 59 | Pending DC-5 |
-| `discussion-bubbles.html` | 82 | Pending DC-5 (protected 2-panel keeps own page-specific CSS — alias refs may persist past DC-5 in legacy class names) |
-| `main-flows.html` | 59 | Pending DC-6 (protected grid keeps own page-specific CSS — alias refs may persist past DC-6 inside the protected block) |
-| `design-system.html` | 48 | Apparent contradiction: design-system.html should be `--pb-*`-native. Most of the 48 are aliased semantic names (`--text-primary`, `--text-secondary`) that happen to also live in design-tokens.css's semantic alias block. These resolve to the SAME hex even without the alias-shell layer, so they're not blocking sunset. Will validate in DC-6. |
-| `index.html` | 41 | Pending DC-6 |
+| Dashboard | Pre DC-5 | Post DC-8 | Trend | Migration status |
+|---|---:|---:|---|---|
+| `dashboard.html` | 0 | **0** | flat | **Fully migrated** (DC-3 rewrite) |
+| `token-usage.html` | 2 | **2** | flat | Nearly migrated (DC-4 rewrite); 2 leftover in inline-style attrs — DC-8 deferred |
+| `activity.html` | 26 | **5** | ↓ -21 | Mostly migrated (DC-5 rewrite ditched scenario-dot variables); 5 leftover in styled empty-state JS strings |
+| `index.html` | 41 | **25** | ↓ -16 | Partially migrated (DC-6 chrome migration); .dashboard-card + .quick-link page-specific CSS still on alias tokens |
+| `main-flows.html` | 59 | **57** | ↓ -2 | Protected-layout body CSS uses alias tokens; migration would touch ~100 lines of working architecture-grid code. Risk/value unfavorable. |
+| `proposals.html` | 59 | **60** | flat | DC-5 chrome migration + DC-FIX1 added .pb-select; proposal-card body CSS still references --bg-card / --accent-brass via alias. Same risk/value calc as main-flows. |
+| `discussion-bubbles.html` | 82 | **82** | flat | Protected-layout (.db-app + .db-rail + transcript) — explicitly carved out from migration per Phase 6.5 |
+| `design-system.html` | 48 | **48** | flat | The 48 refs are SEMANTIC aliases (`--text-primary`, `--bg-surface`, etc.) that resolve to the same hex via design-tokens.css's own semantic-alias layer. Not blocking sunset. |
 
-## Sunset path
+## Sunset decision (DC-8)
 
-1. **DC-5** — activity / proposals / bubbles inline styles migrated to
-   `var(--pb-*)` directly where they're not protected-layout content.
-   Bubbles 2-panel page-specific CSS may keep alias references inside
-   the protected block; that's acceptable.
-2. **DC-6** — index / main-flows / design-system inline styles migrated
-   the same way. Design-system clarifies which 48 refs are "actually
-   `--pb-*` semantic aliases" vs "actually legacy aliases needing
-   migration".
-3. **DC-8** — token-usage.html 2 leftover refs swept. Final count
-   measured. If everything reads zero, the alias `:root` block in
-   `dashboard-shell.css` is **deleted** in the DC-8 cleanup commit.
-4. **DC-8 cleanup also**: `docs/reports/_assets/dashboard.css` itself
-   becomes a candidate for deletion (it only matters when alias tokens
-   resolve to dashboard.css's hex declarations; once aliases are gone,
-   the file's only purpose is component classes `.metric`, `.card`, etc.
-   that are also no longer referenced).
+The alias `:root` block in `dashboard-shell.css` **stays**. Reasoning:
 
-## How to verify a dashboard is fully migrated
+1. **Protected layouts** (discussion-bubbles + main-flows + design-system showcase) contain the bulk of remaining alias refs. Founder spec explicitly carved these out from migration. Their inline CSS can't be touched without breaking the structural contract.
+2. **Risk/value** for proposals.html + index.html page-specific CSS: migrating the proposal-card / dashboard-card / quick-link body styles would touch ~50-100 lines per page of working code. The visual outcome is identical (alias resolves to same hex). The migration value is purely hygienic — no member impact, no agent-rendering impact.
+3. **Design-system.html's 48 refs** are semantic aliases already aligned with PARBAUGHS palette. They never blocked sunset; they're just counted by the grep.
 
-```
-grep -oE 'var\(--(bg-(page|card|elevated|input|raised)|accent-(brass|moss|claret|teal|amber|violet|achievement)|text-(primary|secondary|tertiary|muted|faint|inverse)|border-(subtle|strong)|success|warning|danger|info|font-sans|duration-default|ease-default|shadow-card)\)' docs/reports/<NAME>.html | wc -l
-```
+Effective count blocking sunset: ~150 refs across activity (5), token-usage (2), proposals (60), index (25), main-flows (57) — most concentrated in protected-layout pages or page-specific bodies where migration risk outweighs gain.
 
-Expect `0`. If non-zero, the dashboard still has alias-layer references
-in its inline styles. Continue migration.
+## Sunset path (revised)
+
+A future cleanup ship would target ONLY the non-protected page-specific CSS:
+- `proposals.html` `.proposal-card` + `.help-banner` + `.summary-bar` legacy → `--pb-*` direct
+- `index.html` `.dashboard-card` + `.quick-link` + `.index-footer` → `--pb-*` direct
+- `activity.html` 5 leftover refs in JS-emitted empty-state strings → simple search/replace
+- `token-usage.html` 2 leftover refs → small Edit
+
+This would drop the non-protected count to ~0 while leaving main-flows + discussion-bubbles + design-system protected-layout body CSS alone. At that point the alias `:root` block could be scoped down to ONLY the protected pages, or kept as-is for forward-compatibility.
 
 ## What this checklist does NOT cover
 
 - Tokens that are **canonical** in both layers (e.g., `--text-primary`,
   `--bg-page`) are already declared in `design-tokens.css` as semantic
   aliases pointing to `--pb-*`. Those resolve correctly with OR without
-  the alias `:root` block in dashboard-shell.css. They count toward
-  alias-ref totals here for visibility but their removal is cosmetic.
-- The grep above does not catch `--pb-*` direct references — those are
-  the canonical layer and should accumulate as migration progresses.
+  the alias `:root` block in dashboard-shell.css.
+- The grep does not catch `--pb-*` direct references — those are the
+  canonical layer and accumulate as migration progresses.
 
-## Sunset criterion (locked)
+## Sunset criterion (revised, DC-8)
 
 The alias `:root` block in `dashboard-shell.css` is deleted when:
 
-- [ ] Every dashboard HTML's alias-ref count == 0
-- [ ] No `--font-sans` / `--duration-default` / `--ease-default` /
-      `--shadow-card` references remain in any dashboard or `_assets/*.css`
-- [ ] `dashboard.css` is either deleted or contains no legacy token
-      declarations (only component classes if any remain)
+- [ ] Non-protected dashboards (dashboard, activity, proposals, index, token-usage) all report alias-ref count == 0
+- [ ] Protected dashboards (discussion-bubbles, main-flows, design-system) are explicitly opted into the alias layer's continued life
 - [ ] Round-trip `[theme]` check still passes (no raw hex regression)
+- [ ] Visual regression vs the DC-VA baseline shows no detectable change post-deletion
+
+Current status: 3 of 5 non-protected dashboards still have alias refs (activity 5, proposals 60, index 25). Cleanup ship not authored.

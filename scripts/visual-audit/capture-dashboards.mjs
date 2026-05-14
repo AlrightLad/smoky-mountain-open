@@ -38,9 +38,13 @@ const PAGES = [
     "index.html",
 ];
 
+// Four canonical widths (DC-8 mobile QA). 1920 = desktop wide, 1280 = desktop
+// standard (--max-content), 768 = tablet portrait, 375 = mobile (iPhone X).
 const VIEWPORTS = [
-    { name: "desktop", width: 1440, height: 900 },
-    { name: "mobile",  width: 375,  height: 812 }, // iPhone X portrait
+    { name: "desktop-wide", width: 1920, height: 1080 },
+    { name: "desktop",      width: 1280, height: 900  },
+    { name: "tablet",       width: 768,  height: 1024 },
+    { name: "mobile",       width: 375,  height: 812  },
 ];
 
 function todayIso() {
