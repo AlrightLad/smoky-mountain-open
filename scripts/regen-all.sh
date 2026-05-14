@@ -95,6 +95,41 @@ if [ "$TEST_RC" -ne 0 ]; then
     exit 2
 fi
 echo "[regen-all] round-trip test PASS"
+
+# Ship-close-commit trigger (AMD-011 Step 2 — dispatch scanner inline at
+# ship boundaries). Detects ship-close patterns in HEAD commit message:
+#   - "W<N>.<S> ship close" / "ship complete"  (Wave-N ship-N pattern)
+#   - "Shipped PROP-NNN[.suffix]:"             (proposal ship pattern)
+#   - "ship close:" / "ship complete:"          (generic ship-close)
+# When matched: invokes scan-proposal-readiness.py + emits
+# ship.close.scanner-dispatched telemetry event. Does NOT auto-execute
+# ready proposals — dispatch != execute (separate ship plans the launcher).
+HEAD_MSG=$(git log -1 --pretty=%B 2>/dev/null || echo "")
+SHIP_CLOSE_RE='(W[0-9]+\.[SIMm][0-9a-z]+ ship (close|complete)|Shipped PROP-[0-9]+(\.[a-z])?|[Ss]hip (close|complete):)'
+if echo "$HEAD_MSG" | grep -qE "$SHIP_CLOSE_RE"; then
+    SHIP_HEAD_LINE=$(echo "$HEAD_MSG" | head -1)
+    echo ""
+    echo "[regen-all] SHIP-CLOSE DETECTED: $SHIP_HEAD_LINE"
+    echo "[regen-all] dispatching proposal-readiness scanner..."
+    SCANNER_OUT="$("$PYTHON" .claude/scripts/scan-proposal-readiness.py 2>&1)"
+    SCANNER_RC=$?
+    echo "$SCANNER_OUT" | sed 's/^/    [scan] /'
+    READY_LINE=$(echo "$SCANNER_OUT" | grep -E "summary:" | head -1)
+    READY_COUNT=$(echo "$READY_LINE" | grep -oE "[0-9]+ ready" | grep -oE "[0-9]+" || echo 0)
+    DEFERRED_COUNT=$(echo "$READY_LINE" | grep -oE "[0-9]+ deferred" | grep -oE "[0-9]+" || echo 0)
+    echo "[regen-all] ship-close scanner: ready=$READY_COUNT deferred=$DEFERRED_COUNT exit=$SCANNER_RC"
+    # Emit telemetry event so the proposal-readiness lineage is observable
+    NOW_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+    TODAY=$(date -u +%Y-%m-%d)
+    EVENT_DIR=".claude/state/telemetry/events"
+    mkdir -p "$EVENT_DIR"
+    EVENT_FILE="$EVENT_DIR/$TODAY.ndjson"
+    SHIP_HEAD_ESC=$(echo "$SHIP_HEAD_LINE" | sed 's/"/\\"/g')
+    printf '{"event_type":"ship.close.scanner-dispatched","timestamp":"%s","data":{"head_commit_subject":"%s","ready_count":%s,"deferred_count":%s,"scanner_exit":%s}}\n' \
+        "$NOW_UTC" "$SHIP_HEAD_ESC" "$READY_COUNT" "$DEFERRED_COUNT" "$SCANNER_RC" \
+        >> "$EVENT_FILE"
+fi
+
 echo ""
 echo "ALL DASHBOARDS REGENERATED at $END_TS"
 exit 0

@@ -110,6 +110,52 @@ if ($testRc -ne 0) {
 }
 Pop-Location
 Write-Host "[regen-all] round-trip test PASS" -ForegroundColor Green
+
+# Ship-close-commit trigger (AMD-011 Step 2 - dispatch scanner inline
+# at ship boundaries). Detects ship-close patterns in HEAD commit
+# message; on match invokes scan-proposal-readiness.py + emits
+# ship.close.scanner-dispatched telemetry. Dispatch != execute.
+$headMsg = & git log -1 --pretty=%B 2>$null
+if (-not $headMsg) { $headMsg = "" }
+$shipCloseRe = '(W\d+\.[SIMm][0-9a-z]+ ship (close|complete)|Shipped PROP-\d+(\.[a-z])?|[Ss]hip (close|complete):)'
+if ($headMsg -match $shipCloseRe) {
+    $shipHeadLine = ($headMsg -split "`n")[0]
+    Write-Host ""
+    Write-Host "[regen-all] SHIP-CLOSE DETECTED: $shipHeadLine" -ForegroundColor Cyan
+    Write-Host "[regen-all] dispatching proposal-readiness scanner..." -ForegroundColor Cyan
+    Push-Location $repoRoot
+    $scannerOut = & $python ".claude\scripts\scan-proposal-readiness.py" 2>&1
+    $scannerRc = $LASTEXITCODE
+    Pop-Location
+    $scannerOut | ForEach-Object { Write-Host "    [scan] $_" -ForegroundColor DarkGray }
+    $summaryLine = ($scannerOut | Where-Object { $_ -match "summary:" } | Select-Object -First 1)
+    $readyCount = 0
+    $deferredCount = 0
+    if ($summaryLine -match "(\d+)\s+ready,\s+(\d+)\s+deferred") {
+        $readyCount = [int]$Matches[1]
+        $deferredCount = [int]$Matches[2]
+    }
+    Write-Host "[regen-all] ship-close scanner: ready=$readyCount deferred=$deferredCount exit=$scannerRc" -ForegroundColor Cyan
+    # Emit telemetry event
+    $nowUtc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+    $today = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd")
+    $eventDir = Join-Path $repoRoot ".claude\state\telemetry\events"
+    $null = New-Item -ItemType Directory -Path $eventDir -Force -ErrorAction SilentlyContinue
+    $eventFile = Join-Path $eventDir "$today.ndjson"
+    $eventObj = @{
+        event_type = "ship.close.scanner-dispatched"
+        timestamp = $nowUtc
+        data = @{
+            head_commit_subject = $shipHeadLine
+            ready_count = $readyCount
+            deferred_count = $deferredCount
+            scanner_exit = $scannerRc
+        }
+    }
+    $line = ($eventObj | ConvertTo-Json -Compress -Depth 6)
+    Add-Content -Path $eventFile -Value $line -Encoding utf8
+}
+
 Write-Host ""
 Write-Host "ALL DASHBOARDS REGENERATED at $endTs" -ForegroundColor Green
 exit 0
