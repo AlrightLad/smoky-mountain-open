@@ -95,7 +95,7 @@
     </style>
     <link rel="stylesheet" href="_assets/dashboard-shell.css">
 </head>
-<body>
+<body class="pb-app">
 
     <header class="pb-page-header">
         <nav class="pb-page-nav">
@@ -113,7 +113,16 @@
         </nav>
     </header>
 
-<main>
+<main class="pb-page-main">
+
+    <!-- PROTECTED LAYOUT 3 (Phase 6.5): the design-system showcase below
+         (hero copy + color swatches + typography ladder + component primitives
+         + composition examples + motion demos + anti-patterns) is the visual
+         REFERENCE for the system. The .ds-hero deliberately uses display-scale
+         type as a typography sample, not a generic page title; do NOT replace
+         it with .pb-page-title-row. Body tag adoption of .pb-app + nav
+         standardization above are the only allowed shell migrations on this
+         page. Swatches, type rows, demo blocks STAY as-is structurally. -->
 
     <!-- ============= HERO ============= -->
     <section class="ds-hero">

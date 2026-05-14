@@ -4,71 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PARBAUGHS Orchestration — Index</title>
-    <link rel="stylesheet" href="_assets/dashboard.css">
     <link rel="stylesheet" href="_assets/dashboard-shell.css">
     <style>
-        body { background: var(--bg-page); color: var(--text-primary); }
-
-        /* ============== Shared page chrome (matches main-flows.html) ============== */
-
-        .page-main {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: var(--space-5) var(--space-4);
-        }
-        .page-header-row { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--space-4); margin-bottom: var(--space-5); flex-wrap: wrap; }
-        .page-title { font-size: 2rem; font-weight: 700; color: var(--text-primary); margin: 0; }
-        .page-subtitle { color: var(--text-secondary); font-size: 0.9375rem; margin-top: var(--space-2); max-width: 700px; line-height: 1.5; }
-
-        /* ============== Status panel ============== */
-        .status-panel {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-md);
-            padding: var(--space-4);
-            margin-bottom: var(--space-5);
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: var(--space-3);
-        }
-        .status-tile {
-            background: var(--bg-elevated);
-            border-radius: var(--radius-sm);
-            padding: var(--space-3);
-            border-left: 3px solid var(--accent-brass);
-        }
-        .status-tile.is-positive { border-left-color: var(--accent-moss); }
-        .status-tile.is-warning { border-left-color: var(--accent-amber); }
-        .status-tile.is-danger { border-left-color: var(--accent-claret); }
-        .status-tile-label {
-            font-size: 0.6875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-tertiary);
-        }
-        .status-tile-value {
-            font-family: var(--font-mono);
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-top: var(--space-1);
-            line-height: 1;
-        }
-        .status-tile-sub {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-top: var(--space-1);
-        }
-
-        /* ============== Dashboards grid ============== */
-        .section-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: var(--space-3);
-            padding-bottom: var(--space-2);
-            border-bottom: 1px solid var(--border-subtle);
-        }
+        /* Page-specific: index dashboard cards + governance quick-links. 30-line budget. */
         .dashboards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -161,7 +99,7 @@
         }
     </style>
 </head>
-<body>
+<body class="pb-app">
     <header class="pb-page-header">
         <nav class="pb-page-nav">
             <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
@@ -178,49 +116,55 @@
         </nav>
     </header>
 
-    <main class="page-main">
-        <div class="page-header-row">
+    <main class="pb-page-main">
+        <div class="pb-page-title-row">
             <div>
-                <h1 class="page-title">PARBAUGHS Orchestration</h1>
-                <p class="page-subtitle">Founder's morning landing pad — status at a glance, every dashboard one click away. Last updated <span id="last-updated-inline">—</span> · git <code id="git-sha-inline">—</code></p>
+                <h1 class="pb-page-title">PARBAUGHS Orchestration</h1>
+                <p class="pb-page-subtitle">Founder's morning landing pad &mdash; status at a glance, every dashboard one click away.</p>
+            </div>
+            <div class="pb-page-meta">
+                <span>Last updated <span id="last-updated-inline">&mdash;</span></span>
+                <span>git <code id="git-sha-inline">&mdash;</code></span>
             </div>
         </div>
 
-        <h2 class="section-title">Status</h2>
-        <section class="status-panel" id="status-panel">
-            <div class="status-tile" id="tile-ships">
-                <div class="status-tile-label">Ships this week</div>
-                <div class="status-tile-value">—</div>
-                <div class="status-tile-sub">via ship-progress/*.json</div>
-            </div>
-            <div class="status-tile" id="tile-proposals">
-                <div class="status-tile-label">Proposals pending</div>
-                <div class="status-tile-value">—</div>
-                <div class="status-tile-sub">awaiting Founder review</div>
-            </div>
-            <div class="status-tile" id="tile-fiq">
-                <div class="status-tile-label">FIQ depth (B+)</div>
-                <div class="status-tile-value">—</div>
-                <div class="status-tile-sub" id="fiq-grades">grade distribution</div>
-            </div>
-            <div class="status-tile" id="tile-bubbles">
-                <div class="status-tile-label">Discussion bubbles</div>
-                <div class="status-tile-value">—</div>
-                <div class="status-tile-sub">via discussion-bubbles/</div>
-            </div>
-            <div class="status-tile" id="tile-cron">
-                <div class="status-tile-label">Last cron run</div>
-                <div class="status-tile-value">—</div>
-                <div class="status-tile-sub">substrate pending build</div>
-            </div>
-            <div class="status-tile" id="tile-halt">
-                <div class="status-tile-label">HALT state</div>
-                <div class="status-tile-value">—</div>
-                <div class="status-tile-sub">via halts/</div>
+        <section class="pb-section">
+            <h2 class="pb-section-title">Status</h2>
+            <div class="pb-kpi-grid" id="status-panel">
+                <div class="pb-kpi-card" id="tile-ships">
+                    <span class="pb-kpi-label">Ships this week</span>
+                    <span class="pb-kpi-value">&mdash;</span>
+                    <span class="pb-kpi-sub">via ship-progress/*.json</span>
+                </div>
+                <div class="pb-kpi-card" id="tile-proposals">
+                    <span class="pb-kpi-label">Proposals pending</span>
+                    <span class="pb-kpi-value">&mdash;</span>
+                    <span class="pb-kpi-sub">awaiting Founder review</span>
+                </div>
+                <div class="pb-kpi-card" id="tile-fiq">
+                    <span class="pb-kpi-label">FIQ depth (B+)</span>
+                    <span class="pb-kpi-value">&mdash;</span>
+                    <span class="pb-kpi-sub" id="fiq-grades">grade distribution</span>
+                </div>
+                <div class="pb-kpi-card" id="tile-bubbles">
+                    <span class="pb-kpi-label">Discussion bubbles</span>
+                    <span class="pb-kpi-value">&mdash;</span>
+                    <span class="pb-kpi-sub">via discussion-bubbles/</span>
+                </div>
+                <div class="pb-kpi-card" id="tile-cron">
+                    <span class="pb-kpi-label">Last cron run</span>
+                    <span class="pb-kpi-value">&mdash;</span>
+                    <span class="pb-kpi-sub">substrate pending build</span>
+                </div>
+                <div class="pb-kpi-card" id="tile-halt">
+                    <span class="pb-kpi-label">HALT state</span>
+                    <span class="pb-kpi-value">&mdash;</span>
+                    <span class="pb-kpi-sub">via halts/</span>
+                </div>
             </div>
         </section>
 
-        <h2 class="section-title">Dashboards</h2>
+        <h2 class="pb-section-title">Dashboards</h2>
         <section class="dashboards-grid" id="dashboards-grid">
             <a class="dashboard-card" href="dashboard.html">
                 <div class="dashboard-card-name">Dashboard</div>
@@ -249,7 +193,7 @@
             </a>
         </section>
 
-        <h2 class="section-title">Governance &amp; reference</h2>
+        <h2 class="pb-section-title">Governance &amp; reference</h2>
         <div class="quick-links">
             <a class="quick-link" href="../agents/ROADMAP.md"><span>ROADMAP.md</span><span class="quick-link-arrow">→</span></a>
             <a class="quick-link" href="../agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md"><span>PAUSE_DISCIPLINE</span><span class="quick-link-arrow">→</span></a>
@@ -269,8 +213,8 @@
 
     <script id="report-data" type="application/json">
 {
-  "as_of": "2026-05-13T23:08:49.789063+00:00",
-  "git_sha": "328ae5cc",
+  "as_of": "2026-05-14T00:02:29.726671+00:00",
+  "git_sha": "cb117dec",
   "status": {
     "ships_this_week": 0,
     "proposals_pending": 0,
@@ -290,27 +234,27 @@
   },
   "dashboards": {
     "dashboard.html": {
-      "mtime_utc": "2026-05-13T23:08:49.531557+00:00",
+      "mtime_utc": "2026-05-14T00:02:29.344229+00:00",
       "badge": "meter gap-per-F1a"
     },
     "activity.html": {
-      "mtime_utc": "2026-05-13T23:08:49.583852+00:00",
+      "mtime_utc": "2026-05-14T00:02:29.398852+00:00",
       "badge": "1 handoffs"
     },
     "discussion-bubbles.html": {
-      "mtime_utc": "2026-05-13T23:08:49.583852+00:00",
+      "mtime_utc": "2026-05-14T00:02:29.397847+00:00",
       "badge": "5 threads"
     },
     "proposals.html": {
-      "mtime_utc": "2026-05-13T23:08:49.475075+00:00",
+      "mtime_utc": "2026-05-14T00:02:29.287625+00:00",
       "badge": "0 pending"
     },
     "main-flows.html": {
-      "mtime_utc": "2026-05-13T23:08:49.634413+00:00",
+      "mtime_utc": "2026-05-14T00:02:29.511041+00:00",
       "badge": "8 flows"
     }
   },
-  "last_orchestration_action": ".claude/state/telemetry/aggregates/token-usage-snapshot.json at 2026-05-13T23:08:49.309452+00:00"
+  "last_orchestration_action": ".claude/state/telemetry/aggregates/.token-usage-cursor.json at 2026-05-14T00:02:29.124334+00:00"
 }
     </script>
     <script>
@@ -328,8 +272,11 @@
             function setTile(id, value, sub, cls) {
                 var el = document.getElementById(id);
                 if (!el) return;
-                var v = el.querySelector('.status-tile-value');
-                var s = el.querySelector('.status-tile-sub');
+                // Tiles now use .pb-kpi-card shell classes (DC-6 migration).
+                // Legacy .status-tile-value / .status-tile-sub selectors retained as
+                // fallback in case regen output lags before next regen cycle.
+                var v = el.querySelector('.pb-kpi-value') || el.querySelector('.status-tile-value');
+                var s = el.querySelector('.pb-kpi-sub')   || el.querySelector('.status-tile-sub');
                 if (v) v.textContent = value;
                 if (s && sub != null) s.textContent = sub;
                 if (cls) el.classList.add(cls);
