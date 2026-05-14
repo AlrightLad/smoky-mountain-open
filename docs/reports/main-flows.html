@@ -259,8 +259,8 @@
     <main class="pb-page-main is-wide">
         <div class="pb-page-title-row">
             <div>
-                <h1 class="pb-page-title">Architecture & Flows</h1>
-                <p class="pb-page-subtitle">Six columns from member action to external service. Pick a flow on the right; the path lights up, arrows draw between nodes, and the steps panel walks the journey. Every node and step is grep-evidenced (see the <a href="../../.claude/state/wave-zero-dry-run/architecture-audit.md">architecture audit</a>).</p>
+                <h1 class="pb-page-title">Architecture &amp; Flows</h1>
+                <p class="pb-page-subtitle">Every component and external service that powers PARBAUGHS, mapped across six columns from member action to external system. Pick a flow on the right rail (search + actor + tier filters surface all 62 flows in the scrollable panel); the path lights up, arrows draw between nodes, and the steps panel walks the journey. Every node and step is grep-evidenced &mdash; see the <a href="../../.claude/state/wave-zero-dry-run/architecture-audit.md">architecture audit</a>.</p>
             </div>
         </div>
 
@@ -275,13 +275,14 @@
         <!-- PROTECTED LAYOUT 2 (Phase 6.5): mf-workspace = 6-column architecture grid
              + SVG arrow overlay + right rail (Flows list + Steps panel). This is the
              functional documentation interface. Do NOT flatten, do NOT replace with
-             a table, do NOT remove the SVG arrows. Page-header standardization above
-             is the only allowed shell migration; the workspace below stays as-is.
-             Issue-1 (2026-05-14): added clarifying section heading per Founder
-             diagnostic so the PRIMARY architecture view is visually anchored
-             vs the SECONDARY 62-flow filterable catalog below. -->
-        <h2 class="pb-section-title" style="margin-top: var(--space-6);">Architecture diagram</h2>
-        <p class="pb-section-subtitle">6-column grid: member action through external service. Pick a flow on the right rail (search + actor + tier filters surface all 62 flows in the scrollable rail panel); the path lights up, arrows draw between nodes, the steps panel walks the journey.</p>
+             a table, do NOT remove the SVG arrows.
+             Iter 7 (2026-05-14, Founder engineering-mindset directive): removed the
+             redundant inner H2 "Architecture diagram" + section subtitle now that
+             the bottom catalog section is gone (iter 6). Page-level h1 + subtitle
+             above are the only title pair, matching Janowiak reference pattern of
+             single-title hierarchy. See reference-spec-from-frames.md for the
+             full structural specification derived from
+             .claude/state/main-flows-v2/reference-frames/dave-frame-t*.png. -->
         <section class="mf-workspace">
             <div class="mf-grid-wrap">
                 <div class="mf-grid" id="mf-grid"></div>
@@ -1132,7 +1133,7 @@
       ]
     }
   ],
-  "last_amended": "2026-05-14T18:15:54.561687+00:00",
+  "last_amended": "2026-05-14T18:42:36.895564+00:00",
   "doc_source": "docs/reports/_assets/main-flows-data.json",
   "schema_version": 1,
   "flow_rail": [

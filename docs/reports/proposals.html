@@ -295,7 +295,44 @@
     <script id="report-data" type="application/json">
 {
   "proposals": {
-    "pending": [],
+    "pending": [
+      {
+        "id": "PROP-006",
+        "title": "Author outcome-vs-task skill (engineering-mindset gate)",
+        "lane": 1,
+        "lane_label": "Substrate Discipline",
+        "ship_target": "Substrate",
+        "created_at": "2026-05-14T18:45:00Z",
+        "rationale": "Founder engineering-mindset call-out 2026-05-14 surfaced that the team has been executing tasks as literally described instead of solving the problems behind them \u2014 escalating on Plan A failures, ignoring already-on-disk artifacts, shipping structural sentinels that don't answer the operational question. PROP-005 (continuation-discipline) covers stop conditions; this proposal covers the symmetric START condition: before doing, declare the outcome + enumerate approaches + check what's already on disk. The 5-question discipline named in .claude/state/lessons-learned/engineering-mindset.md becomes a SKILL the team consults at decision time, not a policy doc.",
+        "scope": "Three deliverables: (1) Author .claude/skills/outcome-vs-task/SKILL.md with the 5-question discipline + the 'check what's on disk' first-move + concrete pattern of when to invoke (before escalation, before declaring blocked, before ship-close). (2) Add Critic gate: outcome-vs-task skill must have been consulted before any escalation or ship-close. (3) Operate the skill immediately per the engineering-mindset directive \u2014 this proposal codifies the existing operative behavior.",
+        "estimate": {
+          "cost_tokens": 5000,
+          "duration_minutes": 12,
+          "risk": "low"
+        },
+        "files_affected": [
+          ".claude/skills/outcome-vs-task/SKILL.md (new)",
+          ".claude/skills/outcome-vs-task/SKILL.APPROVAL.md (skill-approval-gate sidecar marker)",
+          "docs/agents/CRITIC.md (or peer doc) \u2014 append outcome-vs-task gate (deferred to apply-time)",
+          ".claude/state/proposals/pending/PROP-006-outcome-vs-task-skill.md (this file)"
+        ],
+        "fallback_plan": "Plan A: ship the skill + Critic gate as one bundle (this proposal). Plan B: ship the skill only, defer Critic gate to follow-on if CRITIC.md edit blocked by governance protection at apply-time. Plan C: keep the lessons-learned doc as the authoritative source; team operates from lesson text alone. Abandon: outcome-vs-task framing itself becomes unworkable (unlikely \u2014 the 5-question structure is a direct read of Founder's directive).",
+        "rollback_strategy": "git revert; skill is new \u2014 removal restores prior implicit behavior. The engineering-mindset lessons-learned doc continues to operate as written.",
+        "round_trip_coverage": "Existing [proposals] check verifies this proposal's frontmatter schema; no new round-trip block required (skills are loaded by Claude Code at session start, not by round-trip-test.py).",
+        "depends_on": [
+          "AMD-009",
+          "AMD-015",
+          "AMD-016",
+          "AMD-017",
+          "AUTONOMOUS_FAILURE_RECOVERY_v8.3"
+        ],
+        "authored_by": "claude-code",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": 1500,
+        "status": "pending",
+        "operating_status": "Skill content + structure operate immediately per the engineering-mindset directive even before formal approval. This proposal codifies it for the next agent loop."
+      }
+    ],
     "approved": [
       {
         "id": "PROP-005",
@@ -572,13 +609,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 0,
+    "pending": 1,
     "approved": 1,
     "deferred": 0,
     "shipped_total": 4,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T17:54:50.554193+00:00",
+  "as_of": "2026-05-14T18:42:36.133320+00:00",
   "schema_version": 2,
   "archive_display_cap": 50
 }

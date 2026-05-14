@@ -165,7 +165,8 @@
     <script id="report-data" type="application/json">
 {
   "escalations": {
-    "pending": [
+    "pending": [],
+    "approved": [
       {
         "id": "ESC-003",
         "title": "Per-ship token attribution \u2014 going-forward instrumentation approach",
@@ -204,11 +205,15 @@
           "scripts/lib/anthropic-pricing.json",
           ".claude/state/telemetry/events/2026-05-14.ndjson"
         ],
+        "founder_decision": "approve",
+        "founder_decision_options": [
+          "a"
+        ],
+        "approved_at": "2026-05-14T17:55:52.031878+00:00",
         "_filename": "ESC-003-per-ship-token-attribution-instrumentation.md",
         "_body_preview": "# ESC-003 \u2014 Per-ship token attribution instrumentation approach\n\nAuthored per AMD-015 propose-first + AMD-017 continuation-discipline skill\nStep 3 (LOW confidence \u2192 escalate, don't stop).\n\n## Why this is an escalation rather than direct execution\n\nPer AMD-017 + continuation-discipline skill: LOW confidence items go to\nescalation, the team continues to next eligible work. This is the\n\"feature-break"
       }
     ],
-    "approved": [],
     "applied": [
       {
         "id": "ESC-001",
@@ -360,8 +365,8 @@
     "rejected": []
   },
   "counts": {
-    "pending": 1,
-    "approved": 0,
+    "pending": 0,
+    "approved": 1,
     "applied_total": 2,
     "deferred": 0,
     "rejected_total": 0
