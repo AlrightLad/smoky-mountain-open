@@ -516,12 +516,13 @@ def main():
     # Test runs against REPORTS_SRC (the real docs/reports/), not the test workspace —
     # the nav lives in the production templates, not in seeded synthetic state.
     print(cyan("\n[nav] Cross-dashboard navigation audit..."))
-    NAV_LINKS_REQUIRED = ["dashboard.html", "activity.html", "discussion-bubbles.html", "proposals.html", "main-flows.html", "design-system.html", "token-usage.html", "index.html"]
+    NAV_LINKS_REQUIRED = ["dashboard.html", "activity.html", "discussion-bubbles.html", "proposals.html", "amendments.html", "main-flows.html", "design-system.html", "token-usage.html", "index.html"]
     NAV_PAGES = [
         ("dashboard.html",         "dashboard.html"),
         ("activity.html",          "activity.html"),
         ("discussion-bubbles.html","discussion-bubbles.html"),
         ("proposals.html",         "proposals.html"),
+        ("amendments.html",        "amendments.html"),
         ("main-flows.html",        "main-flows.html"),
         ("design-system.html",     "design-system.html"),
         ("token-usage.html",       "token-usage.html"),
@@ -643,13 +644,13 @@ def main():
                     failures.append(("index.html", f"missing keys: {missing}"))
                 else:
                     dashboards = data.get("dashboards", {})
-                    expected_dashes = {"dashboard.html", "activity.html", "discussion-bubbles.html", "proposals.html", "main-flows.html"}
+                    expected_dashes = {"dashboard.html", "activity.html", "discussion-bubbles.html", "proposals.html", "amendments.html", "main-flows.html"}
                     missing_dashes = expected_dashes - set(dashboards.keys())
                     if missing_dashes:
                         print(red(f"  ✗ index.html dashboards missing: {missing_dashes}"))
                         failures.append(("index.html", f"missing dashboards: {missing_dashes}"))
                     else:
-                        print(green(f"  ✓ index.html                   data block valid, status + 5 dashboard entries present"))
+                        print(green(f"  ✓ index.html                   data block valid, status + {len(expected_dashes)} dashboard entries present"))
             except json.JSONDecodeError as e:
                 print(red(f"  ✗ index.html JSON parse: {e}"))
                 failures.append(("index.html", f"JSON parse: {e}"))
@@ -911,7 +912,7 @@ def main():
 
         # Phase 1 informational scan: count violations in legacy dashboards (not a failure;
         # migration to --pb-* is Phase 2 work)
-        legacy = ["dashboard.html", "activity.html", "proposals.html", "discussion-bubbles.html", "main-flows.html", "index.html"]
+        legacy = ["dashboard.html", "activity.html", "proposals.html", "amendments.html", "discussion-bubbles.html", "main-flows.html", "index.html"]
         legacy_violations = {}
         for name in legacy:
             p = REPORTS_SRC / name
@@ -1099,7 +1100,7 @@ def main():
         (re.compile(r"new\s+Chart\s*\("),                                          "new Chart()"),
     ]
     chart_failures = []
-    for fname in ["dashboard.html", "activity.html", "proposals.html",
+    for fname in ["dashboard.html", "activity.html", "proposals.html", "amendments.html",
                   "discussion-bubbles.html", "main-flows.html",
                   "design-system.html", "token-usage.html", "index.html"]:
         p = REPORTS_SRC / fname
@@ -1194,6 +1195,8 @@ def main():
         ROOT / ".claude" / "state" / "wave-zero-dry-run" / "fictional-cap-audit.md",
         ROOT / ".claude" / "state" / "wave-zero-dry-run" / "remediation",
         ROOT / ".claude" / "state" / "proposals",  # historical proposal artifacts
+        ROOT / ".claude" / "state" / "amendments", # AMD drafts deprecate the fictional cap; references are documentary
+        ROOT / "docs" / "reports" / "amendments.html",  # rendered AMD drafts (body previews mirror exempt sources)
         ROOT / "scripts" / "cron" / "quarantine",   # maintenance script holding area
         ROOT / "scripts" / "refresh-quota-manual.ps1",  # placeholder caps for % -> tokens conversion
     ]

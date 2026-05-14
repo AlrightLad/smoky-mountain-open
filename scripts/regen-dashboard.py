@@ -98,6 +98,18 @@ def proposals_state_counts():
     return out
 
 
+def amendments_state_counts():
+    """Return counts across all 5 amendment states (mirror proposals lifecycle)."""
+    out = {"pending": 0, "approved": 0, "deferred": 0, "applied": 0, "rejected": 0}
+    for k in out:
+        d = STATE / "amendments" / k
+        if d.exists():
+            out[k] = sum(1 for f in d.iterdir() if f.name.startswith("AMD-") and f.name.endswith(".md"))
+    out["applied_total"]  = out["applied"]
+    out["rejected_total"] = out["rejected"]
+    return out
+
+
 def build_dashboard_data():
     if not SNAPSHOT.exists():
         sys.stderr.write(f"[regen-dashboard] FATAL snapshot missing: {SNAPSHOT}\n"
@@ -105,12 +117,14 @@ def build_dashboard_data():
         sys.exit(2)
     snap = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
     pc = proposals_state_counts()
+    ac = amendments_state_counts()
     return {
         "weekly_tokens": snap.get("weekly_tokens", 0),
         "weekly_cost": snap.get("weekly_cost", 0.0),
         "ships_this_week": snap.get("ships_this_week", 0),
         "proposals_pending": pc["pending"],
         "proposals_counts": pc,
+        "amendments_counts": ac,
         "halts_this_week": snap.get("halts_this_week", 0),
         "fiq_depth": snap.get("fiq_depth", 0),
         # Phase 6.6: no fictional cap. Real quota % comes from manual paste.

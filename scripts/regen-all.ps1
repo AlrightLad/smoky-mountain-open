@@ -53,6 +53,7 @@ $steps = @(
     @{ Name = "aggregate-telemetry";     Script = "scripts/aggregate-telemetry.py" },
     @{ Name = "aggregate-token-usage";   Script = "scripts/aggregate-token-usage.py" },
     @{ Name = "regen-proposals";         Script = "scripts/regen-proposals.py" },
+    @{ Name = "regen-amendments";        Script = "scripts/regen-amendments.py" },
     @{ Name = "regen-dashboard";         Script = "scripts/regen-dashboard.py" },
     @{ Name = "regen-ops-views";         Script = "scripts/dry-run-regen-ops-views.py" },
     @{ Name = "regen-main-flows";        Script = "scripts/regen-main-flows.py" },
@@ -91,7 +92,8 @@ if ($testRc -ne 0) {
     Write-Host "[regen-all] ROUND-TRIP TEST FAILED (exit $testRc). Dashboards will be rolled back." -ForegroundColor Red
     $files = @(
         "docs/reports/dashboard.html", "docs/reports/activity.html",
-        "docs/reports/proposals.html", "docs/reports/discussion-bubbles.html",
+        "docs/reports/proposals.html", "docs/reports/amendments.html",
+        "docs/reports/discussion-bubbles.html",
         "docs/reports/index.html", "docs/reports/main-flows.html",
         "docs/reports/token-usage.html"
     )

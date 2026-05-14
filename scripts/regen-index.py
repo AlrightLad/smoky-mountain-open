@@ -28,6 +28,7 @@ DASHBOARDS = [
     "activity.html",
     "discussion-bubbles.html",
     "proposals.html",
+    "amendments.html",
     "main-flows.html",
 ]
 
@@ -64,6 +65,10 @@ def count_dir(path: Path, pattern: str = "*.md"):
 
 def count_proposals_pending():
     return count_dir(STATE / "proposals" / "pending", "*.md")
+
+
+def count_amendments_pending():
+    return count_dir(STATE / "amendments" / "pending", "AMD-*.md")
 
 
 def count_discussion_bubbles():
@@ -154,6 +159,9 @@ def build_dashboard_meta():
                 handoffs_total += sum(1 for _ in folder.rglob("*.md"))
     if "proposals.html" in out:
         out["proposals.html"]["badge"] = f"{proposals_pending} pending" if proposals_pending else "0 pending"
+    if "amendments.html" in out:
+        amendments_pending = count_amendments_pending()
+        out["amendments.html"]["badge"] = f"{amendments_pending} pending" if amendments_pending else "0 pending"
     if "discussion-bubbles.html" in out:
         out["discussion-bubbles.html"]["badge"] = f"{bubbles_total} threads"
     if "activity.html" in out:

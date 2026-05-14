@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Governance Amendments — PARBAUGHS Orchestration</title>
+    <link rel="stylesheet" href="_assets/dashboard-shell.css">
+    <style>
+        /* Page-specific: amendment cards + diff preview disclosure. ~30-line budget. */
+        .amd-card { background: var(--pb-billiard-green-800); border: 1px solid var(--border-subtle); border-left: 3px solid var(--pb-info); border-radius: var(--radius-md); padding: var(--space-4); margin-bottom: var(--space-3); transition: border-left-color var(--duration-fast) var(--ease-out); }
+        .amd-card.decided-approve { border-left-color: var(--pb-success); background: linear-gradient(90deg, rgba(74,128,103,.06) 0%, var(--pb-billiard-green-800) 30%); }
+        .amd-card.decided-reject  { border-left-color: var(--pb-error);   background: linear-gradient(90deg, rgba(156,74,74,.06) 0%, var(--pb-billiard-green-800) 30%); }
+        .amd-card.decided-defer   { border-left-color: var(--pb-warning); background: linear-gradient(90deg, rgba(212,168,87,.06) 0%, var(--pb-billiard-green-800) 30%); }
+        .amd-header { display: flex; gap: var(--space-3); justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-2); flex-wrap: wrap; }
+        .amd-id { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--pb-chalk-400); }
+        .amd-title { font-size: var(--text-lg, 1.0625rem); font-weight: 600; color: var(--pb-chalk-50); margin: 0; }
+        .amd-meta { display: flex; gap: var(--space-3); font-size: var(--text-xs); color: var(--pb-chalk-300); flex-wrap: wrap; margin-top: var(--space-2); }
+        .amd-meta code { font-family: var(--font-mono); background: var(--pb-billiard-green-700); padding: 1px 6px; border-radius: var(--radius-sm); color: var(--pb-chalk-200); }
+        .amd-type { font-family: var(--font-mono); font-size: var(--text-xs); padding: 2px 8px; border-radius: var(--radius-pill); font-weight: 600; }
+        .amd-type-new-file { background: rgba(74,128,103,0.18); color: var(--pb-success); }
+        .amd-type-replace-existing { background: rgba(212,168,87,0.18); color: var(--pb-warning); }
+        .amd-type-append-to-existing { background: rgba(74,138,156,0.18); color: var(--pb-info); }
+        .amd-type-edit-section { background: rgba(201,169,97,0.18); color: var(--pb-brass-500); }
+        .amd-scope { color: var(--pb-chalk-100); font-size: var(--text-sm); margin: var(--space-2) 0; line-height: 1.5; }
+        .amd-diff-disclosure { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--border-subtle); }
+        .amd-diff-disclosure summary { cursor: pointer; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--pb-chalk-400); text-transform: uppercase; letter-spacing: 0.08em; user-select: none; }
+        .amd-diff-disclosure summary:hover { color: var(--pb-brass-500); }
+        .amd-diff-pre { background: var(--pb-billiard-green-700); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: var(--space-3); margin-top: var(--space-2); font-family: var(--font-mono); font-size: var(--text-xs); color: var(--pb-chalk-100); overflow-x: auto; max-height: 400px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; }
+        .amd-decision-bar { display: flex; gap: var(--space-2); margin-top: var(--space-4); padding-top: var(--space-3); border-top: 2px solid var(--border-subtle); flex-wrap: wrap; align-items: center; }
+        .amd-decision-btn { flex: 1; min-width: 110px; background: transparent; color: var(--pb-chalk-200); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3); font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 600; cursor: pointer; transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); text-transform: uppercase; letter-spacing: 0.06em; }
+        .amd-decision-btn:hover { background: var(--pb-billiard-green-700); color: var(--pb-chalk-50); }
+        .amd-decision-btn.btn-approve.active { background: var(--pb-success); color: var(--pb-billiard-green-900); border-color: var(--pb-success); }
+        .amd-decision-btn.btn-reject.active  { background: var(--pb-error);   color: var(--pb-chalk-50); border-color: var(--pb-error); }
+        .amd-decision-btn.btn-defer.active   { background: var(--pb-warning); color: var(--pb-billiard-green-900); border-color: var(--pb-warning); }
+        .amd-note-row { display: flex; gap: var(--space-2); margin-top: var(--space-2); width: 100%; }
+        .amd-note-row input { flex: 1; padding: var(--space-2); background: var(--pb-billiard-green-700); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--pb-chalk-50); font-family: var(--font-body); font-size: var(--text-sm); }
+        .amd-note-row input::placeholder { color: var(--pb-chalk-500); }
+        .amd-empty { padding: var(--space-5); text-align: center; color: var(--pb-chalk-400); font-style: italic; font-size: var(--text-sm); background: var(--pb-billiard-green-800); border: 1px dashed var(--border-subtle); border-radius: var(--radius-md); }
+        .amd-help-banner { background: rgba(74,138,156,.10); border: 1px solid var(--pb-info); border-radius: var(--radius-md); padding: var(--space-3); margin-bottom: var(--space-4); font-size: var(--text-sm); color: var(--pb-chalk-200); }
+        .amd-help-banner strong { color: var(--pb-info); }
+    </style>
+</head>
+<body class="pb-app">
+    <header class="pb-page-header">
+        <nav class="pb-page-nav">
+            <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
+            <div class="pb-page-nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="activity.html">Activity</a>
+                <a href="discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="proposals.html">Proposals</a>
+                <a href="amendments.html" class="is-active">Amendments</a>
+                <a href="main-flows.html">Main Flows</a>
+                <a href="design-system.html">Design System</a>
+                <a href="token-usage.html">Tokens</a>
+                <a href="index.html">Index</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="pb-page-main">
+        <div class="pb-page-title-row">
+            <div>
+                <h1 class="pb-page-title">Governance Amendments</h1>
+                <p class="pb-page-subtitle">Founder review queue for governance amendment drafts authored by the orchestration team. Mirrors the proposal lifecycle: pending → Founder decision → watcher applies via apply-amendments.sh.</p>
+            </div>
+            <div class="pb-page-meta">
+                <button class="amd-decision-btn" id="btn-clear-all" type="button" title="Clear all decisions in browser memory">Clear all</button>
+                <button class="amd-decision-btn" id="btn-export" type="button" style="background: var(--pb-brass-500); color: var(--pb-billiard-green-900); border-color: var(--pb-brass-500);">Export amendments &rarr;</button>
+            </div>
+        </div>
+
+        <section class="pb-section">
+            <h2 class="pb-section-title">Decision queue</h2>
+            <div class="pb-kpi-grid">
+                <div class="pb-kpi-card">
+                    <span class="pb-kpi-label">Pending</span>
+                    <span class="pb-kpi-value" data-kpi="pending">&mdash;</span>
+                    <span class="pb-kpi-sub">awaiting Founder review</span>
+                </div>
+                <div class="pb-kpi-card is-positive">
+                    <span class="pb-kpi-label">Approve</span>
+                    <span class="pb-kpi-value" data-kpi="approve">0</span>
+                    <span class="pb-kpi-sub">marked in this session</span>
+                </div>
+                <div class="pb-kpi-card is-danger">
+                    <span class="pb-kpi-label">Reject</span>
+                    <span class="pb-kpi-value" data-kpi="reject">0</span>
+                    <span class="pb-kpi-sub">marked in this session</span>
+                </div>
+                <div class="pb-kpi-card is-warning">
+                    <span class="pb-kpi-label">Defer</span>
+                    <span class="pb-kpi-value" data-kpi="defer">0</span>
+                    <span class="pb-kpi-sub">marked in this session</span>
+                </div>
+            </div>
+        </section>
+
+        <aside class="amd-help-banner">
+            <strong>How this works:</strong> Mark each amendment as approve / reject / defer. Decisions are stored in your browser only. When done, click <strong>Export amendments</strong> to download <code>amendments-&lt;ts&gt;.json</code> with <code>kind: "amendments"</code> — the Downloads watcher routes it to <code>apply-amendments.sh</code>. Approved amendments are applied to their <code>target_canonical_path</code> per their <code>type</code> (new-file / replace-existing / append-to-existing / edit-section). Drafts then move from <code>.claude/state/amendments/pending/</code> to <code>applied/</code> (or <code>rejected/</code> / <code>deferred/</code>).
+        </aside>
+
+        <section class="pb-section">
+            <h2 class="pb-section-title">Pending review <span class="pb-kpi-label" id="count-pending-inline">&mdash;</span></h2>
+            <p class="pb-section-subtitle">Founder's active workspace. Drafts authored by the orchestration team awaiting your decision.</p>
+            <div id="pending-list"></div>
+        </section>
+
+        <section class="pb-section">
+            <h2 class="pb-section-title">Approved &mdash; awaiting apply <span class="pb-kpi-label" id="count-approved-inline">&mdash;</span></h2>
+            <p class="pb-section-subtitle">Between Founder click and watcher catch (5-min cron cadence). Empty under normal flow.</p>
+            <div id="approved-list"></div>
+        </section>
+
+        <section class="pb-section">
+            <details>
+                <summary class="pb-section-title" style="cursor: pointer;">Deferred &mdash; archive <span class="pb-kpi-label" id="count-deferred-inline">&mdash;</span></summary>
+                <div id="deferred-list" style="margin-top: var(--space-3);"></div>
+            </details>
+        </section>
+
+        <section class="pb-section">
+            <details>
+                <summary class="pb-section-title" style="cursor: pointer;">Applied &mdash; archive <span class="pb-kpi-label" id="count-applied-inline">&mdash;</span></summary>
+                <div id="applied-list" style="margin-top: var(--space-3);"></div>
+            </details>
+        </section>
+
+        <section class="pb-section">
+            <details>
+                <summary class="pb-section-title" style="cursor: pointer;">Rejected &mdash; archive <span class="pb-kpi-label" id="count-rejected-inline">&mdash;</span></summary>
+                <div id="rejected-list" style="margin-top: var(--space-3);"></div>
+            </details>
+        </section>
+    </main>
+
+    <footer class="pb-page-footer">
+        Source: <code>.claude/state/amendments/</code> &middot;
+        <a href="index.html">All reports</a> &middot;
+        <a href="proposals.html">Proposals</a> &middot;
+        <a href="discussion-bubbles.html">Discussion Bubbles</a>
+    </footer>
+
+    <script id="report-data" type="application/json">
+{
+  "amendments": {
+    "pending": [
+      {
+        "id": "AMD-001",
+        "title": "PAUSE_DISCIPLINE v8.2 \u2014 Remove fictional 3.5M weekly cap",
+        "target_canonical_path": "docs/agents/PAUSE_DISCIPLINE_v8.2_ADDENDUM.md",
+        "source_draft_path": ".claude/state/wave-zero-dry-run/remediation/proposed-PAUSE_DISCIPLINE_v8.2_remove-fictional-cap.md",
+        "scope_summary": "Replaces \u00a72.1 rate-limit threshold (op-count-based default + manual-quota override at 90% when fresh paste available) and marks \u00a74 item 24 dormant until PROP-003 ships. Schema-compatible (last-verify.json reason enum extended).",
+        "type": "new-file",
+        "section_anchor": null,
+        "depends_on": [],
+        "authored_by": "claude-code",
+        "authored_at": "2026-05-13T22:00:00Z",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": "5000",
+        "rollback_strategy": "git revert the commit; PAUSE_DISCIPLINE_v8.1_ADDENDUM stays the active addendum until v8.2 is re-applied.",
+        "status": "pending",
+        "migrated_from_remediation": "2026-05-14T01:30:00Z",
+        "_body_preview": "# PAUSE_DISCIPLINE v8.2 \u2014 Remove fictional 3.5M weekly cap\n\nThis draft amends the v8.1 ADDENDUM to remove the fictional 3.5M weekly\ntoken cap as a pause trigger. Founder applies via:\n\n```\ngit mv .claude/state/wave-zero-dry-run/remediation/proposed-PAUSE_DISCIPLINE_v8.2_remove-fictional-cap.md \\\n       docs/agents/PAUSE_DISCIPLINE_v8.2_ADDENDUM.md\n```\n\n## What changed\n\n### Section 2.1 \u2014 Rate-limit ",
+        "_filename": "AMD-001-PAUSE_DISCIPLINE_v8.2_remove-fictional-cap.md"
+      },
+      {
+        "id": "AMD-002",
+        "title": "CRON_CONFIGURATION \u2014 Remove fictional 3.5M weekly alert threshold",
+        "target_canonical_path": "docs/agents/CRON_CONFIGURATION.md",
+        "source_draft_path": ".claude/state/wave-zero-dry-run/remediation/proposed-CRON_CONFIGURATION_v8.2_remove-fictional-cap.md",
+        "scope_summary": "Single-line edit replacing hardcoded 4.5M / 3.5M alert thresholds at line 616 with a manual-quota-derived percentage (or telemetry-anomaly fallback when no paste exists).",
+        "type": "edit-section",
+        "section_anchor": "For cron-specific thresholds",
+        "depends_on": [
+          "AMD-001"
+        ],
+        "authored_by": "claude-code",
+        "authored_at": "2026-05-13T22:00:00Z",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": "500",
+        "rollback_strategy": "git revert; the legacy 3.5M / 4.5M line is plain prose, safe to restore via revert.",
+        "status": "pending",
+        "migrated_from_remediation": "2026-05-14T01:30:00Z",
+        "_body_preview": "# CRON_CONFIGURATION \u2014 Remove fictional 3.5M weekly alert threshold\n\nThis draft surfaces a single line edit to CRON_CONFIGURATION.md.\n\nFounder applies via direct edit (no `git mv` needed; this is an in-place\ncontent change to one line).\n\n## What changed\n\n### Line 616 \u2014 Weekly token budget alert (REPHRASED)\n\n**v8.1 (REMOVE):**\n> - Weekly token budget alert: 3.5M/week expected, alert at 4.5M/week\n\nT",
+        "_filename": "AMD-002-CRON_CONFIGURATION_v8.2_remove-fictional-cap.md"
+      },
+      {
+        "id": "AMD-003",
+        "title": "design-bot skill \u2014 Append DASHBOARD PR CHECKLIST (Phase 6 / DC-7)",
+        "target_canonical_path": ".claude/skills/parbaughs-design-bot.md",
+        "source_draft_path": ".claude/state/wave-zero-dry-run/remediation/proposed-parbaughs-design-bot-dashboard-checklist.md",
+        "scope_summary": "Appends a 9-item DASHBOARD PR CHECKLIST section to the design-bot skill, codifying the canonical dashboard contract (no charts / shell import / .pb-* classes / form controls / 4 viewports / 30-line inline budget / protected layouts / round-trip / no fictional cap).",
+        "type": "append-to-existing",
+        "section_anchor": "## POST-WORK audit checklist",
+        "depends_on": [],
+        "authored_by": "claude-code",
+        "authored_at": "2026-05-13T22:00:00Z",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": "2000",
+        "rollback_strategy": "git revert; the checklist block is additive and self-contained.",
+        "status": "pending",
+        "hook_gate": "skills/*.md require .APPROVAL.md sidecar bump; apply-amendments.sh disables/restores hook via \"disableAllHooks: true\" pattern per CLAUDE.md operational gotchas.",
+        "migrated_from_remediation": "2026-05-14T01:30:00Z",
+        "_body_preview": "# Proposed: DASHBOARD PR CHECKLIST appended to design-bot skill\n\nAdd the following block to `.claude/skills/parbaughs-design-bot.md`\nimmediately after the existing \"## POST-WORK audit checklist\" section.\n\nThe block codifies the canonical dashboard contract established across\nDC-1 through DC-9. Critic uses this as the gate for every future\ndashboard PR.\n\n---\n\n## DASHBOARD PR CHECKLIST (Phase 6 / DC",
+        "_filename": "AMD-003-design-bot-dashboard-checklist.md"
+      },
+      {
+        "id": "AMD-004",
+        "title": "AUTONOMOUS_FAILURE_RECOVERY v8.3 \u2014 Team owns recovery, Founder owns decisions",
+        "target_canonical_path": "docs/agents/AUTONOMOUS_FAILURE_RECOVERY_v8.3.md",
+        "source_draft_path": ".claude/state/wave-zero-dry-run/remediation/proposed-AUTONOMOUS_FAILURE_RECOVERY_v8.3.md",
+        "scope_summary": "New governance doc. Backend issues, infrastructure failures, encoding bugs, test failures are TEAM problems. Founder escalation requires 3+ failed attempts AND a decision (not a fix). Documents 5 real failure-recovery patterns already applied during consolidation as precedent.",
+        "type": "new-file",
+        "section_anchor": null,
+        "depends_on": [],
+        "authored_by": "claude-code",
+        "authored_at": "2026-05-14T01:15:00Z",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": "6000",
+        "rollback_strategy": "git revert; new file, no overwrite of existing governance. Protocol stays in effect via operating-immediately status while the formal doc is being re-applied.",
+        "status": "pending",
+        "operating_status": "ACTIVE \u2014 protocol operates immediately per Founder PROTOCOL UPDATE 2026-05-14; this draft is the formalization artifact only.",
+        "migrated_from_remediation": "2026-05-14T01:30:00Z",
+        "_body_preview": "# AUTONOMOUS_FAILURE_RECOVERY v8.3\n\nBackend issues, infrastructure failures, encoding bugs, test failures,\nand similar technical problems are **TEAM problems** to diagnose and\nfix, not Founder problems to receive notifications about. Founder gets\ninvolved only when (a) all reasonable attempts have failed AND (b) a\ndecision is genuinely required.\n\n## 1 \u2014 Operating principle\n\nThe team owns failure r",
+        "_filename": "AMD-004-AUTONOMOUS_FAILURE_RECOVERY_v8.3.md"
+      },
+      {
+        "id": "AMD-005",
+        "title": "Deprecate op-count defensive pause heuristic (trust substrate guardrails)",
+        "target_canonical_path": "docs/agents/AUTONOMOUS_FAILURE_RECOVERY_v8.3.md",
+        "source_draft_path": ".claude/state/amendments/pending/AMD-005-deprecate-op-count-pause.md",
+        "scope_summary": "Removes the \"defensive pause every 5 atomic ops\" heuristic that was a placeholder for missing token-metering substrate. Replaces with explicit STOP CONDITIONS (HALT 1-25 / API error / AUTONOMOUS_FAILURE_RECOVERY abandon / 5 escalation criteria / Founder pause / natural ship completion). Commits stay atomic; pause-rate is independent of that discipline.",
+        "type": "append-to-existing",
+        "section_anchor": "## 9 \u2014 Status",
+        "depends_on": [
+          "AMD-004"
+        ],
+        "authored_by": "claude-code",
+        "authored_at": "2026-05-14T01:55:00Z",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": "1500",
+        "rollback_strategy": "git revert; pre-deprecation behavior re-emerges automatically (the op-count heuristic was a soft rule, not a hard mechanism in code).",
+        "status": "pending",
+        "operating_status": "ACTIVE \u2014 deprecation operates immediately per Founder PROTOCOL UPDATE 2026-05-14; formalization artifact only.",
+        "_body_preview": "# AMD-005 \u2014 Deprecate op-count defensive pause heuristic\n\nThis amendment retires the \"defensive pause every 5 atomic ops\" rule\nthat appeared in earlier substrate directives. Founder trusts the\ncurrent substrate guardrails to handle real pause conditions without\narbitrary op-count throttling.\n\n## Why the heuristic existed\n\nThe op-count rule was a placeholder from when:\n- No real token metering exis",
+        "_filename": "AMD-005-deprecate-op-count-pause.md"
+      }
+    ],
+    "approved": [],
+    "deferred": [],
+    "applied": [],
+    "rejected": []
+  },
+  "counts": {
+    "pending": 5,
+    "approved": 0,
+    "deferred": 0,
+    "applied_total": 0,
+    "rejected_total": 0
+  },
+  "as_of": "2026-05-14T01:48:18.696150+00:00",
+  "schema_version": 1,
+  "archive_display_cap": 50
+}
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            'use strict';
+            const STORAGE_KEY = 'pb_amendment_decisions';
+            const data = JSON.parse(document.getElementById('report-data').textContent);
+            const decisions = loadDecisions();
+
+            function loadDecisions() {
+                try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+                catch (e) { return {}; }
+            }
+            function saveDecisions() {
+                try { localStorage.setItem(STORAGE_KEY, JSON.stringify(decisions)); }
+                catch (e) {}
+            }
+            function esc(s) { return s == null ? '' : String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
+
+            function renderCard(amd, bucketName) {
+                const aid = amd.id || amd._filename || '';
+                const dec = decisions[aid] || { type: null, note: '' };
+                const decidedClass = dec.type ? ' decided-' + dec.type : '';
+                const typeClass = 'amd-type-' + (amd.type || 'unknown');
+                const depends = Array.isArray(amd.depends_on) && amd.depends_on.length ? ' &middot; depends_on: ' + amd.depends_on.join(', ') : '';
+                const isPending = bucketName === 'pending';
+                const showActions = isPending;
+                return ''
+                    + '<div class="amd-card' + decidedClass + '" data-aid="' + esc(aid) + '">'
+                    + '  <div class="amd-header">'
+                    + '    <div>'
+                    + '      <div class="amd-id">' + esc(aid) + '</div>'
+                    + '      <h3 class="amd-title">' + esc(amd.title || '(no title)') + '</h3>'
+                    + '    </div>'
+                    + '    <span class="amd-type ' + typeClass + '">' + esc(amd.type || 'unknown') + '</span>'
+                    + '  </div>'
+                    + '  <p class="amd-scope">' + esc(amd.scope_summary || '') + '</p>'
+                    + '  <div class="amd-meta">'
+                    + '    <span>target: <code>' + esc(amd.target_canonical_path || '') + '</code></span>'
+                    + (amd.section_anchor ? '<span>anchor: <code>' + esc(amd.section_anchor) + '</code></span>' : '')
+                    + '    <span>author: ' + esc(amd.authored_by || '') + '</span>'
+                    + '    <span>at: ' + esc(amd.authored_at || '') + '</span>'
+                    + (depends ? '<span style="color: var(--pb-warning);">' + depends + '</span>' : '')
+                    + '  </div>'
+                    + '  <details class="amd-diff-disclosure">'
+                    + '    <summary>Show diff preview (' + esc(amd.type || '') + ')</summary>'
+                    + '    <pre class="amd-diff-pre">' + esc(amd._body_preview || '(no body preview available)') + '</pre>'
+                    + '  </details>'
+                    + (showActions ? ''
+                        + '  <div class="amd-decision-bar">'
+                        + '    <button class="amd-decision-btn btn-approve' + (dec.type === 'approve' ? ' active' : '') + '" data-action="approve">Approve</button>'
+                        + '    <button class="amd-decision-btn btn-reject'  + (dec.type === 'reject'  ? ' active' : '') + '" data-action="reject">Reject</button>'
+                        + '    <button class="amd-decision-btn btn-defer'   + (dec.type === 'defer'   ? ' active' : '') + '" data-action="defer">Defer</button>'
+                        + '  </div>'
+                        + '  <div class="amd-note-row">'
+                        + '    <input type="text" placeholder="Note (optional)" data-note="' + esc(aid) + '" value="' + esc(dec.note || '') + '">'
+                        + '  </div>'
+                      : '')
+                    + '</div>';
+            }
+
+            function renderBucket(bucketName, targetId) {
+                const items = (data.amendments || {})[bucketName] || [];
+                const target = document.getElementById(targetId);
+                if (!target) return;
+                if (items.length === 0) {
+                    target.innerHTML = '<div class="amd-empty">No ' + bucketName + ' amendments.</div>';
+                    return;
+                }
+                target.innerHTML = items.map(function (a) { return renderCard(a, bucketName); }).join('');
+            }
+
+            function recomputeCounts() {
+                const tally = { approve: 0, reject: 0, defer: 0 };
+                Object.values(decisions).forEach(function (d) {
+                    if (d && d.type && tally.hasOwnProperty(d.type)) tally[d.type]++;
+                });
+                document.querySelector('[data-kpi="approve"]').textContent = tally.approve;
+                document.querySelector('[data-kpi="reject"]').textContent  = tally.reject;
+                document.querySelector('[data-kpi="defer"]').textContent   = tally.defer;
+                document.querySelector('[data-kpi="pending"]').textContent = String(((data.counts || {}).pending) || 0);
+                // Inline section counts
+                const c = data.counts || {};
+                function setInline(id, val) { var el = document.getElementById(id); if (el) el.textContent = '(' + val + ')'; }
+                setInline('count-pending-inline',  c.pending  || 0);
+                setInline('count-approved-inline', c.approved || 0);
+                setInline('count-deferred-inline', c.deferred || 0);
+                setInline('count-applied-inline',  c.applied_total  || 0);
+                setInline('count-rejected-inline', c.rejected_total || 0);
+            }
+
+            function bindActions() {
+                document.querySelectorAll('.amd-decision-btn[data-action]').forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        const card = btn.closest('.amd-card');
+                        const aid = card.dataset.aid;
+                        const action = btn.dataset.action;
+                        if (!decisions[aid]) decisions[aid] = { type: null, note: '' };
+                        // Toggle off if already selected
+                        decisions[aid].type = decisions[aid].type === action ? null : action;
+                        saveDecisions();
+                        // Re-render the pending list to update visual state
+                        renderBucket('pending', 'pending-list');
+                        bindActions();
+                        bindNotes();
+                        recomputeCounts();
+                    });
+                });
+            }
+            function bindNotes() {
+                document.querySelectorAll('input[data-note]').forEach(function (inp) {
+                    inp.addEventListener('input', function () {
+                        const aid = inp.dataset.note;
+                        if (!decisions[aid]) decisions[aid] = { type: null, note: '' };
+                        decisions[aid].note = inp.value;
+                        saveDecisions();
+                        recomputeCounts();
+                    });
+                });
+            }
+
+            document.getElementById('btn-clear-all').addEventListener('click', function () {
+                if (!confirm('Clear all session decisions?')) return;
+                Object.keys(decisions).forEach(function (k) { delete decisions[k]; });
+                saveDecisions();
+                renderBucket('pending', 'pending-list');
+                bindActions();
+                bindNotes();
+                recomputeCounts();
+            });
+
+            document.getElementById('btn-export').addEventListener('click', function () {
+                const decided = Object.entries(decisions)
+                    .filter(function ([_, d]) { return d && d.type; })
+                    .map(function ([aid, d]) {
+                        return {
+                            amendment_id: aid,
+                            decision: d.type,
+                            note: d.note || '',
+                            decided_at: new Date().toISOString()
+                        };
+                    });
+                if (decided.length === 0) { alert('No decisions to export. Mark at least one amendment as approve/reject/defer first.'); return; }
+                const payload = {
+                    schema_version: 1,
+                    kind: 'amendments',
+                    source_report_generated_at: data.as_of,
+                    generated_at: new Date().toISOString(),
+                    decisions: decided
+                };
+                const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'amendments-' + new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19) + '.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+
+            // Initial render
+            renderBucket('pending',  'pending-list');
+            renderBucket('approved', 'approved-list');
+            renderBucket('deferred', 'deferred-list');
+            renderBucket('applied',  'applied-list');
+            renderBucket('rejected', 'rejected-list');
+            bindActions();
+            bindNotes();
+            recomputeCounts();
+        });
+    </script>
+</body>
+</html>

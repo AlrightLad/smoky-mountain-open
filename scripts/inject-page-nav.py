@@ -30,6 +30,7 @@ TARGETS = [
     ("dashboard.html",         "dashboard.html"),
     ("activity.html",          "activity.html"),
     ("proposals.html",         "proposals.html"),
+    ("amendments.html",        "amendments.html"),
     ("discussion-bubbles.html","discussion-bubbles.html"),
     ("main-flows.html",        "main-flows.html"),
     ("design-system.html",     "design-system.html"),
@@ -42,6 +43,7 @@ NAV_LINKS = [
     ("activity.html",          "Activity"),
     ("discussion-bubbles.html","Discussion Bubbles"),
     ("proposals.html",         "Proposals"),
+    ("amendments.html",        "Amendments"),
     ("main-flows.html",        "Main Flows"),
     ("design-system.html",     "Design System"),
     ("token-usage.html",       "Tokens"),
@@ -102,7 +104,7 @@ def has_canonical_pb_nav(html: str, active: str) -> bool:
     if not m:
         return False
     inside = m.group(1)
-    # All 8 links present?
+    # All NAV_LINKS present?
     for href, _ in NAV_LINKS:
         if f'href="{href}"' not in inside:
             return False
