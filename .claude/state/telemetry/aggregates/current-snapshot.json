@@ -1,11 +1,11 @@
 {
-  "as_of": "2026-05-14T21:38:55.571299+00:00",
+  "as_of": "2026-05-14T21:56:01.445157+00:00",
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "quota_status": {
     "state": "empty",
-    "as_of": "2026-05-14T21:37:13.1511240Z",
-    "age_seconds": 102,
+    "as_of": "2026-05-14T21:52:13.0328417Z",
+    "age_seconds": 228,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -17,7 +17,7 @@
   },
   "weekly_tokens": 7302000,
   "weekly_cost": 175.25,
-  "ships_this_week": 24,
+  "ships_this_week": 25,
   "ships_trend_7d": {
     "labels": [
       "Fri",
@@ -35,7 +35,7 @@
       0,
       0,
       4,
-      20
+      21
     ]
   },
   "handoffs_trend_7d": {
@@ -165,6 +165,18 @@
   },
   "recent_ships": [
     {
+      "id": "AMD-018",
+      "title": "Self-governed push authorization",
+      "kind": "amendment",
+      "status": "applied",
+      "completed_at": "2026-05-14T21:35:00Z",
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
+      "source_path": ".claude/state/amendments/applied/AMD-018-self-governed-push-authorization.md"
+    },
+    {
       "id": "ESC-003",
       "title": "Per-ship token attribution \u2014 going-forward instrumentation approach",
       "kind": "escalation",
@@ -271,22 +283,10 @@
       "tokens_events_matched": 0,
       "cost_usd": null,
       "source_path": ".claude/state/amendments/applied/AMD-012-smoke-testing-governance.md"
-    },
-    {
-      "id": "AMD-011",
-      "title": "Auto-execute approved proposals when AMD-009-compliant (the auto-implementation gate)",
-      "kind": "amendment",
-      "status": "applied",
-      "completed_at": "2026-05-14T03:50:00Z",
-      "tokens": null,
-      "tokens_source": "unknown",
-      "tokens_events_matched": 0,
-      "cost_usd": null,
-      "source_path": ".claude/state/amendments/applied/AMD-011-auto-execute-approved-proposals.md"
     }
   ],
   "_aggregate_counts": {
-    "events_total": 851,
+    "events_total": 863,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
