@@ -449,3 +449,4 @@
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T17:23:00.884018+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T17:24:59.762538+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T17:25:00.086302+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"timestamp":"2026-05-14T17:25:49.2741031Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"8f60705c3b30","cron_source":"downloads-watcher"}}
