@@ -57,28 +57,69 @@ def read_frontmatter(path: Path):
 
 
 def recent_handoffs():
-    handoffs_dir = STATE / "handoffs"
-    if not handoffs_dir.exists():
-        return []
+    """Founder directive 2026-05-14 "DASHBOARD DATA PIPELINE BROKEN":
+    legacy source (.claude/state/handoffs/<scenario>/*.md) is sparsely
+    written — only 1 entry surfaced despite 2 days of active substrate
+    work. Extended to also mine git history for substrate activity
+    (ship-close commits, cron auto-commits, watcher applies). Markdown
+    handoffs preserved when present; commits surface the rest of the
+    activity."""
     out = []
-    for folder in sorted(handoffs_dir.iterdir()):
-        if not folder.is_dir():
-            continue
-        scenario = FOLDER_TO_SCENARIO.get(folder.name)
-        if scenario is None:
-            continue
-        for f in sorted(folder.rglob("*.md")):
-            data = read_frontmatter(f)
-            if data is None:
+    handoffs_dir = STATE / "handoffs"
+    if handoffs_dir.exists():
+        for folder in sorted(handoffs_dir.iterdir()):
+            if not folder.is_dir():
                 continue
+            scenario = FOLDER_TO_SCENARIO.get(folder.name)
+            if scenario is None:
+                continue
+            for f in sorted(folder.rglob("*.md")):
+                data = read_frontmatter(f)
+                if data is None:
+                    continue
+                out.append({
+                    "scenario": scenario,
+                    "from": data.get("from_agent"),
+                    "to": data.get("to_agent"),
+                    "created_at": data.get("created_at"),
+                })
+
+    # Mine git history for recent substrate activity (last 48h, cap 10)
+    try:
+        import subprocess
+        r = subprocess.run(
+            ["git", "log", "--pretty=%cI%x09%s%x09%an", "--since=2.days"],
+            cwd=str(ROOT), capture_output=True, text=True, timeout=15, check=False,
+        )
+        for line in (r.stdout or "").splitlines()[:15]:
+            parts = line.split("\t")
+            if len(parts) < 3:
+                continue
+            cdate, subject, author = parts[0], parts[1], parts[2]
+            if re.search(r"^cron\(routine\)|^Apply governance amendments|^Apply escalation|^Apply ", subject):
+                scenario = "cron-auto-commit"
+                from_agent = "cron"
+                to_agent = author
+            elif re.search(r"Shipped (PROP|AMD)-|^W\d+\.[SIMm]", subject):
+                scenario = "ship-close"
+                from_agent = "engineer"
+                to_agent = "founder"
+            else:
+                scenario = "team-commit"
+                from_agent = author
+                to_agent = "main"
             out.append({
                 "scenario": scenario,
-                "from": data.get("from_agent"),
-                "to": data.get("to_agent"),
-                "created_at": data.get("created_at"),
+                "from": from_agent,
+                "to": to_agent,
+                "created_at": cdate,
+                "subject": subject[:80],
             })
+    except (OSError, subprocess.SubprocessError):
+        pass
+
     out.sort(key=lambda h: h.get("created_at") or "", reverse=True)
-    return out[:5]
+    return out[:10]
 
 
 def proposals_pending_count():

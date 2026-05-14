@@ -144,7 +144,31 @@
     <script id="report-data" type="application/json">
 {
   "amendments": {
-    "pending": [],
+    "pending": [
+      {
+        "id": "AMD-016",
+        "title": "Continuation discipline \u2014 consolidated reports are checkpoints, not stop conditions",
+        "target_canonical_path": "docs/agents/CONTINUATION_DISCIPLINE.md",
+        "source_draft_path": ".claude/state/amendments/pending/AMD-016-continuation-discipline.md",
+        "scope_summary": "Codifies that consolidated reports are async checkpoints; team continues immediately to next eligible work. Lists the exhaustive stop conditions; ending a ship is not one of them. Critic protocol gates: before ending a session/turn, Critic verifies next work is triggered, not paused.",
+        "type": "new-file",
+        "section_anchor": null,
+        "depends_on": [
+          "AMD-009",
+          "AMD-011",
+          "AMD-015"
+        ],
+        "authored_by": "claude-code (orchestration team)",
+        "authored_at": "2026-05-14T17:14:00Z",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": "3000",
+        "rollback_strategy": "git revert; the document is new. Principle continues to operate informally per Founder directive even if the formal artifact is rolled back.",
+        "status": "pending",
+        "operating_status": "ACTIVE \u2014 operating immediately per Founder directive 2026-05-14 \"CONTINUATION DISCIPLINE\". Critic gates apply now; formal apply via amendments.html is paperwork rather than enablement.",
+        "_body_preview": "# Continuation Discipline\n\nThe team's default behavior is to **continue immediately** after every\nship-complete + consolidated report. Reports are async checkpoints\nthat Founder reads at their own pace; the team does not pause on\nthem.\n\n## Founder principle (recorded verbatim)\n\n> \"Consolidated reports are CHECKPOINTS, not GATES.\n> Founder reads them ASYNC, not BLOCKING.\n> Team continues immediatel",
+        "_filename": "AMD-016-continuation-discipline.md"
+      }
+    ],
     "approved": [],
     "deferred": [],
     "applied": [
@@ -459,13 +483,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 0,
+    "pending": 1,
     "approved": 0,
     "deferred": 0,
     "applied_total": 15,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T17:12:20.574783+00:00",
+  "as_of": "2026-05-14T17:17:14.721315+00:00",
   "schema_version": 1,
   "archive_display_cap": 50
 }

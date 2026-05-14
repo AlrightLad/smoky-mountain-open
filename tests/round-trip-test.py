@@ -1073,19 +1073,26 @@ def main():
     check_eq("discussion_bubbles_total", truth_bubbles_total, cands)
 
     # handoffs_total
+    # Founder directive 2026-05-14 "DASHBOARD DATA PIPELINE BROKEN":
+    # dashboard.recent_handoffs is now a UNION of legacy handoff markdown
+    # entries + git-commit-derived recent substrate activity (ship-close
+    # commits, cron auto-commits, watcher applies). It is no longer a
+    # 1:1 mirror of .claude/state/handoffs/ — by design. Only assert
+    # activity.html mirrors legacy ground truth; dashboard.recent_handoffs
+    # is the richer "recent activity" surface.
     cands = []
     if act_data is not None:
         cands.append(("activity.html data.handoffs.length", len(act_data.get("handoffs", []))))
-    if dash_data is not None:
-        cands.append(("dashboard.html data.recent_handoffs.length", len(dash_data.get("recent_handoffs", []))))
-    # NOTE: dashboard.recent_handoffs is capped at 5 by design; only compare against truth if truth <= 5
+    # NOTE: dashboard.recent_handoffs intentionally no longer matches the
+    # ground-truth legacy handoff count (it now includes git-commit-mined
+    # activity entries). Cross-check skips it.
     if truth_handoffs_total <= 5:
         check_eq("handoffs_total", truth_handoffs_total, cands)
     else:
-        # Truth >5 — only assert activity.html count == truth; dashboard is "recent" subset
+        # Truth >5 — only assert activity.html count == truth
         act_count = len(act_data.get("handoffs", [])) if act_data else 0
         if act_count == truth_handoffs_total:
-            print(green(f"  ✓ {'handoffs_total':40s} ground={truth_handoffs_total} activity.html={act_count} (dashboard.recent_handoffs is design-capped at 5, skipped)"))
+            print(green(f"  ✓ {'handoffs_total':40s} ground={truth_handoffs_total} activity.html={act_count} (dashboard.recent_handoffs is design-extended with git activity, skipped)"))
         else:
             print(red(f"  ✗ {'handoffs_total':40s} ground={truth_handoffs_total} activity.html={act_count}"))
             failures.append(("cross-dash:handoffs_total", f"ground={truth_handoffs_total} activity={act_count}"))

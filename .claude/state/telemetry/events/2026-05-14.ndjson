@@ -435,3 +435,11 @@
 {"timestamp":"2026-05-14T17:10:49.5242219Z","event_type":"cron.downloads-watcher.end","data":{"success":true,"exit_reason":"skip-dirty","cron_source":"downloads-watcher","duration_ms":429,"claude_invoked":false,"run_id":"855bf314100a"}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T17:12:20.224759+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T17:12:20.518117+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"timestamp":"2026-05-14T17:15:49.3392209Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"5d7736959933","cron_source":"downloads-watcher"}}
+{"timestamp":"2026-05-14T17:15:49.6050927Z","event_type":"cron.downloads-watcher.end","data":{"success":true,"exit_reason":"skip-dirty","cron_source":"downloads-watcher","duration_ms":419,"claude_invoked":false,"run_id":"5d7736959933"}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T17:15:52.003480+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T17:15:52.336374+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T17:16:26.670211+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T17:16:26.986815+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T17:17:14.297234+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T17:17:14.632970+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}

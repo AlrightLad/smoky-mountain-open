@@ -458,7 +458,7 @@
     "rejected_total": 0
   },
   "amendments_counts": {
-    "pending": 0,
+    "pending": 1,
     "approved": 0,
     "deferred": 0,
     "applied": 15,
@@ -553,10 +553,74 @@
   },
   "recent_handoffs": [
     {
-      "scenario": "discussion-bubble-to-caller",
-      "from": "discussion-bubble-orchestrator",
-      "to": "wave-zero-dry-run-orchestrator",
-      "created_at": "2026-05-13T11:38:00Z"
+      "scenario": "team-commit",
+      "from": "Zach Boogher",
+      "to": "main",
+      "created_at": "2026-05-14T13:14:39-04:00",
+      "subject": "Dashboard data pipeline fix: per-day bucketing + real shipped-artifact sourcing "
+    },
+    {
+      "scenario": "cron-auto-commit",
+      "from": "cron",
+      "to": "PARBAUGHS Cron",
+      "created_at": "2026-05-14T13:05:54-04:00",
+      "subject": "Apply governance amendments via amendments.html watcher"
+    },
+    {
+      "scenario": "cron-auto-commit",
+      "from": "cron",
+      "to": "PARBAUGHS Cron",
+      "created_at": "2026-05-14T13:05:49-04:00",
+      "subject": "cron(routine): auto-commit telemetry output before watcher preflight (2026-05-14"
+    },
+    {
+      "scenario": "team-commit",
+      "from": "Zach Boogher",
+      "to": "main",
+      "created_at": "2026-05-14T13:03:28-04:00",
+      "subject": "Install flow + escalations Step 4: install-all.ps1 + round-trip parseability smo"
+    },
+    {
+      "scenario": "team-commit",
+      "from": "Zach Boogher",
+      "to": "main",
+      "created_at": "2026-05-14T12:59:24-04:00",
+      "subject": "Dashboard fidelity: precise round-trip timestamp + actionable working-tree statu"
+    },
+    {
+      "scenario": "team-commit",
+      "from": "Zach Boogher",
+      "to": "main",
+      "created_at": "2026-05-14T12:53:50-04:00",
+      "subject": "Escalations lifecycle: escalations.html dashboard + Founder Review Queue navigat"
+    },
+    {
+      "scenario": "team-commit",
+      "from": "Zach Boogher",
+      "to": "main",
+      "created_at": "2026-05-14T12:48:14-04:00",
+      "subject": "Escalations lifecycle: apply-escalations.sh + watcher kind=escalations"
+    },
+    {
+      "scenario": "team-commit",
+      "from": "Zach Boogher",
+      "to": "main",
+      "created_at": "2026-05-14T12:46:17-04:00",
+      "subject": "Escalations lifecycle: state directories + schema + migration (ESC-001 + ESC-002"
+    },
+    {
+      "scenario": "team-commit",
+      "from": "Zach Boogher",
+      "to": "main",
+      "created_at": "2026-05-14T12:36:20-04:00",
+      "subject": "main-flows.html: Ships R5+R6+R7+R9 \u2014 catalog theme remap + column header cleanup"
+    },
+    {
+      "scenario": "cron-auto-commit",
+      "from": "cron",
+      "to": "PARBAUGHS Cron",
+      "created_at": "2026-05-14T12:30:49-04:00",
+      "subject": "cron(routine): auto-commit telemetry output before watcher preflight (2026-05-14"
     }
   ],
   "recent_ships": [
@@ -664,7 +728,7 @@
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "_aggregate_counts": {
-    "events_total": 613,
+    "events_total": 621,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
@@ -680,7 +744,7 @@
   "quota_status": {
     "state": "empty",
     "as_of": "2026-05-14T15:24:53.5950065Z",
-    "age_seconds": 6446,
+    "age_seconds": 6740,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -691,10 +755,10 @@
     "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
   },
   "founder_queue": {
-    "as_of": "2026-05-14T17:12:20.683717+00:00",
+    "as_of": "2026-05-14T17:17:14.910835+00:00",
     "last_founder_visit": null,
     "governance_gates": {
-      "amendments_pending": 0,
+      "amendments_pending": 1,
       "amendments_link": "amendments.html",
       "bubbles_flagged": 0,
       "bubbles_link": "discussion-bubbles.html",
@@ -705,8 +769,8 @@
     "system_health": {
       "crons": {
         "downloads-watcher": {
-          "last_run": "2026-05-14T17-10-49Z",
-          "last_log": "2026-05-14T17-10-49Z-downloads-watcher.log"
+          "last_run": "2026-05-14T17-15-49Z",
+          "last_log": "2026-05-14T17-15-49Z-downloads-watcher.log"
         },
         "maintenance": {
           "last_run": "2026-05-14T06-55-01Z",
@@ -731,10 +795,10 @@
           "task_name": "PARBAUGHS-Downloads-Watcher",
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-downloads-watcher.ps1",
-          "last_fire_iso": "2026-05-14T17:10:49.524221+00:00",
-          "age_minutes": 1.5,
+          "last_fire_iso": "2026-05-14T17:15:49.605092+00:00",
+          "age_minutes": 1.4,
           "status": "firing",
-          "label": "firing \u00b7 last fire 1.5min ago"
+          "label": "firing \u00b7 last fire 1.4min ago"
         },
         {
           "name": "maintenance",
@@ -742,9 +806,9 @@
           "cadence_minutes": 1440,
           "install_script": "scripts/cron/install-maintenance.ps1",
           "last_fire_iso": "2026-05-14T06:55:19.949406+00:00",
-          "age_minutes": 617.0,
+          "age_minutes": 621.9,
           "status": "firing",
-          "label": "firing \u00b7 last fire 617.0min ago"
+          "label": "firing \u00b7 last fire 621.9min ago"
         },
         {
           "name": "overnight-triage",
@@ -762,9 +826,9 @@
           "cadence_minutes": 120,
           "install_script": "scripts/cron/install-proposal-readiness-scanner.ps1",
           "last_fire_iso": "2026-05-14T05:04:49.834159+00:00",
-          "age_minutes": 727.5,
+          "age_minutes": 732.4,
           "status": "stale",
-          "label": "stale \u00b7 last fire 727.5min ago (cadence 120min)"
+          "label": "stale \u00b7 last fire 732.4min ago (cadence 120min)"
         },
         {
           "name": "token-sidecar",
@@ -772,28 +836,28 @@
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-sidecar.ps1",
           "last_fire_iso": "2026-05-14T15:24:53.642316+00:00",
-          "age_minutes": 107.5,
+          "age_minutes": 112.4,
           "status": "stale",
-          "label": "stale \u00b7 last fire 107.5min ago (cadence 5min)"
+          "label": "stale \u00b7 last fire 112.4min ago (cadence 5min)"
         }
       ],
       "last_regen_all": {
-        "ts": "2026-05-14 17:10 UTC",
-        "ts_iso": "2026-05-14T17:10:33.0552077Z",
+        "ts": "2026-05-14 17:15 UTC",
+        "ts_iso": "2026-05-14T17:15:56.9040196Z",
         "status": "PASS",
-        "age_minutes": 1.8,
+        "age_minutes": 1.3,
         "source": "heartbeat"
       },
       "working_tree": {
         "state": "dirty-cycling",
-        "label": "dirty (12 files) \u00b7 watcher cycling",
+        "label": "dirty (11 files) \u00b7 watcher cycling",
         "color": "var(--pb-warning)",
-        "dirty_count": 12,
-        "watcher_last_fire": "2026-05-14T17:10:49.524221+00:00",
-        "watcher_minutes_ago": 1.5
+        "dirty_count": 11,
+        "watcher_last_fire": "2026-05-14T17:15:49.605092+00:00",
+        "watcher_minutes_ago": 1.4
       },
       "halts": [],
-      "round_trip_last_pass": "2026-05-14T17:10:33.0552077Z"
+      "round_trip_last_pass": "2026-05-14T17:15:56.9040196Z"
     },
     "activity_since_last_visit": {
       "_note": "Counts since last_founder_visit (null = since-forever)",

@@ -498,16 +498,64 @@ def aggregate():
     else:
         meter_status = "wired-estimated" if meter_wired else "gap-per-F1a"
 
-    # Recent handoffs (top 5)
+    # Recent handoffs (top 5) — Founder directive 2026-05-14 fix: extend
+    # legacy handoff markdown source with git-commit mining so the table
+    # surfaces recent substrate activity (cron auto-commits, ship-close
+    # commits, etc.) instead of only formal handoff markdown files.
+    # Markdown handoffs first (preserves legacy semantics), then commits.
     recent_handoffs = [
         {
             "scenario": h.get("_scenario"),
             "from": h.get("from_agent"),
             "to": h.get("to_agent"),
             "created_at": h.get("created_at"),
+            "_source": "handoff-md",
         }
-        for h in handoffs[:5]
+        for h in handoffs[:3]
     ]
+    # Mine git history for recent activity (last 48h, capped at 10 commits)
+    try:
+        import subprocess
+        gres = subprocess.run(
+            ["git", "log", "--pretty=%cI%x09%s%x09%an", "--since=2.days"],
+            cwd=str(ROOT), capture_output=True, text=True, timeout=15, check=False,
+        )
+        commit_lines = (gres.stdout or "").splitlines()[:10]
+        for line in commit_lines:
+            parts = line.split("\t")
+            if len(parts) < 3:
+                continue
+            cdate, subject, author = parts[0], parts[1], parts[2]
+            # Classify the commit by subject pattern
+            if re.search(r"^cron\(routine\)|^Apply governance amendments|^Apply escalation", subject):
+                scenario = "cron-auto-commit"
+                from_agent = "cron"
+                to_agent = author
+            elif re.search(r"Shipped (PROP|AMD)-|^W\d+\.[SIMm]", subject):
+                scenario = "ship-close"
+                from_agent = "engineer"
+                to_agent = "founder"
+            elif re.search(r"^Apply ", subject):
+                scenario = "watcher-apply"
+                from_agent = "watcher"
+                to_agent = "team"
+            else:
+                scenario = "team-commit"
+                from_agent = "engineer"
+                to_agent = "main"
+            recent_handoffs.append({
+                "scenario": scenario,
+                "from": from_agent,
+                "to": to_agent,
+                "created_at": cdate,
+                "_subject": subject[:80],
+                "_source": "git-commit",
+            })
+    except (OSError, subprocess.SubprocessError):
+        pass
+    # Cap and sort by created_at desc
+    recent_handoffs.sort(key=lambda h: h.get("created_at") or "", reverse=True)
+    recent_handoffs = recent_handoffs[:10]
 
     # Recent ships — Founder directive 2026-05-14 fix: source from real
     # shipped artifacts (proposals/shipped/ + amendments/applied/ +
