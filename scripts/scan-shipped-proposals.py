@@ -30,10 +30,20 @@ SHIPPED = PROPOSALS / "shipped"
 LOG = PROPOSALS / "shipped-log.md"
 EVENTS_DIR = STATE / "telemetry" / "events"
 
-# Per PROPOSAL_LIFECYCLE_v8.2 § 3 — accept "Implements PROP-NNN" or "Closes PROP-NNN"
-# Case-insensitive. Comma or space separates multiple PROPs.
-PROP_REF_RE = re.compile(r"\b(?:implements|closes)\s+(PROP-\d+(?:[-\w]*)?(?:\s*,\s*PROP-\d+(?:[-\w]*)?)*)", re.IGNORECASE)
-PROP_ID_RE = re.compile(r"PROP-(\d+)", re.IGNORECASE)
+# Per PROPOSAL_LIFECYCLE_v8.2 § 3 — accept any of these conventions in
+# commit subject/body for proposal-ship detection (case-insensitive):
+#   - "Implements PROP-NNN"
+#   - "Closes PROP-NNN"
+#   - "Shipped PROP-NNN" (AMD-011 Ship 2 ship-close convention, 2026-05-14)
+# Split-suffix support: PROP-NNN.<a-z> for ships like PROP-003.a / PROP-003.b
+# (the .a/.b convention shipped with the PROP-003 split, commit 726db1f).
+# Comma or space separates multiple PROPs.
+_PROP_ID_PATTERN = r"PROP-\d+(?:\.[a-z])?(?:[-\w]*)?"
+PROP_REF_RE = re.compile(
+    rf"\b(?:implements|closes|shipped)\s+({_PROP_ID_PATTERN}(?:\s*,\s*{_PROP_ID_PATTERN})*)",
+    re.IGNORECASE,
+)
+PROP_ID_RE = re.compile(r"PROP-(\d+(?:\.[a-z])?)", re.IGNORECASE)
 
 
 def git(*args, cwd=ROOT):
@@ -67,7 +77,22 @@ def commits_referencing_props(days_back: int = 90):
         for m in PROP_REF_RE.finditer(full):
             blob = m.group(1)
             for idm in PROP_ID_RE.finditer(blob):
-                props.add("PROP-" + idm.group(1).zfill(3) if len(idm.group(1)) < 3 else "PROP-" + idm.group(1))
+                # Normalize to upper-case for matching against approved dict
+                # (which is keyed by pid.upper()). PROP-003.a -> PROP-003.A.
+                raw_id = idm.group(1)
+                # zfill applies only to bare numeric portion before any dot suffix
+                if "." in raw_id:
+                    num, _, suf = raw_id.partition(".")
+                    if len(num) < 3:
+                        num = num.zfill(3)
+                    normalized = f"PROP-{num}.{suf}".upper()
+                else:
+                    if len(raw_id) < 3:
+                        normalized = "PROP-" + raw_id.zfill(3)
+                    else:
+                        normalized = "PROP-" + raw_id
+                    normalized = normalized.upper()
+                props.add(normalized)
         if props:
             out.append({"sha": sha, "short_sha": sha[:7], "date": date, "subject": subject, "props": props})
     # Sort by date ascending so the earliest matching commit wins (per § 3 rule 3)

@@ -5,7 +5,7 @@
   "lane": 3,
   "lane_label": "Performance",
   "parent_proposal": "PROP-003",
-  "split_rationale": "Per Founder directive 2026-05-14: PROP-003 split into 3 coherent ships. PROP-003.a is the pure-infrastructure half — backend script + cron + tests producing quota-status.json. NO dashboards, NO telemetry consumers, NO governance docs.",
+  "split_rationale": "Per Founder directive 2026-05-14: PROP-003 split into 3 coherent ships. PROP-003.a is the pure-infrastructure half \u2014 backend script + cron + tests producing quota-status.json. NO dashboards, NO telemetry consumers, NO governance docs.",
   "created_at": "2026-05-14T04:50:00Z",
   "rationale": "Sidecar process on Founder's machine polls Anthropic-side usage and writes a snapshot file the agent reads each turn. Scope-isolated from downstream consumers so the data-production path can ship + verify before any consumer wiring lands.",
   "scope": "Author scripts/sidecar/usage-snapshot.ps1 + scripts/cron/install-sidecar.ps1 + tests/checks/quota-status-schema.py (new). Produce .claude/state/quota-status.json on a 5-minute cron cadence with the schema documented below.",
@@ -54,12 +54,14 @@
     "value": true,
     "rationale": "PROP-003.a is AMD-009-compliant, single-component, no unshipped dependencies, smoke-testable. Scanner will mark READY; auto-execute is appropriate."
   },
-  "ship_target": "Wave 1 parallel work — no Wave 1 ship blocks PROP-003.a since it's pure cron infrastructure.",
+  "ship_target": "Wave 1 parallel work \u2014 no Wave 1 ship blocks PROP-003.a since it's pure cron infrastructure.",
   "estimate": {
     "cost_tokens": 200000,
     "duration_minutes": 120,
     "risk": "low"
-  }
+  },
+  "shipped_at": "2026-05-14T01:25:53-04:00",
+  "shipped_in_commit": "9ff9883"
 }
 ---
 
