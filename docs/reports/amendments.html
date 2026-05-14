@@ -146,29 +146,6 @@
   "amendments": {
     "pending": [
       {
-        "id": "AMD-016",
-        "title": "Infrastructure must answer its operational question",
-        "target_canonical_path": "docs/agents/INFRASTRUCTURE_OPERATIONAL_QUESTION.md",
-        "source_draft_path": ".claude/state/amendments/pending/AMD-016-infrastructure-operational-question.md",
-        "scope_summary": "Codifies that every shipped infrastructure component must answer the operational question it was built to answer. Structural existence (sentinels pass, schema valid, lint clean) is necessary but NOT sufficient for ship-complete. Adds the Operational Question Test (3 questions per ship); adds Criterion 9 to AMD-011 readiness gate; binds Critic protocol gate on operational evidence not just sentinel verdicts.",
-        "type": "new-file",
-        "section_anchor": null,
-        "depends_on": [
-          "AMD-009",
-          "AMD-011",
-          "AMD-012"
-        ],
-        "authored_by": "claude-code (orchestration team)",
-        "authored_at": "2026-05-14T17:23:30Z",
-        "bubble_of_record": null,
-        "estimate_tokens_to_apply": "4000",
-        "rollback_strategy": "git revert; the document is new. Principle continues to operate informally per Founder directive even if the formal artifact is rolled back.",
-        "status": "pending",
-        "operating_status": "ACTIVE \u2014 operating immediately per Founder directive 2026-05-14 \"AUTHOR AMENDMENT \u2014 Infrastructure Must Answer Its Operational Question\". Critic gates apply now; formal apply via amendments.html is paperwork rather than enablement. Retroactive audit of recent ships against the test pending.",
-        "_body_preview": "# Infrastructure Must Answer Its Operational Question\n\nEvery shipped infrastructure component must answer the operational\nquestion it was built to answer. Structural existence (sentinels pass,\nschema valid, lint clean, round-trip green) is necessary but **NOT\nsufficient** for ship-complete.\n\n## Founder principle (recorded verbatim)\n\n> \"Infrastructure renders structurally correct values that DON'T\n",
-        "_filename": "AMD-016-infrastructure-operational-question.md"
-      },
-      {
         "id": "AMD-017",
         "title": "Continuation discipline \u2014 consolidated reports are checkpoints, not stop conditions",
         "target_canonical_path": "docs/agents/CONTINUATION_DISCIPLINE.md",
@@ -195,6 +172,29 @@
     "approved": [],
     "deferred": [],
     "applied": [
+      {
+        "id": "AMD-016",
+        "title": "Infrastructure must answer its operational question",
+        "target_canonical_path": "docs/agents/INFRASTRUCTURE_OPERATIONAL_QUESTION.md",
+        "source_draft_path": ".claude/state/amendments/pending/AMD-016-infrastructure-operational-question.md",
+        "scope_summary": "Codifies that every shipped infrastructure component must answer the operational question it was built to answer. Structural existence (sentinels pass, schema valid, lint clean) is necessary but NOT sufficient for ship-complete. Adds the Operational Question Test (3 questions per ship); adds Criterion 9 to AMD-011 readiness gate; binds Critic protocol gate on operational evidence not just sentinel verdicts.",
+        "type": "new-file",
+        "section_anchor": null,
+        "depends_on": [
+          "AMD-009",
+          "AMD-011",
+          "AMD-012"
+        ],
+        "authored_by": "claude-code (orchestration team)",
+        "authored_at": "2026-05-14T17:23:30Z",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": "4000",
+        "rollback_strategy": "git revert; the document is new. Principle continues to operate informally per Founder directive even if the formal artifact is rolled back.",
+        "status": "pending",
+        "operating_status": "ACTIVE \u2014 operating immediately per Founder directive 2026-05-14 \"AUTHOR AMENDMENT \u2014 Infrastructure Must Answer Its Operational Question\". Critic gates apply now; formal apply via amendments.html is paperwork rather than enablement. Retroactive audit of recent ships against the test pending.",
+        "_body_preview": "# Infrastructure Must Answer Its Operational Question\n\nEvery shipped infrastructure component must answer the operational\nquestion it was built to answer. Structural existence (sentinels pass,\nschema valid, lint clean, round-trip green) is necessary but **NOT\nsufficient** for ship-complete.\n\n## Founder principle (recorded verbatim)\n\n> \"Infrastructure renders structurally correct values that DON'T\n",
+        "_filename": "AMD-016-infrastructure-operational-question.md"
+      },
       {
         "id": "AMD-015",
         "title": "Team proposes; Agent 2 ratifies (default escalation pattern)",
@@ -506,13 +506,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 2,
+    "pending": 1,
     "approved": 0,
     "deferred": 0,
-    "applied_total": 15,
+    "applied_total": 16,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T17:25:00.176354+00:00",
+  "as_of": "2026-05-14T17:29:09.047189+00:00",
   "schema_version": 1,
   "archive_display_cap": 50
 }

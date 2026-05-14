@@ -762,6 +762,12 @@ def build_dashboard_data():
         "tokens_by_role": snap.get("tokens_by_role", {"labels": [], "values": []}),
         "token_trend_7d": snap.get("token_trend_7d", {"labels": [], "values": []}),
         "cycle_outcomes_7d": snap.get("cycle_outcomes_7d", {"labels": [], "datasets": []}),
+        # Founder directive 2026-05-14 DASHBOARD VIZ — wire these trend
+        # arrays into the dashboard data block so the 7-day table renders
+        # real handoffs/ships/bubbles per-day counts instead of dashes.
+        "ships_trend_7d":    snap.get("ships_trend_7d",    {"labels": [], "values": []}),
+        "handoffs_trend_7d": snap.get("handoffs_trend_7d", {"labels": [], "values": []}),
+        "bubbles_trend_7d":  snap.get("bubbles_trend_7d",  {"labels": [], "values": []}),
         "recent_handoffs": recent_handoffs(),
         "recent_ships": snap.get("recent_ships", []),
         "_meter_status": snap.get("_meter_status", "unknown"),

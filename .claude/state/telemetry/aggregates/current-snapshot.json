@@ -1,11 +1,11 @@
 {
-  "as_of": "2026-05-14T17:24:59.886220+00:00",
+  "as_of": "2026-05-14T17:29:08.800471+00:00",
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "quota_status": {
     "state": "empty",
     "as_of": "2026-05-14T15:24:53.5950065Z",
-    "age_seconds": 7206,
+    "age_seconds": 7455,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -17,7 +17,7 @@
   },
   "weekly_tokens": 7302000,
   "weekly_cost": 0.0,
-  "ships_this_week": 21,
+  "ships_this_week": 22,
   "ships_trend_7d": {
     "labels": [
       "Fri",
@@ -35,7 +35,47 @@
       0,
       0,
       4,
-      17
+      18
+    ]
+  },
+  "handoffs_trend_7d": {
+    "labels": [
+      "Fri",
+      "Sat",
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu"
+    ],
+    "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+    ]
+  },
+  "bubbles_trend_7d": {
+    "labels": [
+      "Fri",
+      "Sat",
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu"
+    ],
+    "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      5,
+      2
     ]
   },
   "halts_this_week": 0,
@@ -124,6 +164,18 @@
     ]
   },
   "recent_ships": [
+    {
+      "id": "AMD-016",
+      "title": "Infrastructure must answer its operational question",
+      "kind": "amendment",
+      "status": "applied",
+      "completed_at": "2026-05-14T17:23:30Z",
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
+      "source_path": ".claude/state/amendments/applied/AMD-016-infrastructure-operational-question.md"
+    },
     {
       "id": "ESC-001",
       "title": "main-flows-v2 Phase 2 taxonomy + visual approach + speculative flows decisions",
@@ -231,22 +283,10 @@
       "tokens_events_matched": 0,
       "cost_usd": null,
       "source_path": ".claude/state/amendments/applied/AMD-009-senior-engineering-standard.md"
-    },
-    {
-      "id": "PROP-004",
-      "title": "Add `org-monthly` as 4th quota_type in PAUSE_DISCIPLINE schema",
-      "kind": "proposal",
-      "status": "shipped",
-      "completed_at": "2026-05-14T02:47:38-04:00",
-      "tokens": null,
-      "tokens_source": "unknown",
-      "tokens_events_matched": 0,
-      "cost_usd": null,
-      "source_path": ".claude/state/proposals/shipped/PROP-004-org-monthly-quota-type.md"
     }
   ],
   "_aggregate_counts": {
-    "events_total": 627,
+    "events_total": 635,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
