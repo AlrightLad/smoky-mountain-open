@@ -139,6 +139,20 @@ def walk_ship_progress():
     return out
 
 
+def _count_fiq_entries(repo_root: Path):
+    """Count entries in .claude/state/founder-input-queue/ — Founder Input Queue.
+    Per Issue-2 (2026-05-14): replaces the hardcoded 0 stub. Returns 0 honestly
+    when the FIQ dir does not exist OR is empty; non-zero when entries exist.
+    F3 substrate (FIQ build pipeline) is still forthcoming; this function reads
+    whatever already lives in the dir so the dashboard signal is honest as
+    soon as entries appear (won't wait for F3)."""
+    fiq_dir = repo_root / ".claude" / "state" / "founder-input-queue"
+    if not fiq_dir.exists():
+        return 0
+    # Count *.md entries (the canonical FIQ entry format)
+    return sum(1 for p in fiq_dir.glob("*.md") if p.is_file())
+
+
 def _read_latest_manual_quota(repo_root: Path):
     """
     Phase 6.6: Surface the most recent Founder manual-quota-paste entry from
@@ -334,7 +348,7 @@ def aggregate():
         "weekly_cost": weekly_cost,
         "ships_this_week": len([s for s in ship_progress if s.get("status") == "complete"]),
         "halts_this_week": halts,
-        "fiq_depth": 0,  # FIQ entries when written; currently 0 (F3 forthcoming)
+        "fiq_depth": _count_fiq_entries(ROOT),  # was hardcoded 0 (F3-era stub); now reads .claude/state/founder-input-queue/ entries per Issue-2 unstub 2026-05-14
         # Phase 6.6: no fictional cap. Real quota % comes from manual paste
         # (see manual_quota_latest below). Field intentionally omitted; dashboards
         # consume manual_quota_latest instead.
