@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spike B — shadcn/ui adapted, static HTML render</title>
+    <link rel="stylesheet" href="../../../../docs/reports/_assets/design-tokens.css">
+    <style>
+        /* Spike B reproduces shadcn/ui's Tailwind-utility composition statically.
+           Each utility class below is the Tailwind shape applied with PARBAUGHS
+           tokens. shadcn's <Avatar>, <Card>, <Badge> primitives are inlined as
+           CSS for browser viewing without a React build. See LeaderboardRow.tsx
+           for the actual React composition. */
+
+        body {
+            background: var(--pb-billiard-green-900);
+            color: var(--pb-chalk-50);
+            font-family: var(--font-body, system-ui, sans-serif);
+            margin: 0;
+            padding: 24px 16px;
+            min-height: 100vh;
+        }
+        .frame { max-width: 720px; margin: 0 auto; }
+        h1 {
+            font-family: var(--font-display, Georgia, serif);
+            font-size: 20px;
+            margin: 0 0 8px 0;
+            color: var(--pb-chalk-50);
+        }
+        .eyebrow {
+            font-family: var(--font-mono, monospace);
+            font-size: 12px;
+            color: var(--pb-chalk-400);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin: 0 0 20px 0;
+        }
+
+        /* shadcn Card primitive — rounded, bordered, surface-2 */
+        .card {
+            background: var(--pb-billiard-green-800);
+            border: 1px solid rgba(245,241,232,0.10);
+            border-radius: 0.5rem;  /* shadcn rounded-lg = 0.5rem; we use md scale */
+            overflow: hidden;
+        }
+        /* shadcn list — no list-style; rows are divided */
+        ol.lb { list-style: none; margin: 0; padding: 0; }
+
+        /* shadcn-style row composition: flex items-center gap-3 px-4 py-3 border-b */
+        .lb-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;        /* gap-3 */
+            padding: 12px 16px; /* py-3 px-4 */
+            border-bottom: 1px solid rgba(245,241,232,0.08);
+            transition: background-color 150ms ease;
+        }
+        .lb-row:last-child { border-bottom: none; }
+        .lb-row:hover { background-color: rgba(36,55,48,0.60); }  /* hover:bg-pb-green-800/60 */
+        .lb-row.is-leader {
+            background: linear-gradient(90deg, rgba(201,169,97,0.06) 0%, transparent 40%);
+        }
+
+        /* rank — w-7 text-right font-mono tabular-nums */
+        .lb-rank {
+            font-family: var(--font-mono, monospace);
+            font-size: 13px;
+            font-variant-numeric: tabular-nums;
+            width: 28px;
+            text-align: right;
+            color: var(--pb-chalk-400);
+        }
+        .lb-row.is-leader .lb-rank { color: var(--pb-brass-500); font-weight: 600; }
+
+        /* shadcn Avatar — h-9 w-9 rounded-full + AvatarFallback */
+        .avatar {
+            position: relative;
+            display: inline-flex;
+            height: 36px;
+            width: 36px;
+            border-radius: 9999px;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 1px solid rgba(245,241,232,0.10);
+            background: var(--pb-billiard-green-700);
+        }
+        .lb-row.is-leader .avatar {
+            border-color: var(--pb-brass-500);
+            box-shadow: 0 0 0 2px rgba(201,169,97,0.15);
+        }
+        .avatar-fallback {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display, Georgia, serif);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--pb-chalk-100);
+        }
+
+        /* identity column — flex-1 min-w-0 */
+        .lb-identity { flex: 1; min-width: 0; }
+        .lb-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--pb-chalk-50);
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .lb-meta-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 2px;
+        }
+        .lb-rounds {
+            font-family: var(--font-mono, monospace);
+            font-size: 11px;
+            color: var(--pb-chalk-400);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        /* shadcn Badge — variant outline, small, mono */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 9999px;
+            border: 1px solid rgba(156,151,136,0.20);
+            padding: 1px 8px;
+            font-family: var(--font-mono, monospace);
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--pb-chalk-400);
+        }
+
+        /* score + handicap — tabular nums, right-aligned, mono */
+        .lb-score {
+            font-family: var(--font-mono, monospace);
+            font-size: 18px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            color: var(--pb-chalk-50);
+            min-width: 48px;
+            text-align: right;
+        }
+        .lb-handicap {
+            font-family: var(--font-mono, monospace);
+            font-size: 11px;
+            font-variant-numeric: tabular-nums;
+            color: var(--pb-chalk-400);
+            min-width: 36px;
+            text-align: right;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        @media (max-width: 480px) {
+            .lb-row { padding: 8px 12px; gap: 8px; }
+            .lb-name { font-size: 14px; }
+            .lb-score { font-size: 16px; min-width: 40px; }
+            .lb-meta-line, .lb-handicap { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="frame">
+        <h1>Spring 2026 Standings</h1>
+        <div class="eyebrow">Approach B · shadcn/ui adapted (static render)</div>
+
+        <div class="card">
+            <ol class="lb" role="list">
+                <li class="lb-row is-leader">
+                    <span class="lb-rank">1</span>
+                    <div class="avatar"><div class="avatar-fallback">ZB</div></div>
+                    <div class="lb-identity">
+                        <div class="lb-name">Zach Boogher</div>
+                        <div class="lb-meta-line">
+                            <span class="lb-rounds">7 rounds</span>
+                            <span class="badge">founding</span>
+                        </div>
+                    </div>
+                    <div class="lb-score">+12</div>
+                    <div class="lb-handicap">18.8</div>
+                </li>
+                <li class="lb-row">
+                    <span class="lb-rank">2</span>
+                    <div class="avatar"><div class="avatar-fallback">NB</div></div>
+                    <div class="lb-identity">
+                        <div class="lb-name">Nick Blades</div>
+                        <div class="lb-meta-line">
+                            <span class="lb-rounds">6 rounds</span>
+                            <span class="badge">founding-four</span>
+                        </div>
+                    </div>
+                    <div class="lb-score">+8</div>
+                    <div class="lb-handicap">14.2</div>
+                </li>
+                <li class="lb-row">
+                    <span class="lb-rank">3</span>
+                    <div class="avatar"><div class="avatar-fallback">KV</div></div>
+                    <div class="lb-identity">
+                        <div class="lb-name">Kayvan Soltani</div>
+                        <div class="lb-meta-line">
+                            <span class="lb-rounds">5 rounds</span>
+                            <span class="badge">founding-four</span>
+                        </div>
+                    </div>
+                    <div class="lb-score">+5</div>
+                    <div class="lb-handicap">11.0</div>
+                </li>
+                <li class="lb-row">
+                    <span class="lb-rank">4</span>
+                    <div class="avatar"><div class="avatar-fallback">KY</div></div>
+                    <div class="lb-identity">
+                        <div class="lb-name">Kiyan Banakar</div>
+                        <div class="lb-meta-line">
+                            <span class="lb-rounds">5 rounds</span>
+                            <span class="badge">founding-four</span>
+                        </div>
+                    </div>
+                    <div class="lb-score">+2</div>
+                    <div class="lb-handicap">9.5</div>
+                </li>
+                <li class="lb-row">
+                    <span class="lb-rank">5</span>
+                    <div class="avatar"><div class="avatar-fallback">JF</div></div>
+                    <div class="lb-identity">
+                        <div class="lb-name">Jordyn (flossonthefairway)</div>
+                        <div class="lb-meta-line">
+                            <span class="lb-rounds">3 rounds</span>
+                            <span class="badge">the-boss's-wife</span>
+                        </div>
+                    </div>
+                    <div class="lb-score">−1</div>
+                    <div class="lb-handicap">22.4</div>
+                </li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>

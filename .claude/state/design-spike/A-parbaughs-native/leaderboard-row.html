@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spike A — PARBAUGHS native leaderboard row</title>
+    <link rel="stylesheet" href="../../../../docs/reports/_assets/design-tokens.css">
+    <link rel="stylesheet" href="../../../../docs/reports/_assets/design-system-components.css">
+    <style>
+        /* Page chrome only — primitives consumed from design-system-components.css */
+        body {
+            background: var(--pb-billiard-green-900);
+            color: var(--pb-chalk-50);
+            font-family: var(--font-body, system-ui, sans-serif);
+            margin: 0;
+            padding: var(--space-6) var(--space-4);
+            min-height: 100vh;
+        }
+        .spike-frame { max-width: 720px; margin: 0 auto; }
+        .spike-title {
+            font-family: var(--font-display, Georgia, serif);
+            font-size: 20px;
+            color: var(--pb-chalk-50);
+            margin: 0 0 var(--space-2) 0;
+        }
+        .spike-sub {
+            font-family: var(--font-mono, monospace);
+            font-size: 12px;
+            color: var(--pb-chalk-400);
+            margin: 0 0 var(--space-5) 0;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        /* Leaderboard row — uses .pb-surface as container, .pb-inline for layout.
+           Density: 56px row height; tight gap; tabular nums on score + handicap. */
+        .lb-list {
+            background: var(--pb-billiard-green-800);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        .lb-row {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            border-bottom: 1px solid var(--border-subtle);
+            transition: background var(--duration-fast) var(--ease-out);
+        }
+        .lb-row:last-child { border-bottom: none; }
+        .lb-row:hover { background: var(--pb-billiard-green-700); }
+        .lb-row.is-leader { background: linear-gradient(90deg, rgba(201,169,97,0.06) 0%, transparent 40%); }
+
+        .lb-rank {
+            font-family: var(--font-mono, monospace);
+            font-size: 13px;
+            color: var(--pb-chalk-400);
+            width: 28px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+        .lb-row.is-leader .lb-rank { color: var(--pb-brass-500); font-weight: 600; }
+
+        .lb-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--pb-billiard-green-700);
+            color: var(--pb-chalk-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display, Georgia, serif);
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+            border: 1px solid var(--border-subtle);
+        }
+        .lb-row.is-leader .lb-avatar {
+            border-color: var(--pb-brass-500);
+            box-shadow: 0 0 0 2px rgba(201,169,97,0.15);
+        }
+
+        .lb-identity { flex: 1; min-width: 0; }
+        .lb-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--pb-chalk-50);
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .lb-meta {
+            font-family: var(--font-mono, monospace);
+            font-size: 11px;
+            color: var(--pb-chalk-400);
+            margin-top: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .lb-score {
+            font-family: var(--font-mono, monospace);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--pb-chalk-50);
+            font-variant-numeric: tabular-nums;
+            min-width: 48px;
+            text-align: right;
+        }
+        .lb-handicap {
+            font-family: var(--font-mono, monospace);
+            font-size: 11px;
+            color: var(--pb-chalk-400);
+            font-variant-numeric: tabular-nums;
+            min-width: 36px;
+            text-align: right;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        @media (max-width: 480px) {
+            .lb-row { padding: var(--space-2) var(--space-3); gap: var(--space-2); }
+            .lb-name { font-size: 14px; }
+            .lb-score { font-size: 16px; min-width: 40px; }
+            .lb-meta, .lb-handicap { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="spike-frame">
+        <h1 class="spike-title">Spring 2026 Standings</h1>
+        <div class="spike-sub">Approach A · PARBAUGHS native primitives</div>
+
+        <ol class="lb-list" role="list">
+            <li class="lb-row is-leader">
+                <span class="lb-rank">1</span>
+                <div class="lb-avatar" aria-hidden="true">ZB</div>
+                <div class="lb-identity">
+                    <div class="lb-name">Zach Boogher</div>
+                    <div class="lb-meta">7 rounds · founding</div>
+                </div>
+                <div class="lb-score">+12</div>
+                <div class="lb-handicap">18.8</div>
+            </li>
+            <li class="lb-row">
+                <span class="lb-rank">2</span>
+                <div class="lb-avatar" aria-hidden="true">NB</div>
+                <div class="lb-identity">
+                    <div class="lb-name">Nick Blades</div>
+                    <div class="lb-meta">6 rounds · founding-four</div>
+                </div>
+                <div class="lb-score">+8</div>
+                <div class="lb-handicap">14.2</div>
+            </li>
+            <li class="lb-row">
+                <span class="lb-rank">3</span>
+                <div class="lb-avatar" aria-hidden="true">KV</div>
+                <div class="lb-identity">
+                    <div class="lb-name">Kayvan Soltani</div>
+                    <div class="lb-meta">5 rounds · founding-four</div>
+                </div>
+                <div class="lb-score">+5</div>
+                <div class="lb-handicap">11.0</div>
+            </li>
+            <li class="lb-row">
+                <span class="lb-rank">4</span>
+                <div class="lb-avatar" aria-hidden="true">KY</div>
+                <div class="lb-identity">
+                    <div class="lb-name">Kiyan Banakar</div>
+                    <div class="lb-meta">5 rounds · founding-four</div>
+                </div>
+                <div class="lb-score">+2</div>
+                <div class="lb-handicap">9.5</div>
+            </li>
+            <li class="lb-row">
+                <span class="lb-rank">5</span>
+                <div class="lb-avatar" aria-hidden="true">JF</div>
+                <div class="lb-identity">
+                    <div class="lb-name">Jordyn (flossonthefairway)</div>
+                    <div class="lb-meta">3 rounds · the-boss's-wife</div>
+                </div>
+                <div class="lb-score">−1</div>
+                <div class="lb-handicap">22.4</div>
+            </li>
+        </ol>
+    </div>
+</body>
+</html>
