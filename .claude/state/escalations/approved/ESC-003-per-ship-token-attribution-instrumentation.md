@@ -64,6 +64,9 @@ source_artifact_paths:
   - scripts/aggregate-telemetry.py
   - scripts/lib/anthropic-pricing.json
   - .claude/state/telemetry/events/2026-05-14.ndjson
+founder_decision: approve
+founder_decision_options: [a]
+approved_at: 2026-05-14T17:55:52.031878+00:00
 ---
 
 # ESC-003 — Per-ship token attribution instrumentation approach

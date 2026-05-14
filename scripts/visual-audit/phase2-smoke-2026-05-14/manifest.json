@@ -1,0 +1,491 @@
+{
+  "captured_at": "2026-05-14T18:08:16.717Z",
+  "repo_root": "C:\\Users\\Zach\\smoky-mountain-open",
+  "reports_dir": "C:\\Users\\Zach\\smoky-mountain-open\\docs\\reports",
+  "browsers": [
+    "chromium",
+    "firefox"
+  ],
+  "viewports": [
+    {
+      "name": "desktop-wide",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "name": "tablet",
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "name": "mobile",
+      "width": 375,
+      "height": 812
+    }
+  ],
+  "pages": [
+    "dashboard.html",
+    "activity.html",
+    "proposals.html",
+    "discussion-bubbles.html",
+    "main-flows.html",
+    "design-system.html",
+    "token-usage.html",
+    "index.html"
+  ],
+  "files": [
+    {
+      "browser": "chromium",
+      "page": "dashboard.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/dashboard-desktop-wide-chromium.png",
+      "size_bytes": 257251
+    },
+    {
+      "browser": "chromium",
+      "page": "activity.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/activity-desktop-wide-chromium.png",
+      "size_bytes": 71830
+    },
+    {
+      "browser": "chromium",
+      "page": "proposals.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/proposals-desktop-wide-chromium.png",
+      "size_bytes": 164774
+    },
+    {
+      "browser": "chromium",
+      "page": "discussion-bubbles.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/discussion-bubbles-desktop-wide-chromium.png",
+      "size_bytes": 273743
+    },
+    {
+      "browser": "chromium",
+      "page": "main-flows.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/main-flows-desktop-wide-chromium.png",
+      "size_bytes": 470424
+    },
+    {
+      "browser": "chromium",
+      "page": "design-system.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/design-system-desktop-wide-chromium.png",
+      "size_bytes": 562204
+    },
+    {
+      "browser": "chromium",
+      "page": "token-usage.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/token-usage-desktop-wide-chromium.png",
+      "size_bytes": 123504
+    },
+    {
+      "browser": "chromium",
+      "page": "index.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/index-desktop-wide-chromium.png",
+      "size_bytes": 97784
+    },
+    {
+      "browser": "chromium",
+      "page": "dashboard.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/dashboard-desktop-chromium.png",
+      "size_bytes": 245637
+    },
+    {
+      "browser": "chromium",
+      "page": "activity.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/activity-desktop-chromium.png",
+      "size_bytes": 67399
+    },
+    {
+      "browser": "chromium",
+      "page": "proposals.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/proposals-desktop-chromium.png",
+      "size_bytes": 154364
+    },
+    {
+      "browser": "chromium",
+      "page": "discussion-bubbles.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/discussion-bubbles-desktop-chromium.png",
+      "size_bytes": 214976
+    },
+    {
+      "browser": "chromium",
+      "page": "main-flows.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/main-flows-desktop-chromium.png",
+      "size_bytes": 416257
+    },
+    {
+      "browser": "chromium",
+      "page": "design-system.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/design-system-desktop-chromium.png",
+      "size_bytes": 528032
+    },
+    {
+      "browser": "chromium",
+      "page": "token-usage.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/token-usage-desktop-chromium.png",
+      "size_bytes": 117656
+    },
+    {
+      "browser": "chromium",
+      "page": "index.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/index-desktop-chromium.png",
+      "size_bytes": 94693
+    },
+    {
+      "browser": "chromium",
+      "page": "dashboard.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/dashboard-tablet-chromium.png",
+      "size_bytes": 253157
+    },
+    {
+      "browser": "chromium",
+      "page": "activity.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/activity-tablet-chromium.png",
+      "size_bytes": 69475
+    },
+    {
+      "browser": "chromium",
+      "page": "proposals.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/proposals-tablet-chromium.png",
+      "size_bytes": 129570
+    },
+    {
+      "browser": "chromium",
+      "page": "discussion-bubbles.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/discussion-bubbles-tablet-chromium.png",
+      "size_bytes": 326532
+    },
+    {
+      "browser": "chromium",
+      "page": "main-flows.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/main-flows-tablet-chromium.png",
+      "size_bytes": 387465
+    },
+    {
+      "browser": "chromium",
+      "page": "design-system.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/design-system-tablet-chromium.png",
+      "size_bytes": 527676
+    },
+    {
+      "browser": "chromium",
+      "page": "token-usage.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/token-usage-tablet-chromium.png",
+      "size_bytes": 112416
+    },
+    {
+      "browser": "chromium",
+      "page": "index.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/index-tablet-chromium.png",
+      "size_bytes": 96440
+    },
+    {
+      "browser": "chromium",
+      "page": "dashboard.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/dashboard-mobile-chromium.png",
+      "size_bytes": 302912
+    },
+    {
+      "browser": "chromium",
+      "page": "activity.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/activity-mobile-chromium.png",
+      "size_bytes": 69917
+    },
+    {
+      "browser": "chromium",
+      "page": "proposals.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/proposals-mobile-chromium.png",
+      "size_bytes": 117843
+    },
+    {
+      "browser": "chromium",
+      "page": "discussion-bubbles.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/discussion-bubbles-mobile-chromium.png",
+      "size_bytes": 302963
+    },
+    {
+      "browser": "chromium",
+      "page": "main-flows.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/main-flows-mobile-chromium.png",
+      "size_bytes": 316070
+    },
+    {
+      "browser": "chromium",
+      "page": "design-system.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/design-system-mobile-chromium.png",
+      "size_bytes": 552845
+    },
+    {
+      "browser": "chromium",
+      "page": "token-usage.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/token-usage-mobile-chromium.png",
+      "size_bytes": 109377
+    },
+    {
+      "browser": "chromium",
+      "page": "index.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/index-mobile-chromium.png",
+      "size_bytes": 102980
+    },
+    {
+      "browser": "firefox",
+      "page": "dashboard.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/dashboard-desktop-wide-firefox.png",
+      "size_bytes": 358295
+    },
+    {
+      "browser": "firefox",
+      "page": "activity.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/activity-desktop-wide-firefox.png",
+      "size_bytes": 102712
+    },
+    {
+      "browser": "firefox",
+      "page": "proposals.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/proposals-desktop-wide-firefox.png",
+      "size_bytes": 186303
+    },
+    {
+      "browser": "firefox",
+      "page": "discussion-bubbles.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/discussion-bubbles-desktop-wide-firefox.png",
+      "size_bytes": 250430
+    },
+    {
+      "browser": "firefox",
+      "page": "main-flows.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/main-flows-desktop-wide-firefox.png",
+      "size_bytes": 604729
+    },
+    {
+      "browser": "firefox",
+      "page": "design-system.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/design-system-desktop-wide-firefox.png",
+      "size_bytes": 755166
+    },
+    {
+      "browser": "firefox",
+      "page": "token-usage.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/token-usage-desktop-wide-firefox.png",
+      "size_bytes": 170898
+    },
+    {
+      "browser": "firefox",
+      "page": "index.html",
+      "viewport": "desktop-wide",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/index-desktop-wide-firefox.png",
+      "size_bytes": 131862
+    },
+    {
+      "browser": "firefox",
+      "page": "dashboard.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/dashboard-desktop-firefox.png",
+      "size_bytes": 294842
+    },
+    {
+      "browser": "firefox",
+      "page": "activity.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/activity-desktop-firefox.png",
+      "size_bytes": 82323
+    },
+    {
+      "browser": "firefox",
+      "page": "proposals.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/proposals-desktop-firefox.png",
+      "size_bytes": 160106
+    },
+    {
+      "browser": "firefox",
+      "page": "discussion-bubbles.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/discussion-bubbles-desktop-firefox.png",
+      "size_bytes": 185150
+    },
+    {
+      "browser": "firefox",
+      "page": "main-flows.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/main-flows-desktop-firefox.png",
+      "size_bytes": 497129
+    },
+    {
+      "browser": "firefox",
+      "page": "design-system.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/design-system-desktop-firefox.png",
+      "size_bytes": 623288
+    },
+    {
+      "browser": "firefox",
+      "page": "token-usage.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/token-usage-desktop-firefox.png",
+      "size_bytes": 142288
+    },
+    {
+      "browser": "firefox",
+      "page": "index.html",
+      "viewport": "desktop",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/index-desktop-firefox.png",
+      "size_bytes": 114341
+    },
+    {
+      "browser": "firefox",
+      "page": "dashboard.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/dashboard-tablet-firefox.png",
+      "size_bytes": 293563
+    },
+    {
+      "browser": "firefox",
+      "page": "activity.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/activity-tablet-firefox.png",
+      "size_bytes": 77377
+    },
+    {
+      "browser": "firefox",
+      "page": "proposals.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/proposals-tablet-firefox.png",
+      "size_bytes": 135076
+    },
+    {
+      "browser": "firefox",
+      "page": "discussion-bubbles.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/discussion-bubbles-tablet-firefox.png",
+      "size_bytes": 266280
+    },
+    {
+      "browser": "firefox",
+      "page": "main-flows.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/main-flows-tablet-firefox.png",
+      "size_bytes": 468830
+    },
+    {
+      "browser": "firefox",
+      "page": "design-system.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/design-system-tablet-firefox.png",
+      "size_bytes": 569641
+    },
+    {
+      "browser": "firefox",
+      "page": "token-usage.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/token-usage-tablet-firefox.png",
+      "size_bytes": 129482
+    },
+    {
+      "browser": "firefox",
+      "page": "index.html",
+      "viewport": "tablet",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/index-tablet-firefox.png",
+      "size_bytes": 109139
+    },
+    {
+      "browser": "firefox",
+      "page": "dashboard.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/dashboard-mobile-firefox.png",
+      "size_bytes": 319733
+    },
+    {
+      "browser": "firefox",
+      "page": "activity.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/activity-mobile-firefox.png",
+      "size_bytes": 73812
+    },
+    {
+      "browser": "firefox",
+      "page": "proposals.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/proposals-mobile-firefox.png",
+      "size_bytes": 113231
+    },
+    {
+      "browser": "firefox",
+      "page": "discussion-bubbles.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/discussion-bubbles-mobile-firefox.png",
+      "size_bytes": 252599
+    },
+    {
+      "browser": "firefox",
+      "page": "main-flows.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/main-flows-mobile-firefox.png",
+      "size_bytes": 380368
+    },
+    {
+      "browser": "firefox",
+      "page": "design-system.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/design-system-mobile-firefox.png",
+      "size_bytes": 580866
+    },
+    {
+      "browser": "firefox",
+      "page": "token-usage.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/token-usage-mobile-firefox.png",
+      "size_bytes": 112167
+    },
+    {
+      "browser": "firefox",
+      "page": "index.html",
+      "viewport": "mobile",
+      "path": "scripts/visual-audit/phase2-smoke-2026-05-14/index-mobile-firefox.png",
+      "size_bytes": 107691
+    }
+  ]
+}
