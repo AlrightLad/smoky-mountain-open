@@ -297,6 +297,42 @@
   "proposals": {
     "pending": [
       {
+        "id": "PROP-010",
+        "title": "Design-bot role formalization (Playwright MCP mandatory, ship-close gate)",
+        "lane": 1,
+        "lane_label": "Substrate Discipline",
+        "ship_target": "Substrate",
+        "created_at": "2026-05-14T20:30:00Z",
+        "rationale": "Founder directive 2026-05-14 'DESIGN-BOT IS NOT DOING ITS JOB': backend infrastructure is solid; UI/UX is poor. Pattern across many ships: data correct, presentation broken; counts accurate, perception wrong; tests pass, page doesn't feel right; scroll exists, scroll behaves weirdly (the iter-11/iter-13 rail expand/contract bug is the canonical example). The team has a design-bot role per the three-agent model but it's been reviewing checklists, not operating the product. PROP-010 formalizes the role with mandatory Playwright MCP browser-control + a ship-close gate.",
+        "scope": "Five deliverables: (1) Author docs/agents/DESIGN_BOT.md (or addendum exempt from governance-protection) codifying the role + protocol. (2) Update Critic protocol: design-bot approval is a separate ship-close gate alongside Critic. (3) Define the design-review artifact format (.claude/state/<area>/design-review-<timestamp>.md with screenshots + observations + ship recommendation). (4) Wire round-trip [design-review] block that warns when a user-facing surface modification has no recent design-review. (5) Document the design-bot user-journey discipline: scroll everything, click everything, navigate everything, assess holistically \u2014 not just 'does the test pass'.",
+        "estimate": {
+          "cost_tokens": 6000,
+          "duration_minutes": 20,
+          "risk": "low"
+        },
+        "files_affected": [
+          "docs/agents/lessons-learned/DESIGN_BOT_role.md (governance-exempt sister doc, deferred to apply-time)",
+          "tests/round-trip-test.py \u2014 [design-review] block at apply-time",
+          "docs/agents/CRITIC.md or peer addendum \u2014 design-bot gate at apply-time",
+          ".claude/state/lessons-learned/engineering-mindset.md \u2014 design-bot vs Critic separation addendum",
+          ".claude/state/proposals/pending/PROP-010-design-bot-role-formalization.md (this file)"
+        ],
+        "fallback_plan": "Plan A: ship the role-formalization doc + Critic gate + round-trip block as one bundle. Plan B: ship the doc only, defer Critic/round-trip wiring to follow-on. Plan C: keep the lessons-learned doc as the authoritative source. Abandon: 'design-bot role' itself isn't a workable abstraction \u2014 unlikely since the three-agent model already documents it; this just makes it operative.",
+        "rollback_strategy": "git revert; the role formalization is an additive practice. Without it, the team continues current (failing) approach. With it, design-bot blocks ship-close on UX issues Critic alone can't catch.",
+        "round_trip_coverage": "New [design-review] block at apply-time: when a user-facing surface mtime > most recent .claude/state/<area>/design-review-*.md mtime, round-trip warns (similar to user-context-gate). Failures don't auto-block (heavyweight check) but Critic protocol gate at ship-close is hard.",
+        "depends_on": [
+          "PROP-006",
+          "PROP-007",
+          "PROP-008",
+          "PROP-009"
+        ],
+        "authored_by": "claude-code",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": 2500,
+        "status": "pending",
+        "operating_status": "Design-bot protocol operative immediately per Founder directive. This proposal codifies it for the next agent loop."
+      },
+      {
         "id": "PROP-009",
         "title": "Click-through user-journey gate (operation, not measurement)",
         "lane": 1,
@@ -713,13 +749,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 4,
+    "pending": 5,
     "approved": 1,
     "deferred": 0,
     "shipped_total": 4,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T20:14:17.481592+00:00",
+  "as_of": "2026-05-14T20:30:28.802899+00:00",
   "schema_version": 2,
   "archive_display_cap": 50
 }

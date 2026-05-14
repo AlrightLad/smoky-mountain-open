@@ -352,9 +352,9 @@
   "weekly_tokens": 7302000,
   "weekly_cost": 175.25,
   "ships_this_week": 24,
-  "proposals_pending": 4,
+  "proposals_pending": 5,
   "proposals_counts": {
-    "pending": 4,
+    "pending": 5,
     "approved": 1,
     "deferred": 0,
     "shipped": 4,
@@ -521,6 +521,13 @@
       "scenario": "team-commit",
       "from": "Zach Boogher",
       "to": "main",
+      "created_at": "2026-05-14T16:16:09-04:00",
+      "subject": "iter 12: perceptual color fix + click-through user-journey audit (PROP-009)"
+    },
+    {
+      "scenario": "team-commit",
+      "from": "Zach Boogher",
+      "to": "main",
       "created_at": "2026-05-14T15:53:38-04:00",
       "subject": "ESC-003 applied: per-ship token attribution (Approach A)"
     },
@@ -579,13 +586,6 @@
       "to": "founder",
       "created_at": "2026-05-14T14:17:50-04:00",
       "subject": "W1.S1.b: dispatch packet to Agent 2 per Founder directive"
-    },
-    {
-      "scenario": "cron-auto-commit",
-      "from": "cron",
-      "to": "PARBAUGHS Cron",
-      "created_at": "2026-05-14T14:15:49-04:00",
-      "subject": "cron(routine): auto-commit telemetry output before watcher preflight (2026-05-14"
     }
   ],
   "recent_ships": [
@@ -713,13 +713,13 @@
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "_aggregate_counts": {
-    "events_total": 786,
+    "events_total": 797,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
     "handoffs_total": 1,
     "bubbles_total": 7,
-    "proposals_pending": 4,
+    "proposals_pending": 5,
     "proposals_approved": 1,
     "pause_durations_sec": [
       10,
@@ -728,8 +728,8 @@
   },
   "quota_status": {
     "state": "empty",
-    "as_of": "2026-05-14T20:12:13.8568351Z",
-    "age_seconds": 122,
+    "as_of": "2026-05-14T20:27:13.8758824Z",
+    "age_seconds": 194,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -740,22 +740,22 @@
     "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
   },
   "founder_queue": {
-    "as_of": "2026-05-14T20:14:17.856243+00:00",
+    "as_of": "2026-05-14T20:30:29.169337+00:00",
     "last_founder_visit": null,
     "governance_gates": {
       "amendments_pending": 0,
       "amendments_link": "amendments.html",
       "bubbles_flagged": 0,
       "bubbles_link": "discussion-bubbles.html",
-      "proposals_pending": 4,
+      "proposals_pending": 5,
       "proposals_link": "proposals.html",
       "open_escalations": []
     },
     "system_health": {
       "crons": {
         "downloads-watcher": {
-          "last_run": "2026-05-14T20-10-49Z",
-          "last_log": "2026-05-14T20-10-49Z-downloads-watcher.log"
+          "last_run": "2026-05-14T20-25-49Z",
+          "last_log": "2026-05-14T20-25-49Z-downloads-watcher.log"
         },
         "maintenance": {
           "last_run": "2026-05-14T06-55-01Z",
@@ -770,8 +770,8 @@
           "last_log": "2026-05-14T20-00-02Z-proposal-readiness.log"
         },
         "sidecar": {
-          "last_run": "2026-05-14T20-12-13Z",
-          "last_log": "2026-05-14T20-12-13Z-sidecar.log"
+          "last_run": "2026-05-14T20-27-13Z",
+          "last_log": "2026-05-14T20-27-13Z-sidecar.log"
         }
       },
       "cron_install_status": [
@@ -780,10 +780,10 @@
           "task_name": "PARBAUGHS-Downloads-Watcher",
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-downloads-watcher.ps1",
-          "last_fire_iso": "2026-05-14T20:10:49.728086+00:00",
-          "age_minutes": 3.5,
+          "last_fire_iso": "2026-05-14T20:25:49.716090+00:00",
+          "age_minutes": 4.7,
           "status": "firing",
-          "label": "firing \u00b7 last fire 3.5min ago",
+          "label": "firing \u00b7 last fire 4.7min ago",
           "os_state": "Ready",
           "is_installed": true
         },
@@ -793,9 +793,9 @@
           "cadence_minutes": 1440,
           "install_script": "scripts/cron/install-maintenance.ps1",
           "last_fire_iso": "2026-05-14T06:55:19.949406+00:00",
-          "age_minutes": 799.0,
+          "age_minutes": 815.2,
           "status": "firing",
-          "label": "firing \u00b7 last fire 799.0min ago",
+          "label": "firing \u00b7 last fire 815.2min ago",
           "os_state": "Ready",
           "is_installed": true
         },
@@ -817,9 +817,9 @@
           "cadence_minutes": 120,
           "install_script": "scripts/cron/install-proposal-readiness-scanner.ps1",
           "last_fire_iso": "2026-05-14T20:00:02.583490+00:00",
-          "age_minutes": 14.3,
+          "age_minutes": 30.5,
           "status": "firing",
-          "label": "firing \u00b7 last fire 14.3min ago",
+          "label": "firing \u00b7 last fire 30.5min ago",
           "os_state": "Ready",
           "is_installed": true
         },
@@ -828,10 +828,10 @@
           "task_name": "PARBAUGHS-Token-Sidecar",
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-sidecar.ps1",
-          "last_fire_iso": "2026-05-14T20:12:13.902466+00:00",
-          "age_minutes": 2.1,
+          "last_fire_iso": "2026-05-14T20:27:13.920379+00:00",
+          "age_minutes": 3.3,
           "status": "firing",
-          "label": "firing \u00b7 last fire 2.1min ago",
+          "label": "firing \u00b7 last fire 3.3min ago",
           "os_state": "Ready",
           "is_installed": true
         }
@@ -840,16 +840,16 @@
         "ts": "2026-05-14 18:15 UTC",
         "ts_iso": "2026-05-14T18:15:58.4395875Z",
         "status": "STALE",
-        "age_minutes": 118.4,
+        "age_minutes": 134.5,
         "source": "heartbeat"
       },
       "working_tree": {
         "state": "dirty-cycling",
-        "label": "dirty (18 files) \u00b7 watcher cycling",
+        "label": "dirty (21 files) \u00b7 watcher cycling",
         "color": "var(--pb-warning)",
-        "dirty_count": 18,
-        "watcher_last_fire": "2026-05-14T20:10:49.728086+00:00",
-        "watcher_minutes_ago": 3.5
+        "dirty_count": 21,
+        "watcher_last_fire": "2026-05-14T20:25:49.716090+00:00",
+        "watcher_minutes_ago": 4.7
       },
       "halts": [],
       "round_trip_last_pass": "2026-05-14T18:15:58.4395875Z"
@@ -899,6 +899,11 @@
           "id": "PROP-009",
           "title": "Click-through user-journey gate (operation, not measurement)",
           "ts": "2026-05-14T20:11:00Z"
+        },
+        {
+          "id": "PROP-010",
+          "title": "Design-bot role formalization (Playwright MCP mandatory, ship-close gate)",
+          "ts": "2026-05-14T20:30:00Z"
         }
       ]
     },

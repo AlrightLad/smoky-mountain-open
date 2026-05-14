@@ -409,6 +409,89 @@ work that succeeds in actual user use. Tests are a proxy. When the
 proxy diverges from reality, fix the proxy AND fix the underlying
 gap — never just the proxy.
 
+---
+
+## Addendum (iter 13, 2026-05-14): design-bot ≠ Critic; jitter ≠ measurement-failure
+
+Iter 12 shipped Recent 7 Days perceptual color fix. Iter 13 caught
+a different gap: main-flows.html rail expanding/contracting based
+on scroll position. Founder direction: "scroll exists, scroll
+behaves weirdly".
+
+The bug origin was iter-11's own fix: I bound `adjustRailHeight` to
+the scroll event so the rail could USE extra space when sticky-pinned.
+That CAUSED the visible jitter — every scroll tick changed rail.top
+(sticky positioning), which changed max-height, which visibly resized
+the rail.
+
+### Observation 8 — Jitter is felt, not measured
+
+A bug that's "list expands/contracts as you scroll" cannot be caught
+by:
+- Sentinel: "list has correct max-height" (it does — different values
+  at different scroll positions)
+- Measurement: "rail.style.maxHeight is set" (it is — recomputing
+  every scroll tick)
+- Click-through: "F62 is visible after wheel scroll" (it is — at the
+  scroll position where the rail happened to be tall enough)
+
+The bug is FELT only when watching the rail respond to scrolling.
+Automated tests measure properties; designers feel behavior. Both
+are necessary; neither alone is sufficient.
+
+### Fix 14 — Stable rail max-height (iter 13 fix)
+
+Removed the scroll listener. `adjustRailHeight` now runs on load +
+resize only. Rail max-height is computed from the rail's natural
+absolute Y (window.scrollY + rect.top) so it's invariant across
+scroll positions.
+
+Verification via `scripts/visual-audit/verify-rail-stability.mjs`:
+1 distinct rail.style.maxHeight across 5 scroll positions. Stable.
+
+### Fix 15 — Design-bot role formalized (PROP-010)
+
+Design-bot is now a distinct ship-close gate, peer to Critic:
+- Critic asks: "Is the data accurate? Are tests green?"
+- Design-bot asks: "Does it feel intentional? Does it jitter?"
+
+Both must approve for user-facing ship-close. Design-bot operates
+the product via Playwright MCP (channel:chrome real browser), not
+via measurement, and authors `design-review-<ts>.md` with explicit
+approve/request/block recommendation.
+
+The first design-review artifact was authored this ship:
+`.claude/state/main-flows-v2/design-review-2026-05-14-iter13.md`.
+
+### Fix 16 — Critic vocabulary update (third extension)
+
+Acceptable ship-close evidence for user-facing surfaces (post-PROP-010):
+1. Round-trip + scroll-reachability (agent-context smoke)
+2. Side-by-side comparison + checklist (visual reference match)
+3. User-context capture (channel:chrome real-Chrome rendering)
+4. Click-through user-journey transcript (PROP-009)
+5. **Design-bot design-review artifact with explicit approval (PROP-010)**
+
+All five required. Any one missing = ship blocks.
+
+### Forward implications
+
+The verification stack has grown to five layers over 13 iterations
+(starting at one — structural sentinels). Each layer was added in
+response to a specific kind of bug the prior layers couldn't catch:
+
+| Layer | Iteration added | Catches |
+|---|---|---|
+| Round-trip sentinels | Pre-session | Structural integrity |
+| Side-by-side + checklist | Iter 8 | Visual fidelity to reference |
+| User-context capture | Iter 9 (PROP-007) | Real-Chrome rendering |
+| Click-through user-journey | Iter 12 (PROP-009) | Behavior + perceptual UX |
+| Design-bot review | Iter 13 (PROP-010) | "Doesn't feel right" judgment |
+
+The Wave 1 ships landing post-PROP-010 inherit this full stack
+without rediscovering it. The 12-iteration pattern should not recur
+for any surface the stack covers.
+
 Acceptable evidence for user-facing surfaces (post-PROP-007):
 1. Round-trip + scroll-reachability (agent-context smoke) — necessary
 2. Side-by-side comparison + checklist (visual reference match) — necessary
