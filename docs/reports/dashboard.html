@@ -423,10 +423,9 @@
                  side-by-side at >=960px viewport. SVG with theme tokens — no raw
                  hex; theme-aware via currentColor / var(--*) patterns. -->
             <div id="recent-7days-charts" class="recent-7days-charts"><!-- populated by JS --></div>
-            <details style="margin-top: var(--space-3);">
-                <summary style="cursor: pointer; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--pb-chalk-400); text-transform: uppercase; letter-spacing: 0.06em;">Show as data table</summary>
-                <div class="pb-table-wrap" style="margin-top: var(--space-2);">
-                    <table class="pb-table" id="recent-7-days-table">
+            <!-- Data table retained for accessibility / scripted readers but hidden visually (graph is the primary surface) -->
+            <div class="pb-table-wrap" style="display: none;" aria-hidden="false">
+                <table class="pb-table" id="recent-7-days-table">
                         <thead>
                             <tr>
                                 <th class="is-sticky-col">Date</th>
@@ -439,10 +438,9 @@
                                 <th class="is-num">Bubbles</th>
                             </tr>
                         </thead>
-                        <tbody><!-- populated by JS --></tbody>
-                    </table>
-                </div>
-            </details>
+                    <tbody><!-- populated by JS --></tbody>
+                </table>
+            </div>
         </section>
 
         <section class="pb-section">
@@ -660,6 +658,20 @@
   },
   "recent_handoffs": [
     {
+      "scenario": "cron-auto-commit",
+      "from": "cron",
+      "to": "PARBAUGHS Cron",
+      "created_at": "2026-05-14T13:45:49-04:00",
+      "subject": "cron(routine): auto-commit telemetry output before watcher preflight (2026-05-14"
+    },
+    {
+      "scenario": "team-commit",
+      "from": "Zach Boogher",
+      "to": "main",
+      "created_at": "2026-05-14T13:44:33-04:00",
+      "subject": "main-flows R10 + R11: display font audit clean + caveats banner restyle (Janowia"
+    },
+    {
       "scenario": "team-commit",
       "from": "Zach Boogher",
       "to": "main",
@@ -714,20 +726,6 @@
       "to": "main",
       "created_at": "2026-05-14T13:30:20-04:00",
       "subject": "Dashboard 7-day table \u2014 ships/handoffs/bubbles columns wired + honest \"\u2014\" tokens"
-    },
-    {
-      "scenario": "cron-auto-commit",
-      "from": "cron",
-      "to": "PARBAUGHS Cron",
-      "created_at": "2026-05-14T13:25:54-04:00",
-      "subject": "Apply governance amendments via amendments.html watcher"
-    },
-    {
-      "scenario": "cron-auto-commit",
-      "from": "cron",
-      "to": "PARBAUGHS Cron",
-      "created_at": "2026-05-14T13:25:49-04:00",
-      "subject": "cron(routine): auto-commit telemetry output before watcher preflight (2026-05-14"
     }
   ],
   "recent_ships": [
@@ -855,7 +853,7 @@
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "_aggregate_counts": {
-    "events_total": 659,
+    "events_total": 665,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
@@ -871,7 +869,7 @@
   "quota_status": {
     "state": "empty",
     "as_of": "2026-05-14T15:24:53.5950065Z",
-    "age_seconds": 8347,
+    "age_seconds": 8655,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -882,7 +880,7 @@
     "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
   },
   "founder_queue": {
-    "as_of": "2026-05-14T17:44:01.209666+00:00",
+    "as_of": "2026-05-14T17:49:09.766719+00:00",
     "last_founder_visit": null,
     "governance_gates": {
       "amendments_pending": 0,
@@ -930,7 +928,7 @@
           "authored_by": "claude-code",
           "link": "escalations.html#ESC-003",
           "source_file": ".claude/state/escalations/pending/ESC-003-per-ship-token-attribution-instrumentation.md",
-          "age_days": 0.0,
+          "age_days": 0.01,
           "stale": false
         }
       ]
@@ -938,8 +936,8 @@
     "system_health": {
       "crons": {
         "downloads-watcher": {
-          "last_run": "2026-05-14T17-40-49Z",
-          "last_log": "2026-05-14T17-40-49Z-downloads-watcher.log"
+          "last_run": "2026-05-14T17-45-49Z",
+          "last_log": "2026-05-14T17-45-49Z-downloads-watcher.log"
         },
         "maintenance": {
           "last_run": "2026-05-14T06-55-01Z",
@@ -964,10 +962,10 @@
           "task_name": "PARBAUGHS-Downloads-Watcher",
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-downloads-watcher.ps1",
-          "last_fire_iso": "2026-05-14T17:41:05.927386+00:00",
-          "age_minutes": 2.9,
+          "last_fire_iso": "2026-05-14T17:45:51.934212+00:00",
+          "age_minutes": 3.3,
           "status": "firing",
-          "label": "firing \u00b7 last fire 2.9min ago"
+          "label": "firing \u00b7 last fire 3.3min ago"
         },
         {
           "name": "maintenance",
@@ -975,9 +973,9 @@
           "cadence_minutes": 1440,
           "install_script": "scripts/cron/install-maintenance.ps1",
           "last_fire_iso": "2026-05-14T06:55:19.949406+00:00",
-          "age_minutes": 648.7,
+          "age_minutes": 653.8,
           "status": "firing",
-          "label": "firing \u00b7 last fire 648.7min ago"
+          "label": "firing \u00b7 last fire 653.8min ago"
         },
         {
           "name": "overnight-triage",
@@ -995,9 +993,9 @@
           "cadence_minutes": 120,
           "install_script": "scripts/cron/install-proposal-readiness-scanner.ps1",
           "last_fire_iso": "2026-05-14T05:04:49.834159+00:00",
-          "age_minutes": 759.2,
+          "age_minutes": 764.3,
           "status": "stale",
-          "label": "stale \u00b7 last fire 759.2min ago (cadence 120min)"
+          "label": "stale \u00b7 last fire 764.3min ago (cadence 120min)"
         },
         {
           "name": "token-sidecar",
@@ -1005,28 +1003,28 @@
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-sidecar.ps1",
           "last_fire_iso": "2026-05-14T15:24:53.642316+00:00",
-          "age_minutes": 139.1,
+          "age_minutes": 144.3,
           "status": "stale",
-          "label": "stale \u00b7 last fire 139.1min ago (cadence 5min)"
+          "label": "stale \u00b7 last fire 144.3min ago (cadence 5min)"
         }
       ],
       "last_regen_all": {
-        "ts": "2026-05-14 17:43 UTC",
-        "ts_iso": "2026-05-14T17:43:34.7519367Z",
+        "ts": "2026-05-14 17:48 UTC",
+        "ts_iso": "2026-05-14T17:48:14.0240686Z",
         "status": "PASS",
-        "age_minutes": 0.4,
+        "age_minutes": 0.9,
         "source": "heartbeat"
       },
       "working_tree": {
         "state": "dirty-cycling",
-        "label": "dirty (10 files) \u00b7 watcher cycling",
+        "label": "dirty (16 files) \u00b7 watcher cycling",
         "color": "var(--pb-warning)",
-        "dirty_count": 10,
-        "watcher_last_fire": "2026-05-14T17:41:05.927386+00:00",
-        "watcher_minutes_ago": 2.9
+        "dirty_count": 16,
+        "watcher_last_fire": "2026-05-14T17:45:51.934212+00:00",
+        "watcher_minutes_ago": 3.3
       },
       "halts": [],
-      "round_trip_last_pass": "2026-05-14T17:43:34.7519367Z"
+      "round_trip_last_pass": "2026-05-14T17:48:14.0240686Z"
     },
     "activity_since_last_visit": {
       "_note": "Counts since last_founder_visit (null = since-forever)",
@@ -1507,10 +1505,10 @@
                         + '  ' + missing.length + ' cron task' + (missing.length > 1 ? 's' : '') + ' need Founder action</div>'
                         + rows
                         + (installCmds.length > 0
-                            ? '<details style="margin-top: var(--space-2);"><summary style="cursor: pointer; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--accent-brass);">Show consolidated install command (admin PowerShell)</summary>'
-                              + '<pre style="margin-top: var(--space-2); padding: var(--space-2); background: var(--pb-billiard-green-700); border-radius: var(--radius-sm); font-size: var(--text-xs); color: var(--text-primary); overflow-x: auto;"># Run as Administrator:\ncd ' + window.location.origin.replace(/^file:\/\/\//, '').split('/docs/')[0].replace(/%20/g, ' ') + '\n'
-                              + installCmds.map(function (s) { return '.\\' + s.replace(/\//g, '\\'); }).join('\n')
-                              + '</pre></details>'
+                            ? '<details style="margin-top: var(--space-2);" open><summary style="cursor: pointer; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--accent-brass);">Install command (admin PowerShell - single entry point)</summary>'
+                              + '<pre style="margin-top: var(--space-2); padding: var(--space-2); background: var(--pb-billiard-green-700); border-radius: var(--radius-sm); font-size: var(--text-xs); color: var(--text-primary); overflow-x: auto;"># Open PowerShell as Administrator (right-click PowerShell -> Run as Administrator), then run:\nSet-Location \'C:\\Users\\Zach\\smoky-mountain-open\'\n.\\scripts\\cron\\install-all.ps1</pre>'
+                              + '<p style="margin-top: var(--space-2); font-size: var(--text-xs); color: var(--text-secondary);">install-all.ps1 is idempotent - checks each PARBAUGHS-* task, installs missing, skips already-installed, prints summary table.</p>'
+                              + '</details>'
                             : '')
                         + '</div>';
                     cisEl.innerHTML = banner;

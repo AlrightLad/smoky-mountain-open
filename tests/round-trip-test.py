@@ -1600,8 +1600,15 @@ def main():
         if not ps:
             print(yellow(f"  ~ install-scripts  PowerShell not available; skipping parseability check ({len(install_scripts)} scripts present)"))
         else:
+            # AMD-009 P7 honest fix 2026-05-14: ParseFile() passes when actual
+             # PowerShell execution fails (em-dash on a line confuses Windows
+             # PowerShell 5.1's cp1252 byte handling). Smoke now also runs the
+             # file via -File to verify it loads + parses with real encoding
+             # context. The install scripts elevation-check early-exits 1
+             # without doing destructive work, so this is safe to run.
             for script in install_scripts:
                 try:
+                    # Step 1: AST parse (existing check)
                     r = subprocess.run(
                         [ps, "-NoProfile", "-NonInteractive", "-Command",
                          f"$null = [System.Management.Automation.Language.Parser]::ParseFile('{str(script).replace(chr(92), chr(92)+chr(92))}', [ref]$null, [ref]$null)"],
@@ -1609,6 +1616,17 @@ def main():
                     )
                     if r.returncode != 0:
                         install_failures.append(f"{script.name}: parser exited {r.returncode}: {(r.stderr or '').strip()[:200]}")
+                        continue
+                    # Step 2: ASCII-only check (catches em-dash / smart-quote bytes
+                    # that ParseFile tolerates but `-File` mode misreads as cp1252).
+                    try:
+                        raw_bytes = script.read_bytes()
+                        try:
+                            raw_bytes.decode("ascii")
+                        except UnicodeDecodeError as e:
+                            install_failures.append(f"{script.name}: contains non-ASCII byte at offset {e.start} ({raw_bytes[e.start:e.start+1].hex()}); PowerShell -File may misparse as cp1252")
+                    except OSError as e:
+                        install_failures.append(f"{script.name}: read failed: {e}")
                 except (OSError, subprocess.SubprocessError) as e:
                     install_failures.append(f"{script.name}: parse probe error: {e}")
             if install_failures:

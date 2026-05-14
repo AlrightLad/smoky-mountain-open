@@ -4,7 +4,7 @@
     Single-command installer for all PARBAUGHS scheduled tasks.
 
 .DESCRIPTION
-    Per Founder directive 2026-05-14 "INSTALL FLOW IS BROKEN — Team owns
+    Per Founder directive 2026-05-14 "INSTALL FLOW IS BROKEN - Team owns
     this, not Founder". Replaces the dashboard's broken `cd file://`
     consolidated install with a single owner-team-authored entry point.
 
@@ -14,7 +14,7 @@
       - If present: report and skip (idempotent)
       - If install fails: surface error clearly + continue
 
-    Repo root resolved via $PSScriptRoot — no hardcoded paths; works from
+    Repo root resolved via $PSScriptRoot - no hardcoded paths; works from
     any clone location.
 
     End-of-run summary table: task / status / action.
@@ -94,7 +94,7 @@ foreach ($t in $tasks) {
                 Write-Host "  installed OK" -ForegroundColor Green
                 $summary += [PSCustomObject]@{ Task = $name; Status = "newly-installed"; Action = "registered"; Detail = "task now present" }
             } else {
-                Write-Host "  install script exited 0 but task not visible — investigate" -ForegroundColor Red
+                Write-Host "  install script exited 0 but task not visible - investigate" -ForegroundColor Red
                 $summary += [PSCustomObject]@{ Task = $name; Status = "install-uncertain"; Action = "ran"; Detail = "exit 0 but no task" }
             }
         } else {
@@ -122,6 +122,6 @@ if ($failed) {
     Write-Host "[install-all] DONE with $($failed.Count) failure(s); $installedCount newly installed; $alreadyCount already installed" -ForegroundColor Yellow
     exit 1
 } else {
-    Write-Host "[install-all] DONE — $installedCount newly installed; $alreadyCount already installed; 0 failures" -ForegroundColor Green
+    Write-Host "[install-all] DONE - $installedCount newly installed; $alreadyCount already installed; 0 failures" -ForegroundColor Green
     exit 0
 }
