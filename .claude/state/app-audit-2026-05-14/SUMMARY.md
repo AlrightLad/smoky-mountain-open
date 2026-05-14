@@ -42,8 +42,8 @@ NOT yet covered by this scaffolding:
 
 | # | Finding | Source | Status |
 |---|---|---|---|
-| H1 | All-time records best rounds — needs split into 9-hole vs 18-hole columns | CLAUDE.md Known Bugs #4 | **Data layer FIXED iter 16 (commit 7c3b5ba — getPlayerBest9 added)**; UI consumer updates deferred (members.js:260, trophyroom.js:48 still display 18-only) |
-| H2 | Shareable scorecards for 9-hole rounds — currently renders all 18 cells with empty back-9 | CLAUDE.md Known Bugs #5 | **Likely ALREADY FIXED** — buildScorecardHTML (src/core/router.js:1109+) computes `is9only` from front9count/back9count and only renders nines where score data exists. Needs verification via live 9-hole round share-card capture. CLAUDE.md Known Bug entry may be stale. |
+| H1 | All-time records best rounds — needs split into 9-hole vs 18-hole columns | CLAUDE.md Known Bugs #4 | **FULLY CLOSED iter 16**: data layer (commit 7c3b5ba `getPlayerBest9`) + UI consumers in members.js (commit 94e4340) + trophyroom.js (commit 66a6e19). Records page already inlined pre-iter-16. |
+| H2 | Shareable scorecards for 9-hole rounds — currently renders all 18 cells with empty back-9 | CLAUDE.md Known Bugs #5 | **STALE bug entry — ALREADY FIXED**: buildScorecardHTML (src/core/router.js:1109-1190) computes `front9count` + `back9count` separately; renders only the nines with data. Lines 1116-1120 detect `is9only`; lines 1187-1188 only emit nineHTML where count > 0. Verified via code trace. Founder live-test could confirm via 9-hole round share-card preview. |
 | H3 | Parbaugh Round joined players not appearing on scorecard (host-only display) | CLAUDE.md Known Bugs #9 | Diagnosed in code scan: live `renderLiveScorecard` (src/pages/syncround.js:128-205) DOES render all `playerIds` — multi-player display works in live view. The "host-only" filter must be on the EXPORT/SHARE scorecard path or the completed-round detail view. Needs investigation. |
 
 ### MEDIUM (4)
@@ -60,7 +60,7 @@ NOT yet covered by this scaffolding:
 | # | Finding | Source | Status |
 |---|---|---|---|
 | L1 | Sequoyah National finalization bar tap — missing iOS tap CSS properties | CLAUDE.md Known Bugs #3 | Diagnosed; not yet fixed |
-| L2 | Scorecard logo — currently base64; should reference `logo.jpg` from repo | CLAUDE.md Known Bugs #8 | Diagnosed; not yet fixed |
+| L2 | Scorecard logo — currently base64; should reference `logo.jpg` from repo | CLAUDE.md Known Bugs #8 | **STALE bug entry — ALREADY FIXED**: index.html:66 + 98 use `src="Logo.jpg"` (file reference). No base64 in scorecard logo path. The `data:image/jpeg;base64` in src/core/firebase.js:46 is `COURSE_DEFAULT_IMG` (default placeholder for missing course photos — different from scorecard logo). |
 
 ### POLISH (4, from iter 12-15 design-reviews)
 
