@@ -1,11 +1,11 @@
 {
-  "as_of": "2026-05-14T17:54:50.289327+00:00",
+  "as_of": "2026-05-14T21:03:45.244080+00:00",
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "quota_status": {
     "state": "empty",
-    "as_of": "2026-05-14T15:24:53.5950065Z",
-    "age_seconds": 8996,
+    "as_of": "2026-05-14T21:02:13.0367148Z",
+    "age_seconds": 92,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -16,8 +16,8 @@
     "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
   },
   "weekly_tokens": 7302000,
-  "weekly_cost": 0.0,
-  "ships_this_week": 23,
+  "weekly_cost": 175.25,
+  "ships_this_week": 24,
   "ships_trend_7d": {
     "labels": [
       "Fri",
@@ -35,7 +35,7 @@
       0,
       0,
       4,
-      19
+      20
     ]
   },
   "handoffs_trend_7d": {
@@ -165,6 +165,18 @@
   },
   "recent_ships": [
     {
+      "id": "ESC-003",
+      "title": "Per-ship token attribution \u2014 going-forward instrumentation approach",
+      "kind": "escalation",
+      "status": "applied",
+      "completed_at": "2026-05-14T19:51:56.843644+00:00",
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
+      "source_path": ".claude/state/escalations/applied/ESC-003-per-ship-token-attribution-instrumentation.md"
+    },
+    {
       "id": "AMD-016",
       "title": "Infrastructure must answer its operational question",
       "kind": "amendment",
@@ -271,28 +283,16 @@
       "tokens_events_matched": 0,
       "cost_usd": null,
       "source_path": ".claude/state/amendments/applied/AMD-011-auto-execute-approved-proposals.md"
-    },
-    {
-      "id": "AMD-010",
-      "title": "MAIN_FLOWS v2 \u2014 62-flow inventory + Taxonomy E + filterable rail",
-      "kind": "amendment",
-      "status": "applied",
-      "completed_at": "2026-05-14T03:35:00Z",
-      "tokens": null,
-      "tokens_source": "unknown",
-      "tokens_events_matched": 0,
-      "cost_usd": null,
-      "source_path": ".claude/state/amendments/applied/AMD-010-MAIN_FLOWS_v2.md"
     }
   ],
   "_aggregate_counts": {
-    "events_total": 671,
+    "events_total": 824,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
     "handoffs_total": 1,
     "bubbles_total": 7,
-    "proposals_pending": 0,
+    "proposals_pending": 7,
     "proposals_approved": 1,
     "pause_durations_sec": [
       10,

@@ -1,0 +1,43 @@
+{
+  "captured_at": "2026-05-14T19:40:30.164Z",
+  "page": "main-flows.html",
+  "launch_mode": "playwright-chromium-headless",
+  "browser_version": "148.0.7778.96",
+  "os": {
+    "platform": "win32",
+    "release": "10.0.26200",
+    "hostname": "Zachs-Computer"
+  },
+  "viewport": {
+    "width": 1920,
+    "height": 1080,
+    "devicePixelRatio": 1,
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/148.0.7778.96 Safari/537.36"
+  },
+  "captures": [
+    {
+      "name": "00-page-top",
+      "file": "00-page-top.png",
+      "size_bytes": 217998,
+      "sha256": "0ab82c94f6e9ecac8151ccf8e89853d18832480038583dc873f10ba5c91bda56"
+    },
+    {
+      "name": "01-rail-mid-scroll",
+      "file": "01-rail-mid-scroll.png",
+      "size_bytes": 217487,
+      "sha256": "07031e95c5b982aa3c9b199913d1b0ce19aaaed491131c9b2217c048071e110d"
+    },
+    {
+      "name": "02-rail-bottom",
+      "file": "02-rail-bottom.png",
+      "size_bytes": 219620,
+      "sha256": "ec9bc621e6a5edcaebddb883c42f31124257a317fad11d84e28c7c6e97e2fae8"
+    },
+    {
+      "name": "03-full-page-bottom",
+      "file": "03-full-page-bottom.png",
+      "size_bytes": 236739,
+      "sha256": "714076794d967210ca05c2bc0d3d2bbe98e3004f491b9b0566326cfc00c9d482"
+    }
+  ]
+}
