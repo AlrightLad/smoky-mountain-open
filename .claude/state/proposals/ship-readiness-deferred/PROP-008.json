@@ -1,8 +1,8 @@
 {
-  "proposal_id": "PROP-005",
-  "deferred_at": "2026-05-14T22:00:02.640508+00:00",
+  "proposal_id": "PROP-008",
+  "deferred_at": "2026-05-14T22:00:02.644517+00:00",
   "criteria_failed": [
-    "frontmatter_sparse: required field groups missing ['token_cost'] (P7 declares-everything-explicitly)",
+    "cross_cutting_dependency: depends on unshipped/unapplied ['PROP-007']",
     "token_cost_methodology_absent: no token_cost_estimate/cost_tokens field with documented range/methodology"
   ],
   "resolution_path": "team or Founder authors missing fields; scanner re-evaluates next cycle",
