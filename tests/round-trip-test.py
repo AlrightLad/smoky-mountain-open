@@ -99,7 +99,7 @@ def seed_state(state_root: Path):
             {"id": "W1.I2", "title": "Smoke automation",      "status": "complete",    "tokens":   320_000, "cost": 2.48},
         ],
     }
-    (aggregates / "current-snapshot.json").write_text(json.dumps(snapshot, indent=2))
+    (aggregates / "current-snapshot.json").write_text(json.dumps(snapshot, indent=2), encoding="utf-8")
 
     # --- Handoffs (5 entries across 4 scenarios) ---
     handoffs_root = state_root / "handoffs"
@@ -174,7 +174,7 @@ def seed_state(state_root: Path):
         fpath = handoffs_root / folder / filename
         fpath.parent.mkdir(parents=True, exist_ok=True)
         body = "---\n" + json.dumps(payload, indent=2) + "\n---\n"
-        fpath.write_text(body)
+        fpath.write_text(body, encoding="utf-8")
 
     # --- Discussion bubbles ---
     bubbles = state_root / "discussion-bubbles"
@@ -247,7 +247,7 @@ def seed_state(state_root: Path):
     ]
     for filename, payload in bubble_specs:
         body = "---\n" + json.dumps(payload, indent=2) + "\n---\n"
-        (bubbles / filename).write_text(body)
+        (bubbles / filename).write_text(body, encoding="utf-8")
 
     # --- Proposals (pending) ---
     proposals = state_root / "proposals" / "pending"
@@ -276,7 +276,7 @@ def seed_state(state_root: Path):
     ]
     for filename, payload in proposal_specs:
         body = "---\n" + json.dumps(payload, indent=2) + "\n---\n\n## Body\n\nDetails would live here.\n"
-        (proposals / filename).write_text(body)
+        (proposals / filename).write_text(body, encoding="utf-8")
 
     print(green(f"  ✓ Seeded {len(handoff_files)} handoffs, {len(bubble_specs)} discussion bubbles, {len(proposal_specs)} proposals"))
 
@@ -294,7 +294,7 @@ def read_handoffs(state_root: Path):
             print(red(f"  ✗ Unknown handoff folder (no scenario mapping): {folder_path.name}"))
             sys.exit(2)
         for f in sorted(folder_path.rglob("*.md")):
-            body = f.read_text()
+            body = f.read_text(encoding="utf-8")
             m = re.search(r"^---\n(.*?)\n---", body, re.DOTALL)
             if not m:
                 continue
@@ -310,7 +310,7 @@ def read_bubbles(state_root: Path):
     for f in sorted((state_root / "discussion-bubbles").iterdir()):
         if not f.name.endswith(".md"):
             continue
-        body = f.read_text()
+        body = f.read_text(encoding="utf-8")
         m = re.search(r"^---\n(.*?)\n---", body, re.DOTALL)
         if not m:
             continue
@@ -324,7 +324,7 @@ def read_proposals(state_root: Path):
     for f in sorted((state_root / "proposals" / "pending").iterdir()):
         if not f.name.endswith(".md"):
             continue
-        body = f.read_text()
+        body = f.read_text(encoding="utf-8")
         m = re.search(r"^---\n(.*?)\n---", body, re.DOTALL)
         if not m:
             continue
@@ -333,7 +333,7 @@ def read_proposals(state_root: Path):
 
 
 def read_snapshot(state_root: Path):
-    return json.loads((state_root / "telemetry" / "aggregates" / "current-snapshot.json").read_text())
+    return json.loads((state_root / "telemetry" / "aggregates" / "current-snapshot.json").read_text(encoding="utf-8"))
 
 
 def build_dashboard_data(state_root: Path):
@@ -380,20 +380,20 @@ def swap_data_block(html_path: Path, new_data: dict):
     """Surgical replacement of <script id="report-data"> block contents per skill spec."""
     if not html_path.exists():
         return False, f"file not found: {html_path}"
-    html = html_path.read_text()
+    html = html_path.read_text(encoding="utf-8")
     new_json = json.dumps(new_data, indent=2)
     replacement = lambda m: m.group(1) + new_json + m.group(3)
     new_html, count = DATA_BLOCK_RE.subn(replacement, html, count=1)
     if count != 1:
         return False, f"data block not matched (count={count})"
-    html_path.write_text(new_html)
+    html_path.write_text(new_html, encoding="utf-8")
     return True, None
 
 
 # ---------- Verification ----------
 def verify_html(html_path: Path, required_keys: list):
     """Verify HTML can be re-read, data block parses as JSON, required keys present."""
-    html = html_path.read_text()
+    html = html_path.read_text(encoding="utf-8")
     m = DATA_BLOCK_RE.search(html)
     if not m:
         return False, "data block not found post-write"
@@ -472,7 +472,7 @@ def main():
 
     # Discussion-bubbles deep check: every bubble has messages, status is canonical
     print(cyan("\n[transcript] Verifying discussion bubble transcripts..."))
-    bubbles_html = (test_reports / "discussion-bubbles.html").read_text()
+    bubbles_html = (test_reports / "discussion-bubbles.html").read_text(encoding="utf-8")
     bubbles_data_match = DATA_BLOCK_RE.search(bubbles_html)
     bubbles_payload = json.loads(bubbles_data_match.group(2))
     valid_statuses = {"open", "approved", "approved-with-dissent", "rejected", "tied"}
@@ -1658,7 +1658,7 @@ def main():
     # Wiring assertions: cross-check that scenarios in activity data match canonical CSS classes.
     # Accept either legacy `.activity-item.scenario-X` or new `.act-item.scenario-X` during migration.
     print(cyan("\n[wiring] Cross-checking scenario tokens against CSS + dropdown..."))
-    activity_html = (test_reports / "activity.html").read_text()
+    activity_html = (test_reports / "activity.html").read_text(encoding="utf-8")
     scenarios_in_data = {h["scenario"] for h in activity_data["handoffs"]}
     for scenario in scenarios_in_data:
         legacy_class = f".activity-item.scenario-{scenario}::before"
