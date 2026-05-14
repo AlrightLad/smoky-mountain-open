@@ -139,6 +139,67 @@ def walk_ship_progress():
     return out
 
 
+def _read_latest_manual_quota(repo_root: Path):
+    """
+    Phase 6.6: Surface the most recent Founder manual-quota-paste entry from
+    `.claude/state/telemetry/manual-quota-log.ndjson` so dashboards can show
+    a REAL percentage-against-quota (instead of dividing by a fictional cap).
+
+    Aggregates the latest entry per scope; returns shape:
+      {
+        "anchored_at": "<ISO-8601 of most recent paste>",
+        "weekly_all_pct": <0..100 or None>,
+        "weekly_sonnet_pct": <0..100 or None>,
+        "session_pct": <0..100 or None>,
+        "claude_design_pct": <0..100 or None>
+      }
+
+    Returns None when no entries exist.
+    """
+    log_path = repo_root / ".claude" / "state" / "telemetry" / "manual-quota-log.ndjson"
+    if not log_path.exists():
+        return None
+    by_scope = {}
+    try:
+        for line in log_path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                obj = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            scope = obj.get("scope")
+            ts = obj.get("timestamp")
+            if not scope or not ts:
+                continue
+            prior = by_scope.get(scope)
+            if prior is None or ts > prior.get("timestamp", ""):
+                by_scope[scope] = obj
+    except OSError:
+        return None
+    if not by_scope:
+        return None
+    # Derive percentages from tokens_used + the note containing "% of <cap>".
+    def _pct(entry):
+        note = entry.get("note", "") or ""
+        m = re.search(r"(\d+(?:\.\d+)?)%", note)
+        if m:
+            try:
+                return float(m.group(1))
+            except ValueError:
+                return None
+        return None
+    latest_ts = max(e.get("timestamp", "") for e in by_scope.values())
+    return {
+        "anchored_at": latest_ts,
+        "weekly_all_pct":      _pct(by_scope.get("weekly-all", {}))      if "weekly-all"      in by_scope else None,
+        "weekly_sonnet_pct":   _pct(by_scope.get("weekly-sonnet", {}))   if "weekly-sonnet"   in by_scope else None,
+        "session_pct":         _pct(by_scope.get("session", {}))         if "session"         in by_scope else None,
+        "claude_design_pct":   _pct(by_scope.get("claude-design", {}))   if "claude-design"   in by_scope else None,
+    }
+
+
 def aggregate():
     events = walk_events()
     handoffs = walk_handoffs()
@@ -241,7 +302,10 @@ def aggregate():
         "ships_this_week": len([s for s in ship_progress if s.get("status") == "complete"]),
         "halts_this_week": halts,
         "fiq_depth": 0,  # FIQ entries when written; currently 0 (F3 forthcoming)
-        "budget_pct": 0.0 if not weekly_tokens else min(weekly_tokens / 3_500_000, 1.0),
+        # Phase 6.6: no fictional cap. Real quota % comes from manual paste
+        # (see manual_quota_latest below). Field intentionally omitted; dashboards
+        # consume manual_quota_latest instead.
+        "manual_quota_latest": _read_latest_manual_quota(ROOT),
         "tokens_by_role": {
             "labels": list(tokens_by_role.keys()) or ["(meter unwired)"],
             "values": list(tokens_by_role.values()) or [0],

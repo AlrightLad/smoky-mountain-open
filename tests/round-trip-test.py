@@ -72,7 +72,9 @@ def seed_state(state_root: Path):
         "ships_this_week": 2,
         "halts_this_week": 0,
         "fiq_depth": 3,
-        "budget_pct": 0.689,
+        # Phase 6.6: no fictional cap. manual_quota_latest sourced from real
+        # manual-quota-log.ndjson; synthetic fixture leaves it None.
+        "manual_quota_latest": None,
         "tokens_by_role": {
             "labels": ["Orchestrator", "Engineer", "Critic", "Discussion Bubble", "Design Bot", "End User"],
             "values": [425_000, 990_000, 545_000, 185_000, 152_000, 113_000],
@@ -345,7 +347,7 @@ def build_dashboard_data(state_root: Path):
         "proposals_pending": len(proposals),
         "halts_this_week": snap["halts_this_week"],
         "fiq_depth": snap["fiq_depth"],
-        "budget_pct": snap["budget_pct"],
+        "manual_quota_latest": snap.get("manual_quota_latest"),
         "tokens_by_role": snap["tokens_by_role"],
         "token_trend_7d": snap["token_trend_7d"],
         "cycle_outcomes_7d": snap["cycle_outcomes_7d"],
@@ -1079,6 +1081,61 @@ def main():
         if 'href="_assets/dashboard-shell.css"' not in text:
             print(red(f"  ✗ {fname:32s} does not import dashboard-shell.css"))
             failures.append((f"theme:{fname}:shell-import", "dashboard-shell.css not imported"))
+
+    # Pause-discipline guard (Phase 6.6): no production-tree references to the
+    # fictional 3.5M cap or budget_pct. The audit doc + governance drafts +
+    # historical proposals are explicitly exempt.
+    print(cyan("\n[pause-discipline] No fictional-cap references in production tree..."))
+    FICTIONAL_RE = re.compile(r"(?<![0-9.])(3\.5M|3500000|3,500,000|weekly_budget_cap|budget_pct|weekly_tokens_cap)\b")
+    PD_SCOPE = [
+        ROOT / "docs" / "reports",
+        ROOT / "scripts",
+    ]
+    PD_EXEMPT_PATHS = [
+        ROOT / ".claude" / "state" / "wave-zero-dry-run" / "fictional-cap-audit.md",
+        ROOT / ".claude" / "state" / "wave-zero-dry-run" / "remediation",
+        ROOT / ".claude" / "state" / "proposals",  # historical proposal artifacts
+        ROOT / "scripts" / "cron" / "quarantine",   # maintenance script holding area
+        ROOT / "scripts" / "refresh-quota-manual.ps1",  # placeholder caps for % -> tokens conversion
+    ]
+    def _is_exempt(p):
+        for ex in PD_EXEMPT_PATHS:
+            try:
+                p.relative_to(ex)
+                return True
+            except ValueError:
+                continue
+        return False
+    pd_failures = []
+    for root in PD_SCOPE:
+        if not root.exists():
+            continue
+        for f in root.rglob("*"):
+            if not f.is_file():
+                continue
+            if _is_exempt(f):
+                continue
+            if f.suffix not in {".py", ".ps1", ".sh", ".html", ".js", ".css", ".json", ".md"}:
+                continue
+            try:
+                text = f.read_text(encoding="utf-8", errors="ignore")
+            except OSError:
+                continue
+            for m in FICTIONAL_RE.finditer(text):
+                pd_failures.append((str(f.relative_to(ROOT)), m.group(0)))
+                if len(pd_failures) >= 20:
+                    break
+            if len(pd_failures) >= 20:
+                break
+        if len(pd_failures) >= 20:
+            break
+    if pd_failures:
+        print(red(f"  ✗ {len(pd_failures)} fictional-cap reference(s) in production tree:"))
+        for path, tok in pd_failures[:10]:
+            print(red(f"     {path}: '{tok}'"))
+        failures.append(("pause-discipline:fictional-cap-refs", f"{len(pd_failures)} refs"))
+    else:
+        print(green("  ✓ no fictional-cap references in production tree (audit doc + governance drafts + historical proposals exempt)"))
 
     # Wiring assertions: cross-check that scenarios in activity data match canonical CSS classes.
     # Accept either legacy `.activity-item.scenario-X` or new `.act-item.scenario-X` during migration.

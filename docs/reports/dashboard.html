@@ -37,35 +37,37 @@
 
         <section class="pb-section">
             <h2 class="pb-section-title">This week</h2>
+            <!--
+              Tokens-this-week is the raw aggregate of cycle.budget.checkpoint events.
+              Anthropic quota % is sourced from the most recent founder-paste entry in
+              manual-quota-log.ndjson (run scripts/refresh-quota-manual.ps1 to refresh).
+              No fictional weekly cap (Phase 6.6) — until PROP-003 ships a real meter,
+              manual paste is the only ground truth for percent-against-quota.
+            -->
             <div class="pb-kpi-grid">
                 <div class="pb-kpi-card is-neutral">
-                    <span class="pb-kpi-label">Weekly tokens</span>
+                    <span class="pb-kpi-label">Tokens this week</span>
                     <span class="pb-kpi-value" data-kpi="weekly-tokens">&mdash;</span>
-                    <span class="pb-kpi-sub" data-kpi-sub="weekly-tokens">&mdash;</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="weekly-tokens">aggregate of telemetry events</span>
                 </div>
-                <div class="pb-kpi-card is-neutral">
-                    <span class="pb-kpi-label">Weekly remaining</span>
-                    <span class="pb-kpi-value" data-kpi="weekly-remaining">&mdash;</span>
-                    <span class="pb-kpi-sub">of 3.5M cap</span>
-                </div>
-                <div class="pb-kpi-card is-neutral">
-                    <span class="pb-kpi-label">Budget</span>
-                    <span class="pb-kpi-value" data-kpi="budget-pct">&mdash;</span>
-                    <span class="pb-kpi-sub">consumed this week</span>
+                <div class="pb-kpi-card" data-kpi-card="manual-quota">
+                    <span class="pb-kpi-label">Anthropic quota (manual)</span>
+                    <span class="pb-kpi-value" data-kpi="manual-quota-pct">&mdash;</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="manual-quota">no recent paste &mdash; run <code>scripts/refresh-quota-manual.ps1</code></span>
                 </div>
                 <div class="pb-kpi-card is-positive">
                     <span class="pb-kpi-label">Ships this week</span>
                     <span class="pb-kpi-value" data-kpi="ships-week">&mdash;</span>
                     <span class="pb-kpi-sub">approved &amp; shipped</span>
                 </div>
-            </div>
-
-            <div class="pb-kpi-grid">
                 <div class="pb-kpi-card is-positive">
                     <span class="pb-kpi-label">Halts this week</span>
                     <span class="pb-kpi-value" data-kpi="halts-week">&mdash;</span>
                     <span class="pb-kpi-sub">clean = good</span>
                 </div>
+            </div>
+
+            <div class="pb-kpi-grid">
                 <div class="pb-kpi-card is-warning">
                     <span class="pb-kpi-label">FIQ depth</span>
                     <span class="pb-kpi-value" data-kpi="fiq-depth">&mdash;</span>
@@ -81,14 +83,14 @@
                     <span class="pb-kpi-value" data-kpi="cycles-paused">&mdash;</span>
                     <span class="pb-kpi-sub">resumed after defensive pause</span>
                 </div>
-            </div>
-
-            <div class="pb-kpi-grid">
                 <div class="pb-kpi-card is-danger">
                     <span class="pb-kpi-label">Cycles halted (7d)</span>
                     <span class="pb-kpi-value" data-kpi="cycles-halted">&mdash;</span>
                     <span class="pb-kpi-sub">unresolved halt evidence</span>
                 </div>
+            </div>
+
+            <div class="pb-kpi-grid">
                 <div class="pb-kpi-card">
                     <span class="pb-kpi-label">Proposals pending</span>
                     <span class="pb-kpi-value" data-kpi="proposals-pending">&mdash;</span>
@@ -103,6 +105,11 @@
                     <span class="pb-kpi-label">Proposals shipped</span>
                     <span class="pb-kpi-value" data-kpi="proposals-shipped">&mdash;</span>
                     <span class="pb-kpi-sub">total terminal</span>
+                </div>
+                <div class="pb-kpi-card is-neutral">
+                    <span class="pb-kpi-label">Quota last anchored</span>
+                    <span class="pb-kpi-value is-small" data-kpi="manual-quota-age">&mdash;</span>
+                    <span class="pb-kpi-sub">via refresh-quota-manual.ps1</span>
                 </div>
             </div>
         </section>
@@ -190,7 +197,7 @@
   },
   "halts_this_week": 0,
   "fiq_depth": 0,
-  "budget_pct": 0.0,
+  "manual_quota_latest": null,
   "tokens_by_role": {
     "labels": [
       "(meter unwired)"
@@ -201,13 +208,13 @@
   },
   "token_trend_7d": {
     "labels": [
-      "Thu",
       "Fri",
       "Sat",
       "Sun",
       "Mon",
       "Tue",
-      "Wed"
+      "Wed",
+      "Thu"
     ],
     "values": [
       0,
@@ -221,13 +228,13 @@
   },
   "cycle_outcomes_7d": {
     "labels": [
-      "Thu",
       "Fri",
       "Sat",
       "Sun",
       "Mon",
       "Tue",
-      "Wed"
+      "Wed",
+      "Thu"
     ],
     "datasets": [
       {
@@ -283,7 +290,7 @@
   "_meter_status": "gap-per-F1a",
   "_meter_note": "Token meter is not wired (F1 finding). tokens_by_role / weekly_tokens / weekly_cost / token_trend_7d will show synthesized event-attributed values ONLY for events that carry agent + tokens fields. Until a real meter wires up (db-2026-05-13-003 outcome pending Founder ratification), treat these fields as a lower bound, not the actual consumption.",
   "_aggregate_counts": {
-    "events_total": 48,
+    "events_total": 90,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
@@ -324,17 +331,44 @@
                     return iso.replace('T', ' ').slice(0, 16) + ' UTC';
                 }
 
-                // KPI strip: row 1
-                var weeklyCap = 3500000;
+                // KPI strip: row 1 — tokens used + Anthropic quota (manual-anchored)
+                // No fictional cap; per Phase 6.6, percentage is sourced from the
+                // most recent Founder paste in manual-quota-log.ndjson.
                 var weeklyUsed = data.weekly_tokens || 0;
-                var weeklyRemaining = Math.max(0, weeklyCap - weeklyUsed);
                 setText('[data-kpi="weekly-tokens"]', fmtNum(weeklyUsed));
-                setText('[data-kpi-sub="weekly-tokens"]', '$' + (data.weekly_cost || 0).toFixed(2) + ' spend');
-                setText('[data-kpi="weekly-remaining"]', fmtNum(weeklyRemaining));
-                setText('[data-kpi="budget-pct"]', fmtPct(data.budget_pct));
+                var costStr = '$' + (data.weekly_cost || 0).toFixed(2) + ' spend';
+                setText('[data-kpi-sub="weekly-tokens"]', costStr + ' · aggregate of telemetry events');
+
+                function _fmtAgo(iso) {
+                    if (!iso) return 'never';
+                    var d = new Date(iso); if (isNaN(d)) return iso;
+                    var diff = (Date.now() - d.getTime()) / 1000;
+                    if (diff < 60) return Math.floor(diff) + 's ago';
+                    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+                    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+                    return Math.floor(diff / 86400) + 'd ago';
+                }
+                var mq = data.manual_quota_latest || null;
+                if (mq && typeof mq.weekly_all_pct === 'number') {
+                    setText('[data-kpi="manual-quota-pct"]', mq.weekly_all_pct.toFixed(0) + '%');
+                    var anchored = mq.anchored_at ? _fmtAgo(mq.anchored_at) : 'unknown time';
+                    setText('[data-kpi-sub="manual-quota"]', 'weekly all-models · anchored ' + anchored);
+                    setText('[data-kpi="manual-quota-age"]', anchored);
+                    var card = document.querySelector('[data-kpi-card="manual-quota"]');
+                    if (card) {
+                        var stale = mq.anchored_at && (Date.now() - new Date(mq.anchored_at).getTime()) > (24 * 3600 * 1000);
+                        card.classList.add(stale ? 'is-warning' : 'is-info');
+                    }
+                } else {
+                    setText('[data-kpi="manual-quota-pct"]', 'no data');
+                    setText('[data-kpi="manual-quota-age"]', 'never');
+                    var card2 = document.querySelector('[data-kpi-card="manual-quota"]');
+                    if (card2) card2.classList.add('is-warning');
+                }
+
                 setText('[data-kpi="ships-week"]', String(data.ships_this_week || 0));
 
-                // KPI strip: row 2
+                // KPI strip: row 2 + 3
                 setText('[data-kpi="halts-week"]', String(data.halts_this_week || 0));
                 setText('[data-kpi="fiq-depth"]', String(data.fiq_depth || 0));
 

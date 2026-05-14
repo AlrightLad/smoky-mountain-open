@@ -113,7 +113,8 @@ def build_dashboard_data():
         "proposals_counts": pc,
         "halts_this_week": snap.get("halts_this_week", 0),
         "fiq_depth": snap.get("fiq_depth", 0),
-        "budget_pct": snap.get("budget_pct", 0.0),
+        # Phase 6.6: no fictional cap. Real quota % comes from manual paste.
+        "manual_quota_latest": snap.get("manual_quota_latest"),
         "tokens_by_role": snap.get("tokens_by_role", {"labels": [], "values": []}),
         "token_trend_7d": snap.get("token_trend_7d", {"labels": [], "values": []}),
         "cycle_outcomes_7d": snap.get("cycle_outcomes_7d", {"labels": [], "datasets": []}),

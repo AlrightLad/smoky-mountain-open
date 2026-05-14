@@ -23,6 +23,29 @@
     Test:    scripts/cron/test-overnight-triage.ps1
     Logs:    scripts/cron/logs/<ts>-overnight-triage.log
     Prompt:  scripts/cron/overnight-triage-prompt.txt
+
+    PAUSE HEURISTIC (v8.2 — see proposed-PAUSE_DISCIPLINE_v8.2 in
+    .claude/state/wave-zero-dry-run/remediation/)
+    Until PROP-003 (token-meter-wiring-sidecar) ships, the agent does not have
+    a programmatic real-time token meter. Pause discipline is OP-COUNT-BASED,
+    NOT percentage-based against any hardcoded constant.
+
+    Trigger: every 5 atomic operations, the agent writes a last-verify.json
+    checkpoint and EXITS cleanly (return 0). The next scheduled fire of this
+    cron resumes from that checkpoint.
+
+    Real-quota fallback: when .claude/state/telemetry/manual-quota-log.ndjson
+    has a Founder-paste entry within 24 hours, the agent additionally consults
+    the most recent weekly-all percentage. If >= 90%, pause overrides the op-
+    count rule.
+
+    When PROP-003 ships, this heuristic gets replaced with a real-quota check
+    against the sidecar's quota-status.json. The op-count fallback remains as
+    a defensive secondary trigger.
+
+    DO NOT add hardcoded ceiling constants to this script. The round-trip
+    [pause-discipline] check fails the build on any such reference outside
+    the audit doc.
 #>
 
 $ErrorActionPreference = "Continue"

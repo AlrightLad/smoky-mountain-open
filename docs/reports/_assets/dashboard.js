@@ -226,15 +226,8 @@
       setText('[data-metric="halt-count"]', data.halts_this_week || 0);
       setText('[data-metric="fiq-depth"]', data.fiq_depth || 0);
 
-      // Budget progress bar
-      const budgetPct = data.budget_pct || 0;
-      const bar = document.querySelector('[data-progress="weekly-budget"] .progress-bar');
-      if (bar) {
-        bar.style.width = Math.min(budgetPct * 100, 100) + '%';
-        if (budgetPct >= 0.9) bar.classList.add('danger');
-        else if (budgetPct >= 0.75) bar.classList.add('warning');
-        else bar.classList.add('success');
-      }
+      // Budget progress bar removed (Phase 6.6) — no fictional cap.
+      // Dashboards consume data.manual_quota_latest directly when needed.
 
       // Charts
       if (data.tokens_by_role) {
