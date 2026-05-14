@@ -179,18 +179,50 @@
 
 <script id="report-data" type="application/json">
 {
-  "generated_at": "2026-05-14T02:59:10.496426+00:00",
+  "generated_at": "2026-05-14T03:08:15.435811+00:00",
   "constants": {
     "INPUT_RATE_TOKENS_PER_SEC": 100,
     "OUTPUT_RATE_TOKENS_PER_SEC": 30
   },
   "by_agent": {
+    "engineer": {
+      "real": 102000,
+      "estimated": 0,
+      "manual": 0,
+      "total_real_plus_estimated": 102000,
+      "by_day": {
+        "2026-05-13": {
+          "real": 102000,
+          "estimated": 0
+        }
+      }
+    },
+    "orchestrator": {
+      "real": 0,
+      "estimated": 4200130,
+      "manual": 0,
+      "total_real_plus_estimated": 4200130,
+      "by_day": {
+        "2026-05-14": {
+          "real": 0,
+          "estimated": 4200000
+        },
+        "2026-05-13": {
+          "real": 0,
+          "estimated": 130
+        }
+      }
+    },
     "cron-runner": {
       "real": 0,
       "estimated": 0,
       "manual": 0,
       "total_real_plus_estimated": 0,
       "by_day": {
+        "2026-05-13": {
+          "real": 0,
+          "estimated": 0
+        },
         "2026-05-14": {
           "real": 0,
           "estimated": 0
@@ -199,43 +231,103 @@
     }
   },
   "by_cron": {
+    "manual-session": {
+      "real": 102000,
+      "estimated": 4200000,
+      "manual": 0,
+      "total_real_plus_estimated": 4302000,
+      "by_day": {
+        "2026-05-13": {
+          "real": 102000,
+          "estimated": 0
+        },
+        "2026-05-14": {
+          "real": 0,
+          "estimated": 4200000
+        }
+      }
+    },
     "downloads-watcher": {
       "real": 0,
       "estimated": 0,
       "manual": 0,
       "total_real_plus_estimated": 0,
       "by_day": {
+        "2026-05-13": {
+          "real": 0,
+          "estimated": 0
+        },
         "2026-05-14": {
           "real": 0,
           "estimated": 0
+        }
+      }
+    },
+    "maintenance": {
+      "real": 0,
+      "estimated": 0,
+      "manual": 0,
+      "total_real_plus_estimated": 0,
+      "by_day": {
+        "2026-05-13": {
+          "real": 0,
+          "estimated": 0
+        }
+      }
+    },
+    "overnight-triage": {
+      "real": 0,
+      "estimated": 130,
+      "manual": 0,
+      "total_real_plus_estimated": 130,
+      "by_day": {
+        "2026-05-13": {
+          "real": 0,
+          "estimated": 130
         }
       }
     }
   },
   "by_ship": {
     "unattributed": {
-      "real": 0,
-      "estimated": 0,
+      "real": 102000,
+      "estimated": 130,
       "manual": 0,
-      "total_real_plus_estimated": 0,
+      "total_real_plus_estimated": 102130,
       "by_day": {
+        "2026-05-13": {
+          "real": 102000,
+          "estimated": 130
+        },
         "2026-05-14": {
           "real": 0,
           "estimated": 0
         }
       }
+    },
+    "substrate-build-day-3": {
+      "real": 0,
+      "estimated": 4200000,
+      "manual": 0,
+      "total_real_plus_estimated": 4200000,
+      "by_day": {
+        "2026-05-14": {
+          "real": 0,
+          "estimated": 4200000
+        }
+      }
     }
   },
   "all_time": {
-    "real": 0,
-    "estimated": 0,
+    "real": 102000,
+    "estimated": 4200130,
     "manual": 0,
-    "first_event_at": "2026-05-14T02:20:48+00:00",
-    "last_event_at": "2026-05-14T02:59:10+00:00"
+    "first_event_at": "2026-05-13T11:55:00+00:00",
+    "last_event_at": "2026-05-14T03:05:49+00:00"
   },
   "_counts": {
-    "real_events": 0,
-    "estimated_events": 10,
+    "real_events": 1,
+    "estimated_events": 94,
     "manual_entries": 0
   }
 }

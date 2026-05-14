@@ -144,7 +144,27 @@
     <script id="report-data" type="application/json">
 {
   "amendments": {
-    "pending": [],
+    "pending": [
+      {
+        "id": "AMD-009",
+        "title": "Senior Engineering Standard (dominant operating principle)",
+        "target_canonical_path": "docs/agents/SENIOR_ENGINEERING_STANDARD.md",
+        "source_draft_path": ".claude/state/amendments/pending/AMD-009-senior-engineering-standard.md",
+        "scope_summary": "Establishes the senior engineering standard as the dominant operating principle, supersedes prior \"ship MVP iterate later\" patterns. Eight codified behaviors covering diagnosis discipline, root-cause vs symptom, ship-complete-or-don't, test-before-done, honest language, no-punt-to-future, acknowledge-what-breaks, and Critic empowerment. Operates retroactively to in-flight work.",
+        "type": "new-file",
+        "section_anchor": null,
+        "depends_on": [],
+        "authored_by": "claude-code",
+        "authored_at": "2026-05-14T03:05:00Z",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": "6500",
+        "rollback_strategy": "git revert; the document is new, removal restores prior governance posture. Note that the principles will continue to operate informally per Founder's directive even if the formal artifact is rolled back.",
+        "status": "pending",
+        "operating_status": "ACTIVE \u2014 operating immediately per Founder directive 2026-05-14. Conflicts with prior amendments resolve in favor of this one for quality questions. Applies retroactively to in-flight work (AMD-008 application failure, token usage dashboard, anything currently broken must be brought to working state per these principles before new work begins).",
+        "_body_preview": "# Senior Engineering Standard\n\nThe dominant operating principle for the PARBAUGHS orchestration team.\nSupersedes the \"ship MVP, iterate later\" pattern that was implicit in\nearlier protocols. When this principle conflicts with another, this one\nwins for quality questions. Founder is the only override.\n\n## 1. Diagnose to evidence, not to hypothesis\n\nWhen a system isn't working, the team produces EVI",
+        "_filename": "AMD-009-senior-engineering-standard.md"
+      }
+    ],
     "approved": [],
     "deferred": [],
     "applied": [
@@ -309,13 +329,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 0,
+    "pending": 1,
     "approved": 0,
     "deferred": 0,
     "applied_total": 8,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T02:59:10.724806+00:00",
+  "as_of": "2026-05-14T03:08:15.958709+00:00",
   "schema_version": 1,
   "archive_display_cap": 50
 }

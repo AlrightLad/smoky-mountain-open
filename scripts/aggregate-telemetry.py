@@ -231,18 +231,51 @@ def aggregate():
         elif et.startswith("cycle.halt") or et.startswith("halt."):
             halts += 1
 
-    # Tokens by role — synthesize when events carry agent attribution
+    # Tokens by role — synthesize from event types that carry token attribution.
+    # Covers: legacy generic 'tokens'/'tokens_consumed' fields + session.team-work.summary
+    # (operator-asserted estimate for orchestration sessions) + cycle.paused
+    # (tokens_consumed_since_last_rest) + cycle.budget.checkpoint deltas.
     tokens_by_role = defaultdict(int)
+    last_checkpoint = None
     for e in events:
-        data = e.get("data", {})
-        if isinstance(data, dict):
-            agent = e.get("agent") or data.get("agent")
-            tokens = data.get("tokens") or data.get("tokens_consumed")
-            if agent and isinstance(tokens, (int, float)):
-                tokens_by_role[agent] += int(tokens)
+        data = e.get("data") or {}
+        if not isinstance(data, dict):
+            continue
+        et = e.get("event_type", "")
+        agent = e.get("agent") or data.get("agent")
+
+        # Legacy generic field
+        legacy_tokens = data.get("tokens") or data.get("tokens_consumed")
+        if agent and isinstance(legacy_tokens, (int, float)) and legacy_tokens > 0:
+            tokens_by_role[agent] += int(legacy_tokens)
+
+        # session.team-work.summary — operator-asserted estimate
+        if et == "session.team-work.summary":
+            t = data.get("tokens_estimated")
+            a = agent or "orchestrator"
+            if isinstance(t, (int, float)) and t > 0:
+                tokens_by_role[a] += int(t)
+
+        # cycle.paused — tokens consumed since last rest, by agent
+        elif et == "cycle.paused":
+            t = data.get("tokens_consumed_since_last_rest")
+            a = agent or "unknown"
+            if isinstance(t, (int, float)) and t > 0:
+                tokens_by_role[a] += int(t)
+
+        # cycle.budget.checkpoint — delta from prior checkpoint
+        elif et == "cycle.budget.checkpoint":
+            consumed = data.get("weekly_tokens_consumed")
+            if isinstance(consumed, (int, float)):
+                if last_checkpoint is not None:
+                    delta = int(consumed) - last_checkpoint
+                    if delta > 0:
+                        a = agent or "unknown"
+                        tokens_by_role[a] += delta
+                last_checkpoint = int(consumed)
 
     meter_wired = len(tokens_by_role) > 0
-    meter_status = "wired" if meter_wired else "gap-per-F1a"
+    meter_status = "wired-estimated" if meter_wired else "gap-per-F1a"
 
     # Recent handoffs (top 5)
     recent_handoffs = [

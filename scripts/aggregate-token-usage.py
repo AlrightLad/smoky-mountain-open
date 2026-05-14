@@ -174,6 +174,23 @@ def scan_telemetry_events(cursor_ts):
                     "tokens": tokens, "source_type": "real",
                 })
 
+        elif et == "session.team-work.summary":
+            # Operator-asserted estimate for orchestration-team session work.
+            # Surfaced as 'estimated' (NOT 'real') in the dashboard to maintain
+            # the real/estimated/manual honesty distinction — operator-asserted
+            # values are not measurements. See scripts/emit-session-event.py
+            # HONESTY DISCIPLINE docstring.
+            tokens = data.get("tokens_estimated")
+            agent = data.get("agent") or ev.get("agent") or "orchestrator"
+            ship_id = data.get("ship_id") or ev.get("ship_id") or "unattributed"
+            cron_source = ev.get("cron_source") or "manual-session"
+            if tokens is not None and tokens > 0:
+                derived.append({
+                    "ts": ts, "dt": dt, "agent": agent, "ship_id": ship_id,
+                    "cron_source": cron_source, "tokens": tokens,
+                    "source_type": "estimated",
+                })
+
     return derived
 
 
@@ -329,16 +346,26 @@ def merge_to_snapshot(real_events, estimated_events, manual_entries):
 def main():
     AGGREGATES_DIR.mkdir(parents=True, exist_ok=True)
 
+    # Full rescan every run. The cursor was an attempted incremental
+    # optimization but the merge_to_snapshot rebuilds state from scratch,
+    # so cursor-filtered runs DISCARDED accumulated data on each invocation
+    # (concrete repro 2026-05-14: first run produced orchestrator=4.2M;
+    # second run advanced cursor past my session event; third run filtered
+    # everything older than cursor + built empty snapshot). At our scale
+    # (small ndjsons), full rescan is fast and correct.
     cursor_ts = None
-    if CURSOR_PATH.exists():
-        try:
-            cursor_ts = json.loads(CURSOR_PATH.read_text(encoding="utf-8")).get("last_processed_event_ts")
-        except Exception:
-            pass
 
-    real = scan_telemetry_events(cursor_ts)
-    estimated = scan_cron_logs(cursor_ts)
+    source_a_events = scan_telemetry_events(cursor_ts)
+    source_b_events = scan_cron_logs(cursor_ts)
     manual = scan_manual_log()
+
+    # Partition by inner source_type. Source A (telemetry events) can now emit
+    # both 'real' (cycle.budget.checkpoint, cycle.paused) AND 'estimated'
+    # (session.team-work.summary, operator-asserted). Source B (cron logs) is
+    # always 'estimated'. Group properly so the dashboard's real/estimated/
+    # manual columns reflect honesty discipline.
+    real = [e for e in source_a_events if e.get("source_type") == "real"]
+    estimated = [e for e in source_a_events if e.get("source_type") == "estimated"] + source_b_events
 
     snapshot = merge_to_snapshot(real, estimated, manual)
     SNAPSHOT_PATH.write_text(json.dumps(snapshot, indent=2, default=str), encoding="utf-8")

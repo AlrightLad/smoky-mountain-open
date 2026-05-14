@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "as_of": "2026-05-14T02:25:00Z",
+  "as_of": "2026-05-14T03:10:00Z",
   "purpose": "Manual queue stub honoring AMD-007 P18.6 'Operating discipline (immediate, pre-implementation)'. Replaced by automated regen-dashboard.py aggregation once W1 Founder Review Queue implementation ship lands.",
   "governance_gates": {
     "amendments_pending": 1,
     "amendments_link": "docs/reports/amendments.html",
-    "amendments_ids": ["AMD-008"],
-    "amendments_note": "AMD-008 is a script-fix amendment authored after AMD-002 caused a regression in CRON_CONFIGURATION.md edit-section apply. Self-contained bug fix; approve at Founder's convenience — no urgency.",
-    "bubbles_flagged": 1,
+    "amendments_ids": ["AMD-009"],
+    "amendments_note": "AMD-009 is the Senior Engineering Standard authored during today's S1+S2 hard-stop work. Operating immediately per Founder directive; formal approval pending. AMD-001..008 all applied earlier in the session.",
+    "bubbles_flagged": 2,
     "bubbles_link": "docs/reports/discussion-bubbles.html",
-    "bubbles_ids": ["db-2026-05-14-001"],
-    "bubbles_note": "UI/UX maturity gap; long-running, no immediate Founder action.",
+    "bubbles_ids": ["db-2026-05-14-001", "db-2026-05-14-002"],
+    "bubbles_note": "Both long-running with deliberate pacing. db-001 UI/UX maturity gap (design-bot spike evidence appended today). db-002 auto-implementation eligibility (research artifacts still pending from voters).",
     "proposals_pending": 0,
     "proposals_link": "docs/reports/proposals.html",
     "open_escalations": [
@@ -19,16 +19,22 @@
         "type": "cross-cutting architecture decision (escalation criterion #5)",
         "summary": "Phase 2 taxonomy + visual + speculative-flows decisions; defaults documented at .claude/state/main-flows-v2/taxonomy-proposals.md",
         "link": ".claude/state/main-flows-v2/taxonomy-proposals.md"
+      },
+      {
+        "id": "wave-1-ship-1-selection",
+        "type": "Founder authorization needed",
+        "summary": "Design Tooling Spike complete; recommendation locked (Approach A native). Founder selects which Wave 1 ship goes first.",
+        "link": ".claude/state/design-spike/comparison.md"
       }
     ]
   },
   "system_health": {
     "crons": {
       "PARBAUGHS-Downloads-Watcher": {
-        "last_run": "2026-05-14T02:05:48Z",
+        "last_run": "2026-05-14T02:59:05Z",
         "last_result": 0,
         "state": "Ready",
-        "notes": "SKIPped 02:00 + 02:05 cycles on dirty tree. Tree now clean; cursor advanced past Founder's applied JSON. Next cycle (~02:25Z) should pass preflight cleanly."
+        "notes": "AMD-008 successfully applied during this cycle. Pre-flight now auto-commits routine cron output."
       },
       "PARBAUGHS-Daily-Maintenance": {
         "last_run": "2026-05-13T22:02:53Z",
@@ -41,30 +47,23 @@
     },
     "last_regen_all": {
       "status": "PASS",
-      "ts": "2026-05-14T02:18:57Z",
+      "ts": "2026-05-14T03:08:17Z",
       "round_trip": "PASS"
     },
-    "working_tree": "clean (post-resolution)",
+    "working_tree": "uncommitted (S2 telemetry fix + AMD-009 + this stub)",
     "halts": [],
-    "round_trip_last_pass": "2026-05-14T02:18:57Z"
+    "round_trip_last_pass": "2026-05-14T03:08:17Z"
   },
   "activity_since_last_visit": {
-    "note": "Will become accurate once founder/last-visit.json is wired by the implementation ship.",
-    "commits_since_last_directive": 3,
-    "amendments_applied": ["AMD-001", "AMD-002", "AMD-003", "AMD-004", "AMD-005", "AMD-007"],
-    "amendments_applied_with_regression_repair": ["AMD-002"],
-    "ships_closed": [],
-    "bubbles_closed": []
+    "note": "Will become accurate once founder/last-visit.json is wired by the implementation ship",
+    "commits_since_last_directive": 8,
+    "amendments_applied": ["AMD-008"],
+    "amendments_authored": ["AMD-009"],
+    "ships_closed": ["S1 amendments pipeline", "S2 token usage dashboard"],
+    "bubbles_closed": [],
+    "bubble_evidence_appended": ["db-2026-05-14-001 (design-bot spike H1-H5 calibration)"]
   },
-  "exceptions": [
-    {
-      "id": "AMD-002-edit-section-fallback-regression",
-      "severity": "self-resolved",
-      "summary": "apply-amendments.sh edit-section substring-fallback deleted CRON_CONFIGURATION.md Section 12 + footer. Restored via fix-up. AMD-008 authored as script-fix follow-up.",
-      "status": "resolved",
-      "evidence": ".claude/state/cron/founder-resolution-2026-05-14.md"
-    }
-  ],
-  "latest_founder_report": ".claude/state/cron/founder-resolution-2026-05-14.md",
+  "exceptions": [],
+  "latest_founder_report": ".claude/state/cron/founder-resolution-2026-05-14-S1-S2.md",
   "stub_acknowledged": "Team operates against this stub for the Critic gates until dashboard.html surfaces the queue natively."
 }
