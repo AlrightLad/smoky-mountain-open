@@ -186,12 +186,21 @@ apply_amendment_via_python() {
 
     # Convert SRC path if necessary
     local SRC_FOR_PY="$SRC"
+    local TOUCHED_LOG_FOR_PY="$TOUCHED_LOG"
     case "$PYTHON_BIN" in
         *.exe|*.EXE)
             if command -v cygpath >/dev/null 2>&1; then
                 SRC_FOR_PY=$(cygpath -w "$SRC")
+                # The TOUCHED_LOG is a POSIX /tmp path under Git-Bash; Windows
+                # Python sees it as a relative path and writes the touched log
+                # into the wrong place. cygpath -w is mandatory here — without
+                # it, the bash stage-loop reads an empty TOUCHED_LOG and skips
+                # staging the actual touched files. (Class of bug: same as
+                # AMD_SRC_PATH conversion above.)
+                TOUCHED_LOG_FOR_PY=$(cygpath -w "$TOUCHED_LOG")
             else
                 SRC_FOR_PY=$(echo "$SRC" | sed -E 's|^/([a-zA-Z])/|\1:/|')
+                TOUCHED_LOG_FOR_PY=$(echo "$TOUCHED_LOG" | sed -E 's|^/([a-zA-Z])/|\1:/|')
             fi
             ;;
     esac
@@ -201,7 +210,7 @@ apply_amendment_via_python() {
     export AMD_NOTE="$LE_NOTE"
     export AMD_DECIDED_AT="$LE_DECIDED_AT"
     export AMD_DRY_RUN="$DRY_RUN"
-    export AMD_TOUCHED_LOG="$TOUCHED_LOG"
+    export AMD_TOUCHED_LOG="$TOUCHED_LOG_FOR_PY"
 
     "$PYTHON_BIN" <<'PYEOF'
 import json, os, sys, re
