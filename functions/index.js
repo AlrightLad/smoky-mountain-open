@@ -110,7 +110,15 @@ async function validateInviteCode(code) {
       return { valid: false, reason: 'Invite code has expired. Ask for a new one.' };
     }
   }
-  return { valid: true, createdBy: d.createdBy || null, code: upperCode };
+  // P2 fix (iter 16, 2026-05-14, Founder directive — "invite link auto-apply"):
+  // return the invite's leagueId so the client can set the new member's
+  // leagues[] + activeLeague to the league the invite was created for.
+  // Without this, the client fell back to "the-parbaughs" for every
+  // non-founding invite — users joining other leagues got dropped into
+  // the founding league instead. d.leagueId is null for legacy invites
+  // created before iter 16; the client handles null via fallback to
+  // "the-parbaughs" (preserves prior behavior for legacy codes).
+  return { valid: true, createdBy: d.createdBy || null, leagueId: d.leagueId || null, code: upperCode };
 }
 
 // ══════════════════════════════════════════════════════════════════════

@@ -31,10 +31,19 @@ var INVITE_EXPIRY_DAYS = 7;
 function createInviteDoc(code) {
   var expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + INVITE_EXPIRY_DAYS);
+  // P2 fix (iter 16, 2026-05-14, Founder directive — "invite link auto-apply"):
+  // invites never stored which league they targeted. validateInvite returned
+  // no leagueId. Client fell back to "the-parbaughs" for every non-founding
+  // invite — so users joining other leagues got dropped into the founding
+  // league instead. Fix: persist the inviter's active league on the invite
+  // document so validateInvite can return it + client can set the new
+  // member's leagues[] + activeLeague correctly.
+  var inviterLeague = (currentProfile && currentProfile.activeLeague) || "the-parbaughs";
   return {
     code: code,
     createdBy: currentUser.uid,
     createdByName: PB.getDisplayName(currentProfile),
+    leagueId: inviterLeague,
     usedBy: null,
     status: "active",
     createdAt: fsTimestamp(),
