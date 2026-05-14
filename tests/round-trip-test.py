@@ -1637,6 +1637,67 @@ def main():
             else:
                 print(green(f"  ✓ install-scripts  {len(install_scripts)} scripts parse cleanly"))
 
+            # AMD-016 reinforcement (Founder directive 2026-05-14 third-failure
+             # fix): the Founder-facing install command surfaced in dashboard.html
+             # must include "-ExecutionPolicy Bypass" otherwise default Windows
+             # PowerShell ExecutionPolicy=Restricted blocks the .ps1 invocation.
+             # This catches the recurring "command parses but won't execute in
+             # Founder's context" pattern that has caused 3 ship failures.
+            print(cyan("\n[install-cmd-surface] Founder-facing install command execution-context check..."))
+            dashboard_html = REPORTS_SRC / "dashboard.html"
+            cmd_failures = []
+            if dashboard_html.exists():
+                dash_text = dashboard_html.read_text(encoding="utf-8")
+                # Locate the install command pre-block (single source of truth in
+                # the cron-install-status banner JS).
+                if "install-all.ps1" in dash_text:
+                    # Find the <pre> block containing install-all.ps1
+                    # and verify it includes the -ExecutionPolicy Bypass flag.
+                    pre_blocks = re.findall(r"<pre[^>]*>(.*?)</pre>", dash_text, re.DOTALL)
+                    found_install_pre = False
+                    for pre in pre_blocks:
+                        if "install-all.ps1" in pre:
+                            found_install_pre = True
+                            if "ExecutionPolicy" not in pre and "Bypass" not in pre:
+                                cmd_failures.append(
+                                    "dashboard.html install command <pre> missing -ExecutionPolicy Bypass — Founder default Windows policy will block .ps1 execution"
+                                )
+                            if "Set-Location" not in pre:
+                                cmd_failures.append(
+                                    "dashboard.html install command <pre> missing Set-Location — Founder won't know which directory to cd to"
+                                )
+                            if "C:\\\\Users\\\\Zach" not in pre and "C:\\Users\\Zach" not in pre:
+                                # JS string-literal escapes \\ but the surfaced
+                                # rendering shows single backslashes; either form
+                                # is acceptable. This check catches templating
+                                # regressions like "cd file://" or empty paths.
+                                cmd_failures.append(
+                                    "dashboard.html install command <pre> missing literal repo path — Founder needs absolute path, not a template variable"
+                                )
+                    # The dashboard's install command lives inside JS-literal-template
+                    # in the JS source (not in a <pre> emitted at render time).
+                    # So also scan the JS string literals directly for the same checks.
+                    if not found_install_pre:
+                        # Search for the JS template literal that builds the install <pre>
+                        m = re.search(r"'<pre[^>]*install-all\.ps1[^']*'", dash_text)
+                        if m:
+                            pre_literal = m.group(0)
+                            if "ExecutionPolicy" not in pre_literal:
+                                cmd_failures.append(
+                                    "dashboard.html JS-literal install <pre> missing -ExecutionPolicy Bypass (would surface broken on Founder's default Windows policy)"
+                                )
+                else:
+                    # No install-all.ps1 reference at all — that's separate from
+                    # this check (the cron banner may be hidden if all crons firing)
+                    pass
+            if cmd_failures:
+                print(red(f"  ✗ install-cmd-surface  {len(cmd_failures)} issue(s):"))
+                for f in cmd_failures[:5]:
+                    print(red(f"     {f}"))
+                failures.append(("install-cmd-surface:execution-context", f"{len(cmd_failures)} issues"))
+            else:
+                print(green("  ✓ install-cmd-surface  Founder-facing install command surfaces with execution-context-aware invocation (-ExecutionPolicy Bypass)"))
+
     # Escalations lifecycle discipline (Founder directive 2026-05-14):
     # 5-state lifecycle, schema integrity, no orphan markers, dashboard
     # count matches pending/ count.
