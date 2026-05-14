@@ -119,19 +119,24 @@ try {
             }
         } catch {}
     }
-    Log "scanning $downloads for decisions-*.json newer than $($lastProcessed.ToString('o'))"
+    Log "scanning $downloads for decisions-*.json and amendments-*.json newer than $($lastProcessed.ToString('o'))"
 
-    $candidates = Get-ChildItem -Path $downloads -Filter "decisions-*.json" -File -ErrorAction SilentlyContinue |
-        Where-Object { $_.LastWriteTimeUtc -gt $lastProcessed } |
-        Sort-Object LastWriteTimeUtc
+    # Two recognized file patterns (amendments lifecycle DC-7+):
+    #   decisions-*.json  → kind="decisions"  → apply-decisions.sh (proposals)
+    #   amendments-*.json → kind="amendments" → apply-amendments.sh (governance)
+    # Watcher inspects first line of JSON to determine kind for safety.
+    $candidates = @(Get-ChildItem -Path $downloads -Filter "decisions-*.json" -File -ErrorAction SilentlyContinue |
+        Where-Object { $_.LastWriteTimeUtc -gt $lastProcessed }) + @(Get-ChildItem -Path $downloads -Filter "amendments-*.json" -File -ErrorAction SilentlyContinue |
+        Where-Object { $_.LastWriteTimeUtc -gt $lastProcessed })
+    $candidates = $candidates | Sort-Object LastWriteTimeUtc
 
     if ($candidates.Count -eq 0) {
-        Log "DONE no new decisions files"
+        Log "DONE no new decisions or amendments files"
         $script:cronExitReason = "no-new-files"
         exit 0
     }
 
-    Log "found $($candidates.Count) new decisions file(s)"
+    Log "found $($candidates.Count) new candidate file(s)"
 
     $inbox = Join-Path $repoRoot ".claude\state\proposals\inbox"
     $null = New-Item -ItemType Directory -Path $inbox -Force -ErrorAction SilentlyContinue
@@ -140,33 +145,63 @@ try {
     $appliedAnything = $false
     foreach ($f in $candidates) {
         Log "processing $($f.Name) (mtime=$($f.LastWriteTimeUtc.ToString('o')))"
-        $dest = Join-Path $inbox $f.Name
+
+        # Read JSON to detect kind; default to "decisions" if no kind field
+        # (backward compatibility with pre-amendments-lifecycle exports).
+        $kind = "decisions"
+        try {
+            $jsonObj = Get-Content $f.FullName -Raw | ConvertFrom-Json
+            if ($jsonObj.kind) { $kind = $jsonObj.kind }
+        } catch {
+            Log "  WARN could not parse JSON: $_ - defaulting to kind=decisions"
+        }
+        Log "  detected kind: $kind"
+
+        # Route to the appropriate apply script per kind
+        switch ($kind) {
+            "amendments" {
+                $applyScript = ".claude/scripts/apply-amendments.sh"
+                $inboxSub = Join-Path $repoRoot ".claude\state\amendments\inbox"
+            }
+            "decisions" {
+                $applyScript = ".claude/scripts/apply-decisions.sh"
+                $inboxSub = $inbox
+            }
+            default {
+                Log "  FATAL unrecognized kind=$kind in $($f.Name); skipping"
+                $applyFailures++
+                continue
+            }
+        }
+
+        $null = New-Item -ItemType Directory -Path $inboxSub -Force -ErrorAction SilentlyContinue
+        $dest = Join-Path $inboxSub $f.Name
         Copy-Item -Path $f.FullName -Destination $dest -Force
         Log "  copied to $dest"
 
-        # Run apply-decisions.sh via Git Bash explicitly (Fix C: no WSL).
+        # Run apply script via Git Bash (Fix C: no WSL).
         $gitBash = Resolve-GitBash
         if (-not $gitBash) {
-            Log "  FATAL Git Bash not found at any known install path; cannot run apply-decisions.sh"
+            Log "  FATAL Git Bash not found at any known install path; cannot run $applyScript"
             $applyFailures++
             break
         }
-        # Convert Windows path to bash-style for apply-decisions.sh
         $bashPath = $dest -replace '\\', '/' -replace '^([A-Za-z]):', '/$1'
         $bashPath = $bashPath.Substring(0,2).ToLower() + $bashPath.Substring(2)
-        & $gitBash -c ".claude/scripts/apply-decisions.sh '$bashPath'" 2>&1 | ForEach-Object { Log "    [apply] $_" }
+        & $gitBash -c "$applyScript '$bashPath'" 2>&1 | ForEach-Object { Log "    [apply] $_" }
         if ($LASTEXITCODE -ne 0) {
-            Log "  apply-decisions.sh FAILED for $($f.Name)"
+            Log "  $applyScript FAILED for $($f.Name) (exit $LASTEXITCODE)"
             $applyFailures++
             continue
         }
-        Log "  apply-decisions.sh OK"
+        Log "  $applyScript OK"
         $appliedAnything = $true
 
         # Update marker AFTER successful apply
         $marker_data = @{
             last_processed_mtime_utc = $f.LastWriteTimeUtc.ToString("o")
             last_processed_filename  = $f.Name
+            last_processed_kind      = $kind
             last_processed_at        = (Get-Date).ToUniversalTime().ToString("o")
         }
         $marker_data | ConvertTo-Json | Set-Content -Path $marker -Encoding utf8
