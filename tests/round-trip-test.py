@@ -1570,6 +1570,121 @@ def main():
         marker_count = len(list(DEFERRED_DIR.glob("*.json"))) if DEFERRED_DIR.exists() else 0
         print(green(f"  ✓ proposal-readiness        {marker_count} deferred marker(s); schema valid; no orphans"))
 
+    # Install script parseability (Founder directive 2026-05-14 INSTALL FLOW
+    # IS BROKEN): every scripts/cron/install-*.ps1 must parse without errors.
+    # The dashboard install-command surface was broken (window.location.origin
+    # produced "cd file://" instead of a real path) and would have been caught
+    # if install scripts had been smoke-tested for parseability.
+    print(cyan("\n[install-scripts] PowerShell install script parseability..."))
+    install_dir = ROOT / "scripts" / "cron"
+    install_scripts = sorted(install_dir.glob("install-*.ps1")) if install_dir.exists() else []
+    install_failures = []
+    if not install_scripts:
+        install_failures.append("no install-*.ps1 scripts found in scripts/cron/")
+    else:
+        # PowerShell parse check via -Command. Available on Windows; on
+        # non-Windows hosts, skip gracefully. (Don't `import shutil` here —
+        # the module is already imported at the top of this file, and a
+        # local re-import triggers UnboundLocalError on later top-level
+        # references like shutil.rmtree(TEST_WORKSPACE).)
+        import subprocess
+        import shutil as _shutil_mod
+        ps = _shutil_mod.which("powershell.exe") or _shutil_mod.which("powershell") or _shutil_mod.which("pwsh")
+        if not ps:
+            print(yellow(f"  ~ install-scripts  PowerShell not available; skipping parseability check ({len(install_scripts)} scripts present)"))
+        else:
+            for script in install_scripts:
+                try:
+                    r = subprocess.run(
+                        [ps, "-NoProfile", "-NonInteractive", "-Command",
+                         f"$null = [System.Management.Automation.Language.Parser]::ParseFile('{str(script).replace(chr(92), chr(92)+chr(92))}', [ref]$null, [ref]$null)"],
+                        capture_output=True, text=True, timeout=15, check=False,
+                    )
+                    if r.returncode != 0:
+                        install_failures.append(f"{script.name}: parser exited {r.returncode}: {(r.stderr or '').strip()[:200]}")
+                except (OSError, subprocess.SubprocessError) as e:
+                    install_failures.append(f"{script.name}: parse probe error: {e}")
+            if install_failures:
+                print(red(f"  ✗ install-scripts  {len(install_failures)} parse failure(s):"))
+                for f in install_failures[:10]:
+                    print(red(f"     {f}"))
+                failures.append(("install-scripts:parseability", f"{len(install_failures)} failures"))
+            else:
+                print(green(f"  ✓ install-scripts  {len(install_scripts)} scripts parse cleanly"))
+
+    # Escalations lifecycle discipline (Founder directive 2026-05-14):
+    # 5-state lifecycle, schema integrity, no orphan markers, dashboard
+    # count matches pending/ count.
+    print(cyan("\n[escalations] Lifecycle + schema discipline..."))
+    ESC_ROOT = ROOT / ".claude" / "state" / "escalations"
+    REQUIRED_STATES = ["pending", "approved", "applied", "deferred", "rejected"]
+    esc_failures = []
+    if not ESC_ROOT.exists():
+        esc_failures.append("escalations root directory missing — run state-directory migration")
+    else:
+        for s in REQUIRED_STATES:
+            sub = ESC_ROOT / s
+            if not sub.exists():
+                esc_failures.append(f"state directory missing: {s}/")
+                continue
+        # Per-file schema check: every ESC-NNN.md has the required frontmatter
+        # fields (id matches filename; title + question + proposed_answer present).
+        REQUIRED_FIELDS = ["id", "title", "type", "question", "proposed_answer"]
+        all_esc_files = []
+        for s in REQUIRED_STATES:
+            sub = ESC_ROOT / s
+            if sub.exists():
+                all_esc_files.extend([(s, f) for f in sub.glob("ESC-*.md")])
+        for state, f in all_esc_files:
+            try:
+                text = f.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError) as e:
+                esc_failures.append(f"{state}/{f.name}: unreadable ({e})")
+                continue
+            m = re.match(r"^---\n(.*?)\n---", text, re.DOTALL)
+            if not m:
+                esc_failures.append(f"{state}/{f.name}: no YAML frontmatter")
+                continue
+            head = m.group(1)
+            for field in REQUIRED_FIELDS:
+                if not re.search(rf"^{field}:", head, re.MULTILINE):
+                    esc_failures.append(f"{state}/{f.name}: missing required field '{field}'")
+            # ID-from-filename match: filename ESC-NNN-*.md should have id: ESC-NNN
+            fname_id_m = re.match(r"^(ESC-\d+)-", f.name)
+            if fname_id_m:
+                expected_id = fname_id_m.group(1)
+                id_match = re.search(r"^id:\s*(.+)$", head, re.MULTILINE)
+                if id_match and id_match.group(1).strip() != expected_id:
+                    esc_failures.append(f"{state}/{f.name}: filename id '{expected_id}' != frontmatter id '{id_match.group(1).strip()}'")
+        # Founder Review Queue count cross-check: dashboard.html data block
+        # open_escalations should match pending/ count.
+        pending_count = len(list((ESC_ROOT / "pending").glob("ESC-*.md"))) if (ESC_ROOT / "pending").exists() else 0
+        dashboard_path = REPORTS_SRC / "dashboard.html"
+        if dashboard_path.exists():
+            dtext = dashboard_path.read_text(encoding="utf-8")
+            # Extract the data block + parse open_escalations length
+            mdata = re.search(r'<script id="report-data" type="application/json">\s*(\{.*?\})\s*</script>', dtext, re.DOTALL)
+            if mdata:
+                try:
+                    djson = json.loads(mdata.group(1))
+                    open_esc = (djson.get("founder_queue", {}).get("governance_gates", {}).get("open_escalations") or [])
+                    if len(open_esc) != pending_count:
+                        esc_failures.append(f"dashboard.html open_escalations count={len(open_esc)} != pending/ count={pending_count}")
+                except json.JSONDecodeError:
+                    esc_failures.append("dashboard.html data block not parseable")
+    if esc_failures:
+        print(red(f"  ✗ escalations    {len(esc_failures)} issue(s):"))
+        for f in esc_failures[:10]:
+            print(red(f"     {f}"))
+        failures.append(("escalations:lifecycle", f"{len(esc_failures)} issues"))
+    else:
+        applied_count = len(list((ESC_ROOT / "applied").glob("ESC-*.md"))) if (ESC_ROOT / "applied").exists() else 0
+        pending_count = len(list((ESC_ROOT / "pending").glob("ESC-*.md"))) if (ESC_ROOT / "pending").exists() else 0
+        approved_count = len(list((ESC_ROOT / "approved").glob("ESC-*.md"))) if (ESC_ROOT / "approved").exists() else 0
+        deferred_count = len(list((ESC_ROOT / "deferred").glob("ESC-*.md"))) if (ESC_ROOT / "deferred").exists() else 0
+        rejected_count = len(list((ESC_ROOT / "rejected").glob("ESC-*.md"))) if (ESC_ROOT / "rejected").exists() else 0
+        print(green(f"  ✓ escalations    pending={pending_count} approved={approved_count} applied={applied_count} deferred={deferred_count} rejected={rejected_count}; schema valid; dashboard count matches"))
+
     # PROP-003.a quota-status.json schema discipline. The sidecar writes
     # this file on a 5-min cron cadence; consumers (PROP-003.b, future
     # PAUSE_DISCIPLINE meter-gate per AMD-014) depend on a stable schema.

@@ -417,3 +417,11 @@
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T16:56:57.381600+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T16:58:01.634799+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T16:58:01.887824+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T17:00:22.441210+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T17:00:22.698268+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"timestamp":"2026-05-14T17:00:49.1960806Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"b9c16778a646","cron_source":"downloads-watcher"}}
+{"timestamp":"2026-05-14T17:00:49.4461216Z","event_type":"cron.downloads-watcher.end","data":{"success":true,"exit_reason":"skip-dirty","cron_source":"downloads-watcher","duration_ms":390,"claude_invoked":false,"run_id":"b9c16778a646"}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T17:02:25.542597+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T17:02:25.811075+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T17:02:47.074650+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-14T17:02:47.333471+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
