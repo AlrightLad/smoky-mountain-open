@@ -5,7 +5,7 @@ target_canonical_path: docs/agents/PAUSE_DISCIPLINE_v8.2_ADDENDUM.md
 source_draft_path: .claude/state/amendments/pending/AMD-014-pause-discipline-reactivation.md
 scope_summary: Amends section 2.1 of PAUSE_DISCIPLINE_v8.2 to reactivate the percentage-based rate-limit threshold WHEN quota-status.json from PROP-003.a is fresh (<6h old). When stale or absent, the section stays in its current dormant state (op-count-only). Bridges meter-wired vs meter-unwired states honestly.
 type: edit-section
-section_anchor: "Section 2.1 - Rate-limit threshold (REPLACED)"
+section_anchor: "Section 2.1 — Rate-limit threshold (REPLACED)"
 depends_on: [PROP-003.a]
 authored_by: claude-code (orchestration team)
 authored_at: 2026-05-14T04:50:00Z
