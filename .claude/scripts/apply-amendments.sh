@@ -225,9 +225,14 @@ dry_run  = os.environ.get("AMD_DRY_RUN", "0") == "1"
 touched_log = os.environ.get("AMD_TOUCHED_LOG", "")
 
 def record_touched(p):
+    # Bash reads this file as a list of paths to `git add`. Under Git-Bash,
+    # the `[[ -f path ]]` test and `git add path` only resolve a Windows path
+    # if the path uses forward slashes — backslash form silently fails the
+    # -f test and the file never gets staged. Always emit POSIX-style.
     if touched_log:
+        path_for_bash = Path(p).as_posix()
         with open(touched_log, "a", encoding="utf-8") as f:
-            f.write(str(p) + "\n")
+            f.write(path_for_bash + "\n")
 
 text = src_path.read_text(encoding="utf-8")
 
