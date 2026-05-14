@@ -345,17 +345,26 @@ elif amd_type == "edit-section":
     if start_idx is None:
         print(f"  ✗ APPLY-FAIL {amd_id}: section_anchor {anchor!r} not found in {target_path}", file=sys.stderr)
         sys.exit(3)
-    # Find next heading line (same or higher level)
+    # AMD-008 bounded-fallback (applied 2026-05-14):
+    # When anchor matched a HEADING line, splice replaces from that heading to
+    # the next same-or-higher heading (or EOF). When anchor matched a NON-
+    # heading line (prose substring fallback), bound the splice to ONLY the
+    # matched line. Pre-AMD-008 behavior set end_idx = len(lines) for
+    # non-heading anchors, so the splice deleted from anchor to EOF. AMD-002
+    # against CRON_CONFIGURATION.md tripped this — Section 12 + footer
+    # were deleted alongside the intended 3-line threshold deprecation.
     start_line = lines[start_idx]
-    end_idx = len(lines)
     if start_line.strip().startswith("#"):
         start_level = len(start_line) - len(start_line.lstrip("#"))
+        end_idx = len(lines)
         for j in range(start_idx + 1, len(lines)):
             if lines[j].strip().startswith("#"):
                 jlevel = len(lines[j]) - len(lines[j].lstrip("#"))
                 if jlevel <= start_level:
                     end_idx = j
                     break
+    else:
+        end_idx = start_idx + 1
     spliced = "".join(lines[:start_idx]) + body + ("\n" if not body.endswith("\n") else "") + "".join(lines[end_idx:])
     target_path.write_text(spliced, encoding="utf-8")
     record_touched(target_path)
