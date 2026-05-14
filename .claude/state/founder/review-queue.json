@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-05-14T02:05:00Z",
+  "purpose": "Manual queue stub maintained while AMD-007 dashboard.html implementation is pending. Honored by Critic gates per AMD-007 P18.6 'Operating discipline (immediate, pre-implementation)'. Replaced by automated regen-dashboard.py aggregation once W1.S?? Founder Review Queue implementation lands.",
+  "governance_gates": {
+    "amendments_pending": 6,
+    "amendments_link": "docs/reports/amendments.html",
+    "amendments_ids": ["AMD-001", "AMD-002", "AMD-003", "AMD-004", "AMD-005", "AMD-007"],
+    "bubbles_flagged": 1,
+    "bubbles_link": "docs/reports/discussion-bubbles.html",
+    "bubbles_ids": ["db-2026-05-14-001"],
+    "bubbles_note": "UI/UX maturity gap; long-running, no immediate Founder action required",
+    "proposals_pending": 0,
+    "proposals_link": "docs/reports/proposals.html",
+    "open_escalations": [
+      {
+        "id": "main-flows-v2-taxonomy",
+        "type": "cross-cutting architecture decision (escalation criterion #5)",
+        "summary": "Phase 2 taxonomy + visual + speculative-flows decisions; defaults documented, awaiting Founder confirmation or override",
+        "link": ".claude/state/main-flows-v2/taxonomy-proposals.md"
+      }
+    ]
+  },
+  "system_health": {
+    "crons": {
+      "downloads-watcher": "not_installed_yet",
+      "maintenance": "not_installed_yet",
+      "overnight-triage": "not_installed_yet"
+    },
+    "last_regen_all": {
+      "status": "PASS",
+      "ts": "2026-05-14T01:59:50Z",
+      "round_trip": "PASS"
+    },
+    "working_tree": "uncommitted (AMD-007 + this stub)",
+    "halts": [],
+    "round_trip_last_pass": "2026-05-14T01:59:50Z"
+  },
+  "activity_since_last_visit": {
+    "note": "Will become accurate once founder/last-visit.json is wired by the implementation ship",
+    "commits_count": 18,
+    "amendments_applied": ["AMD-006"]
+  },
+  "exceptions": [],
+  "stub_acknowledged": "Team operates against this stub for the Critic gates until dashboard.html surfaces the queue natively."
+}

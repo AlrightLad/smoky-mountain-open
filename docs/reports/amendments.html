@@ -245,6 +245,26 @@
         "operating_status": "ACTIVE \u2014 deprecation operates immediately per Founder PROTOCOL UPDATE 2026-05-14; formalization artifact only.",
         "_body_preview": "# AMD-005 \u2014 Deprecate op-count defensive pause heuristic\n\nThis amendment retires the \"defensive pause every 5 atomic ops\" rule\nthat appeared in earlier substrate directives. Founder trusts the\ncurrent substrate guardrails to handle real pause conditions without\narbitrary op-count throttling.\n\n## Why the heuristic existed\n\nThe op-count rule was a placeholder from when:\n- No real token metering exis",
         "_filename": "AMD-005-deprecate-op-count-pause.md"
+      },
+      {
+        "id": "AMD-007",
+        "title": "Dashboard = Founder's Newspaper protocol (canonical review surface)",
+        "target_canonical_path": "docs/agents/PROTOCOLS_v8.1_ADDENDUM.md",
+        "source_draft_path": ".claude/state/amendments/pending/AMD-007-dashboard-as-newspaper.md",
+        "scope_summary": "Establishes dashboard.html as the canonical start-of-day / end-of-day Founder surface. Every Founder-review-needed item \u2014 governance gates, system health, activity since last visit, open exceptions \u2014 routes through a \"Founder Review Queue\" section on dashboard.html. Critic gates added to every commit. Operating immediately; dashboard.html + regen-dashboard.py implementation queued for the next ship cycle.",
+        "type": "append-to-existing",
+        "section_anchor": null,
+        "depends_on": [],
+        "authored_by": "claude-code",
+        "authored_at": "2026-05-14T02:05:00Z",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": "5500",
+        "rollback_strategy": "git revert; protocol text is additive, queue logic in regen-dashboard.py is a clean subtree.",
+        "status": "pending",
+        "operating_status": "ACTIVE \u2014 protocol operates immediately per Founder directive 2026-05-14; dashboard.html + regen-dashboard.py implementation is a separate Wave 1 ship.",
+        "id_conflict_note": "Founder directive originally specified filename AMD-006-dashboard-as-newspaper.md, but AMD-006-P18-amendments-discipline.md is already in applied/ (committed 9edb38e this session). Using AMD-007 to preserve the monotonic-ID invariant per AMD frontmatter schema P18.5.2. Title and content match Founder's stated intent verbatim.",
+        "_body_preview": "# P18.6 \u2014 Dashboard = Founder's Newspaper\n\n## Principle\n\n`docs/reports/dashboard.html` is Founder's canonical newspaper. Every item\nrequiring Founder eyes is surfaced on the dashboard. Team session logs,\nstate-tree files, and per-surface dashboards (amendments.html,\nproposals.html, etc.) are NOT acceptable substitutes \u2014 they're drill-down\ndestinations that the dashboard LINKS TO, not standalone re",
+        "_filename": "AMD-007-dashboard-as-newspaper.md"
       }
     ],
     "approved": [],
@@ -272,13 +292,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 5,
+    "pending": 6,
     "approved": 0,
     "deferred": 0,
     "applied_total": 1,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T01:59:48.836669+00:00",
+  "as_of": "2026-05-14T02:08:17.916094+00:00",
   "schema_version": 1,
   "archive_display_cap": 50
 }
