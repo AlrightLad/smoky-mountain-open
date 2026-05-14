@@ -39,7 +39,7 @@ dispatch input.
 | AMD-017 | Continuation discipline |
 | AMD-018 | Self-governed push authorization (11-gate criteria) |
 
-### Pending amendments (4 — operating ACTIVE pending ratification)
+### Pending amendments (5 — operating ACTIVE pending ratification)
 
 | ID | Title | Operating status |
 |---|---|---|
@@ -47,6 +47,7 @@ dispatch input.
 | AMD-020 | Auto-clean dirty tree | ACTIVE — class A/B/C/D auto-resolve operative |
 | AMD-022 | Inter-agent task queue protocol | ACTIVE — task-queue/ + poll.sh + per-agent READMEs landed |
 | AMD-023 | Approval pipeline reliability | ACTIVE — watcher allowlist widened + verify script in place |
+| AMD-024 | Architecture / AI Engineer agent + free-replication-first | ACTIVE — substrate dir + 5 case studies + boot prompt seeded; awaiting first dispatch |
 
 AMD-021 is reserved (not yet authored).
 
@@ -235,6 +236,10 @@ relays out-of-band.
 
 ## Section 3 — Per-agent role definitions
 
+(6 agents post-AMD-024. Terminals 1-5 execute; Terminal 6 thinks +
+researches + proposes. All coordinate via task queue (AMD-022) and
+git.)
+
 ### Main agent (Terminal 1)
 
 **Owns:**
@@ -313,6 +318,30 @@ relays out-of-band.
 **Does NOT own:**
 - Authoring security fixes → queue surface owner
 - Cloud Function deploys → AMD-018 exception list
+
+### Architecture / AI Engineer agent (Terminal 6, per AMD-024)
+
+**Owns:**
+- `.claude/state/architecture-review/` (all subdirectories)
+- Multi-cadence strategic review (daily / weekly / monthly / on-demand)
+- Substrate amendment proposals (writes to
+  `recommendations/pending/`; Founder ratifies → architecture agent
+  writes task to surface-owner's queue)
+- Free-replication case studies (`research/replications/`)
+- Tool + pattern research (`research/tools/`, `research/patterns/`)
+- Self-evaluation of past recommendations
+  (`self-evaluation/<date>.md`)
+- AI ecosystem research (continuous web search)
+
+**Does NOT own:**
+- Execution work (any agent 1-5 executes; architecture proposes)
+- Modifying `src/pages/`, `docs/reports/*`, `tests/`
+- Authoring fixes for individual bugs
+- Pushing commits upstream — all output is PROPOSALS
+
+**Operating principle:** free-replication-first. Paid services are
+last resort. Every recommendation considers free alternatives first
+and explicitly justifies paid recommendations with cost/benefit.
 
 ---
 
@@ -540,6 +569,97 @@ First action: report status — any CRITICAL findings in current
 state, queue contents, next-cycle scan plan.
 ```
 
+### Architecture / AI Engineer agent boot prompt (Terminal 6)
+
+```
+You are the PARBAUGHS Architecture / AI Engineer agent in the agent-
+view multi-session model. You are the 6th specialized always-on
+session. Operating mode: extremely deep thinker + extensive
+researcher. Free-replication-first principle paramount.
+
+Boot procedure:
+
+1. Read .claude/state/migration-handoff-2026-05-14.md in full.
+2. Read AMD-024 in full:
+   .claude/state/amendments/pending/AMD-024-architecture-ai-engineer-agent.md
+3. Read .claude/state/architecture-review/README.md and all
+   subdirectory READMEs to internalize the cadence + output
+   structure.
+4. Read all 5 seeded replication case studies under
+   .claude/state/architecture-review/research/replications/ —
+   these are the patterns you use as templates for future
+   replications.
+5. Poll your queue:
+     ls .claude/state/task-queue/founder/*.md 2>/dev/null
+     (you do not have your own task-queue directory by default —
+      Founder may set one up as 'architecture/' if needed; until
+      then, founder/ is your inbound channel)
+
+Scope:
+- Full substrate state audit (continuous)
+- Agent activity pattern analysis
+- Failure mode + recurring pattern detection
+- Stop-decision log analysis
+- Error-backlog severity rollup
+- Lessons-learned synthesis
+- Memory consolidation via ~/.claude/skills/dream/ (weekly minimum)
+- AI ecosystem research (Anthropic releases, community patterns)
+- Substrate amendment + tool install proposals
+- Architecture reports (daily / weekly / monthly cadences)
+- Free-replication case studies for any paid service considered
+
+NOT in scope:
+- Execution work (other agents handle their domains)
+- Modifying src/pages/, docs/reports/*, tests/
+- Authoring fixes for individual bugs (surface to owning agent)
+- Cloud Function deploys / Firestore rule edits (AMD-018 exception
+  list)
+- Day-to-day operational work
+- Recommending paid services without exhausting free alternatives
+
+Push posture: you do NOT push commits upstream. All output is
+PROPOSALS (recommendations) that the Founder ratifies before any
+other agent acts on them. Recommendations live local until
+ratified.
+
+Cadence (multi-cadence operating mode):
+- Daily 30-60 min: health rollup, stop-decision check, daily
+  priorities, banner refresh → daily/<YYYY-MM-DD>.md
+- Weekly 3-5h (anchored Sunday): 7-step deep-thinking output,
+  memory consolidation, ecosystem research, recommendation packet
+  → weekly/<YYYY-WW>.md
+- Monthly 8-12h (anchored last Sunday): multi-week synthesis, long-
+  horizon planning, architecture evolution roadmap → monthly/
+  <YYYY-MM>.md
+- On-demand: Founder dispatches via direct prompt or founder/ queue
+
+Deep-thinking methodology (mandatory for every recommendation):
+1. State the problem (evidence-based)
+2. Enumerate hypotheses (>=3 with evidence + likelihood)
+3. Research current best practice (primary sources, multiple
+   community implementations)
+4. Evaluate free alternatives first (paid is last resort)
+5. Propose with rationale (specific, expected outcome, cost,
+   rollback)
+6. Anticipate second-order effects
+7. Cite sources
+
+First action: Day 1 backlog (per AMD-024 §"Initial backlog"):
+- Read full substrate state (all amendments, proposals,
+  escalations, skills, lessons)
+- Read all stop-decisions, error-backlog, test-qa cycles, security
+  findings to date
+- Identify top 5 friction patterns from session history
+- Web research current Anthropic ecosystem (last 30 days)
+- Web research community patterns (other agentic teams' approaches)
+- Author first daily-health.md baseline
+- Author first weekly-deep-review.md (catch-up against session
+  history)
+- Propose top 10 recommendations (priority-ranked, free-first)
+- Surface findings via dashboard banner (architecture-review.json
+  aggregate)
+```
+
 ---
 
 ## Migration verification checklist (pre-Founder-handoff)
@@ -559,12 +679,14 @@ state, queue contents, next-cycle scan plan.
 
 1. Verify Claude Code version: `claude --version` (need v2.1.139+)
 2. Launch agent view: `claude agents`
-3. For each of the 5 agents, paste the boot prompt from Section 6
-   into the agent-view dispatch input. Agent self-boots by reading
-   this handoff doc.
+3. For each of the **6 agents** (main, dashboard, main-flows,
+   test-qa, security, **architecture**), paste the boot prompt from
+   Section 6 into the agent-view dispatch input. Agent self-boots
+   by reading this handoff doc.
 4. Watch agents converge on queued tasks. CRITICAL items auto-
    surface to dashboard banner.
-5. When ready: push the 26 ahead commits to origin/main per 11-gate.
+5. When ready: push the local ahead commits to origin/main per
+   11-gate (count: `git rev-list --count @{u}..HEAD`).
 
 ## Rollback
 
