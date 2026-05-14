@@ -1,0 +1,132 @@
+#!/usr/bin/env sh
+# post-commit — dashboard freshness per commit (AMD-019, husky-managed).
+#
+# Git's core.hooksPath is set to .husky/_ (by Husky), so the legacy hook
+# at .git/hooks/post-commit DOES NOT FIRE. This is the live hook.
+#
+# Scope split (dashboard health agent owns this hook):
+#   - Runs the dashboard regen subset (NOT regen-main-flows.py — main-flows
+#     polish agent owns that surface).
+#   - AMD-020 Class A auto-clean: commits the dashboard regen output so it
+#     does not accumulate in the working tree.
+#   - Auto-commit uses "cron(routine):" prefix → next hook fire bails via
+#     the recursion guard below.
+#   - Does NOT push (push remains AMD-018 agent-decided).
+#
+# Synchronous: the founder's commit waits for regen+auto-commit so the
+# local dashboard at file:///.../docs/reports/dashboard.html reflects the
+# new commit before any next action.
+
+set -e
+cd "$(git rev-parse --show-toplevel)"
+
+# Recursion guard: my own auto-commit re-fires this hook. Bail on
+# cron(routine) / decision-apply commits so we don't loop.
+HEAD_MSG=$(git log -1 --pretty=%s 2>/dev/null || echo "")
+case "$HEAD_MSG" in
+    "cron(routine)"*|"Apply proposal decisions"*|"Apply amendment decisions"*|"Apply escalation decisions"*|"cron: "*)
+        exit 0
+        ;;
+esac
+
+# Locate python (mirrors regen-all.sh)
+PY=""
+for c in \
+    "$LOCALAPPDATA/Programs/Python/Python312/python.exe" \
+    "$LOCALAPPDATA/Programs/Python/Python311/python.exe" \
+    "/usr/bin/python3" \
+    "/usr/local/bin/python3"; do
+    if [ -x "$c" ] >/dev/null 2>&1 || command -v "$c" >/dev/null 2>&1; then
+        PY="$c"; break
+    fi
+done
+if [ -z "$PY" ]; then
+    PY=$(command -v python3 2>/dev/null || command -v python 2>/dev/null || echo "python")
+fi
+
+# Read ship_id from current-ship.json (per ESC-003 Approach A)
+SHIP_PATH=".claude/state/current-ship.json"
+SHIP_ID=""
+if [ -f "$SHIP_PATH" ]; then
+    SHIP_ID=$("$PY" -c "
+import json
+try:
+    d = json.load(open('$SHIP_PATH'))
+    print(d.get('ship_id') or '', end='')
+except Exception:
+    print('', end='')
+" 2>/dev/null || echo "")
+fi
+
+# Emit team-work summary event (best-effort)
+if [ -f "scripts/emit-team-work-summary.py" ]; then
+    EMIT_ARGS="--agent engineer --tokens 0 --note post-commit-hook"
+    if [ -n "$SHIP_ID" ]; then
+        EMIT_ARGS="$EMIT_ARGS --ship-id $SHIP_ID"
+    fi
+    "$PY" scripts/emit-team-work-summary.py $EMIT_ARGS >/dev/null 2>&1 || true
+fi
+
+# Regenerate dashboard subset (best-effort). Order matters: aggregates
+# before consumers. regen-main-flows.py is EXCLUDED — main-flows polish
+# agent owns that surface and regenerates on their own commits.
+REGEN_SCRIPTS="\
+scripts/scan-shipped-proposals.py
+scripts/aggregate-telemetry.py
+scripts/aggregate-token-usage.py
+scripts/regen-proposals.py
+scripts/regen-amendments.py
+scripts/regen-escalations.py
+scripts/regen-dashboard.py
+scripts/dry-run-regen-ops-views.py
+scripts/regen-token-usage.py
+scripts/regen-index.py"
+
+for s in $REGEN_SCRIPTS; do
+    if [ -f "$s" ]; then
+        "$PY" "$s" >/dev/null 2>&1 || true
+    fi
+done
+
+# AMD-020 Class A auto-clean. Commit ONLY dashboard regen output. Exclude
+# docs/reports/main-flows.html and .claude/state/main-flows-v2/* — owned
+# by main-flows polish agent. Exclude any modifications outside the
+# allowlist (source code, configs, etc.) — those belong to the agent who
+# made the original commit.
+CLASS_A_PATHS="\
+docs/reports/dashboard.html
+docs/reports/amendments.html
+docs/reports/proposals.html
+docs/reports/escalations.html
+docs/reports/activity.html
+docs/reports/token-usage.html
+docs/reports/discussion-bubbles.html
+docs/reports/design-system.html
+docs/reports/index.html
+.claude/state/telemetry/aggregates"
+
+DIRTY=""
+for p in $CLASS_A_PATHS; do
+    if [ -e "$p" ]; then
+        if ! git diff --quiet HEAD -- "$p" 2>/dev/null; then
+            DIRTY="$DIRTY $p"
+        fi
+    fi
+done
+
+if [ -n "$DIRTY" ]; then
+    for f in $DIRTY; do
+        git add -- "$f" 2>/dev/null || true
+    done
+    # Only commit if there are actual staged changes (defensive — stat-only
+    # dirty paths may have nothing real to commit).
+    if ! git diff --cached --quiet 2>/dev/null; then
+        GIT_AUTHOR_NAME="PARBAUGHS Dashboard Agent" \
+        GIT_AUTHOR_EMAIL="dashboard@parbaughs.local" \
+        GIT_COMMITTER_NAME="PARBAUGHS Dashboard Agent" \
+        GIT_COMMITTER_EMAIL="dashboard@parbaughs.local" \
+        git commit -m "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)" >/dev/null 2>&1 || true
+    fi
+fi
+
+exit 0
