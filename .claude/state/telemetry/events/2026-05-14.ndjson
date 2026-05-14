@@ -44,3 +44,5 @@
 {"timestamp":"2026-05-14T04:00:48.9188799Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"1dbc29fca57f","cron_source":"downloads-watcher"}}
 {"timestamp":"2026-05-14T04:00:52.1976204Z","event_type":"cron.downloads-watcher.end","data":{"success":false,"exit_reason":"apply-failures","cron_source":"downloads-watcher","duration_ms":3348,"claude_invoked":false,"run_id":"1dbc29fca57f"}}
 {"timestamp":"2026-05-14T04:05:48.8949341Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"c684b5705c73","cron_source":"downloads-watcher"}}
+{"timestamp":"2026-05-14T04:05:53.0488331Z","event_type":"cron.downloads-watcher.end","data":{"success":false,"exit_reason":"apply-failures","cron_source":"downloads-watcher","duration_ms":4222,"claude_invoked":false,"run_id":"c684b5705c73"}}
+{"timestamp":"2026-05-14T04:10:49.0899105Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"4f9bf49a69f9","cron_source":"downloads-watcher"}}
