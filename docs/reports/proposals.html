@@ -297,6 +297,45 @@
   "proposals": {
     "pending": [
       {
+        "id": "PROP-011",
+        "title": "Vision capability install (Anthropic skills + Z.AI MCP deferred)",
+        "lane": 1,
+        "lane_label": "Substrate Discipline",
+        "ship_target": "Substrate",
+        "created_at": "2026-05-14T20:45:00Z",
+        "rationale": "Founder directive 2026-05-14 'EQUIP THE TEAM WITH VISION': the team has been Playwright-measuring without VISION. 13 iterations of main-flows shipped with verification gaps that 'pixel computation' (getComputedStyle, getBoundingClientRect, scrollTop) cannot catch because those gaps are felt, not measured. Founder identified 5 options for closing the gap. This proposal selects, audits, and installs the safe + accessible subset, defers the API-key-dependent option, and documents how the team uses them.",
+        "scope": "Six deliverables: (1) Install anthropics/skills frontend-design + webapp-testing + canvas-design + theme-factory (free, official, audited per Snyk-style review). (2) Document Z.AI MCP install command for when Founder provides API key (`@z_ai/mcp-server` v0.1.4 on npm, official). (3) Author iter-14 main-flows visual review using the LLM's built-in multimodal vision (Read tool sees rendered PNGs \u2014 capability already present, discipline was missing). (4) Update design-bot protocol (PROP-010) to invoke the new skills explicitly. (5) Author this proposal with rationale per AMD-015. (6) Update engineering-mindset.md with the 'capability vs perception' observation.",
+        "estimate": {
+          "cost_tokens": 7000,
+          "duration_minutes": 25,
+          "risk": "low"
+        },
+        "files_affected": [
+          "~/.claude/skills/frontend-design/ (NEW, installed this ship)",
+          "~/.claude/skills/webapp-testing/ (NEW, installed this ship)",
+          "~/.claude/skills/canvas-design/ (NEW, installed this ship)",
+          "~/.claude/skills/theme-factory/ (NEW, installed this ship)",
+          ".claude/state/proposals/pending/PROP-011-vision-capability-install.md (this file)",
+          ".claude/state/main-flows-v2/iter-14-visual-review.md (NEW, applied iter 14)",
+          ".claude/state/lessons-learned/engineering-mindset.md \u2014 vision addendum"
+        ],
+        "fallback_plan": "Plan A (chosen): install Anthropic-official skills via sparse clone of github.com/anthropics/skills (no API key, no remote network during runtime, audited content). Plan B (deferred): install Z.AI MCP (@z_ai/mcp-server) when Founder provides API key \u2014 `claude mcp add zai -- npx -y @z_ai/mcp-server@latest` with API key env var. Plan C: ai-vision-mcp (Gemini-based) as alternative if Z.AI unavailable. Plan D (rejected): community skills with Snyk-flagged prompt-injection risk \u2014 only audited/official sources. Plan E: use Claude's built-in multimodal Read capability as the immediate baseline; the skills add discipline + structure on top.",
+        "rollback_strategy": "git revert (this file). Skills can be removed via `rm -rf ~/.claude/skills/<name>/` if any are surfaced as problematic. No remote dependencies activated.",
+        "round_trip_coverage": "No new round-trip block. Skills are loaded by Claude Code at session start; round-trip verifies dashboard data integrity, not skill activation. PROP-010 design-bot ship-close gate covers visual verification workflow.",
+        "depends_on": [
+          "PROP-006",
+          "PROP-007",
+          "PROP-008",
+          "PROP-009",
+          "PROP-010"
+        ],
+        "authored_by": "claude-code",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": 2500,
+        "status": "pending",
+        "operating_status": "Anthropic skills installed + audited this ship. Z.AI MCP install command documented for when Founder authorizes + provides API key. iter-14 visual review demonstrates discipline using built-in multimodal capability."
+      },
+      {
         "id": "PROP-010",
         "title": "Design-bot role formalization (Playwright MCP mandatory, ship-close gate)",
         "lane": 1,
@@ -749,13 +788,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 5,
+    "pending": 6,
     "approved": 1,
     "deferred": 0,
     "shipped_total": 4,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T20:30:28.802899+00:00",
+  "as_of": "2026-05-14T20:46:01.748861+00:00",
   "schema_version": 2,
   "archive_display_cap": 50
 }

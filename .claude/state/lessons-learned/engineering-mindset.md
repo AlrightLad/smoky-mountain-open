@@ -492,6 +492,78 @@ The Wave 1 ships landing post-PROP-010 inherit this full stack
 without rediscovering it. The 12-iteration pattern should not recur
 for any surface the stack covers.
 
+---
+
+## Addendum (iter 14, 2026-05-14): capability ≠ perception
+
+Founder directive 2026-05-14: "EQUIP THE TEAM WITH VISION". The
+team has been Playwright-measuring without VISION across 13
+iterations.
+
+### Observation 9 — Multimodal capability existed; discipline did not
+
+Claude (Agent 3) is a multimodal LLM. The Read tool surfaces rendered
+PNG content visually — what I see when I Read an image is what a
+human would see looking at it.
+
+This capability has been available the entire session. Iter 6 read
+the Janowiak reference. Iter 11 read the rail-bottom screenshot.
+Iter 12 read the chart screenshot. **Every iteration could have
+used multimodal vision for systematic image comparison.** None did
+the comparison systematically until iter 14.
+
+The gap was not capability. The gap was DISCIPLINE: read both images,
+write down what's in each, compare element-by-element with
+articulated observations — not just glance + assert.
+
+### Fix 17 — Anthropic-official skills installed (PROP-011)
+
+Sparse-cloned `github.com/anthropics/skills` and copied 4 skills to
+`~/.claude/skills/`:
+- frontend-design — aesthetic discipline, "avoid AI slop"
+- webapp-testing — Playwright formalization
+- canvas-design — share-card patterns
+- theme-factory — design token guidance
+
+Free, official, audited (SKILL.md content reviewed for executable
+risk; none found). Skills are discovered by Claude Code at session
+start.
+
+### Fix 18 — Z.AI MCP install path documented (deferred until API key)
+
+`@z_ai/mcp-server` v0.1.4 (verified on npm) provides automated
+`ui_diff_check` tool — vision-model-grade reference comparison.
+Install command documented in PROP-011 for activation when Founder
+provides API key. Until then, built-in multimodal vision + the
+discipline (Fix 17 + Fix 19) cover the gap.
+
+### Fix 19 — Iter-14 visual review discipline (operative)
+
+The first systematic eye-test of reference vs current:
+- Read both images via Read tool (multimodal capability)
+- Articulate what's in each (forces actual looking)
+- Per-element diff with MATCH / DEVIATION / GAP / APPROXIMATION verdicts
+- Document Founder-ratified deviations explicitly
+- Surface actual gaps for Founder ratification per AMD-015
+
+Found in iter 14: **zero new gaps** beyond the one "default selection
+state" question (POTENTIAL GAP, surfaced for Founder design-intent
+ratification — team's default-operative answer: keep empty-state-as-
+prompt). All 13 prior iterations' fixes hold under systematic eye-test.
+
+### Forward implications
+
+Capability is necessary but not sufficient. The team had multimodal
+vision in iter 1 and didn't apply it systematically until iter 14.
+Future "reference comparison" work must invoke the discipline:
+1. Read the reference frame via Read tool
+2. Read the current capture via Read tool
+3. Write down what's in each (proves the looking happened)
+4. Per-element diff with explicit verdicts
+5. Design-bot review with explicit approve/request/block
+
+No more "checklist run" without explicit visual articulation.
+
 Acceptable evidence for user-facing surfaces (post-PROP-007):
 1. Round-trip + scroll-reachability (agent-context smoke) — necessary
 2. Side-by-side comparison + checklist (visual reference match) — necessary
