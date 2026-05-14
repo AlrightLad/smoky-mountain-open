@@ -20,23 +20,28 @@ files), but accurate enough for the diagram to light up
 representatively for each flow. Founder + design-bot can refine
 specific paths in follow-on ships.
 """
-import re
 import json
 import sys
 from pathlib import Path
 
-HTML_PATH = Path("docs/reports/main-flows.html")
+# Iter 16.2 fix: there are TWO sources merged by regen-main-flows.py:
+#  - main-flows-data.json holds flows[] (path-rich entries; F1-F8)
+#  - .claude/state/main-flows-v2/flow-inventory.json holds flow_rail
+#    (62-entry catalog; F1-F62 with metadata but no step paths)
+# Generator must read flow_rail from the inventory + write generated
+# entries to main-flows-data.json's flows[].
+DATA_PATH = Path("docs/reports/_assets/main-flows-data.json")
+INVENTORY_PATH = Path(".claude/state/main-flows-v2/flow-inventory.json")
 
 
 def main():
-    txt = HTML_PATH.read_text(encoding="utf-8")
-    m = re.search(r'(<script id="report-data" type="application/json">\s*)([\s\S]*?)(\s*</script>)', txt)
-    if not m:
-        print("ERR: data block not found", file=sys.stderr)
-        sys.exit(2)
-    data = json.loads(m.group(2))
+    data = json.loads(DATA_PATH.read_text(encoding="utf-8"))
+    inventory = json.loads(INVENTORY_PATH.read_text(encoding="utf-8"))
 
-    flow_rail = data.get("flow_rail", [])
+    flow_rail = inventory.get("flow_rail") or inventory.get("flows") or []
+    if not flow_rail and isinstance(inventory, list):
+        flow_rail = inventory  # raw list-form
+
     existing_flows = data.get("flows", [])
     existing_ids = {f["id"] for f in existing_flows}
 
@@ -56,14 +61,13 @@ def main():
     # Append to flows[]
     data["flows"].extend(to_add)
 
-    # Re-serialize + write back
-    new_data_json = json.dumps(data, indent=2, ensure_ascii=False)
-    new_txt = txt[:m.start(2)] + new_data_json + txt[m.end(2):]
-    HTML_PATH.write_text(new_txt, encoding="utf-8")
+    # Re-serialize + write back to canonical source
+    DATA_PATH.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
-    print(f"Added {len(to_add)} flow entries:")
+    print(f"Added {len(to_add)} flow entries to {DATA_PATH}:")
     for f in to_add:
         print(f"  {f['id']:5s} {f['name'][:55]:55s} steps={len(f['steps'])}")
+    print("Run scripts/regen-main-flows.py to materialize into HTML.")
 
 
 def _build_flow(rail_entry):

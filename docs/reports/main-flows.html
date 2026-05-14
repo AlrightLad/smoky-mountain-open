@@ -500,7 +500,7 @@
         {
           "id": "fn.search-courses",
           "label": "searchCourses",
-          "subtitle": "Proxy → GolfCourseAPI"
+          "subtitle": "Proxy \u2192 GolfCourseAPI"
         },
         {
           "id": "fn.validate-invite",
@@ -654,7 +654,7 @@
         {
           "id": "ext.anthropic",
           "label": "Anthropic API",
-          "subtitle": "Phase 4 — AI Caddie (planned)"
+          "subtitle": "Phase 4 \u2014 AI Caddie (planned)"
         }
       ]
     }
@@ -778,14 +778,14 @@
           "from": "client.hq-home",
           "to": "client.hq-feed",
           "label": "Tap pulse card",
-          "description": "Pulse card click → Router.go('feed') for full activity stream."
+          "description": "Pulse card click \u2192 Router.go('feed') for full activity stream."
         },
         {
           "n": 5,
           "from": "client.hq-feed",
           "to": "client.hq-leagues",
           "label": "Tap leagues",
-          "description": "Bottom nav 'Leagues' → src/pages/leagues.js; standings table renders."
+          "description": "Bottom nav 'Leagues' \u2192 src/pages/leagues.js; standings table renders."
         },
         {
           "n": 6,
@@ -819,7 +819,7 @@
           "from": "actor.member",
           "to": "client.hq-members",
           "label": "Open Members",
-          "description": "Router.go('members') loads src/pages/members.js — A-Z directory with public profiles."
+          "description": "Router.go('members') loads src/pages/members.js \u2014 A-Z directory with public profiles."
         },
         {
           "n": 2,
@@ -833,7 +833,7 @@
           "from": "client.hq-members",
           "to": "data.members",
           "label": "Send friend request",
-          "description": "Tap CTA → write friend-request doc; recipient's members doc gets pending friend entry (W1.S3 redesigns this)."
+          "description": "Tap CTA \u2192 write friend-request doc; recipient's members doc gets pending friend entry (W1.S3 redesigns this)."
         },
         {
           "n": 4,
@@ -882,7 +882,7 @@
           "from": "actor.member",
           "to": "client.hq-wagers",
           "label": "Open Wagers",
-          "description": "Router.go('wagers') → src/pages/wagers.js; current league's open wagers list."
+          "description": "Router.go('wagers') \u2192 src/pages/wagers.js; current league's open wagers list."
         },
         {
           "n": 2,
@@ -910,14 +910,14 @@
           "from": "client.hq-playnow",
           "to": "data.rounds",
           "label": "Round outcome",
-          "description": "Submitted rounds resolve the wager (lower score wins, etc. — settlement logic per W1.S6 spec)."
+          "description": "Submitted rounds resolve the wager (lower score wins, etc. \u2014 settlement logic per W1.S6 spec)."
         },
         {
           "n": 6,
           "from": "data.rounds",
           "to": "data.parcoins",
           "label": "Settle winnings",
-          "description": "Winner's balance credited 2× stakes; loser's already-debited; ledger entry on both sides."
+          "description": "Winner's balance credited 2\u00d7 stakes; loser's already-debited; ledger entry on both sides."
         },
         {
           "n": 7,
@@ -959,7 +959,7 @@
           "from": "client.hq-teetimes",
           "to": "data.events",
           "label": "Post tee time",
-          "description": "writeTeeTime(date, course, openings) → teetimes collection doc with leagueId scope."
+          "description": "writeTeeTime(date, course, openings) \u2192 teetimes collection doc with leagueId scope."
         },
         {
           "n": 3,
@@ -973,7 +973,7 @@
           "from": "client.hq-feed",
           "to": "data.events",
           "label": "RSVP click",
-          "description": "Other member taps RSVP → tee time doc's rsvps[] array updated."
+          "description": "Other member taps RSVP \u2192 tee time doc's rsvps[] array updated."
         },
         {
           "n": 5,
@@ -1017,7 +1017,7 @@
           "from": "actor.member",
           "to": "client.hq-playnow",
           "label": "Trigger action",
-          "description": "Member completes round / range session / wager — any can trigger an achievement check."
+          "description": "Member completes round / range session / wager \u2014 any can trigger an achievement check."
         },
         {
           "n": 2,
@@ -1031,7 +1031,7 @@
           "from": "data.rounds",
           "to": "data.parcoins",
           "label": "ParCoin reward",
-          "description": "Achievement unlock → parcoin_transactions credit per CLAUDE.md economy table (100 for 18H PB, 50 for 9H PB)."
+          "description": "Achievement unlock \u2192 parcoin_transactions credit per CLAUDE.md economy table (100 for 18H PB, 50 for 9H PB)."
         },
         {
           "n": 4,
@@ -1072,7 +1072,7 @@
           "from": "actor.member",
           "to": "client.hq-home",
           "label": "Tap 'Log range'",
-          "description": "Home CTA → Router.go('range') → src/pages/range.js."
+          "description": "Home CTA \u2192 Router.go('range') \u2192 src/pages/range.js."
         },
         {
           "n": 2,
@@ -1086,14 +1086,14 @@
           "from": "client.hq-range",
           "to": "data.rounds",
           "label": "Submit session",
-          "description": "Range session doc written (separate from rounds — uses syncrounds or rangelive collection per page mode)."
+          "description": "Range session doc written (separate from rounds \u2014 uses syncrounds or rangelive collection per page mode)."
         },
         {
           "n": 4,
           "from": "data.rounds",
           "to": "data.parcoins",
-          "label": "Reward if ≥30 min",
-          "description": "If session duration ≥ 30 min, ParCoin reward (10 coins) per CLAUDE.md economy."
+          "label": "Reward if \u226530 min",
+          "description": "If session duration \u2265 30 min, ParCoin reward (10 coins) per CLAUDE.md economy."
         },
         {
           "n": 5,
@@ -1135,7 +1135,7 @@
           "from": "client.hq-feed",
           "to": "client.hq-spectator",
           "label": "Tap to spectate",
-          "description": "Router.go('spectator?roundId=X') → src/pages/spectator.js; Spectator HUD overlays score + hole + last shot."
+          "description": "Router.go('spectator?roundId=X') \u2192 src/pages/spectator.js; Spectator HUD overlays score + hole + last shot."
         },
         {
           "n": 3,
@@ -1211,7 +1211,7 @@
     },
     {
       "id": "F10",
-      "name": "Settings — appearance + privacy + notifications",
+      "name": "Settings \u2014 appearance + privacy + notifications",
       "primary_user_goal": "Adjust theme (light/dark), set public/private profile, configure push notifications.",
       "actor": "actor.member",
       "served_by_ships": [
@@ -1233,42 +1233,42 @@
           "from": "actor.member",
           "to": "client.hq-settings",
           "label": "Open surface",
-          "description": "Settings — appearance + privacy + notifications: user opens hq settings surface."
+          "description": "Settings \u2014 appearance + privacy + notifications: user opens hq settings surface."
         },
         {
           "n": 2,
           "from": "client.hq-settings",
           "to": "fn.send-push",
           "label": "Invoke function",
-          "description": "Settings — appearance + privacy + notifications: client invokes send push cloud function."
+          "description": "Settings \u2014 appearance + privacy + notifications: client invokes send push cloud function."
         },
         {
           "n": 3,
           "from": "fn.send-push",
           "to": "data.notifications",
           "label": "Function writes",
-          "description": "Settings — appearance + privacy + notifications: function writes notifications."
+          "description": "Settings \u2014 appearance + privacy + notifications: function writes notifications."
         },
         {
           "n": 4,
           "from": "data.notifications",
           "to": "data.members",
           "label": "Cross-collection update",
-          "description": "Settings — appearance + privacy + notifications: change in notifications propagates to members."
+          "description": "Settings \u2014 appearance + privacy + notifications: change in notifications propagates to members."
         },
         {
           "n": 5,
           "from": "data.members",
           "to": "dist.gh-pages",
           "label": "Serve to client",
-          "description": "Settings — appearance + privacy + notifications: state surfaces back to client via gh pages."
+          "description": "Settings \u2014 appearance + privacy + notifications: state surfaces back to client via gh pages."
         },
         {
           "n": 6,
           "from": "dist.gh-pages",
           "to": "ext.fcm",
           "label": "External service",
-          "description": "Settings — appearance + privacy + notifications: external service fcm contributes."
+          "description": "Settings \u2014 appearance + privacy + notifications: external service fcm contributes."
         }
       ],
       "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
@@ -1742,7 +1742,7 @@
     {
       "id": "F21",
       "name": "Challenge another member",
-      "primary_user_goal": "Issue a head-to-head challenge (different from wager — no ParCoin escrow required).",
+      "primary_user_goal": "Issue a head-to-head challenge (different from wager \u2014 no ParCoin escrow required).",
       "actor": "actor.member",
       "served_by_ships": [
         "W1.S6"
@@ -2180,7 +2180,7 @@
     {
       "id": "F31",
       "name": "View FAQ / Rules",
-      "primary_user_goal": "Read how things work — handicaps, ParCoins, attestation, etiquette.",
+      "primary_user_goal": "Read how things work \u2014 handicaps, ParCoins, attestation, etiquette.",
       "actor": "actor.member",
       "served_by_ships": [],
       "status": "shipped",
@@ -2274,7 +2274,7 @@
     {
       "id": "F33",
       "name": "View other member's public profile",
-      "primary_user_goal": "Read another member's public profile — avatar, handicap, level, home course, bio.",
+      "primary_user_goal": "Read another member's public profile \u2014 avatar, handicap, level, home course, bio.",
       "actor": "actor.member",
       "served_by_ships": [
         "W1.S3"
@@ -2321,7 +2321,7 @@
     },
     {
       "id": "F34",
-      "name": "Social action — trash talk / spotlight / victory lap",
+      "name": "Social action \u2014 trash talk / spotlight / victory lap",
       "primary_user_goal": "Apply a coin-cost social effect to another member (Spotlight of Shame, Victory Lap, etc.).",
       "actor": "actor.member",
       "served_by_ships": [
@@ -2341,21 +2341,21 @@
           "from": "actor.member",
           "to": "client.hq-feed",
           "label": "Open surface",
-          "description": "Social action — trash talk / spotlight / victory lap: user opens hq feed surface."
+          "description": "Social action \u2014 trash talk / spotlight / victory lap: user opens hq feed surface."
         },
         {
           "n": 2,
           "from": "client.hq-feed",
           "to": "data.social",
           "label": "Read/write data",
-          "description": "Social action — trash talk / spotlight / victory lap: client reads/writes social collection."
+          "description": "Social action \u2014 trash talk / spotlight / victory lap: client reads/writes social collection."
         },
         {
           "n": 3,
           "from": "data.social",
           "to": "dist.gh-pages",
           "label": "Serve to client",
-          "description": "Social action — trash talk / spotlight / victory lap: state surfaces back to client via gh pages."
+          "description": "Social action \u2014 trash talk / spotlight / victory lap: state surfaces back to client via gh pages."
         }
       ],
       "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
@@ -2458,7 +2458,7 @@
     },
     {
       "id": "F37",
-      "name": "Commissioner — approve / reject member application",
+      "name": "Commissioner \u2014 approve / reject member application",
       "primary_user_goal": "Review pending member applications, approve or reject with note.",
       "actor": "actor.commissioner",
       "served_by_ships": [
@@ -2478,35 +2478,35 @@
           "from": "actor.commissioner",
           "to": "client.hq-admin",
           "label": "Open surface",
-          "description": "Commissioner — approve / reject member application: user opens hq admin surface."
+          "description": "Commissioner \u2014 approve / reject member application: user opens hq admin surface."
         },
         {
           "n": 2,
           "from": "client.hq-admin",
           "to": "fn.on-member-role-change",
           "label": "Invoke function",
-          "description": "Commissioner — approve / reject member application: client invokes on member role change cloud function."
+          "description": "Commissioner \u2014 approve / reject member application: client invokes on member role change cloud function."
         },
         {
           "n": 3,
           "from": "fn.on-member-role-change",
           "to": "data.members",
           "label": "Function writes",
-          "description": "Commissioner — approve / reject member application: function writes members."
+          "description": "Commissioner \u2014 approve / reject member application: function writes members."
         },
         {
           "n": 4,
           "from": "data.members",
           "to": "dist.gh-pages",
           "label": "Serve to client",
-          "description": "Commissioner — approve / reject member application: state surfaces back to client via gh pages."
+          "description": "Commissioner \u2014 approve / reject member application: state surfaces back to client via gh pages."
         }
       ],
       "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
     },
     {
       "id": "F38",
-      "name": "Commissioner — suspend / restore member",
+      "name": "Commissioner \u2014 suspend / restore member",
       "primary_user_goal": "Temporarily suspend a member (rule violation) or restore from suspension.",
       "actor": "actor.commissioner",
       "served_by_ships": [
@@ -2526,35 +2526,35 @@
           "from": "actor.commissioner",
           "to": "client.hq-admin",
           "label": "Open surface",
-          "description": "Commissioner — suspend / restore member: user opens hq admin surface."
+          "description": "Commissioner \u2014 suspend / restore member: user opens hq admin surface."
         },
         {
           "n": 2,
           "from": "client.hq-admin",
           "to": "fn.on-member-role-change",
           "label": "Invoke function",
-          "description": "Commissioner — suspend / restore member: client invokes on member role change cloud function."
+          "description": "Commissioner \u2014 suspend / restore member: client invokes on member role change cloud function."
         },
         {
           "n": 3,
           "from": "fn.on-member-role-change",
           "to": "data.members",
           "label": "Function writes",
-          "description": "Commissioner — suspend / restore member: function writes members."
+          "description": "Commissioner \u2014 suspend / restore member: function writes members."
         },
         {
           "n": 4,
           "from": "data.members",
           "to": "dist.gh-pages",
           "label": "Serve to client",
-          "description": "Commissioner — suspend / restore member: state surfaces back to client via gh pages."
+          "description": "Commissioner \u2014 suspend / restore member: state surfaces back to client via gh pages."
         }
       ],
       "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
     },
     {
       "id": "F39",
-      "name": "Commissioner — transfer commissioner role",
+      "name": "Commissioner \u2014 transfer commissioner role",
       "primary_user_goal": "Hand off commissioner role to another league member.",
       "actor": "actor.commissioner",
       "served_by_ships": [
@@ -2574,35 +2574,35 @@
           "from": "actor.commissioner",
           "to": "client.hq-admin",
           "label": "Open surface",
-          "description": "Commissioner — transfer commissioner role: user opens hq admin surface."
+          "description": "Commissioner \u2014 transfer commissioner role: user opens hq admin surface."
         },
         {
           "n": 2,
           "from": "client.hq-admin",
           "to": "fn.on-member-role-change",
           "label": "Invoke function",
-          "description": "Commissioner — transfer commissioner role: client invokes on member role change cloud function."
+          "description": "Commissioner \u2014 transfer commissioner role: client invokes on member role change cloud function."
         },
         {
           "n": 3,
           "from": "fn.on-member-role-change",
           "to": "data.members",
           "label": "Function writes",
-          "description": "Commissioner — transfer commissioner role: function writes members."
+          "description": "Commissioner \u2014 transfer commissioner role: function writes members."
         },
         {
           "n": 4,
           "from": "data.members",
           "to": "dist.gh-pages",
           "label": "Serve to client",
-          "description": "Commissioner — transfer commissioner role: state surfaces back to client via gh pages."
+          "description": "Commissioner \u2014 transfer commissioner role: state surfaces back to client via gh pages."
         }
       ],
       "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
     },
     {
       "id": "F40",
-      "name": "Commissioner — delete league (cascade)",
+      "name": "Commissioner \u2014 delete league (cascade)",
       "primary_user_goal": "Permanently delete a league (rare; requires confirmation + cascade).",
       "actor": "actor.commissioner",
       "served_by_ships": [
@@ -2623,42 +2623,42 @@
           "from": "actor.commissioner",
           "to": "client.hq-admin",
           "label": "Open surface",
-          "description": "Commissioner — delete league (cascade): user opens hq admin surface."
+          "description": "Commissioner \u2014 delete league (cascade): user opens hq admin surface."
         },
         {
           "n": 2,
           "from": "client.hq-admin",
           "to": "fn.on-league-delete",
           "label": "Invoke function",
-          "description": "Commissioner — delete league (cascade): client invokes on league delete cloud function."
+          "description": "Commissioner \u2014 delete league (cascade): client invokes on league delete cloud function."
         },
         {
           "n": 3,
           "from": "fn.on-league-delete",
           "to": "data.members",
           "label": "Function writes",
-          "description": "Commissioner — delete league (cascade): function writes members."
+          "description": "Commissioner \u2014 delete league (cascade): function writes members."
         },
         {
           "n": 4,
           "from": "data.members",
           "to": "data.leagues",
           "label": "Cross-collection update",
-          "description": "Commissioner — delete league (cascade): change in members propagates to leagues."
+          "description": "Commissioner \u2014 delete league (cascade): change in members propagates to leagues."
         },
         {
           "n": 5,
           "from": "data.leagues",
           "to": "dist.gh-pages",
           "label": "Serve to client",
-          "description": "Commissioner — delete league (cascade): state surfaces back to client via gh pages."
+          "description": "Commissioner \u2014 delete league (cascade): state surfaces back to client via gh pages."
         }
       ],
       "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
     },
     {
       "id": "F41",
-      "name": "Founder — platform admin (cross-league)",
+      "name": "Founder \u2014 platform admin (cross-league)",
       "primary_user_goal": "Founder-only platform-wide admin actions (impersonate, cross-league audit).",
       "actor": "actor.founder",
       "served_by_ships": [
@@ -2678,35 +2678,35 @@
           "from": "actor.founder",
           "to": "client.hq-admin",
           "label": "Open surface",
-          "description": "Founder — platform admin (cross-league): user opens hq admin surface."
+          "description": "Founder \u2014 platform admin (cross-league): user opens hq admin surface."
         },
         {
           "n": 2,
           "from": "client.hq-admin",
           "to": "fn.on-founder-access-log",
           "label": "Invoke function",
-          "description": "Founder — platform admin (cross-league): client invokes on founder access log cloud function."
+          "description": "Founder \u2014 platform admin (cross-league): client invokes on founder access log cloud function."
         },
         {
           "n": 3,
           "from": "fn.on-founder-access-log",
           "to": "data.dms",
           "label": "Function writes",
-          "description": "Founder — platform admin (cross-league): function writes dms."
+          "description": "Founder \u2014 platform admin (cross-league): function writes dms."
         },
         {
           "n": 4,
           "from": "data.dms",
           "to": "dist.gh-pages",
           "label": "Serve to client",
-          "description": "Founder — platform admin (cross-league): state surfaces back to client via gh pages."
+          "description": "Founder \u2014 platform admin (cross-league): state surfaces back to client via gh pages."
         }
       ],
       "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
     },
     {
       "id": "F42",
-      "name": "Founder — report a member bug (in-app channel)",
+      "name": "Founder \u2014 report a member bug (in-app channel)",
       "primary_user_goal": "Member files a bug report from inside the app (annotated screenshot + steps).",
       "actor": "actor.member",
       "served_by_ships": [
@@ -2725,21 +2725,21 @@
           "from": "actor.member",
           "to": "client.hq-admin",
           "label": "Open surface",
-          "description": "Founder — report a member bug (in-app channel): user opens hq admin surface."
+          "description": "Founder \u2014 report a member bug (in-app channel): user opens hq admin surface."
         },
         {
           "n": 2,
           "from": "client.hq-admin",
           "to": "data.config",
           "label": "Read/write data",
-          "description": "Founder — report a member bug (in-app channel): client reads/writes config collection."
+          "description": "Founder \u2014 report a member bug (in-app channel): client reads/writes config collection."
         },
         {
           "n": 3,
           "from": "data.config",
           "to": "dist.gh-pages",
           "label": "Serve to client",
-          "description": "Founder — report a member bug (in-app channel): state surfaces back to client via gh pages."
+          "description": "Founder \u2014 report a member bug (in-app channel): state surfaces back to client via gh pages."
         }
       ],
       "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
@@ -2795,7 +2795,7 @@
     {
       "id": "F44",
       "name": "Mobile Home screen (mobile Clubhouse Wave 3)",
-      "primary_user_goal": "Mobile equivalent of Home — CTA card + headline stats + League Pulse + agate.",
+      "primary_user_goal": "Mobile equivalent of Home \u2014 CTA card + headline stats + League Pulse + agate.",
       "actor": "actor.member",
       "served_by_ships": [
         "W3.M2"
@@ -2835,7 +2835,7 @@
     {
       "id": "F45",
       "name": "Mobile Play tab (start a round w/ GPS)",
-      "primary_user_goal": "Mobile Play tab — course / format / players / settings; uses GPS, offline queue.",
+      "primary_user_goal": "Mobile Play tab \u2014 course / format / players / settings; uses GPS, offline queue.",
       "actor": "actor.member",
       "served_by_ships": [
         "W3.M3"
@@ -2883,7 +2883,7 @@
     {
       "id": "F46",
       "name": "Mobile Stats tab",
-      "primary_user_goal": "Mobile Stats — KPI row + handicap trend + drill-in section list + share-as-image.",
+      "primary_user_goal": "Mobile Stats \u2014 KPI row + handicap trend + drill-in section list + share-as-image.",
       "actor": "actor.member",
       "served_by_ships": [
         "W3.M4"
@@ -2923,7 +2923,7 @@
     {
       "id": "F47",
       "name": "Mobile Feed tab",
-      "primary_user_goal": "Mobile Feed — sub-segmented (rounds / range / chat highlights) with image attachments + mentions + pin.",
+      "primary_user_goal": "Mobile Feed \u2014 sub-segmented (rounds / range / chat highlights) with image attachments + mentions + pin.",
       "actor": "actor.member",
       "served_by_ships": [
         "W3.M5"
@@ -2971,7 +2971,7 @@
     {
       "id": "F48",
       "name": "Mobile More tab (Settings + Admin)",
-      "primary_user_goal": "Mobile More — Play / League / You / League mgmt / About sections; settings, admin (commissioner-only).",
+      "primary_user_goal": "Mobile More \u2014 Play / League / You / League mgmt / About sections; settings, admin (commissioner-only).",
       "actor": "actor.member",
       "served_by_ships": [
         "W3.M6"
@@ -3018,7 +3018,7 @@
     },
     {
       "id": "F49",
-      "name": "Identity — new-member signup (discriminator)",
+      "name": "Identity \u2014 new-member signup (discriminator)",
       "primary_user_goal": "New member signs up under the Discord-style displayname#XXXX identity primitive.",
       "actor": "actor.member",
       "served_by_ships": [
@@ -3038,35 +3038,35 @@
           "from": "actor.member",
           "to": "client.hq-admin",
           "label": "Open surface",
-          "description": "Identity — new-member signup (discriminator): user opens hq admin surface."
+          "description": "Identity \u2014 new-member signup (discriminator): user opens hq admin surface."
         },
         {
           "n": 2,
           "from": "client.hq-admin",
           "to": "fn.auth",
           "label": "Invoke function",
-          "description": "Identity — new-member signup (discriminator): client invokes auth cloud function."
+          "description": "Identity \u2014 new-member signup (discriminator): client invokes auth cloud function."
         },
         {
           "n": 3,
           "from": "fn.auth",
           "to": "data.members",
           "label": "Function writes",
-          "description": "Identity — new-member signup (discriminator): function writes members."
+          "description": "Identity \u2014 new-member signup (discriminator): function writes members."
         },
         {
           "n": 4,
           "from": "data.members",
           "to": "dist.gh-pages",
           "label": "Serve to client",
-          "description": "Identity — new-member signup (discriminator): state surfaces back to client via gh pages."
+          "description": "Identity \u2014 new-member signup (discriminator): state surfaces back to client via gh pages."
         }
       ],
       "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
     },
     {
       "id": "F50",
-      "name": "Identity — founder-led migration of existing 20",
+      "name": "Identity \u2014 founder-led migration of existing 20",
       "primary_user_goal": "Founder runs production migration assigning discriminators to existing 20 members.",
       "actor": "actor.founder",
       "served_by_ships": [
@@ -3085,21 +3085,21 @@
           "from": "actor.founder",
           "to": "client.hq-admin",
           "label": "Open surface",
-          "description": "Identity — founder-led migration of existing 20: user opens hq admin surface."
+          "description": "Identity \u2014 founder-led migration of existing 20: user opens hq admin surface."
         },
         {
           "n": 2,
           "from": "client.hq-admin",
           "to": "data.members",
           "label": "Read/write data",
-          "description": "Identity — founder-led migration of existing 20: client reads/writes members collection."
+          "description": "Identity \u2014 founder-led migration of existing 20: client reads/writes members collection."
         },
         {
           "n": 3,
           "from": "data.members",
           "to": "dist.gh-pages",
           "label": "Serve to client",
-          "description": "Identity — founder-led migration of existing 20: state surfaces back to client via gh pages."
+          "description": "Identity \u2014 founder-led migration of existing 20: state surfaces back to client via gh pages."
         }
       ],
       "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
@@ -3282,7 +3282,7 @@
     },
     {
       "id": "F55",
-      "name": "Cron — Downloads watcher (decisions + amendments)",
+      "name": "Cron \u2014 Downloads watcher (decisions + amendments)",
       "primary_user_goal": "Every 5 min, scan Founder's Downloads for decisions-*.json / amendments-*.json and apply.",
       "actor": "actor.founder",
       "served_by_ships": [
@@ -3303,35 +3303,35 @@
           "from": "actor.founder",
           "to": "client.hq-admin",
           "label": "Open surface",
-          "description": "Cron — Downloads watcher (decisions + amendments): user opens hq admin surface."
+          "description": "Cron \u2014 Downloads watcher (decisions + amendments): user opens hq admin surface."
         },
         {
           "n": 2,
           "from": "client.hq-admin",
           "to": "data.dms",
           "label": "Read/write data",
-          "description": "Cron — Downloads watcher (decisions + amendments): client reads/writes dms collection."
+          "description": "Cron \u2014 Downloads watcher (decisions + amendments): client reads/writes dms collection."
         },
         {
           "n": 3,
           "from": "data.dms",
           "to": "data.config",
           "label": "Cross-collection update",
-          "description": "Cron — Downloads watcher (decisions + amendments): change in dms propagates to config."
+          "description": "Cron \u2014 Downloads watcher (decisions + amendments): change in dms propagates to config."
         },
         {
           "n": 4,
           "from": "data.config",
           "to": "dist.gh-pages",
           "label": "Serve to client",
-          "description": "Cron — Downloads watcher (decisions + amendments): state surfaces back to client via gh pages."
+          "description": "Cron \u2014 Downloads watcher (decisions + amendments): state surfaces back to client via gh pages."
         }
       ],
       "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
     },
     {
       "id": "F56",
-      "name": "Cron — Maintenance (daily 02:55)",
+      "name": "Cron \u2014 Maintenance (daily 02:55)",
       "primary_user_goal": "Daily git fetch + GC + junk quarantine + log rotation + dep updates + state audit + regen-all sanity + daily report + local commit.",
       "actor": "actor.founder",
       "served_by_ships": [
@@ -3350,28 +3350,28 @@
           "from": "actor.founder",
           "to": "client.hq-home",
           "label": "Open surface",
-          "description": "Cron — Maintenance (daily 02:55): user opens hq home surface."
+          "description": "Cron \u2014 Maintenance (daily 02:55): user opens hq home surface."
         },
         {
           "n": 2,
           "from": "client.hq-home",
           "to": "data.config",
           "label": "Read/write data",
-          "description": "Cron — Maintenance (daily 02:55): client reads/writes config collection."
+          "description": "Cron \u2014 Maintenance (daily 02:55): client reads/writes config collection."
         },
         {
           "n": 3,
           "from": "data.config",
           "to": "dist.gh-pages",
           "label": "Serve to client",
-          "description": "Cron — Maintenance (daily 02:55): state surfaces back to client via gh pages."
+          "description": "Cron \u2014 Maintenance (daily 02:55): state surfaces back to client via gh pages."
         }
       ],
       "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
     },
     {
       "id": "F57",
-      "name": "Cron — Overnight triage (daily 03:00)",
+      "name": "Cron \u2014 Overnight triage (daily 03:00)",
       "primary_user_goal": "Daily 4-hour-budget Claude Code launch to process FIQ + bug reports overnight.",
       "actor": "actor.founder",
       "served_by_ships": [
@@ -3390,28 +3390,28 @@
           "from": "actor.founder",
           "to": "client.hq-settings",
           "label": "Open surface",
-          "description": "Cron — Overnight triage (daily 03:00): user opens hq settings surface."
+          "description": "Cron \u2014 Overnight triage (daily 03:00): user opens hq settings surface."
         },
         {
           "n": 2,
           "from": "client.hq-settings",
           "to": "data.config",
           "label": "Read/write data",
-          "description": "Cron — Overnight triage (daily 03:00): client reads/writes config collection."
+          "description": "Cron \u2014 Overnight triage (daily 03:00): client reads/writes config collection."
         },
         {
           "n": 3,
           "from": "data.config",
           "to": "dist.gh-pages",
           "label": "Serve to client",
-          "description": "Cron — Overnight triage (daily 03:00): state surfaces back to client via gh pages."
+          "description": "Cron \u2014 Overnight triage (daily 03:00): state surfaces back to client via gh pages."
         }
       ],
       "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
     },
     {
       "id": "F58",
-      "name": "Proposal lifecycle (proactive cycle → Founder review → apply)",
+      "name": "Proposal lifecycle (proactive cycle \u2192 Founder review \u2192 apply)",
       "primary_user_goal": "Proactive orchestrator generates 1-3 proposals; Founder reviews via proposals.html; watcher applies decisions.",
       "actor": "actor.founder",
       "served_by_ships": [
@@ -3430,28 +3430,28 @@
           "from": "actor.founder",
           "to": "client.hq-admin",
           "label": "Open surface",
-          "description": "Proposal lifecycle (proactive cycle → Founder review → apply): user opens hq admin surface."
+          "description": "Proposal lifecycle (proactive cycle \u2192 Founder review \u2192 apply): user opens hq admin surface."
         },
         {
           "n": 2,
           "from": "client.hq-admin",
           "to": "data.config",
           "label": "Read/write data",
-          "description": "Proposal lifecycle (proactive cycle → Founder review → apply): client reads/writes config collection."
+          "description": "Proposal lifecycle (proactive cycle \u2192 Founder review \u2192 apply): client reads/writes config collection."
         },
         {
           "n": 3,
           "from": "data.config",
           "to": "dist.gh-pages",
           "label": "Serve to client",
-          "description": "Proposal lifecycle (proactive cycle → Founder review → apply): state surfaces back to client via gh pages."
+          "description": "Proposal lifecycle (proactive cycle \u2192 Founder review \u2192 apply): state surfaces back to client via gh pages."
         }
       ],
       "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
     },
     {
       "id": "F59",
-      "name": "Amendments lifecycle (governance change → Founder review → apply)",
+      "name": "Amendments lifecycle (governance change \u2192 Founder review \u2192 apply)",
       "primary_user_goal": "Agent authors governance amendment draft; Founder reviews via amendments.html; watcher applies via apply-amendments.sh.",
       "actor": "actor.founder",
       "served_by_ships": [
@@ -3472,42 +3472,42 @@
           "from": "actor.founder",
           "to": "client.hq-admin",
           "label": "Open surface",
-          "description": "Amendments lifecycle (governance change → Founder review → apply): user opens hq admin surface."
+          "description": "Amendments lifecycle (governance change \u2192 Founder review \u2192 apply): user opens hq admin surface."
         },
         {
           "n": 2,
           "from": "client.hq-admin",
           "to": "fn.auth",
           "label": "Invoke function",
-          "description": "Amendments lifecycle (governance change → Founder review → apply): client invokes auth cloud function."
+          "description": "Amendments lifecycle (governance change \u2192 Founder review \u2192 apply): client invokes auth cloud function."
         },
         {
           "n": 3,
           "from": "fn.auth",
           "to": "data.dms",
           "label": "Function writes",
-          "description": "Amendments lifecycle (governance change → Founder review → apply): function writes dms."
+          "description": "Amendments lifecycle (governance change \u2192 Founder review \u2192 apply): function writes dms."
         },
         {
           "n": 4,
           "from": "data.dms",
           "to": "data.config",
           "label": "Cross-collection update",
-          "description": "Amendments lifecycle (governance change → Founder review → apply): change in dms propagates to config."
+          "description": "Amendments lifecycle (governance change \u2192 Founder review \u2192 apply): change in dms propagates to config."
         },
         {
           "n": 5,
           "from": "data.config",
           "to": "dist.gh-pages",
           "label": "Serve to client",
-          "description": "Amendments lifecycle (governance change → Founder review → apply): state surfaces back to client via gh pages."
+          "description": "Amendments lifecycle (governance change \u2192 Founder review \u2192 apply): state surfaces back to client via gh pages."
         }
       ],
       "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
     },
     {
       "id": "F60",
-      "name": "Discussion bubble lifecycle (open → vote → close)",
+      "name": "Discussion bubble lifecycle (open \u2192 vote \u2192 close)",
       "primary_user_goal": "Multi-agent deliberation with voters / bubble-only participants; closes on quorum or stays open long-running.",
       "actor": "actor.founder",
       "served_by_ships": [
@@ -3526,21 +3526,21 @@
           "from": "actor.founder",
           "to": "client.hq-home",
           "label": "Open surface",
-          "description": "Discussion bubble lifecycle (open → vote → close): user opens hq home surface."
+          "description": "Discussion bubble lifecycle (open \u2192 vote \u2192 close): user opens hq home surface."
         },
         {
           "n": 2,
           "from": "client.hq-home",
           "to": "data.social",
           "label": "Read/write data",
-          "description": "Discussion bubble lifecycle (open → vote → close): client reads/writes social collection."
+          "description": "Discussion bubble lifecycle (open \u2192 vote \u2192 close): client reads/writes social collection."
         },
         {
           "n": 3,
           "from": "data.social",
           "to": "dist.gh-pages",
           "label": "Serve to client",
-          "description": "Discussion bubble lifecycle (open → vote → close): state surfaces back to client via gh pages."
+          "description": "Discussion bubble lifecycle (open \u2192 vote \u2192 close): state surfaces back to client via gh pages."
         }
       ],
       "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
@@ -3548,7 +3548,7 @@
     {
       "id": "F61",
       "name": "Heartbeat cycle (regen-all chain)",
-      "primary_user_goal": "Every cron fire: telemetry aggregation → reports regen → ops views regen → round-trip test.",
+      "primary_user_goal": "Every cron fire: telemetry aggregation \u2192 reports regen \u2192 ops views regen \u2192 round-trip test.",
       "actor": "actor.founder",
       "served_by_ships": [
         "DC-5",
@@ -3636,7 +3636,7 @@
       "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
     }
   ],
-  "last_amended": "2026-05-14T21:03:48.196994+00:00",
+  "last_amended": "2026-05-14T21:38:58.480076+00:00",
   "doc_source": "docs/reports/_assets/main-flows-data.json",
   "schema_version": 1,
   "flow_rail": [
@@ -3667,7 +3667,7 @@
         "W1.S5",
         "W1.S3"
       ],
-      "primary_user_goal": "See what the league is doing right now — recent rounds, who is hot, where I stand.",
+      "primary_user_goal": "See what the league is doing right now \u2014 recent rounds, who is hot, where I stand.",
       "estimated_steps_count": 4
     },
     {
@@ -3765,7 +3765,7 @@
     },
     {
       "id": "F10",
-      "name": "Settings — appearance + privacy + notifications",
+      "name": "Settings \u2014 appearance + privacy + notifications",
       "actor": "member",
       "tier": "supplementary",
       "status": "shipped",
@@ -3906,7 +3906,7 @@
       "served_by_ships": [
         "W1.S6"
       ],
-      "primary_user_goal": "Issue a head-to-head challenge (different from wager — no ParCoin escrow required).",
+      "primary_user_goal": "Issue a head-to-head challenge (different from wager \u2014 no ParCoin escrow required).",
       "estimated_steps_count": 4
     },
     {
@@ -4022,7 +4022,7 @@
       "tier": "supplementary",
       "status": "shipped",
       "served_by_ships": [],
-      "primary_user_goal": "Read how things work — handicaps, ParCoins, attestation, etiquette.",
+      "primary_user_goal": "Read how things work \u2014 handicaps, ParCoins, attestation, etiquette.",
       "estimated_steps_count": 2
     },
     {
@@ -4046,12 +4046,12 @@
       "served_by_ships": [
         "W1.S3"
       ],
-      "primary_user_goal": "Read another member's public profile — avatar, handicap, level, home course, bio.",
+      "primary_user_goal": "Read another member's public profile \u2014 avatar, handicap, level, home course, bio.",
       "estimated_steps_count": 2
     },
     {
       "id": "F34",
-      "name": "Social action — trash talk / spotlight / victory lap",
+      "name": "Social action \u2014 trash talk / spotlight / victory lap",
       "actor": "member",
       "tier": "supplementary",
       "status": "shipped",
@@ -4088,7 +4088,7 @@
     },
     {
       "id": "F37",
-      "name": "Commissioner — approve / reject member application",
+      "name": "Commissioner \u2014 approve / reject member application",
       "actor": "commissioner",
       "tier": "admin",
       "status": "planned",
@@ -4100,7 +4100,7 @@
     },
     {
       "id": "F38",
-      "name": "Commissioner — suspend / restore member",
+      "name": "Commissioner \u2014 suspend / restore member",
       "actor": "commissioner",
       "tier": "admin",
       "status": "planned",
@@ -4112,7 +4112,7 @@
     },
     {
       "id": "F39",
-      "name": "Commissioner — transfer commissioner role",
+      "name": "Commissioner \u2014 transfer commissioner role",
       "actor": "commissioner",
       "tier": "admin",
       "status": "planned",
@@ -4124,7 +4124,7 @@
     },
     {
       "id": "F40",
-      "name": "Commissioner — delete league (cascade)",
+      "name": "Commissioner \u2014 delete league (cascade)",
       "actor": "commissioner",
       "tier": "admin",
       "status": "planned",
@@ -4136,7 +4136,7 @@
     },
     {
       "id": "F41",
-      "name": "Founder — platform admin (cross-league)",
+      "name": "Founder \u2014 platform admin (cross-league)",
       "actor": "founder",
       "tier": "admin",
       "status": "shipped",
@@ -4148,7 +4148,7 @@
     },
     {
       "id": "F42",
-      "name": "Founder — report a member bug (in-app channel)",
+      "name": "Founder \u2014 report a member bug (in-app channel)",
       "actor": "member",
       "tier": "supplementary",
       "status": "planned",
@@ -4179,7 +4179,7 @@
       "served_by_ships": [
         "W3.M2"
       ],
-      "primary_user_goal": "Mobile equivalent of Home — CTA card + headline stats + League Pulse + agate.",
+      "primary_user_goal": "Mobile equivalent of Home \u2014 CTA card + headline stats + League Pulse + agate.",
       "estimated_steps_count": 3
     },
     {
@@ -4191,7 +4191,7 @@
       "served_by_ships": [
         "W3.M3"
       ],
-      "primary_user_goal": "Mobile Play tab — course / format / players / settings; uses GPS, offline queue.",
+      "primary_user_goal": "Mobile Play tab \u2014 course / format / players / settings; uses GPS, offline queue.",
       "estimated_steps_count": 6
     },
     {
@@ -4203,7 +4203,7 @@
       "served_by_ships": [
         "W3.M4"
       ],
-      "primary_user_goal": "Mobile Stats — KPI row + handicap trend + drill-in section list + share-as-image.",
+      "primary_user_goal": "Mobile Stats \u2014 KPI row + handicap trend + drill-in section list + share-as-image.",
       "estimated_steps_count": 4
     },
     {
@@ -4215,7 +4215,7 @@
       "served_by_ships": [
         "W3.M5"
       ],
-      "primary_user_goal": "Mobile Feed — sub-segmented (rounds / range / chat highlights) with image attachments + mentions + pin.",
+      "primary_user_goal": "Mobile Feed \u2014 sub-segmented (rounds / range / chat highlights) with image attachments + mentions + pin.",
       "estimated_steps_count": 4
     },
     {
@@ -4227,12 +4227,12 @@
       "served_by_ships": [
         "W3.M6"
       ],
-      "primary_user_goal": "Mobile More — Play / League / You / League mgmt / About sections; settings, admin (commissioner-only).",
+      "primary_user_goal": "Mobile More \u2014 Play / League / You / League mgmt / About sections; settings, admin (commissioner-only).",
       "estimated_steps_count": 3
     },
     {
       "id": "F49",
-      "name": "Identity — new-member signup (discriminator)",
+      "name": "Identity \u2014 new-member signup (discriminator)",
       "actor": "member",
       "tier": "core",
       "status": "planned",
@@ -4244,7 +4244,7 @@
     },
     {
       "id": "F50",
-      "name": "Identity — founder-led migration of existing 20",
+      "name": "Identity \u2014 founder-led migration of existing 20",
       "actor": "founder",
       "tier": "admin",
       "status": "planned",
@@ -4304,7 +4304,7 @@
     },
     {
       "id": "F55",
-      "name": "Cron — Downloads watcher (decisions + amendments)",
+      "name": "Cron \u2014 Downloads watcher (decisions + amendments)",
       "actor": "system",
       "tier": "system",
       "status": "shipped",
@@ -4317,7 +4317,7 @@
     },
     {
       "id": "F56",
-      "name": "Cron — Maintenance (daily 02:55)",
+      "name": "Cron \u2014 Maintenance (daily 02:55)",
       "actor": "system",
       "tier": "system",
       "status": "shipped",
@@ -4329,7 +4329,7 @@
     },
     {
       "id": "F57",
-      "name": "Cron — Overnight triage (daily 03:00)",
+      "name": "Cron \u2014 Overnight triage (daily 03:00)",
       "actor": "agent",
       "tier": "system",
       "status": "shipped",
@@ -4341,7 +4341,7 @@
     },
     {
       "id": "F58",
-      "name": "Proposal lifecycle (proactive cycle → Founder review → apply)",
+      "name": "Proposal lifecycle (proactive cycle \u2192 Founder review \u2192 apply)",
       "actor": "agent",
       "tier": "system",
       "status": "shipped",
@@ -4353,7 +4353,7 @@
     },
     {
       "id": "F59",
-      "name": "Amendments lifecycle (governance change → Founder review → apply)",
+      "name": "Amendments lifecycle (governance change \u2192 Founder review \u2192 apply)",
       "actor": "agent",
       "tier": "system",
       "status": "shipping",
@@ -4365,7 +4365,7 @@
     },
     {
       "id": "F60",
-      "name": "Discussion bubble lifecycle (open → vote → close)",
+      "name": "Discussion bubble lifecycle (open \u2192 vote \u2192 close)",
       "actor": "agent",
       "tier": "system",
       "status": "shipped",
@@ -4385,7 +4385,7 @@
         "DC-5",
         "regen-all chain"
       ],
-      "primary_user_goal": "Every cron fire: telemetry aggregation → reports regen → ops views regen → round-trip test.",
+      "primary_user_goal": "Every cron fire: telemetry aggregation \u2192 reports regen \u2192 ops views regen \u2192 round-trip test.",
       "estimated_steps_count": 9
     },
     {
@@ -4428,32 +4428,15 @@
   "_counts": {
     "columns": 6,
     "components_total": 47,
-    "flows": 8,
+    "flows": 62,
     "flow_rail_total": 62,
     "orphan_components": [
-      "actor.commissioner",
-      "actor.founder",
       "actor.guest",
       "actor.invitee",
-      "client.hq-admin",
-      "client.hq-roundhistory",
-      "client.hq-settings",
-      "client.mobile-capacitor",
-      "data.dms",
-      "data.invites",
-      "dist.capacitor-android",
       "dist.capacitor-ios",
-      "ext.anthropic",
-      "ext.golfcourseapi",
       "ext.open-meteo",
-      "fn.auth",
       "fn.expire-suspensions",
-      "fn.join-league",
-      "fn.on-founder-access-log",
-      "fn.on-league-delete",
-      "fn.on-member-role-change",
-      "fn.search-courses",
-      "fn.validate-invite"
+      "fn.join-league"
     ]
   }
 }
