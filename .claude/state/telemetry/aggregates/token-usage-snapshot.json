@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T04:27:42.167203+00:00",
+  "generated_at": "2026-05-14T04:31:20.543061+00:00",
   "constants": {
     "INPUT_RATE_TOKENS_PER_SEC": 100,
     "OUTPUT_RATE_TOKENS_PER_SEC": 30
@@ -143,11 +143,11 @@
     "estimated": 4200130,
     "manual": 0,
     "first_event_at": "2026-05-13T11:55:00+00:00",
-    "last_event_at": "2026-05-14T04:27:42+00:00"
+    "last_event_at": "2026-05-14T04:30:49+00:00"
   },
   "_counts": {
     "real_events": 1,
-    "estimated_events": 111,
+    "estimated_events": 112,
     "manual_entries": 0
   }
 }

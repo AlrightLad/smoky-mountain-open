@@ -1,0 +1,12 @@
+{
+  "proposal_id": "PROP-004",
+  "deferred_at": "2026-05-14T04:30:31.466381+00:00",
+  "criteria_failed": [
+    "scope_not_enumerated: frontmatter missing files_affected/scope with concrete file list",
+    "fallback_plan_absent: no Plan B/C/D or fallback_plan field documented",
+    "rollback_absent: rollback_strategy/rollback field missing from frontmatter",
+    "token_cost_methodology_absent: no token_cost_estimate field with documented range/methodology"
+  ],
+  "resolution_path": "team or Founder authors missing fields; scanner re-evaluates next cycle",
+  "scanner_run_id": "20260514T043031Z"
+}

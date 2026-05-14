@@ -1317,6 +1317,43 @@ def main():
         print(red(f"  ✗ W1.S1 primitives             missing: {missing}"))
         failures.append(("w1s1:primitives", f"missing: {missing}"))
 
+    # AMD-011 auto-execute scanner discipline. Every proposal in
+    # ship-readiness-deferred/ must have a marker JSON with enumerated
+    # criteria_failed. No orphan markers (marker for a proposal that's no
+    # longer in approved/). No missing markers (approved/ proposal that
+    # failed readiness but has no marker).
+    print(cyan("\n[proposal-readiness] AMD-011 scanner state discipline..."))
+    APPROVED_DIR = ROOT / ".claude" / "state" / "proposals" / "approved"
+    DEFERRED_DIR = ROOT / ".claude" / "state" / "proposals" / "ship-readiness-deferred"
+    pr_failures = []
+    if DEFERRED_DIR.exists():
+        for marker in sorted(DEFERRED_DIR.glob("*.json")):
+            try:
+                m = json.loads(marker.read_text(encoding="utf-8"))
+            except Exception as e:
+                pr_failures.append((marker.name, f"unparseable: {e}"))
+                continue
+            req = {"proposal_id", "deferred_at", "criteria_failed", "resolution_path"}
+            missing = req - set(m.keys())
+            if missing:
+                pr_failures.append((marker.name, f"missing fields: {sorted(missing)}"))
+            elif not isinstance(m.get("criteria_failed"), list) or len(m["criteria_failed"]) == 0:
+                pr_failures.append((marker.name, "criteria_failed must be non-empty list"))
+            # Orphan check — marker exists but no matching proposal in approved/
+            prop_id = m.get("proposal_id", marker.stem)
+            if APPROVED_DIR.exists():
+                matching = list(APPROVED_DIR.glob(f"{prop_id}-*.md")) + list(APPROVED_DIR.glob(f"{prop_id}.md"))
+                if not matching:
+                    pr_failures.append((marker.name, f"orphan: no {prop_id}-*.md in approved/"))
+    if pr_failures:
+        print(red(f"  ✗ proposal-readiness markers have {len(pr_failures)} issues:"))
+        for n, e in pr_failures[:5]:
+            print(red(f"     {n}: {e}"))
+        failures.append(("proposal-readiness:markers", f"{len(pr_failures)} issues"))
+    else:
+        marker_count = len(list(DEFERRED_DIR.glob("*.json"))) if DEFERRED_DIR.exists() else 0
+        print(green(f"  ✓ proposal-readiness        {marker_count} deferred marker(s); schema valid; no orphans"))
+
     # Pause-discipline guard (Phase 6.6): no production-tree references to the
     # fictional 3.5M cap or budget_pct. The audit doc + governance drafts +
     # historical proposals are explicitly exempt.
