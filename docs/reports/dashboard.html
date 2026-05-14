@@ -352,7 +352,7 @@
     <script id="report-data" type="application/json">
 {
   "weekly_tokens": 7302000,
-  "weekly_cost": 0.0,
+  "weekly_cost": 175.25,
   "ships_this_week": 23,
   "proposals_pending": 3,
   "proposals_counts": {
@@ -523,6 +523,13 @@
       "scenario": "team-commit",
       "from": "Zach Boogher",
       "to": "main",
+      "created_at": "2026-05-14T15:46:05-04:00",
+      "subject": "main-flows iter 11 + dashboard fixes via user-context inspection"
+    },
+    {
+      "scenario": "team-commit",
+      "from": "Zach Boogher",
+      "to": "main",
       "created_at": "2026-05-14T15:24:49-04:00",
       "subject": "PROP-008: browser-control install (Playwright MCP) + capture script fix"
     },
@@ -581,13 +588,6 @@
       "to": "main",
       "created_at": "2026-05-14T14:11:52-04:00",
       "subject": "Phase 2 smoke fix: apply-escalations.sh mkdir -p state dirs + .gitkeep for pendi"
-    },
-    {
-      "scenario": "cron-auto-commit",
-      "from": "cron",
-      "to": "PARBAUGHS Cron",
-      "created_at": "2026-05-14T14:10:17-04:00",
-      "subject": "cron(routine): auto-commit telemetry output before watcher preflight (2026-05-14"
     }
   ],
   "recent_ships": [
@@ -715,7 +715,7 @@
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "_aggregate_counts": {
-    "events_total": 758,
+    "events_total": 764,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
@@ -730,8 +730,8 @@
   },
   "quota_status": {
     "state": "empty",
-    "as_of": "2026-05-14T19:37:13.7704630Z",
-    "age_seconds": 297,
+    "as_of": "2026-05-14T19:47:13.8094687Z",
+    "age_seconds": 34,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -742,7 +742,7 @@
     "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
   },
   "founder_queue": {
-    "as_of": "2026-05-14T19:42:11.930230+00:00",
+    "as_of": "2026-05-14T19:47:48.865478+00:00",
     "last_founder_visit": null,
     "governance_gates": {
       "amendments_pending": 0,
@@ -756,8 +756,8 @@
     "system_health": {
       "crons": {
         "downloads-watcher": {
-          "last_run": "2026-05-14T19-40-49Z",
-          "last_log": "2026-05-14T19-40-49Z-downloads-watcher.log"
+          "last_run": "2026-05-14T19-45-49Z",
+          "last_log": "2026-05-14T19-45-49Z-downloads-watcher.log"
         },
         "maintenance": {
           "last_run": "2026-05-14T06-55-01Z",
@@ -772,8 +772,8 @@
           "last_log": "2026-05-14T18-00-01Z-proposal-readiness.log"
         },
         "sidecar": {
-          "last_run": "2026-05-14T19-37-13Z",
-          "last_log": "2026-05-14T19-37-13Z-sidecar.log"
+          "last_run": "2026-05-14T19-47-13Z",
+          "last_log": "2026-05-14T19-47-13Z-sidecar.log"
         }
       },
       "cron_install_status": [
@@ -782,10 +782,10 @@
           "task_name": "PARBAUGHS-Downloads-Watcher",
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-downloads-watcher.ps1",
-          "last_fire_iso": "2026-05-14T19:40:49.995760+00:00",
-          "age_minutes": 1.4,
+          "last_fire_iso": "2026-05-14T19:45:49.813338+00:00",
+          "age_minutes": 2.0,
           "status": "firing",
-          "label": "firing \u00b7 last fire 1.4min ago",
+          "label": "firing \u00b7 last fire 2.0min ago",
           "os_state": "Ready",
           "is_installed": true
         },
@@ -795,9 +795,9 @@
           "cadence_minutes": 1440,
           "install_script": "scripts/cron/install-maintenance.ps1",
           "last_fire_iso": "2026-05-14T06:55:19.949406+00:00",
-          "age_minutes": 766.9,
+          "age_minutes": 772.5,
           "status": "firing",
-          "label": "firing \u00b7 last fire 766.9min ago",
+          "label": "firing \u00b7 last fire 772.5min ago",
           "os_state": "Ready",
           "is_installed": true
         },
@@ -819,9 +819,9 @@
           "cadence_minutes": 120,
           "install_script": "scripts/cron/install-proposal-readiness-scanner.ps1",
           "last_fire_iso": "2026-05-14T18:00:01.582523+00:00",
-          "age_minutes": 102.2,
+          "age_minutes": 107.8,
           "status": "firing",
-          "label": "firing \u00b7 last fire 102.2min ago",
+          "label": "firing \u00b7 last fire 107.8min ago",
           "os_state": "Ready",
           "is_installed": true
         },
@@ -830,11 +830,11 @@
           "task_name": "PARBAUGHS-Token-Sidecar",
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-sidecar.ps1",
-          "last_fire_iso": "2026-05-14T19:37:13.814001+00:00",
-          "age_minutes": 5.0,
+          "last_fire_iso": "2026-05-14T19:47:13.854152+00:00",
+          "age_minutes": 0.6,
           "status": "firing",
-          "label": "firing \u00b7 last fire 5.0min ago",
-          "os_state": "Running",
+          "label": "firing \u00b7 last fire 0.6min ago",
+          "os_state": "Ready",
           "is_installed": true
         }
       ],
@@ -842,16 +842,16 @@
         "ts": "2026-05-14 18:15 UTC",
         "ts_iso": "2026-05-14T18:15:58.4395875Z",
         "status": "STALE",
-        "age_minutes": 86.3,
+        "age_minutes": 91.9,
         "source": "heartbeat"
       },
       "working_tree": {
         "state": "dirty-cycling",
-        "label": "dirty (22 files) \u00b7 watcher cycling",
+        "label": "dirty (10 files) \u00b7 watcher cycling",
         "color": "var(--pb-warning)",
-        "dirty_count": 22,
-        "watcher_last_fire": "2026-05-14T19:40:49.995760+00:00",
-        "watcher_minutes_ago": 1.4
+        "dirty_count": 10,
+        "watcher_last_fire": "2026-05-14T19:45:49.813338+00:00",
+        "watcher_minutes_ago": 2.0
       },
       "halts": [],
       "round_trip_last_pass": "2026-05-14T18:15:58.4395875Z"

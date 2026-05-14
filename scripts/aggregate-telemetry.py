@@ -799,13 +799,24 @@ def aggregate():
 
     # Default weekly_tokens to the event-derived sum (lower bound).
     weekly_tokens = sum(tokens_by_role.values())  # 0 when meter is gap
-    weekly_cost = 0.0  # No cost meter either
 
     # PROP-003.b: when sidecar fresh, prefer its weekly_tokens (real data).
     if qs_state == "fresh":
         real_weekly = quota_status.get("weekly_tokens")
         if isinstance(real_weekly, (int, float)) and real_weekly > 0:
             weekly_tokens = int(real_weekly)
+
+    # Iter 11 (2026-05-14, user-context audit): weekly_cost was hardcoded
+    # 0.0 with a TODO comment. Per AMD-009 P5 (honest language): a non-zero
+    # weekly_tokens with a $0.00 spend label is misleading even if "no
+    # cost meter" is in the small print. Use the existing pricing model +
+    # _compute_ship_cost_usd() to produce an estimate from operator-asserted
+    # 85/15 input/output split per anthropic-pricing.json. Honest deltas
+    # already exist in _meter_note explaining that estimates use the default
+    # model and split.
+    weekly_pricing = _load_anthropic_pricing()
+    weekly_cost_estimate = _compute_ship_cost_usd(weekly_tokens, weekly_pricing)
+    weekly_cost = weekly_cost_estimate if weekly_cost_estimate is not None else 0.0
 
     # PROP-003.b: meter note adapts to current state so dashboards can
     # show users why the value is what it is.
