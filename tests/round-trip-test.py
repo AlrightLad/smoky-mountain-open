@@ -1082,6 +1082,105 @@ def main():
             print(red(f"  ✗ {fname:32s} does not import dashboard-shell.css"))
             failures.append((f"theme:{fname}:shell-import", "dashboard-shell.css not imported"))
 
+    # No-charts discipline (DC-7): the Dashboard Consolidation strips every chart
+    # from every dashboard except the explicitly-carved-out token-usage donut and
+    # the main-flows SVG arrow overlay (functional documentation, not a chart).
+    # Fail on any new <canvas>, Chart.js import, D3 import, or chart.umd reference.
+    print(cyan("\n[no-charts] Dashboards must not introduce charts (donut + arch arrows exempted)..."))
+    # Match only load-bearing chart references, not documentation prose
+    # explaining the absence of charts. <canvas> tag is unambiguous; Chart.js /
+    # chart.umd / D3 must appear in a <script src=...> import, not in a comment
+    # like "/* no Chart.js, no D3 */".
+    CHART_RES = [
+        (re.compile(r"<canvas\b", re.IGNORECASE),                                 "<canvas>"),
+        (re.compile(r'<script[^>]*src="[^"]*chart\.umd[^"]*"', re.IGNORECASE),    "chart.umd <script>"),
+        (re.compile(r'<script[^>]*src="[^"]*chart\.js[^"]*"',  re.IGNORECASE),    "chart.js <script>"),
+        (re.compile(r'<script[^>]*src="[^"]*d3[^"]*"',         re.IGNORECASE),    "D3 <script>"),
+        (re.compile(r"new\s+Chart\s*\("),                                          "new Chart()"),
+    ]
+    chart_failures = []
+    for fname in ["dashboard.html", "activity.html", "proposals.html",
+                  "discussion-bubbles.html", "main-flows.html",
+                  "design-system.html", "token-usage.html", "index.html"]:
+        p = REPORTS_SRC / fname
+        if not p.exists():
+            continue
+        text = p.read_text(encoding="utf-8", errors="ignore")
+        for pat, label in CHART_RES:
+            for m in pat.finditer(text):
+                # Exception: main-flows.html has the SVG arrow overlay (<svg class="mf-arrows">),
+                # not <canvas>. Exception: token-usage.html uses an SVG donut, not a canvas.
+                # Documentation comments mentioning "no Chart.js" are not matched (require
+                # <script src=...> wrapper for library references).
+                chart_failures.append((fname, label, m.start()))
+    if chart_failures:
+        print(red(f"  ✗ {len(chart_failures)} chart reference(s) detected:"))
+        for fname, label, off in chart_failures[:10]:
+            print(red(f"     {fname}: {label} @ offset {off}"))
+        failures.append(("no-charts", f"{len(chart_failures)} chart refs"))
+    else:
+        print(green("  ✓ no canvas/Chart.js/D3 references in any dashboard (SVG donut + arch arrows are SVG, not charts)"))
+
+    # Protected layout sentinels (Phase 6.5 + DC-7): structural assertions that
+    # the three protected layouts (bubbles 2-panel, main-flows grid+arrows,
+    # design-system showcase) survived past consolidation work.
+    print(cyan("\n[protected-layouts] Sentinels for protected layouts..."))
+
+    # discussion-bubbles.html: master/detail 2-panel intact
+    bubbles_html = (REPORTS_SRC / "discussion-bubbles.html").read_text(encoding="utf-8")
+    bubble_checks = [
+        ("db-app container",       'class="db-app"' in bubbles_html or 'id="db-app"' in bubbles_html),
+        ("db-rail (master)",       'class="db-rail"' in bubbles_html),
+        ("db-thread-list iteration", 'class="db-thread-list"' in bubbles_html),
+        # db-day-divider is added dynamically by JS, so look for the class name
+        # anywhere (CSS rule or JS template), not just `class="..."` attribute.
+        ("db-day-divider grouping", 'db-day-divider' in bubbles_html),
+        ("2-panel grid declaration", "grid-template-columns" in bubbles_html and ("360px" in bubbles_html or "300px" in bubbles_html)),
+    ]
+    bubble_pass = all(ok for _, ok in bubble_checks)
+    if bubble_pass:
+        print(green(f"  ✓ discussion-bubbles.html      master/detail 2-panel intact ({sum(1 for _, ok in bubble_checks if ok)}/{len(bubble_checks)} sentinels)"))
+    else:
+        missing = [name for name, ok in bubble_checks if not ok]
+        print(red(f"  ✗ discussion-bubbles.html      missing sentinels: {missing}"))
+        failures.append(("protected:bubbles", f"missing: {missing}"))
+
+    # main-flows.html: 6-col grid + SVG arrows + flow rail + steps panel
+    mf_html = (REPORTS_SRC / "main-flows.html").read_text(encoding="utf-8")
+    mf_checks = [
+        ("mf-workspace",      'class="mf-workspace"' in mf_html),
+        ("mf-grid",           'class="mf-grid"'      in mf_html or 'id="mf-grid"' in mf_html),
+        ("6-column declared", "repeat(6," in mf_html),
+        ("SVG arrows",        '<svg class="mf-arrows"' in mf_html or 'id="mf-arrows"' in mf_html),
+        ("flows list rail",   'class="mf-flows-list"' in mf_html or 'id="mf-flows-list"' in mf_html),
+        ("steps panel",       'class="mf-steps-list"' in mf_html or 'id="mf-steps-list"' in mf_html),
+    ]
+    mf_pass = all(ok for _, ok in mf_checks)
+    if mf_pass:
+        print(green(f"  ✓ main-flows.html              arch grid + SVG arrows + rails intact ({sum(1 for _, ok in mf_checks if ok)}/{len(mf_checks)} sentinels)"))
+    else:
+        missing = [name for name, ok in mf_checks if not ok]
+        print(red(f"  ✗ main-flows.html              missing sentinels: {missing}"))
+        failures.append(("protected:main-flows", f"missing: {missing}"))
+
+    # design-system.html: >=10 swatches + type ladder + component primitives
+    ds_html = (REPORTS_SRC / "design-system.html").read_text(encoding="utf-8")
+    swatch_count = ds_html.count('class="ds-swatch"')
+    type_row_count = ds_html.count('class="ds-type-row"')
+    ds_checks = [
+        (f"{swatch_count} color swatches (>=10)", swatch_count >= 10),
+        (f"{type_row_count} type-ladder rows (>=4)", type_row_count >= 4),
+        ("component primitives section", 'ds-compose' in ds_html or 'Composition examples' in ds_html),
+        ("form controls section", 'pb-filter-bar' in ds_html and ('pb-select' in ds_html or 'pb-input' in ds_html)),
+    ]
+    ds_pass = all(ok for _, ok in ds_checks)
+    if ds_pass:
+        print(green(f"  ✓ design-system.html           {swatch_count} swatches, {type_row_count} type rows, primitives + form controls present"))
+    else:
+        missing = [name for name, ok in ds_checks if not ok]
+        print(red(f"  ✗ design-system.html           missing sentinels: {missing}"))
+        failures.append(("protected:design-system", f"missing: {missing}"))
+
     # Pause-discipline guard (Phase 6.6): no production-tree references to the
     # fictional 3.5M cap or budget_pct. The audit doc + governance drafts +
     # historical proposals are explicitly exempt.
