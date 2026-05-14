@@ -26,6 +26,7 @@ SNAPSHOT_PATH = AGGREGATES_DIR / "token-usage-snapshot.json"
 CURSOR_PATH = AGGREGATES_DIR / ".token-usage-cursor.json"
 MANUAL_LOG = STATE / "telemetry" / "manual-quota-log.ndjson"
 CRON_LOG_DIR = ROOT / "scripts" / "cron" / "logs"
+QUOTA_STATUS = STATE / "quota-status.json"  # PROP-003.a sidecar output
 
 # =============================================================================
 # CONSTANTS (calibratable — see token-usage-build-summary.md "Open question")
@@ -250,6 +251,40 @@ def scan_cron_logs(cursor_ts):
     return derived
 
 
+# ---------- PROP-003.b: Source D — quota-status.json sidecar ----------
+def read_quota_status(max_age_seconds: int = 6 * 3600):
+    """
+    Read .claude/state/quota-status.json (PROP-003.a sidecar output) and
+    return a dict with `_state` ∈ {"fresh","empty","stale","absent"}.
+    Used at snapshot-merge time to set `_meter_status` and surface the
+    sidecar's canonical totals (NOT folded into per-source buckets — that
+    would double-count against the event-derived attribution).
+    """
+    if not QUOTA_STATUS.exists():
+        return {"_state": "absent"}
+    try:
+        obj = json.loads(QUOTA_STATUS.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {"_state": "absent"}
+    as_of_raw = obj.get("as_of", "") or ""
+    try:
+        if as_of_raw.endswith("Z"):
+            as_of_raw = as_of_raw[:-1] + "+00:00"
+        as_of_dt = datetime.fromisoformat(as_of_raw)
+    except Exception:
+        return {**obj, "_state": "absent"}
+    age = (datetime.now(timezone.utc) - as_of_dt).total_seconds()
+    obj["_age_seconds"] = int(age)
+    if age > max_age_seconds:
+        obj["_state"] = "stale"
+        return obj
+    if obj.get("data_source") in (None, "none") or not (obj.get("weekly_tokens") or 0):
+        obj["_state"] = "empty"
+        return obj
+    obj["_state"] = "fresh"
+    return obj
+
+
 # ---------- Source C: manual paste log ----------
 def scan_manual_log():
     if not MANUAL_LOG.exists():
@@ -325,8 +360,36 @@ def merge_to_snapshot(real_events, estimated_events, manual_entries):
             }
         return out
 
+    # PROP-003.b: Source D — quota-status.json sidecar snapshot.
+    # Not folded into buckets (would double-count vs Source A event
+    # attribution). Surfaced at top level so token-usage.html can show
+    # the canonical weekly total alongside the per-agent breakdown.
+    qs = read_quota_status()
+    qs_state = qs.get("_state", "absent")
+    if qs_state == "fresh":
+        meter_status = "wired-real"
+    elif qs_state == "empty":
+        meter_status = "wired-estimated-sidecar-empty"
+    elif qs_state == "stale":
+        meter_status = "wired-estimated-sidecar-stale"
+    else:
+        meter_status = "wired-estimated"
     return {
         "generated_at": iso_now(),
+        "_meter_status": meter_status,
+        "quota_status": {
+            "state": qs_state,
+            "as_of": qs.get("as_of") if qs_state != "absent" else None,
+            "age_seconds": qs.get("_age_seconds"),
+            "weekly_tokens": qs.get("weekly_tokens"),
+            "weekly_cap": qs.get("weekly_cap"),
+            "weekly_pct": qs.get("weekly_pct"),
+            "org_monthly_tokens": qs.get("org_monthly_tokens"),
+            "org_monthly_cap": qs.get("org_monthly_cap"),
+            "org_monthly_pct": qs.get("org_monthly_pct"),
+            "data_source": qs.get("data_source"),
+            "_warning": qs.get("_warning"),
+        },
         "constants": {
             "INPUT_RATE_TOKENS_PER_SEC": INPUT_RATE_TOKENS_PER_SEC,
             "OUTPUT_RATE_TOKENS_PER_SEC": OUTPUT_RATE_TOKENS_PER_SEC,

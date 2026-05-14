@@ -153,6 +153,50 @@ def _count_fiq_entries(repo_root: Path):
     return sum(1 for p in fiq_dir.glob("*.md") if p.is_file())
 
 
+def _read_quota_status(repo_root: Path, max_age_seconds: int = 6 * 3600):
+    """
+    PROP-003.b: Read .claude/state/quota-status.json (PROP-003.a sidecar
+    output) and gate it on freshness + data presence. Returns a dict with
+    `_state` ∈ {"fresh", "empty", "stale", "absent"} so callers can flip
+    `_meter_status` and downstream dashboards can render accordingly.
+
+    Freshness gate: `as_of` must be within `max_age_seconds` (default 6h).
+    Data gate: `data_source != "none"` AND `weekly_tokens > 0` (sidecar
+    can produce an empty file when the underlying manual log doesn't exist
+    yet — that's "empty", not "fresh real data").
+    """
+    path = repo_root / ".claude" / "state" / "quota-status.json"
+    if not path.exists():
+        return {"_state": "absent"}
+    try:
+        obj = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {"_state": "absent"}
+    # Parse as_of
+    as_of_raw = obj.get("as_of", "") or ""
+    try:
+        # Handle Z + microseconds
+        if as_of_raw.endswith("Z"):
+            as_of_raw = as_of_raw[:-1] + "+00:00"
+        as_of_dt = datetime.fromisoformat(as_of_raw)
+    except Exception:
+        return {**obj, "_state": "absent"}
+    age_sec = (datetime.now(timezone.utc) - as_of_dt).total_seconds()
+    obj["_age_seconds"] = int(age_sec)
+    if age_sec > max_age_seconds:
+        obj["_state"] = "stale"
+        return obj
+    # Data gate: data_source "none" + weekly_tokens 0 means sidecar ran but
+    # has no underlying log to read. Treat as "empty" so the meter says
+    # "sidecar running, no data" rather than misleadingly claiming wired-real
+    # with zero tokens.
+    if obj.get("data_source") in (None, "none") or not (obj.get("weekly_tokens") or 0):
+        obj["_state"] = "empty"
+        return obj
+    obj["_state"] = "fresh"
+    return obj
+
+
 def _read_latest_manual_quota(repo_root: Path):
     """
     Phase 6.6: Surface the most recent Founder manual-quota-paste entry from
@@ -289,7 +333,24 @@ def aggregate():
                 last_checkpoint = int(consumed)
 
     meter_wired = len(tokens_by_role) > 0
-    meter_status = "wired-estimated" if meter_wired else "gap-per-F1a"
+
+    # PROP-003.b: prefer quota-status.json (PROP-003.a sidecar) when fresh.
+    # Cascading status determination:
+    #   - quota-status fresh           → "wired-real"
+    #   - quota-status empty (no data) → "wired-estimated-sidecar-empty"
+    #   - quota-status stale (> 6h)    → "wired-estimated-sidecar-stale"
+    #   - quota-status absent + events → "wired-estimated"
+    #   - nothing at all               → "gap-per-F1a"
+    quota_status = _read_quota_status(ROOT)
+    qs_state = quota_status.get("_state", "absent")
+    if qs_state == "fresh":
+        meter_status = "wired-real"
+    elif qs_state == "empty":
+        meter_status = "wired-estimated-sidecar-empty"
+    elif qs_state == "stale":
+        meter_status = "wired-estimated-sidecar-stale"
+    else:
+        meter_status = "wired-estimated" if meter_wired else "gap-per-F1a"
 
     # Recent handoffs (top 5)
     recent_handoffs = [
@@ -331,19 +392,70 @@ def aggregate():
         ],
     }
 
+    # Default weekly_tokens to the event-derived sum (lower bound).
     weekly_tokens = sum(tokens_by_role.values())  # 0 when meter is gap
     weekly_cost = 0.0  # No cost meter either
 
-    snapshot = {
-        "as_of": now.isoformat(),
-        "_meter_status": meter_status,
-        "_meter_note": (
+    # PROP-003.b: when sidecar fresh, prefer its weekly_tokens (real data).
+    if qs_state == "fresh":
+        real_weekly = quota_status.get("weekly_tokens")
+        if isinstance(real_weekly, (int, float)) and real_weekly > 0:
+            weekly_tokens = int(real_weekly)
+
+    # PROP-003.b: meter note adapts to current state so dashboards can
+    # show users why the value is what it is.
+    if meter_status == "wired-real":
+        meter_note = (
+            "Token meter is wired to real data via PROP-003.a sidecar "
+            "(.claude/state/quota-status.json). weekly_tokens reflects the "
+            "most recent meter reading. See quota_status block for org-monthly "
+            "percentage + freshness."
+        )
+    elif meter_status == "wired-estimated-sidecar-empty":
+        meter_note = (
+            "Sidecar (PROP-003.a) is running and writing quota-status.json, but "
+            "the underlying manual-quota-log.ndjson does not yet exist. "
+            "Falling back to event-aggregated estimates. Run "
+            "scripts/refresh-quota-manual.ps1 to populate, or install the "
+            "sidecar Scheduled Task for automatic refresh."
+        )
+    elif meter_status == "wired-estimated-sidecar-stale":
+        meter_note = (
+            "Sidecar (PROP-003.a) output quota-status.json is older than 6h "
+            "(staleness threshold). Falling back to event-aggregated estimates. "
+            "Re-run sidecar manually or check the Scheduled Task health."
+        )
+    else:
+        meter_note = (
             "Token meter is not wired (F1 finding). tokens_by_role / weekly_tokens / "
             "weekly_cost / token_trend_7d will show synthesized event-attributed values "
             "ONLY for events that carry agent + tokens fields. Until a real meter wires "
             "up (db-2026-05-13-003 outcome pending Founder ratification), treat these "
             "fields as a lower bound, not the actual consumption."
-        ),
+        )
+
+    # PROP-003.b: quota_status block — every aggregator run records the
+    # current state of the PROP-003.a sidecar so dashboards can render
+    # appropriately + downstream PAUSE_DISCIPLINE (AMD-014) can gate.
+    quota_status_block = {
+        "state": qs_state,
+        "as_of": quota_status.get("as_of") if qs_state != "absent" else None,
+        "age_seconds": quota_status.get("_age_seconds"),
+        "weekly_tokens": quota_status.get("weekly_tokens"),
+        "weekly_cap": quota_status.get("weekly_cap"),
+        "weekly_pct": quota_status.get("weekly_pct"),
+        "org_monthly_tokens": quota_status.get("org_monthly_tokens"),
+        "org_monthly_cap": quota_status.get("org_monthly_cap"),
+        "org_monthly_pct": quota_status.get("org_monthly_pct"),
+        "data_source": quota_status.get("data_source"),
+        "_warning": quota_status.get("_warning"),
+    }
+
+    snapshot = {
+        "as_of": now.isoformat(),
+        "_meter_status": meter_status,
+        "_meter_note": meter_note,
+        "quota_status": quota_status_block,
         "weekly_tokens": weekly_tokens,
         "weekly_cost": weekly_cost,
         "ships_this_week": len([s for s in ship_progress if s.get("status") == "complete"]),

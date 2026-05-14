@@ -68,6 +68,31 @@
         </div>
     </div>
 
+    <!-- PROP-003.b: quota meter status (live / sidecar empty / sidecar stale /
+         estimated). Shows the canonical weekly_tokens + percentage from the
+         PROP-003.a sidecar when fresh. Falls through to legacy estimated
+         pathway when sidecar unavailable. Per AMD-014 PAUSE_DISCIPLINE,
+         this is the band downstream pacing gates read from. -->
+    <section class="pb-section" id="tu-quota-meter" style="margin-bottom: var(--space-4);">
+        <div class="pb-kpi-grid">
+            <div class="pb-kpi-card" data-kpi-card="meter-status">
+                <span class="pb-kpi-label">Meter status</span>
+                <span class="pb-kpi-value" data-kpi="meter-status">&mdash;</span>
+                <span class="pb-kpi-sub" data-kpi-sub="meter-status">checking sidecar...</span>
+            </div>
+            <div class="pb-kpi-card" data-kpi-card="quota-weekly">
+                <span class="pb-kpi-label">Weekly tokens (live)</span>
+                <span class="pb-kpi-value" data-kpi="quota-weekly">&mdash;</span>
+                <span class="pb-kpi-sub" data-kpi-sub="quota-weekly">vs <span data-kpi="quota-weekly-cap">&mdash;</span> cap</span>
+            </div>
+            <div class="pb-kpi-card" data-kpi-card="quota-org">
+                <span class="pb-kpi-label">Org monthly</span>
+                <span class="pb-kpi-value" data-kpi="quota-org-pct">&mdash;</span>
+                <span class="pb-kpi-sub" data-kpi-sub="quota-org">org-wide cap</span>
+            </div>
+        </div>
+    </section>
+
     <section class="tu-summary">
         <div class="tu-donut-wrap">
             <!-- Single donut covering Real / Estimated / Manual breakdown. -->
@@ -446,6 +471,72 @@
         document.querySelector('[data-stat="first-event"]').textContent = fmtDate(at.first_event_at);
         document.querySelector('[data-stat="generated-at"]').textContent = fmtAgo(data.generated_at);
         renderDonut(at.real || 0, at.estimated || 0, at.manual || 0);
+        renderQuotaMeter(data);
+    }
+
+    // PROP-003.b: meter widget — reflect _meter_status + quota_status block.
+    function renderQuotaMeter(data) {
+        function set(sel, val) {
+            var el = document.querySelector(sel);
+            if (el) el.textContent = val;
+        }
+        var status = data._meter_status || 'wired-estimated';
+        var qs = data.quota_status || {};
+        var statusLabels = {
+            'wired-real': 'LIVE',
+            'wired-estimated-sidecar-empty': 'sidecar empty',
+            'wired-estimated-sidecar-stale': 'sidecar STALE',
+            'wired-estimated': 'estimated only',
+            'gap-per-F1a': 'no meter'
+        };
+        set('[data-kpi="meter-status"]', statusLabels[status] || status);
+
+        var sub;
+        if (status === 'wired-real') {
+            var ageMin = qs.age_seconds != null ? Math.floor(qs.age_seconds / 60) : null;
+            sub = 'sidecar fresh' + (ageMin != null ? ' (' + ageMin + 'm ago)' : '');
+        } else if (status === 'wired-estimated-sidecar-empty') {
+            sub = 'sidecar present but no source data';
+        } else if (status === 'wired-estimated-sidecar-stale') {
+            var ageH = qs.age_seconds != null ? Math.floor(qs.age_seconds / 3600) : null;
+            sub = 'sidecar last ran' + (ageH != null ? ' ' + ageH + 'h ago' : ' long ago');
+        } else if (status === 'wired-estimated') {
+            sub = 'event-aggregated estimates · no sidecar';
+        } else {
+            sub = 'gap — no meter wired';
+        }
+        set('[data-kpi-sub="meter-status"]', sub);
+
+        var statusCard = document.querySelector('[data-kpi-card="meter-status"]');
+        if (statusCard) {
+            statusCard.classList.remove('is-positive', 'is-warning', 'is-neutral');
+            if (status === 'wired-real') statusCard.classList.add('is-positive');
+            else if (status.indexOf('stale') !== -1) statusCard.classList.add('is-warning');
+            else statusCard.classList.add('is-neutral');
+        }
+
+        if (typeof qs.weekly_tokens === 'number' && qs.weekly_tokens > 0) {
+            set('[data-kpi="quota-weekly"]', fmtTokens(qs.weekly_tokens));
+            if (typeof qs.weekly_cap === 'number') {
+                set('[data-kpi="quota-weekly-cap"]', fmtTokens(qs.weekly_cap));
+            }
+            if (typeof qs.weekly_pct === 'number') {
+                set('[data-kpi-sub="quota-weekly"]', qs.weekly_pct.toFixed(0) + '% of cap');
+            }
+        } else {
+            set('[data-kpi="quota-weekly"]', '—');
+            set('[data-kpi-sub="quota-weekly"]', 'awaiting sidecar data');
+        }
+
+        if (typeof qs.org_monthly_pct === 'number') {
+            set('[data-kpi="quota-org-pct"]', qs.org_monthly_pct.toFixed(0) + '%');
+            if (typeof qs.org_monthly_tokens === 'number' && typeof qs.org_monthly_cap === 'number') {
+                set('[data-kpi-sub="quota-org"]', fmtTokens(qs.org_monthly_tokens) + ' of ' + fmtTokens(qs.org_monthly_cap));
+            }
+        } else {
+            set('[data-kpi="quota-org-pct"]', '—');
+            set('[data-kpi-sub="quota-org"]', qs.state === 'fresh' ? 'org cap unset' : 'awaiting sidecar data');
+        }
     }
 
     function totalOf(b) {

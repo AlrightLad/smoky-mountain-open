@@ -1,7 +1,20 @@
 {
-  "as_of": "2026-05-14T05:37:06.896401+00:00",
-  "_meter_status": "wired-estimated",
-  "_meter_note": "Token meter is not wired (F1 finding). tokens_by_role / weekly_tokens / weekly_cost / token_trend_7d will show synthesized event-attributed values ONLY for events that carry agent + tokens fields. Until a real meter wires up (db-2026-05-13-003 outcome pending Founder ratification), treat these fields as a lower bound, not the actual consumption.",
+  "as_of": "2026-05-14T06:41:10.163366+00:00",
+  "_meter_status": "wired-estimated-sidecar-empty",
+  "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
+  "quota_status": {
+    "state": "empty",
+    "as_of": "2026-05-14T05:22:21.0965935Z",
+    "age_seconds": 4729,
+    "weekly_tokens": 0,
+    "weekly_cap": 3500000,
+    "weekly_pct": null,
+    "org_monthly_tokens": 0,
+    "org_monthly_cap": null,
+    "org_monthly_pct": null,
+    "data_source": "none",
+    "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
+  },
   "weekly_tokens": 7302000,
   "weekly_cost": 0.0,
   "ships_this_week": 0,
@@ -92,7 +105,7 @@
   },
   "recent_ships": [],
   "_aggregate_counts": {
-    "events_total": 349,
+    "events_total": 376,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,

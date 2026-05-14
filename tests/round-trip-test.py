@@ -677,6 +677,86 @@ def main():
         print(red("  ✗ index.html (production) MISSING"))
         failures.append(("index.html", "production file missing"))
 
+    # PROP-003.b [meter-wiring]: validate the freshness gate + status
+    # transition logic in the telemetry + token-usage aggregators.
+    # Source of truth: the SHIPPED current-snapshot.json + token-usage-snapshot.json
+    # in .claude/state/telemetry/aggregates/. These are regenerated on every
+    # commit by the regen-all chain, so testing them here catches drift.
+    print(cyan("\n[meter-wiring] PROP-003.b sidecar consumption..."))
+    real_state = ROOT / ".claude" / "state"
+    snap_path = real_state / "telemetry" / "aggregates" / "current-snapshot.json"
+    tu_path = real_state / "telemetry" / "aggregates" / "token-usage-snapshot.json"
+    qs_path = real_state / "quota-status.json"
+
+    VALID_METER_STATES = {
+        "wired-real",
+        "wired-estimated",
+        "wired-estimated-sidecar-empty",
+        "wired-estimated-sidecar-stale",
+        "gap-per-F1a",
+    }
+    REQUIRED_QS_KEYS = {
+        "state", "as_of", "age_seconds", "weekly_tokens", "weekly_cap",
+        "weekly_pct", "org_monthly_tokens", "org_monthly_cap",
+        "org_monthly_pct", "data_source",
+    }
+
+    meter_checks = []
+    if snap_path.exists():
+        try:
+            snap = json.loads(snap_path.read_text(encoding="utf-8"))
+            ms = snap.get("_meter_status")
+            qs = snap.get("quota_status") or {}
+            meter_checks.append(("telemetry snapshot has _meter_status", ms in VALID_METER_STATES))
+            meter_checks.append(("telemetry snapshot has quota_status block", isinstance(qs, dict)))
+            missing_qs_keys = REQUIRED_QS_KEYS - set(qs.keys())
+            meter_checks.append(("telemetry snapshot quota_status schema complete", len(missing_qs_keys) == 0))
+            # If quota-status.json exists, the snapshot's quota_status.state should
+            # reflect its content (not "absent")
+            if qs_path.exists():
+                meter_checks.append((
+                    "quota_status.state != 'absent' when sidecar present",
+                    qs.get("state") != "absent",
+                ))
+        except Exception as e:
+            failures.append(("meter-wiring", f"telemetry snapshot parse failed: {e}"))
+    else:
+        failures.append(("meter-wiring", "current-snapshot.json missing — run scripts/aggregate-telemetry.py"))
+    if tu_path.exists():
+        try:
+            tu = json.loads(tu_path.read_text(encoding="utf-8"))
+            tms = tu.get("_meter_status")
+            tqs = tu.get("quota_status") or {}
+            meter_checks.append(("token-usage snapshot has _meter_status", tms in VALID_METER_STATES))
+            meter_checks.append(("token-usage snapshot has quota_status block", isinstance(tqs, dict)))
+        except Exception as e:
+            failures.append(("meter-wiring", f"token-usage snapshot parse failed: {e}"))
+    else:
+        failures.append(("meter-wiring", "token-usage-snapshot.json missing — run scripts/aggregate-token-usage.py"))
+
+    # Both aggregators must agree on _meter_status (they read the same
+    # sidecar file with the same freshness gate, so divergence indicates
+    # a real bug in one of the readers)
+    if snap_path.exists() and tu_path.exists():
+        try:
+            snap_ms = json.loads(snap_path.read_text(encoding="utf-8")).get("_meter_status")
+            tu_ms = json.loads(tu_path.read_text(encoding="utf-8")).get("_meter_status")
+            meter_checks.append((
+                f"aggregators agree on _meter_status (telemetry={snap_ms}, token-usage={tu_ms})",
+                snap_ms == tu_ms,
+            ))
+        except Exception:
+            pass
+
+    if all(ok for _, ok in meter_checks):
+        print(green(f"  ✓ meter-wiring                 {len(meter_checks)} checks pass"))
+        for name, _ in meter_checks:
+            print(green(f"    · {name}"))
+    else:
+        missing = [name for name, ok in meter_checks if not ok]
+        print(red(f"  ✗ meter-wiring                 failures: {missing}"))
+        failures.append(("meter-wiring", f"checks failed: {missing}"))
+
     # Cross-dashboard count consistency: every dashboard that surfaces a count for the
     # same metric MUST show the same number. Founder caught a banner-vs-page divergence
     # by eye on 2026-05-13; this check catches the class going forward.
@@ -1259,6 +1339,27 @@ def main():
     mf_idx_workspace = mf_html.find('class="mf-workspace"')
     mf_idx_flowrail = mf_html.find('id="flow-rail-section"')
     arch_first = (mf_idx_workspace > 0 and (mf_idx_flowrail < 0 or mf_idx_workspace < mf_idx_flowrail))
+
+    # Ship 4 (Founder diagnostic 2026-05-14): the prior sentinel check
+    # passed while the page was visually wrong — sentinels only prove
+    # structure, not balance. Extend with content-count sentinels grounded
+    # in the data block, AND the Ship 3 rail expansion (search + chips +
+    # all-62 rendering). Static checks only here — proportion check is in
+    # scripts/visual-audit/verify-main-flows.mjs.
+    mf_data_match = DATA_BLOCK_RE.search(mf_html)
+    mf_data = None
+    expected_total_components = None
+    expected_total_steps = None
+    if mf_data_match:
+        try:
+            mf_data = json.loads(mf_data_match.group(2))
+            cols = mf_data.get("columns", []) or []
+            expected_total_components = sum(len(c.get("components", []) or []) for c in cols)
+            flows = mf_data.get("flows", []) or []
+            expected_total_steps = sum(len(f.get("steps", []) or []) for f in flows)
+        except json.JSONDecodeError:
+            pass
+
     mf_checks = [
         ("mf-workspace",      'class="mf-workspace"' in mf_html),
         ("mf-grid",           'class="mf-grid"'      in mf_html or 'id="mf-grid"' in mf_html),
@@ -1267,10 +1368,22 @@ def main():
         ("flows list rail",   'class="mf-flows-list"' in mf_html or 'id="mf-flows-list"' in mf_html),
         ("steps panel",       'class="mf-steps-list"' in mf_html or 'id="mf-steps-list"' in mf_html),
         ("arch-before-rail",  arch_first),
+        # Ship 3 / Founder Q2 (2026-05-14): rail must carry search + filter
+        # chips + render all 62 flows from data.flow_rail (not just F1-F8).
+        ("rail search input",   'id="mf-rail-search"' in mf_html),
+        ("rail filter chips",   'class="mf-rail-chips"' in mf_html),
+        ("rail sources flow_rail", "railEntries()" in mf_html and "data.flow_rail" in mf_html),
+        # Ship 4 / Founder brief 2026-05-14: content-count sentinels grounded
+        # in the data block so display-layer regressions surface immediately.
+        ("expected components (data)", expected_total_components is not None and expected_total_components >= 40),
+        ("expected steps (data)",      expected_total_steps is not None and expected_total_steps >= 30),
+        ("8 path-rich flows",          mf_data is not None and len((mf_data.get("flows") or [])) == 8),
+        ("62 rail entries",            mf_data is not None and len((mf_data.get("flow_rail") or [])) == 62),
     ]
     mf_pass = all(ok for _, ok in mf_checks)
     if mf_pass:
-        print(green(f"  ✓ main-flows.html              arch grid + SVG arrows + rails intact ({sum(1 for _, ok in mf_checks if ok)}/{len(mf_checks)} sentinels)"))
+        cc_note = f" ({expected_total_components} components, {expected_total_steps} steps)" if expected_total_components else ""
+        print(green(f"  ✓ main-flows.html              arch grid + SVG arrows + rails + Ship-3 rail expansion intact{cc_note} ({sum(1 for _, ok in mf_checks if ok)}/{len(mf_checks)} sentinels)"))
     else:
         missing = [name for name, ok in mf_checks if not ok]
         print(red(f"  ✗ main-flows.html              missing sentinels: {missing}"))

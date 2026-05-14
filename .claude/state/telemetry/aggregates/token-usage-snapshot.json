@@ -1,5 +1,19 @@
 {
-  "generated_at": "2026-05-14T05:37:07.093631+00:00",
+  "generated_at": "2026-05-14T06:41:10.241010+00:00",
+  "_meter_status": "wired-estimated-sidecar-empty",
+  "quota_status": {
+    "state": "empty",
+    "as_of": "2026-05-14T05:22:21.0965935Z",
+    "age_seconds": 4729,
+    "weekly_tokens": 0,
+    "weekly_cap": 3500000,
+    "weekly_pct": null,
+    "org_monthly_tokens": 0,
+    "org_monthly_cap": null,
+    "org_monthly_pct": null,
+    "data_source": "none",
+    "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
+  },
   "constants": {
     "INPUT_RATE_TOKENS_PER_SEC": 100,
     "OUTPUT_RATE_TOKENS_PER_SEC": 30
@@ -179,11 +193,11 @@
     "estimated": 7200130,
     "manual": 0,
     "first_event_at": "2026-05-13T11:55:00+00:00",
-    "last_event_at": "2026-05-14T05:36:00.243244+00:00"
+    "last_event_at": "2026-05-14T06:40:49+00:00"
   },
   "_counts": {
     "real_events": 1,
-    "estimated_events": 132,
+    "estimated_events": 145,
     "manual_entries": 0
   }
 }

@@ -39,11 +39,12 @@
         <section class="pb-section">
             <h2 class="pb-section-title">This week</h2>
             <!--
-              Tokens-this-week is the raw aggregate of cycle.budget.checkpoint events.
-              Anthropic quota % is sourced from the most recent founder-paste entry in
-              manual-quota-log.ndjson (run scripts/refresh-quota-manual.ps1 to refresh).
-              No fictional weekly cap (Phase 6.6) — until PROP-003 ships a real meter,
-              manual paste is the only ground truth for percent-against-quota.
+              Tokens-this-week prefers PROP-003.a sidecar (.claude/state/quota-status.json)
+              when fresh (<6h, data_source != "none"). Falls back to event-aggregated
+              estimates when sidecar is stale/empty, and finally to manual paste anchored
+              from manual-quota-log.ndjson.
+              Anthropic quota label dynamically reflects source: "live" when wired-real,
+              "sidecar empty/stale" when fallback, "manual" when only the paste exists.
             -->
             <div class="pb-kpi-grid">
                 <div class="pb-kpi-card is-neutral">
@@ -52,7 +53,7 @@
                     <span class="pb-kpi-sub" data-kpi-sub="weekly-tokens">aggregate of telemetry events</span>
                 </div>
                 <div class="pb-kpi-card" data-kpi-card="manual-quota">
-                    <span class="pb-kpi-label">Anthropic quota (manual)</span>
+                    <span class="pb-kpi-label" data-kpi-label="quota-source">Anthropic quota</span>
                     <span class="pb-kpi-value" data-kpi="manual-quota-pct">&mdash;</span>
                     <span class="pb-kpi-sub" data-kpi-sub="manual-quota">no recent paste &mdash; run <code>scripts/refresh-quota-manual.ps1</code></span>
                 </div>
@@ -370,22 +371,57 @@
                     if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
                     return Math.floor(diff / 86400) + 'd ago';
                 }
+                // PROP-003.b: cascading source priority for the quota meter widget:
+                //   1. quota_status.state === "fresh"  →  use sidecar weekly_pct (live)
+                //   2. quota_status.state === "stale"  →  show last-known sidecar value + stale badge
+                //   3. quota_status.state === "empty"  →  fall through to manual paste
+                //   4. quota_status.state === "absent" →  fall through to manual paste
+                //   5. manual paste present → use it
+                //   6. nothing → "no data" + warning
+                var qs = data.quota_status || null;
+                var meterStatus = data._meter_status || 'wired-estimated';
+                var quotaCard = document.querySelector('[data-kpi-card="manual-quota"]');
+                var quotaLabel = document.querySelector('[data-kpi-label="quota-source"]');
                 var mq = data.manual_quota_latest || null;
-                if (mq && typeof mq.weekly_all_pct === 'number') {
-                    setText('[data-kpi="manual-quota-pct"]', mq.weekly_all_pct.toFixed(0) + '%');
-                    var anchored = mq.anchored_at ? _fmtAgo(mq.anchored_at) : 'unknown time';
-                    setText('[data-kpi-sub="manual-quota"]', 'weekly all-models · anchored ' + anchored);
-                    setText('[data-kpi="manual-quota-age"]', anchored);
-                    var card = document.querySelector('[data-kpi-card="manual-quota"]');
-                    if (card) {
+                var quotaResolved = false;
+                if (qs && qs.state === 'fresh' && typeof qs.weekly_pct === 'number') {
+                    setText('[data-kpi="manual-quota-pct"]', qs.weekly_pct.toFixed(0) + '%');
+                    var qsAge = qs.age_seconds != null ? Math.floor(qs.age_seconds / 60) + 'm' : 'unknown';
+                    var orgPctTxt = (typeof qs.org_monthly_pct === 'number')
+                        ? ' · org ' + qs.org_monthly_pct.toFixed(0) + '%'
+                        : '';
+                    setText('[data-kpi-sub="manual-quota"]', 'live · sidecar ' + qsAge + ' old' + orgPctTxt);
+                    if (quotaLabel) quotaLabel.textContent = 'Anthropic quota (live)';
+                    if (quotaCard) quotaCard.classList.add('is-positive');
+                    quotaResolved = true;
+                } else if (qs && qs.state === 'stale' && typeof qs.weekly_pct === 'number') {
+                    setText('[data-kpi="manual-quota-pct"]', qs.weekly_pct.toFixed(0) + '%');
+                    var staleAge = qs.age_seconds != null ? Math.floor(qs.age_seconds / 3600) + 'h' : 'old';
+                    setText('[data-kpi-sub="manual-quota"]', 'STALE · sidecar last ran ' + staleAge + ' ago');
+                    if (quotaLabel) quotaLabel.textContent = 'Anthropic quota (stale)';
+                    if (quotaCard) quotaCard.classList.add('is-warning');
+                    quotaResolved = true;
+                }
+                if (!quotaResolved) {
+                    if (mq && typeof mq.weekly_all_pct === 'number') {
+                        setText('[data-kpi="manual-quota-pct"]', mq.weekly_all_pct.toFixed(0) + '%');
+                        var anchored = mq.anchored_at ? _fmtAgo(mq.anchored_at) : 'unknown time';
+                        var sidecarNote = '';
+                        if (qs && qs.state === 'empty') sidecarNote = ' · sidecar present, empty';
+                        else if (qs && qs.state === 'absent') sidecarNote = ' · sidecar not installed';
+                        setText('[data-kpi-sub="manual-quota"]', 'manual paste · anchored ' + anchored + sidecarNote);
+                        if (quotaLabel) quotaLabel.textContent = 'Anthropic quota (manual)';
                         var stale = mq.anchored_at && (Date.now() - new Date(mq.anchored_at).getTime()) > (24 * 3600 * 1000);
-                        card.classList.add(stale ? 'is-warning' : 'is-info');
+                        if (quotaCard) quotaCard.classList.add(stale ? 'is-warning' : 'is-info');
+                    } else {
+                        setText('[data-kpi="manual-quota-pct"]', 'no data');
+                        var noDataNote = qs && qs.state === 'empty'
+                            ? 'sidecar present but no source data · run scripts/refresh-quota-manual.ps1'
+                            : 'no recent paste';
+                        setText('[data-kpi-sub="manual-quota"]', noDataNote);
+                        if (quotaLabel) quotaLabel.textContent = 'Anthropic quota (no data)';
+                        if (quotaCard) quotaCard.classList.add('is-warning');
                     }
-                } else {
-                    setText('[data-kpi="manual-quota-pct"]', 'no data');
-                    setText('[data-kpi="manual-quota-age"]', 'never');
-                    var card2 = document.querySelector('[data-kpi-card="manual-quota"]');
-                    if (card2) card2.classList.add('is-warning');
                 }
 
                 setText('[data-kpi="ships-week"]', String(data.ships_this_week || 0));
