@@ -129,7 +129,7 @@ try {
         $msg = "cron(routine): auto-commit telemetry output before watcher preflight (" + (Get-Date).ToUniversalTime().ToString("o") + ")"
         & git commit -m $msg 2>&1 | ForEach-Object { Log "  [auto-commit] $_" }
         if ($LASTEXITCODE -ne 0) {
-            Log "WARN auto-commit of routine output failed (continuing — preflight will recheck)"
+            Log "WARN auto-commit of routine output failed (continuing - preflight will recheck)"
         }
     }
 
