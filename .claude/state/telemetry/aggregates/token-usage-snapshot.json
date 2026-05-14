@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T05:35:14.711216+00:00",
+  "generated_at": "2026-05-14T05:37:07.093631+00:00",
   "constants": {
     "INPUT_RATE_TOKENS_PER_SEC": 100,
     "OUTPUT_RATE_TOKENS_PER_SEC": 30
@@ -19,13 +19,13 @@
     },
     "orchestrator": {
       "real": 0,
-      "estimated": 4200130,
+      "estimated": 7200130,
       "manual": 0,
-      "total_real_plus_estimated": 4200130,
+      "total_real_plus_estimated": 7200130,
       "by_day": {
         "2026-05-14": {
           "real": 0,
-          "estimated": 4200000
+          "estimated": 7200000
         },
         "2026-05-13": {
           "real": 0,
@@ -53,9 +53,9 @@
   "by_cron": {
     "manual-session": {
       "real": 102000,
-      "estimated": 4200000,
+      "estimated": 7200000,
       "manual": 0,
-      "total_real_plus_estimated": 4302000,
+      "total_real_plus_estimated": 7302000,
       "by_day": {
         "2026-05-13": {
           "real": 102000,
@@ -63,7 +63,7 @@
         },
         "2026-05-14": {
           "real": 0,
-          "estimated": 4200000
+          "estimated": 7200000
         }
       }
     },
@@ -160,18 +160,30 @@
           "estimated": 4200000
         }
       }
+    },
+    "substrate-build-day-3-post-backfill": {
+      "real": 0,
+      "estimated": 3000000,
+      "manual": 0,
+      "total_real_plus_estimated": 3000000,
+      "by_day": {
+        "2026-05-14": {
+          "real": 0,
+          "estimated": 3000000
+        }
+      }
     }
   },
   "all_time": {
     "real": 102000,
-    "estimated": 4200130,
+    "estimated": 7200130,
     "manual": 0,
     "first_event_at": "2026-05-13T11:55:00+00:00",
-    "last_event_at": "2026-05-14T05:30:56+00:00"
+    "last_event_at": "2026-05-14T05:36:00.243244+00:00"
   },
   "_counts": {
     "real_events": 1,
-    "estimated_events": 130,
+    "estimated_events": 132,
     "manual_entries": 0
   }
 }
