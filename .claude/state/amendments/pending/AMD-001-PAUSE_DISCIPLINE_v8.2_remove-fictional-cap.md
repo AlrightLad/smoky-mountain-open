@@ -1,10 +1,19 @@
 ---
-draft: proposed amendment to PAUSE_DISCIPLINE_v8.1_ADDENDUM.md
-target: docs/agents/PAUSE_DISCIPLINE_v8.2_ADDENDUM.md (Founder applies via git mv)
+id: AMD-001
+title: PAUSE_DISCIPLINE v8.2 — Remove fictional 3.5M weekly cap
+target_canonical_path: docs/agents/PAUSE_DISCIPLINE_v8.2_ADDENDUM.md
+source_draft_path: .claude/state/wave-zero-dry-run/remediation/proposed-PAUSE_DISCIPLINE_v8.2_remove-fictional-cap.md
+scope_summary: Replaces §2.1 rate-limit threshold (op-count-based default + manual-quota override at 90% when fresh paste available) and marks §4 item 24 dormant until PROP-003 ships. Schema-compatible (last-verify.json reason enum extended).
+type: new-file
+section_anchor: null
+depends_on: []
 authored_by: claude-code
-authored_at: 2026-05-13
-trigger: Phase 6.6 of Dashboard Consolidation (fictional-cap audit DC-9)
-governance_hook: orchestration team cannot edit docs/agents/ directly; this is a draft
+authored_at: 2026-05-13T22:00:00Z
+bubble_of_record: null
+estimate_tokens_to_apply: 5000
+rollback_strategy: git revert the commit; PAUSE_DISCIPLINE_v8.1_ADDENDUM stays the active addendum until v8.2 is re-applied.
+status: pending
+migrated_from_remediation: 2026-05-14T01:30:00Z
 ---
 
 # PAUSE_DISCIPLINE v8.2 — Remove fictional 3.5M weekly cap

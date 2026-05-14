@@ -1,14 +1,20 @@
 ---
-draft: proposed amendment to .claude/skills/parbaughs-design-bot.md
-target: appended to .claude/skills/parbaughs-design-bot.md after the
-        existing POST-WORK audit checklist
+id: AMD-003
+title: design-bot skill — Append DASHBOARD PR CHECKLIST (Phase 6 / DC-7)
+target_canonical_path: .claude/skills/parbaughs-design-bot.md
+source_draft_path: .claude/state/wave-zero-dry-run/remediation/proposed-parbaughs-design-bot-dashboard-checklist.md
+scope_summary: Appends a 9-item DASHBOARD PR CHECKLIST section to the design-bot skill, codifying the canonical dashboard contract (no charts / shell import / .pb-* classes / form controls / 4 viewports / 30-line inline budget / protected layouts / round-trip / no fictional cap).
+type: append-to-existing
+section_anchor: "## POST-WORK audit checklist"
+depends_on: []
 authored_by: claude-code
-authored_at: 2026-05-13
-trigger: DC-7 of Dashboard Consolidation (Critic protocol update)
-governance_hook: skills/*.md require approval sidecar; orchestration team
-                 cannot edit directly. This draft documents the addition;
-                 Founder applies by appending the block + bumping the
-                 sidecar version.
+authored_at: 2026-05-13T22:00:00Z
+bubble_of_record: null
+estimate_tokens_to_apply: 2000
+rollback_strategy: git revert; the checklist block is additive and self-contained.
+status: pending
+hook_gate: skills/*.md require .APPROVAL.md sidecar bump; apply-amendments.sh disables/restores hook via "disableAllHooks: true" pattern per CLAUDE.md operational gotchas.
+migrated_from_remediation: 2026-05-14T01:30:00Z
 ---
 
 # Proposed: DASHBOARD PR CHECKLIST appended to design-bot skill

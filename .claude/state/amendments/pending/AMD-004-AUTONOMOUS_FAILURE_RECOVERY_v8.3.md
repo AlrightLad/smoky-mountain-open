@@ -1,13 +1,20 @@
 ---
-draft: proposed governance amendment — AUTONOMOUS_FAILURE_RECOVERY_v8.3
-target: docs/agents/AUTONOMOUS_FAILURE_RECOVERY_v8.3.md (new file)
+id: AMD-004
+title: AUTONOMOUS_FAILURE_RECOVERY v8.3 — Team owns recovery, Founder owns decisions
+target_canonical_path: docs/agents/AUTONOMOUS_FAILURE_RECOVERY_v8.3.md
+source_draft_path: .claude/state/wave-zero-dry-run/remediation/proposed-AUTONOMOUS_FAILURE_RECOVERY_v8.3.md
+scope_summary: New governance doc. Backend issues, infrastructure failures, encoding bugs, test failures are TEAM problems. Founder escalation requires 3+ failed attempts AND a decision (not a fix). Documents 5 real failure-recovery patterns already applied during consolidation as precedent.
+type: new-file
+section_anchor: null
+depends_on: []
 authored_by: claude-code
-authored_at: 2026-05-14
-trigger: Founder PROTOCOL UPDATE (2026-05-14)
-status: operating immediately; formalization pending amendments.html approval
-governance_hook: orchestration team cannot edit docs/agents/ directly;
-                 this draft moves to canonical path via amendments.html
-                 lifecycle once that ships, or via Founder git mv earlier
+authored_at: 2026-05-14T01:15:00Z
+bubble_of_record: null
+estimate_tokens_to_apply: 6000
+rollback_strategy: git revert; new file, no overwrite of existing governance. Protocol stays in effect via operating-immediately status while the formal doc is being re-applied.
+status: pending
+operating_status: ACTIVE — protocol operates immediately per Founder PROTOCOL UPDATE 2026-05-14; this draft is the formalization artifact only.
+migrated_from_remediation: 2026-05-14T01:30:00Z
 ---
 
 # AUTONOMOUS_FAILURE_RECOVERY v8.3

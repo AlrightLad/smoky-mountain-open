@@ -1,10 +1,19 @@
 ---
-draft: proposed amendment to docs/agents/CRON_CONFIGURATION.md
-target: docs/agents/CRON_CONFIGURATION.md (Founder applies in place)
+id: AMD-002
+title: CRON_CONFIGURATION — Remove fictional 3.5M weekly alert threshold
+target_canonical_path: docs/agents/CRON_CONFIGURATION.md
+source_draft_path: .claude/state/wave-zero-dry-run/remediation/proposed-CRON_CONFIGURATION_v8.2_remove-fictional-cap.md
+scope_summary: Single-line edit replacing hardcoded 4.5M / 3.5M alert thresholds at line 616 with a manual-quota-derived percentage (or telemetry-anomaly fallback when no paste exists).
+type: edit-section
+section_anchor: "For cron-specific thresholds"
+depends_on: ["AMD-001"]
 authored_by: claude-code
-authored_at: 2026-05-13
-trigger: Phase 6.6 of Dashboard Consolidation (fictional-cap audit DC-9)
-governance_hook: orchestration team cannot edit docs/agents/ directly; this is a draft
+authored_at: 2026-05-13T22:00:00Z
+bubble_of_record: null
+estimate_tokens_to_apply: 500
+rollback_strategy: git revert; the legacy 3.5M / 4.5M line is plain prose, safe to restore via revert.
+status: pending
+migrated_from_remediation: 2026-05-14T01:30:00Z
 ---
 
 # CRON_CONFIGURATION — Remove fictional 3.5M weekly alert threshold
