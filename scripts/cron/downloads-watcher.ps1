@@ -159,14 +159,22 @@ try {
             }
         } catch {}
     }
-    Log "scanning $downloads for decisions-*.json and amendments-*.json newer than $($lastProcessed.ToString('o'))"
+    Log "scanning $downloads for decisions-*.json + amendments-*.json + escalation-decisions-*.json newer than $($lastProcessed.ToString('o'))"
 
-    # Two recognized file patterns (amendments lifecycle DC-7+):
-    #   decisions-*.json  → kind="decisions"  → apply-decisions.sh (proposals)
-    #   amendments-*.json → kind="amendments" → apply-amendments.sh (governance)
-    # Watcher inspects first line of JSON to determine kind for safety.
-    $candidates = @(Get-ChildItem -Path $downloads -Filter "decisions-*.json" -File -ErrorAction SilentlyContinue |
-        Where-Object { $_.LastWriteTimeUtc -gt $lastProcessed }) + @(Get-ChildItem -Path $downloads -Filter "amendments-*.json" -File -ErrorAction SilentlyContinue |
+    # Three recognized file patterns:
+    #   decisions-*.json             -> kind="decisions"             -> apply-decisions.sh (proposals)
+    #   amendments-*.json            -> kind="amendments"            -> apply-amendments.sh (governance)
+    #   escalation-decisions-*.json  -> kind="escalation-decisions"  -> apply-escalation-decisions.sh (Founder Review Queue)
+    # Watcher inspects the kind field in the JSON to determine routing.
+    # escalation-decisions-*.json is matched before decisions-*.json to
+    # avoid the escalation pattern being captured by the shorter prefix.
+    $candidates = @(Get-ChildItem -Path $downloads -Filter "escalation-decisions-*.json" -File -ErrorAction SilentlyContinue |
+        Where-Object { $_.LastWriteTimeUtc -gt $lastProcessed })
+    $alreadyMatched = @{}
+    foreach ($c in $candidates) { $alreadyMatched[$c.FullName] = $true }
+    $candidates += @(Get-ChildItem -Path $downloads -Filter "decisions-*.json" -File -ErrorAction SilentlyContinue |
+        Where-Object { $_.LastWriteTimeUtc -gt $lastProcessed -and -not $alreadyMatched.ContainsKey($_.FullName) })
+    $candidates += @(Get-ChildItem -Path $downloads -Filter "amendments-*.json" -File -ErrorAction SilentlyContinue |
         Where-Object { $_.LastWriteTimeUtc -gt $lastProcessed })
     $candidates = $candidates | Sort-Object LastWriteTimeUtc
 
@@ -206,6 +214,10 @@ try {
             "decisions" {
                 $applyScript = ".claude/scripts/apply-decisions.sh"
                 $inboxSub = $inbox
+            }
+            "escalation-decisions" {
+                $applyScript = ".claude/scripts/apply-escalation-decisions.sh"
+                $inboxSub = Join-Path $repoRoot ".claude\state\founder\inbox"
             }
             default {
                 Log "  FATAL unrecognized kind=$kind in $($f.Name); skipping"

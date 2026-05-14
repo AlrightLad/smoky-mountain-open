@@ -1,0 +1,51 @@
+{
+  "captured_at": "2026-05-14T16:28:34.234Z",
+  "desktop": {
+    "expectedCount": 2,
+    "renderedCount": 2,
+    "cardCount": 2,
+    "cards": [
+      {
+        "id": "main-flows-v2-taxonomy",
+        "hasTitle": true,
+        "hasProposed": true,
+        "hasResolveBtn": true,
+        "hasSourceLink": true,
+        "isStale": false
+      },
+      {
+        "id": "wave-1-ship-1-selection",
+        "hasTitle": true,
+        "hasProposed": true,
+        "hasResolveBtn": true,
+        "hasSourceLink": true,
+        "isStale": false
+      }
+    ],
+    "errors": []
+  },
+  "mobile": {
+    "expectedCount": 2,
+    "renderedCount": 2,
+    "cardCount": 2,
+    "cards": [
+      {
+        "id": "main-flows-v2-taxonomy",
+        "hasTitle": true,
+        "hasProposed": true,
+        "hasResolveBtn": true,
+        "hasSourceLink": true,
+        "isStale": false
+      },
+      {
+        "id": "wave-1-ship-1-selection",
+        "hasTitle": true,
+        "hasProposed": true,
+        "hasResolveBtn": true,
+        "hasSourceLink": true,
+        "isStale": false
+      }
+    ],
+    "errors": []
+  }
+}

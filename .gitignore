@@ -56,6 +56,7 @@ logs/
 /.claude/state/proposals/inbox/
 /.claude/state/amendments/inbox/
 /.claude/state/amendments/inbox-archive/
+/.claude/state/founder/inbox/
 /.claude/state/quota-status.json
 /tests/round-trip-workspace/
 

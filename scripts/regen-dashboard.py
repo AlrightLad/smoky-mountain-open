@@ -126,18 +126,109 @@ def count_bubbles_flagged_for_founder():
     return n
 
 
+_PROPOSED_ANSWER_HEADINGS = re.compile(
+    r"^##\s+(?:Team's recommendation|Recommendation|Team recommendation|Proposed answer)\b",
+    re.IGNORECASE | re.MULTILINE,
+)
+_NEXT_H2 = re.compile(r"^##\s+", re.MULTILINE)
+_DECISION_FORM = re.compile(
+    r"^##\s+(?:Founder gate|Decisions? required|Open questions for Founder)\b",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+
+def _extract_section(text: str, start_match):
+    """Return the body of a markdown section that starts at start_match,
+    truncated at the next H2 (or end-of-file). Strip leading/trailing
+    whitespace. Cap at 1500 chars so the dashboard payload stays bounded."""
+    if not start_match:
+        return ""
+    body_start = start_match.end()
+    next_match = _NEXT_H2.search(text, body_start)
+    body_end = next_match.start() if next_match else len(text)
+    body = text[body_start:body_end].strip()
+    if len(body) > 1500:
+        body = body[:1500].rstrip() + "…"
+    return body
+
+
+def _read_proposed_answer(source_path: Path):
+    """Read a markdown file and extract the team's proposed answer +
+    decision form. Returns dict with 'proposed_answer' (text) +
+    'decision_form' (text) keys; empty strings when sections absent.
+    Returns the full file's first 1500 chars as 'proposed_answer' fallback
+    if no recognized heading found (so something useful surfaces)."""
+    if not source_path.exists():
+        return {"proposed_answer": "", "decision_form": "", "source_missing": True}
+    try:
+        text = source_path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return {"proposed_answer": "", "decision_form": "", "source_missing": True}
+
+    proposed = _extract_section(text, _PROPOSED_ANSWER_HEADINGS.search(text))
+    form = _extract_section(text, _DECISION_FORM.search(text))
+
+    if not proposed:
+        # No recognized heading; fall back to the first H2 section body
+        # (post-frontmatter) so something useful surfaces. Cap at 1500.
+        body_only = re.sub(r"^---\n.*?\n---\n", "", text, count=1, flags=re.DOTALL)
+        first_h2 = _NEXT_H2.search(body_only)
+        if first_h2:
+            after = body_only[first_h2.end():]
+            next_h2 = _NEXT_H2.search(after)
+            proposed = after[:next_h2.start()].strip() if next_h2 else after.strip()
+            if len(proposed) > 1500:
+                proposed = proposed[:1500].rstrip() + "…"
+
+    return {"proposed_answer": proposed, "decision_form": form, "source_missing": False}
+
+
 def list_open_phase_escalations():
     """AMD-007 P18.6: until structured .claude/state/founder/escalations/ lands,
-    surface escalations from the manually-maintained queue stub."""
+    surface escalations from the manually-maintained queue stub.
+
+    AMD-007 P18.6 + Founder directive 2026-05-14 (escalation panel
+    needs functionality): enrich each escalation with the team's
+    proposed answer + decision form parsed from its source markdown
+    file, plus age + stale flag. Dashboard renders these inline so
+    Founder doesn't navigate to source files to see what's asked.
+    """
     p = STATE / "founder" / "review-queue.json"
     if not p.exists():
         return []
     try:
         stub = json.loads(p.read_text(encoding="utf-8"))
         gov = stub.get("governance_gates", {}) or {}
-        return gov.get("open_escalations", []) or []
+        raw = gov.get("open_escalations", []) or []
     except (OSError, json.JSONDecodeError):
         return []
+
+    now_utc = datetime.now(timezone.utc)
+    enriched = []
+    for e in raw:
+        link = e.get("link") or ""
+        source_path = ROOT / link if link else None
+        meta = {"proposed_answer": "", "decision_form": "", "source_missing": True}
+        age_days = None
+        if source_path and source_path.exists():
+            meta = _read_proposed_answer(source_path)
+            try:
+                mtime = datetime.fromtimestamp(source_path.stat().st_mtime, tz=timezone.utc)
+                age_days = round((now_utc - mtime).total_seconds() / 86400.0, 2)
+            except OSError:
+                age_days = None
+        enriched.append({
+            "id": e.get("id"),
+            "type": e.get("type"),
+            "summary": e.get("summary"),
+            "link": link,
+            "proposed_answer": meta["proposed_answer"],
+            "decision_form": meta["decision_form"],
+            "source_missing": meta["source_missing"],
+            "age_days": age_days,
+            "stale": (age_days is not None and age_days > 1.0),  # Founder directive: stale > 24h flagged
+        })
+    return enriched
 
 
 def cron_last_fire_map():

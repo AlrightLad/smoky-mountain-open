@@ -144,7 +144,29 @@
     <script id="report-data" type="application/json">
 {
   "amendments": {
-    "pending": [],
+    "pending": [
+      {
+        "id": "AMD-015",
+        "title": "Team proposes; Agent 2 ratifies (default escalation pattern)",
+        "target_canonical_path": "docs/agents/TEAM_PROPOSES_AGENT_2_RATIFIES.md",
+        "source_draft_path": ".claude/state/amendments/pending/AMD-015-team-proposes-agent-2-ratifies.md",
+        "scope_summary": "Codifies the operating principle that team escalations to Agent 2 (Claude.ai planning agent) must include a proposed answer with rationale by default. Blank escalations are reserved for vision-level decisions, strategic trade-offs requiring Founder taste, cross-cutting architecture, or information Agent 2/Founder uniquely has. Code implementation, technical fallback chains, smoke test scenario enumeration, and phase sequencing within a ship are team decisions to propose, not Agent 2 questions to answer. Critic gates escalations and blocks blank ones.",
+        "type": "new-file",
+        "section_anchor": null,
+        "depends_on": [
+          "AMD-009"
+        ],
+        "authored_by": "claude-code (orchestration team)",
+        "authored_at": "2026-05-14T16:05:00Z",
+        "bubble_of_record": null,
+        "estimate_tokens_to_apply": "3500",
+        "rollback_strategy": "git revert; the document is new. Operating principle continues informally per Founder directive even if the formal artifact is rolled back (parallel to AMD-009's rollback note).",
+        "status": "pending",
+        "operating_status": "ACTIVE \u2014 operating immediately per Founder directive 2026-05-14 four-part directive. Conflicts with prior amendments resolve in favor of this one for escalation-discipline questions. Critic enforces immediately; formal application via amendments.html is paperwork rather than enablement.",
+        "_body_preview": "# Team Proposes; Agent 2 Ratifies\n\nThe default operating principle for orchestration-team escalations to\nAgent 2 (Claude.ai planning agent). Supersedes the blank-escalation\npattern observed in recent Q1-Q7 routings on W1.S1.b. When this\nprinciple conflicts with another, this one wins for escalation-\ndiscipline questions. Founder is the only override.\n\n## Founder principle (recorded verbatim)\n\n> \"W",
+        "_filename": "AMD-015-team-proposes-agent-2-ratifies.md"
+      }
+    ],
     "approved": [],
     "deferred": [],
     "applied": [
@@ -438,13 +460,13 @@
     "rejected": []
   },
   "counts": {
-    "pending": 0,
+    "pending": 1,
     "approved": 0,
     "deferred": 0,
     "applied_total": 14,
     "rejected_total": 0
   },
-  "as_of": "2026-05-14T15:56:04.645361+00:00",
+  "as_of": "2026-05-14T16:27:54.649467+00:00",
   "schema_version": 1,
   "archive_display_cap": 50
 }

@@ -6,6 +6,152 @@
     <title>Dashboard — PARBAUGHS Orchestration</title>
     <link rel="stylesheet" href="_assets/design-tokens.css">
     <link rel="stylesheet" href="_assets/dashboard-shell.css">
+    <style>
+        /* Founder Review Queue escalation detail panel.
+           Founder directive 2026-05-14: escalation panel needs functionality.
+           Clickable KPI card toggles this panel; each escalation renders as
+           a rich card with proposed answer + decision form + mark-resolved
+           export action. Tokens only (no raw hex) per theme convergence guard. */
+        .pb-kpi-card--clickable:hover { background: rgba(201,169,97,0.06); border-color: var(--accent-brass); }
+        .pb-kpi-card--clickable:focus-visible { outline: 2px solid var(--accent-brass); outline-offset: 2px; }
+        .pb-kpi-card--clickable[aria-expanded="true"] { background: rgba(201,169,97,0.10); border-color: var(--accent-brass); }
+
+        .fq-escalation-card {
+            background: var(--surface-secondary);
+            border: 1px solid var(--border-subtle);
+            border-left: 3px solid var(--accent-brass);
+            border-radius: var(--radius-md);
+            padding: var(--space-3) var(--space-4);
+            font-size: var(--text-sm);
+            color: var(--text-primary);
+            line-height: 1.55;
+        }
+        .fq-escalation-card.is-stale { border-left-color: var(--accent-amber); }
+        .fq-escalation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: var(--space-3);
+            margin-bottom: var(--space-2);
+        }
+        .fq-escalation-title {
+            margin: 0;
+            font-family: var(--font-mono);
+            font-size: var(--text-base);
+            color: var(--accent-brass);
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+        .fq-escalation-summary {
+            margin: var(--space-1) 0 0 0;
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+        }
+        .fq-escalation-age {
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .fq-escalation-age.is-stale {
+            color: var(--accent-amber);
+            font-weight: 600;
+        }
+        .fq-escalation-type {
+            margin: 0 0 var(--space-2) 0;
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .fq-escalation-warn {
+            background: rgba(212,168,87,0.10);
+            border: 1px solid var(--accent-amber);
+            border-radius: var(--radius-sm);
+            padding: var(--space-1) var(--space-2);
+            margin-bottom: var(--space-2);
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            color: var(--accent-amber);
+        }
+        .fq-escalation-section {
+            margin-top: var(--space-2);
+        }
+        .fq-escalation-section-label {
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-tertiary);
+            font-weight: 600;
+            margin-bottom: var(--space-1);
+        }
+        .fq-escalation-body {
+            font-family: var(--font-ui);
+            font-size: var(--text-sm);
+            color: var(--text-primary);
+            background: var(--surface-tertiary);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: var(--space-2) var(--space-3);
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 280px;
+            overflow-y: auto;
+            line-height: 1.55;
+        }
+        .fq-escalation-body.is-empty {
+            color: var(--text-tertiary);
+            font-style: italic;
+        }
+        .fq-escalation-actions {
+            display: flex;
+            gap: var(--space-2);
+            margin-top: var(--space-3);
+            flex-wrap: wrap;
+        }
+        .fq-escalation-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-ui);
+            font-size: var(--text-sm);
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: 1px solid var(--border-subtle);
+            background: var(--surface-tertiary);
+            color: var(--text-primary);
+            transition: background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+        }
+        .fq-escalation-btn:hover { background: var(--surface-raised); border-color: var(--accent-brass); }
+        .fq-escalation-btn:focus-visible { outline: 2px solid var(--accent-brass); outline-offset: 2px; }
+        .fq-escalation-btn--resolve {
+            background: var(--accent-brass);
+            color: var(--surface-inverse);
+            border-color: var(--accent-brass);
+        }
+        .fq-escalation-btn--resolve:hover {
+            background: var(--accent-positive);
+            border-color: var(--accent-positive);
+        }
+
+        /* Mobile responsive — stack action buttons + tighten card padding */
+        @media (max-width: 480px) {
+            .fq-escalation-card { padding: var(--space-2) var(--space-3); }
+            .fq-escalation-header { flex-direction: column; gap: var(--space-1); }
+            .fq-escalation-age { align-self: flex-start; }
+            .fq-escalation-actions { flex-direction: column; }
+            .fq-escalation-btn { width: 100%; justify-content: center; }
+        }
+    </style>
 </head>
 <body class="pb-app">
     <header class="pb-page-header">
@@ -77,13 +223,19 @@
                         <span class="pb-kpi-value" data-fq="proposals-pending">&mdash;</span>
                         <span class="pb-kpi-sub">awaiting approval</span>
                     </a>
-                    <div class="pb-kpi-card" data-fq-gate="escalations">
+                    <button type="button" class="pb-kpi-card pb-kpi-card--clickable" data-fq-gate="escalations" data-fq-toggle="escalation-detail" aria-expanded="false" aria-controls="fq-escalation-detail" style="cursor: pointer; text-align: left; border: 1px solid var(--border-subtle); background: transparent; font: inherit; color: inherit; padding: var(--space-3); border-radius: var(--radius-sm); transition: background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out); position: relative;">
                         <span class="pb-kpi-label">Open escalations</span>
                         <span class="pb-kpi-value" data-fq="escalations-count">&mdash;</span>
                         <span class="pb-kpi-sub" data-fq="escalations-summary">phase escalations</span>
-                    </div>
+                        <span data-fq="escalations-chevron" aria-hidden="true" style="position: absolute; right: var(--space-2); top: var(--space-2); font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-tertiary); transition: transform var(--duration-fast) var(--ease-out);">&#9662;</span>
+                    </button>
                 </div>
-                <ul data-fq="escalations-list" style="margin-top: var(--space-2); padding-left: var(--space-4); list-style: disc; color: var(--text-secondary); font-size: var(--text-sm);"></ul>
+                <!-- Rich escalation detail (Founder directive 2026-05-14: escalation panel needs functionality).
+                     Hidden by default; clicking the KPI card above toggles. Each card shows the team's
+                     proposed answer (per AMD-015), decision form, source link, age, and a Mark Resolved
+                     button that exports an escalation-decisions JSON file mirroring the amendments
+                     approval flow. -->
+                <div id="fq-escalation-detail" data-fq-section="escalation-detail" hidden role="region" aria-label="Escalation detail" style="margin-top: var(--space-3); display: grid; grid-template-columns: 1fr; gap: var(--space-3);"></div>
             </div>
 
             <!-- Sub-section: system health -->
@@ -294,7 +446,7 @@
     "rejected_total": 0
   },
   "amendments_counts": {
-    "pending": 0,
+    "pending": 1,
     "approved": 0,
     "deferred": 0,
     "applied": 14,
@@ -399,7 +551,7 @@
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "_aggregate_counts": {
-    "events_total": 549,
+    "events_total": 563,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
@@ -415,7 +567,7 @@
   "quota_status": {
     "state": "empty",
     "as_of": "2026-05-14T15:24:53.5950065Z",
-    "age_seconds": 1870,
+    "age_seconds": 3780,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -426,10 +578,10 @@
     "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
   },
   "founder_queue": {
-    "as_of": "2026-05-14T15:56:04.705469+00:00",
+    "as_of": "2026-05-14T16:27:54.708638+00:00",
     "last_founder_visit": null,
     "governance_gates": {
-      "amendments_pending": 0,
+      "amendments_pending": 1,
       "amendments_link": "amendments.html",
       "bubbles_flagged": 0,
       "bubbles_link": "discussion-bubbles.html",
@@ -440,21 +592,31 @@
           "id": "main-flows-v2-taxonomy",
           "type": "cross-cutting architecture decision (escalation criterion #5)",
           "summary": "Phase 2 taxonomy + visual + speculative-flows decisions; defaults documented at .claude/state/main-flows-v2/taxonomy-proposals.md",
-          "link": ".claude/state/main-flows-v2/taxonomy-proposals.md"
+          "link": ".claude/state/main-flows-v2/taxonomy-proposals.md",
+          "proposed_answer": "**Taxonomy E (hybrid: tier primary + status secondary + lifecycle chip)** + **Option 1 visual (single-page rail with filter chips)**.\n\nReasoning:\n- Tier as primary preserves the F5 Main Flow filter rule clarity\n- Status secondary surfaces roadmap progress without dominating\n- Lifecycle chip gives Founder a \"what part of the product\" reading lane\n- Single-page rail at 62 flows is tight but viable with filters; doesn't fragment context across pages\n- Architecture grid stays (protected layout per Phase 6.5)",
+          "decision_form": "\u2014 escalation per criterion #5\n\nThree decisions required:\n- **Decision (a) \u2014 Taxonomy:** A / B / C / D / **E (recommended hybrid)**\n- **Decision (b) \u2014 Visual:** Option 1 single-page filtered rail (recommended) / Option 2 accordion / Option 3 multi-page\n- **Decision (c) \u2014 Speculative flows:** **(a) Include + render with treatment** (recommended) / (b) include data, hide UI / (c) remove\n\n**Default if no response within reasonable window:** team proceeds with **Taxonomy E + Option 1 + Speculative (a)**. The inventory at `.claude/state/main-flows-v2/flow-inventory.json` is permanent regardless of taxonomy choice; only the visual organization is gated.",
+          "source_missing": false,
+          "age_days": 0.62,
+          "stale": false
         },
         {
           "id": "wave-1-ship-1-selection",
           "type": "Founder authorization needed",
           "summary": "Design Tooling Spike complete; recommendation locked (Approach A native). Founder selects which Wave 1 ship goes first.",
-          "link": ".claude/state/design-spike/comparison.md"
+          "link": ".claude/state/design-spike/comparison.md",
+          "proposed_answer": "**Wave 1 ship 1 should use Approach A \u2014 PARBAUGHS native primitives.**\n\nThree reasons:\n\n1. **Polish ceiling isn't the constraint.** A scored 7/10 raw; C scored\n   8/10 raw but 6/10 IN PARBAUGHS' aesthetic context. The gap between\n   \"competent native\" and \"ideal aesthetic\" is not closed by switching\n   tools \u2014 it's closed by reference library (H4) + iteration\n   speed (H3). Both are cheaper than a framework migration.\n\n2. **Migration tax is real and load-bearing.** B would consume\n   ~600k-1M tokens just to migrate the dashboard build pipeline before\n   the first React component lands. Wave 1 ship 1 is design system\n   codification; adding \"and also rewrite the build in React\" doubles\n   the ship's scope.\n\n3. **Generative defaults read foreign.** C's gradients + glow + trend\n   deltas are the \"Vercel premium\" aesthetic. PARBAUGHS' is the\n   Augusta-leaderboard / country-club ledger aesthetic. They're\n   different design languages. Using v0's defaults imports a tonal\n   mismatch we'd then have to back-edit out, which is wasted motion.\n\n**However: the spike surfaced two things worth doing alongside Wave 1\nship 1.**\n\n- **Add the 3 missing primitives to design-system-components.css:**\n  `.pb-avatar` (with --leader-ring variant), `.pb-list` + `.pb-list-row`\n  (with hover + leader-row gradient variants), `.pb-trend-delta` (up /\n  down / flat with proper a11y). Authored fresh ~150 tokens; pays\n  dividends every Wave 1 component that comes after.\n\n- **Build a reference-library state\u2026",
+          "decision_form": "1. **Does the leaderboard-row spec want trend-deltas at all?** Approach C\n   added rank-change indicators (up 2, down 1) because Strava has them.\n   PARBAUGHS doesn't have rank-change data wired today \u2014 the\n   substrate would need a snapshot-prev-week step. Worth it?\n\n2. **Is \"this looks shadcn\" actually a bad outcome?** Approach B's\n   identity score was MEDIUM because the pattern is recognizable. But\n   shadcn-derived UIs are everywhere in 2026; \"recognizable\" might be\n   \"fits the era.\" Open question whether PARBAUGHS' chosen\n   distinctiveness should fight that.\n\n3. **Should the spike try other tools the team COULD reach?** Magic-UI\n   and aceternity (cited in db-2026-05-14-001 H1) are reachable as\n   copy-paste-from-docs, similar to shadcn. They produce more\n   motion-heavy aesthetics. Worth a follow-on spike if Founder wants\n   evidence on motion-rich variants.",
+          "source_missing": false,
+          "age_days": 0.57,
+          "stale": false
         }
       ]
     },
     "system_health": {
       "crons": {
         "downloads-watcher": {
-          "last_run": "2026-05-14T15-55-48Z",
-          "last_log": "2026-05-14T15-55-48Z-downloads-watcher.log"
+          "last_run": "2026-05-14T16-25-48Z",
+          "last_log": "2026-05-14T16-25-48Z-downloads-watcher.log"
         },
         "maintenance": {
           "last_run": "2026-05-14T06-55-01Z",
@@ -748,14 +910,7 @@
             var esc = gov.open_escalations || [];
             setText('[data-fq="escalations-count"]', String(esc.length));
             setText('[data-fq="escalations-summary"]', esc.length === 0 ? 'none open' : 'requiring Founder decision');
-            var listEl = document.querySelector('[data-fq="escalations-list"]');
-            if (listEl) {
-                listEl.innerHTML = esc.map(function (e) {
-                    var link = e.link ? '<a href="' + e.link + '" style="color:var(--accent-brass);">link</a>' : '';
-                    var title = (e.id || '') + (e.summary ? ' — ' + e.summary : '');
-                    return '<li><strong>' + title + '</strong> ' + link + '</li>';
-                }).join('');
-            }
+            renderEscalationDetail(esc);
 
             // System health
             var hh = fq.system_health || {};
@@ -810,6 +965,146 @@
                 : 'Items below need Founder review before next ship-close.';
             setText('[data-fq="subtitle"]', subtitle);
         }
+
+        // ============================================================
+        // Escalation detail rendering + interaction
+        // Founder directive 2026-05-14: escalation panel needs functionality.
+        // - Clickable KPI card toggles the detail view
+        // - Each escalation rendered as a rich card with proposed answer + decision form
+        // - "Mark resolved" button generates an escalation-decisions JSON download
+        //   that the downloads-watcher picks up via the apply-escalation-decisions
+        //   substrate (mirrors amendments + proposals approval flow).
+        // ============================================================
+        function escHtml(s) {
+            if (s == null) return '';
+            return String(s)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;');
+        }
+
+        function ageLabel(days) {
+            if (days == null) return 'age unknown';
+            if (days < 1.0) {
+                var hours = Math.round(days * 24);
+                return hours + 'h old';
+            }
+            var rounded = (days >= 10 ? Math.round(days) : Math.round(days * 10) / 10);
+            return rounded + 'd old';
+        }
+
+        function renderEscalationDetail(escalations) {
+            var host = document.getElementById('fq-escalation-detail');
+            if (!host) return;
+            if (!escalations || escalations.length === 0) {
+                host.innerHTML = '';
+                host.hidden = true;
+                var btn0 = document.querySelector('[data-fq-toggle="escalation-detail"]');
+                if (btn0) btn0.setAttribute('aria-expanded', 'false');
+                return;
+            }
+            host.innerHTML = escalations.map(function (e) {
+                var id = escHtml(e.id || '(no-id)');
+                var type = escHtml(e.type || '');
+                var summary = escHtml(e.summary || '');
+                var link = escHtml(e.link || '');
+                var proposed = escHtml(e.proposed_answer || '');
+                var form = escHtml(e.decision_form || '');
+                var staleClass = e.stale ? ' is-stale' : '';
+                var ageText = escHtml(ageLabel(e.age_days));
+                var srcMissing = e.source_missing ? '<div class="fq-escalation-warn">source file not found at <code>' + link + '</code></div>' : '';
+                var proposedHtml = proposed
+                    ? '<div class="fq-escalation-section"><div class="fq-escalation-section-label">Team proposed answer (per AMD-015)</div><pre class="fq-escalation-body">' + proposed + '</pre></div>'
+                    : (e.source_missing ? '' : '<div class="fq-escalation-section"><div class="fq-escalation-section-label">Team proposed answer</div><div class="fq-escalation-body is-empty">No proposed answer authored yet — per AMD-015, team must propose before this escalation can proceed.</div></div>');
+                var formHtml = form
+                    ? '<div class="fq-escalation-section"><div class="fq-escalation-section-label">Decision form (Founder choices)</div><pre class="fq-escalation-body">' + form + '</pre></div>'
+                    : '';
+                var sourceLink = link
+                    ? '<a class="fq-escalation-btn fq-escalation-btn--source" href="' + link + '">Open source file &rarr;</a>'
+                    : '';
+                return ''
+                    + '<article class="fq-escalation-card' + staleClass + '" data-escalation-id="' + id + '">'
+                    + '  <header class="fq-escalation-header">'
+                    + '    <div>'
+                    + '      <h3 class="fq-escalation-title">' + id + '</h3>'
+                    + '      <p class="fq-escalation-summary">' + summary + '</p>'
+                    + '    </div>'
+                    + '    <span class="fq-escalation-age' + staleClass + '">' + ageText + (e.stale ? ' &middot; STALE' : '') + '</span>'
+                    + '  </header>'
+                    + '  <p class="fq-escalation-type">' + type + '</p>'
+                    + srcMissing
+                    + proposedHtml
+                    + formHtml
+                    + '  <div class="fq-escalation-actions">'
+                    + '    ' + sourceLink
+                    + '    <button type="button" class="fq-escalation-btn fq-escalation-btn--resolve" data-fq-resolve="' + id + '">Mark resolved &amp; export decision &darr;</button>'
+                    + '  </div>'
+                    + '</article>';
+            }).join('');
+
+            // Wire Mark Resolved buttons
+            host.querySelectorAll('[data-fq-resolve]').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var escalationId = btn.getAttribute('data-fq-resolve');
+                    exportEscalationDecision(escalationId);
+                });
+            });
+        }
+
+        function exportEscalationDecision(escalationId) {
+            var decision = window.prompt(
+                'Decision text for escalation "' + escalationId + '":\n\n' +
+                'Brief note describing the resolution (e.g., "Taxonomy E + Option 1 + Speculative (a)").\n' +
+                'Leave blank to cancel.'
+            );
+            if (!decision || !decision.trim()) return;
+            var notes = window.prompt('Optional notes (rationale, links, etc.). Leave blank to skip:') || '';
+            var payload = {
+                kind: 'escalation-decisions',
+                schema_version: 1,
+                exported_at: new Date().toISOString(),
+                decisions: [{
+                    escalation_id: escalationId,
+                    action: 'resolved',
+                    decision: decision.trim(),
+                    notes: notes.trim()
+                }]
+            };
+            var ts = new Date().toISOString().replace(/[:.]/g, '-');
+            var fname = 'escalation-decisions-' + ts + '.json';
+            var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = fname;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(function () { URL.revokeObjectURL(url); }, 100);
+            window.alert(
+                'Downloaded ' + fname + '.\n\n' +
+                'Move it to your Downloads folder (or wherever the downloads-watcher scans), ' +
+                'and the watcher will pick it up within 5 minutes. Apply-escalation-decisions.sh ' +
+                'will remove this escalation from review-queue.json and log the decision to ' +
+                'escalation-decisions-log.ndjson.'
+            );
+        }
+
+        // Toggle handler for the escalation KPI card.
+        (function () {
+            var btn = document.querySelector('[data-fq-toggle="escalation-detail"]');
+            if (!btn) return;
+            btn.addEventListener('click', function () {
+                var panel = document.getElementById('fq-escalation-detail');
+                var chevron = document.querySelector('[data-fq="escalations-chevron"]');
+                if (!panel) return;
+                var willOpen = panel.hidden;
+                panel.hidden = !willOpen;
+                btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+                if (chevron) chevron.style.transform = willOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+            });
+        })();
     </script>
 </body>
 </html>

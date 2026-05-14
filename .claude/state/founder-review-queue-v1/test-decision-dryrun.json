@@ -1,0 +1,13 @@
+{
+  "kind": "escalation-decisions",
+  "schema_version": 1,
+  "exported_at": "2026-05-14T16:30:00Z",
+  "decisions": [
+    {
+      "escalation_id": "main-flows-v2-taxonomy",
+      "action": "resolved",
+      "decision": "Taxonomy E + Option 1 single-page rail + Speculative flows (a) — per team recommendation in taxonomy-proposals.md",
+      "notes": "DRY-RUN VERIFICATION ONLY — not the actual Founder decision. This file exercises apply-escalation-decisions.sh's parse + filter + format path without mutating review-queue.json."
+    }
+  ]
+}
