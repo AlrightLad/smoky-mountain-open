@@ -12,156 +12,7 @@
            Clickable KPI card toggles this panel; each escalation renders as
            a rich card with proposed answer + decision form + mark-resolved
            export action. Tokens only (no raw hex) per theme convergence guard. */
-        .pb-kpi-card--clickable:hover { background: rgba(201,169,97,0.06); border-color: var(--accent-brass); }
-        .pb-kpi-card--clickable:focus-visible { outline: 2px solid var(--accent-brass); outline-offset: 2px; }
-        .pb-kpi-card--clickable[aria-expanded="true"] { background: rgba(201,169,97,0.10); border-color: var(--accent-brass); }
-
-        /* Escalation detail panel layout. Applied only when not hidden so the
-           HTML `hidden` attribute (display:none) keeps the panel collapsed by
-           default. Cross-browser smoke 2026-05-14 caught the regression where
-           `display: grid` inline overrode `hidden`. */
-        #fq-escalation-detail:not([hidden]) {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: var(--space-3);
-            margin-top: var(--space-3);
-        }
-
-        .fq-escalation-card {
-            background: var(--surface-secondary);
-            border: 1px solid var(--border-subtle);
-            border-left: 3px solid var(--accent-brass);
-            border-radius: var(--radius-md);
-            padding: var(--space-3) var(--space-4);
-            font-size: var(--text-sm);
-            color: var(--text-primary);
-            line-height: 1.55;
-        }
-        .fq-escalation-card.is-stale { border-left-color: var(--accent-amber); }
-        .fq-escalation-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: var(--space-3);
-            margin-bottom: var(--space-2);
-        }
-        .fq-escalation-title {
-            margin: 0;
-            font-family: var(--font-mono);
-            font-size: var(--text-base);
-            color: var(--accent-brass);
-            font-weight: 600;
-            letter-spacing: 0.02em;
-        }
-        .fq-escalation-summary {
-            margin: var(--space-1) 0 0 0;
-            font-size: var(--text-sm);
-            color: var(--text-secondary);
-        }
-        .fq-escalation-age {
-            font-family: var(--font-mono);
-            font-size: var(--text-xs);
-            color: var(--text-tertiary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .fq-escalation-age.is-stale {
-            color: var(--accent-amber);
-            font-weight: 600;
-        }
-        .fq-escalation-type {
-            margin: 0 0 var(--space-2) 0;
-            font-family: var(--font-mono);
-            font-size: var(--text-xs);
-            color: var(--text-tertiary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .fq-escalation-warn {
-            background: rgba(212,168,87,0.10);
-            border: 1px solid var(--accent-amber);
-            border-radius: var(--radius-sm);
-            padding: var(--space-1) var(--space-2);
-            margin-bottom: var(--space-2);
-            font-family: var(--font-mono);
-            font-size: var(--text-xs);
-            color: var(--accent-amber);
-        }
-        .fq-escalation-section {
-            margin-top: var(--space-2);
-        }
-        .fq-escalation-section-label {
-            font-family: var(--font-mono);
-            font-size: var(--text-xs);
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--text-tertiary);
-            font-weight: 600;
-            margin-bottom: var(--space-1);
-        }
-        .fq-escalation-body {
-            font-family: var(--font-ui);
-            font-size: var(--text-sm);
-            color: var(--text-primary);
-            background: var(--surface-tertiary);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-sm);
-            padding: var(--space-2) var(--space-3);
-            margin: 0;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            max-height: 280px;
-            overflow-y: auto;
-            line-height: 1.55;
-        }
-        .fq-escalation-body.is-empty {
-            color: var(--text-tertiary);
-            font-style: italic;
-        }
-        .fq-escalation-actions {
-            display: flex;
-            gap: var(--space-2);
-            margin-top: var(--space-3);
-            flex-wrap: wrap;
-        }
-        .fq-escalation-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-1);
-            padding: var(--space-2) var(--space-3);
-            border-radius: var(--radius-sm);
-            font-family: var(--font-ui);
-            font-size: var(--text-sm);
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-            border: 1px solid var(--border-subtle);
-            background: var(--surface-tertiary);
-            color: var(--text-primary);
-            transition: background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
-        }
-        .fq-escalation-btn:hover { background: var(--surface-raised); border-color: var(--accent-brass); }
-        .fq-escalation-btn:focus-visible { outline: 2px solid var(--accent-brass); outline-offset: 2px; }
-        .fq-escalation-btn--resolve {
-            background: var(--accent-brass);
-            color: var(--surface-inverse);
-            border-color: var(--accent-brass);
-        }
-        .fq-escalation-btn--resolve:hover {
-            background: var(--accent-positive);
-            border-color: var(--accent-positive);
-        }
-
-        /* Mobile responsive — stack action buttons + tighten card padding */
-        @media (max-width: 480px) {
-            .fq-escalation-card { padding: var(--space-2) var(--space-3); }
-            .fq-escalation-header { flex-direction: column; gap: var(--space-1); }
-            .fq-escalation-age { align-self: flex-start; }
-            .fq-escalation-actions { flex-direction: column; }
-            .fq-escalation-btn { width: 100%; justify-content: center; }
-        }
+        /* Inline-expansion CSS removed 2026-05-14 — superseded by escalations.html lifecycle. */
 
         /* Recent 7-days chart (Founder directive 2026-05-14 DASHBOARD VIZ).
            Two sub-charts: tokens (M/k scale) and counts (integer scale).
@@ -658,6 +509,13 @@
   },
   "recent_handoffs": [
     {
+      "scenario": "team-commit",
+      "from": "Zach Boogher",
+      "to": "main",
+      "created_at": "2026-05-14T13:50:58-04:00",
+      "subject": "Phase C findings (3 of 4): install command actually-executable + Escalations nav"
+    },
+    {
       "scenario": "cron-auto-commit",
       "from": "cron",
       "to": "PARBAUGHS Cron",
@@ -719,13 +577,6 @@
       "to": "main",
       "created_at": "2026-05-14T13:34:59-04:00",
       "subject": "Dashboard 7-day graph: replaced table with SVG sub-charts (tokens + activity cou"
-    },
-    {
-      "scenario": "team-commit",
-      "from": "Zach Boogher",
-      "to": "main",
-      "created_at": "2026-05-14T13:30:20-04:00",
-      "subject": "Dashboard 7-day table \u2014 ships/handoffs/bubbles columns wired + honest \"\u2014\" tokens"
     }
   ],
   "recent_ships": [
@@ -853,7 +704,7 @@
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "_aggregate_counts": {
-    "events_total": 665,
+    "events_total": 669,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
@@ -869,7 +720,7 @@
   "quota_status": {
     "state": "empty",
     "as_of": "2026-05-14T15:24:53.5950065Z",
-    "age_seconds": 8655,
+    "age_seconds": 8830,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -880,7 +731,7 @@
     "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
   },
   "founder_queue": {
-    "as_of": "2026-05-14T17:49:09.766719+00:00",
+    "as_of": "2026-05-14T17:52:04.774306+00:00",
     "last_founder_visit": null,
     "governance_gates": {
       "amendments_pending": 0,
@@ -936,8 +787,8 @@
     "system_health": {
       "crons": {
         "downloads-watcher": {
-          "last_run": "2026-05-14T17-45-49Z",
-          "last_log": "2026-05-14T17-45-49Z-downloads-watcher.log"
+          "last_run": "2026-05-14T17-50-49Z",
+          "last_log": "2026-05-14T17-50-49Z-downloads-watcher.log"
         },
         "maintenance": {
           "last_run": "2026-05-14T06-55-01Z",
@@ -962,10 +813,10 @@
           "task_name": "PARBAUGHS-Downloads-Watcher",
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-downloads-watcher.ps1",
-          "last_fire_iso": "2026-05-14T17:45:51.934212+00:00",
-          "age_minutes": 3.3,
+          "last_fire_iso": "2026-05-14T17:50:49.642452+00:00",
+          "age_minutes": 1.3,
           "status": "firing",
-          "label": "firing \u00b7 last fire 3.3min ago"
+          "label": "firing \u00b7 last fire 1.3min ago"
         },
         {
           "name": "maintenance",
@@ -973,9 +824,9 @@
           "cadence_minutes": 1440,
           "install_script": "scripts/cron/install-maintenance.ps1",
           "last_fire_iso": "2026-05-14T06:55:19.949406+00:00",
-          "age_minutes": 653.8,
+          "age_minutes": 656.7,
           "status": "firing",
-          "label": "firing \u00b7 last fire 653.8min ago"
+          "label": "firing \u00b7 last fire 656.7min ago"
         },
         {
           "name": "overnight-triage",
@@ -993,9 +844,9 @@
           "cadence_minutes": 120,
           "install_script": "scripts/cron/install-proposal-readiness-scanner.ps1",
           "last_fire_iso": "2026-05-14T05:04:49.834159+00:00",
-          "age_minutes": 764.3,
+          "age_minutes": 767.2,
           "status": "stale",
-          "label": "stale \u00b7 last fire 764.3min ago (cadence 120min)"
+          "label": "stale \u00b7 last fire 767.2min ago (cadence 120min)"
         },
         {
           "name": "token-sidecar",
@@ -1003,28 +854,28 @@
           "cadence_minutes": 5,
           "install_script": "scripts/cron/install-sidecar.ps1",
           "last_fire_iso": "2026-05-14T15:24:53.642316+00:00",
-          "age_minutes": 144.3,
+          "age_minutes": 147.2,
           "status": "stale",
-          "label": "stale \u00b7 last fire 144.3min ago (cadence 5min)"
+          "label": "stale \u00b7 last fire 147.2min ago (cadence 5min)"
         }
       ],
       "last_regen_all": {
-        "ts": "2026-05-14 17:48 UTC",
-        "ts_iso": "2026-05-14T17:48:14.0240686Z",
+        "ts": "2026-05-14 17:49 UTC",
+        "ts_iso": "2026-05-14T17:49:14.2961924Z",
         "status": "PASS",
-        "age_minutes": 0.9,
+        "age_minutes": 2.8,
         "source": "heartbeat"
       },
       "working_tree": {
         "state": "dirty-cycling",
-        "label": "dirty (16 files) \u00b7 watcher cycling",
+        "label": "dirty (7 files) \u00b7 watcher cycling",
         "color": "var(--pb-warning)",
-        "dirty_count": 16,
-        "watcher_last_fire": "2026-05-14T17:45:51.934212+00:00",
-        "watcher_minutes_ago": 3.3
+        "dirty_count": 7,
+        "watcher_last_fire": "2026-05-14T17:50:49.642452+00:00",
+        "watcher_minutes_ago": 1.3
       },
       "halts": [],
-      "round_trip_last_pass": "2026-05-14T17:48:14.0240686Z"
+      "round_trip_last_pass": "2026-05-14T17:49:14.2961924Z"
     },
     "activity_since_last_visit": {
       "_note": "Counts since last_founder_visit (null = since-forever)",
@@ -1436,7 +1287,6 @@
             var esc = gov.open_escalations || [];
             setText('[data-fq="escalations-count"]', String(esc.length));
             setText('[data-fq="escalations-summary"]', esc.length === 0 ? 'none open' : 'requiring Founder decision');
-            renderEscalationDetail(esc);
 
             // System health
             var hh = fq.system_health || {};
@@ -1593,117 +1443,8 @@
             return rounded + 'd old';
         }
 
-        function renderEscalationDetail(escalations) {
-            var host = document.getElementById('fq-escalation-detail');
-            if (!host) return;
-            if (!escalations || escalations.length === 0) {
-                host.innerHTML = '';
-                host.hidden = true;
-                var btn0 = document.querySelector('[data-fq-toggle="escalation-detail"]');
-                if (btn0) btn0.setAttribute('aria-expanded', 'false');
-                return;
-            }
-            host.innerHTML = escalations.map(function (e) {
-                var id = escHtml(e.id || '(no-id)');
-                var type = escHtml(e.type || '');
-                var summary = escHtml(e.summary || '');
-                var link = escHtml(e.link || '');
-                var proposed = escHtml(e.proposed_answer || '');
-                var form = escHtml(e.decision_form || '');
-                var staleClass = e.stale ? ' is-stale' : '';
-                var ageText = escHtml(ageLabel(e.age_days));
-                var srcMissing = e.source_missing ? '<div class="fq-escalation-warn">source file not found at <code>' + link + '</code></div>' : '';
-                var proposedHtml = proposed
-                    ? '<div class="fq-escalation-section"><div class="fq-escalation-section-label">Team proposed answer (per AMD-015)</div><pre class="fq-escalation-body">' + proposed + '</pre></div>'
-                    : (e.source_missing ? '' : '<div class="fq-escalation-section"><div class="fq-escalation-section-label">Team proposed answer</div><div class="fq-escalation-body is-empty">No proposed answer authored yet — per AMD-015, team must propose before this escalation can proceed.</div></div>');
-                var formHtml = form
-                    ? '<div class="fq-escalation-section"><div class="fq-escalation-section-label">Decision form (Founder choices)</div><pre class="fq-escalation-body">' + form + '</pre></div>'
-                    : '';
-                var sourceLink = link
-                    ? '<a class="fq-escalation-btn fq-escalation-btn--source" href="' + link + '">Open source file &rarr;</a>'
-                    : '';
-                return ''
-                    + '<article class="fq-escalation-card' + staleClass + '" data-escalation-id="' + id + '">'
-                    + '  <header class="fq-escalation-header">'
-                    + '    <div>'
-                    + '      <h3 class="fq-escalation-title">' + id + '</h3>'
-                    + '      <p class="fq-escalation-summary">' + summary + '</p>'
-                    + '    </div>'
-                    + '    <span class="fq-escalation-age' + staleClass + '">' + ageText + (e.stale ? ' &middot; STALE' : '') + '</span>'
-                    + '  </header>'
-                    + '  <p class="fq-escalation-type">' + type + '</p>'
-                    + srcMissing
-                    + proposedHtml
-                    + formHtml
-                    + '  <div class="fq-escalation-actions">'
-                    + '    ' + sourceLink
-                    + '    <button type="button" class="fq-escalation-btn fq-escalation-btn--resolve" data-fq-resolve="' + id + '">Mark resolved &amp; export decision &darr;</button>'
-                    + '  </div>'
-                    + '</article>';
-            }).join('');
 
-            // Wire Mark Resolved buttons
-            host.querySelectorAll('[data-fq-resolve]').forEach(function (btn) {
-                btn.addEventListener('click', function () {
-                    var escalationId = btn.getAttribute('data-fq-resolve');
-                    exportEscalationDecision(escalationId);
-                });
-            });
-        }
 
-        function exportEscalationDecision(escalationId) {
-            var decision = window.prompt(
-                'Decision text for escalation "' + escalationId + '":\n\n' +
-                'Brief note describing the resolution (e.g., "Taxonomy E + Option 1 + Speculative (a)").\n' +
-                'Leave blank to cancel.'
-            );
-            if (!decision || !decision.trim()) return;
-            var notes = window.prompt('Optional notes (rationale, links, etc.). Leave blank to skip:') || '';
-            var payload = {
-                kind: 'escalation-decisions',
-                schema_version: 1,
-                exported_at: new Date().toISOString(),
-                decisions: [{
-                    escalation_id: escalationId,
-                    action: 'resolved',
-                    decision: decision.trim(),
-                    notes: notes.trim()
-                }]
-            };
-            var ts = new Date().toISOString().replace(/[:.]/g, '-');
-            var fname = 'escalation-decisions-' + ts + '.json';
-            var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = fname;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(function () { URL.revokeObjectURL(url); }, 100);
-            window.alert(
-                'Downloaded ' + fname + '.\n\n' +
-                'Move it to your Downloads folder (or wherever the downloads-watcher scans), ' +
-                'and the watcher will pick it up within 5 minutes. Apply-escalation-decisions.sh ' +
-                'will remove this escalation from review-queue.json and log the decision to ' +
-                'escalation-decisions-log.ndjson.'
-            );
-        }
-
-        // Toggle handler for the escalation KPI card.
-        (function () {
-            var btn = document.querySelector('[data-fq-toggle="escalation-detail"]');
-            if (!btn) return;
-            btn.addEventListener('click', function () {
-                var panel = document.getElementById('fq-escalation-detail');
-                var chevron = document.querySelector('[data-fq="escalations-chevron"]');
-                if (!panel) return;
-                var willOpen = panel.hidden;
-                panel.hidden = !willOpen;
-                btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-                if (chevron) chevron.style.transform = willOpen ? 'rotate(180deg)' : 'rotate(0deg)';
-            });
-        })();
     </script>
 </body>
 </html>
