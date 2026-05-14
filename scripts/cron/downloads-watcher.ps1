@@ -90,13 +90,53 @@ try {
         }
     }
 
-    # --- Pre-flight: working tree clean ---
+    # --- Pre-flight: working tree clean (with auto-commit of routine cron output) ---
+    # Routine cron output (telemetry events + aggregates) re-dirties the tree
+    # on every cron cycle. Without auto-commit, the watcher refuses Founder
+    # decisions indefinitely. We tolerate dirt ONLY when every dirty path
+    # matches the routine-output allowlist; anything else still triggers skip.
+    $routinePatterns = @(
+        '^\.claude/state/telemetry/events/.+\.ndjson$',
+        '^\.claude/state/telemetry/aggregates/.+\.json$',
+        '^package-lock\.json$'
+    )
+    $allDirtyRaw = @()
+    $allDirtyRaw += (& git diff --name-only HEAD 2>$null)
+    $allDirtyRaw += (& git diff --cached --name-only 2>$null)
+    $allDirtyRaw += (& git ls-files --others --exclude-standard 2>$null)
+    $allDirty = $allDirtyRaw | Where-Object { $_ } | Sort-Object -Unique
+
+    if ($allDirty.Count -gt 0) {
+        $nonRoutine = @()
+        foreach ($f in $allDirty) {
+            $isRoutine = $false
+            foreach ($pat in $routinePatterns) {
+                if ($f -match $pat) { $isRoutine = $true; break }
+            }
+            if (-not $isRoutine) { $nonRoutine += $f }
+        }
+        if ($nonRoutine.Count -gt 0) {
+            Log "SKIP working tree dirty with non-routine files: $($nonRoutine -join ', ')"
+            $script:cronExitReason = "skip-dirty"
+            exit 0
+        }
+        Log "AUTO-COMMIT routine cron output before preflight: $($allDirty.Count) files"
+        foreach ($f in $allDirty) { & git add -- $f 2>&1 | Out-Null }
+        $env:GIT_AUTHOR_NAME  = "PARBAUGHS Cron"
+        $env:GIT_AUTHOR_EMAIL = "cron@parbaughs.local"
+        $env:GIT_COMMITTER_NAME  = "PARBAUGHS Cron"
+        $env:GIT_COMMITTER_EMAIL = "cron@parbaughs.local"
+        $msg = "cron(routine): auto-commit telemetry output before watcher preflight (" + (Get-Date).ToUniversalTime().ToString("o") + ")"
+        & git commit -m $msg 2>&1 | ForEach-Object { Log "  [auto-commit] $_" }
+        if ($LASTEXITCODE -ne 0) {
+            Log "WARN auto-commit of routine output failed (continuing — preflight will recheck)"
+        }
+    }
+
+    # Re-verify tree clean after auto-commit (defensive)
     & git diff --quiet HEAD 2>$null
-    $dirty = ($LASTEXITCODE -ne 0)
-    & git diff --cached --quiet 2>$null
-    $stagedDirty = ($LASTEXITCODE -ne 0)
-    if ($dirty -or $stagedDirty) {
-        Log "SKIP working tree dirty (refuse to apply on top of in-flight work)"
+    if ($LASTEXITCODE -ne 0) {
+        Log "SKIP working tree still dirty after auto-commit attempt"
         $script:cronExitReason = "skip-dirty"
         exit 0
     }
