@@ -1,1 +1,7 @@
 {"timestamp": "2026-05-14T01:59:33Z", "amendment_id": "AMD-006", "decision": "approve", "note": "E2E test of amendments lifecycle; AMD-006 is independent (no depends_on) and appends to existing PROTOCOLS_v8.1_ADDENDUM.md.", "decided_at": "2026-05-14T02:00:00Z"}
+{"timestamp": "2026-05-14T02:15:55Z", "amendment_id": "AMD-001", "decision": "approve", "note": "", "decided_at": "2026-05-14T02:09:05.957Z\r"}
+{"timestamp": "2026-05-14T02:15:55Z", "amendment_id": "AMD-002", "decision": "approve", "note": "", "decided_at": "2026-05-14T02:09:05.957Z\r"}
+{"timestamp": "2026-05-14T02:15:56Z", "amendment_id": "AMD-003", "decision": "approve", "note": "", "decided_at": "2026-05-14T02:09:05.957Z\r"}
+{"timestamp": "2026-05-14T02:15:56Z", "amendment_id": "AMD-004", "decision": "approve", "note": "", "decided_at": "2026-05-14T02:09:05.957Z\r"}
+{"timestamp": "2026-05-14T02:15:57Z", "amendment_id": "AMD-005", "decision": "approve", "note": "", "decided_at": "2026-05-14T02:09:05.957Z\r"}
+{"timestamp": "2026-05-14T02:15:57Z", "amendment_id": "AMD-007", "decision": "approve", "note": "", "decided_at": "2026-05-14T02:09:05.957Z"}

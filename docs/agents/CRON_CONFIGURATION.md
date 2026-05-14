@@ -611,23 +611,46 @@ At Claude Opus pricing, plan accordingly.
 ### 11.2 Cost threshold integration
 Per locked governance, Founder cost-discipline can set thresholds in Admin → Platform settings → Cost thresholds (3i.5). Threshold breach triggers HALT_CRITERIA item 5.
 
-For cron-specific thresholds:
-- Daily token budget alert: 600k/day expected, alert at 800k/day
-- Weekly token budget alert: 3.5M/week expected, alert at 4.5M/week
 
-These thresholds can be Founder-configured per locked spec (3i.5).
+# CRON_CONFIGURATION — Remove fictional 3.5M weekly alert threshold
 
----
+This draft surfaces a single line edit to CRON_CONFIGURATION.md.
 
-## 12 — Cross-references
+Founder applies via direct edit (no `git mv` needed; this is an in-place
+content change to one line).
 
-- `HEADLESS_OPERATION_PROTOCOL.md` (cycle definitions, activities)
-- `PROACTIVE_IMPROVEMENT_PROTOCOL.md` (proactive scope)
-- `HALT_CRITERIA_v7_ADDENDUM.md` (items 18-20)
-- `SESSION_JOURNAL_v7_ADDENDUM.md` (cycle entry types)
-- `WAVE_ZERO_DRY_RUN_v7_EXTENSION.md` (cycle dry-run validations)
-- `FOUNDER_INPUT_QUEUE.md` (FIQ creation from cycles)
+## What changed
 
----
+### Line 616 — Weekly token budget alert (REPHRASED)
 
-*Document authored 2026-05-12. Locked Founder ratification. Configuration walkthrough for v7 headless operation.*
+**v8.1 (REMOVE):**
+> - Weekly token budget alert: 3.5M/week expected, alert at 4.5M/week
+
+This hardcoded 4.5M / 3.5M against a fictional cap. The thresholds are
+guesses, not measurements.
+
+**v8.2 (NEW):**
+> - Weekly token budget alert: whatever the active Anthropic quota is per
+>   the most recent `manual-quota-log.ndjson` entry. Alert fires at 90%
+>   of the latest paste's `weekly-all` percentage (computed at threshold
+>   evaluation, not pre-stored). If no manual paste exists or the latest
+>   is > 24h stale, fall back to alerting on telemetry-event volume
+>   anomalies (e.g., 2x prior week's daily peak) rather than against a
+>   hardcoded number.
+
+## Why this matters
+
+Cron-level alerts that fire against fiction are noise, not signal. The
+4.5M / 3.5M numbers had no relationship to Founder's actual Anthropic
+quota. Replacing them with the manual-paste-derived percentage means:
+
+1. When Founder has anchored quota recently, the alert is real.
+2. When Founder hasn't, the alert falls back to a measurement-derived
+   anomaly check rather than a fictional ceiling — no false confidence.
+3. When PROP-003 ships, the manual-paste anchor gets replaced by real
+   telemetry-derived numbers; the threshold logic is the same.
+
+## Dependency
+
+Same as PAUSE_DISCIPLINE v8.2: pending PROP-003 ship for real
+telemetry-derived caps.
