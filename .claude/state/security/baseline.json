@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "established_at": "2026-05-14T22:46:49Z",
+  "established_at_sha": "fac33105a9aefc824dd9f48a6881bcd05e6125db",
+  "repo_visibility": "public",
+  "known_acceptable": {
+    "firebase_web_api_key": {
+      "value_prefix": "AIzaSyCKM8...JwFk",
+      "value_sha256_first8": "redacted-from-baseline-doc",
+      "locations": [
+        "legacy.html:1191",
+        "public/firebase-messaging-sw.js:7",
+        "src/core/firebase.js:52"
+      ],
+      "justification": "Firebase web client API key is public-by-design. Per CLAUDE.md Security Notes: 'Firebase API key in client code is normal and expected — Firebase keys are restricted by Firestore rules, not secrecy.' Same key in all three files (web app, service worker, legacy).",
+      "do_not_alert": true
+    },
+    "scanner_pattern_definitions": {
+      "locations": [
+        ".husky/pre-commit",
+        ".claude/hooks/secrets-scanner.sh"
+      ],
+      "justification": "These files contain regex definitions for the credential-detection patterns. They are the scanner itself, not exposed credentials.",
+      "do_not_alert": true
+    },
+    "env_example_template": {
+      "location": ".env.example",
+      "justification": "Template file showing the shape of .env without real values. Explicitly allowed by .gitignore via !.env.example.",
+      "do_not_alert": true
+    },
+    "firebaserc_project_id": {
+      "location": ".firebaserc",
+      "value": "parbaughs",
+      "justification": "Project ID is public information (visible in app URL, hosted site). Not a credential.",
+      "do_not_alert": true
+    }
+  },
+  "history_scan_results": {
+    "credential_file_additions": 0,
+    "aws_keys_ever_committed": 0,
+    "stripe_live_keys_ever_committed": 0,
+    "anthropic_keys_ever_committed": 0,
+    "private_keys_ever_committed": 0,
+    "pickaxe_hits_explained": {
+      "private_key_block_marker": "Only match is in 5ef9833d (Phase 1 setup) introducing the secrets-scanner hook which contains the pattern as a detection regex, not a credential.",
+      "stripe_live_prefix": "Matches in 5ef9833d (scanner) and 59e88376 (V1-V6 hardening introducing husky pre-commit pattern). Both are scanner pattern definitions."
+    }
+  },
+  "tracked_sensitive_inventory": {
+    "tracked_files_matching_gitignore_credential_patterns": [
+      ".env.example",
+      ".claude/hooks/secrets-scanner.sh"
+    ],
+    "verdict": "Both intentional and safe per justifications above."
+  },
+  "firebase_rules_baseline": {
+    "firestore_rules_sha": "fac33105a9aefc824dd9f48a6881bcd05e6125db",
+    "permissive_patterns_present": false,
+    "catch_all_match_present": false,
+    "allow_if_true_present": false,
+    "architecture_note": "v8.0.0-rc1 full rewrite — explicit per-collection match blocks, no catch-all, list-query-compatible rule patterns per CLAUDE.md."
+  },
+  "storage_rules_baseline": {
+    "file_present": false,
+    "note": "storage.rules does not exist in repo. If Firebase Storage is in use, default Firebase rules apply — by default these deny all access until rules are deployed. Tracked as informational finding."
+  },
+  "dependency_audit_baseline": {
+    "root_package": {
+      "critical": 0,
+      "high": 0,
+      "moderate": 0,
+      "low": 8,
+      "notes": "All 8 LOW are transitive via firebase-admin dev tree (test/build context only, not shipped to clients)."
+    },
+    "functions_package": {
+      "critical": 0,
+      "high": 2,
+      "moderate": 2,
+      "low": 9,
+      "high_packages": ["fast-xml-builder", "protobufjs"],
+      "moderate_packages": ["@protobufjs/utf8", "uuid"],
+      "notes": "fast-xml-builder + protobufjs HIGH are transitive via firebase-admin / firebase-functions. Fix available via semver-major firebase-admin@10.3.0 — review for breakage before applying."
+    }
+  },
+  "amd_018_baseline": {
+    "rule_commits_60d": 9,
+    "all_ship_tagged": true,
+    "note": "All recent firestore.rules commits are version-tagged ships (v7.x, v8.x) which means they passed through the Founder-authorized ship system. No bypass-pattern commits detected."
+  }
+}

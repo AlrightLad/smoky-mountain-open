@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "timestamp": "2026-05-14T22:46:49Z",
+  "head_sha": "fac33105a9aefc824dd9f48a6881bcd05e6125db",
+  "status": "yellow",
+  "status_reason": "2 HIGH-severity dependency vulnerabilities in functions/ (fast-xml-builder, protobufjs). No active credential leak. No rule drift. No AMD-018 violations.",
+  "active_findings": {
+    "critical": 0,
+    "high": 0,
+    "medium": 1,
+    "low": 1
+  },
+  "credential_leaks": [],
+  "vulnerable_deps": [
+    {
+      "package": "fast-xml-builder",
+      "severity": "high",
+      "location": "functions/",
+      "fix_available": true,
+      "finding_file": "2026-05-14T22-46-49Z-medium-functions-deps.md"
+    },
+    {
+      "package": "protobufjs",
+      "severity": "high",
+      "location": "functions/",
+      "fix_available": true,
+      "finding_file": "2026-05-14T22-46-49Z-medium-functions-deps.md"
+    }
+  ],
+  "rule_drift": [],
+  "exception_compliance_gaps": [],
+  "informational": [
+    {
+      "kind": "storage_rules_absent",
+      "severity": "low",
+      "finding_file": "2026-05-14T22-46-49Z-low-storage-rules-absent.md"
+    }
+  ],
+  "last_scan": "2026-05-14T22:46:49Z",
+  "baseline_established": true,
+  "scans_performed": {
+    "git_history_credential_pickaxe": true,
+    "tree_credential_pattern_scan": true,
+    "gitignore_vs_tracked_verification": true,
+    "npm_audit_root": true,
+    "npm_audit_functions": true,
+    "firestore_rules_permissiveness_lint": true,
+    "storage_rules_existence_check": true,
+    "amd_018_exception_class_audit": true
+  }
+}
