@@ -1,13 +1,23 @@
 {
-  "timestamp": "2026-05-14T22:48:18Z",
-  "status": "yellow",
-  "head_sha": "fac33105a9aefc824dd9f48a6881bcd05e6125db",
-  "head_short": "fac3310",
-  "checks_run": 8,
-  "checks_passed": 5,
-  "checks_skipped": 2,
-  "checks_with_known_failure": 1,
-  "regressions": [],
+  "timestamp": "2026-05-15T00:11:00Z",
+  "status": "red",
+  "head_sha": "f5fbb44",
+  "head_short": "f5fbb44",
+  "checks_run": 1,
+  "checks_passed": 0,
+  "checks_skipped": 0,
+  "checks_with_known_failure": 0,
+  "regressions": [
+    {
+      "id": "approval-pipeline-hard-blocked",
+      "test": "scripts/verify-approval-pipeline.sh",
+      "pipeline_verify_status": "FAIL",
+      "detail": "Watcher SKIPping every 5-min cycle for 35+ min on .claude/worktrees/dashboard-banners/ (sibling-agent EnterWorktree leftover). Founder decisions dropped to ~/Downloads/ would NOT be applied. Verify canary TEST-PIPELINE-CANARY.md also self-blocks. Both addressable by widening $routinePatterns in scripts/cron/downloads-watcher.ps1.",
+      "first_seen_cycle_utc": "2026-05-14T23:40:49Z",
+      "cycles_observed_blocked": 8,
+      "queued_to": ".claude/state/task-queue/main/CRITICAL-watcher-allowlist-worktrees-and-canary.md"
+    }
+  ],
   "known_failures": [
     {
       "id": "user-context-gate",
@@ -23,5 +33,5 @@
   "fix_confirmed_this_cycle": [],
   "last_baseline_update": "2026-05-14T22:48:18Z",
   "agent": "test-qa",
-  "cycle_notes": "Initial baseline. Known failure is workflow staleness (Founder re-captures), not a code regression. click-every-interactive sample was rejected by Founder this cycle and will retry next cycle; dashboard.html click-every requires enumerate-interactives.mjs run first to produce dashboard-interactives.json."
+  "cycle_notes": "AMD-023 verify-approval-pipeline.sh executed end-to-end (full mode, 6-min window). Detected real production-affecting outage of the approval pipeline: watcher has been silently SKIPping every cycle since 23:40:49Z due to sibling-agent .claude/worktrees/dashboard-banners/ falling outside the watcher's $routinePatterns allowlist. CRITICAL task queued to main agent. Pipeline status stays red until allowlist widened + dirty dir cleared or routinely accepted."
 }

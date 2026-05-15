@@ -1,10 +1,10 @@
 {
   "proposal_id": "PROP-012",
-  "deferred_at": "2026-05-14T22:00:02.651021+00:00",
+  "deferred_at": "2026-05-15T00:00:02.676074+00:00",
   "criteria_failed": [
     "cross_cutting_dependency: depends on unshipped/unapplied ['PROP-010', 'PROP-011']",
     "token_cost_methodology_absent: no token_cost_estimate/cost_tokens field with documented range/methodology"
   ],
   "resolution_path": "team or Founder authors missing fields; scanner re-evaluates next cycle",
-  "scanner_run_id": "20260514T220002Z"
+  "scanner_run_id": "20260515T000002Z"
 }
