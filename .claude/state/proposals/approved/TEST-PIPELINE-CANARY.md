@@ -15,3 +15,9 @@ shipped; the verify script cleans it up after each run.
 
 If you see this file in approved/ or shipped/ outside of a verify run,
 the cleanup step failed — delete the file manually.
+
+---
+
+## Founder decision (approve — 2026-05-15T01:52:07Z)
+
+canary — verify script
