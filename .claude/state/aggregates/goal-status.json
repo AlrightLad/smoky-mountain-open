@@ -1,0 +1,76 @@
+{
+  "goal_id": "ship-full-parbaughs-roadmap-2026-05-14",
+  "spec_path": ".claude/state/goal-roadmap-2026-05-14.md",
+  "session_started_at": "2026-05-15T01:35:00Z",
+  "session_completed_at": "2026-05-15T02:10:00Z",
+  "objectives": {
+    "1_approval_pipeline_under_10min": {
+      "status": "PASS",
+      "evidence": "verify-approval-pipeline.sh PASS end-to-end in 16 seconds (canary pending/->approved/) at 2026-05-15T01:52:13Z",
+      "root_cause_fixes": ["416e4d2 untrack worktree gitlinks", "7fb3a13 canonical decisions JSON schema"]
+    },
+    "2_main_flows_3_consecutive_APPROVED": {
+      "status": "PASS",
+      "evidence": "polish-iteration-18.md confirms iters 16+17+18 all APPROVE; stop-decision log entry 2026-05-14T22:53:00Z documents closure",
+      "zero_prop012_gaps": true
+    },
+    "3_p3_audit_SUMMARY_categorized": {
+      "status": "PASS",
+      "evidence": ".claude/state/app-audit-2026-05-14/SUMMARY.md categorizes CRITICAL/HIGH/MEDIUM/LOW/POLISH + cross-browser flake; H3 deferred with rationale this session"
+    },
+    "4_critical_high_resolved_or_deferred": {
+      "status": "PASS",
+      "evidence": "C1 fixed+deployed prior ship; H1 fixed iter 16; H2 stale (already correct in code); H3 deferred with architectural rationale 2026-05-15 (requires Stage 1 design doc)"
+    },
+    "5_bypass_flags_zero_production": {
+      "status": "PARTIAL_PASS",
+      "evidence_compliant": "--no-verify, --force, || true, exit 0, except.*pass, catch{} all compliant (see .claude/state/goal-progress/bypass-flag-scan-2026-05-15.md)",
+      "evidence_open": "-ExecutionPolicy Bypass in production scripts gated on Founder running Set-ExecutionPolicy -Scope CurrentUser RemoteSigned; surfaced via .claude/state/task-queue/founder/set-execution-policy-currentuser.md"
+    },
+    "6_f9_f62_step_paths": {
+      "status": "PASS",
+      "evidence": "F9-F62 paths fully rendered per iter 18 verification ('F15's path + steps + arrows render exactly like F1-F8'); main-agent commit b28f5eb landed paths"
+    },
+    "7_dashboard_zero_RED_banners": {
+      "status": "PASS",
+      "evidence": "test-health.json flipped red->green (ccf7dba); security-health remains yellow on pre-existing dependency CVEs (non-CRITICAL, not RED)"
+    },
+    "8_governance_AMDs_PROP013_decision": {
+      "status": "PARTIAL_PASS",
+      "evidence_applied": "AMD-019/020/022/023/024 in applied/ (5 of 6); PROP-013 in approved/",
+      "evidence_open": "AMD-021 (strict closure) + AMD-025 (ship spec standard) authored in pending/ awaiting Founder ratification via amendments.html; both operate ACTIVE per Founder verbal directives. Surfaced via .claude/state/task-queue/founder/ratify-AMD-021-AMD-025.md"
+    }
+  },
+  "validator_checks": {
+    "verify_approval_pipeline_sh": "PASS (exit 0)",
+    "main_flows_3_consecutive_APPROVED": "PASS (iters 16/17/18)",
+    "app_audit_SUMMARY_exists_categorizes": "PASS",
+    "critical_unresolved": 0,
+    "high_unresolved_or_undeferred": 0,
+    "bypass_flag_grep_zero": "PARTIAL (Founder-gate -ExecutionPolicy Bypass)",
+    "git_status_porcelain_empty": "PARTIAL (routine ndjson allowlisted)",
+    "AMD_019_through_024_applied": "5_of_6 (AMD-021 in pending, ACTIVE)",
+    "PROP_013_decided": "PASS (in approved/)",
+    "round_trip_test_py_exit_0": "Unverified this session (user-context-gate workflow staleness — Founder owns)",
+    "final_push_to_origin_main": "PASS (95 commits pushed 2026-05-15T02:08:30Z; HEAD 7662202)",
+    "dashboard_zero_RED_banners": "PASS (test-health green, security yellow not red)"
+  },
+  "founder_gated_items": [
+    {
+      "id": "set-execution-policy-currentuser",
+      "queue": ".claude/state/task-queue/founder/set-execution-policy-currentuser.md",
+      "closes_objective": 5
+    },
+    {
+      "id": "ratify-AMD-021-AMD-025",
+      "queue": ".claude/state/task-queue/founder/ratify-AMD-021-AMD-025.md",
+      "closes_objective": 8
+    }
+  ],
+  "session_commits": 95,
+  "session_pushed": true,
+  "session_push_target": "origin/main",
+  "session_push_head": "7662202",
+  "tree_state_post_push": "1 file dirty (.claude/state/telemetry/events/2026-05-14.ndjson — routine allowlisted)",
+  "final_status": "8_OBJECTIVES_CLOSED_OR_FOUNDER_GATED"
+}
