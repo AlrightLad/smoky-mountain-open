@@ -1,0 +1,14 @@
+{
+  "cycles": [
+    {
+      "cycle_id": "heartbeat-20260515-0159",
+      "type": "heartbeat",
+      "started_at": "2026-05-15T01:59:22Z",
+      "ended_at": "2026-05-15T01:59:22Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    }
+  ]
+}
