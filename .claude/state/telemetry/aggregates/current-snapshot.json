@@ -1,11 +1,11 @@
 {
-  "as_of": "2026-05-15T01:46:14.405542+00:00",
+  "as_of": "2026-05-15T01:47:30.422296+00:00",
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "quota_status": {
     "state": "empty",
-    "as_of": "2026-05-15T01:42:13.7241326Z",
-    "age_seconds": 240,
+    "as_of": "2026-05-15T01:47:13.7893505Z",
+    "age_seconds": 16,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -17,7 +17,7 @@
   },
   "weekly_tokens": 7302000,
   "weekly_cost": 175.25,
-  "ships_this_week": 27,
+  "ships_this_week": 30,
   "ships_trend_7d": {
     "labels": [
       "Sat",
@@ -34,7 +34,7 @@
       0,
       0,
       4,
-      23,
+      26,
       0
     ]
   },
@@ -165,6 +165,42 @@
   },
   "recent_ships": [
     {
+      "id": "AMD-024",
+      "title": "Architecture / AI Engineer Agent + free-replication-first principle",
+      "kind": "amendment",
+      "status": "applied",
+      "completed_at": "2026-05-14T23:25:00Z",
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
+      "source_path": ".claude/state/amendments/applied/AMD-024-architecture-ai-engineer-agent.md"
+    },
+    {
+      "id": "AMD-023",
+      "title": "Approval pipeline reliability",
+      "kind": "amendment",
+      "status": "applied",
+      "completed_at": "2026-05-14T23:15:00Z",
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
+      "source_path": ".claude/state/amendments/applied/AMD-023-approval-pipeline-reliability.md"
+    },
+    {
+      "id": "AMD-022",
+      "title": "Inter-agent task queue protocol",
+      "kind": "amendment",
+      "status": "applied",
+      "completed_at": "2026-05-14T22:55:00Z",
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
+      "source_path": ".claude/state/amendments/applied/AMD-022-inter-agent-task-queue.md"
+    },
+    {
       "id": "AMD-020",
       "title": "Auto-clean dirty tree protocol",
       "kind": "amendment",
@@ -247,46 +283,10 @@
       "tokens_events_matched": 0,
       "cost_usd": null,
       "source_path": ".claude/state/escalations/applied/ESC-001-main-flows-v2-taxonomy.md"
-    },
-    {
-      "id": "ESC-002",
-      "title": "Wave 1 ship 1 selection \u2014 design tooling approach (native vs framework vs generative)",
-      "kind": "escalation",
-      "status": "applied",
-      "completed_at": "2026-05-14T16:42:00Z",
-      "tokens": null,
-      "tokens_source": "unknown",
-      "tokens_events_matched": 0,
-      "cost_usd": null,
-      "source_path": ".claude/state/escalations/applied/ESC-002-wave-1-ship-1-selection.md"
-    },
-    {
-      "id": "AMD-015",
-      "title": "Team proposes; Agent 2 ratifies (default escalation pattern)",
-      "kind": "amendment",
-      "status": "applied",
-      "completed_at": "2026-05-14T16:05:00Z",
-      "tokens": null,
-      "tokens_source": "unknown",
-      "tokens_events_matched": 0,
-      "cost_usd": null,
-      "source_path": ".claude/state/amendments/applied/AMD-015-team-proposes-agent-2-ratifies.md"
-    },
-    {
-      "id": "AMD-014",
-      "title": "PAUSE_DISCIPLINE section 2.1 reactivation - meter-gated rate-limit threshold",
-      "kind": "amendment",
-      "status": "applied",
-      "completed_at": "2026-05-14T04:50:00Z",
-      "tokens": null,
-      "tokens_source": "unknown",
-      "tokens_events_matched": 0,
-      "cost_usd": null,
-      "source_path": ".claude/state/amendments/applied/AMD-014-pause-discipline-reactivation.md"
     }
   ],
   "_aggregate_counts": {
-    "events_total": 1065,
+    "events_total": 1070,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
