@@ -536,6 +536,474 @@ def read_health_banner(name: str):
     }
 
 
+def approvals_pipeline_status():
+    """Approvals Pipeline health banner (AMD-023, queue task
+    approvals-pipeline-banner). Synthesizes:
+
+      - latest downloads-watcher cron log (exit reason, timestamp)
+      - .claude/state/proposals/.last-processed-decisions.json marker
+      - .claude/state/proposals/{pending,approved,deferred,rejected,inbox}/ counts
+      - .claude/state/amendments/inbox/, escalations/inbox/ queue depth
+      - last 10 watcher runs -> SKIP-consecutive detection
+      - approved-count delta vs prior dashboard regen (cached in
+        .claude/state/dashboard-health/approvals-pipeline-prev.json)
+
+    Status colors (per task acceptance):
+      - green:  most recent run within 10 min AND exit_reason in
+                {applied, no-op, no-new-files}
+      - yellow: last 2 runs both 'SKIP working tree dirty'
+      - red:    last run errored OR 4+ consecutive SKIPs
+
+    Returns the normalized read_health_banner() shape so the existing
+    renderHealthBanner('approvals', ...) JS path can render it without
+    a special case.
+    """
+    now_utc = datetime.now(timezone.utc)
+    logs_dir = ROOT / "scripts" / "cron" / "logs"
+    source_path = ".claude/state/proposals/ + scripts/cron/logs/"
+
+    # --- 1. Parse watcher logs (most recent N) ---
+    # Filename: <YYYY-MM-DDTHH-MM-SSZ>-downloads-watcher.log
+    watcher_runs = []
+    if logs_dir.exists():
+        files = sorted(
+            logs_dir.glob("*-downloads-watcher.log"),
+            key=lambda p: p.name,
+            reverse=True,
+        )[:10]
+        for f in files:
+            m = re.match(r"^(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}Z)-", f.name)
+            ts_dt = None
+            ts_iso = None
+            if m:
+                raw = m.group(1)
+                date_part, time_part = raw.split("T", 1)
+                time_part = time_part.replace("-", ":")
+                ts_iso = f"{date_part}T{time_part}"
+                try:
+                    ts_dt = datetime.fromisoformat(ts_iso.replace("Z", "+00:00"))
+                except ValueError:
+                    pass
+            try:
+                lines = f.read_text(encoding="utf-8", errors="replace").splitlines()
+            except OSError:
+                continue
+            exit_reason = None
+            raw_last = ""
+            for ln in reversed(lines):
+                s = ln.strip()
+                if not s:
+                    continue
+                if "DONE applied=" in s:
+                    exit_reason = "applied" if "applied=True" in s else "no-op"
+                    raw_last = s
+                    break
+                if "DONE no new decisions" in s:
+                    exit_reason = "no-new-files"
+                    raw_last = s
+                    break
+                if "SKIP working tree dirty" in s:
+                    exit_reason = "skip-dirty"
+                    raw_last = s
+                    break
+                if "SKIP cron-paused" in s:
+                    exit_reason = "skip-paused"
+                    raw_last = s
+                    break
+                if "SKIP last-verify" in s:
+                    exit_reason = "skip-verify-window"
+                    raw_last = s
+                    break
+                if s.startswith("[") and ("FAIL " in s or "ERROR" in s):
+                    exit_reason = "error"
+                    raw_last = s
+                    break
+            if exit_reason is None and lines:
+                exit_reason = "incomplete"
+                raw_last = lines[-1].strip()
+            watcher_runs.append({
+                "ts_iso": ts_iso,
+                "ts_dt": ts_dt,
+                "exit_reason": exit_reason or "unknown",
+                "raw_last_line": raw_last[:200],
+                "log_name": f.name,
+            })
+
+    # --- 2. Last marker ---
+    marker_path = STATE / "proposals" / ".last-processed-decisions.json"
+    marker = None
+    if marker_path.exists():
+        try:
+            marker = json.loads(marker_path.read_text(encoding="utf-8-sig"))
+        except (OSError, json.JSONDecodeError):
+            marker = None
+
+    # --- 3. Counts ---
+    counts = {}
+    for state_name in ("pending", "approved", "deferred", "rejected", "shipped"):
+        d = STATE / "proposals" / state_name
+        counts[f"proposals_{state_name}"] = (
+            sum(1 for f in d.iterdir() if f.name.endswith(".md")) if d.exists() else 0
+        )
+    for inbox in ("proposals", "amendments", "escalations"):
+        d = STATE / inbox / "inbox"
+        counts[f"{inbox}_inbox"] = (
+            sum(1 for f in d.iterdir() if f.is_file() and f.name.endswith(".json"))
+            if d.exists() else 0
+        )
+
+    # --- 4. Delta vs prior cycle (approved count) ---
+    cache_path = STATE / "dashboard-health" / "approvals-pipeline-prev.json"
+    prev_approved = None
+    if cache_path.exists():
+        try:
+            prev = json.loads(cache_path.read_text(encoding="utf-8-sig"))
+            prev_approved = prev.get("approved_count")
+        except (OSError, json.JSONDecodeError):
+            pass
+    approved_delta = None
+    if isinstance(prev_approved, int):
+        approved_delta = counts["proposals_approved"] - prev_approved
+    try:
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        cache_path.write_text(json.dumps({
+            "approved_count": counts["proposals_approved"],
+            "snapshot_at": now_utc.isoformat(),
+        }, indent=2), encoding="utf-8")
+    except OSError:
+        pass
+
+    # --- 5. Status classification ---
+    most_recent = watcher_runs[0] if watcher_runs else None
+    age_minutes = None
+    if most_recent and most_recent["ts_dt"]:
+        age_minutes = round(
+            (now_utc - most_recent["ts_dt"]).total_seconds() / 60.0, 1
+        )
+
+    consecutive_skips = 0
+    for run in watcher_runs:
+        if run["exit_reason"] and run["exit_reason"].startswith("skip"):
+            consecutive_skips += 1
+        else:
+            break
+
+    last_two_dirty = (
+        len(watcher_runs) >= 2
+        and watcher_runs[0]["exit_reason"] == "skip-dirty"
+        and watcher_runs[1]["exit_reason"] == "skip-dirty"
+    )
+
+    last_errored = bool(most_recent) and most_recent["exit_reason"] in (
+        "error", "incomplete"
+    )
+
+    fresh_success_reasons = {"applied", "no-op", "no-new-files"}
+    if most_recent is None:
+        status = "missing"
+        summary = "no downloads-watcher logs found"
+    elif last_errored or consecutive_skips >= 4:
+        status = "red"
+        summary = (
+            "watcher errored"
+            if last_errored
+            else f"{consecutive_skips} consecutive SKIPs"
+        )
+    elif last_two_dirty:
+        status = "yellow"
+        summary = "last 2 runs SKIP working tree dirty"
+    elif (
+        age_minutes is not None
+        and age_minutes <= 10
+        and most_recent["exit_reason"] in fresh_success_reasons
+    ):
+        status = "green"
+        summary = f"watcher {most_recent['exit_reason']} {age_minutes}min ago"
+    elif age_minutes is not None and age_minutes > 10:
+        status = "yellow"
+        summary = f"watcher last fired {age_minutes}min ago (>10min cadence)"
+    else:
+        status = "yellow"
+        summary = f"watcher last run: {most_recent['exit_reason']}"
+
+    inbox_total = (
+        counts["proposals_inbox"]
+        + counts["amendments_inbox"]
+        + counts["escalations_inbox"]
+    )
+    if inbox_total > 0 and status != "missing":
+        summary += f" · {inbox_total} in inbox"
+
+    # --- 6. Details: last 3 stall events + marker + delta ---
+    stalls = []
+    for run in watcher_runs:
+        if run["exit_reason"] and (
+            run["exit_reason"].startswith("skip")
+            or run["exit_reason"] in ("error", "incomplete")
+        ):
+            stalls.append({
+                "category": "stall",
+                "status": run["exit_reason"],
+                "name": run["log_name"],
+                "note": run["raw_last_line"],
+                "when": run["ts_iso"],
+            })
+        if len(stalls) >= 3:
+            break
+
+    if marker:
+        stalls.insert(0, {
+            "category": "marker",
+            "status": "info",
+            "name": "last-processed-decisions",
+            "note": (
+                f"file={marker.get('last_processed_filename', '?')} "
+                f"kind={marker.get('last_processed_kind', '?')}"
+            ),
+            "when": marker.get("last_processed_at"),
+        })
+
+    if approved_delta is not None and approved_delta != 0:
+        sign = "+" if approved_delta > 0 else ""
+        stalls.insert(0, {
+            "category": "delta",
+            "status": "info",
+            "name": "approved delta",
+            "note": f"{sign}{approved_delta} since last regen",
+            "when": now_utc.isoformat(),
+        })
+
+    # --- 7. Normalized banner shape ---
+    as_of_iso = (
+        most_recent["ts_iso"]
+        if most_recent and most_recent["ts_iso"]
+        else now_utc.isoformat()
+    )
+    age_hours = (age_minutes / 60.0) if age_minutes is not None else None
+
+    return {
+        "available": most_recent is not None,
+        "status": status,
+        "raw_status": status,
+        "summary": summary,
+        "as_of": as_of_iso,
+        "stale": False,
+        "age_hours": age_hours,
+        "counts": counts,
+        "details": stalls,
+        "links": [
+            {
+                "label": "Approvals pipeline trace",
+                "href": "../../.claude/state/approval-pipeline-trace-2026-05-14.md",
+            },
+            {
+                "label": "AMD-023",
+                "href": "../../.claude/state/amendments/pending/AMD-023-approval-pipeline-reliability.md",
+            },
+        ],
+        "source_path": source_path,
+        "_meta": {
+            "watcher_runs_inspected": len(watcher_runs),
+            "consecutive_skips": consecutive_skips,
+            "age_minutes": age_minutes,
+        },
+    }
+
+
+def architecture_review_status():
+    """Architecture Review health banner (AMD-024, queue task
+    architecture-review-banner). Reads the aggregator JSON written by
+    the 6th always-on Architecture / AI Engineer agent:
+
+      .claude/state/aggregates/architecture-review.json
+
+    Schema (from queue task):
+      schema_version, updated_at,
+      latest_daily_health: { date, color, summary },
+      latest_weekly_summary: { week, summary, link },
+      latest_monthly_strategic: { month, summary, link },
+      pending_recommendations_count,
+      ratification_rate,
+      top_3_priorities: [ { title, owning_agent, priority }, ... ]
+
+    Status colors:
+      - green:  daily.color=green AND recs_count <= 5
+      - yellow: daily.color=yellow OR recs_count 6-15 OR ratification_rate < 0.5
+      - red:    daily.color=red OR recs_count > 15
+      - missing: file absent (architecture agent not yet active)
+    """
+    path = STATE / "aggregates" / "architecture-review.json"
+    source_path = str(path.relative_to(ROOT)).replace("\\", "/")
+    now_utc = datetime.now(timezone.utc)
+
+    if not path.exists():
+        return {
+            "available": False,
+            "status": "missing",
+            "summary": "Architecture agent not yet active — dispatch via boot prompt §6.6",
+            "as_of": None,
+            "stale": False,
+            "age_hours": None,
+            "counts": {},
+            "details": [{
+                "category": "empty-state",
+                "status": "info",
+                "name": "AMD-024",
+                "note": (
+                    "The Architecture / AI Engineer agent (Terminal 6) emits "
+                    "this aggregator on its first daily cycle after dispatch. "
+                    "Once written, this banner populates on the next post-commit "
+                    "dashboard regen."
+                ),
+                "when": now_utc.isoformat(),
+            }],
+            "links": [
+                {
+                    "label": "AMD-024",
+                    "href": "../../.claude/state/amendments/pending/AMD-024-architecture-ai-engineer-agent.md",
+                },
+                {
+                    "label": "Architecture review dir",
+                    "href": "../../.claude/state/architecture-review/",
+                },
+            ],
+            "source_path": source_path,
+        }
+
+    try:
+        data = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return {
+            "available": False,
+            "status": "error",
+            "summary": f"failed to read {path.name}: {exc.__class__.__name__}",
+            "as_of": None,
+            "stale": False,
+            "age_hours": None,
+            "counts": {},
+            "details": [],
+            "links": [],
+            "source_path": source_path,
+        }
+
+    if not isinstance(data, dict):
+        return {
+            "available": False,
+            "status": "error",
+            "summary": f"{path.name} did not contain a JSON object",
+            "as_of": None,
+            "stale": False,
+            "age_hours": None,
+            "counts": {},
+            "details": [],
+            "links": [],
+            "source_path": source_path,
+        }
+
+    daily = data.get("latest_daily_health") or {}
+    weekly = data.get("latest_weekly_summary") or {}
+    monthly = data.get("latest_monthly_strategic") or {}
+    daily_color = (daily.get("color") or "unknown").lower()
+    recs_count = data.get("pending_recommendations_count")
+    if not isinstance(recs_count, int):
+        recs_count = 0
+    rat_rate = data.get("ratification_rate")
+    try:
+        rat_rate_f = float(rat_rate) if rat_rate is not None else None
+    except (TypeError, ValueError):
+        rat_rate_f = None
+
+    if daily_color == "red" or recs_count > 15:
+        status = "red"
+    elif (
+        daily_color == "yellow"
+        or 6 <= recs_count <= 15
+        or (rat_rate_f is not None and rat_rate_f < 0.5)
+    ):
+        status = "yellow"
+    elif daily_color == "green" and recs_count <= 5:
+        status = "green"
+    else:
+        status = "unknown"
+
+    summary = daily.get("summary") or (
+        f"{recs_count} pending recommendation"
+        + ("s" if recs_count != 1 else "")
+    )
+
+    updated_at = data.get("updated_at")
+    age_hours = None
+    stale = False
+    if updated_at:
+        try:
+            updated_dt = datetime.fromisoformat(
+                str(updated_at).replace("Z", "+00:00")
+            )
+            age_hours = round((now_utc - updated_dt).total_seconds() / 3600.0, 2)
+            stale = age_hours > 48
+        except (ValueError, TypeError):
+            pass
+
+    counts = {
+        "pending_recommendations": recs_count,
+        "ratification_rate_pct": (
+            round(rat_rate_f * 100) if rat_rate_f is not None else 0
+        ),
+    }
+
+    details = []
+    top_priorities = data.get("top_3_priorities") or []
+    if isinstance(top_priorities, list):
+        for p in top_priorities[:3]:
+            if not isinstance(p, dict):
+                continue
+            details.append({
+                "category": "priority",
+                "status": (p.get("priority") or "").lower(),
+                "name": p.get("title") or "(untitled)",
+                "note": f"owner: {p.get('owning_agent') or '?'}",
+            })
+    if weekly.get("summary"):
+        details.append({
+            "category": "weekly",
+            "status": "info",
+            "name": f"Week {weekly.get('week') or '?'}",
+            "note": weekly.get("summary"),
+        })
+    if monthly.get("summary"):
+        details.append({
+            "category": "monthly",
+            "status": "info",
+            "name": f"Month {monthly.get('month') or '?'}",
+            "note": monthly.get("summary"),
+        })
+
+    links = []
+    if weekly.get("link"):
+        links.append({"label": "Latest weekly", "href": weekly.get("link")})
+    if monthly.get("link"):
+        links.append({"label": "Latest monthly", "href": monthly.get("link")})
+    links.append({
+        "label": "Pending recommendations",
+        "href": "../../.claude/state/architecture-review/recommendations/pending/",
+    })
+
+    return {
+        "available": True,
+        "status": "unknown" if stale else status,
+        "raw_status": status,
+        "summary": summary,
+        "as_of": updated_at,
+        "stale": stale,
+        "age_hours": age_hours,
+        "counts": counts,
+        "details": details,
+        "links": links,
+        "schema_version": data.get("schema_version"),
+        "source_path": source_path,
+    }
+
+
 def cron_last_fire_map():
     """AMD-007 P18.6: most-recent log per cron name. Filename pattern
     `<isoZ>-<cron-name>.log` per scripts/cron/logs/."""
@@ -940,6 +1408,14 @@ def build_founder_queue():
             # Dashboard health agent reads + renders; does not write.
             "test_health": read_health_banner("test"),
             "security_health": read_health_banner("security"),
+            # AMD-023 + queue task approvals-pipeline-banner: derived
+            # locally from scripts/cron/logs/*-downloads-watcher.log +
+            # marker + proposals/{state}/ counts. No external aggregator.
+            "approvals_pipeline": approvals_pipeline_status(),
+            # AMD-024 + queue task architecture-review-banner: reads the
+            # aggregator JSON the Architecture / AI Engineer agent emits.
+            # Empty-state when file absent.
+            "architecture_review": architecture_review_status(),
         },
         "activity_since_last_visit": {
             "_note": "Counts since last_founder_visit (null = since-forever)",
