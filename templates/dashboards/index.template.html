@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PARBAUGHS Orchestration — Index</title>
+    <link rel="stylesheet" href="_assets/dashboard-shell.css">
+    <style>
+        /* Page-specific: index dashboard cards + governance quick-links. 30-line budget. */
+        .dashboards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: var(--space-3);
+            margin-bottom: var(--space-5);
+        }
+        .dashboard-card {
+            display: block;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: transform var(--duration-default) var(--ease-default), border-color var(--duration-default) var(--ease-default);
+        }
+        .dashboard-card:hover {
+            border-color: var(--accent-brass);
+            transform: translateY(-2px);
+        }
+        .dashboard-card-name {
+            font-size: 1.0625rem;
+            font-weight: 600;
+            color: var(--accent-brass);
+            margin-bottom: var(--space-2);
+        }
+        .dashboard-card-purpose {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: var(--space-3);
+        }
+        .dashboard-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            font-family: var(--font-mono);
+        }
+        .dashboard-card-badge {
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: rgba(201,169,97,0.18);
+            color: var(--accent-brass);
+            font-weight: 600;
+        }
+
+        /* ============== Quick links ============== */
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: var(--space-2);
+            margin-bottom: var(--space-5);
+        }
+        .quick-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-2);
+            background: var(--bg-elevated);
+            border-radius: var(--radius-sm);
+            padding: var(--space-2) var(--space-3);
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.8125rem;
+            font-family: var(--font-mono);
+            border: 1px solid var(--border-subtle);
+            transition: color var(--duration-default) var(--ease-default), border-color var(--duration-default) var(--ease-default);
+        }
+        .quick-link:hover { color: var(--accent-teal); border-color: var(--accent-teal); }
+        .quick-link-arrow { color: var(--text-tertiary); }
+
+        /* ============== Footer ============== */
+        .index-footer {
+            margin-top: var(--space-6);
+            padding-top: var(--space-4);
+            border-top: 1px solid var(--border-subtle);
+            color: var(--text-tertiary);
+            font-size: 0.8125rem;
+            line-height: 1.6;
+        }
+        .index-footer code {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 1px 5px;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-sm);
+        }
+    </style>
+</head>
+<body class="pb-app">
+    <header class="pb-page-header">
+        <nav class="pb-page-nav">
+            <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
+            <div class="pb-page-nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="activity.html">Activity</a>
+                <a href="discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="proposals.html">Proposals</a>
+                <a href="amendments.html">Amendments</a>
+                <a href="main-flows.html">Main Flows</a>
+                <a href="design-system.html">Design System</a>
+                <a href="token-usage.html">Tokens</a>
+                <a href="index.html" class="is-active">Index</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="pb-page-main">
+        <div class="pb-page-title-row">
+            <div>
+                <h1 class="pb-page-title">PARBAUGHS Orchestration</h1>
+                <p class="pb-page-subtitle">Founder's morning landing pad &mdash; status at a glance, every dashboard one click away.</p>
+            </div>
+            <div class="pb-page-meta">
+                <span>Last updated <span id="last-updated-inline">&mdash;</span></span>
+                <span>git <code id="git-sha-inline">&mdash;</code></span>
+            </div>
+        </div>
+
+        <section class="pb-section">
+            <h2 class="pb-section-title">Status</h2>
+            <div class="pb-kpi-grid" id="status-panel">
+                <div class="pb-kpi-card" id="tile-ships">
+                    <span class="pb-kpi-label">Ships this week</span>
+                    <span class="pb-kpi-value">&mdash;</span>
+                    <span class="pb-kpi-sub">via ship-progress/*.json</span>
+                </div>
+                <div class="pb-kpi-card" id="tile-proposals">
+                    <span class="pb-kpi-label">Proposals pending</span>
+                    <span class="pb-kpi-value">&mdash;</span>
+                    <span class="pb-kpi-sub">awaiting Founder review</span>
+                </div>
+                <div class="pb-kpi-card" id="tile-fiq">
+                    <span class="pb-kpi-label">FIQ depth (B+)</span>
+                    <span class="pb-kpi-value">&mdash;</span>
+                    <span class="pb-kpi-sub" id="fiq-grades">grade distribution</span>
+                </div>
+                <div class="pb-kpi-card" id="tile-bubbles">
+                    <span class="pb-kpi-label">Discussion bubbles</span>
+                    <span class="pb-kpi-value">&mdash;</span>
+                    <span class="pb-kpi-sub">via discussion-bubbles/</span>
+                </div>
+                <div class="pb-kpi-card" id="tile-cron">
+                    <span class="pb-kpi-label">Last cron run</span>
+                    <span class="pb-kpi-value">&mdash;</span>
+                    <span class="pb-kpi-sub">substrate pending build</span>
+                </div>
+                <div class="pb-kpi-card" id="tile-halt">
+                    <span class="pb-kpi-label">HALT state</span>
+                    <span class="pb-kpi-value">&mdash;</span>
+                    <span class="pb-kpi-sub">via halts/</span>
+                </div>
+            </div>
+        </section>
+
+        <h2 class="pb-section-title">Dashboards</h2>
+        <section class="dashboards-grid" id="dashboards-grid">
+            <a class="dashboard-card" href="dashboard.html">
+                <div class="dashboard-card-name">Dashboard</div>
+                <div class="dashboard-card-purpose">Operational state: tokens, costs, ships, charts. Orchestration team's overview.</div>
+                <div class="dashboard-card-meta"><span data-meta="dashboard-mtime">—</span><span class="dashboard-card-badge" data-meta="dashboard-badge">—</span></div>
+            </a>
+            <a class="dashboard-card" href="activity.html">
+                <div class="dashboard-card-name">Activity</div>
+                <div class="dashboard-card-purpose">Handoff feed. Every scenario-1-through-11 transition across cycles.</div>
+                <div class="dashboard-card-meta"><span data-meta="activity-mtime">—</span><span class="dashboard-card-badge" data-meta="activity-badge">—</span></div>
+            </a>
+            <a class="dashboard-card" href="discussion-bubbles.html">
+                <div class="dashboard-card-name">Discussion Bubbles</div>
+                <div class="dashboard-card-purpose">Threaded transcripts of every multi-agent deliberation. Read who said what.</div>
+                <div class="dashboard-card-meta"><span data-meta="discussion-bubbles-mtime">—</span><span class="dashboard-card-badge" data-meta="discussion-bubbles-badge">—</span></div>
+            </a>
+            <a class="dashboard-card" href="proposals.html">
+                <div class="dashboard-card-name">Proposals</div>
+                <div class="dashboard-card-purpose">Review queue: approve / reject / defer pending proposals from the proactive cycle.</div>
+                <div class="dashboard-card-meta"><span data-meta="proposals-mtime">—</span><span class="dashboard-card-badge" data-meta="proposals-badge">—</span></div>
+            </a>
+            <a class="dashboard-card" href="amendments.html">
+                <div class="dashboard-card-name">Amendments</div>
+                <div class="dashboard-card-purpose">Governance amendment drafts authored by the team. Founder approves to apply against docs/agents/*.</div>
+                <div class="dashboard-card-meta"><span data-meta="amendments-mtime">—</span><span class="dashboard-card-badge" data-meta="amendments-badge">—</span></div>
+            </a>
+            <a class="dashboard-card" href="main-flows.html">
+                <div class="dashboard-card-name">Main Flows</div>
+                <div class="dashboard-card-purpose">Critical user journeys through PARBAUGHS. Filter for "does this serve a main flow?"</div>
+                <div class="dashboard-card-meta"><span data-meta="main-flows-mtime">—</span><span class="dashboard-card-badge" data-meta="main-flows-badge">—</span></div>
+            </a>
+        </section>
+
+        <h2 class="pb-section-title">Governance &amp; reference</h2>
+        <div class="quick-links">
+            <a class="quick-link" href="../agents/ROADMAP.md"><span>ROADMAP.md</span><span class="quick-link-arrow">→</span></a>
+            <a class="quick-link" href="../agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md"><span>PAUSE_DISCIPLINE</span><span class="quick-link-arrow">→</span></a>
+            <a class="quick-link" href="../agents/HALT_CRITERIA_AND_AUTONOMY_DISCIPLINE.md"><span>HALT_CRITERIA</span><span class="quick-link-arrow">→</span></a>
+            <a class="quick-link" href="../agents/SESSION_JOURNAL.md"><span>SESSION_JOURNAL</span><span class="quick-link-arrow">→</span></a>
+            <a class="quick-link" href="../agents/WAVE_ZERO_DRY_RUN_RUNBOOK.md"><span>Wave Zero Runbook</span><span class="quick-link-arrow">→</span></a>
+            <a class="quick-link" href="../../.claude/state/wave-zero-dry-run/remediation/proposed-MAIN_FLOWS.md"><span>MAIN_FLOWS draft</span><span class="quick-link-arrow">→</span></a>
+            <a class="quick-link" href="../../.claude/state/wave-zero-dry-run/remediation/proposed-METRIC_INTEGRITY_PROTOCOL.md"><span>METRIC_INTEGRITY draft</span><span class="quick-link-arrow">→</span></a>
+            <a class="quick-link" href="../../.claude/state/wave-zero-dry-run/remediation/proposed-FIQ_QUALITY_RUBRIC.md"><span>FIQ_QUALITY_RUBRIC draft</span><span class="quick-link-arrow">→</span></a>
+        </div>
+
+        <footer class="index-footer" id="index-footer">
+            <p>Last orchestration action: <span id="last-action">—</span></p>
+            <p>Data freshness: this page is regenerated by <code>scripts/regen-index.py</code> as part of <code>scripts/regen-all.ps1</code>. Cards reflect file timestamps + on-disk state counts at last regen.</p>
+        </footer>
+    </main>
+
+    <script id="report-data" type="application/json">
+{}
+    </script>
+    <script>
+        (function () {
+            function fmtMTime(iso) {
+                if (!iso) return 'never';
+                var d = new Date(iso);
+                if (isNaN(d)) return iso;
+                var diff = (Date.now() - d.getTime()) / 1000;
+                if (diff < 60) return Math.floor(diff) + 's ago';
+                if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+                if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+                return Math.floor(diff / 86400) + 'd ago';
+            }
+            function setTile(id, value, sub, cls) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                // Tiles now use .pb-kpi-card shell classes (DC-6 migration).
+                // Legacy .status-tile-value / .status-tile-sub selectors retained as
+                // fallback in case regen output lags before next regen cycle.
+                var v = el.querySelector('.pb-kpi-value') || el.querySelector('.status-tile-value');
+                var s = el.querySelector('.pb-kpi-sub')   || el.querySelector('.status-tile-sub');
+                if (v) v.textContent = value;
+                if (s && sub != null) s.textContent = sub;
+                if (cls) el.classList.add(cls);
+            }
+            function render() {
+                try {
+                    var raw = document.getElementById('report-data').textContent;
+                    var data = JSON.parse(raw);
+                    var lu = document.getElementById('last-updated-inline');
+                    if (lu) lu.textContent = data.as_of ? fmtMTime(data.as_of) : '—';
+                    var gs = document.getElementById('git-sha-inline');
+                    if (gs) gs.textContent = data.git_sha || '—';
+                    var st = data.status || {};
+                    setTile('tile-ships', st.ships_this_week != null ? st.ships_this_week : 0, 'via ship-progress/*.json', (st.ships_this_week || 0) > 0 ? 'is-positive' : null);
+                    setTile('tile-proposals', st.proposals_pending != null ? st.proposals_pending : 0, 'awaiting Founder review');
+                    var fiq = st.fiq_grade_distribution || {};
+                    setTile('tile-fiq', st.fiq_depth_b_plus != null ? st.fiq_depth_b_plus : 0, 'A:' + (fiq.A||0) + ' B:' + (fiq.B||0) + ' C:' + (fiq.C||0) + ' D:' + (fiq.D||0) + ' F:' + (fiq.F||0));
+                    setTile('tile-bubbles', st.open_discussion_bubbles != null ? st.open_discussion_bubbles : 0, 'via discussion-bubbles/');
+                    setTile('tile-cron', st.last_cron_run ? fmtMTime(st.last_cron_run) : 'never', 'substrate pending build', !st.last_cron_run ? 'is-warning' : null);
+                    setTile('tile-halt', st.halt_state || 'none', 'via halts/', st.halt_state && st.halt_state !== 'none' ? 'is-danger' : 'is-positive');
+
+                    var dbs = data.dashboards || {};
+                    Object.keys(dbs).forEach(function (key) {
+                        var slug = key.replace('.html', '');
+                        var mtEl = document.querySelector('[data-meta="' + slug + '-mtime"]');
+                        var bgEl = document.querySelector('[data-meta="' + slug + '-badge"]');
+                        if (mtEl) mtEl.textContent = dbs[key].mtime_utc ? fmtMTime(dbs[key].mtime_utc) : '—';
+                        if (bgEl) bgEl.textContent = dbs[key].badge || '';
+                    });
+                    var la = document.getElementById('last-action');
+                    if (la) la.textContent = data.last_orchestration_action || 'no recorded action';
+                } catch (err) {
+                    console.error('index render failed', err);
+                }
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', render);
+            } else {
+                render();
+            }
+        })();
+    </script>
+</body>
+</html>

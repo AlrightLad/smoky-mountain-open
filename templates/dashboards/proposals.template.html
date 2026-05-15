@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposal Review — PARBAUGHS Orchestration</title>
+    <link rel="stylesheet" href="_assets/dashboard-shell.css">
+    <style>
+        .proposal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-left: 3px solid var(--accent-teal);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-3);
+            transition: border-left-color var(--duration-default) var(--ease-default);
+        }
+        .proposal-card.decided-approved { border-left-color: var(--accent-moss); background: linear-gradient(90deg, rgba(74,128,103,.06) 0%, var(--bg-card) 30%); }
+        .proposal-card.decided-rejected { border-left-color: var(--accent-claret); background: linear-gradient(90deg, rgba(156,74,74,.06) 0%, var(--bg-card) 30%); }
+        .proposal-card.decided-deferred { border-left-color: var(--accent-amber); background: linear-gradient(90deg, rgba(212,168,87,.06) 0%, var(--bg-card) 30%); }
+
+        .proposal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); margin-bottom: var(--space-3); }
+        .proposal-id { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-tertiary); }
+        .proposal-title { font-size: 1.125rem; font-weight: 600; color: var(--text-primary); margin-top: var(--space-1); }
+        .proposal-meta { display: flex; gap: var(--space-3); font-size: 0.75rem; color: var(--text-secondary); margin-top: var(--space-2); flex-wrap: wrap; }
+        .proposal-lane { font-weight: 600; padding: 2px 8px; border-radius: 999px; font-size: 0.75rem; }
+        .lane-1 { background: rgba(201,169,97,.18); color: var(--accent-brass); }
+        .lane-2 { background: rgba(156,74,74,.18); color: var(--accent-claret); }
+        .lane-3 { background: rgba(74,138,156,.18); color: var(--accent-teal); }
+        .lane-4 { background: rgba(74,128,103,.18); color: var(--accent-moss); }
+
+        .proposal-section { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--border-subtle); }
+        .proposal-section-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-brass); margin-bottom: var(--space-2); }
+
+        .decision-bar {
+            display: flex;
+            gap: var(--space-2);
+            margin-top: var(--space-4);
+            padding-top: var(--space-3);
+            border-top: 2px solid var(--border-subtle);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .decision-bar .btn {
+            flex: 1;
+            min-width: 110px;
+            justify-content: center;
+            font-weight: 600;
+        }
+        .btn-approve.active { background: var(--accent-moss); color: var(--text-inverse); border-color: var(--accent-moss); }
+        .btn-reject.active  { background: var(--accent-claret); color: var(--text-inverse); border-color: var(--accent-claret); }
+        .btn-defer.active   { background: var(--accent-amber); color: var(--text-inverse); border-color: var(--accent-amber); }
+
+        .decision-note-row { display: flex; gap: var(--space-2); margin-top: var(--space-2); width: 100%; }
+        .decision-note-row input {
+            flex: 1;
+            padding: var(--space-2);
+            background: var(--bg-input);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            font-size: 0.875rem;
+        }
+        .decision-note-row input::placeholder { color: var(--text-tertiary); }
+        .decision-clear {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            text-decoration: underline;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: var(--space-2);
+        }
+        .decision-clear:hover { color: var(--accent-claret); }
+
+        .summary-bar {
+            position: sticky;
+            top: 0;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-md);
+            padding: var(--space-3) var(--space-4);
+            margin-bottom: var(--space-4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--space-3);
+            z-index: 10;
+            flex-wrap: wrap;
+        }
+        .summary-counts {
+            display: flex;
+            gap: var(--space-4);
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+        }
+        .summary-count .label { color: var(--text-tertiary); font-size: 0.75rem; text-transform: uppercase; }
+        .summary-count .value { color: var(--text-primary); font-size: 1.25rem; font-weight: 600; display: block; }
+        .summary-count .value.approve { color: var(--accent-moss); }
+        .summary-count .value.reject { color: var(--accent-claret); }
+        .summary-count .value.defer { color: var(--accent-amber); }
+        .summary-count .value.pending { color: var(--text-secondary); }
+
+        .export-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+
+        .impact-block {
+            background: var(--bg-elevated);
+            border-radius: var(--radius-sm);
+            padding: var(--space-3);
+            font-size: 0.875rem;
+        }
+        .impact-row {
+            display: grid;
+            grid-template-columns: 130px 1fr;
+            gap: var(--space-2);
+            padding: var(--space-1) 0;
+        }
+        .impact-label { color: var(--text-secondary); font-size: 0.75rem; }
+        .impact-value { color: var(--text-primary); font-family: var(--font-mono); font-size: 0.875rem; }
+
+        .files-list code {
+            display: block;
+            background: var(--bg-elevated);
+            padding: var(--space-1) var(--space-2);
+            margin: var(--space-1) 0;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+        }
+
+        .help-banner {
+            background: rgba(74,138,156,.12);
+            border: 1px solid var(--accent-teal);
+            border-radius: var(--radius-md);
+            padding: var(--space-3);
+            margin-bottom: var(--space-4);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        .help-banner strong { color: var(--accent-teal); }
+
+        @media (max-width: 600px) {
+            .summary-bar { position: relative; }
+        }
+    </style>
+</head>
+<body class="pb-app">
+    <header class="pb-page-header">
+        <nav class="pb-page-nav">
+            <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
+            <div class="pb-page-nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="activity.html">Activity</a>
+                <a href="discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="proposals.html" class="is-active">Proposals</a>
+                <a href="amendments.html">Amendments</a>
+                <a href="main-flows.html">Main Flows</a>
+                <a href="design-system.html">Design System</a>
+                <a href="token-usage.html">Tokens</a>
+                <a href="index.html">Index</a>
+            </div>
+        </nav>
+    </header>
+    <main class="pb-page-main">
+        <div class="pb-page-title-row">
+            <div>
+                <h1 class="pb-page-title">Proposals</h1>
+                <p class="pb-page-subtitle">Pending proposals from the proactive cycle &mdash; approve / reject / defer, export decisions, apply via script. Decisions are browser-local until you export.</p>
+            </div>
+            <div class="pb-page-meta">
+                <button class="btn" id="btn-clear-all" title="Clear all decisions in browser memory" style="background: transparent; color: var(--pb-chalk-200); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3); font-family: var(--font-mono); font-size: var(--text-xs); cursor: pointer; text-transform: none; letter-spacing: 0;">Clear all</button>
+                <button class="btn primary" id="btn-export" style="background: var(--pb-brass-500); color: var(--pb-billiard-green-900); border: none; border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3); font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 600; cursor: pointer; text-transform: none; letter-spacing: 0;">Export decisions →</button>
+            </div>
+        </div>
+
+        <section class="pb-section">
+            <h2 class="pb-section-title">Decision queue</h2>
+            <div class="pb-kpi-grid">
+                <div class="pb-kpi-card">
+                    <span class="pb-kpi-label">Pending</span>
+                    <span class="pb-kpi-value" id="count-pending">&mdash;</span>
+                    <span class="pb-kpi-sub">awaiting Founder review</span>
+                </div>
+                <div class="pb-kpi-card is-positive">
+                    <span class="pb-kpi-label">Approve</span>
+                    <span class="pb-kpi-value" id="count-approve">0</span>
+                    <span class="pb-kpi-sub">marked in this session</span>
+                </div>
+                <div class="pb-kpi-card is-danger">
+                    <span class="pb-kpi-label">Reject</span>
+                    <span class="pb-kpi-value" id="count-reject">0</span>
+                    <span class="pb-kpi-sub">marked in this session</span>
+                </div>
+                <div class="pb-kpi-card is-warning">
+                    <span class="pb-kpi-label">Defer</span>
+                    <span class="pb-kpi-value" id="count-defer">0</span>
+                    <span class="pb-kpi-sub">marked in this session</span>
+                </div>
+            </div>
+        </section>
+
+        <aside class="help-banner">
+            <strong>How this works:</strong> Mark each proposal as approve / reject / defer. Decisions are stored in your browser only (nothing is committed to the repo from this page). When done, click <strong>Export decisions</strong> above, then run <code>.claude/scripts/apply-decisions.sh path/to/decisions.json</code> in your repo. The script moves proposal files between <code>.claude/state/proposals/{pending,approved,rejected,deferred}/</code> and commits.
+            <span style="display:none;" id="count-undecided">—</span>
+        </aside>
+
+        <section>
+            <div class="pb-filter-bar">
+                <div class="pb-filter-group">
+                    <label class="pb-filter-label" for="filter-lane">Lane</label>
+                    <select class="pb-select" id="filter-lane">
+                        <option value="all">All lanes</option>
+                        <option value="1">Lane 1 &mdash; UI Polish</option>
+                        <option value="2">Lane 2 &mdash; Bug Discovery</option>
+                        <option value="3">Lane 3 &mdash; Performance</option>
+                        <option value="4">Lane 4 &mdash; Design System</option>
+                    </select>
+                </div>
+                <div class="pb-filter-group">
+                    <label class="pb-filter-label" for="filter-status">Status</label>
+                    <select class="pb-select" id="filter-status">
+                        <option value="all">All</option>
+                        <option value="undecided">Undecided</option>
+                        <option value="decided">Decided</option>
+                    </select>
+                </div>
+                <div class="pb-filter-group">
+                    <label class="pb-filter-label" for="sort-by">Sort</label>
+                    <select class="pb-select" id="sort-by">
+                        <option value="cost-asc">Cost &uarr;</option>
+                        <option value="cost-desc">Cost &darr;</option>
+                        <option value="lane">By lane</option>
+                        <option value="newest">Newest first</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="pb-section-title">Pending review <span class="section-count" data-section-count="pending">—</span></div>
+            <p class="text-muted" style="font-size: 0.8125rem; margin-bottom: var(--space-3);">Founder's active workspace. Mark each as approve / reject / defer, then export decisions.</p>
+            <div id="proposal-list"></div>
+        </section>
+
+        <section class="mt-4">
+            <div class="pb-section-title">Approved — in flight <span class="section-count" data-section-count="approved">—</span></div>
+            <p class="text-muted" style="font-size: 0.8125rem; margin-bottom: var(--space-3);">Past Founder's decision point. No buttons — these are awaiting an implementing commit ("Implements PROP-NNN") which auto-promotes to shipped.</p>
+            <div id="proposal-list-approved"></div>
+        </section>
+
+        <section class="mt-4">
+            <details>
+                <summary class="pb-section-title" style="cursor: pointer;">Deferred <span class="section-count" data-section-count="deferred">—</span></summary>
+                <p class="text-muted" style="font-size: 0.8125rem; margin: var(--space-2) 0 var(--space-3);">Founder deferred for later consideration. Un-deferring is a future feature.</p>
+                <div id="proposal-list-deferred"></div>
+            </details>
+        </section>
+
+        <section class="mt-4">
+            <details>
+                <summary class="pb-section-title" style="cursor: pointer;">Shipped — archive <span class="section-count" data-section-count="shipped">—</span></summary>
+                <p class="text-muted" style="font-size: 0.8125rem; margin: var(--space-2) 0 var(--space-3);">Last 50 shown. Append-only audit trail in <code>.claude/state/proposals/shipped-log.md</code>. Each card cites the implementing commit (short sha).</p>
+                <div id="proposal-list-shipped"></div>
+            </details>
+        </section>
+
+        <section class="mt-4">
+            <details>
+                <summary class="pb-section-title" style="cursor: pointer;">Rejected — archive <span class="section-count" data-section-count="rejected">—</span></summary>
+                <p class="text-muted" style="font-size: 0.8125rem; margin: var(--space-2) 0 var(--space-3);">Last 50 shown. Terminal archive.</p>
+                <div id="proposal-list-rejected"></div>
+            </details>
+        </section>
+
+        <section class="mt-5">
+            <h3 class="collapsible collapsed">Raw data (debug)</h3>
+            <div class="collapsible-content">
+                <div class="card">
+                    <pre id="raw-data-display" style="overflow-x: auto; max-height: 400px; color: var(--text-secondary); font-size: 0.75rem;"></pre>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="pb-page-footer">
+        Source: <code>.claude/state/proposals/</code> &middot;
+        <a href="index.html">All reports</a> &middot;
+        <a href="dashboard.html">Dashboard</a> &middot;
+        <a href="discussion-bubbles.html">Discussion Bubbles</a> &middot;
+        <a href="activity.html">Activity</a>
+    </footer>
+
+    <script id="report-data" type="application/json">
+{}
+    </script>
+
+    <script src="_assets/dashboard.js"></script>
+    <script>
+        const STORAGE_KEY = 'parbaughs-proposal-decisions-v1';
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const data = JSON.parse(document.getElementById('report-data').textContent);
+            document.getElementById('raw-data-display').textContent = JSON.stringify(data, null, 2);
+
+            const decisions = loadDecisions();
+
+            function loadDecisions() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    return raw ? JSON.parse(raw) : {};
+                } catch (e) { return {}; }
+            }
+
+            function saveDecisions() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(decisions));
+                } catch (e) {
+                    console.warn('localStorage save failed:', e);
+                }
+            }
+
+            function setDecision(id, type) {
+                if (!decisions[id]) decisions[id] = {};
+                if (decisions[id].type === type) {
+                    // Toggle off
+                    delete decisions[id];
+                } else {
+                    decisions[id].type = type;
+                    if (!decisions[id].note) decisions[id].note = '';
+                    decisions[id].decided_at = new Date().toISOString();
+                }
+                saveDecisions();
+                render();
+            }
+
+            function setNote(id, note) {
+                if (!decisions[id]) decisions[id] = { type: 'undecided' };
+                decisions[id].note = note;
+                saveDecisions();
+                updateCounts();
+            }
+
+            function clearAll() {
+                if (!confirm('Clear all decisions for all proposals?')) return;
+                Object.keys(decisions).forEach(k => delete decisions[k]);
+                saveDecisions();
+                render();
+            }
+
+            function exportDecisions() {
+                const decided = Object.entries(decisions)
+                    .filter(([_, d]) => d.type && d.type !== 'undecided');
+
+                if (decided.length === 0) {
+                    alert('No decisions to export. Mark at least one proposal first.');
+                    return;
+                }
+
+                const payload = {
+                    schema_version: 1,
+                    generated_at: new Date().toISOString(),
+                    source_report_generated_at: data.generated_at,
+                    decisions: decided.map(([id, d]) => ({
+                        proposal_id: id,
+                        decision: d.type,
+                        note: d.note || '',
+                        decided_at: d.decided_at
+                    }))
+                };
+
+                const json = JSON.stringify(payload, null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+                const filename = `decisions-${ts}.json`;
+
+                // Modern browsers: try File System Access API, fall back to download
+                if (window.showSaveFilePicker) {
+                    window.showSaveFilePicker({
+                        suggestedName: filename,
+                        types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }]
+                    }).then(handle => {
+                        return handle.createWritable().then(w => w.write(blob).then(() => w.close()));
+                    }).catch(err => {
+                        if (err.name !== 'AbortError') {
+                            console.warn('File System Access failed, falling back:', err);
+                            downloadBlob(blob, filename);
+                        }
+                    });
+                } else {
+                    downloadBlob(blob, filename);
+                }
+
+                // Show next-step reminder
+                setTimeout(() => {
+                    alert(`Decisions exported as ${filename}.\n\nNext step: in your repo, run:\n.claude/scripts/apply-decisions.sh path/to/${filename}\n\nThe script will move proposal files and commit the changes.`);
+                }, 200);
+            }
+
+            function downloadBlob(blob, filename) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 100);
+            }
+
+            // PROPOSAL_LIFECYCLE_v8.2: data.proposals may be (a) the old array shape (pending only)
+            // or (b) the new object shape {pending, approved, deferred, shipped, rejected}. Normalize.
+            function bucketedProposals() {
+                const p = data.proposals;
+                if (Array.isArray(p)) {
+                    return { pending: p, approved: [], deferred: [], shipped: [], rejected: [] };
+                }
+                return {
+                    pending:  Array.isArray(p && p.pending)  ? p.pending  : [],
+                    approved: Array.isArray(p && p.approved) ? p.approved : [],
+                    deferred: Array.isArray(p && p.deferred) ? p.deferred : [],
+                    shipped:  Array.isArray(p && p.shipped)  ? p.shipped  : [],
+                    rejected: Array.isArray(p && p.rejected) ? p.rejected : [],
+                };
+            }
+
+            function safeCost(p) {
+                return (p && p.estimate && typeof p.estimate.cost_tokens === 'number') ? p.estimate.cost_tokens : 0;
+            }
+
+            function renderCompactCard(p, mode) {
+                // mode = "approved" | "deferred" | "shipped" | "rejected"
+                const lane = (p && p.lane != null) ? p.lane : '—';
+                const laneLabel = escapeHtml(p && p.lane_label || '');
+                const tsRaw = (mode === 'shipped')  ? p.shipped_at
+                            : (mode === 'approved') ? (p.approved_at || p.created_at)
+                            : (mode === 'rejected') ? (p.rejected_at || p.created_at)
+                            : (mode === 'deferred') ? (p.deferred_at || p.created_at)
+                            : p.created_at;
+                const tsLabel = tsRaw ? formatTime(tsRaw) : '—';
+                const tsKind  = mode === 'shipped'  ? 'shipped'
+                              : mode === 'rejected' ? 'rejected'
+                              : mode === 'deferred' ? 'deferred'
+                              : 'approved';
+                const note  = (mode === 'shipped'  && p.shipped_in_commit) ? `commit <code>${escapeHtml(p.shipped_in_commit)}</code>`
+                            : (mode === 'rejected' && p.rejected_note)     ? escapeHtml(p.rejected_note)
+                            : (mode === 'deferred' && p.deferred_note)     ? escapeHtml(p.deferred_note)
+                            : '';
+                const badge = mode === 'approved' ? '<span class="proposal-lane" style="background: rgba(74,128,103,0.18); color: var(--accent-moss);">WORKING</span>'
+                            : mode === 'shipped'  ? '<span class="proposal-lane" style="background: rgba(74,128,103,0.18); color: var(--accent-moss);">SHIPPED</span>'
+                            : mode === 'rejected' ? '<span class="proposal-lane" style="background: rgba(156,74,74,0.18); color: var(--accent-claret);">REJECTED</span>'
+                            : '<span class="proposal-lane" style="background: rgba(212,168,87,0.18); color: var(--accent-amber);">DEFERRED</span>';
+                return `
+                    <div class="proposal-card decided-${mode === 'approved' ? 'approved' : mode === 'rejected' ? 'rejected' : mode === 'deferred' ? 'deferred' : 'approved'}" data-id="${escapeHtml(p.id || '')}" style="padding: var(--space-3);">
+                        <div class="proposal-header">
+                            <div style="flex: 1;">
+                                <div class="proposal-id">${escapeHtml(p.id || '')}</div>
+                                <div class="proposal-title">${escapeHtml(p.title || '')}</div>
+                                <div class="proposal-meta">
+                                    <span class="proposal-lane lane-${escapeHtml(String(lane))}">Lane ${escapeHtml(String(lane))} · ${laneLabel}</span>
+                                    ${badge}
+                                    <span>${tsKind}: ${tsLabel}</span>
+                                    <span>Target: <code>${escapeHtml(p.ship_target || '—')}</code></span>
+                                    ${note ? `<span>${note}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderList(elId, items, mode, limit) {
+                const el = document.getElementById(elId);
+                if (!el) return;
+                let arr = items || [];
+                if (typeof limit === 'number' && arr.length > limit) arr = arr.slice(0, limit);
+                if (!arr.length) {
+                    el.innerHTML = `<div class="card" style="text-align: center; padding: var(--space-4); color: var(--text-tertiary); font-size: 0.875rem;">No ${mode} proposals.</div>`;
+                    return;
+                }
+                el.innerHTML = arr.map(p => renderCompactCard(p, mode)).join('');
+            }
+
+            function render() {
+                const fLane = document.getElementById('filter-lane').value;
+                const fStatus = document.getElementById('filter-status').value;
+                const sort = document.getElementById('sort-by').value;
+                const buckets = bucketedProposals();
+
+                // Pending — apply filter + sort + intent-capture rendering
+                let filtered = buckets.pending.filter(p => {
+                    if (fLane !== 'all' && String(p.lane) !== fLane) return false;
+                    const dec = decisions[p.id];
+                    const isDecided = dec && dec.type && dec.type !== 'undecided';
+                    if (fStatus === 'undecided' && isDecided) return false;
+                    if (fStatus === 'decided' && !isDecided) return false;
+                    return true;
+                });
+                filtered.sort((a, b) => {
+                    switch (sort) {
+                        case 'cost-asc':  return safeCost(a) - safeCost(b);
+                        case 'cost-desc': return safeCost(b) - safeCost(a);
+                        case 'lane':      return (a.lane || 0) - (b.lane || 0);
+                        case 'newest':    return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+                    }
+                    return 0;
+                });
+                const list = document.getElementById('proposal-list');
+                list.innerHTML = filtered.length === 0
+                    ? '<div class="card" style="text-align: center; padding: var(--space-5); color: var(--text-tertiary);">No proposals match current filters.</div>'
+                    : filtered.map(p => renderProposal(p)).join('');
+
+                // Approved — sort newest-first by approved_at OR created_at
+                const approvedSorted = [...buckets.approved].sort((a, b) =>
+                    new Date(b.approved_at || b.created_at || 0) - new Date(a.approved_at || a.created_at || 0));
+                renderList('proposal-list-approved', approvedSorted, 'approved');
+
+                // Deferred — sort newest-first by deferred_at OR created_at
+                const deferredSorted = [...buckets.deferred].sort((a, b) =>
+                    new Date(b.deferred_at || b.created_at || 0) - new Date(a.deferred_at || a.created_at || 0));
+                renderList('proposal-list-deferred', deferredSorted, 'deferred');
+
+                // Shipped — sort newest-first by shipped_at; cap at 50
+                const shippedSorted = [...buckets.shipped].sort((a, b) =>
+                    new Date(b.shipped_at || 0) - new Date(a.shipped_at || 0));
+                renderList('proposal-list-shipped', shippedSorted, 'shipped', 50);
+
+                // Rejected — sort newest-first by rejected_at; cap at 50
+                const rejectedSorted = [...buckets.rejected].sort((a, b) =>
+                    new Date(b.rejected_at || b.created_at || 0) - new Date(a.rejected_at || a.created_at || 0));
+                renderList('proposal-list-rejected', rejectedSorted, 'rejected', 50);
+
+                // Section counts (in headers)
+                const counts = (data.counts) || {
+                    pending: buckets.pending.length,
+                    approved: buckets.approved.length,
+                    deferred: buckets.deferred.length,
+                    shipped_total: buckets.shipped.length,
+                    rejected_total: buckets.rejected.length,
+                };
+                const setSec = (key, value) => {
+                    const el = document.querySelector(`[data-section-count="${key}"]`);
+                    if (el) el.textContent = '(' + value + ')';
+                };
+                setSec('pending',  counts.pending != null ? counts.pending : buckets.pending.length);
+                setSec('approved', counts.approved != null ? counts.approved : buckets.approved.length);
+                setSec('deferred', counts.deferred != null ? counts.deferred : buckets.deferred.length);
+                setSec('shipped',  counts.shipped_total != null ? counts.shipped_total : buckets.shipped.length);
+                setSec('rejected', counts.rejected_total != null ? counts.rejected_total : buckets.rejected.length);
+
+                wireInputs();
+                updateCounts();
+            }
+
+            function renderProposal(p) {
+                const dec = decisions[p.id] || {};
+                const decType = dec.type;
+                const klass = decType && decType !== 'undecided' ? `decided-${decType}` : '';
+
+                return `
+                    <div class="proposal-card ${klass}" data-id="${p.id}">
+                        <div class="proposal-header">
+                            <div style="flex: 1;">
+                                <div class="proposal-id">${escapeHtml(p.id)}</div>
+                                <div class="proposal-title">${escapeHtml(p.title)}</div>
+                                <div class="proposal-meta">
+                                    <span class="proposal-lane lane-${p.lane}">Lane ${p.lane} · ${escapeHtml(p.lane_label)}</span>
+                                    <span>Generated ${formatTime(p.created_at)}</span>
+                                    <span>Target: <code>${escapeHtml(p.ship_target)}</code></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="proposal-section">
+                            <div class="proposal-section-label">Rationale</div>
+                            <p class="text-muted">${escapeHtml(p.rationale)}</p>
+                        </div>
+
+                        <div class="proposal-section">
+                            <div class="proposal-section-label">Scope</div>
+                            <p class="text-muted">${escapeHtml(p.scope)}</p>
+                        </div>
+
+                        <div class="proposal-section">
+                            <div class="proposal-section-label">Estimate</div>
+                            <div class="impact-block">
+                                <div class="impact-row">
+                                    <span class="impact-label">Token cost</span>
+                                    <span class="impact-value">~${ParbaughsReports.utils.fmtTokens(p.estimate.cost_tokens)}</span>
+                                </div>
+                                <div class="impact-row">
+                                    <span class="impact-label">Duration</span>
+                                    <span class="impact-value">~${p.estimate.duration_minutes} min</span>
+                                </div>
+                                <div class="impact-row">
+                                    <span class="impact-label">Risk</span>
+                                    <span class="impact-value">${escapeHtml(p.estimate.risk)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="proposal-section">
+                            <div class="proposal-section-label">Files affected (${p.files_affected.length})</div>
+                            <div class="files-list">
+                                ${p.files_affected.map(f => `<code>${escapeHtml(f)}</code>`).join('')}
+                            </div>
+                        </div>
+
+                        ${p.evidence_paths && p.evidence_paths.length ? `
+                            <div class="proposal-section">
+                                <div class="proposal-section-label">Evidence</div>
+                                <div class="files-list">
+                                    ${p.evidence_paths.map(f => `<code>${escapeHtml(f)}</code>`).join('')}
+                                </div>
+                            </div>` : ''}
+
+                        <div class="decision-bar">
+                            <button class="btn btn-approve ${decType === 'approve' ? 'active' : ''}" data-action="approve">✓ Approve</button>
+                            <button class="btn btn-reject ${decType === 'reject' ? 'active' : ''}" data-action="reject">✗ Reject</button>
+                            <button class="btn btn-defer ${decType === 'defer' ? 'active' : ''}" data-action="defer">⏸ Defer</button>
+                        </div>
+                        ${decType && decType !== 'undecided' ? `
+                            <div class="decision-note-row">
+                                <input type="text" placeholder="Note (optional — appended to applied proposal doc)" value="${escapeHtml(dec.note || '')}" data-note="${p.id}">
+                                <button class="decision-clear" data-clear="${p.id}">Clear</button>
+                            </div>` : ''}
+                    </div>
+                `;
+            }
+
+            function wireInputs() {
+                document.querySelectorAll('.proposal-card [data-action]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const card = btn.closest('.proposal-card');
+                        const id = card.dataset.id;
+                        setDecision(id, btn.dataset.action);
+                    });
+                });
+                document.querySelectorAll('.proposal-card [data-note]').forEach(inp => {
+                    inp.addEventListener('input', () => setNote(inp.dataset.note, inp.value));
+                });
+                document.querySelectorAll('.proposal-card [data-clear]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        delete decisions[btn.dataset.clear];
+                        saveDecisions();
+                        render();
+                    });
+                });
+            }
+
+            function updateCounts() {
+                // PROPOSAL_LIFECYCLE_v8.2: summary bar reflects the PENDING bucket's intent-capture state only.
+                // (Approved/deferred/shipped/rejected sections each have their own section-count badges.)
+                const buckets = bucketedProposals();
+                const pendingList = buckets.pending || [];
+                const total = pendingList.length;
+                let a = 0, r = 0, d = 0;
+                pendingList.forEach(p => {
+                    const t = (decisions[p.id] && decisions[p.id].type);
+                    if (t === 'approve') a++;
+                    else if (t === 'reject') r++;
+                    else if (t === 'defer') d++;
+                });
+                document.getElementById('count-pending').textContent = total;
+                document.getElementById('count-approve').textContent = a;
+                document.getElementById('count-reject').textContent = r;
+                document.getElementById('count-defer').textContent = d;
+                document.getElementById('count-undecided').textContent = total - a - r - d;
+            }
+
+            function formatTime(iso) {
+                return new Date(iso).toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
+            }
+            function escapeHtml(s) {
+                if (s === null || s === undefined) return '';
+                return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+            }
+
+            ['filter-lane', 'filter-status', 'sort-by'].forEach(id => {
+                document.getElementById(id).addEventListener('change', render);
+            });
+            document.getElementById('btn-clear-all').addEventListener('click', clearAll);
+            document.getElementById('btn-export').addEventListener('click', exportDecisions);
+
+            document.querySelectorAll('.collapsible').forEach(el => {
+                el.addEventListener('click', () => el.classList.toggle('collapsed'));
+            });
+
+            render();
+
+        });
+    </script>
+</body>
+</html>

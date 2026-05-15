@@ -1,0 +1,586 @@
+/* ============================================================================
+   PARBAUGHS Dashboard Shell — Canonical chrome for every dashboard
+   ----------------------------------------------------------------------------
+   Single source of truth for the visual standard called out in the Phase 3
+   directive: page header + brand line + nav + page title + KPI grid + table.
+   Every dashboard imports this; the shell pulls in design-tokens.css
+   transitively, so consumers only need a single <link> to dashboard-shell.css
+   (legacy dashboards may still import dashboard.css alongside until they
+   migrate to .pb-* primitives, but the alias layer below ensures their
+   legacy `var(--bg-*)` / `var(--accent-*)` calls resolve to PARBAUGHS palette).
+   Page-specific style is restricted to a 30-line inline budget; anything
+   beyond gets extracted to its own _assets/*.css.
+
+   Visual standard (locked):
+     - Background: --pb-billiard-green-900 (page) / --pb-billiard-green-800 (surface)
+     - Brand line: mono, uppercase, --pb-chalk-400, tracked
+     - Nav: pill links, --pb-chalk-200 default / --pb-brass-500 active w/ underline
+     - Page H1: --text-2xl, weight 600, --pb-chalk-50
+     - KPI numbers: --text-3xl, weight 700, tabular nums, --pb-chalk-50
+     - KPI labels: --text-xs, uppercase, weight 600, --pb-chalk-400, tracked
+     - Table headers: --text-xs, uppercase, weight 600, --pb-chalk-300
+     - Table rows: --text-sm, --pb-chalk-100, hover = --bg-raised
+     - Numbers in tables: tabular-nums, right-aligned
+
+   Responsive (locked):
+     - 4 KPI cols at desktop (>=1024px)
+     - 2 KPI cols at tablet (600-1024px)
+     - 1 KPI col at mobile (<600px)
+     - Tables horizontal-scroll inside .pb-table-wrap on narrow widths
+     - Tables can sticky their first column via .is-sticky-col
+   ============================================================================ */
+
+
+/* Pull in the canonical PARBAUGHS palette (`--pb-*` family + semantic
+ * aliases). Every dashboard inherits this through dashboard-shell.css
+ * regardless of which other stylesheets it imports. */
+@import url("design-tokens.css");
+
+
+/* ============================================================================
+   LEGACY ALIAS LAYER — TEMPORARY
+   ----------------------------------------------------------------------------
+   These aliases let pre-migration inline `<style>` blocks (and the legacy
+   dashboard.css token declarations) continue working while individual
+   dashboards migrate to `var(--pb-*)` directly. Each legacy token name
+   in active use by any dashboard maps to its canonical PARBAUGHS
+   equivalent — Theme A converges to Theme B without any HTML edit.
+
+   Cascade order matters: dashboards that import dashboard.css get its
+   legacy hex declarations first (`--bg-page: #0f1419`), then this
+   alias block in dashboard-shell.css redeclares them as `var(--pb-*)`
+   references. The shell wins because it loads after.
+
+   SUNSET CRITERION: when no dashboard HTML references the alias tokens
+   in <style> blocks or style="..." attributes, this block can be
+   deleted. Tracked at .claude/state/design-system/alias-sunset.md.
+
+   Mappings rationale documented at
+   .claude/state/wave-zero-dry-run/theme-migration-audit.md.
+   ============================================================================ */
+:root {
+    /* Surfaces */
+    --bg-page:     var(--pb-billiard-green-900);
+    --bg-card:     var(--pb-billiard-green-800);
+    --bg-elevated: var(--pb-billiard-green-700);
+    --bg-input:    var(--pb-billiard-green-700);
+
+    /* Text — semantic */
+    --text-primary:   var(--pb-chalk-50);
+    --text-secondary: var(--pb-chalk-200);
+    --text-tertiary:  var(--pb-chalk-400);
+    --text-inverse:   var(--pb-billiard-green-900);
+
+    /* Accents — color names */
+    --accent-brass:       var(--pb-brass-500);
+    --accent-achievement: var(--pb-brass-500);
+    --accent-moss:        var(--pb-success);
+    --accent-claret:      var(--pb-error);
+    --accent-teal:        var(--pb-info);
+    --accent-amber:       var(--pb-warning);
+    --accent-violet:      var(--pb-leather-700);
+
+    /* Semantic aliases — status */
+    --success: var(--pb-success);
+    --warning: var(--pb-warning);
+    --danger:  var(--pb-error);
+    --info:    var(--pb-info);
+
+    /* Borders — override dashboard.css's solid hex hairlines with the
+     * canonical chalk-rgba hairlines from design-tokens.css. */
+    --border-subtle: rgba(216, 208, 192, 0.08);
+    --border-strong: rgba(216, 208, 192, 0.16);
+
+    /* Type stacks */
+    --font-sans: var(--font-body);
+
+    /* Motion */
+    --duration-default: var(--duration-medium);
+    --ease-default:     var(--ease-out);
+
+    /* Shadows */
+    --shadow-card: var(--shadow-md);
+}
+
+
+/* ----------------------------------------------------------------------------
+   BODY + PAGE CANVAS
+   .pb-app on <body> drops the page on the billiard-green canvas. The body
+   margin reset is intentional — dashboards previously relied on user-agent
+   margins inconsistent across browsers.
+   ---------------------------------------------------------------------------- */
+body.pb-app {
+    background: var(--pb-billiard-green-900);
+    color: var(--pb-chalk-50);
+    font-family: var(--font-body);
+    margin: 0;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* ----------------------------------------------------------------------------
+   PAGE HEADER (brand line + nav + divider)
+   The canonical chrome that every dashboard renders before its main content.
+   Brand line is mono, uppercase, dim. Nav is pill-links with brass active.
+   ---------------------------------------------------------------------------- */
+.pb-page-header {
+    background: var(--pb-billiard-green-800);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.pb-page-nav {
+    max-width: var(--max-content);
+    margin: 0 auto;
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+}
+
+/* Wide variant — used by .pb-page-main.is-wide pages (main-flows.html). */
+.pb-page-header.is-wide .pb-page-nav { max-width: var(--max-content-wide); }
+
+.pb-page-brand {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--pb-chalk-400);
+    text-decoration: none;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+.pb-page-brand:hover { color: var(--pb-chalk-200); }
+
+.pb-page-nav-links {
+    display: flex;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+    flex-wrap: wrap;
+}
+
+.pb-page-nav-links a {
+    color: var(--pb-chalk-200);
+    text-decoration: none;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-sm);
+    border-bottom: 2px solid transparent;
+    transition: color var(--duration-fast) var(--ease-out),
+                background var(--duration-fast) var(--ease-out),
+                border-color var(--duration-fast) var(--ease-out);
+}
+.pb-page-nav-links a:hover {
+    color: var(--pb-chalk-50);
+    background: var(--pb-billiard-green-700);
+}
+.pb-page-nav-links a.is-active {
+    color: var(--pb-brass-500);
+    border-bottom-color: var(--pb-brass-500);
+}
+
+
+/* ----------------------------------------------------------------------------
+   PAGE MAIN (content container) + PAGE TITLE BLOCK
+   .pb-page-main caps content width and centers. .is-wide opts into the
+   wider variant for layout-heavy pages (main-flows architecture grid).
+   ---------------------------------------------------------------------------- */
+.pb-page-main {
+    max-width: var(--max-content);
+    margin: 0 auto;
+    padding: var(--space-5) var(--space-4) var(--space-6);
+}
+.pb-page-main.is-wide { max-width: var(--max-content-wide); }
+
+.pb-page-title-row {
+    display: flex;
+    gap: var(--space-4);
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: var(--space-5);
+    flex-wrap: wrap;
+}
+
+.pb-page-title {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 600;
+    color: var(--pb-chalk-50);
+    margin: 0;
+    letter-spacing: var(--tracking-tight, -0.01em);
+    line-height: 1.15;
+}
+
+.pb-page-subtitle {
+    color: var(--pb-chalk-200);
+    font-size: var(--text-base);
+    margin: var(--space-2) 0 0;
+    max-width: 70ch;
+    line-height: var(--lh-normal, 1.5);
+}
+
+.pb-page-meta {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--pb-chalk-400);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    align-items: center;
+}
+.pb-page-meta code {
+    font-family: var(--font-mono);
+    color: var(--pb-chalk-200);
+    background: var(--pb-billiard-green-700);
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+
+/* ----------------------------------------------------------------------------
+   SECTION (group header + content)
+   Used to chunk a dashboard's main into thematic groups. Quiet visual weight
+   on the heading — the data inside the section is the focus.
+   ---------------------------------------------------------------------------- */
+.pb-section {
+    margin-bottom: var(--space-6);
+}
+
+.pb-section-title {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--pb-chalk-300);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0 0 var(--space-3);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.pb-section-subtitle {
+    font-size: var(--text-sm);
+    color: var(--pb-chalk-300);
+    margin: calc(-1 * var(--space-2)) 0 var(--space-3);
+}
+
+
+/* ----------------------------------------------------------------------------
+   KPI GRID + KPI CARD
+   Canonical KPI cell. Four variants by left-border color: positive (moss),
+   warning (amber), danger (claret), accent (brass — default). The brass
+   default carries the page when no semantic state applies; semantic variants
+   communicate state without color noise elsewhere.
+   ---------------------------------------------------------------------------- */
+.pb-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+}
+@media (max-width: 1024px) {
+    .pb-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+    .pb-kpi-grid { grid-template-columns: 1fr; }
+}
+
+.pb-kpi-card {
+    background: var(--pb-billiard-green-800);
+    border: 1px solid var(--border-subtle);
+    border-left: 3px solid var(--pb-brass-500);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+}
+.pb-kpi-card.is-positive { border-left-color: var(--pb-success); }
+.pb-kpi-card.is-warning  { border-left-color: var(--pb-warning); }
+.pb-kpi-card.is-danger   { border-left-color: var(--pb-error); }
+.pb-kpi-card.is-neutral  { border-left-color: var(--pb-chalk-300); }
+.pb-kpi-card.is-info     { border-left-color: var(--pb-info); }
+
+.pb-kpi-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--pb-chalk-400);
+}
+
+.pb-kpi-value {
+    font-family: var(--font-numeric);
+    font-variant-numeric: tabular-nums;
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--pb-chalk-50);
+    line-height: 1.1;
+    word-break: break-all;
+}
+.pb-kpi-value.is-small { font-size: var(--text-xl); }
+
+.pb-kpi-sub {
+    font-size: var(--text-xs);
+    color: var(--pb-chalk-300);
+    margin-top: var(--space-1);
+    line-height: 1.4;
+}
+
+
+/* ----------------------------------------------------------------------------
+   TABLE
+   Tabular numerals, mono headers, right-aligned numbers, hover row state.
+   Horizontal scroll on narrow widths via .pb-table-wrap. Sticky first column
+   via .is-sticky-col so the row identifier remains visible during scroll.
+   ---------------------------------------------------------------------------- */
+.pb-table-wrap {
+    overflow-x: auto;
+    background: var(--pb-billiard-green-800);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    /* Keep horizontal-scroll obvious on touch surfaces without showing a
+     * permanent scrollbar on desktop. */
+    -webkit-overflow-scrolling: touch;
+}
+
+.pb-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+}
+
+.pb-table thead th {
+    text-align: left;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--border-strong);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--pb-chalk-300);
+    background: var(--pb-billiard-green-800);
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.pb-table tbody td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--pb-chalk-100);
+    vertical-align: top;
+}
+.pb-table tbody tr:last-child td { border-bottom: none; }
+.pb-table tbody tr:hover td { background: var(--pb-billiard-green-700); }
+
+/* Number columns: tabular nums, right-aligned. Mark with class on TH/TD. */
+.pb-table th.is-num,
+.pb-table td.is-num {
+    font-family: var(--font-numeric);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Sticky first column (row identifier stays visible during horizontal scroll). */
+.pb-table .is-sticky-col {
+    position: sticky;
+    left: 0;
+    background: var(--pb-billiard-green-800);
+    z-index: 2;
+}
+.pb-table thead .is-sticky-col {
+    background: var(--pb-billiard-green-800);
+    z-index: 3;
+}
+.pb-table tbody tr:hover .is-sticky-col { background: var(--pb-billiard-green-700); }
+
+/* Sortable column headers. JS toggles .is-sorted-asc / .is-sorted-desc. */
+.pb-table th.is-sortable { cursor: pointer; user-select: none; }
+.pb-table th.is-sortable:hover { color: var(--pb-chalk-50); }
+.pb-table th.is-sortable::after {
+    content: " \2195"; /* ↕ */
+    color: var(--pb-chalk-500);
+    margin-left: var(--space-1);
+}
+.pb-table th.is-sortable.is-sorted-asc::after {
+    content: " \2191"; /* ↑ */
+    color: var(--pb-brass-500);
+}
+.pb-table th.is-sortable.is-sorted-desc::after {
+    content: " \2193"; /* ↓ */
+    color: var(--pb-brass-500);
+}
+
+/* Warning row (currently used by token-usage by_cron warnings). */
+.pb-table tr.is-warning td { background: rgba(212, 168, 87, 0.08); }
+.pb-table tr.is-warning:hover td { background: rgba(212, 168, 87, 0.16); }
+
+.pb-table-empty {
+    text-align: center;
+    padding: var(--space-6) var(--space-4);
+    color: var(--pb-chalk-400);
+    font-size: var(--text-sm);
+    font-style: italic;
+    background: var(--pb-billiard-green-800);
+    border: 1px dashed var(--border-subtle);
+    border-radius: var(--radius-md);
+}
+
+
+/* ----------------------------------------------------------------------------
+   FORM CONTROLS — primitives for filter bars, search inputs, etc.
+   Tokens: --pb-billiard-green-700 (fill), --border-subtle (default),
+   --pb-brass-500 (focus/hover accent), --pb-chalk-100 (value text).
+   ---------------------------------------------------------------------------- */
+
+/* Filter bar: horizontal row of labeled controls. Wraps on narrow widths. */
+.pb-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-3) var(--space-4);
+    margin: var(--space-3) 0 var(--space-4);
+}
+.pb-filter-bar .pb-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+}
+.pb-filter-bar .pb-filter-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--pb-chalk-300);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* Shared input look — applies to .pb-select, .pb-input, .pb-textarea. */
+.pb-select,
+.pb-input,
+.pb-textarea {
+    background: var(--pb-billiard-green-700);
+    color: var(--pb-chalk-100);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: var(--space-2) var(--space-3);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    min-width: 140px;
+    transition: border-color var(--duration-fast) var(--ease-out),
+                box-shadow var(--duration-fast) var(--ease-out);
+}
+.pb-select:hover,
+.pb-input:hover,
+.pb-textarea:hover {
+    border-color: rgba(201, 169, 97, 0.35);
+}
+.pb-select:focus,
+.pb-input:focus,
+.pb-textarea:focus,
+.pb-select:focus-visible,
+.pb-input:focus-visible,
+.pb-textarea:focus-visible {
+    outline: none;
+    border-color: var(--pb-brass-500);
+    box-shadow: 0 0 0 2px rgba(201, 169, 97, 0.18);
+}
+.pb-select:disabled,
+.pb-input:disabled,
+.pb-textarea:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.pb-input::placeholder,
+.pb-textarea::placeholder {
+    color: var(--pb-chalk-500);
+}
+
+/* .pb-select needs a custom arrow chevron (native select arrow color cannot
+ * be styled cross-browser). SVG chevron in brass; appearance: none drops the
+ * native arrow. */
+.pb-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%23c9a961' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right var(--space-3) center;
+    background-size: 12px 8px;
+    padding-right: calc(var(--space-3) + var(--space-3) + 12px);
+}
+.pb-select option {
+    background: var(--pb-billiard-green-800);
+    color: var(--pb-chalk-50);
+}
+
+.pb-textarea {
+    min-height: 80px;
+    resize: vertical;
+    font-family: var(--font-body);
+}
+
+
+/* ----------------------------------------------------------------------------
+   PAGE FOOTER (consistent end-of-page meta + repo link)
+   Reuses --pb-chalk-400 caption tone. No legacy text-faint dependency.
+   ---------------------------------------------------------------------------- */
+.pb-page-footer {
+    max-width: var(--max-content);
+    margin: var(--space-6) auto 0;
+    padding: var(--space-4);
+    border-top: 1px solid var(--border-subtle);
+    color: var(--pb-chalk-400);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: 1.6;
+    text-align: center;
+}
+.pb-page-main.is-wide ~ .pb-page-footer,
+.pb-page-footer.is-wide { max-width: var(--max-content-wide); }
+
+.pb-page-footer a {
+    color: var(--pb-chalk-200);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--pb-chalk-500);
+    transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+}
+.pb-page-footer a:hover {
+    color: var(--pb-brass-500);
+    border-bottom-color: var(--pb-brass-500);
+}
+
+
+/* ----------------------------------------------------------------------------
+   NARROW-WIDTH REFINEMENTS
+   Small typographic + spacing adjustments for cramped widths. KPI grid
+   breakpoints live above with the .pb-kpi-grid rule.
+   ---------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+    .pb-page-nav { padding: var(--space-2) var(--space-3); gap: var(--space-2); }
+    .pb-page-main { padding: var(--space-4) var(--space-3) var(--space-5); }
+    .pb-page-title { font-size: var(--text-xl); }
+    .pb-page-subtitle { font-size: var(--text-sm); }
+    .pb-kpi-value { font-size: var(--text-2xl); }
+    .pb-kpi-card { padding: var(--space-3); }
+}
+
+@media (max-width: 480px) {
+    .pb-page-nav-links { font-size: var(--text-xs); gap: 0; }
+    .pb-page-nav-links a { padding: var(--space-1) var(--space-2); }
+    .pb-kpi-value { font-size: var(--text-xl); }
+}

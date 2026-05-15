@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture & Flows — PARBAUGHS Orchestration</title>
+    <link rel="stylesheet" href="_assets/dashboard-shell.css">
+    <style>
+        /* Column color tokens (referenced from columns[].color_token in data block).
+         * Updated 2026-05-14 (Ship R1, Dave Jeffery reference fidelity) to the
+         * legend dot palette in reference-spec.md § 9. These appear only in
+         * the legend dots — they do not paint anything else on the page. */
+        :root {
+            --col-actor:        #E91E63;  /* magenta — Actor */
+            --col-client:       #4F8FF7;  /* blue — Client surfaces */
+            --col-auth-fn:      #9C5BB8;  /* purple — Auth + Functions */
+            --col-data:         #3FB07F;  /* teal-green — Firestore (data) */
+            --col-distribution: #3DAEDB;  /* cyan — Distribution */
+            --col-external:     #D6483B;  /* red — External services */
+
+            /* Page-local override: bump max-content-wide from 1480 → 1640 so
+             * the 6-column architecture grid has room to breathe at 1920px.
+             * Founder diagnostic 2026-05-14 (Q1C): columns rebalanced from
+             * ~170px each → ~200px each. Only main-flows.html uses .is-wide,
+             * so this override is contained to this page. */
+            --max-content-wide: 1640px;
+        }
+
+        /* Iter 6 (2026-05-14, Founder directive — "theme is divorced from
+         * the rest of the dashboard"): all R1/R2/R3/R5 page-local theme
+         * overrides (--bg-page → black, --accent-brass → pure yellow,
+         * --pb-* remaps to white-on-black) DELETED. The page now inherits
+         * dashboard-shell.css + design-tokens.css exactly like every other
+         * dashboard — billiard-green felt + brass accents + chalk text.
+         * The 6 --col-* tokens above are kept because they encode category
+         * meaning (actor/client/auth-fn/data/distribution/external) and
+         * appear only in legend dots / column headers, not as page surface
+         * colors. */
+
+        /* === Legend === */
+        .mf-legend { display: flex; flex-wrap: wrap; gap: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); margin-bottom: var(--space-4); font-size: 0.75rem; }
+        .mf-legend-item { display: flex; align-items: center; gap: var(--space-1); }
+        .mf-legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+        /* === Workspace layout === */
+        .mf-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: var(--space-4); align-items: start; }
+        @media (max-width: 1100px) {
+            .mf-workspace { grid-template-columns: 1fr; }
+            .mf-rail { order: 2; }
+        }
+
+        /* === Grid (left) === */
+        .mf-grid-wrap { position: relative; overflow-x: auto; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-3); }
+        /* Founder diagnostic 2026-05-14: widened track minmax 140 → 200 and
+         * min-width 900 → 1180 so columns are ~200px at 1920 viewport (up from
+         * ~170). Below 1100px the workspace stacks vertically and the grid
+         * scrolls horizontally — narrow column variant preserved. */
+        .mf-grid { display: grid; grid-template-columns: repeat(6, minmax(200px, 1fr)); gap: var(--space-3); position: relative; min-width: 1180px; }
+        @media (max-width: 1100px) {
+            .mf-grid { grid-template-columns: repeat(6, 180px); min-width: 0; }
+        }
+        .mf-column { display: flex; flex-direction: column; gap: var(--space-2); position: relative; z-index: 2; }
+        /* Ship R6 (2026-05-14): column headers drop the colored 2px bottom-
+         * border per reference-spec.md § 8 (Janowiak ref: uppercase, weight
+         * 400, no border-bottom). Legend dots carry the column-color identity
+         * now. Header weight reduced from 600 → 500 to match the reference's
+         * lighter tone; uppercase + letter-spacing preserved. */
+        .mf-column-header { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; padding: var(--space-1) 0; margin-bottom: var(--space-1); color: var(--text-secondary); font-weight: 500; }
+        .mf-column-subtitle { font-size: 0.6875rem; color: var(--text-tertiary); margin-bottom: var(--space-2); font-style: italic; }
+
+        /* Ship R4 (2026-05-14): node component box re-style per
+         * reference-spec.md § 4. No left-border accent, no bg fill — just
+         * a hairline border on all 4 sides, yellow when on-path, dim gray
+         * when off-path. Removed column-specific border-left rules; the
+         * legend dots carry the column color identity now. */
+        .mf-node { background: transparent; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-2); font-size: 0.75rem; transition: opacity var(--duration-default) var(--ease-default), border-color var(--duration-default) var(--ease-default), transform var(--duration-default) var(--ease-default); position: relative; }
+        .mf-node-label { font-weight: 600; color: var(--text-primary); font-size: 0.8125rem; }
+        .mf-node-subtitle { color: var(--text-tertiary); font-size: 0.6875rem; margin-top: 2px; line-height: 1.3; font-family: var(--font-mono); word-break: break-word; }
+
+        /* Flow selection states (Ship R4 + R5):
+         * Off-path nodes dim to ~0.18 (was 0.25) per reference-spec.md § 4.
+         * On-path nodes get a crisp yellow border, no glow shadow — Dave's
+         * reference uses sharp yellow borders rather than soft halos. */
+        .mf-grid.has-selection .mf-node { opacity: 0.18; }
+        .mf-grid.has-selection .mf-node.is-on-path { opacity: 1; border-color: var(--accent-brass); box-shadow: none; }
+        .mf-node.is-pulse { animation: mfPulse 700ms ease-out 1; }
+        @keyframes mfPulse {
+            0%   { box-shadow: 0 0 0 0   rgba(201,169,97,0.55); }
+            50%  { box-shadow: 0 0 0 8px rgba(201,169,97,0.15); }
+            100% { box-shadow: 0 0 0 1px var(--accent-brass), 0 4px 12px rgba(201,169,97,0.18); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .mf-node, .mf-node.is-pulse { animation: none !important; transition: none !important; }
+        }
+
+        /* SVG arrow overlay. Ship R2 (2026-05-14): solid (not dashed) +
+         * full opacity to match Dave Jeffery reference § 5. */
+        .mf-arrows { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+        .mf-arrow-line { fill: none; stroke: var(--accent-brass); stroke-width: 1.5; stroke-dasharray: none; opacity: 1; }
+        .mf-arrow-head { fill: var(--accent-brass); }
+        .mf-arrow-badge-bg { fill: var(--accent-brass); }
+        .mf-arrow-badge-text { fill: var(--bg-page); font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+
+        /* === Right rail ===
+         * Iter 11 (2026-05-14, user-context measurement diagnosis):
+         * the static max-height: calc(100vh - 100px) assumed the rail
+         * top sat ~100px below viewport top. ACTUAL measurement:
+         * rail.top = 381px at page-load (caveats + legend + title row
+         * push it down). Rail height 980px → rail.bottom = 1361px →
+         * extends 281px BELOW viewport bottom. .mf-flows-list F62
+         * sat at viewport y=1308, invisible. 10 iterations of agent-
+         * context "all 62 in DOM + scrollable" sentinels missed this
+         * because the test scrolled .mf-flows-list to its scrollHeight
+         * without measuring against viewport coordinates.
+         *
+         * Fix: JS dynamic max-height that recomputes on scroll +
+         * resize. Sets max-height = viewport.height - rail.top - 20.
+         * Sticky positioning still applies — at page-scroll-past, the
+         * rail's top becomes 12px (top: var(--space-3)) and max-height
+         * grows to ~1068px. At page-top, rail.top is ~381px and
+         * max-height is ~679px — fits inside viewport.
+         *
+         * Initial value here is a SAFE FALLBACK if JS fails to load.
+         * Calculated for the worst case (rail.top = 400px at 1080
+         * viewport on first paint): 100vh - 420px = 660px.
+         */
+        .mf-rail { display: flex; flex-direction: column; gap: var(--space-3); position: sticky; top: var(--space-3); max-height: calc(100vh - 420px); }
+        @media (max-width: 1100px) { .mf-rail { position: static; max-height: none; } }
+
+        .mf-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); overflow: hidden; }
+        .mf-card-header { display: flex; justify-content: space-between; align-items: center; padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border-subtle); background: var(--bg-elevated); }
+        .mf-card-title { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-tertiary); font-weight: 600; }
+        .mf-card-meta { font-size: 0.6875rem; color: var(--text-tertiary); font-family: var(--font-mono); }
+
+        /* Rail search + filter chips (Ship 3, 2026-05-14) — Founder Q2:
+         * rail shows all 62 flows scrollable, with search + actor + tier
+         * chips. F1-F8 clicks still highlight paths; F9-F62 clicks show
+         * metadata-only state in the Steps panel. */
+        .mf-rail-search-wrap { padding: var(--space-2) var(--space-3) 0; }
+        .mf-rail-search {
+            width: 100%;
+            padding: 6px var(--space-2);
+            background: var(--bg-page);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.8125rem;
+            font-family: var(--font-ui, inherit);
+        }
+        .mf-rail-search:focus-visible { outline: 2px solid var(--accent-brass); outline-offset: 1px; }
+        .mf-rail-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            padding: var(--space-2) var(--space-3) 0;
+        }
+        .mf-rail-chip {
+            background: var(--bg-page);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 999px;
+            padding: 2px 8px;
+            font-family: var(--font-mono);
+            font-size: 0.6875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: all var(--duration-fast, 150ms) ease;
+        }
+        .mf-rail-chip:hover { color: var(--text-primary); border-color: var(--accent-brass); }
+        .mf-rail-chip.is-on { background: var(--accent-brass); color: var(--bg-page); border-color: var(--accent-brass); }
+
+        /* Iter 8 (2026-05-14, Founder directive — F62 not visible past scrollbar):
+         * - padding-bottom gives last items clearance from the rail-clear button below
+         * - scrollbar-gutter: stable reserves scrollbar width so it does not overlay
+         *   the last row's content
+         * - increase max-height ceiling from 55vh to calc(100vh - 280px) so the list
+         *   uses available rail height instead of an arbitrary 55% cap */
+        .mf-flows-list { list-style: none; margin: var(--space-2) 0 0; padding: 0 0 var(--space-3) 0; max-height: calc(100vh - 280px); overflow-y: auto; scrollbar-gutter: stable; }
+        /* Ship R9: clear-selection link at bottom of rail per reference-spec.md § 19.
+         * Visible only when a flow is selected (toggled by JS). Subtle, mono, dim — no visual weight when off. */
+        .mf-rail-clear {
+            display: block;
+            width: calc(100% - var(--space-6));
+            margin: var(--space-2) var(--space-3) var(--space-2) var(--space-3);
+            padding: 6px var(--space-2);
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-tertiary);
+            font-family: var(--font-mono);
+            font-size: var(--text-2xs);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+            transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+        }
+        .mf-rail-clear:hover { color: var(--accent-brass); border-color: var(--accent-brass); }
+        .mf-rail-clear:focus-visible { outline: 2px solid var(--accent-brass); outline-offset: 1px; }
+        .mf-flows-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: 6px var(--space-3);
+            border-top: 1px solid var(--border-subtle);
+            cursor: pointer;
+            transition: background var(--duration-default) var(--ease-default);
+        }
+        .mf-flows-item.is-hidden { display: none; }
+        .mf-flows-item:hover { background: var(--bg-elevated); }
+        /* Ship R8 (2026-05-14): flow rail card style refinement per
+         * reference-spec.md § 14 — transparent bg + hairline yellow ring
+         * when active (was: brass-tint bg + 3px left-border). Preserves
+         * Founder-locked id chip + tier badge + status pill per Q2. */
+        .mf-flows-item.is-active {
+            background: transparent;
+            box-shadow: inset 0 0 0 1px var(--accent-brass);
+        }
+        .mf-flows-item.has-path::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-brass);
+            flex-shrink: 0;
+            opacity: 0.8;
+        }
+        .mf-flows-item:not(.has-path)::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            border: 1px dashed var(--border-subtle);
+            box-sizing: border-box;
+            flex-shrink: 0;
+            opacity: 0.6;
+        }
+        .mf-flows-id { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--accent-brass); min-width: 32px; flex-shrink: 0; }
+        .mf-flows-name { font-size: 0.8125rem; color: var(--text-primary); font-weight: 600; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mf-flows-tier-badge { font-family: var(--font-mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-tertiary); flex-shrink: 0; }
+        .mf-flows-status { font-size: 0.625rem; font-family: var(--font-mono); padding: 1px 6px; border-radius: 999px; flex-shrink: 0; }
+        .mf-flows-status.is-shipped  { background: rgba(74,128,103,0.18); color: var(--accent-moss); }
+        .mf-flows-status.is-shipping { background: rgba(74,138,156,0.18); color: var(--accent-teal); }
+        .mf-flows-status.is-planned  { background: rgba(212,168,87,0.18); color: var(--accent-amber); }
+        .mf-flows-status.is-speculative { background: rgba(216,208,192,0.10); color: var(--text-tertiary); }
+
+        .mf-steps-empty { padding: var(--space-3); color: var(--text-tertiary); font-size: 0.8125rem; line-height: 1.55; }
+        .mf-steps-list { list-style: none; margin: 0; padding: 0; max-height: 40vh; overflow-y: auto; }
+        .mf-steps-item { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border-subtle); display: grid; grid-template-columns: 28px 1fr; gap: var(--space-2); cursor: pointer; transition: background var(--duration-default) var(--ease-default); }
+        .mf-steps-item:last-child { border-bottom: none; }
+        .mf-steps-item:hover { background: var(--bg-elevated); }
+        .mf-step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--accent-brass); color: var(--bg-page); font-family: var(--font-mono); font-weight: 700; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+        .mf-step-from-to { font-size: 0.6875rem; color: var(--text-secondary); font-family: var(--font-mono); }
+        .mf-step-label { font-size: 0.8125rem; color: var(--text-primary); font-weight: 600; margin-top: 1px; }
+        /* Ship R7 (2026-05-14): step description switches from sans body to
+         * monospace per reference-spec.md § 23. Mono signals "technical/data"
+         * which matches the reference's treatment of step descriptions as
+         * code-like notation. */
+        .mf-step-desc { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; line-height: 1.45; font-family: var(--font-mono); }
+
+        /* Caveats banner */
+        /* Ship R11 (2026-05-14): caveats banner restyle for Janowiak theme fidelity â subtle gray bg + hairline border + brass strong text (was teal). Content preserved per Founder-lock db-2026-05-13-004. */
+        .mf-caveats { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3); font-size: 0.75rem; color: var(--text-secondary); line-height: 1.55; }
+        .mf-caveats strong { color: var(--accent-brass); }
+    </style>
+</head>
+<body class="pb-app">
+    <header class="pb-page-header is-wide">
+        <nav class="pb-page-nav">
+            <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
+            <div class="pb-page-nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="activity.html">Activity</a>
+                <a href="discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="proposals.html">Proposals</a>
+                <a href="amendments.html">Amendments</a>
+                <a href="main-flows.html" class="is-active">Main Flows</a>
+                <a href="design-system.html">Design System</a>
+                <a href="token-usage.html">Tokens</a>
+                <a href="index.html">Index</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="pb-page-main is-wide">
+        <div class="pb-page-title-row">
+            <div>
+                <h1 class="pb-page-title">Architecture &amp; Flows</h1>
+                <p class="pb-page-subtitle">Every component and external service that powers PARBAUGHS, mapped across six columns from member action to external system. Pick a flow on the right rail (search + actor + tier filters surface all 62 flows in the scrollable panel); the path lights up, arrows draw between nodes, and the steps panel walks the journey. Every node and step is grep-evidenced &mdash; see the <a href="../../.claude/state/wave-zero-dry-run/architecture-audit.md">architecture audit</a>.</p>
+            </div>
+        </div>
+
+        <aside class="mf-caveats">
+            <strong>Read this artifact correctly</strong> (binding caveats from <code>db-2026-05-13-004</code>):
+            this is the orchestration team's recommendation — Founder is the product source of truth.
+            <strong>NOT a roadmap</strong> (read <a href="../agents/ROADMAP.md">ROADMAP.md</a> for shipping order). Single source of truth is <code>docs/reports/_assets/main-flows-data.json</code>; HTML is generator-driven via <code>scripts/regen-main-flows.py</code>.
+        </aside>
+
+        <div class="mf-legend" id="mf-legend"></div>
+
+        <!-- PROTECTED LAYOUT 2 (Phase 6.5): mf-workspace = 6-column architecture grid
+             + SVG arrow overlay + right rail (Flows list + Steps panel). This is the
+             functional documentation interface. Do NOT flatten, do NOT replace with
+             a table, do NOT remove the SVG arrows.
+             Iter 7 (2026-05-14, Founder engineering-mindset directive): removed the
+             redundant inner H2 "Architecture diagram" + section subtitle now that
+             the bottom catalog section is gone (iter 6). Page-level h1 + subtitle
+             above are the only title pair, matching Janowiak reference pattern of
+             single-title hierarchy. See reference-spec-from-frames.md for the
+             full structural specification derived from
+             .claude/state/main-flows-v2/reference-frames/dave-frame-t*.png. -->
+        <section class="mf-workspace">
+            <div class="mf-grid-wrap">
+                <div class="mf-grid" id="mf-grid"></div>
+                <svg class="mf-arrows" id="mf-arrows" preserveAspectRatio="xMinYMin meet"></svg>
+            </div>
+
+            <aside class="mf-rail">
+                <div class="mf-card">
+                    <div class="mf-card-header">
+                        <span class="mf-card-title">Flows</span>
+                        <span class="mf-card-meta" id="mf-flows-count">—</span>
+                    </div>
+                    <div class="mf-rail-search-wrap">
+                        <input type="search" id="mf-rail-search" class="mf-rail-search" placeholder="Search flow id or name…" aria-label="Search flows">
+                    </div>
+                    <div class="mf-rail-chips" data-axis="actor" aria-label="Filter by actor">
+                        <button class="mf-rail-chip is-on" data-actor="">all</button>
+                        <button class="mf-rail-chip" data-actor="member">member</button>
+                        <button class="mf-rail-chip" data-actor="commissioner">commish</button>
+                        <button class="mf-rail-chip" data-actor="founder">founder</button>
+                        <button class="mf-rail-chip" data-actor="system">system</button>
+                        <button class="mf-rail-chip" data-actor="agent">agent</button>
+                    </div>
+                    <div class="mf-rail-chips" data-axis="tier" aria-label="Filter by tier">
+                        <button class="mf-rail-chip is-on" data-tier="">all tiers</button>
+                        <button class="mf-rail-chip" data-tier="core">core</button>
+                        <button class="mf-rail-chip" data-tier="supplementary">supp</button>
+                        <button class="mf-rail-chip" data-tier="admin">admin</button>
+                        <button class="mf-rail-chip" data-tier="system">system</button>
+                    </div>
+                    <ul class="mf-flows-list" id="mf-flows-list"></ul>
+                    <!-- Ship R9: "Clear selection" affordance at bottom of rail per reference-spec.md § 19 -->
+                    <button type="button" class="mf-rail-clear" id="mf-rail-clear" hidden>Clear selection</button>
+                </div>
+
+                <div class="mf-card">
+                    <div class="mf-card-header">
+                        <span class="mf-card-title">Steps</span>
+                        <span class="mf-card-meta" id="mf-steps-meta">no flow selected</span>
+                    </div>
+                    <div class="mf-steps-empty" id="mf-steps-empty">Select a flow on the right to see the path through the system.</div>
+                    <ol class="mf-steps-list" id="mf-steps-list" hidden></ol>
+                </div>
+            </aside>
+        </section>
+
+        <!-- Iter 6 (2026-05-14, Founder directive): bottom "ALL FLOWS · 62"
+             filterable catalog section DELETED. The right-rail flow filter
+             inside the architecture diagram above already provides search +
+             actor/tier filters + all 62 flows scrollable; the bottom catalog
+             was redundant duplication. -->
+    </main>
+
+    <!-- Iter 6 (2026-05-14, Founder directive): bottom catalog style + script
+         IIFE (renderRail, applyFilters, bindFilters) DELETED alongside the
+         duplicate flow rail section markup above. The architecture diagram's
+         mf-rail-search + mf-rail-chips + mf-flows-list (rendered by the IIFE
+         later in the page) continue to provide all 62 flows filterable in
+         the right rail panel. Round-trip iter6 negative assertions prevent
+         re-introduction. -->
+
+    <script id="report-data" type="application/json">
+{}
+    </script>
+
+    <script>
+        (function () {
+            "use strict";
+            var GRID = document.getElementById('mf-grid');
+            var ARROWS = document.getElementById('mf-arrows');
+            var LEGEND = document.getElementById('mf-legend');
+            var FLOWS_LIST = document.getElementById('mf-flows-list');
+            var FLOWS_COUNT = document.getElementById('mf-flows-count');
+            var STEPS_EMPTY = document.getElementById('mf-steps-empty');
+            var STEPS_LIST = document.getElementById('mf-steps-list');
+            var STEPS_META = document.getElementById('mf-steps-meta');
+
+            var data = null;
+            var selectedFlowId = null;
+
+            function esc(s) {
+                if (s == null) return '';
+                return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            }
+            function statusBadge(status) {
+                if (!status) return '';
+                var short = String(status);
+                if (short.indexOf('shipped') !== -1)     return '<span class="mf-flows-status is-shipped">shipped</span>';
+                if (short.indexOf('shipping') !== -1)    return '<span class="mf-flows-status is-shipping">shipping</span>';
+                if (short.indexOf('planned') !== -1)     return '<span class="mf-flows-status is-planned">planned</span>';
+                if (short.indexOf('speculative') !== -1) return '<span class="mf-flows-status is-speculative">spec</span>';
+                return '<span class="mf-flows-status">' + esc(short) + '</span>';
+            }
+            // Normalize actor: data.flows uses "actor.member", data.flow_rail uses "member"
+            function actorShort(a) {
+                if (!a) return '';
+                var s = String(a);
+                return s.indexOf('.') !== -1 ? s.split('.').pop() : s;
+            }
+
+            function loadData() {
+                try {
+                    var raw = document.getElementById('report-data').textContent;
+                    return JSON.parse(raw);
+                } catch (e) {
+                    console.error('main-flows: data parse failed', e);
+                    return { columns: [], flows: [] };
+                }
+            }
+
+            function renderLegend() {
+                if (!data.columns || !data.columns.length) {
+                    LEGEND.innerHTML = '<div class="mf-legend-item">Empty data — run <code>scripts/regen-main-flows.py</code></div>';
+                    return;
+                }
+                LEGEND.innerHTML = data.columns.map(function (col) {
+                    return '<div class="mf-legend-item"><div class="mf-legend-dot" style="background: var(' + esc(col.color_token) + ');"></div><span>' + esc(col.label) + '</span></div>';
+                }).join('');
+            }
+
+            function renderGrid() {
+                if (!data.columns || !data.columns.length) {
+                    GRID.innerHTML = '<div style="padding: var(--space-4); color: var(--text-tertiary);">No components. Update <code>docs/reports/_assets/main-flows-data.json</code> and re-regen.</div>';
+                    return;
+                }
+                GRID.innerHTML = data.columns.map(function (col) {
+                    var nodes = (col.components || []).map(function (c) {
+                        return ''
+                            + '<div class="mf-node" data-component-id="' + esc(c.id) + '">'
+                            +   '<div class="mf-node-label">' + esc(c.label) + '</div>'
+                            +   '<div class="mf-node-subtitle">' + esc(c.subtitle || '') + '</div>'
+                            + '</div>';
+                    }).join('');
+                    return ''
+                        + '<div class="mf-column" data-col="' + esc(col.id) + '">'
+                        +   '<div class="mf-column-header">' + esc(col.label) + '</div>'
+                        +   '<div class="mf-column-subtitle">' + esc(col.subtitle || '') + '</div>'
+                        +   nodes
+                        + '</div>';
+                }).join('');
+            }
+
+            // Ship 3 (2026-05-14, Founder Q2): source flow_rail (62) not flows (8).
+            // F1-F8 entries retain path/steps data via lookup in data.flows.
+            // F9-F62 entries are metadata-only — clicking shows their goal +
+            // served-by-ships in the Steps panel but does NOT highlight a path.
+            function railEntries() {
+                var rail = (data && data.flow_rail) || [];
+                if (rail.length) return rail;
+                // Fallback: derive from data.flows so the rail still renders if
+                // the data file is somehow missing flow_rail.
+                return (data.flows || []).map(function (f) {
+                    return {
+                        id: f.id, name: f.name, actor: actorShort(f.actor),
+                        tier: 'core', status: 'shipping',
+                        primary_user_goal: f.primary_user_goal,
+                        estimated_steps_count: (f.steps || []).length,
+                    };
+                });
+            }
+            function flowHasPath(id) {
+                return !!(data.flows || []).find(function (f) { return f.id === id; });
+            }
+            function renderFlowsList() {
+                var rows = railEntries();
+                FLOWS_LIST.innerHTML = rows.map(function (f) {
+                    var hasPath = flowHasPath(f.id);
+                    var actor = actorShort(f.actor);
+                    var tier = (f.tier || '').toLowerCase();
+                    return ''
+                        + '<li class="mf-flows-item' + (hasPath ? ' has-path' : '') + '"'
+                        +   ' data-flow-id="' + esc(f.id) + '"'
+                        +   ' data-actor="' + esc(actor) + '"'
+                        +   ' data-tier="' + esc(tier) + '"'
+                        +   ' data-status="' + esc(f.status || '') + '"'
+                        +   ' data-name="' + esc((f.name || '').toLowerCase()) + '"'
+                        +   ' title="' + esc(f.primary_user_goal || f.name || '') + '">'
+                        +   '<span class="mf-flows-id">' + esc(f.id) + '</span>'
+                        +   '<span class="mf-flows-name">' + esc(f.name) + '</span>'
+                        +   '<span class="mf-flows-tier-badge">' + esc(tier) + '</span>'
+                        +   statusBadge(f.status)
+                        + '</li>';
+                }).join('');
+                FLOWS_COUNT.textContent = rows.length + ' flows';
+                FLOWS_LIST.querySelectorAll('.mf-flows-item').forEach(function (li) {
+                    li.addEventListener('click', function () { selectFlow(li.getAttribute('data-flow-id')); });
+                });
+                bindRailFilters();
+            }
+
+            function applyRailFilters() {
+                var searchEl = document.getElementById('mf-rail-search');
+                var search = (searchEl && searchEl.value || '').toLowerCase().trim();
+                var actorBtn = document.querySelector('.mf-rail-chips[data-axis="actor"] .mf-rail-chip.is-on');
+                var tierBtn = document.querySelector('.mf-rail-chips[data-axis="tier"] .mf-rail-chip.is-on');
+                var actor = actorBtn ? (actorBtn.getAttribute('data-actor') || '') : '';
+                var tier = tierBtn ? (tierBtn.getAttribute('data-tier') || '') : '';
+                var visibleCount = 0;
+                FLOWS_LIST.querySelectorAll('.mf-flows-item').forEach(function (li) {
+                    var rowActor = li.getAttribute('data-actor') || '';
+                    var rowTier = li.getAttribute('data-tier') || '';
+                    var rowName = li.getAttribute('data-name') || '';
+                    var rowId = (li.getAttribute('data-flow-id') || '').toLowerCase();
+                    var actorOk = !actor || rowActor === actor;
+                    var tierOk = !tier || rowTier === tier;
+                    var searchOk = !search || rowName.indexOf(search) !== -1 || rowId.indexOf(search) !== -1;
+                    var show = actorOk && tierOk && searchOk;
+                    li.classList.toggle('is-hidden', !show);
+                    if (show) visibleCount++;
+                });
+                FLOWS_COUNT.textContent = visibleCount + ' of ' + FLOWS_LIST.querySelectorAll('.mf-flows-item').length;
+            }
+
+            function bindRailFilters() {
+                var searchEl = document.getElementById('mf-rail-search');
+                if (searchEl && !searchEl.dataset.bound) {
+                    searchEl.addEventListener('input', applyRailFilters);
+                    searchEl.dataset.bound = '1';
+                }
+                document.querySelectorAll('.mf-rail-chips').forEach(function (group) {
+                    if (group.dataset.bound) return;
+                    group.dataset.bound = '1';
+                    group.addEventListener('click', function (ev) {
+                        var btn = ev.target.closest('.mf-rail-chip');
+                        if (!btn) return;
+                        group.querySelectorAll('.mf-rail-chip').forEach(function (b) { b.classList.remove('is-on'); });
+                        btn.classList.add('is-on');
+                        applyRailFilters();
+                    });
+                });
+            }
+
+            function renderStepsForFlow(flowId) {
+                if (!flowId) {
+                    STEPS_EMPTY.hidden = false;
+                    STEPS_EMPTY.textContent = 'Select a flow on the right to see the path through the system.';
+                    STEPS_LIST.hidden = true;
+                    STEPS_META.textContent = 'no flow selected';
+                    return;
+                }
+                var flow = (data.flows || []).find(function (f) { return f.id === flowId; });
+                if (flow && flow.steps && flow.steps.length) {
+                    // F1–F8 — full path + steps
+                    STEPS_META.textContent = flow.id + ' · ' + flow.steps.length + ' steps';
+                    STEPS_EMPTY.hidden = true;
+                    STEPS_LIST.hidden = false;
+                    STEPS_LIST.innerHTML = flow.steps.map(function (s) {
+                        return ''
+                            + '<li class="mf-steps-item" data-step-from="' + esc(s.from) + '" data-step-to="' + esc(s.to) + '">'
+                            +   '<div class="mf-step-num">' + s.n + '</div>'
+                            +   '<div>'
+                            +     '<div class="mf-step-from-to">' + esc(s.from) + ' → ' + esc(s.to) + '</div>'
+                            +     '<div class="mf-step-label">' + esc(s.label) + '</div>'
+                            +     '<div class="mf-step-desc">' + esc(s.description) + '</div>'
+                            +   '</div>'
+                            + '</li>';
+                    }).join('');
+                    STEPS_LIST.querySelectorAll('.mf-steps-item').forEach(function (li) {
+                        li.addEventListener('click', function () {
+                            pulseNodes([li.getAttribute('data-step-from'), li.getAttribute('data-step-to')]);
+                        });
+                    });
+                    return;
+                }
+                // F9–F62 — metadata only (no path/steps authored)
+                var meta = ((data.flow_rail) || []).find(function (f) { return f.id === flowId; });
+                if (!meta) {
+                    renderStepsForFlow(null);
+                    return;
+                }
+                var ships = (meta.served_by_ships || []).join(', ') || '—';
+                STEPS_META.textContent = meta.id + ' · metadata only';
+                STEPS_LIST.hidden = true;
+                STEPS_EMPTY.hidden = false;
+                STEPS_EMPTY.innerHTML = ''
+                    + '<div style="font-size:0.8125rem;color:var(--text-primary);font-weight:600;margin-bottom:6px;">' + esc(meta.name) + '</div>'
+                    + '<div style="font-size:0.75rem;color:var(--text-secondary);line-height:1.5;margin-bottom:8px;">' + esc(meta.primary_user_goal || '') + '</div>'
+                    + '<div style="font-size:0.6875rem;color:var(--text-tertiary);font-family:var(--font-mono);line-height:1.55;">'
+                    +   '<div>actor &middot; ' + esc(actorShort(meta.actor)) + '</div>'
+                    +   '<div>tier &middot; ' + esc(meta.tier || '') + '</div>'
+                    +   '<div>status &middot; ' + esc(meta.status || '') + '</div>'
+                    +   '<div>served by &middot; ' + esc(ships) + '</div>'
+                    +   '<div>est. steps &middot; ' + esc(String(meta.estimated_steps_count || '—')) + '</div>'
+                    + '</div>'
+                    + '<div style="margin-top:10px;font-size:0.6875rem;color:var(--text-tertiary);font-style:italic;">Detailed step path not yet authored. F1–F8 (core member flows) have full step paths; the remaining flows live in the rail for navigation/filtering.</div>';
+            }
+
+            function selectFlow(flowId) {
+                selectedFlowId = flowId;
+                FLOWS_LIST.querySelectorAll('.mf-flows-item').forEach(function (li) {
+                    li.classList.toggle('is-active', li.getAttribute('data-flow-id') === flowId);
+                });
+                renderStepsForFlow(flowId);
+                highlightPath(flowId);
+                requestAnimationFrame(function () { drawArrowsForFlow(flowId); });
+                // Ship R9: clear-selection button visibility tracks selection state
+                var clearBtn = document.getElementById('mf-rail-clear');
+                if (clearBtn) clearBtn.hidden = !flowId;
+            }
+
+            // Ship R9: wire clear-selection click
+            (function () {
+                var btn = document.getElementById('mf-rail-clear');
+                if (btn) btn.addEventListener('click', function () { selectFlow(null); });
+            })();
+
+            function highlightPath(flowId) {
+                var flow = (data.flows || []).find(function (f) { return f.id === flowId; });
+                var pathSet = {};
+                if (flow && flow.path) flow.path.forEach(function (id) { pathSet[id] = true; });
+                GRID.classList.toggle('has-selection', !!flow);
+                GRID.querySelectorAll('.mf-node').forEach(function (node) {
+                    node.classList.toggle('is-on-path', !!pathSet[node.getAttribute('data-component-id')]);
+                });
+            }
+
+            function pulseNodes(ids) {
+                ids.forEach(function (id) {
+                    var n = GRID.querySelector('[data-component-id="' + id + '"]');
+                    if (!n) return;
+                    n.classList.remove('is-pulse');
+                    void n.offsetWidth;
+                    n.classList.add('is-pulse');
+                });
+            }
+
+            function nodeCenter(id) {
+                var n = GRID.querySelector('[data-component-id="' + id + '"]');
+                if (!n) return null;
+                var wrap = GRID.parentElement;
+                var nRect = n.getBoundingClientRect();
+                var wRect = wrap.getBoundingClientRect();
+                return {
+                    x: nRect.left - wRect.left + nRect.width / 2 + wrap.scrollLeft,
+                    y: nRect.top  - wRect.top  + nRect.height / 2,
+                    rx: nRect.width / 2,
+                    ry: nRect.height / 2
+                };
+            }
+
+            function drawArrowsForFlow(flowId) {
+                ARROWS.innerHTML = '';
+                if (!flowId) return;
+                var wrap = GRID.parentElement;
+                var w = wrap.scrollWidth;
+                var h = wrap.scrollHeight;
+                ARROWS.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+                ARROWS.setAttribute('width', w);
+                ARROWS.setAttribute('height', h);
+
+                var flow = (data.flows || []).find(function (f) { return f.id === flowId; });
+                if (!flow || !flow.steps) return;
+
+                var ns = 'http://www.w3.org/2000/svg';
+                var defs = document.createElementNS(ns, 'defs');
+                defs.innerHTML = '<marker id="mf-arrow-head-marker" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="mf-arrow-head" d="M 0 0 L 10 5 L 0 10 z"/></marker>';
+                ARROWS.appendChild(defs);
+
+                flow.steps.forEach(function (s) {
+                    var a = nodeCenter(s.from);
+                    var b = nodeCenter(s.to);
+                    if (!a || !b) return;
+                    var dx = b.x - a.x;
+                    var ax = a.x + Math.sign(dx) * (a.rx + 4);
+                    var ay = a.y;
+                    var bx = b.x - Math.sign(dx) * (b.rx + 8);
+                    var by = b.y;
+                    var mx = (ax + bx) / 2;
+                    var my = (ay + by) / 2 + (Math.abs(dx) > 1 ? 0 : 40);
+                    var path = document.createElementNS(ns, 'path');
+                    path.setAttribute('class', 'mf-arrow-line');
+                    path.setAttribute('d', 'M ' + ax + ' ' + ay + ' Q ' + mx + ' ' + my + ' ' + bx + ' ' + by);
+                    path.setAttribute('marker-end', 'url(#mf-arrow-head-marker)');
+                    ARROWS.appendChild(path);
+
+                    var badge = document.createElementNS(ns, 'g');
+                    var cx = mx, cy = my;
+                    var circle = document.createElementNS(ns, 'circle');
+                    circle.setAttribute('class', 'mf-arrow-badge-bg');
+                    circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', 10);
+                    badge.appendChild(circle);
+                    var text = document.createElementNS(ns, 'text');
+                    text.setAttribute('class', 'mf-arrow-badge-text');
+                    text.setAttribute('x', cx); text.setAttribute('y', cy);
+                    text.textContent = s.n;
+                    badge.appendChild(text);
+                    ARROWS.appendChild(badge);
+                });
+            }
+
+            function render() {
+                data = loadData();
+                renderLegend();
+                renderGrid();
+                renderFlowsList();
+                // P1 fix (iter 16, 2026-05-14, Founder directive — match reference):
+                // Janowiak reference opens with first flow pre-selected (path lit,
+                // steps populated). PARBAUGHS was opening with empty state ("Select
+                // a flow on the right..."). Reference fidelity gap caught iter 14
+                // visual review as "POTENTIAL GAP — default selection state".
+                // Fix: auto-select F1 on initial render. Users immediately see the
+                // interaction pattern; rail still allows clicking other flows;
+                // "Clear selection" affordance still works for empty state.
+                var defaultFlow = (data.flows && data.flows[0]) || null;
+                var defaultFlowId = defaultFlow ? defaultFlow.id : null;
+                if (defaultFlowId) {
+                    selectFlow(defaultFlowId);
+                } else {
+                    renderStepsForFlow(null);
+                }
+                window.addEventListener('resize', function () {
+                    if (selectedFlowId) requestAnimationFrame(function () { drawArrowsForFlow(selectedFlowId); });
+                    adjustRailHeight();
+                });
+                // Iter 13 (2026-05-14, Founder directive — "rail expand/contract"):
+                // iter-11 bound adjustRailHeight to the scroll event so the rail
+                // could USE the extra space when sticky pinned rail.top to 12px.
+                // That CAUSED the bug: every scroll tick changed rail.top, which
+                // changed maxH, which visibly resized the rail. Users saw the
+                // list expand and contract as they scrolled the page.
+                // Fix: compute once at load + on resize only. Stable max-height
+                // regardless of scroll position. The CSS fallback
+                // (calc(100vh - 420px) at 1080 viewport = 660px) holds even if
+                // JS fails to run. Loses some vertical space when page is
+                // scrolled but the rail never visibly jitters.
+                adjustRailHeight();
+            }
+
+            function adjustRailHeight() {
+                var rail = document.querySelector('.mf-rail');
+                var list = document.querySelector('.mf-flows-list');
+                if (!rail) return;
+                if (window.innerWidth <= 1100) {
+                    // mobile breakpoint: rail un-sticks and goes static
+                    rail.style.maxHeight = '';
+                    if (list) list.style.maxHeight = '';
+                    return;
+                }
+                // Iter 13 fix: use the rail's INITIAL natural top (where it
+                // sits before any sticky pinning), NOT the live bounding box
+                // which shifts with scroll. This produces a stable max-height
+                // for the entire page lifetime, regardless of scroll position.
+                var rect = rail.getBoundingClientRect();
+                var naturalTop = rect.top + window.scrollY;  // absolute Y in document
+                // Reserve 20px bottom padding from viewport edge.
+                var railMaxH = Math.max(window.innerHeight - naturalTop - 20, 320);
+                rail.style.maxHeight = railMaxH + 'px';
+                if (list) {
+                    var listMaxH = Math.max(railMaxH - 200 - 80 - 12 - 36, 160);
+                    list.style.maxHeight = listMaxH + 'px';
+                }
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', render);
+            } else {
+                render();
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escalations — PARBAUGHS Orchestration</title>
+    <link rel="stylesheet" href="_assets/dashboard-shell.css">
+    <style>
+        /* Escalations lifecycle (Founder directive 2026-05-14). Mirrors
+           amendments.html .amd-* card pattern. */
+        .esc-card { background: var(--pb-billiard-green-800); border: 1px solid var(--border-subtle); border-left: 3px solid var(--pb-info); border-radius: var(--radius-md); padding: var(--space-4); margin-bottom: var(--space-3); transition: border-left-color var(--duration-fast) var(--ease-out); }
+        .esc-card.decided-approve { border-left-color: var(--pb-success); background: linear-gradient(90deg, rgba(74,128,103,.06) 0%, var(--pb-billiard-green-800) 30%); }
+        .esc-card.decided-reject  { border-left-color: var(--pb-error);   background: linear-gradient(90deg, rgba(156,74,74,.06) 0%, var(--pb-billiard-green-800) 30%); }
+        .esc-card.decided-defer   { border-left-color: var(--pb-warning); background: linear-gradient(90deg, rgba(212,168,87,.06) 0%, var(--pb-billiard-green-800) 30%); }
+        .esc-card.is-stale       { border-left-color: var(--pb-warning); }
+        .esc-card.is-blocks-ship { box-shadow: 0 0 0 1px var(--pb-brass-500) inset; }
+        .esc-header { display: flex; gap: var(--space-3); justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-2); flex-wrap: wrap; }
+        .esc-id { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--pb-chalk-400); }
+        .esc-title { font-size: var(--text-lg); font-weight: 600; color: var(--pb-chalk-50); margin: 0; }
+        .esc-meta { display: flex; gap: var(--space-2); font-size: var(--text-xs); flex-wrap: wrap; margin-top: var(--space-2); align-items: center; }
+        .esc-badge { font-family: var(--font-mono); font-size: var(--text-2xs); padding: 2px 8px; border-radius: var(--radius-pill); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .esc-badge-vision-decision { background: rgba(74,138,156,0.18); color: var(--pb-info); }
+        .esc-badge-architecture-decision { background: rgba(201,169,97,0.18); color: var(--pb-brass-500); }
+        .esc-badge-scope-decision { background: rgba(212,168,87,0.18); color: var(--pb-warning); }
+        .esc-badge-info-required { background: rgba(74,128,103,0.18); color: var(--pb-success); }
+        .esc-badge-cross-cutting { background: rgba(156,74,74,0.18); color: var(--pb-error); }
+        .esc-badge-founder-pre-authorized { background: rgba(74,138,156,0.18); color: var(--pb-info); }
+        .esc-badge-complexity { background: var(--pb-billiard-green-700); color: var(--pb-chalk-300); }
+        .esc-badge-blocks-ship { background: var(--pb-brass-500); color: var(--pb-billiard-green-900); }
+        .esc-badge-stale { background: var(--pb-warning); color: var(--pb-billiard-green-900); }
+        .esc-question { font-size: var(--text-md); color: var(--pb-chalk-100); margin: var(--space-3) 0; line-height: 1.55; font-weight: 500; white-space: pre-wrap; }
+        .esc-section { margin-top: var(--space-3); }
+        .esc-section-label { font-family: var(--font-mono); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.06em; color: var(--pb-chalk-400); font-weight: 600; margin-bottom: var(--space-1); }
+        .esc-body { font-family: var(--font-body); font-size: var(--text-sm); color: var(--pb-chalk-100); background: var(--pb-billiard-green-700); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3); margin: 0; white-space: pre-wrap; word-break: break-word; line-height: 1.55; }
+        .esc-options { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+        .esc-option { background: var(--pb-billiard-green-700); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3); }
+        .esc-option label { display: flex; align-items: flex-start; gap: var(--space-2); cursor: pointer; }
+        .esc-option input[type="checkbox"] { margin-top: 3px; flex-shrink: 0; }
+        .esc-option-id { font-family: var(--font-mono); color: var(--pb-brass-500); font-weight: 700; margin-right: var(--space-1); }
+        .esc-option-label { flex: 1; color: var(--pb-chalk-50); font-size: var(--text-sm); font-weight: 500; }
+        .esc-option-rationale { color: var(--pb-chalk-300); font-size: var(--text-xs); margin-top: var(--space-1); margin-left: 26px; line-height: 1.5; }
+        .esc-option.is-checked { border-color: var(--pb-success); background: rgba(74,128,103,0.12); }
+        .esc-custom-answer { margin-top: var(--space-2); }
+        .esc-custom-answer textarea { width: 100%; box-sizing: border-box; min-height: 60px; padding: var(--space-2); background: var(--pb-billiard-green-700); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--pb-chalk-50); font-family: var(--font-body); font-size: var(--text-sm); resize: vertical; }
+        .esc-default-note { font-size: var(--text-xs); color: var(--pb-chalk-300); padding: var(--space-2); background: rgba(74,138,156,0.06); border: 1px dashed var(--border-subtle); border-radius: var(--radius-sm); }
+        .esc-sources { font-size: var(--text-xs); color: var(--pb-chalk-300); }
+        .esc-sources a { color: var(--pb-brass-500); text-decoration: none; }
+        .esc-sources a:hover { text-decoration: underline; }
+        .esc-decision-bar { display: flex; gap: var(--space-2); margin-top: var(--space-4); padding-top: var(--space-3); border-top: 2px solid var(--border-subtle); flex-wrap: wrap; align-items: center; }
+        .esc-decision-btn { flex: 1; min-width: 110px; background: transparent; color: var(--pb-chalk-200); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3); font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 600; cursor: pointer; transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); text-transform: uppercase; letter-spacing: 0.06em; }
+        .esc-decision-btn:hover { background: var(--pb-billiard-green-700); color: var(--pb-chalk-50); }
+        .esc-decision-btn.btn-approve.active { background: var(--pb-success); color: var(--pb-billiard-green-900); border-color: var(--pb-success); }
+        .esc-decision-btn.btn-reject.active  { background: var(--pb-error);   color: var(--pb-chalk-50); border-color: var(--pb-error); }
+        .esc-decision-btn.btn-defer.active   { background: var(--pb-warning); color: var(--pb-billiard-green-900); border-color: var(--pb-warning); }
+        .esc-note-row { display: flex; gap: var(--space-2); margin-top: var(--space-2); width: 100%; }
+        .esc-note-row input { flex: 1; padding: var(--space-2); background: var(--pb-billiard-green-700); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--pb-chalk-50); font-family: var(--font-body); font-size: var(--text-sm); }
+        .esc-note-row input::placeholder { color: var(--pb-chalk-500); }
+        .esc-empty { padding: var(--space-5); text-align: center; color: var(--pb-chalk-400); font-style: italic; font-size: var(--text-sm); background: var(--pb-billiard-green-800); border: 1px dashed var(--border-subtle); border-radius: var(--radius-md); }
+        .esc-help-banner { background: rgba(74,138,156,.10); border: 1px solid var(--pb-info); border-radius: var(--radius-md); padding: var(--space-3); margin-bottom: var(--space-4); font-size: var(--text-sm); color: var(--pb-chalk-200); }
+        .esc-help-banner strong { color: var(--pb-info); }
+    </style>
+</head>
+<body class="pb-app">
+    <header class="pb-page-header">
+        <nav class="pb-page-nav">
+            <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
+            <div class="pb-page-nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="activity.html">Activity</a>
+                <a href="discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="proposals.html">Proposals</a>
+                <a href="amendments.html">Amendments</a>
+                <a href="escalations.html" class="is-active">Escalations</a>
+                <a href="main-flows.html">Main Flows</a>
+                <a href="design-system.html">Design System</a>
+                <a href="token-usage.html">Tokens</a>
+                <a href="index.html">Index</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="pb-page-main">
+        <div class="pb-page-title-row">
+            <div>
+                <h1 class="pb-page-title">Escalations</h1>
+                <p class="pb-page-subtitle">Founder review queue for escalations the orchestration team can't resolve without vision-level or strategic input. Mirrors the amendments + proposals lifecycle: pending → Founder decision → watcher applies via apply-escalations.sh.</p>
+            </div>
+            <div class="pb-page-meta">
+                <button class="esc-decision-btn" id="btn-clear-all" type="button" title="Clear all decisions in browser memory">Clear all</button>
+                <button class="esc-decision-btn" id="btn-export" type="button" style="background: var(--pb-brass-500); color: var(--pb-billiard-green-900); border-color: var(--pb-brass-500);">Export escalations &rarr;</button>
+            </div>
+        </div>
+
+        <section class="pb-section">
+            <h2 class="pb-section-title">Decision queue</h2>
+            <div class="pb-kpi-grid">
+                <div class="pb-kpi-card">
+                    <span class="pb-kpi-label">Pending</span>
+                    <span class="pb-kpi-value" data-kpi="pending">&mdash;</span>
+                    <span class="pb-kpi-sub">awaiting Founder review</span>
+                </div>
+                <div class="pb-kpi-card is-positive">
+                    <span class="pb-kpi-label">Approve</span>
+                    <span class="pb-kpi-value" data-kpi="approve">0</span>
+                    <span class="pb-kpi-sub">marked in this session</span>
+                </div>
+                <div class="pb-kpi-card is-danger">
+                    <span class="pb-kpi-label">Reject</span>
+                    <span class="pb-kpi-value" data-kpi="reject">0</span>
+                    <span class="pb-kpi-sub">marked in this session</span>
+                </div>
+                <div class="pb-kpi-card is-warning">
+                    <span class="pb-kpi-label">Defer</span>
+                    <span class="pb-kpi-value" data-kpi="defer">0</span>
+                    <span class="pb-kpi-sub">marked in this session</span>
+                </div>
+            </div>
+        </section>
+
+        <aside class="esc-help-banner">
+            <strong>How this works:</strong> Each escalation surfaces the team's proposed answer (per AMD-015) + options + decision form. Tick the option(s) you select OR write a custom answer. Mark each escalation as approve / reject / defer. Decisions are stored in your browser only. When done, click <strong>Export escalations</strong> to download <code>escalations-&lt;ts&gt;.json</code> with <code>kind: "escalations"</code> — the Downloads watcher routes it to <code>apply-escalations.sh</code>, which moves files from <code>pending/</code> to <code>approved/</code> / <code>rejected/</code> / <code>deferred/</code> with the decision captured. The team picks up approved escalations on the next agent loop and moves them to <code>applied/</code> when implementation lands.
+        </aside>
+
+        <section class="pb-section">
+            <h2 class="pb-section-title">Pending review <span class="pb-kpi-label" id="count-pending-inline">&mdash;</span></h2>
+            <p class="pb-section-subtitle">Founder's active workspace. Escalations the team has authored and is awaiting your decision on.</p>
+            <div id="pending-list"></div>
+        </section>
+
+        <section class="pb-section">
+            <h2 class="pb-section-title">Approved &mdash; awaiting team apply <span class="pb-kpi-label" id="count-approved-inline">&mdash;</span></h2>
+            <p class="pb-section-subtitle">Between Founder approval and team picking up the decision on next loop.</p>
+            <div id="approved-list"></div>
+        </section>
+
+        <section class="pb-section">
+            <details>
+                <summary class="pb-section-title" style="cursor: pointer;">Applied &mdash; archive <span class="pb-kpi-label" id="count-applied-inline">&mdash;</span></summary>
+                <div id="applied-list" style="margin-top: var(--space-3);"></div>
+            </details>
+        </section>
+
+        <section class="pb-section">
+            <details>
+                <summary class="pb-section-title" style="cursor: pointer;">Deferred &mdash; archive <span class="pb-kpi-label" id="count-deferred-inline">&mdash;</span></summary>
+                <div id="deferred-list" style="margin-top: var(--space-3);"></div>
+            </details>
+        </section>
+
+        <section class="pb-section">
+            <details>
+                <summary class="pb-section-title" style="cursor: pointer;">Rejected &mdash; archive <span class="pb-kpi-label" id="count-rejected-inline">&mdash;</span></summary>
+                <div id="rejected-list" style="margin-top: var(--space-3);"></div>
+            </details>
+        </section>
+    </main>
+
+    <footer class="pb-page-footer">
+        Source: <code>.claude/state/escalations/</code> &middot;
+        <a href="index.html">All reports</a> &middot;
+        <a href="amendments.html">Amendments</a> &middot;
+        <a href="proposals.html">Proposals</a>
+    </footer>
+
+    <script id="report-data" type="application/json">
+{}
+    </script>
+
+    <script>
+        (function () {
+            'use strict';
+
+            var STORAGE_KEY = 'pb_escalation_decisions';
+            var data;
+            try {
+                data = JSON.parse(document.getElementById('report-data').textContent);
+            } catch (e) {
+                console.error('escalations: failed to parse report-data', e);
+                data = { escalations: { pending: [], approved: [], applied: [], deferred: [], rejected: [] }, counts: {} };
+            }
+
+            function esc(s) {
+                if (s == null) return '';
+                return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+            }
+
+            function loadDecisions() {
+                try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+                catch (e) { return {}; }
+            }
+            function saveDecisions(d) {
+                try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+                catch (e) { console.warn('localStorage save failed', e); }
+            }
+
+            var decisions = loadDecisions();
+
+            function ageLabel(authoredAt) {
+                if (!authoredAt) return 'age unknown';
+                try {
+                    var t = new Date(authoredAt).getTime();
+                    var deltaHours = (Date.now() - t) / (1000 * 60 * 60);
+                    if (deltaHours < 24) return Math.round(deltaHours) + 'h old';
+                    var days = deltaHours / 24;
+                    return (days >= 10 ? Math.round(days) : Math.round(days * 10) / 10) + 'd old';
+                } catch (e) { return 'age unknown'; }
+            }
+
+            function isStale(esc) {
+                if (!esc.authored_at) return false;
+                try {
+                    var t = new Date(esc.authored_at).getTime();
+                    var windowHours = (typeof esc.default_window_hours === 'number') ? esc.default_window_hours : 24;
+                    var deltaHours = (Date.now() - t) / (1000 * 60 * 60);
+                    return deltaHours > windowHours;
+                } catch (e) { return false; }
+            }
+
+            function renderCard(escalation, opts) {
+                opts = opts || {};
+                var id = esc(escalation.id || '');
+                var d = decisions[id] || {};
+                var stale = isStale(escalation);
+                var classes = ['esc-card'];
+                if (d.action === 'approve') classes.push('decided-approve');
+                if (d.action === 'reject')  classes.push('decided-reject');
+                if (d.action === 'defer')   classes.push('decided-defer');
+                if (stale) classes.push('is-stale');
+                if (escalation.blocks_ship) classes.push('is-blocks-ship');
+
+                var type = esc(escalation.type || '');
+                var typeBadge = type ? '<span class="esc-badge esc-badge-' + type.replace(/[^a-z-]/gi, '-') + '">' + type + '</span>' : '';
+                var complexity = esc(escalation.estimated_decision_complexity || '');
+                var complexityBadge = complexity ? '<span class="esc-badge esc-badge-complexity">' + complexity + '</span>' : '';
+                var blocksShipBadge = escalation.blocks_ship ? '<span class="esc-badge esc-badge-blocks-ship">BLOCKS SHIP</span>' : '';
+                var ageBadge = '<span class="esc-badge esc-badge-stale" style="' + (stale ? '' : 'background:var(--pb-billiard-green-700);color:var(--pb-chalk-400);') + '">' + ageLabel(escalation.authored_at) + (stale ? ' · STALE' : '') + '</span>';
+
+                var options = Array.isArray(escalation.options) ? escalation.options : [];
+                var optionsHtml = '';
+                if (options.length > 0 && opts.editable) {
+                    var pickedSet = new Set(d.decision_options || []);
+                    optionsHtml = '<div class="esc-section"><div class="esc-section-label">Options</div><ul class="esc-options">' +
+                        options.map(function (o) {
+                            var oid = esc(o.id || '');
+                            var label = esc(o.label || '');
+                            var rat = esc(o.rationale || '');
+                            var checked = pickedSet.has(oid) ? ' checked' : '';
+                            var isChecked = pickedSet.has(oid) ? ' is-checked' : '';
+                            return '<li class="esc-option' + isChecked + '"><label>' +
+                                '<input type="checkbox" data-esc-option="' + oid + '" data-esc-id="' + id + '"' + checked + '>' +
+                                '<span class="esc-option-label"><span class="esc-option-id">(' + oid + ')</span>' + label + '</span></label>' +
+                                '<p class="esc-option-rationale">' + rat + '</p></li>';
+                        }).join('') +
+                        '</ul></div>';
+                } else if (options.length > 0) {
+                    optionsHtml = '<div class="esc-section"><div class="esc-section-label">Options</div><ul class="esc-options">' +
+                        options.map(function (o) {
+                            var oid = esc(o.id || '');
+                            var label = esc(o.label || '');
+                            return '<li class="esc-option" style="opacity:0.75"><span class="esc-option-id">(' + oid + ')</span> ' + label + '</li>';
+                        }).join('') +
+                        '</ul></div>';
+                }
+
+                var customAnswerHtml = opts.editable
+                    ? '<div class="esc-custom-answer"><div class="esc-section-label" style="margin-top:var(--space-2)">Custom answer (optional)</div><textarea data-esc-custom="' + id + '" placeholder="If none of the above match, write the decision here…">' + esc(d.decision_text || '') + '</textarea></div>'
+                    : '';
+
+                var sources = (escalation.source_artifact_paths || []).map(function (p) {
+                    var ep = esc(p);
+                    var rel = (p && p.startsWith('docs/')) ? p.replace(/^docs\//, '../') : '../../' + p;
+                    return '<a href="' + esc(rel) + '">' + ep + '</a>';
+                }).join(' &middot; ');
+
+                var decisionBar = opts.editable
+                    ? '<div class="esc-decision-bar">' +
+                        '<button type="button" class="esc-decision-btn btn-approve' + (d.action === 'approve' ? ' active' : '') + '" data-esc-action="approve" data-esc-id="' + id + '">Approve</button>' +
+                        '<button type="button" class="esc-decision-btn btn-reject'  + (d.action === 'reject'  ? ' active' : '') + '" data-esc-action="reject"  data-esc-id="' + id + '">Reject</button>' +
+                        '<button type="button" class="esc-decision-btn btn-defer'   + (d.action === 'defer'   ? ' active' : '') + '" data-esc-action="defer"   data-esc-id="' + id + '">Defer</button>' +
+                      '</div><div class="esc-note-row"><input type="text" data-esc-note="' + id + '" placeholder="Note (optional)…" value="' + esc(d.note || '') + '"></div>'
+                    : (escalation.founder_note ? '<div class="esc-section esc-default-note"><strong>Founder note:</strong> ' + esc(escalation.founder_note) + '</div>' : '');
+
+                return '' +
+                    '<article class="' + classes.join(' ') + '">' +
+                    '  <header class="esc-header">' +
+                    '    <div style="flex:1; min-width: 0;">' +
+                    '      <h3 class="esc-title">' + esc(escalation.title || '') + ' <span class="esc-id">' + id + '</span></h3>' +
+                    '      <div class="esc-meta">' + typeBadge + complexityBadge + blocksShipBadge + ageBadge + '</div>' +
+                    '    </div>' +
+                    '  </header>' +
+                    (escalation.question ? '  <p class="esc-question">' + esc(escalation.question) + '</p>' : '') +
+                    (escalation.context_summary ? '<div class="esc-section"><div class="esc-section-label">Context</div><pre class="esc-body">' + esc(escalation.context_summary) + '</pre></div>' : '') +
+                    (escalation.proposed_answer ? '<div class="esc-section"><div class="esc-section-label">Team proposed answer (per AMD-015)</div><pre class="esc-body">' + esc(escalation.proposed_answer) + '</pre></div>' : '') +
+                    (escalation.rationale ? '<div class="esc-section"><div class="esc-section-label">Rationale</div><pre class="esc-body">' + esc(escalation.rationale) + '</pre></div>' : '') +
+                    optionsHtml +
+                    customAnswerHtml +
+                    (escalation.default_if_no_response ? '<div class="esc-section esc-default-note"><strong>Default if no response:</strong> ' + esc(escalation.default_if_no_response) + (escalation.default_window_hours ? ' (window: ' + escalation.default_window_hours + 'h)' : '') + '</div>' : '') +
+                    (sources ? '<div class="esc-section esc-sources"><strong>Sources:</strong> ' + sources + '</div>' : '') +
+                    decisionBar +
+                    '</article>';
+            }
+
+            function renderList(host, items, opts) {
+                if (!items || items.length === 0) {
+                    host.innerHTML = '<div class="esc-empty">(none)</div>';
+                    return;
+                }
+                host.innerHTML = items.map(function (e) { return renderCard(e, opts); }).join('');
+            }
+
+            function updateKPIs() {
+                var pendingCount = data.escalations.pending.length;
+                document.querySelector('[data-kpi="pending"]').textContent = String(pendingCount);
+                var approve = 0, reject = 0, defer = 0;
+                Object.values(decisions).forEach(function (d) {
+                    if (d.action === 'approve') approve++;
+                    else if (d.action === 'reject') reject++;
+                    else if (d.action === 'defer') defer++;
+                });
+                document.querySelector('[data-kpi="approve"]').textContent = String(approve);
+                document.querySelector('[data-kpi="reject"]').textContent = String(reject);
+                document.querySelector('[data-kpi="defer"]').textContent = String(defer);
+
+                document.getElementById('count-pending-inline').textContent = '(' + data.counts.pending + ')';
+                document.getElementById('count-approved-inline').textContent = '(' + data.counts.approved + ')';
+                document.getElementById('count-applied-inline').textContent = '(' + data.counts.applied_total + ')';
+                document.getElementById('count-deferred-inline').textContent = '(' + data.counts.deferred + ')';
+                document.getElementById('count-rejected-inline').textContent = '(' + data.counts.rejected_total + ')';
+            }
+
+            function renderAll() {
+                renderList(document.getElementById('pending-list'),  data.escalations.pending,  { editable: true  });
+                renderList(document.getElementById('approved-list'), data.escalations.approved, { editable: false });
+                renderList(document.getElementById('applied-list'),  data.escalations.applied,  { editable: false });
+                renderList(document.getElementById('deferred-list'), data.escalations.deferred, { editable: false });
+                renderList(document.getElementById('rejected-list'), data.escalations.rejected, { editable: false });
+                updateKPIs();
+            }
+
+            // Event delegation for decision actions
+            document.addEventListener('click', function (ev) {
+                var t = ev.target;
+                if (t && t.matches('[data-esc-action]')) {
+                    var id = t.getAttribute('data-esc-id');
+                    var action = t.getAttribute('data-esc-action');
+                    var d = decisions[id] || {};
+                    d.action = (d.action === action) ? null : action;  // toggle off if same
+                    if (!d.action) { delete decisions[id]; } else { decisions[id] = d; }
+                    saveDecisions(decisions);
+                    renderAll();
+                }
+            });
+
+            document.addEventListener('change', function (ev) {
+                var t = ev.target;
+                if (t && t.matches('[data-esc-option]')) {
+                    var id = t.getAttribute('data-esc-id');
+                    var optId = t.getAttribute('data-esc-option');
+                    var d = decisions[id] || {};
+                    var opts = new Set(d.decision_options || []);
+                    if (t.checked) opts.add(optId); else opts.delete(optId);
+                    d.decision_options = Array.from(opts);
+                    decisions[id] = d;
+                    saveDecisions(decisions);
+                    // Light re-render: toggle the option visual; full renderAll() would lose focus
+                    var li = t.closest('.esc-option');
+                    if (li) li.classList.toggle('is-checked', t.checked);
+                }
+            });
+
+            document.addEventListener('input', function (ev) {
+                var t = ev.target;
+                if (t && t.matches('[data-esc-custom]')) {
+                    var id = t.getAttribute('data-esc-custom');
+                    var d = decisions[id] || {};
+                    d.decision_text = t.value;
+                    decisions[id] = d;
+                    saveDecisions(decisions);
+                } else if (t && t.matches('[data-esc-note]')) {
+                    var id2 = t.getAttribute('data-esc-note');
+                    var d2 = decisions[id2] || {};
+                    d2.note = t.value;
+                    decisions[id2] = d2;
+                    saveDecisions(decisions);
+                }
+            });
+
+            // Clear all
+            document.getElementById('btn-clear-all').addEventListener('click', function () {
+                if (!confirm('Clear all decisions in browser memory? (Will not affect escalations on disk.)')) return;
+                decisions = {};
+                saveDecisions(decisions);
+                renderAll();
+            });
+
+            // Export
+            document.getElementById('btn-export').addEventListener('click', function () {
+                var entries = Object.entries(decisions).filter(function (kv) { return kv[1] && kv[1].action; });
+                if (entries.length === 0) {
+                    alert('No decisions to export. Mark at least one escalation approve / reject / defer first.');
+                    return;
+                }
+                var payload = {
+                    kind: 'escalations',
+                    schema_version: 1,
+                    exported_at: new Date().toISOString(),
+                    decisions: entries.map(function (kv) {
+                        var id = kv[0], d = kv[1];
+                        return {
+                            escalation_id: id,
+                            action: d.action,
+                            decision_options: d.decision_options || [],
+                            decision_text: (d.decision_text || '').trim(),
+                            note: (d.note || '').trim()
+                        };
+                    })
+                };
+                var ts = new Date().toISOString().replace(/[:.]/g, '-');
+                var fname = 'escalations-' + ts + '.json';
+                var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = fname;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(function () { URL.revokeObjectURL(url); }, 100);
+                alert('Downloaded ' + fname + '.\n\nMove it to your Downloads folder. The downloads-watcher will pick it up within 5 minutes and run apply-escalations.sh, which moves each pending escalation to approved/, rejected/, or deferred/ per your decision.');
+            });
+
+            // Honor hash anchor scrolling (e.g., navigated from dashboard)
+            renderAll();
+            if (location.hash) {
+                var target = document.getElementById(location.hash.substring(1));
+                if (target) target.scrollIntoView();
+            }
+        })();
+    </script>
+</body>
+</html>

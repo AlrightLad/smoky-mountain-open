@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Usage - PARBAUGHS Orchestration</title>
+    <link rel="stylesheet" href="_assets/design-tokens.css">
+    <link rel="stylesheet" href="_assets/dashboard-shell.css">
+    <style>
+        /* Page-specific style — token-usage donut + all-time stats. 30-line budget. */
+        .tu-summary {
+            display: grid;
+            grid-template-columns: minmax(320px, 400px) 1fr;
+            gap: var(--space-5);
+            background: var(--pb-billiard-green-800);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-5);
+            align-items: center;
+        }
+        @media (max-width: 768px) { .tu-summary { grid-template-columns: 1fr; gap: var(--space-4); } }
+        .tu-donut-wrap { display: flex; justify-content: center; align-items: center; min-height: 240px; }
+        .tu-donut { width: 100%; max-width: 240px; height: auto; }
+        .tu-donut-total { font-family: var(--font-numeric); font-variant-numeric: tabular-nums; font-size: 32px; font-weight: 700; fill: var(--pb-chalk-50); }
+        .tu-donut-total-label { font-family: var(--font-mono); font-size: 10px; fill: var(--pb-chalk-400); letter-spacing: 0.12em; text-transform: uppercase; }
+        .tu-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--space-3); }
+        .tu-stat-cell { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-2) var(--space-3); border-left: 3px solid var(--pb-chalk-500); }
+        .tu-stat-cell.is-real { border-left-color: var(--pb-billiard-green-500); }
+        .tu-stat-cell.is-estimated { border-left-color: var(--pb-brass-500); }
+        .tu-stat-cell.is-manual { border-left-color: var(--pb-chalk-300); }
+        .tu-stat-cell-label { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--pb-chalk-400); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+        .tu-stat-cell-value { font-family: var(--font-numeric); font-variant-numeric: tabular-nums; font-size: var(--text-xl); font-weight: 600; color: var(--pb-chalk-50); }
+        .tu-stat-cell.is-manual .tu-stat-cell-value::before { content: '* '; color: var(--pb-chalk-300); font-weight: 700; }
+        .tu-refresh-row { display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap; justify-content: space-between; margin-bottom: var(--space-4); }
+        .tu-refresh-btn { background: transparent; color: var(--pb-chalk-200); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3); font-family: var(--font-mono); font-size: var(--text-xs); cursor: pointer; transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out); }
+        .tu-refresh-btn:hover { border-color: var(--pb-brass-500); color: var(--pb-brass-500); }
+    </style>
+</head>
+<body class="pb-app">
+
+    <header class="pb-page-header">
+        <nav class="pb-page-nav">
+            <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
+            <div class="pb-page-nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="activity.html">Activity</a>
+                <a href="discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="proposals.html">Proposals</a>
+                <a href="amendments.html">Amendments</a>
+                <a href="main-flows.html">Main Flows</a>
+                <a href="design-system.html">Design System</a>
+                <a href="token-usage.html" class="is-active">Tokens</a>
+                <a href="index.html">Index</a>
+            </div>
+        </nav>
+    </header>
+
+<main class="pb-page-main">
+    <div class="pb-page-title-row">
+        <div>
+            <h1 class="pb-page-title">Token usage</h1>
+            <p class="pb-page-subtitle">Where Claude tokens have gone, by agent / cron / ship. Real (telemetry-derived) and Estimated (cron session duration heuristic) shown separately; manual entries (Founder-anchored from claude.ai billing) prefixed with <code>*</code>. Totals never blended.</p>
+        </div>
+        <div class="pb-page-meta">
+            <span>Since <span data-stat="first-event">&mdash;</span></span>
+            <span>Refreshed <span data-stat="generated-at">&mdash;</span></span>
+        </div>
+    </div>
+
+    <!-- PROP-003.b: quota meter status (live / sidecar empty / sidecar stale /
+         estimated). Shows the canonical weekly_tokens + percentage from the
+         PROP-003.a sidecar when fresh. Falls through to legacy estimated
+         pathway when sidecar unavailable. Per AMD-014 PAUSE_DISCIPLINE,
+         this is the band downstream pacing gates read from. -->
+    <section class="pb-section" id="tu-quota-meter" style="margin-bottom: var(--space-4);">
+        <div class="pb-kpi-grid">
+            <div class="pb-kpi-card" data-kpi-card="meter-status">
+                <span class="pb-kpi-label">Meter status</span>
+                <span class="pb-kpi-value" data-kpi="meter-status">&mdash;</span>
+                <span class="pb-kpi-sub" data-kpi-sub="meter-status">checking sidecar...</span>
+            </div>
+            <div class="pb-kpi-card" data-kpi-card="quota-weekly">
+                <span class="pb-kpi-label">Weekly tokens (live)</span>
+                <span class="pb-kpi-value" data-kpi="quota-weekly">&mdash;</span>
+                <span class="pb-kpi-sub" data-kpi-sub="quota-weekly">vs <span data-kpi="quota-weekly-cap">&mdash;</span> cap</span>
+            </div>
+            <div class="pb-kpi-card" data-kpi-card="quota-org">
+                <span class="pb-kpi-label">Org monthly</span>
+                <span class="pb-kpi-value" data-kpi="quota-org-pct">&mdash;</span>
+                <span class="pb-kpi-sub" data-kpi-sub="quota-org">org-wide cap</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="tu-summary">
+        <div class="tu-donut-wrap">
+            <!-- Single donut covering Real / Estimated / Manual breakdown. -->
+            <!-- Built by JS; viewBox preserved here so empty-state has graceful fallback. -->
+            <svg class="tu-donut" id="tu-donut" viewBox="0 0 200 200" aria-label="Token source breakdown donut">
+                <circle cx="100" cy="100" r="80" fill="none" stroke="var(--pb-billiard-green-700)" stroke-width="22" />
+                <text class="tu-donut-total" x="100" y="98" text-anchor="middle" dominant-baseline="central" data-donut="total">0</text>
+                <text class="tu-donut-total-label" x="100" y="118" text-anchor="middle" data-donut="label">All-time tokens</text>
+            </svg>
+        </div>
+        <div>
+            <div class="tu-stats">
+                <div class="tu-stat-cell is-real">
+                    <span class="tu-stat-cell-label">Real</span>
+                    <span class="tu-stat-cell-value" data-stat="all-time-real">&mdash;</span>
+                </div>
+                <div class="tu-stat-cell is-estimated">
+                    <span class="tu-stat-cell-label">Estimated</span>
+                    <span class="tu-stat-cell-value" data-stat="all-time-estimated">&mdash;</span>
+                </div>
+                <div class="tu-stat-cell is-manual">
+                    <span class="tu-stat-cell-label">Manual</span>
+                    <span class="tu-stat-cell-value" data-stat="all-time-manual">&mdash;</span>
+                </div>
+            </div>
+            <div class="tu-refresh-row" style="margin-top: var(--space-4);">
+                <small style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--pb-chalk-400);">
+                    Real = telemetry events. Estimated = cron session duration &times; rate constants.
+                    Manual = Founder claude.ai billing paste.
+                </small>
+                <button class="tu-refresh-btn" id="tu-refresh-btn" type="button" title="Run scripts/regen-all.ps1 locally">
+                    Refresh now
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="pb-section">
+        <h2 class="pb-section-title">Tokens by agent</h2>
+        <p class="pb-section-subtitle">Click a column header to sort. Manual values prefixed with <code>*</code>.</p>
+        <div class="pb-table-wrap">
+            <table class="pb-table" id="tu-table-by-agent" data-bucket="by_agent">
+                <thead>
+                    <tr>
+                        <th class="is-sticky-col is-sortable" data-col="key" data-type="text">Agent</th>
+                        <th class="is-num is-sortable" data-col="real" data-type="num">Real</th>
+                        <th class="is-num is-sortable" data-col="estimated" data-type="num">Estimated</th>
+                        <th class="is-num is-sortable" data-col="manual" data-type="num">Manual</th>
+                        <th class="is-num is-sortable" data-col="total" data-type="num">Total (real+est)</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="pb-section">
+        <h2 class="pb-section-title">Tokens by cron source</h2>
+        <p class="pb-section-subtitle"><code>downloads-watcher</code> + <code>maintenance</code> should be at <strong>0</strong> &mdash; they do not invoke Claude. <code>overnight-triage</code> uses estimation.</p>
+        <div class="pb-table-wrap">
+            <table class="pb-table" id="tu-table-by-cron" data-bucket="by_cron">
+                <thead>
+                    <tr>
+                        <th class="is-sticky-col is-sortable" data-col="key" data-type="text">Cron source</th>
+                        <th class="is-num is-sortable" data-col="real" data-type="num">Real</th>
+                        <th class="is-num is-sortable" data-col="estimated" data-type="num">Estimated</th>
+                        <th class="is-num is-sortable" data-col="manual" data-type="num">Manual</th>
+                        <th class="is-num is-sortable" data-col="total" data-type="num">Total (real+est)</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="pb-section">
+        <h2 class="pb-section-title">Tokens by ship</h2>
+        <p class="pb-section-subtitle"><code>unattributed</code> is everything outside an explicit <code>ship_id</code> cycle.</p>
+        <div class="pb-table-wrap">
+            <table class="pb-table" id="tu-table-by-ship" data-bucket="by_ship">
+                <thead>
+                    <tr>
+                        <th class="is-sticky-col is-sortable" data-col="key" data-type="text">Ship</th>
+                        <th class="is-num is-sortable" data-col="real" data-type="num">Real</th>
+                        <th class="is-num is-sortable" data-col="estimated" data-type="num">Estimated</th>
+                        <th class="is-num is-sortable" data-col="manual" data-type="num">Manual</th>
+                        <th class="is-num is-sortable" data-col="total" data-type="num">Total (real+est)</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+
+    <p style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--pb-chalk-400); padding: var(--space-3); border-left: 2px solid var(--pb-warning); margin-top: var(--space-5); line-height: 1.55;">
+        <strong style="color: var(--pb-warning);">How estimation works:</strong>
+        when a cron session invokes Claude, the session's start/end timestamps give a duration in seconds. Input tokens estimated as
+        <code>duration_seconds &times; 100</code>; output tokens as <code>duration_seconds &times; 30</code>.
+        Constants at top of <code>scripts/aggregate-token-usage.py</code> as
+        <code>INPUT_RATE_TOKENS_PER_SEC</code> / <code>OUTPUT_RATE_TOKENS_PER_SEC</code> &mdash; recalibrate against the first Founder manual paste if needed.
+    </p>
+</main>
+
+<footer class="pb-page-footer">
+    Source: <code>.claude/state/telemetry/aggregates/token-usage-snapshot.json</code> &middot;
+    <a href="index.html">All reports</a> &middot;
+    <a href="dashboard.html">Dashboard</a>
+</footer>
+
+<script id="report-data" type="application/json">
+{}
+</script>
+<script>
+(function () {
+    "use strict";
+
+    function getData() {
+        try { return JSON.parse(document.getElementById('report-data').textContent); }
+        catch (e) { console.error('token-usage: data parse failed', e); return null; }
+    }
+
+    function fmtTokens(n) {
+        if (n === null || n === undefined) return '-';
+        if (n === 0) return '0';
+        if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+        if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(1) + 'k';
+        return String(n);
+    }
+    function fmtAgo(iso) {
+        if (!iso) return 'never';
+        var d = new Date(iso);
+        if (isNaN(d)) return iso;
+        var diff = (Date.now() - d.getTime()) / 1000;
+        if (diff < 60) return Math.floor(diff) + 's ago';
+        if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+        if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+        return Math.floor(diff / 86400) + 'd ago';
+    }
+    function fmtDate(iso) {
+        if (!iso) return '-';
+        return iso.slice(0, 10);
+    }
+
+    /* SVG donut renderer (no Chart.js, no D3 — single circle per arc with
+     * stroke-dasharray + stroke-dashoffset for arc length + start position).
+     * Real arc starts at 12 o'clock (rotate -90), Estimated continues, Manual continues. */
+    function renderDonut(real, estimated, manual) {
+        var svg = document.getElementById('tu-donut');
+        if (!svg) return;
+        var total = real + estimated + manual;
+        // Remove any previous arcs (the placeholder ring stays).
+        Array.prototype.slice.call(svg.querySelectorAll('.tu-arc')).forEach(function (n) { svg.removeChild(n); });
+        var totalEl = svg.querySelector('[data-donut="total"]');
+        if (totalEl) totalEl.textContent = fmtTokens(total);
+        if (total === 0) return;
+        var r = 80, C = 2 * Math.PI * r;  // circumference 502.65
+        var segments = [
+            { val: real, color: 'var(--pb-billiard-green-500)' },
+            { val: estimated, color: 'var(--pb-brass-500)' },
+            { val: manual, color: 'var(--pb-chalk-300)' }
+        ];
+        var offset = 0;
+        segments.forEach(function (seg) {
+            if (seg.val <= 0) return;
+            var len = (seg.val / total) * C;
+            var arc = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            arc.setAttribute('class', 'tu-arc');
+            arc.setAttribute('cx', '100');
+            arc.setAttribute('cy', '100');
+            arc.setAttribute('r', String(r));
+            arc.setAttribute('fill', 'none');
+            arc.setAttribute('stroke', seg.color);
+            arc.setAttribute('stroke-width', '22');
+            arc.setAttribute('stroke-dasharray', len + ' ' + (C - len));
+            arc.setAttribute('stroke-dashoffset', String(-offset));
+            arc.setAttribute('transform', 'rotate(-90 100 100)');
+            // Insert arcs before the text so text stays on top.
+            svg.insertBefore(arc, svg.querySelector('text'));
+            offset += len;
+        });
+    }
+
+    function setStats(data) {
+        var at = data.all_time || {};
+        document.querySelector('[data-stat="all-time-real"]').textContent = fmtTokens(at.real);
+        document.querySelector('[data-stat="all-time-estimated"]').textContent = fmtTokens(at.estimated);
+        document.querySelector('[data-stat="all-time-manual"]').textContent = fmtTokens(at.manual);
+        document.querySelector('[data-stat="first-event"]').textContent = fmtDate(at.first_event_at);
+        document.querySelector('[data-stat="generated-at"]').textContent = fmtAgo(data.generated_at);
+        renderDonut(at.real || 0, at.estimated || 0, at.manual || 0);
+        renderQuotaMeter(data);
+    }
+
+    // PROP-003.b: meter widget — reflect _meter_status + quota_status block.
+    function renderQuotaMeter(data) {
+        function set(sel, val) {
+            var el = document.querySelector(sel);
+            if (el) el.textContent = val;
+        }
+        var status = data._meter_status || 'wired-estimated';
+        var qs = data.quota_status || {};
+        var statusLabels = {
+            'wired-real': 'LIVE',
+            'wired-estimated-sidecar-empty': 'sidecar empty',
+            'wired-estimated-sidecar-stale': 'sidecar STALE',
+            'wired-estimated': 'estimated only',
+            'gap-per-F1a': 'no meter'
+        };
+        set('[data-kpi="meter-status"]', statusLabels[status] || status);
+
+        var sub;
+        if (status === 'wired-real') {
+            var ageMin = qs.age_seconds != null ? Math.floor(qs.age_seconds / 60) : null;
+            sub = 'sidecar fresh' + (ageMin != null ? ' (' + ageMin + 'm ago)' : '');
+        } else if (status === 'wired-estimated-sidecar-empty') {
+            sub = 'sidecar present but no source data';
+        } else if (status === 'wired-estimated-sidecar-stale') {
+            var ageH = qs.age_seconds != null ? Math.floor(qs.age_seconds / 3600) : null;
+            sub = 'sidecar last ran' + (ageH != null ? ' ' + ageH + 'h ago' : ' long ago');
+        } else if (status === 'wired-estimated') {
+            sub = 'event-aggregated estimates · no sidecar';
+        } else {
+            sub = 'gap — no meter wired';
+        }
+        set('[data-kpi-sub="meter-status"]', sub);
+
+        var statusCard = document.querySelector('[data-kpi-card="meter-status"]');
+        if (statusCard) {
+            statusCard.classList.remove('is-positive', 'is-warning', 'is-neutral');
+            if (status === 'wired-real') statusCard.classList.add('is-positive');
+            else if (status.indexOf('stale') !== -1) statusCard.classList.add('is-warning');
+            else statusCard.classList.add('is-neutral');
+        }
+
+        if (typeof qs.weekly_tokens === 'number' && qs.weekly_tokens > 0) {
+            set('[data-kpi="quota-weekly"]', fmtTokens(qs.weekly_tokens));
+            if (typeof qs.weekly_cap === 'number') {
+                set('[data-kpi="quota-weekly-cap"]', fmtTokens(qs.weekly_cap));
+            }
+            if (typeof qs.weekly_pct === 'number') {
+                set('[data-kpi-sub="quota-weekly"]', qs.weekly_pct.toFixed(0) + '% of cap');
+            }
+        } else {
+            set('[data-kpi="quota-weekly"]', '—');
+            set('[data-kpi-sub="quota-weekly"]', 'awaiting sidecar data');
+        }
+
+        if (typeof qs.org_monthly_pct === 'number') {
+            set('[data-kpi="quota-org-pct"]', qs.org_monthly_pct.toFixed(0) + '%');
+            if (typeof qs.org_monthly_tokens === 'number' && typeof qs.org_monthly_cap === 'number') {
+                set('[data-kpi-sub="quota-org"]', fmtTokens(qs.org_monthly_tokens) + ' of ' + fmtTokens(qs.org_monthly_cap));
+            }
+        } else {
+            set('[data-kpi="quota-org-pct"]', '—');
+            set('[data-kpi-sub="quota-org"]', qs.state === 'fresh' ? 'org cap unset' : 'awaiting sidecar data');
+        }
+    }
+
+    function totalOf(b) {
+        // Sort/total uses real + estimated + manual (everything actually attributed to the row).
+        return (b.real || 0) + (b.estimated || 0) + (b.manual || 0);
+    }
+
+    // Build sortable rows from a bucket. Returns array of row objects.
+    function buildRows(bucket) {
+        return Object.keys(bucket || {}).map(function (k) {
+            var b = bucket[k] || {};
+            return {
+                key: k,
+                real: b.real || 0,
+                estimated: b.estimated || 0,
+                manual: b.manual || 0,
+                total: totalOf(b)
+            };
+        });
+    }
+
+    function renderTable(tableEl, rows, isCron) {
+        var tbody = tableEl.querySelector('tbody');
+        if (rows.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:var(--space-5);color:var(--pb-chalk-400);font-style:italic;">No data yet. Run scripts/aggregate-token-usage.py.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = rows.map(function (r) {
+            var trClass = '';
+            var keyCell = r.key;
+            if (isCron && (r.key === 'downloads-watcher' || r.key === 'maintenance') && r.total > 0) {
+                trClass = ' class="is-warning"';
+                keyCell = '<strong>! ' + r.key + '</strong>';
+            }
+            var manualCell = r.manual > 0 ? ('* ' + fmtTokens(r.manual)) : fmtTokens(r.manual);
+            return '<tr' + trClass + '>'
+                + '<td class="is-sticky-col"><code>' + keyCell + '</code></td>'
+                + '<td class="is-num">' + fmtTokens(r.real) + '</td>'
+                + '<td class="is-num">' + fmtTokens(r.estimated) + '</td>'
+                + '<td class="is-num">' + manualCell + '</td>'
+                + '<td class="is-num">' + fmtTokens(r.total) + '</td>'
+                + '</tr>';
+        }).join('');
+    }
+
+    function wireSorting(tableEl, rowsState, isCron) {
+        var ths = Array.prototype.slice.call(tableEl.querySelectorAll('th.is-sortable'));
+        ths.forEach(function (th) {
+            th.addEventListener('click', function () {
+                var col = th.getAttribute('data-col');
+                var type = th.getAttribute('data-type');
+                var current = th.classList.contains('is-sorted-desc') ? 'desc' : (th.classList.contains('is-sorted-asc') ? 'asc' : null);
+                var nextDir = current === 'desc' ? 'asc' : 'desc';
+                ths.forEach(function (other) { other.classList.remove('is-sorted-asc', 'is-sorted-desc'); });
+                th.classList.add('is-sorted-' + nextDir);
+                rowsState.sort(function (a, b) {
+                    var va = a[col], vb = b[col];
+                    if (type === 'num') { return nextDir === 'asc' ? va - vb : vb - va; }
+                    return nextDir === 'asc'
+                        ? String(va).localeCompare(String(vb))
+                        : String(vb).localeCompare(String(va));
+                });
+                renderTable(tableEl, rowsState, isCron);
+            });
+        });
+    }
+
+    function setupPanel(tableId, bucket, isCron) {
+        var tableEl = document.getElementById(tableId);
+        if (!tableEl) return;
+        var rows = buildRows(bucket).sort(function (a, b) { return b.total - a.total; });
+        // Default sort: total desc.
+        var totalTh = tableEl.querySelector('th[data-col="total"]');
+        if (totalTh) totalTh.classList.add('is-sorted-desc');
+        renderTable(tableEl, rows, isCron);
+        wireSorting(tableEl, rows, isCron);
+    }
+
+    function render() {
+        var data = getData();
+        if (!data) return;
+        setStats(data);
+        setupPanel('tu-table-by-agent', data.by_agent || {}, false);
+        setupPanel('tu-table-by-cron',  data.by_cron  || {}, true);
+        setupPanel('tu-table-by-ship',  data.by_ship  || {}, false);
+
+        var btn = document.getElementById('tu-refresh-btn');
+        if (btn) {
+            btn.addEventListener('click', function () {
+                btn.textContent = 'Run scripts/regen-all.ps1 locally';
+                btn.disabled = true;
+                setTimeout(function () { btn.disabled = false; btn.textContent = 'Refresh now'; }, 4000);
+            });
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', render);
+    } else { render(); }
+})();
+</script>
+</body>
+</html>
