@@ -37,6 +37,7 @@ STEPS=(
     "scan-shipped-proposals|scripts/scan-shipped-proposals.py"
     "aggregate-telemetry|scripts/aggregate-telemetry.py"
     "aggregate-token-usage|scripts/aggregate-token-usage.py"
+    "inject-health-banners|scripts/inject-health-banners.py"
     "regen-proposals|scripts/regen-proposals.py"
     "regen-amendments|scripts/regen-amendments.py"
     "regen-escalations|scripts/regen-escalations.py"

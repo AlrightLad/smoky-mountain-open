@@ -52,6 +52,7 @@ $steps = @(
     @{ Name = "scan-shipped-proposals";  Script = "scripts/scan-shipped-proposals.py" },
     @{ Name = "aggregate-telemetry";     Script = "scripts/aggregate-telemetry.py" },
     @{ Name = "aggregate-token-usage";   Script = "scripts/aggregate-token-usage.py" },
+    @{ Name = "inject-health-banners";   Script = "scripts/inject-health-banners.py" },
     @{ Name = "regen-proposals";         Script = "scripts/regen-proposals.py" },
     @{ Name = "regen-amendments";        Script = "scripts/regen-amendments.py" },
     @{ Name = "regen-escalations";       Script = "scripts/regen-escalations.py" },
