@@ -103,6 +103,10 @@ fi
 # Check watcher Scheduled Task installed
 if command -v powershell.exe >/dev/null 2>&1 || command -v pwsh >/dev/null 2>&1; then
     PS_BIN="$(command -v pwsh || command -v powershell.exe)"
+    # `|| true` rationale: PowerShell may return non-zero when the task
+    # doesn't exist (the SilentlyContinue suppresses error output but not the
+    # exit code under all hosts). The grep on the next line is the actual
+    # presence check — we just need the .txt populated either way.
     "$PS_BIN" -Command "Get-ScheduledTask -TaskName 'PARBAUGHS-Downloads-Watcher' -ErrorAction SilentlyContinue" \
         > /tmp/watcher-check.txt 2>&1 || true
     if ! grep -q "PARBAUGHS-Downloads-Watcher" /tmp/watcher-check.txt 2>/dev/null; then
@@ -214,7 +218,11 @@ log "tree dirty count post-run: $DIRTY"
 log "cleaning up canary state..."
 cleanup_canary
 
-# Commit the cleanup so the next verify run starts clean
+# Commit the cleanup so the next verify run starts clean.
+# `|| true` rationale: git add may fail if PENDING/APPROVED contain only
+# untracked files that are gitignored (which is the expected steady state).
+# The next "git status --porcelain" check determines whether anything was
+# actually staged — exit code here is informational only.
 git -C "$REPO_ROOT" add "$PENDING" "$APPROVED" 2>/dev/null || true
 if [ -n "$(git -C "$REPO_ROOT" status --porcelain | head -5)" ]; then
     log "WARN tree has changes after cleanup — manual review recommended"

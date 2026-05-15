@@ -91,6 +91,11 @@ case "$outcome" in
 esac
 
 # Git activity since the run started — what did the agent commit?
+# `|| true` rationale (all three below): this is a best-effort REPORT
+# generator. Missing log file, no commits in window, or empty tree status
+# are all valid empty-state outcomes — they should produce empty strings
+# in the report body, not abort report generation. Not exit-swallowing of
+# real failures (those would show up as missing report content).
 commits_since=""
 if [ -n "$started" ]; then
     commits_since="$(git -C "$REPO_ROOT" log --since="$started" --pretty='format:- %h %s' 2>/dev/null || true)"

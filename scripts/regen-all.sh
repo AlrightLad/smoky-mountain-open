@@ -16,6 +16,9 @@ for c in \
     if [ -n "$c" ] && [ -x "$c" ]; then PYTHON="$c"; break; fi
 done
 if [ -z "$PYTHON" ]; then
+    # `|| true` rationale: this is a python-discovery fallthrough, not exit-
+    # swallowing. command -v returns non-zero when the binary isn't found;
+    # we test for an empty result on the next line and exit FATAL there.
     PYTHON="$(command -v python3 || command -v python || true)"
 fi
 if [ -z "$PYTHON" ]; then
