@@ -1,11 +1,11 @@
 {
-  "as_of": "2026-05-15T01:17:43.639256+00:00",
+  "as_of": "2026-05-15T01:45:52.722866+00:00",
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "quota_status": {
     "state": "empty",
-    "as_of": "2026-05-15T00:12:13.2300096Z",
-    "age_seconds": 3930,
+    "as_of": "2026-05-15T01:42:13.7241326Z",
+    "age_seconds": 218,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -286,7 +286,7 @@
     }
   ],
   "_aggregate_counts": {
-    "events_total": 1044,
+    "events_total": 1062,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
