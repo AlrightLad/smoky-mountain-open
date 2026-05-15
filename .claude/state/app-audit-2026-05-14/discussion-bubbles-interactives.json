@@ -1,0 +1,1147 @@
+{
+  "page": "discussion-bubbles.html",
+  "captured_at": "2026-05-15T23:31:35.518Z",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "total_interactives": 89,
+  "by_type": {
+    "link": 10,
+    "select": 2,
+    "cursor-pointer": 77
+  },
+  "elements": [
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "href": "index.html",
+      "class": "pb-page-brand",
+      "location": {
+        "x": 320,
+        "y": -264,
+        "w": 185,
+        "h": 14
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "href": "dashboard.html",
+      "location": {
+        "x": 743,
+        "y": -272,
+        "w": 91,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Activity",
+      "href": "activity.html",
+      "location": {
+        "x": 839,
+        "y": -272,
+        "w": 69,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.is-active",
+      "text": "Discussion Bubbles",
+      "href": "discussion-bubbles.html",
+      "class": "is-active",
+      "location": {
+        "x": 912,
+        "y": -272,
+        "w": 142,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Proposals",
+      "href": "proposals.html",
+      "location": {
+        "x": 1058,
+        "y": -272,
+        "w": 84,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Amendments",
+      "href": "amendments.html",
+      "location": {
+        "x": 1146,
+        "y": -272,
+        "w": 107,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Main Flows",
+      "href": "main-flows.html",
+      "location": {
+        "x": 1256,
+        "y": -272,
+        "w": 93,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Design System",
+      "href": "design-system.html",
+      "location": {
+        "x": 1354,
+        "y": -272,
+        "w": 114,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Tokens",
+      "href": "token-usage.html",
+      "location": {
+        "x": 1472,
+        "y": -272,
+        "w": 66,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Index",
+      "href": "index.html",
+      "location": {
+        "x": 1542,
+        "y": -272,
+        "w": 58,
+        "h": 29
+      }
+    },
+    {
+      "type": "select",
+      "tag": "select",
+      "selector_hint": "#filter-status",
+      "text": "All statuses\nOpen\nApproved\nApproved w/ dissent\nRejected\nTied",
+      "id": "filter-status",
+      "location": {
+        "x": 333,
+        "y": 146,
+        "w": 335,
+        "h": 28
+      }
+    },
+    {
+      "type": "select",
+      "tag": "select",
+      "selector_hint": "#filter-ship",
+      "text": "All ships\ndesign-system\nwave-zero-dry-run\nwave-zero-dry-run-remediation-F1\nwave-",
+      "id": "filter-ship",
+      "location": {
+        "x": 333,
+        "y": 182,
+        "w": 335,
+        "h": 28
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.db-thread-item.is-active",
+      "text": "Auto-implementation eligibility for approved proposals — when, how, what criteri",
+      "class": "db-thread-item is-active",
+      "location": {
+        "x": 321,
+        "y": 279,
+        "w": 359,
+        "h": 100
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.db-thread-dot",
+      "text": "",
+      "class": "db-thread-dot",
+      "location": {
+        "x": 333,
+        "y": 295,
+        "w": 10,
+        "h": 10
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-meta",
+      "text": "Auto-implementation eligibility for approved proposals — when, how, what criteri",
+      "class": "db-thread-meta",
+      "location": {
+        "x": 353,
+        "y": 291,
+        "w": 315,
+        "h": 75
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-title",
+      "text": "Auto-implementation eligibility for approved proposals — when, how, what criteri",
+      "class": "db-thread-title",
+      "location": {
+        "x": 353,
+        "y": 291,
+        "w": 315,
+        "h": 18
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-sub",
+      "text": "22:35\n·\n2 messages\n·\nclosed-by-founder-directive 0-0-0",
+      "class": "db-thread-sub",
+      "location": {
+        "x": 353,
+        "y": 313,
+        "w": 315,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "22:35",
+      "location": {
+        "x": 353,
+        "y": 313,
+        "w": 26,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "·",
+      "location": {
+        "x": 385,
+        "y": 313,
+        "w": 2,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "2 messages",
+      "location": {
+        "x": 394,
+        "y": 313,
+        "w": 56,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "·",
+      "location": {
+        "x": 456,
+        "y": 313,
+        "w": 2,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.db-status-text",
+      "text": "closed-by-founder-directive 0-0-0",
+      "class": "db-status-text",
+      "location": {
+        "x": 464,
+        "y": 313,
+        "w": 169,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-snippet",
+      "text": "An approved proposal moving from approved/ to in-flight execution must follow on",
+      "class": "db-thread-snippet",
+      "location": {
+        "x": 353,
+        "y": 332,
+        "w": 315,
+        "h": 34
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.db-thread-item",
+      "text": "UI/UX maturity gap — top-tier polish vs. current substrate output\n20:55\n·\n7 mess",
+      "class": "db-thread-item",
+      "location": {
+        "x": 321,
+        "y": 378,
+        "w": 359,
+        "h": 100
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.db-thread-dot",
+      "text": "",
+      "class": "db-thread-dot",
+      "location": {
+        "x": 333,
+        "y": 394,
+        "w": 10,
+        "h": 10
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-meta",
+      "text": "UI/UX maturity gap — top-tier polish vs. current substrate output\n20:55\n·\n7 mess",
+      "class": "db-thread-meta",
+      "location": {
+        "x": 353,
+        "y": 390,
+        "w": 315,
+        "h": 75
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-title",
+      "text": "UI/UX maturity gap — top-tier polish vs. current substrate output",
+      "class": "db-thread-title",
+      "location": {
+        "x": 353,
+        "y": 390,
+        "w": 315,
+        "h": 18
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-sub",
+      "text": "20:55\n·\n7 messages\n·\nOpen 0-0-0",
+      "class": "db-thread-sub",
+      "location": {
+        "x": 353,
+        "y": 413,
+        "w": 315,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "20:55",
+      "location": {
+        "x": 353,
+        "y": 413,
+        "w": 26,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "·",
+      "location": {
+        "x": 385,
+        "y": 413,
+        "w": 2,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "7 messages",
+      "location": {
+        "x": 394,
+        "y": 413,
+        "w": 56,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "·",
+      "location": {
+        "x": 456,
+        "y": 413,
+        "w": 2,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.db-status-text",
+      "text": "Open 0-0-0",
+      "class": "db-status-text",
+      "location": {
+        "x": 464,
+        "y": 413,
+        "w": 57,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-snippet",
+      "text": "Some products feel polished (Linear, Strava, Janowiak’s architecture diagrams, W",
+      "class": "db-thread-snippet",
+      "location": {
+        "x": 353,
+        "y": 432,
+        "w": 315,
+        "h": 34
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.db-thread-item",
+      "text": "Rate-limit discipline gap — token meter is not wired; org-monthly is an unmodele",
+      "class": "db-thread-item",
+      "location": {
+        "x": 321,
+        "y": 510,
+        "w": 359,
+        "h": 100
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.db-thread-dot",
+      "text": "",
+      "class": "db-thread-dot",
+      "location": {
+        "x": 333,
+        "y": 526,
+        "w": 10,
+        "h": 10
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-meta",
+      "text": "Rate-limit discipline gap — token meter is not wired; org-monthly is an unmodele",
+      "class": "db-thread-meta",
+      "location": {
+        "x": 353,
+        "y": 522,
+        "w": 315,
+        "h": 75
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-title",
+      "text": "Rate-limit discipline gap — token meter is not wired; org-monthly is an unmodele",
+      "class": "db-thread-title",
+      "location": {
+        "x": 353,
+        "y": 522,
+        "w": 315,
+        "h": 18
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-sub",
+      "text": "10:30\n·\n8 messages\n·\nDissent 2-1-1",
+      "class": "db-thread-sub",
+      "location": {
+        "x": 353,
+        "y": 544,
+        "w": 315,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "10:30",
+      "location": {
+        "x": 353,
+        "y": 544,
+        "w": 26,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "·",
+      "location": {
+        "x": 385,
+        "y": 544,
+        "w": 2,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "8 messages",
+      "location": {
+        "x": 394,
+        "y": 544,
+        "w": 56,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "·",
+      "location": {
+        "x": 456,
+        "y": 544,
+        "w": 2,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.db-status-text",
+      "text": "Dissent 2-1-1",
+      "class": "db-status-text",
+      "location": {
+        "x": 464,
+        "y": 544,
+        "w": 63,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-snippet",
+      "text": "Approved-with-dissent (2-1-1). Data-Integrity dissents: the defensive heuristic ",
+      "class": "db-thread-snippet",
+      "location": {
+        "x": 353,
+        "y": 563,
+        "w": 315,
+        "h": 34
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.db-thread-item",
+      "text": "Ratify METRIC_INTEGRITY_PROTOCOL — and stress-test it on the very vote that rati",
+      "class": "db-thread-item",
+      "location": {
+        "x": 321,
+        "y": 610,
+        "w": 359,
+        "h": 100
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.db-thread-dot",
+      "text": "",
+      "class": "db-thread-dot",
+      "location": {
+        "x": 333,
+        "y": 626,
+        "w": 10,
+        "h": 10
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-meta",
+      "text": "Ratify METRIC_INTEGRITY_PROTOCOL — and stress-test it on the very vote that rati",
+      "class": "db-thread-meta",
+      "location": {
+        "x": 353,
+        "y": 622,
+        "w": 315,
+        "h": 75
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-title",
+      "text": "Ratify METRIC_INTEGRITY_PROTOCOL — and stress-test it on the very vote that rati",
+      "class": "db-thread-title",
+      "location": {
+        "x": 353,
+        "y": 622,
+        "w": 315,
+        "h": 18
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-sub",
+      "text": "09:55\n·\n10 messages\n·\nDissent 2-1-2",
+      "class": "db-thread-sub",
+      "location": {
+        "x": 353,
+        "y": 644,
+        "w": 315,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "09:55",
+      "location": {
+        "x": 353,
+        "y": 644,
+        "w": 26,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "·",
+      "location": {
+        "x": 385,
+        "y": 644,
+        "w": 2,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "10 messages",
+      "location": {
+        "x": 394,
+        "y": 644,
+        "w": 62,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "·",
+      "location": {
+        "x": 461,
+        "y": 644,
+        "w": 2,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.db-status-text",
+      "text": "Dissent 2-1-2",
+      "class": "db-status-text",
+      "location": {
+        "x": 470,
+        "y": 644,
+        "w": 65,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-snippet",
+      "text": "Approved-with-dissent (2-1-2). Critic dissents on one specific scope question (d",
+      "class": "db-thread-snippet",
+      "location": {
+        "x": 353,
+        "y": 663,
+        "w": 315,
+        "h": 34
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.db-thread-item",
+      "text": "Should MAIN_FLOWS become a 4th operational view at docs/reports/main-flows.html?",
+      "class": "db-thread-item",
+      "location": {
+        "x": 321,
+        "y": 710,
+        "w": 359,
+        "h": 100
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.db-thread-dot",
+      "text": "",
+      "class": "db-thread-dot",
+      "location": {
+        "x": 333,
+        "y": 726,
+        "w": 10,
+        "h": 10
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-meta",
+      "text": "Should MAIN_FLOWS become a 4th operational view at docs/reports/main-flows.html?",
+      "class": "db-thread-meta",
+      "location": {
+        "x": 353,
+        "y": 722,
+        "w": 315,
+        "h": 75
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-title",
+      "text": "Should MAIN_FLOWS become a 4th operational view at docs/reports/main-flows.html?",
+      "class": "db-thread-title",
+      "location": {
+        "x": 353,
+        "y": 722,
+        "w": 315,
+        "h": 18
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-sub",
+      "text": "09:38\n·\n7 messages\n·\nApproved 3-0-1",
+      "class": "db-thread-sub",
+      "location": {
+        "x": 353,
+        "y": 744,
+        "w": 315,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "09:38",
+      "location": {
+        "x": 353,
+        "y": 744,
+        "w": 26,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "·",
+      "location": {
+        "x": 385,
+        "y": 744,
+        "w": 2,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "7 messages",
+      "location": {
+        "x": 394,
+        "y": 744,
+        "w": 56,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "·",
+      "location": {
+        "x": 456,
+        "y": 744,
+        "w": 2,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.db-status-text",
+      "text": "Approved 3-0-1",
+      "class": "db-status-text",
+      "location": {
+        "x": 464,
+        "y": 744,
+        "w": 78,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-snippet",
+      "text": "Approved 3-0-1. Cycle 1 stays scope-locked to existing 3 operational views per F",
+      "class": "db-thread-snippet",
+      "location": {
+        "x": 353,
+        "y": 763,
+        "w": 315,
+        "h": 34
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.db-thread-item",
+      "text": "Main Flows artifact — what is it, what goes in the PARBAUGHS version, which flow",
+      "class": "db-thread-item",
+      "location": {
+        "x": 321,
+        "y": 809,
+        "w": 359,
+        "h": 100
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.db-thread-dot",
+      "text": "",
+      "class": "db-thread-dot",
+      "location": {
+        "x": 333,
+        "y": 825,
+        "w": 10,
+        "h": 10
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-meta",
+      "text": "Main Flows artifact — what is it, what goes in the PARBAUGHS version, which flow",
+      "class": "db-thread-meta",
+      "location": {
+        "x": 353,
+        "y": 821,
+        "w": 315,
+        "h": 75
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-title",
+      "text": "Main Flows artifact — what is it, what goes in the PARBAUGHS version, which flow",
+      "class": "db-thread-title",
+      "location": {
+        "x": 353,
+        "y": 821,
+        "w": 315,
+        "h": 18
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-sub",
+      "text": "09:10\n·\n9 messages\n·\nDissent 3-1-1",
+      "class": "db-thread-sub",
+      "location": {
+        "x": 353,
+        "y": 844,
+        "w": 315,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "09:10",
+      "location": {
+        "x": 353,
+        "y": 844,
+        "w": 26,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "·",
+      "location": {
+        "x": 385,
+        "y": 844,
+        "w": 2,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "9 messages",
+      "location": {
+        "x": 394,
+        "y": 844,
+        "w": 56,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "·",
+      "location": {
+        "x": 456,
+        "y": 844,
+        "w": 2,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.db-status-text",
+      "text": "Dissent 3-1-1",
+      "class": "db-status-text",
+      "location": {
+        "x": 464,
+        "y": 844,
+        "w": 63,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-snippet",
+      "text": "Approved-with-dissent (3-1-1). The artifact serves Founder's product-engineering",
+      "class": "db-thread-snippet",
+      "location": {
+        "x": 353,
+        "y": 863,
+        "w": 315,
+        "h": 34
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "li",
+      "selector_hint": "li.db-thread-item",
+      "text": "Wave Zero Dry-Run V3 — synthetic decision: where should ephemeral wave-zero dry-",
+      "class": "db-thread-item",
+      "location": {
+        "x": 321,
+        "y": 909,
+        "w": 359,
+        "h": 100
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.db-thread-dot",
+      "text": "",
+      "class": "db-thread-dot",
+      "location": {
+        "x": 333,
+        "y": 925,
+        "w": 10,
+        "h": 10
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-meta",
+      "text": "Wave Zero Dry-Run V3 — synthetic decision: where should ephemeral wave-zero dry-",
+      "class": "db-thread-meta",
+      "location": {
+        "x": 353,
+        "y": 921,
+        "w": 315,
+        "h": 75
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-title",
+      "text": "Wave Zero Dry-Run V3 — synthetic decision: where should ephemeral wave-zero dry-",
+      "class": "db-thread-title",
+      "location": {
+        "x": 353,
+        "y": 921,
+        "w": 315,
+        "h": 18
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-sub",
+      "text": "07:30\n·\n6 messages\n·\nApproved 3-0-0",
+      "class": "db-thread-sub",
+      "location": {
+        "x": 353,
+        "y": 943,
+        "w": 315,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "07:30",
+      "location": {
+        "x": 353,
+        "y": 943,
+        "w": 26,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "·",
+      "location": {
+        "x": 385,
+        "y": 943,
+        "w": 2,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "6 messages",
+      "location": {
+        "x": 394,
+        "y": 943,
+        "w": 56,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "·",
+      "location": {
+        "x": 456,
+        "y": 943,
+        "w": 2,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.db-status-text",
+      "text": "Approved 3-0-0",
+      "class": "db-status-text",
+      "location": {
+        "x": 464,
+        "y": 943,
+        "w": 79,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.db-thread-snippet",
+      "text": "Approved 3-0-0. Subfolder-under-dry-run keeps real and dry-run artifacts cleanly",
+      "class": "db-thread-snippet",
+      "location": {
+        "x": 353,
+        "y": 962,
+        "w": 315,
+        "h": 34
+      }
+    }
+  ]
+}

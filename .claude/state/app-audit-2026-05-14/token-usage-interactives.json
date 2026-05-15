@@ -1,0 +1,383 @@
+{
+  "page": "token-usage.html",
+  "captured_at": "2026-05-15T23:31:26.417Z",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "total_interactives": 28,
+  "by_type": {
+    "button": 1,
+    "link": 12,
+    "cursor-pointer": 15
+  },
+  "elements": [
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "#tu-refresh-btn",
+      "text": "Refresh now",
+      "id": "tu-refresh-btn",
+      "class": "tu-refresh-btn",
+      "location": {
+        "x": 761,
+        "y": 512,
+        "w": 99,
+        "h": 32
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "href": "index.html",
+      "class": "pb-page-brand",
+      "location": {
+        "x": 320,
+        "y": 20,
+        "w": 185,
+        "h": 14
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "href": "dashboard.html",
+      "location": {
+        "x": 743,
+        "y": 12,
+        "w": 91,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Activity",
+      "href": "activity.html",
+      "location": {
+        "x": 839,
+        "y": 12,
+        "w": 69,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "href": "discussion-bubbles.html",
+      "location": {
+        "x": 912,
+        "y": 12,
+        "w": 142,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Proposals",
+      "href": "proposals.html",
+      "location": {
+        "x": 1058,
+        "y": 12,
+        "w": 84,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Amendments",
+      "href": "amendments.html",
+      "location": {
+        "x": 1146,
+        "y": 12,
+        "w": 107,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Main Flows",
+      "href": "main-flows.html",
+      "location": {
+        "x": 1256,
+        "y": 12,
+        "w": 93,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Design System",
+      "href": "design-system.html",
+      "location": {
+        "x": 1354,
+        "y": 12,
+        "w": 114,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.is-active",
+      "text": "Tokens",
+      "href": "token-usage.html",
+      "class": "is-active",
+      "location": {
+        "x": 1472,
+        "y": 12,
+        "w": 66,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Index",
+      "href": "index.html",
+      "location": {
+        "x": 1542,
+        "y": 12,
+        "w": 58,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "All reports",
+      "href": "index.html",
+      "location": {
+        "x": 1118,
+        "y": 1618,
+        "w": 73,
+        "h": 15
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "href": "dashboard.html",
+      "location": {
+        "x": 1211,
+        "y": 1618,
+        "w": 59,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "th",
+      "selector_hint": "th.is-sticky-col.is-sortable",
+      "text": "AGENT",
+      "class": "is-sticky-col is-sortable",
+      "location": {
+        "x": 321,
+        "y": 705,
+        "w": 269,
+        "h": 31
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "th",
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "REAL",
+      "class": "is-num is-sortable",
+      "location": {
+        "x": 590,
+        "y": 705,
+        "w": 169,
+        "h": 31
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "th",
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "ESTIMATED",
+      "class": "is-num is-sortable",
+      "location": {
+        "x": 759,
+        "y": 705,
+        "w": 257,
+        "h": 31
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "th",
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "MANUAL",
+      "class": "is-num is-sortable",
+      "location": {
+        "x": 1016,
+        "y": 705,
+        "w": 204,
+        "h": 31
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "th",
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "TOTAL (REAL+EST)",
+      "class": "is-num is-sortable is-sorted-desc",
+      "location": {
+        "x": 1220,
+        "y": 705,
+        "w": 379,
+        "h": 31
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "th",
+      "selector_hint": "th.is-sticky-col.is-sortable",
+      "text": "CRON SOURCE",
+      "class": "is-sticky-col is-sortable",
+      "location": {
+        "x": 321,
+        "y": 935,
+        "w": 346,
+        "h": 31
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "th",
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "REAL",
+      "class": "is-num is-sortable",
+      "location": {
+        "x": 667,
+        "y": 935,
+        "w": 156,
+        "h": 31
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "th",
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "ESTIMATED",
+      "class": "is-num is-sortable",
+      "location": {
+        "x": 824,
+        "y": 935,
+        "w": 237,
+        "h": 31
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "th",
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "MANUAL",
+      "class": "is-num is-sortable",
+      "location": {
+        "x": 1061,
+        "y": 935,
+        "w": 189,
+        "h": 31
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "th",
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "TOTAL (REAL+EST)",
+      "class": "is-num is-sortable is-sorted-desc",
+      "location": {
+        "x": 1249,
+        "y": 935,
+        "w": 350,
+        "h": 31
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "th",
+      "selector_hint": "th.is-sticky-col.is-sortable",
+      "text": "SHIP",
+      "class": "is-sticky-col is-sortable",
+      "location": {
+        "x": 321,
+        "y": 1273,
+        "w": 513,
+        "h": 31
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "th",
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "REAL",
+      "class": "is-num is-sortable",
+      "location": {
+        "x": 834,
+        "y": 1273,
+        "w": 128,
+        "h": 31
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "th",
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "ESTIMATED",
+      "class": "is-num is-sortable",
+      "location": {
+        "x": 963,
+        "y": 1273,
+        "w": 194,
+        "h": 31
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "th",
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "MANUAL",
+      "class": "is-num is-sortable",
+      "location": {
+        "x": 1157,
+        "y": 1273,
+        "w": 155,
+        "h": 31
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "th",
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "TOTAL (REAL+EST)",
+      "class": "is-num is-sortable is-sorted-desc",
+      "location": {
+        "x": 1312,
+        "y": 1273,
+        "w": 287,
+        "h": 31
+      }
+    }
+  ]
+}

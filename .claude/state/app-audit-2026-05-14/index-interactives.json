@@ -1,0 +1,927 @@
+{
+  "page": "index.html",
+  "captured_at": "2026-05-15T23:47:44.764Z",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "total_interactives": 70,
+  "by_type": {
+    "link": 24,
+    "cursor-pointer": 46
+  },
+  "elements": [
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "href": "index.html",
+      "class": "pb-page-brand",
+      "location": {
+        "x": 320,
+        "y": 20,
+        "w": 185,
+        "h": 14
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "href": "dashboard.html",
+      "location": {
+        "x": 743,
+        "y": 12,
+        "w": 91,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Activity",
+      "href": "activity.html",
+      "location": {
+        "x": 839,
+        "y": 12,
+        "w": 69,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "href": "discussion-bubbles.html",
+      "location": {
+        "x": 912,
+        "y": 12,
+        "w": 142,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Proposals",
+      "href": "proposals.html",
+      "location": {
+        "x": 1058,
+        "y": 12,
+        "w": 84,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Amendments",
+      "href": "amendments.html",
+      "location": {
+        "x": 1146,
+        "y": 12,
+        "w": 107,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Main Flows",
+      "href": "main-flows.html",
+      "location": {
+        "x": 1256,
+        "y": 12,
+        "w": 93,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Design System",
+      "href": "design-system.html",
+      "location": {
+        "x": 1354,
+        "y": 12,
+        "w": 114,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Tokens",
+      "href": "token-usage.html",
+      "location": {
+        "x": 1472,
+        "y": 12,
+        "w": 66,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.is-active",
+      "text": "Index",
+      "href": "index.html",
+      "class": "is-active",
+      "location": {
+        "x": 1542,
+        "y": 12,
+        "w": 58,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.dashboard-card",
+      "text": "Dashboard\nOperational state: tokens, costs, ships, charts. Orchestration team's ",
+      "href": "dashboard.html",
+      "class": "dashboard-card",
+      "location": {
+        "x": 320,
+        "y": 521,
+        "w": 311,
+        "h": 150
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.dashboard-card",
+      "text": "Activity\nHandoff feed. Every scenario-1-through-11 transition across cycles.\n4s ",
+      "href": "activity.html",
+      "class": "dashboard-card",
+      "location": {
+        "x": 643,
+        "y": 521,
+        "w": 311,
+        "h": 150
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.dashboard-card",
+      "text": "Discussion Bubbles\nThreaded transcripts of every multi-agent deliberation. Read ",
+      "href": "discussion-bubbles.html",
+      "class": "dashboard-card",
+      "location": {
+        "x": 966,
+        "y": 521,
+        "w": 311,
+        "h": 150
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.dashboard-card",
+      "text": "Proposals\nReview queue: approve / reject / defer pending proposals from the proa",
+      "href": "proposals.html",
+      "class": "dashboard-card",
+      "location": {
+        "x": 1289,
+        "y": 521,
+        "w": 311,
+        "h": 150
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.dashboard-card",
+      "text": "Amendments\nGovernance amendment drafts authored by the team. Founder approves to",
+      "href": "amendments.html",
+      "class": "dashboard-card",
+      "location": {
+        "x": 320,
+        "y": 683,
+        "w": 311,
+        "h": 157
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.dashboard-card",
+      "text": "Main Flows\nCritical user journeys through PARBAUGHS. Filter for \"does this serve",
+      "href": "main-flows.html",
+      "class": "dashboard-card",
+      "location": {
+        "x": 643,
+        "y": 683,
+        "w": 311,
+        "h": 157
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.quick-link",
+      "text": "ROADMAP.md\n→",
+      "href": "../agents/ROADMAP.md",
+      "class": "quick-link",
+      "location": {
+        "x": 320,
+        "y": 899,
+        "w": 250,
+        "h": 33
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.quick-link",
+      "text": "PAUSE_DISCIPLINE\n→",
+      "href": "../agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md",
+      "class": "quick-link",
+      "location": {
+        "x": 578,
+        "y": 899,
+        "w": 250,
+        "h": 33
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.quick-link",
+      "text": "HALT_CRITERIA\n→",
+      "href": "../agents/HALT_CRITERIA_AND_AUTONOMY_DISCIPLINE.md",
+      "class": "quick-link",
+      "location": {
+        "x": 835,
+        "y": 899,
+        "w": 250,
+        "h": 33
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.quick-link",
+      "text": "SESSION_JOURNAL\n→",
+      "href": "../agents/SESSION_JOURNAL.md",
+      "class": "quick-link",
+      "location": {
+        "x": 1093,
+        "y": 899,
+        "w": 250,
+        "h": 33
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.quick-link",
+      "text": "Wave Zero Runbook\n→",
+      "href": "../agents/WAVE_ZERO_DRY_RUN_RUNBOOK.md",
+      "class": "quick-link",
+      "location": {
+        "x": 1350,
+        "y": 899,
+        "w": 250,
+        "h": 33
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.quick-link",
+      "text": "MAIN_FLOWS draft\n→",
+      "href": "../../.claude/state/wave-zero-dry-run/remediation/proposed-MAIN_FLOWS.md",
+      "class": "quick-link",
+      "location": {
+        "x": 320,
+        "y": 940,
+        "w": 250,
+        "h": 33
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.quick-link",
+      "text": "METRIC_INTEGRITY draft\n→",
+      "href": "../../.claude/state/wave-zero-dry-run/remediation/proposed-METRIC_INTEGRITY_PROTOCOL.md",
+      "class": "quick-link",
+      "location": {
+        "x": 578,
+        "y": 940,
+        "w": 250,
+        "h": 33
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.quick-link",
+      "text": "FIQ_QUALITY_RUBRIC draft\n→",
+      "href": "../../.claude/state/wave-zero-dry-run/remediation/proposed-FIQ_QUALITY_RUBRIC.md",
+      "class": "quick-link",
+      "location": {
+        "x": 835,
+        "y": 940,
+        "w": 250,
+        "h": 33
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.dashboard-card-name",
+      "text": "Dashboard",
+      "class": "dashboard-card-name",
+      "location": {
+        "x": 337,
+        "y": 538,
+        "w": 277,
+        "h": 22
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.dashboard-card-purpose",
+      "text": "Operational state: tokens, costs, ships, charts. Orchestration team's overview.",
+      "class": "dashboard-card-purpose",
+      "location": {
+        "x": 337,
+        "y": 568,
+        "w": 277,
+        "h": 42
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.dashboard-card-meta",
+      "text": "5s ago\nmeter wired-estimated-sidecar-empty",
+      "class": "dashboard-card-meta",
+      "location": {
+        "x": 337,
+        "y": 622,
+        "w": 277,
+        "h": 32
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "5s ago",
+      "location": {
+        "x": 337,
+        "y": 624,
+        "w": 37,
+        "h": 28
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.dashboard-card-badge",
+      "text": "meter wired-estimated-sidecar-empty",
+      "class": "dashboard-card-badge",
+      "location": {
+        "x": 382,
+        "y": 622,
+        "w": 232,
+        "h": 32
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.dashboard-card-name",
+      "text": "Activity",
+      "class": "dashboard-card-name",
+      "location": {
+        "x": 660,
+        "y": 538,
+        "w": 277,
+        "h": 22
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.dashboard-card-purpose",
+      "text": "Handoff feed. Every scenario-1-through-11 transition across cycles.",
+      "class": "dashboard-card-purpose",
+      "location": {
+        "x": 660,
+        "y": 568,
+        "w": 277,
+        "h": 42
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.dashboard-card-meta",
+      "text": "4s ago\n1 handoffs",
+      "class": "dashboard-card-meta",
+      "location": {
+        "x": 660,
+        "y": 622,
+        "w": 277,
+        "h": 18
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "4s ago",
+      "location": {
+        "x": 660,
+        "y": 624,
+        "w": 40,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.dashboard-card-badge",
+      "text": "1 handoffs",
+      "class": "dashboard-card-badge",
+      "location": {
+        "x": 855,
+        "y": 622,
+        "w": 82,
+        "h": 18
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.dashboard-card-name",
+      "text": "Discussion Bubbles",
+      "class": "dashboard-card-name",
+      "location": {
+        "x": 983,
+        "y": 538,
+        "w": 277,
+        "h": 22
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.dashboard-card-purpose",
+      "text": "Threaded transcripts of every multi-agent deliberation. Read who said what.",
+      "class": "dashboard-card-purpose",
+      "location": {
+        "x": 983,
+        "y": 568,
+        "w": 277,
+        "h": 42
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.dashboard-card-meta",
+      "text": "4s ago\n7 threads",
+      "class": "dashboard-card-meta",
+      "location": {
+        "x": 983,
+        "y": 622,
+        "w": 277,
+        "h": 18
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "4s ago",
+      "location": {
+        "x": 983,
+        "y": 624,
+        "w": 40,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.dashboard-card-badge",
+      "text": "7 threads",
+      "class": "dashboard-card-badge",
+      "location": {
+        "x": 1185,
+        "y": 622,
+        "w": 75,
+        "h": 18
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.dashboard-card-name",
+      "text": "Proposals",
+      "class": "dashboard-card-name",
+      "location": {
+        "x": 1306,
+        "y": 538,
+        "w": 277,
+        "h": 22
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.dashboard-card-purpose",
+      "text": "Review queue: approve / reject / defer pending proposals from the proactive cycl",
+      "class": "dashboard-card-purpose",
+      "location": {
+        "x": 1306,
+        "y": 568,
+        "w": 277,
+        "h": 42
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.dashboard-card-meta",
+      "text": "6s ago\n0 pending",
+      "class": "dashboard-card-meta",
+      "location": {
+        "x": 1306,
+        "y": 622,
+        "w": 277,
+        "h": 18
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "6s ago",
+      "location": {
+        "x": 1306,
+        "y": 624,
+        "w": 40,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.dashboard-card-badge",
+      "text": "0 pending",
+      "class": "dashboard-card-badge",
+      "location": {
+        "x": 1508,
+        "y": 622,
+        "w": 75,
+        "h": 18
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.dashboard-card-name",
+      "text": "Amendments",
+      "class": "dashboard-card-name",
+      "location": {
+        "x": 337,
+        "y": 700,
+        "w": 277,
+        "h": 22
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.dashboard-card-purpose",
+      "text": "Governance amendment drafts authored by the team. Founder approves to apply agai",
+      "class": "dashboard-card-purpose",
+      "location": {
+        "x": 337,
+        "y": 730,
+        "w": 277,
+        "h": 63
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.dashboard-card-meta",
+      "text": "6s ago\n0 pending",
+      "class": "dashboard-card-meta",
+      "location": {
+        "x": 337,
+        "y": 805,
+        "w": 277,
+        "h": 18
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "6s ago",
+      "location": {
+        "x": 337,
+        "y": 807,
+        "w": 40,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.dashboard-card-badge",
+      "text": "0 pending",
+      "class": "dashboard-card-badge",
+      "location": {
+        "x": 539,
+        "y": 805,
+        "w": 75,
+        "h": 18
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.dashboard-card-name",
+      "text": "Main Flows",
+      "class": "dashboard-card-name",
+      "location": {
+        "x": 660,
+        "y": 700,
+        "w": 277,
+        "h": 22
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.dashboard-card-purpose",
+      "text": "Critical user journeys through PARBAUGHS. Filter for \"does this serve a main flo",
+      "class": "dashboard-card-purpose",
+      "location": {
+        "x": 660,
+        "y": 730,
+        "w": 277,
+        "h": 42
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "div",
+      "selector_hint": "div.dashboard-card-meta",
+      "text": "20m ago\n62 flows",
+      "class": "dashboard-card-meta",
+      "location": {
+        "x": 660,
+        "y": 784,
+        "w": 277,
+        "h": 18
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "20m ago",
+      "location": {
+        "x": 660,
+        "y": 786,
+        "w": 46,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.dashboard-card-badge",
+      "text": "62 flows",
+      "class": "dashboard-card-badge",
+      "location": {
+        "x": 868,
+        "y": 784,
+        "w": 69,
+        "h": 18
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "ROADMAP.md",
+      "location": {
+        "x": 333,
+        "y": 908,
+        "w": 71,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.quick-link-arrow",
+      "text": "→",
+      "class": "quick-link-arrow",
+      "location": {
+        "x": 549,
+        "y": 908,
+        "w": 7,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "PAUSE_DISCIPLINE",
+      "location": {
+        "x": 591,
+        "y": 908,
+        "w": 114,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.quick-link-arrow",
+      "text": "→",
+      "class": "quick-link-arrow",
+      "location": {
+        "x": 807,
+        "y": 908,
+        "w": 7,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "HALT_CRITERIA",
+      "location": {
+        "x": 848,
+        "y": 908,
+        "w": 93,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.quick-link-arrow",
+      "text": "→",
+      "class": "quick-link-arrow",
+      "location": {
+        "x": 1065,
+        "y": 908,
+        "w": 7,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "SESSION_JOURNAL",
+      "location": {
+        "x": 1106,
+        "y": 908,
+        "w": 107,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.quick-link-arrow",
+      "text": "→",
+      "class": "quick-link-arrow",
+      "location": {
+        "x": 1322,
+        "y": 908,
+        "w": 7,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "Wave Zero Runbook",
+      "location": {
+        "x": 1363,
+        "y": 908,
+        "w": 122,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.quick-link-arrow",
+      "text": "→",
+      "class": "quick-link-arrow",
+      "location": {
+        "x": 1580,
+        "y": 908,
+        "w": 7,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "MAIN_FLOWS draft",
+      "location": {
+        "x": 333,
+        "y": 949,
+        "w": 114,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.quick-link-arrow",
+      "text": "→",
+      "class": "quick-link-arrow",
+      "location": {
+        "x": 549,
+        "y": 949,
+        "w": 7,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "METRIC_INTEGRITY draft",
+      "location": {
+        "x": 591,
+        "y": 949,
+        "w": 157,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.quick-link-arrow",
+      "text": "→",
+      "class": "quick-link-arrow",
+      "location": {
+        "x": 807,
+        "y": 949,
+        "w": 7,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "FIQ_QUALITY_RUBRIC draft",
+      "location": {
+        "x": 848,
+        "y": 949,
+        "w": 172,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.quick-link-arrow",
+      "text": "→",
+      "class": "quick-link-arrow",
+      "location": {
+        "x": 1065,
+        "y": 949,
+        "w": 7,
+        "h": 15
+      }
+    }
+  ]
+}

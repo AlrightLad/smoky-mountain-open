@@ -1,0 +1,806 @@
+{
+  "page": "discussion-bubbles.html",
+  "captured_at": "2026-05-15T23:31:57.722Z",
+  "enumeration_source": ".claude\\state\\app-audit-2026-05-14\\discussion-bubbles-interactives.json",
+  "summary": {
+    "total_attempted": 89,
+    "clicked": 79,
+    "navigated_skipped": 10,
+    "errored": 0,
+    "js_errors_emitted": 0
+  },
+  "js_errors": [],
+  "results": [
+    {
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "dashboard.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Activity",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "activity.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.is-active",
+      "text": "Discussion Bubbles",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "discussion-bubbles.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Proposals",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "proposals.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Amendments",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "amendments.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Main Flows",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "main-flows.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Design System",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "design-system.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Tokens",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "token-usage.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Index",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "#filter-status",
+      "text": "All statuses\nOpen\nApproved\nApproved w/ dissent\nRejected\nTied",
+      "type": "select",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "#filter-ship",
+      "text": "All ships\ndesign-system\nwave-zero-dry-run\nwave-zero-dry-run-remediation-F1\nwave-",
+      "type": "select",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "li.db-thread-item.is-active",
+      "text": "Auto-implementation eligibility for approved proposals — when, how, what criteri",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span.db-thread-dot",
+      "text": "",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-meta",
+      "text": "Auto-implementation eligibility for approved proposals — when, how, what criteri",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-title",
+      "text": "Auto-implementation eligibility for approved proposals — when, how, what criteri",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-sub",
+      "text": "22:35\n·\n2 messages\n·\nclosed-by-founder-directive 0-0-0",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "22:35",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "·",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "2 messages",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "·",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span.db-status-text",
+      "text": "closed-by-founder-directive 0-0-0",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-snippet",
+      "text": "An approved proposal moving from approved/ to in-flight execution must follow on",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "li.db-thread-item",
+      "text": "UI/UX maturity gap — top-tier polish vs. current substrate output\n20:55\n·\n7 mess",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span.db-thread-dot",
+      "text": "",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-meta",
+      "text": "UI/UX maturity gap — top-tier polish vs. current substrate output\n20:55\n·\n7 mess",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-title",
+      "text": "UI/UX maturity gap — top-tier polish vs. current substrate output",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-sub",
+      "text": "20:55\n·\n7 messages\n·\nOpen 0-0-0",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "20:55",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "·",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "7 messages",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "·",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span.db-status-text",
+      "text": "Open 0-0-0",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-snippet",
+      "text": "Some products feel polished (Linear, Strava, Janowiak’s architecture diagrams, W",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "li.db-thread-item",
+      "text": "Rate-limit discipline gap — token meter is not wired; org-monthly is an unmodele",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span.db-thread-dot",
+      "text": "",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-meta",
+      "text": "Rate-limit discipline gap — token meter is not wired; org-monthly is an unmodele",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-title",
+      "text": "Rate-limit discipline gap — token meter is not wired; org-monthly is an unmodele",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-sub",
+      "text": "10:30\n·\n8 messages\n·\nDissent 2-1-1",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "10:30",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "·",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "8 messages",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "·",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span.db-status-text",
+      "text": "Dissent 2-1-1",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-snippet",
+      "text": "Approved-with-dissent (2-1-1). Data-Integrity dissents: the defensive heuristic ",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "li.db-thread-item",
+      "text": "Ratify METRIC_INTEGRITY_PROTOCOL — and stress-test it on the very vote that rati",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span.db-thread-dot",
+      "text": "",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-meta",
+      "text": "Ratify METRIC_INTEGRITY_PROTOCOL — and stress-test it on the very vote that rati",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-title",
+      "text": "Ratify METRIC_INTEGRITY_PROTOCOL — and stress-test it on the very vote that rati",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-sub",
+      "text": "09:55\n·\n10 messages\n·\nDissent 2-1-2",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "09:55",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "·",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "10 messages",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "·",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span.db-status-text",
+      "text": "Dissent 2-1-2",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-snippet",
+      "text": "Approved-with-dissent (2-1-2). Critic dissents on one specific scope question (d",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "li.db-thread-item",
+      "text": "Should MAIN_FLOWS become a 4th operational view at docs/reports/main-flows.html?",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span.db-thread-dot",
+      "text": "",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-meta",
+      "text": "Should MAIN_FLOWS become a 4th operational view at docs/reports/main-flows.html?",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-title",
+      "text": "Should MAIN_FLOWS become a 4th operational view at docs/reports/main-flows.html?",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-sub",
+      "text": "09:38\n·\n7 messages\n·\nApproved 3-0-1",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "09:38",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "·",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "7 messages",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "·",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span.db-status-text",
+      "text": "Approved 3-0-1",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-snippet",
+      "text": "Approved 3-0-1. Cycle 1 stays scope-locked to existing 3 operational views per F",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "li.db-thread-item",
+      "text": "Main Flows artifact — what is it, what goes in the PARBAUGHS version, which flow",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span.db-thread-dot",
+      "text": "",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-meta",
+      "text": "Main Flows artifact — what is it, what goes in the PARBAUGHS version, which flow",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-title",
+      "text": "Main Flows artifact — what is it, what goes in the PARBAUGHS version, which flow",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-sub",
+      "text": "09:10\n·\n9 messages\n·\nDissent 3-1-1",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "09:10",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "·",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "9 messages",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "·",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span.db-status-text",
+      "text": "Dissent 3-1-1",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-snippet",
+      "text": "Approved-with-dissent (3-1-1). The artifact serves Founder's product-engineering",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "li.db-thread-item",
+      "text": "Wave Zero Dry-Run V3 — synthetic decision: where should ephemeral wave-zero dry-",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span.db-thread-dot",
+      "text": "",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-meta",
+      "text": "Wave Zero Dry-Run V3 — synthetic decision: where should ephemeral wave-zero dry-",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-title",
+      "text": "Wave Zero Dry-Run V3 — synthetic decision: where should ephemeral wave-zero dry-",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-sub",
+      "text": "07:30\n·\n6 messages\n·\nApproved 3-0-0",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "07:30",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "·",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "6 messages",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span",
+      "text": "·",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "span.db-status-text",
+      "text": "Approved 3-0-0",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    },
+    {
+      "selector_hint": "div.db-thread-snippet",
+      "text": "Approved 3-0-0. Subfolder-under-dry-run keeps real and dry-run artifacts cleanly",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 104412,
+      "after_dom_size": 104412
+    }
+  ]
+}

@@ -1,0 +1,416 @@
+{
+  "page": "amendments.html",
+  "captured_at": "2026-05-15T23:31:16.126Z",
+  "enumeration_source": ".claude\\state\\app-audit-2026-05-14\\amendments-interactives.json",
+  "summary": {
+    "total_attempted": 46,
+    "clicked": 33,
+    "navigated_skipped": 13,
+    "errored": 0,
+    "js_errors_emitted": 0
+  },
+  "js_errors": [],
+  "results": [
+    {
+      "selector_hint": "#btn-clear-all",
+      "text": "CLEAR ALL",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "#btn-export",
+      "text": "EXPORT AMENDMENTS →",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "dashboard.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Activity",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "activity.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "discussion-bubbles.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Proposals",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "proposals.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.is-active",
+      "text": "Amendments",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "amendments.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Main Flows",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "main-flows.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Design System",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "design-system.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Tokens",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "token-usage.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Index",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "All reports",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Proposals",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "proposals.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "discussion-bubbles.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "summary.pb-section-title",
+      "text": "DEFERRED — ARCHIVE (0)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101530,
+      "after_dom_size": 101538
+    },
+    {
+      "selector_hint": "summary.pb-section-title",
+      "text": "APPLIED — ARCHIVE (25)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101538,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101530,
+      "after_dom_size": 101538
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101538,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101530,
+      "after_dom_size": 101538
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101538,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101530,
+      "after_dom_size": 101538
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101538,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101530,
+      "after_dom_size": 101538
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101538,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101530,
+      "after_dom_size": 101538
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101538,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101530,
+      "after_dom_size": 101538
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (edit-section)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101538,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (append-to-existing)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101530,
+      "after_dom_size": 101538
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101538,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101530,
+      "after_dom_size": 101538
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (replace-existing)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101538,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101530,
+      "after_dom_size": 101538
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (replace-existing)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101538,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (append-to-existing)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101530,
+      "after_dom_size": 101538
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (append-to-existing)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101538,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (append-to-existing)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101530,
+      "after_dom_size": 101538
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101538,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101530,
+      "after_dom_size": 101538
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (edit-section)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101538,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "summary",
+      "text": "Show diff preview (append-to-existing)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101530,
+      "after_dom_size": 101538
+    },
+    {
+      "selector_hint": "summary.pb-section-title",
+      "text": "REJECTED — ARCHIVE (0)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101538,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "#count-deferred-inline",
+      "text": "(0)",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101530,
+      "after_dom_size": 101538
+    },
+    {
+      "selector_hint": "#count-applied-inline",
+      "text": "(25)",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101538,
+      "after_dom_size": 101546
+    },
+    {
+      "selector_hint": "#count-rejected-inline",
+      "text": "(0)",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 101546,
+      "after_dom_size": 101554
+    }
+  ]
+}

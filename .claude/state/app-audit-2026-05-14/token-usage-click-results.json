@@ -1,0 +1,255 @@
+{
+  "page": "token-usage.html",
+  "captured_at": "2026-05-15T23:31:32.656Z",
+  "enumeration_source": ".claude\\state\\app-audit-2026-05-14\\token-usage-interactives.json",
+  "summary": {
+    "total_attempted": 28,
+    "clicked": 16,
+    "navigated_skipped": 12,
+    "errored": 0,
+    "js_errors_emitted": 0
+  },
+  "js_errors": [],
+  "results": [
+    {
+      "selector_hint": "#tu-refresh-btn",
+      "text": "Refresh now",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 28413,
+      "after_dom_size": 28409
+    },
+    {
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "dashboard.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Activity",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "activity.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "discussion-bubbles.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Proposals",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "proposals.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Amendments",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "amendments.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Main Flows",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "main-flows.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Design System",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "design-system.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.is-active",
+      "text": "Tokens",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "token-usage.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Index",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "All reports",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "dashboard.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "th.is-sticky-col.is-sortable",
+      "text": "AGENT",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 28409,
+      "after_dom_size": 28409
+    },
+    {
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "REAL",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 28409,
+      "after_dom_size": 28409
+    },
+    {
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "ESTIMATED",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 28409,
+      "after_dom_size": 28408
+    },
+    {
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "MANUAL",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 28408,
+      "after_dom_size": 28409
+    },
+    {
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "TOTAL (REAL+EST)",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 28409,
+      "after_dom_size": 28408
+    },
+    {
+      "selector_hint": "th.is-sticky-col.is-sortable",
+      "text": "CRON SOURCE",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 28408,
+      "after_dom_size": 28409
+    },
+    {
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "REAL",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 28409,
+      "after_dom_size": 28409
+    },
+    {
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "ESTIMATED",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 28409,
+      "after_dom_size": 28408
+    },
+    {
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "MANUAL",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 28408,
+      "after_dom_size": 28409
+    },
+    {
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "TOTAL (REAL+EST)",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 28409,
+      "after_dom_size": 28408
+    },
+    {
+      "selector_hint": "th.is-sticky-col.is-sortable",
+      "text": "SHIP",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 28408,
+      "after_dom_size": 28409
+    },
+    {
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "REAL",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 28409,
+      "after_dom_size": 28409
+    },
+    {
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "ESTIMATED",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 28409,
+      "after_dom_size": 28408
+    },
+    {
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "MANUAL",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 28408,
+      "after_dom_size": 28409
+    },
+    {
+      "selector_hint": "th.is-num.is-sortable",
+      "text": "TOTAL (REAL+EST)",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 28409,
+      "after_dom_size": 28408
+    }
+  ]
+}

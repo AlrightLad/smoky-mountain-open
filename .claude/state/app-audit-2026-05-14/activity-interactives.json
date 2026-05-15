@@ -1,0 +1,238 @@
+{
+  "page": "activity.html",
+  "captured_at": "2026-05-15T23:30:51.461Z",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "total_interactives": 17,
+  "by_type": {
+    "link": 13,
+    "select": 4
+  },
+  "elements": [
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "href": "index.html",
+      "class": "pb-page-brand",
+      "location": {
+        "x": 320,
+        "y": 20,
+        "w": 185,
+        "h": 14
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "href": "dashboard.html",
+      "location": {
+        "x": 743,
+        "y": 12,
+        "w": 91,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.is-active",
+      "text": "Activity",
+      "href": "activity.html",
+      "class": "is-active",
+      "location": {
+        "x": 839,
+        "y": 12,
+        "w": 69,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "href": "discussion-bubbles.html",
+      "location": {
+        "x": 912,
+        "y": 12,
+        "w": 142,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Proposals",
+      "href": "proposals.html",
+      "location": {
+        "x": 1058,
+        "y": 12,
+        "w": 84,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Amendments",
+      "href": "amendments.html",
+      "location": {
+        "x": 1146,
+        "y": 12,
+        "w": 107,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Main Flows",
+      "href": "main-flows.html",
+      "location": {
+        "x": 1256,
+        "y": 12,
+        "w": 93,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Design System",
+      "href": "design-system.html",
+      "location": {
+        "x": 1354,
+        "y": 12,
+        "w": 114,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Tokens",
+      "href": "token-usage.html",
+      "location": {
+        "x": 1472,
+        "y": 12,
+        "w": 66,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Index",
+      "href": "index.html",
+      "location": {
+        "x": 1542,
+        "y": 12,
+        "w": 58,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "All reports",
+      "href": "index.html",
+      "location": {
+        "x": 927,
+        "y": 918,
+        "w": 73,
+        "h": 15
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "href": "dashboard.html",
+      "location": {
+        "x": 1019,
+        "y": 918,
+        "w": 59,
+        "h": 15
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "href": "discussion-bubbles.html",
+      "location": {
+        "x": 1099,
+        "y": 918,
+        "w": 119,
+        "h": 15
+      }
+    },
+    {
+      "type": "select",
+      "tag": "select",
+      "selector_hint": "#filter-scenario",
+      "text": "All scenarios\nCycle-to-cycle\nAgent-to-agent\nSubagent-to-parent\nParent-to-subagen",
+      "id": "filter-scenario",
+      "location": {
+        "x": 320,
+        "y": 420,
+        "w": 224,
+        "h": 31
+      }
+    },
+    {
+      "type": "select",
+      "tag": "select",
+      "selector_hint": "#filter-agent",
+      "text": "Any agent\ndiscussion-bubble-orchestrator\nwave-zero-dry-run-orchestrator",
+      "id": "filter-agent",
+      "location": {
+        "x": 556,
+        "y": 420,
+        "w": 235,
+        "h": 31
+      }
+    },
+    {
+      "type": "select",
+      "tag": "select",
+      "selector_hint": "#filter-ship",
+      "text": "All ships\nwave-zero-dry-run",
+      "id": "filter-ship",
+      "location": {
+        "x": 803,
+        "y": 420,
+        "w": 154,
+        "h": 31
+      }
+    },
+    {
+      "type": "select",
+      "tag": "select",
+      "selector_hint": "#filter-range",
+      "text": "Last 24h\nLast 7 days\nLast 30 days\nAll time",
+      "id": "filter-range",
+      "location": {
+        "x": 969,
+        "y": 420,
+        "w": 140,
+        "h": 31
+      }
+    }
+  ]
+}

@@ -1,0 +1,597 @@
+{
+  "page": "amendments.html",
+  "captured_at": "2026-05-15T23:31:06.174Z",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "total_interactives": 46,
+  "by_type": {
+    "button": 2,
+    "link": 13,
+    "details-summary": 28,
+    "cursor-pointer": 3
+  },
+  "elements": [
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "#btn-clear-all",
+      "text": "CLEAR ALL",
+      "id": "btn-clear-all",
+      "class": "amd-decision-btn",
+      "location": {
+        "x": 1313,
+        "y": 151,
+        "w": 138,
+        "h": 32
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "#btn-export",
+      "text": "EXPORT AMENDMENTS →",
+      "id": "btn-export",
+      "class": "amd-decision-btn",
+      "location": {
+        "x": 1462,
+        "y": 144,
+        "w": 138,
+        "h": 46
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "href": "index.html",
+      "class": "pb-page-brand",
+      "location": {
+        "x": 320,
+        "y": 20,
+        "w": 185,
+        "h": 14
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "href": "dashboard.html",
+      "location": {
+        "x": 743,
+        "y": 12,
+        "w": 91,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Activity",
+      "href": "activity.html",
+      "location": {
+        "x": 839,
+        "y": 12,
+        "w": 69,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "href": "discussion-bubbles.html",
+      "location": {
+        "x": 912,
+        "y": 12,
+        "w": 142,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Proposals",
+      "href": "proposals.html",
+      "location": {
+        "x": 1058,
+        "y": 12,
+        "w": 84,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.is-active",
+      "text": "Amendments",
+      "href": "amendments.html",
+      "class": "is-active",
+      "location": {
+        "x": 1146,
+        "y": 12,
+        "w": 107,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Main Flows",
+      "href": "main-flows.html",
+      "location": {
+        "x": 1256,
+        "y": 12,
+        "w": 93,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Design System",
+      "href": "design-system.html",
+      "location": {
+        "x": 1354,
+        "y": 12,
+        "w": 114,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Tokens",
+      "href": "token-usage.html",
+      "location": {
+        "x": 1472,
+        "y": 12,
+        "w": 66,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Index",
+      "href": "index.html",
+      "location": {
+        "x": 1542,
+        "y": 12,
+        "w": 58,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "All reports",
+      "href": "index.html",
+      "location": {
+        "x": 934,
+        "y": 1091,
+        "w": 73,
+        "h": 15
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Proposals",
+      "href": "proposals.html",
+      "location": {
+        "x": 1026,
+        "y": 1091,
+        "w": 59,
+        "h": 15
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "href": "discussion-bubbles.html",
+      "location": {
+        "x": 1105,
+        "y": 1091,
+        "w": 119,
+        "h": 15
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary.pb-section-title",
+      "text": "DEFERRED — ARCHIVE (0)",
+      "class": "pb-section-title",
+      "location": {
+        "x": 320,
+        "y": 807,
+        "w": 1280,
+        "h": 23
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary.pb-section-title",
+      "text": "APPLIED — ARCHIVE (25)",
+      "class": "pb-section-title",
+      "location": {
+        "x": 320,
+        "y": 874,
+        "w": 1280,
+        "h": 23
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "location": {
+        "x": 339,
+        "y": 1075,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "location": {
+        "x": 339,
+        "y": 1293,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "location": {
+        "x": 339,
+        "y": 1511,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "location": {
+        "x": 339,
+        "y": 1708,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "location": {
+        "x": 339,
+        "y": 1905,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "location": {
+        "x": 339,
+        "y": 2102,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "location": {
+        "x": 339,
+        "y": 2299,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "location": {
+        "x": 339,
+        "y": 2517,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "location": {
+        "x": 339,
+        "y": 2735,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "location": {
+        "x": 339,
+        "y": 2932,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "location": {
+        "x": 339,
+        "y": 3150,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (edit-section)",
+      "location": {
+        "x": 339,
+        "y": 3347,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (append-to-existing)",
+      "location": {
+        "x": 339,
+        "y": 3565,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "location": {
+        "x": 339,
+        "y": 3783,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "location": {
+        "x": 339,
+        "y": 4001,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (replace-existing)",
+      "location": {
+        "x": 339,
+        "y": 4219,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "location": {
+        "x": 339,
+        "y": 4416,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (replace-existing)",
+      "location": {
+        "x": 339,
+        "y": 4634,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (append-to-existing)",
+      "location": {
+        "x": 339,
+        "y": 4852,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (append-to-existing)",
+      "location": {
+        "x": 339,
+        "y": 5049,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (append-to-existing)",
+      "location": {
+        "x": 339,
+        "y": 5246,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "location": {
+        "x": 339,
+        "y": 5443,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (new-file)",
+      "location": {
+        "x": 339,
+        "y": 5640,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (edit-section)",
+      "location": {
+        "x": 339,
+        "y": 5816,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary",
+      "text": "Show diff preview (append-to-existing)",
+      "location": {
+        "x": 339,
+        "y": 6013,
+        "w": 1244,
+        "h": 14
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary.pb-section-title",
+      "text": "REJECTED — ARCHIVE (0)",
+      "class": "pb-section-title",
+      "location": {
+        "x": 320,
+        "y": 941,
+        "w": 1280,
+        "h": 23
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "#count-deferred-inline",
+      "text": "(0)",
+      "id": "count-deferred-inline",
+      "class": "pb-kpi-label",
+      "location": {
+        "x": 481,
+        "y": 807,
+        "w": 23,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "#count-applied-inline",
+      "text": "(25)",
+      "id": "count-applied-inline",
+      "class": "pb-kpi-label",
+      "location": {
+        "x": 473,
+        "y": 874,
+        "w": 31,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "#count-rejected-inline",
+      "text": "(0)",
+      "id": "count-rejected-inline",
+      "class": "pb-kpi-label",
+      "location": {
+        "x": 481,
+        "y": 941,
+        "w": 23,
+        "h": 14
+      }
+    }
+  ]
+}

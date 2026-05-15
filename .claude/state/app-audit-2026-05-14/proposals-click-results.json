@@ -1,0 +1,226 @@
+{
+  "page": "proposals.html",
+  "captured_at": "2026-05-15T23:31:03.346Z",
+  "enumeration_source": ".claude\\state\\app-audit-2026-05-14\\proposals-interactives.json",
+  "summary": {
+    "total_attempted": 25,
+    "clicked": 11,
+    "navigated_skipped": 14,
+    "errored": 0,
+    "js_errors_emitted": 0
+  },
+  "js_errors": [],
+  "results": [
+    {
+      "selector_hint": "#btn-clear-all",
+      "text": "Clear all",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 145114,
+      "after_dom_size": 145114
+    },
+    {
+      "selector_hint": "#btn-export",
+      "text": "Export decisions →",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 145114,
+      "after_dom_size": 145114
+    },
+    {
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "dashboard.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Activity",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "activity.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "discussion-bubbles.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.is-active",
+      "text": "Proposals",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "proposals.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Amendments",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "amendments.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Main Flows",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "main-flows.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Design System",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "design-system.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Tokens",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "token-usage.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Index",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "All reports",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "dashboard.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "discussion-bubbles.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Activity",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "activity.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "summary.pb-section-title",
+      "text": "DEFERRED (0)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 145114,
+      "after_dom_size": 145122
+    },
+    {
+      "selector_hint": "summary.pb-section-title",
+      "text": "SHIPPED — ARCHIVE (4)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 145122,
+      "after_dom_size": 145114
+    },
+    {
+      "selector_hint": "summary.pb-section-title",
+      "text": "REJECTED — ARCHIVE (0)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 145114,
+      "after_dom_size": 145122
+    },
+    {
+      "selector_hint": "#filter-lane",
+      "text": "All lanes\nLane 1 — UI Polish\nLane 2 — Bug Discovery\nLane 3 — Performance\nLane 4 ",
+      "type": "select",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 145122,
+      "after_dom_size": 145122
+    },
+    {
+      "selector_hint": "#filter-status",
+      "text": "All\nUndecided\nDecided",
+      "type": "select",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 145122,
+      "after_dom_size": 145122
+    },
+    {
+      "selector_hint": "#sort-by",
+      "text": "Cost ↑\nCost ↓\nBy lane\nNewest first",
+      "type": "select",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 145122,
+      "after_dom_size": 145122
+    },
+    {
+      "selector_hint": "span.section-count",
+      "text": "(0)",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 145122,
+      "after_dom_size": 145122
+    },
+    {
+      "selector_hint": "span.section-count",
+      "text": "(4)",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 145122,
+      "after_dom_size": 145122
+    },
+    {
+      "selector_hint": "span.section-count",
+      "text": "(0)",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 145122,
+      "after_dom_size": 145122
+    }
+  ]
+}

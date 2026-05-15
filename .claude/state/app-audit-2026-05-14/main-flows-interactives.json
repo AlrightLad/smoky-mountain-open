@@ -1,14 +1,14 @@
 {
   "page": "main-flows.html",
-  "captured_at": "2026-05-14T21:31:24.931Z",
+  "captured_at": "2026-05-15T23:32:10.699Z",
   "viewport": {
     "width": 1920,
     "height": 1080
   },
-  "total_interactives": 377,
+  "total_interactives": 376,
   "by_type": {
     "button": 12,
-    "link": 13,
+    "link": 12,
     "cursor-pointer": 352
   },
   "elements": [
@@ -190,7 +190,7 @@
       "text": "Dashboard",
       "href": "dashboard.html",
       "location": {
-        "x": 828,
+        "x": 923,
         "y": 12,
         "w": 91,
         "h": 29
@@ -203,7 +203,7 @@
       "text": "Activity",
       "href": "activity.html",
       "location": {
-        "x": 924,
+        "x": 1019,
         "y": 12,
         "w": 69,
         "h": 29
@@ -216,7 +216,7 @@
       "text": "Discussion Bubbles",
       "href": "discussion-bubbles.html",
       "location": {
-        "x": 997,
+        "x": 1092,
         "y": 12,
         "w": 142,
         "h": 29
@@ -229,7 +229,7 @@
       "text": "Proposals",
       "href": "proposals.html",
       "location": {
-        "x": 1143,
+        "x": 1238,
         "y": 12,
         "w": 84,
         "h": 29
@@ -242,22 +242,9 @@
       "text": "Amendments",
       "href": "amendments.html",
       "location": {
-        "x": 1230,
+        "x": 1326,
         "y": 12,
         "w": 107,
-        "h": 29
-      }
-    },
-    {
-      "type": "link",
-      "tag": "a",
-      "selector_hint": "a",
-      "text": "Escalations",
-      "href": "escalations.html",
-      "location": {
-        "x": 1341,
-        "y": 12,
-        "w": 91,
         "h": 29
       }
     },

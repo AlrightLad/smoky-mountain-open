@@ -1,0 +1,414 @@
+{
+  "page": "design-system.html",
+  "captured_at": "2026-05-15T23:32:00.599Z",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "total_interactives": 30,
+  "by_type": {
+    "button": 14,
+    "link": 14,
+    "select": 2
+  },
+  "elements": [
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.ds-motion-btn",
+      "text": "var(--ease-out) · 160ms · default interactive",
+      "class": "ds-motion-btn",
+      "location": {
+        "x": 337,
+        "y": 3560,
+        "w": 1246,
+        "h": 32
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.ds-motion-btn",
+      "text": "var(--ease-in-out) · 240ms · symmetric state changes",
+      "class": "ds-motion-btn",
+      "location": {
+        "x": 337,
+        "y": 3604,
+        "w": 1246,
+        "h": 32
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.ds-motion-btn",
+      "text": "var(--ease-spring) · 240ms · celebration only",
+      "class": "ds-motion-btn",
+      "location": {
+        "x": 337,
+        "y": 3648,
+        "w": 1246,
+        "h": 32
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.pb-button.pb-button--primary",
+      "text": "Default",
+      "class": "pb-button pb-button--primary",
+      "location": {
+        "x": 489,
+        "y": 3886,
+        "w": 81,
+        "h": 36
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.pb-button.pb-button--primary",
+      "text": "Disabled",
+      "class": "pb-button pb-button--primary",
+      "location": {
+        "x": 578,
+        "y": 3886,
+        "w": 89,
+        "h": 36
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.pb-button.pb-button--secondary",
+      "text": "Default",
+      "class": "pb-button pb-button--secondary",
+      "location": {
+        "x": 489,
+        "y": 3947,
+        "w": 81,
+        "h": 36
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.pb-button.pb-button--secondary",
+      "text": "Disabled",
+      "class": "pb-button pb-button--secondary",
+      "location": {
+        "x": 578,
+        "y": 3947,
+        "w": 89,
+        "h": 36
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.pb-button.pb-button--ghost",
+      "text": "Default",
+      "class": "pb-button pb-button--ghost",
+      "location": {
+        "x": 489,
+        "y": 4008,
+        "w": 81,
+        "h": 36
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.pb-button.pb-button--ghost",
+      "text": "Disabled",
+      "class": "pb-button pb-button--ghost",
+      "location": {
+        "x": 578,
+        "y": 4008,
+        "w": 89,
+        "h": 36
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.pb-button.pb-button--destructive",
+      "text": "Reject",
+      "class": "pb-button pb-button--destructive",
+      "location": {
+        "x": 489,
+        "y": 4070,
+        "w": 73,
+        "h": 36
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.pb-button.pb-button--primary",
+      "text": "Log hole 7",
+      "class": "pb-button pb-button--primary",
+      "location": {
+        "x": 337,
+        "y": 5870,
+        "w": 382,
+        "h": 36
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.pb-button.pb-button--primary",
+      "text": "Approve",
+      "class": "pb-button pb-button--primary",
+      "location": {
+        "x": 337,
+        "y": 6123,
+        "w": 88,
+        "h": 36
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.pb-button.pb-button--secondary",
+      "text": "Defer",
+      "class": "pb-button pb-button--secondary",
+      "location": {
+        "x": 433,
+        "y": 6123,
+        "w": 69,
+        "h": 36
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.pb-button.pb-button--destructive",
+      "text": "Reject",
+      "class": "pb-button pb-button--destructive",
+      "location": {
+        "x": 510,
+        "y": 6123,
+        "w": 73,
+        "h": 36
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "href": "index.html",
+      "class": "pb-page-brand",
+      "location": {
+        "x": 320,
+        "y": 19,
+        "w": 185,
+        "h": 18
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "href": "dashboard.html",
+      "location": {
+        "x": 743,
+        "y": 12,
+        "w": 91,
+        "h": 31
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Activity",
+      "href": "activity.html",
+      "location": {
+        "x": 839,
+        "y": 12,
+        "w": 69,
+        "h": 31
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "href": "discussion-bubbles.html",
+      "location": {
+        "x": 912,
+        "y": 12,
+        "w": 142,
+        "h": 31
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Proposals",
+      "href": "proposals.html",
+      "location": {
+        "x": 1058,
+        "y": 12,
+        "w": 84,
+        "h": 31
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Amendments",
+      "href": "amendments.html",
+      "location": {
+        "x": 1146,
+        "y": 12,
+        "w": 107,
+        "h": 31
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Main Flows",
+      "href": "main-flows.html",
+      "location": {
+        "x": 1256,
+        "y": 12,
+        "w": 93,
+        "h": 31
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.is-active",
+      "text": "Design System",
+      "href": "design-system.html",
+      "class": "is-active",
+      "location": {
+        "x": 1354,
+        "y": 12,
+        "w": 114,
+        "h": 31
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Tokens",
+      "href": "token-usage.html",
+      "location": {
+        "x": 1472,
+        "y": 12,
+        "w": 66,
+        "h": 31
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Index",
+      "href": "index.html",
+      "location": {
+        "x": 1542,
+        "y": 12,
+        "w": 58,
+        "h": 31
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.pb-link",
+      "text": "Read this page",
+      "href": "#",
+      "class": "pb-link",
+      "location": {
+        "x": 489,
+        "y": 4235,
+        "w": 104,
+        "h": 25
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.pb-link--subtle",
+      "text": "A subtle reference",
+      "href": "#",
+      "class": "pb-link--subtle",
+      "location": {
+        "x": 601,
+        "y": 4236,
+        "w": 128,
+        "h": 24
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.pb-link--strong",
+      "text": "Strong call to action",
+      "href": "#",
+      "class": "pb-link--strong",
+      "location": {
+        "x": 737,
+        "y": 4236,
+        "w": 146,
+        "h": 24
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.pb-link.pb-link--subtle",
+      "text": "Read full transcript →",
+      "href": "#",
+      "class": "pb-link pb-link--subtle",
+      "location": {
+        "x": 1201,
+        "y": 5737,
+        "w": 150,
+        "h": 22
+      }
+    },
+    {
+      "type": "select",
+      "tag": "select",
+      "selector_hint": "#ds-select-demo",
+      "text": "All lanes\nLane 1 — UI Polish\nLane 2 — Bug Discovery",
+      "id": "ds-select-demo",
+      "class": "pb-select",
+      "location": {
+        "x": 320,
+        "y": 5210,
+        "w": 200,
+        "h": 38
+      }
+    },
+    {
+      "type": "select",
+      "tag": "select",
+      "selector_hint": "#ds-select-demo-2",
+      "text": "Newest first\nCost ↑\nCost ↓",
+      "id": "ds-select-demo-2",
+      "class": "pb-select",
+      "location": {
+        "x": 737,
+        "y": 5210,
+        "w": 140,
+        "h": 38
+      }
+    }
+  ]
+}

@@ -1,11 +1,11 @@
 {
   "page": "main-flows.html",
-  "captured_at": "2026-05-14T21:46:56.930Z",
+  "captured_at": "2026-05-15T23:47:41.934Z",
   "enumeration_source": ".claude\\state\\app-audit-2026-05-14\\main-flows-interactives.json",
   "summary": {
-    "total_attempted": 377,
+    "total_attempted": 376,
     "clicked": 25,
-    "navigated_skipped": 13,
+    "navigated_skipped": 12,
     "errored": 339,
     "js_errors_emitted": 0
   },
@@ -17,8 +17,8 @@
       "type": "button",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 201449,
-      "after_dom_size": 201449
+      "before_dom_size": 201690,
+      "after_dom_size": 201690
     },
     {
       "selector_hint": "button.mf-rail-chip[data-actor=\"member\"]",
@@ -26,8 +26,8 @@
       "type": "button",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 201449,
-      "after_dom_size": 201619
+      "before_dom_size": 201690,
+      "after_dom_size": 201860
     },
     {
       "selector_hint": "button.mf-rail-chip[data-actor=\"commissioner\"]",
@@ -35,8 +35,8 @@
       "type": "button",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 201619,
-      "after_dom_size": 202018
+      "before_dom_size": 201860,
+      "after_dom_size": 202259
     },
     {
       "selector_hint": "button.mf-rail-chip[data-actor=\"founder\"]",
@@ -44,8 +44,8 @@
       "type": "button",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 202018,
-      "after_dom_size": 202018
+      "before_dom_size": 202259,
+      "after_dom_size": 202259
     },
     {
       "selector_hint": "button.mf-rail-chip[data-actor=\"system\"]",
@@ -53,8 +53,8 @@
       "type": "button",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 202018,
-      "after_dom_size": 202038
+      "before_dom_size": 202259,
+      "after_dom_size": 202279
     },
     {
       "selector_hint": "button.mf-rail-chip[data-actor=\"agent\"]",
@@ -62,8 +62,8 @@
       "type": "button",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 202038,
-      "after_dom_size": 202028
+      "before_dom_size": 202279,
+      "after_dom_size": 202269
     },
     {
       "selector_hint": "button.mf-rail-chip.is-on[data-tier=\"\"]",
@@ -71,8 +71,8 @@
       "type": "button",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 202028,
-      "after_dom_size": 202028
+      "before_dom_size": 202269,
+      "after_dom_size": 202269
     },
     {
       "selector_hint": "button.mf-rail-chip[data-tier=\"core\"]",
@@ -80,8 +80,8 @@
       "type": "button",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 202028,
-      "after_dom_size": 202068
+      "before_dom_size": 202269,
+      "after_dom_size": 202309
     },
     {
       "selector_hint": "button.mf-rail-chip[data-tier=\"supplementary\"]",
@@ -89,8 +89,8 @@
       "type": "button",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 202068,
-      "after_dom_size": 202068
+      "before_dom_size": 202309,
+      "after_dom_size": 202309
     },
     {
       "selector_hint": "button.mf-rail-chip[data-tier=\"admin\"]",
@@ -98,8 +98,8 @@
       "type": "button",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 202068,
-      "after_dom_size": 202068
+      "before_dom_size": 202309,
+      "after_dom_size": 202309
     },
     {
       "selector_hint": "button.mf-rail-chip[data-tier=\"system\"]",
@@ -107,8 +107,8 @@
       "type": "button",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 202068,
-      "after_dom_size": 202028
+      "before_dom_size": 202309,
+      "after_dom_size": 202269
     },
     {
       "selector_hint": "#mf-rail-clear",
@@ -116,8 +116,8 @@
       "type": "button",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 202028,
-      "after_dom_size": 199768
+      "before_dom_size": 202269,
+      "after_dom_size": 200009
     },
     {
       "selector_hint": "a.pb-page-brand",
@@ -165,14 +165,6 @@
       "type": "link",
       "outcome": "skipped-navigation",
       "href": "amendments.html",
-      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
-    },
-    {
-      "selector_hint": "a",
-      "text": "Escalations",
-      "type": "link",
-      "outcome": "skipped-navigation",
-      "href": "escalations.html",
       "note": "anchor with non-fragment href; clicking would navigate away from page under test"
     },
     {
@@ -2189,8 +2181,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 199768,
-      "after_dom_size": 199194
+      "before_dom_size": 200009,
+      "after_dom_size": 199435
     },
     {
       "selector_hint": "span.mf-flows-id",
@@ -2226,8 +2218,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 199194,
-      "after_dom_size": 199254
+      "before_dom_size": 199435,
+      "after_dom_size": 199495
     },
     {
       "selector_hint": "span.mf-flows-id",
@@ -2263,8 +2255,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 199254,
-      "after_dom_size": 200554
+      "before_dom_size": 199495,
+      "after_dom_size": 200795
     },
     {
       "selector_hint": "span.mf-flows-id",
@@ -2300,8 +2292,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 200554,
-      "after_dom_size": 199212
+      "before_dom_size": 200795,
+      "after_dom_size": 199453
     },
     {
       "selector_hint": "span.mf-flows-id",
@@ -2407,8 +2399,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 199212,
-      "after_dom_size": 199230
+      "before_dom_size": 199453,
+      "after_dom_size": 199471
     },
     {
       "selector_hint": "div.mf-step-num",
@@ -2416,8 +2408,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 199230,
-      "after_dom_size": 199230
+      "before_dom_size": 199471,
+      "after_dom_size": 199471
     },
     {
       "selector_hint": "div",
@@ -2425,8 +2417,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 199230,
-      "after_dom_size": 78091
+      "before_dom_size": 199471,
+      "after_dom_size": 101530
     },
     {
       "selector_hint": "div.mf-step-from-to",
@@ -2464,8 +2456,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 78091,
-      "after_dom_size": 78091
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
     },
     {
       "selector_hint": "div.mf-step-from-to",
@@ -2503,8 +2495,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 78091,
-      "after_dom_size": 78091
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
     },
     {
       "selector_hint": "div.mf-step-from-to",
@@ -2542,8 +2534,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 78091,
-      "after_dom_size": 78091
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
     },
     {
       "selector_hint": "div.mf-step-from-to",
@@ -2581,8 +2573,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 78091,
-      "after_dom_size": 78091
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
     },
     {
       "selector_hint": "div.mf-step-from-to",
@@ -2620,8 +2612,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 78091,
-      "after_dom_size": 78091
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
     },
     {
       "selector_hint": "div.mf-step-from-to",
@@ -2659,8 +2651,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 78091,
-      "after_dom_size": 78091
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
     },
     {
       "selector_hint": "div.mf-step-from-to",

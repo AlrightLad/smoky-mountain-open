@@ -1,0 +1,528 @@
+{
+  "page": "index.html",
+  "captured_at": "2026-05-15T23:47:50.820Z",
+  "enumeration_source": ".claude\\state\\app-audit-2026-05-14\\index-interactives.json",
+  "summary": {
+    "total_attempted": 70,
+    "clicked": 15,
+    "navigated_skipped": 24,
+    "errored": 31,
+    "js_errors_emitted": 0
+  },
+  "js_errors": [],
+  "results": [
+    {
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "dashboard.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Activity",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "activity.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "discussion-bubbles.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Proposals",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "proposals.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Amendments",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "amendments.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Main Flows",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "main-flows.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Design System",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "design-system.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Tokens",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "token-usage.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.is-active",
+      "text": "Index",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.dashboard-card",
+      "text": "Dashboard\nOperational state: tokens, costs, ships, charts. Orchestration team's ",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "dashboard.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.dashboard-card",
+      "text": "Activity\nHandoff feed. Every scenario-1-through-11 transition across cycles.\n4s ",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "activity.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.dashboard-card",
+      "text": "Discussion Bubbles\nThreaded transcripts of every multi-agent deliberation. Read ",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "discussion-bubbles.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.dashboard-card",
+      "text": "Proposals\nReview queue: approve / reject / defer pending proposals from the proa",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "proposals.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.dashboard-card",
+      "text": "Amendments\nGovernance amendment drafts authored by the team. Founder approves to",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "amendments.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.dashboard-card",
+      "text": "Main Flows\nCritical user journeys through PARBAUGHS. Filter for \"does this serve",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "main-flows.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.quick-link",
+      "text": "ROADMAP.md\n→",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../agents/ROADMAP.md",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.quick-link",
+      "text": "PAUSE_DISCIPLINE\n→",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../agents/PAUSE_DISCIPLINE_v8.1_ADDENDUM.md",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.quick-link",
+      "text": "HALT_CRITERIA\n→",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../agents/HALT_CRITERIA_AND_AUTONOMY_DISCIPLINE.md",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.quick-link",
+      "text": "SESSION_JOURNAL\n→",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../agents/SESSION_JOURNAL.md",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.quick-link",
+      "text": "Wave Zero Runbook\n→",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../agents/WAVE_ZERO_DRY_RUN_RUNBOOK.md",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.quick-link",
+      "text": "MAIN_FLOWS draft\n→",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../../.claude/state/wave-zero-dry-run/remediation/proposed-MAIN_FLOWS.md",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.quick-link",
+      "text": "METRIC_INTEGRITY draft\n→",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../../.claude/state/wave-zero-dry-run/remediation/proposed-METRIC_INTEGRITY_PROTOCOL.md",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.quick-link",
+      "text": "FIQ_QUALITY_RUBRIC draft\n→",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../../.claude/state/wave-zero-dry-run/remediation/proposed-FIQ_QUALITY_RUBRIC.md",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "div.dashboard-card-name",
+      "text": "Dashboard",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 13508,
+      "after_dom_size": 97694
+    },
+    {
+      "selector_hint": "div.dashboard-card-purpose",
+      "text": "Operational state: tokens, costs, ships, charts. Orchestration team's overview.",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.dashboard-card-meta",
+      "text": "5s ago\nmeter wired-estimated-sidecar-empty",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "span",
+      "text": "5s ago",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 97694,
+      "after_dom_size": 97694
+    },
+    {
+      "selector_hint": "span.dashboard-card-badge",
+      "text": "meter wired-estimated-sidecar-empty",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.dashboard-card-name",
+      "text": "Activity",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.dashboard-card-purpose",
+      "text": "Handoff feed. Every scenario-1-through-11 transition across cycles.",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.dashboard-card-meta",
+      "text": "4s ago\n1 handoffs",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "span",
+      "text": "4s ago",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 97694,
+      "after_dom_size": 97694
+    },
+    {
+      "selector_hint": "span.dashboard-card-badge",
+      "text": "1 handoffs",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.dashboard-card-name",
+      "text": "Discussion Bubbles",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.dashboard-card-purpose",
+      "text": "Threaded transcripts of every multi-agent deliberation. Read who said what.",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.dashboard-card-meta",
+      "text": "4s ago\n7 threads",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "span",
+      "text": "4s ago",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 97694,
+      "after_dom_size": 97694
+    },
+    {
+      "selector_hint": "span.dashboard-card-badge",
+      "text": "7 threads",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.dashboard-card-name",
+      "text": "Proposals",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.dashboard-card-purpose",
+      "text": "Review queue: approve / reject / defer pending proposals from the proactive cycl",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.dashboard-card-meta",
+      "text": "6s ago\n0 pending",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "span",
+      "text": "6s ago",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 97694,
+      "after_dom_size": 97694
+    },
+    {
+      "selector_hint": "span.dashboard-card-badge",
+      "text": "0 pending",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.dashboard-card-name",
+      "text": "Amendments",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.dashboard-card-purpose",
+      "text": "Governance amendment drafts authored by the team. Founder approves to apply agai",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.dashboard-card-meta",
+      "text": "6s ago\n0 pending",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "span",
+      "text": "6s ago",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 97694,
+      "after_dom_size": 97694
+    },
+    {
+      "selector_hint": "span.dashboard-card-badge",
+      "text": "0 pending",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.dashboard-card-name",
+      "text": "Main Flows",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.dashboard-card-purpose",
+      "text": "Critical user journeys through PARBAUGHS. Filter for \"does this serve a main flo",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "div.dashboard-card-meta",
+      "text": "20m ago\n62 flows",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "span",
+      "text": "20m ago",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 97694,
+      "after_dom_size": 97694
+    },
+    {
+      "selector_hint": "span.dashboard-card-badge",
+      "text": "62 flows",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "span",
+      "text": "ROADMAP.md",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 97694,
+      "after_dom_size": 97694
+    },
+    {
+      "selector_hint": "span.quick-link-arrow",
+      "text": "→",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "span",
+      "text": "PAUSE_DISCIPLINE",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 97694,
+      "after_dom_size": 97694
+    },
+    {
+      "selector_hint": "span.quick-link-arrow",
+      "text": "→",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "span",
+      "text": "HALT_CRITERIA",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 97694,
+      "after_dom_size": 97694
+    },
+    {
+      "selector_hint": "span.quick-link-arrow",
+      "text": "→",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "span",
+      "text": "SESSION_JOURNAL",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 97694,
+      "after_dom_size": 97694
+    },
+    {
+      "selector_hint": "span.quick-link-arrow",
+      "text": "→",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "span",
+      "text": "Wave Zero Runbook",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 97694,
+      "after_dom_size": 97694
+    },
+    {
+      "selector_hint": "span.quick-link-arrow",
+      "text": "→",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "span",
+      "text": "MAIN_FLOWS draft",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 97694,
+      "after_dom_size": 97694
+    },
+    {
+      "selector_hint": "span.quick-link-arrow",
+      "text": "→",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "span",
+      "text": "METRIC_INTEGRITY draft",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 97694,
+      "after_dom_size": 97694
+    },
+    {
+      "selector_hint": "span.quick-link-arrow",
+      "text": "→",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    },
+    {
+      "selector_hint": "span",
+      "text": "FIQ_QUALITY_RUBRIC draft",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 97694,
+      "after_dom_size": 97694
+    },
+    {
+      "selector_hint": "span.quick-link-arrow",
+      "text": "→",
+      "type": "cursor-pointer",
+      "outcome": "selector-not-found"
+    }
+  ]
+}

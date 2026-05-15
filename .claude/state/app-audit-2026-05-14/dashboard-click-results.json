@@ -1,0 +1,295 @@
+{
+  "page": "dashboard.html",
+  "captured_at": "2026-05-15T23:30:48.593Z",
+  "enumeration_source": ".claude\\state\\app-audit-2026-05-14\\dashboard-interactives.json",
+  "summary": {
+    "total_attempted": 33,
+    "clicked": 16,
+    "navigated_skipped": 17,
+    "errored": 0,
+    "js_errors_emitted": 0
+  },
+  "js_errors": [],
+  "results": [
+    {
+      "selector_hint": "button.pb-kpi-card.pb-health-banner",
+      "text": "• TEST HEALTH\nregen-all completed but round-trip-test gate failed (workflow stal",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 97681,
+      "after_dom_size": 97681
+    },
+    {
+      "selector_hint": "button.pb-kpi-card.pb-health-banner",
+      "text": "• SECURITY HEALTH\n2 HIGH/CRITICAL-severity dependency vulnerabilities. No active",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 97681,
+      "after_dom_size": 97681
+    },
+    {
+      "selector_hint": "button.pb-kpi-card.pb-health-banner",
+      "text": "• APPROVALS PIPELINE\n10 consecutive SKIPs · 31 in inbox\nred · 4min ago",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 97681,
+      "after_dom_size": 97681
+    },
+    {
+      "selector_hint": "button.pb-kpi-card.pb-health-banner",
+      "text": "• ARCHITECTURE REVIEW\n0 pending recommendations\nunknown",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 97681,
+      "after_dom_size": 97681
+    },
+    {
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.is-active",
+      "text": "Dashboard",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "dashboard.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Activity",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "activity.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "discussion-bubbles.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Proposals",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "proposals.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Amendments",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "amendments.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Main Flows",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "main-flows.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Design System",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "design-system.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Tokens",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "token-usage.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Index",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.pb-kpi-card",
+      "text": "AMENDMENTS PENDING\n0\nawaiting Founder ratification",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "amendments.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.pb-kpi-card",
+      "text": "BUBBLES FLAGGED\n0\ntie-break or Founder weigh-in",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "discussion-bubbles.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.pb-kpi-card",
+      "text": "PROPOSALS PENDING\n0\nawaiting approval",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "proposals.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.pb-kpi-card",
+      "text": "OPEN ESCALATIONS\n0\nnone open",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "escalations.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "All reports",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Proposals",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "proposals.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Repo",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "https://github.com/AlrightLad/smoky-mountain-open",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "span.pb-kpi-label",
+      "text": "AMENDMENTS PENDING",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 97681,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "span.pb-kpi-value",
+      "text": "0",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "span.pb-kpi-sub",
+      "text": "awaiting Founder ratification",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "span.pb-kpi-label",
+      "text": "BUBBLES FLAGGED",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "span.pb-kpi-value",
+      "text": "0",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "span.pb-kpi-sub",
+      "text": "tie-break or Founder weigh-in",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "span.pb-kpi-label",
+      "text": "PROPOSALS PENDING",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "span.pb-kpi-value",
+      "text": "0",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "span.pb-kpi-sub",
+      "text": "awaiting approval",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "span.pb-kpi-label",
+      "text": "OPEN ESCALATIONS",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "span.pb-kpi-value",
+      "text": "0",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
+    },
+    {
+      "selector_hint": "span.pb-kpi-sub",
+      "text": "none open",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 101530,
+      "after_dom_size": 101530
+    }
+  ]
+}

@@ -1,0 +1,271 @@
+{
+  "page": "escalations.html",
+  "captured_at": "2026-05-15T23:31:23.597Z",
+  "enumeration_source": ".claude\\state\\app-audit-2026-05-14\\escalations-interactives.json",
+  "summary": {
+    "total_attempted": 31,
+    "clicked": 8,
+    "navigated_skipped": 23,
+    "errored": 0,
+    "js_errors_emitted": 0
+  },
+  "js_errors": [],
+  "results": [
+    {
+      "selector_hint": "#btn-clear-all",
+      "text": "CLEAR ALL",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 51447,
+      "after_dom_size": 51447
+    },
+    {
+      "selector_hint": "#btn-export",
+      "text": "EXPORT ESCALATIONS →",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 51447,
+      "after_dom_size": 51447
+    },
+    {
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "dashboard.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Activity",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "activity.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "discussion-bubbles.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Proposals",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "proposals.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Amendments",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "amendments.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.is-active",
+      "text": "Escalations",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "escalations.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Main Flows",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "main-flows.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Design System",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "design-system.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Tokens",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "token-usage.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Index",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": ".claude/state/main-flows-v2/taxonomy-proposals.md",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../../.claude/state/main-flows-v2/taxonomy-proposals.md",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": ".claude/state/main-flows-v2/flow-inventory.json",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../../.claude/state/main-flows-v2/flow-inventory.json",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": ".claude/state/main-flows-v2/reference-spec.md",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../../.claude/state/main-flows-v2/reference-spec.md",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": ".claude/state/main-flows-v2/visual-diff-2026-05-14.md",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../../.claude/state/main-flows-v2/visual-diff-2026-05-14.md",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": ".claude/state/design-spike/comparison.md",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../../.claude/state/design-spike/comparison.md",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": ".claude/state/wave-1-kickoff/transition-summary.md",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../../.claude/state/wave-1-kickoff/transition-summary.md",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "scripts/aggregate-telemetry.py",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../../scripts/aggregate-telemetry.py",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "scripts/lib/anthropic-pricing.json",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../../scripts/lib/anthropic-pricing.json",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": ".claude/state/telemetry/events/2026-05-14.ndjson",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "../../.claude/state/telemetry/events/2026-05-14.ndjson",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "All reports",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Amendments",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "amendments.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Proposals",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "proposals.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "summary.pb-section-title",
+      "text": "APPLIED — ARCHIVE (3)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 51447,
+      "after_dom_size": 51455
+    },
+    {
+      "selector_hint": "summary.pb-section-title",
+      "text": "DEFERRED — ARCHIVE (0)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 51455,
+      "after_dom_size": 51447
+    },
+    {
+      "selector_hint": "summary.pb-section-title",
+      "text": "REJECTED — ARCHIVE (0)",
+      "type": "details-summary",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 51447,
+      "after_dom_size": 51455
+    },
+    {
+      "selector_hint": "#count-applied-inline",
+      "text": "(3)",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 51455,
+      "after_dom_size": 51447
+    },
+    {
+      "selector_hint": "#count-deferred-inline",
+      "text": "(0)",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 51447,
+      "after_dom_size": 51455
+    },
+    {
+      "selector_hint": "#count-rejected-inline",
+      "text": "(0)",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 51455,
+      "after_dom_size": 51463
+    }
+  ]
+}

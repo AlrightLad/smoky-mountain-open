@@ -1,0 +1,155 @@
+{
+  "page": "activity.html",
+  "captured_at": "2026-05-15T23:30:55.202Z",
+  "enumeration_source": ".claude\\state\\app-audit-2026-05-14\\activity-interactives.json",
+  "summary": {
+    "total_attempted": 17,
+    "clicked": 4,
+    "navigated_skipped": 13,
+    "errored": 0,
+    "js_errors_emitted": 0
+  },
+  "js_errors": [],
+  "results": [
+    {
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "dashboard.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a.is-active",
+      "text": "Activity",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "activity.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "discussion-bubbles.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Proposals",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "proposals.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Amendments",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "amendments.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Main Flows",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "main-flows.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Design System",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "design-system.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Tokens",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "token-usage.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Index",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "All reports",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "index.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "dashboard.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "type": "link",
+      "outcome": "skipped-navigation",
+      "href": "discussion-bubbles.html",
+      "note": "anchor with non-fragment href; clicking would navigate away from page under test"
+    },
+    {
+      "selector_hint": "#filter-scenario",
+      "text": "All scenarios\nCycle-to-cycle\nAgent-to-agent\nSubagent-to-parent\nParent-to-subagen",
+      "type": "select",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 13896,
+      "after_dom_size": 13896
+    },
+    {
+      "selector_hint": "#filter-agent",
+      "text": "Any agent\ndiscussion-bubble-orchestrator\nwave-zero-dry-run-orchestrator",
+      "type": "select",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 13896,
+      "after_dom_size": 13896
+    },
+    {
+      "selector_hint": "#filter-ship",
+      "text": "All ships\nwave-zero-dry-run",
+      "type": "select",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 13896,
+      "after_dom_size": 13896
+    },
+    {
+      "selector_hint": "#filter-range",
+      "text": "Last 24h\nLast 7 days\nLast 30 days\nAll time",
+      "type": "select",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 13896,
+      "after_dom_size": 13896
+    }
+  ]
+}

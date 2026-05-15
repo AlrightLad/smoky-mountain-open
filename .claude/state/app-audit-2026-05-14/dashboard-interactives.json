@@ -1,0 +1,451 @@
+{
+  "page": "dashboard.html",
+  "captured_at": "2026-05-15T23:30:42.319Z",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "total_interactives": 33,
+  "by_type": {
+    "button": 4,
+    "link": 17,
+    "cursor-pointer": 12
+  },
+  "elements": [
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.pb-kpi-card.pb-health-banner",
+      "text": "• TEST HEALTH\nregen-all completed but round-trip-test gate failed (workflow stal",
+      "class": "pb-kpi-card pb-health-banner",
+      "location": {
+        "x": 338,
+        "y": 504,
+        "w": 197,
+        "h": 383
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.pb-kpi-card.pb-health-banner",
+      "text": "• SECURITY HEALTH\n2 HIGH/CRITICAL-severity dependency vulnerabilities. No active",
+      "class": "pb-kpi-card pb-health-banner",
+      "location": {
+        "x": 547,
+        "y": 504,
+        "w": 197,
+        "h": 383
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.pb-kpi-card.pb-health-banner",
+      "text": "• APPROVALS PIPELINE\n10 consecutive SKIPs · 31 in inbox\nred · 4min ago",
+      "class": "pb-kpi-card pb-health-banner",
+      "location": {
+        "x": 757,
+        "y": 504,
+        "w": 197,
+        "h": 383
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.pb-kpi-card.pb-health-banner",
+      "text": "• ARCHITECTURE REVIEW\n0 pending recommendations\nunknown",
+      "class": "pb-kpi-card pb-health-banner",
+      "location": {
+        "x": 966,
+        "y": 504,
+        "w": 197,
+        "h": 383
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "href": "index.html",
+      "class": "pb-page-brand",
+      "location": {
+        "x": 320,
+        "y": 20,
+        "w": 185,
+        "h": 14
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.is-active",
+      "text": "Dashboard",
+      "href": "dashboard.html",
+      "class": "is-active",
+      "location": {
+        "x": 743,
+        "y": 12,
+        "w": 91,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Activity",
+      "href": "activity.html",
+      "location": {
+        "x": 839,
+        "y": 12,
+        "w": 69,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "href": "discussion-bubbles.html",
+      "location": {
+        "x": 912,
+        "y": 12,
+        "w": 142,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Proposals",
+      "href": "proposals.html",
+      "location": {
+        "x": 1058,
+        "y": 12,
+        "w": 84,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Amendments",
+      "href": "amendments.html",
+      "location": {
+        "x": 1146,
+        "y": 12,
+        "w": 107,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Main Flows",
+      "href": "main-flows.html",
+      "location": {
+        "x": 1256,
+        "y": 12,
+        "w": 93,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Design System",
+      "href": "design-system.html",
+      "location": {
+        "x": 1354,
+        "y": 12,
+        "w": 114,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Tokens",
+      "href": "token-usage.html",
+      "location": {
+        "x": 1472,
+        "y": 12,
+        "w": 66,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Index",
+      "href": "index.html",
+      "location": {
+        "x": 1542,
+        "y": 12,
+        "w": 58,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.pb-kpi-card",
+      "text": "AMENDMENTS PENDING\n0\nawaiting Founder ratification",
+      "href": "amendments.html",
+      "class": "pb-kpi-card",
+      "location": {
+        "x": 338,
+        "y": 351,
+        "w": 302,
+        "h": 108
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.pb-kpi-card",
+      "text": "BUBBLES FLAGGED\n0\ntie-break or Founder weigh-in",
+      "href": "discussion-bubbles.html",
+      "class": "pb-kpi-card",
+      "location": {
+        "x": 652,
+        "y": 351,
+        "w": 302,
+        "h": 108
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.pb-kpi-card",
+      "text": "PROPOSALS PENDING\n0\nawaiting approval",
+      "href": "proposals.html",
+      "class": "pb-kpi-card",
+      "location": {
+        "x": 966,
+        "y": 351,
+        "w": 302,
+        "h": 108
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.pb-kpi-card",
+      "text": "OPEN ESCALATIONS\n0\nnone open",
+      "href": "escalations.html",
+      "class": "pb-kpi-card",
+      "location": {
+        "x": 1280,
+        "y": 351,
+        "w": 302,
+        "h": 108
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "All reports",
+      "href": "index.html",
+      "location": {
+        "x": 1013,
+        "y": 3290,
+        "w": 73,
+        "h": 15
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Proposals",
+      "href": "proposals.html",
+      "location": {
+        "x": 1105,
+        "y": 3290,
+        "w": 59,
+        "h": 15
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Repo",
+      "href": "https://github.com/AlrightLad/smoky-mountain-open",
+      "location": {
+        "x": 1184,
+        "y": 3290,
+        "w": 26,
+        "h": 15
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.pb-kpi-label",
+      "text": "AMENDMENTS PENDING",
+      "class": "pb-kpi-label",
+      "location": {
+        "x": 357,
+        "y": 364,
+        "w": 266,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.pb-kpi-value",
+      "text": "0",
+      "class": "pb-kpi-value",
+      "location": {
+        "x": 357,
+        "y": 382,
+        "w": 266,
+        "h": 40
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.pb-kpi-sub",
+      "text": "awaiting Founder ratification",
+      "class": "pb-kpi-sub",
+      "location": {
+        "x": 357,
+        "y": 430,
+        "w": 266,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.pb-kpi-label",
+      "text": "BUBBLES FLAGGED",
+      "class": "pb-kpi-label",
+      "location": {
+        "x": 671,
+        "y": 364,
+        "w": 266,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.pb-kpi-value",
+      "text": "0",
+      "class": "pb-kpi-value",
+      "location": {
+        "x": 671,
+        "y": 382,
+        "w": 266,
+        "h": 40
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.pb-kpi-sub",
+      "text": "tie-break or Founder weigh-in",
+      "class": "pb-kpi-sub",
+      "location": {
+        "x": 671,
+        "y": 430,
+        "w": 266,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.pb-kpi-label",
+      "text": "PROPOSALS PENDING",
+      "class": "pb-kpi-label",
+      "location": {
+        "x": 985,
+        "y": 364,
+        "w": 266,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.pb-kpi-value",
+      "text": "0",
+      "class": "pb-kpi-value",
+      "location": {
+        "x": 985,
+        "y": 382,
+        "w": 266,
+        "h": 40
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.pb-kpi-sub",
+      "text": "awaiting approval",
+      "class": "pb-kpi-sub",
+      "location": {
+        "x": 985,
+        "y": 430,
+        "w": 266,
+        "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.pb-kpi-label",
+      "text": "OPEN ESCALATIONS",
+      "class": "pb-kpi-label",
+      "location": {
+        "x": 1299,
+        "y": 364,
+        "w": 266,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.pb-kpi-value",
+      "text": "0",
+      "class": "pb-kpi-value",
+      "location": {
+        "x": 1299,
+        "y": 382,
+        "w": 266,
+        "h": 40
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.pb-kpi-sub",
+      "text": "none open",
+      "class": "pb-kpi-sub",
+      "location": {
+        "x": 1299,
+        "y": 430,
+        "w": 266,
+        "h": 17
+      }
+    }
+  ]
+}

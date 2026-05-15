@@ -1,0 +1,427 @@
+{
+  "page": "escalations.html",
+  "captured_at": "2026-05-15T23:31:18.961Z",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "total_interactives": 31,
+  "by_type": {
+    "button": 2,
+    "link": 23,
+    "details-summary": 3,
+    "cursor-pointer": 3
+  },
+  "elements": [
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "#btn-clear-all",
+      "text": "CLEAR ALL",
+      "id": "btn-clear-all",
+      "class": "esc-decision-btn",
+      "location": {
+        "x": 1306,
+        "y": 151,
+        "w": 141,
+        "h": 32
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "#btn-export",
+      "text": "EXPORT ESCALATIONS →",
+      "id": "btn-export",
+      "class": "esc-decision-btn",
+      "location": {
+        "x": 1459,
+        "y": 144,
+        "w": 141,
+        "h": 46
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "href": "index.html",
+      "class": "pb-page-brand",
+      "location": {
+        "x": 320,
+        "y": 20,
+        "w": 185,
+        "h": 14
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "href": "dashboard.html",
+      "location": {
+        "x": 648,
+        "y": 12,
+        "w": 91,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Activity",
+      "href": "activity.html",
+      "location": {
+        "x": 744,
+        "y": 12,
+        "w": 69,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "href": "discussion-bubbles.html",
+      "location": {
+        "x": 817,
+        "y": 12,
+        "w": 142,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Proposals",
+      "href": "proposals.html",
+      "location": {
+        "x": 963,
+        "y": 12,
+        "w": 84,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Amendments",
+      "href": "amendments.html",
+      "location": {
+        "x": 1050,
+        "y": 12,
+        "w": 107,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.is-active",
+      "text": "Escalations",
+      "href": "escalations.html",
+      "class": "is-active",
+      "location": {
+        "x": 1161,
+        "y": 12,
+        "w": 91,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Main Flows",
+      "href": "main-flows.html",
+      "location": {
+        "x": 1256,
+        "y": 12,
+        "w": 93,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Design System",
+      "href": "design-system.html",
+      "location": {
+        "x": 1354,
+        "y": 12,
+        "w": 114,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Tokens",
+      "href": "token-usage.html",
+      "location": {
+        "x": 1472,
+        "y": 12,
+        "w": 66,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Index",
+      "href": "index.html",
+      "location": {
+        "x": 1542,
+        "y": 12,
+        "w": 58,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": ".claude/state/main-flows-v2/taxonomy-proposals.md",
+      "href": "../../.claude/state/main-flows-v2/taxonomy-proposals.md",
+      "location": {
+        "x": 389,
+        "y": 1920,
+        "w": 281,
+        "h": 16
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": ".claude/state/main-flows-v2/flow-inventory.json",
+      "href": "../../.claude/state/main-flows-v2/flow-inventory.json",
+      "location": {
+        "x": 680,
+        "y": 1920,
+        "w": 254,
+        "h": 16
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": ".claude/state/main-flows-v2/reference-spec.md",
+      "href": "../../.claude/state/main-flows-v2/reference-spec.md",
+      "location": {
+        "x": 942,
+        "y": 1920,
+        "w": 251,
+        "h": 16
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": ".claude/state/main-flows-v2/visual-diff-2026-05-14.md",
+      "href": "../../.claude/state/main-flows-v2/visual-diff-2026-05-14.md",
+      "location": {
+        "x": 1202,
+        "y": 1920,
+        "w": 290,
+        "h": 16
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": ".claude/state/design-spike/comparison.md",
+      "href": "../../.claude/state/design-spike/comparison.md",
+      "location": {
+        "x": 389,
+        "y": 2795,
+        "w": 226,
+        "h": 16
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": ".claude/state/wave-1-kickoff/transition-summary.md",
+      "href": "../../.claude/state/wave-1-kickoff/transition-summary.md",
+      "location": {
+        "x": 625,
+        "y": 2795,
+        "w": 278,
+        "h": 16
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "scripts/aggregate-telemetry.py",
+      "href": "../../scripts/aggregate-telemetry.py",
+      "location": {
+        "x": 389,
+        "y": 3863,
+        "w": 163,
+        "h": 16
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "scripts/lib/anthropic-pricing.json",
+      "href": "../../scripts/lib/anthropic-pricing.json",
+      "location": {
+        "x": 562,
+        "y": 3863,
+        "w": 172,
+        "h": 16
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": ".claude/state/telemetry/events/2026-05-14.ndjson",
+      "href": "../../.claude/state/telemetry/events/2026-05-14.ndjson",
+      "location": {
+        "x": 743,
+        "y": 3863,
+        "w": 266,
+        "h": 16
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "All reports",
+      "href": "index.html",
+      "location": {
+        "x": 963,
+        "y": 1110,
+        "w": 73,
+        "h": 15
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Amendments",
+      "href": "amendments.html",
+      "location": {
+        "x": 1056,
+        "y": 1110,
+        "w": 66,
+        "h": 15
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Proposals",
+      "href": "proposals.html",
+      "location": {
+        "x": 1141,
+        "y": 1110,
+        "w": 59,
+        "h": 15
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary.pb-section-title",
+      "text": "APPLIED — ARCHIVE (3)",
+      "class": "pb-section-title",
+      "location": {
+        "x": 320,
+        "y": 826,
+        "w": 1280,
+        "h": 23
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary.pb-section-title",
+      "text": "DEFERRED — ARCHIVE (0)",
+      "class": "pb-section-title",
+      "location": {
+        "x": 320,
+        "y": 893,
+        "w": 1280,
+        "h": 23
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary.pb-section-title",
+      "text": "REJECTED — ARCHIVE (0)",
+      "class": "pb-section-title",
+      "location": {
+        "x": 320,
+        "y": 960,
+        "w": 1280,
+        "h": 23
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "#count-applied-inline",
+      "text": "(3)",
+      "id": "count-applied-inline",
+      "class": "pb-kpi-label",
+      "location": {
+        "x": 473,
+        "y": 826,
+        "w": 23,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "#count-deferred-inline",
+      "text": "(0)",
+      "id": "count-deferred-inline",
+      "class": "pb-kpi-label",
+      "location": {
+        "x": 481,
+        "y": 893,
+        "w": 23,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "#count-rejected-inline",
+      "text": "(0)",
+      "id": "count-rejected-inline",
+      "class": "pb-kpi-label",
+      "location": {
+        "x": 481,
+        "y": 960,
+        "w": 23,
+        "h": 14
+      }
+    }
+  ]
+}

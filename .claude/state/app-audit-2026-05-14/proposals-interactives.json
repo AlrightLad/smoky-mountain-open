@@ -1,0 +1,350 @@
+{
+  "page": "proposals.html",
+  "captured_at": "2026-05-15T23:30:58.047Z",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "total_interactives": 25,
+  "by_type": {
+    "button": 2,
+    "link": 14,
+    "details-summary": 3,
+    "select": 3,
+    "cursor-pointer": 3
+  },
+  "elements": [
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "#btn-clear-all",
+      "text": "Clear all",
+      "id": "btn-clear-all",
+      "class": "btn",
+      "location": {
+        "x": 1360,
+        "y": 134,
+        "w": 85,
+        "h": 32
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "#btn-export",
+      "text": "Export decisions →",
+      "id": "btn-export",
+      "class": "btn primary",
+      "location": {
+        "x": 1457,
+        "y": 135,
+        "w": 143,
+        "h": 30
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.pb-page-brand",
+      "text": "PARBAUGHS ORCHESTRATION",
+      "href": "index.html",
+      "class": "pb-page-brand",
+      "location": {
+        "x": 320,
+        "y": 20,
+        "w": 185,
+        "h": 14
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "href": "dashboard.html",
+      "location": {
+        "x": 743,
+        "y": 12,
+        "w": 91,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Activity",
+      "href": "activity.html",
+      "location": {
+        "x": 839,
+        "y": 12,
+        "w": 69,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "href": "discussion-bubbles.html",
+      "location": {
+        "x": 912,
+        "y": 12,
+        "w": 142,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a.is-active",
+      "text": "Proposals",
+      "href": "proposals.html",
+      "class": "is-active",
+      "location": {
+        "x": 1058,
+        "y": 12,
+        "w": 84,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Amendments",
+      "href": "amendments.html",
+      "location": {
+        "x": 1146,
+        "y": 12,
+        "w": 107,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Main Flows",
+      "href": "main-flows.html",
+      "location": {
+        "x": 1256,
+        "y": 12,
+        "w": 93,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Design System",
+      "href": "design-system.html",
+      "location": {
+        "x": 1354,
+        "y": 12,
+        "w": 114,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Tokens",
+      "href": "token-usage.html",
+      "location": {
+        "x": 1472,
+        "y": 12,
+        "w": 66,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Index",
+      "href": "index.html",
+      "location": {
+        "x": 1542,
+        "y": 12,
+        "w": 58,
+        "h": 29
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "All reports",
+      "href": "index.html",
+      "location": {
+        "x": 894,
+        "y": 2478,
+        "w": 73,
+        "h": 15
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Dashboard",
+      "href": "dashboard.html",
+      "location": {
+        "x": 986,
+        "y": 2478,
+        "w": 59,
+        "h": 15
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Discussion Bubbles",
+      "href": "discussion-bubbles.html",
+      "location": {
+        "x": 1066,
+        "y": 2478,
+        "w": 119,
+        "h": 15
+      }
+    },
+    {
+      "type": "link",
+      "tag": "a",
+      "selector_hint": "a",
+      "text": "Activity",
+      "href": "activity.html",
+      "location": {
+        "x": 1204,
+        "y": 2478,
+        "w": 53,
+        "h": 15
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary.pb-section-title",
+      "text": "DEFERRED (0)",
+      "class": "pb-section-title",
+      "location": {
+        "x": 320,
+        "y": 1815,
+        "w": 1280,
+        "h": 23
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary.pb-section-title",
+      "text": "SHIPPED — ARCHIVE (4)",
+      "class": "pb-section-title",
+      "location": {
+        "x": 320,
+        "y": 1850,
+        "w": 1280,
+        "h": 23
+      }
+    },
+    {
+      "type": "details-summary",
+      "tag": "summary",
+      "selector_hint": "summary.pb-section-title",
+      "text": "REJECTED — ARCHIVE (0)",
+      "class": "pb-section-title",
+      "location": {
+        "x": 320,
+        "y": 1885,
+        "w": 1280,
+        "h": 23
+      }
+    },
+    {
+      "type": "select",
+      "tag": "select",
+      "selector_hint": "#filter-lane",
+      "text": "All lanes\nLane 1 — UI Polish\nLane 2 — Bug Discovery\nLane 3 — Performance\nLane 4 ",
+      "id": "filter-lane",
+      "class": "pb-select",
+      "location": {
+        "x": 320,
+        "y": 483,
+        "w": 203,
+        "h": 38
+      }
+    },
+    {
+      "type": "select",
+      "tag": "select",
+      "selector_hint": "#filter-status",
+      "text": "All\nUndecided\nDecided",
+      "id": "filter-status",
+      "class": "pb-select",
+      "location": {
+        "x": 539,
+        "y": 483,
+        "w": 140,
+        "h": 38
+      }
+    },
+    {
+      "type": "select",
+      "tag": "select",
+      "selector_hint": "#sort-by",
+      "text": "Cost ↑\nCost ↓\nBy lane\nNewest first",
+      "id": "sort-by",
+      "class": "pb-select",
+      "location": {
+        "x": 695,
+        "y": 483,
+        "w": 140,
+        "h": 38
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.section-count",
+      "text": "(0)",
+      "class": "section-count",
+      "location": {
+        "x": 403,
+        "y": 1815,
+        "w": 23,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.section-count",
+      "text": "(4)",
+      "class": "section-count",
+      "location": {
+        "x": 473,
+        "y": 1850,
+        "w": 23,
+        "h": 14
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span.section-count",
+      "text": "(0)",
+      "class": "section-count",
+      "location": {
+        "x": 481,
+        "y": 1885,
+        "w": 23,
+        "h": 14
+      }
+    }
+  ]
+}
