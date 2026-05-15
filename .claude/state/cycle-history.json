@@ -9,6 +9,66 @@
       "tokens_consumed": 0,
       "outcome": "PLACEHOLDER",
       "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260515-0649",
+      "type": "heartbeat",
+      "started_at": "2026-05-15T06:49:38Z",
+      "ended_at": "2026-05-15T06:49:38Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260515-1011",
+      "type": "heartbeat",
+      "started_at": "2026-05-15T10:11:51Z",
+      "ended_at": "2026-05-15T10:11:51Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "ship-20260515-1253",
+      "type": "ship",
+      "started_at": "2026-05-15T12:53:33Z",
+      "ended_at": "2026-05-15T12:53:34Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Ship cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260515-1325",
+      "type": "heartbeat",
+      "started_at": "2026-05-15T13:25:39Z",
+      "ended_at": "2026-05-15T13:25:39Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260515-1720",
+      "type": "heartbeat",
+      "started_at": "2026-05-15T17:20:34Z",
+      "ended_at": "2026-05-15T17:20:34Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260515-2049",
+      "type": "heartbeat",
+      "started_at": "2026-05-15T20:49:23Z",
+      "ended_at": "2026-05-15T20:49:23Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
     }
   ]
 }

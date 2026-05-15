@@ -9,11 +9,11 @@
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
-    "org_monthly_tokens": 0,
+    "org_monthly_tokens": null,
     "org_monthly_cap": null,
     "org_monthly_pct": null,
-    "data_source": "none",
-    "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
+    "data_source": null,
+    "_warning": null
   },
   "weekly_tokens": 7302000,
   "weekly_cost": 175.25,

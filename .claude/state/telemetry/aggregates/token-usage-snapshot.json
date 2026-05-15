@@ -8,11 +8,11 @@
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
-    "org_monthly_tokens": 0,
+    "org_monthly_tokens": null,
     "org_monthly_cap": null,
     "org_monthly_pct": null,
-    "data_source": "none",
-    "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
+    "data_source": null,
+    "_warning": null
   },
   "constants": {
     "INPUT_RATE_TOKENS_PER_SEC": 100,
