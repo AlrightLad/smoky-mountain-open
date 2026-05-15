@@ -1,0 +1,25 @@
+{
+  "schema_version": "architecture-review-v1.0",
+  "timestamp": "2026-05-15T23:13:05Z",
+  "generated_at": "2026-05-15T23:13:05Z",
+  "source": "regen-dashboard.architecture_review_status()",
+  "available": true,
+  "status": "unknown",
+  "raw_status": "unknown",
+  "summary": "0 pending recommendations",
+  "as_of": null,
+  "stale": false,
+  "age_hours": null,
+  "counts": {
+    "pending_recommendations": 0,
+    "ratification_rate_pct": 0
+  },
+  "details": [],
+  "links": [
+    {
+      "label": "Pending recommendations",
+      "href": "../../.claude/state/architecture-review/recommendations/pending/"
+    }
+  ],
+  "source_path": ".claude/state/aggregates/architecture-review.json"
+}

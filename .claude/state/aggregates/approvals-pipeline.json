@@ -1,0 +1,69 @@
+{
+  "schema_version": "approvals-pipeline-v1.1",
+  "timestamp": "2026-05-15T23:13:05Z",
+  "generated_at": "2026-05-15T23:13:05Z",
+  "source": "regen-dashboard.approvals_pipeline_status()",
+  "available": true,
+  "status": "red",
+  "raw_status": "red",
+  "summary": "10 consecutive SKIPs · 31 in inbox",
+  "as_of": "2026-05-15T23:10:48Z",
+  "stale": false,
+  "age_hours": 0.03833333333333333,
+  "counts": {
+    "proposals_pending": 0,
+    "proposals_approved": 9,
+    "proposals_deferred": 0,
+    "proposals_rejected": 0,
+    "proposals_shipped": 4,
+    "proposals_inbox": 14,
+    "amendments_inbox": 15,
+    "escalations_inbox": 2
+  },
+  "details": [
+    {
+      "category": "marker",
+      "status": "info",
+      "name": "last-processed-decisions",
+      "note": "file=amendments-2026-05-15T02-22-12Z-goal-closure.json kind=amendments",
+      "when": "2026-05-15T02:22:28.9780130Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-15T23-10-48Z-downloads-watcher.log",
+      "note": "[23:10:48] SKIP working tree dirty with non-routine files: .claude/state/dashboard-health/post-commit-hook.log, .claude/state/main-flows-v2/janowiak-reference-frames/frame-01-t0.5s.png, .claude/state/",
+      "when": "2026-05-15T23:10:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-15T23-05-48Z-downloads-watcher.log",
+      "note": "[23:05:48] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-15/screenshots/audit-2026-05-15-dashboard-1440.png, .claude/state/dashboard-audit-2026-05-15/screenshot",
+      "when": "2026-05-15T23:05:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-15T23-00-48Z-downloads-watcher.log",
+      "note": "[23:00:48] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-15/screenshots/audit-2026-05-15-dashboard-1440.png, .claude/state/dashboard-health/post-commit-hook.log",
+      "when": "2026-05-15T23:00:48Z"
+    }
+  ],
+  "links": [
+    {
+      "label": "Approvals pipeline trace",
+      "href": "../../.claude/state/approval-pipeline-trace-2026-05-14.md"
+    },
+    {
+      "label": "AMD-023",
+      "href": "../../.claude/state/amendments/pending/AMD-023-approval-pipeline-reliability.md"
+    }
+  ],
+  "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
+  "_meta": {
+    "watcher_runs_inspected": 10,
+    "consecutive_skips": 10,
+    "age_minutes": 2.3
+  }
+}

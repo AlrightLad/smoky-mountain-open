@@ -94,6 +94,10 @@ REGEN_SCRIPTS="\
 scripts/scan-shipped-proposals.py
 scripts/aggregate-telemetry.py
 scripts/aggregate-token-usage.py
+scripts/aggregate-test-health.py
+scripts/aggregate-security-health.py
+scripts/aggregate-approvals-pipeline.py
+scripts/aggregate-architecture-review.py
 scripts/inject-health-banners.py
 scripts/regen-proposals.py
 scripts/regen-amendments.py

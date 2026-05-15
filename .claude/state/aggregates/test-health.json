@@ -1,12 +1,14 @@
 {
-  "timestamp": "2026-05-15T02:15:00Z",
-  "status": "green",
-  "head_sha": "121310a",
-  "head_short": "121310a",
+  "schema_version": "test-health-v1.1",
+  "timestamp": "2026-05-15T23:10:25Z",
+  "generated_at": "2026-05-15T23:10:25Z",
+  "head_sha": "634e8ae",
+  "status": "unknown",
+  "summary": "no round-trip heartbeat available",
   "checks_run": 1,
-  "checks_passed": 1,
+  "checks_passed": 0,
   "checks_skipped": 0,
-  "checks_with_known_failure": 0,
+  "checks_with_known_failure": 1,
   "regressions": [],
   "known_failures": [
     {
@@ -20,23 +22,8 @@
       "cycles_observed": 2
     }
   ],
-  "fix_confirmed_this_cycle": [
-    {
-      "id": "approval-pipeline-hard-blocked",
-      "test": "scripts/verify-approval-pipeline.sh",
-      "verify_outcome": "PASS",
-      "verify_evidence": "canary propagated pending/ -> approved/ in 16 seconds (verified by main agent 2026-05-15T01:52:13Z)",
-      "root_cause_fix_commits": [
-        "416e4d2 fix(approval-pipeline): untrack .claude/worktrees/ gitlinks",
-        "7fb3a13 fix(verify-approval-pipeline): match canonical decisions JSON schema"
-      ],
-      "regression_first_seen": "2026-05-14T23:40:49Z",
-      "regression_cycles_observed": 8,
-      "confirmed_by_agent": "main"
-    }
-  ],
-  "last_baseline_update": "2026-05-15T02:15:00Z",
-  "agent": "main",
-  "cycle_notes": "Approval pipeline regression FIX CONFIRMED. Two root-cause commits landed this session (untrack worktree gitlinks + canonical decisions JSON schema). Verify-approval-pipeline.sh re-run by main agent passed end-to-end in 16 seconds. Status flipped from red back to green. user-context-gate known_failure persists as workflow-staleness (not code), owned by Founder. Test/QA agent's next cycle will re-baseline against this corrected state per AMD-022 cross-agent write protocol — this update is fix-confirmation, not new diagnostic.",
-  "cross_agent_write_notice": "main agent updated this file to confirm fix landed for the CRITICAL regression test-qa surfaced 2026-05-15T00:11:00Z. Per AMD-022 protocol, cross-agent writes are restricted to assignment + notification — this is the notification half of the fix-confirmation handshake. Test-qa retains ownership; next test-qa cycle re-baselines."
+  "source_files": [
+    ".claude/state/heartbeats/regen-all-last-pass.json",
+    "tests/round-trip-test.py"
+  ]
 }
