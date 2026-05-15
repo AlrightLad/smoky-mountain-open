@@ -1,11 +1,11 @@
 {
-  "as_of": "2026-05-15T02:21:51.315731+00:00",
+  "as_of": "2026-05-15T02:22:24.490995+00:00",
   "_meter_status": "wired-estimated-sidecar-empty",
   "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
   "quota_status": {
     "state": "empty",
     "as_of": "2026-05-15T02:17:13.8186919Z",
-    "age_seconds": 277,
+    "age_seconds": 310,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -17,7 +17,7 @@
   },
   "weekly_tokens": 7302000,
   "weekly_cost": 175.25,
-  "ships_this_week": 31,
+  "ships_this_week": 32,
   "ships_trend_7d": {
     "labels": [
       "Sat",
@@ -35,7 +35,7 @@
       0,
       4,
       26,
-      1
+      2
     ]
   },
   "handoffs_trend_7d": {
@@ -165,6 +165,18 @@
   },
   "recent_ships": [
     {
+      "id": "AMD-021",
+      "title": "Strict closure discipline \u2014 workarounds replaced with proven fix + proof",
+      "kind": "amendment",
+      "status": "applied",
+      "completed_at": "2026-05-15T02:05:00Z",
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
+      "source_path": ".claude/state/amendments/applied/AMD-021-strict-closure-discipline.md"
+    },
+    {
       "id": "AMD-025",
       "title": "Ship spec standard \u2014 10 mandatory sections + research-first discipline",
       "kind": "amendment",
@@ -271,22 +283,10 @@
       "tokens_events_matched": 0,
       "cost_usd": null,
       "source_path": ".claude/state/amendments/applied/AMD-016-infrastructure-operational-question.md"
-    },
-    {
-      "id": "AMD-017",
-      "title": "Continuation discipline \u2014 consolidated reports are checkpoints, not stop conditions",
-      "kind": "amendment",
-      "status": "applied",
-      "completed_at": "2026-05-14T17:14:00Z",
-      "tokens": null,
-      "tokens_source": "unknown",
-      "tokens_events_matched": 0,
-      "cost_usd": null,
-      "source_path": ".claude/state/amendments/applied/AMD-017-continuation-discipline.md"
     }
   ],
   "_aggregate_counts": {
-    "events_total": 1071,
+    "events_total": 1075,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
