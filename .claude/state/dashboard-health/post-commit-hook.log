@@ -1,0 +1,75 @@
+=== post-commit hook fired 2026-05-15T06:55:36Z HEAD=1d5611e ===
+[scaffold-from-templates] done: scaffolded=0 skipped=11
+
+--- scripts/scan-shipped-proposals.py ---
+Exception in thread Thread-1 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
+    self.run()
+  File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+  File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 23, in decode
+    return codecs.charmap_decode(input,self.errors,decoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeDecodeError: 'charmap' codec can't decode byte 0x90 in position 115651: character maps to <undefined>
+[scan-shipped] approved=9 candidate-commits-90d=0
+[scan-shipped] done: moved=0 skipped_already_shipped=0 warnings=0
+
+--- scripts/aggregate-telemetry.py ---
+[aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json
+[aggregate] meter_status=wired-estimated-sidecar-empty
+[aggregate] events=1154 handoffs=1 bubbles=7 proposals_pending=0
+
+--- scripts/aggregate-token-usage.py ---
+[aggregate-token] real_events=1 estimated_events=456 manual_entries=0
+[aggregate-token] all-time: real=102000 estimated=7200130 manual=0
+[aggregate-token] wrote .claude\state\telemetry\aggregates\token-usage-snapshot.json
+
+--- scripts/inject-health-banners.py ---
+[inject-health-banners] banner-architecture      already-present
+[inject-health-banners] banner-approvals         already-present
+[inject-health-banners] banner-security          already-present
+[inject-health-banners] banner-test              already-present
+[inject-health-banners] detail-architecture      already-present
+[inject-health-banners] detail-approvals         already-present
+[inject-health-banners] detail-security          already-present
+[inject-health-banners] detail-test              already-present
+
+--- scripts/regen-proposals.py ---
+[regen-proposals] running shipped-scan first...
+  [scan] [scan-shipped] approved=9 candidate-commits-90d=4
+  [scan] [scan-shipped] WARN commit 9ff9883 references PROP-003.A but it's not in approved/ (may be already-shipped, rejected, or typo)
+  [scan] [scan-shipped] WARN commit 2361e06 references PROP-003.B but it's not in approved/ (may be already-shipped, rejected, or typo)
+  [scan] [scan-shipped] WARN commit 7fdcf7e references PROP-004 but it's not in approved/ (may be already-shipped, rejected, or typo)
+  [scan] [scan-shipped] done: moved=0 skipped_already_shipped=0 warnings=3
+[regen-proposals] OK   proposals.html
+[regen-proposals] counts: pending=0 approved=9 deferred=0 shipped=4 rejected=0
+
+--- scripts/regen-amendments.py ---
+[regen-amendments] OK   amendments.html
+[regen-amendments] counts: pending=0 approved=0 deferred=0 applied=25 rejected=0
+
+--- scripts/regen-escalations.py ---
+[regen-escalations] OK   escalations.html
+[regen-escalations] pending=0 approved=0 applied=3 deferred=0 rejected=0
+
+--- scripts/regen-dashboard.py ---
+[regen-dashboard] OK   dashboard.html
+[regen-dashboard] meter_status=wired-estimated-sidecar-empty
+[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=1154
+
+--- scripts/dry-run-regen-ops-views.py ---
+[regen] 7 bubbles, 1 handoffs (proposals.html owned by regen-proposals.py)
+[regen] OK   discussion-bubbles.html
+[regen] OK   activity.html
+
+--- scripts/regen-token-usage.py ---
+[regen-token-usage] OK   token-usage.html
+[regen-token-usage] all-time: real=102000 estimated=7200130 manual=0
+
+--- scripts/regen-index.py ---
+[regen-index] OK   index.html
+[regen-index] ships=32 proposals_pending=0 bubbles=1 halt=none git=1d5611e7
