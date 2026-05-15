@@ -44,7 +44,7 @@ NOT yet covered by this scaffolding:
 |---|---|---|---|
 | H1 | All-time records best rounds — needs split into 9-hole vs 18-hole columns | CLAUDE.md Known Bugs #4 | **FULLY CLOSED iter 16**: data layer (commit 7c3b5ba `getPlayerBest9`) + UI consumers in members.js (commit 94e4340) + trophyroom.js (commit 66a6e19). Records page already inlined pre-iter-16. |
 | H2 | Shareable scorecards for 9-hole rounds — currently renders all 18 cells with empty back-9 | CLAUDE.md Known Bugs #5 | **STALE bug entry — ALREADY FIXED**: buildScorecardHTML (src/core/router.js:1109-1190) computes `front9count` + `back9count` separately; renders only the nines with data. Lines 1116-1120 detect `is9only`; lines 1187-1188 only emit nineHTML where count > 0. Verified via code trace. Founder live-test could confirm via 9-hole round share-card preview. |
-| H3 | Parbaugh Round joined players not appearing on scorecard (host-only display) | CLAUDE.md Known Bugs #9 | Diagnosed in code scan: live `renderLiveScorecard` (src/pages/syncround.js:128-205) DOES render all `playerIds` — multi-player display works in live view. The "host-only" filter must be on the EXPORT/SHARE scorecard path or the completed-round detail view. Needs investigation. |
+| H3 | Parbaugh Round joined players not appearing on scorecard (host-only display) | CLAUDE.md Known Bugs #9 | **DEFERRED with rationale (2026-05-15)** — see deep-dive below. Current architecture stores one round per player (`syncround.js:259-281`); live view shows all players (`renderLiveScorecard:128-205`) but completed rounds are per-player by design. The "missing joined players" is the expected behavior of a per-player stats model, not a code bug. Multi-player completed-scorecard view requires a Stage 1 product design doc per CLAUDE.md "Design Before Implementation". Deferred until that design exists. |
 
 ### MEDIUM (4)
 
@@ -79,17 +79,60 @@ NOT yet covered by this scaffolding:
 | B46 | (captured alongside B43 in Ship 5+7) | memory | Tracking |
 | B47 | Sibling smoke account (re-scoped W1.I2) | memory | Wave 1 ship work |
 
+## H3 deep-dive — deferral rationale (2026-05-15)
+
+Investigation per /goal Objective 4 (HIGH fixed or deferred):
+
+**Root cause:** `src/pages/syncround.js:259-281` writes a separate
+round document for EACH player when a Parbaugh Round is finished —
+each with `playerId: pid`, `playerName: p.name`, `syncedRound: true`,
+`syncRoundId: roundId`, and only that player's hole scores.
+
+**Live view (`renderLiveScorecard:128-205`):** correctly renders all
+`playerIds` from `round.players`. This is the in-progress view that
+shows everyone playing together.
+
+**Completed view path:** rounds.js + roundhistory.js + share-card
+(`showShareCard` in router.js:988) all operate on a SINGLE round
+document. Since each player owns their own round doc, the "share"
+view shows only that player's scores — by design.
+
+**Why this is correct:**
+- Per-player stats (handicap, season points, achievements) require
+  per-player rounds
+- Round visibility is per-member privacy-controlled
+- ParCoin attribution requires per-player ownership
+
+**Why it's "missing" from Founder's perspective:**
+- The Parbaugh Round LIVE experience builds expectation that the
+  completed round will also display all players
+- No "view this round's leaderboard" link on completed rounds
+  back-references the `syncRoundId` to fetch sibling docs
+
+**Proper fix requires Stage 1 product design doc** per CLAUDE.md
+"Design Before Implementation". Substantive questions:
+- Multi-player scorecard view: separate page or modal?
+- Share card: per-player (current) or multi-player (new)?
+- Privacy: if member B has hidden their round, do other players in
+  the same syncround see B's scores? Per CLAUDE.md privacy defaults,
+  no.
+- Scoreboard ranking: by gross? net? handicap-adjusted?
+
+**Deferred to:** dedicated Stage 1 design doc + corresponding Stage 2
++ implementation ship. Not in scope for /goal P4 fixes.
+
 ## Recommended fix sequence
 
 For Priority 4 (CRITICAL + HIGH fixes):
 
-1. **C1 (DONE this ship)** — invite link going-forward fix deployed
-2. **H3** — Parbaugh Round joined players display (member-visible bug,
-   affects multi-player rounds)
-3. **H1** — best rounds 9/18 split (visible on every member's stats)
-4. **H2** — 9-hole scorecard rendering
+1. **C1 (DONE prior ship)** — invite link going-forward fix deployed
+2. **H1 (DONE iter 16)** — best rounds 9/18 split
+3. **H2 (STALE)** — 9-hole scorecard rendering already correct
+4. **H3 (DEFERRED 2026-05-15)** — requires Stage 1 product design
 
-For MEDIUM + LOW: deferred to dedicated polish ship per AMD-015.
+For MEDIUM + LOW: M3 + M4 remaining open from CLAUDE.md were closed
+iter 16 except M3 (standings Courses button). M3 deferred to
+dedicated polish ship per AMD-015.
 
 ## Audit coverage gap (honest delta per AMD-009 P5)
 
