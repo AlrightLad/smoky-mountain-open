@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-15T06:42:02.466799+00:00",
+  "generated_at": "2026-05-15T06:55:37.346374+00:00",
   "_meter_status": "wired-estimated-sidecar-empty",
   "quota_status": {
     "state": "empty",
-    "as_of": "2026-05-15T06:37:12.9739023Z",
-    "age_seconds": 289,
+    "as_of": "2026-05-15T06:52:12.9881297Z",
+    "age_seconds": 204,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -118,6 +118,10 @@
         "2026-05-14": {
           "real": 0,
           "estimated": 0
+        },
+        "2026-05-15": {
+          "real": 0,
+          "estimated": 0
         }
       }
     },
@@ -217,11 +221,11 @@
     "estimated": 7200130,
     "manual": 0,
     "first_event_at": "2026-05-13T11:55:00+00:00",
-    "last_event_at": "2026-05-15T06:40:49+00:00"
+    "last_event_at": "2026-05-15T06:55:35+00:00"
   },
   "_counts": {
     "real_events": 1,
-    "estimated_events": 450,
+    "estimated_events": 456,
     "manual_entries": 0
   }
 }
