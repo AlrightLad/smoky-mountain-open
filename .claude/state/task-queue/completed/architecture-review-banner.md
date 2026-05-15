@@ -96,3 +96,33 @@ to extend it — but the schema above should cover the v1 banner.
 Pattern: same as Dashboard / Test Health / Security Health banner
 readers already in `scripts/regen-dashboard.py` — extend with one
 more aggregator section.
+
+## Findings (2026-05-15T01:15Z, dashboard-health)
+
+Banner shipped via the same commit pair as the sibling approvals banner
+(497beaa aggregator + 1fb77d3 inject). `architecture_review_status()`
+reads `.claude/state/aggregates/architecture-review.json` against the
+schema spelled out in this task and returns the normalized banner
+shape. Empty-state surfaces when the file is absent (current state —
+architecture agent has not dispatched yet).
+
+Current live state:
+
+- Status: MISSING.
+- Summary: `Architecture agent not yet active — dispatch via boot
+  prompt §6.6`.
+- Details: empty-state info row pointing at AMD-024.
+- Links: AMD-024, Architecture review dir.
+
+Status logic per task acceptance:
+- green: `daily.color=green` AND `recs <=5`
+- yellow: `daily.color=yellow` OR `recs 6-15` OR `ratification_rate <0.5`
+- red: `daily.color=red` OR `recs >15`
+- stale (>48h since `updated_at`): auto-downgrade to unknown
+
+Visual review screenshots at same path as the sibling task.
+
+Once the Architecture / AI Engineer agent emits its first
+`architecture-review.json` on its first daily cycle after dispatch,
+the banner will switch out of missing-state on the next post-commit
+regen. No further dashboard work needed.
