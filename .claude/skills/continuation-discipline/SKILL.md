@@ -125,6 +125,44 @@ Per AMD-009 + AMD-011:
 **After ship-close: GO BACK TO STEP 1.** The loop continues until a
 real stop condition fires.
 
+### Step 5 — Closure durability check (R5, 2026-05-15)
+
+Before declaring any ship/closure PASS, run **Q5 — Reproducibility**:
+
+> *What in this work depends on on-disk state that isn't reproducible
+> from a fresh checkout?*
+
+Walk through every artifact the closure claims as PASS evidence:
+
+- **Files claimed present**: are they tracked, OR producible from
+  tracked sources by a tracked script?
+- **Validator runs claimed PASS**: would the same run pass against a
+  fresh `git clone` (no on-disk state from prior runs)?
+- **Health JSONs / aggregates claimed green**: are they committed, OR
+  derivable from tracked inputs by tracked scripts?
+
+If ANY answer is "no":
+
+- The closure is **snapshot-PASS**, not **durable-PASS**.
+- Declare it explicitly in the report:
+  > "Objective X: PASS at snapshot 2026-05-15T03:00Z. Durability
+  > untested — depends on on-disk Y which is not reproducible from
+  > a fresh checkout."
+- Author a follow-up ship to either (a) commit/template the state,
+  (b) make the consuming script self-heal, or (c) add an explicit
+  reproducibility test to the validator.
+
+Why this exists: a prior /goal closure (2026-05-15T02:25Z) declared 8/8
+PASS based on artifacts that vanished within hours because they depended
+on uncommitted on-disk state. The validator's claim-time PASS was true;
+the closure's "durable PASS" implication was not. See
+audit-report-2026-05-15.md "Root-cause finding" + engineering-mindset.md
+"snapshot-PASS vs durable-PASS" addendum.
+
+**Snapshot-PASS is acceptable, but it must be NAMED. Hiding a
+snapshot-PASS behind unqualified "PASS" language is an overclaim per
+AMD-009 P5 (honest delta).**
+
 ## Confidence framework
 
 Per Founder principle: "if anything is feature breaking to hold off
@@ -157,12 +195,17 @@ one of those 7, it's a false signal.
 Before approving a consolidated report as a turn-end:
 
 ```
-[ ] Critic verifies this skill was consulted
-[ ] Critic verifies at least one real stop condition is documented in
-    the report
-[ ] If no real stop condition: Critic BLOCKS the report end-of-turn and
-    instructs team to continue per Step 2 of this skill
-[ ] Critic gates this BEFORE the report is final
+[ ] Q1 — Critic verifies this skill was consulted
+[ ] Q2 — Critic verifies at least one real stop condition is documented
+         in the report
+[ ] Q3 — If no real stop condition: Critic BLOCKS the report end-of-turn
+         and instructs team to continue per Step 2 of this skill
+[ ] Q4 — Critic gates this BEFORE the report is final
+[ ] Q5 — Reproducibility (per Step 5 above): does any PASS claim depend
+         on on-disk state not reproducible from a fresh checkout? If
+         yes: closure is snapshot-PASS, not durable-PASS — Critic
+         requires explicit naming in the report and a follow-up ship
+         to make the state durable.
 ```
 
 Critic is empowered to refuse to let the team stop without justification.
