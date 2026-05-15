@@ -52,6 +52,7 @@ STEPS=(
     "aggregate-security-health|scripts/aggregate-security-health.py"
     "aggregate-approvals-pipeline|scripts/aggregate-approvals-pipeline.py"
     "aggregate-architecture-review|scripts/aggregate-architecture-review.py"
+    "aggregate-fiq-status|scripts/aggregate-fiq-status.py"
     "inject-health-banners|scripts/inject-health-banners.py"
     "regen-proposals|scripts/regen-proposals.py"
     "regen-amendments|scripts/regen-amendments.py"
@@ -88,30 +89,44 @@ if [ ${#FAILED[@]} -ne 0 ]; then
     exit 1
 fi
 
-# Sanity-gate: run round-trip-test before declaring success. If the test fails,
-# the regenerated dashboards are inconsistent with state — roll back via git
-# checkout so Founder never sees a divergent dashboard.
+# Sanity-gate: run round-trip-test before declaring success.
+#
+# NOTE on rollback (2026-05-15 PHASE H + I refactor): the prior version
+# rolled back HTML files via `git checkout HEAD --` on round-trip-test
+# failure. Since the dashboards are now gitignored per Founder local-only
+# directive, `git checkout` is a no-op for them — the rollback never
+# actually rolled anything back, it just emitted "could not roll back"
+# warnings. Removed in favor of:
+#   1. Always write the heartbeat (so we know regen completed)
+#   2. Let test-health.json reflect the test outcome (status='yellow' for
+#      known-failure gates like user-context-gate; status='red' for true
+#      regressions)
+#   3. Return exit 2 on test fail so CI / human flows see the gate
 echo ""
 echo "[regen-all] running round-trip sanity test..."
+# Disable set -e so the command-substitution's non-zero exit doesn't bail
+# before we reach the if/else gate logic below. Re-enable immediately
+# after capturing TEST_RC.
+set +e
 TEST_OUT="$("$PYTHON" tests/round-trip-test.py 2>&1)"
 TEST_RC=$?
-if [ "$TEST_RC" -ne 0 ]; then
-    echo "[regen-all] ROUND-TRIP TEST FAILED (exit $TEST_RC). Dashboards will be rolled back."
+set -e
+
+# Always write heartbeat — successful regen of dashboards is the load-bearing
+# event for test-health freshness. Round-trip-test FAILURES are signaled by
+# the heartbeat's status field ("PASS" | "GATE-FAIL") so test-health can
+# differentiate "regen working" from "regen + tests both green."
+if [ "$TEST_RC" -eq 0 ]; then
+    "$PYTHON" scripts/write-regen-heartbeat.py
+    echo "[regen-all] round-trip test PASS"
+else
+    HEARTBEAT_STATUS="GATE-FAIL" "$PYTHON" scripts/write-regen-heartbeat.py
+    echo "[regen-all] ROUND-TRIP TEST FAILED (exit $TEST_RC) — heartbeat written with status=GATE-FAIL."
     echo "$TEST_OUT" | tail -20 | sed 's/^/    /'
-    # Roll back each affected HTML to last committed version. Quiet on files that aren't tracked yet.
-    for f in docs/reports/dashboard.html docs/reports/activity.html docs/reports/proposals.html \
-             docs/reports/amendments.html docs/reports/discussion-bubbles.html \
-             docs/reports/index.html docs/reports/main-flows.html \
-             docs/reports/token-usage.html; do
-        if [ -f "$f" ]; then
-            git checkout HEAD -- "$f" 2>/dev/null || echo "[regen-all] could not roll back $f (not tracked or no HEAD)"
-        fi
-    done
     echo ""
-    echo "REGEN ROLLED BACK at $END_TS — round-trip test failed; consult the test output above"
+    echo "[regen-all] test-health.json will reflect the gate failure on next aggregate refresh"
     exit 2
 fi
-echo "[regen-all] round-trip test PASS"
 
 # Ship-close-commit trigger (AMD-011 Step 2 — dispatch scanner inline at
 # ship boundaries). Detects ship-close patterns in HEAD commit message:

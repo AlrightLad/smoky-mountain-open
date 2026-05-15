@@ -1,1 +1,8 @@
-﻿{"status":"PASS","duration_seconds":5,"last_pass_at_human":"2026-05-14 18:15 UTC","last_pass_at_utc":"2026-05-14T18:15:58.4395875Z"}
+{
+  "ts": "2026-05-15T23:27:36Z",
+  "timestamp": "2026-05-15T23:27:36Z",
+  "generated_at": "2026-05-15T23:27:36Z",
+  "status": "GATE-FAIL",
+  "age_minutes": 0,
+  "head_sha": "7db7d88"
+}

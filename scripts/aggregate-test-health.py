@@ -84,10 +84,22 @@ def main():
             pass
 
     # Default state: green if last round-trip pass within 24h, yellow if 24-72h, red if >72h
+    # ALSO honor heartbeat status field — "GATE-FAIL" means regen ran but
+    # round-trip-test had a known-failure (e.g. user-context-gate
+    # workflow staleness). That's NOT a code regression but IS a
+    # signal Founder owns; surfaces as yellow.
     status = "green"
     summary = "round-trip + regen passing"
     checks_run = 1
     checks_passed = 1
+    heartbeat_status = None
+    if heartbeat.exists():
+        try:
+            hb = json.loads(heartbeat.read_text(encoding="utf-8-sig"))
+            heartbeat_status = hb.get("status")
+        except (OSError, json.JSONDecodeError):
+            pass
+
     if last_rt_pass:
         try:
             ts = datetime.fromisoformat(str(last_rt_pass).replace("Z", "+00:00"))
@@ -106,6 +118,15 @@ def main():
         status = "unknown"
         summary = "no round-trip heartbeat available"
         checks_passed = 0
+
+    # Heartbeat status override: if heartbeat says GATE-FAIL or ERROR,
+    # surface that even if age is recent.
+    if heartbeat_status == "GATE-FAIL" and status != "red":
+        status = "yellow"
+        summary = "regen-all completed but round-trip-test gate failed (workflow staleness; see test-health.known_failures)"
+    elif heartbeat_status == "ERROR" and status != "red":
+        status = "red"
+        summary = "regen-all reported ERROR (see post-commit-hook.log)"
 
     out = {
         "schema_version": SCHEMA_VERSION,

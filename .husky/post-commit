@@ -98,6 +98,7 @@ scripts/aggregate-test-health.py
 scripts/aggregate-security-health.py
 scripts/aggregate-approvals-pipeline.py
 scripts/aggregate-architecture-review.py
+scripts/aggregate-fiq-status.py
 scripts/inject-health-banners.py
 scripts/regen-proposals.py
 scripts/regen-amendments.py
