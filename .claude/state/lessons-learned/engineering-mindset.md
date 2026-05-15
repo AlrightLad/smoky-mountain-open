@@ -633,6 +633,126 @@ decision moment — pre-research becomes a Critic-gate question. The
 question is "what did you research before authoring this?" and the
 answer is the spec's PRE-RESEARCH section. Empty section = blocked.
 
+## Addendum (audit, 2026-05-15): uncommitted-on-disk-state as load-bearing truth
+
+**Trigger.** Founder reported "cannot access dashboard." Independent audit of
+the prior /goal closure (which had declared 8/8 PASS at 2026-05-15T02:25Z)
+found two material gaps that shared a single failure pattern.
+
+**Setting.** Prior /goal closed claiming PASS on:
+1. Approval pipeline end-to-end verified via `verify-approval-pipeline.sh`
+   exit 0 at a specific timestamp.
+2. Dashboard zero RED banners — banners visibly rendering green/yellow on
+   the on-disk `docs/reports/dashboard.html`.
+
+Hours later, the audit found:
+1. `verify-approval-pipeline.sh` now exits 2 ("pending/ not found") — the
+   directory it stages canaries into doesn't exist on disk.
+2. The on-disk `docs/reports/dashboard.html` and `_assets/` directory had
+   vanished entirely. Founder opened the file:// URL and got 404.
+
+In BOTH cases, the prior closure's PASS evidence was *literally true at
+the moment it was captured*. The artifact existed. The exit code was 0.
+The grep matched. But the artifacts depended on **on-disk state that was
+not durably reproducible from git**.
+
+**Specifically.** When commit `8eb0a15` `git rm --cached`'d the dashboard
+HTML scaffolds per Founder directive ("only I should have access to
+dashboard"), the message said files were "kept on disk." This is true at
+that single commit. But:
+
+- A subsequent `git clean -fd` or worktree-related cleanup destroyed the
+  on-disk files. There is no telemetry of when this happened.
+- The post-commit regen pipeline runs after every commit but uses
+  `>/dev/null 2>&1 || true` to swallow exit codes. Regen scripts that
+  silently no-op'd (because they couldn't find their target HTML) emitted
+  no signal. The hook even commits a `cron(routine): post-commit dashboard
+  regen` commit on each run — *those commits contain only telemetry
+  aggregate JSONs, not HTML, but read as if a regen had succeeded.*
+- `inject-health-banners.py` (added at `1fb77d3`, 2026-05-14 21:11)
+  expects security/test banner markup as **anchor points to insert after**.
+  Search of every commit of `dashboard.html` in git history returns
+  *zero* matches for `data-fq-banner-meta="security"`. The banner markup
+  the prior closure's "PASS" depended on was **authored at some point that
+  was never committed anywhere**.
+
+Both gaps were invisible to the prior /goal's validator checks because
+those checks read claim-time facts (exit code, current grep, file size)
+without testing whether the facts were **reproducible from committed
+state**.
+
+**Root pattern.** *Validator passes that depend on on-disk state which
+isn't durably reproducible from committed state.* The validator gate
+asks "is X true now?" when the discipline question is "is X durable?"
+
+**Concrete instances.**
+
+1. Pending/ canary directory: script depends on it pre-existing, script
+   itself cleans it up on success → second run fails.
+2. Dashboard banner markup: authored ad-hoc on a gitignored file, never
+   templated, never re-derivable from committed state → vanishes with
+   the file.
+3. Post-commit regen output: regen scripts emit nothing (`|| true`) when
+   their input scaffold is missing, but the hook still commits the
+   *telemetry side* of regen, looking like the pipeline succeeded.
+
+**Structural fixes (proposed to Founder, not yet enacted).**
+
+1. **Closure gates must include reproducibility check.** "Did X pass" is
+   insufficient. "If I delete the workspace and re-checkout, does X still
+   pass?" is the discipline question. Concrete: the validator should
+   include a step like `rm -rf $TARGET && rerun && verify` for any state
+   that's claimed durable. If reproducibility costs too much to run inline,
+   the claim should be downgraded to "PASS at snapshot" with explicit
+   note that durability wasn't tested.
+
+2. **No load-bearing uncommitted state.** Any on-disk file that a
+   validator's PASS depends on must either be (a) committed to git, or
+   (b) creatable by a tracked script with no inputs beyond committed
+   state. The dashboard scaffolds violated this — they were neither
+   committed nor scaffoldable from anything tracked.
+
+3. **Silent-failure pipelines must be exposed at closure time.** A
+   post-commit hook that swallows exit codes with `|| true` is fine for
+   not-fatal-to-developer-workflow scenarios, but the closure validator
+   must independently run the same scripts WITHOUT `|| true` to surface
+   what the hook hides. Audit's findings could have been the prior
+   /goal's findings if the validator had run `bash regen-all.sh && [ -f
+   docs/reports/dashboard.html -a $(wc -c < ...) -gt 50000 ]` rather
+   than assuming silent-success in the post-commit hook.
+
+4. **AMD-009 P5 honest-delta extends to scope.** Prior closure used PASS
+   for "categorizes" when the underlying audit was self-described
+   incomplete. P5 should apply to scope-of-claim too: "Categorized" is
+   a literal PASS that *implies* completeness; if the audit doc itself
+   says "deferred to follow-on session," the claim should explicitly
+   say "categorization PASS · completeness DEFERRED."
+
+**Connection to prior addenda.**
+
+- Iter 8 added "show, don't claim." This audit adds **"show that what
+  you showed is reproducible."** A screenshot or grep at moment T proves
+  T; it doesn't prove T+1h or T+1d.
+- Iter 9 added "agent context vs user context." This audit adds **"agent
+  filesystem state vs durable committed state."** The agent saw a green
+  dashboard rendering at one moment; the user saw a 404 hours later.
+  Both observations were accurate at their respective moments. The /goal
+  closure asserted from the agent's moment.
+- Iter 12 added "measurement is not operation." This audit adds
+  **"validator-PASS is not closure-true."** A validator can return
+  exit 0 against state that won't survive the next workspace cleanup.
+  Closure means "the work durably exists in the codebase," not "the
+  test passed once."
+
+**What this means for skills.** The continuation-discipline skill's
+Q1-Q4 stop-check should add a Q5: *"What in this work depends on
+on-disk state that isn't reproducible from a fresh checkout?"* If the
+answer is non-empty, the stop is not a closure — it's a snapshot.
+
+**Pattern name.** *Snapshot-PASS vs Durable-PASS.* When the claim is
+"PASS," default to durable. When durability hasn't been tested, declare
+"PASS at snapshot" explicitly.
+
 ## Cross-references
 
 - `docs/agents/AUTONOMOUS_FAILURE_RECOVERY_v8.3.md` (3+ attempts
@@ -651,3 +771,7 @@ answer is the spec's PRE-RESEARCH section. Empty section = blocked.
 - `.claude/skills/continuation-discipline/SKILL.md` (sister skill,
   stop discipline; this lesson proposes its start-discipline peer)
 - PROP-006 (this ship — skill proposal: outcome-vs-task)
+- `.claude/state/audit-report-2026-05-15.md` (the audit that
+  surfaced the snapshot-vs-durable pattern)
+- `.claude/state/audit-spec-2026-05-15.md` (the audit spec that
+  directed the investigation)
