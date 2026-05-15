@@ -247,14 +247,13 @@ Learned during v8.0.5: `firebase.json` runtime bump to `nodejs22` deployed succe
 
 See also: Cutover Playbook section for migration-specific patterns.
 
-### PowerShell ExecutionPolicy: one-time CurrentUser fix vs per-run Bypass
+### PowerShell ExecutionPolicy: one-time CurrentUser fix
 
-Default Windows PowerShell ExecutionPolicy on a fresh install is `Restricted` (Undefined at all scopes). Local `.ps1` scripts won't run without explicit policy work. Two patterns surfaced in this repo:
+Default Windows PowerShell ExecutionPolicy on a fresh install is `Restricted` (Undefined at all scopes). Local `.ps1` scripts won't run without explicit policy work.
 
-- **Per-run Bypass** (legacy, still works): `PowerShell -ExecutionPolicy Bypass -File <script>.ps1`. Each invocation declares the bypass. Founder used this for several iterations.
-- **One-time CurrentUser fix** (preferred, iter 16): `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`. After this single command, all `.ps1` invocation in user context works directly — no per-run flag.
+**Canonical fix (post-/goal 2026-05-15 per AMD-021 strict closure):** one-time `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`. After this single command, all `.ps1` invocation in user context works directly — no per-run override flag needed.
 
-`scripts/cron/install-all.ps1` now detects the policy state on first interactive run and offers to set CurrentUser=RemoteSigned with Founder consent. Decline keeps the bypass-per-run pattern. Accept eliminates the friction for all future runs.
+`scripts/cron/install-all.ps1` now detects the policy state on first interactive run and offers to set CurrentUser=RemoteSigned with Founder consent. The prior legacy pattern (per-invocation `-ExecutionPolicy` override flag set to `Bypass`) is deprecated; cron Scheduled Tasks + production scripts no longer emit the flag.
 
 ### Git push schannel error with large pushes: HTTP/1.1 fallback
 

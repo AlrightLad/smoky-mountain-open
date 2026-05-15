@@ -26,7 +26,8 @@ if (-not (Test-Path $script)) {
 }
 Write-Host "[test-ot] invoking $script"
 Write-Host "[test-ot] (Ctrl-C to cancel if Claude Code launches and runs longer than you want)"
-& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $script
+# Requires CurrentUser ExecutionPolicy=RemoteSigned (install-all.ps1 sets).
+& powershell.exe -NoProfile -File $script
 $rc = $LASTEXITCODE
 Write-Host "[test-ot] overnight-triage.ps1 exited with $rc"
 exit $rc

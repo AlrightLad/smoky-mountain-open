@@ -15,7 +15,8 @@ if (-not (Test-Path $watcher)) {
     exit 2
 }
 Write-Host "[test] invoking $watcher (output also logged to scripts/cron/logs/...)"
-& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $watcher
+# Requires CurrentUser ExecutionPolicy=RemoteSigned (install-all.ps1 sets).
+& powershell.exe -NoProfile -File $watcher
 $rc = $LASTEXITCODE
 Write-Host "[test] watcher exited with $rc"
 exit $rc

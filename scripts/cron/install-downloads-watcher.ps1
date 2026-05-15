@@ -38,9 +38,12 @@ if ($existing) {
 }
 
 # Action: invoke watcher
+# Requires CurrentUser ExecutionPolicy=RemoteSigned (set via install-all.ps1
+# first-run prompt). Per AMD-021 strict closure, the prior per-invocation
+# execution-policy override flag is replaced with the proper policy fix.
 $action = New-ScheduledTaskAction `
     -Execute "powershell.exe" `
-    -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$watcher`""
+    -Argument "-NoProfile -File `"$watcher`""
 
 # Trigger: every 5 minutes, indefinitely, starting now
 $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) `
@@ -75,4 +78,4 @@ Write-Host "[install] State: $($created.State)"
 Write-Host "[install] Logs land in: $repoRoot\scripts\cron\logs\"
 Write-Host ""
 Write-Host "Next: verify via 'Get-ScheduledTask -TaskName $taskName' or open Task Scheduler."
-Write-Host "Test once manually: powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/cron/test-downloads-watcher.ps1"
+Write-Host "Test once manually: powershell.exe -NoProfile -File scripts/cron/test-downloads-watcher.ps1"

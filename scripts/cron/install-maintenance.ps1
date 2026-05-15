@@ -72,9 +72,12 @@ if ($existing) {
 }
 
 # Action: invoke maintenance script via powershell.exe
+# Requires CurrentUser ExecutionPolicy=RemoteSigned (install-all.ps1 sets).
+# Per AMD-021 strict closure, the execution-policy override workaround is
+# replaced with the proper one-time policy fix.
 $action = New-ScheduledTaskAction `
     -Execute "powershell.exe" `
-    -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$script`""
+    -Argument "-NoProfile -File `"$script`""
 
 # Trigger: daily at 02:55 local
 $trigger = New-ScheduledTaskTrigger -Daily -At "02:55"
@@ -113,4 +116,4 @@ Write-Host "[install-maint] Logs:     $repoRoot\scripts\cron\logs\"
 Write-Host "[install-maint] Daily report: $repoRoot\.claude\state\cron\maintenance-<date>.md"
 Write-Host ""
 Write-Host "Test once manually (no admin needed for test-only steps):"
-Write-Host "  powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/cron/test-maintenance.ps1"
+Write-Host "  powershell.exe -NoProfile -File scripts/cron/test-maintenance.ps1"

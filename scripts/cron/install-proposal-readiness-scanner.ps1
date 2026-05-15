@@ -46,9 +46,12 @@ if ($existing) {
 }
 
 # Action: invoke the cron script
+# Requires CurrentUser ExecutionPolicy=RemoteSigned (install-all.ps1 sets).
+# Per AMD-021 strict closure, the execution-policy override workaround is
+# replaced with the proper one-time policy fix.
 $action = New-ScheduledTaskAction `
     -Execute "powershell.exe" `
-    -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$cron`""
+    -Argument "-NoProfile -File `"$cron`""
 
 # Trigger: every 2 hours starting on the next top-of-hour, indefinitely.
 # Compute next top-of-hour for cleaner cron-feel start.

@@ -19,7 +19,8 @@ if (-not (Test-Path $script)) {
     exit 2
 }
 Write-Host "[test-maint] invoking $script"
-& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $script
+# Requires CurrentUser ExecutionPolicy=RemoteSigned (install-all.ps1 sets).
+& powershell.exe -NoProfile -File $script
 $rc = $LASTEXITCODE
 Write-Host "[test-maint] maintenance.ps1 exited with $rc"
 exit $rc

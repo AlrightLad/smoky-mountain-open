@@ -45,7 +45,7 @@ Work to do:
        e. Move processed bug report from inbox/ to bug-reports/triaged/.
 
   3. Run heartbeat activities:
-       a. powershell -ExecutionPolicy Bypass -File scripts/regen-all.ps1
+       a. powershell -File scripts/regen-all.ps1
           (this is the gating wrapper - it runs scan-shipped-proposals,
           aggregate-telemetry, regen-proposals, regen-dashboard, regen-
           ops-views, regen-main-flows, regen-index, and the round-trip

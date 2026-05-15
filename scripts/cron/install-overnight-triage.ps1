@@ -66,9 +66,12 @@ if ($existing) {
     Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
 }
 
+# Requires CurrentUser ExecutionPolicy=RemoteSigned (install-all.ps1 sets).
+# Per AMD-021 strict closure, the execution-policy override workaround is
+# replaced with the proper one-time policy fix.
 $action = New-ScheduledTaskAction `
     -Execute "powershell.exe" `
-    -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$script`""
+    -Argument "-NoProfile -File `"$script`""
 
 $trigger = New-ScheduledTaskTrigger -Daily -At "03:00"
 
@@ -103,4 +106,4 @@ Write-Host "[install-ot] Logs:     $repoRoot\scripts\cron\logs\"
 Write-Host "[install-ot] Session journal: $repoRoot\.claude\state\cron\<date>-overnight-run.md"
 Write-Host ""
 Write-Host "Test once manually before first scheduled fire:"
-Write-Host "  powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/cron/test-overnight-triage.ps1"
+Write-Host "  powershell.exe -NoProfile -File scripts/cron/test-overnight-triage.ps1"

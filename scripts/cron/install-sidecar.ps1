@@ -45,9 +45,12 @@ if ($existing) {
 }
 
 # Action: invoke the sidecar
+# Requires CurrentUser ExecutionPolicy=RemoteSigned (install-all.ps1 sets).
+# Per AMD-021 strict closure, the execution-policy override workaround is
+# replaced with the proper one-time policy fix.
 $action = New-ScheduledTaskAction `
     -Execute "powershell.exe" `
-    -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$sidecar`""
+    -Argument "-NoProfile -File `"$sidecar`""
 
 # Trigger: every 5 minutes, indefinitely, starting now
 $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) `
@@ -82,4 +85,4 @@ Write-Host "[install] State: $($created.State)"
 Write-Host "[install] Logs land in: $repoRoot\scripts\cron\logs\"
 Write-Host ""
 Write-Host "Next: verify via 'Get-ScheduledTask -TaskName $taskName' or Task Scheduler."
-Write-Host "Test manually: powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/sidecar/usage-snapshot.ps1"
+Write-Host "Test manually: powershell.exe -NoProfile -File scripts/sidecar/usage-snapshot.ps1"

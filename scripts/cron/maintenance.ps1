@@ -333,7 +333,10 @@ try {
     try {
         $regenScript = Join-Path $repoRoot "scripts\regen-all.ps1"
         if (Test-Path $regenScript) {
-            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $regenScript 2>&1 |
+            # CurrentUser ExecutionPolicy=RemoteSigned is the proper one-time
+            # fix (install-all.ps1 first-run prompt). Per AMD-021 strict
+            # closure, this replaces the prior execution-policy override flag.
+            & powershell.exe -NoProfile -File $regenScript 2>&1 |
                 ForEach-Object { Log "    [regen] $_" }
             $regenRc = $LASTEXITCODE
             if ($regenRc -ne 0) {

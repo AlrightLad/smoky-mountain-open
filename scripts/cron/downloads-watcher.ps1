@@ -311,7 +311,11 @@ try {
     if ($appliedAnything) {
         Log "running regen-all.ps1..."
         $regenScript = Join-Path $repoRoot "scripts\regen-all.ps1"
-        & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $regenScript 2>&1 | ForEach-Object { Log "    [regen] $_" }
+        # CurrentUser ExecutionPolicy=RemoteSigned is required (set via
+        # scripts/cron/install-all.ps1 first-run prompt). Per AMD-021 strict
+        # closure, the prior per-invocation execution-policy override flag
+        # is replaced with the proper one-time policy fix.
+        & powershell.exe -NoProfile -File $regenScript 2>&1 | ForEach-Object { Log "    [regen] $_" }
         $regenRc = $LASTEXITCODE
         if ($regenRc -ne 0) {
             Log "regen-all FAILED with exit $regenRc - apply-decisions changes are committed by the apply script; regen output may be stale"

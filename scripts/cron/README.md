@@ -9,19 +9,19 @@ Scans `%USERPROFILE%\Downloads\decisions-*.json` exported from `proposals.html`.
 ### Install (Founder, as Administrator)
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/cron/install-downloads-watcher.ps1
+powershell -File scripts/cron/install-downloads-watcher.ps1
 ```
 
 ### Test manually
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/cron/test-downloads-watcher.ps1
+powershell -File scripts/cron/test-downloads-watcher.ps1
 ```
 
 ### Uninstall
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/cron/uninstall-downloads-watcher.ps1
+powershell -File scripts/cron/uninstall-downloads-watcher.ps1
 ```
 
 ### Pre-flight checks (skip if any fail)
@@ -37,7 +37,7 @@ Per Fix B. 10-step run: pre-flight, git fetch+gc, untracked-junk quarantine, log
 ### Install (Founder, as Administrator — REQUIRES PASSWORD)
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/cron/install-maintenance.ps1
+powershell -File scripts/cron/install-maintenance.ps1
 ```
 
 You will be prompted for your Windows password. Windows stores it **encrypted** in the Scheduled Task definition (S4U — Service for User logon type). The task then runs unattended with admin privileges.
@@ -47,7 +47,7 @@ You will be prompted for your Windows password. Windows stores it **encrypted** 
 ### Test manually (no admin needed)
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/cron/test-maintenance.ps1
+powershell -File scripts/cron/test-maintenance.ps1
 ```
 
 Admin-only steps (wsl/pip/npm updates) skip with a logged note when run non-admin. State audit, log rotation, regen-all, etc. all run fine.
@@ -55,7 +55,7 @@ Admin-only steps (wsl/pip/npm updates) skip with a logged note when run non-admi
 ### Uninstall
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/cron/uninstall-maintenance.ps1
+powershell -File scripts/cron/uninstall-maintenance.ps1
 ```
 
 ### Outputs
@@ -77,7 +77,7 @@ Launches Claude Code with the fixed prompt at `scripts/cron/overnight-triage-pro
 claude --version
 
 # Then install the task
-powershell -ExecutionPolicy Bypass -File scripts/cron/install-overnight-triage.ps1
+powershell -File scripts/cron/install-overnight-triage.ps1
 ```
 
 Founder enters Windows password when prompted (separate from the maintenance task's credential — each Scheduled Task stores its own encrypted password copy).
@@ -85,7 +85,7 @@ Founder enters Windows password when prompted (separate from the maintenance tas
 ### Test manually
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/cron/test-overnight-triage.ps1
+powershell -File scripts/cron/test-overnight-triage.ps1
 ```
 
 This LAUNCHES Claude Code. Cancel with Ctrl-C if you don't want a real overnight run on demand.
@@ -93,7 +93,7 @@ This LAUNCHES Claude Code. Cancel with Ctrl-C if you don't want a real overnight
 ### Uninstall
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/cron/uninstall-overnight-triage.ps1
+powershell -File scripts/cron/uninstall-overnight-triage.ps1
 ```
 
 ### Outputs
@@ -176,19 +176,19 @@ Per AMD-011 Auto-Execute Protocol. Reads `.claude/state/proposals/approved/PROP-
 ### Install (Founder, as Administrator)
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/cron/install-proposal-readiness-scanner.ps1
+powershell -File scripts/cron/install-proposal-readiness-scanner.ps1
 ```
 
 ### Test manually (no admin needed)
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/cron/proposal-readiness.ps1
+powershell -File scripts/cron/proposal-readiness.ps1
 ```
 
 ### Uninstall
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/cron/uninstall-proposal-readiness-scanner.ps1
+powershell -File scripts/cron/uninstall-proposal-readiness-scanner.ps1
 ```
 
 ### Trigger sources

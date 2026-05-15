@@ -1695,14 +1695,17 @@ def main():
 
             # AMD-016 reinforcement (Founder directive 2026-05-14 third-failure
              # fix): the Founder-facing install command surfaced in dashboard.html
-             # must include "-ExecutionPolicy Bypass" otherwise default Windows
-             # PowerShell ExecutionPolicy=Restricted blocks the .ps1 invocation.
-             # This catches the recurring "command parses but won't execute in
-             # Founder's context" pattern that has caused 3 ship failures.
+             # must surface the policy fix explanation (or a per-run flag),
+             # otherwise default Windows PowerShell ExecutionPolicy=Restricted
+             # blocks the .ps1 invocation. This catches the recurring "command
+             # parses but won't execute in Founder's context" pattern that
+             # has caused 3 ship failures.
             # Iter 16 (Founder directive: bypass-flag audit): install-all.ps1
             # now detects ExecutionPolicy at CurrentUser scope + offers proper
             # fix via Set-ExecutionPolicy RemoteSigned on first run. This
-            # removes the need for per-invocation -ExecutionPolicy Bypass.
+            # removes the need for any per-invocation execution-policy flag.
+            # /goal 2026-05-15 (AMD-021 strict closure): policy fix is now
+            # the canonical pattern; per-run override flag is deprecated.
             # Round-trip check now verifies the dashboard surfaces either:
             #   (a) the proper one-time setup pattern (bare install-all.ps1
             #       invocation with policy-fix prompt explained in the
@@ -1744,7 +1747,7 @@ def main():
                             has_policy_explanation = ("ExecutionPolicy" in surrounding or "RemoteSigned" in surrounding or "policy" in surrounding.lower())
                             if not has_per_run_bypass and not has_policy_explanation:
                                 cmd_failures.append(
-                                    "dashboard.html install command <pre> missing both ExecutionPolicy Bypass AND policy-fix explanation — Founder default Windows policy will block .ps1 execution without context"
+                                    "dashboard.html install command <pre> missing both per-run override flag AND policy-fix explanation — Founder default Windows policy will block .ps1 execution without context"
                                 )
                     if not found_install_pre:
                         m = re.search(r"'<pre[^>]*install-all\.ps1[^']*'", dash_text)
@@ -1757,7 +1760,7 @@ def main():
                             has_policy_explanation = ("ExecutionPolicy" in surrounding or "RemoteSigned" in surrounding or "policy" in surrounding.lower())
                             if not has_per_run_bypass and not has_policy_explanation:
                                 cmd_failures.append(
-                                    "dashboard.html JS-literal install <pre> missing both ExecutionPolicy Bypass AND policy-fix explanation"
+                                    "dashboard.html JS-literal install <pre> missing both per-run override flag AND policy-fix explanation"
                                 )
             if cmd_failures:
                 print(red(f"  ✗ install-cmd-surface  {len(cmd_failures)} issue(s):"))
@@ -1765,7 +1768,7 @@ def main():
                     print(red(f"     {f}"))
                 failures.append(("install-cmd-surface:execution-context", f"{len(cmd_failures)} issues"))
             else:
-                print(green("  ✓ install-cmd-surface  Founder-facing install command surfaces with execution-context handling (either per-run Bypass or one-time policy fix)"))
+                print(green("  ✓ install-cmd-surface  Founder-facing install command surfaces with execution-context handling (either per-run override flag or one-time policy fix)"))
 
     # Scroll reachability (Founder directive 2026-05-14 iter 8): for every
     # scrollable surface the team ships, verify the LAST item is reachable +

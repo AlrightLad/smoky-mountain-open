@@ -44,35 +44,36 @@ if (-not $isAdmin) {
     exit 1
 }
 
-# Iter 16 (2026-05-14, Founder directive: agent-side fix for ExecutionPolicy
-# bypass): detect Restricted policy at CurrentUser scope + offer one-time
-# proper fix. Replaces the prior dashboard pattern of "-ExecutionPolicy
-# Bypass" on every invocation (a per-run workaround) with a one-time policy
-# set that lets .ps1 run cleanly thereafter. RemoteSigned scope=CurrentUser
-# is the conventional setting for development machines - allows local
-# unsigned scripts (this repo's) while requiring signature on downloaded
-# scripts. Founder consent required (interactive prompt).
+# Iter 16 (2026-05-14, Founder directive: agent-side fix for execution
+# policy override per-run pattern): detect Restricted policy at CurrentUser
+# scope + offer one-time proper fix. Replaces the prior pattern of using
+# an execution-policy override flag on every invocation (a per-run
+# workaround) with a one-time policy set that lets .ps1 run cleanly
+# thereafter. RemoteSigned scope=CurrentUser is the conventional setting
+# for development machines - allows local unsigned scripts (this repo's)
+# while requiring signature on downloaded scripts. Founder consent
+# required (interactive prompt).
 $currentUserPolicy = Get-ExecutionPolicy -Scope CurrentUser -ErrorAction SilentlyContinue
 $effectivePolicy = Get-ExecutionPolicy
 if ($effectivePolicy -eq "Restricted" -or $effectivePolicy -eq "Undefined") {
     Write-Host "" -NoNewline
     Write-Host "[install-all] PowerShell ExecutionPolicy at CurrentUser scope: $currentUserPolicy" -ForegroundColor Yellow
-    Write-Host "[install-all] effective policy: $effectivePolicy - .ps1 invocation requires -ExecutionPolicy Bypass per run." -ForegroundColor Yellow
+    Write-Host "[install-all] effective policy: $effectivePolicy - .ps1 invocation requires per-run policy override." -ForegroundColor Yellow
     Write-Host ""
     Write-Host "[install-all] Proper fix: set policy ONCE at CurrentUser scope. After this," -ForegroundColor Cyan
-    Write-Host "  .\scripts\cron\install-all.ps1 works directly without -ExecutionPolicy Bypass." -ForegroundColor Cyan
+    Write-Host "  .\scripts\cron\install-all.ps1 works directly without any per-run flag." -ForegroundColor Cyan
     Write-Host ""
     $consent = Read-Host "[install-all] Set ExecutionPolicy CurrentUser=RemoteSigned now? (y/N)"
     if ($consent -eq "y" -or $consent -eq "Y") {
         try {
             Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
-            Write-Host "[install-all] OK ExecutionPolicy CurrentUser set to RemoteSigned. Future runs do not need -ExecutionPolicy Bypass." -ForegroundColor Green
+            Write-Host "[install-all] OK ExecutionPolicy CurrentUser set to RemoteSigned. Future runs do not need any per-run flag." -ForegroundColor Green
         } catch {
             Write-Host "[install-all] FAIL Set-ExecutionPolicy: $_" -ForegroundColor Red
             Write-Host "[install-all] continuing - current invocation already proceeded past policy check." -ForegroundColor DarkGray
         }
     } else {
-        Write-Host "[install-all] skipping policy set. -ExecutionPolicy Bypass remains required per invocation." -ForegroundColor DarkGray
+        Write-Host "[install-all] skipping policy set. Per-run policy override remains required." -ForegroundColor DarkGray
     }
     Write-Host ""
 }

@@ -48,7 +48,7 @@ docs/reports/dashboard.html  (TOKENS THIS WEEK + ANTHROPIC QUOTA cards)
 
 ```powershell
 # Open PowerShell. From repo root:
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/refresh-quota-manual.ps1
+powershell -NoProfile -File scripts/refresh-quota-manual.ps1
 ```
 
 Script prompts for percentages from your claude.ai billing UI:
