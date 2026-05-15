@@ -159,10 +159,12 @@ def inject(html: str):
 
 
 def main():
+    # R1 (2026-05-15): scaffold-or-bail. Self-heal if dashboard missing.
+    from _dashboard_bootstrap import ensure_scaffold
+    ensure_scaffold(DASHBOARD)
     if not DASHBOARD.exists():
         print(
-            f"[inject-health-banners] FAIL {DASHBOARD} not present. "
-            f"Run scripts/scaffold-from-templates.sh first to create the scaffold.",
+            f"[inject-health-banners] FAIL {DASHBOARD} not present after scaffold attempt.",
             file=sys.stderr,
         )
         return 1

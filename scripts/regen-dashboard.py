@@ -1483,6 +1483,9 @@ def swap_data_block(html_path: Path, new_data: dict):
 
 
 def main():
+    # R1 (2026-05-15): scaffold-or-bail. Self-heal if dashboard.html missing.
+    from _dashboard_bootstrap import ensure_scaffold
+    ensure_scaffold(DASHBOARD)
     data = build_dashboard_data()
     ok, err = swap_data_block(DASHBOARD, data)
     if ok:

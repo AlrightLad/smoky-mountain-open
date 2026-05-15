@@ -117,6 +117,9 @@ def swap_data_block(html_path: Path, new_data: dict):
 
 
 def main():
+    # R1 (2026-05-15): scaffold-or-bail. Self-heal if target missing.
+    from _dashboard_bootstrap import ensure_scaffold
+    ensure_scaffold(TARGET)
     print("[regen-proposals] running shipped-scan first...")
     run_scan()
 

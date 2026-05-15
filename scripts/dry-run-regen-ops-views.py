@@ -116,6 +116,10 @@ def swap_data_block(html_path: Path, new_data: dict):
 
 
 def main():
+    # R1 (2026-05-15): scaffold-or-bail. Self-heal if targets missing.
+    from _dashboard_bootstrap import ensure_scaffold
+    ensure_scaffold(REPORTS / "discussion-bubbles.html")
+    ensure_scaffold(REPORTS / "activity.html")
     bubbles = read_bubbles()
     handoffs = read_handoffs()
     proposals = read_proposals()

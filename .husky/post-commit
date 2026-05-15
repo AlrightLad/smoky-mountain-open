@@ -67,13 +67,34 @@ if [ -f "scripts/emit-team-work-summary.py" ]; then
     "$PY" scripts/emit-team-work-summary.py $EMIT_ARGS >/dev/null 2>&1 || true
 fi
 
-# Regenerate dashboard subset (best-effort). Order matters: aggregates
-# before consumers. regen-main-flows.py is EXCLUDED — main-flows polish
-# agent owns that surface and regenerates on their own commits.
+# R1+R2 (2026-05-15): scaffold docs/reports/ from tracked templates first.
+# Idempotent (no-op when scaffolds exist), bootstraps fresh checkouts.
+SCAFFOLD_LOG=".claude/state/dashboard-health/post-commit-hook.log"
+mkdir -p "$(dirname "$SCAFFOLD_LOG")"
+SCAFFOLD_TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+{
+    echo "=== post-commit hook fired $SCAFFOLD_TS HEAD=$(git rev-parse --short HEAD) ==="
+} > "$SCAFFOLD_LOG"
+
+if [ -f "scripts/scaffold-from-templates.sh" ]; then
+    if ! bash scripts/scaffold-from-templates.sh >> "$SCAFFOLD_LOG" 2>&1; then
+        echo "[post-commit] WARN scaffold-from-templates failed — see $SCAFFOLD_LOG" >&2
+    fi
+fi
+
+# Regenerate dashboard subset. Order matters: aggregates before consumers.
+# regen-main-flows.py EXCLUDED — main-flows polish agent owns that surface.
+#
+# R1 (2026-05-15): exit codes captured to SCAFFOLD_LOG instead of swallowed
+# via "|| true". Hook still exits 0 (commits succeed even on regen errors)
+# but failures are now visible via post-commit-hook.log + the FAILED list
+# emitted to stderr. The audit lesson: a silent regen pipeline is what let
+# the dashboard vanish unnoticed for hours.
 REGEN_SCRIPTS="\
 scripts/scan-shipped-proposals.py
 scripts/aggregate-telemetry.py
 scripts/aggregate-token-usage.py
+scripts/inject-health-banners.py
 scripts/regen-proposals.py
 scripts/regen-amendments.py
 scripts/regen-escalations.py
@@ -82,11 +103,21 @@ scripts/dry-run-regen-ops-views.py
 scripts/regen-token-usage.py
 scripts/regen-index.py"
 
+FAILED=""
 for s in $REGEN_SCRIPTS; do
     if [ -f "$s" ]; then
-        "$PY" "$s" >/dev/null 2>&1 || true
+        echo "" >> "$SCAFFOLD_LOG"
+        echo "--- $s ---" >> "$SCAFFOLD_LOG"
+        if ! "$PY" "$s" >> "$SCAFFOLD_LOG" 2>&1; then
+            FAILED="$FAILED $s"
+        fi
     fi
 done
+
+if [ -n "$FAILED" ]; then
+    echo "[post-commit] WARN regen failures:$FAILED" >&2
+    echo "[post-commit] see $SCAFFOLD_LOG for diagnostics" >&2
+fi
 
 # AMD-020 Class A auto-clean. Commit ONLY dashboard regen output. Exclude
 # docs/reports/main-flows.html and .claude/state/main-flows-v2/* — owned

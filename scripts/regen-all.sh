@@ -33,6 +33,14 @@ cd "$REPO_ROOT"
 START_TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 echo "[regen-all] START $START_TS   python=$PYTHON"
 
+# R1+R2 (2026-05-15): bootstrap docs/reports/ from tracked templates before
+# any regen step touches them. scaffold-from-templates.sh is idempotent —
+# it skips files that already exist, so this is a no-op on normal runs and
+# self-heals when scaffolds vanish (the failure mode that produced the
+# 2026-05-15 dashboard outage). Failure here halts the pipeline via set -e.
+echo "[regen-all] $(date -u +%H:%M:%S)   scaffold-from-templates ..."
+bash "$SCRIPT_DIR/scaffold-from-templates.sh"
+
 STEPS=(
     "scan-shipped-proposals|scripts/scan-shipped-proposals.py"
     "aggregate-telemetry|scripts/aggregate-telemetry.py"
