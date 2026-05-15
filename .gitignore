@@ -74,6 +74,15 @@ tests/__pycache__/
 # Per AMD-020 auto-clean — exclude Python bytecode caches from tree
 .playwright-mcp/
 
+# Git worktrees — sibling-agent EnterWorktree adds these as linked working
+# trees. They appear as gitlinks (mode 160000) in the parent index, which
+# causes the parent's "git diff HEAD" to flag them as modified whenever the
+# linked worktree's own checkout is dirty (-dirty suffix). The downloads-
+# watcher's auto-commit gate cannot resolve that — committing the gitlink
+# updates the ref but the linked tree's internal dirt persists. Ignore the
+# directory entirely; worktrees remain functional via .git/worktrees/.
+.claude/worktrees/
+
 # ─── Dashboard reports: local-only per Founder directive 2026-05-14 ─────
 # Dashboards in docs/reports/ are operational tooling for Founder's local
 # view only. Repo is PUBLIC on GitHub; committing dashboards exposes
