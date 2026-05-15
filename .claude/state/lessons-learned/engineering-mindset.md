@@ -595,6 +595,44 @@ The 9-iteration main-flows pattern cannot recur for any surface
 PROP-007 covers, because agent-context-only PASS will fail the
 user-context-gate.
 
+### Observation 10 — Shipping without pre-research = ship-broken
+
+**Authored:** 2026-05-15 by Agent 3, after Founder's "NEW SHIP
+STANDARD" directive reproduced verbatim in AMD-025.
+
+Two concrete misses Founder caught against Claude.ai (Agent 2):
+
+1. **/goal character-limit miss.** Founder caught Agent 2 shipping a
+   14k-character /goal invocation when /goal has a 4k limit. The
+   four-thousand-character cap exists in current Claude Code v2.1.139+
+   documentation. Agent 2 didn't pre-check the limit; the prompt
+   would have been truncated mid-spec on dispatch.
+
+2. **/goal command existence miss.** Agent 2 had recommended a
+   manual loop pattern when /goal existed natively in v2.1.139+. The
+   command was in release notes the agent could have surfaced with a
+   single web search of "claude code goal command" before authoring
+   the workaround.
+
+Pattern: shipping any spec / prompt / agent-dispatch artifact without
+research-first verification produces ship-broken work that Founder
+must catch. Structural fix lives in AMD-025: every spec / prompt /
+ship deliverable now requires a documented PRE-RESEARCH section
+covering current Anthropic docs, format constraints, version
+compatibility, and substrate state. Specs without research = rejected
+at Critic gate.
+
+The 10 mandatory spec sections (PRE-RESEARCH, GOAL, CONTEXT,
+CONSTRAINTS, PRIORITY, PLAN, DONE WHEN, VERIFY, OUTPUT, STOP RULES)
+encode the research-first discipline at the artifact level so it
+binds at the moment of authoring, not at the moment of catching
+mistakes.
+
+**Skill propagation:** the discipline propagates via skills at the
+decision moment — pre-research becomes a Critic-gate question. The
+question is "what did you research before authoring this?" and the
+answer is the spec's PRE-RESEARCH section. Empty section = blocked.
+
 ## Cross-references
 
 - `docs/agents/AUTONOMOUS_FAILURE_RECOVERY_v8.3.md` (3+ attempts
@@ -602,6 +640,8 @@ user-context-gate.
 - `docs/agents/AMD-009-senior-engineering-standard.md` (P5 honest
   language, P7 honest delta)
 - `docs/agents/AMD-016` (operational question test, value-complete)
+- `docs/agents/AMD-025` (ship spec standard — research-first
+  discipline + 10 mandatory sections)
 - `docs/agents/lessons-learned/SHIP_main-flows-iter6_LESSONS.md`
   (the 5-iteration retro that surfaced the broader pattern)
 - `scripts/visual-audit/capture-janowiak-reference.mjs` (Plan A
