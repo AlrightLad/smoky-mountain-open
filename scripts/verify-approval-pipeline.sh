@@ -84,8 +84,19 @@ if [ ! -d "$DOWNLOADS" ]; then
     exit 2
 fi
 
+# R4 (2026-05-15): ensure pipeline state directories exist BEFORE the
+# preflight gate. Pre-fix, the script's own cleanup_canary step removed the
+# canary from pending/ on success, but if pending/ ITSELF was missing
+# (fresh checkout or after a state cleanup), preflight exited 2 with no
+# recovery path. Audit-report-2026-05-15.md noted this fragility. Bucket
+# directories are tracked via .gitkeep so a fresh clone has them, but
+# defensive mkdir keeps the script idempotent across reruns.
+for bucket in pending approved deferred rejected shipped applied; do
+    mkdir -p "$PROPOSALS/$bucket"
+done
+
 if [ ! -d "$PENDING" ]; then
-    log "FAIL pending/ not found: $PENDING"
+    log "FAIL pending/ not creatable: $PENDING"
     exit 2
 fi
 
