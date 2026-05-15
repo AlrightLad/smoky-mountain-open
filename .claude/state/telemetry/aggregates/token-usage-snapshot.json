@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-15T02:24:55.091595+00:00",
+  "generated_at": "2026-05-15T05:20:47.228720+00:00",
   "_meter_status": "wired-estimated-sidecar-empty",
   "quota_status": {
     "state": "empty",
     "as_of": "2026-05-15T02:17:13.8186919Z",
-    "age_seconds": 461,
+    "age_seconds": 11013,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
