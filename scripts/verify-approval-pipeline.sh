@@ -131,9 +131,14 @@ if [ "$MODE" = "quick" ]; then
     log "quick mode — canary staged but JSON drop skipped"
     log "next step: drop $DOWNLOADS/decisions-canary-<ts>.json with body:"
     cat <<'JSON'
-    { "kind": "decisions",
+    {
+      "schema_version": 1,
+      "generated_at": "<ISO ts>",
       "decisions": [
-        { "id": "TEST-PIPELINE-CANARY", "decision": "approved", "note": "canary" }
+        { "proposal_id": "TEST-PIPELINE-CANARY",
+          "decision": "approve",
+          "note": "canary",
+          "decided_at": "<ISO ts>" }
       ]
     }
 JSON
@@ -141,15 +146,23 @@ JSON
 fi
 
 # ── Drop synthetic decisions JSON in Downloads ──────────────────────────────
+# Schema must match proposals.html export shape (schema_version=1,
+# decisions[].proposal_id, decisions[].decision in {approve|reject|defer}).
+# apply-decisions.sh rejects anything else with VERSION_ERROR or SKIP.
 TS="$(date -u +"%Y-%m-%dT%H-%M-%SZ")"
 JSON_FILE="$DOWNLOADS/decisions-canary-$TS.json"
 cat > "$JSON_FILE" <<EOF
 {
-  "kind": "decisions",
-  "exported_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "schema_version": 1,
+  "generated_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "exported_by": "verify-approval-pipeline.sh",
   "decisions": [
-    { "id": "$CANARY_ID", "decision": "approved", "note": "canary — verify script" }
+    {
+      "proposal_id": "$CANARY_ID",
+      "decision": "approve",
+      "note": "canary — verify script",
+      "decided_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+    }
   ]
 }
 EOF
