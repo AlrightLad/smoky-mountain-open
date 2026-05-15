@@ -833,15 +833,9 @@ Read: /mnt/skills/examples/mcp-builder/SKILL.md
 
 ## Known Bugs (Diagnosed, Not Yet Fixed)
 
-1. Course directory average display — derive front/back/18-hole from `holesMode` field
-2. Clubhouse calendar missing in-progress events — filter uses startDate only, needs end-date check
-3. Sequoyah National finalization bar tap — missing iOS tap CSS properties
-4. All-time records best rounds — split into 9-hole and 18-hole columns
-5. Shareable scorecards for 9-hole rounds — render only played holes
-6. Courses button on season standings — navigate to 2026 courses with rounds
-7. Courses button on player profiles — show all courses with best round
-8. Scorecard logo — reference `logo.jpg` from repo, not base64
-9. Parbaugh Round — joined players not appearing on scorecard (host-only display)
+1. Parbaugh Round — joined players not appearing on scorecard. Live `renderLiveScorecard` (src/pages/syncround.js:128-205) renders all `playerIds` correctly; the host-only filter must be on the export/share scorecard path or the completed-round detail view. Needs investigation. (P3 audit finding H3, 2026-05-14.)
+
+Closed during the 2026-05-14 P3 audit sweep: the previous nine entries here were either fixed in iter 16 (course-directory averages, all-time records 9/18 split, courses-button navigation on standings + player profiles) or were stale entries whose code paths were already correct (calendar in-progress filter, iOS tap CSS on finalize bar, 9-hole scorecard rendering, scorecard logo file reference). See `.claude/state/app-audit-2026-05-14/SUMMARY.md` for line-level evidence per entry.
 
 ## Roadmap (Priority Order)
 
