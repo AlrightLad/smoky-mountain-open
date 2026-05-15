@@ -152,23 +152,23 @@
                          click-to-expand interaction when renderHealthBanner is wired (separate ship). -->
                     <button type="button" class="pb-kpi-card pb-health-banner" data-fq-banner="test" aria-controls="health-banner-test-detail" aria-expanded="false" title="Test health (test-health.json aggregate). Click for details.">
                         <span class="pb-kpi-label"><span class="pb-health-banner-dot" data-fq-banner-dot="test" aria-hidden="true">&bull;</span> Test health</span>
-                        <span class="pb-kpi-value is-small" data-fq-banner-summary="test" style="white-space: normal; word-break: break-word; line-height: 1.3;">awaiting data&hellip;</span>
-                        <span class="pb-kpi-sub" data-fq-banner-meta="test">no aggregate yet</span>
+                        <span class="pb-kpi-value is-small" data-fq-banner-summary="test" style="white-space: normal; word-break: break-word; line-height: 1.3;">&mdash;</span>
+                        <span class="pb-kpi-sub" data-fq-banner-meta="test"></span>
                     </button>
                     <!-- R3 2026-05-15: security-health banner. Reads .claude/state/aggregates/security-health.json
                          (status: green | yellow | red). Yellow = open dependency CVEs (non-blocking). Red = active leak / rules drift / AMD-018 violation. -->
                     <button type="button" class="pb-kpi-card pb-health-banner" data-fq-banner="security" aria-controls="health-banner-security-detail" aria-expanded="false" title="Security health (security-health.json aggregate). Click for details.">
                         <span class="pb-kpi-label"><span class="pb-health-banner-dot" data-fq-banner-dot="security" aria-hidden="true">&bull;</span> Security health</span>
-                        <span class="pb-kpi-value is-small" data-fq-banner-summary="security" style="white-space: normal; word-break: break-word; line-height: 1.3;">awaiting data&hellip;</span>
-                        <span class="pb-kpi-sub" data-fq-banner-meta="security">no aggregate yet</span>
+                        <span class="pb-kpi-value is-small" data-fq-banner-summary="security" style="white-space: normal; word-break: break-word; line-height: 1.3;">&mdash;</span>
+                        <span class="pb-kpi-sub" data-fq-banner-meta="security"></span>
                     </button>
                     <!-- AMD-023 + queue task approvals-pipeline-banner: derived locally
                          from scripts/cron/logs/*-downloads-watcher.log + marker +
                          proposals/{state}/ counts. No external aggregator file. -->
                     <button type="button" class="pb-kpi-card pb-health-banner" data-fq-banner="approvals" aria-controls="health-banner-approvals-detail" aria-expanded="false" title="Approvals pipeline (AMD-023). Reads downloads-watcher logs + proposals state. Click for details.">
                         <span class="pb-kpi-label"><span class="pb-health-banner-dot" data-fq-banner-dot="approvals" aria-hidden="true">&bull;</span> Approvals pipeline</span>
-                        <span class="pb-kpi-value is-small" data-fq-banner-summary="approvals" style="white-space: normal; word-break: break-word; line-height: 1.3;">awaiting data&hellip;</span>
-                        <span class="pb-kpi-sub" data-fq-banner-meta="approvals">scanning watcher logs</span>
+                        <span class="pb-kpi-value is-small" data-fq-banner-summary="approvals" style="white-space: normal; word-break: break-word; line-height: 1.3;">&mdash;</span>
+                        <span class="pb-kpi-sub" data-fq-banner-meta="approvals"></span>
                     </button>
                     <!-- AMD-024 + queue task architecture-review-banner: reads
                          .claude/state/aggregates/architecture-review.json written by
@@ -176,8 +176,8 @@
                          when file absent until that agent dispatches. -->
                     <button type="button" class="pb-kpi-card pb-health-banner" data-fq-banner="architecture" aria-controls="health-banner-architecture-detail" aria-expanded="false" title="Architecture / AI Engineer agent (Terminal 6, AMD-024) writes architecture-review.json. Click for details.">
                         <span class="pb-kpi-label"><span class="pb-health-banner-dot" data-fq-banner-dot="architecture" aria-hidden="true">&bull;</span> Architecture review</span>
-                        <span class="pb-kpi-value is-small" data-fq-banner-summary="architecture" style="white-space: normal; word-break: break-word; line-height: 1.3;">awaiting data&hellip;</span>
-                        <span class="pb-kpi-sub" data-fq-banner-meta="architecture">no aggregate yet</span>
+                        <span class="pb-kpi-value is-small" data-fq-banner-summary="architecture" style="white-space: normal; word-break: break-word; line-height: 1.3;">&mdash;</span>
+                        <span class="pb-kpi-sub" data-fq-banner-meta="architecture"></span>
                     </button>
                     <div class="pb-kpi-card" data-fq-health="round-trip" title="Last successful round-trip pass from regen-all heartbeat. Persisted at .claude/state/heartbeats/regen-all-last-pass.json on every PASS. STALE if more than 60 minutes old.">
                         <span class="pb-kpi-label">Round-trip last pass</span>
@@ -872,6 +872,55 @@
             var halts = hh.halts || [];
             setText('[data-fq="halts-count"]', String(halts.length));
             setText('[data-fq="halts-summary"]', halts.length === 0 ? 'no active halts' : 'unresolved');
+
+            // R-Banner (2026-05-15 dashboard-completion B1-B4): render the 4 health
+            // banners (test, security, approvals, architecture) from
+            // founder_queue.system_health.{test,security,approvals_pipeline,architecture_review}.
+            // Each banner row has data-fq-banner-summary, data-fq-banner-meta, and
+            // data-fq-banner-dot anchors that this function targets.
+            function renderHealthBanner(name, info) {
+                info = info || {};
+                var status = info.status || 'missing';
+                var summary = info.summary || '';
+                var ageHours = info.age_hours;
+                var stale = info.stale === true;
+                // Color map per status
+                var colorMap = {
+                    'green':   'var(--accent-positive, #4CAF50)',
+                    'yellow':  'var(--accent-warning, #F59E42)',
+                    'red':     'var(--accent-negative, #E53935)',
+                    'unknown': 'var(--text-muted, #888888)',
+                    'missing': 'var(--text-muted, #888888)',
+                    'error':   'var(--accent-negative, #E53935)'
+                };
+                var color = colorMap[status] || colorMap['unknown'];
+                // Banner summary text — show summary truncated for visual fit
+                var summaryText = summary.length > 120 ? summary.substring(0, 117) + '...' : summary;
+                setText('[data-fq-banner-summary="' + name + '"]', summaryText);
+                // Meta line: status + age + stale flag
+                var metaParts = [status];
+                if (ageHours != null) {
+                    if (ageHours < 1) metaParts.push(Math.round(ageHours * 60) + 'min ago');
+                    else if (ageHours < 24) metaParts.push(Math.round(ageHours) + 'h ago');
+                    else metaParts.push(Math.round(ageHours / 24) + 'd ago');
+                }
+                if (stale) metaParts.push('STALE');
+                setText('[data-fq-banner-meta="' + name + '"]', metaParts.join(' · '));
+                // Dot color
+                var dotEl = document.querySelector('[data-fq-banner-dot="' + name + '"]');
+                if (dotEl) { dotEl.style.color = color; }
+                // Banner card left border color
+                var bannerEl = document.querySelector('[data-fq-banner="' + name + '"]');
+                if (bannerEl) {
+                    bannerEl.style.borderLeftColor = color;
+                    bannerEl.style.borderLeftWidth = '3px';
+                    bannerEl.style.borderLeftStyle = 'solid';
+                }
+            }
+            renderHealthBanner('test', hh.test_health);
+            renderHealthBanner('security', hh.security_health);
+            renderHealthBanner('approvals', hh.approvals_pipeline);
+            renderHealthBanner('architecture', hh.architecture_review);
 
             // Crons
             var cronsEl = document.querySelector('[data-fq="crons"]');
