@@ -134,7 +134,16 @@ try {
         '^\.claude/state/proposals/inbox/.+\.json$',
         '^\.claude/state/amendments/inbox/.+\.json$',
         '^\.claude/state/escalations/inbox/.+\.json$',
-        '^\.claude/state/proposals/\.last-processed-decisions\.json$'
+        '^\.claude/state/proposals/\.last-processed-decisions\.json$',
+
+        # Sibling-agent EnterWorktree dirs + verify canary. Both surfaced by
+        # test-qa CRITICAL-watcher-allowlist-worktrees-and-canary (2026-05-15):
+        # 6 consecutive watcher SKIPs were caused by a leftover worktree dir
+        # under .claude/worktrees/dashboard-banners/ plus the verify script's
+        # own canary at proposals/pending/TEST-PIPELINE-CANARY.md, neither of
+        # which AMD-023's earlier widening covered.
+        '^\.claude/worktrees/.+',
+        '^\.claude/state/proposals/pending/TEST-PIPELINE-CANARY\.md$'
     )
     $allDirtyRaw = @()
     $allDirtyRaw += (& git diff --name-only HEAD 2>$null)
