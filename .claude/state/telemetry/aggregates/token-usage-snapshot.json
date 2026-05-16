@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-05-15T23:50:40.181061+00:00",
+  "generated_at": "2026-05-16T00:04:58.820250+00:00",
   "_meter_status": "wired-estimated-sidecar-empty",
   "quota_status": {
     "state": "empty",
-    "as_of": "2026-05-15T23:47:12.4953156Z",
-    "age_seconds": 207,
+    "as_of": "2026-05-16T00:02:12.5324485Z",
+    "age_seconds": 166,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
-    "org_monthly_tokens": null,
+    "org_monthly_tokens": 0,
     "org_monthly_cap": null,
     "org_monthly_pct": null,
-    "data_source": null,
-    "_warning": null
+    "data_source": "none",
+    "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
   },
   "constants": {
     "INPUT_RATE_TOKENS_PER_SEC": 100,
@@ -68,6 +68,10 @@
         "2026-05-15": {
           "real": 0,
           "estimated": 0
+        },
+        "2026-05-16": {
+          "real": 0,
+          "estimated": 0
         }
       }
     }
@@ -104,6 +108,10 @@
           "estimated": 0
         },
         "2026-05-15": {
+          "real": 0,
+          "estimated": 0
+        },
+        "2026-05-16": {
           "real": 0,
           "estimated": 0
         }
@@ -158,6 +166,10 @@
         "2026-05-15": {
           "real": 0,
           "estimated": 0
+        },
+        "2026-05-16": {
+          "real": 0,
+          "estimated": 0
         }
       }
     },
@@ -172,6 +184,10 @@
           "estimated": 0
         },
         "2026-05-15": {
+          "real": 0,
+          "estimated": 0
+        },
+        "2026-05-16": {
           "real": 0,
           "estimated": 0
         }
@@ -196,6 +212,10 @@
         "2026-05-15": {
           "real": 0,
           "estimated": 26780
+        },
+        "2026-05-16": {
+          "real": 0,
+          "estimated": 0
         }
       }
     },
@@ -229,11 +249,11 @@
     "estimated": 7226910,
     "manual": 0,
     "first_event_at": "2026-05-13T11:55:00+00:00",
-    "last_event_at": "2026-05-15T23:47:12+00:00"
+    "last_event_at": "2026-05-16T00:02:12+00:00"
   },
   "_counts": {
     "real_events": 1,
-    "estimated_events": 871,
+    "estimated_events": 878,
     "manual_entries": 0
   }
 }
