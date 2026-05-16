@@ -1,8 +1,8 @@
 {
   "schema_version": "test-health-v1.1",
-  "timestamp": "2026-05-16T01:02:00Z",
-  "generated_at": "2026-05-16T01:02:00Z",
-  "head_sha": "eebf0f1",
+  "timestamp": "2026-05-16T01:37:27Z",
+  "generated_at": "2026-05-16T01:37:27Z",
+  "head_sha": "a86583e",
   "status": "yellow",
   "summary": "regen-all completed but round-trip-test gate failed (workflow staleness; see test-health.known_failures)",
   "checks_run": 1,
@@ -24,24 +24,27 @@
     {
       "id": "b43-webkit-smoke-timing-fragility",
       "test": "npm run smoke:full (BROWSERS=chromium,firefox,webkit,webkit-mobile)",
-      "detail": "5 webkit-specific FAILs (S10 dismiss-deletes-read-items 27.6s timeout; S13 feed-action-row-integrity 17.5s timeout; S15 feed-comment-persistence; S21 masthead league chip; S22 hq handicap chart legal state). Per CLAUDE.md memory project_b43_webkit_mobile_smoke_timing.md: intermittent webkit-only flakes from timing fragility; not new code regressions. Chromium 26/26 PASS, Firefox 26/26 PASS (visible), webkit-mobile incomplete due to timeout.",
+      "detail": "B.43 confirmed across both webkit + webkit-mobile (same browser engine, different viewport). Same 2-5 scenarios FAIL on both: S10 dismiss-deletes-read-items + S13 feed-action-row-integrity. Per CLAUDE.md memory project_b43_webkit_mobile_smoke_timing.md: intermittent webkit-engine-only flakes from timing fragility; not new code regressions; chromium + firefox engines unaffected.",
       "resolution_owner": "deferred-ship",
       "resolution_command": "separate ship to harden webkit smoke timing (B.43)",
       "category": "browser-specific-timing-flake-not-code-regression",
       "first_seen": "2026-05-07T00:00:00Z",
-      "cycles_observed": 3,
-      "test_run_artifact": ".claude/state/test-runs/2026-05-16T00-55-00Z-smoke-full-4br-v3/",
+      "cycles_observed": 4,
+      "test_run_artifacts": [
+        ".claude/state/test-runs/2026-05-16T00-55-00Z-smoke-full-4br-v3/ (4-browser parallel run)",
+        ".claude/state/test-runs/2026-05-16T01-38-44Z-smoke-webkit-mobile-v2/ (webkit-mobile-only run; reached S13 before outer timeout)"
+      ],
       "browser_results": {
-        "chromium": "26/26 PASS",
-        "firefox": "26/26 PASS (visible)",
-        "webkit": "21/26 PASS · 5 FAIL (B.43 known-flake)",
-        "webkit-mobile": "incomplete (5min timeout)"
-      }
+        "chromium": "26/26 PASS (1 run)",
+        "firefox": "26/26 PASS (1 run, visible scenarios)",
+        "webkit": "21/26 PASS \u00b7 5 FAIL (B.43 known-flake): S10, S13, S15, S21, S22",
+        "webkit-mobile": "11+/26 PASS \u00b7 2+ FAIL confirmed (S10, S13 \u2014 same as webkit). Sequence killed by outer timeout at scenario ~14/26 of webkit-mobile run."
+      },
+      "verdict": "B.43 is engine-specific (webkit), not viewport-specific. Both webkit + webkit-mobile reproduce same 2 minimum failures (S10 + S13). Per Founder Packet Item 6: accept this categorized known-flake list OR block goal on webkit-engine fix."
     }
   ],
   "source_files": [
     ".claude/state/heartbeats/regen-all-last-pass.json",
-    "tests/round-trip-test.py",
-    ".claude/state/test-runs/2026-05-16T00-55-00Z-smoke-full-4br-v3/"
+    "tests/round-trip-test.py"
   ]
 }
