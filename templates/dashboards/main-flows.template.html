@@ -84,9 +84,18 @@
         /* Flow selection states (Ship R4 + R5):
          * Off-path nodes dim to ~0.18 (was 0.25) per reference-spec.md § 4.
          * On-path nodes get a crisp yellow border, no glow shadow — Dave's
-         * reference uses sharp yellow borders rather than soft halos. */
-        .mf-grid.has-selection .mf-node { opacity: 0.18; }
-        .mf-grid.has-selection .mf-node.is-on-path { opacity: 1; border-color: var(--accent-brass); box-shadow: none; }
+         * reference uses sharp yellow borders rather than soft halos.
+         *
+         * BUG-8 fix (2026-05-16): per Janowiak ToDesktop video, nodes light
+         * up smoothly when added to the path. Transition opacity + border
+         * + transform so the sequential JS-driven addClass produces a
+         * visible walk-the-path animation rather than instant snap.
+         */
+        .mf-grid.has-selection .mf-node { opacity: 0.18; transition: opacity 220ms ease-out, border-color 180ms ease-out, transform 180ms ease-out; }
+        .mf-grid.has-selection .mf-node.is-on-path {
+            opacity: 1; border-color: var(--accent-brass); box-shadow: none;
+            transform: translateY(-1px);
+        }
         .mf-node.is-pulse { animation: mfPulse 700ms ease-out 1; }
         @keyframes mfPulse {
             0%   { box-shadow: 0 0 0 0   rgba(201,169,97,0.55); }
@@ -665,13 +674,38 @@
                 if (btn) btn.addEventListener('click', function () { selectFlow(null); });
             })();
 
+            // BUG-8 fix (2026-05-16): per Janowiak ToDesktop reference video,
+            // the path lights up SEQUENTIALLY through ordered nodes — not all
+            // at once. Founder feedback: "you are not viewing the video but
+            // just looking at the screenshot." Sequential reveal is the
+            // signature interaction. Steps:
+            //   1. Clear is-on-path from every node immediately
+            //   2. For each node in flow.path order, schedule is-on-path
+            //      after (index * STEP_MS) ms — chain of timeouts
+            //   3. respect prefers-reduced-motion: instant reveal there
+            var _highlightTimers = [];
+            function _cancelHighlightAnimation() {
+                _highlightTimers.forEach(function (t) { clearTimeout(t); });
+                _highlightTimers = [];
+            }
             function highlightPath(flowId) {
+                _cancelHighlightAnimation();
                 var flow = (data.flows || []).find(function (f) { return f.id === flowId; });
-                var pathSet = {};
-                if (flow && flow.path) flow.path.forEach(function (id) { pathSet[id] = true; });
                 GRID.classList.toggle('has-selection', !!flow);
-                GRID.querySelectorAll('.mf-node').forEach(function (node) {
-                    node.classList.toggle('is-on-path', !!pathSet[node.getAttribute('data-component-id')]);
+                // Clear all is-on-path immediately so the previous flow's lit nodes
+                // dim before this flow's nodes light up.
+                GRID.querySelectorAll('.mf-node.is-on-path').forEach(function (n) {
+                    n.classList.remove('is-on-path');
+                });
+                if (!flow || !flow.path || !flow.path.length) return;
+                var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                var STEP_MS = reduce ? 0 : 90;
+                flow.path.forEach(function (componentId, i) {
+                    var t = setTimeout(function () {
+                        var n = GRID.querySelector('[data-component-id="' + componentId + '"]');
+                        if (n) n.classList.add('is-on-path');
+                    }, i * STEP_MS);
+                    _highlightTimers.push(t);
                 });
             }
 
