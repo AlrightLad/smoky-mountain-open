@@ -154,6 +154,11 @@ After 9 closures this session (D9 partial + D27 + D32 + D33 + D34 + D36 partial 
 - **D9 partial — cross-browser smoke** ⚠️ — WebKit binary installed via `npx playwright install webkit`. Vite dev server started. Cross-browser run: chromium 26/26 PASS, firefox 26/26 PASS visible, **webkit had 5 FAIL flakes** matching CLAUDE.md memory `project_b43_webkit_mobile_smoke_timing.md` "B.43 webkit smoke timing fragility" — known-flake pattern, not new code regression. webkit-mobile incomplete (timed out at ~5min). Artifacts at `.claude/state/test-runs/2026-05-16T00-54-13Z-smoke-full-4br-v2/` + `v3`. **Founder decision needed: accept B.43 known-flake list OR block goal on webkit fix?**
 - **D27 TASTE-AUDIT.md** ✅ — `.claude/state/design-research/taste-scoring/TASTE-AUDIT.md` committed. Explicit honest gap analysis: fleet 7.80 vs new 9.5 threshold (gap 1.70). Per-surface gap-to-9.5, per-dimension gap analysis, 3 possible Founder rulings on the 9.5-vs-7.5 question. Per spec D26 verbatim "Founder-approved gap" is a valid PASS path — this document IS the gap audit.
 - **test-health.json B.43 entry** ✅ — added webkit-smoke-flake to known_failures with browser-by-browser breakdown + test-run artifact reference. Banner now reflects 2 known failures (user-context-gate + B.43). Status stays YELLOW (both categorized known-flake/workflow, not code regressions). Aggregator carries forward on subsequent runs.
+- **D26 partial iterations** ⚙️ ongoing — multiple substantive polish iterations applied:
+  - dashboard.html THIS WEEK strip: big-numeral typography (commit 2a12de7, V1 vision-verified)
+  - proposals/amendments/escalations/activity/index: same big-numeral pattern applied to KPI grids (commit b4d5011, V1 vision-verified on proposals)
+  - fleet-wide: hover-elevation on `.pb-kpi-card` + button-banner translateY (commit 791ac52)
+  - Fleet score estimate: 7.80 → ~8.15 (still 1.35 short of 9.5). Per TASTE-AUDIT.md: ~30-35 more polish ships needed to reach 9.5 fleet-average. Founder ruling on threshold remains explicit OPEN ITEM 4.
 
 ### OPEN (Founder decision required to close)
 
