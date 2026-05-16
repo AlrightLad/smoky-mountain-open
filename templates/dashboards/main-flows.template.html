@@ -255,6 +255,30 @@
         .mf-steps-empty-eyebrow { display: block; font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent-brass); margin-bottom: var(--space-2); }
         .mf-steps-empty-hint { display: block; margin-top: var(--space-2); font-size: 0.75rem; color: var(--text-tertiary); }
         .mf-steps-list { list-style: none; margin: 0; padding: 0; max-height: 40vh; overflow-y: auto; }
+        /* M4 delta #1 (2026-05-16): step reveal stagger animation per
+         * Janowiak decomposition signature (sequenced path traversal).
+         * Each .mf-steps-item fades + scales in with N * 80ms delay.
+         * prefers-reduced-motion respected per AMD-009 accessibility. */
+        @keyframes mf-step-reveal {
+            from { opacity: 0; transform: translateY(4px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .mf-steps-list .mf-steps-item {
+            animation: mf-step-reveal 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+        }
+        .mf-steps-list .mf-steps-item:nth-child(1)  { animation-delay: 0ms; }
+        .mf-steps-list .mf-steps-item:nth-child(2)  { animation-delay: 80ms; }
+        .mf-steps-list .mf-steps-item:nth-child(3)  { animation-delay: 160ms; }
+        .mf-steps-list .mf-steps-item:nth-child(4)  { animation-delay: 240ms; }
+        .mf-steps-list .mf-steps-item:nth-child(5)  { animation-delay: 320ms; }
+        .mf-steps-list .mf-steps-item:nth-child(6)  { animation-delay: 400ms; }
+        .mf-steps-list .mf-steps-item:nth-child(7)  { animation-delay: 480ms; }
+        .mf-steps-list .mf-steps-item:nth-child(8)  { animation-delay: 560ms; }
+        .mf-steps-list .mf-steps-item:nth-child(9)  { animation-delay: 640ms; }
+        .mf-steps-list .mf-steps-item:nth-child(n+10) { animation-delay: 720ms; }
+        @media (prefers-reduced-motion: reduce) {
+            .mf-steps-list .mf-steps-item { animation: none; }
+        }
         .mf-steps-item { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border-subtle); display: grid; grid-template-columns: 28px 1fr; gap: var(--space-2); cursor: pointer; transition: background var(--duration-default) var(--ease-default); }
         .mf-steps-item:last-child { border-bottom: none; }
         .mf-steps-item:hover { background: var(--bg-elevated); }
