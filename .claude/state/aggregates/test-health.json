@@ -1,14 +1,14 @@
 {
   "schema_version": "test-health-v1.1",
-  "timestamp": "2026-05-15T23:28:09Z",
-  "generated_at": "2026-05-15T23:28:09Z",
-  "head_sha": "7db7d88",
+  "timestamp": "2026-05-16T01:02:00Z",
+  "generated_at": "2026-05-16T01:02:00Z",
+  "head_sha": "eebf0f1",
   "status": "yellow",
   "summary": "regen-all completed but round-trip-test gate failed (workflow staleness; see test-health.known_failures)",
   "checks_run": 1,
   "checks_passed": 1,
   "checks_skipped": 0,
-  "checks_with_known_failure": 1,
+  "checks_with_known_failure": 2,
   "regressions": [],
   "known_failures": [
     {
@@ -20,10 +20,28 @@
       "category": "workflow-staleness-not-code-regression",
       "first_seen": "2026-05-14T22:48:18Z",
       "cycles_observed": 2
+    },
+    {
+      "id": "b43-webkit-smoke-timing-fragility",
+      "test": "npm run smoke:full (BROWSERS=chromium,firefox,webkit,webkit-mobile)",
+      "detail": "5 webkit-specific FAILs (S10 dismiss-deletes-read-items 27.6s timeout; S13 feed-action-row-integrity 17.5s timeout; S15 feed-comment-persistence; S21 masthead league chip; S22 hq handicap chart legal state). Per CLAUDE.md memory project_b43_webkit_mobile_smoke_timing.md: intermittent webkit-only flakes from timing fragility; not new code regressions. Chromium 26/26 PASS, Firefox 26/26 PASS (visible), webkit-mobile incomplete due to timeout.",
+      "resolution_owner": "deferred-ship",
+      "resolution_command": "separate ship to harden webkit smoke timing (B.43)",
+      "category": "browser-specific-timing-flake-not-code-regression",
+      "first_seen": "2026-05-07T00:00:00Z",
+      "cycles_observed": 3,
+      "test_run_artifact": ".claude/state/test-runs/2026-05-16T00-55-00Z-smoke-full-4br-v3/",
+      "browser_results": {
+        "chromium": "26/26 PASS",
+        "firefox": "26/26 PASS (visible)",
+        "webkit": "21/26 PASS · 5 FAIL (B.43 known-flake)",
+        "webkit-mobile": "incomplete (5min timeout)"
+      }
     }
   ],
   "source_files": [
     ".claude/state/heartbeats/regen-all-last-pass.json",
-    "tests/round-trip-test.py"
+    "tests/round-trip-test.py",
+    ".claude/state/test-runs/2026-05-16T00-55-00Z-smoke-full-4br-v3/"
   ]
 }
