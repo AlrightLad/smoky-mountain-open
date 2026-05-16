@@ -70,7 +70,16 @@
 
         <section class="pb-section">
             <h2 class="pb-section-title">This week</h2>
-            <div class="pb-kpi-grid">
+            <!-- D26 iter (2026-05-16): big-numeral typography for fleet consistency. -->
+            <style>
+                .pb-kpi-grid.is-this-week .pb-kpi-value {
+                    font-size: var(--text-4xl, 2.25rem);
+                    line-height: 1.05;
+                    letter-spacing: -0.02em;
+                    font-weight: 600;
+                }
+            </style>
+            <div class="pb-kpi-grid is-this-week">
                 <div class="pb-kpi-card is-neutral">
                     <span class="pb-kpi-label">Handoffs (7d)</span>
                     <span class="pb-kpi-value" data-kpi="handoffs-7d">&mdash;</span>

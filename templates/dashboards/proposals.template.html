@@ -175,7 +175,18 @@
 
         <section class="pb-section">
             <h2 class="pb-section-title">Decision queue</h2>
-            <div class="pb-kpi-grid">
+            <!-- D26 iter (2026-05-16): big-numeral typography per Vercel/Stripe pattern.
+                 Bumps .pb-kpi-value to 4xl inside Decision Queue grid. Same class
+                 modifier pattern as dashboard.template.html .is-this-week. -->
+            <style>
+                .pb-kpi-grid.is-decision-queue .pb-kpi-value {
+                    font-size: var(--text-4xl, 2.25rem);
+                    line-height: 1.05;
+                    letter-spacing: -0.02em;
+                    font-weight: 600;
+                }
+            </style>
+            <div class="pb-kpi-grid is-decision-queue">
                 <div class="pb-kpi-card">
                     <span class="pb-kpi-label">Pending</span>
                     <span class="pb-kpi-value" id="count-pending">&mdash;</span>

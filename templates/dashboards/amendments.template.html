@@ -72,7 +72,17 @@
 
         <section class="pb-section">
             <h2 class="pb-section-title">Decision queue</h2>
-            <div class="pb-kpi-grid">
+            <!-- D26 iter (2026-05-16): big-numeral typography. Mirror dashboard
+                 + proposals .is-decision-queue pattern for fleet consistency. -->
+            <style>
+                .pb-kpi-grid.is-decision-queue .pb-kpi-value {
+                    font-size: var(--text-4xl, 2.25rem);
+                    line-height: 1.05;
+                    letter-spacing: -0.02em;
+                    font-weight: 600;
+                }
+            </style>
+            <div class="pb-kpi-grid is-decision-queue">
                 <div class="pb-kpi-card">
                     <span class="pb-kpi-label">Pending</span>
                     <span class="pb-kpi-value" data-kpi="pending">&mdash;</span>

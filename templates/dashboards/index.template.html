@@ -135,6 +135,15 @@
 
         <section class="pb-section">
             <h2 class="pb-section-title">Status</h2>
+            <!-- D26 iter (2026-05-16): big-numeral typography for fleet consistency. -->
+            <style>
+                #status-panel .pb-kpi-value {
+                    font-size: var(--text-4xl, 2.25rem);
+                    line-height: 1.05;
+                    letter-spacing: -0.02em;
+                    font-weight: 600;
+                }
+            </style>
             <div class="pb-kpi-grid" id="status-panel">
                 <div class="pb-kpi-card" id="tile-ships">
                     <span class="pb-kpi-label">Ships this week</span>
