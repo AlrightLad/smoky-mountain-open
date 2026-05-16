@@ -31,6 +31,8 @@ Pattern at ship boundaries (Agent 3 discipline):
 """
 import argparse
 import json
+import re
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -39,6 +41,18 @@ ROOT = Path(__file__).resolve().parents[1]
 CURRENT_SHIP_PATH = ROOT / ".claude" / "state" / "current-ship.json"
 EVENTS_DIR = ROOT / ".claude" / "state" / "telemetry" / "events"
 
+# Per dashboard-completion-spec-2026-05-15.md PHASE T fix (Founder Obs 2):
+# the prior fallback "manual-emit-{timestamp}" never matched canonical
+# artifact IDs (AMD-NNN, PROP-NNN, ESC-NNN), so per-ship token attribution
+# rendered "—" for every ship in Recent Ships table forever. New cascade:
+#   1. --ship-id flag (explicit override)
+#   2. current-ship.json ship_id (ESC-003 Approach A)
+#   3. parse HEAD commit message for AMD-NNN / PROP-NNN / ESC-NNN pattern
+#   4. fall back to manual-emit-{timestamp} only when commit truly is generic
+SHIP_ID_FROM_SUBJECT_RE = re.compile(
+    r"\b(AMD-\d{3,}|PROP-\d{3,}|ESC-\d{3,}|REC-\d{3,})\b"
+)
+
 
 def read_current_ship():
     if not CURRENT_SHIP_PATH.exists():
@@ -46,6 +60,25 @@ def read_current_ship():
     try:
         return json.loads(CURRENT_SHIP_PATH.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
+        return None
+
+
+def parse_ship_id_from_head_commit():
+    """Read HEAD commit subject + body; extract canonical artifact ID if present.
+
+    Returns the ID string (e.g. "AMD-021") or None. Matches the same pattern
+    aggregate-telemetry.py uses for per-ship token attribution.
+    """
+    try:
+        r = subprocess.run(
+            ["git", "log", "-1", "--pretty=%B"],
+            capture_output=True, text=True, cwd=str(ROOT), timeout=5,
+        )
+        if r.returncode != 0:
+            return None
+        m = SHIP_ID_FROM_SUBJECT_RE.search(r.stdout)
+        return m.group(1) if m else None
+    except (subprocess.SubprocessError, OSError):
         return None
 
 
@@ -61,19 +94,30 @@ def main():
     now = datetime.now(timezone.utc)
     iso = now.isoformat()
 
-    # Ship ID resolution per ESC-003 Approach A
+    # Ship ID resolution per ESC-003 Approach A + dashboard-completion-spec PHASE T
     ship_id = args.ship_id
+    ship_id_source = "flag"
     if not ship_id:
         current = read_current_ship()
         if current and current.get("ship_id"):
             ship_id = current["ship_id"]
+            ship_id_source = "current-ship.json"
         else:
-            # Honest fallback per AMD-009 P5: name explicitly that this is
-            # unattributed. Aggregator will surface "—" for any artifact
-            # this event doesn't match.
-            ship_id = f"manual-emit-{now.strftime('%Y%m%dT%H%M%SZ')}"
-            print(f"warning: no ship_id in current-ship.json, no --ship-id flag; using fallback '{ship_id}'", file=sys.stderr)
-            print("Per ESC-003: set ship_id in .claude/state/current-ship.json at ship-plan time, or pass --ship-id PROP-NNN explicitly.", file=sys.stderr)
+            # NEW (2026-05-15): parse HEAD commit subject/body for canonical
+            # artifact ID before falling through to manual-emit-{timestamp}.
+            # Most post-commit hook fires happen RIGHT after a commit naming
+            # AMD-NNN / PROP-NNN, so the ship_id is sitting right there.
+            ship_id = parse_ship_id_from_head_commit()
+            if ship_id:
+                ship_id_source = "head-commit-parse"
+            else:
+                # Honest fallback per AMD-009 P5: name explicitly that this is
+                # unattributed. Aggregator will surface "—" for any artifact
+                # this event doesn't match.
+                ship_id = f"manual-emit-{now.strftime('%Y%m%dT%H%M%SZ')}"
+                ship_id_source = "fallback"
+                print(f"warning: no ship_id in current-ship.json, no --ship-id flag, no canonical ID in HEAD commit; using fallback '{ship_id}'", file=sys.stderr)
+                print("Per ESC-003: set ship_id in .claude/state/current-ship.json at ship-plan time, or pass --ship-id PROP-NNN explicitly, or include canonical ID in commit message.", file=sys.stderr)
 
     event = {
         "event_type": "session.team-work.summary",
