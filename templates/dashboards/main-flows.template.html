@@ -248,7 +248,12 @@
         .mf-flows-status.is-planned  { background: rgba(212,168,87,0.18); color: var(--accent-amber); }
         .mf-flows-status.is-speculative { background: rgba(216,208,192,0.10); color: var(--text-tertiary); }
 
-        .mf-steps-empty { padding: var(--space-3); color: var(--text-tertiary); font-size: 0.8125rem; line-height: 1.55; }
+        /* M4 delta #4 (2026-05-16): empty-state polish per Linear/Stripe
+         * intentional-empty-state pattern. Was minimal hint; now has eyebrow
+         * + body + secondary action. Estimated empty/loading dim 6 lift: 6 → 7. */
+        .mf-steps-empty { padding: var(--space-4) var(--space-3); color: var(--text-secondary); font-size: 0.8125rem; line-height: 1.55; text-align: center; }
+        .mf-steps-empty-eyebrow { display: block; font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent-brass); margin-bottom: var(--space-2); }
+        .mf-steps-empty-hint { display: block; margin-top: var(--space-2); font-size: 0.75rem; color: var(--text-tertiary); }
         .mf-steps-list { list-style: none; margin: 0; padding: 0; max-height: 40vh; overflow-y: auto; }
         .mf-steps-item { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border-subtle); display: grid; grid-template-columns: 28px 1fr; gap: var(--space-2); cursor: pointer; transition: background var(--duration-default) var(--ease-default); }
         .mf-steps-item:last-child { border-bottom: none; }
@@ -357,7 +362,7 @@
                         <span class="mf-card-title">Steps</span>
                         <span class="mf-card-meta" id="mf-steps-meta">no flow selected</span>
                     </div>
-                    <div class="mf-steps-empty" id="mf-steps-empty">Select a flow on the right to see the path through the system.</div>
+                    <div class="mf-steps-empty" id="mf-steps-empty"><span class="mf-steps-empty-eyebrow">No flow selected</span>Pick a flow from the right rail to trace its path through the system.<span class="mf-steps-empty-hint">Each flow lights up the components it touches + numbers each step in order.</span></div>
                     <ol class="mf-steps-list" id="mf-steps-list" hidden></ol>
                 </div>
             </aside>
@@ -552,7 +557,7 @@
             function renderStepsForFlow(flowId) {
                 if (!flowId) {
                     STEPS_EMPTY.hidden = false;
-                    STEPS_EMPTY.textContent = 'Select a flow on the right to see the path through the system.';
+                    STEPS_EMPTY.innerHTML = '<span class="mf-steps-empty-eyebrow">No flow selected</span>Pick a flow from the right rail to trace its path through the system.<span class="mf-steps-empty-hint">Each flow lights up the components it touches + numbers each step in order.</span>';
                     STEPS_LIST.hidden = true;
                     STEPS_META.textContent = 'no flow selected';
                     return;
