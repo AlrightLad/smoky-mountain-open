@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-16T16:41:29.439928+00:00",
+  "generated_at": "2026-05-16T16:51:59.761143+00:00",
   "_meter_status": "wired-real",
   "quota_status": {
     "state": "fresh",
-    "as_of": "2026-05-16T16:37:13.0884068Z",
-    "age_seconds": 256,
+    "as_of": "2026-05-16T16:47:13.1459592Z",
+    "age_seconds": 286,
     "weekly_tokens": 102000,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -261,11 +261,11 @@
     "estimated": 7254600,
     "manual": 0,
     "first_event_at": "2026-05-13T11:55:00+00:00",
-    "last_event_at": "2026-05-16T16:40:48+00:00"
+    "last_event_at": "2026-05-16T16:50:48+00:00"
   },
   "_counts": {
     "real_events": 1,
-    "estimated_events": 1290,
+    "estimated_events": 1294,
     "manual_entries": 0
   }
 }
