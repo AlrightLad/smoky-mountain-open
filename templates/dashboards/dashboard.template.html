@@ -487,13 +487,28 @@
                         var stale = mq.anchored_at && (Date.now() - new Date(mq.anchored_at).getTime()) > (24 * 3600 * 1000);
                         if (quotaCard) quotaCard.classList.add(stale ? 'is-warning' : 'is-info');
                     } else {
-                        setText('[data-kpi="manual-quota-pct"]', 'no data');
-                        var noDataNote = qs && qs.state === 'empty'
-                            ? 'sidecar present but no source data · run scripts/refresh-quota-manual.ps1'
-                            : 'no recent paste';
-                        setText('[data-kpi-sub="manual-quota"]', noDataNote);
-                        if (quotaLabel) quotaLabel.textContent = 'Anthropic quota (no data)';
-                        if (quotaCard) quotaCard.classList.add('is-warning');
+                        // D37 (2026-05-15) — per usage-meters/notes.md (Anthropic
+                        // Console + GitHub Actions + Stripe billing pattern):
+                        // "meter must always render — fall back to estimated value
+                        // with HONEST source label rather than display 'no data'."
+                        // Was: "no data" / "sidecar present but no source data ..."
+                        // Now: render estimated weekly_tokens as the headline,
+                        // explicit "estimated · no Anthropic console quota
+                        // configured" sub-label, link to refresh-quota-manual.ps1
+                        // as the upgrade path.
+                        var estTokens = data.weekly_tokens || 0;
+                        if (estTokens > 0) {
+                            setText('[data-kpi="manual-quota-pct"]', fmtNum(estTokens));
+                            setText('[data-kpi-sub="manual-quota"]', 'estimated · no Anthropic console quota configured · run scripts/refresh-quota-manual.ps1 for live %');
+                            if (quotaLabel) quotaLabel.textContent = 'Anthropic spend (estimated)';
+                            if (quotaCard) quotaCard.classList.add('is-info');
+                        } else {
+                            // Honest empty: source genuinely empty + no estimated fallback
+                            setText('[data-kpi="manual-quota-pct"]', '$0.00');
+                            setText('[data-kpi-sub="manual-quota"]', 'no usage recorded yet · sidecar awaits Founder paste');
+                            if (quotaLabel) quotaLabel.textContent = 'Anthropic spend';
+                            if (quotaCard) quotaCard.classList.add('is-neutral');
+                        }
                     }
                 }
 

@@ -80,6 +80,9 @@ def scan_for_credentials():
             #   - node_modules (third-party code; package security ≠ ours)
             #   - .claude/hooks/ (secret-scanner itself contains pattern
             #     definitions as search targets)
+            #   - .claude/state/security/ (P8 baseline scan outputs contain
+            #     the scanner's own pattern regex literals as DATA — false
+            #     positive caught in V1 vision verification 2026-05-16)
             #   - scripts/aggregate-security-health.py (this script's own
             #     pattern declarations would match themselves)
             r = subprocess.run(
@@ -87,6 +90,7 @@ def scan_for_credentials():
                  ":(exclude)*.lock", ":(exclude)node_modules",
                  ":(exclude)functions/node_modules",
                  ":(exclude).claude/hooks/",
+                 ":(exclude).claude/state/security/",
                  ":(exclude)scripts/aggregate-security-health.py"],
                 capture_output=True, text=True, cwd=str(ROOT), timeout=10,
             )
