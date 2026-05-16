@@ -145,14 +145,53 @@ $status = [ordered]@{
     "_run_id" = $runId
 }
 
+# BUG-6 fix (2026-05-16): Founder reported "sidecar for token counter is
+# still not working" because manual-quota-log perpetually absent → sidecar
+# perpetually reported data_source=none → UI perpetually showed "sidecar
+# empty". That made the sidecar a half-baked feature on a Founder-only
+# workstation where claude.ai pastes are infrequent.
+#
+# Fix: when manual paste is absent OR empty, AUTO-DERIVE from the measured
+# weekly_tokens in current-snapshot.json (real cycle telemetry, 7-day
+# window — per BUG-7 fix). Mark data_source="auto-derived" so the UI can
+# show the value with an honest "measured · paste for ground truth %"
+# label instead of "sidecar empty".
+function Get-AutoDerivedWeeklyTokens {
+    param([string]$repoRoot)
+    $snapPath = Join-Path $repoRoot ".claude\state\telemetry\aggregates\current-snapshot.json"
+    if (-not (Test-Path $snapPath)) { return $null }
+    try {
+        $snap = Get-Content $snapPath -Raw -Encoding utf8 | ConvertFrom-Json
+        $measured = [int]($snap.weekly_tokens)
+        if ($measured -gt 0) { return $measured }
+    } catch { return $null }
+    return $null
+}
+
 if (-not (Test-Path $logFile)) {
-    $status.data_source = "none"
-    $status."_warning" = "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
-    Log "no-data: manual-quota-log absent"
+    $autoTokens = Get-AutoDerivedWeeklyTokens -repoRoot $repoRoot
+    if ($autoTokens) {
+        $status.data_source = "auto-derived"
+        $status.weekly_tokens = $autoTokens
+        $status."_warning" = "auto-derived from measured cycle telemetry (last 7 days); run scripts/refresh-quota-manual.ps1 to paste claude.ai % for live quota tracking"
+        Log "auto-derived: weekly_tokens=$autoTokens (manual-quota-log absent)"
+    } else {
+        $status.data_source = "none"
+        $status."_warning" = "no measured telemetry and no manual paste; run scripts/refresh-quota-manual.ps1"
+        Log "no-data: manual-quota-log absent + no measured telemetry"
+    }
 } elseif (-not $mostRecentTs) {
-    $status.data_source = "none"
-    $status."_warning" = "manual-quota-log.ndjson exists but contains no parseable entries"
-    Log "no-data: log present but empty"
+    $autoTokens = Get-AutoDerivedWeeklyTokens -repoRoot $repoRoot
+    if ($autoTokens) {
+        $status.data_source = "auto-derived"
+        $status.weekly_tokens = $autoTokens
+        $status."_warning" = "auto-derived from measured cycle telemetry (last 7 days); manual-quota-log present but contains no parseable entries"
+        Log "auto-derived: weekly_tokens=$autoTokens (manual-quota-log empty)"
+    } else {
+        $status.data_source = "none"
+        $status."_warning" = "manual-quota-log.ndjson exists but contains no parseable entries"
+        Log "no-data: log present but empty"
+    }
 } else {
     $ageSeconds = [int]($now - $mostRecentTs).TotalSeconds
     $status.stale_seconds = $ageSeconds
