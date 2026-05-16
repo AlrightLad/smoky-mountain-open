@@ -1,0 +1,12 @@
+{
+  "test_name": "smoke-full-4browsers",
+  "command": "npm run smoke:full",
+  "exit_code": 2,
+  "started_at": "2026-05-16T00:53:47Z",
+  "duration_seconds": 1,
+  "head_sha": "f32fea1",
+  "stdout_path": ".claude/state/test-runs/2026-05-16T00-53-47Z-smoke-full-4browsers/stdout.txt",
+  "stderr_path": ".claude/state/test-runs/2026-05-16T00-53-47Z-smoke-full-4browsers/stderr.txt",
+  "stdout_bytes": 303,
+  "stderr_bytes": 485
+}

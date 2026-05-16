@@ -1,0 +1,5 @@
+(node:40356) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ERROR: dev server not reachable at http://localhost:5173/
+  Start it in another terminal:  npm run dev
+  Or override:  DEV_URL=http://localhost:PORT/ npm run smoke

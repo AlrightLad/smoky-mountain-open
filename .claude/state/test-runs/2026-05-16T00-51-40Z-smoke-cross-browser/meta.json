@@ -1,0 +1,12 @@
+{
+  "test_name": "smoke-cross-browser",
+  "command": "npm run smoke",
+  "exit_code": 0,
+  "started_at": "2026-05-16T00:51:40Z",
+  "duration_seconds": 100,
+  "head_sha": "f32fea1",
+  "stdout_path": ".claude/state/test-runs/2026-05-16T00-51-40Z-smoke-cross-browser/stdout.txt",
+  "stderr_path": ".claude/state/test-runs/2026-05-16T00-51-40Z-smoke-cross-browser/stderr.txt",
+  "stdout_bytes": 3897,
+  "stderr_bytes": 301
+}

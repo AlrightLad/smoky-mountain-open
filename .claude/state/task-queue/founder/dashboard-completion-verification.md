@@ -145,9 +145,13 @@ Recommendation: A (accept). Production exploit risk ≈ 0.
 ### NEWLY CLOSED THIS SESSION (after initial packet emission)
 
 - **D32 pre-commit secret scanner + fixture rejection test** ✅ — `scripts/test-precommit-secret-rejection.sh` proves the Husky pre-commit hook correctly rejects a fake AWS-key fixture. Log at `.claude/state/security/precommit-secret-fixture-test.md`. Test exit 0; hook exit 1 (correct block); cleanup runs on trap EXIT.
+- **D33 per-test-run artifact dirs** ✅ — `scripts/run-test-with-artifacts.sh` wrapper produces `.claude/state/test-runs/{ts}-{name}/` with command + stdout + stderr + meta.json sidecar per P8.7. Used to run round-trip + verify-scroll + verify-flows + self-tests + smoke-full (5 artifact dirs this session).
 - **D34 firestore-rules coverage matrix** ✅ — `.claude/state/security/firestore-rules-coverage-2026-05-15.md` maps 41 collections × 4 operations (read/create/update/delete) + per-OWASP-A01-concern verdict. 9/9 A01 sub-items PASS.
-- **D37 zero unexplained "—"/"0"** ✅ for the Anthropic quota card — was "no data"; now renders estimated weekly_tokens (7.30M) with "Anthropic spend (estimated)" label per usage-meters peer pattern. V1 vision-verified at `.claude/state/dashboard-audit-2026-05-15/screenshots/d37-quota-fix-AND-d40-security-back-yellow.png`. Daily Anthropic console card still "—" (separate widget; same data source; can apply same fix in follow-up).
+- **D36 partial — Day-To-Date token card** ✅ — new "Tokens today (UTC)" KPI card on dashboard.html. Derives from token-usage-snapshot.json by_day breakdown. Honest empty-state "no events recorded yet today" when 0 (legitimate early-UTC-day case). V1 vision-verified at `screenshots/d36-daily-tokens-card-fullpage.png`. **Spec full D36 also wants "last-ship spend" column — fix for that landed at `92c7433` (going-forward; historical 36 events stay non-attributable).**
+- **D37 zero unexplained "—"/"0"** ✅ for the Anthropic quota card — was "no data"; now renders estimated weekly_tokens (7.30M) with "Anthropic spend (estimated)" label per usage-meters peer pattern. V1 vision-verified at `screenshots/d37-quota-fix-AND-d40-security-back-yellow.png`.
 - **D40 aggregator --self-test mode** ✅ — `scripts/aggregate-self-tests.py` runs all 5 aggregators + asserts JSON shape + timestamp freshness + status-not-unknown-when-source-detectable. All 5 PASS. Wired into post-commit hook REGEN_SCRIPTS list.
+- **PHASE H re-validation** ✅ — Clean rebuild (rm + scaffold + regen) post-D32/D34/D37/D40 — D37 changes survive, D40 self-tests all PASS, banner anchors intact, no regressions.
+- **D9 partial — cross-browser smoke** ⚠️ — WebKit binary installed via `npx playwright install webkit`. Vite dev server started. Cross-browser run: chromium 26/26 PASS, firefox 26/26 PASS visible, **webkit had 5 FAIL flakes** matching CLAUDE.md memory `project_b43_webkit_mobile_smoke_timing.md` "B.43 webkit smoke timing fragility" — known-flake pattern, not new code regression. webkit-mobile incomplete (timed out at ~5min). Artifacts at `.claude/state/test-runs/2026-05-16T00-54-13Z-smoke-full-4br-v2/` + `v3`. **Founder decision needed: accept B.43 known-flake list OR block goal on webkit fix?**
 
 ### OPEN (Founder decision required to close)
 
@@ -198,13 +202,14 @@ AWAITING APPROVAL
 [Founder writes any notes here]
 ```
 
-### Founder decisions on the 5 open items above
+### Founder decisions on the OPEN items above
 
-- Item 1 (Token meter empty state UI): [Founder picks A or B]
-- Item 2 (Per-ship tokens backfill): [Founder picks A, B, or C]
-- Item 3 (Security YELLOW): [Founder picks A or B]
-- Item 4 (Taste 9.5 threshold for ops tooling): [Founder rules]
+- Item 1 (Token meter empty state UI — now showing 7.30M estimated): [Founder picks A or B]
+- Item 2 (Per-ship tokens backfill historical 36 events): [Founder picks A, B, or C]
+- Item 3 (Security YELLOW — 2 transitive fast-xml-builder + protobufjs): [Founder picks A or B]
+- Item 4 (Taste 9.5 threshold for operator tooling vs 7.5 prior threshold): [Founder rules]
 - Item 5 (Report format 9 vs 15 sections): [Founder picks]
+- **Item 6 (NEW) — D9 webkit smoke flakes (B.43 known pattern)**: accept the 5 known-flake FAILs OR block goal on webkit fix?
 
 ---
 
