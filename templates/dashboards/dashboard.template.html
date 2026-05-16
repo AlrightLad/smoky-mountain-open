@@ -146,7 +146,23 @@
             <!-- Sub-section: system health -->
             <div data-fq-section="health" style="margin-bottom: var(--space-3);">
                 <div style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); font-weight: 600; margin-bottom: var(--space-1);">System health</div>
-                <div class="pb-kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+                <!-- P7 layout fix 2026-05-15 (taste-scoring): the 6-column auto-fit at 180px
+                     min collapses banner summary text into 10-line wraps that break rhythm
+                     against the equal-height KPI cards in the row above. Min raised to
+                     240px (→ 4 cols at 1440px, 2 cols at 720px, single col mobile), and a
+                     CSS clamp on banner-summary keeps long summaries readable + the
+                     button title attribute carries the full text on hover. -->
+                <style>
+                    .pb-health-banner [data-fq-banner-summary] {
+                        display: -webkit-box;
+                        -webkit-line-clamp: 3;
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        word-break: normal !important;
+                    }
+                </style>
+                <div class="pb-kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
                     <!-- R3 2026-05-15: test-health banner. Reads .claude/state/aggregates/test-health.json
                          (status: green | yellow | red). Renders without JS by injecting status text inline; will gain
                          click-to-expand interaction when renderHealthBanner is wired (separate ship). -->

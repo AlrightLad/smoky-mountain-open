@@ -7,9 +7,13 @@
     <link rel="stylesheet" href="_assets/dashboard-shell.css">
     <style>
         /* Page-specific: index dashboard cards + governance quick-links. 30-line budget. */
+        /* P7 layout iter 2026-05-15: was minmax(260px, 1fr) which produced
+           4+2 asymmetric layout at 1440px with 6 dashboard cards. Bumped to
+           minmax(360px, 1fr) so 1440px viewport renders 3+3 symmetric;
+           narrow viewports still single-column responsively. */
         .dashboards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
             gap: var(--space-3);
             margin-bottom: var(--space-5);
         }
