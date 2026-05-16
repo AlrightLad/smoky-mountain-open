@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-05-16T13:53:11.648477+00:00",
-  "_meter_status": "wired-estimated-sidecar-empty",
+  "generated_at": "2026-05-16T12:55:34.666238+00:00",
+  "_meter_status": "wired-estimated",
   "quota_status": {
-    "state": "empty",
-    "as_of": "2026-05-16T13:52:12.8288831Z",
-    "age_seconds": 58,
-    "weekly_tokens": 0,
+    "state": "absent",
+    "as_of": null,
+    "age_seconds": null,
+    "weekly_tokens": null,
     "weekly_cap": null,
     "weekly_pct": null,
-    "org_monthly_tokens": 0,
+    "org_monthly_tokens": null,
     "org_monthly_cap": null,
     "org_monthly_pct": null,
-    "data_source": "none",
-    "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
+    "data_source": null,
+    "_warning": null
   },
   "constants": {
     "INPUT_RATE_TOKENS_PER_SEC": 100,
@@ -33,49 +33,13 @@
     },
     "orchestrator": {
       "real": 0,
-      "estimated": 7254600,
+      "estimated": 7200000,
       "manual": 0,
-      "total_real_plus_estimated": 7254600,
+      "total_real_plus_estimated": 7200000,
       "by_day": {
         "2026-05-14": {
           "real": 0,
           "estimated": 7200000
-        },
-        "2026-05-13": {
-          "real": 0,
-          "estimated": 130
-        },
-        "2026-05-15": {
-          "real": 0,
-          "estimated": 26780
-        },
-        "2026-05-16": {
-          "real": 0,
-          "estimated": 27690
-        }
-      }
-    },
-    "cron-runner": {
-      "real": 0,
-      "estimated": 0,
-      "manual": 0,
-      "total_real_plus_estimated": 0,
-      "by_day": {
-        "2026-05-13": {
-          "real": 0,
-          "estimated": 0
-        },
-        "2026-05-14": {
-          "real": 0,
-          "estimated": 0
-        },
-        "2026-05-15": {
-          "real": 0,
-          "estimated": 0
-        },
-        "2026-05-16": {
-          "real": 0,
-          "estimated": 0
         }
       }
     }
@@ -96,138 +60,18 @@
           "estimated": 7200000
         }
       }
-    },
-    "downloads-watcher": {
-      "real": 0,
-      "estimated": 0,
-      "manual": 0,
-      "total_real_plus_estimated": 0,
-      "by_day": {
-        "2026-05-13": {
-          "real": 0,
-          "estimated": 0
-        },
-        "2026-05-14": {
-          "real": 0,
-          "estimated": 0
-        },
-        "2026-05-15": {
-          "real": 0,
-          "estimated": 0
-        },
-        "2026-05-16": {
-          "real": 0,
-          "estimated": 0
-        }
-      }
-    },
-    "maintenance": {
-      "real": 0,
-      "estimated": 0,
-      "manual": 0,
-      "total_real_plus_estimated": 0,
-      "by_day": {
-        "2026-05-13": {
-          "real": 0,
-          "estimated": 0
-        },
-        "2026-05-14": {
-          "real": 0,
-          "estimated": 0
-        },
-        "2026-05-15": {
-          "real": 0,
-          "estimated": 0
-        },
-        "2026-05-16": {
-          "real": 0,
-          "estimated": 0
-        }
-      }
-    },
-    "overnight-triage": {
-      "real": 0,
-      "estimated": 54600,
-      "manual": 0,
-      "total_real_plus_estimated": 54600,
-      "by_day": {
-        "2026-05-13": {
-          "real": 0,
-          "estimated": 130
-        },
-        "2026-05-15": {
-          "real": 0,
-          "estimated": 26780
-        },
-        "2026-05-16": {
-          "real": 0,
-          "estimated": 27690
-        }
-      }
-    },
-    "proposal-readiness": {
-      "real": 0,
-      "estimated": 0,
-      "manual": 0,
-      "total_real_plus_estimated": 0,
-      "by_day": {
-        "2026-05-14": {
-          "real": 0,
-          "estimated": 0
-        },
-        "2026-05-15": {
-          "real": 0,
-          "estimated": 0
-        },
-        "2026-05-16": {
-          "real": 0,
-          "estimated": 0
-        }
-      }
-    },
-    "sidecar": {
-      "real": 0,
-      "estimated": 0,
-      "manual": 0,
-      "total_real_plus_estimated": 0,
-      "by_day": {
-        "2026-05-14": {
-          "real": 0,
-          "estimated": 0
-        },
-        "2026-05-15": {
-          "real": 0,
-          "estimated": 0
-        },
-        "2026-05-16": {
-          "real": 0,
-          "estimated": 0
-        }
-      }
     }
   },
   "by_ship": {
     "unattributed": {
       "real": 102000,
-      "estimated": 54600,
+      "estimated": 0,
       "manual": 0,
-      "total_real_plus_estimated": 156600,
+      "total_real_plus_estimated": 102000,
       "by_day": {
         "2026-05-13": {
           "real": 102000,
-          "estimated": 130
-        },
-        "2026-05-14": {
-          "real": 0,
           "estimated": 0
-        },
-        "2026-05-15": {
-          "real": 0,
-          "estimated": 26780
-        },
-        "2026-05-16": {
-          "real": 0,
-          "estimated": 27690
         }
       }
     },
@@ -258,14 +102,14 @@
   },
   "all_time": {
     "real": 102000,
-    "estimated": 7254600,
+    "estimated": 7200000,
     "manual": 0,
     "first_event_at": "2026-05-13T11:55:00+00:00",
-    "last_event_at": "2026-05-16T13:52:12+00:00"
+    "last_event_at": "2026-05-14T05:36:00.243244+00:00"
   },
   "_counts": {
     "real_events": 1,
-    "estimated_events": 1218,
+    "estimated_events": 2,
     "manual_entries": 0
   }
 }
