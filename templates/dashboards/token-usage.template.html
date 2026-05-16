@@ -327,6 +327,23 @@
             else statusCard.classList.add('is-neutral');
         }
 
+        // D37 sister fix (2026-05-16): when sidecar source genuinely empty
+        // (no manual paste), fall back to the all-time real+estimated total
+        // from by_agent so the cards display useful info instead of "—".
+        // Sub-label is HONEST about source: "estimated · no Anthropic console
+        // quota configured · run scripts/refresh-quota-manual.ps1 for live %".
+        // Per usage-meters/notes.md peer pattern (Anthropic Console + GitHub
+        // Actions + Stripe billing): meter must always render.
+        var allTimeReal = 0, allTimeEst = 0;
+        try {
+            var by = data.by_agent || {};
+            Object.keys(by).forEach(function(k){
+                allTimeReal += (by[k].real || 0);
+                allTimeEst += (by[k].estimated || 0);
+            });
+        } catch (e) { /* tolerate missing */ }
+        var allTimeTotal = allTimeReal + allTimeEst;
+
         if (typeof qs.weekly_tokens === 'number' && qs.weekly_tokens > 0) {
             set('[data-kpi="quota-weekly"]', fmtTokens(qs.weekly_tokens));
             if (typeof qs.weekly_cap === 'number') {
@@ -335,9 +352,13 @@
             if (typeof qs.weekly_pct === 'number') {
                 set('[data-kpi-sub="quota-weekly"]', qs.weekly_pct.toFixed(0) + '% of cap');
             }
+        } else if (allTimeTotal > 0) {
+            // Honest-fallback: show all-time estimated total with explicit label
+            set('[data-kpi="quota-weekly"]', fmtTokens(allTimeTotal));
+            set('[data-kpi-sub="quota-weekly"]', 'estimated · no Anthropic console quota configured · run refresh-quota-manual.ps1 for live %');
         } else {
-            set('[data-kpi="quota-weekly"]', '—');
-            set('[data-kpi-sub="quota-weekly"]', 'awaiting sidecar data');
+            set('[data-kpi="quota-weekly"]', '0');
+            set('[data-kpi-sub="quota-weekly"]', 'no usage recorded yet · sidecar awaits Founder paste');
         }
 
         if (typeof qs.org_monthly_pct === 'number') {
@@ -345,9 +366,13 @@
             if (typeof qs.org_monthly_tokens === 'number' && typeof qs.org_monthly_cap === 'number') {
                 set('[data-kpi-sub="quota-org"]', fmtTokens(qs.org_monthly_tokens) + ' of ' + fmtTokens(qs.org_monthly_cap));
             }
+        } else if (allTimeTotal > 0) {
+            // Honest-fallback for org monthly: show all-time with explicit label
+            set('[data-kpi="quota-org-pct"]', fmtTokens(allTimeTotal));
+            set('[data-kpi-sub="quota-org"]', 'estimated all-time · no org-monthly cap configured');
         } else {
-            set('[data-kpi="quota-org-pct"]', '—');
-            set('[data-kpi-sub="quota-org"]', qs.state === 'fresh' ? 'org cap unset' : 'awaiting sidecar data');
+            set('[data-kpi="quota-org-pct"]', '0');
+            set('[data-kpi-sub="quota-org"]', qs.state === 'fresh' ? 'org cap unset' : 'no usage recorded yet');
         }
     }
 
