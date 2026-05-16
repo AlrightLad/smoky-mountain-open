@@ -452,19 +452,34 @@
                 }
 
                 // KPI strip: row 1 — tokens used + Anthropic quota (manual-anchored)
-                // No fictional cap; per Phase 6.6, percentage is sourced from the
-                // most recent Founder paste in manual-quota-log.ndjson.
-                var weeklyUsed = data.weekly_tokens || 0;
-                setText('[data-kpi="weekly-tokens"]', fmtNum(weeklyUsed));
+                // BUG-7 fix (2026-05-16): weekly_tokens is now MEASURED tokens
+                // from past 7 days only (not all-time + operator-asserted estimates
+                // conflated). weekly_tokens_estimated is the operator-asserted
+                // bucket shown separately so the headline number is honest.
+                // Paste from claude.ai via refresh-quota-manual.ps1 for ground truth.
+                var weeklyMeasured = data.weekly_tokens || 0;
+                var weeklyEst = data.weekly_tokens_estimated || 0;
+                setText('[data-kpi="weekly-tokens"]', fmtNum(weeklyMeasured));
                 var costStr = '$' + (data.weekly_cost || 0).toFixed(2) + ' spend';
-                setText('[data-kpi-sub="weekly-tokens"]', costStr + ' · aggregate of telemetry events');
+                var weeklySub;
+                if (weeklyMeasured > 0 && weeklyEst > 0) {
+                    weeklySub = costStr + ' measured · +' + fmtNum(weeklyEst) + ' operator-estimated (uncalibrated)';
+                } else if (weeklyMeasured > 0) {
+                    weeklySub = costStr + ' · measured from cycle telemetry';
+                } else if (weeklyEst > 0) {
+                    // Show measured=0 with estimated badge so the headline isn't misleading.
+                    weeklySub = fmtNum(weeklyEst) + ' operator-estimated · no measured data · paste from claude.ai';
+                } else {
+                    weeklySub = 'no token data this week · paste from claude.ai via refresh-quota-manual.ps1';
+                }
+                setText('[data-kpi-sub="weekly-tokens"]', weeklySub);
 
                 // D36 (2026-05-16): Day-To-Date tokens. Honest empty-state label
                 // when source genuinely empty (e.g. early UTC day with no events yet).
                 var dailyUsed = data.daily_tokens || 0;
                 setText('[data-kpi="daily-tokens"]', fmtNum(dailyUsed));
                 var dailySub = (dailyUsed > 0)
-                    ? 'day-to-date · UTC · ' + ((dailyUsed / weeklyUsed) * 100).toFixed(0) + '% of week'
+                    ? 'day-to-date · UTC · ' + (weeklyMeasured > 0 ? ((dailyUsed / weeklyMeasured) * 100).toFixed(0) + '% of week' : 'measured')
                     : 'day-to-date · UTC · no events recorded yet today';
                 setText('[data-kpi-sub="daily-tokens"]', dailySub);
 
@@ -529,12 +544,26 @@
                         // explicit "estimated · no Anthropic console quota
                         // configured" sub-label, link to refresh-quota-manual.ps1
                         // as the upgrade path.
-                        var estTokens = data.weekly_tokens || 0;
-                        if (estTokens > 0) {
-                            setText('[data-kpi="manual-quota-pct"]', fmtNum(estTokens));
-                            setText('[data-kpi-sub="manual-quota"]', 'estimated · no Anthropic console quota configured · run scripts/refresh-quota-manual.ps1 for live %');
-                            if (quotaLabel) quotaLabel.textContent = 'Anthropic spend (estimated)';
-                            if (quotaCard) quotaCard.classList.add('is-info');
+                        // BUG-7 fix (2026-05-16): show MEASURED only as the
+                        // headline so the big number is trustworthy. Operator-
+                        // asserted estimates (May 14 etc.) are uncalibrated and
+                        // shown as a sub-label addendum, never as the headline.
+                        var measured = data.weekly_tokens || 0;
+                        var estOnly = data.weekly_tokens_estimated || 0;
+                        if (measured > 0) {
+                            setText('[data-kpi="manual-quota-pct"]', fmtNum(measured));
+                            var sub = 'measured from cycle telemetry';
+                            if (estOnly > 0) sub += ' · +' + fmtNum(estOnly) + ' operator-estimated (uncalibrated, ignore)';
+                            sub += ' · paste from claude.ai for live %';
+                            setText('[data-kpi-sub="manual-quota"]', sub);
+                            if (quotaLabel) quotaLabel.textContent = 'Anthropic spend (measured)';
+                            if (quotaCard) quotaCard.classList.add('is-positive');
+                        } else if (estOnly > 0) {
+                            // Only operator-asserted data available — flag clearly.
+                            setText('[data-kpi="manual-quota-pct"]', '—');
+                            setText('[data-kpi-sub="manual-quota"]', fmtNum(estOnly) + ' operator-estimated only · uncalibrated · paste from claude.ai for ground truth');
+                            if (quotaLabel) quotaLabel.textContent = 'Anthropic spend (no measured data)';
+                            if (quotaCard) quotaCard.classList.add('is-warning');
                         } else {
                             // Honest empty: source genuinely empty + no estimated fallback
                             setText('[data-kpi="manual-quota-pct"]', '$0.00');

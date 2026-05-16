@@ -1456,6 +1456,8 @@ def build_dashboard_data():
 
     return {
         "weekly_tokens": snap.get("weekly_tokens", 0),
+        "weekly_tokens_estimated": snap.get("weekly_tokens_estimated", 0),
+        "weekly_tokens_methodology": snap.get("weekly_tokens_methodology", ""),
         "daily_tokens": daily_tokens,
         "weekly_cost": snap.get("weekly_cost", 0.0),
         "ships_this_week": snap.get("ships_this_week", 0),

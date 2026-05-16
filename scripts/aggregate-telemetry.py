@@ -491,46 +491,74 @@ def aggregate():
     # Covers: legacy generic 'tokens'/'tokens_consumed' fields + session.team-work.summary
     # (operator-asserted estimate for orchestration sessions) + cycle.paused
     # (tokens_consumed_since_last_rest) + cycle.budget.checkpoint deltas.
-    tokens_by_role = defaultdict(int)
+    #
+    # BUG-7 fix (2026-05-16): operator-asserted estimates (session.team-work.summary
+    # tokens_estimated) are NOT measurements. The two May 14 entries (4.2M + 3.0M)
+    # were heuristic guesses ("74 commits × ~150k tokens/substantial-commit") that
+    # the dashboard was conflating with measured data and labeling "this week".
+    # Now: tokens_by_role tracks REAL measured tokens only. Operator-asserted
+    # estimates are surfaced separately so the displayed "this week" number is
+    # honest. Founder paste from claude.ai (via refresh-quota-manual.ps1) remains
+    # the ground-truth calibration source.
+    #
+    # ALSO filtering to past 7 days — the previous "weekly_tokens" was actually
+    # all-time tokens-since-records-began.
+    seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
+    tokens_by_role = defaultdict(int)            # REAL measured only, last 7 days
+    tokens_estimated_by_role = defaultdict(int)  # operator-asserted, last 7 days
     last_checkpoint = None
+
+    def _event_dt(ev):
+        ts = ev.get("timestamp") or ev.get("ts")
+        if not ts:
+            return None
+        try:
+            return datetime.fromisoformat(ts.replace("Z", "+00:00"))
+        except (ValueError, TypeError):
+            return None
+
     for e in events:
         data = e.get("data") or {}
         if not isinstance(data, dict):
             continue
         et = e.get("event_type", "")
         agent = e.get("agent") or data.get("agent")
+        ev_dt = _event_dt(e)
+        in_week = ev_dt is not None and ev_dt >= seven_days_ago
 
-        # Legacy generic field
+        # Legacy generic field — measured if present (REAL)
         legacy_tokens = data.get("tokens") or data.get("tokens_consumed")
-        if agent and isinstance(legacy_tokens, (int, float)) and legacy_tokens > 0:
+        if in_week and agent and isinstance(legacy_tokens, (int, float)) and legacy_tokens > 0:
             tokens_by_role[agent] += int(legacy_tokens)
 
-        # session.team-work.summary — operator-asserted estimate
+        # session.team-work.summary — operator-asserted ESTIMATE only.
+        # Tracked in a separate bucket so the displayed "this week" number
+        # contains only measured data.
         if et == "session.team-work.summary":
             t = data.get("tokens_estimated")
             a = agent or "orchestrator"
-            if isinstance(t, (int, float)) and t > 0:
-                tokens_by_role[a] += int(t)
+            if in_week and isinstance(t, (int, float)) and t > 0:
+                tokens_estimated_by_role[a] += int(t)
 
-        # cycle.paused — tokens consumed since last rest, by agent
+        # cycle.paused — REAL (measured at pause boundary)
         elif et == "cycle.paused":
             t = data.get("tokens_consumed_since_last_rest")
             a = agent or "unknown"
-            if isinstance(t, (int, float)) and t > 0:
+            if in_week and isinstance(t, (int, float)) and t > 0:
                 tokens_by_role[a] += int(t)
 
-        # cycle.budget.checkpoint — delta from prior checkpoint
+        # cycle.budget.checkpoint — REAL (Anthropic-side counter delta)
         elif et == "cycle.budget.checkpoint":
             consumed = data.get("weekly_tokens_consumed")
             if isinstance(consumed, (int, float)):
-                if last_checkpoint is not None:
+                if last_checkpoint is not None and in_week:
                     delta = int(consumed) - last_checkpoint
                     if delta > 0:
                         a = agent or "unknown"
                         tokens_by_role[a] += delta
                 last_checkpoint = int(consumed)
 
-    meter_wired = len(tokens_by_role) > 0
+    meter_wired = (len(tokens_by_role) + len(tokens_estimated_by_role)) > 0
 
     # PROP-003.b: prefer quota-status.json (PROP-003.a sidecar) when fresh.
     # Cascading status determination:
@@ -797,10 +825,15 @@ def aggregate():
         if d in date_to_idx:
             bubbles_per_day[date_to_idx[d]] += 1
 
-    # Default weekly_tokens to the event-derived sum (lower bound).
-    weekly_tokens = sum(tokens_by_role.values())  # 0 when meter is gap
+    # BUG-7 fix (2026-05-16): weekly_tokens now reflects MEASURED-only sum
+    # from the past 7 days (no operator-asserted estimates conflated).
+    # weekly_tokens_estimated is the operator-asserted bucket, surfaced
+    # separately for transparency.
+    weekly_tokens = sum(tokens_by_role.values())              # measured only
+    weekly_tokens_estimated = sum(tokens_estimated_by_role.values())
 
-    # PROP-003.b: when sidecar fresh, prefer its weekly_tokens (real data).
+    # PROP-003.b: when sidecar fresh (Founder pasted from claude.ai), prefer
+    # its weekly_tokens as the most accurate ground-truth.
     if qs_state == "fresh":
         real_weekly = quota_status.get("weekly_tokens")
         if isinstance(real_weekly, (int, float)) and real_weekly > 0:
@@ -873,6 +906,13 @@ def aggregate():
         "_meter_note": meter_note,
         "quota_status": quota_status_block,
         "weekly_tokens": weekly_tokens,
+        "weekly_tokens_estimated": weekly_tokens_estimated,
+        "weekly_tokens_methodology": (
+            "measured: cycle.budget.checkpoint deltas + cycle.paused tokens + legacy 'tokens' field. "
+            "estimated: session.team-work.summary tokens_estimated (operator-asserted, NOT measurements). "
+            "Both filtered to past 7 days. For ground truth, paste from claude.ai via "
+            "scripts/refresh-quota-manual.ps1."
+        ),
         "weekly_cost": weekly_cost,
         "ships_this_week": sum(ships_per_day),
         "ships_trend_7d": {"labels": days, "values": ships_per_day},

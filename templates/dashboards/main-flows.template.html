@@ -128,8 +128,14 @@
          * Calculated for the worst case (rail.top = 400px at 1080
          * viewport on first paint): 100vh - 420px = 660px.
          */
-        .mf-rail { display: flex; flex-direction: column; gap: var(--space-3); position: sticky; top: var(--space-3); max-height: calc(100vh - 420px); }
-        @media (max-width: 1100px) { .mf-rail { position: static; max-height: none; } }
+        /* BUG-5 fix (2026-05-16): rail is no longer height-capped; the
+         * inner .mf-flows-list owns the scroll affordance via its
+         * max-height: 75vh. The rail itself can grow to fit its content;
+         * the page's normal scroll handles overall layout. Removes the
+         * fragile "rail cap minus list cap" arithmetic.
+         */
+        .mf-rail { display: flex; flex-direction: column; gap: var(--space-3); position: sticky; top: var(--space-3); }
+        @media (max-width: 1100px) { .mf-rail { position: static; } }
 
         .mf-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); overflow: hidden; }
         .mf-card-header { display: flex; justify-content: space-between; align-items: center; padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border-subtle); background: var(--bg-elevated); }
@@ -180,7 +186,14 @@
          *   the last row's content
          * - increase max-height ceiling from 55vh to calc(100vh - 280px) so the list
          *   uses available rail height instead of an arbitrary 55% cap */
-        .mf-flows-list { list-style: none; margin: var(--space-2) 0 0; padding: 0 0 var(--space-3) 0; max-height: calc(100vh - 280px); overflow-y: auto; scrollbar-gutter: stable; }
+        /* BUG-5 fix (2026-05-16): the list must always be tall enough to
+         * show MANY flows on the Founder's 1920x1080 workstation. Use a
+         * generous viewport-relative ceiling: 75vh = 810px at 1080 viewport
+         * = ~27 flows visible at once. Scrollbar-gutter keeps layout
+         * stable. (Previous max-height: calc(100vh - 280px) collapsed to
+         * 160-300px due to the rail's sticky position + JS overrides.)
+         */
+        .mf-flows-list { list-style: none; margin: var(--space-2) 0 0; padding: 0 0 var(--space-3) 0; max-height: 75vh; overflow-y: auto; scrollbar-gutter: stable; }
         /* Ship R9: clear-selection link at bottom of rail per reference-spec.md § 19.
          * Visible only when a flow is selected (toggled by JS). Subtle, mono, dim — no visual weight when off. */
         .mf-rail-clear {
@@ -775,28 +788,16 @@
             }
 
             function adjustRailHeight() {
+                // BUG-5 fix (2026-05-16): NO-OP. The CSS's max-height: 75vh
+                // on .mf-flows-list owns the scroll affordance now; the rail
+                // itself has no height cap. Removing the JS calc avoids the
+                // earlier off-by-pixels race between resize + scroll handlers
+                // that produced 5-flow-visible windows.
                 var rail = document.querySelector('.mf-rail');
                 var list = document.querySelector('.mf-flows-list');
                 if (!rail) return;
-                if (window.innerWidth <= 1100) {
-                    // mobile breakpoint: rail un-sticks and goes static
-                    rail.style.maxHeight = '';
-                    if (list) list.style.maxHeight = '';
-                    return;
-                }
-                // Iter 13 fix: use the rail's INITIAL natural top (where it
-                // sits before any sticky pinning), NOT the live bounding box
-                // which shifts with scroll. This produces a stable max-height
-                // for the entire page lifetime, regardless of scroll position.
-                var rect = rail.getBoundingClientRect();
-                var naturalTop = rect.top + window.scrollY;  // absolute Y in document
-                // Reserve 20px bottom padding from viewport edge.
-                var railMaxH = Math.max(window.innerHeight - naturalTop - 20, 320);
-                rail.style.maxHeight = railMaxH + 'px';
-                if (list) {
-                    var listMaxH = Math.max(railMaxH - 200 - 80 - 12 - 36, 160);
-                    list.style.maxHeight = listMaxH + 'px';
-                }
+                rail.style.maxHeight = '';
+                if (list) list.style.maxHeight = '';
             }
 
             if (document.readyState === 'loading') {
