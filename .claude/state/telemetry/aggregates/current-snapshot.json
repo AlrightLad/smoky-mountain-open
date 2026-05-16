@@ -1,19 +1,19 @@
 {
-  "as_of": "2026-05-16T16:30:19.326053+00:00",
-  "_meter_status": "wired-estimated-sidecar-empty",
-  "_meter_note": "Sidecar (PROP-003.a) is running and writing quota-status.json, but the underlying manual-quota-log.ndjson does not yet exist. Falling back to event-aggregated estimates. Run scripts/refresh-quota-manual.ps1 to populate, or install the sidecar Scheduled Task for automatic refresh.",
+  "as_of": "2026-05-16T16:32:56.251766+00:00",
+  "_meter_status": "wired-real",
+  "_meter_note": "Token meter is wired to real data via PROP-003.a sidecar (.claude/state/quota-status.json). weekly_tokens reflects the most recent meter reading. See quota_status block for org-monthly percentage + freshness.",
   "quota_status": {
-    "state": "empty",
-    "as_of": "2026-05-16T16:27:13.0793649Z",
-    "age_seconds": 186,
-    "weekly_tokens": 0,
+    "state": "fresh",
+    "as_of": "2026-05-16T16:32:13.0680397Z",
+    "age_seconds": 43,
+    "weekly_tokens": 102000,
     "weekly_cap": null,
     "weekly_pct": null,
     "org_monthly_tokens": 0,
     "org_monthly_cap": null,
     "org_monthly_pct": null,
-    "data_source": "none",
-    "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
+    "data_source": "auto-derived",
+    "_warning": "auto-derived from measured cycle telemetry (last 7 days); run scripts/refresh-quota-manual.ps1 to paste claude.ai % for live quota tracking"
   },
   "weekly_tokens": 102000,
   "weekly_tokens_estimated": 7200000,
@@ -286,7 +286,7 @@
     }
   ],
   "_aggregate_counts": {
-    "events_total": 1603,
+    "events_total": 1610,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,

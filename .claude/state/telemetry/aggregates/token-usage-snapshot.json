@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-05-16T16:30:19.608537+00:00",
-  "_meter_status": "wired-estimated-sidecar-empty",
+  "generated_at": "2026-05-16T16:32:56.561365+00:00",
+  "_meter_status": "wired-real",
   "quota_status": {
-    "state": "empty",
-    "as_of": "2026-05-16T16:27:13.0793649Z",
-    "age_seconds": 186,
-    "weekly_tokens": 0,
+    "state": "fresh",
+    "as_of": "2026-05-16T16:32:13.0680397Z",
+    "age_seconds": 43,
+    "weekly_tokens": 102000,
     "weekly_cap": null,
     "weekly_pct": null,
     "org_monthly_tokens": 0,
     "org_monthly_cap": null,
     "org_monthly_pct": null,
-    "data_source": "none",
-    "_warning": "manual-quota-log.ndjson does not exist; run scripts/refresh-quota-manual.ps1 to populate"
+    "data_source": "auto-derived",
+    "_warning": "auto-derived from measured cycle telemetry (last 7 days); run scripts/refresh-quota-manual.ps1 to paste claude.ai % for live quota tracking"
   },
   "constants": {
     "INPUT_RATE_TOKENS_PER_SEC": 100,
@@ -261,11 +261,11 @@
     "estimated": 7254600,
     "manual": 0,
     "first_event_at": "2026-05-13T11:55:00+00:00",
-    "last_event_at": "2026-05-16T16:27:18+00:00"
+    "last_event_at": "2026-05-16T16:32:18+00:00"
   },
   "_counts": {
     "real_events": 1,
-    "estimated_events": 1284,
+    "estimated_events": 1287,
     "manual_entries": 0
   }
 }
