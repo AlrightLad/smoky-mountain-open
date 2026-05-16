@@ -119,22 +119,22 @@ def main():
     # R1 (2026-05-15): scaffold-or-bail. Self-heal if targets missing.
     from _dashboard_bootstrap import ensure_scaffold
     ensure_scaffold(REPORTS / "discussion-bubbles.html")
-    ensure_scaffold(REPORTS / "activity.html")
     bubbles = read_bubbles()
-    handoffs = read_handoffs()
     proposals = read_proposals()
 
-    agents = sorted({h.get("from_agent","") for h in handoffs} | {h.get("to_agent","") for h in handoffs})
-    ships = sorted({h.get("ship_id","") for h in handoffs if h.get("ship_id")})
-
-    # PROPOSAL_LIFECYCLE_v8.2: proposals.html now owned by scripts/regen-proposals.py
-    # (which handles the 5-state schema). This script handles bubbles + activity only.
+    # BUG-3 fix (2026-05-16): activity.html is now owned by
+    # scripts/regen-activity.py, which scans broader sources (handoffs +
+    # telemetry events + git commits) instead of only the sparse
+    # .claude/state/handoffs/ dir. Removed activity.html from this script's
+    # target list so the two scripts don't race in the post-commit hook.
+    #
+    # PROPOSAL_LIFECYCLE_v8.2: proposals.html owned by scripts/regen-proposals.py
+    # (5-state schema). This script handles discussion-bubbles only now.
     targets = [
         (REPORTS / "discussion-bubbles.html", {"discussion_bubbles": bubbles}),
-        (REPORTS / "activity.html",           {"handoffs": handoffs, "agents": agents, "ships": ships}),
     ]
 
-    print(f"[regen] {len(bubbles)} bubbles, {len(handoffs)} handoffs (proposals.html owned by regen-proposals.py)")
+    print(f"[regen] {len(bubbles)} bubbles (activity.html owned by regen-activity.py; proposals.html owned by regen-proposals.py)")
     failed = 0
     for path, data in targets:
         ok, err = swap_data_block(path, data)
