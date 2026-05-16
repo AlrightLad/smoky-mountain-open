@@ -203,5 +203,65 @@ Emit-CronTelemetry -repoRoot $repoRoot -eventType "cron.token-sidecar.end" -data
     claude_invoked = $false
 }
 
+# BUG-1/BUG-4 fix (2026-05-16): refresh dashboard.html + activity.html + main-flows.html
+# locally on every sidecar tick so the rendered surfaces stay current even when no
+# commit fires (downloads-watcher SKIPs on dirty tree → no post-commit hook →
+# dashboard goes stale). The watcher / commit pipeline still owns the COMMITTED
+# state; this only keeps the working-tree HTML in sync with the latest data so the
+# operator's local browser at http://localhost:8765 shows reality.
+#
+# Local-only by design: we deliberately do NOT git-add or git-commit the refreshed
+# HTML here. That avoids competing with the watcher's AMD-020 Class A commit policy
+# and prevents 5-min cadence commit storms. The post-commit hook still does the
+# canonical regen + commit when content changes (proposals/amendments/code).
+$pythonExe = $null
+$candidates = @(
+    "C:\Users\$env:USERNAME\AppData\Local\Programs\Python\Python312\python.exe",
+    "C:\Users\$env:USERNAME\AppData\Local\Programs\Python\Python311\python.exe",
+    "python.exe"
+)
+foreach ($cand in $candidates) {
+    if (Test-Path $cand -ErrorAction SilentlyContinue) { $pythonExe = $cand; break }
+    $resolved = Get-Command $cand -ErrorAction SilentlyContinue
+    if ($resolved) { $pythonExe = $resolved.Source; break }
+}
+
+if ($pythonExe) {
+    $regenScripts = @(
+        "scripts\aggregate-telemetry.py",
+        "scripts\aggregate-token-usage.py",
+        "scripts\aggregate-approvals-pipeline.py",
+        "scripts\aggregate-architecture-review.py",
+        "scripts\aggregate-fiq-status.py",
+        "scripts\aggregate-test-health.py",
+        "scripts\aggregate-security-health.py",
+        "scripts\inject-health-banners.py",
+        "scripts\regen-dashboard.py",
+        "scripts\regen-activity.py",
+        "scripts\regen-token-usage.py"
+    )
+    foreach ($script in $regenScripts) {
+        $fullPath = Join-Path $repoRoot $script
+        if (-not (Test-Path $fullPath)) {
+            Log "skip $script (missing)"
+            continue
+        }
+        try {
+            $regenOut = & $pythonExe $fullPath 2>&1 | Out-String
+            $exitCode = $LASTEXITCODE
+            if ($exitCode -ne 0) {
+                Log "WARN $script exit=$exitCode  $($regenOut.Trim() -replace "`r?`n", ' | ')"
+            } else {
+                $shortOut = ($regenOut.Trim() -split "`r?`n")[0]
+                Log "regen $script  $shortOut"
+            }
+        } catch {
+            Log "WARN $script threw: $_"
+        }
+    }
+} else {
+    Log "WARN no python executable found; skipping dashboard refresh"
+}
+
 Log "DONE data_source=$($status.data_source) duration_seconds=$durationSeconds"
 exit 0

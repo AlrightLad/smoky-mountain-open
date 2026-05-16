@@ -83,13 +83,19 @@ if [ -f "scripts/scaffold-from-templates.sh" ]; then
 fi
 
 # Regenerate dashboard subset. Order matters: aggregates before consumers.
-# regen-main-flows.py EXCLUDED — main-flows polish agent owns that surface.
 #
 # R1 (2026-05-15): exit codes captured to SCAFFOLD_LOG instead of swallowed
 # via "|| true". Hook still exits 0 (commits succeed even on regen errors)
 # but failures are now visible via post-commit-hook.log + the FAILED list
 # emitted to stderr. The audit lesson: a silent regen pipeline is what let
 # the dashboard vanish unnoticed for hours.
+#
+# BUG-2 fix (2026-05-16): regen-main-flows.py REINSTATED. The prior exclusion
+# (intent: main-flows polish agent owns visual surface) had an unintended
+# consequence: when main-flows-data.json updates, no one runs the data-block
+# swap, leaving <script id="report-data">{}</script> and a blank page.
+# The polish agent owns visual iteration on the template; the regen script
+# owns the mechanical data-block swap. Different concerns, both required.
 REGEN_SCRIPTS="\
 scripts/scan-shipped-proposals.py
 scripts/aggregate-telemetry.py
@@ -105,6 +111,8 @@ scripts/regen-proposals.py
 scripts/regen-amendments.py
 scripts/regen-escalations.py
 scripts/regen-dashboard.py
+scripts/regen-main-flows.py
+scripts/regen-activity.py
 scripts/dry-run-regen-ops-views.py
 scripts/regen-token-usage.py
 scripts/regen-index.py"
