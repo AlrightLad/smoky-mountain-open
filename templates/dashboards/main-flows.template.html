@@ -65,7 +65,11 @@
          * 400, no border-bottom). Legend dots carry the column-color identity
          * now. Header weight reduced from 600 → 500 to match the reference's
          * lighter tone; uppercase + letter-spacing preserved. */
-        .mf-column-header { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; padding: var(--space-1) 0; margin-bottom: var(--space-1); color: var(--text-secondary); font-weight: 500; }
+        /* M4 delta #5 (2026-05-16): column headers get typography lift per
+         * Janowiak decomposition #5. Was 0.6875rem weight 500; now 0.75rem
+         * weight 600 with mono family — distinguishes column tier from row
+         * content. Per dim 1 hierarchy 8 → 9 estimated lift. */
+        .mf-column-header { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; padding: var(--space-1) 0; margin-bottom: var(--space-1); color: var(--text-primary); font-weight: 600; font-family: var(--font-mono); }
         .mf-column-subtitle { font-size: 0.6875rem; color: var(--text-tertiary); margin-bottom: var(--space-2); font-style: italic; }
 
         /* Ship R4 (2026-05-14): node component box re-style per
@@ -251,7 +255,11 @@
         .mf-steps-item:hover { background: var(--bg-elevated); }
         .mf-step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--accent-brass); color: var(--bg-page); font-family: var(--font-mono); font-weight: 700; font-size: 11px; display: flex; align-items: center; justify-content: center; }
         .mf-step-from-to { font-size: 0.6875rem; color: var(--text-secondary); font-family: var(--font-mono); }
-        .mf-step-label { font-size: 0.8125rem; color: var(--text-primary); font-weight: 600; margin-top: 1px; }
+        /* M4 delta #2 (2026-05-16): STEPS label switches sans→mono per
+         * Janowiak decomposition #4 + reference frame 02 evidence. Whole
+         * step row (num + from-to + label + desc) is now mono — engineering-
+         * spec voice. Estimated typography dim 2 lift: 7 → 8. */
+        .mf-step-label { font-size: 0.8125rem; color: var(--text-primary); font-weight: 600; margin-top: 1px; font-family: var(--font-mono); }
         /* Ship R7 (2026-05-14): step description switches from sans body to
          * monospace per reference-spec.md § 23. Mono signals "technical/data"
          * which matches the reference's treatment of step descriptions as
