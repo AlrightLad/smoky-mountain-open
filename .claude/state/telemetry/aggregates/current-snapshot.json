@@ -1,19 +1,19 @@
 {
-  "as_of": "2026-05-16T16:41:29.142673+00:00",
-  "_meter_status": "wired-real",
-  "_meter_note": "Token meter is wired to real data via PROP-003.a sidecar (.claude/state/quota-status.json). weekly_tokens reflects the most recent meter reading. See quota_status block for org-monthly percentage + freshness.",
+  "as_of": "2026-05-16T16:43:44.354382+00:00",
+  "_meter_status": "wired-estimated",
+  "_meter_note": "Token meter is not wired (F1 finding). tokens_by_role / weekly_tokens / weekly_cost / token_trend_7d will show synthesized event-attributed values ONLY for events that carry agent + tokens fields. Until a real meter wires up (db-2026-05-13-003 outcome pending Founder ratification), treat these fields as a lower bound, not the actual consumption.",
   "quota_status": {
-    "state": "fresh",
-    "as_of": "2026-05-16T16:37:13.0884068Z",
-    "age_seconds": 256,
-    "weekly_tokens": 102000,
+    "state": "absent",
+    "as_of": null,
+    "age_seconds": null,
+    "weekly_tokens": null,
     "weekly_cap": null,
     "weekly_pct": null,
-    "org_monthly_tokens": 0,
+    "org_monthly_tokens": null,
     "org_monthly_cap": null,
     "org_monthly_pct": null,
-    "data_source": "auto-derived",
-    "_warning": "auto-derived from measured cycle telemetry (last 7 days); run scripts/refresh-quota-manual.ps1 to paste claude.ai % for live quota tracking"
+    "data_source": null,
+    "_warning": null
   },
   "weekly_tokens": 102000,
   "weekly_tokens_estimated": 7200000,
@@ -286,7 +286,7 @@
     }
   ],
   "_aggregate_counts": {
-    "events_total": 1624,
+    "events_total": 1477,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
