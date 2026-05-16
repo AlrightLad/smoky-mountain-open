@@ -108,9 +108,13 @@
             <div class="act-filters">
                 <div class="act-filter">
                     <span class="act-filter-label">Scenario</span>
-                    <select id="filter-scenario">
-                        <option value="all">All scenarios</option><option value="cycle-to-cycle">Cycle-to-cycle</option><option value="agent-to-agent">Agent-to-agent</option><option value="subagent-to-parent">Subagent-to-parent</option><option value="parent-to-subagent">Parent-to-subagent (dispatch)</option><option value="proactive-to-ship">Proactive-to-ship</option><option value="halt-to-resume">Halt-to-resume</option><option value="founder-to-agent">Founder-to-agent</option><option value="discussion-bubble-to-caller">Discussion-bubble-to-caller</option><option value="cross-ship">Cross-ship</option><option value="wave-to-wave">Wave-to-wave</option><option value="parallel-merge">Parallel merge</option>
-                    </select>
+                    <!-- BUG-AUDIT (2026-05-16): scenario options were hardcoded
+                         to a stale list that didn't match the scenarios
+                         regen-activity.py emits (cron-routine-regen, code-ship,
+                         doc-or-chore, session.team-work.summary, cron.*.end).
+                         Dropdown now populates dynamically from the data
+                         (see filter-scenario population in the render script). -->
+                    <select id="filter-scenario"><option value="all">All scenarios</option></select>
                 </div>
                 <div class="act-filter">
                     <span class="act-filter-label">Agent</span>
@@ -166,6 +170,17 @@
             (data.agents || []).forEach(function (a) { var o = document.createElement('option'); o.value = a; o.textContent = a; agentSel.appendChild(o); });
             var shipSel = document.getElementById('filter-ship');
             (data.ships || []).forEach(function (s) { var o = document.createElement('option'); o.value = s; o.textContent = s; shipSel.appendChild(o); });
+
+            // BUG-AUDIT (2026-05-16): populate scenario dropdown from data
+            // so the dropdown matches what regen-activity.py actually emits.
+            var scenarioSel = document.getElementById('filter-scenario');
+            var scenarioSet = {};
+            (data.handoffs || []).forEach(function (h) { if (h.scenario) scenarioSet[h.scenario] = true; });
+            Object.keys(scenarioSet).sort().forEach(function (s) {
+                var o = document.createElement('option');
+                o.value = s; o.textContent = s;
+                scenarioSel.appendChild(o);
+            });
 
             function render() {
                 var fS = document.getElementById('filter-scenario').value;
