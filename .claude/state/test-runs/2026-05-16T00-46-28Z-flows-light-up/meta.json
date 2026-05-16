@@ -1,0 +1,12 @@
+{
+  "test_name": "flows-light-up",
+  "command": "node scripts/visual-audit/verify-all-flows-light-up.mjs",
+  "exit_code": 0,
+  "started_at": "2026-05-16T00:46:28Z",
+  "duration_seconds": 8,
+  "head_sha": "7f920b0",
+  "stdout_path": ".claude/state/test-runs/2026-05-16T00-46-28Z-flows-light-up/stdout.txt",
+  "stderr_path": ".claude/state/test-runs/2026-05-16T00-46-28Z-flows-light-up/stderr.txt",
+  "stdout_bytes": 562,
+  "stderr_bytes": 0
+}

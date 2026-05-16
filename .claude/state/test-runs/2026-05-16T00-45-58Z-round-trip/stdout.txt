@@ -1,0 +1,147 @@
+[1m[36m
+=== PARBAUGHS v8.1 Round-Trip Test ===
+[0m[0m
+[36m[1/4] Seeding synthetic state tree...[0m
+[32m  ✓ Seeded 5 handoffs, 3 discussion bubbles, 2 proposals[0m
+[36m
+[2/4] Reading source state...[0m
+[32m  ✓ Dashboard: 2 pending proposals, 5 recent handoffs[0m
+[32m  ✓ Activity:  5 handoffs across 5 scenarios[0m
+[32m  ✓ Bubbles:   3 discussion bubbles[0m
+[32m  ✓ Proposals: 2 pending[0m
+[36m
+[3/4] Swapping data blocks in HTML...[0m
+[32m  ✓ dashboard.html                   swap OK (73,765 bytes)[0m
+[32m  ✓ activity.html                    swap OK (19,622 bytes)[0m
+[32m  ✓ discussion-bubbles.html          swap OK (40,738 bytes)[0m
+[32m  ✓ proposals.html                   swap OK (39,109 bytes)[0m
+[36m
+[4/4] Verifying outputs...[0m
+[32m  ✓ dashboard.html                   valid HTML + valid JSON + required keys present[0m
+[32m  ✓ activity.html                    valid HTML + valid JSON + required keys present[0m
+[32m  ✓ discussion-bubbles.html          valid HTML + valid JSON + required keys present[0m
+[32m  ✓ proposals.html                   valid HTML + valid JSON + required keys present[0m
+[36m
+[transcript] Verifying discussion bubble transcripts...[0m
+[32m  ✓ db-2026-05-13-001        6 messages, tally 3-0-0 matches messages, status 'approved'[0m
+[32m  ✓ db-2026-05-12-002        9 messages, tally 3-1-1 matches messages, status 'approved-with-dissent'[0m
+[32m  ✓ db-2026-05-12-001        7 messages, tally 4-0-1 matches messages, status 'approved'[0m
+[36m
+[nav] Cross-dashboard navigation audit...[0m
+[32m  ✓ dashboard.html                   9 links, is-active='dashboard.html'[0m
+[32m  ✓ activity.html                    9 links, is-active='activity.html'[0m
+[32m  ✓ discussion-bubbles.html          9 links, is-active='discussion-bubbles.html'[0m
+[32m  ✓ proposals.html                   9 links, is-active='proposals.html'[0m
+[32m  ✓ amendments.html                  9 links, is-active='amendments.html'[0m
+[32m  ✓ main-flows.html                  9 links, is-active='main-flows.html'[0m
+[32m  ✓ design-system.html               9 links, is-active='design-system.html'[0m
+[32m  ✓ token-usage.html                 9 links, is-active='token-usage.html'[0m
+[32m  ✓ index.html                       9 links, is-active='index.html'[0m
+[36m
+[main-flows+index] Verifying production data blocks...[0m
+[32m  ✓ main-flows.html              6 cols, 47 components, 62 flows, 248 steps — all refs resolve[0m
+[32m  ✓ main-flows.html flow_rail   62 entries · tiers {'core': 23, 'supplementary': 22, 'admin': 10, 'system': 7}[0m
+[32m  ✓ index.html                   data block valid, status + 6 dashboard entries present[0m
+[36m
+[meter-wiring] PROP-003.b sidecar consumption...[0m
+[32m  ✓ meter-wiring                 7 checks pass[0m
+[32m    · telemetry snapshot has _meter_status[0m
+[32m    · telemetry snapshot has quota_status block[0m
+[32m    · telemetry snapshot quota_status schema complete[0m
+[32m    · quota_status.state != 'absent' when sidecar present[0m
+[32m    · token-usage snapshot has _meter_status[0m
+[32m    · token-usage snapshot has quota_status block[0m
+[32m    · aggregators agree on _meter_status (telemetry=wired-estimated-sidecar-empty, token-usage=wired-estimated-sidecar-empty)[0m
+[36m
+[founder-queue] AMD-007 P18.6 dashboard surface...[0m
+[32m  ✓ founder-queue                7 checks pass[0m
+[36m
+[quota-type-enum] PROP-004 enum coverage...[0m
+[32m  ✓ quota-type-enum              all cycle.paused/resumed events use valid quota_type (enum: ['daily-tokens', 'hourly-requests', 'org-monthly', 'weekly-tokens'])[0m
+[36m
+[cross-dash] Cross-dashboard count consistency...[0m
+[32m  ✓ proposals_pending                        ground=0  all=dashboard.html data.proposals_pending=0, proposals.html pending length=0, index.html data.status.proposals_pending=0[0m
+[36m
+[lifecycle] PROPOSAL_LIFECYCLE_v8.2 schema validation...[0m
+[32m  ✓ PROPOSAL_LIFECYCLE_v8.2 schema valid; counts pending=0 approved=9 deferred=0 shipped=4 rejected=0[0m
+[32m  ✓ dashboard.html proposals_counts present: pending=0 approved=9 shipped=4[0m
+[36m
+[amendments] AMENDMENTS lifecycle schema validation...[0m
+[32m  ✓ AMENDMENTS lifecycle schema valid; pending=0 approved=0 deferred=0 applied=25 rejected=0[0m
+[32m  ✓ dashboard.html amendments_counts present: pending=0 applied=25[0m
+[32m  ✓ amendments_pending                       ground=0  all=amendments.html counts.pending=0, dashboard.html amendments_counts.pending=0[0m
+[32m  ✓ discussion_bubbles_total                 ground=7  all=discussion-bubbles.html data.discussion_bubbles.length=7, index.html status.total_bubbles=7[0m
+[32m  ✓ handoffs_total                           ground=1  all=activity.html data.handoffs.length=1[0m
+[36m
+[banner-text] dashboard.html banner must be data-bound, not hardcoded...[0m
+[32m  ✓ dashboard.html banner uses data-bound placeholder (no hardcoded count)[0m
+[36m
+[proposal-cards] Each pending proposal has full §amendment.4 schema...[0m
+[36m
+[design-tokens] Design-token discipline check...[0m
+[32m  ✓ design-system.html CSS clean — every color via var(--*), hex in text content is documentation only[0m
+[32m  ✓ design-tokens.css declares all 11 required canonical tokens[0m
+[36m  Phase 2 migration scope (informational, not a failure):[0m
+[36m     dashboard.html                  raw-hex=  0  raw-px= 21  raw-ms=  0[0m
+[36m     activity.html                   raw-hex=  0  raw-px= 13  raw-ms=  0[0m
+[36m     proposals.html                  raw-hex=  0  raw-px= 15  raw-ms=  0[0m
+[36m     amendments.html                 raw-hex=  0  raw-px= 15  raw-ms=  0[0m
+[36m     discussion-bubbles.html         raw-hex=  0  raw-px= 45  raw-ms=  0[0m
+[36m     main-flows.html                 raw-hex=  6  raw-px= 78  raw-ms=  2[0m
+[36m     index.html                      raw-hex=  0  raw-px= 15  raw-ms=  0[0m
+[36m
+[token-usage] Verifying production data block + cross-panel reconciliation...[0m
+[32m  ✓ token-usage.html schema valid; all_time real=102000 estimated=7226910 manual=0; cross-panel sums match[0m
+[32m  ✓ token-usage.html visual distinction present: is-manual, is-estimated, tu-arc, tu-donut[0m
+[36m
+[theme] Theme convergence guard (no raw hex in dashboard <style>)...[0m
+[32m  ✓ dashboard.html                   ok[0m
+[32m  ✓ activity.html                    ok[0m
+[32m  ✓ proposals.html                   ok[0m
+[32m  ✓ discussion-bubbles.html          ok[0m
+[32m  ✓ main-flows.html                  ok (6/6 documented)[0m
+[32m  ✓ token-usage.html                 ok[0m
+[32m  ✓ index.html                       ok[0m
+[36m
+[no-charts] Dashboards must not introduce charts (donut + arch arrows exempted)...[0m
+[32m  ✓ no canvas/Chart.js/D3 references in any dashboard (SVG donut + arch arrows are SVG, not charts)[0m
+[36m
+[protected-layouts] Sentinels for protected layouts...[0m
+[32m  ✓ discussion-bubbles.html      master/detail 2-panel intact (5/5 sentinels)[0m
+[32m  ✓ main-flows.html              arch grid + SVG arrows + rails + Ship-3 rail expansion intact (47 components, 248 steps) (23/23 sentinels)[0m
+[32m  ✓ design-system.html           17 swatches, 9 type rows, primitives + form controls present[0m
+[32m  ✓ W1.S1 primitives             4 primitives + 5 variants declared in components.css + demonstrated in showcase[0m
+[36m
+[proposal-readiness] AMD-011 scanner state discipline...[0m
+[32m  ✓ proposal-readiness        9 deferred marker(s); schema valid; no orphans[0m
+[36m
+[install-scripts] PowerShell install script parseability...[0m
+[32m  ✓ install-scripts  6 scripts parse cleanly[0m
+[36m
+[install-cmd-surface] Founder-facing install command execution-context check...[0m
+[32m  ✓ install-cmd-surface  Founder-facing install command surfaces with execution-context handling (either per-run override flag or one-time policy fix)[0m
+[36m
+[scroll-reachability] Last item reachable + visible on every scrollable surface...[0m
+[32m  ✓ scroll-reachability  5 pass / 0 fail / 0 skip[0m
+[36m
+[user-context-gate] User-context capture present for modified user-facing surfaces...[0m
+[31m  ✗ user-context-gate  main-flows.html: modified 1357.1 min after most recent user-context capture (2026-05-14T23-07-48Z) — Founder runs `node scripts/visual-audit/founder-context-capture.mjs` to seed fresh capture before ship-close[0m
+[36m
+[escalations] Lifecycle + schema discipline...[0m
+[32m  ✓ escalations    pending=0 approved=0 applied=3 deferred=0 rejected=0; schema valid; dashboard count matches[0m
+[36m
+[quota-status] PROP-003.a sidecar schema discipline...[0m
+[32m  ✓ quota-status        [quota-status-schema] OK: data_source=none weekly_pct=None org_monthly_pct=None stale_seconds=None[0m
+[36m
+[pause-discipline] No fictional-cap references in production tree...[0m
+[32m  ✓ no fictional-cap references in production tree (audit doc + governance drafts + historical proposals exempt)[0m
+[36m
+[wiring] Cross-checking scenario tokens against CSS + dropdown...[0m
+[32m  ✓ cycle-to-cycle                   has CSS class + dropdown option[0m
+[32m  ✓ discussion-bubble-to-caller      has CSS class + dropdown option[0m
+[32m  ✓ agent-to-agent                   has CSS class + dropdown option[0m
+[32m  ✓ subagent-to-parent               has CSS class + dropdown option[0m
+[32m  ✓ proactive-to-ship                has CSS class + dropdown option[0m
+
+[31m[1m=== 1 FAILURE(S) ===[0m[0m
+[31m  - user-context-gate: 1 surface(s) modified after last capture[0m

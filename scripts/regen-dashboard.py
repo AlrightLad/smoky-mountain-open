@@ -1435,8 +1435,25 @@ def build_dashboard_data():
     snap = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
     pc = proposals_state_counts()
     ac = amendments_state_counts()
+    # D36 (2026-05-16): compute Day-To-Date token sum from the by-day
+    # breakdown in token-usage-snapshot.json. Per spec PHASE T6 + Founder
+    # Observation 2: dashboard should display W-T-D AND D-T-D AND last-ship.
+    # W-T-D was already populated as weekly_tokens; D-T-D is new this ship.
+    daily_tokens = 0
+    try:
+        token_snap_path = STATE / "telemetry" / "aggregates" / "token-usage-snapshot.json"
+        if token_snap_path.exists():
+            ts_data = json.loads(token_snap_path.read_text(encoding="utf-8"))
+            today_iso = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            for agent_data in (ts_data.get("by_agent") or {}).values():
+                day_bucket = (agent_data.get("by_day") or {}).get(today_iso) or {}
+                daily_tokens += int(day_bucket.get("real", 0)) + int(day_bucket.get("estimated", 0))
+    except (OSError, json.JSONDecodeError, ValueError, TypeError):
+        daily_tokens = 0
+
     return {
         "weekly_tokens": snap.get("weekly_tokens", 0),
+        "daily_tokens": daily_tokens,
         "weekly_cost": snap.get("weekly_cost", 0.0),
         "ships_this_week": snap.get("ships_this_week", 0),
         "proposals_pending": pc["pending"],

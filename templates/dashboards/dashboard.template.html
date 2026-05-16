@@ -251,6 +251,16 @@
                     <span class="pb-kpi-value" data-kpi="weekly-tokens">&mdash;</span>
                     <span class="pb-kpi-sub" data-kpi-sub="weekly-tokens">aggregate of telemetry events</span>
                 </div>
+                <!-- D36 (2026-05-16): Day-To-Date token card per spec PHASE T6 +
+                     usage-meters peer pattern (Anthropic Console Day view +
+                     Vercel daily slice + Stripe today-so-far). Derives from
+                     token-usage-snapshot.json by_day breakdown. Legitimate 0
+                     early in UTC day; honest empty label. -->
+                <div class="pb-kpi-card is-neutral">
+                    <span class="pb-kpi-label">Tokens today (UTC)</span>
+                    <span class="pb-kpi-value" data-kpi="daily-tokens">&mdash;</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="daily-tokens">day-to-date · UTC</span>
+                </div>
                 <div class="pb-kpi-card" data-kpi-card="manual-quota">
                     <span class="pb-kpi-label" data-kpi-label="quota-source">Anthropic quota</span>
                     <span class="pb-kpi-value" data-kpi="manual-quota-pct">&mdash;</span>
@@ -434,6 +444,15 @@
                 setText('[data-kpi="weekly-tokens"]', fmtNum(weeklyUsed));
                 var costStr = '$' + (data.weekly_cost || 0).toFixed(2) + ' spend';
                 setText('[data-kpi-sub="weekly-tokens"]', costStr + ' · aggregate of telemetry events');
+
+                // D36 (2026-05-16): Day-To-Date tokens. Honest empty-state label
+                // when source genuinely empty (e.g. early UTC day with no events yet).
+                var dailyUsed = data.daily_tokens || 0;
+                setText('[data-kpi="daily-tokens"]', fmtNum(dailyUsed));
+                var dailySub = (dailyUsed > 0)
+                    ? 'day-to-date · UTC · ' + ((dailyUsed / weeklyUsed) * 100).toFixed(0) + '% of week'
+                    : 'day-to-date · UTC · no events recorded yet today';
+                setText('[data-kpi-sub="daily-tokens"]', dailySub);
 
                 function _fmtAgo(iso) {
                     if (!iso) return 'never';
