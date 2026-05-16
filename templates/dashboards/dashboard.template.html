@@ -1015,6 +1015,57 @@
             renderHealthBanner('approvals', hh.approvals_pipeline);
             renderHealthBanner('architecture', hh.architecture_review);
 
+            // BUG-9 fix (2026-05-16): the 4 health banner cards have button
+            // styling + aria-controls pointing at detail panels, but no
+            // click handler had been wired. Each banner now toggles its
+            // matching detail panel and populates the panel body with the
+            // full summary + source path so the operator can see WHY the
+            // health is yellow/red/etc. without reading the JSON file.
+            (function wireHealthBanners() {
+                var bannerData = {
+                    'test':         hh.test_health         || {},
+                    'security':     hh.security_health     || {},
+                    'approvals':    hh.approvals_pipeline  || {},
+                    'architecture': hh.architecture_review || {}
+                };
+                function detailHtml(info) {
+                    function row(k, v) {
+                        if (v == null || v === '' || (Array.isArray(v) && !v.length)) return '';
+                        var disp = Array.isArray(v) ? v.map(function (x) { return typeof x === 'object' ? JSON.stringify(x) : x; }).join('<br>') : (typeof v === 'object' ? '<pre style="margin:0;font-size:0.75rem;white-space:pre-wrap">' + JSON.stringify(v, null, 2) + '</pre>' : String(v));
+                        return '<div style="display:grid;grid-template-columns:140px 1fr;gap:var(--space-2);margin-bottom:var(--space-2);font-size:0.8125rem;">'
+                          +  '<span style="color:var(--text-tertiary);text-transform:uppercase;font-family:var(--font-mono);font-size:0.6875rem;letter-spacing:0.06em;">' + k + '</span>'
+                          +  '<span style="color:var(--text-primary)">' + disp + '</span>'
+                          +  '</div>';
+                    }
+                    var html = '';
+                    html += row('Status', info.status);
+                    html += row('Summary', info.summary);
+                    if (info.source) html += row('Source', '<code>' + info.source + '</code>');
+                    if (info.timestamp || info.generated_at) html += row('Generated', info.timestamp || info.generated_at);
+                    if (info.checks_run != null) html += row('Checks run', info.checks_run);
+                    if (info.checks_passed != null) html += row('Checks passed', info.checks_passed);
+                    if (info.regressions && info.regressions.length) html += row('Regressions', info.regressions);
+                    if (info.known_failures && info.known_failures.length) html += row('Known failures', info.known_failures.map(function (f) { return (f.id || '?') + ': ' + (f.detail || '').slice(0, 200); }));
+                    if (info.cred_leaks != null) html += row('Cred leaks', info.cred_leaks);
+                    if (info.vuln_deps != null) html += row('Vuln deps', info.vuln_deps);
+                    if (info.findings && info.findings.length) html += row('Findings', info.findings);
+                    if (info._meta) html += row('Meta', info._meta);
+                    return html || '<em style="color:var(--text-tertiary);">No additional detail available.</em>';
+                }
+                ['test', 'security', 'approvals', 'architecture'].forEach(function (k) {
+                    var btn = document.querySelector('[data-fq-banner="' + k + '"]');
+                    var panel = document.querySelector('[data-fq-banner-detail="' + k + '"]');
+                    if (!btn || !panel) return;
+                    // Populate the panel HTML once
+                    panel.innerHTML = detailHtml(bannerData[k]);
+                    btn.addEventListener('click', function () {
+                        var expanded = btn.getAttribute('aria-expanded') === 'true';
+                        btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+                        panel.hidden = expanded;
+                    });
+                });
+            })();
+
             // Crons
             var cronsEl = document.querySelector('[data-fq="crons"]');
             if (cronsEl) {
