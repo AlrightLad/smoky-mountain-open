@@ -704,14 +704,17 @@ def approvals_pipeline_status():
         summary = "no downloads-watcher logs found"
     elif last_errored or consecutive_skips >= 4:
         status = "red"
+        # BUG-4 fix (2026-05-16): "N consecutive SKIPs" reads to operators as
+        # "cron didn't run", but SKIP means the watcher DID run and chose not
+        # to apply (dirty tree). Reword so the running-vs-not state is clear.
         summary = (
             "watcher errored"
             if last_errored
-            else f"{consecutive_skips} consecutive SKIPs"
+            else f"watcher cycling · applies blocked ({consecutive_skips} skips on dirty tree)"
         )
     elif last_two_dirty:
         status = "yellow"
-        summary = "last 2 runs SKIP working tree dirty"
+        summary = "watcher cycling · last 2 runs skipped on dirty tree"
     elif (
         age_minutes is not None
         and age_minutes <= 10
