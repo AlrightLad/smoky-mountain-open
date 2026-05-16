@@ -308,6 +308,24 @@ body.pb-app {
 .pb-kpi-card.is-neutral  { border-left-color: var(--pb-chalk-300); }
 .pb-kpi-card.is-info     { border-left-color: var(--pb-info); }
 
+/* D26 iter (2026-05-16): subtle hover-elevation on KPI cards.
+   Per TASTE-AUDIT.md gap dim 8 (interactive affordances 6/10): Linear
+   pattern (subtle border-color shift + slight lift on buttons-as-cards)
+   for interactive feedback. Buttons (.pb-health-banner) get translateY. */
+.pb-kpi-card {
+    transition: border-color 150ms ease-out, background-color 150ms ease-out, transform 150ms ease-out;
+}
+.pb-kpi-card:hover {
+    background: var(--pb-billiard-green-700);
+    border-color: var(--border-default, var(--pb-chalk-400));
+}
+button.pb-kpi-card.pb-health-banner:hover {
+    background: var(--pb-billiard-green-700);
+    border-color: var(--accent-brass);
+    transform: translateY(-1px);
+    cursor: pointer;
+}
+
 .pb-kpi-label {
     font-family: var(--font-mono);
     font-size: var(--text-xs);
