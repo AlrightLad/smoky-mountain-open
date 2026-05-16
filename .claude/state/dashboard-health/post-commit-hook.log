@@ -1,4 +1,4 @@
-=== post-commit hook fired 2026-05-15T06:55:36Z HEAD=1d5611e ===
+=== post-commit hook fired 2026-05-16T06:55:46Z HEAD=d39069d ===
 [scaffold-from-templates] done: scaffolded=0 skipped=11
 
 --- scripts/scan-shipped-proposals.py ---
@@ -14,19 +14,43 @@ Traceback (most recent call last):
   File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 23, in decode
     return codecs.charmap_decode(input,self.errors,decoding_table)[0]
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeDecodeError: 'charmap' codec can't decode byte 0x90 in position 115651: character maps to <undefined>
+UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 9714: character maps to <undefined>
 [scan-shipped] approved=9 candidate-commits-90d=0
 [scan-shipped] done: moved=0 skipped_already_shipped=0 warnings=0
 
 --- scripts/aggregate-telemetry.py ---
 [aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json
 [aggregate] meter_status=wired-estimated-sidecar-empty
-[aggregate] events=1154 handoffs=1 bubbles=7 proposals_pending=0
+[aggregate] events=1465 handoffs=1 bubbles=7 proposals_pending=0
 
 --- scripts/aggregate-token-usage.py ---
-[aggregate-token] real_events=1 estimated_events=456 manual_entries=0
-[aggregate-token] all-time: real=102000 estimated=7200130 manual=0
+[aggregate-token] real_events=1 estimated_events=1046 manual_entries=0
+[aggregate-token] all-time: real=102000 estimated=7226910 manual=0
 [aggregate-token] wrote .claude\state\telemetry\aggregates\token-usage-snapshot.json
+
+--- scripts/aggregate-test-health.py ---
+[aggregate-test-health] OK status=yellow timestamp=2026-05-16T06:55:47Z
+
+--- scripts/aggregate-security-health.py ---
+[aggregate-security-health] OK status=yellow cred_leaks=0 vuln_deps=2
+
+--- scripts/aggregate-approvals-pipeline.py ---
+[aggregate-approvals-pipeline] OK status=red summary=10 consecutive SKIPs · 31 in inbox
+
+--- scripts/aggregate-architecture-review.py ---
+[aggregate-architecture-review] OK status=unknown summary=0 pending recommendations
+
+--- scripts/aggregate-fiq-status.py ---
+[aggregate-fiq-status] OK status=green declared=26 deployed=26
+
+--- scripts/aggregate-self-tests.py ---
+[aggregate-self-tests] starting D40 parity checks across 5 aggregators
+  [aggregate-test-health] PASS status=yellow age=0s
+  [aggregate-security-health] PASS status=yellow age=0s
+  [aggregate-approvals-pipeline] PASS status=red age=0s
+  [aggregate-architecture-review] PASS status=unknown age=0s
+  [aggregate-fiq-status] PASS status=green age=0s
+[aggregate-self-tests] OK all 5 aggregators pass parity
 
 --- scripts/inject-health-banners.py ---
 [inject-health-banners] banner-architecture      already-present
@@ -59,7 +83,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x90 in position 115651: c
 --- scripts/regen-dashboard.py ---
 [regen-dashboard] OK   dashboard.html
 [regen-dashboard] meter_status=wired-estimated-sidecar-empty
-[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=1154
+[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=1465
 
 --- scripts/dry-run-regen-ops-views.py ---
 [regen] 7 bubbles, 1 handoffs (proposals.html owned by regen-proposals.py)
@@ -68,8 +92,8 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x90 in position 115651: c
 
 --- scripts/regen-token-usage.py ---
 [regen-token-usage] OK   token-usage.html
-[regen-token-usage] all-time: real=102000 estimated=7200130 manual=0
+[regen-token-usage] all-time: real=102000 estimated=7226910 manual=0
 
 --- scripts/regen-index.py ---
 [regen-index] OK   index.html
-[regen-index] ships=32 proposals_pending=0 bubbles=1 halt=none git=1d5611e7
+[regen-index] ships=32 proposals_pending=0 bubbles=1 halt=none git=d39069da

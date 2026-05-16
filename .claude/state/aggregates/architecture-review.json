@@ -1,7 +1,7 @@
 {
   "schema_version": "architecture-review-v1.0",
-  "timestamp": "2026-05-15T23:27:15Z",
-  "generated_at": "2026-05-15T23:27:15Z",
+  "timestamp": "2026-05-16T06:55:52Z",
+  "generated_at": "2026-05-16T06:55:52Z",
   "source": "regen-dashboard.architecture_review_status()",
   "available": true,
   "status": "unknown",
