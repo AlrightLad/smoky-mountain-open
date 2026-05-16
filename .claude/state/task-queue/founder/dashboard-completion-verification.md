@@ -217,7 +217,7 @@ AWAITING APPROVAL
 - Item 4 (Taste 9.5 threshold for operator tooling vs 7.5 prior threshold): [Founder rules]
 - Item 5 (Report format 9 vs 15 sections): [Founder picks]
 - **Item 6 (NEW) — D9 webkit smoke flakes (B.43 known pattern)**: accept the 5 known-flake FAILs OR block goal on webkit fix?
-- **Item 7 (NEW) — STOP RULE 5 escalation: main-flows.html scores 7.50/10 vs Janowiak peer 9.0 (iter 14 without 9.5)**. See `.claude/state/main-flows-v2/m4-score-2026-05-16.md` for full scoring + 5 specific deltas. Rulings: A=accept 7.50 (62-flow scope deliberately deviates from Janowiak's 10-flow scope), B=block goal until M5 iterations close 5 deltas (~4-8 polish ships), C=scope M5 to separate ship + close this goal. Recommendation A or C.
+- **Item 7 (NEW) — STOP RULE 5 escalation: main-flows.html scores 7.50/10 vs Janowiak peer 9.0 (iter 14 without 9.5)**. See `.claude/state/main-flows-v2/m4-score-2026-05-16.md` for full scoring + 5 specific deltas. Rulings: A=accept 7.50 (62-flow scope deliberately deviates from Janowiak's 10-flow scope), B=block goal until M5 iterations close 5 deltas (~4-8 polish ships), C=scope M5 to separate ship + close this goal. Recommendation A or C. **UPDATE (later this session)**: 4 of 5 deltas now applied (typography mono + distinct headers + empty state + motion animation; commits 3e9f085, b88c2d7, 146d243). main-flows.html score estimate raised to ~8.05. Delta #3 (category color on inactive borders) BLOCKED — would reverse Founder Q1C ruling per iter R1. Need explicit ruling: maintain Q1C (accept ~8.05) OR override Q1C + apply #3 (push toward ~8.30).
 
 ---
 
