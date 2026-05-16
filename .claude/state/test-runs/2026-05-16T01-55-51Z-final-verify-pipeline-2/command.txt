@@ -1,0 +1,1 @@
+bash scripts/verify-approval-pipeline.sh --quick

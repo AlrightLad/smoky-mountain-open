@@ -1,0 +1,1 @@
+node scripts/visual-audit/verify-scroll-reachability.mjs

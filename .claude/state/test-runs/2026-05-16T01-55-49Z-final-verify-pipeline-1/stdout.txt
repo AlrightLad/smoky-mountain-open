@@ -1,0 +1,16 @@
+[verify-approval-pipeline] mode: quick
+[verify-approval-pipeline] repo: /c/Users/Zach/smoky-mountain-open
+[verify-approval-pipeline] downloads: /c/Users/Zach/Downloads
+[verify-approval-pipeline] staging canary proposal: /c/Users/Zach/smoky-mountain-open/.claude/state/proposals/pending/TEST-PIPELINE-CANARY.md
+[verify-approval-pipeline] quick mode — canary staged but JSON drop skipped
+[verify-approval-pipeline] next step: drop /c/Users/Zach/Downloads/decisions-canary-<ts>.json with body:
+    {
+      "schema_version": 1,
+      "generated_at": "<ISO ts>",
+      "decisions": [
+        { "proposal_id": "TEST-PIPELINE-CANARY",
+          "decision": "approve",
+          "note": "canary",
+          "decided_at": "<ISO ts>" }
+      ]
+    }

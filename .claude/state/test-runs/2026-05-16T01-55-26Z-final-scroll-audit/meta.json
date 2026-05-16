@@ -1,0 +1,12 @@
+{
+  "test_name": "final-scroll-audit",
+  "command": "node scripts/visual-audit/verify-scroll-reachability.mjs",
+  "exit_code": 0,
+  "started_at": "2026-05-16T01:55:26Z",
+  "duration_seconds": 14,
+  "head_sha": "852e4dd",
+  "stdout_path": ".claude/state/test-runs/2026-05-16T01-55-26Z-final-scroll-audit/stdout.txt",
+  "stderr_path": ".claude/state/test-runs/2026-05-16T01-55-26Z-final-scroll-audit/stderr.txt",
+  "stdout_bytes": 1062,
+  "stderr_bytes": 0
+}
