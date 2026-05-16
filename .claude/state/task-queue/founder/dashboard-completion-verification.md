@@ -139,12 +139,15 @@ Recommendation: A (accept). Production exploit risk ≈ 0.
 - D24 SIMULATION sections — present in aggregator ships
 - **D26 every surface taste ≥9.5/10** — current spec threshold raised from prior 7.5. **HONEST DELTA: my surfaces score 7.5-8.4 against the prior threshold; achieving 9.5 ("shippable next to Linear and Stripe") on operator-tooling dashboards may require Founder direction on whether 9.5 is the right bar for INTERNAL dashboards vs flagship consumer SaaS. Per spec NOT-STOP: "9.4 close enough" invalid — surface to Founder per STOP RULE 5.**
 - D27 TASTE-AUDIT.md — to be expanded with 9.5-vs-7.5 comparison
-- D32 pre-commit fixture-commit rejection test — pending wiring detect-secrets into Husky pre-commit
 - D33 per-test-run artifact dirs — partial (security baseline done; not all visual audits have per-run subdirs)
-- D34 firestore-rules coverage matrix — pending (P8 audit covered A01 in summary; full matrix is separate)
 - **D36 token meter W-T-D/D-T-D/last-ship** — partial: W-T-D shown (7.30M); D-T-D not separately surfaced; last-ship fix landed but unbackfilled
-- D37 zero unexplained "—"/"0" — DATA-TRUTH-MATRIX identifies the remaining unexplained (Anthropic quota, daily console) per Value #2 above
-- **D40 aggregator --self-test mode** — designed (5 aggregator scripts could each have it); not yet implemented this session
+
+### NEWLY CLOSED THIS SESSION (after initial packet emission)
+
+- **D32 pre-commit secret scanner + fixture rejection test** ✅ — `scripts/test-precommit-secret-rejection.sh` proves the Husky pre-commit hook correctly rejects a fake AWS-key fixture. Log at `.claude/state/security/precommit-secret-fixture-test.md`. Test exit 0; hook exit 1 (correct block); cleanup runs on trap EXIT.
+- **D34 firestore-rules coverage matrix** ✅ — `.claude/state/security/firestore-rules-coverage-2026-05-15.md` maps 41 collections × 4 operations (read/create/update/delete) + per-OWASP-A01-concern verdict. 9/9 A01 sub-items PASS.
+- **D37 zero unexplained "—"/"0"** ✅ for the Anthropic quota card — was "no data"; now renders estimated weekly_tokens (7.30M) with "Anthropic spend (estimated)" label per usage-meters peer pattern. V1 vision-verified at `.claude/state/dashboard-audit-2026-05-15/screenshots/d37-quota-fix-AND-d40-security-back-yellow.png`. Daily Anthropic console card still "—" (separate widget; same data source; can apply same fix in follow-up).
+- **D40 aggregator --self-test mode** ✅ — `scripts/aggregate-self-tests.py` runs all 5 aggregators + asserts JSON shape + timestamp freshness + status-not-unknown-when-source-detectable. All 5 PASS. Wired into post-commit hook REGEN_SCRIPTS list.
 
 ### OPEN (Founder decision required to close)
 
