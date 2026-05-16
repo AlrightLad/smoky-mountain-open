@@ -1,0 +1,273 @@
+{
+  "captured_at": "2026-05-15",
+  "purpose": "PHASE T3 reference inventory for PARBAUGHS dashboard token-meter redesign per dashboard-completion-spec-2026-05-15.md PRE-RESEARCH #13",
+  "target_score": "P7 >= 9.5",
+  "total_images": 28,
+  "total_vendors": 14,
+  "vendors": [
+    {
+      "vendor": "Anthropic",
+      "context": "Claude Console — Usage + Cost pages",
+      "source_url": "https://support.claude.com/en/articles/9534590-cost-and-usage-reporting-in-the-claude-console",
+      "image_paths": [
+        ".claude/state/design-research/competitive-references/usage-meters/anthropic-console-usage-page-chart.png",
+        ".claude/state/design-research/competitive-references/usage-meters/anthropic-console-cost-page-chart.png",
+        ".claude/state/design-research/competitive-references/usage-meters/anthropic-console-rate-limited-requests.png",
+        ".claude/state/design-research/competitive-references/usage-meters/anthropic-claude-billing-page.avif"
+      ],
+      "observed_state": "captured-direct",
+      "patterns_demonstrated": ["big-numeral", "period-selector", "source-breakdown-stacked-bar", "cost-vs-usage-distinction", "rate-limit-chart-pair", "inline-donut-on-stat-card"],
+      "key_observations": [
+        "Three big-numeral stat cards in a row above a full-panel chart — canonical layout",
+        "Six independent filter axes (Workspaces, API keys, Models, Granularity, Period stepper, Group-by)",
+        "Cost and Usage are separate top-level views, not toggled within one panel",
+        "Per-model stacked-bar breakdown is the default chart treatment, not opt-in",
+        "Inline donut next to '$25.92 Total token cost' as compact distribution viz",
+        "Red border around 'Total web search cost $0.47' card draws attention to non-zero web-search spend (called out specifically)"
+      ]
+    },
+    {
+      "vendor": "OpenAI",
+      "context": "API usage cost dashboard + billing settings",
+      "source_url": "https://help.openai.com/en/articles/10478918-api-usage-dashboard (403 to WebFetch); references via saasframe.io",
+      "image_paths": [
+        ".claude/state/design-research/competitive-references/usage-meters/openai-usage-cost-saasframe.avif",
+        ".claude/state/design-research/competitive-references/usage-meters/openai-billing-page.avif"
+      ],
+      "observed_state": "captured-via-saasframe-aggregator",
+      "patterns_demonstrated": ["big-numeral", "period-selector", "stale-data-disclosure"],
+      "key_observations": [
+        "OpenAI explicitly discloses dashboard lag of ~1 hour in docs — freshness stamp pattern",
+        "Cost and Activity are two views — same data, different lens",
+        "Help center pages 403 to WebFetch — direct console screenshots not accessible without auth",
+        "AVIF refs captured via saasframe.io aggregator pages — public marketing collation of console screenshots"
+      ]
+    },
+    {
+      "vendor": "Stripe",
+      "context": "Billing dashboard — MRR, churn, revenue recovery, rate cards",
+      "source_url": "https://stripe.com/billing + https://stripe.com/payments + https://retool.com/use-case/stripe-revenue-dashboard",
+      "image_paths": [
+        ".claude/state/design-research/competitive-references/usage-meters/stripe-billing-churn-revenue.png",
+        ".claude/state/design-research/competitive-references/usage-meters/stripe-billing-revenue-recovery.png",
+        ".claude/state/design-research/competitive-references/usage-meters/stripe-rate-card-pricing-tiers.png",
+        ".claude/state/design-research/competitive-references/usage-meters/stripe-mrr-dashboard.png"
+      ],
+      "observed_state": "captured-direct",
+      "patterns_demonstrated": ["big-numeral", "delta-indicator-CY-vs-PY", "line-chart-with-goal-overlay", "categorical-pie-chart", "marketing-page-visualization"],
+      "key_observations": [
+        "Stripe pairs $112M revenue with both CY and PY values side-by-side (no arrow, just dual numbers) — alternative to delta-indicator",
+        "Monthly Revenue line chart overlays revenue + goal + volume series on shared y-axis",
+        "Declined Reason Breakdown pie chart with two large segments (41.7% / 58.3%) — categorical proportion viz pattern",
+        "Customer Growth bar chart uses categorical industry x-axis with single-bar-per-category"
+      ]
+    },
+    {
+      "vendor": "GitHub",
+      "context": "GitHub Actions billing + Advanced Security usage",
+      "source_url": "https://docs.github.com/en/billing/managing-billing-for-your-products/managing-billing-for-github-actions/viewing-your-github-actions-usage",
+      "image_paths": [
+        ".claude/state/design-research/competitive-references/usage-meters/github-actions-overview-product-summary.png",
+        ".claude/state/design-research/competitive-references/usage-meters/github-actions-product-usage-chart.png",
+        ".claude/state/design-research/competitive-references/usage-meters/github-actions-premium-request-analytics-chart.png",
+        ".claude/state/design-research/competitive-references/usage-meters/github-actions-premium-request-analytics-org-table.png"
+      ],
+      "observed_state": "captured-direct",
+      "patterns_demonstrated": ["big-numeral", "period-selector", "stacked-area-chart-by-sku", "multi-series-line-chart", "chart-plus-breakdown-table"],
+      "key_observations": [
+        "$2,569.90 big number with explainer text and View details CTA is reference-quality stat card",
+        "Time-frame dropdown + Group-by dropdown sit horizontally at top of every chart panel",
+        "Stacked area chart with 6 SKU lines + 'All other' bucket — canonical 5-plus-other categorical pattern",
+        "Per-organization breakdown table below chart with expandable rows (chevron) for drill-down",
+        "Table columns: Included / Billed / Gross / Billed-amount — exposes both count AND cost-after-credits",
+        "Tabs at top (Actions / Codespaces / Copilot / Advanced Security / Enterprise / Git LFS / Models / Packages) — product navigation"
+      ]
+    },
+    {
+      "vendor": "AWS",
+      "context": "Cost Explorer + Billing dashboard widgets",
+      "source_url": "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-exploring-data.html + ce-chart.html + dashboards.html + awsaccountbilling view-billing-dashboard.html",
+      "image_paths": [],
+      "observed_state": "text-only — pages are 403 to WebFetch or pure markdown without embedded screenshots",
+      "patterns_demonstrated": ["budget-status-traffic-light", "anomaly-detection-callout", "top-trends-widget", "month-to-date-vs-forecasted-vs-prior-period", "stale-data-explicit-disclosure", "recommended-actions-priority-ranked"],
+      "key_observations": [
+        "Documented patterns extracted to notes.md — would benefit from live capture via Playwright if direct AWS console screenshots are required",
+        "AWS bakes in 'Month-to-date vs Last month same period' comparison with 'trend calculations might be influenced by number of days in month' caveat",
+        "Top Trends widget shows 'top 10 cost variations sorted by absolute dollar difference' with both % and absolute values",
+        "Cost summary widget specifically excludes credits/refunds — disclosed as a caveat on the widget",
+        "Cost Anomaly Detection 'Setup required' empty state with create-monitor CTA is reference empty-state pattern"
+      ]
+    },
+    {
+      "vendor": "Vercel",
+      "context": "Usage dashboard for Pro customers",
+      "source_url": "https://vercel.com/docs/pricing/manage-and-optimize-usage + https://vercel.com/changelog/new-usage-dashboard-for-pro-customers",
+      "image_paths": [],
+      "observed_state": "documentation-only — changelog references a video (light.mp4) but no static image URLs; docs pages list features without embedded screenshots; would require live capture",
+      "patterns_demonstrated": ["allotment-indicator", "billing-cycle-dropdown", "project-filter", "region-breakdown", "count-vs-project-vs-region-vs-ratio-vs-average-lenses"],
+      "key_observations": [
+        "Vercel explicitly names the allotment indicator pattern — current consumption + projected cost in one widget",
+        "Five lens types ('Count', 'Project', 'Region', 'Ratio', 'Average') applied to a single metric — multi-axis breakdown approach",
+        "Last-30-days as recommended default period selector value",
+        "Pro customers get differentiated dashboard treatment vs free tier — gating pattern",
+        "Spend Management and Usage Notifications are separate features — alerting is separate from visualization"
+      ]
+    },
+    {
+      "vendor": "phuryn/claude-usage (open-source tool)",
+      "context": "Third-party Claude Code token-usage dashboard",
+      "source_url": "https://github.com/phuryn/claude-usage",
+      "image_paths": [
+        ".claude/state/design-research/competitive-references/usage-meters/claude-code-usage-tool-dashboard.png"
+      ],
+      "observed_state": "captured-direct",
+      "patterns_demonstrated": ["progress-bar-for-quota", "session-history-table", "pro-vs-max-tier-differentiation"],
+      "key_observations": [
+        "Local dashboard purpose-built for Claude Code — closest analog to PARBAUGHS token meter use case",
+        "Pro/Max subscribers see progress bar against 5h/24h session quotas — non-subscribers see counter-only view",
+        "Session history is a primary affordance — not just totals but per-session drill-down",
+        "Large native screenshot (3840 x 4620) suggests a dense multi-section dashboard, not single-card"
+      ]
+    },
+    {
+      "vendor": "Mintlify",
+      "context": "Documentation platform dashboard with usage statistics",
+      "source_url": "https://www.saasframe.io/categories/dashboard (aggregator)",
+      "image_paths": [
+        ".claude/state/design-research/competitive-references/usage-meters/saasframe-mintlify-dashboard.avif"
+      ],
+      "observed_state": "captured-via-saasframe-aggregator",
+      "patterns_demonstrated": ["docs-platform-usage-stats"]
+    },
+    {
+      "vendor": "Unkey",
+      "context": "API management dashboard with request metrics and usage tracking",
+      "source_url": "https://www.saasframe.io/categories/dashboard",
+      "image_paths": [
+        ".claude/state/design-research/competitive-references/usage-meters/saasframe-unkey-api-dashboard.avif"
+      ],
+      "observed_state": "captured-via-saasframe-aggregator",
+      "patterns_demonstrated": ["api-request-metrics", "usage-tracking-dashboard"]
+    },
+    {
+      "vendor": "Checkout.com",
+      "context": "Payment processing metrics and transaction overview",
+      "source_url": "https://www.saasframe.io/categories/dashboard",
+      "image_paths": [
+        ".claude/state/design-research/competitive-references/usage-meters/saasframe-checkout-payments-dashboard.avif"
+      ],
+      "observed_state": "captured-via-saasframe-aggregator",
+      "patterns_demonstrated": ["payment-metrics-dashboard"]
+    },
+    {
+      "vendor": "Wise",
+      "context": "Financial dashboard with account balance and transaction analytics",
+      "source_url": "https://www.saasframe.io/categories/dashboard",
+      "image_paths": [
+        ".claude/state/design-research/competitive-references/usage-meters/saasframe-wise-financial-dashboard.avif"
+      ],
+      "observed_state": "captured-via-saasframe-aggregator",
+      "patterns_demonstrated": ["account-balance-display", "transaction-analytics"]
+    },
+    {
+      "vendor": "June (analytics)",
+      "context": "Product analytics interface with performance indicators",
+      "source_url": "https://www.saasframe.io/patterns/metrics",
+      "image_paths": [
+        ".claude/state/design-research/competitive-references/usage-meters/saasframe-june-analytics-report.avif",
+        ".claude/state/design-research/competitive-references/usage-meters/saasframe-june-dashboard.avif"
+      ],
+      "observed_state": "captured-via-saasframe-aggregator",
+      "patterns_demonstrated": ["product-analytics-stats"]
+    },
+    {
+      "vendor": "Buffer",
+      "context": "Social analytics dashboard",
+      "source_url": "https://www.saasframe.io/patterns/metrics",
+      "image_paths": [
+        ".claude/state/design-research/competitive-references/usage-meters/saasframe-buffer-analytics.avif"
+      ],
+      "observed_state": "captured-via-saasframe-aggregator",
+      "patterns_demonstrated": ["social-analytics"]
+    },
+    {
+      "vendor": "Mixpanel",
+      "context": "Product analytics dashboard",
+      "source_url": "https://www.saasframe.io/patterns/metrics",
+      "image_paths": [
+        ".claude/state/design-research/competitive-references/usage-meters/saasframe-mixpanel-analytics.avif"
+      ],
+      "observed_state": "captured-via-saasframe-aggregator",
+      "patterns_demonstrated": ["event-tracking-metrics"]
+    },
+    {
+      "vendor": "Cafe Directory + Steep",
+      "context": "Generic SaaS analytics dashboards",
+      "source_url": "https://www.saasframe.io/patterns/metrics",
+      "image_paths": [
+        ".claude/state/design-research/competitive-references/usage-meters/saasframe-cafe-directory-analytics.avif",
+        ".claude/state/design-research/competitive-references/usage-meters/saasframe-steep-analytics.avif"
+      ],
+      "observed_state": "captured-via-saasframe-aggregator",
+      "patterns_demonstrated": ["generic-analytics-dashboards"]
+    },
+    {
+      "vendor": "Supabase",
+      "context": "Billing settings page",
+      "source_url": "https://www.saasframe.io/categories/upgrading",
+      "image_paths": [
+        ".claude/state/design-research/competitive-references/usage-meters/supabase-billing-settings.avif"
+      ],
+      "observed_state": "captured-via-saasframe-aggregator",
+      "patterns_demonstrated": ["billing-settings-page"]
+    },
+    {
+      "vendor": "Slack",
+      "context": "Billing overview",
+      "source_url": "https://www.saasframe.io/categories/upgrading",
+      "image_paths": [
+        ".claude/state/design-research/competitive-references/usage-meters/slack-billing-overview.avif"
+      ],
+      "observed_state": "captured-via-saasframe-aggregator",
+      "patterns_demonstrated": ["billing-overview-page"]
+    },
+    {
+      "vendor": "Dust",
+      "context": "Subscription/billing page",
+      "source_url": "https://www.saasframe.io/categories/upgrading",
+      "image_paths": [
+        ".claude/state/design-research/competitive-references/usage-meters/dust-subscription-page.avif"
+      ],
+      "observed_state": "captured-via-saasframe-aggregator",
+      "patterns_demonstrated": ["subscription-management-page"]
+    }
+  ],
+  "gaps_for_live_capture": [
+    {
+      "vendor": "Vercel",
+      "what": "live Vercel usage dashboard with real data — current allotment indicator widget + project/region/ratio/average lens switcher",
+      "why": "Vercel only publishes mp4 video on changelog, no static screenshots; would require Playwright capture with authenticated session"
+    },
+    {
+      "vendor": "OpenAI",
+      "what": "live OpenAI Platform usage dashboard at platform.openai.com/account/usage",
+      "why": "Help center articles 403 to WebFetch; AVIF refs are saasframe aggregator second-hand; direct capture preferred for high-fidelity reference"
+    },
+    {
+      "vendor": "AWS",
+      "what": "live AWS Cost Explorer dashboard with daily-costs graph, top-trends widget, anomaly detection callout",
+      "why": "AWS docs are pure markdown without embedded screenshots; would benefit from authenticated console capture"
+    },
+    {
+      "vendor": "GitHub Actions",
+      "what": "full enterprise billing landing page with all product tabs populated",
+      "why": "Captured 4 reference images cover individual chart panels but not the full landing-page composition"
+    }
+  ],
+  "primary_relevance_to_parbaughs": [
+    "Anthropic Console — strongest direct analog (same product family, same use case: developers tracking tokens)",
+    "phuryn/claude-usage — strongest functional analog (local dashboard, Claude-specific quota awareness)",
+    "GitHub Actions — strongest layout analog ($-headline + per-source breakdown + drill-down table)",
+    "Stripe — strongest design-craft analog (typography hierarchy, color discipline, sparkline integration)"
+  ]
+}

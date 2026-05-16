@@ -1,0 +1,47 @@
+{
+  "scanner": "npm audit",
+  "command": "npm audit --json",
+  "exit_code": 1,
+  "exit_code_meaning": "npm audit exits non-zero when ANY vulnerabilities are found. Exit 1 here = 13 total findings including 2 high.",
+  "cwd": "C:\\Users\\Zach\\smoky-mountain-open\\functions",
+  "started_at": "2026-05-16T00:22:15Z",
+  "completed_at": "2026-05-16T00:22:17Z",
+  "output_path": ".claude/state/security/baseline-2026-05-15/functions-npm-audit.json",
+  "totals": {
+    "info": 0,
+    "low": 9,
+    "moderate": 2,
+    "high": 2,
+    "critical": 0,
+    "total": 13
+  },
+  "high_severity_findings": [
+    {
+      "package": "fast-xml-builder",
+      "advisory": "GHSA-5wm8-gmm8-39j9",
+      "title": "fast-xml-builder allows attribute values with unwanted quotes to bypass malicious or unwanted attributes",
+      "url": "https://github.com/advisories/GHSA-5wm8-gmm8-39j9",
+      "via": "transitive (likely via @google-cloud/storage chain)"
+    },
+    {
+      "package": "protobufjs",
+      "advisory": "GHSA-66ff-xgx4-vchm",
+      "title": "protobuf.js: Code injection through bytes field defaults in generated toObject code",
+      "url": "https://github.com/advisories/GHSA-66ff-xgx4-vchm",
+      "via": "transitive (firebase-admin / google-gax chain)"
+    }
+  ],
+  "moderate_severity_findings": [
+    {
+      "package": "@protobufjs/utf8",
+      "advisory": "GHSA-q6x5-8v7m-xcrf",
+      "title": "protobufjs has overlong UTF-8 decoding"
+    },
+    {
+      "package": "uuid",
+      "advisory": "GHSA-w5hq-g745-h8pq",
+      "title": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided"
+    }
+  ],
+  "verdict": "YELLOW — 2 high-severity advisories in transitive deps (fast-xml-builder, protobufjs). All affect server-side Cloud Functions. Runtime exploitability low (we don't parse untrusted XML; protobuf default-byte injection requires generated-code path we don't exercise) but should be tracked for upstream upgrade."
+}

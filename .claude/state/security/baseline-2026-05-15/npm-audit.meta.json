@@ -1,0 +1,29 @@
+{
+  "scanner": "npm audit",
+  "command": "npm audit --json",
+  "exit_code": 1,
+  "exit_code_meaning": "npm audit exits non-zero when ANY vulnerabilities are found, regardless of severity. Exit 1 here = 8 low findings, no high/critical.",
+  "cwd": "C:\\Users\\Zach\\smoky-mountain-open",
+  "started_at": "2026-05-16T00:22:11Z",
+  "completed_at": "2026-05-16T00:22:15Z",
+  "output_path": ".claude/state/security/baseline-2026-05-15/npm-audit.json",
+  "totals": {
+    "info": 0,
+    "low": 8,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 8
+  },
+  "affected_packages": [
+    "@google-cloud/firestore",
+    "@google-cloud/storage",
+    "@tootallnate/once",
+    "firebase-admin",
+    "google-gax",
+    "http-proxy-agent",
+    "retry-request",
+    "teeny-request"
+  ],
+  "verdict": "GREEN — all root vulns are low-severity transitive deps. No high/critical."
+}
