@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-17T06:55:39.613522+00:00",
+  "generated_at": "2026-05-17T07:02:13.075672+00:00",
   "_meter_status": "wired-real",
   "quota_status": {
     "state": "fresh",
-    "as_of": "2026-05-17T06:52:12.4842819Z",
-    "age_seconds": 207,
+    "as_of": "2026-05-17T07:02:12.5106109Z",
+    "age_seconds": 0,
     "weekly_tokens": 102000,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -52,6 +52,10 @@
         "2026-05-16": {
           "real": 0,
           "estimated": 27690
+        },
+        "2026-05-17": {
+          "real": 0,
+          "estimated": 0
         }
       }
     },
@@ -174,6 +178,10 @@
         "2026-05-16": {
           "real": 0,
           "estimated": 27690
+        },
+        "2026-05-17": {
+          "real": 0,
+          "estimated": 0
         }
       }
     },
@@ -285,11 +293,11 @@
     "estimated": 7254600,
     "manual": 0,
     "first_event_at": "2026-05-13T11:55:00+00:00",
-    "last_event_at": "2026-05-17T06:55:37+00:00"
+    "last_event_at": "2026-05-17T07:02:12+00:00"
   },
   "_counts": {
     "real_events": 1,
-    "estimated_events": 1639,
+    "estimated_events": 1644,
     "manual_entries": 0
   }
 }
