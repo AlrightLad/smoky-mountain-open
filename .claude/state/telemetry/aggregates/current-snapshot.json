@@ -1,11 +1,11 @@
 {
-  "as_of": "2026-05-16T16:53:06.334655+00:00",
+  "as_of": "2026-05-17T06:55:39.281989+00:00",
   "_meter_status": "wired-real",
   "_meter_note": "Token meter is wired to real data via PROP-003.a sidecar (.claude/state/quota-status.json). weekly_tokens reflects the most recent meter reading. See quota_status block for org-monthly percentage + freshness.",
   "quota_status": {
     "state": "fresh",
-    "as_of": "2026-05-16T16:52:13.1115570Z",
-    "age_seconds": 53,
+    "as_of": "2026-05-17T06:52:12.4842819Z",
+    "age_seconds": 206,
     "weekly_tokens": 102000,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -22,39 +22,39 @@
   "ships_this_week": 32,
   "ships_trend_7d": {
     "labels": [
-      "Sun",
       "Mon",
       "Tue",
       "Wed",
       "Thu",
       "Fri",
-      "Sat"
+      "Sat",
+      "Sun"
     ],
     "values": [
-      0,
       0,
       0,
       4,
       26,
       2,
+      0,
       0
     ]
   },
   "handoffs_trend_7d": {
     "labels": [
-      "Sun",
       "Mon",
       "Tue",
       "Wed",
       "Thu",
       "Fri",
-      "Sat"
+      "Sat",
+      "Sun"
     ],
     "values": [
       0,
       0,
-      0,
       1,
+      0,
       0,
       0,
       0
@@ -62,20 +62,20 @@
   },
   "bubbles_trend_7d": {
     "labels": [
-      "Sun",
       "Mon",
       "Tue",
       "Wed",
       "Thu",
       "Fri",
-      "Sat"
+      "Sat",
+      "Sun"
     ],
     "values": [
       0,
       0,
-      0,
       5,
       2,
+      0,
       0,
       0
     ]
@@ -93,33 +93,33 @@
   },
   "token_trend_7d": {
     "labels": [
-      "Sun",
       "Mon",
       "Tue",
       "Wed",
       "Thu",
       "Fri",
-      "Sat"
+      "Sat",
+      "Sun"
     ],
     "values": [
       0,
       0,
-      0,
       102000,
       7200000,
+      0,
       0,
       0
     ]
   },
   "cycle_outcomes_7d": {
     "labels": [
-      "Sun",
       "Mon",
       "Tue",
       "Wed",
       "Thu",
       "Fri",
-      "Sat"
+      "Sat",
+      "Sun"
     ],
     "datasets": [
       {
@@ -127,8 +127,8 @@
         "data": [
           0,
           0,
-          0,
           1,
+          0,
           0,
           0,
           0
@@ -140,8 +140,8 @@
         "data": [
           0,
           0,
-          0,
           3,
+          0,
           0,
           0,
           0
@@ -286,7 +286,7 @@
     }
   ],
   "_aggregate_counts": {
-    "events_total": 1637,
+    "events_total": 2225,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
