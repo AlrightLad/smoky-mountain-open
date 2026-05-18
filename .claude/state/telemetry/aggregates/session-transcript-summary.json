@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-18T18:41:00.750426+00:00",
+  "generated_at": "2026-05-18T18:54:44.597077+00:00",
   "schema_version": 1,
   "source": "~/.claude/projects/C--Users-Zach-smoky-mountain-open/*.jsonl",
   "session_count": 29,
   "bucket_count": 56,
-  "all_time_total_tokens": 6387402298,
+  "all_time_total_tokens": 6411212945,
   "by_day_total": {
     "2026-04-17": 294853821,
     "2026-04-20": 362592283,
@@ -22,10 +22,10 @@
     "2026-05-15": 364223036,
     "2026-05-16": 533640773,
     "2026-05-17": 4397863,
-    "2026-05-18": 127451507
+    "2026-05-18": 151262154
   },
   "by_model_total": {
-    "claude-opus-4-7": 6387402298,
+    "claude-opus-4-7": 6411212945,
     "<synthetic>": 0
   },
   "buckets": {
@@ -748,14 +748,14 @@
       "session_id": "bba09b44-bbb9-447a-97ee-4b5aab895cbe",
       "day": "2026-05-18",
       "model": "claude-opus-4-7",
-      "turn_count": 23,
-      "input_tokens": 74,
-      "output_tokens": 17550,
-      "cache_read_input_tokens": 1353308,
-      "cache_creation_input_tokens": 433656,
-      "total": 1804588,
+      "turn_count": 165,
+      "input_tokens": 4938,
+      "output_tokens": 219985,
+      "cache_read_input_tokens": 23813711,
+      "cache_creation_input_tokens": 1576601,
+      "total": 25615235,
       "first_ts": "2026-05-18T18:40:02.670Z",
-      "last_ts": "2026-05-18T18:40:41.429Z"
+      "last_ts": "2026-05-18T18:53:39.620Z"
     }
   }
 }
