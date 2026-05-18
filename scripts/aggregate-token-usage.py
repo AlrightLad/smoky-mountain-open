@@ -27,6 +27,7 @@ CURSOR_PATH = AGGREGATES_DIR / ".token-usage-cursor.json"
 MANUAL_LOG = STATE / "telemetry" / "manual-quota-log.ndjson"
 CRON_LOG_DIR = ROOT / "scripts" / "cron" / "logs"
 QUOTA_STATUS = STATE / "quota-status.json"  # PROP-003.a sidecar output
+SESSION_TRANSCRIPT_SUMMARY = AGGREGATES_DIR / "session-transcript-summary.json"  # Phase T1 wire
 
 # =============================================================================
 # CONSTANTS (calibratable — see token-usage-build-summary.md "Open question")
@@ -285,6 +286,45 @@ def read_quota_status(max_age_seconds: int = 6 * 3600):
     return obj
 
 
+# ---------- Source E: session-transcript summary (Phase T1 wire) ----------
+def scan_session_transcripts():
+    """Read scripts/ingest-session-transcripts.py output. Yield one event per
+    (session_id, day, model) bucket so the aggregator's existing real-event
+    machinery can attribute. All session-transcript spend is currently tagged
+    agent='main' + ship_id='unattributed' + cron_source='manual-session';
+    future work refines tagging via git log correlation.
+    """
+    if not SESSION_TRANSCRIPT_SUMMARY.exists():
+        return [], None
+    try:
+        data = json.loads(SESSION_TRANSCRIPT_SUMMARY.read_text(encoding="utf-8"))
+    except Exception:
+        return [], None
+    buckets = data.get("buckets") or {}
+    out = []
+    for key, b in buckets.items():
+        last_ts = b.get("last_ts") or b.get("first_ts") or ""
+        dt = parse_iso(last_ts) or datetime.now(timezone.utc)
+        out.append({
+            "ts": last_ts,
+            "dt": dt,
+            "agent": "main",
+            "ship_id": "unattributed",
+            "cron_source": "manual-session",
+            "tokens": int(b.get("total", 0)),
+            "source_type": "real",
+            "session_id": b.get("session_id"),
+            "model": b.get("model"),
+            "_breakdown": {
+                "input_tokens": int(b.get("input_tokens", 0)),
+                "output_tokens": int(b.get("output_tokens", 0)),
+                "cache_read_input_tokens": int(b.get("cache_read_input_tokens", 0)),
+                "cache_creation_input_tokens": int(b.get("cache_creation_input_tokens", 0)),
+            },
+        })
+    return out, data
+
+
 # ---------- Source C: manual paste log ----------
 def scan_manual_log():
     if not MANUAL_LOG.exists():
@@ -310,7 +350,7 @@ def scan_manual_log():
 
 
 # ---------- merge into snapshot ----------
-def merge_to_snapshot(real_events, estimated_events, manual_entries):
+def merge_to_snapshot(real_events, estimated_events, manual_entries, session_transcript_meta=None):
     by_agent = defaultdict(empty_buckets)
     by_cron = defaultdict(empty_buckets)
     by_ship = defaultdict(empty_buckets)
@@ -374,9 +414,26 @@ def merge_to_snapshot(real_events, estimated_events, manual_entries):
         meter_status = "wired-estimated-sidecar-stale"
     else:
         meter_status = "wired-estimated"
+    # Phase T1 wire: surface session-transcript ground truth at top level
+    # so the dashboard can distinguish cache reads (90% cheaper) from output
+    # tokens. Without this, all_time.real conflates everything.
+    session_transcripts_block = None
+    if session_transcript_meta:
+        st = session_transcript_meta
+        session_transcripts_block = {
+            "generated_at": st.get("generated_at"),
+            "source": st.get("source"),
+            "session_count": st.get("session_count", 0),
+            "bucket_count": st.get("bucket_count", 0),
+            "all_time_total_tokens": st.get("all_time_total_tokens", 0),
+            "by_day_total": st.get("by_day_total", {}),
+            "by_model_total": st.get("by_model_total", {}),
+        }
+
     return {
         "generated_at": iso_now(),
         "_meter_status": meter_status,
+        "session_transcripts": session_transcripts_block,
         "quota_status": {
             "state": qs_state,
             "as_of": qs.get("as_of") if qs_state != "absent" else None,
@@ -421,16 +478,19 @@ def main():
     source_a_events = scan_telemetry_events(cursor_ts)
     source_b_events = scan_cron_logs(cursor_ts)
     manual = scan_manual_log()
+    source_e_events, source_e_meta = scan_session_transcripts()
 
     # Partition by inner source_type. Source A (telemetry events) can now emit
     # both 'real' (cycle.budget.checkpoint, cycle.paused) AND 'estimated'
     # (session.team-work.summary, operator-asserted). Source B (cron logs) is
-    # always 'estimated'. Group properly so the dashboard's real/estimated/
-    # manual columns reflect honesty discipline.
-    real = [e for e in source_a_events if e.get("source_type") == "real"]
+    # always 'estimated'. Source E (session transcripts, Phase T1) is always
+    # 'real' — the ground truth from Claude Code's own usage blocks. Group
+    # properly so the dashboard's real/estimated/manual columns reflect
+    # honesty discipline.
+    real = [e for e in source_a_events if e.get("source_type") == "real"] + source_e_events
     estimated = [e for e in source_a_events if e.get("source_type") == "estimated"] + source_b_events
 
-    snapshot = merge_to_snapshot(real, estimated, manual)
+    snapshot = merge_to_snapshot(real, estimated, manual, session_transcript_meta=source_e_meta)
     SNAPSHOT_PATH.write_text(json.dumps(snapshot, indent=2, default=str), encoding="utf-8")
 
     # Update cursor to the most-recent event timestamp seen
