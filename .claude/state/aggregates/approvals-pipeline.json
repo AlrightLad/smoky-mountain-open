@@ -1,7 +1,7 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-18T22:42:13Z",
-  "generated_at": "2026-05-18T22:42:13Z",
+  "timestamp": "2026-05-18T22:44:09Z",
+  "generated_at": "2026-05-18T22:44:09Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
@@ -9,7 +9,7 @@
   "summary": "watcher cycling · applies blocked (10 skips on dirty tree) · 32 in inbox",
   "as_of": "2026-05-18T22:40:48Z",
   "stale": false,
-  "age_hours": 0.02333333333333333,
+  "age_hours": 0.056666666666666664,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 9,
@@ -64,6 +64,6 @@
   "_meta": {
     "watcher_runs_inspected": 10,
     "consecutive_skips": 10,
-    "age_minutes": 1.4
+    "age_minutes": 3.4
   }
 }
