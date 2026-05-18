@@ -1,0 +1,51 @@
+# Pre-install plugins snapshot — 2026-05-18T13:10:20-04:00
+# Captured before ECC install (Superpowers already installed via /plugin in same session)
+
+## ~/.claude/plugins/ top-level:
+total 270
+drwxr-xr-x 1 Zach 197121      0 May 18 12:33 .
+drwxr-xr-x 1 Zach 197121      0 May 18 13:06 ..
+drwxr-xr-x 1 Zach 197121      0 May 18 12:33 cache
+-rw-r--r-- 1 Zach 197121    439 May 18 12:32 installed_plugins.json
+-rw-r--r-- 1 Zach 197121    283 May 18 12:33 known_marketplaces.json
+drwxr-xr-x 1 Zach 197121      0 May 18 12:33 marketplaces
+-rw-r--r-- 1 Zach 197121 256924 May 18 12:32 plugin-catalog-cache.json
+
+## installed_plugins.json:
+{
+  "version": 2,
+  "plugins": {
+    "superpowers@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\Zach\\.claude\\plugins\\cache\\claude-plugins-official\\superpowers\\5.1.0",
+        "version": "5.1.0",
+        "installedAt": "2026-05-18T16:32:54.989Z",
+        "lastUpdated": "2026-05-18T16:32:54.989Z",
+        "gitCommitSha": "f2cbfbefebbfef77321e4c9abc9e949826bea9d7"
+      }
+    ]
+  }
+}
+## known_marketplaces.json:
+{
+  "claude-plugins-official": {
+    "source": {
+      "source": "github",
+      "repo": "anthropics/claude-plugins-official"
+    },
+    "installLocation": "C:\\Users\\Zach\\.claude\\plugins\\marketplaces\\claude-plugins-official",
+    "lastUpdated": "2026-05-18T16:33:51.396Z"
+  }
+}
+## ~/.claude/plugins/marketplaces/:
+total 8
+drwxr-xr-x 1 Zach 197121 0 May 18 12:33 .
+drwxr-xr-x 1 Zach 197121 0 May 18 12:33 ..
+drwxr-xr-x 1 Zach 197121 0 May 18 12:33 claude-plugins-official
+
+## ~/.claude/plugins/cache/:
+total 8
+drwxr-xr-x 1 Zach 197121 0 May 18 12:33 .
+drwxr-xr-x 1 Zach 197121 0 May 18 12:33 ..
+drwxr-xr-x 1 Zach 197121 0 May 18 12:32 claude-plugins-official

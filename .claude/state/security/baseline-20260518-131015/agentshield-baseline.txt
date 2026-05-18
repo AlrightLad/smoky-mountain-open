@@ -1,0 +1,1231 @@
+
+  AgentShield Security Report
+  2026-05-18T17:17:15.361Z
+  Target: C:\Users\Zach\smoky-mountain-open\.claude
+
+  Grade: F (31/100)
+
+  Score Breakdown
+  Secrets        ░░░░░░░░░░░░░░░░░░░░ 0
+  Permissions    ░░░░░░░░░░░░░░░░░░░░ 0
+  Hooks          ███████████░░░░░░░░░ 55
+  MCP Servers    ████████████████████ 100
+  Agents         ░░░░░░░░░░░░░░░░░░░░ 0
+
+  Skill Health
+  Skills discovered: 63
+  Instrumented:      0
+  Versioned:         0
+  Rollback-ready:    0
+  With history:      0
+
+  parbaughs-audit-protocol.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-audit-protocol.APPROVAL.md
+  parbaughs-audit-protocol — unobserved (unobserved)
+    File: skills\parbaughs-audit-protocol.md
+  parbaughs-caddy-notes-classifier.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-caddy-notes-classifier.APPROVAL.md
+  parbaughs-caddy-notes-classifier — unobserved (unobserved)
+    File: skills\parbaughs-caddy-notes-classifier.md
+  parbaughs-critic-checklist.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-critic-checklist.APPROVAL.md
+  parbaughs-critic-checklist — unobserved (unobserved)
+    File: skills\parbaughs-critic-checklist.md
+  parbaughs-cross-surface-dependency-audit.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-cross-surface-dependency-audit.APPROVAL.md
+  parbaughs-cross-surface-dependency-audit — unobserved (unobserved)
+    File: skills\parbaughs-cross-surface-dependency-audit.md
+  design-bot-v2 — unobserved (unobserved)
+    File: skills\parbaughs-design-bot.md
+  parbaughs-firestore-writer-audit.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-firestore-writer-audit.APPROVAL.md
+  parbaughs-firestore-writer-audit — unobserved (unobserved)
+    File: skills\parbaughs-firestore-writer-audit.md
+  parbaughs-namespace-collision-check.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-namespace-collision-check.APPROVAL.md
+  parbaughs-namespace-collision-check — unobserved (unobserved)
+    File: skills\parbaughs-namespace-collision-check.md
+  parbaughs-ship-planner.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-ship-planner.APPROVAL.md
+  parbaughs-ship-planner — unobserved (unobserved)
+    File: skills\parbaughs-ship-planner.md
+  parbaughs-smoke-failure-triage.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-smoke-failure-triage.APPROVAL.md
+  parbaughs-smoke-failure-triage — unobserved (unobserved)
+    File: skills\parbaughs-smoke-failure-triage.md
+  parbaughs-version-triple-bumper.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-version-triple-bumper.APPROVAL.md
+  parbaughs-version-triple-bumper — unobserved (unobserved)
+    File: skills\parbaughs-version-triple-bumper.md
+  parbaughs-visual-verification-protocol.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-visual-verification-protocol.APPROVAL.md
+  parbaughs-visual-verification-protocol — unobserved (unobserved)
+    File: skills\parbaughs-visual-verification-protocol.md
+  parbaughs-audit-protocol.APPROVAL — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-audit-protocol.APPROVAL.md
+  parbaughs-audit-protocol — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-audit-protocol.md
+  parbaughs-caddy-notes-classifier.APPROVAL — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-caddy-notes-classifier.APPROVAL.md
+  parbaughs-caddy-notes-classifier — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-caddy-notes-classifier.md
+  parbaughs-critic-checklist.APPROVAL — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-critic-checklist.APPROVAL.md
+  parbaughs-critic-checklist — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-critic-checklist.md
+  parbaughs-cross-surface-dependency-audit.APPROVAL — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-cross-surface-dependency-audit.APPROVAL.md
+  parbaughs-cross-surface-dependency-audit — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-cross-surface-dependency-audit.md
+  design-bot-v2 — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-design-bot.md
+  parbaughs-firestore-writer-audit.APPROVAL — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-firestore-writer-audit.APPROVAL.md
+  parbaughs-firestore-writer-audit — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-firestore-writer-audit.md
+  parbaughs-namespace-collision-check.APPROVAL — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-namespace-collision-check.APPROVAL.md
+  parbaughs-namespace-collision-check — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-namespace-collision-check.md
+  parbaughs-ship-planner.APPROVAL — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-ship-planner.APPROVAL.md
+  parbaughs-ship-planner — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-ship-planner.md
+  parbaughs-smoke-failure-triage.APPROVAL — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-smoke-failure-triage.APPROVAL.md
+  parbaughs-smoke-failure-triage — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-smoke-failure-triage.md
+  parbaughs-version-triple-bumper.APPROVAL — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-version-triple-bumper.APPROVAL.md
+  parbaughs-version-triple-bumper — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-version-triple-bumper.md
+  parbaughs-visual-verification-protocol.APPROVAL — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-visual-verification-protocol.APPROVAL.md
+  parbaughs-visual-verification-protocol — unobserved (unobserved)
+    File: worktrees\architecture-agent-day1\.claude\skills\parbaughs-visual-verification-protocol.md
+  parbaughs-audit-protocol.APPROVAL — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-audit-protocol.APPROVAL.md
+  parbaughs-audit-protocol — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-audit-protocol.md
+  parbaughs-caddy-notes-classifier.APPROVAL — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-caddy-notes-classifier.APPROVAL.md
+  parbaughs-caddy-notes-classifier — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-caddy-notes-classifier.md
+  parbaughs-critic-checklist.APPROVAL — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-critic-checklist.APPROVAL.md
+  parbaughs-critic-checklist — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-critic-checklist.md
+  parbaughs-cross-surface-dependency-audit.APPROVAL — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-cross-surface-dependency-audit.APPROVAL.md
+  parbaughs-cross-surface-dependency-audit — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-cross-surface-dependency-audit.md
+  design-bot-v2 — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-design-bot.md
+  parbaughs-firestore-writer-audit.APPROVAL — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-firestore-writer-audit.APPROVAL.md
+  parbaughs-firestore-writer-audit — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-firestore-writer-audit.md
+  parbaughs-namespace-collision-check.APPROVAL — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-namespace-collision-check.APPROVAL.md
+  parbaughs-namespace-collision-check — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-namespace-collision-check.md
+  parbaughs-ship-planner.APPROVAL — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-ship-planner.APPROVAL.md
+  parbaughs-ship-planner — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-ship-planner.md
+  parbaughs-smoke-failure-triage.APPROVAL — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-smoke-failure-triage.APPROVAL.md
+  parbaughs-smoke-failure-triage — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-smoke-failure-triage.md
+  parbaughs-version-triple-bumper.APPROVAL — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-version-triple-bumper.APPROVAL.md
+  parbaughs-version-triple-bumper — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-version-triple-bumper.md
+  parbaughs-visual-verification-protocol.APPROVAL — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-visual-verification-protocol.APPROVAL.md
+  parbaughs-visual-verification-protocol — unobserved (unobserved)
+    File: worktrees\dashboard-banners\.claude\skills\parbaughs-visual-verification-protocol.md
+
+  Summary
+  Files scanned: 101
+  Findings: 202 total — 18 critical, 32 high, 144 medium, 3 low, 5 info
+
+  Findings
+
+  ● CRITICAL (18)
+
+    ● Overly permissive allow rule: Bash(*)
+      settings.json
+      Unrestricted Bash access — any command can run
+      Evidence: Bash(*)
+      Fix: Restrict to specific commands: Bash(git *), Bash(npm *), Bash(node *)
+
+    ● Potential command injection in hook
+      hooks\schema-mutation-alarm.sh:22
+      Hook uses variable interpolation that could be influenced by file content or command arguments. An attacker could craft filenames or content to inject commands.
+      Evidence: ${content}
+      Fix: Sanitize inputs before interpolation, or use a whitelist approach instead of shell interpolation
+
+    ● Hardcoded Private key material
+      hooks\secrets-scanner.sh:49
+      Found Private key material in hooks\secrets-scanner.sh. Secrets must never be hardcoded in configuration files.
+      Evidence: -----BEG...----
+      Fix: Replace with environment variable reference
+
+    ● PEM-encoded private key found in config
+      hooks\secrets-scanner.sh:49
+      Found "-----BEGIN PRIVATE KEY-----" in hooks\secrets-scanner.sh. Private keys should never be stored in configuration files — they grant authentication access and should be stored in secure key stores or referenced via file paths with restrictive permissions.
+      Evidence: -----BEGIN PRIVATE KEY-----
+      Fix: Remove private key and reference a key file path instead
+
+    ● Dangerous flag: --no-verify
+      worktrees\architecture-agent-day1\CLAUDE.md:933
+      Git hook verification bypass. The flag "--no-verify" disables safety mechanisms.
+      Evidence: --no-verify
+      Fix: Remove dangerous bypass flag
+
+    ● Dangerous flag: --no-verify
+      worktrees\architecture-agent-day1\CLAUDE.md:952
+      Git hook verification bypass. The flag "--no-verify" disables safety mechanisms.
+      Evidence: --no-verify
+      Fix: Remove dangerous bypass flag
+
+    ● Dangerous flag: --no-verify
+      worktrees\architecture-agent-day1\CLAUDE.md:958
+      Git hook verification bypass. The flag "--no-verify" disables safety mechanisms.
+      Evidence: --no-verify
+      Fix: Remove dangerous bypass flag
+
+    ● Overly permissive allow rule: Bash(*)
+      worktrees\architecture-agent-day1\.claude\settings.json
+      Unrestricted Bash access — any command can run
+      Evidence: Bash(*)
+      Fix: Restrict to specific commands: Bash(git *), Bash(npm *), Bash(node *)
+
+    ● Potential command injection in hook
+      worktrees\architecture-agent-day1\.claude\hooks\schema-mutation-alarm.sh:22
+      Hook uses variable interpolation that could be influenced by file content or command arguments. An attacker could craft filenames or content to inject commands.
+      Evidence: ${content}
+      Fix: Sanitize inputs before interpolation, or use a whitelist approach instead of shell interpolation
+
+    ● Hardcoded Private key material
+      worktrees\architecture-agent-day1\.claude\hooks\secrets-scanner.sh:49
+      Found Private key material in worktrees\architecture-agent-day1\.claude\hooks\secrets-scanner.sh. Secrets must never be hardcoded in configuration files.
+      Evidence: -----BEG...----
+      Fix: Replace with environment variable reference
+
+    ● PEM-encoded private key found in config
+      worktrees\architecture-agent-day1\.claude\hooks\secrets-scanner.sh:49
+      Found "-----BEGIN PRIVATE KEY-----" in worktrees\architecture-agent-day1\.claude\hooks\secrets-scanner.sh. Private keys should never be stored in configuration files — they grant authentication access and should be stored in secure key stores or referenced via file paths with restrictive permissions.
+      Evidence: -----BEGIN PRIVATE KEY-----
+      Fix: Remove private key and reference a key file path instead
+
+    ● Dangerous flag: --no-verify
+      worktrees\dashboard-banners\CLAUDE.md:933
+      Git hook verification bypass. The flag "--no-verify" disables safety mechanisms.
+      Evidence: --no-verify
+      Fix: Remove dangerous bypass flag
+
+    ● Dangerous flag: --no-verify
+      worktrees\dashboard-banners\CLAUDE.md:952
+      Git hook verification bypass. The flag "--no-verify" disables safety mechanisms.
+      Evidence: --no-verify
+      Fix: Remove dangerous bypass flag
+
+    ● Dangerous flag: --no-verify
+      worktrees\dashboard-banners\CLAUDE.md:958
+      Git hook verification bypass. The flag "--no-verify" disables safety mechanisms.
+      Evidence: --no-verify
+      Fix: Remove dangerous bypass flag
+
+    ● Overly permissive allow rule: Bash(*)
+      worktrees\dashboard-banners\.claude\settings.json
+      Unrestricted Bash access — any command can run
+      Evidence: Bash(*)
+      Fix: Restrict to specific commands: Bash(git *), Bash(npm *), Bash(node *)
+
+    ● Potential command injection in hook
+      worktrees\dashboard-banners\.claude\hooks\schema-mutation-alarm.sh:22
+      Hook uses variable interpolation that could be influenced by file content or command arguments. An attacker could craft filenames or content to inject commands.
+      Evidence: ${content}
+      Fix: Sanitize inputs before interpolation, or use a whitelist approach instead of shell interpolation
+
+    ● Hardcoded Private key material
+      worktrees\dashboard-banners\.claude\hooks\secrets-scanner.sh:49
+      Found Private key material in worktrees\dashboard-banners\.claude\hooks\secrets-scanner.sh. Secrets must never be hardcoded in configuration files.
+      Evidence: -----BEG...----
+      Fix: Replace with environment variable reference
+
+    ● PEM-encoded private key found in config
+      worktrees\dashboard-banners\.claude\hooks\secrets-scanner.sh:49
+      Found "-----BEGIN PRIVATE KEY-----" in worktrees\dashboard-banners\.claude\hooks\secrets-scanner.sh. Private keys should never be stored in configuration files — they grant authentication access and should be stored in secure key stores or referenced via file paths with restrictive permissions.
+      Evidence: -----BEGIN PRIVATE KEY-----
+      Fix: Remove private key and reference a key file path instead
+
+  ● HIGH (32)
+
+    ● Overly permissive allow rule: Edit(*)
+      settings.json
+      Unrestricted Edit access — agent can edit any file
+      Evidence: Edit(*)
+      Fix: Restrict to specific commands: Edit(src/*), Edit(tests/*)
+
+    ● Overly permissive allow rule: Write(*)
+      settings.json
+      Unrestricted Write access — agent can write to any file
+      Evidence: Write(*)
+      Fix: Restrict to specific commands: Write(src/*), Write(tests/*)
+
+    ● Overly permissive allow rule: Bash(node *)
+      settings.local.json
+      Runtime confidence: project-local optional
+      Interpreter access — agent can run arbitrary code via scripting language
+      Evidence: Bash(node *)
+      Fix: Restrict to specific commands: Restrict to specific scripts: Bash(node scripts/build.js)
+
+    ● Overly permissive allow rule: Bash(rm -f .claude/state/proposals/decisions-log.ndjson)
+      settings.local.json
+      Runtime confidence: project-local optional
+      Delete operations explicitly allowed in Bash
+      Evidence: Bash(rm -f .claude/state/proposals/decisions-log.ndjson)
+      Fix: Restrict to specific commands: Move rm commands to deny list instead
+
+    ● Overly permissive allow rule: Bash(rm -f .claude/state/proposals/inbox/*)
+      settings.local.json
+      Runtime confidence: project-local optional
+      Delete operations explicitly allowed in Bash
+      Evidence: Bash(rm -f .claude/state/proposals/inbox/*)
+      Fix: Restrict to specific commands: Move rm commands to deny list instead
+
+    ● No deny list configured
+      settings.local.json
+      Runtime confidence: project-local optional
+      settings.json has no deny list. Without explicit denials, the agent may run dangerous operations if the allow list is too broad.
+      Fix: Add a deny list for dangerous operations
+
+    ● Allow rule grants env access: PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); python tests/round-trip-test.py)
+      settings.local.json
+      Runtime confidence: project-local optional
+      The allow entry "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); python tests/round-trip-test.py)" Grants access to dump environment variables. Environment variables often contain API keys, tokens, and other secrets.
+      Evidence: PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); python tests/round-trip-test.py)
+
+    ● Allow rule grants env access: PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); $env:PYTHONUTF8 = "1"; $env:PYTHONIOENCODING = "utf-8"; python tests/round-trip-test.py)
+      settings.local.json
+      Runtime confidence: project-local optional
+      The allow entry "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); $env:PYTHONUTF8 = "1"; $env:PYTHONIOENCODING = "utf-8"; python tests/round-trip-test.py)" Grants access to dump environment variables. Environment variables often contain API keys, tokens, and other secrets.
+      Evidence: PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); $env:PYTHONUTF8 = "1"; $env:PYTHONIOENCODING = "utf-8"; python tests/round-trip-test.py)
+
+    ● Allow rule grants unrestricted network access: Bash(curl *)
+      settings.local.json
+      Runtime confidence: project-local optional
+      The allow entry "Bash(curl *)" Allows unrestricted curl — can exfiltrate data to any URL. Network tools should be restricted to specific hosts or purposes.
+      Evidence: Bash(curl *)
+      Fix: Restrict to specific hosts or use explicit URLs
+
+    ● Hook disables logging: >/dev/null 2>&1
+      hooks\schema-mutation-alarm.sh:36
+      Redirects all output to /dev/null — hides both stdout and stderr. Disabling logging or clearing audit trails in hooks is a defense evasion technique that makes it harder to detect and investigate compromises.
+      Evidence: >/dev/null 2>&1
+
+    ● CLAUDE.md contains URL execution instruction
+      worktrees\architecture-agent-day1\CLAUDE.md:211
+      Found "curl http://localhost:8080/`" — Download instruction in CLAUDE.md — if the agent follows this, it will fetch remote content. A malicious repository could include a CLAUDE.md with instructions to download and run arbitrary code.
+      Evidence: curl http://localhost:8080/`
+
+    ● Overly permissive allow rule: Edit(*)
+      worktrees\architecture-agent-day1\.claude\settings.json
+      Unrestricted Edit access — agent can edit any file
+      Evidence: Edit(*)
+      Fix: Restrict to specific commands: Edit(src/*), Edit(tests/*)
+
+    ● Overly permissive allow rule: Write(*)
+      worktrees\architecture-agent-day1\.claude\settings.json
+      Unrestricted Write access — agent can write to any file
+      Evidence: Write(*)
+      Fix: Restrict to specific commands: Write(src/*), Write(tests/*)
+
+    ● Overly permissive allow rule: Bash(node *)
+      worktrees\architecture-agent-day1\.claude\settings.local.json
+      Runtime confidence: project-local optional
+      Interpreter access — agent can run arbitrary code via scripting language
+      Evidence: Bash(node *)
+      Fix: Restrict to specific commands: Restrict to specific scripts: Bash(node scripts/build.js)
+
+    ● Overly permissive allow rule: Bash(rm -f .claude/state/proposals/decisions-log.ndjson)
+      worktrees\architecture-agent-day1\.claude\settings.local.json
+      Runtime confidence: project-local optional
+      Delete operations explicitly allowed in Bash
+      Evidence: Bash(rm -f .claude/state/proposals/decisions-log.ndjson)
+      Fix: Restrict to specific commands: Move rm commands to deny list instead
+
+    ● Overly permissive allow rule: Bash(rm -f .claude/state/proposals/inbox/*)
+      worktrees\architecture-agent-day1\.claude\settings.local.json
+      Runtime confidence: project-local optional
+      Delete operations explicitly allowed in Bash
+      Evidence: Bash(rm -f .claude/state/proposals/inbox/*)
+      Fix: Restrict to specific commands: Move rm commands to deny list instead
+
+    ● No deny list configured
+      worktrees\architecture-agent-day1\.claude\settings.local.json
+      Runtime confidence: project-local optional
+      settings.json has no deny list. Without explicit denials, the agent may run dangerous operations if the allow list is too broad.
+      Fix: Add a deny list for dangerous operations
+
+    ● Allow rule grants env access: PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); python tests/round-trip-test.py)
+      worktrees\architecture-agent-day1\.claude\settings.local.json
+      Runtime confidence: project-local optional
+      The allow entry "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); python tests/round-trip-test.py)" Grants access to dump environment variables. Environment variables often contain API keys, tokens, and other secrets.
+      Evidence: PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); python tests/round-trip-test.py)
+
+    ● Allow rule grants env access: PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); $env:PYTHONUTF8 = "1"; $env:PYTHONIOENCODING = "utf-8"; python tests/round-trip-test.py)
+      worktrees\architecture-agent-day1\.claude\settings.local.json
+      Runtime confidence: project-local optional
+      The allow entry "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); $env:PYTHONUTF8 = "1"; $env:PYTHONIOENCODING = "utf-8"; python tests/round-trip-test.py)" Grants access to dump environment variables. Environment variables often contain API keys, tokens, and other secrets.
+      Evidence: PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); $env:PYTHONUTF8 = "1"; $env:PYTHONIOENCODING = "utf-8"; python tests/round-trip-test.py)
+
+    ● Allow rule grants unrestricted network access: Bash(curl *)
+      worktrees\architecture-agent-day1\.claude\settings.local.json
+      Runtime confidence: project-local optional
+      The allow entry "Bash(curl *)" Allows unrestricted curl — can exfiltrate data to any URL. Network tools should be restricted to specific hosts or purposes.
+      Evidence: Bash(curl *)
+      Fix: Restrict to specific hosts or use explicit URLs
+
+    ● Hook disables logging: >/dev/null 2>&1
+      worktrees\architecture-agent-day1\.claude\hooks\schema-mutation-alarm.sh:36
+      Redirects all output to /dev/null — hides both stdout and stderr. Disabling logging or clearing audit trails in hooks is a defense evasion technique that makes it harder to detect and investigate compromises.
+      Evidence: >/dev/null 2>&1
+
+    ● CLAUDE.md contains URL execution instruction
+      worktrees\dashboard-banners\CLAUDE.md:211
+      Found "curl http://localhost:8080/`" — Download instruction in CLAUDE.md — if the agent follows this, it will fetch remote content. A malicious repository could include a CLAUDE.md with instructions to download and run arbitrary code.
+      Evidence: curl http://localhost:8080/`
+
+    ● Overly permissive allow rule: Edit(*)
+      worktrees\dashboard-banners\.claude\settings.json
+      Unrestricted Edit access — agent can edit any file
+      Evidence: Edit(*)
+      Fix: Restrict to specific commands: Edit(src/*), Edit(tests/*)
+
+    ● Overly permissive allow rule: Write(*)
+      worktrees\dashboard-banners\.claude\settings.json
+      Unrestricted Write access — agent can write to any file
+      Evidence: Write(*)
+      Fix: Restrict to specific commands: Write(src/*), Write(tests/*)
+
+    ● Overly permissive allow rule: Bash(node *)
+      worktrees\dashboard-banners\.claude\settings.local.json
+      Runtime confidence: project-local optional
+      Interpreter access — agent can run arbitrary code via scripting language
+      Evidence: Bash(node *)
+      Fix: Restrict to specific commands: Restrict to specific scripts: Bash(node scripts/build.js)
+
+    ● Overly permissive allow rule: Bash(rm -f .claude/state/proposals/decisions-log.ndjson)
+      worktrees\dashboard-banners\.claude\settings.local.json
+      Runtime confidence: project-local optional
+      Delete operations explicitly allowed in Bash
+      Evidence: Bash(rm -f .claude/state/proposals/decisions-log.ndjson)
+      Fix: Restrict to specific commands: Move rm commands to deny list instead
+
+    ● Overly permissive allow rule: Bash(rm -f .claude/state/proposals/inbox/*)
+      worktrees\dashboard-banners\.claude\settings.local.json
+      Runtime confidence: project-local optional
+      Delete operations explicitly allowed in Bash
+      Evidence: Bash(rm -f .claude/state/proposals/inbox/*)
+      Fix: Restrict to specific commands: Move rm commands to deny list instead
+
+    ● No deny list configured
+      worktrees\dashboard-banners\.claude\settings.local.json
+      Runtime confidence: project-local optional
+      settings.json has no deny list. Without explicit denials, the agent may run dangerous operations if the allow list is too broad.
+      Fix: Add a deny list for dangerous operations
+
+    ● Allow rule grants env access: PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); python tests/round-trip-test.py)
+      worktrees\dashboard-banners\.claude\settings.local.json
+      Runtime confidence: project-local optional
+      The allow entry "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); python tests/round-trip-test.py)" Grants access to dump environment variables. Environment variables often contain API keys, tokens, and other secrets.
+      Evidence: PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); python tests/round-trip-test.py)
+
+    ● Allow rule grants env access: PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); $env:PYTHONUTF8 = "1"; $env:PYTHONIOENCODING = "utf-8"; python tests/round-trip-test.py)
+      worktrees\dashboard-banners\.claude\settings.local.json
+      Runtime confidence: project-local optional
+      The allow entry "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); $env:PYTHONUTF8 = "1"; $env:PYTHONIOENCODING = "utf-8"; python tests/round-trip-test.py)" Grants access to dump environment variables. Environment variables often contain API keys, tokens, and other secrets.
+      Evidence: PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); $env:PYTHONUTF8 = "1"; $env:PYTHONIOENCODING = "utf-8"; python tests/round-trip-test.py)
+
+    ● Allow rule grants unrestricted network access: Bash(curl *)
+      worktrees\dashboard-banners\.claude\settings.local.json
+      Runtime confidence: project-local optional
+      The allow entry "Bash(curl *)" Allows unrestricted curl — can exfiltrate data to any URL. Network tools should be restricted to specific hosts or purposes.
+      Evidence: Bash(curl *)
+      Fix: Restrict to specific hosts or use explicit URLs
+
+    ● Hook disables logging: >/dev/null 2>&1
+      worktrees\dashboard-banners\.claude\hooks\schema-mutation-alarm.sh:36
+      Redirects all output to /dev/null — hides both stdout and stderr. Disabling logging or clearing audit trails in hooks is a defense evasion technique that makes it harder to detect and investigate compromises.
+      Evidence: >/dev/null 2>&1
+
+  ● MEDIUM (144)
+
+    ● Missing deny rule: Privilege escalation
+      settings.json
+      The deny list does not block "sudo". Consider adding it to prevent privilege escalation.
+
+    ● Missing deny rule: World-writable permissions
+      settings.json
+      The deny list does not block "chmod 777". Consider adding it to prevent world-writable permissions.
+
+    ● Missing deny rule: SSH connections from agent
+      settings.json
+      The deny list does not block "ssh". Consider adding it to prevent ssh connections from agent.
+
+    ● Missing deny rule: Writing to device files
+      settings.json
+      The deny list does not block "> /dev/". Consider adding it to prevent writing to device files.
+
+    ● Overly permissive allow rule: Bash(curl *)
+      settings.local.json
+      Runtime confidence: project-local optional
+      Unrestricted curl access — agent can make arbitrary HTTP requests
+      Evidence: Bash(curl *)
+      Fix: Restrict to specific commands: Restrict to specific domains or move to deny list
+
+    ● No PreToolUse security hooks configured
+      settings.local.json
+      Runtime confidence: project-local optional
+      No PreToolUse hooks are defined. These hooks can catch dangerous operations before they run, providing an essential security layer.
+      Fix: Add PreToolUse hooks for security-sensitive operations
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-audit-protocol.APPROVAL.md
+      The skill "parbaughs-audit-protocol.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-audit-protocol.APPROVAL.md
+      The skill "parbaughs-audit-protocol.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-audit-protocol.md
+      The skill "parbaughs-audit-protocol" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-audit-protocol.md
+      The skill "parbaughs-audit-protocol" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-caddy-notes-classifier.APPROVAL.md
+      The skill "parbaughs-caddy-notes-classifier.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-caddy-notes-classifier.APPROVAL.md
+      The skill "parbaughs-caddy-notes-classifier.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-caddy-notes-classifier.md
+      The skill "parbaughs-caddy-notes-classifier" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-caddy-notes-classifier.md
+      The skill "parbaughs-caddy-notes-classifier" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-critic-checklist.APPROVAL.md
+      The skill "parbaughs-critic-checklist.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-critic-checklist.APPROVAL.md
+      The skill "parbaughs-critic-checklist.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-critic-checklist.md
+      The skill "parbaughs-critic-checklist" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-critic-checklist.md
+      The skill "parbaughs-critic-checklist" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-cross-surface-dependency-audit.APPROVAL.md
+      The skill "parbaughs-cross-surface-dependency-audit.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-cross-surface-dependency-audit.APPROVAL.md
+      The skill "parbaughs-cross-surface-dependency-audit.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-cross-surface-dependency-audit.md
+      The skill "parbaughs-cross-surface-dependency-audit" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-cross-surface-dependency-audit.md
+      The skill "parbaughs-cross-surface-dependency-audit" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-design-bot.md
+      The skill "design-bot-v2" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-design-bot.md
+      The skill "design-bot-v2" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-firestore-writer-audit.APPROVAL.md
+      The skill "parbaughs-firestore-writer-audit.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-firestore-writer-audit.APPROVAL.md
+      The skill "parbaughs-firestore-writer-audit.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-firestore-writer-audit.md
+      The skill "parbaughs-firestore-writer-audit" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-firestore-writer-audit.md
+      The skill "parbaughs-firestore-writer-audit" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-namespace-collision-check.APPROVAL.md
+      The skill "parbaughs-namespace-collision-check.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-namespace-collision-check.APPROVAL.md
+      The skill "parbaughs-namespace-collision-check.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-namespace-collision-check.md
+      The skill "parbaughs-namespace-collision-check" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-namespace-collision-check.md
+      The skill "parbaughs-namespace-collision-check" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-ship-planner.APPROVAL.md
+      The skill "parbaughs-ship-planner.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-ship-planner.APPROVAL.md
+      The skill "parbaughs-ship-planner.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-ship-planner.md
+      The skill "parbaughs-ship-planner" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-ship-planner.md
+      The skill "parbaughs-ship-planner" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-smoke-failure-triage.APPROVAL.md
+      The skill "parbaughs-smoke-failure-triage.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-smoke-failure-triage.APPROVAL.md
+      The skill "parbaughs-smoke-failure-triage.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-smoke-failure-triage.md
+      The skill "parbaughs-smoke-failure-triage" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-smoke-failure-triage.md
+      The skill "parbaughs-smoke-failure-triage" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-version-triple-bumper.APPROVAL.md
+      The skill "parbaughs-version-triple-bumper.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-version-triple-bumper.APPROVAL.md
+      The skill "parbaughs-version-triple-bumper.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-version-triple-bumper.md
+      The skill "parbaughs-version-triple-bumper" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-version-triple-bumper.md
+      The skill "parbaughs-version-triple-bumper" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-visual-verification-protocol.APPROVAL.md
+      The skill "parbaughs-visual-verification-protocol.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-visual-verification-protocol.APPROVAL.md
+      The skill "parbaughs-visual-verification-protocol.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      skills\parbaughs-visual-verification-protocol.md
+      The skill "parbaughs-visual-verification-protocol" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      skills\parbaughs-visual-verification-protocol.md
+      The skill "parbaughs-visual-verification-protocol" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Missing deny rule: Privilege escalation
+      worktrees\architecture-agent-day1\.claude\settings.json
+      The deny list does not block "sudo". Consider adding it to prevent privilege escalation.
+
+    ● Missing deny rule: World-writable permissions
+      worktrees\architecture-agent-day1\.claude\settings.json
+      The deny list does not block "chmod 777". Consider adding it to prevent world-writable permissions.
+
+    ● Missing deny rule: SSH connections from agent
+      worktrees\architecture-agent-day1\.claude\settings.json
+      The deny list does not block "ssh". Consider adding it to prevent ssh connections from agent.
+
+    ● Missing deny rule: Writing to device files
+      worktrees\architecture-agent-day1\.claude\settings.json
+      The deny list does not block "> /dev/". Consider adding it to prevent writing to device files.
+
+    ● Overly permissive allow rule: Bash(curl *)
+      worktrees\architecture-agent-day1\.claude\settings.local.json
+      Runtime confidence: project-local optional
+      Unrestricted curl access — agent can make arbitrary HTTP requests
+      Evidence: Bash(curl *)
+      Fix: Restrict to specific commands: Restrict to specific domains or move to deny list
+
+    ● No PreToolUse security hooks configured
+      worktrees\architecture-agent-day1\.claude\settings.local.json
+      Runtime confidence: project-local optional
+      No PreToolUse hooks are defined. These hooks can catch dangerous operations before they run, providing an essential security layer.
+      Fix: Add PreToolUse hooks for security-sensitive operations
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-audit-protocol.APPROVAL.md
+      The skill "parbaughs-audit-protocol.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-audit-protocol.APPROVAL.md
+      The skill "parbaughs-audit-protocol.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-audit-protocol.md
+      The skill "parbaughs-audit-protocol" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-audit-protocol.md
+      The skill "parbaughs-audit-protocol" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-caddy-notes-classifier.APPROVAL.md
+      The skill "parbaughs-caddy-notes-classifier.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-caddy-notes-classifier.APPROVAL.md
+      The skill "parbaughs-caddy-notes-classifier.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-caddy-notes-classifier.md
+      The skill "parbaughs-caddy-notes-classifier" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-caddy-notes-classifier.md
+      The skill "parbaughs-caddy-notes-classifier" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-critic-checklist.APPROVAL.md
+      The skill "parbaughs-critic-checklist.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-critic-checklist.APPROVAL.md
+      The skill "parbaughs-critic-checklist.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-critic-checklist.md
+      The skill "parbaughs-critic-checklist" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-critic-checklist.md
+      The skill "parbaughs-critic-checklist" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-cross-surface-dependency-audit.APPROVAL.md
+      The skill "parbaughs-cross-surface-dependency-audit.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-cross-surface-dependency-audit.APPROVAL.md
+      The skill "parbaughs-cross-surface-dependency-audit.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-cross-surface-dependency-audit.md
+      The skill "parbaughs-cross-surface-dependency-audit" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-cross-surface-dependency-audit.md
+      The skill "parbaughs-cross-surface-dependency-audit" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-design-bot.md
+      The skill "design-bot-v2" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-design-bot.md
+      The skill "design-bot-v2" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-firestore-writer-audit.APPROVAL.md
+      The skill "parbaughs-firestore-writer-audit.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-firestore-writer-audit.APPROVAL.md
+      The skill "parbaughs-firestore-writer-audit.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-firestore-writer-audit.md
+      The skill "parbaughs-firestore-writer-audit" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-firestore-writer-audit.md
+      The skill "parbaughs-firestore-writer-audit" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-namespace-collision-check.APPROVAL.md
+      The skill "parbaughs-namespace-collision-check.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-namespace-collision-check.APPROVAL.md
+      The skill "parbaughs-namespace-collision-check.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-namespace-collision-check.md
+      The skill "parbaughs-namespace-collision-check" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-namespace-collision-check.md
+      The skill "parbaughs-namespace-collision-check" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-ship-planner.APPROVAL.md
+      The skill "parbaughs-ship-planner.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-ship-planner.APPROVAL.md
+      The skill "parbaughs-ship-planner.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-ship-planner.md
+      The skill "parbaughs-ship-planner" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-ship-planner.md
+      The skill "parbaughs-ship-planner" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-smoke-failure-triage.APPROVAL.md
+      The skill "parbaughs-smoke-failure-triage.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-smoke-failure-triage.APPROVAL.md
+      The skill "parbaughs-smoke-failure-triage.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-smoke-failure-triage.md
+      The skill "parbaughs-smoke-failure-triage" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-smoke-failure-triage.md
+      The skill "parbaughs-smoke-failure-triage" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-version-triple-bumper.APPROVAL.md
+      The skill "parbaughs-version-triple-bumper.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-version-triple-bumper.APPROVAL.md
+      The skill "parbaughs-version-triple-bumper.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-version-triple-bumper.md
+      The skill "parbaughs-version-triple-bumper" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-version-triple-bumper.md
+      The skill "parbaughs-version-triple-bumper" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-visual-verification-protocol.APPROVAL.md
+      The skill "parbaughs-visual-verification-protocol.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-visual-verification-protocol.APPROVAL.md
+      The skill "parbaughs-visual-verification-protocol.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-visual-verification-protocol.md
+      The skill "parbaughs-visual-verification-protocol" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\architecture-agent-day1\.claude\skills\parbaughs-visual-verification-protocol.md
+      The skill "parbaughs-visual-verification-protocol" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Missing deny rule: Privilege escalation
+      worktrees\dashboard-banners\.claude\settings.json
+      The deny list does not block "sudo". Consider adding it to prevent privilege escalation.
+
+    ● Missing deny rule: World-writable permissions
+      worktrees\dashboard-banners\.claude\settings.json
+      The deny list does not block "chmod 777". Consider adding it to prevent world-writable permissions.
+
+    ● Missing deny rule: SSH connections from agent
+      worktrees\dashboard-banners\.claude\settings.json
+      The deny list does not block "ssh". Consider adding it to prevent ssh connections from agent.
+
+    ● Missing deny rule: Writing to device files
+      worktrees\dashboard-banners\.claude\settings.json
+      The deny list does not block "> /dev/". Consider adding it to prevent writing to device files.
+
+    ● Overly permissive allow rule: Bash(curl *)
+      worktrees\dashboard-banners\.claude\settings.local.json
+      Runtime confidence: project-local optional
+      Unrestricted curl access — agent can make arbitrary HTTP requests
+      Evidence: Bash(curl *)
+      Fix: Restrict to specific commands: Restrict to specific domains or move to deny list
+
+    ● No PreToolUse security hooks configured
+      worktrees\dashboard-banners\.claude\settings.local.json
+      Runtime confidence: project-local optional
+      No PreToolUse hooks are defined. These hooks can catch dangerous operations before they run, providing an essential security layer.
+      Fix: Add PreToolUse hooks for security-sensitive operations
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-audit-protocol.APPROVAL.md
+      The skill "parbaughs-audit-protocol.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-audit-protocol.APPROVAL.md
+      The skill "parbaughs-audit-protocol.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-audit-protocol.md
+      The skill "parbaughs-audit-protocol" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-audit-protocol.md
+      The skill "parbaughs-audit-protocol" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-caddy-notes-classifier.APPROVAL.md
+      The skill "parbaughs-caddy-notes-classifier.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-caddy-notes-classifier.APPROVAL.md
+      The skill "parbaughs-caddy-notes-classifier.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-caddy-notes-classifier.md
+      The skill "parbaughs-caddy-notes-classifier" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-caddy-notes-classifier.md
+      The skill "parbaughs-caddy-notes-classifier" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-critic-checklist.APPROVAL.md
+      The skill "parbaughs-critic-checklist.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-critic-checklist.APPROVAL.md
+      The skill "parbaughs-critic-checklist.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-critic-checklist.md
+      The skill "parbaughs-critic-checklist" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-critic-checklist.md
+      The skill "parbaughs-critic-checklist" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-cross-surface-dependency-audit.APPROVAL.md
+      The skill "parbaughs-cross-surface-dependency-audit.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-cross-surface-dependency-audit.APPROVAL.md
+      The skill "parbaughs-cross-surface-dependency-audit.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-cross-surface-dependency-audit.md
+      The skill "parbaughs-cross-surface-dependency-audit" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-cross-surface-dependency-audit.md
+      The skill "parbaughs-cross-surface-dependency-audit" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-design-bot.md
+      The skill "design-bot-v2" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-design-bot.md
+      The skill "design-bot-v2" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-firestore-writer-audit.APPROVAL.md
+      The skill "parbaughs-firestore-writer-audit.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-firestore-writer-audit.APPROVAL.md
+      The skill "parbaughs-firestore-writer-audit.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-firestore-writer-audit.md
+      The skill "parbaughs-firestore-writer-audit" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-firestore-writer-audit.md
+      The skill "parbaughs-firestore-writer-audit" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-namespace-collision-check.APPROVAL.md
+      The skill "parbaughs-namespace-collision-check.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-namespace-collision-check.APPROVAL.md
+      The skill "parbaughs-namespace-collision-check.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-namespace-collision-check.md
+      The skill "parbaughs-namespace-collision-check" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-namespace-collision-check.md
+      The skill "parbaughs-namespace-collision-check" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-ship-planner.APPROVAL.md
+      The skill "parbaughs-ship-planner.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-ship-planner.APPROVAL.md
+      The skill "parbaughs-ship-planner.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-ship-planner.md
+      The skill "parbaughs-ship-planner" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-ship-planner.md
+      The skill "parbaughs-ship-planner" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-smoke-failure-triage.APPROVAL.md
+      The skill "parbaughs-smoke-failure-triage.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-smoke-failure-triage.APPROVAL.md
+      The skill "parbaughs-smoke-failure-triage.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-smoke-failure-triage.md
+      The skill "parbaughs-smoke-failure-triage" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-smoke-failure-triage.md
+      The skill "parbaughs-smoke-failure-triage" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-version-triple-bumper.APPROVAL.md
+      The skill "parbaughs-version-triple-bumper.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-version-triple-bumper.APPROVAL.md
+      The skill "parbaughs-version-triple-bumper.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-version-triple-bumper.md
+      The skill "parbaughs-version-triple-bumper" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-version-triple-bumper.md
+      The skill "parbaughs-version-triple-bumper" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-visual-verification-protocol.APPROVAL.md
+      The skill "parbaughs-visual-verification-protocol.APPROVAL" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-visual-verification-protocol.APPROVAL.md
+      The skill "parbaughs-visual-verification-protocol.APPROVAL" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+    ● Skill is missing observation hooks and feedback hooks
+      worktrees\dashboard-banners\.claude\skills\parbaughs-visual-verification-protocol.md
+      The skill "parbaughs-visual-verification-protocol" does not define observation hooks and feedback hooks in SKILL.md. ECC 2.0 self-improving skills need explicit observe/feedback hooks so runs can be inspected and amended safely.
+      Evidence: observation hooks and feedback hooks
+
+    ● Skill is missing version metadata and rollback metadata
+      worktrees\dashboard-banners\.claude\skills\parbaughs-visual-verification-protocol.md
+      The skill "parbaughs-visual-verification-protocol" does not define version metadata and rollback metadata. Self-amending skills need explicit version and rollback markers so regressions can be evaluated and reversed.
+      Evidence: version metadata and rollback metadata
+
+  ● LOW (3)
+
+    ● No Stop hooks for session-end verification
+      settings.json
+      Hooks are configured but no Stop hooks exist. Stop hooks run when a session ends and are useful for final verification — checking for uncommitted secrets, ensuring console.log statements were removed, or auditing file changes.
+      Fix: Add a Stop hook for session-end checks
+
+    ● No Stop hooks for session-end verification
+      worktrees\architecture-agent-day1\.claude\settings.json
+      Hooks are configured but no Stop hooks exist. Stop hooks run when a session ends and are useful for final verification — checking for uncommitted secrets, ensuring console.log statements were removed, or auditing file changes.
+      Fix: Add a Stop hook for session-end checks
+
+    ● No Stop hooks for session-end verification
+      worktrees\dashboard-banners\.claude\settings.json
+      Hooks are configured but no Stop hooks exist. Stop hooks run when a session ends and are useful for final verification — checking for uncommitted secrets, ensuring console.log statements were removed, or auditing file changes.
+      Fix: Add a Stop hook for session-end checks
+
+  ○ INFO (5)
+
+    ○ Prohibition of --no-verify (good practice)
+      hooks\secrets-scanner.sh:106
+      Found "--no-verify" in a negated/prohibitive context. This is correct — the config is telling the agent NOT to use this flag.
+      Evidence: --no-verify
+
+    ○ Prohibition of --no-verify (good practice)
+      worktrees\architecture-agent-day1\CLAUDE.md:958
+      Found "--no-verify" in a negated/prohibitive context. This is correct — the config is telling the agent NOT to use this flag.
+      Evidence: --no-verify
+
+    ○ Prohibition of --no-verify (good practice)
+      worktrees\architecture-agent-day1\.claude\hooks\secrets-scanner.sh:106
+      Found "--no-verify" in a negated/prohibitive context. This is correct — the config is telling the agent NOT to use this flag.
+      Evidence: --no-verify
+
+    ○ Prohibition of --no-verify (good practice)
+      worktrees\dashboard-banners\CLAUDE.md:958
+      Found "--no-verify" in a negated/prohibitive context. This is correct — the config is telling the agent NOT to use this flag.
+      Evidence: --no-verify
+
+    ○ Prohibition of --no-verify (good practice)
+      worktrees\dashboard-banners\.claude\hooks\secrets-scanner.sh:106
+      Found "--no-verify" in a negated/prohibitive context. This is correct — the config is telling the agent NOT to use this flag.
+      Evidence: --no-verify
+
+  ─────────────────────────────────────────
+  AgentShield — Security auditor for AI agent configs
+

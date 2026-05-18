@@ -1,0 +1,70 @@
+# Pre-install user-config snapshot — 2026-05-18T13:10:24-04:00
+# Snapshots ~/.claude/agents/, /skills/, /commands/, /rules/ before ECC install
+
+## ~/.claude/agents/:
+ls: cannot access '/c/Users/Zach/.claude/agents/': No such file or directory
+
+## ~/.claude/skills/ (top-level):
+total 20
+drwxr-xr-x 1 Zach 197121 0 May 14 18:02 .
+drwxr-xr-x 1 Zach 197121 0 May 18 13:06 ..
+drwxr-xr-x 1 Zach 197121 0 May 14 16:42 anthropic-skills-checkout
+drwxr-xr-x 1 Zach 197121 0 May 14 16:42 canvas-design
+drwxr-xr-x 1 Zach 197121 0 May 14 18:03 continuation-discipline
+drwxr-xr-x 1 Zach 197121 0 May 14 13:25 dream
+drwxr-xr-x 1 Zach 197121 0 May 14 16:42 frontend-design
+drwxr-xr-x 1 Zach 197121 0 May 14 16:42 theme-factory
+drwxr-xr-x 1 Zach 197121 0 May 14 16:42 webapp-testing
+
+## ~/.claude/commands/:
+ls: cannot access '/c/Users/Zach/.claude/commands/': No such file or directory
+
+## ~/.claude/rules/:
+ls: cannot access '/c/Users/Zach/.claude/rules/': No such file or directory
+
+## ~/.claude/ top-level (all):
+total 386
+drwxr-xr-x 1 Zach 197121      0 May 18 13:06 .
+drwxr-xr-x 1 Zach 197121      0 May 18 13:07 ..
+-rw-r--r-- 1 Zach 197121    471 May 18 12:32 .credentials.json
+-rw-r--r-- 1 Zach 197121     24 May 18 12:42 .last-cleanup
+drwxr-xr-x 1 Zach 197121      0 May 18 13:06 backups
+drwxr-xr-x 1 Zach 197121      0 Apr 16 15:24 cache
+drwxr-xr-x 1 Zach 197121      0 May 14 22:30 daemon
+-rw-r--r-- 1 Zach 197121   2727 May 14 22:30 daemon.log
+drwxr-xr-x 1 Zach 197121      0 Apr 16 15:35 debug
+drwxr-xr-x 1 Zach 197121      0 May 18 12:42 file-history
+-rw-r--r-- 1 Zach 197121 153282 May 18 13:06 history.jsonl
+drwxr-xr-x 1 Zach 197121      0 May 14 19:37 jobs
+-rw-r--r-- 1 Zach 197121     94 May 18 12:32 mcp-needs-auth-cache.json
+drwxr-xr-x 1 Zach 197121      0 May 18 13:06 paste-cache
+drwxr-xr-x 1 Zach 197121      0 May 18 12:33 plugins
+-rw-r--r-- 1 Zach 197121    125 May 18 12:32 policy-limits.json
+drwxr-xr-x 1 Zach 197121      0 May 18 12:42 projects
+-rw-r--r-- 1 Zach 197121     29 May 11 20:27 remote-settings.json
+drwxr-xr-x 1 Zach 197121      0 May 18 13:06 session-env
+drwxr-xr-x 1 Zach 197121      0 May 18 12:32 sessions
+-rw-r--r-- 1 Zach 197121    205 May 18 12:32 settings.json
+drwxr-xr-x 1 Zach 197121      0 May 18 13:06 shell-snapshots
+drwxr-xr-x 1 Zach 197121      0 May 14 18:02 skills
+drwxr-xr-x 1 Zach 197121      0 Jan 10 11:38 statsig
+drwxr-xr-x 1 Zach 197121      0 May 18 13:07 tasks
+drwxr-xr-x 1 Zach 197121      0 May 16 11:56 telemetry
+
+## Disk usage by subdirectory:
+2.0K	/c/Users/Zach/.claude/statsig/
+4.0K	/c/Users/Zach/.claude/debug/
+4.0K	/c/Users/Zach/.claude/telemetry/
+5.0K	/c/Users/Zach/.claude/sessions/
+10K	/c/Users/Zach/.claude/daemon/
+12K	/c/Users/Zach/.claude/session-env/
+32K	/c/Users/Zach/.claude/shell-snapshots/
+77K	/c/Users/Zach/.claude/jobs/
+144K	/c/Users/Zach/.claude/backups/
+299K	/c/Users/Zach/.claude/tasks/
+304K	/c/Users/Zach/.claude/cache/
+3.1M	/c/Users/Zach/.claude/paste-cache/
+6.4M	/c/Users/Zach/.claude/plugins/
+15M	/c/Users/Zach/.claude/skills/
+38M	/c/Users/Zach/.claude/file-history/
+136M	/c/Users/Zach/.claude/projects/
