@@ -1,17 +1,17 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-18T17:42:13Z",
-  "generated_at": "2026-05-18T17:42:13Z",
+  "timestamp": "2026-05-18T17:52:13Z",
+  "generated_at": "2026-05-18T17:52:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
   "summary": "watcher cycling · applies blocked (10 skips on dirty tree) · 31 in inbox",
-  "as_of": "2026-05-18T17:40:49Z",
+  "as_of": "2026-05-18T17:50:49Z",
   "stale": false,
   "age_hours": 0.02333333333333333,
   "counts": {
-    "proposals_pending": 0,
+    "proposals_pending": 1,
     "proposals_approved": 9,
     "proposals_deferred": 0,
     "proposals_rejected": 0,
@@ -31,23 +31,23 @@
     {
       "category": "stall",
       "status": "skip-dirty",
+      "name": "2026-05-18T17-50-49Z-downloads-watcher.log",
+      "note": "[17:50:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-18/DATA-TRUTH-MATRIX.md, .claude/state/dashboard-health/post-commit-hook.log",
+      "when": "2026-05-18T17:50:49Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-18T17-45-49Z-downloads-watcher.log",
+      "note": "[17:45:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-health/post-commit-hook.log",
+      "when": "2026-05-18T17:45:49Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
       "name": "2026-05-18T17-40-49Z-downloads-watcher.log",
       "note": "[17:40:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-health/post-commit-hook.log",
       "when": "2026-05-18T17:40:49Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-18T17-35-49Z-downloads-watcher.log",
-      "note": "[17:35:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-health/post-commit-hook.log",
-      "when": "2026-05-18T17:35:49Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-18T17-30-49Z-downloads-watcher.log",
-      "note": "[17:30:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-health/post-commit-hook.log",
-      "when": "2026-05-18T17:30:49Z"
     }
   ],
   "links": [

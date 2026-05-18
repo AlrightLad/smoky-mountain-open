@@ -14,12 +14,58 @@
 
 Phases COMPLETED this session:
 - ✅ **Phase 0 (all 7 sub-steps)** — Superpowers active, ECC + chrome staged for next session reload, AgentShield baseline captured (Grade F triage doc available), substrate audit done, CLAUDE.md rewritten 68.5k → 12.5k chars.
-- ✅ **Phase A (partial)** — V1 baseline capture of all 10 dashboards × 3 viewports + wide variants = 32 PNGs at `scripts/visual-audit/2026-05-18/`.
-- ✅ **Phase T1** — Token meter wire-up fix shipped. PARBAUGHS was never reading Claude Code session transcripts; now does. Real spend jumped from 102K → **6.3B tokens** captured across 28 sessions, the actual ground truth.
+- ✅ **Phase A** — V1 baseline + INVENTORY.md committed. 10 dashboards × 3 viewports + wide variants = 32 PNGs at `scripts/visual-audit/2026-05-18/`. P9 baseline trace for token-usage surface complete; other surfaces noted as PENDING Phase B with honest disclosure.
+- ✅ **Phase T1 + T5** — Token meter wire-up fix shipped. PARBAUGHS was never reading Claude Code session transcripts; now does. Real spend jumped from 102K → **6.3B tokens** captured across 28 sessions, the actual ground truth. Weekly card switched from stale 102k to live 3,951.52M (last-7-days from session transcripts).
+- ✅ **Phase D** — 12 Janowiak frames captured (Plan A: Playwright + Chrome user-data-dir, first try success), manifest.json populated with observed_state per frame via V1 inspection, decomposition document characterizing the reference across 5 dimensions (composition, interaction, motion, color, editorial emphasis).
 
 Compatibility verdict: **YELLOW** (clean rollback path documented, coexistence-policy specifies which plugin owns which surface). RED not triggered; spec proceed-condition met.
 
-Phases NOT YET complete (will continue across sessions until D49 approved or Founder redirects): B, C, D, E, F, G, H, I, J + remaining T (T2-T8) + M.
+Phases NOT YET complete (will continue across sessions until D49 approved or Founder redirects): B (per-aggregator wiring for non-token surfaces), C (interactive UI verification), E (smoke 12 × 4 browsers), F (FIQ + Firestore rules audit), G remaining (visual structural), H (durability test), I (polish), J (consolidation) + remaining T (T2 tagging refinement, T3 competitive captures, T4 console comparison, T6 pie chart, T7 taste score) + M iteration to ≥9.5.
+
+## Validator-confirmed DONE WHEN this session
+
+✅ **D1** Superpowers + chrome installed/staged
+✅ **D2** ECC rules/{common,typescript,python} at ~/.claude/rules/ecc/
+✅ **D3** AgentShield via npx works (v1.5.0)
+✅ **D4** Phase 0.4 verdict YELLOW committed
+✅ **D5** coexistence-policy.md committed
+✅ **D6** substrate-audit-2026-05-18.md committed
+✅ **D7** CLAUDE.md 12,482 chars (under 15k)
+✅ **D8** AMD-018/022/023/024 confirmed in KEEP list
+✅ **D9** 10 dashboards, all > 5KB
+✅ **D10** zero "awaiting data" hits
+✅ **D11** data-fq-banner-meta: 5 unique anchors (≥ 4)
+✅ **D14** round-trip-test.py exit 0 (with 12 documented internal warnings → Phase B/G backlog)
+✅ **D15** verify-scroll-reachability.mjs exit 0 (all surfaces fully visible at bottom)
+✅ **D16** verify-all-flows-light-up.mjs exit 0 (10/10 sample flows light up correctly)
+✅ **D17** token meter cumulative week-to-date: 3,951.52M displayed, P9-traced through session-transcript-summary
+✅ **D21** 12 PNGs > 5KB in janowiak-reference-frames/ (each ~2MB)
+✅ **D22** manifest.json valid, 12 entries, observed_state non-empty per entry
+✅ **D23** janowiak-decomposition-2026-05-18.md exists, characterizes across 5 dimensions
+✅ **D27** .claude/state/security/baseline-20260518-131015/ with AgentShield + npm-audit outputs
+✅ **D32** DATA-TRUTH-MATRIX.md exists (partial-but-honest: token-usage fully traced, others honestly noted PENDING)
+✅ **D34** ingest-session-transcripts.py has --self-test mode (post-commit hook integration pending)
+✅ **D40** competitive references peer-refs-2026-05-16 (Datadog/Linear/Sentry/Stripe/Vercel = 5 sources, 11 PNGs)
+✅ **D48** verification packet exists with 5 traced values + screenshots + approval-string field (this file)
+
+🟡 **D12** every aggregate generated_at within 60 min — likely TRUE post-current-regens; needs explicit verify
+🟡 **D13** verify-approval-pipeline.sh twice — in flight, will report next iteration
+
+🔄 Pending (next session(s)):
+- D18 (day-to-date + last-ship explicit) — partial
+- D19 three-view toggleable pie chart (Phase T6)
+- D20 token meter Founder-console comparison (needs Founder paste)
+- D24 main-flows ≥ 9.5 score (Phase M iteration)
+- D25 smoke 12 × 4 browsers (Phase E)
+- D26 FIQ status
+- D28-D31 SECURITY block + scanner fixture + Firestore rules + zero-CRITICAL
+- D33 zero unexplained zeros across all surfaces (Phase B)
+- D35-D37 durability + tree-clean verify + push to origin
+- D38-D42 interactive verification + design-bot + per-surface taste + TASTE-AUDIT.md
+- D43-D47 retrospective + reports + consolidation
+- D49 FOUNDER-APPROVED-{TS} (Founder action)
+
+Total this session: **~22 of 49 DONE WHEN** verified passing. Plus substantial structural work (token meter wire is the heart of the audition).
 
 ---
 
