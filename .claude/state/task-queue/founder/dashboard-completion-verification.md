@@ -166,6 +166,87 @@ The agent will continue making progress on remaining phases across subsequent se
 
 ---
 
+## ⚠ Honest disclosure — dashboard.html P9 gap discovered post-T1
+
+V1 inspection of `docs/reports/dashboard.html` (the main dashboard at the directory root) shows widespread `0` / `—` / "Loading..." across ~15 banner cards (Amendments Pending, Bubbles Flagged, Proposals Pending, Test Health, Security Health, Approvals Pipeline, Architecture Review, Round-Trip Last Pass, Working Tree, Active Halts, Tokens This Week, etc.).
+
+This is a P9.2 violation across cross-surface data. The underlying aggregate JSONs DO have data (token-usage-snapshot.json shows 6.31B real; security-health.json has a fresh status; etc.), but the main dashboard's consumer JS isn't reading from the same sources OR has silent fallback-to-zero paths.
+
+This is **NOT a regression introduced by this session's work** — the dashboard's structural data flow predates Phase T1. But T1's surfacing of session-transcript truth has made the cross-surface inconsistency more visible: `token-usage.html` correctly shows 6.3B; `dashboard.html` shows 0 for the same metric.
+
+**Phase B (priority)** in the prioritized remaining-work list closes this. It's the largest single P9 gap.
+
+## What to verify visually (under 5 minutes total)
+
+These are the five visible things to look at in a browser. None require engineering judgment.
+
+### 1. Token meter (open `docs/reports/token-usage.html`)
+
+Look at the three KPI cards at the top:
+- **METER STATUS: LIVE** + `sidecar fresh (~Nm ago)` — the agent says live data is flowing.
+- **WEEKLY TOKENS (LIVE): 3,951.52M** + `last 7 days · session transcripts (real)` — the agent says this is the actual sum of Claude tokens consumed in the last 7 days, derived from Claude Code's own session transcripts.
+- **ORG MONTHLY: 6,318.30M** + `estimated all-time · no org-monthly cap configured` — honest fallback (no monthly cap is set, so this shows all-time instead).
+
+**Visually check:** numbers are in the BILLIONS / hundreds-of-millions, not 102k. If you see 102k anywhere, the wire broke. If you see "no data" anywhere, that's a stale rendering that should be re-regenerated.
+
+> **Compare against your Anthropic console** (https://console.anthropic.com/settings/usage) — does the 3.95B weekly roughly track your actual paid usage? It will be HIGHER than billed-tokens because raw token sum includes cache reads (10x cheaper than uncached input). Phase T6 will add cost-weighted display.
+
+### 2. Dashboard cards across surfaces
+
+`docs/reports/index.html` is the directory. Open each linked dashboard and scan for:
+- Big numbers that look reasonable (not all zeros)
+- "Awaiting data..." text — should NOT appear anywhere (confirmed: 0 hits in current state)
+- Stale dates older than today — flag if you see any "Refreshed N days ago" beyond ~1 hour
+
+### 3. CLAUDE.md size
+
+`wc -c CLAUDE.md` → 12,482 chars. Open it; confirm:
+- Identity, three-agent workflow, AMD-018 11-gate are all present
+- The detail you need is accessible via pointers (not deleted, just moved to `.claude/state/` and `docs/`)
+
+### 4. Verification packet (this file)
+
+Confirm the 5 traced values listed above the visual section are values you can actually check. If anything is too engineering-y, redirect.
+
+### 5. Janowiak reference (decomposition + frames)
+
+`.claude/state/main-flows-v2/janowiak-decomposition-2026-05-18.md` — read the senior-designer takeaway at the bottom. That's what main-flows.html will be measured against in subsequent ships.
+
+Frames at `.claude/state/main-flows-v2/janowiak-reference-frames/frame-{01..12}-t*.png` (~24MB total).
+
+## Prioritized remaining work (next sessions)
+
+Highest leverage to ship next (per Founder priority):
+
+### Tier 1 — Closes most user-visible gaps
+- **Phase T6** — three-view toggleable pie chart (agent role / work category / session). The current donut chart is single-view; spec calls for three views.
+- **Phase B** — wire remaining aggregator P9 traces (test-health, security-health integrating AgentShield baseline, approvals-pipeline, architecture-review). Closes D33 across-surface zero-sweep.
+- **Phase M** — main-flows iteration against Janowiak decomposition + 2+ peers to ≥ 9.5. Closes D24.
+
+### Tier 2 — Closes durability + security gates
+- **Phase H** — durability test (rm-rf docs/reports/_assets + *.html → bash scaffold → bash regen-all → verify all dashboards re-render). Closes D35.
+- **Phase F** — Firestore rules coverage matrix + Cloud Function audit + bundle exposure scan. Closes D30 + D31 partial.
+- **Phase E** — smoke 12 × 4 browsers (chromium/firefox/webkit + mobile). Closes D25.
+- **Skill instrumentation remediation** — add observation hooks + version metadata to 21+ parbaughs-* skills. Closes most of the AgentShield CRITICAL findings → D31 zero-CRITICAL.
+
+### Tier 3 — Closes consolidation gates
+- **Phase J** — retrospective + final report + CONSOLIDATION.md. Closes D43-D47.
+- **Per-ship SECURITY blocks** in retrospectives. Closes D28.
+
+## Open questions for Founder
+
+Decide / hold / redirect on each:
+
+1. **Token meter raw-count vs cost-weighted display.** Current ALL-TIME shows 6.3B which is dominated by cache-read tokens (very cheap). Do you want a USD-cost display that down-weights cache reads (more accurate to Anthropic billing) or do you want token count to stay primary?
+
+2. **AgentShield CRITICAL findings.** Most are skill-instrumentation gaps + false positives in PARBAUGHS scanner regex. Should the agent (a) remediate them all this audit cycle to hit D31 zero-CRITICAL, OR (b) accept them as documented-known-issues and proceed to app feature work, OR (c) submit upstream PRs to AgentShield to teach it about scanner-regex false positives?
+
+3. **D13 verify-approval-pipeline reliability.** The watcher requires a clean tree to apply approvals. In active development sessions the tree is rarely fully clean. Option (a): add `.claude/state/dashboard-health/post-commit-hook.log` to Class A auto-clean paths or .gitignore. Option (b): change the watcher to apply during dirty trees if the dirty files are scoped to .claude/state/dashboard-health. Both fix the loop; preference?
+
+4. **ECC activation timing.** Currently ECC plugin is staged but not active in current session. Activating requires either (a) `/reload-plugins` slash command (Founder runs it) or (b) restart Claude Code. Once active, ECC's hook system fires — some hooks (gateguard-fact-force) WILL conflict with PARBAUGHS workflow. Coexistence-policy specifies disables. Should we (i) activate now and apply the disables, (ii) defer activation until app-work phase (using AgentShield via npx + ECC skills/agents as read-only library), or (iii) drop ECC entirely?
+
+5. **Founder Verification Packet recursion-breaker confidence threshold.** Per spec P9.6, after three consecutive ships where automated truthfulness self-check + Founder visual verification + 48h no-surprise all hold, the substrate retires the packet for routine ships. Do you want to begin counting now, or only after Phase J closes?
+
 ## Founder approval section
 
 **To approve this packet** (closes the goal per D49), append below this line:
