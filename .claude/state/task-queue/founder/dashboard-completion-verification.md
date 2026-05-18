@@ -1,12 +1,46 @@
 # FOUNDER VERIFICATION PACKET — dashboard-completion-spec-2026-05-18
 
-**Status:** AWAITING FOUNDER APPROVAL — initial packet for current spec audit.
+**Status:** AWAITING FOUNDER APPROVAL — packet refreshed 2026-05-18 (session 2) post-Phase-B close.
 
 **Per spec D49:** This goal cannot close until the Founder writes an approval marker `FOUNDER-APPROVED-{TIMESTAMP}` IN THIS FILE. Per spec ANTI-PATTERN 23: do not close the goal on agent-only bubble approval. The agent self-close recursion stops HERE.
 
-**Created:** 2026-05-18 (initial packet — session 1)
+**Created:** 2026-05-18 session 1; refreshed 2026-05-18 session 2 (post-Phase-B-close).
 **Spec:** `.claude/state/dashboard-completion-spec-2026-05-18.md`
 **Live dashboards:** `file:///C:/Users/Zach/smoky-mountain-open/docs/reports/dashboard.html` (and 9 sibling reports)
+
+## ⚡ SESSION 2 PROGRESS SUMMARY (read first)
+
+The Founder explicitly held approval pending Phase B close ("dashboard.html zeros"). Session 2 closes Phase B. The 5 traced values previously held over for re-verification have changed materially:
+
+| Value | Session 1 state | Session 2 state | Change reason |
+|---|---|---|---|
+| TOKENS THIS WEEK (dashboard.html) | 102.0k (stale) | **4,051.83M** | Phase B GAP-1 fix — consumer now reads from token-usage-snapshot.json |
+| TOKENS QUOTA WEEKLY | 102.0k (stale) | **4,051.83M** | Phase B GAP-2 fix — quota_status.weekly_tokens overridden with session-transcript truth |
+| 7-day token trend chart | 1 bar (102k) | **7 bars (May 14 spike at 2.23B)** | Phase B GAP-3 fix — trend computed from session_transcripts.by_day_total |
+| Round-Trip Last Pass | "unknown" + "watcher cycling" | **"2026-05-18T17:34:43Z" + "GATE-FAIL · regen ran Xmin ago but a gate failed"** | Phase B GAP-4 fix — schema parity in last_regen_all_status() |
+| AgentShield CRITICAL count | 18 (framing: ~12 skill-instrumentation, ~3 false-pos, ~3 policy) | **18 (framing CORRECTED: 0 skill-instrumentation, 9 false-pos UNFIXABLE without upstream, 3 policy, 6 worktree → Phase H)** | Skill-instrumentation work shipped (42 MEDIUM closed) but did NOT reduce CRITICAL count; D31 zero-CRITICAL structurally blocked by AgentShield 1.5.0 lacking suppression mechanism |
+
+**New ships this session (atomic commits in main, all pushed via cron):**
+- `[session-2 prep]` cron drift commit
+- `[security-P8] AgentShield skill instrumentation — 21 skills updated, 42 MEDIUM closed`
+- `[phase-B] dashboard.html cross-surface P9 fix — GAP-1/2/3/4 closed`
+- `[ecc-compat] HOOK-COMPARISON + Founder decision packet — 4 GAP-FILL ECC hooks recommended`
+- `[security-P8] AgentShield false-positive suppression — 0 CRITICAL closed` (proof that suppression doesn't exist)
+- `[phase-M] main-flows iteration M5.1+M5.2 — 7.8/10 → 8.6/10 vs Janowiak`
+- (Phase T6 three-view pie chart — in flight via background agent)
+
+**New Founder-facing decision files (3 surfaced, awaiting approval):**
+1. `task-queue/founder/hook-comparison-decision.md` — 4 ECC hooks recommended for ALONGSIDE-PARBAUGHS install (NO install until Founder approves)
+2. `task-queue/founder/` — task #3 policy overpermissiveness ratification (3 Bash(*) CRITICALs, need Founder to ratify the specific command list)
+3. (THIS FILE for D31 path-forward) — AgentShield 1.5.0 has no suppression mechanism. D31 zero-CRITICAL is structurally blocked unless Founder picks: (a) accept --min-severity high gate with documented exception list, (b) wait for upstream PR, (c) refactor PARBAUGHS hooks to avoid the flagged patterns.
+
+**Documents emitted this session:**
+- `.claude/state/dashboard-audit-2026-05-18/PHASE-B-GAPS.md` — full per-card gap audit
+- `.claude/state/dashboard-audit-2026-05-18/HOOK-COMPARISON.md` — ECC hooks head-to-head
+- `.claude/state/dashboard-audit-2026-05-18/AGENTSHIELD-REMEDIATION-LOG.md` — skill instrumentation report
+- `.claude/state/dashboard-audit-2026-05-18/AGENTSHIELD-FALSE-POSITIVE-LOG.md` — suppression mechanism investigation
+- `.claude/state/dashboard-audit-2026-05-18/AGENTSHIELD-UPSTREAM-ISSUES.md` — 3 upstream issue drafts ready
+- `.claude/state/main-flows-v2/M4-M5-SCORE-2026-05-18-session-2.md` — Phase M scoring + iteration log + path-to-9.5
 
 ---
 
