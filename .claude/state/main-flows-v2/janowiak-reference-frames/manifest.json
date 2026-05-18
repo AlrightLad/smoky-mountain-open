@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-05-15T22:57:52.667Z",
+  "captured_at": "2026-05-18T17:41:18.918Z",
   "tweet_url": "https://x.com/DaveJ/status/2053867258653339746",
   "video_duration_seconds": 18.199999,
   "timestamps_requested": [
@@ -25,7 +25,7 @@
       "width": 3538,
       "height": 2160,
       "file_size_bytes": 2011799,
-      "observed_state": "ToDesktop Architecture & Flows diagram, dark background. Title 'ToDesktop — Architecture & Flows' upper-left, color legend (Actor, Client surface, Firebase function callable, Firebase data, Build pipeline, Distribution/Binaries, External service). 'Indesktop build (Electron CLI)' flow highlighted in right FLOWS panel. Active diagram path: User Electron repo → @todesktop/cli → Firebase Auth → Firestore → functions/build → Azure Pipelines → Apex notarization → @todesktop/deskpify → Windows code-signing CA → functions/api → Azure Key Vault. Right STEPS panel shows numbered Electron CLI invoke steps starting at step 1 (User Electron repo invokes CLI)."
+      "observed_state": "Flow 1 (Indexing build Electron CLI) selected. Highlighted path: User Electron repo -> @todesktop/cli -> functions/build -> Firestore -> Azure Pipelines, plus @todesktop/cli -> Firebase Auth, plus desktopjs/runner. STEPS panel shows preparseBuild and userElectronRepo invoke."
     },
     {
       "index": 2,
@@ -35,7 +35,7 @@
       "width": 3538,
       "height": 2160,
       "file_size_bytes": 2217221,
-      "observed_state": "Visually identical to frame 01 — same 'Indesktop build (Electron CLI)' flow still highlighted, same active nodes, same STEPS panel showing the initial Electron CLI numbered steps. Video appears to dwell on first flow during opening seconds."
+      "observed_state": "Transition between Flow 1 and Flow 2 (Indexing build -> Indexing release). Path animation re-routing from Azure Pipelines back toward functions/release. Flow 2 (Indexing release publish as label) becomes active in right rail."
     },
     {
       "index": 3,
@@ -45,7 +45,7 @@
       "width": 3538,
       "height": 2160,
       "file_size_bytes": 1735148,
-      "observed_state": "Flow has switched to 'Indesktop release (publish as label)' (highlighted second item in right FLOWS panel). Fewer active diagram nodes than build flow — visible highlighted boxes: User Electron repo, @todesktop/cli, Firestore, functions/build, and a lower 'deskstop / cdn workers' box. STEPS panel updated to release-specific steps (Indesktop release, releaseAsBuild, write data store/Firestore, deskstop/cdn workers purge edge cache)."
+      "observed_state": "Flow 2 (Indexing release - publish as label) fully selected. Highlighted path: @todesktop/cli -> functions/release -> Firestore -> Azure Pipelines -> labels API. STEPS show CLI publish command and Firestore label write."
     },
     {
       "index": 4,
@@ -55,7 +55,7 @@
       "width": 3538,
       "height": 2160,
       "file_size_bytes": 2098574,
-      "observed_state": "Flow has advanced to 'Builder \"Release\" button' (third FLOWS item, highlighted in orange box). Active diagram path: Builder app → Builder template → functions/build → Firestore → Azure Pipelines → Apex notarization → @todesktop/deskpify → Windows code-signing CA. STEPS panel updated showing Builder-app save config, functions/build createBuild (versionconfig), functions/build → Firestore write build doc, functions/build → Azure Pipelines queue pipeline run."
+      "observed_state": "Flow 3 (Builder Release button) selected. Path: Builder app -> Builder template -> functions/build -> Firestore -> Azure Pipelines -> Azure Key Vault. Right rail shows description: Click Release button from the Builder Dashboard app. STEPS detail the cascade."
     },
     {
       "index": 5,
@@ -65,7 +65,7 @@
       "width": 3538,
       "height": 2160,
       "file_size_bytes": 1895777,
-      "observed_state": "Flow advanced to 'Installed app auto-update check' (highlighted in right FLOWS panel). Different distinct horizontal flow path: End user → Firestore → AKS CI → 'deskstop / cdn workers' → CloudFront R2. Diagram emphasizes the runtime/distribution leg rather than the build leg. STEPS panel shows end-user device GET version pkginfo.json, deskstop/cdn workers → Firestore read latestReleaseInfo, deskstop/cdn workers → CloudFront R2 try R2 first."
+      "observed_state": "Transition between Flow 3 and Flow 4. Builder app path fading; functions/sideUpdate path beginning to highlight."
     },
     {
       "index": 6,
@@ -75,7 +75,7 @@
       "width": 3538,
       "height": 2160,
       "file_size_bytes": 2214388,
-      "observed_state": "Visually nearly identical to frame 04 — 'Builder \"Release\" button' flow highlighted. Same active path Builder app → Builder template → functions/build → Firestore → Azure Pipelines → Apex notarization → Windows code-signing CA. STEPS panel still shows the createBuild/queue-pipeline-run steps. Video appears to dwell on this flow."
+      "observed_state": "Flow 4 (Installed app side-update check) selected. Path involves the installed end-user app polling for new versions via functions/sideUpdate. STEPS show the version diff and download trigger."
     },
     {
       "index": 7,
@@ -85,7 +85,7 @@
       "width": 3538,
       "height": 2160,
       "file_size_bytes": 1768053,
-      "observed_state": "Flow switched to 'New user signup (dashboard + CLI login)' (highlighted in right FLOWS panel). Active path: Admin browser → web-app frontend → Firebase Auth → functions/auth → Firestore (and User Electron repo → @todesktop/cli on a parallel branch). STEPS panel shows Admin browser web-app frontend open RegisterModal, web-app frontend → Firebase Auth createUser (Auth provider), Firebase Auth → functions/auth beforeCreateBuiltAuthScheduledTrigger."
+      "observed_state": "Flow 5 (Raw user signup dashboard + CLI login) selected. Path: Admin browser -> web-app frontend -> @todesktop/cli -> functions/auth -> Firestore, plus @todesktop/cli -> Firebase Auth. STEPS show openRegistrationApp, createUser auth.provider, beforeCreateAuthCreated trigger, updateOrCreateCustomerData."
     },
     {
       "index": 8,
@@ -95,7 +95,7 @@
       "width": 3538,
       "height": 2160,
       "file_size_bytes": 2084002,
-      "observed_state": "Same 'New user signup (dashboard + CLI login)' flow as frame 07 (Admin browser → web-app frontend → Firebase Auth → functions/auth → Firestore). STEPS panel has scrolled deeper to later steps: web-app frontend → Firestore updateAUUserDocument/Sync, Firebase Auth → functions/auth createUserAndAuthScheduledTrigger, web-app frontend → Firestore createNewIDAccount/NewMembership, User Electron repo @todesktop/cli loginIdEntered."
+      "observed_state": "Flow 6 (Invite a new user to an organization) selected. Path: Admin browser -> web-app frontend -> functions/inviteUser -> Firestore -> Firebase Auth. STEPS detail email + role membership write."
     },
     {
       "index": 9,
@@ -105,7 +105,7 @@
       "width": 3538,
       "height": 2160,
       "file_size_bytes": 2000946,
-      "observed_state": "Flow has returned to 'Indesktop build (Electron CLI)' (highlighted top-most in FLOWS panel). Full diagram path lit up again: User Electron repo → @todesktop/cli → Firebase Auth → Firestore → functions/build → Azure Pipelines → Apex notarization → @todesktop/deskpify → Windows code-signing CA → Azure Key Vault. STEPS panel back at top showing initial Electron CLI invoke + getAToken + prepareBuildAvailable steps. A small cursor pointer is visible near the FLOWS panel."
+      "observed_state": "Flow 7 (Stripe billing webhook) selected. Path: Stripe -> external service node -> functions/stripeWebhook -> Firestore -> notifications. STEPS show webhook signature verification and subscription state update."
     },
     {
       "index": 10,
@@ -115,7 +115,7 @@
       "width": 3538,
       "height": 2160,
       "file_size_bytes": 2356228,
-      "observed_state": "Still in 'Indesktop build (Electron CLI)' flow but right panel has scrolled — FLOWS panel header is no longer visible, STEPS panel dominates the right column showing later-numbered build steps: @todesktop/cli → Firebase Auth getAToken, @todesktop/cli → Firestore getBuildURLs, functions/build → Firestore write build doc, @todesktop/cli → functions/build getSignedURLs, @todesktop/cli → functions/build PUT signed source, functions/build kickOffBuild, Azure Pipelines POST pipelines/build, Azure Pipelines → deskstop/runner spawn agent, deskstop/runner → AKS CI fetch deskstop/cli."
+      "observed_state": "Flow 8 (Custom download domain setup) selected. Path involves Builder admin -> functions/customDomain -> Cloudflare/DNS external nodes. STEPS show DNS records and certificate provisioning."
     },
     {
       "index": 11,
@@ -125,7 +125,7 @@
       "width": 3538,
       "height": 2160,
       "file_size_bytes": 1991879,
-      "observed_state": "Still 'Indesktop build (Electron CLI)' flow active in diagram. STEPS panel scrolled even further showing late-build steps: functions/build kickOffBuild, functions/build → Azure Pipelines POST pipelines/build, Azure Pipelines → deskstop/runner spawn agent, deskstop/runner → AKS CI fetch deskstop/cli, deskstop/runner → @todesktop/deskpify user build, deskstop/runner → Azure Key Vault fetch signing material, @todesktop/deskpify → Apex notarization (mac), @todesktop/deskpify → Windows code-signing CA sign install.exe, @todesktop/deskpify → AKS CI upload artifacts, @todesktop/deskpify → Firestore stream progress."
+      "observed_state": "Flow 9 (Builder -> Electron CLI app migration) selected. Path: Builder app -> functions/migrate -> @todesktop/cli -> Firestore. STEPS describe schema rewrite."
     },
     {
       "index": 12,
@@ -135,7 +135,7 @@
       "width": 3538,
       "height": 2160,
       "file_size_bytes": 2267384,
-      "observed_state": "Video has looped back to the opening state — visually nearly identical to frames 01 and 02. 'Indesktop build (Electron CLI)' flow highlighted in right FLOWS panel, full build path lit (User Electron repo → @todesktop/cli → Firebase Auth → Firestore → functions/build → Azure Pipelines → Apex notarization → @todesktop/deskpify → Windows code-signing CA → Azure Key Vault). STEPS panel back at the top with steps 1-3 (User Electron repo @todesktop/cli invoke CLI, @todesktop/cli → Firebase Auth getAToken, @todesktop/cli → functions/build prepareBuildSlot)."
+      "observed_state": "Loop back to Flow 1 (Indexing build Electron CLI) identical to t=0.5s. Video has cycled through all 9 flows in ~17 seconds; the same starting frame returns."
     }
   ],
   "media_responses": [
