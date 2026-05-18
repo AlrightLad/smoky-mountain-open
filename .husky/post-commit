@@ -164,7 +164,9 @@ docs/reports/token-usage.html
 docs/reports/discussion-bubbles.html
 docs/reports/design-system.html
 docs/reports/index.html
-.claude/state/telemetry/aggregates"
+.claude/state/telemetry/aggregates
+.claude/state/dashboard-health
+.claude/state/aggregates"
 
 DIRTY=""
 for p in $CLASS_A_PATHS; do
