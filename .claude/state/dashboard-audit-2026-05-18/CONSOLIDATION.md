@@ -197,3 +197,71 @@ Self-referential per spec D45 — exists at `.claude/state/dashboard-audit-2026-
 22 of 49 DONE WHEN validator-confirmed passing this session.
 
 Hand off to Founder for D49 review.
+
+---
+
+## SESSION 2 (2026-05-18) — appended
+
+### Atomic ships (commits in main, all auto-pushed via cron)
+
+1. `[session-2 prep]` 3f1d79a — cron drift + CONSOLIDATION commit
+2. `[security-P8] AgentShield skill instrumentation — 21 skills updated, 42 MEDIUM closed` 034118a
+3. `[phase-B] dashboard.html cross-surface P9 fix — GAP-1/2/3/4 closed` 7b598b9
+4. `[ecc-compat] HOOK-COMPARISON + Founder decision packet — 4 GAP-FILL ECC hooks recommended` b641fda
+5. `[security-P8] AgentShield false-positive suppression — 0 CRITICAL closed` (proof of upstream gap) 3eb4ca2
+6. `[phase-M] main-flows iteration M5.1+M5.2 — 7.8/10 → 8.6/10 vs Janowiak` 3158471
+7. `[founder-packet] session 2 refresh — Phase B closed + 4 net new Founder-facing decisions surfaced` 80fb49e
+8. `[phase-T6] three-view toggleable pie chart — agent_role / work_category / session_top10 + USD cost` 42d8b61
+9. `[founder-decisions] D31 path + policy ratification packets — surface required Founder choices`
+10. `[phase-H] durability test passed — rm + scaffold + regen rebuilds 10 dashboards, P9 truth preserved`
+
+### Validator-confirmed DONE WHEN closures (session 2)
+
+- ✅ **D19** — three-view toggleable pie chart (agent_role / work_category / session_top10) — commit 42d8b61
+- ✅ **D32** — DATA-TRUTH-MATRIX dashboard.html row TRUTHFUL — commit 7b598b9
+- ✅ **D33** — dashboard.html sweep zero unexplained "0/—/N/A" — commit 7b598b9 (39,723x weekly_tokens correction)
+- ✅ **D35** — Phase H durability proof (rm + scaffold + regen rebuilds 10 dashboards, Phase B fix durable) — PHASE-H-DURABILITY-LOG.md
+
+Plus material data-truthfulness corrections on dashboard.html:
+- TOKENS THIS WEEK: 102k → 4.10B (cross-surface unified with token-usage.html)
+- TOKENS QUOTA WEEKLY: 102k → 4.10B (quota_status.weekly_tokens overridden)
+- Token consumption 7-day chart: 1 bar → 7 truthful bars (May 14 ~2.23B spike)
+- Round-trip last pass: "unknown" → "GATE-FAIL · regen ran Xmin ago" (schema parity fix)
+
+### Founder-blocking decisions surfaced (3 new)
+
+1. `task-queue/founder/hook-comparison-decision.md` — 4 GAP-FILL ECC hooks recommended for alongside-PARBAUGHS install; 4 confirmed disabled. NO install until Founder approves.
+2. `task-queue/founder/d31-zero-critical-decision.md` — AgentShield 1.5.0 has no suppression mechanism. 9 of 18 CRITICALs are false-positives requiring upstream PR. Three options for D31 closure (--min-severity gate / wait upstream / refactor PARBAUGHS hooks).
+3. `task-queue/founder/policy-overpermissiveness-ratification.md` — Bash(*)/Edit(*)/Write(*) wildcards flagged. Three options (allow-list / accept wildcards / hybrid).
+
+### Open at session 2 close
+
+| DONE WHEN | Path forward |
+|---|---|
+| D20 (token meter matches Anthropic console) | Founder paste of console screenshot |
+| D24 (main-flows ≥ 9.5) | Phase M iteration — currently 8.6/10; 5 specific approaches documented in M4-M5-SCORE doc |
+| D25 (smoke 12 × 4 browsers) | Phase E dedicated ship |
+| D26 (FIQ status) | Phase F |
+| D28 (SECURITY block per ship retrospective) | Standardize template — should be added per-ship going forward |
+| D29 (fixture commit secret rejection) | Phase F |
+| D30 (Firestore rules coverage matrix) | Phase F |
+| D31 (zero CRITICAL) | Founder decision via d31-zero-critical-decision.md |
+| D36-D37 (tree clean + pushed) | Cron handles auto-push; per-ship cleanup discipline |
+| D38 (interactive elements V1) | Phase C dedicated ship |
+| D39 (PROP-010 + design-bot APPROVE) | Phase G |
+| D41-D42 (TASTE-AUDIT) | Phase J |
+| D43-D47 (retrospective + final report + consolidation) | Phase J |
+| D49 (FOUNDER-APPROVED) | Founder action on verification packet |
+
+### Net DONE WHEN count (post-session-2)
+
+**26-27 of 49 confirmed passing.** Up from 22 at session 1 close.
+
+Phases CLOSED this session: **Phase B + Phase H + Phase T6**. Phase M materially advanced (7.8 → 8.6).
+
+Three sessions of work projected to close remaining 22 conditions:
+- Session 3: Phase M iteration to 9.5 + Phase E smoke + Phase F security
+- Session 4: Phase C interactive verification + Phase G design audits
+- Session 5: Phase I polish + Phase J consolidation + Founder packet final + D49
+
+Hand off remains to Founder for D49 approval (after Phase B re-verification, per Founder's session-1 holding statement).
