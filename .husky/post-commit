@@ -165,6 +165,7 @@ docs/reports/discussion-bubbles.html
 docs/reports/design-system.html
 docs/reports/index.html
 .claude/state/telemetry/aggregates
+.claude/state/telemetry/events
 .claude/state/dashboard-health
 .claude/state/aggregates"
 
