@@ -417,16 +417,32 @@ def merge_to_snapshot(real_events, estimated_events, manual_entries, session_tra
     # Phase T1 wire: surface session-transcript ground truth at top level
     # so the dashboard can distinguish cache reads (90% cheaper) from output
     # tokens. Without this, all_time.real conflates everything.
+    #
+    # Phase T5: also compute weekly_real_7d so the Weekly card stops showing
+    # the stale sidecar 102k value when session transcripts have orders-of-
+    # magnitude more recent data.
     session_transcripts_block = None
     if session_transcript_meta:
         st = session_transcript_meta
+        by_day = st.get("by_day_total", {}) or {}
+        weekly_real_7d = 0
+        today = datetime.now(timezone.utc).date()
+        for day_str_key, total in by_day.items():
+            try:
+                d = datetime.strptime(day_str_key, "%Y-%m-%d").date()
+            except Exception:
+                continue
+            age_days = (today - d).days
+            if 0 <= age_days <= 7:
+                weekly_real_7d += int(total)
         session_transcripts_block = {
             "generated_at": st.get("generated_at"),
             "source": st.get("source"),
             "session_count": st.get("session_count", 0),
             "bucket_count": st.get("bucket_count", 0),
             "all_time_total_tokens": st.get("all_time_total_tokens", 0),
-            "by_day_total": st.get("by_day_total", {}),
+            "weekly_real_7d": weekly_real_7d,
+            "by_day_total": by_day,
             "by_model_total": st.get("by_model_total", {}),
         }
 

@@ -344,7 +344,23 @@
         } catch (e) { /* tolerate missing */ }
         var allTimeTotal = allTimeReal + allTimeEst;
 
-        if (typeof qs.weekly_tokens === 'number' && qs.weekly_tokens > 0) {
+        // Phase T5: prefer session-transcript ground truth over sidecar
+        // weekly_tokens. Session transcripts are the actual Claude Code usage;
+        // sidecar weekly_tokens was historically derived from PARBAUGHS-only
+        // telemetry and undercounts by orders of magnitude. If we have a
+        // session_transcripts.weekly_real_7d, use it; fall back to sidecar
+        // qs.weekly_tokens only if transcripts aren't ingested yet.
+        var st = data.session_transcripts || {};
+        var stWeekly = (typeof st.weekly_real_7d === 'number') ? st.weekly_real_7d : 0;
+        if (stWeekly > 0) {
+            set('[data-kpi="quota-weekly"]', fmtTokens(stWeekly));
+            if (typeof qs.weekly_cap === 'number') {
+                set('[data-kpi="quota-weekly-cap"]', fmtTokens(qs.weekly_cap));
+                set('[data-kpi-sub="quota-weekly"]', (100 * stWeekly / qs.weekly_cap).toFixed(0) + '% of cap · last 7 days · session transcripts');
+            } else {
+                set('[data-kpi-sub="quota-weekly"]', 'last 7 days · session transcripts (real)');
+            }
+        } else if (typeof qs.weekly_tokens === 'number' && qs.weekly_tokens > 0) {
             set('[data-kpi="quota-weekly"]', fmtTokens(qs.weekly_tokens));
             if (typeof qs.weekly_cap === 'number') {
                 set('[data-kpi="quota-weekly-cap"]', fmtTokens(qs.weekly_cap));

@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-05-18T17:31:11.635Z",
+  "captured_at": "2026-05-18T17:39:48.807Z",
   "repo_root": "C:\\Users\\Zach\\smoky-mountain-open",
   "reports_dir": "C:\\Users\\Zach\\smoky-mountain-open\\docs\\reports",
   "browsers": [
@@ -43,35 +43,35 @@
       "page": "dashboard.html",
       "viewport": "desktop-wide",
       "path": "scripts/visual-audit/2026-05-18/dashboard-desktop-wide.png",
-      "size_bytes": 263813
+      "size_bytes": 117260
     },
     {
       "browser": "chromium",
       "page": "activity.html",
       "viewport": "desktop-wide",
       "path": "scripts/visual-audit/2026-05-18/activity-desktop-wide.png",
-      "size_bytes": 6280952
+      "size_bytes": 43524
     },
     {
       "browser": "chromium",
       "page": "proposals.html",
       "viewport": "desktop-wide",
       "path": "scripts/visual-audit/2026-05-18/proposals-desktop-wide.png",
-      "size_bytes": 483714
+      "size_bytes": 75890
     },
     {
       "browser": "chromium",
       "page": "discussion-bubbles.html",
       "viewport": "desktop-wide",
       "path": "scripts/visual-audit/2026-05-18/discussion-bubbles-desktop-wide.png",
-      "size_bytes": 275277
+      "size_bytes": 56424
     },
     {
       "browser": "chromium",
       "page": "main-flows.html",
       "viewport": "desktop-wide",
       "path": "scripts/visual-audit/2026-05-18/main-flows-desktop-wide.png",
-      "size_bytes": 341633
+      "size_bytes": 75852
     },
     {
       "browser": "chromium",
@@ -85,49 +85,49 @@
       "page": "token-usage.html",
       "viewport": "desktop-wide",
       "path": "scripts/visual-audit/2026-05-18/token-usage-desktop-wide.png",
-      "size_bytes": 127457
+      "size_bytes": 134101
     },
     {
       "browser": "chromium",
       "page": "index.html",
       "viewport": "desktop-wide",
       "path": "scripts/visual-audit/2026-05-18/index-desktop-wide.png",
-      "size_bytes": 98411
+      "size_bytes": 87440
     },
     {
       "browser": "chromium",
       "page": "dashboard.html",
       "viewport": "desktop",
       "path": "scripts/visual-audit/2026-05-18/dashboard-desktop.png",
-      "size_bytes": 251188
+      "size_bytes": 111155
     },
     {
       "browser": "chromium",
       "page": "activity.html",
       "viewport": "desktop",
       "path": "scripts/visual-audit/2026-05-18/activity-desktop.png",
-      "size_bytes": 6629451
+      "size_bytes": 39362
     },
     {
       "browser": "chromium",
       "page": "proposals.html",
       "viewport": "desktop",
       "path": "scripts/visual-audit/2026-05-18/proposals-desktop.png",
-      "size_bytes": 439901
+      "size_bytes": 72132
     },
     {
       "browser": "chromium",
       "page": "discussion-bubbles.html",
       "viewport": "desktop",
       "path": "scripts/visual-audit/2026-05-18/discussion-bubbles-desktop.png",
-      "size_bytes": 216847
+      "size_bytes": 51955
     },
     {
       "browser": "chromium",
       "page": "main-flows.html",
       "viewport": "desktop",
       "path": "scripts/visual-audit/2026-05-18/main-flows-desktop.png",
-      "size_bytes": 292438
+      "size_bytes": 70690
     },
     {
       "browser": "chromium",
@@ -141,49 +141,49 @@
       "page": "token-usage.html",
       "viewport": "desktop",
       "path": "scripts/visual-audit/2026-05-18/token-usage-desktop.png",
-      "size_bytes": 121871
+      "size_bytes": 128027
     },
     {
       "browser": "chromium",
       "page": "index.html",
       "viewport": "desktop",
       "path": "scripts/visual-audit/2026-05-18/index-desktop.png",
-      "size_bytes": 92623
+      "size_bytes": 83358
     },
     {
       "browser": "chromium",
       "page": "dashboard.html",
       "viewport": "tablet",
       "path": "scripts/visual-audit/2026-05-18/dashboard-tablet.png",
-      "size_bytes": 266671
+      "size_bytes": 117347
     },
     {
       "browser": "chromium",
       "page": "activity.html",
       "viewport": "tablet",
       "path": "scripts/visual-audit/2026-05-18/activity-tablet.png",
-      "size_bytes": 5797567
+      "size_bytes": 39859
     },
     {
       "browser": "chromium",
       "page": "proposals.html",
       "viewport": "tablet",
       "path": "scripts/visual-audit/2026-05-18/proposals-tablet.png",
-      "size_bytes": 335271
+      "size_bytes": 73550
     },
     {
       "browser": "chromium",
       "page": "discussion-bubbles.html",
       "viewport": "tablet",
       "path": "scripts/visual-audit/2026-05-18/discussion-bubbles-tablet.png",
-      "size_bytes": 328526
+      "size_bytes": 49115
     },
     {
       "browser": "chromium",
       "page": "main-flows.html",
       "viewport": "tablet",
       "path": "scripts/visual-audit/2026-05-18/main-flows-tablet.png",
-      "size_bytes": 312041
+      "size_bytes": 66725
     },
     {
       "browser": "chromium",
@@ -197,49 +197,49 @@
       "page": "token-usage.html",
       "viewport": "tablet",
       "path": "scripts/visual-audit/2026-05-18/token-usage-tablet.png",
-      "size_bytes": 114707
+      "size_bytes": 123223
     },
     {
       "browser": "chromium",
       "page": "index.html",
       "viewport": "tablet",
       "path": "scripts/visual-audit/2026-05-18/index-tablet.png",
-      "size_bytes": 98555
+      "size_bytes": 88209
     },
     {
       "browser": "chromium",
       "page": "dashboard.html",
       "viewport": "mobile",
       "path": "scripts/visual-audit/2026-05-18/dashboard-mobile.png",
-      "size_bytes": 325273
+      "size_bytes": 128132
     },
     {
       "browser": "chromium",
       "page": "activity.html",
       "viewport": "mobile",
       "path": "scripts/visual-audit/2026-05-18/activity-mobile.png",
-      "size_bytes": 6169961
+      "size_bytes": 40763
     },
     {
       "browser": "chromium",
       "page": "proposals.html",
       "viewport": "mobile",
       "path": "scripts/visual-audit/2026-05-18/proposals-mobile.png",
-      "size_bytes": 295579
+      "size_bytes": 75722
     },
     {
       "browser": "chromium",
       "page": "discussion-bubbles.html",
       "viewport": "mobile",
       "path": "scripts/visual-audit/2026-05-18/discussion-bubbles-mobile.png",
-      "size_bytes": 305536
+      "size_bytes": 46473
     },
     {
       "browser": "chromium",
       "page": "main-flows.html",
       "viewport": "mobile",
       "path": "scripts/visual-audit/2026-05-18/main-flows-mobile.png",
-      "size_bytes": 256007
+      "size_bytes": 61836
     },
     {
       "browser": "chromium",
@@ -253,14 +253,14 @@
       "page": "token-usage.html",
       "viewport": "mobile",
       "path": "scripts/visual-audit/2026-05-18/token-usage-mobile.png",
-      "size_bytes": 111399
+      "size_bytes": 116829
     },
     {
       "browser": "chromium",
       "page": "index.html",
       "viewport": "mobile",
       "path": "scripts/visual-audit/2026-05-18/index-mobile.png",
-      "size_bytes": 105624
+      "size_bytes": 96254
     }
   ]
 }
