@@ -1,4 +1,4 @@
-=== post-commit hook fired 2026-05-17T06:55:38Z HEAD=1bf0f2d ===
+=== post-commit hook fired 2026-05-18T17:07:45Z HEAD=67b7396 ===
 [scaffold-from-templates] done: scaffolded=0 skipped=11
 
 --- scripts/scan-shipped-proposals.py ---
@@ -14,22 +14,22 @@ Traceback (most recent call last):
   File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 23, in decode
     return codecs.charmap_decode(input,self.errors,decoding_table)[0]
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 1737: character maps to <undefined>
+UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 3182: character maps to <undefined>
 [scan-shipped] approved=9 candidate-commits-90d=0
 [scan-shipped] done: moved=0 skipped_already_shipped=0 warnings=0
 
 --- scripts/aggregate-telemetry.py ---
 [aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json
 [aggregate] meter_status=wired-real
-[aggregate] events=2225 handoffs=1 bubbles=7 proposals_pending=0
+[aggregate] events=2990 handoffs=1 bubbles=7 proposals_pending=0
 
 --- scripts/aggregate-token-usage.py ---
-[aggregate-token] real_events=1 estimated_events=1639 manual_entries=0
-[aggregate-token] all-time: real=102000 estimated=7254600 manual=0
+[aggregate-token] real_events=1 estimated_events=2086 manual_entries=0
+[aggregate-token] all-time: real=102000 estimated=7292040 manual=0
 [aggregate-token] wrote .claude\state\telemetry\aggregates\token-usage-snapshot.json
 
 --- scripts/aggregate-test-health.py ---
-[aggregate-test-health] OK status=yellow timestamp=2026-05-17T06:55:39Z
+[aggregate-test-health] OK status=yellow timestamp=2026-05-18T17:07:47Z
 
 --- scripts/aggregate-security-health.py ---
 [aggregate-security-health] OK status=yellow cred_leaks=0 vuln_deps=2
@@ -83,7 +83,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 1737: cha
 --- scripts/regen-dashboard.py ---
 [regen-dashboard] OK   dashboard.html
 [regen-dashboard] meter_status=wired-real
-[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=2225
+[regen-dashboard] handoffs=6 ships=10 proposals_pending=0 bubbles=7 events=2990
 
 --- scripts/regen-main-flows.py ---
 [regen-main-flows] WARN: 6 orphan components in grid (referenced by no flow's path):
@@ -97,7 +97,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 1737: cha
 [regen-main-flows] 6 columns, 47 components, 62 flows; orphans=6
 
 --- scripts/regen-activity.py ---
-[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=1029 commits=503)
+[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=1477 commits=506)
 
 --- scripts/dry-run-regen-ops-views.py ---
 [regen] 7 bubbles (activity.html owned by regen-activity.py; proposals.html owned by regen-proposals.py)
@@ -105,8 +105,8 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 1737: cha
 
 --- scripts/regen-token-usage.py ---
 [regen-token-usage] OK   token-usage.html
-[regen-token-usage] all-time: real=102000 estimated=7254600 manual=0
+[regen-token-usage] all-time: real=102000 estimated=7292040 manual=0
 
 --- scripts/regen-index.py ---
 [regen-index] OK   index.html
-[regen-index] ships=32 proposals_pending=0 bubbles=1 halt=none git=1bf0f2d2
+[regen-index] ships=32 proposals_pending=0 bubbles=1 halt=none git=67b73962
