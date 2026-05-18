@@ -1,8 +1,8 @@
 {
   "schema_version": "test-health-v1.1",
-  "timestamp": "2026-05-18T19:16:14Z",
-  "generated_at": "2026-05-18T19:16:14Z",
-  "head_sha": "3158471",
+  "timestamp": "2026-05-18T19:17:31Z",
+  "generated_at": "2026-05-18T19:17:31Z",
+  "head_sha": "80fb49e",
   "status": "yellow",
   "summary": "regen-all completed but round-trip-test gate failed (workflow staleness; see test-health.known_failures)",
   "checks_run": 1,
