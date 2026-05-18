@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-18T17:39:31.192993+00:00",
+  "generated_at": "2026-05-18T17:40:41.275711+00:00",
   "_meter_status": "wired-real",
   "session_transcripts": {
     "generated_at": "2026-05-18T17:34:07.167698+00:00",
@@ -35,7 +35,7 @@
   "quota_status": {
     "state": "fresh",
     "as_of": "2026-05-18T17:37:12.8965086Z",
-    "age_seconds": 138,
+    "age_seconds": 208,
     "weekly_tokens": 102000,
     "weekly_cap": null,
     "weekly_pct": null,
