@@ -38,9 +38,13 @@
          * colors. */
 
         /* === Legend === */
-        .mf-legend { display: flex; flex-wrap: wrap; gap: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); margin-bottom: var(--space-4); font-size: 0.75rem; }
-        .mf-legend-item { display: flex; align-items: center; gap: var(--space-1); }
-        .mf-legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+        /* M5.3 (Janowiak D4 polish): legend floats — Janowiak's reference
+         * has no container box around the legend chips. Remove bg + border +
+         * padding; tighten gaps; sharpen dot to a true square (radius 1px).
+         * Label gets monospace + letter-spacing matching the reference. */
+        .mf-legend { display: flex; flex-wrap: wrap; gap: var(--space-4); padding: 0; background: transparent; border: 0; border-radius: 0; margin: var(--space-2) 0 var(--space-4); font-size: 0.6875rem; font-family: var(--font-mono); color: var(--text-tertiary); letter-spacing: 0.08em; text-transform: uppercase; }
+        .mf-legend-item { display: flex; align-items: center; gap: 6px; }
+        .mf-legend-dot { width: 8px; height: 8px; border-radius: 1px; }
 
         /* === Workspace layout === */
         .mf-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: var(--space-4); align-items: start; }

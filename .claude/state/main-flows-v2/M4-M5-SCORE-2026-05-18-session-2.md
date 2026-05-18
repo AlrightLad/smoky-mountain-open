@@ -70,7 +70,41 @@ PARBAUGHS does NOT need to look like any peer per spec P7. The dimensions to mat
 | D4 Color | 8.5 (↑0.0) | Unchanged this iteration |
 | D5 Editorial | 8.5 (↑2.0) | Caveats compressed; subtitle tightened |
 
-**Post-iteration average: 8.6 / 10** (up from 7.8). Still below 9.5 target.
+**Post-iteration (M5.1+M5.2) average: 8.6 / 10** (up from 7.8). Still below 9.5 target.
+
+### Iteration M5.3 — Legend treatment polish (D4 + D5 lift)
+
+**Change:** Removed `bg-card + border + radius` container from `.mf-legend`. Made it float as a thin row of chips. Smaller dots (10×10 → 8×8). Sharpened dot border-radius (2px → 1px). Added monospace + uppercase + letter-spacing to labels. Font-size 0.75rem → 0.6875rem.
+
+**File:** `templates/dashboards/main-flows.template.html` `.mf-legend` rules (line 41-46)
+
+**V1 confirmation:** Legend now floats without container box; matches Janowiak D4 reference style (small squares + uppercase labels, no surrounding chrome).
+
+**Post-iteration scoring (post-M5.1+M5.2+M5.3):**
+
+| Dimension | Score (1-10) | Δ from baseline |
+|---|---|---|
+| D1 Composition | 9.0 | +1.0 (caveats compression freed vertical space) |
+| D2 Interaction | 8.5 | +0.0 |
+| D3 Motion | 8.5 | +1.0 (path-draw animation) |
+| D4 Color | 9.0 | +0.5 (legend treatment tighter, sharper) |
+| D5 Editorial | 9.0 | +2.5 (caveats hidden + subtitle tightened + legend chrome removed) |
+
+**Post-iteration average: 8.8 / 10** (up from 7.8 baseline → 8.6 after M5.1+M5.2 → 8.8 after M5.3). Still below 9.5.
+
+### Remaining concrete approaches to 9.5
+
+Next session should attempt in this order (low → high effort):
+
+1. **F — capture 2 peer references** (Stripe Atlas + Cloudflare Architecture diagrams). Required by spec M5 ≥ 2-peer triangulation. ~30 min Playwright work.
+
+2. **Header weight tradeoff** — investigate whether reducing column header weight from 600 → 400 lifts D1 score (was previously increased per M4 delta #5 = "distinguishes column tier from row content"). This may oscillate; defer to peer-ref-informed decision.
+
+3. **B — node-level scale-in on path entry** (+0.3 D3). 98% → 100% staggered with path-draw.
+
+4. **E — steps panel tightening** (+0.2 D2). Reduce line-height + truncate longer step captions.
+
+5. **Subtitle removal from columns** (+0.2 D5). Drops the italic "Who interacts with PARBAUGHS" sub-text on each column header — Janowiak doesn't have these.
 
 ## Remaining gaps to reach 9.5
 
