@@ -1,4 +1,4 @@
-=== post-commit hook fired 2026-05-18T17:45:15Z HEAD=179a0b6 ===
+=== post-commit hook fired 2026-05-18T17:55:04Z HEAD=a1c381a ===
 [scaffold-from-templates] done: scaffolded=0 skipped=11
 
 --- scripts/scan-shipped-proposals.py ---
@@ -14,22 +14,27 @@ Traceback (most recent call last):
   File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 23, in decode
     return codecs.charmap_decode(input,self.errors,decoding_table)[0]
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 15957: character maps to <undefined>
+UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 18060: character maps to <undefined>
 [scan-shipped] approved=9 candidate-commits-90d=0
 [scan-shipped] done: moved=0 skipped_already_shipped=0 warnings=0
 
 --- scripts/aggregate-telemetry.py ---
 [aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json
 [aggregate] meter_status=wired-real
-[aggregate] events=3031 handoffs=1 bubbles=7 proposals_pending=0
+[aggregate] events=3043 handoffs=1 bubbles=7 proposals_pending=0
+
+--- scripts/ingest-session-transcripts.py ---
+[ingest-session-transcripts] scanned 45611e99-f2fd-4ef5-80df-7d90f6fcce83.jsonl: +117 new entries (offset 1613350\u21923098456)
+[ingest-session-transcripts] scanned 28 JSONL file(s), found 117 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (54 buckets, 6352704639 total tokens, 28 sessions)
 
 --- scripts/aggregate-token-usage.py ---
-[aggregate-token] real_events=55 estimated_events=2100 manual_entries=0
-[aggregate-token] all-time: real=6311005958 estimated=7292040 manual=0
+[aggregate-token] real_events=55 estimated_events=2104 manual_entries=0
+[aggregate-token] all-time: real=6352806639 estimated=7292040 manual=0
 [aggregate-token] wrote .claude\state\telemetry\aggregates\token-usage-snapshot.json
 
 --- scripts/aggregate-test-health.py ---
-[aggregate-test-health] OK status=yellow timestamp=2026-05-18T17:45:17Z
+[aggregate-test-health] OK status=yellow timestamp=2026-05-18T17:55:05Z
 
 --- scripts/aggregate-security-health.py ---
 [aggregate-security-health] OK status=red cred_leaks=2 vuln_deps=2
@@ -83,7 +88,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 15957: ch
 --- scripts/regen-dashboard.py ---
 [regen-dashboard] OK   dashboard.html
 [regen-dashboard] meter_status=wired-real
-[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=3031
+[regen-dashboard] handoffs=10 ships=10 proposals_pending=1 bubbles=7 events=3043
 
 --- scripts/regen-main-flows.py ---
 [regen-main-flows] WARN: 6 orphan components in grid (referenced by no flow's path):
@@ -97,16 +102,41 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 15957: ch
 [regen-main-flows] 6 columns, 47 components, 62 flows; orphans=6
 
 --- scripts/regen-activity.py ---
-[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=1497 commits=518)
+[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=1503 commits=522)
 
 --- scripts/dry-run-regen-ops-views.py ---
-[regen] 7 bubbles (activity.html owned by regen-activity.py; proposals.html owned by regen-proposals.py)
-[regen] OK   discussion-bubbles.html
+Traceback (most recent call last):
+  File "C:\Users\Zach\smoky-mountain-open\scripts\dry-run-regen-ops-views.py", line 150, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "C:\Users\Zach\smoky-mountain-open\scripts\dry-run-regen-ops-views.py", line 123, in main
+    proposals = read_proposals()
+                ^^^^^^^^^^^^^^^^
+  File "C:\Users\Zach\smoky-mountain-open\scripts\dry-run-regen-ops-views.py", line 97, in read_proposals
+    data = read_frontmatter(f)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Zach\smoky-mountain-open\scripts\dry-run-regen-ops-views.py", line 48, in read_frontmatter
+    return json.loads(m.group(1))
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
 
 --- scripts/regen-token-usage.py ---
 [regen-token-usage] OK   token-usage.html
-[regen-token-usage] all-time: real=6311005958 estimated=7292040 manual=0
+[regen-token-usage] all-time: real=6352806639 estimated=7292040 manual=0
 
 --- scripts/regen-index.py ---
 [regen-index] OK   index.html
-[regen-index] ships=32 proposals_pending=0 bubbles=1 halt=none git=179a0b65
+[regen-index] ships=32 proposals_pending=1 bubbles=1 halt=none git=a1c381a6
+
+--- P9.5 self-test ---
+[ingest-session-transcripts] scanned 28 JSONL file(s), found 0 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (54 buckets, 6352704639 total tokens, 28 sessions)
+[ingest-session-transcripts] SELF-TEST OK: 28 JSONLs \u2192 6352704639 tokens across 54 buckets
