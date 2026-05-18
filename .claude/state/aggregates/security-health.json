@@ -1,18 +1,18 @@
 {
   "schema_version": "security-health-v1.1",
-  "timestamp": "2026-05-18T19:02:16Z",
-  "generated_at": "2026-05-18T19:02:16Z",
-  "head_sha": "b641fda",
+  "timestamp": "2026-05-18T19:09:23Z",
+  "generated_at": "2026-05-18T19:09:23Z",
+  "head_sha": "3eb4ca2",
   "status": "red",
-  "status_reason": "2 potential credential leak(s) detected in tracked files",
-  "summary": "2 potential credential leak(s) detected in tracked files",
+  "status_reason": "4 potential credential leak(s) detected in tracked files",
+  "summary": "4 potential credential leak(s) detected in tracked files",
   "active_findings": {
     "critical": 0,
     "high": 0,
     "medium": 1,
     "low": 1
   },
-  "credential_leaks": 2,
+  "credential_leaks": 4,
   "vulnerable_deps": [
     {
       "package": "fast-xml-builder",
