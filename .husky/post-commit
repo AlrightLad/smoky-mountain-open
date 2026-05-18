@@ -99,6 +99,7 @@ fi
 REGEN_SCRIPTS="\
 scripts/scan-shipped-proposals.py
 scripts/aggregate-telemetry.py
+scripts/ingest-session-transcripts.py
 scripts/aggregate-token-usage.py
 scripts/aggregate-test-health.py
 scripts/aggregate-security-health.py
@@ -131,6 +132,21 @@ done
 if [ -n "$FAILED" ]; then
     echo "[post-commit] WARN regen failures:$FAILED" >&2
     echo "[post-commit] see $SCAFFOLD_LOG for diagnostics" >&2
+fi
+
+# Phase T1 D34 — P9.5 automated truthfulness self-check.
+# Asserts that session-transcript ingestion + aggregator produce non-zero
+# output when source files are present. Catches silent data-loss bugs
+# where the aggregator runs successfully but emits zeros.
+if [ -f "scripts/ingest-session-transcripts.py" ]; then
+    echo "" >> "$SCAFFOLD_LOG"
+    echo "--- P9.5 self-test ---" >> "$SCAFFOLD_LOG"
+    if ! "$PY" scripts/ingest-session-transcripts.py --self-test >> "$SCAFFOLD_LOG" 2>&1; then
+        echo "[post-commit] FAIL P9.5 truthfulness self-test (see $SCAFFOLD_LOG)" >&2
+        # Self-test failures are loud but non-blocking — the commit already
+        # landed. Surface to stderr for visibility; let cron route this
+        # into test-health.json on the next refresh.
+    fi
 fi
 
 # AMD-020 Class A auto-clean. Commit ONLY dashboard regen output. Exclude
