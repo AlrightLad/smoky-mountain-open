@@ -4,6 +4,34 @@ description: Critic's 12 rejection criteria + acceptance review. Brief rejection
 trigger: Ship Plan ratified — pre-engineering Critic review; or Engineer self-audit complete — implementation review
 owner: Critic
 tier: T1 (skill content drafted at Phase 1)
+# >>> agentshield-instrumentation
+# Added 2026-05-18 to satisfy AgentShield ECC 2.0 skill-health checks
+# (observation-hooks, feedback-hooks, version, rollback). Wires the skill to
+# the real PARBAUGHS telemetry substrate; no fake telemetry. See
+# parbaughs-telemetry-emit and HANDOFF_PROTOCOL.md for the consuming systems.
+version: 1.0.0
+observation_hooks:
+  on_invoke:
+    event_type: skill.invocation.start
+    emit_via: parbaughs-telemetry-emit
+    target: .claude/state/telemetry/events/{utc_date}.ndjson
+  on_complete:
+    event_type: skill.invocation.end
+    emit_via: parbaughs-telemetry-emit
+    target: .claude/state/telemetry/events/{utc_date}.ndjson
+feedback_hooks:
+  channel: handoff-note
+  scenario: subagent-return
+  template: HANDOFF_NOTE_TEMPLATES.md
+  target_dir: .claude/state/handoffs/subagent-returns/
+rollback:
+  previous_version: null
+  procedure: |
+    git revert the commit that introduced the skill update; APPROVAL sidecar
+    travels with the skill so revert restores both. Skill changes never co-mingle
+    with code commits, so revert is mechanically clean.
+  rollback_safe: true
+# <<< agentshield-instrumentation
 ---
 
 # Skill: parbaughs-critic-checklist
