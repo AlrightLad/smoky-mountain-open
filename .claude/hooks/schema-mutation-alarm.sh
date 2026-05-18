@@ -19,6 +19,14 @@ case "$file" in
   *) exit 0 ;;
 esac
 
+# agentshield-ignore: benign string concatenation of two payload variables for grep,
+# not command execution. AgentShield's hooks-injection rule (var-interpolation pattern
+# /\$\{(?:file|command|content|input|args?)\}/gi) flags ${content} and ${new_string}
+# verbatim because the regex doesn't distinguish exec context from string assignment.
+# These variables hold tool-input bodies that are subsequently piped to `grep -qE`
+# (read-only static pattern matching), never to `sh -c`, `eval`, `bash -c`, or any
+# exec sink. False positive — documented in .claude/state/dashboard-audit-2026-05-18/
+# AGENTSHIELD-FALSE-POSITIVE-LOG.md.
 payload="${content}${new_string}"
 [[ -z "$payload" ]] && exit 0
 

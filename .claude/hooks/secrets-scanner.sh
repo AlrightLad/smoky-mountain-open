@@ -19,6 +19,9 @@ case "$file" in
   *) skip_md=0 ;;
 esac
 
+# agentshield-ignore: same false positive as schema-mutation-alarm.sh — ${content}
+# and ${new_string} are tool-input variables piped to `grep -qE` for read-only static
+# pattern matching, never to a shell exec sink. See AGENTSHIELD-FALSE-POSITIVE-LOG.md.
 # Collect payload to scan
 payload="${content}${new_string}"
 [[ -z "$payload" ]] && exit 0
@@ -45,12 +48,20 @@ if echo "$payload" | grep -qE 'AIza[0-9A-Za-z_-]{35}'; then
   hits="${hits}\n  - Google API key pattern (AIza...)"
 fi
 
+# agentshield-ignore: the PEM-header literal below appears inside a single-quoted
+# regex argument to `grep -qE`. It is a DETECTOR pattern used to catch credentials
+# leaking through tool-input payloads, not an embedded credential itself.
+# AgentShield's secrets rules flag the literal string regardless of context.
+# False positive — the regex must contain the literal PEM header to detect real
+# leaks. Documented in .claude/state/dashboard-audit-2026-05-18/
+# AGENTSHIELD-FALSE-POSITIVE-LOG.md.
 # Firebase service account JSON markers
 if echo "$payload" | grep -qE '"private_key"[[:space:]]*:[[:space:]]*"-----BEGIN PRIVATE KEY-----'; then
   suspicious=1
   hits="${hits}\n  - Firebase service account private key"
 fi
 
+# agentshield-ignore: same false positive — PEM header inside detection regex.
 # Generic private key markers
 if echo "$payload" | grep -qE '-----BEGIN (RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----'; then
   suspicious=1
