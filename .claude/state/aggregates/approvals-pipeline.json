@@ -1,22 +1,22 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-18T18:04:15Z",
-  "generated_at": "2026-05-18T18:04:15Z",
+  "timestamp": "2026-05-18T18:37:13Z",
+  "generated_at": "2026-05-18T18:37:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
-  "summary": "watcher cycling · applies blocked (10 skips on dirty tree) · 31 in inbox",
-  "as_of": "2026-05-18T18:00:49Z",
+  "summary": "watcher cycling · applies blocked (6 skips on dirty tree) · 32 in inbox",
+  "as_of": "2026-05-18T18:35:49Z",
   "stale": false,
-  "age_hours": 0.056666666666666664,
+  "age_hours": 0.02333333333333333,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 9,
     "proposals_deferred": 0,
     "proposals_rejected": 0,
     "proposals_shipped": 4,
-    "proposals_inbox": 14,
+    "proposals_inbox": 15,
     "amendments_inbox": 15,
     "escalations_inbox": 2
   },
@@ -25,29 +25,29 @@
       "category": "marker",
       "status": "info",
       "name": "last-processed-decisions",
-      "note": "file=amendments-2026-05-15T02-22-12Z-goal-closure.json kind=amendments",
-      "when": "2026-05-15T02:22:28.9780130Z"
+      "note": "file=decisions-canary-2026-05-18T18-04-36Z.json kind=decisions",
+      "when": "2026-05-18T18:05:53.2742650Z"
     },
     {
       "category": "stall",
       "status": "skip-dirty",
-      "name": "2026-05-18T18-00-49Z-downloads-watcher.log",
-      "note": "[18:00:49] SKIP working tree dirty with non-routine files: .claude/state/task-queue/founder/dashboard-completion-verification.md",
-      "when": "2026-05-18T18:00:49Z"
+      "name": "2026-05-18T18-35-49Z-downloads-watcher.log",
+      "note": "[18:35:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-18/CONSOLIDATION.md",
+      "when": "2026-05-18T18:35:49Z"
     },
     {
       "category": "stall",
       "status": "skip-dirty",
-      "name": "2026-05-18T17-55-49Z-downloads-watcher.log",
-      "note": "[17:55:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-health/post-commit-hook.log",
-      "when": "2026-05-18T17:55:49Z"
+      "name": "2026-05-18T18-30-49Z-downloads-watcher.log",
+      "note": "[18:30:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-18/CONSOLIDATION.md",
+      "when": "2026-05-18T18:30:49Z"
     },
     {
       "category": "stall",
       "status": "skip-dirty",
-      "name": "2026-05-18T17-50-49Z-downloads-watcher.log",
-      "note": "[17:50:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-18/DATA-TRUTH-MATRIX.md, .claude/state/dashboard-health/post-commit-hook.log",
-      "when": "2026-05-18T17:50:49Z"
+      "name": "2026-05-18T18-25-49Z-downloads-watcher.log",
+      "note": "[18:25:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-18/CONSOLIDATION.md",
+      "when": "2026-05-18T18:25:49Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 10,
-    "age_minutes": 3.4
+    "consecutive_skips": 6,
+    "age_minutes": 1.4
   }
 }
