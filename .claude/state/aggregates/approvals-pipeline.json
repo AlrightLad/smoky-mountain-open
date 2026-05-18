@@ -1,17 +1,17 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-18T17:57:13Z",
-  "generated_at": "2026-05-18T17:57:13Z",
+  "timestamp": "2026-05-18T18:03:36Z",
+  "generated_at": "2026-05-18T18:03:36Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
   "summary": "watcher cycling · applies blocked (10 skips on dirty tree) · 31 in inbox",
-  "as_of": "2026-05-18T17:55:49Z",
+  "as_of": "2026-05-18T18:00:49Z",
   "stale": false,
-  "age_hours": 0.02333333333333333,
+  "age_hours": 0.04666666666666666,
   "counts": {
-    "proposals_pending": 1,
+    "proposals_pending": 0,
     "proposals_approved": 9,
     "proposals_deferred": 0,
     "proposals_rejected": 0,
@@ -31,6 +31,13 @@
     {
       "category": "stall",
       "status": "skip-dirty",
+      "name": "2026-05-18T18-00-49Z-downloads-watcher.log",
+      "note": "[18:00:49] SKIP working tree dirty with non-routine files: .claude/state/task-queue/founder/dashboard-completion-verification.md",
+      "when": "2026-05-18T18:00:49Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
       "name": "2026-05-18T17-55-49Z-downloads-watcher.log",
       "note": "[17:55:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-health/post-commit-hook.log",
       "when": "2026-05-18T17:55:49Z"
@@ -41,13 +48,6 @@
       "name": "2026-05-18T17-50-49Z-downloads-watcher.log",
       "note": "[17:50:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-18/DATA-TRUTH-MATRIX.md, .claude/state/dashboard-health/post-commit-hook.log",
       "when": "2026-05-18T17:50:49Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-18T17-45-49Z-downloads-watcher.log",
-      "note": "[17:45:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-health/post-commit-hook.log",
-      "when": "2026-05-18T17:45:49Z"
     }
   ],
   "links": [
@@ -64,6 +64,6 @@
   "_meta": {
     "watcher_runs_inspected": 10,
     "consecutive_skips": 10,
-    "age_minutes": 1.4
+    "age_minutes": 2.8
   }
 }
