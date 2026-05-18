@@ -1,11 +1,11 @@
 {
-  "as_of": "2026-05-17T07:04:23.807435+00:00",
+  "as_of": "2026-05-18T17:07:46.901143+00:00",
   "_meter_status": "wired-real",
   "_meter_note": "Token meter is wired to real data via PROP-003.a sidecar (.claude/state/quota-status.json). weekly_tokens reflects the most recent meter reading. See quota_status block for org-monthly percentage + freshness.",
   "quota_status": {
     "state": "fresh",
-    "as_of": "2026-05-17T07:02:12.5106109Z",
-    "age_seconds": 131,
+    "as_of": "2026-05-18T17:07:12.8504766Z",
+    "age_seconds": 34,
     "weekly_tokens": 102000,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -22,38 +22,38 @@
   "ships_this_week": 32,
   "ships_trend_7d": {
     "labels": [
-      "Mon",
       "Tue",
       "Wed",
       "Thu",
       "Fri",
       "Sat",
-      "Sun"
+      "Sun",
+      "Mon"
     ],
     "values": [
-      0,
       0,
       4,
       26,
       2,
+      0,
       0,
       0
     ]
   },
   "handoffs_trend_7d": {
     "labels": [
-      "Mon",
       "Tue",
       "Wed",
       "Thu",
       "Fri",
       "Sat",
-      "Sun"
+      "Sun",
+      "Mon"
     ],
     "values": [
       0,
-      0,
       1,
+      0,
       0,
       0,
       0,
@@ -62,19 +62,19 @@
   },
   "bubbles_trend_7d": {
     "labels": [
-      "Mon",
       "Tue",
       "Wed",
       "Thu",
       "Fri",
       "Sat",
-      "Sun"
+      "Sun",
+      "Mon"
     ],
     "values": [
       0,
-      0,
       5,
       2,
+      0,
       0,
       0,
       0
@@ -93,19 +93,19 @@
   },
   "token_trend_7d": {
     "labels": [
-      "Mon",
       "Tue",
       "Wed",
       "Thu",
       "Fri",
       "Sat",
-      "Sun"
+      "Sun",
+      "Mon"
     ],
     "values": [
       0,
-      0,
       102000,
       7200000,
+      0,
       0,
       0,
       0
@@ -113,21 +113,21 @@
   },
   "cycle_outcomes_7d": {
     "labels": [
-      "Mon",
       "Tue",
       "Wed",
       "Thu",
       "Fri",
       "Sat",
-      "Sun"
+      "Sun",
+      "Mon"
     ],
     "datasets": [
       {
         "label": "Complete",
         "data": [
           0,
-          0,
           1,
+          0,
           0,
           0,
           0,
@@ -139,8 +139,8 @@
         "label": "Paused",
         "data": [
           0,
-          0,
           3,
+          0,
           0,
           0,
           0,
@@ -286,7 +286,7 @@
     }
   ],
   "_aggregate_counts": {
-    "events_total": 2237,
+    "events_total": 2990,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
