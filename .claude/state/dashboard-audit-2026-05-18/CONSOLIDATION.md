@@ -253,6 +253,59 @@ Plus material data-truthfulness corrections on dashboard.html:
 | D43-D47 (retrospective + final report + consolidation) | Phase J |
 | D49 (FOUNDER-APPROVED) | Founder action on verification packet |
 
+### Session-2 SECURITY BLOCK (per spec P8 ship retrospective format)
+
+```
+SECURITY + PRIVACY + ABUSE BLOCK — session 2 aggregate
+------------------------------------------------------
+Surface scope: internal dashboards + token meter cross-surface unification + ECC hook coexistence + AgentShield false-positive triage + 10 atomic ship commits
+
+Data classification: PARBAUGHS-internal (no member PII; agent self-data; session transcripts are agent's own tool calls; aggregate JSONs are agent-derived metadata)
+
+AgentShield scan result: .claude/state/security/baseline-20260518-190513/agentshield-post-false-positive-suppression.txt
+- Secrets detection (14 patterns): MIXED — 9 of 18 CRITICAL findings are FALSE POSITIVES (PEM-regex DETECTOR in secrets-scanner.sh:49 + ${content}${new_string} BENIGN concat in schema-mutation-alarm.sh:22). Confirmed via manual review + post-suppression-attempt confirms no inline-suppression in AgentShield 1.5.0. Upstream PR drafts ready at .claude/state/dashboard-audit-2026-05-18/AGENTSHIELD-UPSTREAM-ISSUES.md.
+- Permission audit: 3 of 18 CRITICAL — Bash(*) / Edit(*) / Write(*) wildcards in .claude/settings.json. Founder ratification surfaced via .claude/state/task-queue/founder/policy-overpermissiveness-ratification.md.
+- Hook injection analysis: PARTIAL — ${content}${new_string} concatenation flagged but reviewed as benign (no command exec context).
+- MCP server risk profile: PASS (100% — no MCP changes this session).
+- Agent config review: ✅ 42 MEDIUM closed (21 PARBAUGHS skills instrumented with observation hooks + version + rollback metadata per ECC 2.0 standards).
+- Skill health: 0 → 21 instrumented / 21 versioned / 21 rollback-ready.
+- Worktree CLAUDE.md --no-verify references (6 CRITICAL): auto-resolve on Phase H housekeeping (worktree deletion).
+
+Privacy:
+- All data local; no third-party transmission
+- No member PII collected (session transcripts are agent's own tool calls)
+- Retention: full local history retained (~/.claude/projects/)
+- Third-party data sharing: none
+
+Security headers: N/A (file:// only dashboards; production app code untouched this session)
+
+OWASP Top 10 basics:
+- A01 broken access control: N/A this session (dashboard-only; firestore rules audit deferred to Phase F dispatched agent)
+- A02 cryptographic failures: PASS (no secrets in diff; session-2 commits scanned + clean)
+- A03 injection: PARTIAL — flagged interpolation patterns reviewed as false-positive; ${content}${new_string} concat is bash variable substitution, not command exec
+- A04 insecure design: ✅ Phase B GAP-1/2/3/4 closed (token meter source-of-truth cross-surface unification eliminated silent fallback-to-zero antipattern)
+- A05 misconfiguration: PARTIAL — Bash(*)/Edit(*)/Write(*) overpermissive; Founder ratification packet open
+- A06-A10: N/A or out of scope this session
+
+Bundle exposure scan: N/A (no production bundle changes this session)
+
+Abuse + rate limiting:
+- Per-actor rate limits: N/A (single-user local)
+- Cost ceiling alerts: Token meter (Phase T6) now displays cost-weighted spend per agent role / work category / top 10 sessions. Enables Founder visibility into per-session cost. No automated alerting yet.
+- Auth abuse rate-limits: N/A this session
+
+OVERALL SECURITY VERDICT: YELLOW (carried from session 1)
+- 18 CRITICAL findings — same count as session 1 baseline
+- Breakdown CORRECTED from session 1 framing:
+  * 0 skill-instrumentation CRITICALs (those are MEDIUM; 42 closed this session)
+  * 9 false-positive CRITICALs (need upstream AgentShield fix — 1.5.0 has no suppression mechanism)
+  * 3 policy CRITICALs (Founder ratification packet open)
+  * 6 worktree CRITICALs (Phase H housekeeping auto-resolves)
+- Path to GREEN: Founder picks D31 decision option (--min-severity gate / wait upstream / refactor hooks)
+- New disclosure: AgentShield 1.5.0 limitation that wasn't visible in session 1
+- New surfaced items: 3 Founder-blocking decisions packaged with options
+```
+
 ### Net DONE WHEN count (post-session-2)
 
 **26-27 of 49 confirmed passing.** Up from 22 at session 1 close.
