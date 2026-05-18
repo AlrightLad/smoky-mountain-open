@@ -14,7 +14,7 @@ Usage:
 import json
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -1043,18 +1043,41 @@ def last_regen_all_status():
             # writes; without this, json.loads fails on the BOM byte and we
             # silently fall through to the legacy maintenance-log path.
             data = json.loads(heartbeat.read_text(encoding="utf-8-sig"))
-            iso = data.get("last_pass_at_utc") or ""
+            # Phase B fix 2026-05-18 (GAP-4 schema parity): heartbeat writer
+            # uses {ts, timestamp, generated_at, status, age_minutes, head_sha}.
+            # Consumer was reading {last_pass_at_utc, last_pass_at_human}, which
+            # never matched — every read silently fell through and the upper
+            # round-trip-last-pass anchor displayed "unknown". Read all common
+            # variants so consumer matches producer.
+            iso = (
+                data.get("ts")
+                or data.get("timestamp")
+                or data.get("generated_at")
+                or data.get("last_pass_at_utc")
+                or ""
+            )
             ts_dt = datetime.fromisoformat(iso.replace("Z", "+00:00")) if iso else None
             age_min = round((now_utc - ts_dt).total_seconds() / 60.0, 1) if ts_dt else None
             # Stale threshold: 60 minutes (regen-all should run at least hourly
             # via maintenance cron + ad-hoc on ship-close commits).
             stale = age_min is not None and age_min > 60
+            # Honor heartbeat's reported status (PASS / GATE-FAIL / STALE) so
+            # the dashboard surfaces "GATE-FAIL — regen ran but round-trip
+            # gate failed" honestly rather than masquerading as plain PASS.
+            hb_status = data.get("status")
+            if hb_status == "GATE-FAIL":
+                display_status = "GATE-FAIL"
+            elif stale:
+                display_status = "STALE"
+            else:
+                display_status = "PASS"
             return {
                 "ts": data.get("last_pass_at_human") or iso,
                 "ts_iso": iso,
-                "status": "STALE" if stale else "PASS",
+                "status": display_status,
                 "age_minutes": age_min,
                 "source": "heartbeat",
+                "head_sha": data.get("head_sha"),
             }
         except (OSError, json.JSONDecodeError):
             pass
@@ -1438,11 +1461,16 @@ def build_dashboard_data():
     snap = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
     pc = proposals_state_counts()
     ac = amendments_state_counts()
-    # D36 (2026-05-16): compute Day-To-Date token sum from the by-day
-    # breakdown in token-usage-snapshot.json. Per spec PHASE T6 + Founder
-    # Observation 2: dashboard should display W-T-D AND D-T-D AND last-ship.
-    # W-T-D was already populated as weekly_tokens; D-T-D is new this ship.
+    # Phase B fix 2026-05-18 (session 2, dashboard-completion-spec GAP-1/2/3):
+    # token-usage-snapshot.json is the cross-surface source-of-truth for token
+    # spend (post-T1+T5). current-snapshot.json's weekly_tokens has never been
+    # wired to session transcripts and remains stuck at 102k (vs ~4.05B truth).
+    # Pull weekly_tokens + the 7-day trend + override quota_status.weekly_tokens
+    # from token-usage-snapshot.json to close the P9 gap.
+    weekly_real = None
     daily_tokens = 0
+    trend_labels: list[str] = []
+    trend_values: list[int] = []
     try:
         token_snap_path = STATE / "telemetry" / "aggregates" / "token-usage-snapshot.json"
         if token_snap_path.exists():
@@ -1451,11 +1479,37 @@ def build_dashboard_data():
             for agent_data in (ts_data.get("by_agent") or {}).values():
                 day_bucket = (agent_data.get("by_day") or {}).get(today_iso) or {}
                 daily_tokens += int(day_bucket.get("real", 0)) + int(day_bucket.get("estimated", 0))
+            session_block = ts_data.get("session_transcripts") or {}
+            wr = session_block.get("weekly_real_7d")
+            if isinstance(wr, (int, float)) and wr > 0:
+                weekly_real = int(wr)
+            by_day_total = session_block.get("by_day_total") or {}
+            if by_day_total:
+                today = datetime.now(timezone.utc).date()
+                for offset in range(6, -1, -1):
+                    iso = (today - timedelta(days=offset)).strftime("%Y-%m-%d")
+                    trend_labels.append(iso[5:])
+                    trend_values.append(int(by_day_total.get(iso, 0)))
     except (OSError, json.JSONDecodeError, ValueError, TypeError):
+        weekly_real = None
         daily_tokens = 0
+        trend_labels = []
+        trend_values = []
+
+    weekly_tokens = weekly_real if weekly_real is not None else snap.get("weekly_tokens", 0)
+    token_trend_7d = (
+        {"labels": trend_labels, "values": trend_values}
+        if trend_values
+        else snap.get("token_trend_7d", {"labels": [], "values": []})
+    )
+    quota_status_override = snap.get("quota_status")
+    if isinstance(quota_status_override, dict) and weekly_real is not None:
+        quota_status_override = dict(quota_status_override)
+        quota_status_override["weekly_tokens"] = weekly_real
+        quota_status_override["data_source"] = "session-transcripts (real, cross-surface unified)"
 
     return {
-        "weekly_tokens": snap.get("weekly_tokens", 0),
+        "weekly_tokens": weekly_tokens,
         "weekly_tokens_estimated": snap.get("weekly_tokens_estimated", 0),
         "weekly_tokens_methodology": snap.get("weekly_tokens_methodology", ""),
         "daily_tokens": daily_tokens,
@@ -1469,7 +1523,7 @@ def build_dashboard_data():
         # Phase 6.6: no fictional cap. Real quota % comes from manual paste.
         "manual_quota_latest": snap.get("manual_quota_latest"),
         "tokens_by_role": snap.get("tokens_by_role", {"labels": [], "values": []}),
-        "token_trend_7d": snap.get("token_trend_7d", {"labels": [], "values": []}),
+        "token_trend_7d": token_trend_7d,
         "cycle_outcomes_7d": snap.get("cycle_outcomes_7d", {"labels": [], "datasets": []}),
         # Founder directive 2026-05-14 DASHBOARD VIZ — wire these trend
         # arrays into the dashboard data block so the 7-day table renders
@@ -1484,7 +1538,8 @@ def build_dashboard_data():
         "_aggregate_counts": snap.get("_aggregate_counts", {}),
         # PROP-003.b: surface the quota_status block so dashboard.html can
         # render live/stale/empty/absent state for the meter widget.
-        "quota_status": snap.get("quota_status"),
+        # GAP-2 fix: override weekly_tokens with session-transcript truth.
+        "quota_status": quota_status_override,
         # AMD-007 P18.6: Founder Review Queue.
         "founder_queue": build_founder_queue(),
     }

@@ -30,7 +30,7 @@ The following surfaces render values that have NOT YET been individually P9-trac
 
 | Surface | Banner / KPI source | Status | Phase to close |
 |---|---|---|---|
-| dashboard.html | approvals-pipeline.json, architecture-review.json, fiq-status.json, security-health.json, test-health.json, goal-status.json, token-usage-snapshot.json | PENDING | Phase B1-B5 |
+| dashboard.html | approvals-pipeline.json, architecture-review.json, fiq-status.json, security-health.json, test-health.json, goal-status.json, token-usage-snapshot.json (T1+T5 cross-surface unified post-2026-05-18-session-2) + regen-all heartbeat (GAP-4 schema parity fix) | **TRUTHFUL** ✅ (Phase B closed session 2 — GAP-1/2/3/4 fixed; GAP-5 B2 AgentShield integration deferred; full audit at PHASE-B-GAPS.md) | Phase B (closed) |
 | activity.html | Various event/handoff sources; 1 audit failure: handoffs.length=500 vs ground=1 | PENDING | Phase B + Phase G |
 | amendments.html | AMD-001-AMD-025 frontmatter scan | PENDING | Phase B |
 | design-system.html | Static token reference; no live data | LIKELY TRUTHFUL (no source to drift) | Phase G visual audit |

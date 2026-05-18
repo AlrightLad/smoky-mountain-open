@@ -866,13 +866,22 @@
             var lrStatus = lr.status || 'UNKNOWN';
             var lrAge = lr.age_minutes;
             setText('[data-fq="round-trip"]', lrTs);
+            // Phase B fix 2026-05-18 (GAP-4): added GATE-FAIL state — heartbeat
+            // reports when regen ran but a downstream gate (e.g. round-trip
+            // workflow staleness) failed. Surface honestly rather than masking
+            // as PASS or "unknown".
             var lrSub = (lrStatus === 'PASS') ? ('regen-all heartbeat · ' + (lrAge != null ? lrAge + 'min ago' : 'fresh'))
                       : (lrStatus === 'STALE') ? ('STALE · last pass ' + (lrAge != null ? lrAge + 'min' : 'unknown') + ' ago')
-                      : 'unknown';
+                      : (lrStatus === 'GATE-FAIL') ? ('GATE-FAIL · regen ran ' + (lrAge != null ? lrAge + 'min ago' : '?') + ' but a gate failed')
+                      : (lrStatus === 'UNKNOWN' || lrStatus === 'NEVER') ? 'no heartbeat recorded yet'
+                      : lrStatus.toLowerCase();
             setText('[data-fq="round-trip-status"]', lrSub);
             var rtCard = document.querySelector('[data-fq-health="round-trip"]');
             if (rtCard) {
-                rtCard.style.borderLeftColor = (lrStatus === 'STALE') ? 'var(--pb-warning)' : (lrStatus === 'PASS' ? 'var(--pb-success)' : 'var(--pb-error)');
+                var rtColor = (lrStatus === 'PASS') ? 'var(--pb-success)'
+                            : (lrStatus === 'STALE' || lrStatus === 'GATE-FAIL') ? 'var(--pb-warning)'
+                            : 'var(--pb-error)';
+                rtCard.style.borderLeftColor = rtColor;
                 rtCard.style.borderLeftWidth = '3px';
                 rtCard.style.borderLeftStyle = 'solid';
             }
