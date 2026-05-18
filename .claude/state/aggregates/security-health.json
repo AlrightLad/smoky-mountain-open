@@ -1,8 +1,8 @@
 {
   "schema_version": "security-health-v1.1",
-  "timestamp": "2026-05-18T19:24:30Z",
-  "generated_at": "2026-05-18T19:24:30Z",
-  "head_sha": "31024e1",
+  "timestamp": "2026-05-18T19:26:12Z",
+  "generated_at": "2026-05-18T19:26:12Z",
+  "head_sha": "5ded32e",
   "status": "red",
   "status_reason": "5 potential credential leak(s) detected in tracked files",
   "summary": "5 potential credential leak(s) detected in tracked files",

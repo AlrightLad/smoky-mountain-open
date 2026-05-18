@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-18T19:24:30Z",
-  "generated_at": "2026-05-18T19:24:30Z",
+  "timestamp": "2026-05-18T19:26:12Z",
+  "generated_at": "2026-05-18T19:26:12Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
-  "summary": "watcher cycling · applies blocked (7 skips on dirty tree) · 32 in inbox",
-  "as_of": "2026-05-18T19:20:49Z",
+  "summary": "watcher cycling · applies blocked (8 skips on dirty tree) · 32 in inbox",
+  "as_of": "2026-05-18T19:25:49Z",
   "stale": false,
-  "age_hours": 0.06166666666666667,
+  "age_hours": 0.006666666666666667,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 9,
@@ -31,6 +31,13 @@
     {
       "category": "stall",
       "status": "skip-dirty",
+      "name": "2026-05-18T19-25-49Z-downloads-watcher.log",
+      "note": "[19:25:49] SKIP working tree dirty with non-routine files: .claude/state/main-flows-v2/current-render.png",
+      "when": "2026-05-18T19:25:49Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
       "name": "2026-05-18T19-20-49Z-downloads-watcher.log",
       "note": "[19:20:49] SKIP working tree dirty with non-routine files: .claude/state/main-flows-v2/current-render.png, .claude/state/task-queue/founder/d31-zero-critical-decision.md, scripts/visual-audit/T6-pie-f",
       "when": "2026-05-18T19:20:49Z"
@@ -41,13 +48,6 @@
       "name": "2026-05-18T19-15-49Z-downloads-watcher.log",
       "note": "[19:15:49] SKIP working tree dirty with non-routine files: .claude/state/main-flows-v2/capture-meta.json, .claude/state/main-flows-v2/current-render.png, .claude/state/main-flows-v2/current-render-flo",
       "when": "2026-05-18T19:15:49Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-18T19-10-49Z-downloads-watcher.log",
-      "note": "[19:10:49] SKIP working tree dirty with non-routine files: .claude/state/main-flows-v2/capture-meta.json, .claude/state/main-flows-v2/current-render.png, .claude/state/main-flows-v2/current-render-flo",
-      "when": "2026-05-18T19:10:49Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 7,
-    "age_minutes": 3.7
+    "consecutive_skips": 8,
+    "age_minutes": 0.4
   }
 }
