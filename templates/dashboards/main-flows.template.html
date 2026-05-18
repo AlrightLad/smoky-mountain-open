@@ -345,15 +345,18 @@
         <div class="pb-page-title-row">
             <div>
                 <h1 class="pb-page-title">Architecture &amp; Flows</h1>
-                <p class="pb-page-subtitle">Every component and external service that powers PARBAUGHS, mapped across six columns from member action to external system. Pick a flow on the right rail (search + actor + tier filters surface all 62 flows in the scrollable panel); the path lights up, arrows draw between nodes, and the steps panel walks the journey. Every node and step is grep-evidenced &mdash; see the <a href="../../.claude/state/wave-zero-dry-run/architecture-audit.md">architecture audit</a>.</p>
+                <p class="pb-page-subtitle">Every component that powers PARBAUGHS — from member action to external system. Pick a flow on the right; the path lights up, arrows draw, the steps panel walks the journey.</p>
             </div>
         </div>
 
-        <aside class="mf-caveats">
-            <strong>Read this artifact correctly</strong> (binding caveats from <code>db-2026-05-13-004</code>):
-            this is the orchestration team's recommendation — Founder is the product source of truth.
-            <strong>NOT a roadmap</strong> (read <a href="../agents/ROADMAP.md">ROADMAP.md</a> for shipping order). Single source of truth is <code>docs/reports/_assets/main-flows-data.json</code>; HTML is generator-driven via <code>scripts/regen-main-flows.py</code>.
-        </aside>
+        <details class="mf-caveats-details" style="margin: var(--space-3) 0; font-size: 0.75rem; color: var(--text-tertiary);">
+            <summary style="cursor: pointer; user-select: none; display: inline-block; padding: var(--space-1) 0;">binding caveats &amp; data sources</summary>
+            <aside class="mf-caveats" style="margin-top: var(--space-2);">
+                <strong>Read this artifact correctly</strong> (binding caveats from <code>db-2026-05-13-004</code>):
+                this is the orchestration team's recommendation — Founder is the product source of truth.
+                <strong>NOT a roadmap</strong> (read <a href="../agents/ROADMAP.md">ROADMAP.md</a> for shipping order). Single source of truth is <code>docs/reports/_assets/main-flows-data.json</code>; HTML is generator-driven via <code>scripts/regen-main-flows.py</code>. Every node and step is grep-evidenced &mdash; see the <a href="../../.claude/state/wave-zero-dry-run/architecture-audit.md">architecture audit</a>.
+            </aside>
+        </details>
 
         <div class="mf-legend" id="mf-legend"></div>
 
@@ -733,7 +736,14 @@
                 };
             }
 
-            function drawArrowsForFlow(flowId) {
+            // M5 fix: initial-render path-draw should NOT animate (Janowiak's
+            // page loads with the default flow already lit). Track whether
+            // we've ever drawn an arrow set; subsequent draws animate, the
+            // first set is instant. Toggled by drawArrowsForFlow second arg.
+            var arrowsHaveBeenDrawn = false;
+            function drawArrowsForFlow(flowId, opts) {
+                opts = opts || {};
+                var animate = (opts.animate !== false) && arrowsHaveBeenDrawn;
                 ARROWS.innerHTML = '';
                 if (!flowId) return;
                 var wrap = GRID.parentElement;
@@ -751,7 +761,7 @@
                 defs.innerHTML = '<marker id="mf-arrow-head-marker" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="mf-arrow-head" d="M 0 0 L 10 5 L 0 10 z"/></marker>';
                 ARROWS.appendChild(defs);
 
-                flow.steps.forEach(function (s) {
+                flow.steps.forEach(function (s, idx) {
                     var a = nodeCenter(s.from);
                     var b = nodeCenter(s.to);
                     if (!a || !b) return;
@@ -768,6 +778,27 @@
                     path.setAttribute('marker-end', 'url(#mf-arrow-head-marker)');
                     ARROWS.appendChild(path);
 
+                    // M5 path-draw (Janowiak D3 motion): per-step staggered
+                    // stroke-dashoffset ease-out — the path appears to draw
+                    // through the system. Only runs on subsequent flow
+                    // selections; initial render paints the path instantly.
+                    // 220ms duration, 30ms stagger per step. CSS
+                    // @media (prefers-reduced-motion) falls back to instant
+                    // via the existing rule on .mf-arrow-line.
+                    if (animate) {
+                        try {
+                            var len = path.getTotalLength();
+                            if (len && isFinite(len)) {
+                                path.style.strokeDasharray = String(len);
+                                path.style.strokeDashoffset = String(len);
+                                // Force reflow so the initial state paints first.
+                                void path.getBoundingClientRect();
+                                path.style.transition = 'stroke-dashoffset 220ms ease-out ' + (idx * 30) + 'ms';
+                                path.style.strokeDashoffset = '0';
+                            }
+                        } catch (e) { /* tolerate browsers that lack getTotalLength */ }
+                    }
+
                     var badge = document.createElementNS(ns, 'g');
                     var cx = mx, cy = my;
                     var circle = document.createElementNS(ns, 'circle');
@@ -779,8 +810,18 @@
                     text.setAttribute('x', cx); text.setAttribute('y', cy);
                     text.textContent = s.n;
                     badge.appendChild(text);
+                    // Badge fade-in synced with end of path draw (Janowiak D3:
+                    // edge polyline trailed by node light-up by ~50ms; badge
+                    // appears slightly after its arrow finishes drawing).
+                    // Skipped on initial render — see arrowsHaveBeenDrawn.
+                    if (animate) {
+                        badge.style.opacity = '0';
+                        badge.style.transition = 'opacity 160ms ease-out ' + (idx * 30 + 140) + 'ms';
+                        requestAnimationFrame(function () { badge.style.opacity = '1'; });
+                    }
                     ARROWS.appendChild(badge);
                 });
+                arrowsHaveBeenDrawn = true;
             }
 
             function render() {

@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-05-14T17:41:34.079Z",
+  "captured_at": "2026-05-18T19:14:13.622Z",
   "viewport": {
     "width": 1920,
     "height": 1080
@@ -11,9 +11,9 @@
       "exists": true,
       "bbox": {
         "x": 153,
-        "y": 178.375,
+        "y": 13.1875,
         "width": 1238,
-        "height": 888.15625
+        "height": 887.15625
       },
       "grid_template_columns": "200px 200px 200px 200px 200px 200px",
       "columns_count": 6
@@ -54,9 +54,9 @@
       "exists": true,
       "bbox": {
         "x": 141,
-        "y": 166.375,
+        "y": 1.1875,
         "width": 1272,
-        "height": 912
+        "height": 911
       },
       "line_count": 8,
       "head_count": 1,
@@ -67,9 +67,9 @@
       "exists": true,
       "bbox": {
         "x": 1421,
-        "y": 322.375,
+        "y": 157.1875,
         "width": 358,
-        "height": 594
+        "height": 822
       },
       "item_count": 62
     },
@@ -77,9 +77,9 @@
       "exists": true,
       "bbox": {
         "x": 140,
-        "y": 165.375,
+        "y": 0.1875,
         "width": 1640,
-        "height": 980
+        "height": 1500
       },
       "grid_template_columns": "1264px 360px",
       "display": "grid"
@@ -89,18 +89,13 @@
       "items_visible": true,
       "items_count": 7
     },
-    "section_order": {
-      "arch_top": 409.375,
-      "catalog_top": 1453.375,
-      "arch_before_catalog": true
-    },
     "flow_rail": {
-      "total_count_text": "62",
-      "tier_group_count": 4,
-      "card_count": 62
+      "total_count_text": null,
+      "tier_group_count": 0,
+      "card_count": 0
     },
     "page": {
-      "scroll_height": 3784,
+      "scroll_height": 1832,
       "viewport_width": 1920,
       "viewport_height": 1080
     }

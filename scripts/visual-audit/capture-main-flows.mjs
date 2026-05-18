@@ -96,7 +96,10 @@ async function main() {
         let flowSelected = false;
         if (await firstFlow.count()) {
             await firstFlow.click();
-            await page.waitForTimeout(500);
+            // M5 path-draw animation: 220ms × 7-step stagger × 30ms = ~430ms +
+            // badge fade-in 160ms with delay ~340ms = ~500ms. Wait 900ms total
+            // to give the staggered animation room to settle before capture.
+            await page.waitForTimeout(900);
             flowSelected = true;
             await page.screenshot({
                 path: resolve(OUT_DIR, "current-render-flow-selected.png"),
