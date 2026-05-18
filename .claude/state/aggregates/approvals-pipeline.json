@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-18T18:54:39Z",
-  "generated_at": "2026-05-18T18:54:39Z",
+  "timestamp": "2026-05-18T19:01:38Z",
+  "generated_at": "2026-05-18T19:01:38Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "yellow",
   "raw_status": "yellow",
-  "summary": "watcher last run: skip-dirty · 32 in inbox",
-  "as_of": "2026-05-18T18:50:49Z",
+  "summary": "watcher cycling · last 2 runs skipped on dirty tree · 32 in inbox",
+  "as_of": "2026-05-18T19:00:49Z",
   "stale": false,
-  "age_hours": 0.06333333333333332,
+  "age_hours": 0.013333333333333334,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 9,
@@ -31,23 +31,23 @@
     {
       "category": "stall",
       "status": "skip-dirty",
+      "name": "2026-05-18T19-00-49Z-downloads-watcher.log",
+      "note": "[19:00:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-18/HOOK-COMPARISON.md, .claude/state/dashboard-audit-2026-05-18/PHASE-B-GAPS.md, .claude/state/main-flo",
+      "when": "2026-05-18T19:00:49Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-18T18-55-49Z-downloads-watcher.log",
+      "note": "[18:55:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-18/HOOK-COMPARISON.md, .claude/state/main-flows-v2/capture-meta.json, .claude/state/main-flows-v2/curre",
+      "when": "2026-05-18T18:55:49Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
       "name": "2026-05-18T18-50-49Z-downloads-watcher.log",
       "note": "[18:50:49] SKIP working tree dirty with non-routine files: .claude/skills/parbaughs-audit-protocol.APPROVAL.md, .claude/skills/parbaughs-audit-protocol.md, .claude/skills/parbaughs-caddy-notes-classif",
       "when": "2026-05-18T18:50:49Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-18T18-40-49Z-downloads-watcher.log",
-      "note": "[18:40:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-18/CONSOLIDATION.md",
-      "when": "2026-05-18T18:40:49Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-18T18-35-49Z-downloads-watcher.log",
-      "note": "[18:35:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-18/CONSOLIDATION.md",
-      "when": "2026-05-18T18:35:49Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 1,
-    "age_minutes": 3.8
+    "consecutive_skips": 3,
+    "age_minutes": 0.8
   }
 }
