@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-05-17T20:38:37.623595+00:00",
+  "as_of": "2026-05-18T02:05:32.089577+00:00",
   "_meter_status": "wired-estimated",
   "_meter_note": "Token meter is not wired (F1 finding). tokens_by_role / weekly_tokens / weekly_cost / token_trend_7d will show synthesized event-attributed values ONLY for events that carry agent + tokens fields. Until a real meter wires up (db-2026-05-13-003 outcome pending Founder ratification), treat these fields as a lower bound, not the actual consumption.",
   "quota_status": {
@@ -22,38 +22,38 @@
   "ships_this_week": 32,
   "ships_trend_7d": {
     "labels": [
-      "Mon",
       "Tue",
       "Wed",
       "Thu",
       "Fri",
       "Sat",
-      "Sun"
+      "Sun",
+      "Mon"
     ],
     "values": [
-      0,
       0,
       4,
       26,
       2,
+      0,
       0,
       0
     ]
   },
   "handoffs_trend_7d": {
     "labels": [
-      "Mon",
       "Tue",
       "Wed",
       "Thu",
       "Fri",
       "Sat",
-      "Sun"
+      "Sun",
+      "Mon"
     ],
     "values": [
       0,
-      0,
       1,
+      0,
       0,
       0,
       0,
@@ -62,19 +62,19 @@
   },
   "bubbles_trend_7d": {
     "labels": [
-      "Mon",
       "Tue",
       "Wed",
       "Thu",
       "Fri",
       "Sat",
-      "Sun"
+      "Sun",
+      "Mon"
     ],
     "values": [
       0,
-      0,
       5,
       2,
+      0,
       0,
       0,
       0
@@ -93,19 +93,19 @@
   },
   "token_trend_7d": {
     "labels": [
-      "Mon",
       "Tue",
       "Wed",
       "Thu",
       "Fri",
       "Sat",
-      "Sun"
+      "Sun",
+      "Mon"
     ],
     "values": [
       0,
-      0,
       102000,
       7200000,
+      0,
       0,
       0,
       0
@@ -113,21 +113,21 @@
   },
   "cycle_outcomes_7d": {
     "labels": [
-      "Mon",
       "Tue",
       "Wed",
       "Thu",
       "Fri",
       "Sat",
-      "Sun"
+      "Sun",
+      "Mon"
     ],
     "datasets": [
       {
         "label": "Complete",
         "data": [
           0,
-          0,
           1,
+          0,
           0,
           0,
           0,
@@ -139,8 +139,8 @@
         "label": "Paused",
         "data": [
           0,
-          0,
           3,
+          0,
           0,
           0,
           0,
