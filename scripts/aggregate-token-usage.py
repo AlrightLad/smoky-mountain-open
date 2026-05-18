@@ -58,6 +58,21 @@ CRON_INVOKES_CLAUDE = {
     "maintenance": False,
 }
 
+# =============================================================================
+# Phase T6 (D19) — Anthropic Opus 4.7 pricing per million tokens, USD.
+# Used by build_pie_views() to compute USD cost as a SECONDARY display under
+# the primary RAW token count. RAW tokens stay visually-big; cost line provides
+# honest cache-read context (cache_read is 10x cheaper than input).
+# Reference: ~/.claude/plugins/cache/ecc/ecc/2.0.0-rc.1/scripts/hooks/cost-tracker.js
+# =============================================================================
+OPUS_PRICE_PER_MTOK = {
+    "input": 15.00,
+    "output": 75.00,
+    "cache_creation": 18.75,
+    "cache_read": 1.50,
+}
+PIE_TOP_SESSIONS = 10
+
 
 # ---------- helpers ----------
 def iso_now():
@@ -349,8 +364,128 @@ def scan_manual_log():
     return out
 
 
+# ---------- Phase T6 (D19): three-view pie chart payload ----------
+def _bucket_cost_usd(b):
+    """USD cost of a single session-transcript bucket using per-input/output/
+    cache rates. Returns dollars (float).
+    """
+    rates = OPUS_PRICE_PER_MTOK
+    cost = (
+        b.get("input_tokens", 0) * rates["input"]
+        + b.get("output_tokens", 0) * rates["output"]
+        + b.get("cache_creation_input_tokens", 0) * rates["cache_creation"]
+        + b.get("cache_read_input_tokens", 0) * rates["cache_read"]
+    ) / 1_000_000
+    return cost
+
+
+def _effective_rate_per_mtok(session_summary):
+    """Average $/Mtok across all session-transcript buckets — derived from the
+    real input/output/cache mix observed in practice. Applied to by_agent /
+    by_cron rows that lack per-input/output split (approximate but honest).
+    """
+    if not session_summary:
+        return 0.0
+    buckets = session_summary.get("buckets") or {}
+    total_cost = 0.0
+    total_tokens = 0
+    for b in buckets.values():
+        total_cost += _bucket_cost_usd(b)
+        total_tokens += int(b.get("total", 0))
+    if total_tokens <= 0:
+        return 0.0
+    return total_cost / (total_tokens / 1_000_000)
+
+
+def build_pie_views(real_events, estimated_events, by_agent, by_cron, session_summary):
+    """Produce the pie_views block consumed by token-usage.html.
+
+    Three views: agent_role / work_category / session_top10. Each slice carries
+    raw tokens (primary) + usd_cost (secondary). Methodology documented in
+    `_methodology` for P9 traceability.
+    """
+    effective_rate = _effective_rate_per_mtok(session_summary)
+
+    def agg_total(b):
+        return int((b.get("real") or 0) + (b.get("estimated") or 0) + (b.get("manual") or 0))
+
+    # View 1: agent_role — slices from by_agent (main / orchestrator / engineer / cron-runner).
+    agent_slices = []
+    for label, b in (by_agent or {}).items():
+        tokens = agg_total(b)
+        if tokens <= 0:
+            continue
+        agent_slices.append({
+            "label": label,
+            "tokens": tokens,
+            "usd_cost": round(tokens * effective_rate / 1_000_000, 4),
+        })
+    agent_slices.sort(key=lambda s: s["tokens"], reverse=True)
+
+    # View 2: work_category — slices from by_cron (manual-session / overnight-triage / downloads-watcher / maintenance / proposal-readiness / sidecar).
+    cron_slices = []
+    for label, b in (by_cron or {}).items():
+        tokens = agg_total(b)
+        if tokens <= 0:
+            continue
+        cron_slices.append({
+            "label": label,
+            "tokens": tokens,
+            "usd_cost": round(tokens * effective_rate / 1_000_000, 4),
+        })
+    cron_slices.sort(key=lambda s: s["tokens"], reverse=True)
+
+    # View 3: session_top10 — group session-transcript buckets by session_id,
+    # sum total tokens + compute USD with the per-input/output/cache rates.
+    # Slice label = first 8 chars of session_id + earliest day in window.
+    session_top = []
+    if session_summary:
+        by_session = {}
+        for b in (session_summary.get("buckets") or {}).values():
+            sid = b.get("session_id")
+            if not sid:
+                continue
+            agg = by_session.setdefault(sid, {
+                "session_id": sid, "tokens": 0, "usd_cost": 0.0,
+                "first_day": b.get("day") or "",
+            })
+            agg["tokens"] += int(b.get("total", 0))
+            agg["usd_cost"] += _bucket_cost_usd(b)
+            day = b.get("day") or ""
+            if day and (not agg["first_day"] or day < agg["first_day"]):
+                agg["first_day"] = day
+        sorted_sessions = sorted(by_session.values(), key=lambda s: s["tokens"], reverse=True)
+        for s in sorted_sessions[:PIE_TOP_SESSIONS]:
+            prefix = (s["session_id"] or "")[:8]
+            session_top.append({
+                "label": f"{prefix} · {s['first_day']}" if s["first_day"] else prefix,
+                "tokens": s["tokens"],
+                "usd_cost": round(s["usd_cost"], 4),
+                "session_id_prefix": prefix,
+                "day": s["first_day"],
+            })
+
+    return {
+        "agent_role": agent_slices,
+        "work_category": cron_slices,
+        "session_top10": session_top,
+        "_methodology": {
+            "rates_per_mtok": OPUS_PRICE_PER_MTOK,
+            "model": "claude-opus-4-7",
+            "effective_rate_per_mtok": round(effective_rate, 4),
+            "session_breakdown_source": "session-transcript-summary.json buckets (per-input/output/cache-split)",
+            "agent_work_category_breakdown_source": (
+                "by_agent and by_cron aggregates (no per-input/output split — "
+                "cost computed as tokens × effective_avg_rate derived from "
+                "session_transcripts overall mix)"
+            ),
+            "top_session_count": PIE_TOP_SESSIONS,
+        },
+    }
+
+
 # ---------- merge into snapshot ----------
-def merge_to_snapshot(real_events, estimated_events, manual_entries, session_transcript_meta=None):
+def merge_to_snapshot(real_events, estimated_events, manual_entries, session_transcript_meta=None, session_transcript_raw=None):
     by_agent = defaultdict(empty_buckets)
     by_cron = defaultdict(empty_buckets)
     by_ship = defaultdict(empty_buckets)
@@ -446,10 +581,18 @@ def merge_to_snapshot(real_events, estimated_events, manual_entries, session_tra
             "by_model_total": st.get("by_model_total", {}),
         }
 
+    # Phase T6 (D19): three-view pie chart payload. Reads from completed
+    # by_agent + by_cron + session-transcript raw buckets — must be computed
+    # AFTER bucket merging but BEFORE return.
+    pie_views = build_pie_views(
+        real_events, estimated_events, by_agent, by_cron, session_transcript_raw
+    )
+
     return {
         "generated_at": iso_now(),
         "_meter_status": meter_status,
         "session_transcripts": session_transcripts_block,
+        "pie_views": pie_views,
         "quota_status": {
             "state": qs_state,
             "as_of": qs.get("as_of") if qs_state != "absent" else None,
@@ -506,7 +649,11 @@ def main():
     real = [e for e in source_a_events if e.get("source_type") == "real"] + source_e_events
     estimated = [e for e in source_a_events if e.get("source_type") == "estimated"] + source_b_events
 
-    snapshot = merge_to_snapshot(real, estimated, manual, session_transcript_meta=source_e_meta)
+    snapshot = merge_to_snapshot(
+        real, estimated, manual,
+        session_transcript_meta=source_e_meta,
+        session_transcript_raw=source_e_meta,
+    )
     SNAPSHOT_PATH.write_text(json.dumps(snapshot, indent=2, default=str), encoding="utf-8")
 
     # Update cursor to the most-recent event timestamp seen

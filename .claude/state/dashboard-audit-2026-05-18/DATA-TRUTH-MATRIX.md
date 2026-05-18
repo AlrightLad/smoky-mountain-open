@@ -22,6 +22,25 @@ Honest current state: only `token-usage.html` is fully traced post-Phase-T1+T5. 
 | `SINCE 2026-04-17 · REFRESHED 26s AGO` (header strip) | snapshot.all_time.first_event_at + generated_at | aggregate-token-usage.py | computed | header strip | TRUTHFUL |
 | `Source: .claude/state/telemetry/aggregates/token-usage-snapshot.json` (footer) | literal | (none) | (none) | footer text | TRUTHFUL |
 
+### Phase T6 (D19) — three-view pie chart (added 2026-05-18)
+
+| Visible value | Source | Aggregator | Snapshot field | Template selector | Status |
+|---|---|---|---|---|---|
+| Pie donut center "6458.19M" + "$13.49k" (primary + secondary) | by_agent/by_cron/session-transcript buckets + Opus 4.7 rates | aggregate-token-usage.py — `build_pie_views()` | `pie_views.{view}` totals | `[data-pie-donut="total"]` / `[data-pie-donut="cost"]` | TRUTHFUL |
+| Pie donut slices (arc lengths) | tokens per slice ÷ total tokens × circumference | regen-token-usage.py `_bake_pie()` (server-side) + JS `renderPieDonut()` (hydration) | `pie_views.agent_role[*].tokens` | `<circle class="tu-pie-arc">` | TRUTHFUL |
+| Pie view: **agent_role** legend rows | session-transcript main + telemetry-event orchestrator/engineer/cron-runner; cost = tokens × effective_rate_per_mtok | aggregate-token-usage.py | `pie_views.agent_role[*].{label,tokens,usd_cost}` | `.tu-pie-legend-row` (data-pie-view="agent_role") | TRUTHFUL — approximate cost (no per-input/output split in by_agent), methodology surfaced in footer |
+| Pie view: **work_category** legend rows | by_cron buckets (manual-session / overnight-triage / downloads-watcher / maintenance / proposal-readiness / sidecar) — zero-token buckets filtered out | aggregate-token-usage.py | `pie_views.work_category[*]` | `.tu-pie-legend-row` (data-pie-view="work_category") | TRUTHFUL — same approximate cost rule as agent_role |
+| Pie view: **session_top10** legend rows (e.g. `e7cd3197 · 2026-05-13`) | session-transcript-summary.json buckets grouped by session_id, top 10 by tokens | aggregate-token-usage.py — `build_pie_views()` calls `_bucket_cost_usd()` per bucket | `pie_views.session_top10[*]` | `.tu-pie-legend-row` (data-pie-view="session_top10") | TRUTHFUL — **exact** cost per bucket (input × $15 + output × $75 + cache_creation × $18.75 + cache_read × $1.50 per Mtok) |
+| Pie methodology footer (effective rate, per-Mtok rates) | derived | aggregate-token-usage.py `_effective_rate_per_mtok()` | `pie_views._methodology.{rates_per_mtok,effective_rate_per_mtok,model,...}` | `[data-pie-methodology]` | TRUTHFUL |
+| Pie toggle active state | UI state (agent_role default per spec) | regen bake initial active="agent_role", JS toggles `is-active` | `data-pie-view` attribute on section | `[data-pie-toggle].is-active` | TRUTHFUL |
+
+**P9.5 server-side fallback guarantee:** `regen-token-usage.py` bakes `pie_views.agent_role` slices directly into the SVG and legend at regen time. No-JS browsers see the canonical default view; JS hydrates + adds the toggle interaction. Confirmed via `node scripts/visual-audit/verify-pie-toggle.mjs` (captures `T6-pie-final/token-usage-{agent-role,work-category,top-sessions}.png`).
+
+**Cost computation honesty:**
+- `agent_role` and `work_category` lack per-input/output/cache split (the by_agent / by_cron aggregates only carry raw totals), so cost uses `tokens × effective_rate_per_mtok` where `effective_rate_per_mtok` is derived from the overall session_transcripts mix. This is an approximation — explicitly surfaced in the methodology footer.
+- `session_top10` uses **per-bucket exact** rates (input/output/cache_creation/cache_read), since session-transcript-summary.json carries that split. This is ground truth.
+- The discrepancy between approximate and exact is visible: in the current snapshot, `agent_role.main.usd_cost` ($13.48k) vs `sum(session_top10.usd_cost)` (~$11.6k) — the gap reflects sessions outside the top 10 and small rounding differences. Documented in `pie_views._methodology`.
+
 P9.5 automated self-test: `python scripts/ingest-session-transcripts.py --self-test` exits 0; asserts non-zero source = non-zero output. Wire into post-commit hook is a Phase T backlog item.
 
 ## All other dashboards — PENDING Phase B/T wiring
