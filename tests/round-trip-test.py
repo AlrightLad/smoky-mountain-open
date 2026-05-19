@@ -1092,25 +1092,29 @@ def main():
     # dashboard.recent_handoffs is now a UNION of legacy handoff markdown
     # entries + git-commit-derived recent substrate activity (ship-close
     # commits, cron auto-commits, watcher applies). It is no longer a
-    # 1:1 mirror of .claude/state/handoffs/ — by design. Only assert
-    # activity.html mirrors legacy ground truth; dashboard.recent_handoffs
-    # is the richer "recent activity" surface.
+    # Phase B (session 2, 2026-05-18) — the round-trip check was comparing
+    # apples-to-oranges. `activity.html data.handoffs` is a MERGED activity
+    # stream (handoff files + telemetry events + git commits, capped at 500).
+    # The ground-truth handoff count comes from .claude/state/handoffs/*.md
+    # only. Compare against _counts.from_handoff_files (the unmerged source)
+    # instead of the merged stream's total. Both dashboard.recent_handoffs
+    # and activity.html data.handoffs are design-extended with non-handoff-
+    # file activity — cross-check the explicit source-tracking counts only.
     cands = []
     if act_data is not None:
-        cands.append(("activity.html data.handoffs.length", len(act_data.get("handoffs", []))))
-    # NOTE: dashboard.recent_handoffs intentionally no longer matches the
-    # ground-truth legacy handoff count (it now includes git-commit-mined
-    # activity entries). Cross-check skips it.
+        from_files = (act_data.get("_counts") or {}).get("from_handoff_files")
+        if from_files is not None:
+            cands.append(("activity.html _counts.from_handoff_files", from_files))
     if truth_handoffs_total <= 5:
         check_eq("handoffs_total", truth_handoffs_total, cands)
     else:
-        # Truth >5 — only assert activity.html count == truth
-        act_count = len(act_data.get("handoffs", [])) if act_data else 0
+        # Truth >5 — only assert activity.html source count == truth
+        act_count = (act_data.get("_counts") or {}).get("from_handoff_files", 0) if act_data else 0
         if act_count == truth_handoffs_total:
-            print(green(f"  ✓ {'handoffs_total':40s} ground={truth_handoffs_total} activity.html={act_count} (dashboard.recent_handoffs is design-extended with git activity, skipped)"))
+            print(green(f"  ✓ {'handoffs_total':40s} ground={truth_handoffs_total} activity._counts.from_handoff_files={act_count}"))
         else:
-            print(red(f"  ✗ {'handoffs_total':40s} ground={truth_handoffs_total} activity.html={act_count}"))
-            failures.append(("cross-dash:handoffs_total", f"ground={truth_handoffs_total} activity={act_count}"))
+            print(red(f"  ✗ {'handoffs_total':40s} ground={truth_handoffs_total} activity._counts.from_handoff_files={act_count}"))
+            failures.append(("cross-dash:handoffs_total", f"ground={truth_handoffs_total} activity._counts.from_handoff_files={act_count}"))
 
     # Banner text on dashboard.html must NOT contain a hardcoded count (would diverge)
     print(cyan("\n[banner-text] dashboard.html banner must be data-bound, not hardcoded..."))
