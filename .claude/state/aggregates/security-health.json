@@ -1,11 +1,11 @@
 {
   "schema_version": "security-health-v1.1",
-  "timestamp": "2026-05-19T06:31:46Z",
-  "generated_at": "2026-05-19T06:31:46Z",
-  "head_sha": "f765a93",
-  "status": "yellow",
-  "status_reason": "2 HIGH/CRITICAL-severity dependency vulnerabilities. No active credential leak. No rule drift. No AMD-018 violations.",
-  "summary": "2 HIGH/CRITICAL-severity dependency vulnerabilities. No active credential leak. No rule drift. No AMD-018 violations.",
+  "timestamp": "2026-05-19T18:56:34Z",
+  "generated_at": "2026-05-19T18:56:34Z",
+  "head_sha": "1fd0724",
+  "status": "green",
+  "status_reason": "No credential leaks, no rule drift, no known dep vulnerabilities.",
+  "summary": "No credential leaks, no rule drift, no known dep vulnerabilities.",
   "active_findings": {
     "critical": 0,
     "high": 0,
@@ -13,22 +13,7 @@
     "low": 1
   },
   "credential_leaks": 0,
-  "vulnerable_deps": [
-    {
-      "package": "fast-xml-builder",
-      "severity": "high",
-      "location": "functions/",
-      "fix_available": true,
-      "finding_file": "2026-05-14T22-46-49Z-medium-functions-deps.md"
-    },
-    {
-      "package": "protobufjs",
-      "severity": "high",
-      "location": "functions/",
-      "fix_available": true,
-      "finding_file": "2026-05-14T22-46-49Z-medium-functions-deps.md"
-    }
-  ],
+  "vulnerable_deps": [],
   "rule_drift": [],
   "source_files": [
     "git grep (credentials pattern scan)",

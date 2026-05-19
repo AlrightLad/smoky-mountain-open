@@ -46,6 +46,60 @@ def git_head_short():
         return "unknown"
 
 
+def _live_npm_audit_high_critical():
+    """Run `npm audit --json` in functions/ and return list of HIGH/CRITICAL
+    direct/transitive vulns. Returns None if audit fails entirely (signal
+    to fall back to carry-forward). Returns empty list [] if audit ran but
+    no HIGH/CRITICAL found.
+    """
+    functions_dir = ROOT / "functions"
+    if not (functions_dir / "package-lock.json").exists():
+        return []
+    # Windows resolves `npm` as `npm.cmd`; bare-string subprocess on Windows
+    # fails with FileNotFoundError. Use shell=True so the shim is found.
+    # Linux/macOS: shell=True still works; npm is a real script.
+    import platform
+    use_shell = platform.system() == "Windows"
+    try:
+        if use_shell:
+            r = subprocess.run(
+                "npm audit --json",
+                shell=True, capture_output=True, text=True, cwd=str(functions_dir), timeout=90,
+            )
+        else:
+            r = subprocess.run(
+                ["npm", "audit", "--json"],
+                capture_output=True, text=True, cwd=str(functions_dir), timeout=90,
+            )
+        if not r.stdout:
+            return None
+        data = json.loads(r.stdout)
+    except (OSError, subprocess.TimeoutExpired, json.JSONDecodeError, FileNotFoundError):
+        return None
+
+    out = []
+    advisories = data.get("vulnerabilities") or {}
+    seen_packages = set()
+    for pkg_name, info in advisories.items():
+        sev = (info.get("severity") or "").lower()
+        if sev not in ("high", "critical"):
+            continue
+        # Determine if this is a direct or transitive dep with available fix
+        fix_available = bool(info.get("fixAvailable"))
+        # Deduplicate by package name (audit may list a package multiple times)
+        if pkg_name in seen_packages:
+            continue
+        seen_packages.add(pkg_name)
+        out.append({
+            "package": pkg_name,
+            "severity": sev,
+            "location": "functions/",
+            "fix_available": fix_available,
+            "finding_file": f"npm-audit-live-{datetime.now(timezone.utc).strftime('%Y-%m-%d')}",
+        })
+    return out
+
+
 def load_prev():
     if not TARGET.exists():
         return {}
@@ -107,10 +161,15 @@ def main():
 
     cred_leaks = scan_for_credentials()
 
-    # Vulnerable deps: carry forward from prev aggregate (npm audit run is
-    # expensive + requires network; a separate scheduled task should refresh
-    # the prev aggregate's vulnerable_deps list weekly).
-    vuln_deps = prev.get("vulnerable_deps", [])
+    # Vulnerable deps: prefer LIVE npm audit (functions/) over carried-forward
+    # prev aggregate. Carry-forward was a stop-gap when npm audit was slow;
+    # post-2026-05-19 the audit is fast enough to run on every aggregate.
+    # Per Founder 2026-05-19: dashboard must reflect ACTUAL current vulns,
+    # not stale prev-aggregate carry-forward.
+    vuln_deps = _live_npm_audit_high_critical()
+    if vuln_deps is None:
+        # Fallback to carry-forward only if npm audit completely failed
+        vuln_deps = prev.get("vulnerable_deps", [])
     active_findings = prev.get("active_findings", [])
     rule_drift = prev.get("rule_drift", False)
 
