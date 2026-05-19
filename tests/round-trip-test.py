@@ -2044,21 +2044,36 @@ def main():
 
     # Wiring assertions: cross-check that scenarios in activity data match canonical CSS classes.
     # Accept either legacy `.activity-item.scenario-X` or new `.act-item.scenario-X` during migration.
-    print(cyan("\n[wiring] Cross-checking scenario tokens against CSS + dropdown..."))
+    #
+    # Phase B (session 2, 2026-05-18): the dropdown options are populated by
+    # JS at runtime from data.handoffs[*].scenario (see template line 178:
+    # `(data.handoffs || []).forEach(function (h) { if (h.scenario)
+    # scenarioSet[h.scenario] = true; })`). The static HTML only contains the
+    # placeholder `<option value="all">All scenarios</option>`. Checking for
+    # `<option value="<scenario>">` in the static HTML will always fail for
+    # dynamic scenarios — that's a test-vs-implementation mismatch, not a
+    # wiring bug. The semantic check that matters: scenario is present in
+    # data.handoffs (JS will populate the option) AND a CSS class is defined.
+    print(cyan("\n[wiring] Cross-checking scenario tokens against CSS + data..."))
     activity_html = (test_reports / "activity.html").read_text(encoding="utf-8")
     scenarios_in_data = {h["scenario"] for h in activity_data["handoffs"]}
+    # Also confirm the runtime population code path exists in the template
+    # (defensive — if someone removes that JS block, this check should fail).
+    runtime_populates = "scenarioSet[h.scenario]" in activity_html
     for scenario in scenarios_in_data:
         legacy_class = f".activity-item.scenario-{scenario}::before"
         new_class    = f".act-item.scenario-{scenario}::before"
-        dropdown = f'<option value="{scenario}">'
         css_ok = (legacy_class in activity_html) or (new_class in activity_html)
-        drop_ok = dropdown in activity_html
-        if css_ok and drop_ok:
-            print(green(f"  ✓ {scenario:32s} has CSS class + dropdown option"))
+        # data_ok: scenario is in data (JS will add it as dropdown option).
+        # We already iterated from scenarios_in_data, so this is always true
+        # by construction — assert the JS-side population code exists.
+        data_ok = runtime_populates
+        if css_ok and data_ok:
+            print(green(f"  ✓ {scenario:32s} has CSS class + JS-populated dropdown option"))
         else:
             problems = []
             if not css_ok: problems.append("CSS class missing")
-            if not drop_ok: problems.append("dropdown option missing")
+            if not data_ok: problems.append("dropdown JS-population code missing from template")
             print(red(f"  ✗ {scenario:32s} {', '.join(problems)}"))
             failures.append((f"wiring:{scenario}", ", ".join(problems)))
 
