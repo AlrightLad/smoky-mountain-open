@@ -132,26 +132,71 @@
     </div>
 
     <!-- PROP-003.b: quota meter status (live / sidecar empty / sidecar stale /
-         estimated). Shows the canonical weekly_tokens + percentage from the
-         PROP-003.a sidecar when fresh. Falls through to legacy estimated
-         pathway when sidecar unavailable. Per AMD-014 PAUSE_DISCIPLINE,
-         this is the band downstream pacing gates read from. -->
+         estimated). Phase-I cycle 4 (2026-05-19): the weekly-tokens card is
+         now the hero — biggest visible number on the page. Refs consulted:
+         Anthropic Console usage view (hero monthly), Vercel observability
+         (hero monthly), Stripe billing dashboard.
+         -->
+    <style>
+        /* Cycle 4: token-usage hero meter grid. Same hierarchy pattern as
+           dashboard.html — Stripe + Linear + Vercel + Anthropic Console. */
+        #tu-quota-meter .pb-kpi-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: var(--space-4);
+            align-items: stretch;
+        }
+        #tu-quota-meter .pb-kpi-card { grid-column: span 1; }
+        #tu-quota-meter .pb-kpi-card.is-hero { grid-column: span 2; }
+        @media (max-width: 1024px) {
+            #tu-quota-meter .pb-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            #tu-quota-meter .pb-kpi-card.is-hero { grid-column: span 2; }
+        }
+        @media (max-width: 600px) {
+            #tu-quota-meter .pb-kpi-grid { grid-template-columns: 1fr; }
+            #tu-quota-meter .pb-kpi-card.is-hero { grid-column: span 1; }
+        }
+        #tu-quota-meter .pb-kpi-card.is-hero .pb-kpi-value {
+            font-size: 4.25rem;
+            line-height: 0.92;
+            letter-spacing: -0.045em;
+            font-weight: 600;
+        }
+        #tu-quota-meter .pb-kpi-card.is-hero .pb-kpi-value-unit {
+            font-size: 2.25rem;
+            letter-spacing: -0.022em;
+        }
+        #tu-quota-meter .pb-kpi-card.is-hero {
+            padding: var(--space-6) var(--space-5) var(--space-5);
+            min-height: 200px;
+        }
+        #tu-quota-meter .pb-kpi-card .pb-kpi-value {
+            font-size: 2.25rem;
+            line-height: 0.95;
+            letter-spacing: -0.035em;
+            font-weight: 600;
+        }
+        #tu-quota-meter .pb-kpi-card {
+            padding: var(--space-5) var(--space-4) var(--space-4);
+            min-height: 158px;
+        }
+    </style>
     <section class="pb-section" id="tu-quota-meter" style="margin-bottom: var(--space-4);">
-        <!-- AMD-026 P10 visible-action retrofit (2026-05-19): each meter card
-             gets a WHO badge so Founder sees who closes the state inline. JS
-             hydration in the main render pass below. -->
         <div class="pb-kpi-grid">
-            <div class="pb-kpi-card" data-kpi-card="meter-status" title="Meter status. Click for setup if sidecar absent.">
-                <span class="pb-kpi-label">Meter status</span>
-                <span class="pb-kpi-value" data-kpi="meter-status">&mdash;</span>
-                <span class="pb-kpi-sub" data-kpi-sub="meter-status">checking sidecar...</span>
-                <span class="pb-action-badge" data-who="cron" data-tu-badge="meter-status">cron &middot; aggregator refreshes</span>
-            </div>
-            <div class="pb-kpi-card" data-kpi-card="quota-weekly" title="Weekly tokens. Source: token-usage-snapshot.json session_transcripts.weekly_real_7d (preferred) or events.weekly_tokens.">
-                <span class="pb-kpi-label">Weekly tokens (live)</span>
+            <!-- Hero: weekly tokens consumed in the last 7 days. Anthropic
+                 Console + Vercel usage view: this is THE number the operator
+                 wants to see when opening the page. -->
+            <div class="pb-kpi-card is-hero" data-kpi-card="quota-weekly" title="Weekly tokens (rolling 7-day). Source: token-usage-snapshot.json session_transcripts.weekly_real_7d (preferred) or events.weekly_tokens.">
+                <span class="pb-kpi-label">Weekly tokens (rolling 7d)</span>
                 <span class="pb-kpi-value" data-kpi="quota-weekly">&mdash;</span>
+                <span class="pb-kpi-delta is-flat" data-kpi-delta="quota-weekly" hidden></span>
                 <span class="pb-kpi-sub" data-kpi-sub="quota-weekly">vs <span data-kpi="quota-weekly-cap">&mdash;</span> cap</span>
                 <span class="pb-action-badge" data-who="cron" data-tu-badge="quota-weekly">cron &middot; per-commit refresh</span>
+            </div>
+            <div class="pb-kpi-card" data-kpi-card="meter-status" title="Meter status. Click for setup if sidecar absent.">
+                <span class="pb-kpi-label">Meter status</span>
+                <span class="pb-kpi-value is-small" data-kpi="meter-status">&mdash;</span>
+                <span class="pb-kpi-sub" data-kpi-sub="meter-status">checking sidecar&hellip;</span>
+                <span class="pb-action-badge" data-who="cron" data-tu-badge="meter-status">cron &middot; aggregator refreshes</span>
             </div>
             <div class="pb-kpi-card" data-kpi-card="quota-org" title="Anthropic org-monthly cap. Set in claude.ai billing; pasted via scripts/refresh-quota-manual.ps1.">
                 <span class="pb-kpi-label">Org monthly</span>
@@ -442,14 +487,21 @@
         }
         var status = data._meter_status || 'wired-estimated';
         var qs = data.quota_status || {};
-        var statusLabels = {
-            'wired-real': 'LIVE',
-            'wired-estimated-sidecar-empty': 'sidecar empty',
-            'wired-estimated-sidecar-stale': 'sidecar STALE',
-            'wired-estimated': 'estimated only',
-            'gap-per-F1a': 'no meter'
+        // Cycle 4 (2026-05-19): use status-pill primitive for meter status so
+        // the small-card real estate is filled with a colored pill instead of
+        // wrapping text. Linear/Vercel "status chip" pattern.
+        var statusPills = {
+            'wired-real': { cls: 'is-green', label: 'LIVE' },
+            'wired-estimated-sidecar-empty': { cls: 'is-yellow', label: 'sidecar empty' },
+            'wired-estimated-sidecar-stale': { cls: 'is-yellow', label: 'STALE' },
+            'wired-estimated': { cls: 'is-muted', label: 'estimated' },
+            'gap-per-F1a': { cls: 'is-red', label: 'no meter' }
         };
-        set('[data-kpi="meter-status"]', statusLabels[status] || status);
+        var pill = statusPills[status] || { cls: 'is-muted', label: status };
+        var statusValEl = document.querySelector('[data-kpi="meter-status"]');
+        if (statusValEl) {
+            statusValEl.innerHTML = '<span class="pb-status-pill ' + pill.cls + '">' + pill.label + '</span>';
+        }
 
         var sub;
         if (status === 'wired-real') {
@@ -498,15 +550,40 @@
         // telemetry and undercounts by orders of magnitude. If we have a
         // session_transcripts.weekly_real_7d, use it; fall back to sidecar
         // qs.weekly_tokens only if transcripts aren't ingested yet.
+        // Cycle 4 (2026-05-19): use the same fmtNumHtml-style as dashboard.
+        // The hero card needs the numeral + scale suffix split for visual
+        // weight (Stripe pattern).
+        function fmtNumHtmlTU(n) {
+            if (n == null || isNaN(n)) return '<span style="color:var(--pb-chalk-500);">—</span>';
+            var val, unit = '';
+            if (n >= 1e9) { val = (n / 1e9).toFixed(2); unit = 'B'; }
+            else if (n >= 1e6) { val = (n / 1e6).toFixed(2); unit = 'M'; }
+            else if (n >= 1e3) { val = (n / 1e3).toFixed(1); unit = 'k'; }
+            else { val = String(n); }
+            return unit ? val + '<span class="pb-kpi-value-unit">' + unit + '</span>' : String(val);
+        }
+        function setHtml(sel, html) {
+            var el = document.querySelector(sel);
+            if (el) el.innerHTML = html;
+        }
         var st = data.session_transcripts || {};
         var stWeekly = (typeof st.weekly_real_7d === 'number') ? st.weekly_real_7d : 0;
         if (stWeekly > 0) {
-            set('[data-kpi="quota-weekly"]', fmtTokens(stWeekly));
+            setHtml('[data-kpi="quota-weekly"]', fmtNumHtmlTU(stWeekly));
             if (typeof qs.weekly_cap === 'number') {
                 set('[data-kpi="quota-weekly-cap"]', fmtTokens(qs.weekly_cap));
                 set('[data-kpi-sub="quota-weekly"]', (100 * stWeekly / qs.weekly_cap).toFixed(0) + '% of cap · last 7 days · session transcripts');
             } else {
                 set('[data-kpi-sub="quota-weekly"]', 'last 7 days · session transcripts (real)');
+            }
+            // Cycle 4: pace delta. Compare last 7d to prior weeks if data exists.
+            // For now, just show the daily-run-rate context vs the 7-day budget.
+            var weeklyDelta = document.querySelector('[data-kpi-delta="quota-weekly"]');
+            if (weeklyDelta) {
+                var dailyRate = stWeekly / 7;
+                weeklyDelta.hidden = false;
+                weeklyDelta.className = 'pb-kpi-delta is-flat';
+                weeklyDelta.innerHTML = '<strong>' + fmtTokens(dailyRate) + '/day</strong> <span class="pb-kpi-delta-quiet">&middot; 7-day run rate</span>';
             }
         } else if (typeof qs.weekly_tokens === 'number' && qs.weekly_tokens > 0) {
             set('[data-kpi="quota-weekly"]', fmtTokens(qs.weekly_tokens));
