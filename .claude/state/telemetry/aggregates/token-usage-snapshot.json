@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-05-19T00:37:01.521299+00:00",
+  "generated_at": "2026-05-19T00:37:13.049764+00:00",
   "_meter_status": "wired-real",
   "session_transcripts": {
-    "generated_at": "2026-05-19T00:37:01.081445+00:00",
+    "generated_at": "2026-05-19T00:37:09.899304+00:00",
     "source": "~/.claude/projects/C--Users-Zach-smoky-mountain-open/*.jsonl",
     "session_count": 29,
     "bucket_count": 58,
@@ -151,8 +151,8 @@
   },
   "quota_status": {
     "state": "fresh",
-    "as_of": "2026-05-19T00:32:12.4514933Z",
-    "age_seconds": 289,
+    "as_of": "2026-05-19T00:37:12.4624578Z",
+    "age_seconds": 0,
     "weekly_tokens": 102000,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -669,11 +669,11 @@
     "estimated": 7292040,
     "manual": 0,
     "first_event_at": "2026-04-17T22:45:30.161000+00:00",
-    "last_event_at": "2026-05-19T00:36:57.166000+00:00"
+    "last_event_at": "2026-05-19T00:37:12+00:00"
   },
   "_counts": {
     "real_events": 59,
-    "estimated_events": 2269,
+    "estimated_events": 2270,
     "manual_entries": 0
   }
 }
