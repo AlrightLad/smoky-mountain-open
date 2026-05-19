@@ -1,8 +1,8 @@
 {
   "schema_version": "fiq-status-v1.0",
-  "timestamp": "2026-05-19T00:22:13Z",
-  "generated_at": "2026-05-19T00:22:13Z",
-  "head_sha": "c7c5004",
+  "timestamp": "2026-05-19T00:30:53Z",
+  "generated_at": "2026-05-19T00:30:53Z",
+  "head_sha": "38a91f3",
   "status": "green",
   "summary": "FIQ clean \u00b7 26 declared / 26 deployed (0 pending builds)",
   "declared_count": 26,
