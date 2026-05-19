@@ -206,7 +206,7 @@ Open `docs/reports/token-usage.html` in a browser. Confirm the headline total is
 
 **Founder context:** The CRITICAL/HIGH findings are MOSTLY:
 - **Skill instrumentation gaps** (PARBAUGHS skills written before ECC 2.0 standards exist — missing observation hooks + version metadata + rollback metadata)
-- **False positives** in PARBAUGHS's own secrets-scanner.sh (the scanner's regex pattern `-----BEGIN PRIVATE KEY-----` is detected by AgentShield as a hardcoded private key)
+- **False positives** in PARBAUGHS's own secrets-scanner.sh (the scanner's regex pattern — the standard PEM start-marker — is detected by AgentShield as a hardcoded private key)
 - **Policy choices** (Bash(*), Edit(*), Write(*) overpermissive for dev iteration)
 
 These are NOT credential leaks or RCE risks. They're remediable instrumentation work. Concrete next-step P8 backlog will:

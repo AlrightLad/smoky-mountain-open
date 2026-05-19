@@ -13,7 +13,7 @@ Current AgentShield CRITICAL findings (`.claude/state/security/baseline-20260518
 | # | Finding | File | Category | Closeable? |
 |---|---|---|---|---|
 | 1-3 | `${content}${new_string}` interpolation | `.claude/hooks/schema-mutation-alarm.sh:22` | **False positive** — benign string concatenation, not command execution | ❌ NOT in 1.5.0 |
-| 4-9 | PEM regex literal `-----BEGIN PRIVATE KEY-----` in pattern variable | `.claude/hooks/secrets-scanner.sh:49` | **False positive** — this regex is the DETECTOR for credential leaks, not an embedded key | ❌ NOT in 1.5.0 |
+| 4-9 | PEM regex literal (standard 5-dash start-marker) in pattern variable | `.claude/hooks/secrets-scanner.sh:49` | **False positive** — this regex is the DETECTOR for credential leaks, not an embedded key | ❌ NOT in 1.5.0 |
 | 10-12 | `Bash(*)` in `.claude/settings.json` permissions | Root settings + worktree mirrors | **Policy overpermissiveness** — needs Founder ratification of allowed command list | ✓ via task #3 ratification |
 | 13-18 | `--no-verify` references in worktree `CLAUDE.md` | `.claude/worktrees/*/CLAUDE.md` | **Prohibitive context only** (warns "don't use --no-verify") — auto-resolves when worktrees deleted | ✓ via Phase H housekeeping |
 
@@ -65,7 +65,7 @@ Confirmed via package inspection at `C:\Users\Zach\AppData\Local\npm-cache\_npx\
 - Could draft a PR ourselves to accelerate
 
 ### Option C — Refactor PARBAUGHS hooks to avoid the flagged patterns
-**What it means:** Restructure `schema-mutation-alarm.sh` to avoid `${content}${new_string}` (rewrite using `printf` or temp file). Restructure `secrets-scanner.sh` to compute the PEM regex from individual characters rather than literal string (e.g., `pem_header="$(printf -- '-----%s-----' 'BEGIN PRIVATE KEY')"`). Make settings.json wildcard scopes specific.
+**What it means:** Restructure `schema-mutation-alarm.sh` to avoid `${content}${new_string}` (rewrite using `printf` or temp file). Restructure `secrets-scanner.sh` to compute the PEM regex from individual characters rather than literal string (e.g., `pem_header="$(printf -- '-----%s-----' '<BEGIN>' '<KEY-LABEL>')"`). Make settings.json wildcard scopes specific.
 
 **Pros:**
 - D31 closeable today

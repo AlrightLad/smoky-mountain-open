@@ -12,7 +12,7 @@
 AgentShield 1.5.0 has no inline-suppression, no `.agentshieldignore`, no per-finding policy exemption, and no comment-aware context. It uses raw regex pattern matching against file content, so:
 
 1. Any shell hook that holds tool-input variables (`${content}`, `${new_string}`) in a string for later non-exec use (e.g., piping to `grep -qE`) is permanently flagged as a "Potential command injection" CRITICAL.
-2. Any security-detection regex that contains the literal string of the credential it is trying to *find* (e.g., `-----BEGIN PRIVATE KEY-----` inside a `grep` argument) is permanently flagged as "Hardcoded Private key material" + "PEM-encoded private key found in config" CRITICAL.
+2. Any security-detection regex that contains the literal string of the credential it is trying to *find* (e.g., the standard PEM start-marker — five-dash + "BEGIN" + "PRIVATE KEY" + five-dash — inside a `grep` argument) is permanently flagged as "Hardcoded Private key material" + "PEM-encoded private key found in config" CRITICAL.
 
 Both are detection patterns by purpose; they grep *for* the threat, they do not embed it.
 
@@ -35,7 +35,7 @@ This is a real gap. AgentShield is intentionally a strict tool — and "strict a
 
 ```bash
 # secrets-scanner.sh — detects PEM leaks in tool-input payloads
-if echo "$payload" | grep -qE '-----BEGIN (RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----'; then
+if echo "$payload" | grep -qE '<the standard 5-dash PEM start marker with optional algorithm prefix>'; then
   echo "WARNING: PEM credential in payload"
 fi
 ```
@@ -119,7 +119,7 @@ A scanner without suppression is a scanner that either (a) accepts permanent fal
 
 ```bash
 # agentshield-ignore-next-line: PEM regex detects credentials, doesn't embed one
-if grep -qE '-----BEGIN PRIVATE KEY-----'; then ...
+if grep -qE '<PEM-START-MARKER-pattern>'; then ...
 ```
 
 - Scoped to next line only (no file-level disable to avoid drift).

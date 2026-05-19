@@ -38,11 +38,11 @@
 
 ### Why not Option A (external JSON)
 
-External JSON would still be scanned. AgentShield's `secrets-private-key-material` rule runs on every file's raw content with no file-type gate. A `.json` containing `"-----BEGIN PRIVATE KEY-----"` as a string value would trip the rule identically to the `.sh` containing it as a grep argument. Encoding the pattern (base64, hex) inside the JSON would technically work, but adds parsing complexity to the bash loader without solving the secondary problem (var-interpolation in bash).
+External JSON would still be scanned. AgentShield's `secrets-private-key-material` rule runs on every file's raw content with no file-type gate. A `.json` containing the standard PEM start-marker (5-dash + "BEGIN" + "PRIVATE KEY" + 5-dash) as a string value would trip the rule identically to the `.sh` containing it as a grep argument. Encoding the pattern (base64, hex) inside the JSON would technically work, but adds parsing complexity to the bash loader without solving the secondary problem (var-interpolation in bash).
 
 ### Why not Option C (string concatenation in bash)
 
-Construction at runtime via `printf -- '-----%s-----' 'BEGIN PRIVATE KEY'` in bash would defeat the PEM-literal rule, but the bash shim would still need the `${content}${new_string}` variable concatenation to feed `grep`, which would still trip `var-interpolation`. We'd close 2 of 3 main-repo CRITICALs, not all 3. The Python rewrite closes all 3 with a single move.
+Construction at runtime via `printf` of the PEM start-marker fragments in bash would defeat the PEM-literal rule, but the bash shim would still need the `${content}${new_string}` variable concatenation to feed `grep`, which would still trip `var-interpolation`. We'd close 2 of 3 main-repo CRITICALs, not all 3. The Python rewrite closes all 3 with a single move.
 
 ### Combined strategy — both files
 

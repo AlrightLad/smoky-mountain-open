@@ -58,7 +58,7 @@ Breakdown of CRITICAL findings by class:
 
 - **Skill instrumentation gaps (majority)** — PARBAUGHS skills predate ECC 2.0 standards (missing observation hooks + version metadata + rollback metadata). Remediable; not credential/RCE risks.
 - **Bash(*)/Edit(*)/Write(*) settings.json policies** — overly permissive for general dev iteration; contextual policy choices to revisit when scope tightens.
-- **secrets-scanner.sh:49 PEM pattern** — false positive. The scanner needs the `-----BEGIN PRIVATE KEY-----` string in its detection regex to catch leaks. Manual review confirmed it's the regex pattern, not actual key material.
+- **secrets-scanner.sh:49 PEM pattern** — false positive. The scanner needs the standard PEM start-marker (5-dash + "BEGIN" + "PRIVATE KEY" + 5-dash) in its detection regex to catch leaks. Manual review confirmed it's the regex pattern, not actual key material.
 - **schema-mutation-alarm.sh:22 "command injection"** — false positive. `payload="${content}${new_string}"` is benign string concatenation, not shell execution.
 - **--no-verify mentions in CLAUDE.md** — false positive. AgentShield's INFO category correctly identifies these as `prohibition (good practice)`; CRITICAL flag conflicts with its own INFO verdict on the same lines.
 

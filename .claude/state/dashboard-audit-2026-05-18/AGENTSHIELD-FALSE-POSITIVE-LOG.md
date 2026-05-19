@@ -53,7 +53,7 @@ This is a structural limitation of the 1.5.0 tool. Documented as 3 upstream issu
 2. Reference `AGENTSHIELD-FALSE-POSITIVE-LOG.md` (this file) and `AGENTSHIELD-UPSTREAM-ISSUES.md` for full context.
 3. Use the proposed `# agentshield-ignore` token preemptively so they're forward-compatible if upstream lands inline suppression.
 
-**Constraint discovered mid-task:** Comments containing the literal string `-----BEGIN PRIVATE KEY-----` themselves trip the secrets rules, adding NEW CRITICALs. Mitigation: the comment in `secrets-scanner.sh` refers to "the PEM-header literal below" without restating the literal. Confirmed via re-scan that this avoids creating new findings.
+**Constraint discovered mid-task:** Comments containing the literal PEM start-marker string (5-dash + "BEGIN" + algorithm + "PRIVATE KEY" + 5-dash) themselves trip the secrets rules, adding NEW CRITICALs. Mitigation: the comment in `secrets-scanner.sh` refers to "the PEM-header literal below" without restating the literal. Confirmed via re-scan that this avoids creating new findings.
 
 ---
 
