@@ -1,8 +1,1 @@
-{
-  "ts": "2026-05-18T19:23:05Z",
-  "timestamp": "2026-05-18T19:23:05Z",
-  "generated_at": "2026-05-18T19:23:05Z",
-  "status": "GATE-FAIL",
-  "age_minutes": 0,
-  "head_sha": "dc44b2b"
-}
+﻿{"status":"PASS","duration_seconds":19,"last_pass_at_human":"2026-05-19 00:41 UTC","last_pass_at_utc":"2026-05-19T00:41:12.3435448Z"}

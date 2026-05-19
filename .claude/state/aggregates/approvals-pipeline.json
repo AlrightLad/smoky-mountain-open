@@ -1,22 +1,22 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-19T00:37:13Z",
-  "generated_at": "2026-05-19T00:37:13Z",
+  "timestamp": "2026-05-19T00:52:13Z",
+  "generated_at": "2026-05-19T00:52:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "green",
-  "raw_status": "green",
-  "summary": "watcher no-new-files 1.4min ago · 32 in inbox",
-  "as_of": "2026-05-19T00:35:48Z",
+  "status": "yellow",
+  "raw_status": "yellow",
+  "summary": "watcher cycling · last 2 runs skipped on dirty tree · 33 in inbox",
+  "as_of": "2026-05-19T00:50:48Z",
   "stale": false,
   "age_hours": 0.02333333333333333,
   "counts": {
-    "proposals_pending": 0,
+    "proposals_pending": 1,
     "proposals_approved": 9,
     "proposals_deferred": 0,
     "proposals_rejected": 0,
     "proposals_shipped": 4,
-    "proposals_inbox": 15,
+    "proposals_inbox": 16,
     "amendments_inbox": 15,
     "escalations_inbox": 2
   },
@@ -25,8 +25,22 @@
       "category": "marker",
       "status": "info",
       "name": "last-processed-decisions",
-      "note": "file=decisions-canary-2026-05-18T18-04-36Z.json kind=decisions",
-      "when": "2026-05-18T18:05:53.2742650Z"
+      "note": "file=decisions-canary-2026-05-19T00-37-22Z.json kind=decisions",
+      "when": "2026-05-19T00:40:53.1743276Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-19T00-50-48Z-downloads-watcher.log",
+      "note": "[00:50:48] SKIP working tree dirty with non-routine files: .claude/state/proposals/approved/TEST-PIPELINE-CANARY.md",
+      "when": "2026-05-19T00:50:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-19T00-45-48Z-downloads-watcher.log",
+      "note": "[00:45:48] SKIP working tree dirty with non-routine files: .claude/state/proposals/approved/TEST-PIPELINE-CANARY.md",
+      "when": "2026-05-19T00:45:48Z"
     },
     {
       "category": "stall",
@@ -49,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 0,
+    "consecutive_skips": 2,
     "age_minutes": 1.4
   }
 }
