@@ -20,6 +20,10 @@ from collections import defaultdict, Counter
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
+# Local helper for idempotent-write (root-cause fix 2026-05-19 dirty-tree cycle).
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _idempotent_write import idempotent_write_json  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
 STATE = ROOT / ".claude" / "state"
 EVENTS_DIR = STATE / "telemetry" / "events"
@@ -946,13 +950,25 @@ def aggregate():
 
     AGGREGATES_DIR.mkdir(parents=True, exist_ok=True)
     out_path = AGGREGATES_DIR / "current-snapshot.json"
-    out_path.write_text(json.dumps(snapshot, indent=2), encoding="utf-8")
+    # Idempotent write: skip the file rewrite when normalized content matches
+    # the existing snapshot and timestamps are still fresh. Prevents pure
+    # timestamp drift from dirtying the working tree across post-commit
+    # hook fires (root-cause fix 2026-05-19).
+    #
+    # current-snapshot.json is NOT in aggregate-self-tests' D40 freshness
+    # gate (only test/security/approvals/arch-review/fiq are). regen-dashboard
+    # reads content (weekly_tokens, etc.) not the `as_of` timestamp for
+    # freshness. So a long grace (4h) is safe and minimizes drift.
+    wrote, reason = idempotent_write_json(out_path, snapshot, grace_seconds=4 * 3600)
+    snapshot["_idempotent_write"] = {"wrote": wrote, "reason": reason}
     return out_path, snapshot
 
 
 def main():
     out_path, snap = aggregate()
-    print(f"[aggregate] wrote {out_path.relative_to(ROOT)}")
+    iw = snap.get("_idempotent_write") or {}
+    write_label = "wrote" if iw.get("wrote") else "skipped"
+    print(f"[aggregate] {write_label} {out_path.relative_to(ROOT)} ({iw.get('reason', 'n/a')})")
     print(f"[aggregate] meter_status={snap['_meter_status']}")
     print(f"[aggregate] events={snap['_aggregate_counts']['events_total']} handoffs={snap['_aggregate_counts']['handoffs_total']} bubbles={snap['_aggregate_counts']['bubbles_total']} proposals_pending={snap['_aggregate_counts']['proposals_pending']}")
     return 0

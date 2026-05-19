@@ -31,6 +31,10 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+# Local helper for idempotent-write (root-cause fix 2026-05-19 dirty-tree cycle).
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _idempotent_write import idempotent_write_json  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
 INDEXES_FILE = ROOT / "firestore.indexes.json"
 TARGET = ROOT / ".claude" / "state" / "aggregates" / "fiq-status.json"
@@ -147,9 +151,8 @@ def main():
         ],
     }
 
-    TARGET.parent.mkdir(parents=True, exist_ok=True)
-    TARGET.write_text(json.dumps(out, indent=2), encoding="utf-8")
-    print(f"[aggregate-fiq-status] OK status={status} declared={declared} deployed={deployed}")
+    wrote, reason = idempotent_write_json(TARGET, out)
+    print(f"[aggregate-fiq-status] OK status={status} declared={declared} deployed={deployed} write={wrote} ({reason})")
     return 0
 
 

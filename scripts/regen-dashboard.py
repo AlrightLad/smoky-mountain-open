@@ -17,6 +17,10 @@ import sys
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
+# Local helper for idempotent-write (root-cause fix 2026-05-19 dirty-tree cycle).
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _idempotent_write import idempotent_write_json  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
 STATE = ROOT / ".claude" / "state"
 REPORTS = ROOT / "docs" / "reports"
@@ -665,11 +669,19 @@ def approvals_pipeline_status():
     if isinstance(prev_approved, int):
         approved_delta = counts["proposals_approved"] - prev_approved
     try:
-        cache_path.parent.mkdir(parents=True, exist_ok=True)
-        cache_path.write_text(json.dumps({
-            "approved_count": counts["proposals_approved"],
-            "snapshot_at": now_utc.isoformat(),
-        }, indent=2), encoding="utf-8")
+        # Idempotent: only re-write when approved_count actually changed.
+        # The cache's `snapshot_at` is treated as a timestamp field (normalized
+        # away from the comparison) so a no-op run doesn't dirty the tree.
+        # Root-cause fix 2026-05-19 dirty-tree cycle.
+        idempotent_write_json(
+            cache_path,
+            {
+                "approved_count": counts["proposals_approved"],
+                "snapshot_at": now_utc.isoformat(),
+            },
+            timestamp_keys=["snapshot_at"],
+            grace_seconds=24 * 3600,  # cache is per-cycle; refresh daily even if quiet
+        )
     except OSError:
         pass
 

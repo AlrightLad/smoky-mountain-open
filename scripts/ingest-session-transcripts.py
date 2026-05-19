@@ -52,6 +52,10 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
+# Local helper for idempotent-write (root-cause fix 2026-05-19 dirty-tree cycle).
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _idempotent_write import idempotent_write_json  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
 STATE = ROOT / ".claude" / "state"
 AGGREGATES_DIR = STATE / "telemetry" / "aggregates"
@@ -140,7 +144,12 @@ def load_cursor() -> dict[str, int]:
 
 def save_cursor(cursor: dict[str, int]) -> None:
     AGGREGATES_DIR.mkdir(parents=True, exist_ok=True)
-    CURSOR_PATH.write_text(json.dumps(cursor, indent=2), encoding="utf-8")
+    # Cursor file has no timestamp; only-write-on-content-change semantics.
+    # Idempotent under no-new-offsets runs so the post-commit hook doesn't
+    # re-dirty the tree (root-cause fix 2026-05-19).
+    idempotent_write_json(
+        CURSOR_PATH, cursor, timestamp_keys=[], grace_seconds=0,
+    )
 
 
 def parse_usage_entries(jsonl_path: Path, start_offset: int) -> tuple[list[UsageEntry], int]:
@@ -330,14 +339,23 @@ def main(argv: list[str]) -> int:
     summary = merge_into_summary(new_buckets)
 
     AGGREGATES_DIR.mkdir(parents=True, exist_ok=True)
-    SUMMARY_PATH.write_text(json.dumps(summary, indent=2, default=str), encoding="utf-8")
+    # session-transcript-summary.json is NOT checked by D40's freshness
+    # gate (aggregate-self-tests.py) — only the P9.5 self-test reads it,
+    # and that asserts non-zero counts, not timestamp freshness. So a much
+    # larger grace window (4h) is safe and dramatically cuts pure-timestamp
+    # drift across post-commit hook cycles (root-cause fix 2026-05-19).
+    summary_wrote, summary_reason = idempotent_write_json(
+        SUMMARY_PATH, summary, default=str, grace_seconds=4 * 3600,
+    )
     save_cursor(cursor)
 
-    log.info("wrote %s (%d buckets, %d total tokens, %d sessions)",
+    log.info("%s %s (%d buckets, %d total tokens, %d sessions) [%s]",
+             "wrote" if summary_wrote else "skipped",
              SUMMARY_PATH.name,
              summary["bucket_count"],
              summary["all_time_total_tokens"],
-             summary["session_count"])
+             summary["session_count"],
+             summary_reason)
 
     if do_self_test:
         return self_test(summary)

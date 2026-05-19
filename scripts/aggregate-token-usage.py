@@ -18,6 +18,10 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
+# Local helper for idempotent-write (root-cause fix 2026-05-19 dirty-tree cycle).
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _idempotent_write import idempotent_write_json  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
 STATE = ROOT / ".claude" / "state"
 EVENTS_DIR = STATE / "telemetry" / "events"
@@ -654,21 +658,40 @@ def main():
         session_transcript_meta=source_e_meta,
         session_transcript_raw=source_e_meta,
     )
-    SNAPSHOT_PATH.write_text(json.dumps(snapshot, indent=2, default=str), encoding="utf-8")
+    # token-usage-snapshot.json is NOT in D40's freshness gate. token-usage.html
+    # (the consumer) reads content not timestamps. Long grace (4h) minimizes
+    # the timestamp-only drift that was dirtying the tree on every post-commit
+    # hook fire (root-cause fix 2026-05-19).
+    snap_wrote, snap_reason = idempotent_write_json(
+        SNAPSHOT_PATH, snapshot, default=str, grace_seconds=4 * 3600,
+    )
 
     # Update cursor to the most-recent event timestamp seen
     latest = None
     for ev in real + estimated:
         if ev.get("ts") and (latest is None or ev["ts"] > latest):
             latest = ev["ts"]
+    cursor_wrote = False
+    cursor_reason = "n/a"
     if latest:
-        CURSOR_PATH.write_text(json.dumps({"last_processed_event_ts": latest}, indent=2), encoding="utf-8")
+        # Cursor has no inherent "fresh enough" gate — its value IS the data,
+        # so use grace_seconds=0 and only-write-on-change semantics (the
+        # helper skips when normalized content matches; for this file
+        # "last_processed_event_ts" IS the only field so content drift ==
+        # cursor advance == legitimate write).
+        cursor_wrote, cursor_reason = idempotent_write_json(
+            CURSOR_PATH,
+            {"last_processed_event_ts": latest},
+            timestamp_keys=[],  # no timestamps to normalize away
+            grace_seconds=0,
+        )
 
     c = snapshot["_counts"]
     a = snapshot["all_time"]
     print(f"[aggregate-token] real_events={c['real_events']} estimated_events={c['estimated_events']} manual_entries={c['manual_entries']}")
     print(f"[aggregate-token] all-time: real={a['real']} estimated={a['estimated']} manual={a['manual']}")
-    print(f"[aggregate-token] wrote {SNAPSHOT_PATH.relative_to(ROOT)}")
+    print(f"[aggregate-token] snapshot write={snap_wrote} ({snap_reason}) -> {SNAPSHOT_PATH.relative_to(ROOT)}")
+    print(f"[aggregate-token] cursor   write={cursor_wrote} ({cursor_reason}) -> {CURSOR_PATH.relative_to(ROOT)}")
     return 0
 
 
