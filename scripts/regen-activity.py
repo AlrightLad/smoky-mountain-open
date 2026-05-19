@@ -282,7 +282,25 @@ def compose_payload():
     by id, sort by created_at desc, cap at 500 entries to keep the page
     snappy."""
     items = dedupe(scan_handoffs() + scan_telemetry_events() + scan_commits())
-    items.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    # Phase B (session 3, 2026-05-19): mixed-timezone string sort was
+    # ordering events incorrectly. Commits use `-04:00` offset (EDT) while
+    # telemetry uses `Z` UTC. String comparison treats "2026-05-18T22:25-04:00"
+    # < "2026-05-19T02:25Z" even though they're the SAME absolute moment —
+    # the telemetry event sorted ABOVE today's commits, hiding session-3
+    # ship commits below the top-of-feed. Normalize to UTC-aware datetimes
+    # before comparing. Per AMD-026 P10: ship commits must be visible at
+    # the top of the feed for Founder to verify session work AS IT LANDS.
+    def _sort_key(e):
+        ts = e.get("created_at", "")
+        if not ts:
+            return datetime.min.replace(tzinfo=timezone.utc)
+        try:
+            # Handle Z suffix
+            iso = ts.replace("Z", "+00:00") if ts.endswith("Z") else ts
+            return datetime.fromisoformat(iso).astimezone(timezone.utc)
+        except (ValueError, TypeError):
+            return datetime.min.replace(tzinfo=timezone.utc)
+    items.sort(key=_sort_key, reverse=True)
     items = items[:500]
 
     agents = sorted({
