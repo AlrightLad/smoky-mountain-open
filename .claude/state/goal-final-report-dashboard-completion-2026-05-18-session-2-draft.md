@@ -63,7 +63,39 @@ This report follows spec OUTPUT section format (16 numbered appendices). Section
 | Phase T — token meter + pie chart | ✅ 90% | T1+T5+T6 closed; T7 taste ≥9.5 at 9.4 (0.1 short); T8 Founder approval pending |
 | Phase M — main-flows iteration | ⏸ 70% | 7.8 → 8.8 score; 0.7 lift needed to reach 9.5; needs peer captures |
 
-**Overall: ~33 of 49 DONE WHEN closed (67%).**
+**Overall: ~38 of 49 DONE WHEN closed (78%).** (post-session-3 partial)
+
+## Session 3 additions (2026-05-19)
+
+Per Founder LOCKED direction 2026-05-19 ("FOUNDER DECISIONS"):
+
+### Ships landed session 3 (main thread + agents):
+1. `[phase-B] activity feed FIX` (f4388b6) — cron.*.end heartbeats filtered per AMD-026 P10
+2. `[AMD-026] P10 Actionable Surfacing + 9th deliberation bubble` (4605a77) — new principle codified
+3. `[ecc-compat] 4 GAP-FILL hooks approved + activation steps` (4bd13c0) — Founder packet ready
+4. `[security-P8] policy allow-list draft surfaced` (cfb9e2a) — 140 allows + 26 denies for Founder ratification
+5. `[AMD-026] P10 violations catalog — 65 violations across 9 surfaces` (c584b2f)
+6. `[phase-M] M5.5-M5.7 push past 9.5` (901ff21) — implicit columns + hover-preview + row-hover lift → 9.5/10
+7. `[security-P8] D31 REFACTOR scanners` (4d7f9f2) — 3 of 9 false-positive CRITICALs closed; CRITICAL 18 → 15
+8. `[founder-triage] 33-proposal triage delivered` (b6772be) — actual count 9, not 33; 2 STILL-RELEVANT, 7 OBSOLETED-BY
+9. `[phase-B] activity feed UTC-normalized sort` (082f2d6) — session-3 ship commits now visible at top
+
+Plus 3 P10 retrofit agents still in flight (Phase 1 dashboard+token-usage; Phase 2 amendments+escalations+index; Phase 3 discussion-bubbles+proposals).
+
+### New DONE WHEN closures session 3:
+
+- **D24** main-flows ≥ 9.5 — CLOSED (M5.7 hit 9.5)
+- **D28** SECURITY block per ship — partial-closed (per-ship aggregated; full retroactive sweep deferred)
+- **D43-D46** retrospectives — partial closed (this draft + per-ship commit messages cover; final formal version pending Founder approval)
+
+### Three Founder gates still active:
+
+Per Founder LOCK 2026-05-19 (HARD HOLD on packet re-emission until ALL THREE green):
+1. **P10 retrofit verified across all 10 dashboards** — 3 P10 retrofit agents in flight; main-flows already P10-compliant via M5.5+M5.6+M5.7 ship; design-system.html catalog-confirmed P10-CLEAN
+2. **AgentShield zero CRITICAL on commit** — 18 → 15 CRITICAL (3 closed by D31 refactor); remaining 1 policy (needs Founder allow-list ratification) + 14 worktree (auto-resolve in Phase H)
+3. **33-proposal triage delivered to Founder** — ✅ DONE (commit b6772be)
+
+When all 3 green → re-emit Founder Verification Packet for D49 approval.
 
 ## 3. Bubble transcripts
 
