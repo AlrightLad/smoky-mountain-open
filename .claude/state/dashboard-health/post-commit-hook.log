@@ -1,5 +1,7 @@
-[aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-426s)
--- scripts/scan-shipped-proposals.py ---
+=== post-commit hook fired 2026-05-19T20:38:03Z HEAD=e9bfa3e ===
+[scaffold-from-templates] done: scaffolded=0 skipped=11
+
+--- scripts/scan-shipped-proposals.py ---
 Exception in thread Thread-1 (_readerthread):
 Traceback (most recent call last):
   File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
@@ -12,108 +14,49 @@ Traceback (most recent call last):
   File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 23, in decode
     return codecs.charmap_decode(input,self.errors,decoding_table)[0]
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 99532: character maps to <undefined>
+UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 100073: character maps to <undefined>
 [scan-shipped] approved=2 candidate-commits-90d=0
 [scan-shipped] done: moved=0 skipped_already_shipped=0 warnings=0
 
 --- scripts/aggregate-telemetry.py ---
 [aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json (write-content-changed)
 [aggregate] meter_status=wired-real
-[aggregate] events=3702 handoffs=1 bubbles=7 proposals_pending=0
+[aggregate] events=3709 handoffs=1 bubbles=7 proposals_pending=0
 
 --- scripts/ingest-session-transcripts.py ---
-[ingest-session-transcripts] scanned 29 JSONL file(s), found 0 new assistant turns
-[ingest-session-transcripts] skipped session-transcript-summary.json (59 buckets, 6961396068 total tokens, 29 sessions) [skip-idempotent-fresh-36s]
+[ingest-session-transcripts] scanned bba09b44-bbb9-447a-97ee-4b5aab895cbe.jsonl: +3 new entries (offset 13111184\u219213155673)
+[ingest-session-transcripts] scanned 29 JSONL file(s), found 3 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (59 buckets, 6964038045 total tokens, 29 sessions) [write-content-changed]
 
 --- scripts/aggregate-token-usage.py ---
-[aggregate-token] real_events=60 estimated_events=2365 manual_entries=0
-[aggregate-token] all-time: real=6961498068 estimated=7292040 manual=0
-[aggregate-token] snapshot write=False (skip-idempotent-fresh-3s) -> .claude\state\telemetry\aggregates\token-usage-snapshot.json
-[aggregate-token] cursor   write=False (skip-idempotent-no-timestamps) -> .claude\state\telemetry\aggregates\.token-usage-cursor.json
+[aggregate-token] real_events=60 estimated_events=2367 manual_entries=0
+[aggregate-token] all-time: real=6964140045 estimated=7292040 manual=0
+[aggregate-token] snapshot write=True (write-content-changed) -> .claude\state\telemetry\aggregates\token-usage-snapshot.json
+[aggregate-token] cursor   write=True (write-content-changed) -> .claude\state\telemetry\aggregates\.token-usage-cursor.json
 
 --- scripts/aggregate-test-health.py ---
-[aggregate-test-health] OK status=green timestamp=2026-05-19T20:34:19Z write=False (skip-idempotent-grace-content-unchanged-424s)
+[aggregate-test-health] OK status=green timestamp=2026-05-19T20:38:04Z write=False (skip-idempotent-grace-content-unchanged-649s)
 
 --- scripts/aggregate-security-health.py ---
-[aggregate-security-health] OK status=gre[aggregate-self-tests] FAIL (3 aggregators):
-  aggregate-test-health: stale-timestamp-424s
-  aggregate-security-health: stale-timestamp-423s
-  aggregate-fiq-status: stale-timestamp-426s
-[aggregate-self-tests] starting D40 parity checks across 5 aggregators
-  [aggregate-approvals-pipeline] PASS status=red age=2s
-  [aggregate-architecture-review] PASS status=yellow age=-1s
-w] OK status=yellow findings=5 pending_recs=0 write=True (write-content-changed)
+[aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=False (skip-idempotent-grace-content-unchanged-650s)
+
+--- scripts/aggregate-approvals-pipeline.py ---
+[aggregate-approvals-pipeline] OK status=red summary=watcher cycling · applies blocked (6 skips on dirty tree) · 34 in inbox write=False (skip-idempotent-fresh-53s)
+
+--- scripts/aggregate-architecture-review.py ---
+[aggregate-architecture-review] OK status=yellow findings=5 pending_recs=0 write=True (write-content-changed)
 
 --- scripts/aggregate-fiq-status.py ---
-[aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-430s)
+[aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-656s)
 
 --- scripts/aggregate-self-tests.py ---
 [aggregate-self-tests] FAIL (3 aggregators):
-  aggregate-test-health: stale-timestamp-428s
-  aggregate-security-health: stale-timestamp-427s
-  aggregate-fiq-status: stale-timestamp-430s
+  aggregate-test-health: stale-timestamp-654s
+  aggregate-security-health: stale-timestamp-653s
+  aggregate-fiq-status: stale-timestamp-656s
 [aggregate-self-tests] starting D40 parity checks across 5 aggregators
-  [aggregate-approvals-pipeline] PASS status=red age=6s
+  [aggregate-approvals-pipeline] PASS status=red age=56s
   [aggregate-architecture-review] PASS status=yellow age=-1s
-ealth-banners] detail-approvals         already-present
-[inject-health-banners] detail-security          already-present
-[inject-health-banners] detail-test              already-present
-
---- scripts/regen-proposals.py ---
-[regen-proposals] running shipped-scan first...
-  [scan] [scan-shipped] approved=2 candidate-commits-90d=4
-  [scan] [scan-shipped] WARN commit 9ff9883 references PROP-003.A but it's not in approved/ (may be already-shipped, rejected, or typo)
-  [scan] [scan-shipped] WARN commit 2361e06 references PROP-003.B but it's not in approved/ (may be already-shipped, rejected, or typo)
-  [scan] [scan-shipped] WARN commit 7fdcf7e references PROP-004 but it's not in approved/ (may be already-shipped, rejected, or typo)
-  [scan] [scan-shipped] done: moved=0 skipped_already_shipped=0 warnings=3
-[regen-proposals] OK   proposals.html
-[regen-proposals] counts: pending=0 approved=2 deferred=0 shipped=4 rejected=0
-
---- scripts/regen-amendments.py ---
-[regen-amendments] OK   amendments.html
-[regen-amendments] counts: pending=0 approved=0 deferred=0 applied=26 rejected=0
-
---- scripts/regen-escalations.py ---
-[regen-escalations] OK   escalations.html
-[regen-escalations] pending=0 approved=0 applied=3 deferred=0 rejected=0
-
---- scripts/regen-dashboard.py ---
-[regen-dashboard] OK   dashboard.html
-[regen-dashboard] meter_status=wired-real
-[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=3702
-
---- scripts/regen-main-flows.py ---
-[regen-main-flows] WARN: 6 orphan components in grid (referenced by no flow's path):
-    actor.guest
-    actor.invitee
-    dist.capacitor-ios
-    ext.open-meteo
-    fn.expire-suspensions
-    fn.join-league
-[regen-main-flows] OK   main-flows.html
-[regen-main-flows] 6 columns, 47 components, 62 flows; orphans=6
-
---- scripts/regen-activity.py ---
-[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=150 commits=719)
-
---- scripts/dry-run-regen-ops-views.py ---
-[regen] 7 bubbles (activity.html owned by regen-activity.py; proposals.html owned by regen-proposals.py)
-[regen] OK   discussion-bubbles.html
-
---- scripts/regen-token-usage.py ---
-[regen-token-usage] OK   token-usage.html
-[regen-token-usage] all-time: real=6961498068 estimated=7292040 manual=0
-[regen-token-usage] pie_views slices: agent=3 work=2 session_top10=10
-
---- scripts/regen-index.py ---
-[regen-index] OK   index.html
-[regen-index] ships=33 proposals_pending=0 bubbles=1 halt=none git=fc8ea70e
-[write-regen-heartbeat] OK ts=2026-05-19T20:34:26Z source=post-commit-hook status=GATE-FAIL
-
---- P9.5 self-test ---
-[ingest-session-transcripts] scanned 29 JSONL file(s), found 0 new assistant turns
-[ingest-session-transcripts] skipped session-transcript-summary.json (59 buckets, 6961396068 total tokens, 29 sessions) [skip-idempotent-fresh-44s]
-[ingest-session-transcripts] SELF-TEST OK: 29 JSONLs \u2192 6961396068 tokens across 59 buckets
 
 --- scripts/inject-health-banners.py ---
 [inject-health-banners] banner-architecture      already-present
@@ -146,7 +89,7 @@ ealth-banners] detail-approvals         already-present
 --- scripts/regen-dashboard.py ---
 [regen-dashboard] OK   dashboard.html
 [regen-dashboard] meter_status=wired-real
-[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=3702
+[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=3709
 
 --- scripts/regen-main-flows.py ---
 [regen-main-flows] WARN: 6 orphan components in grid (referenced by no flow's path):
@@ -160,7 +103,7 @@ ealth-banners] detail-approvals         already-present
 [regen-main-flows] 6 columns, 47 components, 62 flows; orphans=6
 
 --- scripts/regen-activity.py ---
-[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=150 commits=720)
+[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=151 commits=722)
 
 --- scripts/dry-run-regen-ops-views.py ---
 [regen] 7 bubbles (activity.html owned by regen-activity.py; proposals.html owned by regen-proposals.py)
@@ -168,15 +111,15 @@ ealth-banners] detail-approvals         already-present
 
 --- scripts/regen-token-usage.py ---
 [regen-token-usage] OK   token-usage.html
-[regen-token-usage] all-time: real=6961498068 estimated=7292040 manual=0
+[regen-token-usage] all-time: real=6964140045 estimated=7292040 manual=0
 [regen-token-usage] pie_views slices: agent=3 work=2 session_top10=10
 
 --- scripts/regen-index.py ---
 [regen-index] OK   index.html
-[regen-index] ships=33 proposals_pending=0 bubbles=1 halt=none git=c76770d4
-[write-regen-heartbeat] OK ts=2026-05-19T20:34:30Z source=post-commit-hook status=GATE-FAIL
+[regen-index] ships=33 proposals_pending=0 bubbles=1 halt=none git=e9bfa3ea
+[write-regen-heartbeat] OK ts=2026-05-19T20:38:15Z source=post-commit-hook status=GATE-FAIL
 
 --- P9.5 self-test ---
 [ingest-session-transcripts] scanned 29 JSONL file(s), found 0 new assistant turns
-[ingest-session-transcripts] skipped session-transcript-summary.json (59 buckets, 6961396068 total tokens, 29 sessions) [skip-idempotent-fresh-48s]
-[ingest-session-transcripts] SELF-TEST OK: 29 JSONLs \u2192 6961396068 tokens across 59 buckets
+[ingest-session-transcripts] skipped session-transcript-summary.json (59 buckets, 6964038045 total tokens, 29 sessions) [skip-idempotent-fresh-11s]
+[ingest-session-transcripts] SELF-TEST OK: 29 JSONLs \u2192 6964038045 tokens across 59 buckets
