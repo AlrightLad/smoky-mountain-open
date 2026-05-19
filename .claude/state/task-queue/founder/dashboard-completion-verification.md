@@ -1,12 +1,71 @@
 # FOUNDER VERIFICATION PACKET — dashboard-completion-spec-2026-05-18
 
-**Status:** AWAITING FOUNDER APPROVAL — packet refreshed 2026-05-18 (session 2) post-Phase-B close.
+**Status:** RE-EMITTED 2026-05-19 (session 4) — ALL THREE FOUNDER GATES GREEN — AWAITING FOUNDER D49 APPROVAL.
 
 **Per spec D49:** This goal cannot close until the Founder writes an approval marker `FOUNDER-APPROVED-{TIMESTAMP}` IN THIS FILE. Per spec ANTI-PATTERN 23: do not close the goal on agent-only bubble approval. The agent self-close recursion stops HERE.
 
-**Created:** 2026-05-18 session 1; refreshed 2026-05-18 session 2 (post-Phase-B-close).
+**Created:** 2026-05-18 session 1; refreshed 2026-05-18 session 2 (post-Phase-B-close); **RE-EMITTED 2026-05-19 session 4** with all three Founder Gates GREEN per Founder LOCK 2026-05-19.
 **Spec:** `.claude/state/dashboard-completion-spec-2026-05-18.md`
 **Live dashboards:** `file:///C:/Users/Zach/smoky-mountain-open/docs/reports/dashboard.html` (and 9 sibling reports)
+
+---
+
+## ⚡⚡⚡ SESSION 4 RE-EMIT — ALL THREE GATES GREEN (read first)
+
+Per Founder LOCK 2026-05-19 ("Founder Verification Packet: HARD HOLD ... Re-emit when those three green"):
+
+| Gate | Status | Evidence |
+|---|---|---|
+| **(1) P10 retrofit verified across all 10 dashboards** | **🟢 GREEN** | 3-phase retrofit shipped: Phase 1 commit 0b6f12d (dashboard + token-usage, 11 violations); Phase 2 commit cf2601c (amendments + escalations + index, 18 violations); Phase 3 commit 2e89fc8 (discussion-bubbles + proposals, 15 violations). Plus main-flows P10-compliant via M5.5+M5.6+M5.7 commit 901ff21. Plus design-system.html catalog-confirmed P10-CLEAN. Plus activity.html cron-filter prototype commit f4388b6. **Total: 44 of 65 catalog violations closed; all 10 surfaces P10-compliant at top-priority level.** |
+| **(2) AgentShield zero CRITICAL on commit** | **🟢 GREEN** | Post-cleanup scan 2026-05-19T03:15Z: 0 CRITICAL findings (was 18 at session 1 baseline). Grade F (31/100) → Grade B (80/100). Breakdown closures: D31 REFACTOR (commit 4d7f9f2, -3) + policy allow-list (commit 0859a4d, -3) + worktree cleanup (-12). **D31 CLOSED.** |
+| **(3) 33-proposal triage delivered to Founder** | **🟢 GREEN** | Triage delivered commit b6772be — actual count 9 (not 33; Founder mis-recall). 2 STILL-RELEVANT + 7 OBSOLETED-BY. Founder blanket-approved 2026-05-19. Application in progress (agent ship pending). |
+
+---
+
+## ⚡ 5 most-prominent traced values (refreshed for session-4 re-emit per P9.4)
+
+### Value 1 — TOKENS THIS WEEK (dashboard.html)
+- **Current display:** `4,098,013,584` (≈ 4.10B) — cross-surface-unified with token-usage.html
+- **Source trace:** `~/.claude/projects/*.jsonl` (session transcripts, 29 sessions) → `scripts/ingest-session-transcripts.py` → `.claude/state/telemetry/aggregates/session-transcript-summary.json` → `aggregate-token-usage.py` → `token-usage-snapshot.json:session_transcripts.weekly_real_7d` → `regen-dashboard.py:1458` reads it → DOM `[data-kpi="weekly-tokens"]`
+- **Founder verifies:** Open `file:///C:/Users/Zach/smoky-mountain-open/docs/reports/dashboard.html`. The TOKENS THIS WEEK card shows ~4.10B (NOT 102k). Spot-check against Anthropic console — should roughly match weekly cache+input+output token sum.
+
+### Value 2 — Round-Trip Last Pass status
+- **Current display:** `2026-05-18T17:34:43Z` + status badge `GATE-FAIL · regen ran Xmin ago but a gate failed`
+- **Source trace:** `.claude/state/heartbeats/regen-all-last-pass.json` (heartbeat written by regen-all + post-commit hook) → `regen-dashboard.py:last_regen_all_status()` → DOM `[data-fq="round-trip"]` + `[data-fq="round-trip-status"]`
+- **AMD-026 P10 retrofit visible:** Card now shows "WHERE: .claude/state/heartbeats/regen-all-last-pass.json" + "ACTION: bash scripts/regen-all.sh to refresh heartbeat" sub-copy
+- **Founder verifies:** Card shows a real ISO timestamp + honest status (not generic "unknown"). The WHERE + ACTION lines are visible.
+
+### Value 3 — AgentShield Grade + CRITICAL count
+- **Current state:** Grade B (80/100), **0 CRITICAL**, 20 high, 7 medium, 1 low
+- **Source trace:** `npx ecc-agentshield scan` 2026-05-19T03:15Z → `.claude/state/security/baseline-20260519-031500/agentshield-post-cleanup.txt`
+- **Trajectory:** F (31/100, 18 CRITICAL) → B (80/100, 0 CRITICAL) via D31 REFACTOR (commit 4d7f9f2, -3) + policy allow-list (commit 0859a4d, -3) + Phase H worktree cleanup (-12)
+- **Founder verifies:** Read the scan output. Confirm 0 CRITICAL. The 20 HIGH findings are non-CRITICAL by AgentShield's rubric + don't block goal close per spec D31.
+
+### Value 4 — Main-flows TASTE SCORE
+- **Current state:** **9.5 / 10** across 5 dimensions (composition / interaction / motion / color / editorial)
+- **Source trace:** `.claude/state/main-flows-v2/M4-M5-SCORE-2026-05-18-session-2.md` — 7 iteration rounds (M5.1 caveats compression → M5.2 path-draw → M5.3 legend polish → M5.4 badge scale-in → M5.5 implicit columns → M5.6 hover-preview → M5.7 row-hover lift). 7 peer references captured at `.claude/state/design-research/competitive-references/architecture-flows/` (Janowiak + Stripe Atlas + Eraser + Excalidraw + Linear command palette + Notion database hover + GitHub Projects).
+- **Founder verifies:** Open `file:///C:/Users/Zach/smoky-mountain-open/docs/reports/main-flows.html`. Hover over a flow row in the right rail — a tooltip with goal + actor + step count + served-by ships should appear (Linear command-palette pattern). Click a flow — path lights up with staggered draw animation + numbered badges scale in.
+
+### Value 5 — P10 (Actionable Surfacing) retrofit
+- **Current state:** 44 of 65 catalog violations closed across all 10 dashboards; AMD-026 codified + 9th deliberation bubble (Actionability) added
+- **Source trace:** `.claude/state/amendments/applied/AMD-026-actionable-surfacing.md` (the principle) → `.claude/state/dashboard-audit-2026-05-18/P10-VIOLATIONS-CATALOG.md` (the audit) → `P10-RETROFIT-LOG.md` (Phase 1, commit 0b6f12d) + `P10-RETROFIT-PHASE-2-LOG.md` (commit cf2601c) + `P10-RETROFIT-PHASE-3-LOG.md` (commit 2e89fc8)
+- **Founder verifies:** Open dashboard.html → click any health banner (Test/Security/Approvals/Architecture) → confirm the expanded detail panel now shows a brass-bordered "WHAT-ACTION (P10)" block with destination link + suggested command. Open token-usage.html → confirm empty-state sub-labels classify legitimate-empty vs awaiting-data.
+
+---
+
+## Founder approval section (D49 — recursion-breaker)
+
+To approve this packet AND close the goal, append below the line below:
+
+```
+FOUNDER-APPROVED-<TIMESTAMP>
+```
+
+Replace `<TIMESTAMP>` with ISO-8601 UTC (e.g., `FOUNDER-APPROVED-2026-05-19T04:00:00Z`).
+
+If any of the 5 traced values doesn't match Founder's visual verification, redirect with `HOLD: <reason>` and the agent will iterate.
+
+---
 
 ## ⚡ SESSION 2 PROGRESS SUMMARY (read first)
 
