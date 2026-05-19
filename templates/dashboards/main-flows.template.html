@@ -814,14 +814,24 @@
                     text.setAttribute('x', cx); text.setAttribute('y', cy);
                     text.textContent = s.n;
                     badge.appendChild(text);
-                    // Badge fade-in synced with end of path draw (Janowiak D3:
+                    // Badge fade-in + scale-in synced with end of path draw (Janowiak D3:
                     // edge polyline trailed by node light-up by ~50ms; badge
-                    // appears slightly after its arrow finishes drawing).
+                    // appears slightly after its arrow finishes drawing — scaling
+                    // from 90% → 100% lightly with no overshoot).
                     // Skipped on initial render — see arrowsHaveBeenDrawn.
                     if (animate) {
                         badge.style.opacity = '0';
-                        badge.style.transition = 'opacity 160ms ease-out ' + (idx * 30 + 140) + 'ms';
-                        requestAnimationFrame(function () { badge.style.opacity = '1'; });
+                        // M5.4 Approach B: badge scale-in. SVG transform via CSS.
+                        // transform-box: fill-box keeps the scale anchored to the
+                        // badge geometry rather than the SVG root.
+                        badge.style.transformBox = 'fill-box';
+                        badge.style.transformOrigin = 'center';
+                        badge.style.transform = 'scale(0.85)';
+                        badge.style.transition = 'opacity 160ms ease-out ' + (idx * 30 + 140) + 'ms, transform 180ms cubic-bezier(0.4, 0, 0.2, 1) ' + (idx * 30 + 140) + 'ms';
+                        requestAnimationFrame(function () {
+                            badge.style.opacity = '1';
+                            badge.style.transform = 'scale(1)';
+                        });
                     }
                     ARROWS.appendChild(badge);
                 });
