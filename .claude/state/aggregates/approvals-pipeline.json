@@ -1,13 +1,13 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-19T00:07:13Z",
-  "generated_at": "2026-05-19T00:07:13Z",
+  "timestamp": "2026-05-19T00:12:13Z",
+  "generated_at": "2026-05-19T00:12:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "green",
   "raw_status": "green",
   "summary": "watcher no-new-files 1.4min ago · 32 in inbox",
-  "as_of": "2026-05-19T00:05:48Z",
+  "as_of": "2026-05-19T00:10:48Z",
   "stale": false,
   "age_hours": 0.02333333333333333,
   "counts": {
