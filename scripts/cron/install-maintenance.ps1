@@ -82,13 +82,29 @@ $action = New-ScheduledTaskAction `
 # Trigger: daily at 02:55 local
 $trigger = New-ScheduledTaskTrigger -Daily -At "02:55"
 
-# Settings: 30-min timeout (WSL updates can take 5+ min); resilient
+# Settings: 30-min timeout (WSL updates can take 5+ min); resilient.
+#
+# 2026-05-19 Path 3 (heartbeat redundancy) hardening:
+#   - StartWhenAvailable: catches up after a missed run (computer asleep
+#     at 02:55). Already set in prior version; preserved.
+#   - RestartCount=3 + RestartInterval=PT5M: if the task fails, retry up
+#     to 3 times every 5 minutes. Earlier version had RestartCount=0,
+#     meaning a single failure left the heartbeat stale until the next
+#     day. (Founder mandate 2026-05-19: "cron jobs are running but not
+#     refreshing heartbeat".)
+#   - WakeToRun=true: wake the computer from sleep at 02:55 to run the
+#     task. Founder pre-authorized in the spec. Without this the daily
+#     task simply never fires when the laptop is closed overnight.
+#   - DontStopOnIdleEnd / battery toggles: preserved from prior version.
 $settings = New-ScheduledTaskSettingsSet `
     -ExecutionTimeLimit (New-TimeSpan -Minutes 30) `
     -StartWhenAvailable `
     -DontStopOnIdleEnd `
     -AllowStartIfOnBatteries `
-    -DontStopIfGoingOnBatteries
+    -DontStopIfGoingOnBatteries `
+    -RestartCount 3 `
+    -RestartInterval (New-TimeSpan -Minutes 5) `
+    -WakeToRun
 
 # Register with S4U + Highest. Windows encrypts and stores the password.
 Register-ScheduledTask `
