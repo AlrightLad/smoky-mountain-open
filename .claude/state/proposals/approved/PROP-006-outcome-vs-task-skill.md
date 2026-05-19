@@ -165,3 +165,15 @@ Per Founder directive: skill content operates IMMEDIATELY. This
 proposal codifies it for the next agent loop. The author of this
 proposal (Agent 3) consults the 5-question discipline starting NOW;
 the formal skill file lands on approval.
+
+---
+
+## Approval metadata
+
+```
+status: approved
+approved_at: 2026-05-19T03:00:00Z
+approved_by: founder-blanket-approval-2026-05-19
+disposition: STILL-RELEVANT — content ratified; small finishing job (~600 tokens to author ~/.claude/skills/outcome-vs-task/SKILL.md as the symmetric sister-skill of continuation-discipline). Skill content currently lives in .claude/state/lessons-learned/engineering-mindset.md and operates from there; this approval green-lights the formal authoring.
+triage_source: .claude/state/task-queue/founder/proposal-triage-2026-05-19.md Batch A row 1.
+```

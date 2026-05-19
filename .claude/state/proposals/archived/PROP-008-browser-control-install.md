@@ -200,3 +200,13 @@ re-install.
 Install operates immediately tonight. USAGE gated on Founder
 fresh-eyes verification tomorrow morning. This proposal codifies
 both the install + the gate for the next agent loop.
+
+---
+
+## Archive metadata
+
+```
+archived_at: 2026-05-19T03:00:00Z
+archived_by: founder-blanket-approval-2026-05-19
+obsoleted_by: SHIPPED — @playwright/mcp installed; playwright MCP server in ~/.claude.json; mcp__playwright__* tools available in session. Triage source: .claude/state/task-queue/founder/proposal-triage-2026-05-19.md Batch B row 3.
+```

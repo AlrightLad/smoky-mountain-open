@@ -102,3 +102,13 @@ When Founder approves via proposals.html:
 - AMD-015 TEAM_PROPOSES_AGENT_2_RATIFIES (escalation pattern)
 - AMD-017 CONTINUATION_DISCIPLINE (the policy this skill operationalizes)
 - AUTONOMOUS_FAILURE_RECOVERY v8.3 (stop condition definitions)
+
+---
+
+## Archive metadata
+
+```
+archived_at: 2026-05-19T03:00:00Z
+archived_by: founder-blanket-approval-2026-05-19
+obsoleted_by: SHIPPED — .claude/skills/continuation-discipline/ + docs/agents/CONTINUATION_DISCIPLINE.md operative; AMD-017 applied; .claude/state/stop-decisions/ logging active. Triage source: .claude/state/task-queue/founder/proposal-triage-2026-05-19.md Batch B row 1.
+```

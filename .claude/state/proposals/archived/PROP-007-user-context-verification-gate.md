@@ -162,3 +162,13 @@ include a `.claude/state/.../founder-real-context/<ts>/` capture
 as evidence. "Agent-context PASS" alone stops counting as
 ship-close evidence for user-facing work. The 9-iteration
 main-flows pattern cannot recur for any surface PROP-007 covers.
+
+---
+
+## Archive metadata
+
+```
+archived_at: 2026-05-19T03:00:00Z
+archived_by: founder-blanket-approval-2026-05-19
+obsoleted_by: SHIPPED — scripts/visual-audit/founder-context-capture.mjs on disk; round-trip [user-context-gate] block at tests/round-trip-test.py:1833 operative; cited in CONSOLIDATION session 2. Triage source: .claude/state/task-queue/founder/proposal-triage-2026-05-19.md Batch B row 2.
+```

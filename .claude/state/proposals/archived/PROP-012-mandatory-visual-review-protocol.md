@@ -169,3 +169,13 @@ No more "shipped and Founder caught the visual issue" pattern.
 The 6-layer verification stack (round-trip + scroll-reachability +
 side-by-side + user-context + click-through + design-bot-articulated-
 diff) provides defense in depth without paid subscriptions.
+
+---
+
+## Archive metadata
+
+```
+archived_at: 2026-05-19T03:00:00Z
+archived_by: founder-blanket-approval-2026-05-19
+obsoleted_by: SHIPPED — .claude/skills/parbaughs-visual-verification-protocol.md exists and is operative (codifies iter-14 Read-and-articulate discipline); used in session 2 main-flows iteration; cited at spec line 450 as "PROP-012 visual review per surface, V1". Triage source: .claude/state/task-queue/founder/proposal-triage-2026-05-19.md Batch B row 6.
+```

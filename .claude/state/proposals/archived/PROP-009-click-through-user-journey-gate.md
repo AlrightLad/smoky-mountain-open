@@ -165,3 +165,13 @@ All three required for user-facing ship-close post-PROP-009.
 
 Audit operates immediately. Critic gate operates at the agent's
 discretion. This proposal codifies both for the next agent loop.
+
+---
+
+## Archive metadata
+
+```
+archived_at: 2026-05-19T03:00:00Z
+archived_by: founder-blanket-approval-2026-05-19
+obsoleted_by: SHIPPED — scripts/visual-audit/user-journey-audit.mjs on disk; used in session 2 design-bot reviews; click-every coverage incorporated. Triage source: .claude/state/task-queue/founder/proposal-triage-2026-05-19.md Batch B row 4.
+```

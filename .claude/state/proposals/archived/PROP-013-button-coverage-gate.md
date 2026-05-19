@@ -129,3 +129,13 @@ Scripts operating since iter 16. Formal codification + Gate 5
 enforcement land at apply-time. Critic + design-bot already
 reference click-every output in their ship-close gate per current
 session's commits.
+
+---
+
+## Archive metadata
+
+```
+archived_at: 2026-05-19T03:00:00Z
+archived_by: founder-blanket-approval-2026-05-19
+obsoleted_by: SHIPPED — scripts/visual-audit/enumerate-interactives.mjs + scripts/visual-audit/click-every-interactive.mjs on disk; AMD-018 11-gate stack incorporates Gate 5 click-every coverage; used in session 2 button audits. Triage source: .claude/state/task-queue/founder/proposal-triage-2026-05-19.md Batch B row 7.
+```

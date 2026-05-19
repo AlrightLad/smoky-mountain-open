@@ -201,3 +201,13 @@ Skills installed + audited + operative this ship. Iter-14 visual
 review applies them. Z.AI MCP install path documented for future
 authorization. This proposal codifies the install + the workflow
 for the next agent loop.
+
+---
+
+## Archive metadata
+
+```
+archived_at: 2026-05-19T03:00:00Z
+archived_by: founder-blanket-approval-2026-05-19
+obsoleted_by: SHIPPED — four Anthropic skills (frontend-design, webapp-testing, canvas-design, theme-factory) installed at ~/.claude/skills/ and available in session skill list. Z.AI MCP correctly deferred (paid). Triage source: .claude/state/task-queue/founder/proposal-triage-2026-05-19.md Batch B row 5.
+```

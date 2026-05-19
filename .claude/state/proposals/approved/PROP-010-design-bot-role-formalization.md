@@ -201,3 +201,15 @@ Design-bot protocol operates immediately. This proposal codifies it
 for the next agent loop. Iter 13 (this ship) is the first to apply
 the protocol — design-review artifacts authored alongside the
 PROP-010 + iter-13 code changes.
+
+---
+
+## Approval metadata
+
+```
+status: approved
+approved_at: 2026-05-19T03:00:00Z
+approved_by: founder-blanket-approval-2026-05-19
+disposition: STILL-RELEVANT — content ratified. NOTE: approval does NOT mean ship-now. Closure is gated by Phase G design-batch per spec D39 ("PROP-010 + design-bot APPROVE on every dashboard surface"). Founder accepts the proposal's content; team ships when Phase G closes. parbaughs-design-bot.md skill already operative; remaining gap is docs/agents/DESIGN_BOT.md formalization.
+triage_source: .claude/state/task-queue/founder/proposal-triage-2026-05-19.md Batch A row 2.
+```
