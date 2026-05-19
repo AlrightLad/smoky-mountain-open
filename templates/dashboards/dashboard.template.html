@@ -14,12 +14,12 @@
            export action. Tokens only (no raw hex) per theme convergence guard. */
         /* Inline-expansion CSS removed 2026-05-14 — superseded by escalations.html lifecycle. */
 
-        /* phase-I iter2 (2026-05-19): Recent 7-days chart card chrome
-           upgraded to match KPI card glass treatment + bars use gradient. */
+        /* phase-I iter6 cycle 7 (2026-05-19): Recent 7-days chart card chrome
+           — wider chrome, more breathing room, hover interaction on bars. */
         .recent-7days-charts {
             display: flex;
             flex-direction: column;
-            gap: var(--space-3);
+            gap: var(--space-4);
         }
         @media (min-width: 960px) {
             .recent-7days-charts { flex-direction: row; gap: var(--space-4); }
@@ -37,9 +37,15 @@
         }
         .r7-chart-title { font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.13em; color: var(--pb-chalk-400); margin: 0 0 4px 0; font-weight: 600; }
         .r7-chart-subtitle { font-family: var(--font-body); font-size: 0.75rem; color: var(--pb-chalk-300); margin: 0 0 var(--space-3) 0; line-height: 1.4; }
-        .r7-chart-summary { display: flex; align-items: baseline; gap: 8px; margin: 4px 0 var(--space-3); flex-wrap: wrap; }
-        .r7-chart-summary-value { font-family: var(--font-numeric); font-variant-numeric: tabular-nums; font-size: 1.625rem; font-weight: 600; color: var(--pb-chalk-50); letter-spacing: -0.025em; line-height: 1; }
+        /* Cycle 7 (2026-05-19): bigger summary value to match the KPI hero
+           treatment. Bumped from 1.625rem to 2.25rem; tighter tracking. */
+        .r7-chart-summary { display: flex; align-items: baseline; gap: 10px; margin: 4px 0 var(--space-3); flex-wrap: wrap; }
+        .r7-chart-summary-value { font-family: var(--font-numeric); font-variant-numeric: tabular-nums; font-size: 2.25rem; font-weight: 600; color: var(--pb-chalk-50); letter-spacing: -0.035em; line-height: 0.95; }
         .r7-chart-summary-label { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--pb-chalk-400); text-transform: uppercase; letter-spacing: 0.1em; }
+        .r7-chart-summary-trend { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--pb-chalk-300); font-weight: 600; letter-spacing: 0.02em; padding-left: 6px; border-left: 1px solid var(--border-subtle); margin-left: 4px; }
+        .r7-chart-summary-trend.is-up { color: var(--pb-success); }
+        .r7-chart-summary-trend.is-down { color: var(--pb-warning); }
+        .r7-chart-summary-trend.is-flat { color: var(--pb-chalk-400); }
         .r7-chart svg { width: 100%; height: auto; display: block; font-family: var(--font-mono); overflow: visible; }
         /* phase-I iter2 (2026-05-19): bars now use SVG gradient fills via
            <defs> declared in renderRecent7DaysCharts. Falls through to
@@ -62,11 +68,14 @@
         .r7-bar-bubbles { fill: url(#r7g-violet); }
         .r7-bar-tokens, .r7-bar-complete, .r7-bar-paused, .r7-bar-halted, .r7-bar-handoffs, .r7-bar-ships, .r7-bar-bubbles {
             transition: opacity var(--duration-fast) var(--ease-out), filter var(--duration-fast) var(--ease-out);
-            cursor: default;
+            cursor: pointer;
         }
+        /* Cycle 7 (2026-05-19): bar hover — stronger brightness lift +
+           subtle drop-shadow halo so the eye locks onto the active bar.
+           Linear/Datadog "scrub a column" interaction language. */
         .r7-bar-tokens:hover, .r7-bar-complete:hover, .r7-bar-paused:hover, .r7-bar-halted:hover, .r7-bar-handoffs:hover, .r7-bar-ships:hover, .r7-bar-bubbles:hover {
-            opacity: 0.85;
-            filter: brightness(1.18);
+            opacity: 1;
+            filter: brightness(1.25) drop-shadow(0 0 6px rgba(201, 169, 97, 0.35));
         }
         .r7-axis { fill: var(--pb-chalk-400); font-size: 9.5px; letter-spacing: 0.04em; font-family: var(--font-mono); }
         .r7-axis-title { fill: var(--pb-chalk-300); font-size: 10px; font-weight: 600; }
@@ -1633,10 +1642,29 @@
             // pattern). Headline number above each chart shows total for the
             // window + delta vs prior period if computable. Tokens get the
             // 7-day total; counts get total activity events.
+            // Cycle 7: peak-day annotation — Datadog/Vercel "the spike was
+            // on Thursday" callout. Eye locates the headline-worthy outlier.
             var totalTokens = tokens.reduce(function (a, b) { return a + b; }, 0);
             var totalCounts = series.reduce(function (acc, s) {
                 return acc + s.values.reduce(function (a, b) { return a + b; }, 0);
             }, 0);
+            var peakDayIdx = tokens.reduce(function (best, v, i) {
+                return v > tokens[best] ? i : best;
+            }, 0);
+            var peakDayLabel = labels[peakDayIdx] || '';
+            var peakDayValue = tokens[peakDayIdx] || 0;
+            var tokenTrendLabel = '';
+            if (tokens.length >= 2 && totalTokens > 0) {
+                var midpoint = Math.floor(tokens.length / 2);
+                var firstHalfAvg = tokens.slice(0, midpoint).reduce(function (a, b) { return a + b; }, 0) / Math.max(1, midpoint);
+                var secondHalfAvg = tokens.slice(midpoint).reduce(function (a, b) { return a + b; }, 0) / Math.max(1, tokens.length - midpoint);
+                if (firstHalfAvg > 0) {
+                    var trendPct = ((secondHalfAvg - firstHalfAvg) / firstHalfAvg) * 100;
+                    var dir = Math.abs(trendPct) < 5 ? 'is-flat' : (trendPct > 0 ? 'is-up' : 'is-down');
+                    var arrow = Math.abs(trendPct) < 5 ? '▬' : (trendPct > 0 ? '▲' : '▼');
+                    tokenTrendLabel = ' <span class="r7-chart-summary-trend ' + dir + '">' + arrow + ' ' + Math.abs(trendPct).toFixed(0) + '% ' + (trendPct >= 0 ? 'up' : 'down') + '</span>';
+                }
+            }
 
             host.innerHTML = ''
                 + '<div class="r7-chart">'
@@ -1644,8 +1672,9 @@
                 + '  <div class="r7-chart-summary">'
                 + '    <span class="r7-chart-summary-value">' + fmtTokenLabel(totalTokens) + '</span>'
                 + '    <span class="r7-chart-summary-label">total · ' + tokens.length + ' day window</span>'
+                + tokenTrendLabel
                 + '  </div>'
-                + '  <p class="r7-chart-subtitle">Per-day consumption bucketed by event timestamp. Hover a bar for the precise value.</p>'
+                + '  <p class="r7-chart-subtitle">' + (peakDayValue > 0 ? 'Peak: ' + peakDayLabel + ' at ' + fmtTokenLabel(peakDayValue) + '. ' : '') + 'Hover a bar for the precise value.</p>'
                 + '  <svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Token consumption per day for trailing 7 days">'
                 + R7_GRAD_DEFS
                 + tokenYTicks
