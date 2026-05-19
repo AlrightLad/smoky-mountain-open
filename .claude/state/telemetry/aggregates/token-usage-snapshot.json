@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-05-19T20:32:13.462405+00:00",
+  "generated_at": "2026-05-19T20:33:42.327914+00:00",
   "_meter_status": "wired-real",
   "session_transcripts": {
-    "generated_at": "2026-05-19T20:25:14.418569+00:00",
+    "generated_at": "2026-05-19T20:33:41.784015+00:00",
     "source": "~/.claude/projects/C--Users-Zach-smoky-mountain-open/*.jsonl",
     "session_count": 29,
     "bucket_count": 59,
-    "all_time_total_tokens": 6960523272,
-    "weekly_real_7d": 4601143879,
+    "all_time_total_tokens": 6961396068,
+    "weekly_real_7d": 4602016675,
     "by_day_total": {
       "2026-04-17": 294853821,
       "2026-04-20": 362592283,
@@ -26,10 +26,10 @@
       "2026-05-16": 533640773,
       "2026-05-17": 4397863,
       "2026-05-18": 235919411,
-      "2026-05-19": 464653070
+      "2026-05-19": 465525866
     },
     "by_model_total": {
-      "claude-opus-4-7": 6960523272,
+      "claude-opus-4-7": 6961396068,
       "<synthetic>": 0
     }
   },
@@ -37,13 +37,13 @@
     "agent_role": [
       {
         "label": "main",
-        "tokens": 6960523272,
-        "usd_cost": 14503.291
+        "tokens": 6961396068,
+        "usd_cost": 14504.6267
       },
       {
         "label": "orchestrator",
         "tokens": 7292040,
-        "usd_cost": 15.1941
+        "usd_cost": 15.1935
       },
       {
         "label": "engineer",
@@ -54,8 +54,8 @@
     "work_category": [
       {
         "label": "manual-session",
-        "tokens": 6967825272,
-        "usd_cost": 14518.5058
+        "tokens": 6968698068,
+        "usd_cost": 14519.841
       },
       {
         "label": "overnight-triage",
@@ -101,8 +101,8 @@
       },
       {
         "label": "bba09b44 \u00b7 2026-05-18",
-        "tokens": 574925562,
-        "usd_cost": 1187.5861,
+        "tokens": 575798358,
+        "usd_cost": 1188.9218,
         "session_id_prefix": "bba09b44",
         "day": "2026-05-18"
       },
@@ -152,7 +152,7 @@
   "quota_status": {
     "state": "fresh",
     "as_of": "2026-05-19T20:32:12.7733636Z",
-    "age_seconds": 0,
+    "age_seconds": 89,
     "weekly_tokens": 102000,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -180,10 +180,10 @@
       }
     },
     "main": {
-      "real": 6960523272,
+      "real": 6961396068,
       "estimated": 0,
       "manual": 0,
-      "total_real_plus_estimated": 6960523272,
+      "total_real_plus_estimated": 6961396068,
       "by_day": {
         "2026-05-13": {
           "real": 672098066,
@@ -254,7 +254,7 @@
           "estimated": 0
         },
         "2026-05-19": {
-          "real": 464653070,
+          "real": 465525866,
           "estimated": 0
         }
       }
@@ -326,10 +326,10 @@
   },
   "by_cron": {
     "manual-session": {
-      "real": 6960625272,
+      "real": 6961498068,
       "estimated": 7200000,
       "manual": 0,
-      "total_real_plus_estimated": 6967825272,
+      "total_real_plus_estimated": 6968698068,
       "by_day": {
         "2026-05-13": {
           "real": 672200066,
@@ -400,7 +400,7 @@
           "estimated": 0
         },
         "2026-05-19": {
-          "real": 464653070,
+          "real": 465525866,
           "estimated": 0
         }
       }
@@ -560,10 +560,10 @@
   },
   "by_ship": {
     "unattributed": {
-      "real": 6960625272,
+      "real": 6961498068,
       "estimated": 92040,
       "manual": 0,
-      "total_real_plus_estimated": 6960717312,
+      "total_real_plus_estimated": 6961590108,
       "by_day": {
         "2026-05-13": {
           "real": 672200066,
@@ -634,7 +634,7 @@
           "estimated": 0
         },
         "2026-05-19": {
-          "real": 464653070,
+          "real": 465525866,
           "estimated": 0
         }
       }
@@ -665,11 +665,11 @@
     }
   },
   "all_time": {
-    "real": 6960625272,
+    "real": 6961498068,
     "estimated": 7292040,
     "manual": 0,
     "first_event_at": "2026-04-17T22:45:30.161000+00:00",
-    "last_event_at": "2026-05-19T20:32:13+00:00"
+    "last_event_at": "2026-05-19T20:33:40.063000+00:00"
   },
   "_counts": {
     "real_events": 60,
