@@ -1,26 +1,72 @@
 """Shared idempotent JSON writer for aggregate + regen scripts.
 
-Root-cause fix 2026-05-19: every regen run was re-writing aggregate JSON
-files with a NEW `generated_at` / `timestamp` even when underlying data
-was unchanged. The post-commit hook fires ~18 regen scripts on every
-commit, including its own auto-commit recursion — so each commit produced
-a ~5-second dirty-tree window. The cron watcher (5-min cadence) saw
-that window as "dirty" and surfaced `dirty (13 files) · watcher cycling`
-on dashboard.html even when the tree was actually clean by the time
-Founder loaded the page.
+Root-cause fix 2026-05-19 (session-3): every regen run was re-writing
+aggregate JSON files with a NEW `generated_at` / `timestamp` even when
+underlying data was unchanged. The post-commit hook fires ~18 regen
+scripts on every commit, including its own auto-commit recursion — so
+each commit produced a ~5-second dirty-tree window. The cron watcher
+(5-min cadence) saw that window as "dirty" and surfaced
+`dirty (13 files) · watcher cycling` on dashboard.html even when the
+tree was actually clean by the time Founder loaded the page.
 
-Fix: aggregator + cache writers compare the NORMALIZED content (timestamps
-excluded) against the existing file. When meaningful content is identical
-AND the existing file's timestamps are still within the "fresh enough"
-grace window, skip the write entirely — so the tree stays clean across
-post-commit hook fires.
+Initial fix (commit d496cdf): aggregator + cache writers compare the
+NORMALIZED content (timestamps excluded) against the existing file.
+When meaningful content is identical AND the existing file's timestamps
+are still within the "fresh enough" grace window, skip the write entirely
+— so the tree stays clean across post-commit hook fires.
 
-D40 freshness contract: aggregate-self-tests.py asserts each aggregator's
-`generated_at` is within 300 seconds of `now`. Our grace window is 240s
-(under the D40 threshold) so the aggregator WILL refresh the timestamp
-just before D40 would flag it stale.
+DEEPER fix 2026-05-19 (session-4, phase-B root-cause part 2): the prior
+fix MISSED that the grace-refresh path still rewrites the entire payload
+when grace expires. Every 5-min cron cycle, grace expired and the
+aggregator rewrote the file with a new head_sha (because every cron
+commit rotates HEAD) AND new timestamps. The watcher saw the dirty
+tree and auto-committed; HEAD rotated again; next cycle repeated.
 
-Public API:
+Verified failure case (test-health.json before fix):
+    timestamp: 20:12:15 → 20:17:15 (5 min apart — grace expired)
+    head_sha: fabe21d → 1d867f9     (rotated by previous cron commit)
+    Content otherwise identical. Cycle: write → commit → rotate → write.
+
+Deeper fix has three parts:
+
+  PART A (this file): extend `TIMESTAMP_KEYS_DEFAULT` with the volatile
+  commit-identifier fields. They were partially included for head_sha but
+  the founder spec calls out `commit_sha`, `head_ref`, `git_sha`,
+  `current_commit` as additional drift sources. ALL of these are masked
+  out of the content comparison so two payloads that differ only by these
+  ids still compare equal.
+
+  PART A.5 (this file): the grace-refresh path is now a NO-OP when
+  normalized content is identical. Previously, grace expiry forced a
+  full payload rewrite (which dropped a new head_sha into the file and
+  triggered a downstream auto-commit chain). The founder's spec test
+  step 8 explicitly verifies that when underlying data hasn't changed,
+  the tree stays clean across grace expiry. Skipping the write achieves
+  that.
+    - Before (session-3 / d496cdf): grace-expired + content-identical →
+      `write-grace-refresh-{age}s` (file rewritten with new timestamp +
+      new head_sha → dirty tree → auto-commit loop)
+    - After (session-4 / phase-B): grace-expired + content-identical →
+      `skip-idempotent-grace-content-unchanged-{age}s` (no write, tree
+      stays clean, loop broken)
+  D40 trade-off: aggregate-self-tests.py asserts `generated_at` is
+  within 300s of `now`. With the new behavior the timestamp will go
+  stale if no real commit lands in 5+ minutes. But D40 only runs from
+  the post-commit hook (which bails on cron(routine) commits), so it
+  only fires after REAL commits. Real commits almost always change
+  aggregator content (= "write-content-changed" path), which DOES
+  refresh the timestamp. The narrow window where D40 fails — real
+  commit lands, but aggregator's underlying data didn't change, and
+  previous content-write was >300s ago — is a legitimate stale signal
+  worth a yellow banner rather than masking with a synthetic refresh.
+
+  PART B (separate audit): aggregator scripts already use this helper
+  (see scripts/aggregate-*.py). New aggregators must opt in.
+
+  PART C (separate test): synthetic cycle test verifies dirty-count
+  stays 0 after grace expires when underlying data is unchanged.
+
+Public API (UNCHANGED):
     idempotent_write_json(
         path: Path,
         new_data: dict,
@@ -33,13 +79,15 @@ Public API:
     ) -> tuple[bool, str]
         Returns (wrote, reason). wrote=True when file was rewritten,
         wrote=False when skipped. `reason` is a short diagnostic suitable
-        for printing (e.g. "skip-idempotent-fresh", "write-content-changed",
-        "write-no-prior-file", "write-grace-refresh", "write-content-changed-and-grace").
+        for printing (e.g. "skip-idempotent-fresh",
+        "skip-idempotent-grace-content-unchanged", "write-content-changed",
+        "write-no-prior-file", "write-existing-unreadable",
+        "write-no-existing-timestamp").
 
 The default `timestamp_keys` covers every top-level + commonly-nested
-timestamp field in current aggregates. Nested paths are dotted strings
-(e.g. "quota_status.as_of"). When a key isn't present in the data, it's
-silently ignored.
+timestamp/volatile field in current aggregates. Nested paths are dotted
+strings (e.g. "quota_status.as_of"). When a key isn't present in the
+data, it's silently ignored.
 """
 import json
 from datetime import datetime, timezone
@@ -50,12 +98,19 @@ from typing import Any, Iterable
 # drift on every aggregator run even when underlying data is identical.
 # Also includes derivatives (age_hours, age_seconds) computed as `now - as_of`
 # which drift continuously even when the source `as_of` doesn't change.
+#
+# session-4 phase-B extension: volatile commit-identifier fields (head_sha,
+# commit_sha, head_ref, git_sha, current_commit) drift every time HEAD
+# rotates. Every cron auto-commit rotates HEAD, so without masking these
+# values out of the content comparison the aggregator would write a new
+# file every cycle — even when underlying data is identical — and the
+# auto-commit loop never breaks.
 TIMESTAMP_KEYS_DEFAULT: list[str] = [
+    # ----- Timestamp / staleness-derivative fields -----
     "timestamp",
     "generated_at",
     "as_of",
     "snapshot_at",
-    "head_sha",                            # also drifts on every commit
     "age_hours",                           # derived `now - as_of` drift
     "age_seconds",                         # derived `now - as_of` drift
     "age_minutes",                         # derived `now - as_of` drift (cron-status)
@@ -67,6 +122,29 @@ TIMESTAMP_KEYS_DEFAULT: list[str] = [
     "quota_status.age_seconds",            # derived from as_of; drifts proportionally
     "all_time.last_event_at",              # nested in token-usage-snapshot.json
     "session_transcripts.generated_at",    # nested in token-usage-snapshot.json
+    # ----- Volatile commit-identifier fields (session-4 phase-B) -----
+    # These rotate on every cron auto-commit. Mask them out of the
+    # content comparison so head-rotation alone doesn't trigger a
+    # re-write of an otherwise-unchanged payload.
+    "head_sha",                            # short SHA (most common — used by test/security/fiq)
+    "commit_sha",                          # full SHA (used by scan-shipped-proposals + audit-log)
+    "head_ref",                            # symbolic ref (branch name) — rarely used but possible
+    "git_sha",                             # used by regen-index.py (index.html data block)
+    "current_commit",                      # alternate naming convention
+]
+
+
+# Subset of TIMESTAMP_KEYS_DEFAULT that holds VOLATILE NON-TIMESTAMP values
+# (typically commit identifiers). Exposed for callers that want to know
+# which mask-out keys are commit-id style vs timestamp-style. Within the
+# helper itself, these are treated identically to timestamps for the
+# normalized-comparison check.
+VOLATILE_NON_TIMESTAMP_KEYS_DEFAULT: list[str] = [
+    "head_sha",
+    "commit_sha",
+    "head_ref",
+    "git_sha",
+    "current_commit",
 ]
 
 
@@ -145,9 +223,16 @@ def idempotent_write_json(
 ) -> tuple[bool, str]:
     """Write `new_data` to `path` ONLY when:
       - file doesn't exist yet, OR
-      - normalized content (timestamps masked) differs from existing, OR
-      - normalized content matches but existing latest-timestamp is older
-        than `grace_seconds` (so D40 freshness threshold doesn't trip).
+      - normalized content (timestamps + commit-id fields masked) differs
+        from existing.
+
+    When normalized content matches the existing file, this function
+    ALWAYS SKIPS THE WRITE — even when the existing file's latest
+    timestamp is older than `grace_seconds`. The `grace_seconds`
+    parameter is retained for API compatibility + the
+    no-existing-timestamp edge case (see below), but it no longer
+    triggers a synthetic refresh on content-identical payloads.
+    Rationale: see module docstring (session-4 phase-B).
 
     Returns (wrote: bool, reason: str). The reason string is short + safe
     for logging.
@@ -204,12 +289,31 @@ def idempotent_write_json(
         return True, "write-no-existing-timestamp"
     age = (datetime.now(timezone.utc) - latest).total_seconds()
     if age > grace_seconds:
-        # Stale: refresh timestamp so D40 doesn't flag.
-        path.write_text(
-            json.dumps(new_data, indent=indent, ensure_ascii=ensure_ascii, default=default),
-            encoding=encoding,
-        )
-        return True, f"write-grace-refresh-{int(age)}s"
+        # Stale-by-grace BUT content normalized-identical.
+        #
+        # Session-4 phase-B root-cause-part-2 fix: the prior behavior was
+        # to rewrite the full payload here so D40 would see fresh
+        # `generated_at`. That meant the file was dirty on every cron
+        # cycle (5-min cadence ≈ grace_seconds), and the diff included
+        # a NEW head_sha (rotated by the previous cron auto-commit).
+        # The downstream cron auto-committed the dirty files, rotating
+        # HEAD again, perpetuating the loop.
+        #
+        # New behavior: SKIP THE WRITE when content is normalized-
+        # identical, regardless of grace. The founder's spec test step 8
+        # explicitly verifies the tree stays clean after grace expires
+        # when data hasn't changed. Trade-off: D40
+        # (aggregate-self-tests.py) might flag aggregators stale if no
+        # real commit lands within 300s — but D40 only fires from the
+        # post-commit hook (which bails on cron(routine) commits), so it
+        # only runs after REAL commits, and real commits typically
+        # invalidate aggregator content (= "write-content-changed" path
+        # above). The window where D40 fails is when a real commit
+        # lands but the aggregator's underlying data didn't change AND
+        # the previous content-change write was >300s ago — rare and
+        # legitimately a stale signal worth surfacing on the dashboard
+        # (yellow banner) rather than masking with a synthetic refresh.
+        return False, f"skip-idempotent-grace-content-unchanged-{int(age)}s"
 
     # Content same + timestamp fresh → SKIP write. Tree stays clean.
     return False, f"skip-idempotent-fresh-{int(age)}s"
