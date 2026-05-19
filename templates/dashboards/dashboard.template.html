@@ -323,33 +323,142 @@
               Anthropic quota label dynamically reflects source: "live" when wired-real,
               "sidecar empty/stale" when fallback, "manual" when only the paste exists.
             -->
-            <!-- phase-I iter3 (2026-05-19): top-of-fold hero numbers
-                 earn the loudest typography. Bumped from 46px → 52px;
-                 tighter tracking; lower line-height; card-level padding
-                 expanded so the number breathes from card edge. -->
+            <!-- phase-I iter6 (2026-05-19): Sellable-polish cycle 1 — Stripe/Linear
+                 hierarchy + sparklines + delta-context. Single hero KPI dominates
+                 visually; supporting metrics get smaller scale. Each metric
+                 carries a tiny sparkline (Datadog inline-pattern) + a delta line
+                 (Stripe/Plausible context-vs-baseline pattern).
+                 Refs consulted: Stripe payment-analytics.svg, Linear analytics
+                 dashboard, Datadog rum, Vercel monitor-track. -->
             <style>
+                /* Hero-mixed grid — Stripe Atlas/Linear pattern: 1 hero +
+                   supporting cards on a 6-col foundation. Tablet collapses to
+                   2-col; mobile single column. */
+                .pb-kpi-grid.is-this-week {
+                    grid-template-columns: repeat(6, minmax(0, 1fr));
+                    gap: var(--space-4);
+                    align-items: stretch;
+                }
+                .pb-kpi-grid.is-this-week .pb-kpi-card { grid-column: span 3; }
+                .pb-kpi-grid.is-this-week .pb-kpi-card.is-hero { grid-column: span 6; }
+                .pb-kpi-grid.is-this-week .pb-kpi-card.span-2 { grid-column: span 2; }
+                @media (max-width: 1024px) {
+                    .pb-kpi-grid.is-this-week { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+                    .pb-kpi-grid.is-this-week .pb-kpi-card { grid-column: span 1; }
+                    .pb-kpi-grid.is-this-week .pb-kpi-card.is-hero { grid-column: span 2; }
+                    .pb-kpi-grid.is-this-week .pb-kpi-card.span-2 { grid-column: span 1; }
+                }
+                @media (max-width: 600px) {
+                    .pb-kpi-grid.is-this-week { grid-template-columns: 1fr; }
+                    .pb-kpi-grid.is-this-week .pb-kpi-card,
+                    .pb-kpi-grid.is-this-week .pb-kpi-card.is-hero,
+                    .pb-kpi-grid.is-this-week .pb-kpi-card.span-2 { grid-column: span 1; }
+                }
+                /* Hero card numeric typography — Stripe Atlas/Vercel observability
+                   pattern: 2x the visual weight of supporting metrics. */
+                .pb-kpi-grid.is-this-week .pb-kpi-card.is-hero .pb-kpi-value {
+                    font-size: 4.5rem; /* 72px */
+                    line-height: 0.92;
+                    letter-spacing: -0.045em;
+                    font-weight: 600;
+                }
+                .pb-kpi-grid.is-this-week .pb-kpi-card.is-hero .pb-kpi-value-unit {
+                    font-size: 2.5rem;
+                    letter-spacing: -0.022em;
+                }
+                .pb-kpi-grid.is-this-week .pb-kpi-card.is-hero {
+                    padding: var(--space-6) var(--space-5) var(--space-5);
+                    min-height: 220px;
+                }
+                /* Supporting cards. */
                 .pb-kpi-grid.is-this-week .pb-kpi-value {
-                    font-size: 3.25rem; /* 52px — top-of-fold weight */
+                    font-size: 2.5rem;
                     line-height: 0.95;
-                    letter-spacing: -0.04em;
+                    letter-spacing: -0.035em;
                     font-weight: 600;
                 }
                 .pb-kpi-grid.is-this-week .pb-kpi-card {
                     padding: var(--space-5) var(--space-4) var(--space-4);
-                    min-height: 152px;
+                    min-height: 162px;
                 }
                 .pb-kpi-grid.is-this-week .pb-kpi-value-unit {
-                    font-size: 1.875rem;
+                    font-size: 1.5rem;
                     letter-spacing: -0.02em;
                 }
                 .pb-kpi-grid.is-this-week .pb-kpi-label {
                     font-size: 0.6875rem;
                     letter-spacing: 0.12em;
                 }
-                /* Render a unit suffix next to the value in muted weight
-                   so "$284 spend" / "tokens" reads as caption-attached. */
                 .pb-kpi-grid.is-this-week .pb-kpi-sub {
                     font-size: 0.75rem;
+                }
+
+                /* phase-I iter6: Sparkline — Datadog/Vercel inline-with-KPI.
+                   Tiny SVG sparkline below the headline number. */
+                .pb-kpi-sparkline {
+                    margin-top: var(--space-2);
+                    height: 32px;
+                    width: 100%;
+                    display: block;
+                    overflow: visible;
+                }
+                .pb-kpi-card.is-hero .pb-kpi-sparkline { height: 56px; }
+                .pb-kpi-sparkline path.pb-spark-line {
+                    fill: none;
+                    stroke: currentColor;
+                    stroke-width: 1.5;
+                    stroke-linecap: round;
+                    stroke-linejoin: round;
+                    opacity: 0.9;
+                }
+                .pb-kpi-sparkline path.pb-spark-fill {
+                    fill: currentColor;
+                    opacity: 0.12;
+                    stroke: none;
+                }
+                .pb-kpi-sparkline .pb-spark-last {
+                    fill: currentColor;
+                    stroke: var(--pb-billiard-green-800);
+                    stroke-width: 1.5;
+                }
+                .pb-kpi-sparkline.is-brass    { color: var(--pb-brass-500); }
+                .pb-kpi-sparkline.is-success  { color: var(--pb-success); }
+                .pb-kpi-sparkline.is-info     { color: var(--pb-info); }
+                .pb-kpi-sparkline.is-warning  { color: var(--pb-warning); }
+                .pb-kpi-sparkline.is-error    { color: var(--pb-error); }
+                .pb-kpi-sparkline.is-muted    { color: var(--pb-chalk-400); opacity: 0.65; }
+
+                /* phase-I iter6: context-delta line — DataDog/Plausible/Stripe.
+                   Sits between the value and the sub-label. Shows the delta vs
+                   baseline. Colored per direction. */
+                .pb-kpi-delta {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 5px;
+                    margin-top: 6px;
+                    font-family: var(--font-mono);
+                    font-size: 0.6875rem;
+                    font-weight: 600;
+                    letter-spacing: 0.02em;
+                    line-height: 1.2;
+                    color: var(--pb-chalk-300);
+                }
+                .pb-kpi-delta::before {
+                    font-size: 0.5625rem;
+                    line-height: 1;
+                }
+                .pb-kpi-delta.is-up::before    { content: "▲"; color: var(--pb-success); }
+                .pb-kpi-delta.is-down::before  { content: "▼"; color: var(--pb-chalk-300); }
+                .pb-kpi-delta.is-flat::before  { content: "▬"; color: var(--pb-chalk-400); }
+                .pb-kpi-delta.is-warn::before  { content: "▲"; color: var(--pb-warning); }
+                .pb-kpi-delta.is-bad::before   { content: "▲"; color: var(--pb-error); }
+                .pb-kpi-delta strong {
+                    color: var(--pb-chalk-100);
+                    font-weight: 700;
+                }
+                .pb-kpi-delta-quiet {
+                    color: var(--pb-chalk-400);
+                    font-weight: 500;
                 }
             </style>
             <!-- AMD-026 P10 visible-action retrofit (2026-05-19): every "This week"
@@ -357,40 +466,43 @@
                  cards point at token-usage.html; ships/halts to source dirs;
                  cycles to halt evidence dir. Badges hydrated in main JS pass. -->
             <div class="pb-kpi-grid is-this-week">
-                <a class="pb-kpi-card is-neutral" href="token-usage.html" style="text-decoration: none; color: inherit;" title="Click to open the Token Usage dashboard">
+                <!-- phase-I iter6 (2026-05-19): Hero card with sparkline + delta
+                     context. Stripe/Linear/Vercel pattern. -->
+                <a class="pb-kpi-card is-neutral is-hero" href="token-usage.html" style="text-decoration: none; color: inherit;" title="Click to open the Token Usage dashboard">
                     <span class="pb-kpi-label">Tokens this week</span>
                     <span class="pb-kpi-value" data-kpi="weekly-tokens">&mdash;</span>
+                    <span class="pb-kpi-delta is-flat" data-kpi-delta="weekly-tokens" hidden></span>
+                    <svg class="pb-kpi-sparkline is-brass" data-spark="weekly-tokens" viewBox="0 0 200 56" preserveAspectRatio="none" aria-hidden="true"></svg>
                     <span class="pb-kpi-sub" data-kpi-sub="weekly-tokens">aggregate of telemetry events</span>
                     <span class="pb-action-badge" data-who="cron" data-kpi-badge="weekly-tokens">cron &middot; aggregator refreshes</span>
                 </a>
-                <!-- D36 (2026-05-16): Day-To-Date token card per spec PHASE T6 +
-                     usage-meters peer pattern (Anthropic Console Day view +
-                     Vercel daily slice + Stripe today-so-far). Derives from
-                     token-usage-snapshot.json by_day breakdown. Legitimate 0
-                     early in UTC day; honest empty label. -->
-                <a class="pb-kpi-card is-neutral" href="token-usage.html" style="text-decoration: none; color: inherit;" title="Click to open the Token Usage dashboard">
+                <a class="pb-kpi-card is-neutral span-2" href="token-usage.html" style="text-decoration: none; color: inherit;" title="Click to open the Token Usage dashboard">
                     <span class="pb-kpi-label">Tokens today (UTC)</span>
                     <span class="pb-kpi-value" data-kpi="daily-tokens">&mdash;</span>
+                    <span class="pb-kpi-delta is-flat" data-kpi-delta="daily-tokens" hidden></span>
+                    <svg class="pb-kpi-sparkline is-info" data-spark="daily-tokens" viewBox="0 0 200 32" preserveAspectRatio="none" aria-hidden="true"></svg>
                     <span class="pb-kpi-sub" data-kpi-sub="daily-tokens">day-to-date · UTC</span>
                     <span class="pb-action-badge" data-who="cron" data-kpi-badge="daily-tokens">cron &middot; aggregator refreshes</span>
                 </a>
-                <div class="pb-kpi-card" data-kpi-card="manual-quota" title="Anthropic billing quota. Source: .claude/state/quota-status.json or manual paste. Run scripts/refresh-quota-manual.ps1 to anchor a paste.">
+                <div class="pb-kpi-card span-2" data-kpi-card="manual-quota" title="Anthropic billing quota. Source: .claude/state/quota-status.json or manual paste. Run scripts/refresh-quota-manual.ps1 to anchor a paste.">
                     <span class="pb-kpi-label" data-kpi-label="quota-source">Anthropic quota</span>
                     <span class="pb-kpi-value" data-kpi="manual-quota-pct">&mdash;</span>
+                    <span class="pb-kpi-delta is-flat" data-kpi-delta="manual-quota" hidden></span>
                     <span class="pb-kpi-sub" data-kpi-sub="manual-quota">no recent paste &mdash; run <code>scripts/refresh-quota-manual.ps1</code></span>
-                    <!-- AMD-026 P10: quota badge starts as "founder" since sidecar
-                         awaits Founder paste; JS swaps to "none" when fresh. -->
                     <span class="pb-action-badge" data-who="founder" data-kpi-badge="manual-quota">founder &middot; paste from claude.ai</span>
                 </div>
-                <a class="pb-kpi-card is-positive" href="../../.claude/state/ship-progress/" style="text-decoration: none; color: inherit;" title="Click to open ship-progress directory">
+                <a class="pb-kpi-card is-positive span-2" href="../../.claude/state/ship-progress/" style="text-decoration: none; color: inherit;" title="Click to open ship-progress directory">
                     <span class="pb-kpi-label">Ships this week</span>
                     <span class="pb-kpi-value" data-kpi="ships-week">&mdash;</span>
+                    <span class="pb-kpi-delta is-flat" data-kpi-delta="ships-week" hidden></span>
+                    <svg class="pb-kpi-sparkline is-success" data-spark="ships-week" viewBox="0 0 200 32" preserveAspectRatio="none" aria-hidden="true"></svg>
                     <span class="pb-kpi-sub">approved &amp; shipped</span>
                     <span class="pb-action-badge" data-who="none" data-kpi-badge="ships-week">ok &middot; per ship-progress/</span>
                 </a>
-                <a class="pb-kpi-card is-positive" href="../../.claude/state/halts/" style="text-decoration: none; color: inherit;" title="Click to open halts directory">
+                <a class="pb-kpi-card is-positive span-2" href="../../.claude/state/halts/" style="text-decoration: none; color: inherit;" title="Click to open halts directory">
                     <span class="pb-kpi-label">Halts this week</span>
                     <span class="pb-kpi-value" data-kpi="halts-week">&mdash;</span>
+                    <span class="pb-kpi-delta is-flat" data-kpi-delta="halts-week" hidden></span>
                     <span class="pb-kpi-sub">clean = good</span>
                     <span class="pb-action-badge" data-who="none" data-kpi-badge="halts-week">ok &middot; no halts</span>
                 </a>
@@ -816,6 +928,106 @@
                 var now = new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
                 setText('[data-meta="generated-at"]', now);
 
+                // ====================================================
+                // phase-I iter6 (2026-05-19): Sellable-polish cycle 1 —
+                // sparklines + delta-context lines per KPI card.
+                // References: Linear analytics dashboard, Stripe payment-
+                // analytics.svg, Datadog rum, Vercel monitor-track.
+                // ====================================================
+                function buildSpark(values, w, h) {
+                    if (!Array.isArray(values) || values.length < 2) return null;
+                    var max = Math.max.apply(null, values);
+                    var min = Math.min.apply(null, values);
+                    var range = (max - min) || 1;
+                    var pad = 3;
+                    var stepX = (w - pad * 2) / (values.length - 1);
+                    var pts = values.map(function (v, i) {
+                        var x = pad + stepX * i;
+                        var y = pad + (h - pad * 2) * (1 - (v - min) / range);
+                        return { x: x, y: y };
+                    });
+                    var line = pts.map(function (p, i) {
+                        return (i === 0 ? 'M' : 'L') + p.x.toFixed(2) + ',' + p.y.toFixed(2);
+                    }).join(' ');
+                    var fill = line
+                        + ' L' + pts[pts.length - 1].x.toFixed(2) + ',' + (h - pad).toFixed(2)
+                        + ' L' + pts[0].x.toFixed(2) + ',' + (h - pad).toFixed(2)
+                        + ' Z';
+                    var last = pts[pts.length - 1];
+                    return { line: line, fill: fill, lastX: last.x, lastY: last.y };
+                }
+                function drawSpark(selector, values, opts) {
+                    var svg = document.querySelector(selector);
+                    if (!svg) return;
+                    if (!values || values.length < 2 || !values.some(function (v) { return v > 0; })) {
+                        svg.style.display = 'none';
+                        return;
+                    }
+                    svg.style.display = '';
+                    var vbox = (svg.getAttribute('viewBox') || '0 0 200 32').split(/\s+/);
+                    var w = parseFloat(vbox[2]) || 200;
+                    var h = parseFloat(vbox[3]) || 32;
+                    var spark = buildSpark(values, w, h);
+                    if (!spark) return;
+                    var hover = opts && opts.hoverLabels ? opts.hoverLabels : [];
+                    var pad = 3;
+                    var stepX = (w - pad * 2) / (values.length - 1);
+                    var hovers = values.map(function (v, i) {
+                        var label = hover[i] != null ? hover[i] : String(v);
+                        var rx = i === 0 ? 0 : pad + stepX * (i - 0.5);
+                        var rw = i === values.length - 1 ? w - rx : stepX;
+                        return '<rect x="' + rx.toFixed(2) + '" y="0" width="' + rw.toFixed(2)
+                             + '" height="' + h + '" fill="transparent" pointer-events="all">'
+                             + '<title>' + label + '</title></rect>';
+                    }).join('');
+                    svg.innerHTML = ''
+                        + '<path class="pb-spark-fill" d="' + spark.fill + '"/>'
+                        + '<path class="pb-spark-line" d="' + spark.line + '"/>'
+                        + '<circle class="pb-spark-last" cx="' + spark.lastX.toFixed(2)
+                        + '" cy="' + spark.lastY.toFixed(2) + '" r="2.5"/>'
+                        + hovers;
+                }
+                function setDelta(selector, values, opts) {
+                    var el = document.querySelector(selector);
+                    if (!el) return;
+                    if (!Array.isArray(values) || values.length < 2) {
+                        el.hidden = true;
+                        return;
+                    }
+                    var fmt = (opts && opts.fmt) || function (n) { return fmtNum(n); };
+                    var label = (opts && opts.label) || 'vs 7-day avg';
+                    var positiveIsBad = opts && opts.positiveIsBad;
+                    var current = values[values.length - 1];
+                    var prior = values.slice(0, -1);
+                    var priorSum = prior.reduce(function (a, b) { return a + b; }, 0);
+                    if (priorSum === 0 && current === 0) {
+                        el.hidden = false;
+                        el.className = 'pb-kpi-delta is-flat';
+                        el.innerHTML = '<span class="pb-kpi-delta-quiet">' + label + ' &middot; no activity yet</span>';
+                        return;
+                    }
+                    var priorAvg = prior.length > 0 ? priorSum / prior.length : 0;
+                    var diff = current - priorAvg;
+                    var pct = priorAvg !== 0 ? (diff / priorAvg) * 100 : (current > 0 ? 100 : 0);
+                    var absPct = Math.abs(pct);
+                    var threshold = (opts && opts.thresholdPct != null) ? opts.thresholdPct : 5;
+                    var direction;
+                    var text;
+                    if (absPct < threshold && Math.abs(diff) < 1) {
+                        direction = 'is-flat';
+                        text = '<strong>on pace</strong> &middot; 7d avg ' + fmt(priorAvg);
+                    } else if (diff > 0) {
+                        direction = positiveIsBad ? 'is-warn' : 'is-up';
+                        text = '<strong>+' + absPct.toFixed(0) + '%</strong> above 7d avg (' + fmt(priorAvg) + ')';
+                    } else {
+                        direction = positiveIsBad ? 'is-up' : 'is-down';
+                        text = '<strong>-' + absPct.toFixed(0) + '%</strong> below 7d avg (' + fmt(priorAvg) + ')';
+                    }
+                    el.hidden = false;
+                    el.className = 'pb-kpi-delta ' + direction;
+                    el.innerHTML = text + ' <span class="pb-kpi-delta-quiet">&middot; ' + label + '</span>';
+                }
+
                 // Recent 7 days table — derive from data already in the snapshot.
                 var tt = data.token_trend_7d || { labels: [], values: [] };
                 function dsAt(label, i) {
@@ -853,6 +1065,64 @@
 
                 // Render 7-day charts (Founder directive DASHBOARD VIZ)
                 renderRecent7DaysCharts(rows);
+
+                // phase-I iter6: Sellable-polish cycle 1 — populate sparklines
+                // + delta lines using the same 7-day trend arrays.
+                var tokenValues = (tt.values || []).slice(-7);
+                var shipsValues = (st.values || []).slice(-7);
+                var tokenLabels = (tt.labels || []).slice(-7);
+                function _hl(date, v, fmt) {
+                    return date + ': ' + (fmt ? fmt(v) : v);
+                }
+                drawSpark('[data-spark="weekly-tokens"]', tokenValues, {
+                    hoverLabels: tokenLabels.map(function (l, i) { return _hl(l, tokenValues[i] || 0, fmtNum); })
+                });
+                drawSpark('[data-spark="daily-tokens"]', tokenValues, {
+                    hoverLabels: tokenLabels.map(function (l, i) { return _hl(l, tokenValues[i] || 0, fmtNum); })
+                });
+                drawSpark('[data-spark="ships-week"]', shipsValues, {
+                    hoverLabels: tokenLabels.map(function (l, i) { return _hl(l, shipsValues[i] || 0); })
+                });
+                setDelta('[data-kpi-delta="weekly-tokens"]', tokenValues, {
+                    fmt: fmtNum,
+                    label: '7-day pattern'
+                });
+                setDelta('[data-kpi-delta="daily-tokens"]', tokenValues, {
+                    fmt: fmtNum,
+                    label: 'today vs trailing avg'
+                });
+                setDelta('[data-kpi-delta="ships-week"]', shipsValues, {
+                    fmt: function (n) { return Math.round(n).toString(); },
+                    label: '7-day cadence',
+                    thresholdPct: 10
+                });
+                var haltsTrend = (data.cycle_outcomes_7d && data.cycle_outcomes_7d.datasets || [])
+                    .find(function (d) { return d.label === 'Halted'; });
+                var haltsValues = haltsTrend && Array.isArray(haltsTrend.data) ? haltsTrend.data : [];
+                if (haltsValues.length >= 2 && haltsValues.some(function (v) { return v > 0; })) {
+                    setDelta('[data-kpi-delta="halts-week"]', haltsValues, {
+                        fmt: function (n) { return Math.round(n).toString(); },
+                        positiveIsBad: true,
+                        label: 'halts trend',
+                        thresholdPct: 1
+                    });
+                } else {
+                    var hd = document.querySelector('[data-kpi-delta="halts-week"]');
+                    if (hd) {
+                        hd.hidden = false;
+                        hd.className = 'pb-kpi-delta is-flat';
+                        hd.innerHTML = '<strong>system green</strong> <span class="pb-kpi-delta-quiet">&middot; clean 7-day run</span>';
+                    }
+                }
+                if (qs && qs.state === 'fresh' && typeof qs.weekly_pct === 'number') {
+                    var qd = document.querySelector('[data-kpi-delta="manual-quota"]');
+                    if (qd) {
+                        qd.hidden = false;
+                        qd.className = 'pb-kpi-delta is-flat';
+                        var qstale = qs.age_seconds != null ? Math.floor(qs.age_seconds / 60) + 'min' : 'fresh';
+                        qd.innerHTML = '<strong>sidecar live</strong> <span class="pb-kpi-delta-quiet">&middot; updated ' + qstale + ' ago</span>';
+                    }
+                }
 
                 // Recent handoffs
                 var handoffs = Array.isArray(data.recent_handoffs) ? data.recent_handoffs : [];
