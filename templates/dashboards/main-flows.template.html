@@ -166,7 +166,7 @@
          *   on-path adds subtle warm-tinted background fill so selected
          *     nodes don't look like "transparent outlines" but rather like
          *     bright brass-glow elements with light fill (rgba 9% amber). */
-        .mf-grid.has-selection .mf-node { opacity: 0.25; transition: opacity 220ms ease-out, border-color 180ms ease-out, transform 180ms ease-out, background 180ms ease-out; }
+        .mf-grid.has-selection .mf-node { opacity: 0.25; transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1), border-color 250ms cubic-bezier(0.4, 0, 0.2, 1), transform 250ms cubic-bezier(0.4, 0, 0.2, 1), background 250ms cubic-bezier(0.4, 0, 0.2, 1); }
         .mf-grid.has-selection .mf-node.is-on-path {
             opacity: 1;
             border-color: var(--accent-brass);
@@ -1069,7 +1069,7 @@
                                 path.style.strokeDashoffset = String(len);
                                 // Force reflow so the initial state paints first.
                                 void path.getBoundingClientRect();
-                                path.style.transition = 'stroke-dashoffset 220ms ease-out ' + (idx * 30) + 'ms';
+                                path.style.transition = 'stroke-dashoffset 250ms cubic-bezier(0.4, 0, 0.2, 1) ' + (idx * 50) + 'ms';
                                 path.style.strokeDashoffset = '0';
                             }
                         } catch (e) { /* tolerate browsers that lack getTotalLength */ }
@@ -1121,7 +1121,7 @@
                         badge.style.transformBox = 'fill-box';
                         badge.style.transformOrigin = 'center';
                         badge.style.transform = 'scale(0.85)';
-                        badge.style.transition = 'opacity 160ms ease-out ' + (idx * 30 + 140) + 'ms, transform 180ms cubic-bezier(0.4, 0, 0.2, 1) ' + (idx * 30 + 140) + 'ms';
+                        badge.style.transition = 'opacity 180ms cubic-bezier(0.4, 0, 0.2, 1) ' + (idx * 50 + 200) + 'ms, transform 200ms cubic-bezier(0.4, 0, 0.2, 1) ' + (idx * 50 + 200) + 'ms';
                         requestAnimationFrame(function () {
                             badge.style.opacity = '1';
                             badge.style.transform = 'scale(1)';
