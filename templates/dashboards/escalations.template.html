@@ -102,26 +102,31 @@
                     font-weight: 600;
                 }
             </style>
+            <!-- AMD-026 P10 (Actionable Surfacing): KPI sub-labels switch to
+                 legitimate-empty classification when count=0. See updateKPIs()
+                 below. WHAT = no escalation awaiting review; WHERE =
+                 .claude/state/escalations/pending/; WHAT-ACTION = legitimate
+                 empty (team has authored none). -->
             <div class="pb-kpi-grid is-decision-queue">
                 <div class="pb-kpi-card">
                     <span class="pb-kpi-label">Pending</span>
                     <span class="pb-kpi-value" data-kpi="pending">&mdash;</span>
-                    <span class="pb-kpi-sub">awaiting Founder review</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="pending">awaiting Founder review</span>
                 </div>
                 <div class="pb-kpi-card is-positive">
                     <span class="pb-kpi-label">Approve</span>
                     <span class="pb-kpi-value" data-kpi="approve">0</span>
-                    <span class="pb-kpi-sub">marked in this session</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="approve">marked in this session</span>
                 </div>
                 <div class="pb-kpi-card is-danger">
                     <span class="pb-kpi-label">Reject</span>
                     <span class="pb-kpi-value" data-kpi="reject">0</span>
-                    <span class="pb-kpi-sub">marked in this session</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="reject">marked in this session</span>
                 </div>
                 <div class="pb-kpi-card is-warning">
                     <span class="pb-kpi-label">Defer</span>
                     <span class="pb-kpi-value" data-kpi="defer">0</span>
-                    <span class="pb-kpi-sub">marked in this session</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="defer">marked in this session</span>
                 </div>
             </div>
         </section>
@@ -289,6 +294,26 @@
                       '</div><div class="esc-note-row"><input type="text" data-esc-note="' + id + '" placeholder="Note (optional)…" value="' + esc(d.note || '') + '"></div>'
                     : (escalation.founder_note ? '<div class="esc-section esc-default-note"><strong>Founder note:</strong> ' + esc(escalation.founder_note) + '</div>' : '');
 
+                /* AMD-026 P10 (Actionable Surfacing): STALE badge needs a
+                 * resolution path. When the escalation has been authored longer
+                 * than default_window_hours AND a default_if_no_response is
+                 * configured, surface an "Apply default" button so the Founder
+                 * can resolve in one click. When no default is configured, the
+                 * badge alone is non-actionable — add classification copy.
+                 * WHAT = window elapsed without Founder response; WHERE =
+                 * .claude/state/escalations/pending/<file>; WHAT-ACTION = click
+                 * Apply default (if configured) OR Founder decision required
+                 * (if not). */
+                var staleResolution = '';
+                if (stale && opts.editable) {
+                    if (escalation.default_if_no_response) {
+                        staleResolution = '<div class="esc-section esc-default-note" style="border-color: var(--pb-warning);"><strong>STALE &mdash; default available:</strong> ' + esc(escalation.default_if_no_response) +
+                            ' <button type="button" class="esc-decision-btn btn-approve" style="margin-left:var(--space-2); min-width:auto;" data-esc-apply-default="' + id + '" title="Marks this escalation Approved with the default decision text — review before export.">Apply default</button></div>';
+                    } else {
+                        staleResolution = '<div class="esc-section esc-default-note" style="border-color: var(--pb-warning);"><strong>STALE &mdash; no default configured:</strong> Founder decision required. Add <code>default_if_no_response</code> to the ESC frontmatter or mark a decision below.</div>';
+                    }
+                }
+
                 return '' +
                     '<article class="' + classes.join(' ') + '">' +
                     '  <header class="esc-header">' +
@@ -303,7 +328,8 @@
                     (escalation.rationale ? '<div class="esc-section"><div class="esc-section-label">Rationale</div><pre class="esc-body">' + esc(escalation.rationale) + '</pre></div>' : '') +
                     optionsHtml +
                     customAnswerHtml +
-                    (escalation.default_if_no_response ? '<div class="esc-section esc-default-note"><strong>Default if no response:</strong> ' + esc(escalation.default_if_no_response) + (escalation.default_window_hours ? ' (window: ' + escalation.default_window_hours + 'h)' : '') + '</div>' : '') +
+                    staleResolution +
+                    (escalation.default_if_no_response && !stale ? '<div class="esc-section esc-default-note"><strong>Default if no response:</strong> ' + esc(escalation.default_if_no_response) + (escalation.default_window_hours ? ' (window: ' + escalation.default_window_hours + 'h)' : '') + '</div>' : '') +
                     (sources ? '<div class="esc-section esc-sources"><strong>Sources:</strong> ' + sources + '</div>' : '') +
                     decisionBar +
                     '</article>';
@@ -311,7 +337,22 @@
 
             function renderList(host, items, opts) {
                 if (!items || items.length === 0) {
-                    host.innerHTML = '<div class="esc-empty">(none)</div>';
+                    /* AMD-026 P10 (Actionable Surfacing): replace bare "(none)"
+                     * with bucket-classified empty-state copy. WHAT = no entry
+                     * in this lifecycle bucket; WHERE =
+                     * .claude/state/escalations/<bucket>/; WHAT-ACTION = depends
+                     * on bucket (legitimate empty, watcher transit, or archive). */
+                    var bucket = (host && host.id ? host.id.replace('-list', '') : '');
+                    var emptyMsg;
+                    switch (bucket) {
+                        case 'pending':  emptyMsg = 'No pending escalations &mdash; team has authored none. See <code>.claude/state/escalations/pending/</code>.'; break;
+                        case 'approved': emptyMsg = 'No approved escalations awaiting team apply &mdash; legitimate between Founder approval and the team picking up the decision on next agent loop. See <code>.claude/state/escalations/approved/</code>.'; break;
+                        case 'applied':  emptyMsg = 'No applied escalations yet &mdash; archive empty. See <code>.claude/state/escalations/applied/</code>.'; break;
+                        case 'deferred': emptyMsg = 'No deferred escalations &mdash; archive empty. See <code>.claude/state/escalations/deferred/</code>.'; break;
+                        case 'rejected': emptyMsg = 'No rejected escalations &mdash; archive empty. See <code>.claude/state/escalations/rejected/</code>.'; break;
+                        default:         emptyMsg = 'No entries.';
+                    }
+                    host.innerHTML = '<div class="esc-empty">' + emptyMsg + '</div>';
                     return;
                 }
                 host.innerHTML = items.map(function (e) { return renderCard(e, opts); }).join('');
@@ -329,6 +370,30 @@
                 document.querySelector('[data-kpi="approve"]').textContent = String(approve);
                 document.querySelector('[data-kpi="reject"]').textContent = String(reject);
                 document.querySelector('[data-kpi="defer"]').textContent = String(defer);
+
+                /* AMD-026 P10 (Actionable Surfacing): swap sub-labels to
+                 * legitimate-empty classification when counts are 0. WHAT = no
+                 * escalation pending Founder review or no decisions marked this
+                 * session; WHERE = .claude/state/escalations/pending/;
+                 * WHAT-ACTION = legitimate empty (team has authored none) /
+                 * mark any pending escalation to populate session tallies. */
+                function setSub(name, text) {
+                    var el = document.querySelector('[data-kpi-sub="' + name + '"]');
+                    if (el) el.textContent = text;
+                }
+                setSub('pending', pendingCount === 0
+                    ? 'no escalations pending — team has authored none'
+                    : 'awaiting Founder review');
+                var noPendingNoMarks = pendingCount === 0 && approve === 0 && reject === 0 && defer === 0;
+                setSub('approve', noPendingNoMarks
+                    ? 'no decisions yet — mark any pending escalation to populate'
+                    : 'marked in this session');
+                setSub('reject', noPendingNoMarks
+                    ? 'no decisions yet — mark any pending escalation to populate'
+                    : 'marked in this session');
+                setSub('defer', noPendingNoMarks
+                    ? 'no decisions yet — mark any pending escalation to populate'
+                    : 'marked in this session');
 
                 document.getElementById('count-pending-inline').textContent = '(' + data.counts.pending + ')';
                 document.getElementById('count-approved-inline').textContent = '(' + data.counts.approved + ')';
@@ -357,6 +422,24 @@
                     if (!d.action) { delete decisions[id]; } else { decisions[id] = d; }
                     saveDecisions(decisions);
                     renderAll();
+                }
+                /* AMD-026 P10 (Actionable Surfacing): STALE escalations with a
+                 * configured default get an "Apply default" affordance. Clicking
+                 * marks the escalation Approved and pre-fills decision_text with
+                 * the default. Founder still must Export to commit the decision. */
+                if (t && t.matches('[data-esc-apply-default]')) {
+                    var staleId = t.getAttribute('data-esc-apply-default');
+                    var staleEsc = (data.escalations.pending || []).find(function (e) { return e.id === staleId; });
+                    if (staleEsc && staleEsc.default_if_no_response) {
+                        decisions[staleId] = {
+                            action: 'approve',
+                            decision_text: staleEsc.default_if_no_response,
+                            note: 'Applied default (window elapsed without Founder response)',
+                            decision_options: []
+                        };
+                        saveDecisions(decisions);
+                        renderAll();
+                    }
                 }
             });
 

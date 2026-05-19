@@ -127,6 +127,12 @@
                 <h1 class="pb-page-title">PARBAUGHS Orchestration</h1>
                 <p class="pb-page-subtitle">Founder's morning landing pad &mdash; status at a glance, every dashboard one click away.</p>
             </div>
+            <!-- AMD-026 P10 (Actionable Surfacing): "Last updated —" / "git —"
+                 are bare em-dashes when as_of / git_sha are absent. The render
+                 script below now substitutes a regen-pending classification
+                 instead. WHAT = data block not yet swapped; WHERE = run
+                 scripts/regen-index.py or scripts/regen-all.ps1; WHAT-ACTION =
+                 regen pending. -->
             <div class="pb-page-meta">
                 <span>Last updated <span id="last-updated-inline">&mdash;</span></span>
                 <span>git <code id="git-sha-inline">&mdash;</code></span>
@@ -143,38 +149,53 @@
                     letter-spacing: -0.02em;
                     font-weight: 600;
                 }
+                /* AMD-026 P10 (Actionable Surfacing): tiles are now <a> tags so
+                   every count has a destination. Override default underline +
+                   inherit colour so visual remains identical to the prior
+                   <div>-based tiles. */
+                #status-panel a.pb-kpi-card {
+                    text-decoration: none;
+                    color: inherit;
+                    cursor: pointer;
+                }
             </style>
+            <!-- AMD-026 P10 (Actionable Surfacing): each tile's sub-label
+                 switches to a legitimate-empty classification when the count is
+                 zero (see render() below). Tile bodies are wrapped in <a> to
+                 give the count a destination. WHAT = zero count; WHERE =
+                 link target dir; WHAT-ACTION = legitimate empty + link to
+                 source-of-truth directory for Founder verification. -->
             <div class="pb-kpi-grid" id="status-panel">
-                <div class="pb-kpi-card" id="tile-ships">
+                <a class="pb-kpi-card" id="tile-ships" href="../../.claude/state/ship-progress/" title="Open ship-progress directory">
                     <span class="pb-kpi-label">Ships this week</span>
                     <span class="pb-kpi-value">&mdash;</span>
                     <span class="pb-kpi-sub">via ship-progress/*.json</span>
-                </div>
-                <div class="pb-kpi-card" id="tile-proposals">
+                </a>
+                <a class="pb-kpi-card" id="tile-proposals" href="proposals.html" title="Open proposals dashboard">
                     <span class="pb-kpi-label">Proposals pending</span>
                     <span class="pb-kpi-value">&mdash;</span>
                     <span class="pb-kpi-sub">awaiting Founder review</span>
-                </div>
-                <div class="pb-kpi-card" id="tile-fiq">
+                </a>
+                <a class="pb-kpi-card" id="tile-fiq" href="../../.claude/state/founder-input-queue/" title="Open founder-input-queue directory">
                     <span class="pb-kpi-label">FIQ depth (B+)</span>
                     <span class="pb-kpi-value">&mdash;</span>
                     <span class="pb-kpi-sub" id="fiq-grades">grade distribution</span>
-                </div>
-                <div class="pb-kpi-card" id="tile-bubbles">
+                </a>
+                <a class="pb-kpi-card" id="tile-bubbles" href="discussion-bubbles.html" title="Open discussion-bubbles dashboard">
                     <span class="pb-kpi-label">Discussion bubbles</span>
                     <span class="pb-kpi-value">&mdash;</span>
                     <span class="pb-kpi-sub">via discussion-bubbles/</span>
-                </div>
-                <div class="pb-kpi-card" id="tile-cron">
+                </a>
+                <a class="pb-kpi-card" id="tile-cron" href="dashboard.html#system-health" title="See cron install status on Dashboard">
                     <span class="pb-kpi-label">Last cron run</span>
                     <span class="pb-kpi-value">&mdash;</span>
                     <span class="pb-kpi-sub">substrate pending build</span>
-                </div>
-                <div class="pb-kpi-card" id="tile-halt">
+                </a>
+                <a class="pb-kpi-card" id="tile-halt" href="../../.claude/state/halts/" title="Open halts directory">
                     <span class="pb-kpi-label">HALT state</span>
                     <span class="pb-kpi-value">&mdash;</span>
                     <span class="pb-kpi-sub">via halts/</span>
-                </div>
+                </a>
             </div>
         </section>
 
@@ -261,29 +282,128 @@
                 try {
                     var raw = document.getElementById('report-data').textContent;
                     var data = JSON.parse(raw);
-                    var lu = document.getElementById('last-updated-inline');
-                    if (lu) lu.textContent = data.as_of ? fmtMTime(data.as_of) : '—';
-                    var gs = document.getElementById('git-sha-inline');
-                    if (gs) gs.textContent = data.git_sha || '—';
-                    var st = data.status || {};
-                    setTile('tile-ships', st.ships_this_week != null ? st.ships_this_week : 0, 'via ship-progress/*.json', (st.ships_this_week || 0) > 0 ? 'is-positive' : null);
-                    setTile('tile-proposals', st.proposals_pending != null ? st.proposals_pending : 0, 'awaiting Founder review');
-                    var fiq = st.fiq_grade_distribution || {};
-                    setTile('tile-fiq', st.fiq_depth_b_plus != null ? st.fiq_depth_b_plus : 0, 'A:' + (fiq.A||0) + ' B:' + (fiq.B||0) + ' C:' + (fiq.C||0) + ' D:' + (fiq.D||0) + ' F:' + (fiq.F||0));
-                    setTile('tile-bubbles', st.open_discussion_bubbles != null ? st.open_discussion_bubbles : 0, 'via discussion-bubbles/');
-                    setTile('tile-cron', st.last_cron_run ? fmtMTime(st.last_cron_run) : 'never', 'substrate pending build', !st.last_cron_run ? 'is-warning' : null);
-                    setTile('tile-halt', st.halt_state || 'none', 'via halts/', st.halt_state && st.halt_state !== 'none' ? 'is-danger' : 'is-positive');
 
+                    /* AMD-026 P10 (Actionable Surfacing): replace bare "—" in
+                     * meta line with regen-pending classification when fields
+                     * are missing. WHAT = data block not yet swapped (regen has
+                     * not run); WHERE = scripts/regen-index.py;
+                     * WHAT-ACTION = run `scripts/regen-all.ps1`. */
+                    var lu = document.getElementById('last-updated-inline');
+                    if (lu) {
+                        if (data.as_of) {
+                            lu.textContent = fmtMTime(data.as_of);
+                        } else {
+                            lu.textContent = 'regen pending — run scripts/regen-all.ps1';
+                        }
+                    }
+                    var gs = document.getElementById('git-sha-inline');
+                    if (gs) {
+                        if (data.git_sha) {
+                            gs.textContent = data.git_sha;
+                        } else {
+                            gs.textContent = 'regen pending';
+                        }
+                    }
+
+                    /* AMD-026 P10 (Actionable Surfacing): tile sub-labels switch
+                     * to legitimate-empty classification when value is 0. WHAT =
+                     * no entries in the source directory; WHERE = source dir
+                     * per-tile (linked from the tile <a>); WHAT-ACTION =
+                     * legitimate empty (no action needed) OR follow tile link
+                     * to verify against on-disk state. */
+                    var st = data.status || {};
+                    var ships = st.ships_this_week != null ? st.ships_this_week : 0;
+                    setTile('tile-ships',
+                        ships,
+                        ships === 0
+                            ? 'legitimate empty — no ship-progress/*.json files this week'
+                            : 'via ship-progress/*.json',
+                        ships > 0 ? 'is-positive' : null);
+
+                    var proposals = st.proposals_pending != null ? st.proposals_pending : 0;
+                    setTile('tile-proposals',
+                        proposals,
+                        proposals === 0
+                            ? 'no drafts pending — see .claude/state/proposals/pending/'
+                            : 'awaiting Founder review — click for proposals dashboard');
+
+                    var fiq = st.fiq_grade_distribution || {};
+                    var fiqDepth = st.fiq_depth_b_plus != null ? st.fiq_depth_b_plus : 0;
+                    var gradesLine = 'A:' + (fiq.A||0) + ' B:' + (fiq.B||0) + ' C:' + (fiq.C||0) + ' D:' + (fiq.D||0) + ' F:' + (fiq.F||0);
+                    var allFiqZero = (fiq.A||0) + (fiq.B||0) + (fiq.C||0) + (fiq.D||0) + (fiq.F||0) === 0;
+                    setTile('tile-fiq',
+                        fiqDepth,
+                        allFiqZero
+                            ? 'FIQ scanner finds no entries — see .claude/state/founder-input-queue/'
+                            : gradesLine);
+
+                    var bubbles = st.open_discussion_bubbles != null ? st.open_discussion_bubbles : 0;
+                    setTile('tile-bubbles',
+                        bubbles,
+                        bubbles === 0
+                            ? 'no recorded threads — see .claude/state/discussion-bubbles/'
+                            : 'via discussion-bubbles/ — click for thread browser');
+
+                    setTile('tile-cron',
+                        st.last_cron_run ? fmtMTime(st.last_cron_run) : 'never',
+                        st.last_cron_run
+                            ? 'substrate active'
+                            : 'never run — see cron install status on dashboard.html',
+                        !st.last_cron_run ? 'is-warning' : null);
+
+                    var haltState = st.halt_state || 'none';
+                    setTile('tile-halt',
+                        haltState,
+                        haltState === 'none'
+                            ? 'no active halts — see .claude/state/halts/ to verify'
+                            : 'HALT active — see ' + haltState + '.json in .claude/state/halts/',
+                        haltState !== 'none' ? 'is-danger' : 'is-positive');
+
+                    /* AMD-026 P10 (Actionable Surfacing): dashboard card meta
+                     * shows "— · —" when regen hasn't written mtime/badge yet.
+                     * Replace literal em-dashes with regen-pending copy so the
+                     * Founder can distinguish "file missing" from "regen hasn't
+                     * touched this dashboard yet". WHAT = dashboard HTML present
+                     * on disk but missing mtime/badge metadata; WHERE =
+                     * scripts/regen-*.py for the named dashboard; WHAT-ACTION =
+                     * run regen-all to populate. */
                     var dbs = data.dashboards || {};
                     Object.keys(dbs).forEach(function (key) {
                         var slug = key.replace('.html', '');
                         var mtEl = document.querySelector('[data-meta="' + slug + '-mtime"]');
                         var bgEl = document.querySelector('[data-meta="' + slug + '-badge"]');
-                        if (mtEl) mtEl.textContent = dbs[key].mtime_utc ? fmtMTime(dbs[key].mtime_utc) : '—';
-                        if (bgEl) bgEl.textContent = dbs[key].badge || '';
+                        if (mtEl) {
+                            if (dbs[key].mtime_utc) {
+                                mtEl.textContent = fmtMTime(dbs[key].mtime_utc);
+                            } else {
+                                mtEl.textContent = 'regen pending';
+                                mtEl.title = 'No mtime recorded — run scripts/regen-' + slug + '.py';
+                            }
+                        }
+                        if (bgEl) {
+                            if (dbs[key].badge) {
+                                bgEl.textContent = dbs[key].badge;
+                            } else {
+                                bgEl.textContent = 'no badge';
+                                bgEl.title = 'No badge recorded — regen has not written this dashboard';
+                            }
+                        }
                     });
+
+                    /* AMD-026 P10 (Actionable Surfacing): "Last orchestration
+                     * action" can read "no recorded action" — replace bare copy
+                     * with WHAT-ACTION hint. WHAT = state tree walk found no
+                     * recent .md/.json mtime; WHERE = scripts/regen-index.py
+                     * last_orchestration_action(); WHAT-ACTION = run regen-all
+                     * to refresh OR confirm orchestration team is idle. */
                     var la = document.getElementById('last-action');
-                    if (la) la.textContent = data.last_orchestration_action || 'no recorded action';
+                    if (la) {
+                        if (data.last_orchestration_action) {
+                            la.textContent = data.last_orchestration_action;
+                        } else {
+                            la.textContent = 'no recorded action — run scripts/regen-all.ps1 to refresh, or orchestration team is idle';
+                        }
+                    }
                 } catch (err) {
                     console.error('index render failed', err);
                 }

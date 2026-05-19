@@ -82,26 +82,31 @@
                     font-weight: 600;
                 }
             </style>
+            <!-- AMD-026 P10 (Actionable Surfacing): KPI sub-labels switch to
+                 legitimate-empty classification when count=0. See
+                 recomputeCounts() below. WHAT = no draft awaiting review;
+                 WHERE = .claude/state/amendments/pending/; WHAT-ACTION =
+                 legitimate empty (team has authored none). -->
             <div class="pb-kpi-grid is-decision-queue">
                 <div class="pb-kpi-card">
                     <span class="pb-kpi-label">Pending</span>
                     <span class="pb-kpi-value" data-kpi="pending">&mdash;</span>
-                    <span class="pb-kpi-sub">awaiting Founder review</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="pending">awaiting Founder review</span>
                 </div>
                 <div class="pb-kpi-card is-positive">
                     <span class="pb-kpi-label">Approve</span>
                     <span class="pb-kpi-value" data-kpi="approve">0</span>
-                    <span class="pb-kpi-sub">marked in this session</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="approve">marked in this session</span>
                 </div>
                 <div class="pb-kpi-card is-danger">
                     <span class="pb-kpi-label">Reject</span>
                     <span class="pb-kpi-value" data-kpi="reject">0</span>
-                    <span class="pb-kpi-sub">marked in this session</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="reject">marked in this session</span>
                 </div>
                 <div class="pb-kpi-card is-warning">
                     <span class="pb-kpi-label">Defer</span>
                     <span class="pb-kpi-value" data-kpi="defer">0</span>
-                    <span class="pb-kpi-sub">marked in this session</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="defer">marked in this session</span>
                 </div>
             </div>
         </section>
@@ -218,7 +223,22 @@
                 const target = document.getElementById(targetId);
                 if (!target) return;
                 if (items.length === 0) {
-                    target.innerHTML = '<div class="amd-empty">No ' + bucketName + ' amendments.</div>';
+                    /* AMD-026 P10 (Actionable Surfacing): bucket-empty panels
+                     * classify the empty state instead of bare "No X amendments".
+                     * WHAT = no entries in this lifecycle bucket; WHERE =
+                     * .claude/state/amendments/<bucket>/; WHAT-ACTION = depends
+                     * on bucket (pending=team authors, approved=watcher applies,
+                     * applied/deferred/rejected=archive, legitimate empty). */
+                    var msg;
+                    switch (bucketName) {
+                        case 'pending':  msg = 'No pending amendments &mdash; orchestration team has authored none. See <code>.claude/state/amendments/pending/</code>.'; break;
+                        case 'approved': msg = 'No approved amendments awaiting apply &mdash; legitimate between Founder approval and the 5-min watcher cron. See <code>.claude/state/amendments/approved/</code>.'; break;
+                        case 'deferred': msg = 'No deferred amendments &mdash; archive empty. See <code>.claude/state/amendments/deferred/</code>.'; break;
+                        case 'applied':  msg = 'No applied amendments yet &mdash; archive empty. See <code>.claude/state/amendments/applied/</code>.'; break;
+                        case 'rejected': msg = 'No rejected amendments &mdash; archive empty. See <code>.claude/state/amendments/rejected/</code>.'; break;
+                        default:         msg = 'No ' + esc(bucketName) + ' amendments.';
+                    }
+                    target.innerHTML = '<div class="amd-empty">' + msg + '</div>';
                     return;
                 }
                 target.innerHTML = items.map(function (a) { return renderCard(a, bucketName); }).join('');
@@ -232,7 +252,33 @@
                 document.querySelector('[data-kpi="approve"]').textContent = tally.approve;
                 document.querySelector('[data-kpi="reject"]').textContent  = tally.reject;
                 document.querySelector('[data-kpi="defer"]').textContent   = tally.defer;
-                document.querySelector('[data-kpi="pending"]').textContent = String(((data.counts || {}).pending) || 0);
+                const pendingCount = ((data.counts || {}).pending) || 0;
+                document.querySelector('[data-kpi="pending"]').textContent = String(pendingCount);
+
+                /* AMD-026 P10 (Actionable Surfacing): swap sub-labels to
+                 * legitimate-empty classification when counts are 0. WHAT = no
+                 * draft pending Founder review or no decisions marked this
+                 * session; WHERE = .claude/state/amendments/pending/; WHAT-ACTION
+                 * = legitimate empty (orchestration team has authored none) /
+                 * mark any pending amendment to populate session tallies. */
+                function setSub(name, text) {
+                    var el = document.querySelector('[data-kpi-sub="' + name + '"]');
+                    if (el) el.textContent = text;
+                }
+                setSub('pending', pendingCount === 0
+                    ? 'no drafts pending — orchestration team has authored none'
+                    : 'awaiting Founder review');
+                var noPendingNoMarks = pendingCount === 0 && tally.approve === 0 && tally.reject === 0 && tally.defer === 0;
+                setSub('approve', noPendingNoMarks
+                    ? 'no decisions yet — mark any pending amendment to populate'
+                    : 'marked in this session');
+                setSub('reject', noPendingNoMarks
+                    ? 'no decisions yet — mark any pending amendment to populate'
+                    : 'marked in this session');
+                setSub('defer', noPendingNoMarks
+                    ? 'no decisions yet — mark any pending amendment to populate'
+                    : 'marked in this session');
+
                 // Inline section counts
                 const c = data.counts || {};
                 function setInline(id, val) { var el = document.getElementById(id); if (el) el.textContent = '(' + val + ')'; }
