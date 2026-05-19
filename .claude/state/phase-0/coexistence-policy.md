@@ -25,6 +25,73 @@
 | Config protection (blocks lint/format config edits) | **DISABLE in ECC** | PARBAUGHS edits its own .claude/settings.local.json frequently; ECC's blanket block prevents normal config tuning. |
 | Session start | **Both fire — investigate at next session** | Superpowers' SessionStart loads context. ECC's loads previous context and detects package manager. Should be additive; verify no race condition. |
 
+## 2026-05-19 update — Founder LOCKED 4 GAP-FILL hooks for install
+
+Per Founder decision 2026-05-19 (responding to `task-queue/founder/hook-comparison-decision.md`):
+
+### APPROVED for install (alongside PARBAUGHS hooks 1-5, no replacement):
+
+1. **`pre:mcp-health-check`** + **`post:mcp-health-check`** (paired)
+   - Path: `~/.claude/plugins/cache/ecc/ecc/2.0.0-rc.1/scripts/hooks/mcp-health-check.js`
+   - Probes MCP server reachability; prevents calls to dead MCPs
+   - Cached 2-min TTL; ~100ms first call, near-zero subsequent
+
+2. **`post:edit:design-quality-check`**
+   - Path: `~/.claude/plugins/cache/ecc/ecc/2.0.0-rc.1/scripts/hooks/design-quality-check.js`
+   - Pattern-matches frontend files for generic-AI-template signals
+   - Warn-only; aligns with P7 ≥9.5 quality bar (early feedback)
+
+3. **`post:edit:console-warn`**
+   - Path: `~/.claude/plugins/cache/ecc/ecc/2.0.0-rc.1/scripts/hooks/post-edit-console-warn.js`
+   - Warns on console.log in edited .js/.jsx/.ts/.tsx files
+   - Warn-only; supplements PARBAUGHS pre-commit lint gate
+
+4. **`stop:cost-tracker`**
+   - Path: `~/.claude/plugins/cache/ecc/ecc/2.0.0-rc.1/scripts/hooks/cost-tracker.js`
+   - Async cost summation at Stop; writes `~/.claude/metrics/costs.jsonl`
+   - Cross-project signal; PARBAUGHS Phase T owns dashboard surface
+
+### DISABLE (CONFLICT with PARBAUGHS workflow):
+
+- `pre:edit-write:gateguard-fact-force` — blocks first edit per file
+- `pre:bash:dispatcher` — overlaps PARBAUGHS pre-commit-lint + push-protection + governance-protection
+- `pre:config-protection` — PARBAUGHS edits settings.local.json frequently
+- `stop:format-typecheck` — 300s timeout vs PARBAUGHS fast ESLint
+
+### Secondary disables (cascading from above):
+
+- `post:edit:accumulator` — orphaned without `stop:format-typecheck`
+- `stop:check-console-log` — redundant with `post:edit:console-warn` (5.3 enabled)
+
+## Activation steps for Founder
+
+ECC plugin hooks fire from the plugin's own `hooks.json` when the plugin is loaded. Since PARBAUGHS substrate may not currently have ECC fully loaded (session 1 install staged but plugin activation pending), Founder should:
+
+1. Run `/plugin list` to confirm ECC is in the active list. If not present:
+2. Run `/plugin enable ecc` (or restart Claude Code session). At session start, ECC's hooks.json will register all 28 hooks.
+3. **Disable the 6 confirmed-disable hooks via env vars in `.claude/settings.local.json` `env` section:**
+   ```json
+   {
+     "env": {
+       "ECC_DISABLE_GATEGUARD_FACT_FORCE": "1",
+       "ECC_DISABLE_BASH_DISPATCHER": "1",
+       "ECC_DISABLE_CONFIG_PROTECTION": "1",
+       "ECC_DISABLE_FORMAT_TYPECHECK": "1",
+       "ECC_DISABLE_EDIT_ACCUMULATOR": "1",
+       "ECC_DISABLE_CHECK_CONSOLE_LOG": "1"
+     }
+   }
+   ```
+   (Confirm env-var names match ECC's actual disable mechanism by reading `~/.claude/plugins/cache/ecc/ecc/2.0.0-rc.1/scripts/hooks/run-with-flags.js`.)
+
+4. Compatibility test:
+   - Run any tool that touches an MCP server (e.g., a Playwright call) → expect `pre:mcp-health-check` to fire
+   - Edit a frontend `.css` or `.html` file → expect `post:edit:design-quality-check` to fire if pattern matches
+   - Edit a `.js` with `console.log` → expect `post:edit:console-warn` to fire
+   - End a session (or natural Stop) → expect `stop:cost-tracker` to write to `~/.claude/metrics/costs.jsonl`
+
+5. Update this file's "Surface ownership" table below with the now-active GAP-FILL hooks.
+
 ## Concrete coexistence actions
 
 These actions are to be applied when ECC plugin first activates (next session start or `/reload-plugins`):
