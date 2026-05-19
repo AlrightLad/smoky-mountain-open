@@ -1,14 +1,14 @@
 {
   "schema_version": "architecture-review-v2.0",
-  "timestamp": "2026-05-19T20:33:48Z",
-  "generated_at": "2026-05-19T20:33:48Z",
-  "updated_at": "2026-05-19T20:33:48Z",
+  "timestamp": "2026-05-19T20:34:01Z",
+  "generated_at": "2026-05-19T20:34:01Z",
+  "updated_at": "2026-05-19T20:34:01Z",
   "source": "scripts/aggregate-architecture-review.py (autonomous-v1)",
   "available": true,
   "status": "yellow",
   "raw_status": "yellow",
   "summary": "5 file-size findings",
-  "as_of": "2026-05-19T20:33:48Z",
+  "as_of": "2026-05-19T20:34:01Z",
   "stale": false,
   "age_hours": 0,
   "counts": {
