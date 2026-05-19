@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-19T02:16:40Z",
-  "generated_at": "2026-05-19T02:16:40Z",
+  "timestamp": "2026-05-19T02:17:13Z",
+  "generated_at": "2026-05-19T02:17:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "green",
   "raw_status": "green",
-  "summary": "watcher no-new-files 0.9min ago · 33 in inbox",
+  "summary": "watcher no-new-files 1.4min ago · 33 in inbox",
   "as_of": "2026-05-19T02:15:48Z",
   "stale": false,
-  "age_hours": 0.015000000000000001,
+  "age_hours": 0.02333333333333333,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 9,
@@ -57,6 +57,6 @@
   "_meta": {
     "watcher_runs_inspected": 10,
     "consecutive_skips": 0,
-    "age_minutes": 0.9
+    "age_minutes": 1.4
   }
 }
