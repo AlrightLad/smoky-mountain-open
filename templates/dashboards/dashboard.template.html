@@ -332,27 +332,24 @@
                  dashboard, Datadog rum, Vercel monitor-track. -->
             <style>
                 /* Hero-mixed grid — Stripe Atlas/Linear pattern: 1 hero +
-                   supporting cards on a 6-col foundation. Tablet collapses to
-                   2-col; mobile single column. */
+                   4 supporting cards on a 4-col foundation. Hero spans 4 (full
+                   width); the 4 supporting cards each span 1 = even quartet. */
                 .pb-kpi-grid.is-this-week {
-                    grid-template-columns: repeat(6, minmax(0, 1fr));
+                    grid-template-columns: repeat(4, minmax(0, 1fr));
                     gap: var(--space-4);
                     align-items: stretch;
                 }
-                .pb-kpi-grid.is-this-week .pb-kpi-card { grid-column: span 3; }
-                .pb-kpi-grid.is-this-week .pb-kpi-card.is-hero { grid-column: span 6; }
-                .pb-kpi-grid.is-this-week .pb-kpi-card.span-2 { grid-column: span 2; }
+                .pb-kpi-grid.is-this-week .pb-kpi-card { grid-column: span 1; }
+                .pb-kpi-grid.is-this-week .pb-kpi-card.is-hero { grid-column: span 4; }
                 @media (max-width: 1024px) {
                     .pb-kpi-grid.is-this-week { grid-template-columns: repeat(2, minmax(0, 1fr)); }
                     .pb-kpi-grid.is-this-week .pb-kpi-card { grid-column: span 1; }
                     .pb-kpi-grid.is-this-week .pb-kpi-card.is-hero { grid-column: span 2; }
-                    .pb-kpi-grid.is-this-week .pb-kpi-card.span-2 { grid-column: span 1; }
                 }
                 @media (max-width: 600px) {
                     .pb-kpi-grid.is-this-week { grid-template-columns: 1fr; }
                     .pb-kpi-grid.is-this-week .pb-kpi-card,
-                    .pb-kpi-grid.is-this-week .pb-kpi-card.is-hero,
-                    .pb-kpi-grid.is-this-week .pb-kpi-card.span-2 { grid-column: span 1; }
+                    .pb-kpi-grid.is-this-week .pb-kpi-card.is-hero { grid-column: span 1; }
                 }
                 /* Hero card numeric typography — Stripe Atlas/Vercel observability
                    pattern: 2x the visual weight of supporting metrics. */
@@ -394,7 +391,9 @@
                 }
 
                 /* phase-I iter6: Sparkline — Datadog/Vercel inline-with-KPI.
-                   Tiny SVG sparkline below the headline number. */
+                   Tiny SVG sparkline below the headline number.
+                   Cycle 2 (2026-05-19): bumped stroke weight + fill opacity for
+                   stronger Vercel-monitor visual presence. */
                 .pb-kpi-sparkline {
                     margin-top: var(--space-2);
                     height: 32px;
@@ -406,20 +405,36 @@
                 .pb-kpi-sparkline path.pb-spark-line {
                     fill: none;
                     stroke: currentColor;
-                    stroke-width: 1.5;
+                    stroke-width: 2;
                     stroke-linecap: round;
                     stroke-linejoin: round;
-                    opacity: 0.9;
+                    opacity: 1;
+                }
+                .pb-kpi-card.is-hero .pb-kpi-sparkline path.pb-spark-line {
+                    stroke-width: 2.5;
                 }
                 .pb-kpi-sparkline path.pb-spark-fill {
                     fill: currentColor;
-                    opacity: 0.12;
+                    opacity: 0.18;
                     stroke: none;
+                }
+                .pb-kpi-card.is-hero .pb-kpi-sparkline path.pb-spark-fill {
+                    opacity: 0.22;
                 }
                 .pb-kpi-sparkline .pb-spark-last {
                     fill: currentColor;
                     stroke: var(--pb-billiard-green-800);
                     stroke-width: 1.5;
+                }
+                /* Cycle 2: hover affordance on sparkline points — Datadog
+                   pattern. The transparent hover rects highlight the column
+                   beneath them on hover so the eye knows "I can scrub here". */
+                .pb-kpi-sparkline rect:hover ~ .pb-spark-line,
+                .pb-kpi-sparkline:hover path.pb-spark-line {
+                    stroke-width: 2.5;
+                }
+                .pb-kpi-card.is-hero .pb-kpi-sparkline:hover path.pb-spark-line {
+                    stroke-width: 3;
                 }
                 .pb-kpi-sparkline.is-brass    { color: var(--pb-brass-500); }
                 .pb-kpi-sparkline.is-success  { color: var(--pb-success); }
@@ -476,7 +491,7 @@
                     <span class="pb-kpi-sub" data-kpi-sub="weekly-tokens">aggregate of telemetry events</span>
                     <span class="pb-action-badge" data-who="cron" data-kpi-badge="weekly-tokens">cron &middot; aggregator refreshes</span>
                 </a>
-                <a class="pb-kpi-card is-neutral span-2" href="token-usage.html" style="text-decoration: none; color: inherit;" title="Click to open the Token Usage dashboard">
+                <a class="pb-kpi-card is-neutral" href="token-usage.html" style="text-decoration: none; color: inherit;" title="Click to open the Token Usage dashboard">
                     <span class="pb-kpi-label">Tokens today (UTC)</span>
                     <span class="pb-kpi-value" data-kpi="daily-tokens">&mdash;</span>
                     <span class="pb-kpi-delta is-flat" data-kpi-delta="daily-tokens" hidden></span>
@@ -484,14 +499,14 @@
                     <span class="pb-kpi-sub" data-kpi-sub="daily-tokens">day-to-date · UTC</span>
                     <span class="pb-action-badge" data-who="cron" data-kpi-badge="daily-tokens">cron &middot; aggregator refreshes</span>
                 </a>
-                <div class="pb-kpi-card span-2" data-kpi-card="manual-quota" title="Anthropic billing quota. Source: .claude/state/quota-status.json or manual paste. Run scripts/refresh-quota-manual.ps1 to anchor a paste.">
+                <div class="pb-kpi-card" data-kpi-card="manual-quota" title="Anthropic billing quota. Source: .claude/state/quota-status.json or manual paste. Run scripts/refresh-quota-manual.ps1 to anchor a paste.">
                     <span class="pb-kpi-label" data-kpi-label="quota-source">Anthropic quota</span>
                     <span class="pb-kpi-value" data-kpi="manual-quota-pct">&mdash;</span>
                     <span class="pb-kpi-delta is-flat" data-kpi-delta="manual-quota" hidden></span>
                     <span class="pb-kpi-sub" data-kpi-sub="manual-quota">no recent paste &mdash; run <code>scripts/refresh-quota-manual.ps1</code></span>
                     <span class="pb-action-badge" data-who="founder" data-kpi-badge="manual-quota">founder &middot; paste from claude.ai</span>
                 </div>
-                <a class="pb-kpi-card is-positive span-2" href="../../.claude/state/ship-progress/" style="text-decoration: none; color: inherit;" title="Click to open ship-progress directory">
+                <a class="pb-kpi-card is-positive" href="../../.claude/state/ship-progress/" style="text-decoration: none; color: inherit;" title="Click to open ship-progress directory">
                     <span class="pb-kpi-label">Ships this week</span>
                     <span class="pb-kpi-value" data-kpi="ships-week">&mdash;</span>
                     <span class="pb-kpi-delta is-flat" data-kpi-delta="ships-week" hidden></span>
@@ -499,7 +514,7 @@
                     <span class="pb-kpi-sub">approved &amp; shipped</span>
                     <span class="pb-action-badge" data-who="none" data-kpi-badge="ships-week">ok &middot; per ship-progress/</span>
                 </a>
-                <a class="pb-kpi-card is-positive span-2" href="../../.claude/state/halts/" style="text-decoration: none; color: inherit;" title="Click to open halts directory">
+                <a class="pb-kpi-card is-positive" href="../../.claude/state/halts/" style="text-decoration: none; color: inherit;" title="Click to open halts directory">
                     <span class="pb-kpi-label">Halts this week</span>
                     <span class="pb-kpi-value" data-kpi="halts-week">&mdash;</span>
                     <span class="pb-kpi-delta is-flat" data-kpi-delta="halts-week" hidden></span>
@@ -512,24 +527,30 @@
                 <a class="pb-kpi-card is-warning" href="../../.claude/state/founder-input-queue/" style="text-decoration: none; color: inherit;" title="Click to open founder-input-queue directory">
                     <span class="pb-kpi-label">FIQ depth</span>
                     <span class="pb-kpi-value" data-kpi="fiq-depth">&mdash;</span>
+                    <span class="pb-kpi-delta is-flat" data-kpi-delta="fiq-depth" hidden></span>
                     <span class="pb-kpi-sub">open questions for Founder</span>
                     <span class="pb-action-badge" data-who="none" data-kpi-badge="fiq-depth">ok &middot; no questions</span>
                 </a>
                 <div class="pb-kpi-card is-positive" title="Cycles run to completion in the last 7 days. Source: telemetry events.">
                     <span class="pb-kpi-label">Cycles complete (7d)</span>
                     <span class="pb-kpi-value" data-kpi="cycles-complete">&mdash;</span>
+                    <span class="pb-kpi-delta is-flat" data-kpi-delta="cycles-complete" hidden></span>
+                    <svg class="pb-kpi-sparkline is-success" data-spark="cycles-complete" viewBox="0 0 200 32" preserveAspectRatio="none" aria-hidden="true"></svg>
                     <span class="pb-kpi-sub">ran to completion</span>
                     <span class="pb-action-badge" data-who="none" data-kpi-badge="cycles-complete">ok</span>
                 </div>
                 <a class="pb-kpi-card is-warning" href="../../.claude/state/halts/" style="text-decoration: none; color: inherit;" title="Cycles that paused for defensive reasons. Click to open halts directory for context.">
                     <span class="pb-kpi-label">Cycles paused (7d)</span>
                     <span class="pb-kpi-value" data-kpi="cycles-paused">&mdash;</span>
+                    <span class="pb-kpi-delta is-flat" data-kpi-delta="cycles-paused" hidden></span>
+                    <svg class="pb-kpi-sparkline is-warning" data-spark="cycles-paused" viewBox="0 0 200 32" preserveAspectRatio="none" aria-hidden="true"></svg>
                     <span class="pb-kpi-sub">resumed after defensive pause</span>
                     <span class="pb-action-badge" data-who="none" data-kpi-badge="cycles-paused">ok &middot; legitimate</span>
                 </a>
                 <a class="pb-kpi-card is-danger" href="../../.claude/state/halts/" style="text-decoration: none; color: inherit;" title="Cycles halted without resolution. Click to open halts directory and review halt files.">
                     <span class="pb-kpi-label">Cycles halted (7d)</span>
                     <span class="pb-kpi-value" data-kpi="cycles-halted">&mdash;</span>
+                    <span class="pb-kpi-delta is-flat" data-kpi-delta="cycles-halted" hidden></span>
                     <span class="pb-kpi-sub">unresolved halt evidence</span>
                     <span class="pb-action-badge" data-who="none" data-kpi-badge="cycles-halted">ok &middot; clean</span>
                 </a>
@@ -608,14 +629,15 @@
 
         <section class="pb-section">
             <h2 class="pb-section-title">Recent handoffs</h2>
+            <p class="pb-section-subtitle">Latest agent + cron transitions in chronological order. Each row carries a scenario chip + direction arrow + subject + relative timestamp.</p>
             <div class="pb-table-wrap">
                 <table class="pb-table" id="recent-handoffs-table">
                     <thead>
                         <tr>
                             <th class="is-sticky-col">Scenario</th>
-                            <th>From</th>
-                            <th>To</th>
-                            <th>When</th>
+                            <th>From &rarr; To</th>
+                            <th>Subject</th>
+                            <th style="text-align: right;">When</th>
                         </tr>
                     </thead>
                     <tbody><!-- populated by JS --></tbody>
@@ -625,6 +647,7 @@
 
         <section class="pb-section">
             <h2 class="pb-section-title">Recent ships</h2>
+            <p class="pb-section-subtitle">Latest 10 amendments + proposals applied or shipped. Sortable by tokens/cost via column headers.</p>
             <div class="pb-table-wrap">
                 <table class="pb-table" id="recent-ships-table">
                     <thead>
@@ -632,6 +655,7 @@
                             <th class="is-sticky-col">Ship</th>
                             <th>Title</th>
                             <th>Status</th>
+                            <th>When</th>
                             <th class="is-num">Tokens</th>
                             <th class="is-num">Cost</th>
                         </tr>
@@ -1124,21 +1148,124 @@
                     }
                 }
 
+                // phase-I iter6 cycle 2 (2026-05-19): cycle outcomes sparklines.
+                // Each cycle-outcome series gets its own inline trend sparkline +
+                // a delta line. Cycles paused/halted: positive growth is bad.
+                function _getCycleSeries(label) {
+                    var ds = (data.cycle_outcomes_7d && data.cycle_outcomes_7d.datasets || [])
+                        .find(function (d) { return d.label === label; });
+                    return ds && Array.isArray(ds.data) ? ds.data : [];
+                }
+                var completeValues = _getCycleSeries('Complete');
+                var pausedValues   = _getCycleSeries('Paused');
+                var haltedValues   = _getCycleSeries('Halted');
+                drawSpark('[data-spark="cycles-complete"]', completeValues, {
+                    hoverLabels: tokenLabels.map(function (l, i) { return _hl(l, completeValues[i] || 0); })
+                });
+                drawSpark('[data-spark="cycles-paused"]', pausedValues, {
+                    hoverLabels: tokenLabels.map(function (l, i) { return _hl(l, pausedValues[i] || 0); })
+                });
+                if (completeValues.length >= 2) {
+                    setDelta('[data-kpi-delta="cycles-complete"]', completeValues, {
+                        fmt: function (n) { return Math.round(n).toString(); },
+                        label: '7-day completion cadence',
+                        thresholdPct: 10
+                    });
+                }
+                if (pausedValues.length >= 2 && pausedValues.some(function (v) { return v > 0; })) {
+                    setDelta('[data-kpi-delta="cycles-paused"]', pausedValues, {
+                        fmt: function (n) { return Math.round(n).toString(); },
+                        positiveIsBad: true,
+                        label: 'pause trend',
+                        thresholdPct: 10
+                    });
+                } else {
+                    var pd = document.querySelector('[data-kpi-delta="cycles-paused"]');
+                    if (pd) {
+                        pd.hidden = false;
+                        pd.className = 'pb-kpi-delta is-flat';
+                        pd.innerHTML = '<strong>no pauses</strong> <span class="pb-kpi-delta-quiet">&middot; clean 7-day run</span>';
+                    }
+                }
+                if (haltedValues.length >= 2 && haltedValues.some(function (v) { return v > 0; })) {
+                    setDelta('[data-kpi-delta="cycles-halted"]', haltedValues, {
+                        fmt: function (n) { return Math.round(n).toString(); },
+                        positiveIsBad: true,
+                        label: 'halt trend',
+                        thresholdPct: 1
+                    });
+                } else {
+                    var ch = document.querySelector('[data-kpi-delta="cycles-halted"]');
+                    if (ch) {
+                        ch.hidden = false;
+                        ch.className = 'pb-kpi-delta is-flat';
+                        ch.innerHTML = '<strong>no halts</strong> <span class="pb-kpi-delta-quiet">&middot; clean 7-day run</span>';
+                    }
+                }
+                // FIQ trend: not in 7-day data, just show the static "depth"
+                // context line. Real FIQ trend would need a separate aggregator
+                // pass — out of scope this round.
+                if (fiqD === 0) {
+                    var fd = document.querySelector('[data-kpi-delta="fiq-depth"]');
+                    if (fd) {
+                        fd.hidden = false;
+                        fd.className = 'pb-kpi-delta is-flat';
+                        fd.innerHTML = '<strong>no questions</strong> <span class="pb-kpi-delta-quiet">&middot; founder uninterrupted</span>';
+                    }
+                } else {
+                    var fd2 = document.querySelector('[data-kpi-delta="fiq-depth"]');
+                    if (fd2) {
+                        fd2.hidden = false;
+                        fd2.className = 'pb-kpi-delta is-warn';
+                        fd2.innerHTML = '<strong>' + fiqD + ' open</strong> <span class="pb-kpi-delta-quiet">&middot; founder review queue</span>';
+                    }
+                }
+
                 // Recent handoffs
+                // phase-I iter6 cycle 2 (2026-05-19): timeline-styled rows with
+                // relative timestamps + scenario chips + from→to direction.
+                // Stripe Atlas + Linear Activity Feed pattern.
                 var handoffs = Array.isArray(data.recent_handoffs) ? data.recent_handoffs : [];
                 var hbody = document.querySelector('#recent-handoffs-table tbody');
+                function fmtAgo(iso) {
+                    if (!iso) return '—';
+                    var d = new Date(iso); if (isNaN(d)) return iso;
+                    var diff = (Date.now() - d.getTime()) / 1000;
+                    if (diff < 60)     return Math.floor(diff) + 's ago';
+                    if (diff < 3600)   return Math.floor(diff / 60) + 'm ago';
+                    if (diff < 86400)  return Math.floor(diff / 3600) + 'h ago';
+                    if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+                    return Math.floor(diff / 604800) + 'w ago';
+                }
+                // Scenario → chip color mapping. Linear-style minimal pill.
+                function scenarioChip(scenario) {
+                    var s = (scenario || '').toLowerCase();
+                    var cls = 'is-muted';
+                    // green = positive completion
+                    if (s.indexOf('ship') !== -1 || s.indexOf('approved') !== -1 || s === 'team-commit') cls = 'is-green';
+                    // brass = celebratory / ship-close
+                    else if (s.indexOf('proactive') !== -1) cls = 'is-brass';
+                    // blue = cycle / cross
+                    else if (s.indexOf('cycle') !== -1 || s.indexOf('cross') !== -1 || s.indexOf('agent') !== -1) cls = 'is-blue';
+                    // yellow = pause / discussion
+                    else if (s.indexOf('discussion') !== -1 || s.indexOf('founder') !== -1) cls = 'is-yellow';
+                    // red = halt
+                    else if (s.indexOf('halt') !== -1) cls = 'is-red';
+                    // grey = cron / routine / auto-commit
+                    else if (s.indexOf('cron') !== -1 || s.indexOf('routine') !== -1 || s.indexOf('auto') !== -1) cls = 'is-muted';
+                    return '<span class="pb-status-pill ' + cls + '">' + esc(scenario) + '</span>';
+                }
                 if (handoffs.length === 0) {
                     hbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:var(--space-5);color:var(--pb-chalk-400);font-style:italic;">No recent handoffs.</td></tr>';
                 } else {
-                    // phase-I iter2 (2026-05-19): mono scenario IDs in muted
-                    // ink + arrow indicator on from→to to read the direction
-                    // at a glance (Linear's "thread direction" pattern).
                     hbody.innerHTML = handoffs.map(function (h) {
-                        return '<tr>'
-                            + '<td class="is-sticky-col"><code style="font-family: var(--font-mono); color: var(--pb-chalk-200); font-size: 0.8125rem; letter-spacing: 0.04em;">' + esc(h.scenario) + '</code></td>'
-                            + '<td><span style="color: var(--pb-chalk-300);">' + esc(h.from) + '</span></td>'
-                            + '<td><span style="color: var(--pb-chalk-100); font-weight: 500;">' + esc(h.to) + '</span></td>'
-                            + '<td style="color: var(--pb-chalk-300); font-family: var(--font-mono); font-size: 0.8125rem; letter-spacing: 0.03em;">' + esc(fmtTime(h.created_at)) + '</td>'
+                        return '<tr title="' + esc(h.subject || '') + ' &mdash; ' + esc(fmtTime(h.created_at)) + '">'
+                            + '<td class="is-sticky-col">' + scenarioChip(h.scenario) + '</td>'
+                            + '<td><span style="color: var(--pb-chalk-300); font-family: var(--font-mono); font-size: 0.8125rem;">' + esc(h.from) + '</span>'
+                                + ' <span style="color: var(--pb-chalk-500); font-family: var(--font-mono); font-size: 0.8125rem;">&rarr;</span> '
+                                + '<span style="color: var(--pb-chalk-100); font-weight: 500;">' + esc(h.to) + '</span></td>'
+                            + '<td style="color: var(--pb-chalk-300); font-size: 0.8125rem; max-width: 360px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + esc((h.subject || '').slice(0, 80)) + '</td>'
+                            + '<td style="color: var(--pb-chalk-300); font-family: var(--font-mono); font-size: 0.8125rem; letter-spacing: 0.03em; white-space: nowrap;">' + esc(fmtAgo(h.created_at)) + '</td>'
                             + '</tr>';
                     }).join('');
                 }
@@ -1164,10 +1291,13 @@
                         var tokDisplay = (s.tokens == null) ? '<span style="color:var(--pb-chalk-500);">—</span>' : fmtNum(s.tokens);
                         var costVal = (s.cost_usd != null) ? s.cost_usd : s.cost;
                         var costDisplay = (costVal == null) ? '<span style="color:var(--pb-chalk-500);">—</span>' : '$' + (costVal.toFixed ? costVal.toFixed(2) : costVal);
-                        return '<tr>'
+                        var whenIso = s.completed_at || s.shipped_at || s.created_at;
+                        var whenAgo = whenIso ? fmtAgo(whenIso) : '<span style="color:var(--pb-chalk-500);">—</span>';
+                        return '<tr title="' + esc(s.title || '') + ' &mdash; ' + esc(fmtTime(whenIso)) + '">'
                             + '<td class="is-sticky-col"><code style="font-family: var(--font-mono); color: var(--pb-chalk-200); font-size: 0.8125rem; letter-spacing: 0.04em;">' + esc(s.id || s.ship || '') + '</code></td>'
-                            + '<td>' + esc(s.title || '') + '</td>'
+                            + '<td style="max-width: 420px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + esc(s.title || '') + '</td>'
                             + '<td>' + statusPill(s.status) + '</td>'
+                            + '<td style="color: var(--pb-chalk-300); font-family: var(--font-mono); font-size: 0.8125rem; letter-spacing: 0.03em; white-space: nowrap;">' + whenAgo + '</td>'
                             + '<td class="is-num">' + tokDisplay + '</td>'
                             + '<td class="is-num">' + costDisplay + '</td>'
                             + '</tr>';
