@@ -1,0 +1,241 @@
+
+  AgentShield Security Report
+  2026-05-19T03:13:30.919Z
+  Target: C:\Users\Zach\smoky-mountain-open\.claude
+
+  Grade: B (80/100)
+
+  Score Breakdown
+  Secrets        ████████████████████ 100
+  Permissions    ░░░░░░░░░░░░░░░░░░░░ 0
+  Hooks          ████████████████████ 100
+  MCP Servers    ████████████████████ 100
+  Agents         ████████████████████ 100
+
+  Skill Health
+  Skills discovered: 21
+  Instrumented:      21
+  Versioned:         21
+  Rollback-ready:    21
+  With history:      0
+
+  parbaughs-audit-protocol.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-audit-protocol.APPROVAL.md
+  parbaughs-audit-protocol — unobserved (unobserved)
+    File: skills\parbaughs-audit-protocol.md
+  parbaughs-caddy-notes-classifier.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-caddy-notes-classifier.APPROVAL.md
+  parbaughs-caddy-notes-classifier — unobserved (unobserved)
+    File: skills\parbaughs-caddy-notes-classifier.md
+  parbaughs-critic-checklist.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-critic-checklist.APPROVAL.md
+  parbaughs-critic-checklist — unobserved (unobserved)
+    File: skills\parbaughs-critic-checklist.md
+  parbaughs-cross-surface-dependency-audit.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-cross-surface-dependency-audit.APPROVAL.md
+  parbaughs-cross-surface-dependency-audit — unobserved (unobserved)
+    File: skills\parbaughs-cross-surface-dependency-audit.md
+  design-bot-v2 — unobserved (unobserved)
+    File: skills\parbaughs-design-bot.md
+  parbaughs-firestore-writer-audit.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-firestore-writer-audit.APPROVAL.md
+  parbaughs-firestore-writer-audit — unobserved (unobserved)
+    File: skills\parbaughs-firestore-writer-audit.md
+  parbaughs-namespace-collision-check.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-namespace-collision-check.APPROVAL.md
+  parbaughs-namespace-collision-check — unobserved (unobserved)
+    File: skills\parbaughs-namespace-collision-check.md
+  parbaughs-ship-planner.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-ship-planner.APPROVAL.md
+  parbaughs-ship-planner — unobserved (unobserved)
+    File: skills\parbaughs-ship-planner.md
+  parbaughs-smoke-failure-triage.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-smoke-failure-triage.APPROVAL.md
+  parbaughs-smoke-failure-triage — unobserved (unobserved)
+    File: skills\parbaughs-smoke-failure-triage.md
+  parbaughs-version-triple-bumper.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-version-triple-bumper.APPROVAL.md
+  parbaughs-version-triple-bumper — unobserved (unobserved)
+    File: skills\parbaughs-version-triple-bumper.md
+  parbaughs-visual-verification-protocol.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-visual-verification-protocol.APPROVAL.md
+  parbaughs-visual-verification-protocol — unobserved (unobserved)
+    File: skills\parbaughs-visual-verification-protocol.md
+
+  Summary
+  Files scanned: 33
+  Findings: 28 total — 0 critical, 20 high, 7 medium, 1 low, 0 info
+
+  Findings
+
+  ● HIGH (20)
+
+    ● Overly permissive allow rule: Bash(python scripts/*)
+      settings.json
+      Interpreter access — agent can run arbitrary code via scripting language
+      Evidence: Bash(python scripts/*)
+      Fix: Restrict to specific commands: Restrict to specific scripts: Bash(node scripts/build.js)
+
+    ● Overly permissive allow rule: Bash(python tests/*)
+      settings.json
+      Interpreter access — agent can run arbitrary code via scripting language
+      Evidence: Bash(python tests/*)
+      Fix: Restrict to specific commands: Restrict to specific scripts: Bash(node scripts/build.js)
+
+    ● Overly permissive allow rule: Bash(python .claude/scripts/*)
+      settings.json
+      Interpreter access — agent can run arbitrary code via scripting language
+      Evidence: Bash(python .claude/scripts/*)
+      Fix: Restrict to specific commands: Restrict to specific scripts: Bash(node scripts/build.js)
+
+    ● Overly permissive allow rule: Bash(python3 scripts/*)
+      settings.json
+      Interpreter access — agent can run arbitrary code via scripting language
+      Evidence: Bash(python3 scripts/*)
+      Fix: Restrict to specific commands: Restrict to specific scripts: Bash(node scripts/build.js)
+
+    ● Overly permissive allow rule: Bash(python -m*)
+      settings.json
+      Interpreter access — agent can run arbitrary code via scripting language
+      Evidence: Bash(python -m*)
+      Fix: Restrict to specific commands: Restrict to specific scripts: Bash(node scripts/build.js)
+
+    ● Overly permissive allow rule: Bash(node scripts/*)
+      settings.json
+      Interpreter access — agent can run arbitrary code via scripting language
+      Evidence: Bash(node scripts/*)
+      Fix: Restrict to specific commands: Restrict to specific scripts: Bash(node scripts/build.js)
+
+    ● Overly permissive allow rule: Bash(node tests/*)
+      settings.json
+      Interpreter access — agent can run arbitrary code via scripting language
+      Evidence: Bash(node tests/*)
+      Fix: Restrict to specific commands: Restrict to specific scripts: Bash(node scripts/build.js)
+
+    ● Overly permissive allow rule: Bash(node -e*)
+      settings.json
+      Interpreter access — agent can run arbitrary code via scripting language
+      Evidence: Bash(node -e*)
+      Fix: Restrict to specific commands: Restrict to specific scripts: Bash(node scripts/build.js)
+
+    ● Overly permissive allow rule: Bash(rm -f .claude/state/proposals/*)
+      settings.json
+      Delete operations explicitly allowed in Bash
+      Evidence: Bash(rm -f .claude/state/proposals/*)
+      Fix: Restrict to specific commands: Move rm commands to deny list instead
+
+    ● Overly permissive allow rule: Bash(rm -f .claude/state/proposals/inbox/*)
+      settings.json
+      Delete operations explicitly allowed in Bash
+      Evidence: Bash(rm -f .claude/state/proposals/inbox/*)
+      Fix: Restrict to specific commands: Move rm commands to deny list instead
+
+    ● All mutable tool categories allowed simultaneously
+      settings.json
+      The allow list grants Bash, Write, and Edit access. Even with scoped patterns, having all three categories means the agent can run commands, create files, and modify files — effectively unrestricted write access to the system. Consider whether all three are truly needed.
+      Fix: Remove one or more mutable tool categories if not needed
+
+    ● Allow rule grants env access: PowerShell($env:Path *)
+      settings.json
+      The allow entry "PowerShell($env:Path *)" Grants access to dump environment variables. Environment variables often contain API keys, tokens, and other secrets.
+      Evidence: PowerShell($env:Path *)
+
+    ● Allow rule grants unrestricted network access: Bash(curl *)
+      settings.json
+      The allow entry "Bash(curl *)" Allows unrestricted curl — can exfiltrate data to any URL. Network tools should be restricted to specific hosts or purposes.
+      Evidence: Bash(curl *)
+      Fix: Restrict to specific hosts or use explicit URLs
+
+    ● Overly permissive allow rule: Bash(node *)
+      settings.local.json
+      Runtime confidence: project-local optional
+      Interpreter access — agent can run arbitrary code via scripting language
+      Evidence: Bash(node *)
+      Fix: Restrict to specific commands: Restrict to specific scripts: Bash(node scripts/build.js)
+
+    ● Overly permissive allow rule: Bash(rm -f .claude/state/proposals/decisions-log.ndjson)
+      settings.local.json
+      Runtime confidence: project-local optional
+      Delete operations explicitly allowed in Bash
+      Evidence: Bash(rm -f .claude/state/proposals/decisions-log.ndjson)
+      Fix: Restrict to specific commands: Move rm commands to deny list instead
+
+    ● Overly permissive allow rule: Bash(rm -f .claude/state/proposals/inbox/*)
+      settings.local.json
+      Runtime confidence: project-local optional
+      Delete operations explicitly allowed in Bash
+      Evidence: Bash(rm -f .claude/state/proposals/inbox/*)
+      Fix: Restrict to specific commands: Move rm commands to deny list instead
+
+    ● No deny list configured
+      settings.local.json
+      Runtime confidence: project-local optional
+      settings.json has no deny list. Without explicit denials, the agent may run dangerous operations if the allow list is too broad.
+      Fix: Add a deny list for dangerous operations
+
+    ● Allow rule grants env access: PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); python tests/round-trip-test.py)
+      settings.local.json
+      Runtime confidence: project-local optional
+      The allow entry "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); python tests/round-trip-test.py)" Grants access to dump environment variables. Environment variables often contain API keys, tokens, and other secrets.
+      Evidence: PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); python tests/round-trip-test.py)
+
+    ● Allow rule grants env access: PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); $env:PYTHONUTF8 = "1"; $env:PYTHONIOENCODING = "utf-8"; python tests/round-trip-test.py)
+      settings.local.json
+      Runtime confidence: project-local optional
+      The allow entry "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); $env:PYTHONUTF8 = "1"; $env:PYTHONIOENCODING = "utf-8"; python tests/round-trip-test.py)" Grants access to dump environment variables. Environment variables often contain API keys, tokens, and other secrets.
+      Evidence: PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\("Path","User"\) + ";" + [System.Environment]::GetEnvironmentVariable\("Path","Machine"\); $env:PYTHONUTF8 = "1"; $env:PYTHONIOENCODING = "utf-8"; python tests/round-trip-test.py)
+
+    ● Allow rule grants unrestricted network access: Bash(curl *)
+      settings.local.json
+      Runtime confidence: project-local optional
+      The allow entry "Bash(curl *)" Allows unrestricted curl — can exfiltrate data to any URL. Network tools should be restricted to specific hosts or purposes.
+      Evidence: Bash(curl *)
+      Fix: Restrict to specific hosts or use explicit URLs
+
+  ● MEDIUM (7)
+
+    ● Overly permissive allow rule: Bash(curl *)
+      settings.json
+      Unrestricted curl access — agent can make arbitrary HTTP requests
+      Evidence: Bash(curl *)
+      Fix: Restrict to specific commands: Restrict to specific domains or move to deny list
+
+    ● Missing deny rule: Privilege escalation
+      settings.json
+      The deny list does not block "sudo". Consider adding it to prevent privilege escalation.
+
+    ● Missing deny rule: World-writable permissions
+      settings.json
+      The deny list does not block "chmod 777". Consider adding it to prevent world-writable permissions.
+
+    ● Missing deny rule: SSH connections from agent
+      settings.json
+      The deny list does not block "ssh". Consider adding it to prevent ssh connections from agent.
+
+    ● Missing deny rule: Writing to device files
+      settings.json
+      The deny list does not block "> /dev/". Consider adding it to prevent writing to device files.
+
+    ● Overly permissive allow rule: Bash(curl *)
+      settings.local.json
+      Runtime confidence: project-local optional
+      Unrestricted curl access — agent can make arbitrary HTTP requests
+      Evidence: Bash(curl *)
+      Fix: Restrict to specific commands: Restrict to specific domains or move to deny list
+
+    ● No PreToolUse security hooks configured
+      settings.local.json
+      Runtime confidence: project-local optional
+      No PreToolUse hooks are defined. These hooks can catch dangerous operations before they run, providing an essential security layer.
+      Fix: Add PreToolUse hooks for security-sensitive operations
+
+  ● LOW (1)
+
+    ● No Stop hooks for session-end verification
+      settings.json
+      Hooks are configured but no Stop hooks exist. Stop hooks run when a session ends and are useful for final verification — checking for uncommitted secrets, ensuring console.log statements were removed, or auditing file changes.
+      Fix: Add a Stop hook for session-end checks
+
+  ─────────────────────────────────────────
+  AgentShield — Security auditor for AI agent configs
+
