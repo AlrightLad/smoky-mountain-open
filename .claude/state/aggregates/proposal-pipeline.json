@@ -1,0 +1,40 @@
+{
+  "schema_version": "proposal-pipeline-v1.0",
+  "timestamp": "2026-05-19T21:08:15.050314Z",
+  "generated_at": "2026-05-19T21:08:15.050314Z",
+  "status": "yellow",
+  "summary": "2 findings across 3 buckets",
+  "counts_by_bucket": {
+    "pending": 0,
+    "approved": 2,
+    "archived": 7,
+    "rejected": 0,
+    "deferred": 0,
+    "ship-readiness-deferred": 0,
+    "shipped": 4
+  },
+  "findings": [
+    {
+      "kind": "status-mismatch",
+      "bucket": "approved",
+      "id": "PROP-006",
+      "file": ".claude\\state\\proposals\\approved\\PROP-006-outcome-vs-task-skill.md",
+      "expected_status": "approved",
+      "actual_status": "pending",
+      "severity": "low",
+      "detail": "PROP-006 sits in approved/ but frontmatter status='pending' (expected 'approved')."
+    },
+    {
+      "kind": "status-mismatch",
+      "bucket": "approved",
+      "id": "PROP-010",
+      "file": ".claude\\state\\proposals\\approved\\PROP-010-design-bot-role-formalization.md",
+      "expected_status": "approved",
+      "actual_status": "pending",
+      "severity": "low",
+      "detail": "PROP-010 sits in approved/ but frontmatter status='pending' (expected 'approved')."
+    }
+  ],
+  "stale_threshold_days": 14,
+  "source": "scripts/audit-proposals.py (autonomous-v1)"
+}

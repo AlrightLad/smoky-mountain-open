@@ -1,11 +1,11 @@
 {
-  "as_of": "2026-05-19T20:58:50.965938+00:00",
+  "as_of": "2026-05-19T21:10:09.445901+00:00",
   "_meter_status": "wired-real",
   "_meter_note": "Token meter is wired to real data via PROP-003.a sidecar (.claude/state/quota-status.json). weekly_tokens reflects the most recent meter reading. See quota_status block for org-monthly percentage + freshness.",
   "quota_status": {
     "state": "fresh",
-    "as_of": "2026-05-19T20:57:12.8100084Z",
-    "age_seconds": 98,
+    "as_of": "2026-05-19T21:07:12.8289060Z",
+    "age_seconds": 176,
     "weekly_tokens": 102000,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -19,7 +19,7 @@
   "weekly_tokens_estimated": 7200000,
   "weekly_tokens_methodology": "measured: cycle.budget.checkpoint deltas + cycle.paused tokens + legacy 'tokens' field. estimated: session.team-work.summary tokens_estimated (operator-asserted, NOT measurements). Both filtered to past 7 days. For ground truth, paste from claude.ai via scripts/refresh-quota-manual.ps1.",
   "weekly_cost": 2.45,
-  "ships_this_week": 33,
+  "ships_this_week": 34,
   "ships_trend_7d": {
     "labels": [
       "Wed",
@@ -37,7 +37,7 @@
       0,
       0,
       0,
-      1
+      2
     ]
   },
   "handoffs_trend_7d": {
@@ -165,6 +165,18 @@
   },
   "recent_ships": [
     {
+      "id": "AMD-027",
+      "title": "src/core/ file-size budget \u2014 orchestration tier allowance",
+      "kind": "amendment",
+      "status": "applied",
+      "completed_at": "2026-05-19T21:30:00Z",
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
+      "source_path": ".claude/state/amendments/applied/AMD-027-src-core-file-size-budget.md"
+    },
+    {
       "id": "AMD-026",
       "title": "Actionable Surfacing \u2014 P10 + 9th deliberation bubble",
       "kind": "amendment",
@@ -271,22 +283,10 @@
       "tokens_events_matched": 0,
       "cost_usd": null,
       "source_path": ".claude/state/amendments/applied/AMD-018-self-governed-push-authorization.md"
-    },
-    {
-      "id": "ESC-003",
-      "title": "Per-ship token attribution \u2014 going-forward instrumentation approach",
-      "kind": "escalation",
-      "status": "applied",
-      "completed_at": "2026-05-14T19:51:56.843644+00:00",
-      "tokens": null,
-      "tokens_source": "unknown",
-      "tokens_events_matched": 0,
-      "cost_usd": null,
-      "source_path": ".claude/state/escalations/applied/ESC-003-per-ship-token-attribution-instrumentation.md"
     }
   ],
   "_aggregate_counts": {
-    "events_total": 3740,
+    "events_total": 3749,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
