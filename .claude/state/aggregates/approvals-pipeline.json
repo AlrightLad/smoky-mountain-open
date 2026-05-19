@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-19T19:15:38Z",
-  "generated_at": "2026-05-19T19:15:38Z",
+  "timestamp": "2026-05-19T19:17:13Z",
+  "generated_at": "2026-05-19T19:17:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "yellow",
   "raw_status": "yellow",
-  "summary": "watcher last run: skip-dirty · 33 in inbox",
-  "as_of": "2026-05-19T19:10:48Z",
+  "summary": "watcher cycling · last 2 runs skipped on dirty tree · 33 in inbox",
+  "as_of": "2026-05-19T19:15:48Z",
   "stale": false,
-  "age_hours": 0.08,
+  "age_hours": 0.02333333333333333,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 2,
@@ -31,6 +31,13 @@
     {
       "category": "stall",
       "status": "skip-dirty",
+      "name": "2026-05-19T19-15-48Z-downloads-watcher.log",
+      "note": "[19:15:48] SKIP working tree dirty with non-routine files: .claude/state/main-flows-v2/capture-meta.json, .claude/state/main-flows-v2/current-render.png, .claude/state/main-flows-v2/current-render-flo",
+      "when": "2026-05-19T19:15:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
       "name": "2026-05-19T19-10-48Z-downloads-watcher.log",
       "note": "[19:10:48] SKIP working tree dirty with non-routine files: .claude/state/main-flows-v2/current-render.png, .claude/state/main-flows-v2/current-render-viewport.png",
       "when": "2026-05-19T19:10:48Z"
@@ -41,13 +48,6 @@
       "name": "2026-05-19T18-55-48Z-downloads-watcher.log",
       "note": "[18:55:48] SKIP working tree dirty with non-routine files: functions/package-lock.json, scripts/aggregate-security-health.py",
       "when": "2026-05-19T18:55:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-19T03-15-48Z-downloads-watcher.log",
-      "note": "[03:15:49] SKIP working tree dirty with non-routine files: .claude/settings.local.json.pre-ecc-activation-backup, .claude/state/dashboard-audit-2026-05-18/fixture/ecc-design-test.html, .claude/state/d",
-      "when": "2026-05-19T03:15:48Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 1,
-    "age_minutes": 4.8
+    "consecutive_skips": 2,
+    "age_minutes": 1.4
   }
 }
