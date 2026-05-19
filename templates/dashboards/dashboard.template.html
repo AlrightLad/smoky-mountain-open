@@ -247,16 +247,18 @@
                         <span class="pb-banner-action" data-fq-banner-action="approvals" hidden></span>
                         <span class="pb-action-badge" data-who="cron" data-fq-banner-badge="approvals">checking&hellip;</span>
                     </button>
-                    <!-- AMD-024 + queue task architecture-review-banner: reads
+                    <!-- AMD-024 + AMD-026 (autonomous-v1 2026-05-19): reads
                          .claude/state/aggregates/architecture-review.json written by
-                         the Architecture / AI Engineer agent (Terminal 6). Empty-state
-                         when file absent until that agent dispatches. -->
-                    <button type="button" class="pb-kpi-card pb-health-banner" data-fq-banner="architecture" aria-controls="health-banner-architecture-detail" aria-expanded="false" title="Architecture / AI Engineer agent (Terminal 6, AMD-024) writes architecture-review.json. Click for details.">
+                         scripts/aggregate-architecture-review.py on every commit.
+                         Performs cheap file-system scan (src/core size + functions/index.js
+                         exports + pending REC-*.md). No "awaiting dispatch" — the
+                         scan runs autonomously via .husky/post-commit. -->
+                    <button type="button" class="pb-kpi-card pb-health-banner" data-fq-banner="architecture" aria-controls="health-banner-architecture-detail" aria-expanded="false" title="Architecture review aggregator (AMD-024 + AMD-026). Autonomous file-system scan on every commit. Click for details.">
                         <span class="pb-kpi-label"><span class="pb-health-banner-dot" data-fq-banner-dot="architecture" aria-hidden="true">&bull;</span> Architecture review</span>
                         <span class="pb-kpi-value is-small" data-fq-banner-summary="architecture" style="white-space: normal; word-break: break-word; line-height: 1.3;">&mdash;</span>
                         <span class="pb-kpi-sub" data-fq-banner-meta="architecture"></span>
                         <span class="pb-banner-action" data-fq-banner-action="architecture" hidden></span>
-                        <span class="pb-action-badge" data-who="agent" data-fq-banner-badge="architecture">agent &middot; not yet dispatched</span>
+                        <span class="pb-action-badge" data-who="cron" data-fq-banner-badge="architecture">cron &middot; scanning&hellip;</span>
                     </button>
                     <div class="pb-kpi-card" data-fq-health="round-trip" title="Last successful round-trip pass from regen-all heartbeat. Persisted at .claude/state/heartbeats/regen-all-last-pass.json on every PASS. STALE if more than 60 minutes old.">
                         <span class="pb-kpi-label">Round-trip last pass</span>
@@ -431,8 +433,8 @@
                 <a class="pb-kpi-card is-info" href="proposals.html#in-flight" style="text-decoration: none; color: inherit;" title="Click to open Proposals dashboard (in-flight section)">
                     <span class="pb-kpi-label">Proposals in flight</span>
                     <span class="pb-kpi-value" data-kpi="proposals-in-flight">&mdash;</span>
-                    <span class="pb-kpi-sub">approved, awaiting commit</span>
-                    <span class="pb-action-badge" data-who="agent" data-kpi-badge="proposals-in-flight">agent &middot; awaiting commit</span>
+                    <span class="pb-kpi-sub">approved, ship-in-progress</span>
+                    <span class="pb-action-badge" data-who="cron" data-kpi-badge="proposals-in-flight">cron &middot; auto-promotes on ship</span>
                 </a>
                 <a class="pb-kpi-card is-positive" href="proposals.html#shipped" style="text-decoration: none; color: inherit;" title="Click to open Proposals dashboard (shipped archive)">
                     <span class="pb-kpi-label">Proposals shipped</span>
@@ -792,8 +794,12 @@
                 setBadge('proposals-pending', pending === 0 ? 'none' : 'founder',
                     pending === 0 ? 'ok · no pending' : 'FOUNDER · ' + pending + ' to review',
                     pending === 0 ? null : 'proposals.html');
-                setBadge('proposals-in-flight', inFlight === 0 ? 'none' : 'agent',
-                    inFlight === 0 ? 'ok · none in flight' : 'agent · ' + inFlight + ' awaiting commit',
+                // Founder mandate 2026-05-19: never "awaiting". In-flight proposals
+                // are auto-promoted to shipped by scripts/scan-shipped-proposals.py
+                // which runs in scripts/regen-all.sh on every commit — this is a
+                // cron-resolved state, not a dispatch-pending wait.
+                setBadge('proposals-in-flight', inFlight === 0 ? 'none' : 'cron',
+                    inFlight === 0 ? 'ok · none in flight' : 'cron · ' + inFlight + ' promotes on next ship-close',
                     'proposals.html#in-flight');
                 setBadge('proposals-shipped', 'none', shipped === 0 ? 'ok · archive empty' : 'ok · ' + shipped + ' archive', 'proposals.html#shipped');
                 setBadge('amendments-pending', amendPending === 0 ? 'none' : 'founder',
@@ -1407,7 +1413,7 @@
                     }).join('');
                     cisEl.innerHTML = '<div style="padding: var(--space-2) var(--space-3); background: rgba(201,169,97,0.06); border: 1px solid var(--accent-brass); border-radius: var(--radius-sm);">'
                         + '<div style="font-family: var(--font-mono); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-brass); font-weight: 700; margin-bottom: var(--space-1);">'
-                        + '  ' + newlyInstalled.length + ' cron task' + (newlyInstalled.length > 1 ? 's' : '') + ' newly installed · awaiting first fire</div>'
+                        + '  ' + newlyInstalled.length + ' cron task' + (newlyInstalled.length > 1 ? 's' : '') + ' newly installed · auto-fires on next cadence</div>'
                         + newRows
                         + '</div>';
                 } else {
@@ -1516,9 +1522,13 @@
                     else if (status === 'red') { who = 'founder'; visibleAction = '<strong>FOUNDER</strong> watcher hard-failed; restart cron task'; }
                     else { who = 'cron'; visibleAction = '<strong>action</strong> derived from cron logs on next regen'; }
                 } else if (name === 'architecture') {
+                    // AMD-024 + AMD-026 autonomous-v1 (2026-05-19): the
+                    // aggregator runs on every commit via .husky/post-commit
+                    // (no "agent awaiting dispatch" gating). Status reflects
+                    // the most-recent file-system scan + pending REC inventory.
                     if (status === 'green') { who = 'none'; visibleAction = ''; }
-                    else if (status === 'yellow' || status === 'red') { who = 'founder'; visibleAction = '<strong>FOUNDER</strong> review pending recommendations'; }
-                    else { who = 'agent'; visibleAction = '<strong>agent</strong> Terminal 6 / AMD-024 not yet dispatched'; }
+                    else if (status === 'yellow' || status === 'red') { who = 'founder'; visibleAction = '<strong>FOUNDER</strong> review architectural findings'; }
+                    else { who = 'cron'; visibleAction = '<strong>action</strong> scan runs on next commit'; }
                 }
                 var actionEl = document.querySelector('[data-fq-banner-action="' + name + '"]');
                 if (actionEl) {
@@ -1528,8 +1538,14 @@
                 var badgeEl = document.querySelector('[data-fq-banner-badge="' + name + '"]');
                 if (badgeEl) {
                     badgeEl.setAttribute('data-who', who);
+                    // Founder mandate 2026-05-19: "agents should never be
+                    // awaiting dispatch they should just perform." The
+                    // 'agent' badge code-path is preserved for forward
+                    // compatibility (e.g. a future task-queue surface)
+                    // but it now reads as actionable ("agent · processing")
+                    // not as a dispatch-pending wait state.
                     var badgeText = (who === 'founder') ? 'FOUNDER · decision needed'
-                                  : (who === 'agent')   ? 'agent · awaiting dispatch'
+                                  : (who === 'agent')   ? 'agent · processing'
                                   : (who === 'cron')    ? 'cron · auto-resolves'
                                   : 'ok · healthy';
                     badgeEl.textContent = badgeText;
@@ -1643,22 +1659,22 @@
                                 open_label: 'Open architecture-review.json',
                                 open_href: '../../.claude/state/aggregates/architecture-review.json',
                                 action_label: 'Suggested action',
-                                action_cmd: null,
-                                action_detail: 'INTENTIONAL EMPTY STATE — Architecture / AI Engineer agent (Terminal 6, AMD-024) has not yet dispatched. No Founder action required.'
+                                action_cmd: 'python scripts/aggregate-architecture-review.py',
+                                action_detail: 'Autonomous scan has not run yet. Trigger manually or wait for next commit — .husky/post-commit invokes the aggregator automatically.'
                             },
                             'yellow': {
                                 open_label: 'Open architecture-review.json',
                                 open_href: '../../.claude/state/aggregates/architecture-review.json',
                                 action_label: 'Suggested action',
                                 action_cmd: 'ls .claude/state/architecture-review/recommendations/pending/',
-                                action_detail: 'Pending architecture recommendations require Founder review.'
+                                action_detail: 'Architectural findings surfaced (file-size, function-count, or pending recommendations). Review the details panel + recommendations directory.'
                             },
                             'red': {
                                 open_label: 'Open architecture-review.json',
                                 open_href: '../../.claude/state/aggregates/architecture-review.json',
                                 action_label: 'Suggested action',
                                 action_cmd: 'ls .claude/state/architecture-review/recommendations/pending/',
-                                action_detail: 'Critical architecture finding flagged; review pending recommendations.'
+                                action_detail: 'Critical architecture finding flagged or >5 concerns surfaced. Review pending recommendations.'
                             }
                         }
                     };

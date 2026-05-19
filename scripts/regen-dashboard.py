@@ -1366,7 +1366,7 @@ def cron_install_status():
             # No telemetry events yet. Distinguish missing vs newly-installed.
             if is_installed:
                 status = "installed-but-unfired"
-                label = f"installed · State={os_task_state} · awaiting first fire (cadence {c['cadence_minutes']}min)"
+                label = f"installed · State={os_task_state} · auto-fires on next cadence (every {c['cadence_minutes']}min)"
             elif not os_state:
                 # OS query returned nothing (probably non-Windows or PowerShell unavailable).
                 # Fall back to telemetry-only inference: surface as missing-or-silent

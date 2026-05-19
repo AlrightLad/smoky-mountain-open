@@ -130,8 +130,8 @@
         </section>
 
         <section class="pb-section">
-            <h2 class="pb-section-title">Approved &mdash; awaiting apply <span class="pb-kpi-label" id="count-approved-inline">&mdash;</span></h2>
-            <p class="pb-section-subtitle">Between Founder click and watcher catch (5-min cron cadence). Empty under normal flow.</p>
+            <h2 class="pb-section-title">Approved &mdash; cron applies <span class="pb-kpi-label" id="count-approved-inline">&mdash;</span></h2>
+            <p class="pb-section-subtitle">Between Founder click and watcher cron catch (5-min cadence). Empty under normal flow.</p>
             <div id="approved-list"></div>
         </section>
 
@@ -240,7 +240,7 @@
                     var msg;
                     switch (bucketName) {
                         case 'pending':  msg = 'No pending amendments &mdash; orchestration team has authored none. See <code>.claude/state/amendments/pending/</code>.'; break;
-                        case 'approved': msg = 'No approved amendments awaiting apply &mdash; legitimate between Founder approval and the 5-min watcher cron. See <code>.claude/state/amendments/approved/</code>.'; break;
+                        case 'approved': msg = 'No approved amendments in the cron pickup queue &mdash; legitimate between Founder approval and the 5-min watcher cron. See <code>.claude/state/amendments/approved/</code>.'; break;
                         case 'deferred': msg = 'No deferred amendments &mdash; archive empty. See <code>.claude/state/amendments/deferred/</code>.'; break;
                         case 'applied':  msg = 'No applied amendments yet &mdash; archive empty. See <code>.claude/state/amendments/applied/</code>.'; break;
                         case 'rejected': msg = 'No rejected amendments &mdash; archive empty. See <code>.claude/state/amendments/rejected/</code>.'; break;

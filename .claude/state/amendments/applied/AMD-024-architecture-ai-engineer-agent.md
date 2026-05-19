@@ -18,8 +18,8 @@ authored_at: 2026-05-14T23:25:00Z
 bubble_of_record: null
 estimate_tokens_to_apply: 5000
 rollback_strategy: Stop the architecture agent's agent-view session. Existing .claude/state/architecture-review/ output remains as audit trail; can be deleted if substrate weight outweighs value. Replications case studies stay even on rollback (they're project knowledge artifacts, not agent state).
-status: pending
-operating_status: ACTIVE — Architecture/AI Engineer Agent role defined; boot prompt added to migration handoff; substrate directory + case studies seeded. Awaiting Founder ratification + first agent-view dispatch.
+status: applied
+operating_status: ACTIVE — Architecture / AI Engineer agent role defined; autonomous-v1 scan operational (scripts/aggregate-architecture-review.py runs on every post-commit hook); Founder mandate 2026-05-19 removed "AGENT · AWAITING DISPATCH" wording in favor of cron-driven autonomous scan.
 ---
 
 # Architecture / AI Engineer Agent + free-replication-first principle

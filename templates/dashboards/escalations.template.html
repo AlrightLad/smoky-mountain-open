@@ -149,8 +149,8 @@
         </section>
 
         <section class="pb-section">
-            <h2 class="pb-section-title">Approved &mdash; awaiting team apply <span class="pb-kpi-label" id="count-approved-inline">&mdash;</span></h2>
-            <p class="pb-section-subtitle">Between Founder approval and team picking up the decision on next loop.</p>
+            <h2 class="pb-section-title">Approved &mdash; team applies on next loop <span class="pb-kpi-label" id="count-approved-inline">&mdash;</span></h2>
+            <p class="pb-section-subtitle">Between Founder approval and team picking up the decision on next agent loop.</p>
             <div id="approved-list"></div>
         </section>
 
@@ -353,7 +353,7 @@
                     var emptyMsg;
                     switch (bucket) {
                         case 'pending':  emptyMsg = 'No pending escalations &mdash; team has authored none. See <code>.claude/state/escalations/pending/</code>.'; break;
-                        case 'approved': emptyMsg = 'No approved escalations awaiting team apply &mdash; legitimate between Founder approval and the team picking up the decision on next agent loop. See <code>.claude/state/escalations/approved/</code>.'; break;
+                        case 'approved': emptyMsg = 'No approved escalations in the team pickup queue &mdash; legitimate between Founder approval and the team picking up the decision on next agent loop. See <code>.claude/state/escalations/approved/</code>.'; break;
                         case 'applied':  emptyMsg = 'No applied escalations yet &mdash; archive empty. See <code>.claude/state/escalations/applied/</code>.'; break;
                         case 'deferred': emptyMsg = 'No deferred escalations &mdash; archive empty. See <code>.claude/state/escalations/deferred/</code>.'; break;
                         case 'rejected': emptyMsg = 'No rejected escalations &mdash; archive empty. See <code>.claude/state/escalations/rejected/</code>.'; break;
