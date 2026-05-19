@@ -59,6 +59,35 @@ The following surfaces render values that have NOT YET been individually P9-trac
 | main-flows.html | flow graph + 9-flow narrative | PENDING (full Phase M5/M6 redesign) | Phase M |
 | proposals.html | PROP-002..004 shipped + PROP-005..013 deferred | PENDING | Phase B |
 
+## P10 retrofit confirmations (AMD-026 Phase 1) — 2026-05-19
+
+Per AMD-026: every visible state must answer WHAT / WHERE / WHAT-ACTION. P10 is
+an actionability layer on top of P9 (data truthfulness). The values are already
+TRUTHFUL post-Phase-B; this layer makes them ACTIONABLE.
+
+| Surface | Element | P10 retrofit | Verified by |
+|---|---|---|---|
+| dashboard.html | Round-Trip card | WHERE: `.claude/state/heartbeats/regen-all-last-pass.json` + ACTION: `bash scripts/regen-all.sh` for non-PASS states | p10-retrofit-test-expanded.png (shows STALE rendering) |
+| dashboard.html | Test health banner detail | WHAT-ACTION block per status (unknown/yellow/red) with `--> Open test-health.json` link + suggested command | p10-retrofit-test-expanded.png |
+| dashboard.html | Security health banner detail | WHAT-ACTION block per status with AgentShield log link + remediation command | p10-retrofit-security-expanded.png |
+| dashboard.html | Approvals pipeline banner detail | WHAT-ACTION block per status with `ls proposals/inbox/` / watcher log tail | p10-retrofit-approvals-expanded.png |
+| dashboard.html | Architecture review banner detail | WHAT-ACTION block; **architecture/unknown = intentional empty state** (no command, per P10 legitimate-empty classification) | p10-retrofit-architecture-expanded.png |
+| token-usage.html | Real stat cell | Sub-label classifies: `telemetry events` when >0, `no telemetry events · scripts/aggregate-token-usage.py` when 0 | token-usage-desktop.png |
+| token-usage.html | Estimated stat cell | Sub-label classifies: `cron session heuristic` when >0, `no cron sessions · scripts/aggregate-token-usage.py` when 0 | token-usage-desktop.png |
+| token-usage.html | Manual stat cell | Sub-label classifies: `Founder claude.ai billing paste` when >0, `no manual paste · run scripts/refresh-quota-manual.ps1 if needed` when 0 | token-usage-desktop.png |
+| token-usage.html | Org-monthly KPI | Sub-label classifies legitimate-empty (no org cap configured) vs awaiting-data-ingest with WHAT-ACTION command | token-usage-desktop.png |
+| token-usage.html | By cron source subtitle | Adds "rows prefixed with `!`" diagnostic line with WHERE pointer (`scripts/cron/<name>.ps1`) + aggregator | token-usage-desktop.png |
+
+**P10 retrofit Phase 1 status:** 11 of 65 catalog violations closed across 2
+surfaces (dashboard.html + token-usage.html). 54 remaining violations across 7
+surfaces are Phase 2/3 backlog. Full BEFORE/AFTER per fix at
+`.claude/state/dashboard-audit-2026-05-18/P10-RETROFIT-LOG.md`.
+
+**Founder Verification Packet gate (per AMD-026):** Phase 1 retrofit closes the
+high-severity dashboard.html + token-usage.html block on packet re-emission.
+The remaining Phase 2/3 work is medium-severity polish — does NOT block packet
+unless Founder LOCKs otherwise.
+
 ## Per-aggregator producer/consumer parity (P9.3)
 
 | Aggregate JSON | Producer | Consumer | Parity status |

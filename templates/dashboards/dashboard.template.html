@@ -870,12 +870,44 @@
             // reports when regen ran but a downstream gate (e.g. round-trip
             // workflow staleness) failed. Surface honestly rather than masking
             // as PASS or "unknown".
-            var lrSub = (lrStatus === 'PASS') ? ('regen-all heartbeat · ' + (lrAge != null ? lrAge + 'min ago' : 'fresh'))
-                      : (lrStatus === 'STALE') ? ('STALE · last pass ' + (lrAge != null ? lrAge + 'min' : 'unknown') + ' ago')
-                      : (lrStatus === 'GATE-FAIL') ? ('GATE-FAIL · regen ran ' + (lrAge != null ? lrAge + 'min ago' : '?') + ' but a gate failed')
+            // P10 retrofit 2026-05-19 (AMD-026 Phase 1): non-PASS states now
+            // surface WHAT-ACTION — concrete next-step + clickable destination
+            // (heartbeat file + cron logs dir + suggested command). Founder no
+            // longer parses subtitle to figure out what to do.
+            var lrSub = (lrStatus === 'PASS') ? ('regen-all heartbeat &middot; ' + (lrAge != null ? lrAge + 'min ago' : 'fresh'))
+                      : (lrStatus === 'STALE') ? ('STALE &middot; last pass ' + (lrAge != null ? lrAge + 'min' : 'unknown') + ' ago')
+                      : (lrStatus === 'GATE-FAIL') ? ('GATE-FAIL &middot; regen ran ' + (lrAge != null ? lrAge + 'min ago' : '?') + ' but a gate failed')
                       : (lrStatus === 'UNKNOWN' || lrStatus === 'NEVER') ? 'no heartbeat recorded yet'
                       : lrStatus.toLowerCase();
-            setText('[data-fq="round-trip-status"]', lrSub);
+            // Use innerHTML for non-PASS states so we can append clickable
+            // destination + action affordances per P10. PASS stays plain text.
+            var rtSubEl = document.querySelector('[data-fq="round-trip-status"]');
+            if (rtSubEl) {
+                if (lrStatus === 'PASS') {
+                    rtSubEl.textContent = lrSub.replace('&middot;', '·');
+                } else if (lrStatus === 'GATE-FAIL') {
+                    rtSubEl.innerHTML = lrSub
+                        + '<br><span style="font-size: var(--text-2xs); color: var(--text-secondary);">'
+                        + 'WHERE: <a href="../../scripts/cron/logs/" style="color: var(--accent-brass);">scripts/cron/logs/</a> &middot; '
+                        + 'heartbeat: <code style="font-size: 0.7rem;">.claude/state/heartbeats/regen-all-last-pass.json</code><br>'
+                        + 'ACTION: <code style="font-size: 0.7rem; color: var(--accent-brass);">bash scripts/regen-all.sh</code> to re-run + clear gate failure'
+                        + '</span>';
+                } else if (lrStatus === 'STALE') {
+                    rtSubEl.innerHTML = lrSub
+                        + '<br><span style="font-size: var(--text-2xs); color: var(--text-secondary);">'
+                        + 'WHERE: <code style="font-size: 0.7rem;">.claude/state/heartbeats/regen-all-last-pass.json</code><br>'
+                        + 'ACTION: <code style="font-size: 0.7rem; color: var(--accent-brass);">bash scripts/regen-all.sh</code> to refresh heartbeat'
+                        + '</span>';
+                } else if (lrStatus === 'UNKNOWN' || lrStatus === 'NEVER') {
+                    rtSubEl.innerHTML = lrSub
+                        + '<br><span style="font-size: var(--text-2xs); color: var(--text-secondary);">'
+                        + 'WHERE: <code style="font-size: 0.7rem;">.claude/state/heartbeats/</code> (file absent or unparseable)<br>'
+                        + 'ACTION: <code style="font-size: 0.7rem; color: var(--accent-brass);">bash scripts/regen-all.sh</code> once to seed heartbeat'
+                        + '</span>';
+                } else {
+                    rtSubEl.textContent = lrSub;
+                }
+            }
             var rtCard = document.querySelector('[data-fq-health="round-trip"]');
             if (rtCard) {
                 var rtColor = (lrStatus === 'PASS') ? 'var(--pb-success)'
@@ -1037,7 +1069,111 @@
                     'approvals':    hh.approvals_pipeline  || {},
                     'architecture': hh.architecture_review || {}
                 };
-                function detailHtml(info) {
+                // P10 retrofit 2026-05-19 (AMD-026 Phase 1): each banner detail
+                // panel must surface WHAT-ACTION rows — clickable source path
+                // link + a concrete next-step command for the non-green status.
+                // Per-banner action recipe lookup keyed on banner name + status.
+                // Returns {open_label, open_href, action_label, action_cmd} or null.
+                function actionRecipe(name, status) {
+                    var recipes = {
+                        'test': {
+                            'yellow': {
+                                open_label: 'Open test-health.json',
+                                open_href: '../../.claude/state/aggregates/test-health.json',
+                                action_label: 'Suggested action',
+                                action_cmd: 'python tests/round-trip-test.py',
+                                action_detail: 'Review test output; close user-context-gate or B.43 known-failure entries; or re-run regen-all.sh to refresh.'
+                            },
+                            'red': {
+                                open_label: 'Open test-health.json',
+                                open_href: '../../.claude/state/aggregates/test-health.json',
+                                action_label: 'Suggested action',
+                                action_cmd: 'python tests/round-trip-test.py 2>&1 | tail -40',
+                                action_detail: 'Inspect failing tests; check regressions list above; consider rollback or hotfix.'
+                            },
+                            'unknown': {
+                                open_label: 'Open test-health.json',
+                                open_href: '../../.claude/state/aggregates/test-health.json',
+                                action_label: 'Suggested action',
+                                action_cmd: 'bash scripts/regen-all.sh',
+                                action_detail: 'Aggregator status=unknown; regen-all.sh re-runs round-trip and refreshes test-health.json.'
+                            }
+                        },
+                        'security': {
+                            'yellow': {
+                                open_label: 'Open security-health.json',
+                                open_href: '../../.claude/state/aggregates/security-health.json',
+                                action_label: 'Suggested action',
+                                action_cmd: 'npx ecc-agentshield scan',
+                                action_detail: 'Vulnerable deps detected; run AgentShield + npm audit for upgrade path.'
+                            },
+                            'red': {
+                                open_label: 'Open security-health.json',
+                                open_href: '../../.claude/state/aggregates/security-health.json',
+                                action_label: 'Suggested action',
+                                action_cmd: 'cat .claude/state/dashboard-audit-2026-05-18/AGENTSHIELD-FALSE-POSITIVE-LOG.md',
+                                action_detail: 'Credential leak surface; review findings + classify as legitimate/false-positive in the log; rotate any real secret immediately.'
+                            },
+                            'unknown': {
+                                open_label: 'Open security-health.json',
+                                open_href: '../../.claude/state/aggregates/security-health.json',
+                                action_label: 'Suggested action',
+                                action_cmd: 'bash scripts/regen-all.sh',
+                                action_detail: 'No recent security scan; regen-all.sh re-runs credential scan + dep audit.'
+                            }
+                        },
+                        'approvals': {
+                            'yellow': {
+                                open_label: 'Open approvals-pipeline.json',
+                                open_href: '../../.claude/state/aggregates/approvals-pipeline.json',
+                                action_label: 'Suggested action',
+                                action_cmd: 'ls .claude/state/proposals/inbox/',
+                                action_detail: 'Watcher skipped because tree was dirty; commit pending work or pause the work to clear inbox.'
+                            },
+                            'red': {
+                                open_label: 'Open approvals-pipeline.json',
+                                open_href: '../../.claude/state/aggregates/approvals-pipeline.json',
+                                action_label: 'Suggested action',
+                                action_cmd: 'tail -50 scripts/cron/logs/$(ls -t scripts/cron/logs/*-downloads-watcher.log | head -1)',
+                                action_detail: 'Downloads-watcher hard-failed; inspect latest log + restart cron task if needed.'
+                            },
+                            'unknown': {
+                                open_label: 'Open approvals-pipeline.json',
+                                open_href: '../../.claude/state/aggregates/approvals-pipeline.json',
+                                action_label: 'Suggested action',
+                                action_cmd: 'bash scripts/regen-all.sh',
+                                action_detail: 'Aggregator absent; regen-all.sh re-derives from cron logs + proposals state.'
+                            }
+                        },
+                        'architecture': {
+                            'unknown': {
+                                open_label: 'Open architecture-review.json',
+                                open_href: '../../.claude/state/aggregates/architecture-review.json',
+                                action_label: 'Suggested action',
+                                action_cmd: null,
+                                action_detail: 'INTENTIONAL EMPTY STATE — Architecture / AI Engineer agent (Terminal 6, AMD-024) has not yet dispatched. No Founder action required.'
+                            },
+                            'yellow': {
+                                open_label: 'Open architecture-review.json',
+                                open_href: '../../.claude/state/aggregates/architecture-review.json',
+                                action_label: 'Suggested action',
+                                action_cmd: 'ls .claude/state/architecture-review/recommendations/pending/',
+                                action_detail: 'Pending architecture recommendations require Founder review.'
+                            },
+                            'red': {
+                                open_label: 'Open architecture-review.json',
+                                open_href: '../../.claude/state/aggregates/architecture-review.json',
+                                action_label: 'Suggested action',
+                                action_cmd: 'ls .claude/state/architecture-review/recommendations/pending/',
+                                action_detail: 'Critical architecture finding flagged; review pending recommendations.'
+                            }
+                        }
+                    };
+                    var bannerRecipes = recipes[name] || {};
+                    return bannerRecipes[status] || null;
+                }
+                function detailHtml(info, name) {
+                    info = info || {};
                     function row(k, v) {
                         if (v == null || v === '' || (Array.isArray(v) && !v.length)) return '';
                         var disp = Array.isArray(v) ? v.map(function (x) { return typeof x === 'object' ? JSON.stringify(x) : x; }).join('<br>') : (typeof v === 'object' ? '<pre style="margin:0;font-size:0.75rem;white-space:pre-wrap">' + JSON.stringify(v, null, 2) + '</pre>' : String(v));
@@ -1059,14 +1195,34 @@
                     if (info.vuln_deps != null) html += row('Vuln deps', info.vuln_deps);
                     if (info.findings && info.findings.length) html += row('Findings', info.findings);
                     if (info._meta) html += row('Meta', info._meta);
+
+                    // P10 retrofit (AMD-026 Phase 1): append WHAT-ACTION block for
+                    // non-green states with a clickable source link + suggested
+                    // remediation command. Founder can act without parsing JSON.
+                    var recipe = actionRecipe(name, (info.status || '').toLowerCase());
+                    if (recipe) {
+                        var actionBlock = '<div style="margin-top:var(--space-3);padding:var(--space-3);background:rgba(201,169,97,0.08);border-left:3px solid var(--accent-brass);border-radius:var(--radius-sm);font-size:0.8125rem;">'
+                          +  '<div style="color:var(--accent-brass);text-transform:uppercase;font-family:var(--font-mono);font-size:0.6875rem;letter-spacing:0.06em;font-weight:700;margin-bottom:var(--space-2);">WHAT-ACTION (P10)</div>'
+                          +  '<div style="margin-bottom:var(--space-2);"><a href="' + recipe.open_href + '" style="color:var(--accent-brass);text-decoration:underline;font-family:var(--font-mono);font-size:0.75rem;">&rarr; ' + recipe.open_label + '</a></div>';
+                        if (recipe.action_cmd) {
+                            actionBlock += '<div style="margin-bottom:var(--space-1);color:var(--text-tertiary);text-transform:uppercase;font-family:var(--font-mono);font-size:0.6875rem;letter-spacing:0.06em;">' + recipe.action_label + '</div>'
+                              +  '<pre style="margin:0 0 var(--space-2) 0;padding:var(--space-2);background:var(--pb-billiard-green-700,#1a2b25);color:var(--text-primary);border-radius:var(--radius-sm);font-size:0.75rem;overflow-x:auto;">' + recipe.action_cmd + '</pre>';
+                        }
+                        if (recipe.action_detail) {
+                            actionBlock += '<div style="color:var(--text-secondary);font-size:0.75rem;line-height:1.4;">' + recipe.action_detail + '</div>';
+                        }
+                        actionBlock += '</div>';
+                        html += actionBlock;
+                    }
                     return html || '<em style="color:var(--text-tertiary);">No additional detail available.</em>';
                 }
                 ['test', 'security', 'approvals', 'architecture'].forEach(function (k) {
                     var btn = document.querySelector('[data-fq-banner="' + k + '"]');
                     var panel = document.querySelector('[data-fq-banner-detail="' + k + '"]');
                     if (!btn || !panel) return;
-                    // Populate the panel HTML once
-                    panel.innerHTML = detailHtml(bannerData[k]);
+                    // Populate the panel HTML once (P10: pass banner name so
+                    // detailHtml can append the WHAT-ACTION block per recipe).
+                    panel.innerHTML = detailHtml(bannerData[k], k);
                     btn.addEventListener('click', function () {
                         var expanded = btn.getAttribute('aria-expanded') === 'true';
                         btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');

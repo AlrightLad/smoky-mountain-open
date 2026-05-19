@@ -171,14 +171,23 @@
                 <div class="tu-stat-cell is-real">
                     <span class="tu-stat-cell-label">Real</span>
                     <span class="tu-stat-cell-value" data-stat="all-time-real">&mdash;</span>
+                    <span class="tu-stat-cell-sub" data-stat-sub="all-time-real" style="display: block; font-size: var(--text-2xs); color: var(--pb-chalk-400); margin-top: var(--space-1);">telemetry events</span>
                 </div>
                 <div class="tu-stat-cell is-estimated">
                     <span class="tu-stat-cell-label">Estimated</span>
                     <span class="tu-stat-cell-value" data-stat="all-time-estimated">&mdash;</span>
+                    <span class="tu-stat-cell-sub" data-stat-sub="all-time-estimated" style="display: block; font-size: var(--text-2xs); color: var(--pb-chalk-400); margin-top: var(--space-1);">cron session heuristic</span>
                 </div>
+                <!-- P10 retrofit 2026-05-19 (AMD-026 Phase 1): the Manual cell
+                     is honestly 0 when Founder hasn't pasted from claude.ai
+                     billing. The "*" prefix per token-usage convention is
+                     reserved for manual entries. Sub-label classifies the
+                     empty-state as legitimate-empty (no paste yet) rather
+                     than leaving a bare "—" or "0" ambiguous. -->
                 <div class="tu-stat-cell is-manual">
                     <span class="tu-stat-cell-label">Manual</span>
                     <span class="tu-stat-cell-value" data-stat="all-time-manual">&mdash;</span>
+                    <span class="tu-stat-cell-sub" data-stat-sub="all-time-manual" style="display: block; font-size: var(--text-2xs); color: var(--pb-chalk-400); margin-top: var(--space-1);">Founder paste &mdash; legitimate empty if 0</span>
                 </div>
             </div>
             <div class="tu-refresh-row" style="margin-top: var(--space-4);">
@@ -248,7 +257,17 @@
 
     <section class="pb-section">
         <h2 class="pb-section-title">Tokens by cron source</h2>
-        <p class="pb-section-subtitle"><code>downloads-watcher</code> + <code>maintenance</code> should be at <strong>0</strong> &mdash; they do not invoke Claude. <code>overnight-triage</code> uses estimation.</p>
+        <!-- P10 retrofit 2026-05-19 (AMD-026 Phase 1): subtitle classifies the
+             0-token rows as legitimate empty (these crons don't invoke Claude)
+             and surfaces WHAT-ACTION ("investigate which cron is leaking") for
+             the !-prefixed warning rows. WHERE pointers to the source script
+             and aggregator make trust verification one click away. -->
+        <p class="pb-section-subtitle">
+            <code>downloads-watcher</code> + <code>maintenance</code> should be at <strong>0</strong> &mdash; they do not invoke Claude (<strong>legitimate empty</strong> per P10). <code>overnight-triage</code> uses estimation.
+            <br><span style="display: inline-block; margin-top: var(--space-1); font-size: var(--text-2xs); color: var(--pb-chalk-400);">
+                Rows prefixed with <code style="font-size: 0.7rem;">!</code> indicate the row is non-zero when it should be zero &mdash; ACTION: inspect <code style="font-size: 0.7rem;">scripts/cron/&lt;name&gt;.ps1</code> + <code style="font-size: 0.7rem;">scripts/aggregate-token-usage.py</code> attribution.
+            </span>
+        </p>
         <div class="pb-table-wrap">
             <table class="pb-table" id="tu-table-by-cron" data-bucket="by_cron">
                 <thead>
@@ -376,9 +395,32 @@
         var at = data.all_time || {};
         document.querySelector('[data-stat="all-time-real"]').textContent = fmtTokens(at.real);
         document.querySelector('[data-stat="all-time-estimated"]').textContent = fmtTokens(at.estimated);
-        document.querySelector('[data-stat="all-time-manual"]').textContent = fmtTokens(at.manual);
+        document.querySelector('[data-stat="all-time-manual"]').textContent = ((at.manual || 0) > 0) ? ('* ' + fmtTokens(at.manual)) : '* 0';
         document.querySelector('[data-stat="first-event"]').textContent = fmtDate(at.first_event_at);
         document.querySelector('[data-stat="generated-at"]').textContent = fmtAgo(data.generated_at);
+        // P10 retrofit 2026-05-19 (AMD-026 Phase 1): classify each stat-cell
+        // empty state with WHAT-ACTION copy + WHERE pointer. Bare "—" / "0"
+        // would leave the Founder unsure whether the source is empty
+        // (legitimate), broken, or in flight.
+        function subSet(sel, val) {
+            var el = document.querySelector(sel);
+            if (el) el.innerHTML = val;
+        }
+        if (!(at.real > 0)) {
+            subSet('[data-stat-sub="all-time-real"]', 'no telemetry events &middot; <code style="font-size: 0.7rem;">scripts/aggregate-token-usage.py</code>');
+        } else {
+            subSet('[data-stat-sub="all-time-real"]', 'telemetry events');
+        }
+        if (!(at.estimated > 0)) {
+            subSet('[data-stat-sub="all-time-estimated"]', 'no cron sessions &middot; <code style="font-size: 0.7rem;">scripts/aggregate-token-usage.py</code>');
+        } else {
+            subSet('[data-stat-sub="all-time-estimated"]', 'cron session heuristic');
+        }
+        if (!(at.manual > 0)) {
+            subSet('[data-stat-sub="all-time-manual"]', 'no manual paste &middot; run <code style="font-size: 0.7rem;">scripts/refresh-quota-manual.ps1</code> if needed');
+        } else {
+            subSet('[data-stat-sub="all-time-manual"]', 'Founder claude.ai billing paste');
+        }
         renderDonut(at.real || 0, at.estimated || 0, at.manual || 0);
         renderQuotaMeter(data);
     }
@@ -474,6 +516,14 @@
             set('[data-kpi-sub="quota-weekly"]', 'no usage recorded yet · sidecar awaits Founder paste');
         }
 
+        // P10 retrofit 2026-05-19 (AMD-026 Phase 1): org-monthly displays
+        // "—"/"0" by default because no org-monthly cap is configured. Classify
+        // the empty-state honestly: legitimate (no cap configured) vs awaiting
+        // data ingest. Founder shouldn't have to ask whether org-cap exists.
+        function subSetHtml(sel, val) {
+            var el = document.querySelector(sel);
+            if (el) el.innerHTML = val;
+        }
         if (typeof qs.org_monthly_pct === 'number') {
             set('[data-kpi="quota-org-pct"]', qs.org_monthly_pct.toFixed(0) + '%');
             if (typeof qs.org_monthly_tokens === 'number' && typeof qs.org_monthly_cap === 'number') {
@@ -482,10 +532,12 @@
         } else if (allTimeTotal > 0) {
             // Honest-fallback for org monthly: show all-time with explicit label
             set('[data-kpi="quota-org-pct"]', fmtTokens(allTimeTotal));
-            set('[data-kpi-sub="quota-org"]', 'estimated all-time · no org-monthly cap configured');
+            subSetHtml('[data-kpi-sub="quota-org"]', 'estimated all-time &middot; no org-monthly cap configured &middot; legitimate empty (P10)');
         } else {
             set('[data-kpi="quota-org-pct"]', '0');
-            set('[data-kpi-sub="quota-org"]', qs.state === 'fresh' ? 'org cap unset' : 'no usage recorded yet');
+            subSetHtml('[data-kpi-sub="quota-org"]', qs.state === 'fresh'
+                ? 'no org cap configured &middot; legitimate empty per honest-fallback'
+                : 'no usage recorded &middot; run <code style="font-size: 0.7rem;">scripts/aggregate-token-usage.py</code>');
         }
     }
 
