@@ -1,54 +1,54 @@
 {
   "page": "dashboard.html",
-  "captured_at": "2026-05-15T23:30:42.319Z",
+  "captured_at": "2026-05-19T00:56:39.029Z",
   "viewport": {
     "width": 1920,
     "height": 1080
   },
-  "total_interactives": 33,
+  "total_interactives": 36,
   "by_type": {
-    "button": 4,
+    "button": 5,
     "link": 17,
-    "cursor-pointer": 12
+    "cursor-pointer": 14
   },
   "elements": [
     {
       "type": "button",
       "tag": "button",
       "selector_hint": "button.pb-kpi-card.pb-health-banner",
-      "text": "• TEST HEALTH\nregen-all completed but round-trip-test gate failed (workflow stal",
+      "text": "• TEST HEALTH\nno round-trip heartbeat available\nunknown · 0min ago",
       "class": "pb-kpi-card pb-health-banner",
       "location": {
         "x": 338,
         "y": 504,
-        "w": 197,
-        "h": 383
+        "w": 302,
+        "h": 155
       }
     },
     {
       "type": "button",
       "tag": "button",
       "selector_hint": "button.pb-kpi-card.pb-health-banner",
-      "text": "• SECURITY HEALTH\n2 HIGH/CRITICAL-severity dependency vulnerabilities. No active",
+      "text": "• SECURITY HEALTH\n5 potential credential leak(s) detected in tracked files\nred ·",
       "class": "pb-kpi-card pb-health-banner",
       "location": {
-        "x": 547,
+        "x": 652,
         "y": 504,
-        "w": 197,
-        "h": 383
+        "w": 302,
+        "h": 155
       }
     },
     {
       "type": "button",
       "tag": "button",
       "selector_hint": "button.pb-kpi-card.pb-health-banner",
-      "text": "• APPROVALS PIPELINE\n10 consecutive SKIPs · 31 in inbox\nred · 4min ago",
+      "text": "• APPROVALS PIPELINE\nwatcher cycling · last 2 runs skipped on dirty tree · 33 in",
       "class": "pb-kpi-card pb-health-banner",
       "location": {
-        "x": 757,
+        "x": 966,
         "y": 504,
-        "w": 197,
-        "h": 383
+        "w": 302,
+        "h": 155
       }
     },
     {
@@ -58,10 +58,23 @@
       "text": "• ARCHITECTURE REVIEW\n0 pending recommendations\nunknown",
       "class": "pb-kpi-card pb-health-banner",
       "location": {
-        "x": 966,
+        "x": 1280,
         "y": 504,
-        "w": 197,
-        "h": 383
+        "w": 302,
+        "h": 155
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "#pb-live-indicator",
+      "text": "●live · just now",
+      "id": "pb-live-indicator",
+      "location": {
+        "x": 1772,
+        "y": 1037,
+        "w": 132,
+        "h": 27
       }
     },
     {
@@ -260,7 +273,7 @@
       "href": "index.html",
       "location": {
         "x": 1013,
-        "y": 3290,
+        "y": 3235,
         "w": 73,
         "h": 15
       }
@@ -273,7 +286,7 @@
       "href": "proposals.html",
       "location": {
         "x": 1105,
-        "y": 3290,
+        "y": 3235,
         "w": 59,
         "h": 15
       }
@@ -286,7 +299,7 @@
       "href": "https://github.com/AlrightLad/smoky-mountain-open",
       "location": {
         "x": 1184,
-        "y": 3290,
+        "y": 3235,
         "w": 26,
         "h": 15
       }
@@ -445,6 +458,30 @@
         "y": 430,
         "w": 266,
         "h": 17
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "●",
+      "location": {
+        "x": 1783,
+        "y": 1044,
+        "w": 7,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "live · just now",
+      "location": {
+        "x": 1796,
+        "y": 1044,
+        "w": 97,
+        "h": 13
       }
     }
   ]

@@ -1,15 +1,21 @@
 {
   "page": "token-usage.html",
-  "captured_at": "2026-05-15T23:31:32.656Z",
+  "captured_at": "2026-05-19T00:57:09.926Z",
   "enumeration_source": ".claude\\state\\app-audit-2026-05-14\\token-usage-interactives.json",
   "summary": {
-    "total_attempted": 28,
-    "clicked": 16,
+    "total_attempted": 34,
+    "clicked": 22,
     "navigated_skipped": 12,
     "errored": 0,
-    "js_errors_emitted": 0
+    "js_errors_emitted": 1
   },
-  "js_errors": [],
+  "js_errors": [
+    {
+      "at": "2026-05-19T00:57:09.179Z",
+      "source": "console",
+      "text": "Fetch API cannot load file:///C:/Users/Zach/smoky-mountain-open/docs/reports/token-usage.html?_live=1779152229178. URL scheme \"file\" is not supported."
+    }
+  ],
   "results": [
     {
       "selector_hint": "#tu-refresh-btn",
@@ -17,8 +23,44 @@
       "type": "button",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 28413,
-      "after_dom_size": 28409
+      "before_dom_size": 55893,
+      "after_dom_size": 55889
+    },
+    {
+      "selector_hint": "button.tu-pie-toggle-btn.is-active",
+      "text": "Agent role",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 55889,
+      "after_dom_size": 55889
+    },
+    {
+      "selector_hint": "button.tu-pie-toggle-btn",
+      "text": "Work category",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 55889,
+      "after_dom_size": 55889
+    },
+    {
+      "selector_hint": "button.tu-pie-toggle-btn",
+      "text": "Top sessions",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 55889,
+      "after_dom_size": 55889
+    },
+    {
+      "selector_hint": "#pb-live-indicator",
+      "text": "●live · just now",
+      "type": "button",
+      "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 55889,
+      "after_dom_size": 55893
     },
     {
       "selector_hint": "a.pb-page-brand",
@@ -122,8 +164,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 28409,
-      "after_dom_size": 28409
+      "before_dom_size": 55893,
+      "after_dom_size": 55893
     },
     {
       "selector_hint": "th.is-num.is-sortable",
@@ -131,8 +173,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 28409,
-      "after_dom_size": 28409
+      "before_dom_size": 55893,
+      "after_dom_size": 55893
     },
     {
       "selector_hint": "th.is-num.is-sortable",
@@ -140,8 +182,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 28409,
-      "after_dom_size": 28408
+      "before_dom_size": 55893,
+      "after_dom_size": 55892
     },
     {
       "selector_hint": "th.is-num.is-sortable",
@@ -149,8 +191,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 28408,
-      "after_dom_size": 28409
+      "before_dom_size": 55892,
+      "after_dom_size": 55893
     },
     {
       "selector_hint": "th.is-num.is-sortable",
@@ -158,8 +200,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 28409,
-      "after_dom_size": 28408
+      "before_dom_size": 55893,
+      "after_dom_size": 55892
     },
     {
       "selector_hint": "th.is-sticky-col.is-sortable",
@@ -167,8 +209,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 28408,
-      "after_dom_size": 28409
+      "before_dom_size": 55892,
+      "after_dom_size": 55893
     },
     {
       "selector_hint": "th.is-num.is-sortable",
@@ -176,8 +218,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 28409,
-      "after_dom_size": 28409
+      "before_dom_size": 55893,
+      "after_dom_size": 55893
     },
     {
       "selector_hint": "th.is-num.is-sortable",
@@ -185,8 +227,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 28409,
-      "after_dom_size": 28408
+      "before_dom_size": 55893,
+      "after_dom_size": 55892
     },
     {
       "selector_hint": "th.is-num.is-sortable",
@@ -194,8 +236,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 28408,
-      "after_dom_size": 28409
+      "before_dom_size": 55892,
+      "after_dom_size": 55893
     },
     {
       "selector_hint": "th.is-num.is-sortable",
@@ -203,8 +245,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 28409,
-      "after_dom_size": 28408
+      "before_dom_size": 55893,
+      "after_dom_size": 55892
     },
     {
       "selector_hint": "th.is-sticky-col.is-sortable",
@@ -212,8 +254,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 28408,
-      "after_dom_size": 28409
+      "before_dom_size": 55892,
+      "after_dom_size": 55893
     },
     {
       "selector_hint": "th.is-num.is-sortable",
@@ -221,8 +263,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 28409,
-      "after_dom_size": 28409
+      "before_dom_size": 55893,
+      "after_dom_size": 55893
     },
     {
       "selector_hint": "th.is-num.is-sortable",
@@ -230,8 +272,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 28409,
-      "after_dom_size": 28408
+      "before_dom_size": 55893,
+      "after_dom_size": 55892
     },
     {
       "selector_hint": "th.is-num.is-sortable",
@@ -239,8 +281,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 28408,
-      "after_dom_size": 28409
+      "before_dom_size": 55892,
+      "after_dom_size": 55893
     },
     {
       "selector_hint": "th.is-num.is-sortable",
@@ -248,8 +290,26 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 28409,
-      "after_dom_size": 28408
+      "before_dom_size": 55893,
+      "after_dom_size": 55892
+    },
+    {
+      "selector_hint": "span",
+      "text": "●",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 55892,
+      "after_dom_size": 55892
+    },
+    {
+      "selector_hint": "span",
+      "text": "live · just now",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 55892,
+      "after_dom_size": 55892
     }
   ]
 }

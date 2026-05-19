@@ -1,51 +1,66 @@
 {
   "page": "dashboard.html",
-  "captured_at": "2026-05-15T23:30:48.593Z",
+  "captured_at": "2026-05-19T00:56:51.850Z",
   "enumeration_source": ".claude\\state\\app-audit-2026-05-14\\dashboard-interactives.json",
   "summary": {
-    "total_attempted": 33,
-    "clicked": 16,
+    "total_attempted": 36,
+    "clicked": 19,
     "navigated_skipped": 17,
     "errored": 0,
-    "js_errors_emitted": 0
+    "js_errors_emitted": 1
   },
-  "js_errors": [],
+  "js_errors": [
+    {
+      "at": "2026-05-19T00:56:51.848Z",
+      "source": "console",
+      "text": "Fetch API cannot load file:///C:/Users/Zach/smoky-mountain-open/docs/reports/amendments.html?_live=1779152211848. URL scheme \"file\" is not supported."
+    }
+  ],
   "results": [
     {
       "selector_hint": "button.pb-kpi-card.pb-health-banner",
-      "text": "• TEST HEALTH\nregen-all completed but round-trip-test gate failed (workflow stal",
+      "text": "• TEST HEALTH\nno round-trip heartbeat available\nunknown · 0min ago",
       "type": "button",
       "outcome": "clicked",
-      "state_changed": false,
-      "before_dom_size": 97681,
-      "after_dom_size": 97681
+      "state_changed": true,
+      "before_dom_size": 115645,
+      "after_dom_size": 115634
     },
     {
       "selector_hint": "button.pb-kpi-card.pb-health-banner",
-      "text": "• SECURITY HEALTH\n2 HIGH/CRITICAL-severity dependency vulnerabilities. No active",
+      "text": "• SECURITY HEALTH\n5 potential credential leak(s) detected in tracked files\nred ·",
       "type": "button",
       "outcome": "clicked",
-      "state_changed": false,
-      "before_dom_size": 97681,
-      "after_dom_size": 97681
+      "state_changed": true,
+      "before_dom_size": 115634,
+      "after_dom_size": 115645
     },
     {
       "selector_hint": "button.pb-kpi-card.pb-health-banner",
-      "text": "• APPROVALS PIPELINE\n10 consecutive SKIPs · 31 in inbox\nred · 4min ago",
+      "text": "• APPROVALS PIPELINE\nwatcher cycling · last 2 runs skipped on dirty tree · 33 in",
       "type": "button",
       "outcome": "clicked",
-      "state_changed": false,
-      "before_dom_size": 97681,
-      "after_dom_size": 97681
+      "state_changed": true,
+      "before_dom_size": 115645,
+      "after_dom_size": 115634
     },
     {
       "selector_hint": "button.pb-kpi-card.pb-health-banner",
       "text": "• ARCHITECTURE REVIEW\n0 pending recommendations\nunknown",
       "type": "button",
       "outcome": "clicked",
+      "state_changed": true,
+      "before_dom_size": 115634,
+      "after_dom_size": 115645
+    },
+    {
+      "selector_hint": "#pb-live-indicator",
+      "text": "●live · just now",
+      "type": "button",
+      "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 97681,
-      "after_dom_size": 97681
+      "before_dom_size": 115645,
+      "after_dom_size": 115645
     },
     {
       "selector_hint": "a.pb-page-brand",
@@ -189,8 +204,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": true,
-      "before_dom_size": 97681,
-      "after_dom_size": 101530
+      "before_dom_size": 115645,
+      "after_dom_size": 102754
     },
     {
       "selector_hint": "span.pb-kpi-value",
@@ -198,8 +213,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 101530,
-      "after_dom_size": 101530
+      "before_dom_size": 102754,
+      "after_dom_size": 102754
     },
     {
       "selector_hint": "span.pb-kpi-sub",
@@ -207,8 +222,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 101530,
-      "after_dom_size": 101530
+      "before_dom_size": 102754,
+      "after_dom_size": 102754
     },
     {
       "selector_hint": "span.pb-kpi-label",
@@ -216,8 +231,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 101530,
-      "after_dom_size": 101530
+      "before_dom_size": 102754,
+      "after_dom_size": 102754
     },
     {
       "selector_hint": "span.pb-kpi-value",
@@ -225,8 +240,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 101530,
-      "after_dom_size": 101530
+      "before_dom_size": 102754,
+      "after_dom_size": 102754
     },
     {
       "selector_hint": "span.pb-kpi-sub",
@@ -234,8 +249,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 101530,
-      "after_dom_size": 101530
+      "before_dom_size": 102754,
+      "after_dom_size": 102754
     },
     {
       "selector_hint": "span.pb-kpi-label",
@@ -243,8 +258,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 101530,
-      "after_dom_size": 101530
+      "before_dom_size": 102754,
+      "after_dom_size": 102754
     },
     {
       "selector_hint": "span.pb-kpi-value",
@@ -252,8 +267,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 101530,
-      "after_dom_size": 101530
+      "before_dom_size": 102754,
+      "after_dom_size": 102754
     },
     {
       "selector_hint": "span.pb-kpi-sub",
@@ -261,8 +276,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 101530,
-      "after_dom_size": 101530
+      "before_dom_size": 102754,
+      "after_dom_size": 102754
     },
     {
       "selector_hint": "span.pb-kpi-label",
@@ -270,8 +285,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 101530,
-      "after_dom_size": 101530
+      "before_dom_size": 102754,
+      "after_dom_size": 102754
     },
     {
       "selector_hint": "span.pb-kpi-value",
@@ -279,8 +294,8 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 101530,
-      "after_dom_size": 101530
+      "before_dom_size": 102754,
+      "after_dom_size": 102754
     },
     {
       "selector_hint": "span.pb-kpi-sub",
@@ -288,8 +303,26 @@
       "type": "cursor-pointer",
       "outcome": "clicked",
       "state_changed": false,
-      "before_dom_size": 101530,
-      "after_dom_size": 101530
+      "before_dom_size": 102754,
+      "after_dom_size": 102754
+    },
+    {
+      "selector_hint": "span",
+      "text": "●",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 102754,
+      "after_dom_size": 102754
+    },
+    {
+      "selector_hint": "span",
+      "text": "live · just now",
+      "type": "cursor-pointer",
+      "outcome": "clicked",
+      "state_changed": false,
+      "before_dom_size": 102754,
+      "after_dom_size": 102754
     }
   ]
 }

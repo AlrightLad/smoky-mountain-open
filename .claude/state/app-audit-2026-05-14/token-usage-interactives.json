@@ -1,15 +1,15 @@
 {
   "page": "token-usage.html",
-  "captured_at": "2026-05-15T23:31:26.417Z",
+  "captured_at": "2026-05-19T00:57:02.385Z",
   "viewport": {
     "width": 1920,
     "height": 1080
   },
-  "total_interactives": 28,
+  "total_interactives": 34,
   "by_type": {
-    "button": 1,
+    "button": 5,
     "link": 12,
-    "cursor-pointer": 15
+    "cursor-pointer": 17
   },
   "elements": [
     {
@@ -24,6 +24,61 @@
         "y": 512,
         "w": 99,
         "h": 32
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.tu-pie-toggle-btn.is-active",
+      "text": "Agent role",
+      "class": "tu-pie-toggle-btn is-active",
+      "role": "tab",
+      "location": {
+        "x": 1256,
+        "y": 669,
+        "w": 95,
+        "h": 30
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.tu-pie-toggle-btn",
+      "text": "Work category",
+      "class": "tu-pie-toggle-btn",
+      "role": "tab",
+      "location": {
+        "x": 1353,
+        "y": 669,
+        "w": 116,
+        "h": 30
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "button.tu-pie-toggle-btn",
+      "text": "Top sessions",
+      "class": "tu-pie-toggle-btn",
+      "role": "tab",
+      "location": {
+        "x": 1471,
+        "y": 669,
+        "w": 109,
+        "h": 30
+      }
+    },
+    {
+      "type": "button",
+      "tag": "button",
+      "selector_hint": "#pb-live-indicator",
+      "text": "●live · just now",
+      "id": "pb-live-indicator",
+      "location": {
+        "x": 1772,
+        "y": 1037,
+        "w": 132,
+        "h": 27
       }
     },
     {
@@ -166,7 +221,7 @@
       "href": "index.html",
       "location": {
         "x": 1118,
-        "y": 1618,
+        "y": 2106,
         "w": 73,
         "h": 15
       }
@@ -179,7 +234,7 @@
       "href": "dashboard.html",
       "location": {
         "x": 1211,
-        "y": 1618,
+        "y": 2106,
         "w": 59,
         "h": 15
       }
@@ -192,8 +247,8 @@
       "class": "is-sticky-col is-sortable",
       "location": {
         "x": 321,
-        "y": 705,
-        "w": 269,
+        "y": 1157,
+        "w": 263,
         "h": 31
       }
     },
@@ -204,9 +259,9 @@
       "text": "REAL",
       "class": "is-num is-sortable",
       "location": {
-        "x": 590,
-        "y": 705,
-        "w": 169,
+        "x": 584,
+        "y": 1157,
+        "w": 193,
         "h": 31
       }
     },
@@ -217,9 +272,9 @@
       "text": "ESTIMATED",
       "class": "is-num is-sortable",
       "location": {
-        "x": 759,
-        "y": 705,
-        "w": 257,
+        "x": 777,
+        "y": 1157,
+        "w": 251,
         "h": 31
       }
     },
@@ -230,9 +285,9 @@
       "text": "MANUAL",
       "class": "is-num is-sortable",
       "location": {
-        "x": 1016,
-        "y": 705,
-        "w": 204,
+        "x": 1028,
+        "y": 1157,
+        "w": 200,
         "h": 31
       }
     },
@@ -243,9 +298,9 @@
       "text": "TOTAL (REAL+EST)",
       "class": "is-num is-sortable is-sorted-desc",
       "location": {
-        "x": 1220,
-        "y": 705,
-        "w": 379,
+        "x": 1228,
+        "y": 1157,
+        "w": 371,
         "h": 31
       }
     },
@@ -257,8 +312,8 @@
       "class": "is-sticky-col is-sortable",
       "location": {
         "x": 321,
-        "y": 935,
-        "w": 346,
+        "y": 1423,
+        "w": 340,
         "h": 31
       }
     },
@@ -269,9 +324,9 @@
       "text": "REAL",
       "class": "is-num is-sortable",
       "location": {
-        "x": 667,
-        "y": 935,
-        "w": 156,
+        "x": 661,
+        "y": 1423,
+        "w": 179,
         "h": 31
       }
     },
@@ -282,9 +337,9 @@
       "text": "ESTIMATED",
       "class": "is-num is-sortable",
       "location": {
-        "x": 824,
-        "y": 935,
-        "w": 237,
+        "x": 839,
+        "y": 1423,
+        "w": 232,
         "h": 31
       }
     },
@@ -295,9 +350,9 @@
       "text": "MANUAL",
       "class": "is-num is-sortable",
       "location": {
-        "x": 1061,
-        "y": 935,
-        "w": 189,
+        "x": 1071,
+        "y": 1423,
+        "w": 185,
         "h": 31
       }
     },
@@ -308,9 +363,9 @@
       "text": "TOTAL (REAL+EST)",
       "class": "is-num is-sortable is-sorted-desc",
       "location": {
-        "x": 1249,
-        "y": 935,
-        "w": 350,
+        "x": 1256,
+        "y": 1423,
+        "w": 343,
         "h": 31
       }
     },
@@ -322,8 +377,8 @@
       "class": "is-sticky-col is-sortable",
       "location": {
         "x": 321,
-        "y": 1273,
-        "w": 513,
+        "y": 1761,
+        "w": 505,
         "h": 31
       }
     },
@@ -334,9 +389,9 @@
       "text": "REAL",
       "class": "is-num is-sortable",
       "location": {
-        "x": 834,
-        "y": 1273,
-        "w": 128,
+        "x": 826,
+        "y": 1761,
+        "w": 147,
         "h": 31
       }
     },
@@ -347,9 +402,9 @@
       "text": "ESTIMATED",
       "class": "is-num is-sortable",
       "location": {
-        "x": 963,
-        "y": 1273,
-        "w": 194,
+        "x": 973,
+        "y": 1761,
+        "w": 191,
         "h": 31
       }
     },
@@ -360,9 +415,9 @@
       "text": "MANUAL",
       "class": "is-num is-sortable",
       "location": {
-        "x": 1157,
-        "y": 1273,
-        "w": 155,
+        "x": 1164,
+        "y": 1761,
+        "w": 152,
         "h": 31
       }
     },
@@ -373,10 +428,34 @@
       "text": "TOTAL (REAL+EST)",
       "class": "is-num is-sortable is-sorted-desc",
       "location": {
-        "x": 1312,
-        "y": 1273,
-        "w": 287,
+        "x": 1317,
+        "y": 1761,
+        "w": 282,
         "h": 31
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "●",
+      "location": {
+        "x": 1783,
+        "y": 1044,
+        "w": 7,
+        "h": 13
+      }
+    },
+    {
+      "type": "cursor-pointer",
+      "tag": "span",
+      "selector_hint": "span",
+      "text": "live · just now",
+      "location": {
+        "x": 1796,
+        "y": 1044,
+        "w": 97,
+        "h": 13
       }
     }
   ]
