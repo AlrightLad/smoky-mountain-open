@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-05-19T06:28:27.278Z",
+  "captured_at": "2026-05-19T06:30:17.625Z",
   "repo_root": "C:\\Users\\Zach\\smoky-mountain-open",
   "reports_dir": "C:\\Users\\Zach\\smoky-mountain-open\\docs\\reports",
   "browsers": [
@@ -43,14 +43,14 @@
       "page": "dashboard.html",
       "viewport": "desktop-wide",
       "path": "scripts/visual-audit/dashboard/dashboard-desktop-wide.png",
-      "size_bytes": 286751
+      "size_bytes": 287248
     },
     {
       "browser": "chromium",
       "page": "activity.html",
       "viewport": "desktop-wide",
       "path": "scripts/visual-audit/dashboard/activity-desktop-wide.png",
-      "size_bytes": 6954223
+      "size_bytes": 6857974
     },
     {
       "browser": "chromium",
@@ -64,14 +64,14 @@
       "page": "discussion-bubbles.html",
       "viewport": "desktop-wide",
       "path": "scripts/visual-audit/dashboard/discussion-bubbles-desktop-wide.png",
-      "size_bytes": 276505
+      "size_bytes": 276546
     },
     {
       "browser": "chromium",
       "page": "main-flows.html",
       "viewport": "desktop-wide",
       "path": "scripts/visual-audit/dashboard/main-flows-desktop-wide.png",
-      "size_bytes": 304541
+      "size_bytes": 300676
     },
     {
       "browser": "chromium",
@@ -85,28 +85,28 @@
       "page": "token-usage.html",
       "viewport": "desktop-wide",
       "path": "scripts/visual-audit/dashboard/token-usage-desktop-wide.png",
-      "size_bytes": 182795
+      "size_bytes": 182675
     },
     {
       "browser": "chromium",
       "page": "index.html",
       "viewport": "desktop-wide",
       "path": "scripts/visual-audit/dashboard/index-desktop-wide.png",
-      "size_bytes": 102258
+      "size_bytes": 102026
     },
     {
       "browser": "chromium",
       "page": "dashboard.html",
       "viewport": "desktop",
       "path": "scripts/visual-audit/dashboard/dashboard-desktop.png",
-      "size_bytes": 272440
+      "size_bytes": 272989
     },
     {
       "browser": "chromium",
       "page": "activity.html",
       "viewport": "desktop",
       "path": "scripts/visual-audit/dashboard/activity-desktop.png",
-      "size_bytes": 7918870
+      "size_bytes": 7828273
     },
     {
       "browser": "chromium",
@@ -120,14 +120,14 @@
       "page": "discussion-bubbles.html",
       "viewport": "desktop",
       "path": "scripts/visual-audit/dashboard/discussion-bubbles-desktop.png",
-      "size_bytes": 218516
+      "size_bytes": 218555
     },
     {
       "browser": "chromium",
       "page": "main-flows.html",
       "viewport": "desktop",
       "path": "scripts/visual-audit/dashboard/main-flows-desktop.png",
-      "size_bytes": 250508
+      "size_bytes": 249070
     },
     {
       "browser": "chromium",
@@ -141,28 +141,28 @@
       "page": "token-usage.html",
       "viewport": "desktop",
       "path": "scripts/visual-audit/dashboard/token-usage-desktop.png",
-      "size_bytes": 174281
+      "size_bytes": 174297
     },
     {
       "browser": "chromium",
       "page": "index.html",
       "viewport": "desktop",
       "path": "scripts/visual-audit/dashboard/index-desktop.png",
-      "size_bytes": 96130
+      "size_bytes": 95842
     },
     {
       "browser": "chromium",
       "page": "dashboard.html",
       "viewport": "tablet",
       "path": "scripts/visual-audit/dashboard/dashboard-tablet.png",
-      "size_bytes": 284970
+      "size_bytes": 285263
     },
     {
       "browser": "chromium",
       "page": "activity.html",
       "viewport": "tablet",
       "path": "scripts/visual-audit/dashboard/activity-tablet.png",
-      "size_bytes": 7401913
+      "size_bytes": 7402920
     },
     {
       "browser": "chromium",
@@ -176,14 +176,14 @@
       "page": "discussion-bubbles.html",
       "viewport": "tablet",
       "path": "scripts/visual-audit/dashboard/discussion-bubbles-tablet.png",
-      "size_bytes": 330041
+      "size_bytes": 330369
     },
     {
       "browser": "chromium",
       "page": "main-flows.html",
       "viewport": "tablet",
       "path": "scripts/visual-audit/dashboard/main-flows-tablet.png",
-      "size_bytes": 277841
+      "size_bytes": 275273
     },
     {
       "browser": "chromium",
@@ -197,28 +197,28 @@
       "page": "token-usage.html",
       "viewport": "tablet",
       "path": "scripts/visual-audit/dashboard/token-usage-tablet.png",
-      "size_bytes": 170997
+      "size_bytes": 171212
     },
     {
       "browser": "chromium",
       "page": "index.html",
       "viewport": "tablet",
       "path": "scripts/visual-audit/dashboard/index-tablet.png",
-      "size_bytes": 101843
+      "size_bytes": 101836
     },
     {
       "browser": "chromium",
       "page": "dashboard.html",
       "viewport": "mobile",
       "path": "scripts/visual-audit/dashboard/dashboard-mobile.png",
-      "size_bytes": 344397
+      "size_bytes": 345297
     },
     {
       "browser": "chromium",
       "page": "activity.html",
       "viewport": "mobile",
       "path": "scripts/visual-audit/dashboard/activity-mobile.png",
-      "size_bytes": 7070864
+      "size_bytes": 7072153
     },
     {
       "browser": "chromium",
@@ -232,14 +232,14 @@
       "page": "discussion-bubbles.html",
       "viewport": "mobile",
       "path": "scripts/visual-audit/dashboard/discussion-bubbles-mobile.png",
-      "size_bytes": 308091
+      "size_bytes": 307695
     },
     {
       "browser": "chromium",
       "page": "main-flows.html",
       "viewport": "mobile",
       "path": "scripts/visual-audit/dashboard/main-flows-mobile.png",
-      "size_bytes": 221120
+      "size_bytes": 217310
     },
     {
       "browser": "chromium",
@@ -253,14 +253,14 @@
       "page": "token-usage.html",
       "viewport": "mobile",
       "path": "scripts/visual-audit/dashboard/token-usage-mobile.png",
-      "size_bytes": 167498
+      "size_bytes": 167779
     },
     {
       "browser": "chromium",
       "page": "index.html",
       "viewport": "mobile",
       "path": "scripts/visual-audit/dashboard/index-mobile.png",
-      "size_bytes": 109859
+      "size_bytes": 109316
     }
   ]
 }
