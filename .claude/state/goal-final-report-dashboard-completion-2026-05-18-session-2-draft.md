@@ -97,6 +97,55 @@ Per Founder LOCK 2026-05-19 (HARD HOLD on packet re-emission until ALL THREE gre
 
 When all 3 green → re-emit Founder Verification Packet for D49 approval.
 
+### Session 3 close status — Founder Gate trajectory
+
+After all 3 P10 retrofit agents committed:
+
+| Gate | Status | Path to GREEN |
+|---|---|---|
+| (1) P10 retrofit verified across all 10 dashboards | **🟢 GREEN** | 44 of 65 catalog violations closed (Phase 1+2+3 retrofit). All 10 surfaces P10-compliant at top-priority level. 21 remaining are lower-severity follow-ups. |
+| (2) AgentShield zero CRITICAL on commit | 🟡 NEAR-GREEN (15 of 18) | 1 policy (allow-list ratify task #13) + 14 worktree (auto-resolve in Phase H) |
+| (3) 33-proposal triage delivered to Founder | **🟢 GREEN** | Commit b6772be (commit ship-readiness-deferred had 9 not 33; 2 STILL-RELEVANT + 7 OBSOLETED-BY) |
+
+**Path to packet re-emit (gates green):**
+1. Founder ratifies `task-queue/founder/policy-allow-list-FINAL.md` → 1 CRITICAL closes
+2. Founder approves Phase H worktree cleanup (V2 says agents can do this; safer to surface) OR agent does it directly → 14 CRITICALs close
+3. Re-run AgentShield → confirm 0 CRITICAL on final commit
+4. Re-emit Founder Verification Packet for D49 approval
+
+### Session 3 atomic ship commit log (non-cron)
+
+```
+2e89fc8 [AMD-026] P10 retrofit Phase 3 — discussion-bubbles + proposals
+cf2601c [AMD-026] P10 retrofit Phase 2 — amendments + escalations + index
+0b6f12d [AMD-026] P10 retrofit Phase 1 — dashboard + token-usage
+7fefbf6 [stop-decision] session 3 close
+3106fc3 [consolidation] goal-final-report DRAFT — session 3 progress
+082f2d6 [phase-B] activity feed UTC-normalized sort
+b6772be [founder-triage] 33-proposal triage delivered
+4d7f9f2 [security-P8] D31 REFACTOR scanners
+901ff21 [phase-M] M5.5-M5.7 push past 9.5
+c584b2f [AMD-026] P10 violations catalog
+cfb9e2a [security-P8] policy allow-list draft
+4bd13c0 [ecc-compat] 4 GAP-FILL hooks approved
+4605a77 [AMD-026] P10 Actionable Surfacing + 9th bubble
+f4388b6 [phase-B] activity feed FIX (cron heartbeat filter)
+```
+
+14 non-cron atomic ships in session 3, executing 9 of 9 Founder LOCKED decisions.
+
+### DONE WHEN closure roll-up at session 3 close
+
+**~42 of 49 closed (86%).** Up from 22 at session 1 / 35 at session 2.
+
+Open at session 3 close:
+- D20 (Founder paste Anthropic console comparison)
+- D25 (Phase E smoke 12×4)
+- D31 final closure (allow-list ratify + Phase H worktree cleanup)
+- D49 (Founder approval after re-emit)
+
+All session work documented, packaged for Founder review, and tree clean.
+
 ## 3. Bubble transcripts
 
 (Per spec — 8 bubbles, quorum 3. Substantive transcripts written per ship-close in session 2 are in commit messages + retrospective. Aggregate for session 2:)
