@@ -100,8 +100,14 @@
                 <h1 class="pb-page-title">Dashboard</h1>
                 <p class="pb-page-subtitle">Current snapshot of weekly orchestration state &mdash; tokens, ships, halts, FIQ depth, proposals, recent activity. Numbers from <code>.claude/state/telemetry/aggregates/</code>.</p>
             </div>
-            <div class="pb-page-meta">
-                <span>Generated <span data-meta="generated-at">&mdash;</span></span>
+            <div class="pb-page-meta" style="flex-direction: column; align-items: flex-end; gap: 6px;">
+                <!-- phase-I iter5 (2026-05-19): live status pill above the
+                     generated timestamp — Founder sees the data freshness
+                     state at a glance without reading the timestamp. -->
+                <span class="pb-status-pill is-green" data-meta="freshness-pill" style="background: rgba(74, 128, 103, 0.16);">
+                    Live
+                </span>
+                <span style="color: var(--pb-chalk-400);">Generated <span data-meta="generated-at" style="color: var(--pb-chalk-200);">&mdash;</span></span>
             </div>
         </div>
 
@@ -909,6 +915,21 @@
                         card.removeAttribute('data-zero');
                     }
                 });
+
+                // phase-I iter4 (2026-05-19): hover-tooltip on every KPI
+                // value. AMD-026 P10: every visible number must answer WHAT
+                // it means + WHERE it comes from. We synthesize a title=
+                // attribute from the label + sub line so the native browser
+                // tooltip on hover gives Founder the answer without a click.
+                document.querySelectorAll('.pb-kpi-card').forEach(function (card) {
+                    if (card.hasAttribute('title')) return; // honor explicit titles
+                    var labelEl = card.querySelector('.pb-kpi-label');
+                    var subEl   = card.querySelector('.pb-kpi-sub');
+                    if (!labelEl) return;
+                    var label = labelEl.textContent.trim();
+                    var sub   = subEl ? subEl.textContent.trim() : '';
+                    card.setAttribute('title', label + (sub ? ' — ' + sub : ''));
+                });
             } catch (err) {
                 console.error('Dashboard render failed:', err);
             }
@@ -1009,16 +1030,52 @@
             var by = function (v) { return MT + IH - (v / niceMax) * IH; };
             var bh = function (v) { return Math.max(1, (v / niceMax) * IH); };
 
+            // phase-I iter5 (2026-05-19): bars rendered with rounded top-only
+            // corners (square bottoms sit cleanly on the baseline) + a value
+            // label centered ABOVE the tallest bar so the eye knows what the
+            // peak represents without hovering. Linear / Vercel monitor both
+            // use this pattern for "headline-worthy" data points.
+            var tokenPeakIdx = tokens.reduce(function (idxBest, v, i, arr) {
+                return v > arr[idxBest] ? i : idxBest;
+            }, 0);
             var tokenBars = tokens.map(function (v, i) {
                 var title = labels[i] + ': ' + fmtTokenLabel(v) + ' tokens';
-                // phase-I iter2: rx 2 → 3 + add a subtle "highlight" capline at
-                // top of each bar (1px white-tinted line) for an extra polish.
                 if (v <= 0) return '';
-                return '<rect class="r7-bar-tokens" x="' + bx(i) + '" y="' + by(v) + '" width="' + bw + '" height="' + bh(v) + '" rx="3"><title>' + title + '</title></rect>'
-                     + '<rect x="' + bx(i) + '" y="' + by(v) + '" width="' + bw + '" height="1" rx="0.5" fill="rgba(255,255,255,0.18)" pointer-events="none"/>';
+                var x = bx(i), y = by(v), h = bh(v);
+                // Path-based bar with top-corner radius only.
+                var r = 3;
+                var d = ''
+                    + 'M' + x + ',' + (y + r)
+                    + ' Q' + x + ',' + y + ' ' + (x + r) + ',' + y
+                    + ' L' + (x + bw - r) + ',' + y
+                    + ' Q' + (x + bw) + ',' + y + ' ' + (x + bw) + ',' + (y + r)
+                    + ' L' + (x + bw) + ',' + (y + h)
+                    + ' L' + x + ',' + (y + h)
+                    + ' Z';
+                var hi = '<rect x="' + x + '" y="' + y + '" width="' + bw + '" height="1" rx="0.5" fill="rgba(255,255,255,0.20)" pointer-events="none"/>';
+                var bar = '<path class="r7-bar-tokens" d="' + d + '"><title>' + title + '</title></path>';
+                // Peak label above the tallest bar
+                var lbl = '';
+                if (i === tokenPeakIdx && v > 0 && y > MT + 14) {
+                    lbl = '<text x="' + (x + bw / 2) + '" y="' + (y - 6) + '" text-anchor="middle" fill="var(--pb-chalk-100)" font-family="var(--font-mono)" font-size="10" font-weight="600" letter-spacing="0.02em">' + fmtTokenLabel(v) + '</text>';
+                }
+                return bar + hi + lbl;
             }).join('');
+            // phase-I iter4 (2026-05-19): truncate date labels to MM-DD → DD.
+            // Per Linear / Datadog dense-axis pattern: when the X range is a
+            // single month, the month prefix on every tick is redundant — the
+            // day-of-month carries enough context. The first tick keeps the
+            // month prefix as a hint, the rest just show the day.
+            function _shortDate(l, i) {
+                if (!l) return '';
+                // Format guesses: "MM-DD" or "YYYY-MM-DD" → take last 2 chars.
+                var m = l.match(/(\d{2})$/);
+                if (!m) return l;
+                if (i === 0) return l.length >= 5 ? l.slice(-5) : l;
+                return m[1];
+            }
             var tokenXLabels = labels.map(function (l, i) {
-                return '<text class="r7-axis" x="' + (bx(i) + bw / 2) + '" y="' + (H - 10) + '" text-anchor="middle">' + l + '</text>';
+                return '<text class="r7-axis" x="' + (bx(i) + bw / 2) + '" y="' + (H - 12) + '" text-anchor="middle">' + _shortDate(l, i) + '</text>';
             }).join('');
             // phase-I iter2: Y-axis ticks at 25/50/75/100% (drop top label
             // density to 4 levels); baseline at v=0 emphasized. Grid lines
@@ -1045,19 +1102,32 @@
             var cby = function (v) { return MT + IH - (v / countMax) * IH; };
             var cbh = function (v) { return v > 0 ? Math.max(1, (v / countMax) * IH) : 0; };
 
+            // phase-I iter5 (2026-05-19): counts chart bars also use the
+            // rounded-top-only path treatment for consistency with the
+            // tokens chart.
             var countBars = labels.map(function (l, i) {
                 return series.map(function (s, si) {
                     var v = s.values[i];
                     if (v <= 0) return '';
                     var x = groupX(i) + si * cbw;
                     var w = cbw * 0.85;
+                    var y = cby(v), h = cbh(v);
+                    var r = Math.min(2, w / 2);
+                    var d = ''
+                        + 'M' + x + ',' + (y + r)
+                        + ' Q' + x + ',' + y + ' ' + (x + r) + ',' + y
+                        + ' L' + (x + w - r) + ',' + y
+                        + ' Q' + (x + w) + ',' + y + ' ' + (x + w) + ',' + (y + r)
+                        + ' L' + (x + w) + ',' + (y + h)
+                        + ' L' + x + ',' + (y + h)
+                        + ' Z';
                     var title = l + ' · ' + s.label + ': ' + v;
-                    return '<rect class="' + s.cls + '" x="' + x + '" y="' + cby(v) + '" width="' + w + '" height="' + cbh(v) + '" rx="2"><title>' + title + '</title></rect>'
-                         + '<rect x="' + x + '" y="' + cby(v) + '" width="' + w + '" height="1" rx="0.5" fill="rgba(255,255,255,0.20)" pointer-events="none"/>';
+                    return '<path class="' + s.cls + '" d="' + d + '"><title>' + title + '</title></path>'
+                         + '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="1" rx="0.5" fill="rgba(255,255,255,0.22)" pointer-events="none"/>';
                 }).join('');
             }).join('');
             var countXLabels = labels.map(function (l, i) {
-                return '<text class="r7-axis" x="' + (groupX(i) + (nSeries * cbw) / 2) + '" y="' + (H - 10) + '" text-anchor="middle">' + l + '</text>';
+                return '<text class="r7-axis" x="' + (groupX(i) + (nSeries * cbw) / 2) + '" y="' + (H - 12) + '" text-anchor="middle">' + _shortDate(l, i) + '</text>';
             }).join('');
             var countYTicks = [0.25, 0.5, 0.75, 1].map(function (f) {
                 var v = Math.round(countMax * f);
@@ -1123,6 +1193,7 @@
                 var el = document.querySelector(sel);
                 if (el) el.textContent = val;
             }
+            function esc(s) { return s == null ? '' : String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
             function ageDaysAgo(iso) {
                 if (!iso) return null;
                 var d = new Date(iso);
@@ -1147,9 +1218,11 @@
             setText('[data-fq="bubbles-flagged"]', String(buF));
             setText('[data-fq="proposals-pending"]', String(prP));
 
-            var esc = gov.open_escalations || [];
-            setText('[data-fq="escalations-count"]', String(esc.length));
-            setText('[data-fq="escalations-summary"]', esc.length === 0 ? 'none open' : 'requiring Founder decision');
+            // phase-I iter4 (2026-05-19): renamed `esc` → `escList` to avoid
+            // shadowing the esc() HTML-escaper function declared at fn top.
+            var escList = gov.open_escalations || [];
+            setText('[data-fq="escalations-count"]', String(escList.length));
+            setText('[data-fq="escalations-summary"]', escList.length === 0 ? 'none open' : 'requiring Founder decision');
 
             // AMD-026 P10 visible-action retrofit (2026-05-19): swap gate badges
             // based on count. 0 = legitimate empty ("none" green); >0 = Founder
@@ -1172,8 +1245,8 @@
                 buF === 0 ? 'ok &middot; quorum reached' : 'FOUNDER &middot; ' + buF + ' to weigh-in');
             setFqBadge('proposals', prP === 0 ? 'none' : 'founder',
                 prP === 0 ? 'ok &middot; no pending' : 'FOUNDER &middot; ' + prP + ' to approve');
-            setFqBadge('escalations', esc.length === 0 ? 'none' : 'founder',
-                esc.length === 0 ? 'ok &middot; none open' : 'FOUNDER &middot; ' + esc.length + ' open');
+            setFqBadge('escalations', escList.length === 0 ? 'none' : 'founder',
+                escList.length === 0 ? 'ok &middot; none open' : 'FOUNDER &middot; ' + escList.length + ' open');
 
             // System health
             var hh = fq.system_health || {};
@@ -1651,7 +1724,10 @@
                 });
             })();
 
-            // Crons
+            // phase-I iter4 (2026-05-19): Cron heartbeat row tightened.
+            // Was a wall of mono "name · timestamp" spans wrapping ugly.
+            // Now: compact pill chips (cron-task-name · ageMin) with subtle
+            // chrome — reads as a status strip, not a log dump.
             var cronsEl = document.querySelector('[data-fq="crons"]');
             if (cronsEl) {
                 var crons = hh.crons || {};
@@ -1659,10 +1735,29 @@
                 if (names.length === 0) {
                     cronsEl.textContent = 'no cron logs found';
                 } else {
+                    function _agePill(iso) {
+                        if (!iso || iso === '?') return '?';
+                        var d = new Date(iso);
+                        if (isNaN(d)) return iso;
+                        var diff = (Date.now() - d.getTime()) / 60000;
+                        if (diff < 60) return Math.max(0, Math.floor(diff)) + 'm';
+                        if (diff < 1440) return Math.floor(diff / 60) + 'h';
+                        return Math.floor(diff / 1440) + 'd';
+                    }
+                    cronsEl.style.display = 'flex';
+                    cronsEl.style.flexWrap = 'wrap';
+                    cronsEl.style.gap = '6px 8px';
+                    cronsEl.style.marginTop = '12px';
                     cronsEl.innerHTML = names.map(function (n) {
                         var c = crons[n];
-                        return '<span style="display:inline-block;margin-right:var(--space-3);">'
-                            + n + ' · ' + (c.last_run || '?')
+                        var age = _agePill(c.last_run);
+                        // Short name (drop "PARBAUGHS-" prefix if present)
+                        var short = n.replace(/^PARBAUGHS-/, '').replace(/-/g, ' ');
+                        return '<span style="display:inline-flex; align-items:center; gap:6px; padding: 3px 8px; font-family: var(--font-mono); font-size: 0.625rem; background: rgba(216,208,192,0.04); border: 1px solid rgba(216,208,192,0.07); border-radius: 999px; color: var(--pb-chalk-300); letter-spacing: 0.04em;">'
+                            + '<span style="width: 5px; height: 5px; border-radius: 50%; background: var(--pb-success); opacity: 0.8;"></span>'
+                            + '<span>' + esc(short) + '</span>'
+                            + '<span style="color: var(--pb-chalk-500);">·</span>'
+                            + '<span style="color: var(--pb-chalk-200);">' + age + ' ago</span>'
                             + '</span>';
                     }).join('');
                 }
@@ -1684,7 +1779,7 @@
             var allEmpty = (gov.amendments_pending || 0) === 0
                 && (gov.bubbles_flagged || 0) === 0
                 && (gov.proposals_pending || 0) === 0
-                && esc.length === 0
+                && escList.length === 0
                 && halts.length === 0
                 && ex.length === 0;
             var emptyEl = document.querySelector('[data-fq-empty]');
