@@ -372,7 +372,14 @@ finally {
             source             = "downloads-watcher"
             cron_cadence_min   = 5
         }
-        ($hbObj | ConvertTo-Json -Compress) | Set-Content -Path $watcherHeartbeat -Encoding utf8
+        # Write BOM-free UTF-8 so downstream tooling that uses utf-8 (not
+        # utf-8-sig) can parse the file without BOM-eating workarounds.
+        # PS 5.1 Set-Content -Encoding utf8 always writes a BOM; use
+        # WriteAllText with explicit BOM-free encoding to match the
+        # python-written regen-all heartbeat.
+        $hbJson = $hbObj | ConvertTo-Json -Compress
+        $utf8NoBom = New-Object System.Text.UTF8Encoding $false
+        [System.IO.File]::WriteAllText($watcherHeartbeat, $hbJson, $utf8NoBom)
     } catch {
         # Best-effort - never let heartbeat write break the cron exit
     }
