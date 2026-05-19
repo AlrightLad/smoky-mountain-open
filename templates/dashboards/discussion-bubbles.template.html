@@ -392,26 +392,45 @@
 
         <section class="pb-section">
             <h2 class="pb-section-title">Bubble counts</h2>
+            <!-- AMD-026 P10 (Actionable Surfacing) Phase 3 retrofit 2026-05-19:
+                 each KPI sub-label switches to a legitimate-empty classification
+                 when count=0, with a clickable destination to .claude/state/
+                 discussion-bubbles/ for trust verification. WHAT = no bubbles
+                 in this bucket; WHERE = .claude/state/discussion-bubbles/;
+                 WHAT-ACTION = legitimate empty (orchestration team has
+                 deliberated nothing yet) / await next deliberation event.
+                 Per AMD-026 9th bubble (Actionability): deliberation gate is
+                 now 9-bubble quorum 3 (8 data + Actionability process bubble).
+                 The underlying data shape stays 8-bubble because Actionability
+                 is a process-bubble, not a data-bubble. -->
             <div class="pb-kpi-grid">
                 <div class="pb-kpi-card">
-                    <span class="pb-kpi-label">Total bubbles</span>
-                    <span class="pb-kpi-value" data-kpi="bubbles-total">&mdash;</span>
-                    <span class="pb-kpi-sub">recorded threads</span>
+                    <a class="pb-kpi-link" href="../../.claude/state/discussion-bubbles/" title="Open .claude/state/discussion-bubbles/ source directory" style="text-decoration: none; color: inherit; display: contents;">
+                        <span class="pb-kpi-label">Total bubbles</span>
+                        <span class="pb-kpi-value" data-kpi="bubbles-total">&mdash;</span>
+                        <span class="pb-kpi-sub" data-kpi-sub="bubbles-total">recorded threads</span>
+                    </a>
                 </div>
                 <div class="pb-kpi-card is-warning">
-                    <span class="pb-kpi-label">Open</span>
-                    <span class="pb-kpi-value" data-kpi="bubbles-open">&mdash;</span>
-                    <span class="pb-kpi-sub">awaiting decision</span>
+                    <a class="pb-kpi-link" href="../../.claude/state/discussion-bubbles/" title="Open .claude/state/discussion-bubbles/ source directory" style="text-decoration: none; color: inherit; display: contents;">
+                        <span class="pb-kpi-label">Open</span>
+                        <span class="pb-kpi-value" data-kpi="bubbles-open">&mdash;</span>
+                        <span class="pb-kpi-sub" data-kpi-sub="bubbles-open">awaiting decision</span>
+                    </a>
                 </div>
                 <div class="pb-kpi-card is-positive">
-                    <span class="pb-kpi-label">Closed (7d)</span>
-                    <span class="pb-kpi-value" data-kpi="bubbles-closed-7d">&mdash;</span>
-                    <span class="pb-kpi-sub">approved or rejected this week</span>
+                    <a class="pb-kpi-link" href="../../.claude/state/discussion-bubbles/" title="Open .claude/state/discussion-bubbles/ source directory" style="text-decoration: none; color: inherit; display: contents;">
+                        <span class="pb-kpi-label">Closed (7d)</span>
+                        <span class="pb-kpi-value" data-kpi="bubbles-closed-7d">&mdash;</span>
+                        <span class="pb-kpi-sub" data-kpi-sub="bubbles-closed-7d">approved or rejected this week</span>
+                    </a>
                 </div>
                 <div class="pb-kpi-card is-info">
-                    <span class="pb-kpi-label">Approved w/ dissent</span>
-                    <span class="pb-kpi-value" data-kpi="bubbles-dissent">&mdash;</span>
-                    <span class="pb-kpi-sub">non-unanimous outcomes</span>
+                    <a class="pb-kpi-link" href="../../.claude/state/discussion-bubbles/" title="Open .claude/state/discussion-bubbles/ source directory" style="text-decoration: none; color: inherit; display: contents;">
+                        <span class="pb-kpi-label">Approved w/ dissent</span>
+                        <span class="pb-kpi-value" data-kpi="bubbles-dissent">&mdash;</span>
+                        <span class="pb-kpi-sub" data-kpi-sub="bubbles-dissent">non-unanimous outcomes (9-bubble quorum 3 per AMD-026)</span>
+                    </a>
                 </div>
             </div>
         </section>
@@ -441,10 +460,17 @@
 
             <section class="db-detail" id="detail-pane">
                 <button class="db-back-button" id="back-button" type="button">← Back to threads</button>
+                <!-- AMD-026 P10 Phase 3 retrofit: differentiate "no selection"
+                     (threads exist, none selected) from "no threads available"
+                     (zero bubbles recorded). JS swaps copy based on bubbles
+                     array length so Founder doesn't conflate the two states.
+                     WHAT = no selection or no threads; WHERE = .claude/state/
+                     discussion-bubbles/; WHAT-ACTION = pick a thread / await
+                     next deliberation. -->
                 <div class="db-detail-empty" id="detail-empty">
                     <div class="icon">💬</div>
-                    <h3>Select a discussion bubble</h3>
-                    <p>Pick a thread from the list to read the full transcript — every agent's contribution, vote, and the closing decision.</p>
+                    <h3 data-empty-title>Select a discussion bubble</h3>
+                    <p data-empty-body>Pick a thread from the list to read the full transcript &mdash; every agent's contribution, vote, and the closing decision.</p>
                 </div>
                 <article class="db-detail-thread" id="detail-thread" hidden>
                     <header class="db-detail-header">
@@ -497,6 +523,30 @@
                 setText('[data-kpi="bubbles-closed-7d"]', String(closed7d));
                 setText('[data-kpi="bubbles-dissent"]',   String(dissent));
                 setText('[data-meta="generated-at"]', new Date().toISOString().slice(0,16).replace('T',' ') + ' UTC');
+
+                // AMD-026 P10 Phase 3 retrofit 2026-05-19: swap KPI sub-labels
+                // to legitimate-empty classification when counts are 0. WHAT =
+                // no bubbles in this bucket; WHERE = .claude/state/discussion-
+                // bubbles/ (linked from card); WHAT-ACTION = legitimate empty
+                // (orchestration team has deliberated nothing yet) / await next
+                // deliberation event. Per AMD-026 9th bubble: deliberation gate
+                // is 9-bubble quorum 3 (8 data + Actionability process bubble).
+                function setSub(name, text) {
+                    var el = document.querySelector('[data-kpi-sub="' + name + '"]');
+                    if (el) el.textContent = text;
+                }
+                setSub('bubbles-total', total === 0
+                    ? 'no bubbles recorded yet — legitimate empty (see source dir)'
+                    : 'recorded threads');
+                setSub('bubbles-open', open === 0
+                    ? (total === 0 ? 'no bubbles to be open — legitimate empty' : 'no open bubbles — quorum reached on all')
+                    : 'awaiting decision (9-bubble quorum 3)');
+                setSub('bubbles-closed-7d', closed7d === 0
+                    ? (total === 0 ? 'no bubbles closed — none recorded' : 'no closures in last 7 days — legitimate empty')
+                    : 'approved or rejected this week');
+                setSub('bubbles-dissent', dissent === 0
+                    ? (total === 0 ? 'no bubbles to dissent — legitimate empty' : 'no dissent — all closures unanimous')
+                    : 'non-unanimous outcomes (9-bubble quorum 3 per AMD-026)');
             })();
 
             // ----- Author → initials (for avatar) -----
@@ -564,6 +614,13 @@
             };
 
             // ----- Populate ship filter -----
+            // AMD-026 P10 Phase 3 retrofit 2026-05-19: when no ships are tagged
+            // in any bubble, the dropdown collapses to a no-op "All ships"
+            // option. Surface helper text so Founder can classify (legitimate
+            // empty — no ship-tagged bubbles yet vs broken data path). WHAT =
+            // no ship metadata; WHERE = .claude/state/discussion-bubbles/*.md
+            // frontmatter ship_id field; WHAT-ACTION = legitimate until
+            // ship-tagged bubble is authored.
             const shipFilter = document.getElementById('filter-ship');
             const ships = Array.from(new Set(bubbles.map(function (b) { return b.ship_id; }).filter(Boolean))).sort();
             ships.forEach(function (s) {
@@ -572,6 +629,18 @@
                 opt.textContent = s;
                 shipFilter.appendChild(opt);
             });
+            if (ships.length === 0) {
+                shipFilter.title = 'No ships tagged in any bubble yet — legitimate empty';
+                // Append helper after the filters row
+                var filtersRow = shipFilter.closest('.db-rail-filters');
+                if (filtersRow && !document.getElementById('db-ship-filter-helper')) {
+                    var helper = document.createElement('div');
+                    helper.id = 'db-ship-filter-helper';
+                    helper.style.cssText = 'font-size: 0.6875rem; color: var(--text-tertiary); margin-top: 4px; font-style: italic;';
+                    helper.textContent = 'no ships tagged in any bubble yet — legitimate empty';
+                    filtersRow.parentNode.insertBefore(helper, filtersRow.nextSibling);
+                }
+            }
 
             // ----- Render thread list -----
             let activeBubbleId = null;
@@ -594,6 +663,50 @@
                 const filtered = getFilteredBubbles();
                 threadList.innerHTML = '';
                 railCount.textContent = `${filtered.length} thread${filtered.length === 1 ? '' : 's'}`;
+
+                // AMD-026 P10 Phase 3 retrofit 2026-05-19: when filtered list is
+                // empty, render an inline empty-state panel inside the thread
+                // list that classifies the cause: (a) no threads exist at all
+                // vs (b) no threads match current filters. WHAT = empty
+                // filtered set; WHERE = .claude/state/discussion-bubbles/
+                // (linked); WHAT-ACTION = widen filters / await bubble author.
+                if (filtered.length === 0) {
+                    var emptyLi = document.createElement('li');
+                    emptyLi.style.cssText = 'padding: var(--space-4) var(--space-3); text-align: center; color: var(--text-tertiary); font-size: 0.75rem; line-height: 1.5;';
+                    var status = document.getElementById('filter-status').value;
+                    var ship = shipFilter.value;
+                    var hasFilters = (status !== 'all') || (ship !== 'all');
+                    if (bubbles.length === 0) {
+                        emptyLi.innerHTML = '<strong>No discussion bubbles recorded</strong><br><span style="display:block;margin-top:4px;color:var(--text-secondary);">Legitimate empty — orchestration team has authored none.</span><br><a href="../../.claude/state/discussion-bubbles/" style="color:var(--accent-brass);font-family:var(--font-mono);font-size:0.6875rem;">.claude/state/discussion-bubbles/</a>';
+                    } else if (hasFilters) {
+                        emptyLi.innerHTML = '<strong>No threads match current filters</strong><br><span style="display:block;margin-top:4px;color:var(--text-secondary);">Try widening: set Status to &quot;All&quot; or Ship to &quot;All ships&quot;.</span>';
+                    } else {
+                        emptyLi.innerHTML = '<strong>No threads</strong><br><span style="display:block;margin-top:4px;color:var(--text-secondary);">' + bubbles.length + ' bubble(s) exist but none rendered. Check console / regen pipeline.</span>';
+                    }
+                    threadList.appendChild(emptyLi);
+
+                    // Sync the right-pane empty-state classification too.
+                    var emptyTitle = document.querySelector('[data-empty-title]');
+                    var emptyBody  = document.querySelector('[data-empty-body]');
+                    if (emptyTitle && emptyBody) {
+                        if (bubbles.length === 0) {
+                            emptyTitle.textContent = 'No discussion bubbles recorded';
+                            emptyBody.innerHTML = 'Legitimate empty &mdash; deliberations write to <code style="font-size:0.75rem;">.claude/state/discussion-bubbles/</code> when the orchestration team opens one. <a href="../../.claude/state/discussion-bubbles/" style="color:var(--accent-brass);">Open source dir</a>.';
+                        } else {
+                            emptyTitle.textContent = 'No threads match filters';
+                            emptyBody.textContent = 'Widen the Status or Ship filter to surface threads.';
+                        }
+                    }
+                }
+
+                // AMD-026 P10 Phase 3: when threads ARE present, restore the
+                // default "no selection" empty-state copy on the right pane.
+                if (filtered.length > 0) {
+                    var emptyTitleR = document.querySelector('[data-empty-title]');
+                    var emptyBodyR  = document.querySelector('[data-empty-body]');
+                    if (emptyTitleR) emptyTitleR.textContent = 'Select a discussion bubble';
+                    if (emptyBodyR)  emptyBodyR.textContent = 'Pick a thread from the list to read the full transcript — every agent’s contribution, vote, and the closing decision.';
+                }
 
                 let lastDay = null;
                 filtered.forEach(function (b) {

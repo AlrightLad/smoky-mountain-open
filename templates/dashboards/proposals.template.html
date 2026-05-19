@@ -186,26 +186,35 @@
                     font-weight: 600;
                 }
             </style>
+            <!-- AMD-026 P10 (Actionable Surfacing) Phase 3 retrofit 2026-05-19:
+                 Decision Queue cards now link to .claude/state/proposals/
+                 pending/ for trust verification; sub-labels switch to a
+                 legitimate-empty classification when counts are 0. WHAT =
+                 pending bucket / session marks; WHERE = .claude/state/
+                 proposals/pending/; WHAT-ACTION = team authors a proposal /
+                 Founder marks approve/reject/defer. See updateCounts() below. -->
             <div class="pb-kpi-grid is-decision-queue">
                 <div class="pb-kpi-card">
-                    <span class="pb-kpi-label">Pending</span>
-                    <span class="pb-kpi-value" id="count-pending">&mdash;</span>
-                    <span class="pb-kpi-sub">awaiting Founder review</span>
+                    <a class="pb-kpi-link" href="../../.claude/state/proposals/pending/" title="Open .claude/state/proposals/pending/ to verify count" style="text-decoration: none; color: inherit; display: contents;">
+                        <span class="pb-kpi-label">Pending</span>
+                        <span class="pb-kpi-value" id="count-pending">&mdash;</span>
+                        <span class="pb-kpi-sub" data-kpi-sub="pending">awaiting Founder review</span>
+                    </a>
                 </div>
                 <div class="pb-kpi-card is-positive">
                     <span class="pb-kpi-label">Approve</span>
                     <span class="pb-kpi-value" id="count-approve">0</span>
-                    <span class="pb-kpi-sub">marked in this session</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="approve">marked in this session</span>
                 </div>
                 <div class="pb-kpi-card is-danger">
                     <span class="pb-kpi-label">Reject</span>
                     <span class="pb-kpi-value" id="count-reject">0</span>
-                    <span class="pb-kpi-sub">marked in this session</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="reject">marked in this session</span>
                 </div>
                 <div class="pb-kpi-card is-warning">
                     <span class="pb-kpi-label">Defer</span>
                     <span class="pb-kpi-value" id="count-defer">0</span>
-                    <span class="pb-kpi-sub">marked in this session</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="defer">marked in this session</span>
                 </div>
             </div>
         </section>
@@ -253,15 +262,21 @@
             <div id="proposal-list"></div>
         </section>
 
+        <!-- AMD-026 P10 Phase 3 retrofit 2026-05-19: archive section headers
+             now link to the source directories on disk so Founder can verify
+             the count by directly browsing the filesystem. WHAT = bucket
+             archive count; WHERE = .claude/state/proposals/{approved,deferred,
+             shipped,rejected}/; WHAT-ACTION = browse the archive dir for
+             content verification. -->
         <section class="mt-4">
-            <div class="pb-section-title">Approved — in flight <span class="section-count" data-section-count="approved">—</span></div>
+            <div class="pb-section-title">Approved — in flight <span class="section-count" data-section-count="approved">—</span> <a href="../../.claude/state/proposals/approved/" style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--accent-brass); text-decoration: none; margin-left: var(--space-2);" title="Open .claude/state/proposals/approved/">→ archive dir</a></div>
             <p class="text-muted" style="font-size: 0.8125rem; margin-bottom: var(--space-3);">Past Founder's decision point. No buttons — these are awaiting an implementing commit ("Implements PROP-NNN") which auto-promotes to shipped.</p>
             <div id="proposal-list-approved"></div>
         </section>
 
         <section class="mt-4">
             <details>
-                <summary class="pb-section-title" style="cursor: pointer;">Deferred <span class="section-count" data-section-count="deferred">—</span></summary>
+                <summary class="pb-section-title" style="cursor: pointer;">Deferred <span class="section-count" data-section-count="deferred">—</span> <a href="../../.claude/state/proposals/deferred/" style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--accent-brass); text-decoration: none; margin-left: var(--space-2);" title="Open .claude/state/proposals/deferred/" onclick="event.stopPropagation();">→ archive dir</a></summary>
                 <p class="text-muted" style="font-size: 0.8125rem; margin: var(--space-2) 0 var(--space-3);">Founder deferred for later consideration. Un-deferring is a future feature.</p>
                 <div id="proposal-list-deferred"></div>
             </details>
@@ -269,7 +284,7 @@
 
         <section class="mt-4">
             <details>
-                <summary class="pb-section-title" style="cursor: pointer;">Shipped — archive <span class="section-count" data-section-count="shipped">—</span></summary>
+                <summary class="pb-section-title" style="cursor: pointer;">Shipped — archive <span class="section-count" data-section-count="shipped">—</span> <a href="../../.claude/state/proposals/shipped/" style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--accent-brass); text-decoration: none; margin-left: var(--space-2);" title="Open .claude/state/proposals/shipped/" onclick="event.stopPropagation();">→ archive dir</a></summary>
                 <p class="text-muted" style="font-size: 0.8125rem; margin: var(--space-2) 0 var(--space-3);">Last 50 shown. Append-only audit trail in <code>.claude/state/proposals/shipped-log.md</code>. Each card cites the implementing commit (short sha).</p>
                 <div id="proposal-list-shipped"></div>
             </details>
@@ -277,15 +292,22 @@
 
         <section class="mt-4">
             <details>
-                <summary class="pb-section-title" style="cursor: pointer;">Rejected — archive <span class="section-count" data-section-count="rejected">—</span></summary>
+                <summary class="pb-section-title" style="cursor: pointer;">Rejected — archive <span class="section-count" data-section-count="rejected">—</span> <a href="../../.claude/state/proposals/rejected/" style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--accent-brass); text-decoration: none; margin-left: var(--space-2);" title="Open .claude/state/proposals/rejected/" onclick="event.stopPropagation();">→ archive dir</a></summary>
                 <p class="text-muted" style="font-size: 0.8125rem; margin: var(--space-2) 0 var(--space-3);">Last 50 shown. Terminal archive.</p>
                 <div id="proposal-list-rejected"></div>
             </details>
         </section>
 
+        <!-- AMD-026 P10 Phase 3 retrofit 2026-05-19: Raw data section gets a
+             classification header. When data is empty {}, that's ambiguous
+             without explanation. Helper copy + WHAT-ACTION command surface
+             how to repopulate. WHAT = data block content; WHERE = scripts/
+             regen-proposals.py + .claude/state/proposals/; WHAT-ACTION = run
+             scripts/regen-proposals.py to repopulate. -->
         <section class="mt-5">
             <h3 class="collapsible collapsed">Raw data (debug)</h3>
             <div class="collapsible-content">
+                <p class="text-muted" style="font-size: 0.8125rem; margin: var(--space-2) 0 var(--space-3);">If the JSON below is <code>{}</code>, the data block has not yet been swapped. Run <code>python scripts/regen-proposals.py</code> (or <code>scripts/regen-all.ps1</code> for the full pipeline) to repopulate from <code>.claude/state/proposals/</code>.</p>
                 <div class="card">
                     <pre id="raw-data-display" style="overflow-x: auto; max-height: 400px; color: var(--text-secondary); font-size: 0.75rem;"></pre>
                 </div>
@@ -487,7 +509,22 @@
                 let arr = items || [];
                 if (typeof limit === 'number' && arr.length > limit) arr = arr.slice(0, limit);
                 if (!arr.length) {
-                    el.innerHTML = `<div class="card" style="text-align: center; padding: var(--space-4); color: var(--text-tertiary); font-size: 0.875rem;">No ${mode} proposals.</div>`;
+                    // AMD-026 P10 Phase 3 retrofit 2026-05-19: classify the
+                    // empty bucket with WHAT-ACTION + WHERE link. WHAT = no
+                    // entries; WHERE = .claude/state/proposals/<mode>/; WHAT-
+                    // ACTION = legitimate empty (no proposals shipped/rejected/
+                    // deferred yet) / await next decision.
+                    const archiveDir = `.claude/state/proposals/${mode}/`;
+                    const action = mode === 'approved'
+                        ? 'no proposals approved yet — Founder marks approve in Pending review above'
+                        : mode === 'shipped'
+                        ? 'no proposals shipped yet — approved proposals auto-promote on an implementing commit'
+                        : mode === 'rejected'
+                        ? 'no proposals rejected — Founder marks reject in Pending review above'
+                        : mode === 'deferred'
+                        ? 'no proposals deferred — Founder marks defer in Pending review above'
+                        : 'no proposals in this bucket';
+                    el.innerHTML = `<div class="card" style="text-align: center; padding: var(--space-4); color: var(--text-tertiary); font-size: 0.875rem;"><strong>No ${mode} proposals</strong><br><span style="display:block;margin-top:4px;color:var(--text-secondary);font-size:0.8125rem;">${action}.</span><br><a href="../../${archiveDir}" style="color:var(--accent-brass);font-family:var(--font-mono);font-size:0.75rem;">${archiveDir}</a></div>`;
                     return;
                 }
                 el.innerHTML = arr.map(p => renderCompactCard(p, mode)).join('');
@@ -518,9 +555,26 @@
                     return 0;
                 });
                 const list = document.getElementById('proposal-list');
-                list.innerHTML = filtered.length === 0
-                    ? '<div class="card" style="text-align: center; padding: var(--space-5); color: var(--text-tertiary);">No proposals match current filters.</div>'
-                    : filtered.map(p => renderProposal(p)).join('');
+                // AMD-026 P10 Phase 3 retrofit 2026-05-19: differentiate
+                // "no match" (filters applied) vs "no proposals exist"
+                // (pending bucket empty). WHAT = empty pending render;
+                // WHERE = .claude/state/proposals/pending/; WHAT-ACTION =
+                // widen filters / await team-authored proposal.
+                if (filtered.length === 0) {
+                    const totalPending = buckets.pending.length;
+                    const hasFilters = (fLane !== 'all') || (fStatus !== 'all');
+                    let emptyMsg;
+                    if (totalPending === 0) {
+                        emptyMsg = '<div class="card" style="text-align: center; padding: var(--space-5); color: var(--text-tertiary);"><strong>No pending proposals</strong><br><span style="display:block;margin-top:4px;color:var(--text-secondary);font-size:0.875rem;">Legitimate empty &mdash; orchestration team has authored none. Proactive cycle writes to <a href="../../.claude/state/proposals/pending/" style="color:var(--accent-brass);font-family:var(--font-mono);">.claude/state/proposals/pending/</a>.</span></div>';
+                    } else if (hasFilters) {
+                        emptyMsg = '<div class="card" style="text-align: center; padding: var(--space-5); color: var(--text-tertiary);"><strong>No proposals match current filters</strong><br><span style="display:block;margin-top:4px;color:var(--text-secondary);font-size:0.875rem;">' + totalPending + ' pending proposal(s) exist. Widen Lane to &quot;All lanes&quot; or Status to &quot;All&quot;.</span></div>';
+                    } else {
+                        emptyMsg = '<div class="card" style="text-align: center; padding: var(--space-5); color: var(--text-tertiary);"><strong>No proposals rendered</strong><br><span style="display:block;margin-top:4px;color:var(--text-secondary);font-size:0.875rem;">' + totalPending + ' in bucket but none passed filter. Check console / regen pipeline.</span></div>';
+                    }
+                    list.innerHTML = emptyMsg;
+                } else {
+                    list.innerHTML = filtered.map(p => renderProposal(p)).join('');
+                }
 
                 // Approved — sort newest-first by approved_at OR created_at
                 const approvedSorted = [...buckets.approved].sort((a, b) =>
@@ -598,31 +652,31 @@
                             <div class="impact-block">
                                 <div class="impact-row">
                                     <span class="impact-label">Token cost</span>
-                                    <span class="impact-value">~${ParbaughsReports.utils.fmtTokens(p.estimate.cost_tokens)}</span>
+                                    <span class="impact-value">${formatCost(p && p.estimate ? p.estimate.cost_tokens : null)}</span>
                                 </div>
                                 <div class="impact-row">
                                     <span class="impact-label">Duration</span>
-                                    <span class="impact-value">~${p.estimate.duration_minutes} min</span>
+                                    <span class="impact-value">${formatDuration(p && p.estimate ? p.estimate.duration_minutes : null)}</span>
                                 </div>
                                 <div class="impact-row">
                                     <span class="impact-label">Risk</span>
-                                    <span class="impact-value">${escapeHtml(p.estimate.risk)}</span>
+                                    <span class="impact-value">${escapeHtml((p && p.estimate && p.estimate.risk) || '—')}</span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="proposal-section">
-                            <div class="proposal-section-label">Files affected (${p.files_affected.length})</div>
+                            <div class="proposal-section-label">Files affected (${(p.files_affected || []).length})</div>
                             <div class="files-list">
-                                ${p.files_affected.map(f => `<code>${escapeHtml(f)}</code>`).join('')}
+                                ${(p.files_affected || []).map(f => renderPathLink(f)).join('')}
                             </div>
                         </div>
 
                         ${p.evidence_paths && p.evidence_paths.length ? `
                             <div class="proposal-section">
-                                <div class="proposal-section-label">Evidence</div>
+                                <div class="proposal-section-label">Evidence (${p.evidence_paths.length})</div>
                                 <div class="files-list">
-                                    ${p.evidence_paths.map(f => `<code>${escapeHtml(f)}</code>`).join('')}
+                                    ${p.evidence_paths.map(f => renderPathLink(f)).join('')}
                                 </div>
                             </div>` : ''}
 
@@ -678,6 +732,42 @@
                 document.getElementById('count-reject').textContent = r;
                 document.getElementById('count-defer').textContent = d;
                 document.getElementById('count-undecided').textContent = total - a - r - d;
+
+                // AMD-026 P10 Phase 3 retrofit 2026-05-19: swap KPI sub-labels
+                // to legitimate-empty classification when counts are 0. WHAT =
+                // no pending or no session marks; WHERE = .claude/state/
+                // proposals/pending/ (linked from Pending card); WHAT-ACTION =
+                // legitimate empty (team has authored none) / mark any pending
+                // proposal to populate session tallies.
+                function setSub(name, text) {
+                    var el = document.querySelector('[data-kpi-sub="' + name + '"]');
+                    if (el) el.textContent = text;
+                }
+                setSub('pending', total === 0
+                    ? 'no proposals pending — orchestration team has authored none'
+                    : 'awaiting Founder review');
+                var noPendingNoMarks = total === 0 && a === 0 && r === 0 && d === 0;
+                setSub('approve', noPendingNoMarks
+                    ? 'no decisions yet — mark any pending proposal to populate'
+                    : 'marked in this session');
+                setSub('reject', noPendingNoMarks
+                    ? 'no decisions yet — mark any pending proposal to populate'
+                    : 'marked in this session');
+                setSub('defer', noPendingNoMarks
+                    ? 'no decisions yet — mark any pending proposal to populate'
+                    : 'marked in this session');
+
+                // AMD-026 P10 Phase 3 retrofit 2026-05-19 (Violation 4): verify
+                // the "Approved — in flight" section count matches data.counts.
+                // approved. If counts.approved differs from buckets.approved.
+                // length, surface a console warning so cron/regen path bugs
+                // don't go unnoticed.
+                if (data && data.counts && typeof data.counts.approved === 'number' &&
+                    data.counts.approved !== buckets.approved.length) {
+                    console.warn('[AMD-026 P10] data.counts.approved (' + data.counts.approved
+                        + ') !== buckets.approved.length (' + buckets.approved.length
+                        + ') — regen-proposals.py count mismatch; section header may mislead.');
+                }
             }
 
             function formatTime(iso) {
@@ -686,6 +776,42 @@
             function escapeHtml(s) {
                 if (s === null || s === undefined) return '';
                 return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+            }
+
+            // AMD-026 P10 Phase 3 retrofit 2026-05-19: classify missing cost
+            // estimates. p.estimate may be null/undefined on archived cards
+            // (shipped/rejected/deferred) — the compact card displays
+            // "tokens: ~—" which is ambiguous. fmtTokens(undefined) returns
+            // "—" with no WHAT-ACTION. Surface "not estimated" classification.
+            // WHAT = missing estimate; WHERE = proposal frontmatter (estimate
+            // block); WHAT-ACTION = legitimate when archived (estimate was
+            // dropped on archive) / re-author frontmatter if pending lacks it.
+            function formatCost(n) {
+                if (n === null || n === undefined || (typeof n === 'number' && !isFinite(n))) {
+                    return '<span title="No estimate.cost_tokens in frontmatter — typical for archived proposals" style="color: var(--text-tertiary); font-style: italic;">not estimated</span>';
+                }
+                if (typeof n !== 'number') return escapeHtml(String(n));
+                return '~' + (typeof ParbaughsReports !== 'undefined' && ParbaughsReports.utils
+                    ? ParbaughsReports.utils.fmtTokens(n)
+                    : (n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n)));
+            }
+            function formatDuration(n) {
+                if (n === null || n === undefined || (typeof n === 'number' && !isFinite(n))) {
+                    return '<span title="No estimate.duration_minutes in frontmatter" style="color: var(--text-tertiary); font-style: italic;">not estimated</span>';
+                }
+                return '~' + escapeHtml(String(n)) + ' min';
+            }
+
+            // AMD-026 P10 Phase 3 retrofit 2026-05-19: make file paths in
+            // files_affected + evidence_paths clickable. Browsers honor
+            // relative file:// hrefs from docs/reports/ → repo root via ../../.
+            // WHAT = referenced source path; WHERE = repo file; WHAT-ACTION =
+            // click to open file in default app / read context.
+            function renderPathLink(path) {
+                if (!path) return '';
+                const safe = escapeHtml(String(path));
+                const href = '../../' + safe;
+                return `<a href="${href}" title="Open ${safe}" style="color: var(--accent-brass); text-decoration: none;"><code>${safe}</code></a>`;
             }
 
             ['filter-lane', 'filter-status', 'sort-by'].forEach(id => {
