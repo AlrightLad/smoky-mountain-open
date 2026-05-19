@@ -52,6 +52,14 @@ REQUIRED_KEYS = {
 ALLOWED_DATA_SOURCES = {
     "none", "manual-paste", "manual-paste-stale",
     "headless-cost", "console-scrape",
+    # Sidecar (PROP-003.a) derives weekly_tokens from cycle telemetry when
+    # no manual paste exists. Added 2026-05-18 Phase B session 2 to align
+    # schema with PROP-003.a sidecar output.
+    "auto-derived",
+    # Phase B GAP-2 fix (session 2): regen-dashboard.py overrides
+    # quota_status.data_source to this value when the consumer-side fix
+    # promotes session-transcript truth into the quota block.
+    "session-transcripts (real, cross-surface unified)",
 }
 
 
