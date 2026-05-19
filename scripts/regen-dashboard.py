@@ -1118,6 +1118,62 @@ def last_regen_all_status():
     }
 
 
+def last_watcher_heartbeat():
+    """2026-05-19 Path 2 (heartbeat redundancy): read the downloads-watcher
+    heartbeat written every 5 min by scripts/cron/downloads-watcher.ps1.
+
+    Returns a structured dict identical in shape to last_regen_all_status()
+    so the dashboard can surface either signal as proof-of-life:
+        - ts, ts_iso, status, age_minutes, source, exit_reason
+    Status thresholds:
+      PASS    age_minutes <= 12     (one missed cycle + a beat)
+      STALE   age_minutes > 12      (watcher misfiring)
+      UNKNOWN heartbeat file absent (watcher never ran)
+    """
+    heartbeat = STATE / "heartbeats" / "watcher-last-run.json"
+    now_utc = datetime.now(timezone.utc)
+    if heartbeat.exists():
+        try:
+            data = json.loads(heartbeat.read_text(encoding="utf-8-sig"))
+            iso = (
+                data.get("ts")
+                or data.get("timestamp")
+                or data.get("generated_at")
+                or data.get("last_run_at_utc")
+                or ""
+            )
+            ts_dt = datetime.fromisoformat(iso.replace("Z", "+00:00")) if iso else None
+            age_min = round((now_utc - ts_dt).total_seconds() / 60.0, 1) if ts_dt else None
+            # Watcher cadence is 5 min; >12 min indicates a missed cycle.
+            stale = age_min is not None and age_min > 12
+            hb_status = data.get("status")
+            if hb_status == "FAIL":
+                display_status = "FAIL"
+            elif stale:
+                display_status = "STALE"
+            else:
+                display_status = "PASS"
+            return {
+                "ts": data.get("last_run_at_human") or iso,
+                "ts_iso": iso,
+                "status": display_status,
+                "age_minutes": age_min,
+                "source": "watcher-heartbeat",
+                "exit_reason": data.get("exit_reason"),
+            }
+        except (OSError, json.JSONDecodeError):
+            pass
+
+    return {
+        "ts": None,
+        "ts_iso": None,
+        "status": "UNKNOWN",
+        "age_minutes": None,
+        "source": "none",
+        "exit_reason": None,
+    }
+
+
 def working_tree_status():
     """Founder directive 2026-05-14 "DASHBOARD FIDELITY" item 2: actionable
     working-tree state. Combines git porcelain + watcher cadence telemetry.
@@ -1437,6 +1493,13 @@ def build_founder_queue():
             "crons": cron_map,
             "cron_install_status": cron_install_status(),
             "last_regen_all": last_regen_all_status(),
+            # 2026-05-19 Path 2 (heartbeat redundancy): secondary freshness
+            # signal from the 5-min downloads-watcher cron. If EITHER this
+            # OR last_regen_all is fresh, the system is alive. Closes the
+            # single-point-of-failure where the daily-maintenance task's
+            # misses left the dashboard reporting STALE despite the watcher
+            # cron firing normally.
+            "last_watcher_heartbeat": last_watcher_heartbeat(),
             "working_tree": working_tree_status(),
             "halts": active_halts(),
             "round_trip_last_pass": round_trip_last_pass_ts(),

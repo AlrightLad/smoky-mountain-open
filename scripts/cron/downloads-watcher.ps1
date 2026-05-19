@@ -346,4 +346,34 @@ finally {
     } catch {
         # Best-effort - never let telemetry break the cron exit
     }
+
+    # 2026-05-19 Path 2 (heartbeat redundancy): write a watcher-specific
+    # heartbeat each cycle. Independent of the regen-all heartbeat, this
+    # gives the dashboard a second freshness signal: if EITHER heartbeat is
+    # fresh, the system is alive. Avoids the prior single-point-of-failure
+    # where the daily-maintenance task's misses left the dashboard reporting
+    # STALE despite the 5-min watcher cron firing normally.
+    try {
+        $heartbeatDir = Join-Path $repoRoot ".claude\state\heartbeats"
+        $null = New-Item -ItemType Directory -Path $heartbeatDir -Force -ErrorAction SilentlyContinue
+        $watcherHeartbeat = Join-Path $heartbeatDir "watcher-last-run.json"
+        $hbIso = $endedAt.ToString("yyyy-MM-ddTHH:mm:ssZ")
+        $hbHuman = $endedAt.ToString("yyyy-MM-dd HH:mm 'UTC'")
+        $hbObj = [ordered]@{
+            ts                 = $hbIso
+            timestamp          = $hbIso
+            generated_at       = $hbIso
+            last_run_at_utc    = $hbIso
+            last_run_at_human  = $hbHuman
+            status             = if ($script:cronSuccess) { "PASS" } else { "FAIL" }
+            exit_reason        = $script:cronExitReason
+            duration_ms        = $durationMs
+            run_id             = $runId
+            source             = "downloads-watcher"
+            cron_cadence_min   = 5
+        }
+        ($hbObj | ConvertTo-Json -Compress) | Set-Content -Path $watcherHeartbeat -Encoding utf8
+    } catch {
+        # Best-effort - never let heartbeat write break the cron exit
+    }
 }
