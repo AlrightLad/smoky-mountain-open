@@ -1,6 +1,6 @@
 # Policy allow-list FINAL — Founder ratification required
 
-**Status:** AWAITING FOUNDER APPROVAL — replaces the open-ended `Bash(*)/Edit(*)/Write(*)` wildcards in `.claude/settings.json` with a per-command/per-path allow-list. Closes 3 of 18 AgentShield CRITICAL findings.
+**Status:** FOUNDER-ALLOW-LIST-APPROVED-2026-05-19T03:00:00Z (blanket approval 2026-05-19) — APPLIED to `.claude/settings.json` per Founder direction. Closes 3 of 18 AgentShield CRITICAL findings (validated post-apply via re-scan).
 
 **Created:** 2026-05-19 (Founder LOCKED 2026-05-19 follow-on to `policy-overpermissiveness-ratification.md`; Founder picked the ALLOW-LIST approach — Option A).
 
