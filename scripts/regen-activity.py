@@ -180,12 +180,20 @@ def scan_telemetry_events():
     out = []
     if not TELEMETRY_DIR.exists():
         return out
+    # Phase B (session 3, 2026-05-19 — Founder reported session 2's 31 ship
+    # commits did NOT appear in activity feed). Root cause: 1722 cron
+    # telemetry events flooded the 500-entry cap, crowding out 619 actual
+    # commits. Per P10 (Actionable Surfacing): cron heartbeats are NOT
+    # actionable — they belong on a cron-health surface, not the activity
+    # feed. Filter out cron.*.end / cron.*.start events. Ship.complete +
+    # session.team-work.summary are the actionable telemetry types.
     interesting_types = {
         "ship.complete",
         "session.team-work.summary",
-        "cron.proposal-readiness.end",
-        "cron.token-sidecar.end",
-        "cron.downloads-watcher.end",
+        # cron.* heartbeats removed 2026-05-19 — they were 1722 of 2342
+        # telemetry events, flooding the activity feed with no Founder
+        # value. Re-add only if cron health needs its own surface AND a
+        # dedicated cap.
     }
     for ndjson_file in sorted(TELEMETRY_DIR.glob("*.ndjson")):
         # Filename guard: filename includes date, skip files older than cutoff.
