@@ -1,13 +1,13 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-19T20:37:13Z",
-  "generated_at": "2026-05-19T20:37:13Z",
+  "timestamp": "2026-05-19T20:42:13Z",
+  "generated_at": "2026-05-19T20:42:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
-  "summary": "watcher cycling · applies blocked (6 skips on dirty tree) · 34 in inbox",
-  "as_of": "2026-05-19T20:35:48Z",
+  "summary": "watcher cycling · applies blocked (7 skips on dirty tree) · 34 in inbox",
+  "as_of": "2026-05-19T20:40:48Z",
   "stale": false,
   "age_hours": 0.02333333333333333,
   "counts": {
@@ -31,6 +31,13 @@
     {
       "category": "stall",
       "status": "skip-dirty",
+      "name": "2026-05-19T20-40-48Z-downloads-watcher.log",
+      "note": "[20:40:48] SKIP working tree dirty with non-routine files: scripts/visual-audit/2026-05-19-cycle1/activity-desktop.png, scripts/visual-audit/2026-05-19-cycle1/activity-desktop-wide.png, scripts/visual",
+      "when": "2026-05-19T20:40:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
       "name": "2026-05-19T20-35-48Z-downloads-watcher.log",
       "note": "[20:35:48] SKIP working tree dirty with non-routine files: scripts/visual-audit/2026-05-19-cycle1/activity-desktop.png, scripts/visual-audit/2026-05-19-cycle1/activity-desktop-wide.png, scripts/visual",
       "when": "2026-05-19T20:35:48Z"
@@ -41,13 +48,6 @@
       "name": "2026-05-19T20-34-04Z-downloads-watcher.log",
       "note": "[20:34:04] SKIP working tree dirty with non-routine files: scripts/_idempotent_write.py, scripts/regen-dashboard.py, scripts/visual-audit/2026-05-19-cycle1/activity-desktop.png, scripts/visual-audit/2",
       "when": "2026-05-19T20:34:04Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-19T20-30-48Z-downloads-watcher.log",
-      "note": "[20:30:48] SKIP working tree dirty with non-routine files: .claude/state/amendments/applied/AMD-024-architecture-ai-engineer-agent.md, .claude/state/dashboard-health/post-commit-hook.log, scripts/_ide",
-      "when": "2026-05-19T20:30:48Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 6,
+    "consecutive_skips": 7,
     "age_minutes": 1.4
   }
 }
