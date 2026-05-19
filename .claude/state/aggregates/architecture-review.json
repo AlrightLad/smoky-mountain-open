@@ -1,24 +1,164 @@
 {
-  "schema_version": "architecture-review-v1.0",
-  "timestamp": "2026-05-19T20:17:13Z",
-  "generated_at": "2026-05-19T20:17:13Z",
-  "source": "regen-dashboard.architecture_review_status()",
+  "schema_version": "architecture-review-v2.0",
+  "timestamp": "2026-05-19T20:25:21Z",
+  "generated_at": "2026-05-19T20:25:21Z",
+  "updated_at": "2026-05-19T20:25:21Z",
+  "source": "scripts/aggregate-architecture-review.py (autonomous-v1)",
   "available": true,
-  "status": "unknown",
-  "raw_status": "unknown",
-  "summary": "0 pending recommendations",
-  "as_of": null,
+  "status": "red",
+  "raw_status": "red",
+  "summary": "5 file-size findings",
+  "as_of": "2026-05-19T20:25:21Z",
   "stale": false,
-  "age_hours": null,
+  "age_hours": 0,
   "counts": {
     "pending_recommendations": 0,
-    "ratification_rate_pct": 0
+    "ratification_rate_pct": 100,
+    "file_size_findings": 5,
+    "function_count_findings": 0,
+    "total_findings": 5
   },
-  "details": [],
+  "pending_recommendations_count": 0,
+  "ratification_rate": 1.0,
+  "latest_daily_health": {
+    "date": "2026-05-19",
+    "color": "red",
+    "summary": "5 file-size findings"
+  },
+  "top_3_priorities": [
+    {
+      "title": "data.js exceeds 800-line limit (2159 lines)",
+      "owning_agent": "architecture",
+      "priority": "CRITICAL",
+      "category": "file-size",
+      "detail": "src/core file size: 2159 lines (limit 800). Coding-style rule: split into focused modules.",
+      "path": "src/core/data.js"
+    },
+    {
+      "title": "firebase.js exceeds 800-line limit (943 lines)",
+      "owning_agent": "architecture",
+      "priority": "HIGH",
+      "category": "file-size",
+      "detail": "src/core file size: 943 lines (limit 800). Coding-style rule: split into focused modules.",
+      "path": "src/core/firebase.js"
+    },
+    {
+      "title": "router.js exceeds 800-line limit (2917 lines)",
+      "owning_agent": "architecture",
+      "priority": "CRITICAL",
+      "category": "file-size",
+      "detail": "src/core file size: 2917 lines (limit 800). Coding-style rule: split into focused modules.",
+      "path": "src/core/router.js"
+    }
+  ],
+  "details": [
+    {
+      "category": "file-size",
+      "status": "critical",
+      "name": "data.js exceeds 800-line limit (2159 lines)",
+      "note": "src/core file size: 2159 lines (limit 800). Coding-style rule: split into focused modules.",
+      "path": "src/core/data.js"
+    },
+    {
+      "category": "file-size",
+      "status": "high",
+      "name": "firebase.js exceeds 800-line limit (943 lines)",
+      "note": "src/core file size: 943 lines (limit 800). Coding-style rule: split into focused modules.",
+      "path": "src/core/firebase.js"
+    },
+    {
+      "category": "file-size",
+      "status": "critical",
+      "name": "router.js exceeds 800-line limit (2917 lines)",
+      "note": "src/core file size: 2917 lines (limit 800). Coding-style rule: split into focused modules.",
+      "path": "src/core/router.js"
+    },
+    {
+      "category": "file-size",
+      "status": "high",
+      "name": "sync.js exceeds 800-line limit (927 lines)",
+      "note": "src/core file size: 927 lines (limit 800). Coding-style rule: split into focused modules.",
+      "path": "src/core/sync.js"
+    },
+    {
+      "category": "file-size",
+      "status": "high",
+      "name": "functions/index.js exceeds 800-line limit (861 lines)",
+      "note": "Cloud Functions index.js: 861 lines (limit 800, 8 exports). Split into per-function modules per firebase-functions v2 conventions.",
+      "path": "functions/index.js"
+    }
+  ],
+  "recommendations": [
+    {
+      "title": "data.js exceeds 800-line limit (2159 lines)",
+      "category": "file-size",
+      "severity": "critical",
+      "detail": "src/core file size: 2159 lines (limit 800). Coding-style rule: split into focused modules.",
+      "path": "src/core/data.js",
+      "metrics": {
+        "lines": 2159,
+        "limit": 800
+      }
+    },
+    {
+      "title": "firebase.js exceeds 800-line limit (943 lines)",
+      "category": "file-size",
+      "severity": "high",
+      "detail": "src/core file size: 943 lines (limit 800). Coding-style rule: split into focused modules.",
+      "path": "src/core/firebase.js",
+      "metrics": {
+        "lines": 943,
+        "limit": 800
+      }
+    },
+    {
+      "title": "router.js exceeds 800-line limit (2917 lines)",
+      "category": "file-size",
+      "severity": "critical",
+      "detail": "src/core file size: 2917 lines (limit 800). Coding-style rule: split into focused modules.",
+      "path": "src/core/router.js",
+      "metrics": {
+        "lines": 2917,
+        "limit": 800
+      }
+    },
+    {
+      "title": "sync.js exceeds 800-line limit (927 lines)",
+      "category": "file-size",
+      "severity": "high",
+      "detail": "src/core file size: 927 lines (limit 800). Coding-style rule: split into focused modules.",
+      "path": "src/core/sync.js",
+      "metrics": {
+        "lines": 927,
+        "limit": 800
+      }
+    },
+    {
+      "title": "functions/index.js exceeds 800-line limit (861 lines)",
+      "category": "file-size",
+      "severity": "high",
+      "detail": "Cloud Functions index.js: 861 lines (limit 800, 8 exports). Split into per-function modules per firebase-functions v2 conventions.",
+      "path": "functions/index.js",
+      "metrics": {
+        "lines": 861,
+        "limit": 800,
+        "exports": 8
+      }
+    }
+  ],
+  "scan": {
+    "src_core_files_scanned": 19,
+    "functions_scanned": true,
+    "recommendations_dir_scanned": true
+  },
   "links": [
     {
       "label": "Pending recommendations",
       "href": "../../.claude/state/architecture-review/recommendations/pending/"
+    },
+    {
+      "label": "AMD-024",
+      "href": "../../.claude/state/amendments/applied/AMD-024-architecture-ai-engineer-agent.md"
     }
   ],
   "source_path": ".claude/state/aggregates/architecture-review.json"
