@@ -20,16 +20,8 @@
 set -e
 cd "$(git rev-parse --show-toplevel)"
 
-# Recursion guard: my own auto-commit re-fires this hook. Bail on
-# cron(routine) / decision-apply commits so we don't loop.
-HEAD_MSG=$(git log -1 --pretty=%s 2>/dev/null || echo "")
-case "$HEAD_MSG" in
-    "cron(routine)"*|"Apply proposal decisions"*|"Apply amendment decisions"*|"Apply escalation decisions"*|"cron: "*)
-        exit 0
-        ;;
-esac
-
-# Locate python (mirrors regen-all.sh)
+# Locate python early (needed by both recursion-guard heartbeat refresh and
+# main regen path). Mirrors regen-all.sh discovery order.
 PY=""
 for c in \
     "$LOCALAPPDATA/Programs/Python/Python312/python.exe" \
@@ -43,6 +35,32 @@ done
 if [ -z "$PY" ]; then
     PY=$(command -v python3 2>/dev/null || command -v python 2>/dev/null || echo "python")
 fi
+
+# Recursion guard: my own auto-commit re-fires this hook. Bail on
+# cron(routine) / decision-apply commits so we don't loop the full regen.
+#
+# 2026-05-19 heartbeat-redundancy fix (Path 1): the prior version exited
+# 0 here WITHOUT refreshing the heartbeat. Result: the watcher cron's
+# 5-min auto-commit fired this hook every cycle but never updated the
+# heartbeat, so it went 19+ hours stale despite the system being alive.
+# We now write a fast-path heartbeat (status=PASS-COMMIT, source=post-
+# commit-hook-fast, duration=0) on every cron(routine) commit before
+# exiting. The full-regen heartbeat below still writes on real commits
+# and wins because it lands later. This means: as long as ANY commit
+# happens (including 5-min watcher auto-commits), the heartbeat stays
+# fresh.
+HEAD_MSG=$(git log -1 --pretty=%s 2>/dev/null || echo "")
+case "$HEAD_MSG" in
+    "cron(routine)"*|"Apply proposal decisions"*|"Apply amendment decisions"*|"Apply escalation decisions"*|"cron: "*)
+        if [ -f "scripts/write-regen-heartbeat.py" ]; then
+            HEARTBEAT_STATUS="PASS-COMMIT" \
+            HEARTBEAT_SOURCE="post-commit-hook-fast" \
+            HEARTBEAT_DURATION="0" \
+            "$PY" scripts/write-regen-heartbeat.py >/dev/null 2>&1 || true
+        fi
+        exit 0
+        ;;
+esac
 
 # Read ship_id from current-ship.json (per ESC-003 Approach A)
 SHIP_PATH=".claude/state/current-ship.json"
@@ -134,6 +152,25 @@ if [ -n "$FAILED" ]; then
     echo "[post-commit] see $SCAFFOLD_LOG for diagnostics" >&2
 fi
 
+# 2026-05-19 heartbeat-redundancy fix (Path 1): write the regen heartbeat
+# right after the dashboard regen loop completes. status=PASS when every
+# regen script returned 0, GATE-FAIL when any failed. source=post-commit-
+# hook lets the dashboard distinguish hook-driven refreshes from the
+# scheduled daily-maintenance task (which used to be the only writer).
+# This guarantees the heartbeat refreshes on EVERY real commit, closing
+# the 19+ hour stale gap that the daily-maintenance task's misses caused.
+if [ -f "scripts/write-regen-heartbeat.py" ]; then
+    if [ -n "$FAILED" ]; then
+        HEARTBEAT_STATUS="GATE-FAIL"
+    else
+        HEARTBEAT_STATUS="PASS"
+    fi
+    HEARTBEAT_STATUS="$HEARTBEAT_STATUS" \
+    HEARTBEAT_SOURCE="post-commit-hook" \
+    HEARTBEAT_DURATION="0" \
+    "$PY" scripts/write-regen-heartbeat.py >> "$SCAFFOLD_LOG" 2>&1 || true
+fi
+
 # Phase T1 D34 — P9.5 automated truthfulness self-check.
 # Asserts that session-transcript ingestion + aggregator produce non-zero
 # output when source files are present. Catches silent data-loss bugs
@@ -167,7 +204,8 @@ docs/reports/index.html
 .claude/state/telemetry/aggregates
 .claude/state/telemetry/events
 .claude/state/dashboard-health
-.claude/state/aggregates"
+.claude/state/aggregates
+.claude/state/heartbeats"
 
 DIRTY=""
 for p in $CLASS_A_PATHS; do
