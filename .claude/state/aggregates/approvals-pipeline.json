@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-19T03:15:49Z",
-  "generated_at": "2026-05-19T03:15:49Z",
+  "timestamp": "2026-05-19T03:18:48Z",
+  "generated_at": "2026-05-19T03:18:48Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "red",
-  "raw_status": "red",
-  "summary": "watcher errored · 33 in inbox",
+  "status": "yellow",
+  "raw_status": "yellow",
+  "summary": "watcher cycling · last 2 runs skipped on dirty tree · 33 in inbox",
   "as_of": "2026-05-19T03:15:48Z",
   "stale": false,
-  "age_hours": 0.0,
+  "age_hours": 0.05,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 2,
@@ -30,9 +30,9 @@
     },
     {
       "category": "stall",
-      "status": "incomplete",
+      "status": "skip-dirty",
       "name": "2026-05-19T03-15-48Z-downloads-watcher.log",
-      "note": "[03:15:48] python=C:\\Users\\Zach\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "note": "[03:15:49] SKIP working tree dirty with non-routine files: .claude/settings.local.json.pre-ecc-activation-backup, .claude/state/dashboard-audit-2026-05-18/fixture/ecc-design-test.html, .claude/state/d",
       "when": "2026-05-19T03:15:48Z"
     },
     {
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 0,
-    "age_minutes": 0.0
+    "consecutive_skips": 2,
+    "age_minutes": 3.0
   }
 }
