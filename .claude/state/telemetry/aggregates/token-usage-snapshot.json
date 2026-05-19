@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-18T23:57:12.959168+00:00",
+  "generated_at": "2026-05-19T00:02:12.989198+00:00",
   "_meter_status": "wired-real",
   "session_transcripts": {
     "generated_at": "2026-05-18T22:45:01.365547+00:00",
@@ -150,7 +150,7 @@
   },
   "quota_status": {
     "state": "fresh",
-    "as_of": "2026-05-18T23:57:12.3848780Z",
+    "as_of": "2026-05-19T00:02:12.4026458Z",
     "age_seconds": 0,
     "weekly_tokens": 102000,
     "weekly_cap": null,
@@ -311,6 +311,10 @@
         "2026-05-18": {
           "real": 0,
           "estimated": 0
+        },
+        "2026-05-19": {
+          "real": 0,
+          "estimated": 0
         }
       }
     }
@@ -421,6 +425,10 @@
         "2026-05-18": {
           "real": 0,
           "estimated": 0
+        },
+        "2026-05-19": {
+          "real": 0,
+          "estimated": 0
         }
       }
     },
@@ -501,6 +509,10 @@
         "2026-05-18": {
           "real": 0,
           "estimated": 0
+        },
+        "2026-05-19": {
+          "real": 0,
+          "estimated": 0
         }
       }
     },
@@ -527,6 +539,10 @@
           "estimated": 0
         },
         "2026-05-18": {
+          "real": 0,
+          "estimated": 0
+        },
+        "2026-05-19": {
           "real": 0,
           "estimated": 0
         }
@@ -607,6 +623,10 @@
         "2026-04-22": {
           "real": 146988627,
           "estimated": 0
+        },
+        "2026-05-19": {
+          "real": 0,
+          "estimated": 0
         }
       }
     },
@@ -640,11 +660,11 @@
     "estimated": 7292040,
     "manual": 0,
     "first_event_at": "2026-04-17T22:45:30.161000+00:00",
-    "last_event_at": "2026-05-18T23:57:12+00:00"
+    "last_event_at": "2026-05-19T00:02:12+00:00"
   },
   "_counts": {
     "real_events": 58,
-    "estimated_events": 2253,
+    "estimated_events": 2256,
     "manual_entries": 0
   }
 }
