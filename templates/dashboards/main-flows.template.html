@@ -408,15 +408,129 @@
         .mf-caveats { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3); font-size: 0.75rem; color: var(--text-secondary); line-height: 1.55; }
         .mf-caveats strong { color: var(--accent-brass); }
 
-        /* M5.8 (2026-05-19) — Founder reckoning: title is the visual focal
-         * point in Janowiak's reference (large, bold, white, near-display
-         * weight). PARBAUGHS title was inheriting standard pb-page-title
-         * which is set for compact dashboards; main-flows is the document
-         * surface where the title needs to ANCHOR the reading. Bump font-
-         * size, weight, and tighten leading. Subtitle gets max-width to
-         * avoid wrap noise. */
-        .pb-page-title-row .pb-page-title { font-size: clamp(1.75rem, 2.4vw, 2.5rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; color: var(--text-primary); }
-        .pb-page-title-row .pb-page-subtitle { max-width: 56rem; font-size: 0.875rem; line-height: 1.55; color: var(--text-secondary); margin-top: var(--space-2); }
+        /* M5.9 (2026-05-19) — per-frame side-by-side reckoning vs Janowiak
+         * frames 01/04/07/12. M5.8 made title large-display per the LIE that
+         * "the title needs to anchor". Janowiak's reference shows the title
+         * as compact-small at top-left ("ToDesktop — Architecture & Flows")
+         * with the DIAGRAM as the focal point. Founder confirmed: "the
+         * current version does NOT match the video". Shrink title to a
+         * single compact row, line-up tight with subtitle, drop subtitle
+         * font even smaller. The diagram + legend + flow rail must dominate
+         * the viewport. */
+        .pb-page-title-row .pb-page-title { font-size: 1.25rem; font-weight: 600; line-height: 1.2; letter-spacing: -0.005em; color: var(--text-primary); margin: 0; }
+        .pb-page-title-row .pb-page-subtitle { max-width: 64rem; font-size: 0.75rem; line-height: 1.45; color: var(--text-tertiary); margin-top: var(--space-1); }
+        .pb-page-title-row { margin-bottom: var(--space-2); }
+
+        /* M5.9 — legend strip presence. Janowiak's legend is a single tight
+         * row of small colored squares + uppercase mono labels at the top of
+         * the diagram region. M5.3 floated the legend correctly but at
+         * 0.6875rem mono it reads as a thin strip; PARBAUGHS needs the
+         * legend dots BIGGER (8 → 10px) to register as the column-color key
+         * the reference establishes. */
+        .mf-legend {
+            margin: var(--space-2) 0 var(--space-3);
+            gap: var(--space-3);
+        }
+        .mf-legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 1px;
+        }
+        .mf-legend-item {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* M5.10 (2026-05-19) — node fill on selection iteration. M5.9 set
+         * 0.14 which still reads as "outlined-with-tint"; Janowiak's lit
+         * nodes have a stronger filled presence. Bump fill to 0.18 + thicker
+         * 2px border that reads as "filled-card" against dark canvas. */
+        .mf-grid.has-selection .mf-node.is-on-path {
+            opacity: 1;
+            border-color: var(--accent-brass);
+            border-width: 2px;
+            box-shadow: 0 1px 0 rgba(212, 168, 87, 0.25);
+            background: rgba(212, 168, 87, 0.18);
+            transform: translateY(-1px);
+        }
+        /* M5.10 — equalize border baselines so layout doesn't lurch on
+         * selection. Off-path keeps 1px subtle; only is-on-path bumps to 2px. */
+        .mf-grid:not(.has-selection) .mf-node {
+            border-color: var(--border-subtle);
+        }
+
+        /* M5.9 — arrow visibility. M5.8 kept stroke-width 1.5px which is
+         * thin-but-not-invisible at 4K but at 1920x1080 reads as ghost-
+         * lines. Janowiak's arrows are clearly bright yellow. Bump to 2px
+         * + stroke-linecap=round softens corners. */
+        .mf-arrow-line {
+            fill: none;
+            stroke: var(--accent-brass);
+            stroke-width: 2;
+            stroke-dasharray: none;
+            stroke-linecap: round;
+            opacity: 1;
+        }
+        .mf-arrow-head {
+            fill: var(--accent-brass);
+        }
+
+        /* M5.9 — flow rail row density. Janowiak rail rows look tight + cool;
+         * PARBAUGHS rail rows had 6px vertical padding which feels cramped
+         * AND the chrome (search + 2 chip rows) eats vertical space. Drop
+         * row padding 6px → 5px so 1-2 more rows fit; tighten id width. */
+        .mf-flows-item { padding: 5px var(--space-3); }
+        .mf-flows-id { min-width: 28px; font-size: 0.625rem; }
+        .mf-flows-name { font-size: 0.75rem; }
+
+        /* M5.9 — collapse rail filter chrome to a single tighter row. Was 2
+         * separate `.mf-rail-chips` rows + a search input. New layout:
+         * search inside chip-row, chip-row collapses to single-line scroll.
+         * Per M5.8 note: "compromise filter chrome to read as density-aware
+         * utility". */
+        .mf-rail-chips { padding: 4px var(--space-3) 0; gap: 2px; }
+        .mf-rail-chip {
+            padding: 1px 6px;
+            font-size: 0.5625rem;
+        }
+        .mf-rail-search-wrap { padding: var(--space-2) var(--space-3) 0; }
+        .mf-rail-search { padding: 4px var(--space-2); font-size: 0.6875rem; }
+
+        /* M5.9 — caveats expander further dimmed. Janowiak has zero meta-
+         * chrome above the legend. PARBAUGHS keeps the source-of-truth
+         * disclosure for traceability but dims it to whisper-level. */
+        .mf-caveats-details { font-size: 0.6875rem; color: var(--text-tertiary); opacity: 0.65; }
+        .mf-caveats-details summary { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; }
+
+        /* M5.9 — flow rail card-header tighter + brass-mono meta. */
+        .mf-card-header { padding: 6px var(--space-3); }
+        .mf-card-title { font-size: 0.625rem; }
+        .mf-card-meta { font-size: 0.625rem; }
+
+        /* M5.9 — steps panel: brighten the step number badge to match
+         * Janowiak's path-badge brightness; align mono label color to text-
+         * primary so steps read as evidence (not metadata). */
+        .mf-step-num {
+            background: var(--accent-brass);
+            color: var(--bg-page);
+            font-weight: 700;
+        }
+        .mf-step-label { color: var(--text-primary); }
+        .mf-step-desc { color: var(--text-secondary); font-size: 0.6875rem; }
+
+        /* M5.9 — node label brightening. Janowiak's lit-node labels are
+         * crisp white. PARBAUGHS used text-primary which is chalk-50 (correct)
+         * but the node subtitle (mono) was text-tertiary (chalk-400) which
+         * is too dim against the canvas. Lift to text-secondary. */
+        .mf-node-subtitle { color: var(--text-secondary); }
+        .mf-grid.has-selection .mf-node.is-on-path .mf-node-label { color: var(--text-primary); }
+        .mf-grid.has-selection .mf-node.is-on-path .mf-node-subtitle { color: var(--text-secondary); }
+
+        /* M5.9 — arrow badge contrast. Inverse-on-brass is correct, but the
+         * badge text fill was bg-page which at billiard-green looks muddy.
+         * Switch to a hard dark anchored to billiard-green-900 for contrast. */
+        .mf-arrow-badge-bg { fill: var(--accent-brass); stroke: var(--pb-billiard-green-900); stroke-width: 1; }
+        .mf-arrow-badge-text { fill: var(--pb-billiard-green-900); font-weight: 800; font-size: 11px; }
     </style>
 </head>
 <body class="pb-app">
@@ -440,8 +554,8 @@
     <main class="pb-page-main is-wide">
         <div class="pb-page-title-row">
             <div>
-                <h1 class="pb-page-title">Architecture &amp; Flows</h1>
-                <p class="pb-page-subtitle">Every component that powers PARBAUGHS — from member action to external system. Pick a flow on the right; the path lights up, arrows draw, the steps panel walks the journey.</p>
+                <h1 class="pb-page-title">PARBAUGHS &mdash; Architecture &amp; Flows</h1>
+                <p class="pb-page-subtitle">Every component that powers PARBAUGHS &mdash; from member action to external system. Pick a flow on the right; the path lights up, arrows draw, the steps panel walks the journey.</p>
             </div>
         </div>
 
@@ -974,10 +1088,15 @@
                     } else {
                         cx = mx; cy = my;
                     }
+                    // M5.10 — badge radius bumped 9 → 11 so badges are
+                    // clearly readable at 1920px. Janowiak's badges are
+                    // ~12px radius; we match to within 1px so badges
+                    // anchored to top-left of target node read as
+                    // "this is step N" without ambiguity.
                     var badge = document.createElementNS(ns, 'g');
                     var circle = document.createElementNS(ns, 'circle');
                     circle.setAttribute('class', 'mf-arrow-badge-bg');
-                    circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', 9);
+                    circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', 11);
                     badge.appendChild(circle);
                     var text = document.createElementNS(ns, 'text');
                     text.setAttribute('class', 'mf-arrow-badge-text');
