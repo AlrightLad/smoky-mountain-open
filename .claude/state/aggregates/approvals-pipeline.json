@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-19T20:52:13Z",
-  "generated_at": "2026-05-19T20:52:13Z",
+  "timestamp": "2026-05-19T20:56:35Z",
+  "generated_at": "2026-05-19T20:56:35Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
-  "summary": "watcher cycling · applies blocked (9 skips on dirty tree) · 34 in inbox",
-  "as_of": "2026-05-19T20:50:48Z",
+  "summary": "watcher cycling · applies blocked (10 skips on dirty tree) · 34 in inbox",
+  "as_of": "2026-05-19T20:55:48Z",
   "stale": false,
-  "age_hours": 0.02333333333333333,
+  "age_hours": 0.013333333333333334,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 2,
@@ -31,6 +31,13 @@
     {
       "category": "stall",
       "status": "skip-dirty",
+      "name": "2026-05-19T20-55-48Z-downloads-watcher.log",
+      "note": "[20:55:48] SKIP working tree dirty with non-routine files: scripts/visual-audit/2026-05-19-cycle1/activity-desktop.png, scripts/visual-audit/2026-05-19-cycle1/activity-desktop-wide.png, scripts/visual",
+      "when": "2026-05-19T20:55:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
       "name": "2026-05-19T20-50-48Z-downloads-watcher.log",
       "note": "[20:50:48] SKIP working tree dirty with non-routine files: scripts/visual-audit/2026-05-19-cycle1/activity-desktop.png, scripts/visual-audit/2026-05-19-cycle1/activity-desktop-wide.png, scripts/visual",
       "when": "2026-05-19T20:50:48Z"
@@ -41,13 +48,6 @@
       "name": "2026-05-19T20-45-48Z-downloads-watcher.log",
       "note": "[20:45:48] SKIP working tree dirty with non-routine files: .claude/state/dashboard-health/post-commit-hook.log, scripts/visual-audit/2026-05-19-cycle1/activity-desktop.png, scripts/visual-audit/2026-0",
       "when": "2026-05-19T20:45:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-19T20-40-48Z-downloads-watcher.log",
-      "note": "[20:40:48] SKIP working tree dirty with non-routine files: scripts/visual-audit/2026-05-19-cycle1/activity-desktop.png, scripts/visual-audit/2026-05-19-cycle1/activity-desktop-wide.png, scripts/visual",
-      "when": "2026-05-19T20:40:48Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 9,
-    "age_minutes": 1.4
+    "consecutive_skips": 10,
+    "age_minutes": 0.8
   }
 }
