@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-05-19T02:24:16.669Z",
+  "captured_at": "2026-05-19T19:45:06.161Z",
   "viewport": {
     "width": 1920,
     "height": 1080
@@ -11,7 +11,7 @@
       "exists": true,
       "bbox": {
         "x": 153,
-        "y": 13.1875,
+        "y": 13.375,
         "width": 1238,
         "height": 822.15625
       },
@@ -54,7 +54,7 @@
       "exists": true,
       "bbox": {
         "x": 141,
-        "y": 1.1875,
+        "y": 1.375,
         "width": 1272,
         "height": 846
       },
@@ -67,7 +67,7 @@
       "exists": true,
       "bbox": {
         "x": 1421,
-        "y": 157.1875,
+        "y": 121.375,
         "width": 358,
         "height": 822
       },
@@ -77,9 +77,9 @@
       "exists": true,
       "bbox": {
         "x": 140,
-        "y": 0.1875,
+        "y": 0.375,
         "width": 1640,
-        "height": 1500
+        "height": 1464
       },
       "grid_template_columns": "1264px 360px",
       "display": "grid"
@@ -95,7 +95,7 @@
       "card_count": 0
     },
     "page": {
-      "scroll_height": 1811,
+      "scroll_height": 1766,
       "viewport_width": 1920,
       "viewport_height": 1080
     }
