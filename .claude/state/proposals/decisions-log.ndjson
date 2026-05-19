@@ -11,3 +11,4 @@
 {"ts": "2026-05-14T23:06:05Z", "proposal_id": "PROP-013", "decision": "approve", "note": "", "decided_at": "2026-05-14T22:30:12.823Z", "moved_to": ".claude/state/proposals/approved/PROP-013-button-coverage-gate.md"}
 {"ts": "2026-05-15T01:52:07Z", "proposal_id": "TEST-PIPELINE-CANARY", "decision": "approve", "note": "canary \u2014 verify script", "decided_at": "2026-05-15T01:51:57Z", "moved_to": ".claude/state/proposals/approved/TEST-PIPELINE-CANARY.md"}
 {"ts": "2026-05-18T18:05:51Z", "proposal_id": "TEST-PIPELINE-CANARY", "decision": "approve", "note": "canary \u2014 verify script", "decided_at": "2026-05-18T18:04:36Z", "moved_to": ".claude/state/proposals/approved/TEST-PIPELINE-CANARY.md"}
+{"ts": "2026-05-19T00:40:51Z", "proposal_id": "TEST-PIPELINE-CANARY", "decision": "approve", "note": "canary \u2014 verify script", "decided_at": "2026-05-19T00:37:22Z", "moved_to": ".claude/state/proposals/approved/TEST-PIPELINE-CANARY.md"}
