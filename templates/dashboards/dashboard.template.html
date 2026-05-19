@@ -556,34 +556,43 @@
                 </a>
             </div>
 
+            <!-- phase-I iter6 cycle 3 (2026-05-19): Governance state row.
+                 Sub-section title separates proposals + amendments visually
+                 from the runtime metrics above. Linear's section-divider pattern. -->
+            <h3 style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: var(--pb-chalk-400); text-transform: uppercase; letter-spacing: 0.13em; margin: var(--space-5) 0 var(--space-3) 0;">Governance state</h3>
             <div class="pb-kpi-grid">
                 <a class="pb-kpi-card" href="proposals.html" style="text-decoration: none; color: inherit;" title="Click to open Proposals dashboard">
                     <span class="pb-kpi-label">Proposals pending</span>
                     <span class="pb-kpi-value" data-kpi="proposals-pending">&mdash;</span>
+                    <span class="pb-kpi-delta is-flat" data-kpi-delta="proposals-pending" hidden></span>
                     <span class="pb-kpi-sub">awaiting Founder review</span>
                     <span class="pb-action-badge" data-who="none" data-kpi-badge="proposals-pending">ok &middot; no pending</span>
                 </a>
                 <a class="pb-kpi-card is-info" href="proposals.html#in-flight" style="text-decoration: none; color: inherit;" title="Click to open Proposals dashboard (in-flight section)">
                     <span class="pb-kpi-label">Proposals in flight</span>
                     <span class="pb-kpi-value" data-kpi="proposals-in-flight">&mdash;</span>
+                    <span class="pb-kpi-delta is-flat" data-kpi-delta="proposals-in-flight" hidden></span>
                     <span class="pb-kpi-sub">approved, ship-in-progress</span>
                     <span class="pb-action-badge" data-who="cron" data-kpi-badge="proposals-in-flight">cron &middot; auto-promotes on ship</span>
                 </a>
                 <a class="pb-kpi-card is-positive" href="proposals.html#shipped" style="text-decoration: none; color: inherit;" title="Click to open Proposals dashboard (shipped archive)">
                     <span class="pb-kpi-label">Proposals shipped</span>
                     <span class="pb-kpi-value" data-kpi="proposals-shipped">&mdash;</span>
+                    <span class="pb-kpi-delta is-flat" data-kpi-delta="proposals-shipped" hidden></span>
                     <span class="pb-kpi-sub">total terminal</span>
                     <span class="pb-action-badge" data-who="none" data-kpi-badge="proposals-shipped">ok &middot; archive</span>
                 </a>
                 <a class="pb-kpi-card" href="amendments.html" style="text-decoration: none; color: inherit;" title="Click to open Amendments dashboard">
                     <span class="pb-kpi-label">Amendments pending</span>
                     <span class="pb-kpi-value" data-kpi="amendments-pending">&mdash;</span>
+                    <span class="pb-kpi-delta is-flat" data-kpi-delta="amendments-pending" hidden></span>
                     <span class="pb-kpi-sub">governance amendment drafts</span>
                     <span class="pb-action-badge" data-who="none" data-kpi-badge="amendments-pending">ok &middot; no drafts</span>
                 </a>
                 <a class="pb-kpi-card is-positive" href="amendments.html#applied" style="text-decoration: none; color: inherit;" title="Click to open Amendments dashboard (applied archive)">
                     <span class="pb-kpi-label">Amendments applied</span>
                     <span class="pb-kpi-value" data-kpi="amendments-applied">&mdash;</span>
+                    <span class="pb-kpi-delta is-flat" data-kpi-delta="amendments-applied" hidden></span>
                     <span class="pb-kpi-sub">total terminal</span>
                     <span class="pb-action-badge" data-who="none" data-kpi-badge="amendments-applied">ok &middot; archive</span>
                 </a>
@@ -591,8 +600,6 @@
                     <span class="pb-kpi-label">Quota last anchored</span>
                     <span class="pb-kpi-value is-small" data-kpi="manual-quota-age">&mdash;</span>
                     <span class="pb-kpi-sub">via refresh-quota-manual.ps1</span>
-                    <!-- AMD-026 P10: this badge stays as "founder" since refresh
-                         requires Founder paste from claude.ai. -->
                     <span class="pb-action-badge" data-who="founder" data-kpi-badge="manual-quota-age">founder &middot; paste to refresh</span>
                 </div>
             </div>
@@ -1220,6 +1227,55 @@
                         fd2.innerHTML = '<strong>' + fiqD + ' open</strong> <span class="pb-kpi-delta-quiet">&middot; founder review queue</span>';
                     }
                 }
+
+                // Cycle 3 (2026-05-19): governance state context lines.
+                function _govDelta(selector, value, opts) {
+                    var el = document.querySelector(selector);
+                    if (!el) return;
+                    el.hidden = false;
+                    if (value === 0) {
+                        el.className = 'pb-kpi-delta is-flat';
+                        el.innerHTML = '<strong>' + (opts.zeroLabel || 'clean') + '</strong> <span class="pb-kpi-delta-quiet">&middot; ' + (opts.zeroDetail || 'archive untouched') + '</span>';
+                    } else {
+                        el.className = 'pb-kpi-delta ' + (opts.activeClass || 'is-up');
+                        el.innerHTML = '<strong>' + value + ' ' + (opts.unitLabel || 'open') + '</strong> <span class="pb-kpi-delta-quiet">&middot; ' + (opts.activeDetail || '') + '</span>';
+                    }
+                }
+                _govDelta('[data-kpi-delta="proposals-pending"]', pending, {
+                    zeroLabel: 'no pending',
+                    zeroDetail: 'founder uninterrupted',
+                    unitLabel: 'pending',
+                    activeClass: 'is-warn',
+                    activeDetail: 'awaiting founder review'
+                });
+                _govDelta('[data-kpi-delta="proposals-in-flight"]', inFlight, {
+                    zeroLabel: 'none in flight',
+                    zeroDetail: 'all approved · shipped',
+                    unitLabel: 'in flight',
+                    activeClass: 'is-up',
+                    activeDetail: 'cron auto-promotes on ship'
+                });
+                _govDelta('[data-kpi-delta="proposals-shipped"]', shipped, {
+                    zeroLabel: 'archive empty',
+                    zeroDetail: 'first ship pending',
+                    unitLabel: 'shipped',
+                    activeClass: 'is-up',
+                    activeDetail: 'cumulative archive'
+                });
+                _govDelta('[data-kpi-delta="amendments-pending"]', amendPending, {
+                    zeroLabel: 'no drafts',
+                    zeroDetail: 'governance steady',
+                    unitLabel: 'drafts',
+                    activeClass: 'is-warn',
+                    activeDetail: 'awaiting founder ratification'
+                });
+                _govDelta('[data-kpi-delta="amendments-applied"]', amendApplied, {
+                    zeroLabel: 'archive empty',
+                    zeroDetail: 'first amendment pending',
+                    unitLabel: 'applied',
+                    activeClass: 'is-up',
+                    activeDetail: 'cumulative archive'
+                });
 
                 // Recent handoffs
                 // phase-I iter6 cycle 2 (2026-05-19): timeline-styled rows with
