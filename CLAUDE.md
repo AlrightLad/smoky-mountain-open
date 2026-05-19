@@ -137,7 +137,7 @@ Detailed file tree, Cloud Function inventory, Firestore rules architecture, desi
 - **Plugin coexistence policy:** `.claude/state/phase-0/coexistence-policy.md`
 - **Substrate KEEP/DROP/MIGRATE:** `.claude/state/substrate-audit-2026-05-18.md`
 - **Spec for active /goal:** `.claude/state/dashboard-completion-spec-2026-05-18.md`
-- **AMDs (25 applied):** `.claude/state/amendments/applied/`
+- **AMDs (27 applied):** `.claude/state/amendments/applied/` (AMD-027 added 2026-05-19: src/core/ orchestration-tier file-size budgets per Founder mandate "agent decides engineering")
 - **PROPs (4 shipped, 9 deferred):** `.claude/state/proposals/shipped/` + `ship-readiness-deferred/`
 - **Design docs:** `docs/`
 - **Design research:** `.claude/state/design-research/`

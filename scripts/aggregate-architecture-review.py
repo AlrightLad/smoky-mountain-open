@@ -57,9 +57,32 @@ ROOT = Path(__file__).resolve().parents[1]
 STATE = ROOT / ".claude" / "state"
 TARGET = STATE / "aggregates" / "architecture-review.json"
 
-SCHEMA_VERSION = "architecture-review-v2.0"
-MAX_FILE_LINES = 800  # ~/.claude/rules/ecc/common/coding-style.md max
-WARN_FILE_LINES = 600  # yellow threshold (75% of max)
+SCHEMA_VERSION = "architecture-review-v2.1"
+MAX_FILE_LINES = 800  # ~/.claude/rules/ecc/common/coding-style.md max (page-tier default)
+WARN_FILE_LINES = 600  # yellow threshold (75% of default)
+
+# AMD-027 orchestration-tier per-file budgets. Keyed by repo-relative
+# POSIX path. Files NOT in this dict fall back to MAX_FILE_LINES (800).
+# Engineering ruling per Founder mandate 2026-05-19 — see
+# .claude/state/amendments/applied/AMD-027-src-core-file-size-budget.md
+# for rationale + open-source benchmark check + 10x foresight.
+PER_FILE_BUDGETS: dict[str, int] = {
+    "src/core/router.js": 3000,
+    "src/core/data.js": 2500,
+    "src/core/firebase.js": 1000,
+    "src/core/sync.js": 1000,
+    "functions/index.js": 1000,
+}
+
+
+def _budget_for(rel_path: str) -> int:
+    """Return the line-count budget for the given repo-relative path.
+
+    AMD-027 ruling: orchestration-tier files (`src/core/router.js`,
+    `src/core/data.js`, …) get bespoke budgets; everything else uses
+    the 800-line default (`~/.claude/rules/ecc/common/coding-style.md`).
+    """
+    return PER_FILE_BUDGETS.get(rel_path, MAX_FILE_LINES)
 
 
 @dataclass(frozen=True)
@@ -101,11 +124,12 @@ def _count_lines(path: Path) -> int:
 
 
 def scan_core_size() -> list[Finding]:
-    """Flag any src/core/ file exceeding the project line-count rule.
+    """Flag any src/core/ file exceeding its per-file budget.
 
-    The 800-line rule lives in ~/.claude/rules/ecc/common/coding-style.md
-    ("Files are focused (<800 lines)") and the local CLAUDE.md operational
-    principles ("MANY SMALL FILES > FEW LARGE FILES: ... 800 max").
+    Default budget (800 lines) lives in ~/.claude/rules/ecc/common/coding-style.md
+    + CLAUDE.md operational principles ("MANY SMALL FILES > FEW LARGE FILES").
+    Orchestration-tier files (`src/core/router.js`, `src/core/data.js`, …)
+    get bespoke budgets per AMD-027 — see PER_FILE_BUDGETS.
     """
     findings: list[Finding] = []
     core_dir = ROOT / "src" / "core"
@@ -114,7 +138,19 @@ def scan_core_size() -> list[Finding]:
     for path in sorted(core_dir.glob("*.js")):
         lines = _count_lines(path)
         rel = path.relative_to(ROOT).as_posix()
-        if lines > MAX_FILE_LINES:
+        budget = _budget_for(rel)
+        # AMD-027 codified-budget files: no "approaching" warning at all.
+        # The budget IS the engineering ruling — files within budget are
+        # explicitly KEEP per AMD-027 rationale. Only flag when the file
+        # exceeds its budget (which then triggers an agent-decided review,
+        # not a Founder badge). Default files (no explicit budget) keep
+        # the historic 75% warn since they should be much smaller than
+        # the 800-line ceiling.
+        if rel in PER_FILE_BUDGETS:
+            warn_threshold = budget + 1  # disable warn — only over-budget triggers
+        else:
+            warn_threshold = int(budget * 0.75)
+        if lines > budget:
             # Severity bucketing — file-size findings are pre-existing
             # architectural debt rather than regressions, so we cap at
             # `high` even for >2x-over files. The CRITICAL severity is
@@ -123,32 +159,32 @@ def scan_core_size() -> list[Finding]:
             # scan_pending_recommendations). This keeps the banner
             # yellow/red signal proportional to recent deltas, not the
             # cumulative long-tail of historic large files.
-            severity = "medium" if lines <= MAX_FILE_LINES * 1.25 else "high"
+            severity = "medium" if lines <= budget * 1.25 else "high"
             findings.append(
                 Finding(
                     category="file-size",
                     severity=severity,
-                    title=f"{path.name} exceeds 800-line limit ({lines} lines)",
+                    title=f"{path.name} exceeds {budget}-line budget ({lines} lines)",
                     detail=(
-                        f"src/core file size: {lines} lines (limit {MAX_FILE_LINES}). "
-                        f"Coding-style rule: split into focused modules."
+                        f"src/core file size: {lines} lines (budget {budget} per AMD-027). "
+                        f"Engineering review: agent-decided refactor or budget amendment."
                     ),
                     path=rel,
-                    metrics={"lines": lines, "limit": MAX_FILE_LINES},
+                    metrics={"lines": lines, "limit": budget, "budget_source": "AMD-027" if rel in PER_FILE_BUDGETS else "default-800"},
                 )
             )
-        elif lines > WARN_FILE_LINES:
+        elif lines > warn_threshold:
             findings.append(
                 Finding(
                     category="file-size",
                     severity="medium",
-                    title=f"{path.name} approaching size limit ({lines}/{MAX_FILE_LINES} lines)",
+                    title=f"{path.name} approaching size budget ({lines}/{budget} lines)",
                     detail=(
-                        f"src/core file size: {lines} lines (warn ≥{WARN_FILE_LINES}, "
-                        f"limit {MAX_FILE_LINES}). Consider refactoring before the next ship."
+                        f"src/core file size: {lines} lines (warn ≥{warn_threshold}, "
+                        f"budget {budget}). Consider refactoring before the next ship."
                     ),
                     path=rel,
-                    metrics={"lines": lines, "limit": MAX_FILE_LINES, "warn": WARN_FILE_LINES},
+                    metrics={"lines": lines, "limit": budget, "warn": warn_threshold, "budget_source": "AMD-027" if rel in PER_FILE_BUDGETS else "default-800"},
                 )
             )
     return findings
@@ -174,7 +210,8 @@ def scan_cloud_functions() -> list[Finding]:
     exports = _EXPORTS_RE.findall(body)
     lines = body.count("\n") + 1
     rel = idx.relative_to(ROOT).as_posix()
-    if lines > MAX_FILE_LINES:
+    budget = _budget_for(rel)
+    if lines > budget:
         # Pre-existing architectural debt — `medium` so the banner stays
         # informative without flipping to red on first-run. The Founder
         # mandate is "perform" not "shout".
@@ -182,14 +219,14 @@ def scan_cloud_functions() -> list[Finding]:
             Finding(
                 category="file-size",
                 severity="medium",
-                title=f"functions/index.js exceeds 800-line limit ({lines} lines)",
+                title=f"functions/index.js exceeds {budget}-line budget ({lines} lines)",
                 detail=(
-                    f"Cloud Functions index.js: {lines} lines (limit {MAX_FILE_LINES}, "
-                    f"{len(exports)} exports). Split into per-function modules per "
-                    f"firebase-functions v2 conventions."
+                    f"Cloud Functions index.js: {lines} lines (budget {budget} per AMD-027, "
+                    f"{len(exports)} exports). Engineering review: split per "
+                    f"firebase-functions v2 conventions or amend budget."
                 ),
                 path=rel,
-                metrics={"lines": lines, "limit": MAX_FILE_LINES, "exports": len(exports)},
+                metrics={"lines": lines, "limit": budget, "exports": len(exports), "budget_source": "AMD-027" if rel in PER_FILE_BUDGETS else "default-800"},
             )
         )
     # Expected roster per CLAUDE.md is 8. Surface any drift so it's visible
@@ -285,7 +322,7 @@ def _summary(findings: list[Finding], pending: int) -> str:
     """Single-line summary surfaced on the banner — Founder-readable, no
     "awaiting" wording per the 2026-05-19 mandate."""
     if not findings:
-        return "0 architectural concerns · scan clean"
+        return "0 architectural concerns · scan clean (AMD-027 budgets in effect)"
     parts: list[str] = []
     size_count = sum(1 for f in findings if f.category == "file-size")
     func_count = sum(1 for f in findings if f.category == "function-count")
