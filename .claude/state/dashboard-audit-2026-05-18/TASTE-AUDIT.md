@@ -15,7 +15,13 @@ For each surface:
 
 ## Surface 1 — `docs/reports/main-flows.html`
 
-**Peer references:** Janowiak ToDesktop video frames (12 captured), Stripe Atlas Architecture, Cloudflare Architecture blog. Reference frames at `.claude/state/main-flows-v2/janowiak-reference-frames/`.
+**Peer references (post-session-2 capture):**
+1. Janowiak ToDesktop video frames (12 captured at `.claude/state/main-flows-v2/janowiak-reference-frames/`)
+2. Stripe Atlas hero (`competitive-references/architecture-flows/stripe-atlas-hero.png`)
+3. Eraser.io Architecture Diagrams marketing page (`competitive-references/architecture-flows/eraser-architecture-diagrams.png`)
+4. Excalidraw hero (`competitive-references/architecture-flows/excalidraw-hero.png`)
+
+**M5 ≥ 2-peer triangulation requirement: SATISFIED** (4 peers, spec requires ≥ 2).
 
 **Latest capture:** `.claude/state/main-flows-v2/current-render-flow-selected.png` (post-M5.3, F1 selected)
 
@@ -27,14 +33,19 @@ For each surface:
 | D4 Color | 9.0 | Janowiak D4 + Clubhouse design system | Dark teal-gray bg ✓; brass/amber selection ✓; legend floats without container chrome (post-M5.3) ✓; 6-color legend matches column tier identity. |
 | D5 Editorial | 9.0 | Janowiak D5 + Linear empty states | Caveats compressed to `<details>` (post-M5.1); subtitle tightened to 1 sentence; floating legend no chrome. Gap: column subtitles still present (Janowiak doesn't have these). |
 
-**Surface score: 8.8 / 10** (post-M5.3). Below 9.5 target.
+**Surface score: 8.8 / 10** (post-M5.3 + peer triangulation validated).
 
-**Gap-to-9.5 plan** (next session):
-- Capture Stripe Atlas + Cloudflare Architecture peer references via Playwright (Approach F per M4-M5-SCORE doc).
-- Apply Approach E (steps panel tightening) and/or Approach B (node-level scale-in).
-- Optionally remove column subtitles.
+**Per-peer comparison observations:**
+- vs **Janowiak** — PARBAUGHS matches D1/D4/D5 (composition + color + editorial); slightly under on D3 motion (Janowiak has continuous draw signature). Closest peer.
+- vs **Stripe Atlas** — PARBAUGHS is denser; Stripe favors editorial whitespace + larger nodes. PARBAUGHS's 47-component grid would feel cramped on Stripe's page. Both are production-polished.
+- vs **Eraser.io** — PARBAUGHS has comparable density (Eraser's Netflix example shows similar node count). PARBAUGHS has more motion + interactive flow selection; Eraser is static reference. PARBAUGHS scores higher on D2 interaction.
+- vs **Excalidraw** — different aesthetic intent (hand-drawn whiteboard vs production polish). Useful for editorial restraint validation; PARBAUGHS aligns on minimal chrome.
 
-**Founder-approval status:** PENDING. Below 9.5 — needs either iteration or Founder gap-approval per spec D41.
+**Triangulation verdict:** PARBAUGHS at 8.8 is comparable-to-Eraser, below Janowiak's signature motion, denser than Stripe. The remaining 0.7 gap to 9.5 is primarily D3 motion polish (node-level scale-in) + optional subtitle removal — small, well-scoped iterations.
+
+**Founder-approval status:** PENDING. Below 9.5 by 0.7. Two paths:
+- **Option A:** 1-2 more iterations (Approach B + Approach E from M4-M5-SCORE doc) — ~30-60 min next session
+- **Option B:** Founder gap-approval for 8.8 as ship-quality, defer 9.5 as a follow-on polish ship after the goal closes
 
 ## Surface 2 — `docs/reports/dashboard.html`
 
