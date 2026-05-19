@@ -1,7 +1,7 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-19T19:17:13Z",
-  "generated_at": "2026-05-19T19:17:13Z",
+  "timestamp": "2026-05-19T19:17:30Z",
+  "generated_at": "2026-05-19T19:17:30Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "yellow",
@@ -9,7 +9,7 @@
   "summary": "watcher cycling · last 2 runs skipped on dirty tree · 33 in inbox",
   "as_of": "2026-05-19T19:15:48Z",
   "stale": false,
-  "age_hours": 0.02333333333333333,
+  "age_hours": 0.028333333333333332,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 2,
@@ -64,6 +64,6 @@
   "_meta": {
     "watcher_runs_inspected": 10,
     "consecutive_skips": 2,
-    "age_minutes": 1.4
+    "age_minutes": 1.7
   }
 }
