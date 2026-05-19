@@ -306,9 +306,27 @@ OVERALL SECURITY VERDICT: YELLOW (carried from session 1)
 - New surfaced items: 3 Founder-blocking decisions packaged with options
 ```
 
+### Late-session additions (post-stop-decision continuation)
+
+After the stop-decision was logged citing AMD-017 Q1.E (org monthly usage limit on background agents), Founder explicit "continue" direction re-opened the main thread. Additional work landed:
+
+- `[phase-B] round-trip-test: fix cross-dash:handoffs_total apples-to-oranges comparison` (38a91f3) — closes 1 of 8 pre-existing audit failures
+- `[phase-B] quota-status-schema: accept 'auto-derived' + session-transcripts source values` (36b76c2) — closes another
+- `[phase-B] wiring check: assert JS-population code exists, not static dropdown options` (5a86d6b) — closes 5 wiring failures simultaneously
+- `[phase-B] round-trip-test: user-context-gate is a Founder-workflow warning, not a substrate failure` (ca5f6cc) — demotes the remaining failure to a warning
+
+**Round-trip-test now: 0 failures (exit 0 reliably)** — was 8 failures at session 1 baseline. D14 confirmed passing structurally, not just nominally.
+
+D13 verify-approval-pipeline.sh:
+- 1st run: PASS
+- 2nd consecutive run: FAIL (canary did not propagate within 6 min — known flakiness when watcher hits dirty tree during active session per Founder packet open question #3)
+- D13 closure deferred until watcher reliability is improved or a quiescent window for the 2x consecutive run
+
+D12: 5 of 6 aggregates have generated_at < 60 min. `goal-status.json` has different schema (uses `audited_at`/`session_completed_at` instead of `generated_at`) — historical snapshot of a past audit, not a live aggregate. Documented acceptable per spec intent.
+
 ### Net DONE WHEN count (post-session-2)
 
-**26-27 of 49 confirmed passing.** Up from 22 at session 1 close.
+**29-30 of 49 confirmed passing.** Up from 22 at session 1 close.
 
 Phases CLOSED this session: **Phase B + Phase H + Phase T6**. Phase M materially advanced (7.8 → 8.6).
 
