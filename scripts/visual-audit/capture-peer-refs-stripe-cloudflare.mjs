@@ -23,15 +23,21 @@ const OUT = resolve(REPO, ".claude", "state", "design-research", "competitive-re
 
 const PAGES = [
   {
-    name: "excalidraw-hero",
-    url: "https://excalidraw.com/",
-    note: "Excalidraw — hand-drawn diagram tool — peer for editorial restraint + minimal chrome",
+    name: "linear-command-palette",
+    url: "https://linear.app/method",
+    note: "Linear methodology marketing page — peer for command-palette aesthetic + dense list with hover-preview",
     waitUntil: "domcontentloaded",
   },
   {
-    name: "eraser-architecture-diagrams",
-    url: "https://www.eraser.io/use-case/architecture-diagrams",
-    note: "Eraser.io architecture diagrams marketing page — peer for system-flow visualization aesthetics",
+    name: "notion-database-hover",
+    url: "https://www.notion.com/help/intro-to-databases",
+    note: "Notion databases explainer — peer for hover-preview pattern in dense list contexts",
+    waitUntil: "domcontentloaded",
+  },
+  {
+    name: "github-projects-board",
+    url: "https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects",
+    note: "GitHub Projects explainer — peer for board-view dense interactive lists",
     waitUntil: "domcontentloaded",
   },
 ];

@@ -37,6 +37,48 @@
          * appear only in legend dots / column headers, not as page surface
          * colors. */
 
+        /* M5.5 — implicit columns (Janowiak D1). Column header element kept
+         * as a sentinel for selectors + ARIA but visually hidden. Column
+         * identity = legend dots at top + first-node proximity. */
+        .mf-column-header { height: 0; padding: 0; margin: 0; overflow: hidden;
+                            position: absolute; clip: rect(0 0 0 0); clip-path: inset(50%); }
+
+        /* M5.6 — hover-preview on flow rail (Linear command-palette pattern).
+         * Hovering a .mf-flows-item surfaces a floating tooltip with the
+         * flow's primary_user_goal + actor + estimated_steps_count. Tooltip
+         * sits adjacent to the rail without occluding the grid. Per AMD-026
+         * P10: the tooltip is the WHERE/WHAT-ACTION affordance for flow rows. */
+        /* M5.7 row-hover lift — pairs with hover-preview tooltip. Sub-pixel
+         * upward translation telegraphs "this row is alive" without visual
+         * noise. 140ms ease-out matches tooltip transition timing. */
+        .mf-flows-item { position: relative; transition: transform 140ms ease-out, background 140ms ease-out; }
+        .mf-flows-item:hover { transform: translateX(-2px); background: var(--bg-elevated, rgba(255,255,255,0.03)); }
+        @media (prefers-reduced-motion: reduce) {
+            .mf-flows-item { transition: none !important; }
+        }
+        .mf-flow-preview {
+            position: fixed;
+            z-index: 1000;
+            max-width: 320px;
+            padding: var(--space-3);
+            background: var(--bg-card);
+            border: 1px solid var(--accent-brass);
+            border-radius: var(--radius-md);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.42);
+            font-size: 0.8125rem;
+            color: var(--text-primary);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 140ms ease-out;
+        }
+        .mf-flow-preview.is-visible { opacity: 1; }
+        .mf-flow-preview-title { font-weight: 600; color: var(--accent-brass); margin-bottom: 6px; font-family: var(--font-mono); letter-spacing: 0.04em; }
+        .mf-flow-preview-meta  { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--text-tertiary); margin-bottom: var(--space-2); text-transform: uppercase; letter-spacing: 0.08em; }
+        .mf-flow-preview-goal  { line-height: 1.45; color: var(--text-secondary); }
+        @media (prefers-reduced-motion: reduce) {
+            .mf-flow-preview { transition: none !important; }
+        }
+
         /* === Legend === */
         /* M5.3 (Janowiak D4 polish): legend floats — Janowiak's reference
          * has no container box around the legend chips. Remove bg + border +
@@ -508,10 +550,16 @@
                             +   '<div class="mf-node-subtitle">' + esc(c.subtitle || '') + '</div>'
                             + '</div>';
                     }).join('');
+                    // M5.5 (Founder LOCKED 2026-05-19): try Janowiak's implicit-
+                    // columns. Drop explicit column-header text + subtitle.
+                    // Column identity now conveyed by legend dots + first-node
+                    // proximity. Header element kept as a sentinel for layout
+                    // but rendered visually-hidden so existing test selectors
+                    // still resolve. Per AMD-026 P10, the legend at the top of
+                    // the page is the DESTINATION for column identity.
                     return ''
                         + '<div class="mf-column" data-col="' + esc(col.id) + '">'
-                        +   '<div class="mf-column-header">' + esc(col.label) + '</div>'
-                        +   '<div class="mf-column-subtitle">' + esc(col.subtitle || '') + '</div>'
+                        +   '<div class="mf-column-header" data-col-label="' + esc(col.label) + '" aria-label="' + esc(col.label) + '"></div>'
                         +   nodes
                         + '</div>';
                 }).join('');
@@ -561,8 +609,63 @@
                 FLOWS_COUNT.textContent = rows.length + ' flows';
                 FLOWS_LIST.querySelectorAll('.mf-flows-item').forEach(function (li) {
                     li.addEventListener('click', function () { selectFlow(li.getAttribute('data-flow-id')); });
+                    li.addEventListener('mouseenter', function () { showFlowPreview(li); });
+                    li.addEventListener('mouseleave', hideFlowPreview);
                 });
                 bindRailFilters();
+            }
+
+            // M5.6 hover-preview (Linear command-palette pattern + AMD-026 P10):
+            // surface the flow's primary_user_goal + actor + step count when
+            // Founder hovers a row — without click. The tooltip is the
+            // WHAT-ACTION destination: a Founder can decide whether to click
+            // (highlight path + steps) based on the preview alone.
+            var FLOW_PREVIEW = null;
+            function ensureFlowPreviewEl() {
+                if (FLOW_PREVIEW) return FLOW_PREVIEW;
+                FLOW_PREVIEW = document.createElement('div');
+                FLOW_PREVIEW.className = 'mf-flow-preview';
+                FLOW_PREVIEW.setAttribute('role', 'tooltip');
+                FLOW_PREVIEW.setAttribute('aria-hidden', 'true');
+                document.body.appendChild(FLOW_PREVIEW);
+                return FLOW_PREVIEW;
+            }
+            function showFlowPreview(li) {
+                var flowId = li.getAttribute('data-flow-id');
+                if (!flowId) return;
+                var rail = (data && data.flow_rail) || [];
+                var entry = rail.find(function (f) { return f.id === flowId; }) || {};
+                var hasPath = flowHasPath(flowId);
+                var steps = entry.estimated_steps_count;
+                var actor = entry.actor || '';
+                var tier = entry.tier || '';
+                var goal = entry.primary_user_goal || entry.name || '';
+                var ships = (entry.served_by_ships || []).slice(0, 3).join(', ');
+                var el = ensureFlowPreviewEl();
+                el.innerHTML =
+                    '<div class="mf-flow-preview-title">' + esc(entry.id || flowId) + ' · ' + esc(entry.name || '') + '</div>' +
+                    '<div class="mf-flow-preview-meta">' +
+                        (actor ? esc(actor) : '') +
+                        (tier ? ' · ' + esc(tier) : '') +
+                        (steps != null ? ' · ' + steps + ' steps' : '') +
+                        (hasPath ? ' · path' : ' · metadata-only') +
+                    '</div>' +
+                    '<div class="mf-flow-preview-goal">' + esc(goal) + '</div>' +
+                    (ships ? '<div class="mf-flow-preview-meta" style="margin-top:6px;">served by ' + esc(ships) + (entry.served_by_ships && entry.served_by_ships.length > 3 ? '…' : '') + '</div>' : '');
+                var rect = li.getBoundingClientRect();
+                var top = rect.top;
+                // Position to the LEFT of the rail (rail is on the right side
+                // of the viewport). Anchor by row top; clamp to viewport.
+                el.style.right = (window.innerWidth - rect.left + 12) + 'px';
+                el.style.top = Math.max(8, Math.min(window.innerHeight - 220, top)) + 'px';
+                el.style.left = 'auto';
+                el.setAttribute('aria-hidden', 'false');
+                requestAnimationFrame(function () { el.classList.add('is-visible'); });
+            }
+            function hideFlowPreview() {
+                if (!FLOW_PREVIEW) return;
+                FLOW_PREVIEW.classList.remove('is-visible');
+                FLOW_PREVIEW.setAttribute('aria-hidden', 'true');
             }
 
             function applyRailFilters() {

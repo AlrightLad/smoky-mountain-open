@@ -4,8 +4,9 @@ Captured for Phase M5 ≥ 2-peer triangulation requirement (spec D24).
 
 | Reference | URL | Note | Status |
 |---|---|---|---|
-| excalidraw-hero | https://excalidraw.com/ | Excalidraw — hand-drawn diagram tool — peer for editorial restraint + minimal chrome | ✅ captured (65063 bytes) |
-| eraser-architecture-diagrams | https://www.eraser.io/use-case/architecture-diagrams | Eraser.io architecture diagrams marketing page — peer for system-flow visualization aesthetics | ✅ captured (380539 bytes) |
+| linear-command-palette | https://linear.app/method | Linear methodology marketing page — peer for command-palette aesthetic + dense list with hover-preview | ✅ captured (86740 bytes) |
+| notion-database-hover | https://www.notion.com/help/intro-to-databases | Notion databases explainer — peer for hover-preview pattern in dense list contexts | ✅ captured (377918 bytes) |
+| github-projects-board | https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects | GitHub Projects explainer — peer for board-view dense interactive lists | ✅ captured (150378 bytes) |
 
 ## Usage in TASTE-AUDIT scoring
 
@@ -16,5 +17,6 @@ PARBAUGHS does NOT need to look like Stripe or Cloudflare. Each dimension scores
 
 ## Files
 
-- `excalidraw-hero.png`
-- `eraser-architecture-diagrams.png`
+- `linear-command-palette.png`
+- `notion-database-hover.png`
+- `github-projects-board.png`
