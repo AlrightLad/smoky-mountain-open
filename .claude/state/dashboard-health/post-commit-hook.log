@@ -1,4 +1,4 @@
-=== post-commit hook fired 2026-05-19T18:57:12Z HEAD=cff0d6f ===
+=== post-commit hook fired 2026-05-19T18:59:15Z HEAD=1b3443c ===
 [scaffold-from-templates] done: scaffolded=0 skipped=11
 
 --- scripts/scan-shipped-proposals.py ---
@@ -14,27 +14,27 @@ Traceback (most recent call last):
   File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 23, in decode
     return codecs.charmap_decode(input,self.errors,decoding_table)[0]
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 75894: character maps to <undefined>
+UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 77069: character maps to <undefined>
 [scan-shipped] approved=2 candidate-commits-90d=0
 [scan-shipped] done: moved=0 skipped_already_shipped=0 warnings=0
 
 --- scripts/aggregate-telemetry.py ---
 [aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json
 [aggregate] meter_status=wired-real
-[aggregate] events=3576 handoffs=1 bubbles=7 proposals_pending=0
+[aggregate] events=3579 handoffs=1 bubbles=7 proposals_pending=0
 
 --- scripts/ingest-session-transcripts.py ---
-[ingest-session-transcripts] scanned bba09b44-bbb9-447a-97ee-4b5aab895cbe.jsonl: +45 new entries (offset 11195166\u219211462770)
-[ingest-session-transcripts] scanned 29 JSONL file(s), found 45 new assistant turns
-[ingest-session-transcripts] wrote session-transcript-summary.json (58 buckets, 6859558420 total tokens, 29 sessions)
+[ingest-session-transcripts] scanned bba09b44-bbb9-447a-97ee-4b5aab895cbe.jsonl: +10 new entries (offset 11462770\u219211862048)
+[ingest-session-transcripts] scanned 29 JSONL file(s), found 10 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (58 buckets, 6867307766 total tokens, 29 sessions)
 
 --- scripts/aggregate-token-usage.py ---
 [aggregate-token] real_events=59 estimated_events=2323 manual_entries=0
-[aggregate-token] all-time: real=6859660420 estimated=7292040 manual=0
+[aggregate-token] all-time: real=6867409766 estimated=7292040 manual=0
 [aggregate-token] wrote .claude\state\telemetry\aggregates\token-usage-snapshot.json
 
 --- scripts/aggregate-test-health.py ---
-[aggregate-test-health] OK status=unknown timestamp=2026-05-19T18:57:14Z
+[aggregate-test-health] OK status=unknown timestamp=2026-05-19T18:59:16Z
 
 --- scripts/aggregate-security-health.py ---
 [aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0
@@ -53,7 +53,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 75894: ch
   aggregate-test-health: parity-fail: source-detected but status=unknown
 [aggregate-self-tests] starting D40 parity checks across 5 aggregators
   [aggregate-security-health] PASS status=green age=0s
-  [aggregate-approvals-pipeline] PASS status=yellow age=0s
+  [aggregate-approvals-pipeline] PASS status=yellow age=-1s
   [aggregate-architecture-review] PASS status=unknown age=-1s
   [aggregate-fiq-status] PASS status=green age=-1s
 
@@ -88,7 +88,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 75894: ch
 --- scripts/regen-dashboard.py ---
 [regen-dashboard] OK   dashboard.html
 [regen-dashboard] meter_status=wired-real
-[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=3576
+[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=3579
 
 --- scripts/regen-main-flows.py ---
 [regen-main-flows] WARN: 6 orphan components in grid (referenced by no flow's path):
@@ -102,7 +102,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 75894: ch
 [regen-main-flows] 6 columns, 47 components, 62 flows; orphans=6
 
 --- scripts/regen-activity.py ---
-[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=130 commits=665)
+[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=131 commits=668)
 
 --- scripts/dry-run-regen-ops-views.py ---
 [regen] 7 bubbles (activity.html owned by regen-activity.py; proposals.html owned by regen-proposals.py)
@@ -110,14 +110,14 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 75894: ch
 
 --- scripts/regen-token-usage.py ---
 [regen-token-usage] OK   token-usage.html
-[regen-token-usage] all-time: real=6859660420 estimated=7292040 manual=0
+[regen-token-usage] all-time: real=6867409766 estimated=7292040 manual=0
 [regen-token-usage] pie_views slices: agent=3 work=2 session_top10=10
 
 --- scripts/regen-index.py ---
 [regen-index] OK   index.html
-[regen-index] ships=33 proposals_pending=0 bubbles=1 halt=none git=cff0d6f5
+[regen-index] ships=33 proposals_pending=0 bubbles=1 halt=none git=1b3443cf
 
 --- P9.5 self-test ---
 [ingest-session-transcripts] scanned 29 JSONL file(s), found 0 new assistant turns
-[ingest-session-transcripts] wrote session-transcript-summary.json (58 buckets, 6859558420 total tokens, 29 sessions)
-[ingest-session-transcripts] SELF-TEST OK: 29 JSONLs \u2192 6859558420 tokens across 58 buckets
+[ingest-session-transcripts] wrote session-transcript-summary.json (58 buckets, 6867307766 total tokens, 29 sessions)
+[ingest-session-transcripts] SELF-TEST OK: 29 JSONLs \u2192 6867307766 tokens across 58 buckets
