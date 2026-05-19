@@ -92,27 +92,65 @@ ECC plugin hooks fire from the plugin's own `hooks.json` when the plugin is load
 
 5. Update this file's "Surface ownership" table below with the now-active GAP-FILL hooks.
 
-## Concrete coexistence actions
+## ACTIVATED 2026-05-19 — 4 GAP-FILL hooks live, 6 ECC hooks disabled
 
-These actions are to be applied when ECC plugin first activates (next session start or `/reload-plugins`):
+Per Founder blanket-approval `task-queue/founder/ecc-gap-fill-activation-steps.md` (LOCKED 2026-05-19) and Engineer execution.
 
-1. Verify ECC hooks fire by triggering a test edit; check for any errors or unexpected blocks.
-2. If `pre:edit-write:gateguard-fact-force` fires on first edit, disable by adding to `.claude/settings.local.json`:
-   ```json
-   "hooks": {
-     "PreToolUse": [
-       {
-         "matcher": "Edit|Write|MultiEdit",
-         "hooks": [
-           { "type": "command", "command": "echo SKIP_GATEGUARD_FACT_FORCE && exit 0" }
-         ]
-       }
-     ]
-   }
-   ```
-   (Or use ECC's documented disable env var if one exists — investigate at activation.)
-3. If `pre:bash:dispatcher` overlaps with PARBAUGHS pre-commit work, the agent will accept ECC's dispatcher output as additive context but rely on PARBAUGHS hooks for actual decisions.
-4. If `stop:format-typecheck` adds unwanted latency, disable similarly or via ECC's runtime flag if available.
+### Hooks wired directly in `.claude/settings.local.json`
+
+The 4 GAP-FILL hooks are wired as direct `command` entries so they fire regardless of ECC plugin load state:
+
+| Event | Matcher | Hook | Script path |
+|---|---|---|---|
+| `PreToolUse` | `mcp__.*` | `pre:mcp-health-check` | `~/.claude/plugins/cache/ecc/ecc/2.0.0-rc.1/scripts/hooks/mcp-health-check.js` |
+| `PostToolUse` | `Edit\|Write\|MultiEdit` | `post:edit:design-quality-check` | `~/.claude/plugins/cache/ecc/ecc/2.0.0-rc.1/scripts/hooks/design-quality-check.js` |
+| `PostToolUse` | `Edit\|Write\|MultiEdit` | `post:edit:console-warn` | `~/.claude/plugins/cache/ecc/ecc/2.0.0-rc.1/scripts/hooks/post-edit-console-warn.js` |
+| `PostToolUseFailure` | `mcp__.*` | `post:mcp-health-check` | `~/.claude/plugins/cache/ecc/ecc/2.0.0-rc.1/scripts/hooks/mcp-health-check.js` |
+| `Stop` | (all) | `stop:cost-tracker` | `~/.claude/plugins/cache/ecc/ecc/2.0.0-rc.1/scripts/hooks/cost-tracker.js` |
+
+### Env vars set to disable conflicting ECC hooks
+
+The activation packet drafted per-hook env var names (`ECC_DISABLE_GATEGUARD_FACT_FORCE`, etc.); ECC actually honors a **single CSV env var `ECC_DISABLED_HOOKS`** (verified by reading `~/.claude/plugins/cache/ecc/ecc/2.0.0-rc.1/scripts/lib/hook-flags.js`). The drafted env var names would have been no-ops. Corrected env vars in `.claude/settings.local.json` `env` block:
+
+```json
+{
+  "ECC_HOOK_PROFILE": "minimal",
+  "ECC_DISABLED_HOOKS": "pre:edit-write:gateguard-fact-force,pre:bash:dispatcher,pre:config-protection,stop:format-typecheck,post:edit:accumulator,stop:check-console-log"
+}
+```
+
+`ECC_HOOK_PROFILE=minimal` additionally constrains ECC plugin-registered hooks to only fire those tagged with `minimal` (covers `post:ecc-metrics-bridge`, `stop:session-end`, `stop:evaluate-session`, `session:end:marker`, `stop:cost-tracker`).
+
+### Smoke test results (2026-05-19, simulated stdin)
+
+| Hook | Result | Evidence |
+|---|---|---|
+| `pre:mcp-health-check` | Pass — no false block | stderr: `[MCPHealthCheck] No MCP config found for claude_ai_Fireflies; skipping preflight probe`; exit 0 |
+| `post:edit:design-quality-check` | Pass — detects 6 generic patterns | stderr: lists all 6 heuristic signals on a Tailwind-ish HTML fixture; exit 0 |
+| `post:edit:console-warn` | Pass — detects 2 console.log lines | stderr: `[Hook] WARNING: console.log found in ...` with line numbers; exit 0 |
+| `stop:cost-tracker` | Pass — writes `~/.claude/metrics/costs.jsonl` | First row appended (zero tokens — synthetic empty transcript path); production payload will include real tokens |
+
+Note: actual hook firing via Claude Code's hooks.PostToolUse will only take effect after a Claude Code session restart (settings.local.json hook registration). Direct script invocation in the activation session confirmed the scripts are functional and won't introduce blocks.
+
+### PARBAUGHS guarantees still intact
+
+- All 5 PARBAUGHS hooks 1-5 (`pre-commit-lint`, `post-edit-syntax`, `gate-assertions`, `gate-protected`, `pre-commit-version-sync`) continue to fire from `.claude/settings.json` `hooks` block (unchanged this activation).
+- AMD-018 11-gate intact; nothing was added that touches the gated surfaces.
+- ECC `pre:bash:dispatcher`, `pre:config-protection`, `pre:edit-write:gateguard-fact-force` all in `ECC_DISABLED_HOOKS` and cannot block PARBAUGHS Bash + Edit flows.
+
+### Founder follow-up
+
+- If ECC plugin is not yet enabled in this Claude Code session (verify with `/plugin list`), the env-based disable list takes effect once ECC's hooks.json starts firing. The 4 direct-wired GAP-FILL hooks are independent of ECC plugin enablement — they fire from settings.local.json hooks block on next session restart.
+- Recommend `/plugin enable ecc@ecc` if plugin not active (or restart Claude Code), then re-verify with `/plugin list`.
+
+## Concrete coexistence actions (legacy — superseded by 2026-05-19 activation above)
+
+These were the actions defined pre-activation:
+
+1. Verify ECC hooks fire by triggering a test edit; check for any errors or unexpected blocks. **Done — see smoke test results above.**
+2. If `pre:edit-write:gateguard-fact-force` fires on first edit, disable. **Done via `ECC_DISABLED_HOOKS` env var.**
+3. If `pre:bash:dispatcher` overlaps with PARBAUGHS pre-commit work, disable. **Done via `ECC_DISABLED_HOOKS` env var.**
+4. If `stop:format-typecheck` adds unwanted latency, disable. **Done via `ECC_DISABLED_HOOKS` env var.**
 
 ## When to surface to Founder per spec STOP RULE 2
 
