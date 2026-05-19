@@ -1,4 +1,4 @@
-=== post-commit hook fired 2026-05-19T02:36:58Z HEAD=0b6f12d ===
+=== post-commit hook fired 2026-05-19T02:38:01Z HEAD=cf2601c ===
 [scaffold-from-templates] done: scaffolded=0 skipped=11
 
 --- scripts/scan-shipped-proposals.py ---
@@ -14,27 +14,27 @@ Traceback (most recent call last):
   File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 23, in decode
     return codecs.charmap_decode(input,self.errors,decoding_table)[0]
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 59944: character maps to <undefined>
+UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 62478: character maps to <undefined>
 [scan-shipped] approved=9 candidate-commits-90d=0
 [scan-shipped] done: moved=0 skipped_already_shipped=0 warnings=0
 
 --- scripts/aggregate-telemetry.py ---
 [aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json
 [aggregate] meter_status=wired-real
-[aggregate] events=3511 handoffs=1 bubbles=7 proposals_pending=0
+[aggregate] events=3515 handoffs=1 bubbles=7 proposals_pending=0
 
 --- scripts/ingest-session-transcripts.py ---
-[ingest-session-transcripts] scanned bba09b44-bbb9-447a-97ee-4b5aab895cbe.jsonl: +1 new entries (offset 8532590\u21928537608)
-[ingest-session-transcripts] scanned 29 JSONL file(s), found 1 new assistant turns
-[ingest-session-transcripts] wrote session-transcript-summary.json (58 buckets, 6690094323 total tokens, 29 sessions)
+[ingest-session-transcripts] scanned bba09b44-bbb9-447a-97ee-4b5aab895cbe.jsonl: +4 new entries (offset 8537608\u21928562427)
+[ingest-session-transcripts] scanned 29 JSONL file(s), found 4 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (58 buckets, 6692646231 total tokens, 29 sessions)
 
 --- scripts/aggregate-token-usage.py ---
-[aggregate-token] real_events=59 estimated_events=2302 manual_entries=0
-[aggregate-token] all-time: real=6690196323 estimated=7292040 manual=0
+[aggregate-token] real_events=59 estimated_events=2303 manual_entries=0
+[aggregate-token] all-time: real=6692748231 estimated=7292040 manual=0
 [aggregate-token] wrote .claude\state\telemetry\aggregates\token-usage-snapshot.json
 
 --- scripts/aggregate-test-health.py ---
-[aggregate-test-health] OK status=unknown timestamp=2026-05-19T02:36:59Z
+[aggregate-test-health] OK status=unknown timestamp=2026-05-19T02:38:02Z
 
 --- scripts/aggregate-security-health.py ---
 [aggregate-security-health] OK status=red cred_leaks=6 vuln_deps=2
@@ -88,7 +88,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 59944: ch
 --- scripts/regen-dashboard.py ---
 [regen-dashboard] OK   dashboard.html
 [regen-dashboard] meter_status=wired-real
-[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=3511
+[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=3515
 
 --- scripts/regen-main-flows.py ---
 [regen-main-flows] WARN: 6 orphan components in grid (referenced by no flow's path):
@@ -102,7 +102,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 59944: ch
 [regen-main-flows] 6 columns, 47 components, 62 flows; orphans=6
 
 --- scripts/regen-activity.py ---
-[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=119 commits=644)
+[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=120 commits=646)
 
 --- scripts/dry-run-regen-ops-views.py ---
 [regen] 7 bubbles (activity.html owned by regen-activity.py; proposals.html owned by regen-proposals.py)
@@ -110,14 +110,15 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 59944: ch
 
 --- scripts/regen-token-usage.py ---
 [regen-token-usage] OK   token-usage.html
-[regen-token-usage] all-time: real=6690196323 estimated=7292040 manual=0
+[regen-token-usage] all-time: real=6692748231 estimated=7292040 manual=0
 [regen-token-usage] pie_views slices: agent=3 work=2 session_top10=10
 
 --- scripts/regen-index.py ---
 [regen-index] OK   index.html
-[regen-index] ships=33 proposals_pending=0 bubbles=1 halt=none git=0b6f12d4
+[regen-index] ships=33 proposals_pending=0 bubbles=1 halt=none git=cf2601cd
 
 --- P9.5 self-test ---
-[ingest-session-transcripts] scanned 29 JSONL file(s), found 0 new assistant turns
-[ingest-session-transcripts] wrote session-transcript-summary.json (58 buckets, 6690094323 total tokens, 29 sessions)
-[ingest-session-transcripts] SELF-TEST OK: 29 JSONLs \u2192 6690094323 tokens across 58 buckets
+[ingest-session-transcripts] scanned bba09b44-bbb9-447a-97ee-4b5aab895cbe.jsonl: +5 new entries (offset 8562427\u21928573367)
+[ingest-session-transcripts] scanned 29 JSONL file(s), found 5 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (58 buckets, 6695840705 total tokens, 29 sessions)
+[ingest-session-transcripts] SELF-TEST OK: 29 JSONLs \u2192 6695840705 tokens across 58 buckets
