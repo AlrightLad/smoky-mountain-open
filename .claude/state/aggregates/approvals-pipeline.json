@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-19T02:25:19Z",
-  "generated_at": "2026-05-19T02:25:19Z",
+  "timestamp": "2026-05-19T02:25:57Z",
+  "generated_at": "2026-05-19T02:25:57Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "green",
-  "raw_status": "green",
-  "summary": "watcher no-new-files 4.5min ago · 33 in inbox",
-  "as_of": "2026-05-19T02:20:48Z",
+  "status": "yellow",
+  "raw_status": "yellow",
+  "summary": "watcher last run: skip-dirty · 33 in inbox",
+  "as_of": "2026-05-19T02:25:48Z",
   "stale": false,
-  "age_hours": 0.075,
+  "age_hours": 0.0033333333333333335,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 9,
@@ -27,6 +27,13 @@
       "name": "last-processed-decisions",
       "note": "file=decisions-canary-2026-05-19T00-37-22Z.json kind=decisions",
       "when": "2026-05-19T00:40:53.1743276Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-19T02-25-48Z-downloads-watcher.log",
+      "note": "[02:25:48] SKIP working tree dirty with non-routine files: .claude/hooks/lib/scanner.py, .claude/hooks/schema-mutation-alarm.sh, .claude/hooks/secrets-scanner.sh, .claude/state/design-research/competi",
+      "when": "2026-05-19T02:25:48Z"
     },
     {
       "category": "stall",
@@ -49,7 +56,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 0,
-    "age_minutes": 4.5
+    "consecutive_skips": 1,
+    "age_minutes": 0.2
   }
 }
