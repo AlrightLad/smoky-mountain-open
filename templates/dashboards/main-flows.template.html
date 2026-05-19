@@ -39,9 +39,34 @@
 
         /* M5.5 — implicit columns (Janowiak D1). Column header element kept
          * as a sentinel for selectors + ARIA but visually hidden. Column
-         * identity = legend dots at top + first-node proximity. */
-        .mf-column-header { height: 0; padding: 0; margin: 0; overflow: hidden;
-                            position: absolute; clip: rect(0 0 0 0); clip-path: inset(50%); }
+         * identity = legend dots at top + first-node proximity.
+         *
+         * M5.8 (2026-05-19) — Founder reckoning: the M5.5 rule was being
+         * overridden by the LATER rule defining .mf-column-header font-size
+         * etc. (CSS source-order specificity). Restored visually-hidden by
+         * deleting the later override entirely and folding column-header
+         * sentinel-only styling here with !important to defeat any future
+         * cascade accidents. */
+        .mf-column-header {
+            height: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            overflow: hidden !important;
+            position: absolute !important;
+            clip: rect(0 0 0 0) !important;
+            clip-path: inset(50%) !important;
+            font-size: 0 !important;
+        }
+        .mf-column-subtitle {
+            height: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            overflow: hidden !important;
+            position: absolute !important;
+            clip: rect(0 0 0 0) !important;
+            clip-path: inset(50%) !important;
+            font-size: 0 !important;
+        }
 
         /* M5.6 — hover-preview on flow rail (Linear command-palette pattern).
          * Hovering a .mf-flows-item surfaces a floating tooltip with the
@@ -106,17 +131,15 @@
             .mf-grid { grid-template-columns: repeat(6, 180px); min-width: 0; }
         }
         .mf-column { display: flex; flex-direction: column; gap: var(--space-2); position: relative; z-index: 2; }
-        /* Ship R6 (2026-05-14): column headers drop the colored 2px bottom-
-         * border per reference-spec.md § 8 (Janowiak ref: uppercase, weight
-         * 400, no border-bottom). Legend dots carry the column-color identity
-         * now. Header weight reduced from 600 → 500 to match the reference's
-         * lighter tone; uppercase + letter-spacing preserved. */
-        /* M4 delta #5 (2026-05-16): column headers get typography lift per
-         * Janowiak decomposition #5. Was 0.6875rem weight 500; now 0.75rem
-         * weight 600 with mono family — distinguishes column tier from row
-         * content. Per dim 1 hierarchy 8 → 9 estimated lift. */
-        .mf-column-header { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; padding: var(--space-1) 0; margin-bottom: var(--space-1); color: var(--text-primary); font-weight: 600; font-family: var(--font-mono); }
-        .mf-column-subtitle { font-size: 0.6875rem; color: var(--text-tertiary); margin-bottom: var(--space-2); font-style: italic; }
+        /* M5.8 (2026-05-19): the legacy column-header + subtitle override
+         * rules (Ship R6 + M4 delta #5) were UNDOING M5.5's
+         * implicit-columns implementation because they appeared LATER in the
+         * cascade with equal specificity. Per Founder reckoning ("the
+         * current version does NOT match the video") — delete the overrides
+         * outright. Column identity is conveyed by the legend chips at page
+         * top + node clustering, exactly as Janowiak's reference does. The
+         * sentinel rule above (with !important) keeps the elements present
+         * for ARIA/selectors while rendering them zero-area visually. */
 
         /* Ship R4 (2026-05-14): node component box re-style per
          * reference-spec.md § 4. No left-border accent, no bg fill — just
@@ -137,9 +160,18 @@
          * + transform so the sequential JS-driven addClass produces a
          * visible walk-the-path animation rather than instant snap.
          */
-        .mf-grid.has-selection .mf-node { opacity: 0.18; transition: opacity 220ms ease-out, border-color 180ms ease-out, transform 180ms ease-out; }
+        /* M5.8 (2026-05-19) — Founder reckoning vs Janowiak frames:
+         *   off-path 0.18 → 0.25 (Janowiak D4 spec: 25% opacity, "still
+         *     legible as proof that the path is in a real system")
+         *   on-path adds subtle warm-tinted background fill so selected
+         *     nodes don't look like "transparent outlines" but rather like
+         *     bright brass-glow elements with light fill (rgba 9% amber). */
+        .mf-grid.has-selection .mf-node { opacity: 0.25; transition: opacity 220ms ease-out, border-color 180ms ease-out, transform 180ms ease-out, background 180ms ease-out; }
         .mf-grid.has-selection .mf-node.is-on-path {
-            opacity: 1; border-color: var(--accent-brass); box-shadow: none;
+            opacity: 1;
+            border-color: var(--accent-brass);
+            box-shadow: none;
+            background: rgba(212, 168, 87, 0.09);
             transform: translateY(-1px);
         }
         .mf-node.is-pulse { animation: mfPulse 700ms ease-out 1; }
@@ -200,33 +232,39 @@
         /* Rail search + filter chips (Ship 3, 2026-05-14) — Founder Q2:
          * rail shows all 62 flows scrollable, with search + actor + tier
          * chips. F1-F8 clicks still highlight paths; F9-F62 clicks show
-         * metadata-only state in the Steps panel. */
+         * metadata-only state in the Steps panel.
+         *
+         * M5.8 (2026-05-19) — Founder reckoning: Janowiak's reference has
+         * NO filter chrome on the flow rail (it has 9 flows; ours has 62
+         * and Founder Q2-locked the filter). Compromise: collapse filter
+         * chips into a single-row, smaller, lower-contrast layout so they
+         * read as DENSITY-AWARE UTILITY rather than dominant chrome. */
         .mf-rail-search-wrap { padding: var(--space-2) var(--space-3) 0; }
         .mf-rail-search {
             width: 100%;
-            padding: 6px var(--space-2);
+            padding: 5px var(--space-2);
             background: var(--bg-page);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-sm);
             color: var(--text-primary);
-            font-size: 0.8125rem;
+            font-size: 0.75rem;
             font-family: var(--font-ui, inherit);
         }
         .mf-rail-search:focus-visible { outline: 2px solid var(--accent-brass); outline-offset: 1px; }
         .mf-rail-chips {
             display: flex;
             flex-wrap: wrap;
-            gap: 4px;
-            padding: var(--space-2) var(--space-3) 0;
+            gap: 3px;
+            padding: 6px var(--space-3) 0;
         }
         .mf-rail-chip {
-            background: var(--bg-page);
-            color: var(--text-secondary);
+            background: transparent;
+            color: var(--text-tertiary);
             border: 1px solid var(--border-subtle);
             border-radius: 999px;
-            padding: 2px 8px;
+            padding: 1px 7px;
             font-family: var(--font-mono);
-            font-size: 0.6875rem;
+            font-size: 0.625rem;
             text-transform: uppercase;
             letter-spacing: 0.04em;
             cursor: pointer;
@@ -280,14 +318,16 @@
         }
         .mf-flows-item.is-hidden { display: none; }
         .mf-flows-item:hover { background: var(--bg-elevated); }
-        /* Ship R8 (2026-05-14): flow rail card style refinement per
-         * reference-spec.md § 14 — transparent bg + hairline yellow ring
-         * when active (was: brass-tint bg + 3px left-border). Preserves
-         * Founder-locked id chip + tier badge + status pill per Q2. */
+        /* M5.8 (2026-05-19) — Founder reckoning: Janowiak's active row has
+         * (a) thin brass LEFT-BORDER accent (~1.5px), (b) slightly lifted
+         * background (warm-tinted), (c) NO inset ring. The previous
+         * inset-ring treatment read as "outline only" which is colder than
+         * Janowiak's "this row is lit + anchored to the left edge". */
         .mf-flows-item.is-active {
-            background: transparent;
-            box-shadow: inset 0 0 0 1px var(--accent-brass);
+            background: rgba(212, 168, 87, 0.07);
+            box-shadow: inset 2px 0 0 0 var(--accent-brass);
         }
+        .mf-flows-item.is-active .mf-flows-name { color: var(--text-primary); }
         .mf-flows-item.has-path::before {
             content: "";
             width: 6px;
@@ -367,6 +407,16 @@
         /* Ship R11 (2026-05-14): caveats banner restyle for Janowiak theme fidelity â subtle gray bg + hairline border + brass strong text (was teal). Content preserved per Founder-lock db-2026-05-13-004. */
         .mf-caveats { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3); font-size: 0.75rem; color: var(--text-secondary); line-height: 1.55; }
         .mf-caveats strong { color: var(--accent-brass); }
+
+        /* M5.8 (2026-05-19) — Founder reckoning: title is the visual focal
+         * point in Janowiak's reference (large, bold, white, near-display
+         * weight). PARBAUGHS title was inheriting standard pb-page-title
+         * which is set for compact dashboards; main-flows is the document
+         * surface where the title needs to ANCHOR the reading. Bump font-
+         * size, weight, and tighten leading. Subtitle gets max-width to
+         * avoid wrap noise. */
+        .pb-page-title-row .pb-page-title { font-size: clamp(1.75rem, 2.4vw, 2.5rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; color: var(--text-primary); }
+        .pb-page-title-row .pb-page-subtitle { max-width: 56rem; font-size: 0.875rem; line-height: 1.55; color: var(--text-secondary); margin-top: var(--space-2); }
     </style>
 </head>
 <body class="pb-app">
@@ -906,11 +956,28 @@
                         } catch (e) { /* tolerate browsers that lack getTotalLength */ }
                     }
 
+                    // M5.8 (2026-05-19) — Founder reckoning: Janowiak's
+                    // numbered badge SITS AT UPPER-LEFT OF THE TARGET NODE,
+                    // NOT mid-arrow. The badge is part of the node identity
+                    // ("this is step N of the flow"), not part of the edge.
+                    // Reposition: anchor badge at the target node's
+                    // upper-left corner with a slight outset so it ringbreaks
+                    // the node border. Fall back to arrow midpoint only if
+                    // target node geometry is unavailable.
+                    var bNode = GRID.querySelector('[data-component-id="' + s.to + '"]');
+                    var cx, cy;
+                    if (bNode) {
+                        var bRect = bNode.getBoundingClientRect();
+                        var wRect2 = wrap.getBoundingClientRect();
+                        cx = bRect.left - wRect2.left + wrap.scrollLeft + 2;
+                        cy = bRect.top - wRect2.top + 2;
+                    } else {
+                        cx = mx; cy = my;
+                    }
                     var badge = document.createElementNS(ns, 'g');
-                    var cx = mx, cy = my;
                     var circle = document.createElementNS(ns, 'circle');
                     circle.setAttribute('class', 'mf-arrow-badge-bg');
-                    circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', 10);
+                    circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', 9);
                     badge.appendChild(circle);
                     var text = document.createElementNS(ns, 'text');
                     text.setAttribute('class', 'mf-arrow-badge-text');

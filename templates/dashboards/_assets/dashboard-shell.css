@@ -125,9 +125,20 @@ body.pb-app {
    The canonical chrome that every dashboard renders before its main content.
    Brand line is mono, uppercase, dim. Nav is pill-links with brass active.
    ---------------------------------------------------------------------------- */
+/* phase-I iter1 (2026-05-19): page header gets subtle vertical gradient
+   so the top edge of the chrome reads as elevated rather than flat-on-
+   surface. Linear and Vercel both use a vertical gradient on their app
+   shells; the effect is unrecognizable until removed. */
 .pb-page-header {
-    background: var(--pb-billiard-green-800);
-    border-bottom: 1px solid var(--border-subtle);
+    background:
+        linear-gradient(180deg,
+            rgba(255, 255, 255, 0.025) 0%,
+            rgba(255, 255, 255, 0) 100%),
+        var(--pb-billiard-green-800);
+    border-bottom: 1px solid rgba(216, 208, 192, 0.10);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.20);
+    position: relative;
+    z-index: 5;
 }
 
 .pb-page-nav {
@@ -155,30 +166,37 @@ body.pb-app {
 }
 .pb-page-brand:hover { color: var(--pb-chalk-200); }
 
+/* phase-I iter2 (2026-05-19): nav links get Linear/Vercel-tier polish.
+   - Active link: subtle brass-tinted background pill + brass color
+     (replaces underline-only treatment which was thin)
+   - Inactive: muted chalk that lifts on hover
+   - Spacing tighter; pill radius for hover lift */
 .pb-page-nav-links {
     display: flex;
-    gap: var(--space-1);
-    font-size: var(--text-sm);
+    gap: 2px;
+    font-size: 0.8125rem;
     flex-wrap: wrap;
+    font-weight: 500;
 }
 
 .pb-page-nav-links a {
-    color: var(--pb-chalk-200);
+    color: var(--pb-chalk-300);
     text-decoration: none;
-    padding: var(--space-1) var(--space-3);
-    border-radius: var(--radius-sm);
-    border-bottom: 2px solid transparent;
-    transition: color var(--duration-fast) var(--ease-out),
-                background var(--duration-fast) var(--ease-out),
-                border-color var(--duration-fast) var(--ease-out);
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 0;
+    transition: color 150ms var(--ease-out),
+                background 150ms var(--ease-out);
+    letter-spacing: -0.005em;
 }
 .pb-page-nav-links a:hover {
     color: var(--pb-chalk-50);
-    background: var(--pb-billiard-green-700);
+    background: rgba(216, 208, 192, 0.06);
 }
 .pb-page-nav-links a.is-active {
     color: var(--pb-brass-500);
-    border-bottom-color: var(--pb-brass-500);
+    background: rgba(201, 169, 97, 0.10);
+    box-shadow: 0 0 0 1px rgba(201, 169, 97, 0.18) inset;
 }
 
 
@@ -203,22 +221,27 @@ body.pb-app {
     flex-wrap: wrap;
 }
 
+/* phase-I iter1 (2026-05-19): H1 stretches to Vercel/Linear scale.
+   Was --text-2xl (1.75rem, 28px); bump to 2rem (32px) and pull the
+   letter-spacing tighter (-0.025em) — display-weight numerals deserve
+   that editorial squeeze. Weight stays 600 (semibold) per the design-
+   tokens guidance (display headings tighten + weighten). */
 .pb-page-title {
     font-family: var(--font-display);
-    font-size: var(--text-2xl);
+    font-size: 2rem;
     font-weight: 600;
     color: var(--pb-chalk-50);
     margin: 0;
-    letter-spacing: var(--tracking-tight, -0.01em);
-    line-height: 1.15;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
 }
 
 .pb-page-subtitle {
     color: var(--pb-chalk-200);
-    font-size: var(--text-base);
+    font-size: 0.9375rem; /* 15px — tighter than 16px base */
     margin: var(--space-2) 0 0;
-    max-width: 70ch;
-    line-height: var(--lh-normal, 1.5);
+    max-width: 72ch;
+    line-height: 1.55;
 }
 
 .pb-page-meta {
@@ -249,25 +272,45 @@ body.pb-app {
    on the heading — the data inside the section is the focus.
    ---------------------------------------------------------------------------- */
 .pb-section {
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-7);
 }
 
+/* phase-I iter1 (2026-05-19): Section titles get Linear-style eyebrow
+   treatment — title sits LEFT of a horizontal hairline that fills the
+   remaining row width. Reads as a section divider, not a label.
+   Wrapper: ::after rule on a flex-row container so the rule auto-
+   extends. We use display:flex with align-items:center so the rule
+   visually centers against the cap-height of the title text. */
 .pb-section-title {
     font-family: var(--font-mono);
-    font-size: var(--text-xs);
+    font-size: 0.6875rem; /* 11px */
     font-weight: 600;
-    color: var(--pb-chalk-300);
+    color: var(--pb-chalk-400);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin: 0 0 var(--space-3);
-    padding-bottom: var(--space-2);
-    border-bottom: 1px solid var(--border-subtle);
+    letter-spacing: 0.13em;
+    margin: 0 0 var(--space-4);
+    padding: 0;
+    border: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+.pb-section-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg,
+        rgba(216, 208, 192, 0.12) 0%,
+        rgba(216, 208, 192, 0.04) 60%,
+        rgba(216, 208, 192, 0) 100%);
 }
 
 .pb-section-subtitle {
-    font-size: var(--text-sm);
+    font-size: 0.8125rem; /* 13px — tighter than 14px sm */
     color: var(--pb-chalk-300);
     margin: calc(-1 * var(--space-2)) 0 var(--space-3);
+    line-height: 1.5;
+    max-width: 72ch;
 }
 
 
@@ -291,66 +334,395 @@ body.pb-app {
     .pb-kpi-grid { grid-template-columns: 1fr; }
 }
 
+/* phase-I iter1 (2026-05-19): Linear/Vercel-tier card chrome.
+   - Subtle vertical gradient on the surface (top -1% lighter → bottom -1% darker)
+     so the card feels lit from above rather than flat fill
+   - 1px hairline ring sourced from chalk-12% RGBA (was 8%; was visually
+     invisible against the dark green); read at glance distance now
+   - Top accent strip (3px) supersedes the left strip — left strip on Linear/
+     Vercel/Stripe analytics cards is rare; top strip ties the colored state
+     to the headline + value tighter (matches Stripe's ledger-card pattern)
+   - Subtle inset highlight on top edge for depth without shadow noise
+   - Shadow is restrained on default; emphasised on hover (lift-of-1px) */
 .pb-kpi-card {
-    background: var(--pb-billiard-green-800);
-    border: 1px solid var(--border-subtle);
-    border-left: 3px solid var(--pb-brass-500);
+    position: relative;
+    background:
+        linear-gradient(180deg,
+            rgba(255, 255, 255, 0.025) 0%,
+            rgba(255, 255, 255, 0) 28%,
+            rgba(0, 0, 0, 0.10) 100%),
+        var(--pb-billiard-green-800);
+    border: 1px solid rgba(216, 208, 192, 0.07);
     border-radius: var(--radius-md);
-    padding: var(--space-3) var(--space-4);
+    padding: calc(var(--space-3) + 2px) var(--space-4) var(--space-3);
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
     min-width: 0;
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.04) inset,
+        0 1px 2px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
 }
-.pb-kpi-card.is-positive { border-left-color: var(--pb-success); }
-.pb-kpi-card.is-warning  { border-left-color: var(--pb-warning); }
-.pb-kpi-card.is-danger   { border-left-color: var(--pb-error); }
-.pb-kpi-card.is-neutral  { border-left-color: var(--pb-chalk-300); }
-.pb-kpi-card.is-info     { border-left-color: var(--pb-info); }
+/* Top accent strip — supersedes the left strip pattern. Renders as a
+   precise 2px lozenge at the top edge using ::before so we don't compete
+   with the card's outer border. Color is set per state class. */
+.pb-kpi-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--pb-brass-500);
+    opacity: 0.85;
+    transition: opacity 180ms var(--ease-out), height 180ms var(--ease-out);
+}
+.pb-kpi-card.is-positive::before { background: var(--pb-success); }
+.pb-kpi-card.is-warning::before  { background: var(--pb-warning); }
+.pb-kpi-card.is-danger::before   { background: var(--pb-error); }
+.pb-kpi-card.is-neutral::before  { background: var(--pb-chalk-400); opacity: 0.45; }
+.pb-kpi-card.is-info::before     { background: var(--pb-info); }
+/* phase-I iter1 (2026-05-19): JS-controlled cards (health banners,
+   round-trip, working tree) set borderLeftColor inline. To honor that
+   intent without competing with our top stripe, suppress the default
+   ::before stripe on those cards and reinstate the left stripe at 3px
+   width — they're still "stateful" cards, just with the original left
+   accent treatment. The card's outer chrome (gradient + ring + shadow)
+   stays consistent with all the others. */
+.pb-kpi-card[style*="border-left-color"]::before {
+    display: none;
+}
+.pb-kpi-card[style*="border-left-color"] {
+    border-left-width: 3px !important;
+    border-left-style: solid !important;
+    padding-left: calc(var(--space-4) - 2px);
+}
 
-/* D26 iter (2026-05-16): subtle hover-elevation on KPI cards.
-   Per TASTE-AUDIT.md gap dim 8 (interactive affordances 6/10): Linear
-   pattern (subtle border-color shift + slight lift on buttons-as-cards)
-   for interactive feedback. Buttons (.pb-health-banner) get translateY. */
 .pb-kpi-card {
-    transition: border-color 150ms ease-out, background-color 150ms ease-out, transform 150ms ease-out;
+    transition:
+        border-color 180ms var(--ease-out),
+        background-color 180ms var(--ease-out),
+        transform 180ms var(--ease-out),
+        box-shadow 180ms var(--ease-out);
 }
 .pb-kpi-card:hover {
-    background: var(--pb-billiard-green-700);
-    border-color: var(--border-default, var(--pb-chalk-400));
+    border-color: rgba(216, 208, 192, 0.16);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.06) inset,
+        0 6px 20px rgba(0, 0, 0, 0.35),
+        0 2px 4px rgba(0, 0, 0, 0.25);
+    transform: translateY(-1px);
+}
+.pb-kpi-card:hover::before {
+    height: 3px;
+    opacity: 1;
 }
 button.pb-kpi-card.pb-health-banner:hover {
-    background: var(--pb-billiard-green-700);
-    border-color: var(--accent-brass);
-    transform: translateY(-1px);
+    border-color: rgba(201, 169, 97, 0.40);
     cursor: pointer;
+}
+a.pb-kpi-card { color: inherit; text-decoration: none; }
+a.pb-kpi-card:hover { border-color: rgba(201, 169, 97, 0.40); }
+
+/* phase-I iter2 (2026-05-19): Status pill primitive.
+   Compact inline rendering of state (PASS / STALE / RED / etc.) with a
+   leading colored dot + uppercase label. Used on health banner cards,
+   table cells, and inline status callouts. Follows Linear's "status
+   chip" pattern: minimal chrome, color-tinted background, small dot. */
+.pb-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.625rem; /* 10px */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.11em;
+    padding: 3px 8px 3px 7px;
+    border-radius: var(--radius-pill);
+    background: rgba(216, 208, 192, 0.06);
+    color: var(--pb-chalk-200);
+    border: 1px solid rgba(216, 208, 192, 0.10);
+    line-height: 1;
+    white-space: nowrap;
+}
+.pb-status-pill::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.04);
+}
+.pb-status-pill.is-green   { background: rgba(74, 128, 103, 0.14); border-color: rgba(74, 128, 103, 0.40); color: #7eb198; }
+.pb-status-pill.is-yellow  { background: rgba(212, 168, 87, 0.14); border-color: rgba(212, 168, 87, 0.40); color: #e8c275; }
+.pb-status-pill.is-red     { background: rgba(156, 74, 74, 0.18);  border-color: rgba(156, 74, 74, 0.50);  color: #d28b8b; }
+.pb-status-pill.is-blue    { background: rgba(74, 138, 156, 0.14); border-color: rgba(74, 138, 156, 0.40); color: #7eb3c2; }
+.pb-status-pill.is-brass   { background: rgba(201, 169, 97, 0.12); border-color: rgba(201, 169, 97, 0.40); color: var(--pb-brass-500); }
+.pb-status-pill.is-muted   { background: rgba(216, 208, 192, 0.04); border-color: rgba(216, 208, 192, 0.08); color: var(--pb-chalk-400); }
+
+/* phase-I iter2 (2026-05-19): Health banner refinements.
+   Health banners (test/security/approvals/architecture) are full-width
+   buttons that include the dot. The dot is currently a bullet character;
+   we replace it with a true bordered halo dot driven by ::after on the
+   .pb-health-banner-dot span. Also: tighten the multi-line summary text
+   inside the value, prevent it from breaking the card height rhythm. */
+.pb-health-banner {
+    border: 0;
+    background: linear-gradient(180deg,
+        rgba(255, 255, 255, 0.025) 0%,
+        rgba(255, 255, 255, 0) 28%,
+        rgba(0, 0, 0, 0.10) 100%),
+        var(--pb-billiard-green-800);
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+}
+.pb-health-banner-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    margin-right: 6px;
+    vertical-align: middle;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05),
+                0 0 0 3px rgba(0, 0, 0, 0.30);
+    /* The bullet character is now hidden — we drive the visible dot via
+       background so the JS-set color flows through. The span's text-content
+       (a unicode bullet) is hidden visually but kept for legacy back-compat. */
+    color: transparent;
+    font-size: 0;
+    line-height: 1;
 }
 
 .pb-kpi-label {
     font-family: var(--font-mono);
-    font-size: var(--text-xs);
+    font-size: 0.6875rem; /* 11px — Linear's micro-eyebrow tightness */
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.11em;
     color: var(--pb-chalk-400);
+    line-height: 1.2;
 }
 
+/* phase-I iter3 (2026-05-19): KPI value can now host a muted unit suffix
+   nested as <span class="pb-kpi-value-unit"> so "$4.51B" renders the
+   "$" + "B" suffix in a softer weight — Stripe / Linear / Vercel all
+   use this pattern. The base numeral stays the loudest element. */
 .pb-kpi-value {
     font-family: var(--font-numeric);
     font-variant-numeric: tabular-nums;
-    font-size: var(--text-3xl);
-    font-weight: 700;
+    font-feature-settings: "tnum" 1, "ss01" 1;
+    font-size: 2.5rem;
+    font-weight: 600;
     color: var(--pb-chalk-50);
-    line-height: 1.1;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
     word-break: break-all;
+    margin-top: 4px;
+    display: inline-block;
 }
-.pb-kpi-value.is-small { font-size: var(--text-xl); }
+.pb-kpi-value-unit {
+    color: var(--pb-chalk-400);
+    font-weight: 500;
+    margin-left: 2px;
+    letter-spacing: -0.01em;
+}
+.pb-kpi-value-prefix {
+    color: var(--pb-chalk-300);
+    font-weight: 500;
+    margin-right: 1px;
+    letter-spacing: -0.01em;
+}
+.pb-kpi-value.is-small {
+    font-size: 1.1875rem; /* 19px — long-form values (timestamps, multi-line) */
+    line-height: 1.3;
+    letter-spacing: -0.005em;
+    font-weight: 500;
+    color: var(--pb-chalk-100);
+}
+
+/* phase-I iter3 (2026-05-19): KPI value count-up animation on first paint.
+   Vercel monitor + Linear analytics both animate the headline number from
+   0 → actual value over ~700-1000ms when the page first renders. We use a
+   CSS-only opacity fade-in + a small translate to give the numbers a
+   "settle into place" feel. The JS-driven count-up itself lives in the
+   dashboard render block. */
+@keyframes pb-kpi-value-enter {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.pb-kpi-card .pb-kpi-value {
+    animation: pb-kpi-value-enter 480ms var(--ease-out) both;
+}
+@media (prefers-reduced-motion: reduce) {
+    .pb-kpi-card .pb-kpi-value { animation: none; }
+}
+
+/* phase-I iter3 (2026-05-19): legitimate-empty "0" state. AMD-026 P10
+   classifies "0" as legitimate-empty when source is genuinely empty. We
+   soften the visual weight of "0" in is-neutral / non-statusful cards
+   via a [data-zero] selector that the JS opts cards into. The value
+   shifts to chalk-300 (was chalk-50); the card retains the same layout
+   so the "0" still scans as a real number, just less alarmingly. */
+.pb-kpi-card[data-zero="1"]:not(.is-danger):not(.is-warning) .pb-kpi-value {
+    color: var(--pb-chalk-300);
+}
+.pb-kpi-card[data-zero="1"]:not(.is-danger):not(.is-warning)::before {
+    opacity: 0.30;
+}
 
 .pb-kpi-sub {
-    font-size: var(--text-xs);
+    font-size: 0.75rem;
     color: var(--pb-chalk-300);
+    margin-top: 10px;
+    line-height: 1.45;
+}
+
+/* ----------------------------------------------------------------------------
+   ACTION AFFORDANCE BADGES (AMD-026 P10 — Founder visible-default)
+   Founder feedback 2026-05-19: "buttons dont show how to resolve or what is
+   needed from me if anything. I should be involved as little as possible."
+   Every state with WHAT/WHERE/WHAT-ACTION must answer WHO closes it without
+   the Founder having to click-to-expand. Four WHO tiers:
+     - founder  → bright brass + bold, "FOUNDER DECISION" — needs human
+     - agent    → amber, "agent working" — already queued autonomously
+     - cron     → grey, "cron will resolve" — auto-resolves on next cadence
+     - none     → muted green dot, "ok" — legitimate empty / healthy
+   The badge sits inside .pb-kpi-card (and any analogous container) at the
+   bottom. It contains a short label + an optional inline link to the
+   destination / next-step path.
+   ---------------------------------------------------------------------------- */
+.pb-action-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-pill, 999px);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    line-height: 1.3;
+    text-decoration: none;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    width: fit-content;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.pb-action-badge::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.pb-action-badge[data-who="founder"] {
+    background: rgba(201, 169, 97, 0.16);
+    color: var(--accent-brass);
+    border-color: var(--accent-brass);
+    font-weight: 700;
+}
+.pb-action-badge[data-who="founder"]::before { background: var(--accent-brass); }
+.pb-action-badge[data-who="agent"] {
+    background: rgba(245, 158, 66, 0.10);
+    color: var(--pb-warning);
+    border-color: rgba(245, 158, 66, 0.40);
+}
+.pb-action-badge[data-who="agent"]::before { background: var(--pb-warning); }
+.pb-action-badge[data-who="cron"] {
+    background: rgba(160, 160, 160, 0.08);
+    color: var(--pb-chalk-300);
+    border-color: var(--border-subtle);
+}
+.pb-action-badge[data-who="cron"]::before { background: var(--pb-chalk-400); }
+.pb-action-badge[data-who="none"] {
+    background: rgba(76, 175, 80, 0.08);
+    color: var(--pb-success);
+    border-color: rgba(76, 175, 80, 0.30);
+}
+.pb-action-badge[data-who="none"]::before { background: var(--pb-success); }
+a.pb-action-badge:hover { filter: brightness(1.15); }
+
+/* Inline visible WHAT-ACTION sub-copy. Sits inside the card body just above
+   the badge. One-line, mono-font, brass-toned link to make the next step
+   visually distinct from the descriptive sub-label. */
+.pb-action-line {
+    display: block;
     margin-top: var(--space-1);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
     line-height: 1.4;
+    color: var(--text-tertiary, var(--pb-chalk-400));
+}
+.pb-action-line strong {
+    color: var(--accent-brass);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: var(--space-1);
+}
+.pb-action-line code {
+    font-size: 0.75em;
+    background: rgba(201, 169, 97, 0.08);
+    padding: 0 4px;
+    border-radius: 3px;
+    color: var(--accent-brass);
+    word-break: break-all;
+}
+.pb-action-line a {
+    color: var(--accent-brass);
+    text-decoration: underline;
+    text-decoration-color: rgba(201, 169, 97, 0.4);
+}
+.pb-action-line a:hover { text-decoration-color: var(--accent-brass); }
+
+/* Founder-attention banner ribbon — used on health banner cards to surface a
+   visible one-line action when banner status is non-green. Sits between the
+   banner summary (line-clamped) and the detail-toggle. */
+.pb-banner-action {
+    display: block;
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 1px dashed rgba(201, 169, 97, 0.25);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    text-align: left;
+    color: var(--text-secondary, var(--pb-chalk-300));
+    word-break: normal;
+    white-space: normal;
+}
+.pb-banner-action strong {
+    color: var(--accent-brass);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: block;
+    margin-bottom: 2px;
+}
+.pb-banner-action code {
+    font-size: 0.85em;
+    background: rgba(201, 169, 97, 0.10);
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: var(--accent-brass);
+    word-break: break-all;
+}
+
+/* When a KPI card carries an action badge with data-who="founder", lift the
+   visual weight so it stands out from cron-noise + agent-busy cards. */
+.pb-kpi-card.has-founder-action {
+    box-shadow: 0 0 0 1px rgba(201, 169, 97, 0.30), 0 2px 8px rgba(201, 169, 97, 0.10);
 }
 
 
@@ -360,11 +732,17 @@ button.pb-kpi-card.pb-health-banner:hover {
    Horizontal scroll on narrow widths via .pb-table-wrap. Sticky first column
    via .is-sticky-col so the row identifier remains visible during scroll.
    ---------------------------------------------------------------------------- */
+/* phase-I iter2 (2026-05-19): table chrome lifted with the same glass
+   gradient treatment as KPI cards. Subtle ring + inset highlight + soft
+   shadow — reads as a designed list, not a CRUD admin table. */
 .pb-table-wrap {
     overflow-x: auto;
-    background: var(--pb-billiard-green-800);
-    border: 1px solid var(--border-subtle);
+    background:
+        linear-gradient(180deg, rgba(255,255,255,0.025) 0%, rgba(255,255,255,0) 14%, rgba(0,0,0,0.06) 100%),
+        var(--pb-billiard-green-800);
+    border: 1px solid rgba(216, 208, 192, 0.07);
     border-radius: var(--radius-md);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, 0 1px 2px rgba(0,0,0,0.20);
     /* Keep horizontal-scroll obvious on touch surfaces without showing a
      * permanent scrollbar on desktop. */
     -webkit-overflow-scrolling: touch;
@@ -376,17 +754,21 @@ button.pb-kpi-card.pb-health-banner:hover {
     font-size: var(--text-sm);
 }
 
+/* phase-I iter2 (2026-05-19): table head + row tighter typography.
+   Header rises to 12px micro-eyebrow with 13% tracking; rows breathe
+   with vertical padding 10px (was 8px); hover-state is a subtle
+   gradient + brass-tinted left edge instead of flat hover-fill. */
 .pb-table thead th {
     text-align: left;
-    padding: var(--space-2) var(--space-3);
-    border-bottom: 1px solid var(--border-strong);
+    padding: 12px var(--space-3) 10px;
+    border-bottom: 1px solid rgba(216, 208, 192, 0.12);
     font-family: var(--font-mono);
-    font-size: var(--text-xs);
+    font-size: 0.6875rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--pb-chalk-300);
-    background: var(--pb-billiard-green-800);
+    letter-spacing: 0.13em;
+    color: var(--pb-chalk-400);
+    background: transparent;
     white-space: nowrap;
     position: sticky;
     top: 0;
@@ -394,13 +776,18 @@ button.pb-kpi-card.pb-health-banner:hover {
 }
 
 .pb-table tbody td {
-    padding: var(--space-2) var(--space-3);
-    border-bottom: 1px solid var(--border-subtle);
+    padding: 10px var(--space-3);
+    border-bottom: 1px solid rgba(216, 208, 192, 0.045);
     color: var(--pb-chalk-100);
-    vertical-align: top;
+    vertical-align: middle;
+    font-size: 0.875rem;
+    transition: background 140ms var(--ease-out);
 }
 .pb-table tbody tr:last-child td { border-bottom: none; }
-.pb-table tbody tr:hover td { background: var(--pb-billiard-green-700); }
+.pb-table tbody tr:hover td {
+    background: linear-gradient(180deg, rgba(255,255,255,0.025) 0%, rgba(255,255,255,0) 100%),
+        rgba(201, 169, 97, 0.04);
+}
 
 /* Number columns: tabular nums, right-aligned. Mark with class on TH/TD. */
 .pb-table th.is-num,

@@ -14,10 +14,8 @@
            export action. Tokens only (no raw hex) per theme convergence guard. */
         /* Inline-expansion CSS removed 2026-05-14 — superseded by escalations.html lifecycle. */
 
-        /* Recent 7-days chart (Founder directive 2026-05-14 DASHBOARD VIZ).
-           Two sub-charts: tokens (M/k scale) and counts (integer scale).
-           Stacked vertically on narrow viewports, side-by-side at >=960px.
-           SVG uses theme tokens — no raw hex. */
+        /* phase-I iter2 (2026-05-19): Recent 7-days chart card chrome
+           upgraded to match KPI card glass treatment + bars use gradient. */
         .recent-7days-charts {
             display: flex;
             flex-direction: column;
@@ -28,20 +26,29 @@
             .recent-7days-charts > div { flex: 1; min-width: 0; }
         }
         .r7-chart {
-            background: var(--pb-billiard-green-800);
-            border: 1px solid var(--border-subtle);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.025) 0%, rgba(255,255,255,0) 28%, rgba(0,0,0,0.10) 100%),
+                var(--pb-billiard-green-800);
+            border: 1px solid rgba(216, 208, 192, 0.07);
             border-radius: var(--radius-md);
-            padding: var(--space-3);
+            padding: var(--space-4) var(--space-4) var(--space-3);
+            box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, 0 1px 2px rgba(0,0,0,0.25);
+            position: relative;
         }
-        .r7-chart-title { font-family: var(--font-mono); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--pb-chalk-300); margin: 0 0 var(--space-1) 0; font-weight: 600; }
-        .r7-chart-subtitle { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--pb-chalk-400); margin: 0 0 var(--space-3) 0; }
-        .r7-chart svg { width: 100%; height: auto; display: block; font-family: var(--font-mono); }
-        .r7-bar-tokens { fill: var(--pb-brass-500); transition: fill var(--duration-fast) var(--ease-out); }
-        .r7-bar-tokens:hover { fill: var(--pb-brass-300); }
-        .r7-bar-complete { fill: var(--pb-success); }
-        .r7-bar-paused { fill: var(--pb-warning); }
-        .r7-bar-halted { fill: var(--pb-error); }
-        .r7-bar-handoffs { fill: var(--pb-info); }
+        .r7-chart-title { font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.13em; color: var(--pb-chalk-400); margin: 0 0 4px 0; font-weight: 600; }
+        .r7-chart-subtitle { font-family: var(--font-body); font-size: 0.75rem; color: var(--pb-chalk-300); margin: 0 0 var(--space-3) 0; line-height: 1.4; }
+        .r7-chart-summary { display: flex; align-items: baseline; gap: 8px; margin: 4px 0 var(--space-3); flex-wrap: wrap; }
+        .r7-chart-summary-value { font-family: var(--font-numeric); font-variant-numeric: tabular-nums; font-size: 1.625rem; font-weight: 600; color: var(--pb-chalk-50); letter-spacing: -0.025em; line-height: 1; }
+        .r7-chart-summary-label { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--pb-chalk-400); text-transform: uppercase; letter-spacing: 0.1em; }
+        .r7-chart svg { width: 100%; height: auto; display: block; font-family: var(--font-mono); overflow: visible; }
+        /* phase-I iter2 (2026-05-19): bars now use SVG gradient fills via
+           <defs> declared in renderRecent7DaysCharts. Falls through to
+           solid token via the gradient stop color if defs missing. */
+        .r7-bar-tokens    { fill: url(#r7g-brass); }
+        .r7-bar-complete  { fill: url(#r7g-success); }
+        .r7-bar-paused    { fill: url(#r7g-warning); }
+        .r7-bar-halted    { fill: url(#r7g-error); }
+        .r7-bar-handoffs  { fill: url(#r7g-info); }
         /* Iter 12 (2026-05-14, user-journey-audit perceptual fix):
          * Iter 11 mapped Ships → pb-brass-300 (hue 43°) and Bubbles →
          * pb-brass-700 (hue 42°). RGB-distinct but perceptually similar
@@ -51,15 +58,22 @@
          * Fix: hue-distinct chart-specific tokens. cool-blue (hue 210°)
          * for Ships and violet (hue 280°) for Bubbles — distinct from
          * the yellow/green/teal/red existing palette. */
-        .r7-bar-ships { fill: var(--chart-rose); }
-        .r7-bar-bubbles { fill: var(--chart-violet); }
-        .r7-bar-tokens, .r7-bar-complete, .r7-bar-paused, .r7-bar-halted, .r7-bar-handoffs, .r7-bar-ships, .r7-bar-bubbles { transition: opacity var(--duration-fast) var(--ease-out); }
-        .r7-bar-tokens:hover, .r7-bar-complete:hover, .r7-bar-paused:hover, .r7-bar-halted:hover, .r7-bar-handoffs:hover, .r7-bar-ships:hover, .r7-bar-bubbles:hover { opacity: 0.7; }
-        .r7-axis { fill: var(--pb-chalk-400); font-size: 10px; }
+        .r7-bar-ships   { fill: url(#r7g-rose); }
+        .r7-bar-bubbles { fill: url(#r7g-violet); }
+        .r7-bar-tokens, .r7-bar-complete, .r7-bar-paused, .r7-bar-halted, .r7-bar-handoffs, .r7-bar-ships, .r7-bar-bubbles {
+            transition: opacity var(--duration-fast) var(--ease-out), filter var(--duration-fast) var(--ease-out);
+            cursor: default;
+        }
+        .r7-bar-tokens:hover, .r7-bar-complete:hover, .r7-bar-paused:hover, .r7-bar-halted:hover, .r7-bar-handoffs:hover, .r7-bar-ships:hover, .r7-bar-bubbles:hover {
+            opacity: 0.85;
+            filter: brightness(1.18);
+        }
+        .r7-axis { fill: var(--pb-chalk-400); font-size: 9.5px; letter-spacing: 0.04em; font-family: var(--font-mono); }
         .r7-axis-title { fill: var(--pb-chalk-300); font-size: 10px; font-weight: 600; }
-        .r7-grid { stroke: var(--border-subtle); stroke-dasharray: 2,2; }
-        .r7-legend { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3); font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--pb-chalk-300); margin-top: var(--space-2); }
-        .r7-legend-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+        .r7-grid { stroke: rgba(216, 208, 192, 0.05); stroke-dasharray: 0; }
+        .r7-grid-baseline { stroke: rgba(216, 208, 192, 0.18); stroke-width: 1; }
+        .r7-legend { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3); font-family: var(--font-mono); font-size: 0.625rem; color: var(--pb-chalk-300); margin-top: var(--space-3); padding-top: var(--space-2); border-top: 1px solid rgba(216, 208, 192, 0.05); letter-spacing: 0.08em; }
+        .r7-legend-swatch { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: middle; box-shadow: 0 0 0 1px rgba(0,0,0,0.18); }
     </style>
 </head>
 <body class="pb-app">
@@ -97,14 +111,35 @@
              exceptions. Rendered by JS from data.founder_queue. Empty queue
              renders an "All caught up" affirmative signal rather than
              collapsing the section. Stale items (>3 days) flagged distinctly. -->
-        <section class="pb-section pb-section--founder-queue" id="founder-review-queue" style="border: 2px solid var(--accent-brass); border-radius: var(--radius-md); padding: var(--space-4); margin-bottom: var(--space-5); background: rgba(201,169,97,0.04);">
-            <div class="pb-page-title-row" style="margin-bottom: var(--space-3);">
-                <div>
-                    <h2 class="pb-section-title" style="font-size: var(--text-2xl, 1.5rem); color: var(--accent-brass); margin: 0;">Founder Review Queue</h2>
-                    <p class="pb-section-subtitle" data-fq="subtitle">checking review queue&hellip;</p>
+        <!-- phase-I iter1 (2026-05-19): Founder Review Queue chrome tuned
+             toward Linear/Vercel premium-feature-panel feel rather than
+             "warning banner". Replaces the loud 2px brass border with a
+             whisper-thin 1px brass-tinted ring + a corner-anchored brass
+             gradient backdrop. Title gets proper hierarchy: H2 size with
+             tracking, the section meta line shifted right with mono +
+             chalk-400 timestamp treatment. -->
+        <section class="pb-section pb-section--founder-queue" id="founder-review-queue" style="position: relative; border: 1px solid rgba(201,169,97,0.22); border-radius: var(--radius-lg); padding: var(--space-5); margin-bottom: var(--space-6); background:
+            radial-gradient(ellipse at top right, rgba(201,169,97,0.08) 0%, rgba(201,169,97,0) 50%),
+            linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0) 30%),
+            var(--pb-billiard-green-800);
+            box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, 0 8px 28px rgba(0,0,0,0.30);">
+            <!-- phase-I iter3 (2026-05-19): brass corner accent toned down
+                 from 0.35 → 0.18 opacity. Premium feature signal stays but
+                 less of a "highlighted feature" feel — closer to a subtle
+                 spark at edge. -->
+            <div aria-hidden="true" style="position:absolute; top: 0; right: 0; width: 180px; height: 120px; pointer-events: none; background: radial-gradient(ellipse at top right, rgba(201,169,97,0.16) 0%, rgba(201,169,97,0) 65%); border-top-right-radius: var(--radius-lg); overflow: hidden;"></div>
+            <div class="pb-page-title-row" style="margin-bottom: var(--space-4); position: relative;">
+                <div style="flex: 1; min-width: 0;">
+                    <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: 8px;">
+                        <span aria-hidden="true" style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent-brass); box-shadow: 0 0 0 3px rgba(201,169,97,0.15);"></span>
+                        <span style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.13em; color: var(--accent-brass);">Founder review queue</span>
+                    </div>
+                    <h2 style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; color: var(--pb-chalk-50); margin: 0 0 6px; letter-spacing: -0.02em; line-height: 1.15;">Pending Founder eyes</h2>
+                    <p style="font-size: 0.875rem; color: var(--pb-chalk-300); margin: 0; line-height: 1.5; max-width: 64ch;" data-fq="subtitle">checking review queue&hellip;</p>
                 </div>
-                <div class="pb-page-meta" style="font-family: var(--font-mono); font-size: var(--text-xs);">
-                    <span>Last visit: <span data-fq="last-visit">never recorded</span></span>
+                <div class="pb-page-meta" style="font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.1em; flex-shrink: 0; text-align: right;">
+                    <span style="color: var(--pb-chalk-400); display: block; margin-bottom: 2px;">Last visit</span>
+                    <span style="color: var(--pb-chalk-100); font-size: 0.8125rem; letter-spacing: 0.04em; font-family: var(--font-mono);" data-fq="last-visit">never recorded</span>
                 </div>
             </div>
 
@@ -114,28 +149,39 @@
             </div>
 
             <!-- Sub-section: governance gates -->
+            <!-- AMD-026 P10 visible-action retrofit (2026-05-19): each gate card
+                 now carries a visible WHO badge showing whether Founder action
+                 is needed (founder), an agent is processing (agent), cron will
+                 catch up (cron), or it's a legitimate empty (none). Renders
+                 inline beneath the sub-label so Founder sees the resolution
+                 path without clicking. JS in renderFounderQueue() swaps the
+                 badge data-who + textContent per count + state. -->
             <div data-fq-section="governance" style="margin-bottom: var(--space-3);">
-                <div style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); font-weight: 600; margin-bottom: var(--space-1);">Governance gates</div>
+                <div style="font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.13em; color: var(--pb-chalk-400); font-weight: 600; margin-bottom: var(--space-2);">Governance gates</div>
                 <div class="pb-kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
-                    <a class="pb-kpi-card" data-fq-gate="amendments" href="amendments.html" style="text-decoration: none;">
+                    <a class="pb-kpi-card" data-fq-gate="amendments" href="amendments.html" style="text-decoration: none;" title="Click to open Amendments dashboard">
                         <span class="pb-kpi-label">Amendments pending</span>
                         <span class="pb-kpi-value" data-fq="amendments-pending">&mdash;</span>
                         <span class="pb-kpi-sub">awaiting Founder ratification</span>
+                        <span class="pb-action-badge" data-who="none" data-fq-badge="amendments">ok &middot; no drafts</span>
                     </a>
-                    <a class="pb-kpi-card" data-fq-gate="bubbles" href="discussion-bubbles.html" style="text-decoration: none;">
+                    <a class="pb-kpi-card" data-fq-gate="bubbles" href="discussion-bubbles.html" style="text-decoration: none;" title="Click to open Discussion Bubbles">
                         <span class="pb-kpi-label">Bubbles flagged</span>
                         <span class="pb-kpi-value" data-fq="bubbles-flagged">&mdash;</span>
                         <span class="pb-kpi-sub">tie-break or Founder weigh-in</span>
+                        <span class="pb-action-badge" data-who="none" data-fq-badge="bubbles">ok &middot; quorum reached</span>
                     </a>
-                    <a class="pb-kpi-card" data-fq-gate="proposals" href="proposals.html" style="text-decoration: none;">
+                    <a class="pb-kpi-card" data-fq-gate="proposals" href="proposals.html" style="text-decoration: none;" title="Click to open Proposals dashboard">
                         <span class="pb-kpi-label">Proposals pending</span>
                         <span class="pb-kpi-value" data-fq="proposals-pending">&mdash;</span>
                         <span class="pb-kpi-sub">awaiting approval</span>
+                        <span class="pb-action-badge" data-who="none" data-fq-badge="proposals">ok &middot; no pending</span>
                     </a>
-                    <a class="pb-kpi-card" data-fq-gate="escalations" href="escalations.html" style="text-decoration: none;">
+                    <a class="pb-kpi-card" data-fq-gate="escalations" href="escalations.html" style="text-decoration: none;" title="Click to open Escalations dashboard">
                         <span class="pb-kpi-label">Open escalations</span>
                         <span class="pb-kpi-value" data-fq="escalations-count">&mdash;</span>
                         <span class="pb-kpi-sub" data-fq="escalations-summary">phase escalations</span>
+                        <span class="pb-action-badge" data-who="none" data-fq-badge="escalations">ok &middot; none open</span>
                     </a>
                 </div>
                 <!-- Escalation lifecycle 2026-05-14: KPI card navigates to escalations.html
@@ -145,7 +191,7 @@
 
             <!-- Sub-section: system health -->
             <div data-fq-section="health" style="margin-bottom: var(--space-3);">
-                <div style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); font-weight: 600; margin-bottom: var(--space-1);">System health</div>
+                <div style="font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.13em; color: var(--pb-chalk-400); font-weight: 600; margin-bottom: var(--space-2);">System health</div>
                 <!-- P7 layout fix 2026-05-15 (taste-scoring): the 6-column auto-fit at 180px
                      min collapses banner summary text into 10-line wraps that break rhythm
                      against the equal-height KPI cards in the row above. Min raised to
@@ -170,6 +216,11 @@
                         <span class="pb-kpi-label"><span class="pb-health-banner-dot" data-fq-banner-dot="test" aria-hidden="true">&bull;</span> Test health</span>
                         <span class="pb-kpi-value is-small" data-fq-banner-summary="test" style="white-space: normal; word-break: break-word; line-height: 1.3;">&mdash;</span>
                         <span class="pb-kpi-sub" data-fq-banner-meta="test"></span>
+                        <!-- AMD-026 P10 visible-action retrofit (2026-05-19): 1-line
+                             action shown without click. JS sets innerHTML + data-who
+                             on the badge per status (renderHealthBanner). -->
+                        <span class="pb-banner-action" data-fq-banner-action="test" hidden></span>
+                        <span class="pb-action-badge" data-who="cron" data-fq-banner-badge="test">checking&hellip;</span>
                     </button>
                     <!-- R3 2026-05-15: security-health banner. Reads .claude/state/aggregates/security-health.json
                          (status: green | yellow | red). Yellow = open dependency CVEs (non-blocking). Red = active leak / rules drift / AMD-018 violation. -->
@@ -177,6 +228,8 @@
                         <span class="pb-kpi-label"><span class="pb-health-banner-dot" data-fq-banner-dot="security" aria-hidden="true">&bull;</span> Security health</span>
                         <span class="pb-kpi-value is-small" data-fq-banner-summary="security" style="white-space: normal; word-break: break-word; line-height: 1.3;">&mdash;</span>
                         <span class="pb-kpi-sub" data-fq-banner-meta="security"></span>
+                        <span class="pb-banner-action" data-fq-banner-action="security" hidden></span>
+                        <span class="pb-action-badge" data-who="cron" data-fq-banner-badge="security">checking&hellip;</span>
                     </button>
                     <!-- AMD-023 + queue task approvals-pipeline-banner: derived locally
                          from scripts/cron/logs/*-downloads-watcher.log + marker +
@@ -185,6 +238,8 @@
                         <span class="pb-kpi-label"><span class="pb-health-banner-dot" data-fq-banner-dot="approvals" aria-hidden="true">&bull;</span> Approvals pipeline</span>
                         <span class="pb-kpi-value is-small" data-fq-banner-summary="approvals" style="white-space: normal; word-break: break-word; line-height: 1.3;">&mdash;</span>
                         <span class="pb-kpi-sub" data-fq-banner-meta="approvals"></span>
+                        <span class="pb-banner-action" data-fq-banner-action="approvals" hidden></span>
+                        <span class="pb-action-badge" data-who="cron" data-fq-banner-badge="approvals">checking&hellip;</span>
                     </button>
                     <!-- AMD-024 + queue task architecture-review-banner: reads
                          .claude/state/aggregates/architecture-review.json written by
@@ -194,21 +249,36 @@
                         <span class="pb-kpi-label"><span class="pb-health-banner-dot" data-fq-banner-dot="architecture" aria-hidden="true">&bull;</span> Architecture review</span>
                         <span class="pb-kpi-value is-small" data-fq-banner-summary="architecture" style="white-space: normal; word-break: break-word; line-height: 1.3;">&mdash;</span>
                         <span class="pb-kpi-sub" data-fq-banner-meta="architecture"></span>
+                        <span class="pb-banner-action" data-fq-banner-action="architecture" hidden></span>
+                        <span class="pb-action-badge" data-who="agent" data-fq-banner-badge="architecture">agent &middot; not yet dispatched</span>
                     </button>
                     <div class="pb-kpi-card" data-fq-health="round-trip" title="Last successful round-trip pass from regen-all heartbeat. Persisted at .claude/state/heartbeats/regen-all-last-pass.json on every PASS. STALE if more than 60 minutes old.">
                         <span class="pb-kpi-label">Round-trip last pass</span>
                         <span class="pb-kpi-value is-small" data-fq="round-trip" style="white-space: nowrap;">&mdash;</span>
                         <span class="pb-kpi-sub" data-fq="round-trip-status">regen-all heartbeat</span>
+                        <!-- AMD-026 P10: WHO badge stays visible by default.
+                             JS swaps data-who per state (cron when healthy/STALE,
+                             founder when GATE-FAIL or UNKNOWN). -->
+                        <span class="pb-action-badge" data-who="cron" data-fq-badge="round-trip">cron &middot; will refresh</span>
                     </div>
                     <div class="pb-kpi-card" data-fq-health="working-tree" title="Working tree state. Clean means autonomous work can proceed. Dirty means uncommitted changes pending. The substrate-watcher auto-commits routine cron output to keep tree clean between ships; if it goes silent, autonomous work blocks.">
                         <span class="pb-kpi-label">Working tree</span>
                         <span class="pb-kpi-value is-small" data-fq="working-tree" style="white-space: normal; word-break: break-word; line-height: 1.3;">&mdash;</span>
                         <span class="pb-kpi-sub" data-fq="working-tree-sub">checking&hellip;</span>
+                        <!-- AMD-026 P10 retrofit: visible action sub-line + WHO
+                             badge. When dirty-cycling → cron resolves; when
+                             dirty-blocked → Founder decision; when watcher-silent
+                             → Founder decision (cron restart). -->
+                        <span class="pb-action-line" data-fq="working-tree-action" hidden></span>
+                        <span class="pb-action-badge" data-who="cron" data-fq-badge="working-tree">checking&hellip;</span>
                     </div>
                     <div class="pb-kpi-card" data-fq-health="halts">
                         <span class="pb-kpi-label">Active halts</span>
                         <span class="pb-kpi-value" data-fq="halts-count">&mdash;</span>
                         <span class="pb-kpi-sub" data-fq="halts-summary">unresolved system faults</span>
+                        <!-- AMD-026 P10: halts surface gets WHO badge — Founder
+                             when >0. Always renders the inspect link. -->
+                        <span class="pb-action-badge" data-who="none" data-fq-badge="halts"><a href="../../.claude/state/halts/" style="color: inherit; text-decoration: underline;">ok &middot; verify dir</a></span>
                     </div>
                 </div>
                 <div id="health-banner-architecture-detail" class="pb-health-banner-detail" data-fq-banner-detail="architecture" hidden style="margin-top: var(--space-3); padding: var(--space-3); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--surface-secondary);"></div>
@@ -224,13 +294,13 @@
 
             <!-- Sub-section: activity since last visit -->
             <div data-fq-section="activity" style="margin-bottom: var(--space-3);">
-                <div style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); font-weight: 600; margin-bottom: var(--space-1);">Activity since last visit</div>
+                <div style="font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.13em; color: var(--pb-chalk-400); font-weight: 600; margin-bottom: var(--space-2);">Activity since last visit</div>
                 <div data-fq="activity-summary" style="font-size: var(--text-sm); color: var(--text-secondary);">Loading&hellip;</div>
             </div>
 
             <!-- Sub-section: exceptions -->
             <div data-fq-section="exceptions">
-                <div style="font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); font-weight: 600; margin-bottom: var(--space-1);">Exceptions</div>
+                <div style="font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.13em; color: var(--pb-chalk-400); font-weight: 600; margin-bottom: var(--space-2);">Exceptions</div>
                 <div data-fq="exceptions-summary" style="font-size: var(--text-sm); color: var(--text-secondary);">none</div>
             </div>
         </section>
@@ -245,106 +315,144 @@
               Anthropic quota label dynamically reflects source: "live" when wired-real,
               "sidecar empty/stale" when fallback, "manual" when only the paste exists.
             -->
-            <!-- D26 taste iteration (2026-05-16): bump primary numeral typography
-                 on THIS WEEK strip per Vercel/Stripe/Anthropic console big-numeral
-                 pattern. Uses --text-4xl (was inherited ~2xl) on .pb-kpi-value within
-                 this grid. Per TASTE-AUDIT.md gap analysis dimension 5 (typography
-                 hierarchy was 0.5-1 point shy of peer baseline). -->
+            <!-- phase-I iter3 (2026-05-19): top-of-fold hero numbers
+                 earn the loudest typography. Bumped from 46px → 52px;
+                 tighter tracking; lower line-height; card-level padding
+                 expanded so the number breathes from card edge. -->
             <style>
                 .pb-kpi-grid.is-this-week .pb-kpi-value {
-                    font-size: var(--text-4xl, 2.25rem);
-                    line-height: 1.05;
-                    letter-spacing: -0.02em;
+                    font-size: 3.25rem; /* 52px — top-of-fold weight */
+                    line-height: 0.95;
+                    letter-spacing: -0.04em;
                     font-weight: 600;
                 }
-                .pb-kpi-grid.is-this-week .pb-kpi-card { padding: var(--space-3) var(--space-3); }
+                .pb-kpi-grid.is-this-week .pb-kpi-card {
+                    padding: var(--space-5) var(--space-4) var(--space-4);
+                    min-height: 152px;
+                }
+                .pb-kpi-grid.is-this-week .pb-kpi-value-unit {
+                    font-size: 1.875rem;
+                    letter-spacing: -0.02em;
+                }
+                .pb-kpi-grid.is-this-week .pb-kpi-label {
+                    font-size: 0.6875rem;
+                    letter-spacing: 0.12em;
+                }
+                /* Render a unit suffix next to the value in muted weight
+                   so "$284 spend" / "tokens" reads as caption-attached. */
+                .pb-kpi-grid.is-this-week .pb-kpi-sub {
+                    font-size: 0.75rem;
+                }
             </style>
+            <!-- AMD-026 P10 visible-action retrofit (2026-05-19): every "This week"
+                 KPI gets a WHO badge so Founder sees who closes the state. Token
+                 cards point at token-usage.html; ships/halts to source dirs;
+                 cycles to halt evidence dir. Badges hydrated in main JS pass. -->
             <div class="pb-kpi-grid is-this-week">
-                <div class="pb-kpi-card is-neutral">
+                <a class="pb-kpi-card is-neutral" href="token-usage.html" style="text-decoration: none; color: inherit;" title="Click to open the Token Usage dashboard">
                     <span class="pb-kpi-label">Tokens this week</span>
                     <span class="pb-kpi-value" data-kpi="weekly-tokens">&mdash;</span>
                     <span class="pb-kpi-sub" data-kpi-sub="weekly-tokens">aggregate of telemetry events</span>
-                </div>
+                    <span class="pb-action-badge" data-who="cron" data-kpi-badge="weekly-tokens">cron &middot; aggregator refreshes</span>
+                </a>
                 <!-- D36 (2026-05-16): Day-To-Date token card per spec PHASE T6 +
                      usage-meters peer pattern (Anthropic Console Day view +
                      Vercel daily slice + Stripe today-so-far). Derives from
                      token-usage-snapshot.json by_day breakdown. Legitimate 0
                      early in UTC day; honest empty label. -->
-                <div class="pb-kpi-card is-neutral">
+                <a class="pb-kpi-card is-neutral" href="token-usage.html" style="text-decoration: none; color: inherit;" title="Click to open the Token Usage dashboard">
                     <span class="pb-kpi-label">Tokens today (UTC)</span>
                     <span class="pb-kpi-value" data-kpi="daily-tokens">&mdash;</span>
                     <span class="pb-kpi-sub" data-kpi-sub="daily-tokens">day-to-date · UTC</span>
-                </div>
-                <div class="pb-kpi-card" data-kpi-card="manual-quota">
+                    <span class="pb-action-badge" data-who="cron" data-kpi-badge="daily-tokens">cron &middot; aggregator refreshes</span>
+                </a>
+                <div class="pb-kpi-card" data-kpi-card="manual-quota" title="Anthropic billing quota. Source: .claude/state/quota-status.json or manual paste. Run scripts/refresh-quota-manual.ps1 to anchor a paste.">
                     <span class="pb-kpi-label" data-kpi-label="quota-source">Anthropic quota</span>
                     <span class="pb-kpi-value" data-kpi="manual-quota-pct">&mdash;</span>
                     <span class="pb-kpi-sub" data-kpi-sub="manual-quota">no recent paste &mdash; run <code>scripts/refresh-quota-manual.ps1</code></span>
+                    <!-- AMD-026 P10: quota badge starts as "founder" since sidecar
+                         awaits Founder paste; JS swaps to "none" when fresh. -->
+                    <span class="pb-action-badge" data-who="founder" data-kpi-badge="manual-quota">founder &middot; paste from claude.ai</span>
                 </div>
-                <div class="pb-kpi-card is-positive">
+                <a class="pb-kpi-card is-positive" href="../../.claude/state/ship-progress/" style="text-decoration: none; color: inherit;" title="Click to open ship-progress directory">
                     <span class="pb-kpi-label">Ships this week</span>
                     <span class="pb-kpi-value" data-kpi="ships-week">&mdash;</span>
                     <span class="pb-kpi-sub">approved &amp; shipped</span>
-                </div>
-                <div class="pb-kpi-card is-positive">
+                    <span class="pb-action-badge" data-who="none" data-kpi-badge="ships-week">ok &middot; per ship-progress/</span>
+                </a>
+                <a class="pb-kpi-card is-positive" href="../../.claude/state/halts/" style="text-decoration: none; color: inherit;" title="Click to open halts directory">
                     <span class="pb-kpi-label">Halts this week</span>
                     <span class="pb-kpi-value" data-kpi="halts-week">&mdash;</span>
                     <span class="pb-kpi-sub">clean = good</span>
-                </div>
+                    <span class="pb-action-badge" data-who="none" data-kpi-badge="halts-week">ok &middot; no halts</span>
+                </a>
             </div>
 
             <div class="pb-kpi-grid">
-                <div class="pb-kpi-card is-warning">
+                <a class="pb-kpi-card is-warning" href="../../.claude/state/founder-input-queue/" style="text-decoration: none; color: inherit;" title="Click to open founder-input-queue directory">
                     <span class="pb-kpi-label">FIQ depth</span>
                     <span class="pb-kpi-value" data-kpi="fiq-depth">&mdash;</span>
                     <span class="pb-kpi-sub">open questions for Founder</span>
-                </div>
-                <div class="pb-kpi-card is-positive">
+                    <span class="pb-action-badge" data-who="none" data-kpi-badge="fiq-depth">ok &middot; no questions</span>
+                </a>
+                <div class="pb-kpi-card is-positive" title="Cycles run to completion in the last 7 days. Source: telemetry events.">
                     <span class="pb-kpi-label">Cycles complete (7d)</span>
                     <span class="pb-kpi-value" data-kpi="cycles-complete">&mdash;</span>
                     <span class="pb-kpi-sub">ran to completion</span>
+                    <span class="pb-action-badge" data-who="none" data-kpi-badge="cycles-complete">ok</span>
                 </div>
-                <div class="pb-kpi-card is-warning">
+                <a class="pb-kpi-card is-warning" href="../../.claude/state/halts/" style="text-decoration: none; color: inherit;" title="Cycles that paused for defensive reasons. Click to open halts directory for context.">
                     <span class="pb-kpi-label">Cycles paused (7d)</span>
                     <span class="pb-kpi-value" data-kpi="cycles-paused">&mdash;</span>
                     <span class="pb-kpi-sub">resumed after defensive pause</span>
-                </div>
-                <div class="pb-kpi-card is-danger">
+                    <span class="pb-action-badge" data-who="none" data-kpi-badge="cycles-paused">ok &middot; legitimate</span>
+                </a>
+                <a class="pb-kpi-card is-danger" href="../../.claude/state/halts/" style="text-decoration: none; color: inherit;" title="Cycles halted without resolution. Click to open halts directory and review halt files.">
                     <span class="pb-kpi-label">Cycles halted (7d)</span>
                     <span class="pb-kpi-value" data-kpi="cycles-halted">&mdash;</span>
                     <span class="pb-kpi-sub">unresolved halt evidence</span>
-                </div>
+                    <span class="pb-action-badge" data-who="none" data-kpi-badge="cycles-halted">ok &middot; clean</span>
+                </a>
             </div>
 
             <div class="pb-kpi-grid">
-                <div class="pb-kpi-card">
+                <a class="pb-kpi-card" href="proposals.html" style="text-decoration: none; color: inherit;" title="Click to open Proposals dashboard">
                     <span class="pb-kpi-label">Proposals pending</span>
                     <span class="pb-kpi-value" data-kpi="proposals-pending">&mdash;</span>
                     <span class="pb-kpi-sub">awaiting Founder review</span>
-                </div>
-                <div class="pb-kpi-card is-info">
+                    <span class="pb-action-badge" data-who="none" data-kpi-badge="proposals-pending">ok &middot; no pending</span>
+                </a>
+                <a class="pb-kpi-card is-info" href="proposals.html#in-flight" style="text-decoration: none; color: inherit;" title="Click to open Proposals dashboard (in-flight section)">
                     <span class="pb-kpi-label">Proposals in flight</span>
                     <span class="pb-kpi-value" data-kpi="proposals-in-flight">&mdash;</span>
                     <span class="pb-kpi-sub">approved, awaiting commit</span>
-                </div>
-                <div class="pb-kpi-card is-positive">
+                    <span class="pb-action-badge" data-who="agent" data-kpi-badge="proposals-in-flight">agent &middot; awaiting commit</span>
+                </a>
+                <a class="pb-kpi-card is-positive" href="proposals.html#shipped" style="text-decoration: none; color: inherit;" title="Click to open Proposals dashboard (shipped archive)">
                     <span class="pb-kpi-label">Proposals shipped</span>
                     <span class="pb-kpi-value" data-kpi="proposals-shipped">&mdash;</span>
                     <span class="pb-kpi-sub">total terminal</span>
-                </div>
-                <div class="pb-kpi-card">
+                    <span class="pb-action-badge" data-who="none" data-kpi-badge="proposals-shipped">ok &middot; archive</span>
+                </a>
+                <a class="pb-kpi-card" href="amendments.html" style="text-decoration: none; color: inherit;" title="Click to open Amendments dashboard">
                     <span class="pb-kpi-label">Amendments pending</span>
                     <span class="pb-kpi-value" data-kpi="amendments-pending">&mdash;</span>
                     <span class="pb-kpi-sub">governance amendment drafts</span>
-                </div>
-                <div class="pb-kpi-card is-positive">
+                    <span class="pb-action-badge" data-who="none" data-kpi-badge="amendments-pending">ok &middot; no drafts</span>
+                </a>
+                <a class="pb-kpi-card is-positive" href="amendments.html#applied" style="text-decoration: none; color: inherit;" title="Click to open Amendments dashboard (applied archive)">
                     <span class="pb-kpi-label">Amendments applied</span>
                     <span class="pb-kpi-value" data-kpi="amendments-applied">&mdash;</span>
                     <span class="pb-kpi-sub">total terminal</span>
-                </div>
-                <div class="pb-kpi-card is-neutral">
+                    <span class="pb-action-badge" data-who="none" data-kpi-badge="amendments-applied">ok &middot; archive</span>
+                </a>
+                <div class="pb-kpi-card is-neutral" title="Last time the Anthropic quota sidecar or manual paste was anchored. Run scripts/refresh-quota-manual.ps1 to refresh.">
                     <span class="pb-kpi-label">Quota last anchored</span>
                     <span class="pb-kpi-value is-small" data-kpi="manual-quota-age">&mdash;</span>
                     <span class="pb-kpi-sub">via refresh-quota-manual.ps1</span>
+                    <!-- AMD-026 P10: this badge stays as "founder" since refresh
+                         requires Founder paste from claude.ai. -->
+                    <span class="pb-action-badge" data-who="founder" data-kpi-badge="manual-quota-age">founder &middot; paste to refresh</span>
                 </div>
             </div>
         </section>
@@ -436,6 +544,13 @@
                     var el = document.querySelector(sel);
                     if (el != null) el.textContent = value;
                 }
+                // phase-I iter3 (2026-05-19): setHTML used for KPI value
+                // entries that include muted unit-suffix markup. Sanitized
+                // upstream via fmtNumHtml — only emits whitelisted spans.
+                function setHTML(sel, html) {
+                    var el = document.querySelector(sel);
+                    if (el != null) el.innerHTML = html;
+                }
                 function fmtNum(n) {
                     if (n == null || isNaN(n)) return '—';
                     // Billions case (Founder 2026-05-19: "4,398.40M is not a number, that's 4.3 billion").
@@ -444,6 +559,21 @@
                     if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
                     if (n >= 1e3) return (n / 1e3).toFixed(1) + 'k';
                     return String(n);
+                }
+                // phase-I iter3 (2026-05-19): fmtNumHtml splits the numeral from
+                // its scale suffix so CSS can render the suffix in a softer
+                // weight — matches Stripe/Linear/Vercel KPI typography pattern.
+                function fmtNumHtml(n) {
+                    if (n == null || isNaN(n)) return '<span style="color:var(--pb-chalk-500);">—</span>';
+                    var unit = '';
+                    var val = n;
+                    if (n >= 1e9) { val = (n / 1e9).toFixed(2); unit = 'B'; }
+                    else if (n >= 1e6) { val = (n / 1e6).toFixed(2); unit = 'M'; }
+                    else if (n >= 1e3) { val = (n / 1e3).toFixed(1); unit = 'k'; }
+                    else { val = String(n); }
+                    return unit
+                        ? val + '<span class="pb-kpi-value-unit">' + unit + '</span>'
+                        : String(val);
                 }
                 function fmtPct(n) {
                     if (n == null || isNaN(n)) return '—';
@@ -462,7 +592,7 @@
                 // Paste from claude.ai via refresh-quota-manual.ps1 for ground truth.
                 var weeklyMeasured = data.weekly_tokens || 0;
                 var weeklyEst = data.weekly_tokens_estimated || 0;
-                setText('[data-kpi="weekly-tokens"]', fmtNum(weeklyMeasured));
+                setHTML('[data-kpi="weekly-tokens"]', fmtNumHtml(weeklyMeasured));
                 var costStr = '$' + (data.weekly_cost || 0).toFixed(2) + ' spend';
                 var weeklySub;
                 if (weeklyMeasured > 0 && weeklyEst > 0) {
@@ -480,7 +610,7 @@
                 // D36 (2026-05-16): Day-To-Date tokens. Honest empty-state label
                 // when source genuinely empty (e.g. early UTC day with no events yet).
                 var dailyUsed = data.daily_tokens || 0;
-                setText('[data-kpi="daily-tokens"]', fmtNum(dailyUsed));
+                setHTML('[data-kpi="daily-tokens"]', fmtNumHtml(dailyUsed));
                 var dailySub = (dailyUsed > 0)
                     ? 'day-to-date · UTC · ' + (weeklyMeasured > 0 ? ((dailyUsed / weeklyMeasured) * 100).toFixed(0) + '% of week' : 'measured')
                     : 'day-to-date · UTC · no events recorded yet today';
@@ -554,7 +684,7 @@
                         var measured = data.weekly_tokens || 0;
                         var estOnly = data.weekly_tokens_estimated || 0;
                         if (measured > 0) {
-                            setText('[data-kpi="manual-quota-pct"]', fmtNum(measured));
+                            setHTML('[data-kpi="manual-quota-pct"]', fmtNumHtml(measured));
                             var sub = 'measured from cycle telemetry';
                             if (estOnly > 0) sub += ' · +' + fmtNum(estOnly) + ' operator-estimated (uncalibrated, ignore)';
                             sub += ' · paste from claude.ai for live %';
@@ -589,9 +719,12 @@
                     if (!ds || !Array.isArray(ds.data)) return 0;
                     return ds.data.reduce(function (a, b) { return a + (b || 0); }, 0);
                 }
-                setText('[data-kpi="cycles-complete"]', String(sumDataset('Complete')));
-                setText('[data-kpi="cycles-paused"]',   String(sumDataset('Paused')));
-                setText('[data-kpi="cycles-halted"]',   String(sumDataset('Halted')));
+                var cyclesComplete = sumDataset('Complete');
+                var cyclesPaused = sumDataset('Paused');
+                var cyclesHalted = sumDataset('Halted');
+                setText('[data-kpi="cycles-complete"]', String(cyclesComplete));
+                setText('[data-kpi="cycles-paused"]',   String(cyclesPaused));
+                setText('[data-kpi="cycles-halted"]',   String(cyclesHalted));
 
                 // KPI strip: row 3 (proposals)
                 var pc = data.proposals_counts || {};
@@ -606,8 +739,66 @@
 
                 // KPI strip: row 3 (amendments)
                 var ac = data.amendments_counts || {};
-                setText('[data-kpi="amendments-pending"]', String(ac.pending != null ? ac.pending : 0));
-                setText('[data-kpi="amendments-applied"]', String(ac.applied_total != null ? ac.applied_total : (ac.applied || 0)));
+                var amendPending = ac.pending != null ? ac.pending : 0;
+                var amendApplied = ac.applied_total != null ? ac.applied_total : (ac.applied || 0);
+                setText('[data-kpi="amendments-pending"]', String(amendPending));
+                setText('[data-kpi="amendments-applied"]', String(amendApplied));
+
+                // AMD-026 P10 visible-action retrofit (2026-05-19):
+                // For every KPI card, set the WHO badge based on state so
+                // Founder sees who closes the state without clicking. Helper
+                // sets data-who + textContent on the matching badge element,
+                // and toggles `.has-founder-action` on the parent card so the
+                // shadow lift kicks in. Each call also re-renders the badge
+                // optionally as a link when the action is "go look at X".
+                function setBadge(key, who, text, href) {
+                    var el = document.querySelector('[data-kpi-badge="' + key + '"]');
+                    if (!el) return;
+                    el.setAttribute('data-who', who);
+                    if (href) {
+                        el.innerHTML = '<a href="' + href + '" style="color: inherit; text-decoration: underline;">' + text + '</a>';
+                    } else {
+                        el.textContent = text;
+                    }
+                    var card = el.closest('.pb-kpi-card');
+                    if (card) {
+                        if (who === 'founder') card.classList.add('has-founder-action');
+                        else card.classList.remove('has-founder-action');
+                    }
+                }
+                setBadge('weekly-tokens', 'cron', 'cron · aggregator refreshes');
+                setBadge('daily-tokens',  'cron', 'cron · aggregator refreshes');
+                var shipsW = data.ships_this_week || 0;
+                setBadge('ships-week', 'none', shipsW === 0 ? 'ok · no ships this week' : 'ok · ' + shipsW + ' shipped');
+                var haltsW = data.halts_this_week || 0;
+                setBadge('halts-week', haltsW === 0 ? 'none' : 'founder',
+                    haltsW === 0 ? 'ok · no halts' : 'FOUNDER · review halt files',
+                    haltsW === 0 ? null : '../../.claude/state/halts/');
+                var fiqD = data.fiq_depth || 0;
+                setBadge('fiq-depth', fiqD === 0 ? 'none' : 'founder',
+                    fiqD === 0 ? 'ok · no questions' : 'FOUNDER · ' + fiqD + ' open',
+                    fiqD === 0 ? null : '../../.claude/state/founder-input-queue/');
+                setBadge('cycles-complete', 'none', cyclesComplete === 0 ? 'ok · no cycles yet' : 'ok · ' + cyclesComplete + ' ran');
+                setBadge('cycles-paused', 'none', cyclesPaused === 0 ? 'ok · clean' : 'ok · ' + cyclesPaused + ' resumed');
+                setBadge('cycles-halted', cyclesHalted === 0 ? 'none' : 'founder',
+                    cyclesHalted === 0 ? 'ok · clean' : 'FOUNDER · review ' + cyclesHalted + ' halt files',
+                    cyclesHalted === 0 ? null : '../../.claude/state/halts/');
+                setBadge('proposals-pending', pending === 0 ? 'none' : 'founder',
+                    pending === 0 ? 'ok · no pending' : 'FOUNDER · ' + pending + ' to review',
+                    pending === 0 ? null : 'proposals.html');
+                setBadge('proposals-in-flight', inFlight === 0 ? 'none' : 'agent',
+                    inFlight === 0 ? 'ok · none in flight' : 'agent · ' + inFlight + ' awaiting commit',
+                    'proposals.html#in-flight');
+                setBadge('proposals-shipped', 'none', shipped === 0 ? 'ok · archive empty' : 'ok · ' + shipped + ' archive', 'proposals.html#shipped');
+                setBadge('amendments-pending', amendPending === 0 ? 'none' : 'founder',
+                    amendPending === 0 ? 'ok · no drafts' : 'FOUNDER · ' + amendPending + ' to ratify',
+                    amendPending === 0 ? null : 'amendments.html');
+                setBadge('amendments-applied', 'none', amendApplied === 0 ? 'ok · archive empty' : 'ok · ' + amendApplied + ' archive', 'amendments.html#applied');
+                var quotaWho = quotaResolved ? 'none' : 'founder';
+                var quotaText = quotaResolved ? 'ok · live data' : 'FOUNDER · paste from claude.ai';
+                setBadge('manual-quota', quotaWho, quotaText);
+                setBadge('manual-quota-age', (mq && mq.anchored_at) ? 'none' : 'founder',
+                    (mq && mq.anchored_at) ? 'ok · refresh weekly' : 'FOUNDER · paste to refresh');
 
                 // Generated-at meta line
                 var now = new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
@@ -657,12 +848,15 @@
                 if (handoffs.length === 0) {
                     hbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:var(--space-5);color:var(--pb-chalk-400);font-style:italic;">No recent handoffs.</td></tr>';
                 } else {
+                    // phase-I iter2 (2026-05-19): mono scenario IDs in muted
+                    // ink + arrow indicator on from→to to read the direction
+                    // at a glance (Linear's "thread direction" pattern).
                     hbody.innerHTML = handoffs.map(function (h) {
                         return '<tr>'
-                            + '<td class="is-sticky-col"><code>' + esc(h.scenario) + '</code></td>'
-                            + '<td>' + esc(h.from) + '</td>'
-                            + '<td>' + esc(h.to)   + '</td>'
-                            + '<td>' + esc(fmtTime(h.created_at)) + '</td>'
+                            + '<td class="is-sticky-col"><code style="font-family: var(--font-mono); color: var(--pb-chalk-200); font-size: 0.8125rem; letter-spacing: 0.04em;">' + esc(h.scenario) + '</code></td>'
+                            + '<td><span style="color: var(--pb-chalk-300);">' + esc(h.from) + '</span></td>'
+                            + '<td><span style="color: var(--pb-chalk-100); font-weight: 500;">' + esc(h.to) + '</span></td>'
+                            + '<td style="color: var(--pb-chalk-300); font-family: var(--font-mono); font-size: 0.8125rem; letter-spacing: 0.03em;">' + esc(fmtTime(h.created_at)) + '</td>'
                             + '</tr>';
                     }).join('');
                 }
@@ -673,21 +867,25 @@
                 if (ships.length === 0) {
                     sbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:var(--space-5);color:var(--pb-chalk-400);font-style:italic;">No recent ships.</td></tr>';
                 } else {
+                    // phase-I iter2 (2026-05-19): pill-style status, refined
+                    // monospace ship IDs, dashes rendered in muted color.
+                    function statusPill(status) {
+                        var s = (status || '').toLowerCase();
+                        var cls = 'is-muted';
+                        if (s === 'applied' || s === 'shipped' || s === 'approved' || s === 'closed' || s === 'complete') cls = 'is-green';
+                        else if (s === 'pending' || s === 'in-flight' || s === 'in-review') cls = 'is-yellow';
+                        else if (s === 'rejected' || s === 'halted' || s === 'failed') cls = 'is-red';
+                        else if (s === 'draft') cls = 'is-muted';
+                        return '<span class="pb-status-pill ' + cls + '">' + esc(status || 'unknown') + '</span>';
+                    }
                     sbody.innerHTML = ships.map(function (s) {
-                        // Per AMD-016 + AMD-009 P5 honest language: surface
-                        // "—" (em-dash) when token/cost attribution is genuinely
-                        // unknown rather than fabricating 0. tokens=null OR
-                        // cost_usd=null both indicate "no events tagged with
-                        // this ship_id". Per-ship attribution will populate
-                        // these going forward when session events emit ship_id
-                        // matching the artifact ID.
-                        var tokDisplay = (s.tokens == null) ? '—' : fmtNum(s.tokens);
+                        var tokDisplay = (s.tokens == null) ? '<span style="color:var(--pb-chalk-500);">—</span>' : fmtNum(s.tokens);
                         var costVal = (s.cost_usd != null) ? s.cost_usd : s.cost;
-                        var costDisplay = (costVal == null) ? '—' : '$' + (costVal.toFixed ? costVal.toFixed(2) : costVal);
+                        var costDisplay = (costVal == null) ? '<span style="color:var(--pb-chalk-500);">—</span>' : '$' + (costVal.toFixed ? costVal.toFixed(2) : costVal);
                         return '<tr>'
-                            + '<td class="is-sticky-col"><code>' + esc(s.id || s.ship || '') + '</code></td>'
+                            + '<td class="is-sticky-col"><code style="font-family: var(--font-mono); color: var(--pb-chalk-200); font-size: 0.8125rem; letter-spacing: 0.04em;">' + esc(s.id || s.ship || '') + '</code></td>'
                             + '<td>' + esc(s.title || '') + '</td>'
-                            + '<td>' + esc(s.status || '') + '</td>'
+                            + '<td>' + statusPill(s.status) + '</td>'
                             + '<td class="is-num">' + tokDisplay + '</td>'
                             + '<td class="is-num">' + costDisplay + '</td>'
                             + '</tr>';
@@ -695,6 +893,22 @@
                 }
                 // AMD-007 P18.6: Founder Review Queue.
                 renderFounderQueue(data.founder_queue || null);
+
+                // phase-I iter3 (2026-05-19): tag legitimate-empty cards
+                // (value === "0" or "—") so CSS can soften the visual weight
+                // per AMD-026 P10 (legitimate-empty classification). Cards
+                // with explicit warning/danger state keep full weight even
+                // at 0 — they're communicating "things are clean."
+                document.querySelectorAll('.pb-kpi-card').forEach(function (card) {
+                    var v = card.querySelector('.pb-kpi-value');
+                    if (!v) return;
+                    var t = v.textContent.trim();
+                    if (t === '0' || t === '—') {
+                        card.setAttribute('data-zero', '1');
+                    } else {
+                        card.removeAttribute('data-zero');
+                    }
+                });
             } catch (err) {
                 console.error('Dashboard render failed:', err);
             }
@@ -712,6 +926,55 @@
             if (v >= 1_000) return (v / 1_000).toFixed(0) + 'k';
             return String(v);
         }
+
+        // phase-I iter2 (2026-05-19): SVG <defs> gradient block.
+        // Single shared defs injected into both chart SVGs — each gradient
+        // is a vertical 2-stop ramp from the named token highlight at top
+        // to the deep variant at bottom. Bars referencing fill: url(#id)
+        // render with a designed gradient instead of a flat token fill.
+        var R7_GRAD_DEFS = ''
+            + '<defs>'
+            + '  <linearGradient id="r7g-brass" x1="0" y1="0" x2="0" y2="1">'
+            + '    <stop offset="0%" stop-color="#e8c275"/>'
+            + '    <stop offset="100%" stop-color="#9a7e3f"/>'
+            + '  </linearGradient>'
+            + '  <linearGradient id="r7g-success" x1="0" y1="0" x2="0" y2="1">'
+            + '    <stop offset="0%" stop-color="#7eb198"/>'
+            + '    <stop offset="100%" stop-color="#3d6a55"/>'
+            + '  </linearGradient>'
+            + '  <linearGradient id="r7g-warning" x1="0" y1="0" x2="0" y2="1">'
+            + '    <stop offset="0%" stop-color="#e8c275"/>'
+            + '    <stop offset="100%" stop-color="#b58a3e"/>'
+            + '  </linearGradient>'
+            + '  <linearGradient id="r7g-error" x1="0" y1="0" x2="0" y2="1">'
+            + '    <stop offset="0%" stop-color="#d28b8b"/>'
+            + '    <stop offset="100%" stop-color="#7a3a3a"/>'
+            + '  </linearGradient>'
+            + '  <linearGradient id="r7g-info" x1="0" y1="0" x2="0" y2="1">'
+            + '    <stop offset="0%" stop-color="#7eb3c2"/>'
+            + '    <stop offset="100%" stop-color="#3d6a78"/>'
+            + '  </linearGradient>'
+            + '  <linearGradient id="r7g-rose" x1="0" y1="0" x2="0" y2="1">'
+            + '    <stop offset="0%" stop-color="#e094bd"/>'
+            + '    <stop offset="100%" stop-color="#a05780"/>'
+            + '  </linearGradient>'
+            + '  <linearGradient id="r7g-violet" x1="0" y1="0" x2="0" y2="1">'
+            + '    <stop offset="0%" stop-color="#c294d6"/>'
+            + '    <stop offset="100%" stop-color="#8857a0"/>'
+            + '  </linearGradient>'
+            + '</defs>';
+
+        // Solid-color lookup for legend swatches (use the top of the gradient
+        // ramp — matches what the eye sees as the bar's "name" color).
+        var R7_SWATCH_COLORS = {
+            'r7-bar-tokens':   '#e8c275',
+            'r7-bar-complete': '#7eb198',
+            'r7-bar-paused':   '#e8c275',
+            'r7-bar-halted':   '#d28b8b',
+            'r7-bar-handoffs': '#7eb3c2',
+            'r7-bar-ships':    '#e094bd',
+            'r7-bar-bubbles':  '#c294d6'
+        };
 
         function renderRecent7DaysCharts(rows) {
             var host = document.getElementById('recent-7days-charts');
@@ -731,8 +994,11 @@
             var series = seriesSpec.filter(function (s) { return s.values.some(function (v) { return v > 0; }); });
 
             // ── Tokens chart ──
-            var W = 480, H = 200;
-            var ML = 50, MR = 8, MT = 8, MB = 28;
+            // phase-I iter2 (2026-05-19): increase H from 200 → 240 so the
+            // bars get more vertical breathing room; widen ML so the axis
+            // labels (up to "1.5M") fit comfortably without being clipped.
+            var W = 480, H = 240;
+            var ML = 56, MR = 12, MT = 12, MB = 32;
             var IW = W - ML - MR;
             var IH = H - MT - MB;
             var tokenMax = Math.max.apply(null, tokens.concat([1]));
@@ -745,18 +1011,27 @@
 
             var tokenBars = tokens.map(function (v, i) {
                 var title = labels[i] + ': ' + fmtTokenLabel(v) + ' tokens';
-                return '<rect class="r7-bar-tokens" x="' + bx(i) + '" y="' + by(v) + '" width="' + bw + '" height="' + bh(v) + '" rx="2"><title>' + title + '</title></rect>';
+                // phase-I iter2: rx 2 → 3 + add a subtle "highlight" capline at
+                // top of each bar (1px white-tinted line) for an extra polish.
+                if (v <= 0) return '';
+                return '<rect class="r7-bar-tokens" x="' + bx(i) + '" y="' + by(v) + '" width="' + bw + '" height="' + bh(v) + '" rx="3"><title>' + title + '</title></rect>'
+                     + '<rect x="' + bx(i) + '" y="' + by(v) + '" width="' + bw + '" height="1" rx="0.5" fill="rgba(255,255,255,0.18)" pointer-events="none"/>';
             }).join('');
             var tokenXLabels = labels.map(function (l, i) {
                 return '<text class="r7-axis" x="' + (bx(i) + bw / 2) + '" y="' + (H - 10) + '" text-anchor="middle">' + l + '</text>';
             }).join('');
-            // Y-axis ticks: 0, 25%, 50%, 75%, 100%
-            var tokenYTicks = [0, 0.25, 0.5, 0.75, 1].map(function (f) {
+            // phase-I iter2: Y-axis ticks at 25/50/75/100% (drop top label
+            // density to 4 levels); baseline at v=0 emphasized. Grid lines
+            // are now ultra-faint horizontals; baseline is a solid hairline.
+            var tokenYTicks = [0.25, 0.5, 0.75, 1].map(function (f) {
                 var v = niceMax * f;
                 var y = by(v);
                 return '<line class="r7-grid" x1="' + ML + '" y1="' + y + '" x2="' + (W - MR) + '" y2="' + y + '"/>'
-                     + '<text class="r7-axis" x="' + (ML - 4) + '" y="' + (y + 3) + '" text-anchor="end">' + fmtTokenLabel(v) + '</text>';
+                     + '<text class="r7-axis" x="' + (ML - 6) + '" y="' + (y + 3) + '" text-anchor="end">' + fmtTokenLabel(v) + '</text>';
             }).join('');
+            // Baseline at v=0
+            var tokenBaseline = '<line class="r7-grid-baseline" x1="' + ML + '" y1="' + by(0) + '" x2="' + (W - MR) + '" y2="' + by(0) + '"/>'
+                              + '<text class="r7-axis" x="' + (ML - 6) + '" y="' + (by(0) + 3) + '" text-anchor="end">0</text>';
 
             // ── Counts chart ──
             var countMax = 0;
@@ -775,57 +1050,69 @@
                     var v = s.values[i];
                     if (v <= 0) return '';
                     var x = groupX(i) + si * cbw;
+                    var w = cbw * 0.85;
                     var title = l + ' · ' + s.label + ': ' + v;
-                    return '<rect class="' + s.cls + '" x="' + x + '" y="' + cby(v) + '" width="' + (cbw * 0.85) + '" height="' + cbh(v) + '" rx="1"><title>' + title + '</title></rect>';
+                    return '<rect class="' + s.cls + '" x="' + x + '" y="' + cby(v) + '" width="' + w + '" height="' + cbh(v) + '" rx="2"><title>' + title + '</title></rect>'
+                         + '<rect x="' + x + '" y="' + cby(v) + '" width="' + w + '" height="1" rx="0.5" fill="rgba(255,255,255,0.20)" pointer-events="none"/>';
                 }).join('');
             }).join('');
             var countXLabels = labels.map(function (l, i) {
                 return '<text class="r7-axis" x="' + (groupX(i) + (nSeries * cbw) / 2) + '" y="' + (H - 10) + '" text-anchor="middle">' + l + '</text>';
             }).join('');
-            var countYTicks = [0, 0.25, 0.5, 0.75, 1].map(function (f) {
+            var countYTicks = [0.25, 0.5, 0.75, 1].map(function (f) {
                 var v = Math.round(countMax * f);
                 var y = cby(v);
                 return '<line class="r7-grid" x1="' + ML + '" y1="' + y + '" x2="' + (W - MR) + '" y2="' + y + '"/>'
-                     + '<text class="r7-axis" x="' + (ML - 4) + '" y="' + (y + 3) + '" text-anchor="end">' + v + '</text>';
+                     + '<text class="r7-axis" x="' + (ML - 6) + '" y="' + (y + 3) + '" text-anchor="end">' + v + '</text>';
             }).join('');
+            var countBaseline = '<line class="r7-grid-baseline" x1="' + ML + '" y1="' + cby(0) + '" x2="' + (W - MR) + '" y2="' + cby(0) + '"/>'
+                              + '<text class="r7-axis" x="' + (ML - 6) + '" y="' + (cby(0) + 3) + '" text-anchor="end">0</text>';
             var countLegend = series.map(function (s) {
-                // Resolve color via a hidden span (browser resolves to CSS token); fallback to currentColor
-                return '<span><span class="r7-legend-swatch ' + s.cls + '" style="background: currentColor;"></span><span class="' + s.cls + '" style="color: currentColor;">' + s.label + '</span></span>';
+                var hex = R7_SWATCH_COLORS[s.cls] || '#888';
+                return '<span><span class="r7-legend-swatch" style="background:' + hex + ';"></span>' + s.label + '</span>';
             }).join('');
+
+            // phase-I iter2 (2026-05-19): chart summary line (Stripe / Linear
+            // pattern). Headline number above each chart shows total for the
+            // window + delta vs prior period if computable. Tokens get the
+            // 7-day total; counts get total activity events.
+            var totalTokens = tokens.reduce(function (a, b) { return a + b; }, 0);
+            var totalCounts = series.reduce(function (acc, s) {
+                return acc + s.values.reduce(function (a, b) { return a + b; }, 0);
+            }, 0);
 
             host.innerHTML = ''
                 + '<div class="r7-chart">'
-                + '  <h3 class="r7-chart-title">Token consumption per day</h3>'
-                + '  <p class="r7-chart-subtitle">Real + estimated tokens, bucketed by event timestamp date. Hover for precise value.</p>'
+                + '  <h3 class="r7-chart-title">Tokens · trailing 7 days</h3>'
+                + '  <div class="r7-chart-summary">'
+                + '    <span class="r7-chart-summary-value">' + fmtTokenLabel(totalTokens) + '</span>'
+                + '    <span class="r7-chart-summary-label">total · ' + tokens.length + ' day window</span>'
+                + '  </div>'
+                + '  <p class="r7-chart-subtitle">Per-day consumption bucketed by event timestamp. Hover a bar for the precise value.</p>'
                 + '  <svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Token consumption per day for trailing 7 days">'
+                + R7_GRAD_DEFS
                 + tokenYTicks
+                + tokenBaseline
                 + tokenBars
                 + tokenXLabels
                 + '  </svg>'
                 + '</div>'
                 + '<div class="r7-chart">'
-                + '  <h3 class="r7-chart-title">Activity counts per day</h3>'
-                + '  <p class="r7-chart-subtitle">Grouped bars: ' + series.map(function (s) { return s.label.toLowerCase(); }).join(' · ') + '. Zero-value series hidden. Hover for precise value.</p>'
+                + '  <h3 class="r7-chart-title">Activity counts · trailing 7 days</h3>'
+                + '  <div class="r7-chart-summary">'
+                + '    <span class="r7-chart-summary-value">' + totalCounts + '</span>'
+                + '    <span class="r7-chart-summary-label">events · ' + series.length + ' series</span>'
+                + '  </div>'
+                + '  <p class="r7-chart-subtitle">Grouped by day. Zero-value series hidden. Hover a bar for the precise value.</p>'
                 + '  <svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Activity counts per day for trailing 7 days">'
+                + R7_GRAD_DEFS
                 + countYTicks
+                + countBaseline
                 + countBars
                 + countXLabels
                 + '  </svg>'
                 + '  <div class="r7-legend">' + countLegend + '</div>'
                 + '</div>';
-
-            // Style swatches (CSS color resolves via classes — copy fill to background)
-            host.querySelectorAll('.r7-legend-swatch').forEach(function (el) {
-                // Use computed fill from the .r7-bar-* class; CSS already sets fill, but background needs to inherit.
-                // We set the swatch's "fill" via CSS classes that style both fill (for SVG) and background (via currentColor).
-                // Fallback: parse fill from a temp SVG rect.
-                var probe = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                probe.setAttribute('class', el.className);
-                document.body.appendChild(probe);
-                var c = getComputedStyle(probe).fill;
-                document.body.removeChild(probe);
-                if (c) el.style.background = c;
-            });
         }
 
         function renderFounderQueue(fq) {
@@ -853,13 +1140,40 @@
 
             // Governance gates
             var gov = fq.governance_gates || {};
-            setText('[data-fq="amendments-pending"]', String(gov.amendments_pending || 0));
-            setText('[data-fq="bubbles-flagged"]', String(gov.bubbles_flagged || 0));
-            setText('[data-fq="proposals-pending"]', String(gov.proposals_pending || 0));
+            var amP = gov.amendments_pending || 0;
+            var buF = gov.bubbles_flagged || 0;
+            var prP = gov.proposals_pending || 0;
+            setText('[data-fq="amendments-pending"]', String(amP));
+            setText('[data-fq="bubbles-flagged"]', String(buF));
+            setText('[data-fq="proposals-pending"]', String(prP));
 
             var esc = gov.open_escalations || [];
             setText('[data-fq="escalations-count"]', String(esc.length));
             setText('[data-fq="escalations-summary"]', esc.length === 0 ? 'none open' : 'requiring Founder decision');
+
+            // AMD-026 P10 visible-action retrofit (2026-05-19): swap gate badges
+            // based on count. 0 = legitimate empty ("none" green); >0 = Founder
+            // decision needed (bright brass + bold). Helper sets data-who attr +
+            // innerHTML.
+            function setFqBadge(key, who, text) {
+                var el = document.querySelector('[data-fq-badge="' + key + '"]');
+                if (!el) return;
+                el.setAttribute('data-who', who);
+                el.innerHTML = text;
+                var card = el.closest('.pb-kpi-card');
+                if (card) {
+                    if (who === 'founder') card.classList.add('has-founder-action');
+                    else card.classList.remove('has-founder-action');
+                }
+            }
+            setFqBadge('amendments', amP === 0 ? 'none' : 'founder',
+                amP === 0 ? 'ok &middot; no drafts' : 'FOUNDER &middot; ' + amP + ' to ratify');
+            setFqBadge('bubbles', buF === 0 ? 'none' : 'founder',
+                buF === 0 ? 'ok &middot; quorum reached' : 'FOUNDER &middot; ' + buF + ' to weigh-in');
+            setFqBadge('proposals', prP === 0 ? 'none' : 'founder',
+                prP === 0 ? 'ok &middot; no pending' : 'FOUNDER &middot; ' + prP + ' to approve');
+            setFqBadge('escalations', esc.length === 0 ? 'none' : 'founder',
+                esc.length === 0 ? 'ok &middot; none open' : 'FOUNDER &middot; ' + esc.length + ' open');
 
             // System health
             var hh = fq.system_health || {};
@@ -920,6 +1234,19 @@
                 rtCard.style.borderLeftWidth = '3px';
                 rtCard.style.borderLeftStyle = 'solid';
             }
+            // AMD-026 P10 retrofit: Round-Trip badge — PASS = ok, STALE = cron
+            // (auto-resolves on next regen heartbeat), GATE-FAIL = founder (gate
+            // failed; needs review), UNKNOWN/NEVER = cron (heartbeat seeds on
+            // next regen).
+            setFqBadge('round-trip',
+                (lrStatus === 'PASS') ? 'none'
+                : (lrStatus === 'STALE') ? 'cron'
+                : (lrStatus === 'GATE-FAIL') ? 'founder'
+                : 'cron',
+                (lrStatus === 'PASS') ? 'ok &middot; passing'
+                : (lrStatus === 'STALE') ? 'cron &middot; will refresh'
+                : (lrStatus === 'GATE-FAIL') ? '<a href="../../scripts/cron/logs/" style="color: inherit; text-decoration: underline;">FOUNDER &middot; review gate failure</a>'
+                : 'cron &middot; will seed on next regen');
 
             // Working tree — structured dict with state/label/color
             var wt = hh.working_tree || {};
@@ -927,6 +1254,7 @@
                 // Back-compat for pre-2026-05-14 string format
                 setText('[data-fq="working-tree"]', wt);
                 setText('[data-fq="working-tree-sub"]', 'legacy stub');
+                setFqBadge('working-tree', 'cron', 'cron &middot; legacy format');
             } else {
                 setText('[data-fq="working-tree"]', wt.label || 'unknown');
                 var wtCard = document.querySelector('[data-fq-health="working-tree"]');
@@ -942,6 +1270,39 @@
                               : (wt.state === 'watcher-silent') ? 'cron may need restart'
                               : 'unknown';
                 setText('[data-fq="working-tree-sub"]', wtSubText);
+
+                // AMD-026 P10 visible-action retrofit: render WHO badge +
+                // optional 1-line action affordance per state. Founder sees
+                // resolution path inline without clicking. dirty-cycling = cron
+                // resolves (watcher commits routine output); dirty-blocked /
+                // watcher-silent = Founder action required.
+                var wtAction = document.querySelector('[data-fq="working-tree-action"]');
+                if (wt.state === 'clean') {
+                    setFqBadge('working-tree', 'none', 'ok &middot; ready');
+                    if (wtAction) wtAction.hidden = true;
+                } else if (wt.state === 'dirty-cycling') {
+                    var dirtyN = (wt.label && wt.label.match(/(\d+)/)) ? wt.label.match(/(\d+)/)[1] : '';
+                    setFqBadge('working-tree', 'cron', 'cron &middot; watcher will commit');
+                    if (wtAction) {
+                        wtAction.hidden = false;
+                        wtAction.innerHTML = '<strong>action</strong> watcher auto-commits routine output on its 5-min cadence. To force: <code>bash scripts/commit-cron-output.sh</code>';
+                    }
+                } else if (wt.state === 'dirty-blocked') {
+                    setFqBadge('working-tree', 'founder', 'FOUNDER &middot; review uncommitted');
+                    if (wtAction) {
+                        wtAction.hidden = false;
+                        wtAction.innerHTML = '<strong>action</strong> uncommitted edits not routine cron output. Review with <code>git status --short</code> then commit or revert.';
+                    }
+                } else if (wt.state === 'watcher-silent' || wt.state === 'clean-no-watcher') {
+                    setFqBadge('working-tree', 'founder', 'FOUNDER &middot; restart watcher');
+                    if (wtAction) {
+                        wtAction.hidden = false;
+                        wtAction.innerHTML = '<strong>action</strong> watcher cron task silent. Restart with <code>scripts/cron/install-all.ps1</code> (admin PowerShell).';
+                    }
+                } else {
+                    setFqBadge('working-tree', 'cron', 'cron &middot; state pending');
+                    if (wtAction) wtAction.hidden = true;
+                }
             }
 
             // Cron install status — REQUIRES INSTALL surfaces only for tasks
@@ -1009,6 +1370,11 @@
             var halts = hh.halts || [];
             setText('[data-fq="halts-count"]', String(halts.length));
             setText('[data-fq="halts-summary"]', halts.length === 0 ? 'no active halts' : 'unresolved');
+            // AMD-026 P10 retrofit: halts WHO badge — Founder review when >0.
+            setFqBadge('halts', halts.length === 0 ? 'none' : 'founder',
+                halts.length === 0
+                    ? '<a href="../../.claude/state/halts/" style="color: inherit; text-decoration: underline;">ok &middot; verify dir</a>'
+                    : '<a href="../../.claude/state/halts/" style="color: inherit; text-decoration: underline;">FOUNDER &middot; review ' + halts.length + ' halt file' + (halts.length === 1 ? '' : 's') + '</a>');
 
             // R-Banner (2026-05-15 dashboard-completion B1-B4): render the 4 health
             // banners (test, security, approvals, architecture) from
@@ -1054,10 +1420,61 @@
                     bannerEl.style.borderLeftStyle = 'solid';
                 }
             }
+            // AMD-026 P10 visible-action helper for the 4 health banners.
+            // Called from renderHealthBanner sites below; toggles WHO badge +
+            // 1-line visible-action ribbon without click-to-expand. Founder
+            // mandate: "I should be involved as little as possible."
+            function applyBannerActionAffordance(name, status) {
+                var visibleAction = '';
+                var who = 'cron';
+                if (name === 'test') {
+                    if (status === 'green') { who = 'none'; visibleAction = ''; }
+                    else if (status === 'yellow') { who = 'cron'; visibleAction = '<strong>action</strong> watcher re-runs round-trip on next cycle'; }
+                    else if (status === 'red') { who = 'founder'; visibleAction = '<strong>FOUNDER</strong> review failing tests in <code>test-health.json</code>'; }
+                    else { who = 'cron'; visibleAction = '<strong>action</strong> next <code>scripts/regen-all.sh</code> seeds health'; }
+                } else if (name === 'security') {
+                    if (status === 'green') { who = 'none'; visibleAction = ''; }
+                    else if (status === 'yellow') { who = 'cron'; visibleAction = '<strong>action</strong> deps audited on next cron cycle'; }
+                    else if (status === 'red') { who = 'founder'; visibleAction = '<strong>FOUNDER</strong> review leak findings + rotate any real secret'; }
+                    else { who = 'cron'; visibleAction = '<strong>action</strong> next regen seeds security scan'; }
+                } else if (name === 'approvals') {
+                    if (status === 'green') { who = 'none'; visibleAction = ''; }
+                    else if (status === 'yellow') { who = 'cron'; visibleAction = '<strong>action</strong> watcher reconciles inbox on next cycle'; }
+                    else if (status === 'red') { who = 'founder'; visibleAction = '<strong>FOUNDER</strong> watcher hard-failed; restart cron task'; }
+                    else { who = 'cron'; visibleAction = '<strong>action</strong> derived from cron logs on next regen'; }
+                } else if (name === 'architecture') {
+                    if (status === 'green') { who = 'none'; visibleAction = ''; }
+                    else if (status === 'yellow' || status === 'red') { who = 'founder'; visibleAction = '<strong>FOUNDER</strong> review pending recommendations'; }
+                    else { who = 'agent'; visibleAction = '<strong>agent</strong> Terminal 6 / AMD-024 not yet dispatched'; }
+                }
+                var actionEl = document.querySelector('[data-fq-banner-action="' + name + '"]');
+                if (actionEl) {
+                    if (visibleAction) { actionEl.hidden = false; actionEl.innerHTML = visibleAction; }
+                    else { actionEl.hidden = true; }
+                }
+                var badgeEl = document.querySelector('[data-fq-banner-badge="' + name + '"]');
+                if (badgeEl) {
+                    badgeEl.setAttribute('data-who', who);
+                    var badgeText = (who === 'founder') ? 'FOUNDER · decision needed'
+                                  : (who === 'agent')   ? 'agent · awaiting dispatch'
+                                  : (who === 'cron')    ? 'cron · auto-resolves'
+                                  : 'ok · healthy';
+                    badgeEl.textContent = badgeText;
+                    var bannerEl2 = document.querySelector('[data-fq-banner="' + name + '"]');
+                    if (bannerEl2) {
+                        if (who === 'founder') bannerEl2.classList.add('has-founder-action');
+                        else bannerEl2.classList.remove('has-founder-action');
+                    }
+                }
+            }
             renderHealthBanner('test', hh.test_health);
             renderHealthBanner('security', hh.security_health);
             renderHealthBanner('approvals', hh.approvals_pipeline);
             renderHealthBanner('architecture', hh.architecture_review);
+            applyBannerActionAffordance('test', (hh.test_health || {}).status || 'missing');
+            applyBannerActionAffordance('security', (hh.security_health || {}).status || 'missing');
+            applyBannerActionAffordance('approvals', (hh.approvals_pipeline || {}).status || 'missing');
+            applyBannerActionAffordance('architecture', (hh.architecture_review || {}).status || 'missing');
 
             // BUG-9 fix (2026-05-16): the 4 health banner cards have button
             // styling + aria-controls pointing at detail panels, but no
