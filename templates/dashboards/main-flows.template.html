@@ -323,10 +323,15 @@
          * background (warm-tinted), (c) NO inset ring. The previous
          * inset-ring treatment read as "outline only" which is colder than
          * Janowiak's "this row is lit + anchored to the left edge". */
+        /* M5.10 (2026-05-19) — active flow row gets brighter background +
+         * thicker inset left-border. M5.8's rgba 0.07 was too subtle to
+         * read as ACTIVE on dark canvas; Janowiak's active row is clearly
+         * brighter than peers. */
         .mf-flows-item.is-active {
-            background: rgba(212, 168, 87, 0.07);
-            box-shadow: inset 2px 0 0 0 var(--accent-brass);
+            background: rgba(212, 168, 87, 0.14);
+            box-shadow: inset 3px 0 0 0 var(--accent-brass);
         }
+        .mf-flows-item.is-active .mf-flows-id { color: var(--accent-brass); font-weight: 700; }
         .mf-flows-item.is-active .mf-flows-name { color: var(--text-primary); }
         .mf-flows-item.has-path::before {
             content: "";
