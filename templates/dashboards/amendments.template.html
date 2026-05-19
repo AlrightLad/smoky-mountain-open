@@ -87,26 +87,34 @@
                  recomputeCounts() below. WHAT = no draft awaiting review;
                  WHERE = .claude/state/amendments/pending/; WHAT-ACTION =
                  legitimate empty (team has authored none). -->
+            <!-- AMD-026 P10 visible-action retrofit (2026-05-19): each KPI
+                 gets a WHO badge that hydrates based on count. Pending = Founder
+                 review needed when >0; mini-counts (Approve/Reject/Defer)
+                 reflect session marks (agent if pending, else ok). -->
             <div class="pb-kpi-grid is-decision-queue">
-                <div class="pb-kpi-card">
+                <div class="pb-kpi-card" title="Drafts authored by the orchestration team awaiting Founder ratification. Source: .claude/state/amendments/pending/">
                     <span class="pb-kpi-label">Pending</span>
                     <span class="pb-kpi-value" data-kpi="pending">&mdash;</span>
                     <span class="pb-kpi-sub" data-kpi-sub="pending">awaiting Founder review</span>
+                    <span class="pb-action-badge" data-who="none" data-amd-badge="pending">ok &middot; no drafts</span>
                 </div>
-                <div class="pb-kpi-card is-positive">
+                <div class="pb-kpi-card is-positive" title="Approve marks this session. Click Export to commit decisions.">
                     <span class="pb-kpi-label">Approve</span>
                     <span class="pb-kpi-value" data-kpi="approve">0</span>
                     <span class="pb-kpi-sub" data-kpi-sub="approve">marked in this session</span>
+                    <span class="pb-action-badge" data-who="none" data-amd-badge="approve">ok &middot; no marks yet</span>
                 </div>
-                <div class="pb-kpi-card is-danger">
+                <div class="pb-kpi-card is-danger" title="Reject marks this session. Click Export to commit decisions.">
                     <span class="pb-kpi-label">Reject</span>
                     <span class="pb-kpi-value" data-kpi="reject">0</span>
                     <span class="pb-kpi-sub" data-kpi-sub="reject">marked in this session</span>
+                    <span class="pb-action-badge" data-who="none" data-amd-badge="reject">ok &middot; no marks yet</span>
                 </div>
-                <div class="pb-kpi-card is-warning">
+                <div class="pb-kpi-card is-warning" title="Defer marks this session.">
                     <span class="pb-kpi-label">Defer</span>
                     <span class="pb-kpi-value" data-kpi="defer">0</span>
                     <span class="pb-kpi-sub" data-kpi-sub="defer">marked in this session</span>
+                    <span class="pb-action-badge" data-who="none" data-amd-badge="defer">ok &middot; no marks yet</span>
                 </div>
             </div>
         </section>
@@ -278,6 +286,29 @@
                 setSub('defer', noPendingNoMarks
                     ? 'no decisions yet — mark any pending amendment to populate'
                     : 'marked in this session');
+
+                // AMD-026 P10 visible-action retrofit (2026-05-19): WHO badges
+                // on the 4 KPIs. Pending = Founder when >0; marks are agent
+                // (Founder has marked but not exported) when >0, else ok.
+                function setAmdBadge(key, who, text) {
+                    var el = document.querySelector('[data-amd-badge="' + key + '"]');
+                    if (!el) return;
+                    el.setAttribute('data-who', who);
+                    el.textContent = text;
+                    var card = el.closest('.pb-kpi-card');
+                    if (card) {
+                        if (who === 'founder') card.classList.add('has-founder-action');
+                        else card.classList.remove('has-founder-action');
+                    }
+                }
+                setAmdBadge('pending', pendingCount === 0 ? 'none' : 'founder',
+                    pendingCount === 0 ? 'ok · no drafts' : 'FOUNDER · ' + pendingCount + ' to ratify');
+                setAmdBadge('approve', tally.approve === 0 ? 'none' : 'agent',
+                    tally.approve === 0 ? 'ok · no marks yet' : 'agent · ' + tally.approve + ' marked · export to apply');
+                setAmdBadge('reject', tally.reject === 0 ? 'none' : 'agent',
+                    tally.reject === 0 ? 'ok · no marks yet' : 'agent · ' + tally.reject + ' marked · export to apply');
+                setAmdBadge('defer', tally.defer === 0 ? 'none' : 'agent',
+                    tally.defer === 0 ? 'ok · no marks yet' : 'agent · ' + tally.defer + ' marked · export to apply');
 
                 // Inline section counts
                 const c = data.counts || {};

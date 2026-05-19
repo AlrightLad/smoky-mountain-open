@@ -79,27 +79,36 @@
                     font-weight: 600;
                 }
             </style>
+            <!-- AMD-026 P10 visible-action retrofit (2026-05-19): each card
+                 gets a WHO badge that hydrates based on count. All counts
+                 here are cron-derived (handoffs/scenarios extracted from
+                 .claude/state/handoffs/ on each regen). Zero = legitimate
+                 empty per P10. Card titles carry source paths for hover. -->
             <div class="pb-kpi-grid is-this-week">
-                <div class="pb-kpi-card is-neutral">
+                <a class="pb-kpi-card is-neutral" href="../../.claude/state/handoffs/" style="text-decoration: none; color: inherit;" title="Cross-agent handoffs in the last 7 days. Source: .claude/state/handoffs/">
                     <span class="pb-kpi-label">Handoffs (7d)</span>
                     <span class="pb-kpi-value" data-kpi="handoffs-7d">&mdash;</span>
                     <span class="pb-kpi-sub">cross-agent transitions</span>
-                </div>
-                <div class="pb-kpi-card is-info">
+                    <span class="pb-action-badge" data-who="cron" data-act-badge="handoffs-7d">cron &middot; per-commit refresh</span>
+                </a>
+                <a class="pb-kpi-card is-info" href="../../.claude/state/handoffs/" style="text-decoration: none; color: inherit;" title="Distinct agent names derived from handoff files.">
                     <span class="pb-kpi-label">Active agents</span>
                     <span class="pb-kpi-value" data-kpi="agent-count">&mdash;</span>
                     <span class="pb-kpi-sub">distinct from/to agents</span>
-                </div>
-                <div class="pb-kpi-card">
+                    <span class="pb-action-badge" data-who="cron" data-act-badge="agent-count">cron &middot; derived from handoffs/</span>
+                </a>
+                <a class="pb-kpi-card" href="../../.claude/state/ship-progress/" style="text-decoration: none; color: inherit;" title="Ships tagged in handoff files. Source: .claude/state/ship-progress/">
                     <span class="pb-kpi-label">Active ships</span>
                     <span class="pb-kpi-value" data-kpi="ship-count">&mdash;</span>
                     <span class="pb-kpi-sub">tagged in handoffs</span>
-                </div>
-                <div class="pb-kpi-card is-positive">
+                    <span class="pb-action-badge" data-who="cron" data-act-badge="ship-count">cron &middot; derived from handoffs/</span>
+                </a>
+                <a class="pb-kpi-card is-positive" href="../../docs/agents/SCENARIO_HANDOFFS.md" style="text-decoration: none; color: inherit;" title="11 canonical handoff scenarios per AMD-013. Source: docs/agents/SCENARIO_HANDOFFS.md">
                     <span class="pb-kpi-label">Scenario coverage</span>
                     <span class="pb-kpi-value" data-kpi="scenario-count">&mdash;</span>
                     <span class="pb-kpi-sub">of 11 canonical scenarios</span>
-                </div>
+                    <span class="pb-action-badge" data-who="cron" data-act-badge="scenario-count">cron &middot; aggregator extracts</span>
+                </a>
             </div>
         </section>
 
@@ -156,11 +165,38 @@
                 var hd = new Date(h.created_at); var cutoff = new Date(Date.now() - 7*86400*1000);
                 return hd >= cutoff;
             });
-            setText('[data-kpi="handoffs-7d"]', String(handoffs7d.length));
-            setText('[data-kpi="agent-count"]', String((data.agents || []).length));
-            setText('[data-kpi="ship-count"]', String((data.ships || []).length));
+            var agentN = (data.agents || []).length;
+            var shipN = (data.ships || []).length;
             var scenariosInUse = new Set((data.handoffs || []).map(function (h) { return h.scenario; }).filter(Boolean));
+            setText('[data-kpi="handoffs-7d"]', String(handoffs7d.length));
+            setText('[data-kpi="agent-count"]', String(agentN));
+            setText('[data-kpi="ship-count"]', String(shipN));
             setText('[data-kpi="scenario-count"]', String(scenariosInUse.size));
+
+            // AMD-026 P10 visible-action retrofit (2026-05-19): each KPI gets
+            // a WHO badge based on count + classification of empty-state.
+            // All values are cron-derived; zero = legitimate empty.
+            function setActBadge(key, who, text) {
+                var el = document.querySelector('[data-act-badge="' + key + '"]');
+                if (!el) return;
+                el.setAttribute('data-who', who);
+                el.textContent = text;
+                var card = el.closest('.pb-kpi-card');
+                if (card) {
+                    if (who === 'founder') card.classList.add('has-founder-action');
+                    else card.classList.remove('has-founder-action');
+                }
+            }
+            setActBadge('handoffs-7d', handoffs7d.length === 0 ? 'none' : 'cron',
+                handoffs7d.length === 0 ? 'ok · legitimate empty' : 'cron · per-commit refresh');
+            setActBadge('agent-count', agentN === 0 ? 'none' : 'cron',
+                agentN === 0 ? 'ok · no handoffs yet' : 'cron · refreshes on each handoff');
+            setActBadge('ship-count', shipN === 0 ? 'none' : 'cron',
+                shipN === 0 ? 'ok · no ships tagged' : 'cron · refreshes on each ship');
+            setActBadge('scenario-count', scenariosInUse.size === 0 ? 'none' : 'cron',
+                scenariosInUse.size === 0
+                    ? 'ok · no scenarios observed'
+                    : 'cron · ' + scenariosInUse.size + ' of 11 covered');
 
             // Generated-at meta line
             setText('[data-meta="generated-at"]', new Date().toISOString().slice(0,16).replace('T',' ') + ' UTC');

@@ -107,26 +107,33 @@
                  below. WHAT = no escalation awaiting review; WHERE =
                  .claude/state/escalations/pending/; WHAT-ACTION = legitimate
                  empty (team has authored none). -->
+            <!-- AMD-026 P10 visible-action retrofit (2026-05-19): each KPI
+                 carries a WHO badge that hydrates based on count. Pending = Founder
+                 review needed when >0; mini-counts reflect session marks. -->
             <div class="pb-kpi-grid is-decision-queue">
-                <div class="pb-kpi-card">
+                <div class="pb-kpi-card" title="Escalations authored by the orchestration team awaiting Founder decision. Source: .claude/state/escalations/pending/">
                     <span class="pb-kpi-label">Pending</span>
                     <span class="pb-kpi-value" data-kpi="pending">&mdash;</span>
                     <span class="pb-kpi-sub" data-kpi-sub="pending">awaiting Founder review</span>
+                    <span class="pb-action-badge" data-who="none" data-esc-badge="pending">ok &middot; none open</span>
                 </div>
-                <div class="pb-kpi-card is-positive">
+                <div class="pb-kpi-card is-positive" title="Approve marks this session. Click Export to commit decisions.">
                     <span class="pb-kpi-label">Approve</span>
                     <span class="pb-kpi-value" data-kpi="approve">0</span>
                     <span class="pb-kpi-sub" data-kpi-sub="approve">marked in this session</span>
+                    <span class="pb-action-badge" data-who="none" data-esc-badge="approve">ok &middot; no marks yet</span>
                 </div>
-                <div class="pb-kpi-card is-danger">
+                <div class="pb-kpi-card is-danger" title="Reject marks this session.">
                     <span class="pb-kpi-label">Reject</span>
                     <span class="pb-kpi-value" data-kpi="reject">0</span>
                     <span class="pb-kpi-sub" data-kpi-sub="reject">marked in this session</span>
+                    <span class="pb-action-badge" data-who="none" data-esc-badge="reject">ok &middot; no marks yet</span>
                 </div>
-                <div class="pb-kpi-card is-warning">
+                <div class="pb-kpi-card is-warning" title="Defer marks this session.">
                     <span class="pb-kpi-label">Defer</span>
                     <span class="pb-kpi-value" data-kpi="defer">0</span>
                     <span class="pb-kpi-sub" data-kpi-sub="defer">marked in this session</span>
+                    <span class="pb-action-badge" data-who="none" data-esc-badge="defer">ok &middot; no marks yet</span>
                 </div>
             </div>
         </section>
@@ -394,6 +401,27 @@
                 setSub('defer', noPendingNoMarks
                     ? 'no decisions yet — mark any pending escalation to populate'
                     : 'marked in this session');
+
+                // AMD-026 P10 visible-action retrofit (2026-05-19): WHO badges.
+                function setEscBadge(key, who, text) {
+                    var el = document.querySelector('[data-esc-badge="' + key + '"]');
+                    if (!el) return;
+                    el.setAttribute('data-who', who);
+                    el.textContent = text;
+                    var card = el.closest('.pb-kpi-card');
+                    if (card) {
+                        if (who === 'founder') card.classList.add('has-founder-action');
+                        else card.classList.remove('has-founder-action');
+                    }
+                }
+                setEscBadge('pending', pendingCount === 0 ? 'none' : 'founder',
+                    pendingCount === 0 ? 'ok · none open' : 'FOUNDER · ' + pendingCount + ' to decide');
+                setEscBadge('approve', approve === 0 ? 'none' : 'agent',
+                    approve === 0 ? 'ok · no marks yet' : 'agent · ' + approve + ' marked · export to apply');
+                setEscBadge('reject', reject === 0 ? 'none' : 'agent',
+                    reject === 0 ? 'ok · no marks yet' : 'agent · ' + reject + ' marked · export to apply');
+                setEscBadge('defer', defer === 0 ? 'none' : 'agent',
+                    defer === 0 ? 'ok · no marks yet' : 'agent · ' + defer + ' marked · export to apply');
 
                 document.getElementById('count-pending-inline').textContent = '(' + data.counts.pending + ')';
                 document.getElementById('count-approved-inline').textContent = '(' + data.counts.approved + ')';

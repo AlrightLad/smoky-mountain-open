@@ -410,6 +410,7 @@
                         <span class="pb-kpi-value" data-kpi="bubbles-total">&mdash;</span>
                         <span class="pb-kpi-sub" data-kpi-sub="bubbles-total">recorded threads</span>
                     </a>
+                    <span class="pb-action-badge" data-who="cron" data-db-badge="bubbles-total">cron &middot; per-bubble refresh</span>
                 </div>
                 <div class="pb-kpi-card is-warning">
                     <a class="pb-kpi-link" href="../../.claude/state/discussion-bubbles/" title="Open .claude/state/discussion-bubbles/ source directory" style="text-decoration: none; color: inherit; display: contents;">
@@ -417,6 +418,7 @@
                         <span class="pb-kpi-value" data-kpi="bubbles-open">&mdash;</span>
                         <span class="pb-kpi-sub" data-kpi-sub="bubbles-open">awaiting decision</span>
                     </a>
+                    <span class="pb-action-badge" data-who="none" data-db-badge="bubbles-open">ok &middot; quorum reached</span>
                 </div>
                 <div class="pb-kpi-card is-positive">
                     <a class="pb-kpi-link" href="../../.claude/state/discussion-bubbles/" title="Open .claude/state/discussion-bubbles/ source directory" style="text-decoration: none; color: inherit; display: contents;">
@@ -424,6 +426,7 @@
                         <span class="pb-kpi-value" data-kpi="bubbles-closed-7d">&mdash;</span>
                         <span class="pb-kpi-sub" data-kpi-sub="bubbles-closed-7d">approved or rejected this week</span>
                     </a>
+                    <span class="pb-action-badge" data-who="none" data-db-badge="bubbles-closed-7d">ok &middot; closures archived</span>
                 </div>
                 <div class="pb-kpi-card is-info">
                     <a class="pb-kpi-link" href="../../.claude/state/discussion-bubbles/" title="Open .claude/state/discussion-bubbles/ source directory" style="text-decoration: none; color: inherit; display: contents;">
@@ -431,6 +434,7 @@
                         <span class="pb-kpi-value" data-kpi="bubbles-dissent">&mdash;</span>
                         <span class="pb-kpi-sub" data-kpi-sub="bubbles-dissent">non-unanimous outcomes (9-bubble quorum 3 per AMD-026)</span>
                     </a>
+                    <span class="pb-action-badge" data-who="none" data-db-badge="bubbles-dissent">ok &middot; reconciled</span>
                 </div>
             </div>
         </section>
@@ -547,6 +551,34 @@
                 setSub('bubbles-dissent', dissent === 0
                     ? (total === 0 ? 'no bubbles to dissent — legitimate empty' : 'no dissent — all closures unanimous')
                     : 'non-unanimous outcomes (9-bubble quorum 3 per AMD-026)');
+
+                // AMD-026 P10 visible-action retrofit (2026-05-19): WHO badges
+                // on the 4 KPIs. Total/Closed = cron-tracked. Open = Founder if
+                // any bubble is awaiting Founder weigh-in (we approximate by
+                // open > 0). Dissent = none (informational archive).
+                function setDbBadge(key, who, text) {
+                    var el = document.querySelector('[data-db-badge="' + key + '"]');
+                    if (!el) return;
+                    el.setAttribute('data-who', who);
+                    el.textContent = text;
+                    var card = el.closest('.pb-kpi-card');
+                    if (card) {
+                        if (who === 'founder') card.classList.add('has-founder-action');
+                        else card.classList.remove('has-founder-action');
+                    }
+                }
+                setDbBadge('bubbles-total', total === 0 ? 'none' : 'cron',
+                    total === 0 ? 'ok · no bubbles yet' : 'cron · ' + total + ' tracked');
+                setDbBadge('bubbles-open', open === 0 ? 'none' : 'founder',
+                    open === 0 ? 'ok · quorum reached' : 'FOUNDER · ' + open + ' awaiting weigh-in');
+                setDbBadge('bubbles-closed-7d', 'none',
+                    closed7d === 0
+                        ? (total === 0 ? 'ok · no bubbles yet' : 'ok · none closed this week')
+                        : 'ok · ' + closed7d + ' archived this week');
+                setDbBadge('bubbles-dissent', 'none',
+                    dissent === 0
+                        ? (total === 0 ? 'ok · no bubbles yet' : 'ok · all unanimous')
+                        : 'ok · ' + dissent + ' archived w/ dissent');
             })();
 
             // ----- Author → initials (for avatar) -----

@@ -200,21 +200,25 @@
                         <span class="pb-kpi-value" id="count-pending">&mdash;</span>
                         <span class="pb-kpi-sub" data-kpi-sub="pending">awaiting Founder review</span>
                     </a>
+                    <span class="pb-action-badge" data-who="none" data-prp-badge="pending">ok &middot; no pending</span>
                 </div>
                 <div class="pb-kpi-card is-positive">
                     <span class="pb-kpi-label">Approve</span>
                     <span class="pb-kpi-value" id="count-approve">0</span>
                     <span class="pb-kpi-sub" data-kpi-sub="approve">marked in this session</span>
+                    <span class="pb-action-badge" data-who="none" data-prp-badge="approve">ok &middot; no marks yet</span>
                 </div>
                 <div class="pb-kpi-card is-danger">
                     <span class="pb-kpi-label">Reject</span>
                     <span class="pb-kpi-value" id="count-reject">0</span>
                     <span class="pb-kpi-sub" data-kpi-sub="reject">marked in this session</span>
+                    <span class="pb-action-badge" data-who="none" data-prp-badge="reject">ok &middot; no marks yet</span>
                 </div>
                 <div class="pb-kpi-card is-warning">
                     <span class="pb-kpi-label">Defer</span>
                     <span class="pb-kpi-value" id="count-defer">0</span>
                     <span class="pb-kpi-sub" data-kpi-sub="defer">marked in this session</span>
+                    <span class="pb-action-badge" data-who="none" data-prp-badge="defer">ok &middot; no marks yet</span>
                 </div>
             </div>
         </section>
@@ -756,6 +760,29 @@
                 setSub('defer', noPendingNoMarks
                     ? 'no decisions yet — mark any pending proposal to populate'
                     : 'marked in this session');
+
+                // AMD-026 P10 visible-action retrofit (2026-05-19): WHO badges
+                // on the 4 KPIs. Pending = Founder when >0; marks reflect agent
+                // state (Founder has marked but not exported) when >0.
+                function setPrpBadge(key, who, text) {
+                    var el = document.querySelector('[data-prp-badge="' + key + '"]');
+                    if (!el) return;
+                    el.setAttribute('data-who', who);
+                    el.textContent = text;
+                    var card = el.closest('.pb-kpi-card');
+                    if (card) {
+                        if (who === 'founder') card.classList.add('has-founder-action');
+                        else card.classList.remove('has-founder-action');
+                    }
+                }
+                setPrpBadge('pending', total === 0 ? 'none' : 'founder',
+                    total === 0 ? 'ok · no pending' : 'FOUNDER · ' + total + ' to review');
+                setPrpBadge('approve', a === 0 ? 'none' : 'agent',
+                    a === 0 ? 'ok · no marks yet' : 'agent · ' + a + ' marked · export to apply');
+                setPrpBadge('reject', r === 0 ? 'none' : 'agent',
+                    r === 0 ? 'ok · no marks yet' : 'agent · ' + r + ' marked · export to apply');
+                setPrpBadge('defer', d === 0 ? 'none' : 'agent',
+                    d === 0 ? 'ok · no marks yet' : 'agent · ' + d + ' marked · export to apply');
 
                 // AMD-026 P10 Phase 3 retrofit 2026-05-19 (Violation 4): verify
                 // the "Approved — in flight" section count matches data.counts.

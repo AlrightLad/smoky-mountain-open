@@ -137,21 +137,27 @@
          pathway when sidecar unavailable. Per AMD-014 PAUSE_DISCIPLINE,
          this is the band downstream pacing gates read from. -->
     <section class="pb-section" id="tu-quota-meter" style="margin-bottom: var(--space-4);">
+        <!-- AMD-026 P10 visible-action retrofit (2026-05-19): each meter card
+             gets a WHO badge so Founder sees who closes the state inline. JS
+             hydration in the main render pass below. -->
         <div class="pb-kpi-grid">
-            <div class="pb-kpi-card" data-kpi-card="meter-status">
+            <div class="pb-kpi-card" data-kpi-card="meter-status" title="Meter status. Click for setup if sidecar absent.">
                 <span class="pb-kpi-label">Meter status</span>
                 <span class="pb-kpi-value" data-kpi="meter-status">&mdash;</span>
                 <span class="pb-kpi-sub" data-kpi-sub="meter-status">checking sidecar...</span>
+                <span class="pb-action-badge" data-who="cron" data-tu-badge="meter-status">cron &middot; aggregator refreshes</span>
             </div>
-            <div class="pb-kpi-card" data-kpi-card="quota-weekly">
+            <div class="pb-kpi-card" data-kpi-card="quota-weekly" title="Weekly tokens. Source: token-usage-snapshot.json session_transcripts.weekly_real_7d (preferred) or events.weekly_tokens.">
                 <span class="pb-kpi-label">Weekly tokens (live)</span>
                 <span class="pb-kpi-value" data-kpi="quota-weekly">&mdash;</span>
                 <span class="pb-kpi-sub" data-kpi-sub="quota-weekly">vs <span data-kpi="quota-weekly-cap">&mdash;</span> cap</span>
+                <span class="pb-action-badge" data-who="cron" data-tu-badge="quota-weekly">cron &middot; per-commit refresh</span>
             </div>
-            <div class="pb-kpi-card" data-kpi-card="quota-org">
+            <div class="pb-kpi-card" data-kpi-card="quota-org" title="Anthropic org-monthly cap. Set in claude.ai billing; pasted via scripts/refresh-quota-manual.ps1.">
                 <span class="pb-kpi-label">Org monthly</span>
                 <span class="pb-kpi-value" data-kpi="quota-org-pct">&mdash;</span>
                 <span class="pb-kpi-sub" data-kpi-sub="quota-org">org-wide cap</span>
+                <span class="pb-action-badge" data-who="founder" data-tu-badge="quota-org">founder &middot; paste cap</span>
             </div>
         </div>
     </section>
@@ -542,6 +548,43 @@
                 ? 'no org cap configured &middot; legitimate empty per honest-fallback'
                 : 'no usage recorded &middot; run <code style="font-size: 0.7rem;">scripts/aggregate-token-usage.py</code>');
         }
+
+        // AMD-026 P10 visible-action retrofit (2026-05-19): WHO badges on the
+        // three meter cards. meter-status / quota-weekly = cron-driven
+        // (aggregator + sidecar refresh); quota-org = Founder-driven (paste
+        // org cap from claude.ai).
+        function setTuBadge(key, who, text) {
+            var el = document.querySelector('[data-tu-badge="' + key + '"]');
+            if (!el) return;
+            el.setAttribute('data-who', who);
+            el.textContent = text;
+            var card = el.closest('.pb-kpi-card');
+            if (card) {
+                if (who === 'founder') card.classList.add('has-founder-action');
+                else card.classList.remove('has-founder-action');
+            }
+        }
+        if (status === 'wired-real') setTuBadge('meter-status', 'none', 'ok · live data');
+        else if (status === 'wired-estimated' || status === 'wired-estimated-sidecar-empty') setTuBadge('meter-status', 'founder', 'FOUNDER · install sidecar or paste');
+        else if (status === 'wired-estimated-sidecar-stale') setTuBadge('meter-status', 'cron', 'cron · sidecar refresh stale; will re-run');
+        else if (status === 'gap-per-F1a') setTuBadge('meter-status', 'founder', 'FOUNDER · install meter (PROP-003)');
+        else setTuBadge('meter-status', 'cron', 'cron · refresh pending');
+
+        if (stWeekly > 0 || (typeof qs.weekly_tokens === 'number' && qs.weekly_tokens > 0)) {
+            setTuBadge('quota-weekly', 'cron', 'cron · per-commit refresh');
+        } else if (allTimeTotal > 0) {
+            setTuBadge('quota-weekly', 'cron', 'cron · honest fallback active');
+        } else {
+            setTuBadge('quota-weekly', 'founder', 'FOUNDER · paste from claude.ai');
+        }
+
+        if (typeof qs.org_monthly_pct === 'number') {
+            setTuBadge('quota-org', 'none', 'ok · cap configured');
+        } else if (allTimeTotal > 0) {
+            setTuBadge('quota-org', 'founder', 'FOUNDER · configure cap');
+        } else {
+            setTuBadge('quota-org', 'founder', 'FOUNDER · paste cap from claude.ai');
+        }
     }
 
     function totalOf(b) {
@@ -691,26 +734,46 @@
         });
     }
 
-    function renderPieLegend(slices) {
+    function renderPieLegend(slices, viewKey) {
         var el = document.getElementById('tu-pie-legend');
         if (!el) return;
         if (!slices.length) {
-            el.innerHTML = '<div class="tu-pie-empty">No tokens recorded for this view yet.</div>';
+            el.innerHTML = '<div class="tu-pie-empty">No tokens recorded for this view yet. Source: <code style="font-size: 0.7rem;">.claude/state/telemetry/aggregates/token-usage-snapshot.json</code>.<br><span style="font-size: 0.7rem; color: var(--accent-brass);">action: run <code>python scripts/aggregate-token-usage.py</code></span></div>';
             return;
         }
+        // AMD-026 P10 visible-action retrofit (2026-05-19): hover tooltip on
+        // every slice shows the label + agent/work/session name + raw tokens +
+        // USD cost + WHO owner (agent/cron/Founder). Click-to-investigate
+        // moved to dedicated href so the slice + legend both navigate to the
+        // right table row.
         el.innerHTML = slices.map(function (slice, idx) {
             var color = PIE_PALETTE[idx % PIE_PALETTE.length];
-            // Escape label minimally — session_id_prefix + day, or agent/cron names.
             var safeLabel = String(slice.label || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            // Infer owner WHO from the view key: agent_role + session_top10
+            // are agent-attributed (so WHO = agent or Founder for high-cost);
+            // work_category is cron-attributed (WHO = cron).
+            var ownerLabel = '';
+            if (viewKey === 'agent_role') ownerLabel = 'owner: agent';
+            else if (viewKey === 'work_category') ownerLabel = 'owner: cron/agent mixed';
+            else if (viewKey === 'session_top10') ownerLabel = 'owner: agent session';
+            var tokensFmt = fmtTokens(slice.tokens || 0);
+            var costFmt = fmtUsd(slice.usd_cost || 0);
+            var tooltipText = safeLabel + ' · ' + tokensFmt + ' tokens · ' + costFmt + ' · ' + ownerLabel + ' · click for table row';
+            // Anchor to the row in the by_agent table (if agent_role) or the
+            // by_cron table (if work_category). For session_top10 there's no
+            // direct table, link to all-data debug instead.
+            var hrefFragment = (viewKey === 'agent_role') ? '#tu-table-by-agent'
+                             : (viewKey === 'work_category') ? '#tu-table-by-cron'
+                             : '#tu-table-by-ship';
             return (
-                '<div class="tu-pie-legend-row" role="listitem">'
+                '<a class="tu-pie-legend-row" role="listitem" href="' + hrefFragment + '" title="' + tooltipText + '" style="text-decoration: none; color: inherit; display: flex;">'
                 + '<span class="tu-pie-legend-swatch" style="background:' + color + ';" aria-hidden="true"></span>'
-                + '<span class="tu-pie-legend-label" title="' + safeLabel + '">' + safeLabel + '</span>'
+                + '<span class="tu-pie-legend-label">' + safeLabel + '</span>'
                 + '<span class="tu-pie-legend-numbers">'
-                + '<span class="tu-pie-legend-tokens">' + fmtTokens(slice.tokens || 0) + '</span>'
-                + '<span class="tu-pie-legend-cost">' + fmtUsd(slice.usd_cost || 0) + '</span>'
+                + '<span class="tu-pie-legend-tokens">' + tokensFmt + '</span>'
+                + '<span class="tu-pie-legend-cost">' + costFmt + '</span>'
                 + '</span>'
-                + '</div>'
+                + '</a>'
             );
         }).join('');
     }
@@ -731,7 +794,7 @@
 
         setTimeout(function () {
             renderPieDonut(slices, totalTokens, totalCost, viewKey);
-            renderPieLegend(slices);
+            renderPieLegend(slices, viewKey);
             if (section) section.setAttribute('data-pie-view', viewKey);
             if (donut)  donut.classList.remove('is-fading');
             if (legend) legend.classList.remove('is-fading');

@@ -170,31 +170,37 @@
                     <span class="pb-kpi-label">Ships this week</span>
                     <span class="pb-kpi-value">&mdash;</span>
                     <span class="pb-kpi-sub">via ship-progress/*.json</span>
+                    <span class="pb-action-badge" data-who="cron" data-idx-badge="ships">cron &middot; per-ship refresh</span>
                 </a>
                 <a class="pb-kpi-card" id="tile-proposals" href="proposals.html" title="Open proposals dashboard">
                     <span class="pb-kpi-label">Proposals pending</span>
                     <span class="pb-kpi-value">&mdash;</span>
                     <span class="pb-kpi-sub">awaiting Founder review</span>
+                    <span class="pb-action-badge" data-who="none" data-idx-badge="proposals">ok &middot; no pending</span>
                 </a>
                 <a class="pb-kpi-card" id="tile-fiq" href="../../.claude/state/founder-input-queue/" title="Open founder-input-queue directory">
                     <span class="pb-kpi-label">FIQ depth (B+)</span>
                     <span class="pb-kpi-value">&mdash;</span>
                     <span class="pb-kpi-sub" id="fiq-grades">grade distribution</span>
+                    <span class="pb-action-badge" data-who="none" data-idx-badge="fiq">ok &middot; no questions</span>
                 </a>
                 <a class="pb-kpi-card" id="tile-bubbles" href="discussion-bubbles.html" title="Open discussion-bubbles dashboard">
                     <span class="pb-kpi-label">Discussion bubbles</span>
                     <span class="pb-kpi-value">&mdash;</span>
                     <span class="pb-kpi-sub">via discussion-bubbles/</span>
+                    <span class="pb-action-badge" data-who="cron" data-idx-badge="bubbles">cron &middot; per-bubble refresh</span>
                 </a>
                 <a class="pb-kpi-card" id="tile-cron" href="dashboard.html#system-health" title="See cron install status on Dashboard">
                     <span class="pb-kpi-label">Last cron run</span>
                     <span class="pb-kpi-value">&mdash;</span>
                     <span class="pb-kpi-sub">substrate pending build</span>
+                    <span class="pb-action-badge" data-who="cron" data-idx-badge="cron">cron &middot; auto-fires</span>
                 </a>
                 <a class="pb-kpi-card" id="tile-halt" href="../../.claude/state/halts/" title="Open halts directory">
                     <span class="pb-kpi-label">HALT state</span>
                     <span class="pb-kpi-value">&mdash;</span>
                     <span class="pb-kpi-sub">via halts/</span>
+                    <span class="pb-action-badge" data-who="none" data-idx-badge="halt">ok &middot; no halts</span>
                 </a>
             </div>
         </section>
@@ -358,6 +364,34 @@
                             ? 'no active halts — see .claude/state/halts/ to verify'
                             : 'HALT active — see ' + haltState + '.json in .claude/state/halts/',
                         haltState !== 'none' ? 'is-danger' : 'is-positive');
+
+                    // AMD-026 P10 visible-action retrofit (2026-05-19): WHO
+                    // badges on the 6 status tiles. Zero/none = legitimate
+                    // empty; non-zero counts that need Founder eyes
+                    // (proposals, FIQ, halts) flip to "founder".
+                    function setIdxBadge(key, who, text) {
+                        var el = document.querySelector('[data-idx-badge="' + key + '"]');
+                        if (!el) return;
+                        el.setAttribute('data-who', who);
+                        el.textContent = text;
+                        var card = el.closest('.pb-kpi-card');
+                        if (card) {
+                            if (who === 'founder') card.classList.add('has-founder-action');
+                            else card.classList.remove('has-founder-action');
+                        }
+                    }
+                    setIdxBadge('ships', ships === 0 ? 'none' : 'cron',
+                        ships === 0 ? 'ok · no ships this week' : 'cron · ' + ships + ' shipped');
+                    setIdxBadge('proposals', proposals === 0 ? 'none' : 'founder',
+                        proposals === 0 ? 'ok · no pending' : 'FOUNDER · ' + proposals + ' to review');
+                    setIdxBadge('fiq', fiqDepth === 0 ? 'none' : 'founder',
+                        fiqDepth === 0 ? 'ok · no questions' : 'FOUNDER · ' + fiqDepth + ' open');
+                    setIdxBadge('bubbles', bubbles === 0 ? 'none' : 'cron',
+                        bubbles === 0 ? 'ok · no threads yet' : 'cron · ' + bubbles + ' tracked');
+                    setIdxBadge('cron', st.last_cron_run ? 'none' : 'founder',
+                        st.last_cron_run ? 'ok · firing' : 'FOUNDER · install cron tasks');
+                    setIdxBadge('halt', haltState === 'none' ? 'none' : 'founder',
+                        haltState === 'none' ? 'ok · clean' : 'FOUNDER · halt active');
 
                     /* AMD-026 P10 (Actionable Surfacing): dashboard card meta
                      * shows "— · —" when regen hasn't written mtime/badge yet.
