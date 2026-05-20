@@ -107,9 +107,9 @@ Founder feedback 2026-05-20 made the failure explicit:
 | `aggregates/proposal-pipeline.json` | 600 min | Producer `scan-shipped-proposals.py` runs but writes only if proposal state changed |
 | `aggregates/allow-list-audit.json` | 598 min | Producer `audit-allow-list.py` runs on explicit invocation |
 
-Additionally 2 aggregates have NO `generated_at` field (schema gap):
-- `aggregates/goal-status.json`
-- `telemetry/aggregates/current-snapshot.json`
+Additionally 2 aggregates had NO `generated_at` field (schema gap) — **closed this audit cycle (commit pending)**:
+- `aggregates/goal-status.json` — `generated_at: "2026-05-15T05:15:00Z"` (mirrors `audited_at`; static historical manifest)
+- `telemetry/aggregates/current-snapshot.json` — `generated_at` mirrors `as_of` in `scripts/aggregate-telemetry.py`
 
 **Why YELLOW:** spec D9 says "All aggregate JSONs have `generated_at` < 60 min." This is structurally not how the aggregators are designed — they're passive consolidators of producer output, and 4 producers don't auto-run on cron. The spec assumes a different aggregator model.
 

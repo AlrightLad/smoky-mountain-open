@@ -1,4 +1,7 @@
 {
+  "_schema_version": "goal-status-v1.1",
+  "generated_at": "2026-05-15T05:15:00Z",
+  "_freshness_note": "Static historical artifact from audit 2026-05-15. generated_at mirrors audited_at; this manifest is a frozen audit record, not a live producer. Updated 2026-05-20 to add field per D9 schema gap closure.",
   "goal_id": "ship-full-parbaughs-roadmap-2026-05-14",
   "spec_path": ".claude/state/goal-roadmap-2026-05-14.md",
   "session_started_at": "2026-05-15T01:35:00Z",

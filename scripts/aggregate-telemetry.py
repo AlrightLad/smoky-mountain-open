@@ -905,6 +905,9 @@ def aggregate():
     }
 
     snapshot = {
+        # generated_at mirrors as_of for cross-aggregator freshness audits
+        # (D9 schema gap fix 2026-05-20). Same value, conventional field name.
+        "generated_at": now.isoformat(),
         "as_of": now.isoformat(),
         "_meter_status": meter_status,
         "_meter_note": meter_note,
