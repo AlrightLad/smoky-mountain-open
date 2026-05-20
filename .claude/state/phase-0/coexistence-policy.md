@@ -16,6 +16,9 @@
 | Methodology — parallel agents | **Superpowers `dispatching-parallel-agents`** | Pattern-driven, not tool-driven. |
 | Browser control (low-level CDP) | **superpowers-chrome `browsing` skill** | When plugin activates; primary mechanism per spec V2. |
 | Browser control (high-level Playwright) | **Playwright MCP (already loaded)** | Authorized in V2. Covers the same use case from a different angle. |
+| Design critique / audit / polish vocabulary | **Impeccable** (`~/.claude/skills/impeccable/`, installed PROP-014) | 23-command surface (`critique`, `polish`, `audit`, `distill`, `bolder`, `quieter`, etc.) layered on top of Anthropic `frontend-design`. Apache 2.0, NOTICE.md credits Anthropic lineage. Use for P7 design-bot ship-close deliberation. Sub-commands needing `scripts/` (`teach`, `document`, `pin`, `live`) run in degraded mode — markdown-only install per audit scope. |
+| Design taste tuning (knobs) | **`.claude/state/design-research/taste-skill-distilled.md`** (distilled PROP-014) | Taste-Skill's DESIGN_VARIANCE / MOTION_INTENSITY / VISUAL_DENSITY parameter system captured locally. Reference doc, not installed. |
+| Design philosophy frames + 5-dim critique | **`.claude/state/design-research/huashu-distilled.md`** (distilled PROP-014) | Huashu's 5-school 20-philosophy taxonomy + 5-dimension critique. Reference doc, not installed; revisit full install for marketing site / season-end PPTX export. |
 | Token / cost tracking | **PARBAUGHS Phase T deliverable** | Founder-spec'd; takes patterns from ECC's `ecc_dashboard.py` per spec line 326. |
 | Pre-commit hooks | **PARBAUGHS .claude/hooks/** | Existing PARBAUGHS hooks (pre-commit-lint, pre-commit-version-sync, gate-protected, gate-assertions, skill-approval-gate, etc.) are PARBAUGHS-specific and take precedence on conflicts. |
 | Continuous-learning observers | **ECC hooks — opt-in via env var only** | ECC's observe-runner, governance-capture, ecc-metrics-bridge, ecc-context-monitor write telemetry. PARBAUGHS already has its own telemetry pipeline (`.claude/state/telemetry/`). Will leave ECC observers in default-off state until shown to add unique value. |
@@ -24,6 +27,38 @@
 | Bash dispatcher (preflight on every Bash) | **DISABLE in ECC** | Overlaps PARBAUGHS's pre-commit-lint.sh + push-protection.sh + governance-protection.sh. Stacking the dispatchers creates duplicate work and conflicting verdicts. |
 | Config protection (blocks lint/format config edits) | **DISABLE in ECC** | PARBAUGHS edits its own .claude/settings.local.json frequently; ECC's blanket block prevents normal config tuning. |
 | Session start | **Both fire — investigate at next session** | Superpowers' SessionStart loads context. ECC's loads previous context and detects package manager. Should be additive; verify no race condition. |
+
+## 2026-05-20 update — Impeccable design skill ADOPTED (PROP-014)
+
+Per Founder approval 2026-05-20 inline ("I approve let's move forward") on the 4-plugin community-design-skill audit. Three actions taken this ship:
+
+### Impeccable — ADOPTED + installed
+- Source: `https://github.com/pbakaus/impeccable` (Apache 2.0, 29k stars, NOTICE.md credits Anthropic frontend-design lineage)
+- Install path: `~/.claude/skills/impeccable/` (user-level, not in repo)
+- Install scope: **39 markdown files** (SKILL.md + 36 reference/*.md + LICENSE + NOTICE.md)
+- Excluded from install: `skill/scripts/` (22 .mjs/.js — `npx impeccable detect`/`live` runtime, will invoke via `npx impeccable@latest` from published package when wired), `skill/agents/impeccable-asset-producer.md` (Codex-only)
+- File-level security audit: 0 prompt-injection patterns across 38 skill files (verified via 2-pass grep — jailbreak phrasings + role/INST/system-tag patterns), 7 benign external URLs (webaim/polypane/stitch/fontaine/wakamai/Unsplash-template/localhost-live-only)
+- `allowed-tools: Bash(npx impeccable *)` whitelist in frontmatter — narrow, defensible
+- Verification: skill loaded successfully — appeared in session skill list at install time (no restart required)
+
+### Taste-Skill — REFERENCE-ONLY (distilled, not installed)
+- Source: `https://github.com/Leonxlnx/taste-skill` (MIT, 18.3k stars)
+- Distilled to: `.claude/state/design-research/taste-skill-distilled.md`
+- Net-new captured: DESIGN_VARIANCE / MOTION_INTENSITY / VISUAL_DENSITY 1-10 parameter knobs, anti-slop banned list (Inter banned, AI-purple banned, `#000` banned, centered hero banned at variance ≥4, mandatory `min-h-[100dvh]` for full-height — direct mobile-Safari stability fix)
+- Rationale for not installing: heavy overlap with `frontend-design` and Impeccable's 23-command surface
+
+### Huashu Design — REFERENCE-ONLY (deferred, not installed)
+- Source: `https://github.com/alchaincyf/huashu-design` (MIT relicensed 2026-05-14, 14.4k stars)
+- Distilled to: `.claude/state/design-research/huashu-distilled.md`
+- Net-new captured: 5-school 20-philosophy frame (Information Architecture / Motion Poetics / Minimalist / Experimental Vanguard / Eastern Philosophy) + 5-dimension critique (Philosophical Consistency + Visual Hierarchy + Execution Detail + Functionality + Innovation) + Core Principle #0 (fact-verify before design assumption)
+- Rationale for not installing: wrong stage of project — Huashu's HTML-native prototype/deck/MP4 deliverables don't slot into our Vite-bundled SPA. Revisit for full install when launching parbaughs.com marketing or season-end Caddy Notes recap PPTX.
+
+### UI/UX Pro Max — SKIPPED (not installed, not distilled)
+- Source: `https://github.com/nextlevelbuilder/ui-ux-pro-max-skill` (MIT, claimed 80.7k stars — treated as unverified social proof; absent from canonical claude-skills lists)
+- Skip rationale (4 reasons): (1) unvalidated Python CLI input in `search.py`, (2) global `npm install -g uipro-cli` + Python prereq violates minimal-tooling, (3) `design-system/MASTER.md` generator conflicts with Clubhouse tokens, (4) suspicious star count vs canonical-list absence
+- If static data tables prove useful later: port relevant CSVs to `.claude/state/design-research/` without the CLI.
+
+---
 
 ## 2026-05-19 update — Founder LOCKED 4 GAP-FILL hooks for install
 
