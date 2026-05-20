@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T20:02:13Z",
-  "generated_at": "2026-05-20T20:02:13Z",
+  "timestamp": "2026-05-20T20:03:37Z",
+  "generated_at": "2026-05-20T20:03:37Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "yellow",
-  "raw_status": "yellow",
-  "summary": "watcher last run: skip-dirty",
-  "as_of": "2026-05-20T20:00:48Z",
+  "status": "green",
+  "raw_status": "green",
+  "summary": "watcher no-new-files 0.1min ago",
+  "as_of": "2026-05-20T20:03:33Z",
   "stale": false,
-  "age_hours": 0.02333333333333333,
+  "age_hours": 0.0016666666666666668,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -34,20 +34,6 @@
       "name": "2026-05-20T20-00-48Z-downloads-watcher.log",
       "note": "[20:00:48] SKIP working tree dirty with non-routine files: dashboard-clean.png, dashboard-sparkline-fixed.png, main-flows-iter4-arrows.png, templates/dashboards/main-flows.template.html",
       "when": "2026-05-20T20:00:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-20T19-55-48Z-downloads-watcher.log",
-      "note": "[19:55:48] SKIP working tree dirty with non-routine files: templates/dashboards/dashboard.template.html",
-      "when": "2026-05-20T19:55:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-20T19-55-38Z-downloads-watcher.log",
-      "note": "[19:55:38] SKIP working tree dirty with non-routine files: templates/dashboards/dashboard.template.html",
-      "when": "2026-05-20T19:55:38Z"
     }
   ],
   "links": [
@@ -63,7 +49,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 1,
-    "age_minutes": 1.4
+    "consecutive_skips": 0,
+    "age_minutes": 0.1
   }
 }
