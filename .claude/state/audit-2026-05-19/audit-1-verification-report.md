@@ -300,6 +300,14 @@ FOUNDER-APPROVED-G1-<TIMESTAMP>
 
 Replace `<TIMESTAMP>` with ISO-8601 UTC (e.g., `FOUNDER-APPROVED-G1-2026-05-20T08:00:00Z`).
 
+---
+
+## Verbal confirmation log
+
+**2026-05-20T23:40Z** — Founder verbal confirmation: *"ok so now I believe that the dashboard is done"* (received in conversation after iter11 watcher Trim/Substring root-cause fix, 5 consecutive unattended cron runs at no-new-files, pipeline GREEN, AgentShield 0 CRITICAL preserved, all 4 named issues addressed at root: dashboard watcher-dirty display, random refresh, sparkline blur, main-flows redesign).
+
+Per AMD-028 recursion-breaker, this verbal confirmation does NOT close Goal 1 — only the literal `FOUNDER-APPROVED-G1-{TS}` string written by Founder above this section closes the goal. Logged here as evidence trail.
+
 **To gap-approve specific YELLOWs**, append per-dimension lines under the approval, e.g.:
 ```
 FOUNDER-APPROVED-G1-2026-05-20T08:00:00Z
