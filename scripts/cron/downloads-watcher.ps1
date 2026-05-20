@@ -185,7 +185,18 @@ try {
     # These re-dirty the tree IMMEDIATELY after our auto-commit. Without
     # routine-pattern filtering on the re-check, the watcher SKIPs forever.
     # 2026-05-20 iter6 — Founder 'why are you stopping when errors persist'.
-    $reDirty = (& git status --porcelain 2>$null) | ForEach-Object { $_.Trim().Substring(3) } | Where-Object { $_ }
+    # 2026-05-20 iter11 bug fix: was using git status --porcelain + Trim() +
+    # Substring(3), but Trim() removes the leading space so Substring(3) was
+    # also stripping the leading '.' from '.claude/...' paths. The routine
+    # regex requires leading '.' so claude/state/heartbeats/... never matched
+    # routine and skip-dirty looped. Use git diff --name-only HEAD instead
+    # (same approach the first auto-commit block uses) — returns paths
+    # verbatim, no offset arithmetic.
+    $reDirtyRaw = @()
+    $reDirtyRaw += (& git diff --name-only HEAD 2>$null)
+    $reDirtyRaw += (& git diff --cached --name-only 2>$null)
+    $reDirtyRaw += (& git ls-files --others --exclude-standard 2>$null)
+    $reDirty = $reDirtyRaw | Where-Object { $_ } | Sort-Object -Unique
     if ($reDirty -and $reDirty.Count -gt 0) {
         $reNonRoutine = @()
         foreach ($f in $reDirty) {

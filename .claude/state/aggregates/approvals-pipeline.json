@@ -1,13 +1,13 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T23:15:46Z",
-  "generated_at": "2026-05-20T23:15:46Z",
+  "timestamp": "2026-05-20T23:16:29Z",
+  "generated_at": "2026-05-20T23:16:29Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "green",
-  "raw_status": "green",
-  "summary": "watcher no-new-files 0.0min ago",
-  "as_of": "2026-05-20T23:15:44Z",
+  "status": "yellow",
+  "raw_status": "yellow",
+  "summary": "watcher cycling · last 2 runs skipped on dirty tree",
+  "as_of": "2026-05-20T23:16:28Z",
   "stale": false,
   "age_hours": 0.0,
   "counts": {
@@ -31,23 +31,23 @@
     {
       "category": "stall",
       "status": "skip-dirty",
-      "name": "2026-05-20T23-15-39Z-downloads-watcher.log",
-      "note": "[23:15:41] SKIP working tree dirty with non-routine after auto-commit: claude/state/heartbeats/regen-all-last-pass.json",
-      "when": "2026-05-20T23:15:39Z"
+      "name": "2026-05-20T23-16-28Z-downloads-watcher.log",
+      "note": "[23:16:29] SKIP working tree dirty with non-routine files: scripts/cron/downloads-watcher.ps1",
+      "when": "2026-05-20T23:16:28Z"
     },
     {
       "category": "stall",
       "status": "skip-dirty",
-      "name": "2026-05-20T23-10-48Z-downloads-watcher.log",
-      "note": "[23:10:51] SKIP working tree dirty with non-routine after auto-commit: claude/state/heartbeats/regen-all-last-pass.json",
-      "when": "2026-05-20T23:10:48Z"
+      "name": "2026-05-20T23-16-27Z-downloads-watcher.log",
+      "note": "[23:16:28] SKIP working tree dirty with non-routine files: scripts/cron/downloads-watcher.ps1",
+      "when": "2026-05-20T23:16:27Z"
     },
     {
       "category": "stall",
       "status": "skip-dirty",
-      "name": "2026-05-20T23-05-48Z-downloads-watcher.log",
-      "note": "[23:05:51] SKIP working tree dirty with non-routine after auto-commit: claude/state/heartbeats/regen-all-last-pass.json",
-      "when": "2026-05-20T23:05:48Z"
+      "name": "2026-05-20T23-16-26Z-downloads-watcher.log",
+      "note": "[23:16:27] SKIP working tree dirty with non-routine files: scripts/cron/downloads-watcher.ps1",
+      "when": "2026-05-20T23:16:26Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 0,
+    "consecutive_skips": 3,
     "age_minutes": 0.0
   }
 }
