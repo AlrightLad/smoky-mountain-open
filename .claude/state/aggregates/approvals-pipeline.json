@@ -1,13 +1,13 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T22:37:13Z",
-  "generated_at": "2026-05-20T22:37:13Z",
+  "timestamp": "2026-05-20T22:47:14Z",
+  "generated_at": "2026-05-20T22:47:14Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "yellow",
-  "raw_status": "yellow",
-  "summary": "watcher cycling · last 2 runs skipped on dirty tree",
-  "as_of": "2026-05-20T22:35:48Z",
+  "status": "red",
+  "raw_status": "red",
+  "summary": "watcher cycling · applies blocked (4 skips on dirty tree)",
+  "as_of": "2026-05-20T22:45:48Z",
   "stale": false,
   "age_hours": 0.02333333333333333,
   "counts": {
@@ -31,23 +31,23 @@
     {
       "category": "stall",
       "status": "skip-dirty",
-      "name": "2026-05-20T22-35-48Z-downloads-watcher.log",
-      "note": "[22:35:51] SKIP working tree dirty with non-routine after auto-commit: claude/state/heartbeats/regen-all-last-pass.json",
-      "when": "2026-05-20T22:35:48Z"
+      "name": "2026-05-20T22-45-48Z-downloads-watcher.log",
+      "note": "[22:45:49] SKIP working tree dirty with non-routine files: templates/dashboards/dashboard.template.html",
+      "when": "2026-05-20T22:45:48Z"
     },
     {
       "category": "stall",
       "status": "skip-dirty",
-      "name": "2026-05-20T22-30-48Z-downloads-watcher.log",
-      "note": "[22:30:51] SKIP working tree dirty with non-routine after auto-commit: claude/state/heartbeats/regen-all-last-pass.json",
-      "when": "2026-05-20T22:30:48Z"
+      "name": "2026-05-20T22-40-48Z-downloads-watcher.log",
+      "note": "[22:40:51] SKIP working tree dirty with non-routine after auto-commit: claude/state/heartbeats/regen-all-last-pass.json",
+      "when": "2026-05-20T22:40:48Z"
     },
     {
       "category": "stall",
-      "status": "incomplete",
-      "name": "2026-05-20T22-25-48Z-downloads-watcher.log",
-      "note": "[22:25:51]   [auto-commit] [main 0417dc46] cron(routine): auto-commit telemetry output before watcher preflight (2026-05-20T22:25:49.5492561Z)",
-      "when": "2026-05-20T22:25:48Z"
+      "status": "skip-dirty",
+      "name": "2026-05-20T22-35-48Z-downloads-watcher.log",
+      "note": "[22:35:51] SKIP working tree dirty with non-routine after auto-commit: claude/state/heartbeats/regen-all-last-pass.json",
+      "when": "2026-05-20T22:35:48Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 2,
+    "consecutive_skips": 4,
     "age_minutes": 1.4
   }
 }

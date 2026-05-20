@@ -460,21 +460,43 @@
                     overflow: visible;
                 }
                 .pb-kpi-card.is-hero .pb-kpi-sparkline { height: 108px; margin-top: var(--space-3); }
-                /* iter5 (2026-05-20): SVG bar variant of sparkline. Bars
-                 * are rectangles → no anti-aliasing curve blur. Each bar:
-                 * solid brass at 60% opacity, tallest-bar at 100%, hover
-                 * lifts to 100% for any bar. shape-rendering crispEdges
-                 * because we want sharp pixel-aligned rectangles. */
-                .pb-kpi-sparkline rect.pb-spark-bar {
+                /* iter10 (2026-05-20): area/line variant. Tufte data-ink:
+                 * line is the trend, area gives it weight, dots mark
+                 * data points, value chips offload exact numbers.
+                 * No preserveAspectRatio=none stretch (the iter1-4 blur
+                 * cause); viewBox set dynamically at render time. */
+                .pb-kpi-sparkline path.pb-spark-area {
                     fill: currentColor;
-                    opacity: 0.55;
-                    shape-rendering: crispEdges;
-                    transition: opacity 140ms ease-out;
+                    fill-opacity: 0.14;
+                    stroke: none;
+                    shape-rendering: geometricPrecision;
                 }
-                .pb-kpi-sparkline rect.pb-spark-bar.is-max { opacity: 1; }
-                .pb-kpi-sparkline rect.pb-spark-bar:hover { opacity: 1; }
-                .pb-kpi-card.is-hero .pb-kpi-sparkline rect.pb-spark-bar { opacity: 0.65; }
-                .pb-kpi-card.is-hero .pb-kpi-sparkline rect.pb-spark-bar.is-max { opacity: 1; }
+                .pb-kpi-sparkline circle.pb-spark-dot {
+                    fill: currentColor;
+                    fill-opacity: 0.6;
+                    stroke: var(--pb-billiard-green-900);
+                    stroke-width: 1.5;
+                    shape-rendering: geometricPrecision;
+                    transition: fill-opacity 140ms ease-out, r 140ms ease-out;
+                }
+                .pb-kpi-sparkline circle.pb-spark-dot.is-max {
+                    fill-opacity: 1;
+                }
+                .pb-kpi-sparkline circle.pb-spark-dot:hover {
+                    fill-opacity: 1;
+                }
+                .pb-kpi-sparkline text.pb-spark-value {
+                    font-family: var(--font-mono);
+                    font-size: 10px;
+                    fill: var(--pb-chalk-300);
+                    letter-spacing: 0.02em;
+                    font-weight: 500;
+                }
+                .pb-kpi-sparkline text.pb-spark-value.is-max {
+                    fill: var(--accent-brass);
+                    font-weight: 700;
+                    font-size: 11px;
+                }
                 .pb-kpi-sparkline text.pb-spark-label {
                     font-family: var(--font-mono);
                     font-size: 9px;
@@ -1095,45 +1117,107 @@
                         return;
                     }
                     svg.style.display = '';
-                    var vbox = (svg.getAttribute('viewBox') || '0 0 200 32').split(/\s+/);
-                    var w = parseFloat(vbox[2]) || 200;
-                    var h = parseFloat(vbox[3]) || 32;
-                    // 2026-05-20 iter5 (Founder 'tokens this week graph is super
-                    // blurry and not legible'): replace SVG path sparkline with
-                    // 7 vertical BARS. Rectangles cannot anti-alias to blur the
-                    // way curved paths with sub-pixel coords do. Stripe-revenue
-                    // pattern: one bar per data point, tallest day highlighted,
-                    // crisp shape-rendering. Round all coords to integers.
+                    // 2026-05-20 iter10 (Founder 'graph for weekly tokens still
+                    // sucks'): research-driven redesign (Tufte data-ink, Few
+                    // common-perceptual-tasks).
+                    //
+                    // Key finding from Stripe Atlas / Linear Insights / Vercel
+                    // Analytics: line/area charts beat bars for time-series
+                    // trends. Bars treat 7 days as 7 categorical comparisons;
+                    // an area chart treats them as a continuous flow, which is
+                    // what tokens-per-day actually IS.
+                    //
+                    // Blur fix from iter4: set viewBox to MATCH the rendered
+                    // pixel dimensions at draw time. preserveAspectRatio='none'
+                    // stretches paths; preserveAspectRatio='xMidYMid meet' on
+                    // a viewBox that matches the actual width keeps the path
+                    // 1:1 with screen pixels. shape-rendering geometricPrecision
+                    // smooths the line.
                     var hover = opts && opts.hoverLabels ? opts.hoverLabels : [];
-                    var max = Math.max.apply(null, values) || 1;
                     var labels = opts && opts.barLabels ? opts.barLabels : [];
-                    var showLabels = labels.length === values.length && h >= 56;
-                    var labelH = showLabels ? 12 : 0;
-                    var chartH = h - labelH;
-                    var gap = Math.max(2, Math.floor(w / values.length / 4));
-                    var barW = Math.floor((w - gap * (values.length - 1)) / values.length);
-                    var pad = 2;
-                    var floorY = chartH - 1;
-                    var bars = values.map(function (v, i) {
-                        var bx = i * (barW + gap);
-                        var bh = Math.max(2, Math.round((chartH - pad * 2) * (v / max)));
-                        var by = floorY - bh;
-                        var label = hover[i] != null ? hover[i] : String(v);
-                        var isMax = v === max;
-                        var cls = 'pb-spark-bar' + (isMax ? ' is-max' : '');
-                        var rect = '<rect class="' + cls + '" x="' + bx + '" y="' + by
-                             + '" width="' + barW + '" height="' + bh
-                             + '" rx="1"><title>' + label + '</title></rect>';
-                        if (showLabels) {
-                            var lx = bx + barW / 2;
-                            var ly = h - 2;
-                            var labelCls = 'pb-spark-label' + (isMax ? ' is-max' : '');
-                            rect += '<text class="' + labelCls + '" x="' + lx.toFixed(1) + '" y="' + ly
-                                 + '" text-anchor="middle">' + labels[i] + '</text>';
+                    var isHero = opts && opts.hero;
+                    // Compute viewBox to match clientWidth so paths render at
+                    // 1:1 device pixels (no stretch blur).
+                    var w = svg.clientWidth || 600;
+                    var hAttr = parseFloat(svg.getAttribute('viewBox') ? svg.getAttribute('viewBox').split(/\s+/)[3] : '') || svg.clientHeight || 80;
+                    var h = svg.clientHeight || hAttr;
+                    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+                    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                    var showLabels = labels.length === values.length && h >= 80;
+                    var showValues = isHero && hover.length === values.length;
+                    var labelH = showLabels ? 18 : 0;
+                    var valueH = showValues ? 22 : 0;
+                    var topPad = isHero ? 20 : 6;
+                    var chartTop = valueH + topPad;
+                    var chartBottom = h - labelH - 2;
+                    var chartH = chartBottom - chartTop;
+                    var max = Math.max.apply(null, values) || 1;
+                    var sidePad = 16;
+                    var usableW = w - sidePad * 2;
+                    var stepX = values.length > 1 ? usableW / (values.length - 1) : 0;
+                    var pts = values.map(function (v, i) {
+                        var x = sidePad + stepX * i;
+                        var y = chartBottom - (chartH * (v / max));
+                        return { x: x, y: y, v: v };
+                    });
+                    // Smooth path using cubic bezier control points (Catmull-
+                    // Rom-ish). Looks polished without external lib.
+                    function buildSmoothPath() {
+                        if (pts.length < 2) return '';
+                        var d = 'M ' + pts[0].x.toFixed(1) + ' ' + pts[0].y.toFixed(1);
+                        for (var i = 1; i < pts.length; i++) {
+                            var p0 = pts[i - 1];
+                            var p1 = pts[i];
+                            var cp1x = p0.x + (p1.x - p0.x) / 3;
+                            var cp1y = p0.y;
+                            var cp2x = p1.x - (p1.x - p0.x) / 3;
+                            var cp2y = p1.y;
+                            d += ' C ' + cp1x.toFixed(1) + ' ' + cp1y.toFixed(1)
+                               + ' ' + cp2x.toFixed(1) + ' ' + cp2y.toFixed(1)
+                               + ' ' + p1.x.toFixed(1) + ' ' + p1.y.toFixed(1);
                         }
-                        return rect;
+                        return d;
+                    }
+                    var linePath = buildSmoothPath();
+                    var areaPath = linePath
+                        + ' L ' + pts[pts.length - 1].x.toFixed(1) + ' ' + chartBottom
+                        + ' L ' + pts[0].x.toFixed(1) + ' ' + chartBottom
+                        + ' Z';
+                    // Dots + per-point value labels (hero only)
+                    var dots = pts.map(function (p, i) {
+                        var isMax = values[i] === max;
+                        var cls = 'pb-spark-dot' + (isMax ? ' is-max' : '');
+                        var r = isHero ? (isMax ? 4 : 3) : 2.5;
+                        var title = hover[i] || String(values[i]);
+                        var dotEl = '<circle class="' + cls + '" cx="' + p.x.toFixed(1)
+                                  + '" cy="' + p.y.toFixed(1) + '" r="' + r + '"><title>'
+                                  + title + '</title></circle>';
+                        if (showValues) {
+                            // Compact numeric (e.g. 2.2B, 487M)
+                            var v = values[i];
+                            var compact = v >= 1e9 ? (v / 1e9).toFixed(1) + 'B'
+                                       : v >= 1e6 ? (v / 1e6).toFixed(0) + 'M'
+                                       : v >= 1e3 ? (v / 1e3).toFixed(0) + 'K' : String(v);
+                            var valCls = 'pb-spark-value' + (isMax ? ' is-max' : '');
+                            var vy = Math.max(12, p.y - 8);
+                            dotEl += '<text class="' + valCls + '" x="' + p.x.toFixed(1)
+                                  + '" y="' + vy.toFixed(1) + '" text-anchor="middle">'
+                                  + compact + '</text>';
+                        }
+                        if (showLabels) {
+                            var lx = p.x.toFixed(1);
+                            var ly = h - 4;
+                            var labelCls = 'pb-spark-label' + (isMax ? ' is-max' : '');
+                            dotEl += '<text class="' + labelCls + '" x="' + lx
+                                  + '" y="' + ly + '" text-anchor="middle">'
+                                  + labels[i] + '</text>';
+                        }
+                        return dotEl;
                     }).join('');
-                    svg.innerHTML = bars;
+                    svg.innerHTML = ''
+                        + '<path class="pb-spark-area" d="' + areaPath + '"/>'
+                        + '<path class="pb-spark-line" d="' + linePath + '"/>'
+                        + dots;
                 }
                 function setDelta(selector, values, opts) {
                     var el = document.querySelector(selector);
@@ -1237,7 +1321,8 @@
                 }
                 drawSpark('[data-spark="weekly-tokens"]', tokenValues, {
                     hoverLabels: tokenLabels.map(function (l, i) { return _hl(l, tokenValues[i] || 0, fmtNum); }),
-                    barLabels: tokenLabels.map(_shortDay)
+                    barLabels: tokenLabels.map(_shortDay),
+                    hero: true
                 });
                 drawSpark('[data-spark="daily-tokens"]', tokenValues, {
                     hoverLabels: tokenLabels.map(function (l, i) { return _hl(l, tokenValues[i] || 0, fmtNum); })
