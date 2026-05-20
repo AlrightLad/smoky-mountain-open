@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T19:22:13Z",
-  "generated_at": "2026-05-20T19:22:13Z",
+  "timestamp": "2026-05-20T19:27:13Z",
+  "generated_at": "2026-05-20T19:27:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "yellow",
-  "raw_status": "yellow",
-  "summary": "watcher last run: skip-dirty",
-  "as_of": "2026-05-20T19:20:48Z",
+  "status": "green",
+  "raw_status": "green",
+  "summary": "watcher no-new-files 0.3min ago",
+  "as_of": "2026-05-20T19:26:54Z",
   "stale": false,
-  "age_hours": 0.02333333333333333,
+  "age_hours": 0.005,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -31,6 +31,13 @@
     {
       "category": "stall",
       "status": "skip-dirty",
+      "name": "2026-05-20T19-25-48Z-downloads-watcher.log",
+      "note": "[19:25:48] SKIP working tree dirty with non-routine files: .claude/state/main-flows-v2/flow-inventory.json",
+      "when": "2026-05-20T19:25:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
       "name": "2026-05-20T19-20-48Z-downloads-watcher.log",
       "note": "[19:20:48] SKIP working tree dirty with non-routine files: main-flows-iter3.png, main-flows-iter3-orch.png, main-flows-iter3-orch-fixed.png, templates/dashboards/main-flows.template.html",
       "when": "2026-05-20T19:20:48Z"
@@ -41,13 +48,6 @@
       "name": "2026-05-20T19-15-48Z-downloads-watcher.log",
       "note": "[19:15:50] SKIP working tree still dirty after auto-commit attempt",
       "when": "2026-05-20T19:15:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-20T19-10-48Z-downloads-watcher.log",
-      "note": "[19:10:48] SKIP working tree dirty with non-routine files: .claude/state/inbox-history/downloads-archive-2026-05-20/amendments-2026-05-14T02-21-09.json, .claude/state/inbox-history/downloads-archive-2",
-      "when": "2026-05-20T19:10:48Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 1,
-    "age_minutes": 1.4
+    "consecutive_skips": 0,
+    "age_minutes": 0.3
   }
 }
