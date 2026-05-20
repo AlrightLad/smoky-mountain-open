@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T19:47:13Z",
-  "generated_at": "2026-05-20T19:47:13Z",
+  "timestamp": "2026-05-20T19:55:40Z",
+  "generated_at": "2026-05-20T19:55:40Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
-  "summary": "watcher errored",
-  "as_of": "2026-05-20T19:45:48Z",
+  "summary": "watcher cycling · applies blocked (4 skips on dirty tree)",
+  "as_of": "2026-05-20T19:55:38Z",
   "stale": false,
-  "age_hours": 0.02333333333333333,
+  "age_hours": 0.0,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -30,24 +30,24 @@
     },
     {
       "category": "stall",
-      "status": "incomplete",
-      "name": "2026-05-20T19-45-48Z-downloads-watcher.log",
-      "note": "[19:45:50] SKIP working tree still dirty after auto-commit attempt",
-      "when": "2026-05-20T19:45:48Z"
+      "status": "skip-dirty",
+      "name": "2026-05-20T19-55-38Z-downloads-watcher.log",
+      "note": "[19:55:38] SKIP working tree dirty with non-routine files: templates/dashboards/dashboard.template.html",
+      "when": "2026-05-20T19:55:38Z"
     },
     {
       "category": "stall",
-      "status": "incomplete",
-      "name": "2026-05-20T19-40-48Z-downloads-watcher.log",
-      "note": "[19:40:50] SKIP working tree still dirty after auto-commit attempt",
-      "when": "2026-05-20T19:40:48Z"
+      "status": "skip-dirty",
+      "name": "2026-05-20T19-55-35Z-downloads-watcher.log",
+      "note": "[19:55:35] SKIP working tree dirty with non-routine files: templates/dashboards/dashboard.template.html",
+      "when": "2026-05-20T19:55:35Z"
     },
     {
       "category": "stall",
-      "status": "incomplete",
-      "name": "2026-05-20T19-35-48Z-downloads-watcher.log",
-      "note": "[19:35:50] SKIP working tree still dirty after auto-commit attempt",
-      "when": "2026-05-20T19:35:48Z"
+      "status": "skip-dirty",
+      "name": "2026-05-20T19-55-33Z-downloads-watcher.log",
+      "note": "[19:55:33] SKIP working tree dirty with non-routine files: templates/dashboards/dashboard.template.html",
+      "when": "2026-05-20T19:55:33Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 0,
-    "age_minutes": 1.4
+    "consecutive_skips": 4,
+    "age_minutes": 0.0
   }
 }

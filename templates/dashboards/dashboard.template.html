@@ -435,23 +435,26 @@
                     display: block;
                     overflow: visible;
                 }
-                .pb-kpi-card.is-hero .pb-kpi-sparkline { height: 56px; }
+                .pb-kpi-card.is-hero .pb-kpi-sparkline { height: 72px; }
                 .pb-kpi-sparkline path.pb-spark-line {
                     fill: none;
                     stroke: currentColor;
-                    stroke-width: 2;
+                    stroke-width: 2.5;
                     stroke-linecap: round;
                     stroke-linejoin: round;
                     opacity: 1;
-                    /* M5.14 (2026-05-20, Founder "graphs blurry"): preserveAspectRatio=none
-                     * was non-uniformly stretching strokes (1.6x x-stretch caused
-                     * horizontal blur). Force uniform-thickness stroke via
-                     * vector-effect: non-scaling-stroke. Stroke renders at the CSS
-                     * value (2px) regardless of viewBox scaling. */
+                    /* 2026-05-20 iter4 (Founder "tokens this week graph blurry"):
+                     * Founder still seeing blur. Root cause: preserveAspectRatio=none
+                     * stretches viewBox X by ~6x → path coordinates land on sub-pixel
+                     * boundaries even with non-scaling-stroke. Fix: shape-rendering=
+                     * geometricPrecision lets the browser smooth the line; bump stroke
+                     * from 2.5 → 3.5 for hero; increase height 56 → 72px for more
+                     * vertical resolution. */
                     vector-effect: non-scaling-stroke;
+                    shape-rendering: geometricPrecision;
                 }
                 .pb-kpi-card.is-hero .pb-kpi-sparkline path.pb-spark-line {
-                    stroke-width: 2.5;
+                    stroke-width: 3.5;
                 }
                 .pb-kpi-sparkline path.pb-spark-fill {
                     fill: currentColor;
@@ -466,7 +469,9 @@
                     stroke: var(--pb-billiard-green-800);
                     stroke-width: 1.5;
                     vector-effect: non-scaling-stroke;
+                    shape-rendering: geometricPrecision;
                 }
+                .pb-kpi-card.is-hero .pb-kpi-sparkline .pb-spark-last { r: 3.5; }
                 /* Cycle 2: hover affordance on sparkline points — Datadog
                    pattern. The transparent hover rects highlight the column
                    beneath them on hover so the eye knows "I can scrub here". */
