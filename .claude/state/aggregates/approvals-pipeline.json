@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T21:32:13Z",
-  "generated_at": "2026-05-20T21:32:13Z",
+  "timestamp": "2026-05-20T21:34:57Z",
+  "generated_at": "2026-05-20T21:34:57Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "red",
-  "raw_status": "red",
-  "summary": "watcher errored",
-  "as_of": "2026-05-20T21:30:48Z",
+  "status": "yellow",
+  "raw_status": "yellow",
+  "summary": "watcher cycling · last 2 runs skipped on dirty tree",
+  "as_of": "2026-05-20T21:34:56Z",
   "stale": false,
-  "age_hours": 0.02333333333333333,
+  "age_hours": 0.0,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -30,24 +30,24 @@
     },
     {
       "category": "stall",
-      "status": "incomplete",
-      "name": "2026-05-20T21-30-48Z-downloads-watcher.log",
-      "note": "[21:30:51] SKIP working tree still dirty after auto-commit attempt",
-      "when": "2026-05-20T21:30:48Z"
+      "status": "skip-dirty",
+      "name": "2026-05-20T21-34-56Z-downloads-watcher.log",
+      "note": "[21:34:57] SKIP working tree dirty with non-routine files: scripts/cron/downloads-watcher.ps1",
+      "when": "2026-05-20T21:34:56Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-20T21-34-55Z-downloads-watcher.log",
+      "note": "[21:34:56] SKIP working tree dirty with non-routine files: scripts/cron/downloads-watcher.ps1",
+      "when": "2026-05-20T21:34:55Z"
     },
     {
       "category": "stall",
       "status": "incomplete",
-      "name": "2026-05-20T21-25-48Z-downloads-watcher.log",
-      "note": "[21:25:50] SKIP working tree still dirty after auto-commit attempt",
-      "when": "2026-05-20T21:25:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "incomplete",
-      "name": "2026-05-20T21-20-48Z-downloads-watcher.log",
-      "note": "[21:20:51] SKIP working tree still dirty after auto-commit attempt",
-      "when": "2026-05-20T21:20:48Z"
+      "name": "2026-05-20T21-34-10Z-downloads-watcher.log",
+      "note": "[21:34:12] SKIP working tree still dirty after auto-commit attempt",
+      "when": "2026-05-20T21:34:10Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 0,
-    "age_minutes": 1.4
+    "consecutive_skips": 2,
+    "age_minutes": 0.0
   }
 }
