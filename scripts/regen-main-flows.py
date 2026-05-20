@@ -139,6 +139,10 @@ def main():
                     "actor": f.get("actor"),
                     "tier": f.get("tier"),
                     "status": f.get("status"),
+                    # 2026-05-20 iter3: carry layer + category from inventory
+                    # so the new layer toggle + category filter UI works.
+                    "layer": f.get("layer") or "app",
+                    "category": f.get("category") or "debug",
                     "served_by_ships": f.get("served_by_ships", []),
                     "primary_user_goal": f.get("primary_user_goal", ""),
                     "estimated_steps_count": f.get("estimated_steps_count"),

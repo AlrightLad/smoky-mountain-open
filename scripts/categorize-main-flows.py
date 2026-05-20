@@ -31,6 +31,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "docs" / "reports" / "_assets" / "main-flows-data.json"
+FLOW_INVENTORY = ROOT / ".claude" / "state" / "main-flows-v2" / "flow-inventory.json"
 
 ORCH_NAME_PREFIXES = (
     "Cron ",
@@ -92,16 +93,17 @@ def main() -> int:
 
     layer_counts: dict[str, int] = {"app": 0, "orch": 0}
     cat_counts: dict[str, int] = {"debug": 0, "ships": 0, "data": 0}
+    flow_lookup: dict = {}
     for flow in flows:
         layer = derive_layer(flow)
         category = derive_category(flow)
         flow["layer"] = layer
         flow["category"] = category
+        flow_lookup[flow.get("id")] = flow
         layer_counts[layer] = layer_counts.get(layer, 0) + 1
         cat_counts[category] = cat_counts.get(category, 0) + 1
 
     rail = doc.get("flow_rail") or []
-    flow_lookup = {f["id"]: f for f in flows}
     for entry in rail:
         target = flow_lookup.get(entry.get("id"))
         if target:
@@ -109,6 +111,21 @@ def main() -> int:
             entry["category"] = target["category"]
 
     DATA.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    # ALSO update flow-inventory.json since the regen-main-flows.py reads
+    # the rail from THAT file, not from main-flows-data.json. Without this,
+    # the rail entries don't carry layer + category and the filter UI breaks.
+    if FLOW_INVENTORY.exists():
+        inv = json.loads(FLOW_INVENTORY.read_text(encoding="utf-8"))
+        inv_flows = inv.get("flows") or []
+        for inv_flow in inv_flows:
+            src = flow_lookup.get(inv_flow.get("id"))
+            if src:
+                inv_flow["layer"] = src.get("layer")
+                inv_flow["category"] = src.get("category")
+        FLOW_INVENTORY.write_text(json.dumps(inv, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        print(f"[categorize-main-flows] also updated {FLOW_INVENTORY.relative_to(ROOT)}")
+
     print(
         f"[categorize-main-flows] tagged {len(flows)} flows\n"
         f"  layer:    app={layer_counts['app']:3d}  orch={layer_counts['orch']:3d}\n"

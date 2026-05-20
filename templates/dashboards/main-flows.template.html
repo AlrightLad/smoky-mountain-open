@@ -173,18 +173,28 @@
          * full borders on every off-path node = visual noise. Drop to 0.18,
          * AND zero out borders on off-path nodes so only label text remains
          * (much closer to Janowiak's "labels-only ghost" pattern). */
+        /* 2026-05-20 iter3 recreate per Founder direct directive
+         * ("recreate it so it is legible and easily understandable"):
+         * Drop unselected to 0.10 — Janowiak's ghost-system is BARELY
+         * visible. Boost selected with thicker stroke, larger label,
+         * brass-tinted background fill. Path POPS unmistakably. */
         .mf-grid.has-selection .mf-node {
-            opacity: 0.18;
+            opacity: 0.10;
             border-color: transparent !important;
             background: transparent !important;
             transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1), border-color 250ms cubic-bezier(0.4, 0, 0.2, 1), transform 250ms cubic-bezier(0.4, 0, 0.2, 1), background 250ms cubic-bezier(0.4, 0, 0.2, 1);
         }
         .mf-grid.has-selection .mf-node.is-on-path {
             opacity: 1;
-            border-color: var(--accent-brass);
+            border-color: var(--accent-brass) !important;
+            border-width: 1.5px !important;
             box-shadow: none;
-            background: rgba(212, 168, 87, 0.09);
+            background: rgba(212, 168, 87, 0.14) !important;
             transform: translateY(-1px);
+        }
+        .mf-grid.has-selection .mf-node.is-on-path .mf-node-label {
+            font-size: 0.875rem;
+            color: var(--accent-brass);
         }
         .mf-node.is-pulse { animation: mfPulse 700ms ease-out 1; }
         @keyframes mfPulse {
@@ -199,10 +209,10 @@
         /* SVG arrow overlay. Ship R2 (2026-05-14): solid (not dashed) +
          * full opacity to match Dave Jeffery reference § 5. */
         .mf-arrows { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
-        .mf-arrow-line { fill: none; stroke: var(--accent-brass); stroke-width: 1.5; stroke-dasharray: none; opacity: 1; }
+        .mf-arrow-line { fill: none; stroke: var(--accent-brass); stroke-width: 2.5; stroke-dasharray: none; opacity: 1; vector-effect: non-scaling-stroke; }
         .mf-arrow-head { fill: var(--accent-brass); }
         .mf-arrow-badge-bg { fill: var(--accent-brass); }
-        .mf-arrow-badge-text { fill: var(--bg-page); font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+        .mf-arrow-badge-text { fill: var(--bg-page); font-family: var(--font-mono); font-size: 13px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
 
         /* === Right rail ===
          * Iter 11 (2026-05-14, user-context measurement diagnosis):
@@ -506,6 +516,44 @@
          * Per M5.8 note: "compromise filter chrome to read as density-aware
          * utility". */
         .mf-rail-chips { padding: 4px var(--space-3) 0; gap: 2px; }
+        /* iter3 RECREATE: big layer toggle pair, Janowiak-style restraint */
+        .mf-rail-layer-toggle {
+            display: flex;
+            gap: 4px;
+            padding: var(--space-2) var(--space-3) var(--space-1);
+        }
+        .mf-rail-category-toggle {
+            display: flex;
+            gap: 4px;
+            padding: 0 var(--space-3) var(--space-2);
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: var(--space-2);
+        }
+        .mf-layer-btn, .mf-category-btn {
+            flex: 1;
+            background: transparent;
+            color: var(--text-tertiary);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 8px 8px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+            transition: all 140ms ease-out;
+        }
+        .mf-layer-btn { font-size: 0.8125rem; padding: 8px 12px; }
+        .mf-layer-btn:hover, .mf-category-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--accent-brass);
+        }
+        .mf-layer-btn.is-on, .mf-category-btn.is-on {
+            background: var(--accent-brass);
+            color: var(--bg-page);
+            border-color: var(--accent-brass);
+        }
         .mf-rail-advanced { margin-top: var(--space-1); padding: 0 var(--space-3); }
         .mf-rail-advanced-summary {
             font-family: var(--font-mono);
@@ -631,22 +679,20 @@
                     <div class="mf-rail-search-wrap">
                         <input type="search" id="mf-rail-search" class="mf-rail-search" placeholder="Search flow id or name…" aria-label="Search flows">
                     </div>
-                    <!-- 2026-05-20 Founder redirect: PRIMARY filter axes are now
-                         LAYER (App vs Orch) + CATEGORY (Debug / Ships / Data).
-                         The Janowiak surface answers "what fires when X
-                         happens?" — default to App + Debug, the operative
-                         debug-when-something-breaks frame. Secondary chips
-                         (actor / tier) remain below for power-users. -->
-                    <div class="mf-rail-chips" data-axis="layer" aria-label="Filter by layer">
-                        <button class="mf-rail-chip is-on" data-layer="app">app</button>
-                        <button class="mf-rail-chip" data-layer="orch">orch</button>
-                        <button class="mf-rail-chip" data-layer="">both</button>
+                    <!-- 2026-05-20 iter3 RECREATE per Founder direct directive:
+                         primary surface = ONE big layer toggle. Category +
+                         all other chips collapse behind 'advanced filters'.
+                         Goal: above-the-fold reads as Janowiak's clean
+                         "pick a flow" prompt, not a control panel. -->
+                    <div class="mf-rail-layer-toggle" role="group" aria-label="Layer">
+                        <button class="mf-layer-btn is-on" data-layer="app">App</button>
+                        <button class="mf-layer-btn" data-layer="orch">Orch</button>
                     </div>
-                    <div class="mf-rail-chips" data-axis="category" aria-label="Filter by category">
-                        <button class="mf-rail-chip is-on" data-category="debug">debug</button>
-                        <button class="mf-rail-chip" data-category="ships">ships</button>
-                        <button class="mf-rail-chip" data-category="data">data</button>
-                        <button class="mf-rail-chip" data-category="">all</button>
+                    <div class="mf-rail-category-toggle" role="group" aria-label="Category">
+                        <button class="mf-category-btn is-on" data-category="debug">Debug</button>
+                        <button class="mf-category-btn" data-category="ships">Ships</button>
+                        <button class="mf-category-btn" data-category="data">Data</button>
+                        <button class="mf-category-btn" data-category="">All</button>
                     </div>
                     <!-- Iter2 2026-05-20: secondary axes (actor/tier) collapse
                          behind an 'advanced' toggle to cut chip-row density.
@@ -798,10 +844,14 @@
                 if (rail.length) return rail;
                 // Fallback: derive from data.flows so the rail still renders if
                 // the data file is somehow missing flow_rail.
+                // 2026-05-20 iter3: include layer + category so the new layer
+                // toggle + category filter work even when rail is synthesized.
                 return (data.flows || []).map(function (f) {
                     return {
                         id: f.id, name: f.name, actor: actorShort(f.actor),
                         tier: 'core', status: 'shipping',
+                        layer: f.layer || 'app',
+                        category: f.category || 'debug',
                         primary_user_goal: f.primary_user_goal,
                         estimated_steps_count: (f.steps || []).length,
                     };
@@ -899,12 +949,15 @@
             function applyRailFilters() {
                 var searchEl = document.getElementById('mf-rail-search');
                 var search = (searchEl && searchEl.value || '').toLowerCase().trim();
-                var layerBtn = document.querySelector('.mf-rail-chips[data-axis="layer"] .mf-rail-chip.is-on');
-                var categoryBtn = document.querySelector('.mf-rail-chips[data-axis="category"] .mf-rail-chip.is-on');
+                // iter3 RECREATE: layer now in big toggle .mf-rail-layer-toggle
+                // instead of chips. Read from active .mf-layer-btn.
+                var layerBtn = document.querySelector('.mf-rail-layer-toggle .mf-layer-btn.is-on');
+                var categoryBtn = document.querySelector('.mf-rail-category-toggle .mf-category-btn.is-on');
                 var actorBtn = document.querySelector('.mf-rail-chips[data-axis="actor"] .mf-rail-chip.is-on');
                 var tierBtn = document.querySelector('.mf-rail-chips[data-axis="tier"] .mf-rail-chip.is-on');
                 var layer = layerBtn ? (layerBtn.getAttribute('data-layer') || '') : '';
                 var category = categoryBtn ? (categoryBtn.getAttribute('data-category') || '') : '';
+                var categoryEmpty = (categoryBtn && !categoryBtn.getAttribute('data-category'));
                 var actor = actorBtn ? (actorBtn.getAttribute('data-actor') || '') : '';
                 var tier = tierBtn ? (tierBtn.getAttribute('data-tier') || '') : '';
                 var visibleCount = 0;
@@ -944,6 +997,50 @@
                         applyRailFilters();
                     });
                 });
+                // iter3 RECREATE: bind the big category toggle (mirror layer pattern)
+                var catToggle = document.querySelector('.mf-rail-category-toggle');
+                if (catToggle && !catToggle.dataset.bound) {
+                    catToggle.dataset.bound = '1';
+                    catToggle.addEventListener('click', function (ev) {
+                        var btn = ev.target.closest('.mf-category-btn');
+                        if (!btn) return;
+                        catToggle.querySelectorAll('.mf-category-btn').forEach(function (b) { b.classList.remove('is-on'); });
+                        btn.classList.add('is-on');
+                        applyRailFilters();
+                        var currentSelected = FLOWS_LIST.querySelector('.mf-flows-item.is-active');
+                        if (!currentSelected || currentSelected.classList.contains('is-hidden')) {
+                            var firstVisible = FLOWS_LIST.querySelector('.mf-flows-item:not(.is-hidden)');
+                            if (firstVisible) selectFlow(firstVisible.getAttribute('data-flow-id'));
+                            else selectFlow(null);
+                        }
+                    });
+                }
+                // iter3 RECREATE: bind the new big layer toggle.
+                // On layer switch: if currently-selected flow no longer
+                // matches the new layer's filter, auto-select first visible
+                // flow so the diagram immediately reflects the new layer.
+                var layerToggle = document.querySelector('.mf-rail-layer-toggle');
+                if (layerToggle && !layerToggle.dataset.bound) {
+                    layerToggle.dataset.bound = '1';
+                    layerToggle.addEventListener('click', function (ev) {
+                        var btn = ev.target.closest('.mf-layer-btn');
+                        if (!btn) return;
+                        layerToggle.querySelectorAll('.mf-layer-btn').forEach(function (b) { b.classList.remove('is-on'); });
+                        btn.classList.add('is-on');
+                        applyRailFilters();
+                        // After filter, check if selected flow is still visible;
+                        // if not, select the first visible flow in the new layer.
+                        var currentSelected = FLOWS_LIST.querySelector('.mf-flows-item.is-active');
+                        if (!currentSelected || currentSelected.classList.contains('is-hidden')) {
+                            var firstVisible = FLOWS_LIST.querySelector('.mf-flows-item:not(.is-hidden)');
+                            if (firstVisible) {
+                                selectFlow(firstVisible.getAttribute('data-flow-id'));
+                            } else {
+                                selectFlow(null);
+                            }
+                        }
+                    });
+                }
             }
 
             function renderStepsForFlow(flowId) {
@@ -1204,16 +1301,20 @@
                 renderLegend();
                 renderGrid();
                 renderFlowsList();
+                // iter3 RECREATE: apply default filters immediately so the
+                // App+Debug landing view is in effect on first paint. Without
+                // this, all 62 flows show until first chip click.
+                applyRailFilters();
                 // P1 fix (iter 16, 2026-05-14, Founder directive — match reference):
                 // Janowiak reference opens with first flow pre-selected (path lit,
                 // steps populated). PARBAUGHS was opening with empty state ("Select
                 // a flow on the right..."). Reference fidelity gap caught iter 14
                 // visual review as "POTENTIAL GAP — default selection state".
-                // Fix: auto-select F1 on initial render. Users immediately see the
-                // interaction pattern; rail still allows clicking other flows;
-                // "Clear selection" affordance still works for empty state.
-                var defaultFlow = (data.flows && data.flows[0]) || null;
-                var defaultFlowId = defaultFlow ? defaultFlow.id : null;
+                // Fix: auto-select FIRST VISIBLE flow on initial render (was F1 always;
+                // now respects the default App+Debug filter so we pick a flow that's
+                // visible after filtering).
+                var firstVisible = FLOWS_LIST.querySelector('.mf-flows-item:not(.is-hidden)');
+                var defaultFlowId = firstVisible ? firstVisible.getAttribute('data-flow-id') : ((data.flows && data.flows[0]) ? data.flows[0].id : null);
                 if (defaultFlowId) {
                     selectFlow(defaultFlowId);
                 } else {
