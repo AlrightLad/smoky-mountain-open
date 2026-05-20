@@ -1439,6 +1439,9 @@
         // ============================================================
         function fmtTokenLabel(v) {
             if (v == null || v === 0) return '0';
+            // Billions case (Founder 2026-05-20: "3886.2M is not a number we only operate in true/real numbers").
+            // Chart Y-axis labels for 7-day token consumption — values commonly exceed 1B.
+            if (v >= 1_000_000_000) return (v / 1_000_000_000).toFixed(2) + 'B';
             if (v >= 1_000_000) return (v / 1_000_000).toFixed(1) + 'M';
             if (v >= 1_000) return (v / 1_000).toFixed(0) + 'k';
             return String(v);
