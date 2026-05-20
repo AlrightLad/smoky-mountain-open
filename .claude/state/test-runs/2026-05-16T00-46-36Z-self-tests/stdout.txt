@@ -1,7 +1,0 @@
-[aggregate-self-tests] starting D40 parity checks across 5 aggregators
-  [aggregate-test-health] PASS status=yellow age=0s
-  [aggregate-security-health] PASS status=yellow age=0s
-  [aggregate-approvals-pipeline] PASS status=red age=0s
-  [aggregate-architecture-review] PASS status=unknown age=0s
-  [aggregate-fiq-status] PASS status=green age=0s
-[aggregate-self-tests] OK all 5 aggregators pass parity

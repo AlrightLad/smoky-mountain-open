@@ -1,0 +1,12 @@
+{
+  "test_name": "smoke-full-webkit-mobile-only",
+  "command": "BROWSERS=webkit-mobile npm run smoke:full",
+  "exit_code": 127,
+  "started_at": "2026-05-16T01:38:28Z",
+  "duration_seconds": 0,
+  "head_sha": "996108a",
+  "stdout_path": ".claude/state/test-runs/2026-05-16T01-38-28Z-smoke-full-webkit-mobile-only/stdout.txt",
+  "stderr_path": ".claude/state/test-runs/2026-05-16T01-38-28Z-smoke-full-webkit-mobile-only/stderr.txt",
+  "stdout_bytes": 0,
+  "stderr_bytes": 87
+}

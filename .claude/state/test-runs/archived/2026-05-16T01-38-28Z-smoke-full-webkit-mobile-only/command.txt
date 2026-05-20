@@ -1,0 +1,1 @@
+BROWSERS=webkit-mobile npm run smoke:full

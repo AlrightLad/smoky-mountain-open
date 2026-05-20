@@ -1,0 +1,1 @@
+scripts/run-test-with-artifacts.sh: line 49: BROWSERS=webkit-mobile: command not found

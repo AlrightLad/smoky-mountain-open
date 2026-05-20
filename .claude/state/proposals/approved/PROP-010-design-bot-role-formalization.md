@@ -13,6 +13,11 @@
     "duration_minutes": 20,
     "risk": "low"
   },
+  "cost_tokens": {
+    "low": 5000,
+    "high": 8000,
+    "methodology": "Empirical estimate based on docs/agents/*.md authoring sizes (CRITIC.md ~6k, CONTINUATION_DISCIPLINE.md ~7k) plus round-trip [design-review] block (~1k). Range captures variation in protocol detail + worked example count."
+  },
   "files_affected": [
     "docs/agents/lessons-learned/DESIGN_BOT_role.md (governance-exempt sister doc, deferred to apply-time)",
     "tests/round-trip-test.py — [design-review] block at apply-time",
@@ -23,7 +28,8 @@
   "fallback_plan": "Plan A: ship the role-formalization doc + Critic gate + round-trip block as one bundle. Plan B: ship the doc only, defer Critic/round-trip wiring to follow-on. Plan C: keep the lessons-learned doc as the authoritative source. Abandon: 'design-bot role' itself isn't a workable abstraction — unlikely since the three-agent model already documents it; this just makes it operative.",
   "rollback_strategy": "git revert; the role formalization is an additive practice. Without it, the team continues current (failing) approach. With it, design-bot blocks ship-close on UX issues Critic alone can't catch.",
   "round_trip_coverage": "New [design-review] block at apply-time: when a user-facing surface mtime > most recent .claude/state/<area>/design-review-*.md mtime, round-trip warns (similar to user-context-gate). Failures don't auto-block (heavyweight check) but Critic protocol gate at ship-close is hard.",
-  "depends_on": ["PROP-006", "PROP-007", "PROP-008", "PROP-009"],
+  "depends_on": ["PROP-006"],
+  "_depends_on_archived_note": "Original deps included PROP-007/008/009; archived 2026-05-19 (substrate operative — see .claude/state/proposals/archived/). PROP-006 still authoring. PROP-010 closure gated by Phase G design-batch per dashboard-completion-spec D39.",
   "authored_by": "claude-code",
   "bubble_of_record": null,
   "estimate_tokens_to_apply": 2500,

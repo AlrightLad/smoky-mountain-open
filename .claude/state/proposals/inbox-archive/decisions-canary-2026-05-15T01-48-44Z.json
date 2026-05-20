@@ -1,0 +1,8 @@
+{
+  "kind": "decisions",
+  "exported_at": "2026-05-15T01:48:44Z",
+  "exported_by": "verify-approval-pipeline.sh",
+  "decisions": [
+    { "id": "TEST-PIPELINE-CANARY", "decision": "approved", "note": "canary — verify script" }
+  ]
+}

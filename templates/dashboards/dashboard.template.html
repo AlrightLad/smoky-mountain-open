@@ -2032,12 +2032,17 @@
                     else if (status === 'red') { who = 'founder'; visibleAction = '<strong>FOUNDER</strong> watcher hard-failed; restart cron task'; }
                     else { who = 'cron'; visibleAction = '<strong>action</strong> derived from cron logs on next regen'; }
                 } else if (name === 'architecture') {
-                    // AMD-024 + AMD-026 autonomous-v1 (2026-05-19): the
-                    // aggregator runs on every commit via .husky/post-commit
-                    // (no "agent awaiting dispatch" gating). Status reflects
-                    // the most-recent file-system scan + pending REC inventory.
+                    // AMD-024 + AMD-026 + AMD-027 (2026-05-19): aggregator runs
+                    // on every commit via .husky/post-commit. Per the Founder
+                    // mandate "make best decision for scalability, open source,
+                    // and most effective for our use case", architecture findings
+                    // are AGENT decisions (engineering), NOT Founder decisions.
+                    // The architecture / AI Engineer agent (AMD-024) decides
+                    // refactor / defer / amend-budget; Founder is informed via
+                    // the detail panel but not gated.
                     if (status === 'green') { who = 'none'; visibleAction = ''; }
-                    else if (status === 'yellow' || status === 'red') { who = 'founder'; visibleAction = '<strong>FOUNDER</strong> review architectural findings'; }
+                    else if (status === 'yellow') { who = 'agent'; visibleAction = '<strong>agent</strong> review architectural findings (engineering decision)'; }
+                    else if (status === 'red') { who = 'agent'; visibleAction = '<strong>agent</strong> critical finding — agent decides + reports back'; }
                     else { who = 'cron'; visibleAction = '<strong>action</strong> scan runs on next commit'; }
                 }
                 var actionEl = document.querySelector('[data-fq-banner-action="' + name + '"]');
@@ -2049,15 +2054,26 @@
                 if (badgeEl) {
                     badgeEl.setAttribute('data-who', who);
                     // Founder mandate 2026-05-19: "agents should never be
-                    // awaiting dispatch they should just perform." The
-                    // 'agent' badge code-path is preserved for forward
-                    // compatibility (e.g. a future task-queue surface)
-                    // but it now reads as actionable ("agent · processing")
-                    // not as a dispatch-pending wait state.
-                    var badgeText = (who === 'founder') ? 'FOUNDER · decision needed'
-                                  : (who === 'agent')   ? 'agent · processing'
-                                  : (who === 'cron')    ? 'cron · auto-resolves'
-                                  : 'ok · healthy';
+                    // awaiting dispatch they should just perform." Plus AMD-027
+                    // / second mandate "agent IS the senior engineer; do not
+                    // wait on Founder for engineering decisions" — the 'agent'
+                    // badge now reads as a real ownership state ("agent ·
+                    // refactor recommended") for engineering surfaces like
+                    // the architecture banner, NOT a dispatch-pending wait.
+                    // Per-banner text refinement: architecture surfaces agent
+                    // ownership; other banners default to "processing".
+                    var badgeText;
+                    if (who === 'founder') {
+                        badgeText = 'FOUNDER · decision needed';
+                    } else if (who === 'agent') {
+                        badgeText = (name === 'architecture')
+                            ? 'agent · refactor recommended'
+                            : 'agent · processing';
+                    } else if (who === 'cron') {
+                        badgeText = 'cron · auto-resolves';
+                    } else {
+                        badgeText = 'ok · healthy';
+                    }
                     badgeEl.textContent = badgeText;
                     var bannerEl2 = document.querySelector('[data-fq-banner="' + name + '"]');
                     if (bannerEl2) {
@@ -2168,23 +2184,23 @@
                             'unknown': {
                                 open_label: 'Open architecture-review.json',
                                 open_href: '../../.claude/state/aggregates/architecture-review.json',
-                                action_label: 'Suggested action',
+                                action_label: 'Agent action (engineering)',
                                 action_cmd: 'python scripts/aggregate-architecture-review.py',
-                                action_detail: 'Autonomous scan has not run yet. Trigger manually or wait for next commit — .husky/post-commit invokes the aggregator automatically.'
+                                action_detail: 'Autonomous scan has not run yet. Trigger manually or wait for next commit — .husky/post-commit invokes the aggregator automatically. AMD-027 per-file budgets in effect.'
                             },
                             'yellow': {
                                 open_label: 'Open architecture-review.json',
                                 open_href: '../../.claude/state/aggregates/architecture-review.json',
-                                action_label: 'Suggested action',
-                                action_cmd: 'ls .claude/state/architecture-review/recommendations/pending/',
-                                action_detail: 'Architectural findings surfaced (file-size, function-count, or pending recommendations). Review the details panel + recommendations directory.'
+                                action_label: 'Agent action (engineering — Founder informed only)',
+                                action_cmd: 'cat .claude/state/amendments/applied/AMD-027-src-core-file-size-budget.md',
+                                action_detail: 'Architectural findings beyond AMD-027 budgets. The architecture / AI Engineer agent (AMD-024) decides refactor / defer / amend-budget. Founder is informed via this panel but not gated — engineering decisions are agent authority per the three-agent workflow.'
                             },
                             'red': {
                                 open_label: 'Open architecture-review.json',
                                 open_href: '../../.claude/state/aggregates/architecture-review.json',
-                                action_label: 'Suggested action',
+                                action_label: 'Agent action (engineering — Founder informed only)',
                                 action_cmd: 'ls .claude/state/architecture-review/recommendations/pending/',
-                                action_detail: 'Critical architecture finding flagged or >5 concerns surfaced. Review pending recommendations.'
+                                action_detail: 'Critical architecture finding flagged or >5 concerns surfaced. Architecture agent decides + reports back. Founder is informed only — engineering decisions are agent authority per the three-agent workflow.'
                             }
                         }
                     };

@@ -1,11 +1,11 @@
 {
-  "as_of": "2026-05-19T21:10:09.445901+00:00",
+  "as_of": "2026-05-20T05:47:12.819923+00:00",
   "_meter_status": "wired-real",
   "_meter_note": "Token meter is wired to real data via PROP-003.a sidecar (.claude/state/quota-status.json). weekly_tokens reflects the most recent meter reading. See quota_status block for org-monthly percentage + freshness.",
   "quota_status": {
     "state": "fresh",
-    "as_of": "2026-05-19T21:07:12.8289060Z",
-    "age_seconds": 176,
+    "as_of": "2026-05-20T05:47:12.6392853Z",
+    "age_seconds": 0,
     "weekly_tokens": 102000,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -19,39 +19,39 @@
   "weekly_tokens_estimated": 7200000,
   "weekly_tokens_methodology": "measured: cycle.budget.checkpoint deltas + cycle.paused tokens + legacy 'tokens' field. estimated: session.team-work.summary tokens_estimated (operator-asserted, NOT measurements). Both filtered to past 7 days. For ground truth, paste from claude.ai via scripts/refresh-quota-manual.ps1.",
   "weekly_cost": 2.45,
-  "ships_this_week": 34,
+  "ships_this_week": 30,
   "ships_trend_7d": {
     "labels": [
-      "Wed",
       "Thu",
       "Fri",
       "Sat",
       "Sun",
       "Mon",
-      "Tue"
+      "Tue",
+      "Wed"
     ],
     "values": [
-      4,
       26,
       2,
       0,
       0,
       0,
-      2
+      2,
+      0
     ]
   },
   "handoffs_trend_7d": {
     "labels": [
-      "Wed",
       "Thu",
       "Fri",
       "Sat",
       "Sun",
       "Mon",
-      "Tue"
+      "Tue",
+      "Wed"
     ],
     "values": [
-      1,
+      0,
       0,
       0,
       0,
@@ -62,17 +62,17 @@
   },
   "bubbles_trend_7d": {
     "labels": [
-      "Wed",
       "Thu",
       "Fri",
       "Sat",
       "Sun",
       "Mon",
-      "Tue"
+      "Tue",
+      "Wed"
     ],
     "values": [
-      5,
       2,
+      0,
       0,
       0,
       0,
@@ -93,17 +93,17 @@
   },
   "token_trend_7d": {
     "labels": [
-      "Wed",
       "Thu",
       "Fri",
       "Sat",
       "Sun",
       "Mon",
-      "Tue"
+      "Tue",
+      "Wed"
     ],
     "values": [
-      102000,
       7200000,
+      0,
       0,
       0,
       0,
@@ -113,19 +113,19 @@
   },
   "cycle_outcomes_7d": {
     "labels": [
-      "Wed",
       "Thu",
       "Fri",
       "Sat",
       "Sun",
       "Mon",
-      "Tue"
+      "Tue",
+      "Wed"
     ],
     "datasets": [
       {
         "label": "Complete",
         "data": [
-          1,
+          0,
           0,
           0,
           0,
@@ -138,7 +138,7 @@
       {
         "label": "Paused",
         "data": [
-          3,
+          0,
           0,
           0,
           0,
@@ -286,7 +286,7 @@
     }
   ],
   "_aggregate_counts": {
-    "events_total": 3749,
+    "events_total": 4078,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,

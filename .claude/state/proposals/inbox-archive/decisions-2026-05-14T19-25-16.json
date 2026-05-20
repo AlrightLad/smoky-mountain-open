@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-05-14T19:25:16.725Z",
+  "decisions": [
+    {
+      "proposal_id": "PROP-004",
+      "decision": "approve",
+      "note": "",
+      "decided_at": "2026-05-13T19:52:55.722Z"
+    },
+    {
+      "proposal_id": "PROP-003",
+      "decision": "approve",
+      "note": "",
+      "decided_at": "2026-05-13T19:54:01.539Z"
+    },
+    {
+      "proposal_id": "PROP-005",
+      "decision": "approve",
+      "note": "",
+      "decided_at": "2026-05-14T17:26:27.772Z"
+    },
+    {
+      "proposal_id": "PROP-006",
+      "decision": "approve",
+      "note": "",
+      "decided_at": "2026-05-14T19:25:13.755Z"
+    },
+    {
+      "proposal_id": "PROP-007",
+      "decision": "approve",
+      "note": "",
+      "decided_at": "2026-05-14T19:25:14.847Z"
+    }
+  ]
+}

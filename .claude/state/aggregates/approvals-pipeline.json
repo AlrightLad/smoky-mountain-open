@@ -1,13 +1,13 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-19T21:07:13Z",
-  "generated_at": "2026-05-19T21:07:13Z",
+  "timestamp": "2026-05-20T05:47:13Z",
+  "generated_at": "2026-05-20T05:47:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
   "summary": "watcher cycling · applies blocked (10 skips on dirty tree)",
-  "as_of": "2026-05-19T21:05:48Z",
+  "as_of": "2026-05-20T05:45:48Z",
   "stale": false,
   "age_hours": 0.02333333333333333,
   "counts": {
@@ -31,23 +31,23 @@
     {
       "category": "stall",
       "status": "skip-dirty",
-      "name": "2026-05-19T21-05-48Z-downloads-watcher.log",
-      "note": "[21:05:48] SKIP working tree dirty with non-routine files: .claude/state/amendments/applied/AMD-027-src-core-file-size-budget.md, .claude/state/proposals/inbox-archive/decisions-2026-05-13T21-23-31.js",
-      "when": "2026-05-19T21:05:48Z"
+      "name": "2026-05-20T05-45-48Z-downloads-watcher.log",
+      "note": "[05:45:48] SKIP working tree dirty with non-routine files: .claude/hooks/gate-bash-edit.sh, .claude/state/dashboard-audit-2026-05-18/FOUNDER-DEGATING-AUDIT-2026-05-19.md, .claude/state/escalations/inb",
+      "when": "2026-05-20T05:45:48Z"
     },
     {
       "category": "stall",
       "status": "skip-dirty",
-      "name": "2026-05-19T21-00-48Z-downloads-watcher.log",
-      "note": "[21:00:48] SKIP working tree dirty with non-routine files: scripts/visual-audit/2026-05-19-cycle1/activity-desktop.png, scripts/visual-audit/2026-05-19-cycle1/activity-desktop-wide.png, scripts/visual",
-      "when": "2026-05-19T21:00:48Z"
+      "name": "2026-05-20T05-40-48Z-downloads-watcher.log",
+      "note": "[05:40:48] SKIP working tree dirty with non-routine files: .claude/hooks/gate-bash-edit.sh, .claude/state/dashboard-audit-2026-05-18/FOUNDER-DEGATING-AUDIT-2026-05-19.md, .claude/state/escalations/inb",
+      "when": "2026-05-20T05:40:48Z"
     },
     {
       "category": "stall",
       "status": "skip-dirty",
-      "name": "2026-05-19T20-55-48Z-downloads-watcher.log",
-      "note": "[20:55:48] SKIP working tree dirty with non-routine files: scripts/visual-audit/2026-05-19-cycle1/activity-desktop.png, scripts/visual-audit/2026-05-19-cycle1/activity-desktop-wide.png, scripts/visual",
-      "when": "2026-05-19T20:55:48Z"
+      "name": "2026-05-20T05-35-48Z-downloads-watcher.log",
+      "note": "[05:35:48] SKIP working tree dirty with non-routine files: .claude/hooks/gate-bash-edit.sh, .claude/state/dashboard-audit-2026-05-18/FOUNDER-DEGATING-AUDIT-2026-05-19.md, .claude/state/escalations/inb",
+      "when": "2026-05-20T05:35:48Z"
     }
   ],
   "links": [

@@ -1,0 +1,12 @@
+{
+  "test_name": "final-round-trip",
+  "command": "python tests/round-trip-test.py",
+  "exit_code": 1,
+  "started_at": "2026-05-16T01:55:09Z",
+  "duration_seconds": 16,
+  "head_sha": "852e4dd",
+  "stdout_path": ".claude/state/test-runs/2026-05-16T01-55-09Z-final-round-trip/stdout.txt",
+  "stderr_path": ".claude/state/test-runs/2026-05-16T01-55-09Z-final-round-trip/stderr.txt",
+  "stdout_bytes": 9884,
+  "stderr_bytes": 0
+}

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-05-19T00:37:22Z",
+  "exported_by": "verify-approval-pipeline.sh",
+  "decisions": [
+    {
+      "proposal_id": "TEST-PIPELINE-CANARY",
+      "decision": "approve",
+      "note": "canary — verify script",
+      "decided_at": "2026-05-19T00:37:22Z"
+    }
+  ]
+}

@@ -1,1 +1,0 @@
-node scripts/visual-audit/verify-all-flows-light-up.mjs

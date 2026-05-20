@@ -13,6 +13,11 @@
     "duration_minutes": 12,
     "risk": "low"
   },
+  "cost_tokens": {
+    "low": 4000,
+    "high": 6000,
+    "methodology": "Empirical estimate based on PROP-005 continuation-discipline skill authoring cost (~5000 tokens for SKILL.md + APPROVAL.md + worked-example section). Range captures variation in worked-example density and frontmatter verbosity."
+  },
   "files_affected": [
     ".claude/skills/outcome-vs-task/SKILL.md (new)",
     ".claude/skills/outcome-vs-task/SKILL.APPROVAL.md (skill-approval-gate sidecar marker)",

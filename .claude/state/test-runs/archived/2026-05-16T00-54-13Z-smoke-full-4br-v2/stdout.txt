@@ -1,0 +1,10 @@
+
+> the-parbaughs@8.22.0 smoke:full
+> cross-env BROWSERS=chromium,firefox,webkit,webkit-mobile node tests/smoke/run.js
+
+SMOKE RUNNER
+  browsers: chromium, firefox, webkit, webkit-mobile
+  headed:   false (slowMo=0ms, devtools=false)
+  devUrl:   http://localhost:5173/
+  scenarios:26
+

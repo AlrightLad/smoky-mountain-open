@@ -1,0 +1,19 @@
+
+[scroll-reachability] 5 pass / 0 fail / 0 skip
+  [PASS] main-flows rail (62 flows)
+         evidence: .claude/state/main-flows-v2/iter-8-rail-bottom.png
+         last-item rect: top=715 bottom=745 (viewport h=1080); fully-visible=true
+  [PASS] dashboard recent ships table
+         evidence: .claude/state/main-flows-v2/iter-8-dashboard-bottom.png
+         last-item rect: top=1005 bottom=1040 (viewport h=1080); fully-visible=true
+  [PASS] amendments applied list
+         evidence: .claude/state/main-flows-v2/iter-8-amendments-bottom.png
+         last-item rect: top=641 bottom=1040 (viewport h=1080); fully-visible=true
+  [PASS] proposals shipped list
+         evidence: .claude/state/main-flows-v2/iter-8-proposals-bottom.png
+         last-item rect: top=932 bottom=1040 (viewport h=1080); fully-visible=true
+  [PASS] escalations applied list
+         evidence: .claude/state/main-flows-v2/iter-8-escalations-bottom.png
+         last-item rect: top=78 bottom=1040 (viewport h=1080); fully-visible=true
+
+[scroll-reachability] OK: all required surfaces pass

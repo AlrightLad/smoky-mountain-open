@@ -646,9 +646,12 @@
             }
         }
         if (status === 'wired-real') setTuBadge('meter-status', 'none', 'ok · live data');
-        else if (status === 'wired-estimated' || status === 'wired-estimated-sidecar-empty') setTuBadge('meter-status', 'founder', 'FOUNDER · install sidecar or paste');
+        // AMD-027 / Founder mandate 2026-05-19: meter install is an
+        // engineering decision (sidecar wiring + PROP-003 implementation),
+        // NOT a Founder taste/scope decision. Convert to agent ownership.
+        else if (status === 'wired-estimated' || status === 'wired-estimated-sidecar-empty') setTuBadge('meter-status', 'agent', 'agent · sidecar install pending');
         else if (status === 'wired-estimated-sidecar-stale') setTuBadge('meter-status', 'cron', 'cron · sidecar refresh stale; will re-run');
-        else if (status === 'gap-per-F1a') setTuBadge('meter-status', 'founder', 'FOUNDER · install meter (PROP-003)');
+        else if (status === 'gap-per-F1a') setTuBadge('meter-status', 'agent', 'agent · meter install pending (PROP-003)');
         else setTuBadge('meter-status', 'cron', 'cron · refresh pending');
 
         if (stWeekly > 0 || (typeof qs.weekly_tokens === 'number' && qs.weekly_tokens > 0)) {
