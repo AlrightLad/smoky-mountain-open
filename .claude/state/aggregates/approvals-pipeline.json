@@ -1,17 +1,17 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T19:03:33Z",
-  "generated_at": "2026-05-20T19:03:33Z",
+  "timestamp": "2026-05-20T19:07:13Z",
+  "generated_at": "2026-05-20T19:07:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
-  "summary": "watcher cycling · applies blocked (9 skips on dirty tree) · 1 in inbox",
-  "as_of": "2026-05-20T19:00:48Z",
+  "summary": "watcher errored · 1 in inbox",
+  "as_of": "2026-05-20T19:05:48Z",
   "stale": false,
-  "age_hours": 0.04666666666666666,
+  "age_hours": 0.02333333333333333,
   "counts": {
-    "proposals_pending": 0,
+    "proposals_pending": 1,
     "proposals_approved": 0,
     "proposals_deferred": 0,
     "proposals_rejected": 0,
@@ -30,6 +30,13 @@
     },
     {
       "category": "stall",
+      "status": "incomplete",
+      "name": "2026-05-20T19-05-48Z-downloads-watcher.log",
+      "note": "[19:05:50] SKIP working tree still dirty after auto-commit attempt",
+      "when": "2026-05-20T19:05:48Z"
+    },
+    {
+      "category": "stall",
       "status": "skip-dirty",
       "name": "2026-05-20T19-00-48Z-downloads-watcher.log",
       "note": "[19:00:48] SKIP working tree dirty with non-routine files: .claude/state/stop-decisions/2026-05-20.ndjson",
@@ -41,13 +48,6 @@
       "name": "2026-05-20T18-55-48Z-downloads-watcher.log",
       "note": "[18:55:48] SKIP working tree dirty with non-routine files: .claude/state/stop-decisions/2026-05-20.ndjson",
       "when": "2026-05-20T18:55:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-20T18-50-48Z-downloads-watcher.log",
-      "note": "[18:50:48] SKIP working tree dirty with non-routine files: .claude/state/stop-decisions/2026-05-20.ndjson",
-      "when": "2026-05-20T18:50:48Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 9,
-    "age_minutes": 2.8
+    "consecutive_skips": 0,
+    "age_minutes": 1.4
   }
 }
