@@ -178,12 +178,41 @@ try {
         }
     }
 
-    # Re-verify tree clean after auto-commit (defensive)
-    & git diff --quiet HEAD 2>$null
-    if ($LASTEXITCODE -ne 0) {
-        Log "SKIP working tree still dirty after auto-commit attempt"
-        $script:cronExitReason = "skip-dirty"
-        exit 0
+    # Re-verify tree clean after auto-commit, but apply the SAME routine-
+    # pattern allowlist. Post-commit hook fires regen-dashboard.py which
+    # appends to telemetry/events/*.ndjson AND rewrites snapshots in
+    # telemetry/aggregates/ AND rewrites heartbeats/regen-all-last-pass.json.
+    # These re-dirty the tree IMMEDIATELY after our auto-commit. Without
+    # routine-pattern filtering on the re-check, the watcher SKIPs forever.
+    # 2026-05-20 iter6 — Founder 'why are you stopping when errors persist'.
+    $reDirty = (& git status --porcelain 2>$null) | ForEach-Object { $_.Trim().Substring(3) } | Where-Object { $_ }
+    if ($reDirty -and $reDirty.Count -gt 0) {
+        $reNonRoutine = @()
+        foreach ($f in $reDirty) {
+            $isRoutine = $false
+            foreach ($pat in $routinePatterns) {
+                if ($f -match $pat) { $isRoutine = $true; break }
+            }
+            if (-not $isRoutine) { $reNonRoutine += $f }
+        }
+        if ($reNonRoutine.Count -gt 0) {
+            Log "SKIP working tree dirty with non-routine after auto-commit: $($reNonRoutine -join ', ')"
+            $script:cronExitReason = "skip-dirty-post-commit"
+            exit 0
+        }
+        # Only routine files dirty after auto-commit — best-effort commit
+        # them too. If the post-commit hook fires again, that's the next
+        # watcher cycle's problem; don't loop forever.
+        Log "AUTO-COMMIT post-commit drift: $($reDirty.Count) routine files"
+        foreach ($f in $reDirty) { & git add -- $f 2>&1 | Out-Null }
+        $env:GIT_AUTHOR_NAME  = "PARBAUGHS Cron"
+        $env:GIT_AUTHOR_EMAIL = "cron@parbaughs.local"
+        $env:GIT_COMMITTER_NAME  = "PARBAUGHS Cron"
+        $env:GIT_COMMITTER_EMAIL = "cron@parbaughs.local"
+        $msg2 = "cron(routine): post-watcher-commit drift sweep (" + (Get-Date).ToUniversalTime().ToString("o") + ")"
+        & git commit -m $msg2 2>&1 | ForEach-Object { Log "  [drift-sweep] $_" }
+        # Don't fail the watcher if this second commit also dirties (post-commit
+        # hook will keep firing); just proceed to Downloads scan.
     }
 
     # --- Scan Downloads ---
