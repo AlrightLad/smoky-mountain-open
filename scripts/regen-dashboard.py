@@ -1229,7 +1229,26 @@ def working_tree_status():
     import subprocess
     now_utc = datetime.now(timezone.utc)
 
-    # Tree state
+    # Tree state — filter out AMD-020 Class A cron-managed files (heartbeats,
+    # telemetry aggregates, approvals-pipeline aggregate). These are auto-
+    # generated every regen and auto-committed every cron cycle; they're
+    # "dirty" in the technical sense but the cron is the OWNER and they
+    # don't represent Founder-actionable state. 2026-05-20 iter4 (Founder
+    # "watcher still dirty on dashboard main page") — the dashboard was
+    # counting these as Founder-state-dirty, contradicting the watcher
+    # GREEN status next to it.
+    CRON_MANAGED_ROUTINE_PREFIXES = (
+        ".claude/state/heartbeats/",
+        ".claude/state/telemetry/",
+        ".claude/state/aggregates/approvals-pipeline.json",
+        ".claude/state/aggregates/architecture-review.json",
+        ".claude/state/aggregates/proposal-pipeline.json",
+        ".claude/state/aggregates/test-health.json",
+        ".claude/state/aggregates/security-health.json",
+        ".claude/state/aggregates/fiq-status.json",
+        ".claude/state/aggregates/allow-list-audit.json",
+        ".claude/state/main-flows-v2/flow-inventory.json",
+    )
     try:
         result = subprocess.run(
             ["git", "status", "--porcelain"],
@@ -1239,7 +1258,12 @@ def working_tree_status():
             timeout=5,
             check=False,
         )
-        dirty_lines = [ln for ln in (result.stdout or "").splitlines() if ln.strip()]
+        all_dirty_lines = [ln for ln in (result.stdout or "").splitlines() if ln.strip()]
+        # Strip the 2-char status prefix + space, normalize Windows backslash
+        def _routine(ln: str) -> bool:
+            path = ln[3:].strip().replace("\\", "/")
+            return any(path.startswith(p) for p in CRON_MANAGED_ROUTINE_PREFIXES)
+        dirty_lines = [ln for ln in all_dirty_lines if not _routine(ln)]
         is_dirty = len(dirty_lines) > 0
         dirty_count = len(dirty_lines)
     except (OSError, subprocess.SubprocessError):
