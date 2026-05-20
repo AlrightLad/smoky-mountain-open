@@ -89,6 +89,26 @@ def main() -> int:
         "head_sha": git_head_short(),
         "source": source,
     }
+
+    # M5.15 (2026-05-20): skip fast-path write if previous heartbeat is <60s
+    # old. Closes the "1 dirty file inherent floor" — every cron(routine)
+    # commit triggered the post-commit hook's recursion-guard fast-path,
+    # which wrote a new heartbeat timestamp on every cycle. Tree never
+    # stabilized clean. Now fast-path is idempotent within 60s; full regen
+    # (source=regen-all.sh or post-commit-hook) always writes regardless.
+    if source == "post-commit-hook-fast" and TARGET.exists():
+        try:
+            prev = json.loads(TARGET.read_text(encoding="utf-8-sig"))
+            prev_ts = prev.get("ts") or prev.get("last_pass_at_utc") or ""
+            if prev_ts:
+                prev_dt = datetime.fromisoformat(prev_ts.replace("Z", "+00:00"))
+                age = (now_dt - prev_dt).total_seconds()
+                if age < 60:
+                    print(f"[write-regen-heartbeat] skip-fast-path-fresh age={age:.0f}s prev_source={prev.get('source')}")
+                    return 0
+        except (OSError, json.JSONDecodeError, ValueError):
+            pass  # if read fails, fall through to write
+
     try:
         TARGET.parent.mkdir(parents=True, exist_ok=True)
         TARGET.write_text(json.dumps(out, indent=2), encoding="utf-8")
