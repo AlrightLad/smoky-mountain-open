@@ -3,555 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Architecture & Flows — PARBAUGHS Orchestration</title>
+    <title>Main Flows — PARBAUGHS Orchestration</title>
     <link rel="stylesheet" href="_assets/dashboard-shell.css">
     <style>
-        /* Column color tokens (referenced from columns[].color_token in data block).
-         * Updated 2026-05-14 (Ship R1, Dave Jeffery reference fidelity) to the
-         * legend dot palette in reference-spec.md § 9. These appear only in
-         * the legend dots — they do not paint anything else on the page. */
-        :root {
-            --col-actor:        #E91E63;  /* magenta — Actor */
-            --col-client:       #4F8FF7;  /* blue — Client surfaces */
-            --col-auth-fn:      #9C5BB8;  /* purple — Auth + Functions */
-            --col-data:         #3FB07F;  /* teal-green — Firestore (data) */
-            --col-distribution: #3DAEDB;  /* cyan — Distribution */
-            --col-external:     #D6483B;  /* red — External services */
-
-            /* Page-local override: bump max-content-wide from 1480 → 1640 so
-             * the 6-column architecture grid has room to breathe at 1920px.
-             * Founder diagnostic 2026-05-14 (Q1C): columns rebalanced from
-             * ~170px each → ~200px each. Only main-flows.html uses .is-wide,
-             * so this override is contained to this page. */
-            --max-content-wide: 1640px;
-        }
-
-        /* Iter 6 (2026-05-14, Founder directive — "theme is divorced from
-         * the rest of the dashboard"): all R1/R2/R3/R5 page-local theme
-         * overrides (--bg-page → black, --accent-brass → pure yellow,
-         * --pb-* remaps to white-on-black) DELETED. The page now inherits
-         * dashboard-shell.css + design-tokens.css exactly like every other
-         * dashboard — billiard-green felt + brass accents + chalk text.
-         * The 6 --col-* tokens above are kept because they encode category
-         * meaning (actor/client/auth-fn/data/distribution/external) and
-         * appear only in legend dots / column headers, not as page surface
-         * colors. */
-
-        /* M5.5 — implicit columns (Janowiak D1). Column header element kept
-         * as a sentinel for selectors + ARIA but visually hidden. Column
-         * identity = legend dots at top + first-node proximity.
+        /* iter6 RECREATE 2026-05-20 — Founder directive 'scratch Janowiak,
+         * orchestration team create it themselves'. Dropped: architecture grid,
+         * SVG arrow overlay, right-rail flow rail, hover tooltips, ghost-system
+         * dimming. Kept: layer + category filters, search.
          *
-         * M5.8 (2026-05-19) — Founder reckoning: the M5.5 rule was being
-         * overridden by the LATER rule defining .mf-column-header font-size
-         * etc. (CSS source-order specificity). Restored visually-hidden by
-         * deleting the later override entirely and folding column-header
-         * sentinel-only styling here with !important to defeat any future
-         * cascade accidents. */
-        .mf-column-header {
-            height: 0 !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            overflow: hidden !important;
-            position: absolute !important;
-            clip: rect(0 0 0 0) !important;
-            clip-path: inset(50%) !important;
-            font-size: 0 !important;
-        }
-        .mf-column-subtitle {
-            height: 0 !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            overflow: hidden !important;
-            position: absolute !important;
-            clip: rect(0 0 0 0) !important;
-            clip-path: inset(50%) !important;
-            font-size: 0 !important;
-        }
+         * New paradigm: VERTICAL EXPANDABLE FLOW LIST (Sentry transaction view +
+         * Stripe events log pattern). Each flow is a card. Click to expand the
+         * step trace inline. No grid eating 70% of the page. */
 
-        /* M5.6 — hover-preview on flow rail (Linear command-palette pattern).
-         * Hovering a .mf-flows-item surfaces a floating tooltip with the
-         * flow's primary_user_goal + actor + estimated_steps_count. Tooltip
-         * sits adjacent to the rail without occluding the grid. Per AMD-026
-         * P10: the tooltip is the WHERE/WHAT-ACTION affordance for flow rows. */
-        /* M5.7 row-hover lift — pairs with hover-preview tooltip. Sub-pixel
-         * upward translation telegraphs "this row is alive" without visual
-         * noise. 140ms ease-out matches tooltip transition timing. */
-        .mf-flows-item { position: relative; transition: transform 140ms ease-out, background 140ms ease-out; }
-        .mf-flows-item:hover { transform: translateX(-2px); background: var(--bg-elevated, rgba(255,255,255,0.03)); }
-        @media (prefers-reduced-motion: reduce) {
-            .mf-flows-item { transition: none !important; }
-        }
-        .mf-flow-preview {
-            position: fixed;
-            z-index: 1000;
-            max-width: 320px;
-            padding: var(--space-3);
-            background: var(--bg-card);
-            border: 1px solid var(--accent-brass);
-            border-radius: var(--radius-md);
-            box-shadow: 0 12px 32px rgba(0,0,0,0.42);
-            font-size: 0.8125rem;
-            color: var(--text-primary);
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 140ms ease-out;
-        }
-        .mf-flow-preview.is-visible { opacity: 1; }
-        .mf-flow-preview-title { font-weight: 600; color: var(--accent-brass); margin-bottom: 6px; font-family: var(--font-mono); letter-spacing: 0.04em; }
-        .mf-flow-preview-meta  { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--text-tertiary); margin-bottom: var(--space-2); text-transform: uppercase; letter-spacing: 0.08em; }
-        .mf-flow-preview-goal  { line-height: 1.45; color: var(--text-secondary); }
-        @media (prefers-reduced-motion: reduce) {
-            .mf-flow-preview { transition: none !important; }
-        }
+        .mf-page-wrap { max-width: 1200px; margin: 0 auto; padding: 0 var(--space-3); }
 
-        /* === Legend === */
-        /* M5.3 (Janowiak D4 polish): legend floats — Janowiak's reference
-         * has no container box around the legend chips. Remove bg + border +
-         * padding; tighten gaps; sharpen dot to a true square (radius 1px).
-         * Label gets monospace + letter-spacing matching the reference. */
-        .mf-legend { display: flex; flex-wrap: wrap; gap: var(--space-4); padding: 0; background: transparent; border: 0; border-radius: 0; margin: var(--space-2) 0 var(--space-4); font-size: 0.6875rem; font-family: var(--font-mono); color: var(--text-tertiary); letter-spacing: 0.08em; text-transform: uppercase; }
-        .mf-legend-item { display: flex; align-items: center; gap: 6px; }
-        .mf-legend-dot { width: 8px; height: 8px; border-radius: 1px; }
-
-        /* === Workspace layout === */
-        .mf-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: var(--space-4); align-items: start; }
-        @media (max-width: 1100px) {
-            .mf-workspace { grid-template-columns: 1fr; }
-            .mf-rail { order: 2; }
-        }
-
-        /* === Grid (left) === */
-        .mf-grid-wrap { position: relative; overflow-x: auto; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-3); }
-        /* Founder diagnostic 2026-05-14: widened track minmax 140 → 200 and
-         * min-width 900 → 1180 so columns are ~200px at 1920 viewport (up from
-         * ~170). Below 1100px the workspace stacks vertically and the grid
-         * scrolls horizontally — narrow column variant preserved. */
-        .mf-grid { display: grid; grid-template-columns: repeat(6, minmax(200px, 1fr)); gap: var(--space-3); position: relative; min-width: 1180px; }
-        @media (max-width: 1100px) {
-            .mf-grid { grid-template-columns: repeat(6, 180px); min-width: 0; }
-        }
-        .mf-column { display: flex; flex-direction: column; gap: var(--space-2); position: relative; z-index: 2; }
-        /* M5.8 (2026-05-19): the legacy column-header + subtitle override
-         * rules (Ship R6 + M4 delta #5) were UNDOING M5.5's
-         * implicit-columns implementation because they appeared LATER in the
-         * cascade with equal specificity. Per Founder reckoning ("the
-         * current version does NOT match the video") — delete the overrides
-         * outright. Column identity is conveyed by the legend chips at page
-         * top + node clustering, exactly as Janowiak's reference does. The
-         * sentinel rule above (with !important) keeps the elements present
-         * for ARIA/selectors while rendering them zero-area visually. */
-
-        /* Ship R4 (2026-05-14): node component box re-style per
-         * reference-spec.md § 4. No left-border accent, no bg fill — just
-         * a hairline border on all 4 sides, yellow when on-path, dim gray
-         * when off-path. Removed column-specific border-left rules; the
-         * legend dots carry the column color identity now. */
-        .mf-node { background: transparent; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-2); font-size: 0.75rem; transition: opacity var(--duration-default) var(--ease-default), border-color var(--duration-default) var(--ease-default), transform var(--duration-default) var(--ease-default); position: relative; }
-        .mf-node-label { font-weight: 600; color: var(--text-primary); font-size: 0.8125rem; }
-        .mf-node-subtitle { color: var(--text-tertiary); font-size: 0.6875rem; margin-top: 2px; line-height: 1.3; font-family: var(--font-mono); word-break: break-word; }
-
-        /* Flow selection states (Ship R4 + R5):
-         * Off-path nodes dim to ~0.18 (was 0.25) per reference-spec.md § 4.
-         * On-path nodes get a crisp yellow border, no glow shadow — Dave's
-         * reference uses sharp yellow borders rather than soft halos.
-         *
-         * BUG-8 fix (2026-05-16): per Janowiak ToDesktop video, nodes light
-         * up smoothly when added to the path. Transition opacity + border
-         * + transform so the sequential JS-driven addClass produces a
-         * visible walk-the-path animation rather than instant snap.
-         */
-        /* M5.8 (2026-05-19) — Founder reckoning vs Janowiak frames:
-         *   off-path 0.18 → 0.25 (Janowiak D4 spec: 25% opacity, "still
-         *     legible as proof that the path is in a real system")
-         *   on-path adds subtle warm-tinted background fill so selected
-         *     nodes don't look like "transparent outlines" but rather like
-         *     bright brass-glow elements with light fill (rgba 9% amber). */
-        /* M5.13 (2026-05-20): Founder reckoning — main-flows "still doesn't show
-         * the flow in a sleek clean way". Janowiak frame 01 ground truth:
-         * off-path nodes are NEARLY INVISIBLE (5-15% of background) — only
-         * labels visible, borders disappear. PARBAUGHS at 0.25 still showed
-         * full borders on every off-path node = visual noise. Drop to 0.18,
-         * AND zero out borders on off-path nodes so only label text remains
-         * (much closer to Janowiak's "labels-only ghost" pattern). */
-        /* 2026-05-20 iter3 recreate per Founder direct directive
-         * ("recreate it so it is legible and easily understandable"):
-         * Drop unselected to 0.10 — Janowiak's ghost-system is BARELY
-         * visible. Boost selected with thicker stroke, larger label,
-         * brass-tinted background fill. Path POPS unmistakably. */
-        .mf-grid.has-selection .mf-node {
-            opacity: 0.10;
-            border-color: transparent !important;
-            background: transparent !important;
-            transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1), border-color 250ms cubic-bezier(0.4, 0, 0.2, 1), transform 250ms cubic-bezier(0.4, 0, 0.2, 1), background 250ms cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .mf-grid.has-selection .mf-node.is-on-path {
-            opacity: 1;
-            border-color: var(--accent-brass) !important;
-            border-width: 1.5px !important;
-            box-shadow: none;
-            background: rgba(212, 168, 87, 0.14) !important;
-            transform: translateY(-1px);
-        }
-        .mf-grid.has-selection .mf-node.is-on-path .mf-node-label {
-            font-size: 0.875rem;
-            color: var(--accent-brass);
-        }
-        .mf-node.is-pulse { animation: mfPulse 700ms ease-out 1; }
-        @keyframes mfPulse {
-            0%   { box-shadow: 0 0 0 0   rgba(201,169,97,0.55); }
-            50%  { box-shadow: 0 0 0 8px rgba(201,169,97,0.15); }
-            100% { box-shadow: 0 0 0 1px var(--accent-brass), 0 4px 12px rgba(201,169,97,0.18); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            .mf-node, .mf-node.is-pulse { animation: none !important; transition: none !important; }
-        }
-
-        /* SVG arrow overlay. Ship R2 (2026-05-14): solid (not dashed) +
-         * full opacity to match Dave Jeffery reference § 5. */
-        .mf-arrows { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
-        .mf-arrow-line { fill: none; stroke: var(--accent-brass); stroke-width: 2.5; stroke-dasharray: none; opacity: 1; vector-effect: non-scaling-stroke; }
-        .mf-arrow-head { fill: var(--accent-brass); }
-        .mf-arrow-badge-bg { fill: var(--accent-brass); }
-        .mf-arrow-badge-text { fill: var(--bg-page); font-family: var(--font-mono); font-size: 13px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
-
-        /* === Right rail ===
-         * Iter 11 (2026-05-14, user-context measurement diagnosis):
-         * the static max-height: calc(100vh - 100px) assumed the rail
-         * top sat ~100px below viewport top. ACTUAL measurement:
-         * rail.top = 381px at page-load (caveats + legend + title row
-         * push it down). Rail height 980px → rail.bottom = 1361px →
-         * extends 281px BELOW viewport bottom. .mf-flows-list F62
-         * sat at viewport y=1308, invisible. 10 iterations of agent-
-         * context "all 62 in DOM + scrollable" sentinels missed this
-         * because the test scrolled .mf-flows-list to its scrollHeight
-         * without measuring against viewport coordinates.
-         *
-         * Fix: JS dynamic max-height that recomputes on scroll +
-         * resize. Sets max-height = viewport.height - rail.top - 20.
-         * Sticky positioning still applies — at page-scroll-past, the
-         * rail's top becomes 12px (top: var(--space-3)) and max-height
-         * grows to ~1068px. At page-top, rail.top is ~381px and
-         * max-height is ~679px — fits inside viewport.
-         *
-         * Initial value here is a SAFE FALLBACK if JS fails to load.
-         * Calculated for the worst case (rail.top = 400px at 1080
-         * viewport on first paint): 100vh - 420px = 660px.
-         */
-        /* BUG-5 fix (2026-05-16): rail is no longer height-capped; the
-         * inner .mf-flows-list owns the scroll affordance via its
-         * max-height: 75vh. The rail itself can grow to fit its content;
-         * the page's normal scroll handles overall layout. Removes the
-         * fragile "rail cap minus list cap" arithmetic.
-         */
-        .mf-rail { display: flex; flex-direction: column; gap: var(--space-3); position: sticky; top: var(--space-3); }
-        @media (max-width: 1100px) { .mf-rail { position: static; } }
-
-        .mf-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); overflow: hidden; }
-        .mf-card-header { display: flex; justify-content: space-between; align-items: center; padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border-subtle); background: var(--bg-elevated); }
-        .mf-card-title { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-tertiary); font-weight: 600; }
-        .mf-card-meta { font-size: 0.6875rem; color: var(--text-tertiary); font-family: var(--font-mono); }
-
-        /* Rail search + filter chips (Ship 3, 2026-05-14) — Founder Q2:
-         * rail shows all 62 flows scrollable, with search + actor + tier
-         * chips. F1-F8 clicks still highlight paths; F9-F62 clicks show
-         * metadata-only state in the Steps panel.
-         *
-         * M5.8 (2026-05-19) — Founder reckoning: Janowiak's reference has
-         * NO filter chrome on the flow rail (it has 9 flows; ours has 62
-         * and Founder Q2-locked the filter). Compromise: collapse filter
-         * chips into a single-row, smaller, lower-contrast layout so they
-         * read as DENSITY-AWARE UTILITY rather than dominant chrome. */
-        .mf-rail-search-wrap { padding: var(--space-2) var(--space-3) 0; }
-        .mf-rail-search {
-            width: 100%;
-            padding: 5px var(--space-2);
-            background: var(--bg-page);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            font-size: 0.75rem;
-            font-family: var(--font-ui, inherit);
-        }
-        .mf-rail-search:focus-visible { outline: 2px solid var(--accent-brass); outline-offset: 1px; }
-        .mf-rail-chips {
+        /* Filter bar */
+        .mf-filter-bar {
             display: flex;
             flex-wrap: wrap;
-            gap: 3px;
-            padding: 6px var(--space-3) 0;
-        }
-        .mf-rail-chip {
-            background: transparent;
-            color: var(--text-tertiary);
-            border: 1px solid var(--border-subtle);
-            border-radius: 999px;
-            padding: 1px 7px;
-            font-family: var(--font-mono);
-            font-size: 0.625rem;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            cursor: pointer;
-            transition: all var(--duration-fast, 150ms) ease;
-        }
-        .mf-rail-chip:hover { color: var(--text-primary); border-color: var(--accent-brass); }
-        .mf-rail-chip.is-on { background: var(--accent-brass); color: var(--bg-page); border-color: var(--accent-brass); }
-
-        /* Iter 8 (2026-05-14, Founder directive — F62 not visible past scrollbar):
-         * - padding-bottom gives last items clearance from the rail-clear button below
-         * - scrollbar-gutter: stable reserves scrollbar width so it does not overlay
-         *   the last row's content
-         * - increase max-height ceiling from 55vh to calc(100vh - 280px) so the list
-         *   uses available rail height instead of an arbitrary 55% cap */
-        /* BUG-5 fix (2026-05-16): the list must always be tall enough to
-         * show MANY flows on the Founder's 1920x1080 workstation. Use a
-         * generous viewport-relative ceiling: 75vh = 810px at 1080 viewport
-         * = ~27 flows visible at once. Scrollbar-gutter keeps layout
-         * stable. (Previous max-height: calc(100vh - 280px) collapsed to
-         * 160-300px due to the rail's sticky position + JS overrides.)
-         */
-        .mf-flows-list { list-style: none; margin: var(--space-2) 0 0; padding: 0 0 var(--space-3) 0; max-height: 75vh; overflow-y: auto; scrollbar-gutter: stable; }
-        /* Ship R9: clear-selection link at bottom of rail per reference-spec.md § 19.
-         * Visible only when a flow is selected (toggled by JS). Subtle, mono, dim — no visual weight when off. */
-        .mf-rail-clear {
-            display: block;
-            width: calc(100% - var(--space-6));
-            margin: var(--space-2) var(--space-3) var(--space-2) var(--space-3);
-            padding: 6px var(--space-2);
-            background: transparent;
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-sm);
-            color: var(--text-tertiary);
-            font-family: var(--font-mono);
-            font-size: var(--text-2xs);
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            cursor: pointer;
-            transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
-        }
-        .mf-rail-clear:hover { color: var(--accent-brass); border-color: var(--accent-brass); }
-        .mf-rail-clear:focus-visible { outline: 2px solid var(--accent-brass); outline-offset: 1px; }
-        .mf-flows-item {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            padding: 6px var(--space-3);
-            border-top: 1px solid var(--border-subtle);
-            cursor: pointer;
-            transition: background var(--duration-default) var(--ease-default);
-        }
-        .mf-flows-item.is-hidden { display: none; }
-        .mf-flows-item:hover { background: var(--bg-elevated); }
-        /* M5.8 (2026-05-19) — Founder reckoning: Janowiak's active row has
-         * (a) thin brass LEFT-BORDER accent (~1.5px), (b) slightly lifted
-         * background (warm-tinted), (c) NO inset ring. The previous
-         * inset-ring treatment read as "outline only" which is colder than
-         * Janowiak's "this row is lit + anchored to the left edge". */
-        /* M5.10 (2026-05-19) — active flow row gets brighter background +
-         * thicker inset left-border. M5.8's rgba 0.07 was too subtle to
-         * read as ACTIVE on dark canvas; Janowiak's active row is clearly
-         * brighter than peers. */
-        .mf-flows-item.is-active {
-            background: rgba(212, 168, 87, 0.14);
-            box-shadow: inset 3px 0 0 0 var(--accent-brass);
-        }
-        .mf-flows-item.is-active .mf-flows-id { color: var(--accent-brass); font-weight: 700; }
-        .mf-flows-item.is-active .mf-flows-name { color: var(--text-primary); }
-        .mf-flows-item.has-path::before {
-            content: "";
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--accent-brass);
-            flex-shrink: 0;
-            opacity: 0.8;
-        }
-        .mf-flows-item:not(.has-path)::before {
-            content: "";
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            border: 1px dashed var(--border-subtle);
-            box-sizing: border-box;
-            flex-shrink: 0;
-            opacity: 0.6;
-        }
-        .mf-flows-id { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--accent-brass); min-width: 32px; flex-shrink: 0; }
-        .mf-flows-name { font-size: 0.8125rem; color: var(--text-primary); font-weight: 600; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .mf-flows-tier-badge { font-family: var(--font-mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-tertiary); flex-shrink: 0; }
-        .mf-flows-status { font-size: 0.625rem; font-family: var(--font-mono); padding: 1px 6px; border-radius: 999px; flex-shrink: 0; }
-        .mf-flows-status.is-shipped  { background: rgba(74,128,103,0.18); color: var(--accent-moss); }
-        .mf-flows-status.is-shipping { background: rgba(74,138,156,0.18); color: var(--accent-teal); }
-        .mf-flows-status.is-planned  { background: rgba(212,168,87,0.18); color: var(--accent-amber); }
-        .mf-flows-status.is-speculative { background: rgba(216,208,192,0.10); color: var(--text-tertiary); }
-
-        /* M4 delta #4 (2026-05-16): empty-state polish per Linear/Stripe
-         * intentional-empty-state pattern. Was minimal hint; now has eyebrow
-         * + body + secondary action. Estimated empty/loading dim 6 lift: 6 → 7. */
-        .mf-steps-empty { padding: var(--space-4) var(--space-3); color: var(--text-secondary); font-size: 0.8125rem; line-height: 1.55; text-align: center; }
-        .mf-steps-empty-eyebrow { display: block; font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent-brass); margin-bottom: var(--space-2); }
-        .mf-steps-empty-hint { display: block; margin-top: var(--space-2); font-size: 0.75rem; color: var(--text-tertiary); }
-        .mf-steps-list { list-style: none; margin: 0; padding: 0; max-height: 40vh; overflow-y: auto; }
-        /* M4 delta #1 (2026-05-16): step reveal stagger animation per
-         * Janowiak decomposition signature (sequenced path traversal).
-         * Each .mf-steps-item fades + scales in with N * 80ms delay.
-         * prefers-reduced-motion respected per AMD-009 accessibility. */
-        @keyframes mf-step-reveal {
-            from { opacity: 0; transform: translateY(4px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        .mf-steps-list .mf-steps-item {
-            animation: mf-step-reveal 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-        }
-        .mf-steps-list .mf-steps-item:nth-child(1)  { animation-delay: 0ms; }
-        .mf-steps-list .mf-steps-item:nth-child(2)  { animation-delay: 80ms; }
-        .mf-steps-list .mf-steps-item:nth-child(3)  { animation-delay: 160ms; }
-        .mf-steps-list .mf-steps-item:nth-child(4)  { animation-delay: 240ms; }
-        .mf-steps-list .mf-steps-item:nth-child(5)  { animation-delay: 320ms; }
-        .mf-steps-list .mf-steps-item:nth-child(6)  { animation-delay: 400ms; }
-        .mf-steps-list .mf-steps-item:nth-child(7)  { animation-delay: 480ms; }
-        .mf-steps-list .mf-steps-item:nth-child(8)  { animation-delay: 560ms; }
-        .mf-steps-list .mf-steps-item:nth-child(9)  { animation-delay: 640ms; }
-        .mf-steps-list .mf-steps-item:nth-child(n+10) { animation-delay: 720ms; }
-        @media (prefers-reduced-motion: reduce) {
-            .mf-steps-list .mf-steps-item { animation: none; }
-        }
-        .mf-steps-item { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border-subtle); display: grid; grid-template-columns: 28px 1fr; gap: var(--space-2); cursor: pointer; transition: background var(--duration-default) var(--ease-default); }
-        .mf-steps-item:last-child { border-bottom: none; }
-        .mf-steps-item:hover { background: var(--bg-elevated); }
-        .mf-step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--accent-brass); color: var(--bg-page); font-family: var(--font-mono); font-weight: 700; font-size: 11px; display: flex; align-items: center; justify-content: center; }
-        .mf-step-from-to { font-size: 0.6875rem; color: var(--text-secondary); font-family: var(--font-mono); }
-        /* M4 delta #2 (2026-05-16): STEPS label switches sans→mono per
-         * Janowiak decomposition #4 + reference frame 02 evidence. Whole
-         * step row (num + from-to + label + desc) is now mono — engineering-
-         * spec voice. Estimated typography dim 2 lift: 7 → 8. */
-        .mf-step-label { font-size: 0.8125rem; color: var(--text-primary); font-weight: 600; margin-top: 1px; font-family: var(--font-mono); }
-        /* Ship R7 (2026-05-14): step description switches from sans body to
-         * monospace per reference-spec.md § 23. Mono signals "technical/data"
-         * which matches the reference's treatment of step descriptions as
-         * code-like notation. */
-        .mf-step-desc { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; line-height: 1.45; font-family: var(--font-mono); }
-
-        /* Caveats banner */
-        /* Ship R11 (2026-05-14): caveats banner restyle for Janowiak theme fidelity â subtle gray bg + hairline border + brass strong text (was teal). Content preserved per Founder-lock db-2026-05-13-004. */
-        .mf-caveats { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3); font-size: 0.75rem; color: var(--text-secondary); line-height: 1.55; }
-        .mf-caveats strong { color: var(--accent-brass); }
-
-        /* M5.9 (2026-05-19) — per-frame side-by-side reckoning vs Janowiak
-         * frames 01/04/07/12. M5.8 made title large-display per the LIE that
-         * "the title needs to anchor". Janowiak's reference shows the title
-         * as compact-small at top-left ("ToDesktop — Architecture & Flows")
-         * with the DIAGRAM as the focal point. Founder confirmed: "the
-         * current version does NOT match the video". Shrink title to a
-         * single compact row, line-up tight with subtitle, drop subtitle
-         * font even smaller. The diagram + legend + flow rail must dominate
-         * the viewport. */
-        .pb-page-title-row .pb-page-title { font-size: 1.25rem; font-weight: 600; line-height: 1.2; letter-spacing: -0.005em; color: var(--text-primary); margin: 0; }
-        .pb-page-title-row .pb-page-subtitle { max-width: 64rem; font-size: 0.75rem; line-height: 1.45; color: var(--text-tertiary); margin-top: var(--space-1); }
-        .pb-page-title-row { margin-bottom: var(--space-2); }
-
-        /* M5.9 — legend strip presence. Janowiak's legend is a single tight
-         * row of small colored squares + uppercase mono labels at the top of
-         * the diagram region. M5.3 floated the legend correctly but at
-         * 0.6875rem mono it reads as a thin strip; PARBAUGHS needs the
-         * legend dots BIGGER (8 → 10px) to register as the column-color key
-         * the reference establishes. */
-        .mf-legend {
-            margin: var(--space-2) 0 var(--space-3);
             gap: var(--space-3);
-        }
-        .mf-legend-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 1px;
-        }
-        .mf-legend-item {
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        /* M5.10 (2026-05-19) — node fill on selection iteration. M5.9 set
-         * 0.14 which still reads as "outlined-with-tint"; Janowiak's lit
-         * nodes have a stronger filled presence. Bump fill to 0.18 + thicker
-         * 2px border that reads as "filled-card" against dark canvas. */
-        .mf-grid.has-selection .mf-node.is-on-path {
-            opacity: 1;
-            border-color: var(--accent-brass);
-            border-width: 2px;
-            box-shadow: 0 1px 0 rgba(212, 168, 87, 0.25);
-            background: rgba(212, 168, 87, 0.18);
-            transform: translateY(-1px);
-        }
-        /* M5.10 — equalize border baselines so layout doesn't lurch on
-         * selection. Off-path keeps 1px subtle; only is-on-path bumps to 2px. */
-        .mf-grid:not(.has-selection) .mf-node {
-            border-color: var(--border-subtle);
-        }
-
-        /* 2026-05-20 iter4 (Founder "arrows and flow need to be cleaner"):
-         * Override M5.9. The 2px stroke + Q-curve paths + sub-pixel coords
-         * (e.g. y=39.6484375) were anti-aliasing to a blur smear. Three fixes:
-         *   1. stroke 2 → 3 (more visible)
-         *   2. stroke-linecap butt (no rounded ends causing flare)
-         *   3. shape-rendering geometricPrecision (browser smooth-line hint)
-         *   4. paint-order normal so stroke sits below arrow heads
-         * Coordinate rounding handled in the JS path generator (see edge
-         * drawing in template's IIFE). */
-        .mf-arrow-line {
-            fill: none;
-            stroke: var(--accent-brass);
-            stroke-width: 3;
-            stroke-dasharray: none;
-            stroke-linecap: butt;
-            stroke-linejoin: round;
-            opacity: 1;
-            shape-rendering: geometricPrecision;
-            vector-effect: non-scaling-stroke;
-        }
-        .mf-arrow-head {
-            fill: var(--accent-brass);
-            shape-rendering: geometricPrecision;
-        }
-        .mf-arrow-badge-bg {
-            fill: var(--accent-brass);
-            shape-rendering: geometricPrecision;
-        }
-        .mf-arrow-head {
-            fill: var(--accent-brass);
-        }
-
-        /* M5.9 — flow rail row density. Janowiak rail rows look tight + cool;
-         * PARBAUGHS rail rows had 6px vertical padding which feels cramped
-         * AND the chrome (search + 2 chip rows) eats vertical space. Drop
-         * row padding 6px → 5px so 1-2 more rows fit; tighten id width. */
-        .mf-flows-item { padding: 5px var(--space-3); }
-        .mf-flows-id { min-width: 28px; font-size: 0.625rem; }
-        .mf-flows-name { font-size: 0.75rem; }
-
-        /* M5.9 — collapse rail filter chrome to a single tighter row. Was 2
-         * separate `.mf-rail-chips` rows + a search input. New layout:
-         * search inside chip-row, chip-row collapses to single-line scroll.
-         * Per M5.8 note: "compromise filter chrome to read as density-aware
-         * utility". */
-        .mf-rail-chips { padding: 4px var(--space-3) 0; gap: 2px; }
-        /* iter3 RECREATE: big layer toggle pair, Janowiak-style restraint */
-        .mf-rail-layer-toggle {
-            display: flex;
-            gap: 4px;
-            padding: var(--space-2) var(--space-3) var(--space-1);
-        }
-        .mf-rail-category-toggle {
-            display: flex;
-            gap: 4px;
-            padding: 0 var(--space-3) var(--space-2);
+            align-items: center;
+            padding: var(--space-3) 0;
+            margin-bottom: var(--space-3);
             border-bottom: 1px solid var(--border-subtle);
-            margin-bottom: var(--space-2);
         }
-        .mf-layer-btn, .mf-category-btn {
-            flex: 1;
+        .mf-filter-group {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .mf-filter-label {
+            font-family: var(--font-mono);
+            font-size: 0.6875rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-right: 4px;
+        }
+        .mf-chip {
             background: transparent;
             color: var(--text-tertiary);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-sm);
-            padding: 8px 8px;
+            padding: 6px 12px;
             font-family: var(--font-mono);
             font-size: 0.75rem;
             font-weight: 600;
@@ -560,80 +54,285 @@
             cursor: pointer;
             transition: all 140ms ease-out;
         }
-        .mf-layer-btn { font-size: 0.8125rem; padding: 8px 12px; }
-        .mf-layer-btn:hover, .mf-category-btn:hover {
+        .mf-chip:hover {
             color: var(--text-primary);
             border-color: var(--accent-brass);
         }
-        .mf-layer-btn.is-on, .mf-category-btn.is-on {
+        .mf-chip.is-on {
             background: var(--accent-brass);
             color: var(--bg-page);
             border-color: var(--accent-brass);
         }
-        .mf-rail-advanced { margin-top: var(--space-1); padding: 0 var(--space-3); }
-        .mf-rail-advanced-summary {
+        .mf-search-wrap {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        .mf-search {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 7px 12px;
+            font-family: var(--font-body);
+            font-size: 0.8125rem;
+            min-width: 240px;
+            outline: none;
+        }
+        .mf-search:focus { border-color: var(--accent-brass); }
+        .mf-search-count {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+
+        /* Flow card list */
+        .mf-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+        .mf-flow {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: border-color 140ms ease-out;
+        }
+        .mf-flow:hover {
+            border-color: var(--accent-brass-dim, rgba(212, 168, 87, 0.4));
+        }
+        .mf-flow.is-open {
+            border-color: var(--accent-brass);
+        }
+        .mf-flow.is-hidden { display: none; }
+        .mf-flow-summary {
+            display: grid;
+            grid-template-columns: 60px 1fr auto auto;
+            gap: var(--space-3);
+            align-items: center;
+            padding: var(--space-3);
+            cursor: pointer;
+            user-select: none;
+        }
+        @media (max-width: 720px) {
+            .mf-flow-summary {
+                grid-template-columns: 50px 1fr;
+                grid-template-rows: auto auto;
+            }
+            .mf-flow-meta, .mf-flow-toggle { grid-column: 2; }
+        }
+        .mf-flow-id {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--accent-brass);
+            letter-spacing: 0.02em;
+        }
+        .mf-flow-name-wrap {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .mf-flow-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+        .mf-flow-goal {
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
+            line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+        }
+        .mf-flow.is-open .mf-flow-goal {
+            -webkit-line-clamp: unset;
+        }
+        .mf-flow-meta {
+            display: flex;
+            gap: 6px;
+            align-items: center;
             font-family: var(--font-mono);
             font-size: 0.6875rem;
-            color: var(--pb-chalk-400);
+            color: var(--text-tertiary);
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            cursor: pointer;
-            padding: 2px 0;
-            user-select: none;
+            letter-spacing: 0.06em;
+        }
+        .mf-tag {
+            padding: 2px 6px;
+            border-radius: var(--radius-pill);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-tertiary);
+        }
+        .mf-tag.is-layer-app { color: var(--col-client, #4f8ff7); border-color: var(--col-client, #4f8ff7); }
+        .mf-tag.is-layer-orch { color: var(--col-auth-fn, #9c5bb8); border-color: var(--col-auth-fn, #9c5bb8); }
+        .mf-tag.is-category-ships {
+            background: rgba(212, 168, 87, 0.12);
+            color: var(--accent-brass);
+            border-color: var(--accent-brass);
+        }
+        .mf-tag.is-category-data {
+            background: rgba(63, 176, 127, 0.12);
+            color: var(--col-data, #3fb07f);
+            border-color: var(--col-data, #3fb07f);
+        }
+        .mf-flow-toggle {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            transition: transform 140ms ease-out, color 140ms ease-out;
+        }
+        .mf-flow:hover .mf-flow-toggle { color: var(--accent-brass); }
+        .mf-flow.is-open .mf-flow-toggle { transform: rotate(90deg); color: var(--accent-brass); }
+
+        /* Step trace (expansion) */
+        .mf-flow-detail {
+            display: none;
+            padding: 0 var(--space-3) var(--space-3);
+            border-top: 1px solid var(--border-subtle);
+            background: var(--bg-page);
+        }
+        .mf-flow.is-open .mf-flow-detail { display: block; }
+        .mf-flow-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-3);
+            padding-top: var(--space-3);
+        }
+        @media (min-width: 920px) {
+            .mf-flow-detail-grid {
+                grid-template-columns: 1fr 280px;
+            }
+        }
+        .mf-steps {
             list-style: none;
-            transition: color 140ms ease-out;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            counter-reset: step;
         }
-        .mf-rail-advanced-summary::-webkit-details-marker { display: none; }
-        .mf-rail-advanced-summary::before { content: '+ '; }
-        .mf-rail-advanced[open] .mf-rail-advanced-summary::before { content: '− '; }
-        .mf-rail-advanced-summary:hover { color: var(--accent-brass); }
-        .mf-rail-advanced[open] .mf-rail-chips { padding: 4px 0 0; }
-        .mf-rail-chip {
-            padding: 1px 6px;
-            font-size: 0.5625rem;
+        .mf-step {
+            display: grid;
+            grid-template-columns: 32px 1fr;
+            gap: var(--space-3);
+            align-items: start;
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 2px solid var(--accent-brass);
+            counter-increment: step;
         }
-        .mf-rail-search-wrap { padding: var(--space-2) var(--space-3) 0; }
-        .mf-rail-search { padding: 4px var(--space-2); font-size: 0.6875rem; }
-
-        /* M5.9 — caveats expander further dimmed. Janowiak has zero meta-
-         * chrome above the legend. PARBAUGHS keeps the source-of-truth
-         * disclosure for traceability but dims it to whisper-level. */
-        .mf-caveats-details { font-size: 0.6875rem; color: var(--text-tertiary); opacity: 0.65; }
-        .mf-caveats-details summary { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; }
-
-        /* M5.9 — flow rail card-header tighter + brass-mono meta. */
-        .mf-card-header { padding: 6px var(--space-3); }
-        .mf-card-title { font-size: 0.625rem; }
-        .mf-card-meta { font-size: 0.625rem; }
-
-        /* M5.9 — steps panel: brighten the step number badge to match
-         * Janowiak's path-badge brightness; align mono label color to text-
-         * primary so steps read as evidence (not metadata). */
-        .mf-step-num {
+        .mf-step::before {
+            content: counter(step);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
             background: var(--accent-brass);
             color: var(--bg-page);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
             font-weight: 700;
+            border-radius: 50%;
+            margin-top: 1px;
         }
-        .mf-step-label { color: var(--text-primary); }
-        .mf-step-desc { color: var(--text-secondary); font-size: 0.6875rem; }
+        .mf-step-body {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+        .mf-step-path {
+            font-family: var(--font-mono);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+        .mf-step-arrow {
+            color: var(--accent-brass);
+            font-weight: 400;
+        }
+        .mf-step-desc {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            line-height: 1.45;
+        }
+        .mf-step-code {
+            font-family: var(--font-mono);
+            font-size: 0.6875rem;
+            color: var(--text-tertiary);
+            background: var(--bg-card);
+            padding: 2px 6px;
+            border-radius: 3px;
+            display: inline-block;
+        }
 
-        /* M5.9 — node label brightening. Janowiak's lit-node labels are
-         * crisp white. PARBAUGHS used text-primary which is chalk-50 (correct)
-         * but the node subtitle (mono) was text-tertiary (chalk-400) which
-         * is too dim against the canvas. Lift to text-secondary. */
-        .mf-node-subtitle { color: var(--text-secondary); }
-        .mf-grid.has-selection .mf-node.is-on-path .mf-node-label { color: var(--text-primary); }
-        .mf-grid.has-selection .mf-node.is-on-path .mf-node-subtitle { color: var(--text-secondary); }
+        /* Side panel — metadata about the open flow */
+        .mf-side {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            font-size: 0.8125rem;
+        }
+        .mf-side-section {
+            padding: var(--space-3);
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+        }
+        .mf-side-label {
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: var(--space-1);
+        }
+        .mf-side-value {
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+        .mf-side-list { display: flex; flex-wrap: wrap; gap: 4px; }
+        .mf-side-pill {
+            font-family: var(--font-mono);
+            font-size: 0.6875rem;
+            padding: 2px 8px;
+            border-radius: var(--radius-pill);
+            background: rgba(212, 168, 87, 0.08);
+            border: 1px solid var(--accent-brass-dim, rgba(212, 168, 87, 0.3));
+            color: var(--accent-brass);
+        }
 
-        /* M5.9 — arrow badge contrast. Inverse-on-brass is correct, but the
-         * badge text fill was bg-page which at billiard-green looks muddy.
-         * Switch to a hard dark anchored to billiard-green-900 for contrast. */
-        .mf-arrow-badge-bg { fill: var(--accent-brass); stroke: var(--pb-billiard-green-900); stroke-width: 1; }
-        .mf-arrow-badge-text { fill: var(--pb-billiard-green-900); font-weight: 800; font-size: 11px; }
+        /* Empty state */
+        .mf-empty {
+            padding: var(--space-6) var(--space-3);
+            text-align: center;
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+        }
+
+        /* Reduce motion */
+        @media (prefers-reduced-motion: reduce) {
+            .mf-flow, .mf-flow-toggle, .mf-chip { transition: none !important; }
+        }
     </style>
 </head>
 <body class="pb-app">
-    <header class="pb-page-header is-wide">
+    <header class="pb-page-header">
         <nav class="pb-page-nav">
             <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
             <div class="pb-page-nav-links">
@@ -650,119 +349,39 @@
         </nav>
     </header>
 
-    <main class="pb-page-main is-wide">
-        <div class="pb-page-title-row">
-            <div>
-                <h1 class="pb-page-title">PARBAUGHS &mdash; Architecture &amp; Flows</h1>
-                <p class="pb-page-subtitle">Every component that powers PARBAUGHS &mdash; from member action to external system. Pick a flow on the right; the path lights up, arrows draw, the steps panel walks the journey.</p>
+    <main class="pb-page-main">
+        <div class="mf-page-wrap">
+            <div class="pb-page-title-row">
+                <div>
+                    <h1 class="pb-page-title">Main Flows</h1>
+                    <p class="pb-page-subtitle">Every backend data flow in PARBAUGHS. Pick a flow to read its step-by-step trace through the system.</p>
+                </div>
             </div>
+
+            <div class="mf-filter-bar">
+                <div class="mf-filter-group" data-axis="layer">
+                    <span class="mf-filter-label">Layer</span>
+                    <button class="mf-chip is-on" data-layer="app">App</button>
+                    <button class="mf-chip" data-layer="orch">Orch</button>
+                    <button class="mf-chip" data-layer="">Both</button>
+                </div>
+                <div class="mf-filter-group" data-axis="category">
+                    <span class="mf-filter-label">Category</span>
+                    <button class="mf-chip is-on" data-category="debug">Debug</button>
+                    <button class="mf-chip" data-category="ships">Ships</button>
+                    <button class="mf-chip" data-category="data">Data</button>
+                    <button class="mf-chip" data-category="">All</button>
+                </div>
+                <div class="mf-search-wrap">
+                    <input type="search" id="mf-search" class="mf-search" placeholder="Search flow id, name, or goal…" aria-label="Search flows">
+                    <span class="mf-search-count" id="mf-search-count">0 of 0</span>
+                </div>
+            </div>
+
+            <ul class="mf-list" id="mf-list"></ul>
+            <div class="mf-empty" id="mf-empty" hidden>No flows match the current filter. Click <strong>Both</strong> + <strong>All</strong> to see everything.</div>
         </div>
-
-        <details class="mf-caveats-details" style="margin: var(--space-3) 0; font-size: 0.75rem; color: var(--text-tertiary);">
-            <summary style="cursor: pointer; user-select: none; display: inline-block; padding: var(--space-1) 0;">binding caveats &amp; data sources</summary>
-            <aside class="mf-caveats" style="margin-top: var(--space-2);">
-                <strong>Read this artifact correctly</strong> (binding caveats from <code>db-2026-05-13-004</code>):
-                this is the orchestration team's recommendation — Founder is the product source of truth.
-                <strong>NOT a roadmap</strong> (read <a href="../agents/ROADMAP.md">ROADMAP.md</a> for shipping order). Single source of truth is <code>docs/reports/_assets/main-flows-data.json</code>; HTML is generator-driven via <code>scripts/regen-main-flows.py</code>. Every node and step is grep-evidenced &mdash; see the <a href="../../.claude/state/wave-zero-dry-run/architecture-audit.md">architecture audit</a>.
-            </aside>
-        </details>
-
-        <div class="mf-legend" id="mf-legend"></div>
-
-        <!-- PROTECTED LAYOUT 2 (Phase 6.5): mf-workspace = 6-column architecture grid
-             + SVG arrow overlay + right rail (Flows list + Steps panel). This is the
-             functional documentation interface. Do NOT flatten, do NOT replace with
-             a table, do NOT remove the SVG arrows.
-             Iter 7 (2026-05-14, Founder engineering-mindset directive): removed the
-             redundant inner H2 "Architecture diagram" + section subtitle now that
-             the bottom catalog section is gone (iter 6). Page-level h1 + subtitle
-             above are the only title pair, matching Janowiak reference pattern of
-             single-title hierarchy. See reference-spec-from-frames.md for the
-             full structural specification derived from
-             .claude/state/main-flows-v2/reference-frames/dave-frame-t*.png. -->
-        <section class="mf-workspace">
-            <div class="mf-grid-wrap">
-                <div class="mf-grid" id="mf-grid"></div>
-                <svg class="mf-arrows" id="mf-arrows" preserveAspectRatio="xMinYMin meet"></svg>
-            </div>
-
-            <aside class="mf-rail">
-                <div class="mf-card">
-                    <div class="mf-card-header">
-                        <span class="mf-card-title">Flows</span>
-                        <span class="mf-card-meta" id="mf-flows-count">—</span>
-                    </div>
-                    <div class="mf-rail-search-wrap">
-                        <input type="search" id="mf-rail-search" class="mf-rail-search" placeholder="Search flow id or name…" aria-label="Search flows">
-                    </div>
-                    <!-- 2026-05-20 iter3 RECREATE per Founder direct directive:
-                         primary surface = ONE big layer toggle. Category +
-                         all other chips collapse behind 'advanced filters'.
-                         Goal: above-the-fold reads as Janowiak's clean
-                         "pick a flow" prompt, not a control panel. -->
-                    <div class="mf-rail-layer-toggle" role="group" aria-label="Layer">
-                        <button class="mf-layer-btn is-on" data-layer="app">App</button>
-                        <button class="mf-layer-btn" data-layer="orch">Orch</button>
-                    </div>
-                    <div class="mf-rail-category-toggle" role="group" aria-label="Category">
-                        <button class="mf-category-btn is-on" data-category="debug">Debug</button>
-                        <button class="mf-category-btn" data-category="ships">Ships</button>
-                        <button class="mf-category-btn" data-category="data">Data</button>
-                        <button class="mf-category-btn" data-category="">All</button>
-                    </div>
-                    <!-- Iter2 2026-05-20: secondary axes (actor/tier) collapse
-                         behind an 'advanced' toggle to cut chip-row density.
-                         Janowiak shows ZERO filter chips; we keep two primary
-                         (layer + category) + an opt-in disclosure for the
-                         secondary actor/tier filters. Default closed. -->
-                    <details class="mf-rail-advanced">
-                        <summary class="mf-rail-advanced-summary">advanced filters</summary>
-                        <div class="mf-rail-chips" data-axis="actor" aria-label="Filter by actor">
-                            <button class="mf-rail-chip is-on" data-actor="">all actors</button>
-                            <button class="mf-rail-chip" data-actor="member">member</button>
-                            <button class="mf-rail-chip" data-actor="commissioner">commish</button>
-                            <button class="mf-rail-chip" data-actor="founder">founder</button>
-                            <button class="mf-rail-chip" data-actor="system">system</button>
-                            <button class="mf-rail-chip" data-actor="agent">agent</button>
-                        </div>
-                        <div class="mf-rail-chips" data-axis="tier" aria-label="Filter by tier">
-                            <button class="mf-rail-chip is-on" data-tier="">all tiers</button>
-                            <button class="mf-rail-chip" data-tier="core">core</button>
-                            <button class="mf-rail-chip" data-tier="supplementary">supp</button>
-                            <button class="mf-rail-chip" data-tier="admin">admin</button>
-                            <button class="mf-rail-chip" data-tier="system">system</button>
-                        </div>
-                    </details>
-                    <ul class="mf-flows-list" id="mf-flows-list"></ul>
-                    <!-- Ship R9: "Clear selection" affordance at bottom of rail per reference-spec.md § 19 -->
-                    <button type="button" class="mf-rail-clear" id="mf-rail-clear" hidden>Clear selection</button>
-                </div>
-
-                <div class="mf-card">
-                    <div class="mf-card-header">
-                        <span class="mf-card-title">Steps</span>
-                        <span class="mf-card-meta" id="mf-steps-meta">no flow selected</span>
-                    </div>
-                    <div class="mf-steps-empty" id="mf-steps-empty"><span class="mf-steps-empty-eyebrow">No flow selected</span>Pick a flow from the right rail to trace its path through the system.<span class="mf-steps-empty-hint">Each flow lights up the components it touches + numbers each step in order.</span></div>
-                    <ol class="mf-steps-list" id="mf-steps-list" hidden></ol>
-                </div>
-            </aside>
-        </section>
-
-        <!-- Iter 6 (2026-05-14, Founder directive): bottom "ALL FLOWS · 62"
-             filterable catalog section DELETED. The right-rail flow filter
-             inside the architecture diagram above already provides search +
-             actor/tier filters + all 62 flows scrollable; the bottom catalog
-             was redundant duplication. -->
     </main>
-
-    <!-- Iter 6 (2026-05-14, Founder directive): bottom catalog style + script
-         IIFE (renderRail, applyFilters, bindFilters) DELETED alongside the
-         duplicate flow rail section markup above. The architecture diagram's
-         mf-rail-search + mf-rail-chips + mf-flows-list (rendered by the IIFE
-         later in the page) continue to provide all 62 flows filterable in
-         the right rail panel. Round-trip iter6 negative assertions prevent
-         re-introduction. -->
 
     <script id="report-data" type="application/json">
 {}
@@ -770,622 +389,187 @@
 
     <script>
         (function () {
-            "use strict";
-            var GRID = document.getElementById('mf-grid');
-            var ARROWS = document.getElementById('mf-arrows');
-            var LEGEND = document.getElementById('mf-legend');
-            var FLOWS_LIST = document.getElementById('mf-flows-list');
-            var FLOWS_COUNT = document.getElementById('mf-flows-count');
-            var STEPS_EMPTY = document.getElementById('mf-steps-empty');
-            var STEPS_LIST = document.getElementById('mf-steps-list');
-            var STEPS_META = document.getElementById('mf-steps-meta');
-
-            var data = null;
-            var selectedFlowId = null;
-
-            function esc(s) {
-                if (s == null) return '';
-                return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-            }
-            function statusBadge(status) {
-                if (!status) return '';
-                var short = String(status);
-                if (short.indexOf('shipped') !== -1)     return '<span class="mf-flows-status is-shipped">shipped</span>';
-                if (short.indexOf('shipping') !== -1)    return '<span class="mf-flows-status is-shipping">shipping</span>';
-                if (short.indexOf('planned') !== -1)     return '<span class="mf-flows-status is-planned">planned</span>';
-                if (short.indexOf('speculative') !== -1) return '<span class="mf-flows-status is-speculative">spec</span>';
-                return '<span class="mf-flows-status">' + esc(short) + '</span>';
-            }
-            // Normalize actor: data.flows uses "actor.member", data.flow_rail uses "member"
-            function actorShort(a) {
-                if (!a) return '';
-                var s = String(a);
-                return s.indexOf('.') !== -1 ? s.split('.').pop() : s;
-            }
-
-            function loadData() {
-                try {
-                    var raw = document.getElementById('report-data').textContent;
-                    return JSON.parse(raw);
-                } catch (e) {
-                    console.error('main-flows: data parse failed', e);
-                    return { columns: [], flows: [] };
-                }
-            }
-
-            function renderLegend() {
-                if (!data.columns || !data.columns.length) {
-                    LEGEND.innerHTML = '<div class="mf-legend-item">Empty data — run <code>scripts/regen-main-flows.py</code></div>';
-                    return;
-                }
-                LEGEND.innerHTML = data.columns.map(function (col) {
-                    return '<div class="mf-legend-item"><div class="mf-legend-dot" style="background: var(' + esc(col.color_token) + ');"></div><span>' + esc(col.label) + '</span></div>';
-                }).join('');
-            }
-
-            function renderGrid() {
-                if (!data.columns || !data.columns.length) {
-                    GRID.innerHTML = '<div style="padding: var(--space-4); color: var(--text-tertiary);">No components. Update <code>docs/reports/_assets/main-flows-data.json</code> and re-regen.</div>';
-                    return;
-                }
-                GRID.innerHTML = data.columns.map(function (col) {
-                    var nodes = (col.components || []).map(function (c) {
-                        return ''
-                            + '<div class="mf-node" data-component-id="' + esc(c.id) + '">'
-                            +   '<div class="mf-node-label">' + esc(c.label) + '</div>'
-                            +   '<div class="mf-node-subtitle">' + esc(c.subtitle || '') + '</div>'
-                            + '</div>';
-                    }).join('');
-                    // M5.5 (Founder LOCKED 2026-05-19): try Janowiak's implicit-
-                    // columns. Drop explicit column-header text + subtitle.
-                    // Column identity now conveyed by legend dots + first-node
-                    // proximity. Header element kept as a sentinel for layout
-                    // but rendered visually-hidden so existing test selectors
-                    // still resolve. Per AMD-026 P10, the legend at the top of
-                    // the page is the DESTINATION for column identity.
-                    return ''
-                        + '<div class="mf-column" data-col="' + esc(col.id) + '">'
-                        +   '<div class="mf-column-header" data-col-label="' + esc(col.label) + '" aria-label="' + esc(col.label) + '"></div>'
-                        +   nodes
-                        + '</div>';
-                }).join('');
-            }
-
-            // Ship 3 (2026-05-14, Founder Q2): source flow_rail (62) not flows (8).
-            // F1-F8 entries retain path/steps data via lookup in data.flows.
-            // F9-F62 entries are metadata-only — clicking shows their goal +
-            // served-by-ships in the Steps panel but does NOT highlight a path.
-            function railEntries() {
-                var rail = (data && data.flow_rail) || [];
-                if (rail.length) return rail;
-                // Fallback: derive from data.flows so the rail still renders if
-                // the data file is somehow missing flow_rail.
-                // 2026-05-20 iter3: include layer + category so the new layer
-                // toggle + category filter work even when rail is synthesized.
-                return (data.flows || []).map(function (f) {
-                    return {
-                        id: f.id, name: f.name, actor: actorShort(f.actor),
-                        tier: 'core', status: 'shipping',
-                        layer: f.layer || 'app',
-                        category: f.category || 'debug',
-                        primary_user_goal: f.primary_user_goal,
-                        estimated_steps_count: (f.steps || []).length,
-                    };
-                });
-            }
-            function flowHasPath(id) {
-                return !!(data.flows || []).find(function (f) { return f.id === id; });
-            }
-            function renderFlowsList() {
-                var rows = railEntries();
-                FLOWS_LIST.innerHTML = rows.map(function (f) {
-                    var hasPath = flowHasPath(f.id);
-                    var actor = actorShort(f.actor);
-                    var tier = (f.tier || '').toLowerCase();
-                    var layer = (f.layer || '').toLowerCase();
-                    var category = (f.category || '').toLowerCase();
-                    return ''
-                        + '<li class="mf-flows-item' + (hasPath ? ' has-path' : '') + '"'
-                        +   ' data-flow-id="' + esc(f.id) + '"'
-                        +   ' data-actor="' + esc(actor) + '"'
-                        +   ' data-tier="' + esc(tier) + '"'
-                        +   ' data-layer="' + esc(layer) + '"'
-                        +   ' data-category="' + esc(category) + '"'
-                        +   ' data-status="' + esc(f.status || '') + '"'
-                        +   ' data-name="' + esc((f.name || '').toLowerCase()) + '"'
-                        +   ' title="' + esc(f.primary_user_goal || f.name || '') + '">'
-                        +   '<span class="mf-flows-id">' + esc(f.id) + '</span>'
-                        +   '<span class="mf-flows-name">' + esc(f.name) + '</span>'
-                        +   '<span class="mf-flows-tier-badge">' + esc(category || tier) + '</span>'
-                        +   statusBadge(f.status)
-                        + '</li>';
-                }).join('');
-                FLOWS_COUNT.textContent = rows.length + ' flows';
-                FLOWS_LIST.querySelectorAll('.mf-flows-item').forEach(function (li) {
-                    li.addEventListener('click', function () { selectFlow(li.getAttribute('data-flow-id')); });
-                    li.addEventListener('mouseenter', function () { showFlowPreview(li); });
-                    li.addEventListener('mouseleave', hideFlowPreview);
-                });
-                bindRailFilters();
-            }
-
-            // M5.6 hover-preview (Linear command-palette pattern + AMD-026 P10):
-            // surface the flow's primary_user_goal + actor + step count when
-            // Founder hovers a row — without click. The tooltip is the
-            // WHAT-ACTION destination: a Founder can decide whether to click
-            // (highlight path + steps) based on the preview alone.
-            var FLOW_PREVIEW = null;
-            function ensureFlowPreviewEl() {
-                if (FLOW_PREVIEW) return FLOW_PREVIEW;
-                FLOW_PREVIEW = document.createElement('div');
-                FLOW_PREVIEW.className = 'mf-flow-preview';
-                FLOW_PREVIEW.setAttribute('role', 'tooltip');
-                FLOW_PREVIEW.setAttribute('aria-hidden', 'true');
-                document.body.appendChild(FLOW_PREVIEW);
-                return FLOW_PREVIEW;
-            }
-            function showFlowPreview(li) {
-                var flowId = li.getAttribute('data-flow-id');
-                if (!flowId) return;
-                var rail = (data && data.flow_rail) || [];
-                var entry = rail.find(function (f) { return f.id === flowId; }) || {};
-                var hasPath = flowHasPath(flowId);
-                var steps = entry.estimated_steps_count;
-                var actor = entry.actor || '';
-                var tier = entry.tier || '';
-                var goal = entry.primary_user_goal || entry.name || '';
-                var ships = (entry.served_by_ships || []).slice(0, 3).join(', ');
-                var el = ensureFlowPreviewEl();
-                el.innerHTML =
-                    '<div class="mf-flow-preview-title">' + esc(entry.id || flowId) + ' · ' + esc(entry.name || '') + '</div>' +
-                    '<div class="mf-flow-preview-meta">' +
-                        (actor ? esc(actor) : '') +
-                        (tier ? ' · ' + esc(tier) : '') +
-                        (steps != null ? ' · ' + steps + ' steps' : '') +
-                        (hasPath ? ' · path' : ' · metadata-only') +
-                    '</div>' +
-                    '<div class="mf-flow-preview-goal">' + esc(goal) + '</div>' +
-                    (ships ? '<div class="mf-flow-preview-meta" style="margin-top:6px;">served by ' + esc(ships) + (entry.served_by_ships && entry.served_by_ships.length > 3 ? '…' : '') + '</div>' : '');
-                var rect = li.getBoundingClientRect();
-                var top = rect.top;
-                // Position to the LEFT of the rail (rail is on the right side
-                // of the viewport). Anchor by row top; clamp to viewport.
-                el.style.right = (window.innerWidth - rect.left + 12) + 'px';
-                el.style.top = Math.max(8, Math.min(window.innerHeight - 220, top)) + 'px';
-                el.style.left = 'auto';
-                el.setAttribute('aria-hidden', 'false');
-                requestAnimationFrame(function () { el.classList.add('is-visible'); });
-            }
-            function hideFlowPreview() {
-                if (!FLOW_PREVIEW) return;
-                FLOW_PREVIEW.classList.remove('is-visible');
-                FLOW_PREVIEW.setAttribute('aria-hidden', 'true');
-            }
-
-            function applyRailFilters() {
-                var searchEl = document.getElementById('mf-rail-search');
-                var search = (searchEl && searchEl.value || '').toLowerCase().trim();
-                // iter3 RECREATE: layer now in big toggle .mf-rail-layer-toggle
-                // instead of chips. Read from active .mf-layer-btn.
-                var layerBtn = document.querySelector('.mf-rail-layer-toggle .mf-layer-btn.is-on');
-                var categoryBtn = document.querySelector('.mf-rail-category-toggle .mf-category-btn.is-on');
-                var actorBtn = document.querySelector('.mf-rail-chips[data-axis="actor"] .mf-rail-chip.is-on');
-                var tierBtn = document.querySelector('.mf-rail-chips[data-axis="tier"] .mf-rail-chip.is-on');
-                var layer = layerBtn ? (layerBtn.getAttribute('data-layer') || '') : '';
-                var category = categoryBtn ? (categoryBtn.getAttribute('data-category') || '') : '';
-                var categoryEmpty = (categoryBtn && !categoryBtn.getAttribute('data-category'));
-                var actor = actorBtn ? (actorBtn.getAttribute('data-actor') || '') : '';
-                var tier = tierBtn ? (tierBtn.getAttribute('data-tier') || '') : '';
-                var visibleCount = 0;
-                FLOWS_LIST.querySelectorAll('.mf-flows-item').forEach(function (li) {
-                    var rowLayer = li.getAttribute('data-layer') || '';
-                    var rowCategory = li.getAttribute('data-category') || '';
-                    var rowActor = li.getAttribute('data-actor') || '';
-                    var rowTier = li.getAttribute('data-tier') || '';
-                    var rowName = li.getAttribute('data-name') || '';
-                    var rowId = (li.getAttribute('data-flow-id') || '').toLowerCase();
-                    var layerOk = !layer || rowLayer === layer;
-                    var categoryOk = !category || rowCategory === category;
-                    var actorOk = !actor || rowActor === actor;
-                    var tierOk = !tier || rowTier === tier;
-                    var searchOk = !search || rowName.indexOf(search) !== -1 || rowId.indexOf(search) !== -1;
-                    var show = layerOk && categoryOk && actorOk && tierOk && searchOk;
-                    li.classList.toggle('is-hidden', !show);
-                    if (show) visibleCount++;
-                });
-                FLOWS_COUNT.textContent = visibleCount + ' of ' + FLOWS_LIST.querySelectorAll('.mf-flows-item').length;
-            }
-
-            function bindRailFilters() {
-                var searchEl = document.getElementById('mf-rail-search');
-                if (searchEl && !searchEl.dataset.bound) {
-                    searchEl.addEventListener('input', applyRailFilters);
-                    searchEl.dataset.bound = '1';
-                }
-                document.querySelectorAll('.mf-rail-chips').forEach(function (group) {
-                    if (group.dataset.bound) return;
-                    group.dataset.bound = '1';
-                    group.addEventListener('click', function (ev) {
-                        var btn = ev.target.closest('.mf-rail-chip');
-                        if (!btn) return;
-                        group.querySelectorAll('.mf-rail-chip').forEach(function (b) { b.classList.remove('is-on'); });
-                        btn.classList.add('is-on');
-                        applyRailFilters();
-                    });
-                });
-                // iter3 RECREATE: bind the big category toggle (mirror layer pattern)
-                var catToggle = document.querySelector('.mf-rail-category-toggle');
-                if (catToggle && !catToggle.dataset.bound) {
-                    catToggle.dataset.bound = '1';
-                    catToggle.addEventListener('click', function (ev) {
-                        var btn = ev.target.closest('.mf-category-btn');
-                        if (!btn) return;
-                        catToggle.querySelectorAll('.mf-category-btn').forEach(function (b) { b.classList.remove('is-on'); });
-                        btn.classList.add('is-on');
-                        applyRailFilters();
-                        var currentSelected = FLOWS_LIST.querySelector('.mf-flows-item.is-active');
-                        if (!currentSelected || currentSelected.classList.contains('is-hidden')) {
-                            var firstVisible = FLOWS_LIST.querySelector('.mf-flows-item:not(.is-hidden)');
-                            if (firstVisible) selectFlow(firstVisible.getAttribute('data-flow-id'));
-                            else selectFlow(null);
-                        }
-                    });
-                }
-                // iter3 RECREATE: bind the new big layer toggle.
-                // On layer switch: if currently-selected flow no longer
-                // matches the new layer's filter, auto-select first visible
-                // flow so the diagram immediately reflects the new layer.
-                var layerToggle = document.querySelector('.mf-rail-layer-toggle');
-                if (layerToggle && !layerToggle.dataset.bound) {
-                    layerToggle.dataset.bound = '1';
-                    layerToggle.addEventListener('click', function (ev) {
-                        var btn = ev.target.closest('.mf-layer-btn');
-                        if (!btn) return;
-                        layerToggle.querySelectorAll('.mf-layer-btn').forEach(function (b) { b.classList.remove('is-on'); });
-                        btn.classList.add('is-on');
-                        applyRailFilters();
-                        // After filter, check if selected flow is still visible;
-                        // if not, select the first visible flow in the new layer.
-                        var currentSelected = FLOWS_LIST.querySelector('.mf-flows-item.is-active');
-                        if (!currentSelected || currentSelected.classList.contains('is-hidden')) {
-                            var firstVisible = FLOWS_LIST.querySelector('.mf-flows-item:not(.is-hidden)');
-                            if (firstVisible) {
-                                selectFlow(firstVisible.getAttribute('data-flow-id'));
-                            } else {
-                                selectFlow(null);
-                            }
-                        }
-                    });
-                }
-            }
-
-            function renderStepsForFlow(flowId) {
-                if (!flowId) {
-                    STEPS_EMPTY.hidden = false;
-                    STEPS_EMPTY.innerHTML = '<span class="mf-steps-empty-eyebrow">No flow selected</span>Pick a flow from the right rail to trace its path through the system.<span class="mf-steps-empty-hint">Each flow lights up the components it touches + numbers each step in order.</span>';
-                    STEPS_LIST.hidden = true;
-                    STEPS_META.textContent = 'no flow selected';
-                    return;
-                }
-                var flow = (data.flows || []).find(function (f) { return f.id === flowId; });
-                if (flow && flow.steps && flow.steps.length) {
-                    // F1–F8 — full path + steps
-                    STEPS_META.textContent = flow.id + ' · ' + flow.steps.length + ' steps';
-                    STEPS_EMPTY.hidden = true;
-                    STEPS_LIST.hidden = false;
-                    STEPS_LIST.innerHTML = flow.steps.map(function (s) {
-                        return ''
-                            + '<li class="mf-steps-item" data-step-from="' + esc(s.from) + '" data-step-to="' + esc(s.to) + '">'
-                            +   '<div class="mf-step-num">' + s.n + '</div>'
-                            +   '<div>'
-                            +     '<div class="mf-step-from-to">' + esc(s.from) + ' → ' + esc(s.to) + '</div>'
-                            +     '<div class="mf-step-label">' + esc(s.label) + '</div>'
-                            +     '<div class="mf-step-desc">' + esc(s.description) + '</div>'
-                            +   '</div>'
-                            + '</li>';
-                    }).join('');
-                    STEPS_LIST.querySelectorAll('.mf-steps-item').forEach(function (li) {
-                        li.addEventListener('click', function () {
-                            pulseNodes([li.getAttribute('data-step-from'), li.getAttribute('data-step-to')]);
-                        });
-                    });
-                    return;
-                }
-                // F9–F62 — metadata only (no path/steps authored)
-                var meta = ((data.flow_rail) || []).find(function (f) { return f.id === flowId; });
-                if (!meta) {
-                    renderStepsForFlow(null);
-                    return;
-                }
-                var ships = (meta.served_by_ships || []).join(', ') || '—';
-                STEPS_META.textContent = meta.id + ' · metadata only';
-                STEPS_LIST.hidden = true;
-                STEPS_EMPTY.hidden = false;
-                STEPS_EMPTY.innerHTML = ''
-                    + '<div style="font-size:0.8125rem;color:var(--text-primary);font-weight:600;margin-bottom:6px;">' + esc(meta.name) + '</div>'
-                    + '<div style="font-size:0.75rem;color:var(--text-secondary);line-height:1.5;margin-bottom:8px;">' + esc(meta.primary_user_goal || '') + '</div>'
-                    + '<div style="font-size:0.6875rem;color:var(--text-tertiary);font-family:var(--font-mono);line-height:1.55;">'
-                    +   '<div>actor &middot; ' + esc(actorShort(meta.actor)) + '</div>'
-                    +   '<div>tier &middot; ' + esc(meta.tier || '') + '</div>'
-                    +   '<div>status &middot; ' + esc(meta.status || '') + '</div>'
-                    +   '<div>served by &middot; ' + esc(ships) + '</div>'
-                    +   '<div>est. steps &middot; ' + esc(String(meta.estimated_steps_count || '—')) + '</div>'
-                    + '</div>'
-                    + '<div style="margin-top:10px;font-size:0.6875rem;color:var(--text-tertiary);font-style:italic;">Detailed step path not yet authored. F1–F8 (core member flows) have full step paths; the remaining flows live in the rail for navigation/filtering.</div>';
-            }
-
-            function selectFlow(flowId) {
-                selectedFlowId = flowId;
-                FLOWS_LIST.querySelectorAll('.mf-flows-item').forEach(function (li) {
-                    li.classList.toggle('is-active', li.getAttribute('data-flow-id') === flowId);
-                });
-                renderStepsForFlow(flowId);
-                highlightPath(flowId);
-                requestAnimationFrame(function () { drawArrowsForFlow(flowId); });
-                // Ship R9: clear-selection button visibility tracks selection state
-                var clearBtn = document.getElementById('mf-rail-clear');
-                if (clearBtn) clearBtn.hidden = !flowId;
-            }
-
-            // Ship R9: wire clear-selection click
-            (function () {
-                var btn = document.getElementById('mf-rail-clear');
-                if (btn) btn.addEventListener('click', function () { selectFlow(null); });
+            'use strict';
+            var data = (function () {
+                try { return JSON.parse(document.getElementById('report-data').textContent); }
+                catch (e) { console.error('main-flows: data parse failed', e); return { flows: [] }; }
             })();
 
-            // BUG-8 fix (2026-05-16): per Janowiak ToDesktop reference video,
-            // the path lights up SEQUENTIALLY through ordered nodes — not all
-            // at once. Founder feedback: "you are not viewing the video but
-            // just looking at the screenshot." Sequential reveal is the
-            // signature interaction. Steps:
-            //   1. Clear is-on-path from every node immediately
-            //   2. For each node in flow.path order, schedule is-on-path
-            //      after (index * STEP_MS) ms — chain of timeouts
-            //   3. respect prefers-reduced-motion: instant reveal there
-            var _highlightTimers = [];
-            function _cancelHighlightAnimation() {
-                _highlightTimers.forEach(function (t) { clearTimeout(t); });
-                _highlightTimers = [];
+            var LIST = document.getElementById('mf-list');
+            var EMPTY = document.getElementById('mf-empty');
+            var SEARCH_COUNT = document.getElementById('mf-search-count');
+            var SEARCH_INPUT = document.getElementById('mf-search');
+
+            function esc(s) {
+                return String(s == null ? '' : s)
+                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
             }
-            function highlightPath(flowId) {
-                _cancelHighlightAnimation();
-                var flow = (data.flows || []).find(function (f) { return f.id === flowId; });
-                GRID.classList.toggle('has-selection', !!flow);
-                // Clear all is-on-path immediately so the previous flow's lit nodes
-                // dim before this flow's nodes light up.
-                GRID.querySelectorAll('.mf-node.is-on-path').forEach(function (n) {
-                    n.classList.remove('is-on-path');
-                });
-                if (!flow || !flow.path || !flow.path.length) return;
-                var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-                var STEP_MS = reduce ? 0 : 90;
-                flow.path.forEach(function (componentId, i) {
-                    var t = setTimeout(function () {
-                        var n = GRID.querySelector('[data-component-id="' + componentId + '"]');
-                        if (n) n.classList.add('is-on-path');
-                    }, i * STEP_MS);
-                    _highlightTimers.push(t);
-                });
+            function actorShort(a) {
+                if (!a) return '';
+                return String(a).replace(/^actor\./, '');
+            }
+            function compNameFromId(id) {
+                if (!id) return '';
+                // 'fn.send-friend-request' -> 'send-friend-request'
+                var dot = id.indexOf('.');
+                return dot === -1 ? id : id.slice(dot + 1);
+            }
+            function compFile(id, columnsLookup) {
+                var comp = columnsLookup[id];
+                return (comp && comp.subtitle) || '';
             }
 
-            function pulseNodes(ids) {
-                ids.forEach(function (id) {
-                    var n = GRID.querySelector('[data-component-id="' + id + '"]');
-                    if (!n) return;
-                    n.classList.remove('is-pulse');
-                    void n.offsetWidth;
-                    n.classList.add('is-pulse');
-                });
-            }
+            // Build a flat lookup of components by id from columns
+            var columnsLookup = {};
+            (data.columns || []).forEach(function (col) {
+                (col.components || []).forEach(function (c) { columnsLookup[c.id] = c; });
+            });
 
-            function nodeCenter(id) {
-                var n = GRID.querySelector('[data-component-id="' + id + '"]');
-                if (!n) return null;
-                var wrap = GRID.parentElement;
-                var nRect = n.getBoundingClientRect();
-                var wRect = wrap.getBoundingClientRect();
-                return {
-                    x: nRect.left - wRect.left + nRect.width / 2 + wrap.scrollLeft,
-                    y: nRect.top  - wRect.top  + nRect.height / 2,
-                    rx: nRect.width / 2,
-                    ry: nRect.height / 2
-                };
-            }
+            function renderFlowCard(f) {
+                var layer = (f.layer || 'app').toLowerCase();
+                var category = (f.category || 'debug').toLowerCase();
+                var actor = actorShort(f.actor || '');
+                var stepCount = (f.steps || []).length;
+                var ships = (f.served_by_ships || []).filter(Boolean);
 
-            // M5 fix: initial-render path-draw should NOT animate (Janowiak's
-            // page loads with the default flow already lit). Track whether
-            // we've ever drawn an arrow set; subsequent draws animate, the
-            // first set is instant. Toggled by drawArrowsForFlow second arg.
-            var arrowsHaveBeenDrawn = false;
-            function drawArrowsForFlow(flowId, opts) {
-                opts = opts || {};
-                var animate = (opts.animate !== false) && arrowsHaveBeenDrawn;
-                ARROWS.innerHTML = '';
-                if (!flowId) return;
-                var wrap = GRID.parentElement;
-                var w = wrap.scrollWidth;
-                var h = wrap.scrollHeight;
-                ARROWS.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
-                ARROWS.setAttribute('width', w);
-                ARROWS.setAttribute('height', h);
+                var stepsHtml = (f.steps || []).map(function (s) {
+                    var fromName = compNameFromId(s.from);
+                    var toName = compNameFromId(s.to);
+                    var fromFile = compFile(s.from, columnsLookup);
+                    var toFile = compFile(s.to, columnsLookup);
+                    var desc = s.description || s.note || '';
+                    return ''
+                        + '<li class="mf-step">'
+                        +   '<div class="mf-step-body">'
+                        +     '<div class="mf-step-path">'
+                        +       '<span>' + esc(fromName) + '</span>'
+                        +       '<span class="mf-step-arrow">→</span>'
+                        +       '<span>' + esc(toName) + '</span>'
+                        +     '</div>'
+                        +     (desc ? '<div class="mf-step-desc">' + esc(desc) + '</div>' : '')
+                        +     (fromFile || toFile
+                            ? '<div><code class="mf-step-code">' + esc(fromFile || '') + '</code>'
+                              + (toFile && toFile !== fromFile ? ' <span class="mf-step-arrow">→</span> <code class="mf-step-code">' + esc(toFile) + '</code>' : '')
+                              + '</div>'
+                            : '')
+                        +   '</div>'
+                        + '</li>';
+                }).join('');
 
-                var flow = (data.flows || []).find(function (f) { return f.id === flowId; });
-                if (!flow || !flow.steps) return;
+                var sideHtml = ''
+                    + '<aside class="mf-side">'
+                    +   '<div class="mf-side-section">'
+                    +     '<div class="mf-side-label">Actor</div>'
+                    +     '<div class="mf-side-value">' + esc(actor || '—') + '</div>'
+                    +   '</div>'
+                    +   '<div class="mf-side-section">'
+                    +     '<div class="mf-side-label">Layer · Category</div>'
+                    +     '<div class="mf-side-value">' + esc(layer) + ' · ' + esc(category) + '</div>'
+                    +   '</div>'
+                    +   (ships.length ? '<div class="mf-side-section">'
+                    +     '<div class="mf-side-label">Served by ships</div>'
+                    +     '<div class="mf-side-list">'
+                    +       ships.map(function (sh) { return '<span class="mf-side-pill">' + esc(sh) + '</span>'; }).join('')
+                    +     '</div>'
+                    +   '</div>' : '')
+                    +   '<div class="mf-side-section">'
+                    +     '<div class="mf-side-label">Step count</div>'
+                    +     '<div class="mf-side-value">' + stepCount + '</div>'
+                    +   '</div>'
+                    + '</aside>';
 
-                var ns = 'http://www.w3.org/2000/svg';
-                var defs = document.createElementNS(ns, 'defs');
-                defs.innerHTML = '<marker id="mf-arrow-head-marker" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="mf-arrow-head" d="M 0 0 L 10 5 L 0 10 z"/></marker>';
-                ARROWS.appendChild(defs);
-
-                // 2026-05-20 iter4 (Founder "arrows and flow need to be cleaner"):
-                // round all coordinates to integers before emitting path d.
-                // Sub-pixel coords (y=39.6484375) caused anti-aliasing smear;
-                // integer coords paint sharply on standard DPI. Also straighten
-                // horizontal segments — Q-curves between same-row nodes were
-                // creating tiny curve dips. Use straight L for horizontal jumps,
-                // Q only for column-jumps (different rows).
-                var rnd = function (n) { return Math.round(n); };
-                flow.steps.forEach(function (s, idx) {
-                    var a = nodeCenter(s.from);
-                    var b = nodeCenter(s.to);
-                    if (!a || !b) return;
-                    var dx = b.x - a.x;
-                    var dy = b.y - a.y;
-                    var ax = rnd(a.x + Math.sign(dx) * (a.rx + 4));
-                    var ay = rnd(a.y);
-                    var bx = rnd(b.x - Math.sign(dx) * (b.rx + 8));
-                    var by = rnd(b.y);
-                    var path = document.createElementNS(ns, 'path');
-                    path.setAttribute('class', 'mf-arrow-line');
-                    var d;
-                    if (Math.abs(dy) < 4) {
-                        // Same row: straight horizontal line (no Q-curve dip).
-                        d = 'M ' + ax + ' ' + ay + ' L ' + bx + ' ' + by;
-                    } else {
-                        // Different row: orthogonal "elbow" routing — horizontal
-                        // out from source, vertical to target row, horizontal
-                        // to target. Much cleaner than a Q-curve through space.
-                        var midX = rnd((ax + bx) / 2);
-                        d = 'M ' + ax + ' ' + ay
-                          + ' L ' + midX + ' ' + ay
-                          + ' L ' + midX + ' ' + by
-                          + ' L ' + bx + ' ' + by;
-                    }
-                    path.setAttribute('d', d);
-                    path.setAttribute('marker-end', 'url(#mf-arrow-head-marker)');
-                    ARROWS.appendChild(path);
-
-                    // M5 path-draw (Janowiak D3 motion): per-step staggered
-                    // stroke-dashoffset ease-out — the path appears to draw
-                    // through the system. Only runs on subsequent flow
-                    // selections; initial render paints the path instantly.
-                    // 220ms duration, 30ms stagger per step. CSS
-                    // @media (prefers-reduced-motion) falls back to instant
-                    // via the existing rule on .mf-arrow-line.
-                    if (animate) {
-                        try {
-                            var len = path.getTotalLength();
-                            if (len && isFinite(len)) {
-                                path.style.strokeDasharray = String(len);
-                                path.style.strokeDashoffset = String(len);
-                                // Force reflow so the initial state paints first.
-                                void path.getBoundingClientRect();
-                                path.style.transition = 'stroke-dashoffset 250ms cubic-bezier(0.4, 0, 0.2, 1) ' + (idx * 50) + 'ms';
-                                path.style.strokeDashoffset = '0';
-                            }
-                        } catch (e) { /* tolerate browsers that lack getTotalLength */ }
-                    }
-
-                    // M5.8 (2026-05-19) — Founder reckoning: Janowiak's
-                    // numbered badge SITS AT UPPER-LEFT OF THE TARGET NODE,
-                    // NOT mid-arrow. The badge is part of the node identity
-                    // ("this is step N of the flow"), not part of the edge.
-                    // Reposition: anchor badge at the target node's
-                    // upper-left corner with a slight outset so it ringbreaks
-                    // the node border. Fall back to arrow midpoint only if
-                    // target node geometry is unavailable.
-                    var bNode = GRID.querySelector('[data-component-id="' + s.to + '"]');
-                    var cx, cy;
-                    if (bNode) {
-                        var bRect = bNode.getBoundingClientRect();
-                        var wRect2 = wrap.getBoundingClientRect();
-                        cx = bRect.left - wRect2.left + wrap.scrollLeft + 2;
-                        cy = bRect.top - wRect2.top + 2;
-                    } else {
-                        cx = mx; cy = my;
-                    }
-                    // M5.10 — badge radius bumped 9 → 11 so badges are
-                    // clearly readable at 1920px. Janowiak's badges are
-                    // ~12px radius; we match to within 1px so badges
-                    // anchored to top-left of target node read as
-                    // "this is step N" without ambiguity.
-                    var badge = document.createElementNS(ns, 'g');
-                    var circle = document.createElementNS(ns, 'circle');
-                    circle.setAttribute('class', 'mf-arrow-badge-bg');
-                    circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', 11);
-                    badge.appendChild(circle);
-                    var text = document.createElementNS(ns, 'text');
-                    text.setAttribute('class', 'mf-arrow-badge-text');
-                    text.setAttribute('x', cx); text.setAttribute('y', cy);
-                    text.textContent = s.n;
-                    badge.appendChild(text);
-                    // Badge fade-in + scale-in synced with end of path draw (Janowiak D3:
-                    // edge polyline trailed by node light-up by ~50ms; badge
-                    // appears slightly after its arrow finishes drawing — scaling
-                    // from 90% → 100% lightly with no overshoot).
-                    // Skipped on initial render — see arrowsHaveBeenDrawn.
-                    if (animate) {
-                        badge.style.opacity = '0';
-                        // M5.4 Approach B: badge scale-in. SVG transform via CSS.
-                        // transform-box: fill-box keeps the scale anchored to the
-                        // badge geometry rather than the SVG root.
-                        badge.style.transformBox = 'fill-box';
-                        badge.style.transformOrigin = 'center';
-                        badge.style.transform = 'scale(0.85)';
-                        badge.style.transition = 'opacity 180ms cubic-bezier(0.4, 0, 0.2, 1) ' + (idx * 50 + 200) + 'ms, transform 200ms cubic-bezier(0.4, 0, 0.2, 1) ' + (idx * 50 + 200) + 'ms';
-                        requestAnimationFrame(function () {
-                            badge.style.opacity = '1';
-                            badge.style.transform = 'scale(1)';
-                        });
-                    }
-                    ARROWS.appendChild(badge);
-                });
-                arrowsHaveBeenDrawn = true;
+                return ''
+                    + '<li class="mf-flow" data-flow-id="' + esc(f.id) + '"'
+                    + '  data-layer="' + esc(layer) + '"'
+                    + '  data-category="' + esc(category) + '"'
+                    + '  data-actor="' + esc(actor) + '"'
+                    + '  data-name="' + esc((f.name || '').toLowerCase()) + '"'
+                    + '  data-goal="' + esc((f.primary_user_goal || '').toLowerCase()) + '">'
+                    +   '<div class="mf-flow-summary" role="button" tabindex="0">'
+                    +     '<span class="mf-flow-id">' + esc(f.id) + '</span>'
+                    +     '<div class="mf-flow-name-wrap">'
+                    +       '<div class="mf-flow-name">' + esc(f.name || '—') + '</div>'
+                    +       '<div class="mf-flow-goal">' + esc(f.primary_user_goal || '') + '</div>'
+                    +     '</div>'
+                    +     '<div class="mf-flow-meta">'
+                    +       '<span class="mf-tag is-layer-' + esc(layer) + '">' + esc(layer) + '</span>'
+                    +       '<span class="mf-tag is-category-' + esc(category) + '">' + esc(category) + '</span>'
+                    +       (actor ? '<span class="mf-tag">' + esc(actor) + '</span>' : '')
+                    +       '<span class="mf-tag">' + stepCount + ' steps</span>'
+                    +     '</div>'
+                    +     '<span class="mf-flow-toggle" aria-hidden="true">›</span>'
+                    +   '</div>'
+                    +   '<div class="mf-flow-detail">'
+                    +     '<div class="mf-flow-detail-grid">'
+                    +       (stepsHtml ? '<ol class="mf-steps">' + stepsHtml + '</ol>' : '<div class="mf-empty">No step trace defined for this flow yet.</div>')
+                    +       sideHtml
+                    +     '</div>'
+                    +   '</div>'
+                    + '</li>';
             }
 
             function render() {
-                data = loadData();
-                renderLegend();
-                renderGrid();
-                renderFlowsList();
-                // iter3 RECREATE: apply default filters immediately so the
-                // App+Debug landing view is in effect on first paint. Without
-                // this, all 62 flows show until first chip click.
-                applyRailFilters();
-                // P1 fix (iter 16, 2026-05-14, Founder directive — match reference):
-                // Janowiak reference opens with first flow pre-selected (path lit,
-                // steps populated). PARBAUGHS was opening with empty state ("Select
-                // a flow on the right..."). Reference fidelity gap caught iter 14
-                // visual review as "POTENTIAL GAP — default selection state".
-                // Fix: auto-select FIRST VISIBLE flow on initial render (was F1 always;
-                // now respects the default App+Debug filter so we pick a flow that's
-                // visible after filtering).
-                var firstVisible = FLOWS_LIST.querySelector('.mf-flows-item:not(.is-hidden)');
-                var defaultFlowId = firstVisible ? firstVisible.getAttribute('data-flow-id') : ((data.flows && data.flows[0]) ? data.flows[0].id : null);
-                if (defaultFlowId) {
-                    selectFlow(defaultFlowId);
-                } else {
-                    renderStepsForFlow(null);
-                }
-                window.addEventListener('resize', function () {
-                    if (selectedFlowId) requestAnimationFrame(function () { drawArrowsForFlow(selectedFlowId); });
-                    adjustRailHeight();
-                });
-                // Iter 13 (2026-05-14, Founder directive — "rail expand/contract"):
-                // iter-11 bound adjustRailHeight to the scroll event so the rail
-                // could USE the extra space when sticky pinned rail.top to 12px.
-                // That CAUSED the bug: every scroll tick changed rail.top, which
-                // changed maxH, which visibly resized the rail. Users saw the
-                // list expand and contract as they scrolled the page.
-                // Fix: compute once at load + on resize only. Stable max-height
-                // regardless of scroll position. The CSS fallback
-                // (calc(100vh - 420px) at 1080 viewport = 660px) holds even if
-                // JS fails to run. Loses some vertical space when page is
-                // scrolled but the rail never visibly jitters.
-                adjustRailHeight();
+                var flows = (data.flows || []);
+                LIST.innerHTML = flows.map(renderFlowCard).join('');
+                bindFlows();
+                applyFilters();
+                // Auto-expand first visible
+                var firstVisible = LIST.querySelector('.mf-flow:not(.is-hidden)');
+                if (firstVisible) firstVisible.classList.add('is-open');
             }
 
-            function adjustRailHeight() {
-                // BUG-5 fix (2026-05-16): NO-OP. The CSS's max-height: 75vh
-                // on .mf-flows-list owns the scroll affordance now; the rail
-                // itself has no height cap. Removing the JS calc avoids the
-                // earlier off-by-pixels race between resize + scroll handlers
-                // that produced 5-flow-visible windows.
-                var rail = document.querySelector('.mf-rail');
-                var list = document.querySelector('.mf-flows-list');
-                if (!rail) return;
-                rail.style.maxHeight = '';
-                if (list) list.style.maxHeight = '';
+            function bindFlows() {
+                LIST.querySelectorAll('.mf-flow-summary').forEach(function (el) {
+                    el.addEventListener('click', function () {
+                        var flow = el.closest('.mf-flow');
+                        flow.classList.toggle('is-open');
+                    });
+                    el.addEventListener('keydown', function (ev) {
+                        if (ev.key === 'Enter' || ev.key === ' ') {
+                            ev.preventDefault();
+                            el.click();
+                        }
+                    });
+                });
+                document.querySelectorAll('.mf-filter-group').forEach(function (group) {
+                    group.addEventListener('click', function (ev) {
+                        var btn = ev.target.closest('.mf-chip');
+                        if (!btn) return;
+                        group.querySelectorAll('.mf-chip').forEach(function (b) { b.classList.remove('is-on'); });
+                        btn.classList.add('is-on');
+                        applyFilters();
+                    });
+                });
+                if (SEARCH_INPUT) {
+                    SEARCH_INPUT.addEventListener('input', applyFilters);
+                }
+            }
+
+            function applyFilters() {
+                var layerBtn = document.querySelector('.mf-filter-group[data-axis="layer"] .mf-chip.is-on');
+                var categoryBtn = document.querySelector('.mf-filter-group[data-axis="category"] .mf-chip.is-on');
+                var layer = layerBtn ? (layerBtn.getAttribute('data-layer') || '') : '';
+                var category = categoryBtn ? (categoryBtn.getAttribute('data-category') || '') : '';
+                var search = (SEARCH_INPUT && SEARCH_INPUT.value || '').toLowerCase().trim();
+                var visible = 0;
+                var total = 0;
+                LIST.querySelectorAll('.mf-flow').forEach(function (el) {
+                    total++;
+                    var rowLayer = el.getAttribute('data-layer') || '';
+                    var rowCategory = el.getAttribute('data-category') || '';
+                    var rowName = el.getAttribute('data-name') || '';
+                    var rowGoal = el.getAttribute('data-goal') || '';
+                    var rowId = (el.getAttribute('data-flow-id') || '').toLowerCase();
+                    var layerOk = !layer || rowLayer === layer;
+                    var categoryOk = !category || rowCategory === category;
+                    var searchOk = !search || rowName.indexOf(search) !== -1 || rowGoal.indexOf(search) !== -1 || rowId.indexOf(search) !== -1;
+                    var show = layerOk && categoryOk && searchOk;
+                    el.classList.toggle('is-hidden', !show);
+                    if (show) visible++;
+                });
+                SEARCH_COUNT.textContent = visible + ' of ' + total;
+                EMPTY.hidden = visible > 0;
             }
 
             if (document.readyState === 'loading') {
@@ -1395,6 +579,5 @@
             }
         })();
     </script>
-    <script src="_assets/live-refresh.js" defer></script>
 </body>
 </html>
