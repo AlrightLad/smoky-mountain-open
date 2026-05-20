@@ -6,7 +6,6 @@
   "total_flows": 62,
   "source_doc": ".claude/state/main-flows-v2/flow-inventory-sources.md",
   "stability_invariant": "Flow IDs F<N> are permanent once assigned. Future audits append; never renumber.",
-
   "flows": [
     {
       "id": "F1",
@@ -14,12 +13,31 @@
       "actor": "member",
       "tier": "core",
       "status": "shipping",
-      "served_by_ships": ["W1.S4", "W1.S2", "W1.S1"],
+      "served_by_ships": [
+        "W1.S4",
+        "W1.S2",
+        "W1.S1"
+      ],
       "primary_user_goal": "Capture an 18- or 9-hole round during or after play and see it reflected in personal stats + league context.",
       "trigger": "Home 'Log a round' CTA or active-round resume from localStorage",
-      "components_touched": ["actor.member", "client.hq-web-home", "client.hq-web-playnow", "client.hq-web-scorecard", "fn.searchCourses", "data.rounds", "data.members", "ext.GolfCourseAPI"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-home",
+        "client.hq-web-playnow",
+        "client.hq-web-scorecard",
+        "fn.searchCourses",
+        "data.rounds",
+        "data.members",
+        "ext.GolfCourseAPI"
+      ],
       "estimated_steps_count": 7,
-      "binding_caveats": ["MAIN_FLOWS.md MF-01", "CLUBHOUSE_SPEC-3b-Play.md", "CLAUDE.md Known Bugs (hole-by-hole entry, joined players, Parbaugh Round)"]
+      "binding_caveats": [
+        "MAIN_FLOWS.md MF-01",
+        "CLUBHOUSE_SPEC-3b-Play.md",
+        "CLAUDE.md Known Bugs (hole-by-hole entry, joined players, Parbaugh Round)"
+      ],
+      "layer": "app",
+      "category": "data"
     },
     {
       "id": "F2",
@@ -27,12 +45,29 @@
       "actor": "member",
       "tier": "core",
       "status": "shipping",
-      "served_by_ships": ["W1.S2", "W1.S11", "W1.S13", "W1.S5", "W1.S3"],
+      "served_by_ships": [
+        "W1.S2",
+        "W1.S11",
+        "W1.S13",
+        "W1.S5",
+        "W1.S3"
+      ],
       "primary_user_goal": "See what the league is doing right now — recent rounds, who is hot, where I stand.",
       "trigger": "Home League Pulse band (above the fold) or Leagues tab",
-      "components_touched": ["actor.member", "client.hq-web-home", "client.hq-web-leagues", "data.rounds", "data.members"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-home",
+        "client.hq-web-leagues",
+        "data.rounds",
+        "data.members"
+      ],
       "estimated_steps_count": 4,
-      "binding_caveats": ["MAIN_FLOWS.md MF-02", "CLUBHOUSE_SPEC-HQ-3a-Home.md § Section B/D"]
+      "binding_caveats": [
+        "MAIN_FLOWS.md MF-02",
+        "CLUBHOUSE_SPEC-HQ-3a-Home.md § Section B/D"
+      ],
+      "layer": "app",
+      "category": "data"
     },
     {
       "id": "F3",
@@ -40,12 +75,25 @@
       "actor": "member",
       "tier": "core",
       "status": "shipping",
-      "served_by_ships": ["W1.S3"],
+      "served_by_ships": [
+        "W1.S3"
+      ],
       "primary_user_goal": "Search for / discover another PARBAUGHS member, see their public profile, send a friend request.",
       "trigger": "Members directory tap or Find Players search",
-      "components_touched": ["actor.member", "client.hq-web-members", "client.hq-web-findplayers", "data.members", "data.social_actions"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-members",
+        "client.hq-web-findplayers",
+        "data.members",
+        "data.social_actions"
+      ],
       "estimated_steps_count": 5,
-      "binding_caveats": ["MAIN_FLOWS.md MF-03", "v9.0 Social System parked design doc"]
+      "binding_caveats": [
+        "MAIN_FLOWS.md MF-03",
+        "v9.0 Social System parked design doc"
+      ],
+      "layer": "app",
+      "category": "debug"
     },
     {
       "id": "F4",
@@ -53,12 +101,27 @@
       "actor": "member",
       "tier": "core",
       "status": "shipping",
-      "served_by_ships": ["W1.S6", "W1.S3", "W1.S4"],
+      "served_by_ships": [
+        "W1.S6",
+        "W1.S3",
+        "W1.S4"
+      ],
       "primary_user_goal": "Challenge another member to a stakes round, watch outcome, claim winnings or pay cleanly.",
       "trigger": "Wagers section 'Post a wager' CTA",
-      "components_touched": ["actor.member", "client.hq-web-wagers", "data.wagers", "data.parcoin_transactions", "data.rounds"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-wagers",
+        "data.wagers",
+        "data.parcoin_transactions",
+        "data.rounds"
+      ],
       "estimated_steps_count": 6,
-      "binding_caveats": ["MAIN_FLOWS.md MF-04", "CLAUDE.md ParCoin Economy Design"]
+      "binding_caveats": [
+        "MAIN_FLOWS.md MF-04",
+        "CLAUDE.md ParCoin Economy Design"
+      ],
+      "layer": "app",
+      "category": "data"
     },
     {
       "id": "F5",
@@ -66,12 +129,25 @@
       "actor": "member",
       "tier": "core",
       "status": "shipping",
-      "served_by_ships": ["W1.S8", "W1.S11"],
+      "served_by_ships": [
+        "W1.S8",
+        "W1.S11"
+      ],
       "primary_user_goal": "Find a posted tee time matching availability, RSVP, see who else is in.",
       "trigger": "Calendar tab upcoming tee times or feed surfacing",
-      "components_touched": ["actor.member", "client.hq-web-calendar", "client.hq-web-teetimes", "data.teetimes", "data.parcoin_transactions"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-calendar",
+        "client.hq-web-teetimes",
+        "data.teetimes",
+        "data.parcoin_transactions"
+      ],
       "estimated_steps_count": 5,
-      "binding_caveats": ["MAIN_FLOWS.md MF-05"]
+      "binding_caveats": [
+        "MAIN_FLOWS.md MF-05"
+      ],
+      "layer": "app",
+      "category": "debug"
     },
     {
       "id": "F6",
@@ -79,12 +155,28 @@
       "actor": "member",
       "tier": "core",
       "status": "shipping",
-      "served_by_ships": ["W1.S9", "W1.S4", "W1.S6", "W1.S10"],
+      "served_by_ships": [
+        "W1.S9",
+        "W1.S4",
+        "W1.S6",
+        "W1.S10"
+      ],
       "primary_user_goal": "Hit a milestone (PB, season champion, range-streak), see the celebration, browse Trophy Room.",
       "trigger": "Round / range / wager-win triggers achievement engine",
-      "components_touched": ["actor.member", "client.hq-web-trophyroom", "client.hq-web-awards", "data.members", "data.parcoin_transactions"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-trophyroom",
+        "client.hq-web-awards",
+        "data.members",
+        "data.parcoin_transactions"
+      ],
       "estimated_steps_count": 5,
-      "binding_caveats": ["MAIN_FLOWS.md MF-06", "v8.1.3 reduced-motion handling"]
+      "binding_caveats": [
+        "MAIN_FLOWS.md MF-06",
+        "v8.1.3 reduced-motion handling"
+      ],
+      "layer": "app",
+      "category": "data"
     },
     {
       "id": "F7",
@@ -92,12 +184,26 @@
       "actor": "member",
       "tier": "core",
       "status": "shipping",
-      "served_by_ships": ["W1.S10", "W1.S2"],
+      "served_by_ships": [
+        "W1.S10",
+        "W1.S2"
+      ],
       "primary_user_goal": "Log a practice session (range, putting, short game), track drill focus, see aggregates.",
       "trigger": "Home 'Log a range session' CTA",
-      "components_touched": ["actor.member", "client.hq-web-range", "client.hq-web-rangelive", "client.hq-web-drills", "data.parcoin_transactions"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-range",
+        "client.hq-web-rangelive",
+        "client.hq-web-drills",
+        "data.parcoin_transactions"
+      ],
       "estimated_steps_count": 6,
-      "binding_caveats": ["MAIN_FLOWS.md MF-07", "CLAUDE.md economy table (30+ min threshold)"]
+      "binding_caveats": [
+        "MAIN_FLOWS.md MF-07",
+        "CLAUDE.md economy table (30+ min threshold)"
+      ],
+      "layer": "app",
+      "category": "debug"
     },
     {
       "id": "F8",
@@ -105,12 +211,26 @@
       "actor": "member",
       "tier": "core",
       "status": "shipping",
-      "served_by_ships": ["W1.S5", "W1.S11"],
+      "served_by_ships": [
+        "W1.S5",
+        "W1.S11"
+      ],
       "primary_user_goal": "As non-league-member, watch a member's round live and read Caddy Notes insights.",
       "trigger": "Live round visible in feed → spectator tap",
-      "components_touched": ["actor.member", "client.hq-web-spectator", "client.hq-web-caddynotes", "data.liverounds", "data.rounds"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-spectator",
+        "client.hq-web-caddynotes",
+        "data.liverounds",
+        "data.rounds"
+      ],
       "estimated_steps_count": 5,
-      "binding_caveats": ["MAIN_FLOWS.md MF-08", "CLUBHOUSE_SPEC-HQ-3b-SpectatorHUD.md"]
+      "binding_caveats": [
+        "MAIN_FLOWS.md MF-08",
+        "CLUBHOUSE_SPEC-HQ-3b-SpectatorHUD.md"
+      ],
+      "layer": "app",
+      "category": "data"
     },
     {
       "id": "F9",
@@ -118,12 +238,28 @@
       "actor": "member",
       "tier": "core",
       "status": "planned",
-      "served_by_ships": ["W1.S14", "W3.M6"],
+      "served_by_ships": [
+        "W1.S14",
+        "W3.M6"
+      ],
       "primary_user_goal": "New invitee opens app for the first time, validates invite, completes signup, lands in product.",
       "trigger": "Tap invite link in iMessage / email",
-      "components_touched": ["actor.invitee", "client.mobile-more-onboarding", "client.hq-web-onboarding", "fn.validateInvite", "fn.joinLeague", "data.members", "data.invites"],
+      "components_touched": [
+        "actor.invitee",
+        "client.mobile-more-onboarding",
+        "client.hq-web-onboarding",
+        "fn.validateInvite",
+        "fn.joinLeague",
+        "data.members",
+        "data.invites"
+      ],
       "estimated_steps_count": 7,
-      "binding_caveats": ["W1.S14 Admin + Onboarding ship", "Critical Feature Registry trigger per ROADMAP"]
+      "binding_caveats": [
+        "W1.S14 Admin + Onboarding ship",
+        "Critical Feature Registry trigger per ROADMAP"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F10",
@@ -131,12 +267,25 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "shipped",
-      "served_by_ships": ["W1.S14"],
+      "served_by_ships": [
+        "W1.S14"
+      ],
       "primary_user_goal": "Adjust theme (light/dark), set public/private profile, configure push notifications.",
       "trigger": "More tab → Settings",
-      "components_touched": ["actor.member", "client.hq-web-settings", "client.mobile-more-settings", "data.members", "fn.sendPushNotification"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-settings",
+        "client.mobile-more-settings",
+        "data.members",
+        "fn.sendPushNotification"
+      ],
       "estimated_steps_count": 4,
-      "binding_caveats": ["CLUBHOUSE_SPEC-3e-More.md § Section You", "CLAUDE.md Privacy Defaults"]
+      "binding_caveats": [
+        "CLUBHOUSE_SPEC-3e-More.md § Section You",
+        "CLAUDE.md Privacy Defaults"
+      ],
+      "layer": "app",
+      "category": "debug"
     },
     {
       "id": "F11",
@@ -144,12 +293,23 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "shipped",
-      "served_by_ships": ["W1.I3"],
+      "served_by_ships": [
+        "W1.I3"
+      ],
       "primary_user_goal": "Read what changed in the app this week.",
       "trigger": "More → Caddy Notes",
-      "components_touched": ["actor.member", "client.hq-web-caddynotes", "data.notes (static)"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-caddynotes",
+        "data.notes (static)"
+      ],
       "estimated_steps_count": 2,
-      "binding_caveats": ["W1.I3 Caddy Notes restructure", "CLAUDE.md Caddy Notes Writing Standard"]
+      "binding_caveats": [
+        "W1.I3 Caddy Notes restructure",
+        "CLAUDE.md Caddy Notes Writing Standard"
+      ],
+      "layer": "app",
+      "category": "debug"
     },
     {
       "id": "F12",
@@ -157,12 +317,24 @@
       "actor": "member",
       "tier": "core",
       "status": "shipping",
-      "served_by_ships": ["W1.S12"],
+      "served_by_ships": [
+        "W1.S12"
+      ],
       "primary_user_goal": "Send a 1:1 message to another member (in-league or friend cross-league).",
       "trigger": "Member profile → DM CTA or Chat tab inbox",
-      "components_touched": ["actor.member", "client.hq-web-dms", "client.hq-web-chat", "data.dms"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-dms",
+        "client.hq-web-chat",
+        "data.dms"
+      ],
       "estimated_steps_count": 4,
-      "binding_caveats": ["W1.S12 ship", "CLAUDE.md Multi-League DM rules"]
+      "binding_caveats": [
+        "W1.S12 ship",
+        "CLAUDE.md Multi-League DM rules"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F13",
@@ -170,12 +342,23 @@
       "actor": "member",
       "tier": "core",
       "status": "shipping",
-      "served_by_ships": ["W1.S12"],
+      "served_by_ships": [
+        "W1.S12"
+      ],
       "primary_user_goal": "Group conversation among all members of an active league.",
       "trigger": "Chat tab → League channel",
-      "components_touched": ["actor.member", "client.hq-web-chat", "data.chat", "data.leagues"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-chat",
+        "data.chat",
+        "data.leagues"
+      ],
       "estimated_steps_count": 3,
-      "binding_caveats": ["W1.S12 includes image attachments per ratification"]
+      "binding_caveats": [
+        "W1.S12 includes image attachments per ratification"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F14",
@@ -183,12 +366,25 @@
       "actor": "member",
       "tier": "core",
       "status": "shipping",
-      "served_by_ships": ["W1.S11", "W1.S2"],
+      "served_by_ships": [
+        "W1.S11",
+        "W1.S2"
+      ],
       "primary_user_goal": "See chronological log of rounds, range sessions, achievements, chat highlights across the league.",
       "trigger": "Feed tab",
-      "components_touched": ["actor.member", "client.hq-web-feed", "client.hq-web-activity", "data.rounds", "data.social_actions"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-feed",
+        "client.hq-web-activity",
+        "data.rounds",
+        "data.social_actions"
+      ],
       "estimated_steps_count": 3,
-      "binding_caveats": ["CLUBHOUSE_SPEC-3c-Feed.md"]
+      "binding_caveats": [
+        "CLUBHOUSE_SPEC-3c-Feed.md"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F15",
@@ -196,12 +392,24 @@
       "actor": "member",
       "tier": "core",
       "status": "shipping",
-      "served_by_ships": ["W1.S13", "W1.S11"],
+      "served_by_ships": [
+        "W1.S13",
+        "W1.S11"
+      ],
       "primary_user_goal": "See per-season points (Stableford-style, handicap-adjusted) and where I rank.",
       "trigger": "Leagues tab → Standings",
-      "components_touched": ["actor.member", "client.hq-web-standings", "data.rounds", "data.leagues"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-standings",
+        "data.rounds",
+        "data.leagues"
+      ],
       "estimated_steps_count": 3,
-      "binding_caveats": ["CLAUDE.md League Scoping Rules"]
+      "binding_caveats": [
+        "CLAUDE.md League Scoping Rules"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F16",
@@ -209,12 +417,23 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "shipping",
-      "served_by_ships": ["W1.S9"],
+      "served_by_ships": [
+        "W1.S9"
+      ],
       "primary_user_goal": "Browse my earned achievements and progress toward unearned ones.",
       "trigger": "More → Trophy Room or Achievement toast tap",
-      "components_touched": ["actor.member", "client.hq-web-trophyroom", "client.hq-web-awards", "data.members"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-trophyroom",
+        "client.hq-web-awards",
+        "data.members"
+      ],
       "estimated_steps_count": 3,
-      "binding_caveats": ["MAIN_FLOWS.md MF-06 (subset)"]
+      "binding_caveats": [
+        "MAIN_FLOWS.md MF-06 (subset)"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F17",
@@ -222,12 +441,25 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "shipped",
-      "served_by_ships": ["W1.S13"],
+      "served_by_ships": [
+        "W1.S13"
+      ],
       "primary_user_goal": "Search for a course, see its layout, par, my history at it, league records there.",
       "trigger": "Courses tab or Log-a-Round course picker",
-      "components_touched": ["actor.member", "client.hq-web-courses", "fn.searchCourses", "data.courses", "data.course_reviews", "ext.GolfCourseAPI"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-courses",
+        "fn.searchCourses",
+        "data.courses",
+        "data.course_reviews",
+        "ext.GolfCourseAPI"
+      ],
       "estimated_steps_count": 4,
-      "binding_caveats": ["CLAUDE.md GolfCourseAPI (no guessing on par)"]
+      "binding_caveats": [
+        "CLAUDE.md GolfCourseAPI (no guessing on par)"
+      ],
+      "layer": "app",
+      "category": "debug"
     },
     {
       "id": "F18",
@@ -235,12 +467,23 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "shipping",
-      "served_by_ships": ["W1.S7"],
+      "served_by_ships": [
+        "W1.S7"
+      ],
       "primary_user_goal": "Form a 2v2 / 3v3 / 4v4 team for an upcoming scramble round.",
       "trigger": "Play Now → Scramble format or Scrambles tab",
-      "components_touched": ["actor.member", "client.hq-web-scramble", "client.hq-web-scramblelive", "data.scrambleTeams"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-scramble",
+        "client.hq-web-scramblelive",
+        "data.scrambleTeams"
+      ],
       "estimated_steps_count": 5,
-      "binding_caveats": ["W1.S7 Multi-player formats"]
+      "binding_caveats": [
+        "W1.S7 Multi-player formats"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F19",
@@ -248,12 +491,21 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "planned",
-      "served_by_ships": ["W1.S7"],
+      "served_by_ships": [
+        "W1.S7"
+      ],
       "primary_user_goal": "Run a quick on-course game (e.g., closest-to-pin, longest drive) with the foursome.",
       "trigger": "Play Now → Party Game format",
-      "components_touched": ["actor.member", "client.hq-web-partygames"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-partygames"
+      ],
       "estimated_steps_count": 4,
-      "binding_caveats": ["W1.S7 — 2-3 MVP games; advanced library deferred"]
+      "binding_caveats": [
+        "W1.S7 — 2-3 MVP games; advanced library deferred"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F20",
@@ -261,12 +513,23 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "shipping",
-      "served_by_ships": ["W1.S6"],
+      "served_by_ships": [
+        "W1.S6"
+      ],
       "primary_user_goal": "Post a coin reward for a specific outcome (course record, hole-in-one, etc.); whoever achieves it claims.",
       "trigger": "Bounties section → Post a bounty",
-      "components_touched": ["actor.member", "client.hq-web-bounties", "data.bounties", "data.parcoin_transactions"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-bounties",
+        "data.bounties",
+        "data.parcoin_transactions"
+      ],
       "estimated_steps_count": 5,
-      "binding_caveats": ["CLAUDE.md Bounty expiry refund TODO"]
+      "binding_caveats": [
+        "CLAUDE.md Bounty expiry refund TODO"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F21",
@@ -274,12 +537,22 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "shipping",
-      "served_by_ships": ["W1.S6"],
+      "served_by_ships": [
+        "W1.S6"
+      ],
       "primary_user_goal": "Issue a head-to-head challenge (different from wager — no ParCoin escrow required).",
       "trigger": "Member profile → Challenge CTA",
-      "components_touched": ["actor.member", "client.hq-web-challenges", "data.wagers (challenge subtype)"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-challenges",
+        "data.wagers (challenge subtype)"
+      ],
       "estimated_steps_count": 4,
-      "binding_caveats": ["W1.S6 Parcoin economy"]
+      "binding_caveats": [
+        "W1.S6 Parcoin economy"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F22",
@@ -287,12 +560,24 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "shipped",
-      "served_by_ships": ["W1.I3"],
+      "served_by_ships": [
+        "W1.I3"
+      ],
       "primary_user_goal": "Spend earned ParCoins on a ring, banner, name effect, or title.",
       "trigger": "More → Shop",
-      "components_touched": ["actor.member", "client.hq-web-shop", "client.hq-web-merch", "data.members", "data.parcoin_transactions"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-shop",
+        "client.hq-web-merch",
+        "data.members",
+        "data.parcoin_transactions"
+      ],
       "estimated_steps_count": 4,
-      "binding_caveats": ["CLAUDE.md ParCoin Economy Design § Spending Sinks"]
+      "binding_caveats": [
+        "CLAUDE.md ParCoin Economy Design § Spending Sinks"
+      ],
+      "layer": "app",
+      "category": "debug"
     },
     {
       "id": "F23",
@@ -303,9 +588,17 @@
       "served_by_ships": [],
       "primary_user_goal": "See league leaderboard of ParCoin lifetime earnings.",
       "trigger": "More → Rich List",
-      "components_touched": ["actor.member", "client.hq-web-richlist", "data.members"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-richlist",
+        "data.members"
+      ],
       "estimated_steps_count": 2,
-      "binding_caveats": ["src/pages/richlist.js"]
+      "binding_caveats": [
+        "src/pages/richlist.js"
+      ],
+      "layer": "app",
+      "category": "debug"
     },
     {
       "id": "F24",
@@ -313,12 +606,22 @@
       "actor": "member",
       "tier": "core",
       "status": "shipping",
-      "served_by_ships": ["W1.S4"],
+      "served_by_ships": [
+        "W1.S4"
+      ],
       "primary_user_goal": "Read scorecard, hole-by-hole, score relative to handicap, attestation status of any past round.",
       "trigger": "Activity / League Pulse / profile tap on round",
-      "components_touched": ["actor.member", "client.hq-web-round", "data.rounds"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-round",
+        "data.rounds"
+      ],
       "estimated_steps_count": 2,
-      "binding_caveats": ["MF-01 contributing"]
+      "binding_caveats": [
+        "MF-01 contributing"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F25",
@@ -326,12 +629,23 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "shipping",
-      "served_by_ships": ["W1.S4"],
+      "served_by_ships": [
+        "W1.S4"
+      ],
       "primary_user_goal": "Scroll my complete round history with filters by course / format / season.",
       "trigger": "Profile → Round History or Rounds tab",
-      "components_touched": ["actor.member", "client.hq-web-roundhistory", "client.hq-web-rounds", "data.rounds"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-roundhistory",
+        "client.hq-web-rounds",
+        "data.rounds"
+      ],
       "estimated_steps_count": 3,
-      "binding_caveats": ["W1.S4 ship"]
+      "binding_caveats": [
+        "W1.S4 ship"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F26",
@@ -339,12 +653,23 @@
       "actor": "member",
       "tier": "core",
       "status": "shipping",
-      "served_by_ships": ["W1.S4"],
+      "served_by_ships": [
+        "W1.S4"
+      ],
       "primary_user_goal": "Multiple players in the same round share a single scorecard with mutual attestation.",
       "trigger": "Play Now → Sync Round format",
-      "components_touched": ["actor.member", "client.hq-web-syncround", "data.syncrounds", "data.rounds"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-syncround",
+        "data.syncrounds",
+        "data.rounds"
+      ],
       "estimated_steps_count": 6,
-      "binding_caveats": ["src/pages/syncround.js"]
+      "binding_caveats": [
+        "src/pages/syncround.js"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F27",
@@ -352,12 +677,22 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "shipping",
-      "served_by_ships": ["W1.S8"],
+      "served_by_ships": [
+        "W1.S8"
+      ],
       "primary_user_goal": "Group golf trip with multiple rounds tracked together (e.g., Smoky Mountain Open).",
       "trigger": "Calendar → Trips section",
-      "components_touched": ["actor.member", "client.hq-web-trips", "data.trips"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-trips",
+        "data.trips"
+      ],
       "estimated_steps_count": 5,
-      "binding_caveats": ["W1.S8 ship"]
+      "binding_caveats": [
+        "W1.S8 ship"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F28",
@@ -365,12 +700,23 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "shipping",
-      "served_by_ships": ["W1.S9"],
+      "served_by_ships": [
+        "W1.S9"
+      ],
       "primary_user_goal": "Browse all-time records across courses and seasons.",
       "trigger": "Trophy Room → Records tab or Courses → Records",
-      "components_touched": ["actor.member", "client.hq-web-records", "data.rounds", "data.courses"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-records",
+        "data.rounds",
+        "data.courses"
+      ],
       "estimated_steps_count": 3,
-      "binding_caveats": ["CLAUDE.md Known Bug #4 (9/18 split)"]
+      "binding_caveats": [
+        "CLAUDE.md Known Bug #4 (9/18 split)"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F29",
@@ -378,12 +724,22 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "shipping",
-      "served_by_ships": ["W1.S9"],
+      "served_by_ships": [
+        "W1.S9"
+      ],
       "primary_user_goal": "Browse historical hole-in-one entries (rare achievement).",
       "trigger": "Trophy Room → Aces tab",
-      "components_touched": ["actor.member", "client.hq-web-aces", "data.rounds"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-aces",
+        "data.rounds"
+      ],
       "estimated_steps_count": 2,
-      "binding_caveats": ["src/pages/aces.js"]
+      "binding_caveats": [
+        "src/pages/aces.js"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F30",
@@ -391,12 +747,23 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "planned",
-      "served_by_ships": ["W1.S10"],
+      "served_by_ships": [
+        "W1.S10"
+      ],
       "primary_user_goal": "End-of-season retrospective: highlight reels, awards ceremony, season-stat aggregates.",
       "trigger": "Season-end timed surface or More → Season Recap",
-      "components_touched": ["actor.member", "client.hq-web-seasonrecap", "data.rounds", "data.members"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-seasonrecap",
+        "data.rounds",
+        "data.members"
+      ],
       "estimated_steps_count": 4,
-      "binding_caveats": ["W1.S10 Season Recap + Range; CLAUDE.md Roadmap 'Seasonal recap'"]
+      "binding_caveats": [
+        "W1.S10 Season Recap + Range; CLAUDE.md Roadmap 'Seasonal recap'"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F31",
@@ -407,9 +774,17 @@
       "served_by_ships": [],
       "primary_user_goal": "Read how things work — handicaps, ParCoins, attestation, etiquette.",
       "trigger": "More → FAQ or More → Rules",
-      "components_touched": ["actor.member", "client.hq-web-faq", "client.hq-web-rules"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-faq",
+        "client.hq-web-rules"
+      ],
       "estimated_steps_count": 2,
-      "binding_caveats": ["src/pages/faq.js + src/pages/rules.js"]
+      "binding_caveats": [
+        "src/pages/faq.js + src/pages/rules.js"
+      ],
+      "layer": "app",
+      "category": "debug"
     },
     {
       "id": "F32",
@@ -417,12 +792,25 @@
       "actor": "commissioner",
       "tier": "admin",
       "status": "shipped",
-      "served_by_ships": ["W1.S14"],
+      "served_by_ships": [
+        "W1.S14"
+      ],
       "primary_user_goal": "Generate an invite link for a prospective member; they validate and join.",
       "trigger": "Admin → Invite or More → Invite",
-      "components_touched": ["actor.commissioner", "client.hq-web-invite", "fn.validateInvite", "fn.joinLeague", "data.invites"],
+      "components_touched": [
+        "actor.commissioner",
+        "client.hq-web-invite",
+        "fn.validateInvite",
+        "fn.joinLeague",
+        "data.invites"
+      ],
       "estimated_steps_count": 3,
-      "binding_caveats": ["MF-09 implicit", "Founder Q on invite role per CLAUDE.md role terminology"]
+      "binding_caveats": [
+        "MF-09 implicit",
+        "Founder Q on invite role per CLAUDE.md role terminology"
+      ],
+      "layer": "app",
+      "category": "debug"
     },
     {
       "id": "F33",
@@ -430,12 +818,23 @@
       "actor": "member",
       "tier": "core",
       "status": "shipping",
-      "served_by_ships": ["W1.S3"],
+      "served_by_ships": [
+        "W1.S3"
+      ],
       "primary_user_goal": "Read another member's public profile — avatar, handicap, level, home course, bio.",
       "trigger": "Members directory tap, mention tap, leaderboard tap, etc.",
-      "components_touched": ["actor.member", "client.hq-web-members", "data.members"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-members",
+        "data.members"
+      ],
       "estimated_steps_count": 2,
-      "binding_caveats": ["MAIN_FLOWS.md MF-03 (overlaps)", "CLAUDE.md Privacy Defaults"]
+      "binding_caveats": [
+        "MAIN_FLOWS.md MF-03 (overlaps)",
+        "CLAUDE.md Privacy Defaults"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F34",
@@ -443,12 +842,24 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "shipped",
-      "served_by_ships": ["W1.S6", "W1.S11"],
+      "served_by_ships": [
+        "W1.S6",
+        "W1.S11"
+      ],
       "primary_user_goal": "Apply a coin-cost social effect to another member (Spotlight of Shame, Victory Lap, etc.).",
       "trigger": "Member profile / round detail → Trash Talk menu",
-      "components_touched": ["actor.member", "client.hq-web-social", "data.social_actions", "data.parcoin_transactions"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-social",
+        "data.social_actions",
+        "data.parcoin_transactions"
+      ],
       "estimated_steps_count": 4,
-      "binding_caveats": ["CLAUDE.md social actions cooldown (12-48 hours)"]
+      "binding_caveats": [
+        "CLAUDE.md social actions cooldown (12-48 hours)"
+      ],
+      "layer": "app",
+      "category": "debug"
     },
     {
       "id": "F35",
@@ -456,12 +867,24 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "shipped",
-      "served_by_ships": ["W1.S13"],
+      "served_by_ships": [
+        "W1.S13"
+      ],
       "primary_user_goal": "Switch which league is the 'active' lens for the app (per-league scoring + members visible).",
       "trigger": "More → Leagues → switch active league",
-      "components_touched": ["actor.member", "client.hq-web-leagues", "data.members", "data.leagues"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-leagues",
+        "data.members",
+        "data.leagues"
+      ],
       "estimated_steps_count": 3,
-      "binding_caveats": ["CLAUDE.md Multi-League Architecture", "_patchFirestoreForLeague"]
+      "binding_caveats": [
+        "CLAUDE.md Multi-League Architecture",
+        "_patchFirestoreForLeague"
+      ],
+      "layer": "app",
+      "category": "debug"
     },
     {
       "id": "F36",
@@ -469,12 +892,24 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "planned",
-      "served_by_ships": ["W1.S13"],
+      "served_by_ships": [
+        "W1.S13"
+      ],
       "primary_user_goal": "Start a new league (any member can host) or accept invite to join another.",
       "trigger": "More → Leagues → Create or Join",
-      "components_touched": ["actor.member", "client.hq-web-leagues", "fn.joinLeague", "data.leagues", "data.invites"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-leagues",
+        "fn.joinLeague",
+        "data.leagues",
+        "data.invites"
+      ],
       "estimated_steps_count": 5,
-      "binding_caveats": ["CLAUDE.md Growth Policy — unlimited free leagues"]
+      "binding_caveats": [
+        "CLAUDE.md Growth Policy — unlimited free leagues"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F37",
@@ -482,12 +917,24 @@
       "actor": "commissioner",
       "tier": "admin",
       "status": "planned",
-      "served_by_ships": ["W1.S14"],
+      "served_by_ships": [
+        "W1.S14"
+      ],
       "primary_user_goal": "Review pending member applications, approve or reject with note.",
       "trigger": "Admin → Pending applications",
-      "components_touched": ["actor.commissioner", "client.hq-web-admin", "fn.onMemberRoleChange", "data.members", "data.invites"],
+      "components_touched": [
+        "actor.commissioner",
+        "client.hq-web-admin",
+        "fn.onMemberRoleChange",
+        "data.members",
+        "data.invites"
+      ],
       "estimated_steps_count": 4,
-      "binding_caveats": ["W1.S14 Admin + Onboarding"]
+      "binding_caveats": [
+        "W1.S14 Admin + Onboarding"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F38",
@@ -495,12 +942,23 @@
       "actor": "commissioner",
       "tier": "admin",
       "status": "planned",
-      "served_by_ships": ["W1.S14"],
+      "served_by_ships": [
+        "W1.S14"
+      ],
       "primary_user_goal": "Temporarily suspend a member (rule violation) or restore from suspension.",
       "trigger": "Admin → Members → Suspend",
-      "components_touched": ["actor.commissioner", "client.hq-web-admin", "fn.expireSuspensionsAndTransfers", "data.members"],
+      "components_touched": [
+        "actor.commissioner",
+        "client.hq-web-admin",
+        "fn.expireSuspensionsAndTransfers",
+        "data.members"
+      ],
       "estimated_steps_count": 4,
-      "binding_caveats": ["fn.expireSuspensionsAndTransfers in functions/index.js"]
+      "binding_caveats": [
+        "fn.expireSuspensionsAndTransfers in functions/index.js"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F39",
@@ -508,12 +966,24 @@
       "actor": "commissioner",
       "tier": "admin",
       "status": "planned",
-      "served_by_ships": ["W1.S14"],
+      "served_by_ships": [
+        "W1.S14"
+      ],
       "primary_user_goal": "Hand off commissioner role to another league member.",
       "trigger": "Admin → Settings → Transfer commissioner",
-      "components_touched": ["actor.commissioner", "client.hq-web-admin", "fn.onMemberRoleChange", "data.members", "data.leagues"],
+      "components_touched": [
+        "actor.commissioner",
+        "client.hq-web-admin",
+        "fn.onMemberRoleChange",
+        "data.members",
+        "data.leagues"
+      ],
       "estimated_steps_count": 5,
-      "binding_caveats": ["fn.expireSuspensionsAndTransfers handles transfers"]
+      "binding_caveats": [
+        "fn.expireSuspensionsAndTransfers handles transfers"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F40",
@@ -521,12 +991,23 @@
       "actor": "commissioner",
       "tier": "admin",
       "status": "planned",
-      "served_by_ships": ["W1.S14"],
+      "served_by_ships": [
+        "W1.S14"
+      ],
       "primary_user_goal": "Permanently delete a league (rare; requires confirmation + cascade).",
       "trigger": "Admin → Settings → Delete league (with confirm)",
-      "components_touched": ["actor.commissioner", "client.hq-web-admin", "fn.onLeagueDelete", "data.leagues"],
+      "components_touched": [
+        "actor.commissioner",
+        "client.hq-web-admin",
+        "fn.onLeagueDelete",
+        "data.leagues"
+      ],
       "estimated_steps_count": 6,
-      "binding_caveats": ["fn.onLeagueDelete cascade trigger"]
+      "binding_caveats": [
+        "fn.onLeagueDelete cascade trigger"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F41",
@@ -534,12 +1015,23 @@
       "actor": "founder",
       "tier": "admin",
       "status": "shipped",
-      "served_by_ships": ["W1.S14"],
+      "served_by_ships": [
+        "W1.S14"
+      ],
       "primary_user_goal": "Founder-only platform-wide admin actions (impersonate, cross-league audit).",
       "trigger": "Admin → Founder mode",
-      "components_touched": ["actor.founder", "client.hq-web-admin", "fn.onFounderAccessLog", "data.members"],
+      "components_touched": [
+        "actor.founder",
+        "client.hq-web-admin",
+        "fn.onFounderAccessLog",
+        "data.members"
+      ],
       "estimated_steps_count": 4,
-      "binding_caveats": ["fn.onFounderAccessLog audit trail"]
+      "binding_caveats": [
+        "fn.onFounderAccessLog audit trail"
+      ],
+      "layer": "orch",
+      "category": "debug"
     },
     {
       "id": "F42",
@@ -547,12 +1039,23 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "planned",
-      "served_by_ships": ["W1.I1"],
+      "served_by_ships": [
+        "W1.I1"
+      ],
       "primary_user_goal": "Member files a bug report from inside the app (annotated screenshot + steps).",
       "trigger": "More → Help → Report a bug",
-      "components_touched": ["actor.member", "client.hq-web-faq (bug report subform)", "data.errors", "ext.email-or-fn"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-faq (bug report subform)",
+        "data.errors",
+        "ext.email-or-fn"
+      ],
       "estimated_steps_count": 5,
-      "binding_caveats": ["W1.I1 Member bug reporting surface"]
+      "binding_caveats": [
+        "W1.I1 Member bug reporting surface"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F43",
@@ -560,12 +1063,22 @@
       "actor": "founder",
       "tier": "admin",
       "status": "planned",
-      "served_by_ships": ["W1.I5"],
+      "served_by_ships": [
+        "W1.I5"
+      ],
       "primary_user_goal": "Founder displays a NOTICE / ALERT / CRITICAL banner to all members (e.g., maintenance window, outage).",
       "trigger": "Founder admin → Crisis banner toggle",
-      "components_touched": ["actor.founder", "client.hq-web-admin", "data.config (platform-config)"],
+      "components_touched": [
+        "actor.founder",
+        "client.hq-web-admin",
+        "data.config (platform-config)"
+      ],
       "estimated_steps_count": 3,
-      "binding_caveats": ["W1.I5 Crisis banner ship"]
+      "binding_caveats": [
+        "W1.I5 Crisis banner ship"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F44",
@@ -573,12 +1086,24 @@
       "actor": "member",
       "tier": "core",
       "status": "planned",
-      "served_by_ships": ["W3.M2"],
+      "served_by_ships": [
+        "W3.M2"
+      ],
       "primary_user_goal": "Mobile equivalent of Home — CTA card + headline stats + League Pulse + agate.",
       "trigger": "Mobile app launch lands on Home tab",
-      "components_touched": ["actor.member", "client.mobile-home", "data.rounds", "data.members"],
+      "components_touched": [
+        "actor.member",
+        "client.mobile-home",
+        "data.rounds",
+        "data.members"
+      ],
       "estimated_steps_count": 3,
-      "binding_caveats": ["CLUBHOUSE_SPEC-3a-Home.md", "CLUBHOUSE_SPEC-4-Wave3-implementation.md M2"]
+      "binding_caveats": [
+        "CLUBHOUSE_SPEC-3a-Home.md",
+        "CLUBHOUSE_SPEC-4-Wave3-implementation.md M2"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F45",
@@ -586,12 +1111,26 @@
       "actor": "member",
       "tier": "core",
       "status": "planned",
-      "served_by_ships": ["W3.M3"],
+      "served_by_ships": [
+        "W3.M3"
+      ],
       "primary_user_goal": "Mobile Play tab — course / format / players / settings; uses GPS, offline queue.",
       "trigger": "Mobile app → Play tab",
-      "components_touched": ["actor.member", "client.mobile-play", "fn.searchCourses", "data.rounds", "data.liverounds", "ext.GPS"],
+      "components_touched": [
+        "actor.member",
+        "client.mobile-play",
+        "fn.searchCourses",
+        "data.rounds",
+        "data.liverounds",
+        "ext.GPS"
+      ],
       "estimated_steps_count": 6,
-      "binding_caveats": ["CLUBHOUSE_SPEC-3b-Play.md", "M3 milestone (highest complexity)"]
+      "binding_caveats": [
+        "CLUBHOUSE_SPEC-3b-Play.md",
+        "M3 milestone (highest complexity)"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F46",
@@ -599,12 +1138,24 @@
       "actor": "member",
       "tier": "core",
       "status": "planned",
-      "served_by_ships": ["W3.M4"],
+      "served_by_ships": [
+        "W3.M4"
+      ],
       "primary_user_goal": "Mobile Stats — KPI row + handicap trend + drill-in section list + share-as-image.",
       "trigger": "Mobile app → Stats tab",
-      "components_touched": ["actor.member", "client.mobile-stats", "data.rounds", "data.members"],
+      "components_touched": [
+        "actor.member",
+        "client.mobile-stats",
+        "data.rounds",
+        "data.members"
+      ],
       "estimated_steps_count": 4,
-      "binding_caveats": ["CLUBHOUSE_SPEC-3d-Stats.md", "M4 milestone (Records cache + share-as-image)"]
+      "binding_caveats": [
+        "CLUBHOUSE_SPEC-3d-Stats.md",
+        "M4 milestone (Records cache + share-as-image)"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F47",
@@ -612,12 +1163,24 @@
       "actor": "member",
       "tier": "core",
       "status": "planned",
-      "served_by_ships": ["W3.M5"],
+      "served_by_ships": [
+        "W3.M5"
+      ],
       "primary_user_goal": "Mobile Feed — sub-segmented (rounds / range / chat highlights) with image attachments + mentions + pin.",
       "trigger": "Mobile app → Feed tab",
-      "components_touched": ["actor.member", "client.mobile-feed", "data.rounds", "data.social_actions"],
+      "components_touched": [
+        "actor.member",
+        "client.mobile-feed",
+        "data.rounds",
+        "data.social_actions"
+      ],
       "estimated_steps_count": 4,
-      "binding_caveats": ["CLUBHOUSE_SPEC-3c-Feed.md", "M5 milestone"]
+      "binding_caveats": [
+        "CLUBHOUSE_SPEC-3c-Feed.md",
+        "M5 milestone"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F48",
@@ -625,12 +1188,23 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "planned",
-      "served_by_ships": ["W3.M6"],
+      "served_by_ships": [
+        "W3.M6"
+      ],
       "primary_user_goal": "Mobile More — Play / League / You / League mgmt / About sections; settings, admin (commissioner-only).",
       "trigger": "Mobile app → More tab",
-      "components_touched": ["actor.member", "client.mobile-more", "data.members"],
+      "components_touched": [
+        "actor.member",
+        "client.mobile-more",
+        "data.members"
+      ],
       "estimated_steps_count": 3,
-      "binding_caveats": ["CLUBHOUSE_SPEC-3e-More.md", "M6 milestone (TestFlight enrollment)"]
+      "binding_caveats": [
+        "CLUBHOUSE_SPEC-3e-More.md",
+        "M6 milestone (TestFlight enrollment)"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F49",
@@ -638,12 +1212,25 @@
       "actor": "member",
       "tier": "core",
       "status": "planned",
-      "served_by_ships": ["W4.I4"],
+      "served_by_ships": [
+        "W4.I4"
+      ],
       "primary_user_goal": "New member signs up under the Discord-style displayname#XXXX identity primitive.",
       "trigger": "Invite-link first-launch (post-W4.I1 generator + W4.I3 UI ready)",
-      "components_touched": ["actor.member", "client.hq-web-onboarding", "fn.validateInvite", "fn.joinLeague", "data.members"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-onboarding",
+        "fn.validateInvite",
+        "fn.joinLeague",
+        "data.members"
+      ],
       "estimated_steps_count": 5,
-      "binding_caveats": ["W4.I4 ship", "v9.1 Handle System parked design doc"]
+      "binding_caveats": [
+        "W4.I4 ship",
+        "v9.1 Handle System parked design doc"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F50",
@@ -651,12 +1238,23 @@
       "actor": "founder",
       "tier": "admin",
       "status": "planned",
-      "served_by_ships": ["W4.I2"],
+      "served_by_ships": [
+        "W4.I2"
+      ],
       "primary_user_goal": "Founder runs production migration assigning discriminators to existing 20 members.",
       "trigger": "Founder runs W4.I2 migration script (synchronous presence required)",
-      "components_touched": ["actor.founder", "client.hq-web-admin", "fn.onMemberRoleChange", "data.members"],
+      "components_touched": [
+        "actor.founder",
+        "client.hq-web-admin",
+        "fn.onMemberRoleChange",
+        "data.members"
+      ],
       "estimated_steps_count": 4,
-      "binding_caveats": ["W4.I2 production-data ship; mixed deployment posture"]
+      "binding_caveats": [
+        "W4.I2 production-data ship; mixed deployment posture"
+      ],
+      "layer": "app",
+      "category": "ships"
     },
     {
       "id": "F51",
@@ -664,12 +1262,22 @@
       "actor": "member",
       "tier": "core",
       "status": "speculative",
-      "served_by_ships": ["Launch.PhaseC"],
+      "served_by_ships": [
+        "Launch.PhaseC"
+      ],
       "primary_user_goal": "Upload swing video, receive AI analysis with form recommendations.",
       "trigger": "Range tab → Swing analyzer or post-round prompt",
-      "components_touched": ["actor.member", "client.hq-web-range", "ext.video-analysis-api"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-range",
+        "ext.video-analysis-api"
+      ],
       "estimated_steps_count": 6,
-      "binding_caveats": ["Launch Phase C; cost-halt + scalability mandate per ROADMAP"]
+      "binding_caveats": [
+        "Launch Phase C; cost-halt + scalability mandate per ROADMAP"
+      ],
+      "layer": "app",
+      "category": "debug"
     },
     {
       "id": "F52",
@@ -677,12 +1285,21 @@
       "actor": "member",
       "tier": "supplementary",
       "status": "speculative",
-      "served_by_ships": ["Launch.PhaseC"],
+      "served_by_ships": [
+        "Launch.PhaseC"
+      ],
       "primary_user_goal": "Walk through animated practice drills (chip, putt, swing path).",
       "trigger": "Range / Drills tab → pick drill",
-      "components_touched": ["actor.member", "client.hq-web-drills"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-drills"
+      ],
       "estimated_steps_count": 4,
-      "binding_caveats": ["Launch Phase C; minimal spec"]
+      "binding_caveats": [
+        "Launch Phase C; minimal spec"
+      ],
+      "layer": "app",
+      "category": "debug"
     },
     {
       "id": "F53",
@@ -690,12 +1307,22 @@
       "actor": "member",
       "tier": "core",
       "status": "speculative",
-      "served_by_ships": ["Launch.PhaseA"],
+      "served_by_ships": [
+        "Launch.PhaseA"
+      ],
       "primary_user_goal": "Member subscribes to Pro / League+ tier per Founder-defined pricing model.",
       "trigger": "Paywall or upgrade CTA",
-      "components_touched": ["actor.member", "client.hq-web-settings", "ext.Stripe-or-equivalent"],
+      "components_touched": [
+        "actor.member",
+        "client.hq-web-settings",
+        "ext.Stripe-or-equivalent"
+      ],
       "estimated_steps_count": 5,
-      "binding_caveats": ["Launch Phase A — model defined during interlude period"]
+      "binding_caveats": [
+        "Launch Phase A — model defined during interlude period"
+      ],
+      "layer": "app",
+      "category": "debug"
     },
     {
       "id": "F54",
@@ -703,12 +1330,21 @@
       "actor": "founder",
       "tier": "admin",
       "status": "speculative",
-      "served_by_ships": ["Launch.PhaseA"],
+      "served_by_ships": [
+        "Launch.PhaseA"
+      ],
       "primary_user_goal": "Founding 20 retain free / discounted access per locked Q.",
       "trigger": "Auto-applied on subscription paywall for founding-20 UIDs",
-      "components_touched": ["actor.founder", "data.members"],
+      "components_touched": [
+        "actor.founder",
+        "data.members"
+      ],
       "estimated_steps_count": 2,
-      "binding_caveats": ["Launch Phase A; if applicable"]
+      "binding_caveats": [
+        "Launch Phase A; if applicable"
+      ],
+      "layer": "app",
+      "category": "debug"
     },
     {
       "id": "F55",
@@ -716,12 +1352,24 @@
       "actor": "system",
       "tier": "system",
       "status": "shipped",
-      "served_by_ships": ["PLC-5", "Amendments-2/4"],
+      "served_by_ships": [
+        "PLC-5",
+        "Amendments-2/4"
+      ],
       "primary_user_goal": "Every 5 min, scan Founder's Downloads for decisions-*.json / amendments-*.json and apply.",
       "trigger": "Windows Task Scheduler 5-min cadence",
-      "components_touched": ["system.cron", "data.proposals", "data.amendments"],
+      "components_touched": [
+        "system.cron",
+        "data.proposals",
+        "data.amendments"
+      ],
       "estimated_steps_count": 6,
-      "binding_caveats": ["scripts/cron/downloads-watcher.ps1", "kind detection added DC-9 amendments"]
+      "binding_caveats": [
+        "scripts/cron/downloads-watcher.ps1",
+        "kind detection added DC-9 amendments"
+      ],
+      "layer": "orch",
+      "category": "debug"
     },
     {
       "id": "F56",
@@ -729,12 +1377,22 @@
       "actor": "system",
       "tier": "system",
       "status": "shipped",
-      "served_by_ships": ["FIX-B"],
+      "served_by_ships": [
+        "FIX-B"
+      ],
       "primary_user_goal": "Daily git fetch + GC + junk quarantine + log rotation + dep updates + state audit + regen-all sanity + daily report + local commit.",
       "trigger": "Windows Task Scheduler daily 02:55 local",
-      "components_touched": ["system.cron", "system.git", "data.state-dirs"],
+      "components_touched": [
+        "system.cron",
+        "system.git",
+        "data.state-dirs"
+      ],
       "estimated_steps_count": 10,
-      "binding_caveats": ["scripts/cron/maintenance.ps1"]
+      "binding_caveats": [
+        "scripts/cron/maintenance.ps1"
+      ],
+      "layer": "orch",
+      "category": "debug"
     },
     {
       "id": "F57",
@@ -742,12 +1400,24 @@
       "actor": "agent",
       "tier": "system",
       "status": "shipped",
-      "served_by_ships": ["OT-2..5"],
+      "served_by_ships": [
+        "OT-2..5"
+      ],
       "primary_user_goal": "Daily 4-hour-budget Claude Code launch to process FIQ + bug reports overnight.",
       "trigger": "Windows Task Scheduler daily 03:00 local",
-      "components_touched": ["system.cron", "agent.claude-code", "data.fiq", "data.errors"],
+      "components_touched": [
+        "system.cron",
+        "agent.claude-code",
+        "data.fiq",
+        "data.errors"
+      ],
       "estimated_steps_count": 5,
-      "binding_caveats": ["scripts/cron/overnight-triage.ps1", "PAUSE HEURISTIC per AMD-005 (op-count default; manual-quota fallback)"]
+      "binding_caveats": [
+        "scripts/cron/overnight-triage.ps1",
+        "PAUSE HEURISTIC per AMD-005 (op-count default; manual-quota fallback)"
+      ],
+      "layer": "orch",
+      "category": "debug"
     },
     {
       "id": "F58",
@@ -755,12 +1425,24 @@
       "actor": "agent",
       "tier": "system",
       "status": "shipped",
-      "served_by_ships": ["PLC-1..7"],
+      "served_by_ships": [
+        "PLC-1..7"
+      ],
       "primary_user_goal": "Proactive orchestrator generates 1-3 proposals; Founder reviews via proposals.html; watcher applies decisions.",
       "trigger": "Weekly proactive cycle (P15)",
-      "components_touched": ["agent.proactive-orchestrator", "client.dashboard-proposals", "system.cron.downloads-watcher", "data.proposals"],
+      "components_touched": [
+        "agent.proactive-orchestrator",
+        "client.dashboard-proposals",
+        "system.cron.downloads-watcher",
+        "data.proposals"
+      ],
       "estimated_steps_count": 8,
-      "binding_caveats": ["PROPOSAL_LIFECYCLE_v8.2", "PROP-001..004 are real artifacts"]
+      "binding_caveats": [
+        "PROPOSAL_LIFECYCLE_v8.2",
+        "PROP-001..004 are real artifacts"
+      ],
+      "layer": "orch",
+      "category": "debug"
     },
     {
       "id": "F59",
@@ -768,12 +1450,23 @@
       "actor": "agent",
       "tier": "system",
       "status": "shipping",
-      "served_by_ships": ["Amendments-1..4"],
+      "served_by_ships": [
+        "Amendments-1..4"
+      ],
       "primary_user_goal": "Agent authors governance amendment draft; Founder reviews via amendments.html; watcher applies via apply-amendments.sh.",
       "trigger": "Agent authoring of proposed-* draft + migration to AMD-NNN",
-      "components_touched": ["agent.claude-code", "client.dashboard-amendments", "system.cron.downloads-watcher", "data.amendments"],
+      "components_touched": [
+        "agent.claude-code",
+        "client.dashboard-amendments",
+        "system.cron.downloads-watcher",
+        "data.amendments"
+      ],
       "estimated_steps_count": 8,
-      "binding_caveats": ["this session's commits bbc8b7c + 7dc9094"]
+      "binding_caveats": [
+        "this session's commits bbc8b7c + 7dc9094"
+      ],
+      "layer": "orch",
+      "category": "ships"
     },
     {
       "id": "F60",
@@ -781,12 +1474,22 @@
       "actor": "agent",
       "tier": "system",
       "status": "shipped",
-      "served_by_ships": ["PLC-3"],
+      "served_by_ships": [
+        "PLC-3"
+      ],
       "primary_user_goal": "Multi-agent deliberation with voters / bubble-only participants; closes on quorum or stays open long-running.",
       "trigger": "Agent opens bubble during decision moment (P3e)",
-      "components_touched": ["agent.discussion-bubble-orchestrator", "client.dashboard-bubbles", "data.discussion-bubbles"],
+      "components_touched": [
+        "agent.discussion-bubble-orchestrator",
+        "client.dashboard-bubbles",
+        "data.discussion-bubbles"
+      ],
       "estimated_steps_count": 6,
-      "binding_caveats": ["db-2026-05-13-001..006 + db-2026-05-14-001"]
+      "binding_caveats": [
+        "db-2026-05-13-001..006 + db-2026-05-14-001"
+      ],
+      "layer": "orch",
+      "category": "debug"
     },
     {
       "id": "F61",
@@ -794,12 +1497,24 @@
       "actor": "system",
       "tier": "system",
       "status": "shipped",
-      "served_by_ships": ["DC-5", "regen-all chain"],
+      "served_by_ships": [
+        "DC-5",
+        "regen-all chain"
+      ],
       "primary_user_goal": "Every cron fire: telemetry aggregation → reports regen → ops views regen → round-trip test.",
       "trigger": "Cron fire (downloads-watcher or maintenance) OR manual run",
-      "components_touched": ["system.cron", "agent.aggregate-telemetry", "agent.regen-*"],
+      "components_touched": [
+        "system.cron",
+        "agent.aggregate-telemetry",
+        "agent.regen-*"
+      ],
       "estimated_steps_count": 9,
-      "binding_caveats": ["scripts/regen-all.ps1", "60+ runs proven during DC-1..DC-9"]
+      "binding_caveats": [
+        "scripts/regen-all.ps1",
+        "60+ runs proven during DC-1..DC-9"
+      ],
+      "layer": "orch",
+      "category": "debug"
     },
     {
       "id": "F62",
@@ -807,12 +1522,25 @@
       "actor": "founder",
       "tier": "admin",
       "status": "shipped",
-      "served_by_ships": ["TU-1..5", "DC-9"],
+      "served_by_ships": [
+        "TU-1..5",
+        "DC-9"
+      ],
       "primary_user_goal": "Founder sees where tokens went (by agent / cron / ship) and anchors percentages via manual paste from claude.ai billing.",
       "trigger": "Founder runs `scripts/refresh-quota-manual.ps1` end of session",
-      "components_touched": ["actor.founder", "client.dashboard-token-usage", "agent.aggregate-token-usage", "data.telemetry"],
+      "components_touched": [
+        "actor.founder",
+        "client.dashboard-token-usage",
+        "agent.aggregate-token-usage",
+        "data.telemetry"
+      ],
       "estimated_steps_count": 5,
-      "binding_caveats": ["DC-9 removed fictional 3.5M cap", "Real-quota dependency on PROP-003"]
+      "binding_caveats": [
+        "DC-9 removed fictional 3.5M cap",
+        "Real-quota dependency on PROP-003"
+      ],
+      "layer": "orch",
+      "category": "debug"
     }
   ]
 }
