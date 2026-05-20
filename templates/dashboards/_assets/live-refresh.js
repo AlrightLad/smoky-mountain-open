@@ -30,7 +30,13 @@
 (function () {
     'use strict';
 
-    var POLL_MS = 20000;   // 20s — balances live-feel against server load
+    // 2026-05-20 iter9 (Founder 'page is randomly refreshing'): 20s poll
+    // was reloading the page every time the watcher committed (every 5min)
+    // OR when the user was mid-read. Now: 5min poll + ONLY show a 'new
+    // data available' indicator. Reload happens ONLY when user clicks the
+    // indicator. No more surprise reloads.
+    var POLL_MS = 300000;  // 5min — match the regen cadence; user-triggered reload only
+    var AUTO_RELOAD = false;  // require explicit click to reload
     var SCROLL_KEY = 'pb-live-scroll-' + location.pathname;
     var FILTER_KEY = 'pb-live-filters-' + location.pathname;
     var INDICATOR_ID = 'pb-live-indicator';
@@ -142,7 +148,18 @@
                 return;
             }
             if (fp !== loadedFingerprint) {
-                saveStateAndReload();
+                if (AUTO_RELOAD) {
+                    saveStateAndReload();
+                } else {
+                    // Mark indicator as 'new data available' — user clicks to refresh
+                    var el = document.getElementById(INDICATOR_ID);
+                    if (el) {
+                        var txtEl = el.querySelector('[data-live-text]');
+                        if (txtEl) txtEl.textContent = 'new data · click to refresh';
+                        el.style.borderColor = 'var(--accent-brass, #c9a961)';
+                        el.style.background = 'rgba(201, 169, 97, 0.18)';
+                    }
+                }
             }
         }).catch(function (e) {
             // Silent — leave last-success timestamp untouched; indicator will

@@ -385,21 +385,45 @@
                     .pb-kpi-grid.is-this-week .pb-kpi-card,
                     .pb-kpi-grid.is-this-week .pb-kpi-card.is-hero { grid-column: span 1; }
                 }
-                /* Hero card numeric typography — Stripe Atlas/Vercel observability
-                   pattern: 2x the visual weight of supporting metrics. */
+                /* 2026-05-20 iter9 (Founder 'everything but token this week
+                 * section on main page is amazing'): the hero card needs to
+                 * VISUALLY OWN the section. Bumping numeric size, padding,
+                 * and chart height for a Stripe-revenue / Linear-trends feel.
+                 * Bigger value, taller chart, more breathing room. */
                 .pb-kpi-grid.is-this-week .pb-kpi-card.is-hero .pb-kpi-value {
-                    font-size: 4.5rem; /* 72px */
+                    font-size: 5.5rem; /* 88px */
                     line-height: 0.92;
-                    letter-spacing: -0.045em;
+                    letter-spacing: -0.05em;
                     font-weight: 600;
                 }
                 .pb-kpi-grid.is-this-week .pb-kpi-card.is-hero .pb-kpi-value-unit {
-                    font-size: 2.5rem;
+                    font-size: 3rem;
                     letter-spacing: -0.022em;
+                    color: var(--accent-brass);
+                    margin-left: 4px;
                 }
                 .pb-kpi-grid.is-this-week .pb-kpi-card.is-hero {
                     padding: var(--space-6) var(--space-5) var(--space-5);
-                    min-height: 220px;
+                    min-height: 280px;
+                    background: linear-gradient(180deg,
+                        var(--bg-card) 0%,
+                        var(--bg-card) 70%,
+                        rgba(212, 168, 87, 0.04) 100%);
+                }
+                .pb-kpi-grid.is-this-week .pb-kpi-card.is-hero .pb-kpi-label {
+                    font-size: 0.75rem;
+                    letter-spacing: 0.14em;
+                    color: var(--accent-brass);
+                    text-transform: uppercase;
+                    font-weight: 600;
+                }
+                .pb-kpi-grid.is-this-week .pb-kpi-card.is-hero .pb-kpi-delta {
+                    font-size: 0.875rem;
+                    margin-top: var(--space-2);
+                }
+                .pb-kpi-grid.is-this-week .pb-kpi-card.is-hero .pb-kpi-delta strong {
+                    font-size: 1rem;
+                    font-weight: 700;
                 }
                 /* Supporting cards. */
                 .pb-kpi-grid.is-this-week .pb-kpi-value {
@@ -435,7 +459,7 @@
                     display: block;
                     overflow: visible;
                 }
-                .pb-kpi-card.is-hero .pb-kpi-sparkline { height: 72px; }
+                .pb-kpi-card.is-hero .pb-kpi-sparkline { height: 108px; margin-top: var(--space-3); }
                 /* iter5 (2026-05-20): SVG bar variant of sparkline. Bars
                  * are rectangles → no anti-aliasing curve blur. Each bar:
                  * solid brass at 60% opacity, tallest-bar at 100%, hover
