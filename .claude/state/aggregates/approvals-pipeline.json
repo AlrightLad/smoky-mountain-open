@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T21:29:55Z",
-  "generated_at": "2026-05-20T21:29:55Z",
+  "timestamp": "2026-05-20T21:36:59Z",
+  "generated_at": "2026-05-20T21:36:59Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
-  "available": false,
-  "status": "missing",
-  "raw_status": "missing",
-  "summary": "no downloads-watcher logs found",
-  "as_of": "2026-05-20T21:29:55.520920+00:00",
+  "available": true,
+  "status": "green",
+  "raw_status": "green",
+  "summary": "watcher no-new-files 1.2min ago",
+  "as_of": "2026-05-20T21:35:48Z",
   "stale": false,
-  "age_hours": null,
+  "age_hours": 0.02,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -20,7 +20,36 @@
     "amendments_inbox": 0,
     "escalations_inbox": 0
   },
-  "details": [],
+  "details": [
+    {
+      "category": "marker",
+      "status": "info",
+      "name": "last-processed-decisions",
+      "note": "file=decisions-canary-2026-05-20T19-05-19Z.json kind=decisions",
+      "when": "2026-05-20T19:08:40.7809674Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-20T21-34-56Z-downloads-watcher.log",
+      "note": "[21:34:57] SKIP working tree dirty with non-routine files: scripts/cron/downloads-watcher.ps1",
+      "when": "2026-05-20T21:34:56Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-20T21-34-55Z-downloads-watcher.log",
+      "note": "[21:34:56] SKIP working tree dirty with non-routine files: scripts/cron/downloads-watcher.ps1",
+      "when": "2026-05-20T21:34:55Z"
+    },
+    {
+      "category": "stall",
+      "status": "incomplete",
+      "name": "2026-05-20T21-34-10Z-downloads-watcher.log",
+      "note": "[21:34:12] SKIP working tree still dirty after auto-commit attempt",
+      "when": "2026-05-20T21:34:10Z"
+    }
+  ],
   "links": [
     {
       "label": "Approvals pipeline trace",
@@ -33,8 +62,8 @@
   ],
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
-    "watcher_runs_inspected": 0,
+    "watcher_runs_inspected": 10,
     "consecutive_skips": 0,
-    "age_minutes": null
+    "age_minutes": 1.2
   }
 }
