@@ -1,0 +1,111 @@
+[regen-all] START 2026-05-20T07:07:22Z   python=/c/Users/Zach/AppData/Local/Programs/Python/Python312/python.exe
+[regen-all] 07:07:22   scaffold-from-templates ...
+[scaffold-from-templates] done: scaffolded=0 skipped=11
+[regen-all] 07:07:23   scan-shipped-proposals ...
+    [scan-shipped] approved/ is empty; nothing to scan
+[regen-all] scan-shipped-proposals OK
+[regen-all] 07:07:23   aggregate-telemetry ...
+    [aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json (write-content-changed)
+    [aggregate] meter_status=wired-real
+    [aggregate] events=4173 handoffs=1 bubbles=7 proposals_pending=1
+[regen-all] aggregate-telemetry OK
+[regen-all] 07:07:23   aggregate-token-usage ...
+    [aggregate-token] real_events=65 estimated_events=2626 manual_entries=0
+    [aggregate-token] all-time: real=7167947446 estimated=7341440 manual=0
+    [aggregate-token] snapshot write=False (skip-idempotent-fresh-10s) -> .claude\state\telemetry\aggregates\token-usage-snapshot.json
+    [aggregate-token] cursor   write=True (write-content-changed) -> .claude\state\telemetry\aggregates\.token-usage-cursor.json
+[regen-all] aggregate-token-usage OK
+[regen-all] 07:07:24   aggregate-test-health ...
+    [aggregate-test-health] OK status=green timestamp=2026-05-20T07:07:24Z write=False (skip-idempotent-grace-content-unchanged-38409s)
+[regen-all] aggregate-test-health OK
+[regen-all] 07:07:24   aggregate-security-health ...
+    [aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=False (skip-idempotent-grace-content-unchanged-38410s)
+[regen-all] aggregate-security-health OK
+[regen-all] 07:07:26   aggregate-approvals-pipeline ...
+    [aggregate-approvals-pipeline] OK status=red summary=watcher cycling · applies blocked (5 skips on dirty tree) · 1 in inbox write=False (skip-idempotent-fresh-13s)
+[regen-all] aggregate-approvals-pipeline OK
+[regen-all] 07:07:26   aggregate-architecture-review ...
+    [aggregate-architecture-review] OK status=green findings=0 pending_recs=0 write=False (skip-idempotent-grace-content-unchanged-4538s)
+[regen-all] aggregate-architecture-review OK
+[regen-all] 07:07:26   aggregate-fiq-status ...
+    [aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-38416s)
+[regen-all] aggregate-fiq-status OK
+[regen-all] 07:07:29   inject-health-banners ...
+    [inject-health-banners] banner-architecture      already-present
+    [inject-health-banners] banner-approvals         already-present
+    [inject-health-banners] banner-security          already-present
+    [inject-health-banners] banner-test              already-present
+    [inject-health-banners] detail-architecture      already-present
+    [inject-health-banners] detail-approvals         already-present
+    [inject-health-banners] detail-security          already-present
+    [inject-health-banners] detail-test              already-present
+[regen-all] inject-health-banners OK
+[regen-all] 07:07:29   regen-proposals ...
+    [regen-proposals] running shipped-scan first...
+      [scan] [scan-shipped] approved/ is empty; nothing to scan
+    [regen-proposals] OK   proposals.html
+    [regen-proposals] counts: pending=1 approved=0 deferred=0 shipped=6 rejected=0
+[regen-all] regen-proposals OK
+[regen-all] 07:07:29   regen-amendments ...
+    [regen-amendments] OK   amendments.html
+    [regen-amendments] counts: pending=0 approved=0 deferred=0 applied=28 rejected=0
+[regen-all] regen-amendments OK
+[regen-all] 07:07:29   regen-escalations ...
+    [regen-escalations] OK   escalations.html
+    [regen-escalations] pending=0 approved=0 applied=3 deferred=0 rejected=0
+[regen-all] regen-escalations OK
+[regen-all] 07:07:29   regen-dashboard ...
+    [regen-dashboard] OK   dashboard.html
+    [regen-dashboard] meter_status=wired-real
+    [regen-dashboard] handoffs=10 ships=10 proposals_pending=1 bubbles=7 events=4173
+[regen-all] regen-dashboard OK
+[regen-all] 07:07:30   regen-ops-views ...
+    [regen] 7 bubbles (activity.html owned by regen-activity.py; proposals.html owned by regen-proposals.py)
+    [regen] OK   discussion-bubbles.html
+[regen-all] regen-ops-views OK
+[regen-all] 07:07:31   regen-main-flows ...
+    [regen-main-flows] WARN: 6 orphan components in grid (referenced by no flow's path):
+        actor.guest
+        actor.invitee
+        dist.capacitor-ios
+        ext.open-meteo
+        fn.expire-suspensions
+        fn.join-league
+    [regen-main-flows] OK   main-flows.html
+    [regen-main-flows] 6 columns, 47 components, 62 flows; orphans=6
+[regen-all] regen-main-flows OK
+[regen-all] 07:07:31   regen-token-usage ...
+    [regen-token-usage] OK   token-usage.html
+    [regen-token-usage] all-time: real=7167947446 estimated=7341440 manual=0
+    [regen-token-usage] pie_views slices: agent=3 work=2 session_top10=10
+[regen-all] regen-token-usage OK
+[regen-all] 07:07:31   regen-index ...
+    [regen-index] OK   index.html
+    [regen-index] ships=31 proposals_pending=1 bubbles=1 halt=none git=3ca929ba
+[regen-all] regen-index OK
+
+[regen-all] running round-trip sanity test...
+[write-regen-heartbeat] OK ts=2026-05-20T07:07:48Z source=regen-all.sh status=GATE-FAIL
+[regen-all] ROUND-TRIP TEST FAILED (exit 1) — heartbeat written with status=GATE-FAIL.
+    [36m
+    [quota-status] PROP-003.a sidecar schema discipline...[0m
+    [32m  ✓ quota-status        [quota-status-schema] OK: data_source=auto-derived weekly_pct=None org_monthly_pct=None stale_seconds=None[0m
+    [36m
+    [pause-discipline] No fictional-cap references in production tree...[0m
+    [32m  ✓ no fictional-cap references in production tree (audit doc + governance drafts + historical proposals exempt)[0m
+    [36m
+    [wiring] Cross-checking scenario tokens against CSS + data...[0m
+    [32m  ✓ agent-to-agent                   has CSS class + JS-populated dropdown option[0m
+    [32m  ✓ cycle-to-cycle                   has CSS class + JS-populated dropdown option[0m
+    [32m  ✓ subagent-to-parent               has CSS class + JS-populated dropdown option[0m
+    [32m  ✓ proactive-to-ship                has CSS class + JS-populated dropdown option[0m
+    [32m  ✓ discussion-bubble-to-caller      has CSS class + JS-populated dropdown option[0m
+    
+    [31m[1m=== 5 FAILURE(S) ===[0m[0m
+    [31m  - lifecycle:shipped-fields: prop=PROP-010[0m
+    [31m  - lifecycle:shipped-fields: prop=PROP-006[0m
+    [31m  - theme:dashboard.html: raw hex count 1 > allowed 0[0m
+    [31m  - proposal-readiness:markers: 1 issues[0m
+    [31m  - escalations:lifecycle: 3 issues[0m
+
+[regen-all] test-health.json will reflect the gate failure on next aggregate refresh
