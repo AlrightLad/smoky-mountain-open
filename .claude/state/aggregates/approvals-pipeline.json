@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T20:03:37Z",
-  "generated_at": "2026-05-20T20:03:37Z",
+  "timestamp": "2026-05-20T20:07:13Z",
+  "generated_at": "2026-05-20T20:07:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "green",
-  "raw_status": "green",
-  "summary": "watcher no-new-files 0.1min ago",
-  "as_of": "2026-05-20T20:03:33Z",
+  "status": "red",
+  "raw_status": "red",
+  "summary": "watcher errored",
+  "as_of": "2026-05-20T20:05:48Z",
   "stale": false,
-  "age_hours": 0.0016666666666666668,
+  "age_hours": 0.02333333333333333,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -27,6 +27,13 @@
       "name": "last-processed-decisions",
       "note": "file=decisions-canary-2026-05-20T19-05-19Z.json kind=decisions",
       "when": "2026-05-20T19:08:40.7809674Z"
+    },
+    {
+      "category": "stall",
+      "status": "incomplete",
+      "name": "2026-05-20T20-05-48Z-downloads-watcher.log",
+      "note": "[20:05:50] SKIP working tree still dirty after auto-commit attempt",
+      "when": "2026-05-20T20:05:48Z"
     },
     {
       "category": "stall",
@@ -50,6 +57,6 @@
   "_meta": {
     "watcher_runs_inspected": 10,
     "consecutive_skips": 0,
-    "age_minutes": 0.1
+    "age_minutes": 1.4
   }
 }
