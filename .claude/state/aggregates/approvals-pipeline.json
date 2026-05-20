@@ -1,13 +1,13 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T07:02:13Z",
-  "generated_at": "2026-05-20T07:02:13Z",
+  "timestamp": "2026-05-20T07:12:13Z",
+  "generated_at": "2026-05-20T07:12:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
-  "summary": "watcher cycling · applies blocked (4 skips on dirty tree) · 1 in inbox",
-  "as_of": "2026-05-20T07:00:48Z",
+  "summary": "watcher cycling · applies blocked (6 skips on dirty tree) · 1 in inbox",
+  "as_of": "2026-05-20T07:10:48Z",
   "stale": false,
   "age_hours": 0.02333333333333333,
   "counts": {
@@ -31,23 +31,23 @@
     {
       "category": "stall",
       "status": "skip-dirty",
+      "name": "2026-05-20T07-10-48Z-downloads-watcher.log",
+      "note": "[07:10:48] SKIP working tree dirty with non-routine files: .claude/state/audit-2026-05-19/agentshield-scan.txt, .claude/state/audit-2026-05-19/audit-activity.png, .claude/state/audit-2026-05-19/audit-",
+      "when": "2026-05-20T07:10:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-20T07-05-48Z-downloads-watcher.log",
+      "note": "[07:05:48] SKIP working tree dirty with non-routine files: .claude/state/audit-2026-05-19/agentshield-scan.txt, .claude/state/audit-2026-05-19/audit-activity.png, .claude/state/audit-2026-05-19/audit-",
+      "when": "2026-05-20T07:05:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
       "name": "2026-05-20T07-00-48Z-downloads-watcher.log",
       "note": "[07:00:48] SKIP working tree dirty with non-routine files: .claude/state/stop-decisions/2026-05-20.ndjson",
       "when": "2026-05-20T07:00:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-20T06-55-48Z-downloads-watcher.log",
-      "note": "[06:55:48] SKIP working tree dirty with non-routine files: .claude/state/dashboard-health/post-commit-hook.log, .claude/state/stop-decisions/2026-05-20.ndjson",
-      "when": "2026-05-20T06:55:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-20T06-50-48Z-downloads-watcher.log",
-      "note": "[06:50:48] SKIP working tree dirty with non-routine files: .claude/state/stop-decisions/2026-05-20.ndjson",
-      "when": "2026-05-20T06:50:48Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 4,
+    "consecutive_skips": 6,
     "age_minutes": 1.4
   }
 }
