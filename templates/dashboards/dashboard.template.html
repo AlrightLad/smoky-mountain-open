@@ -436,6 +436,21 @@
                     overflow: visible;
                 }
                 .pb-kpi-card.is-hero .pb-kpi-sparkline { height: 72px; }
+                /* iter5 (2026-05-20): SVG bar variant of sparkline. Bars
+                 * are rectangles → no anti-aliasing curve blur. Each bar:
+                 * solid brass at 60% opacity, tallest-bar at 100%, hover
+                 * lifts to 100% for any bar. shape-rendering crispEdges
+                 * because we want sharp pixel-aligned rectangles. */
+                .pb-kpi-sparkline rect.pb-spark-bar {
+                    fill: currentColor;
+                    opacity: 0.55;
+                    shape-rendering: crispEdges;
+                    transition: opacity 140ms ease-out;
+                }
+                .pb-kpi-sparkline rect.pb-spark-bar.is-max { opacity: 1; }
+                .pb-kpi-sparkline rect.pb-spark-bar:hover { opacity: 1; }
+                .pb-kpi-card.is-hero .pb-kpi-sparkline rect.pb-spark-bar { opacity: 0.65; }
+                .pb-kpi-card.is-hero .pb-kpi-sparkline rect.pb-spark-bar.is-max { opacity: 1; }
                 .pb-kpi-sparkline path.pb-spark-line {
                     fill: none;
                     stroke: currentColor;
@@ -1044,25 +1059,30 @@
                     var vbox = (svg.getAttribute('viewBox') || '0 0 200 32').split(/\s+/);
                     var w = parseFloat(vbox[2]) || 200;
                     var h = parseFloat(vbox[3]) || 32;
-                    var spark = buildSpark(values, w, h);
-                    if (!spark) return;
+                    // 2026-05-20 iter5 (Founder 'tokens this week graph is super
+                    // blurry and not legible'): replace SVG path sparkline with
+                    // 7 vertical BARS. Rectangles cannot anti-alias to blur the
+                    // way curved paths with sub-pixel coords do. Stripe-revenue
+                    // pattern: one bar per data point, tallest day highlighted,
+                    // crisp shape-rendering. Round all coords to integers.
                     var hover = opts && opts.hoverLabels ? opts.hoverLabels : [];
-                    var pad = 3;
-                    var stepX = (w - pad * 2) / (values.length - 1);
-                    var hovers = values.map(function (v, i) {
+                    var max = Math.max.apply(null, values) || 1;
+                    var gap = Math.max(2, Math.floor(w / values.length / 4));
+                    var barW = Math.floor((w - gap * (values.length - 1)) / values.length);
+                    var pad = 2;
+                    var floorY = h - 1;
+                    var bars = values.map(function (v, i) {
+                        var bx = i * (barW + gap);
+                        var bh = Math.max(2, Math.round((h - pad * 2) * (v / max)));
+                        var by = floorY - bh;
                         var label = hover[i] != null ? hover[i] : String(v);
-                        var rx = i === 0 ? 0 : pad + stepX * (i - 0.5);
-                        var rw = i === values.length - 1 ? w - rx : stepX;
-                        return '<rect x="' + rx.toFixed(2) + '" y="0" width="' + rw.toFixed(2)
-                             + '" height="' + h + '" fill="transparent" pointer-events="all">'
-                             + '<title>' + label + '</title></rect>';
+                        var isMax = v === max;
+                        var cls = 'pb-spark-bar' + (isMax ? ' is-max' : '');
+                        return '<rect class="' + cls + '" x="' + bx + '" y="' + by
+                             + '" width="' + barW + '" height="' + bh
+                             + '" rx="1"><title>' + label + '</title></rect>';
                     }).join('');
-                    svg.innerHTML = ''
-                        + '<path class="pb-spark-fill" d="' + spark.fill + '"/>'
-                        + '<path class="pb-spark-line" d="' + spark.line + '"/>'
-                        + '<circle class="pb-spark-last" cx="' + spark.lastX.toFixed(2)
-                        + '" cy="' + spark.lastY.toFixed(2) + '" r="2.5"/>'
-                        + hovers;
+                    svg.innerHTML = bars;
                 }
                 function setDelta(selector, values, opts) {
                     var el = document.querySelector(selector);
