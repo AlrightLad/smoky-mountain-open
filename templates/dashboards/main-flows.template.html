@@ -613,8 +613,25 @@
                     <div class="mf-rail-search-wrap">
                         <input type="search" id="mf-rail-search" class="mf-rail-search" placeholder="Search flow id or name…" aria-label="Search flows">
                     </div>
+                    <!-- 2026-05-20 Founder redirect: PRIMARY filter axes are now
+                         LAYER (App vs Orch) + CATEGORY (Debug / Ships / Data).
+                         The Janowiak surface answers "what fires when X
+                         happens?" — default to App + Debug, the operative
+                         debug-when-something-breaks frame. Secondary chips
+                         (actor / tier) remain below for power-users. -->
+                    <div class="mf-rail-chips" data-axis="layer" aria-label="Filter by layer">
+                        <button class="mf-rail-chip is-on" data-layer="app">app</button>
+                        <button class="mf-rail-chip" data-layer="orch">orch</button>
+                        <button class="mf-rail-chip" data-layer="">both</button>
+                    </div>
+                    <div class="mf-rail-chips" data-axis="category" aria-label="Filter by category">
+                        <button class="mf-rail-chip is-on" data-category="debug">debug</button>
+                        <button class="mf-rail-chip" data-category="ships">ships</button>
+                        <button class="mf-rail-chip" data-category="data">data</button>
+                        <button class="mf-rail-chip" data-category="">all</button>
+                    </div>
                     <div class="mf-rail-chips" data-axis="actor" aria-label="Filter by actor">
-                        <button class="mf-rail-chip is-on" data-actor="">all</button>
+                        <button class="mf-rail-chip is-on" data-actor="">all actors</button>
                         <button class="mf-rail-chip" data-actor="member">member</button>
                         <button class="mf-rail-chip" data-actor="commissioner">commish</button>
                         <button class="mf-rail-chip" data-actor="founder">founder</button>
@@ -773,17 +790,21 @@
                     var hasPath = flowHasPath(f.id);
                     var actor = actorShort(f.actor);
                     var tier = (f.tier || '').toLowerCase();
+                    var layer = (f.layer || '').toLowerCase();
+                    var category = (f.category || '').toLowerCase();
                     return ''
                         + '<li class="mf-flows-item' + (hasPath ? ' has-path' : '') + '"'
                         +   ' data-flow-id="' + esc(f.id) + '"'
                         +   ' data-actor="' + esc(actor) + '"'
                         +   ' data-tier="' + esc(tier) + '"'
+                        +   ' data-layer="' + esc(layer) + '"'
+                        +   ' data-category="' + esc(category) + '"'
                         +   ' data-status="' + esc(f.status || '') + '"'
                         +   ' data-name="' + esc((f.name || '').toLowerCase()) + '"'
                         +   ' title="' + esc(f.primary_user_goal || f.name || '') + '">'
                         +   '<span class="mf-flows-id">' + esc(f.id) + '</span>'
                         +   '<span class="mf-flows-name">' + esc(f.name) + '</span>'
-                        +   '<span class="mf-flows-tier-badge">' + esc(tier) + '</span>'
+                        +   '<span class="mf-flows-tier-badge">' + esc(category || tier) + '</span>'
                         +   statusBadge(f.status)
                         + '</li>';
                 }).join('');
@@ -852,20 +873,28 @@
             function applyRailFilters() {
                 var searchEl = document.getElementById('mf-rail-search');
                 var search = (searchEl && searchEl.value || '').toLowerCase().trim();
+                var layerBtn = document.querySelector('.mf-rail-chips[data-axis="layer"] .mf-rail-chip.is-on');
+                var categoryBtn = document.querySelector('.mf-rail-chips[data-axis="category"] .mf-rail-chip.is-on');
                 var actorBtn = document.querySelector('.mf-rail-chips[data-axis="actor"] .mf-rail-chip.is-on');
                 var tierBtn = document.querySelector('.mf-rail-chips[data-axis="tier"] .mf-rail-chip.is-on');
+                var layer = layerBtn ? (layerBtn.getAttribute('data-layer') || '') : '';
+                var category = categoryBtn ? (categoryBtn.getAttribute('data-category') || '') : '';
                 var actor = actorBtn ? (actorBtn.getAttribute('data-actor') || '') : '';
                 var tier = tierBtn ? (tierBtn.getAttribute('data-tier') || '') : '';
                 var visibleCount = 0;
                 FLOWS_LIST.querySelectorAll('.mf-flows-item').forEach(function (li) {
+                    var rowLayer = li.getAttribute('data-layer') || '';
+                    var rowCategory = li.getAttribute('data-category') || '';
                     var rowActor = li.getAttribute('data-actor') || '';
                     var rowTier = li.getAttribute('data-tier') || '';
                     var rowName = li.getAttribute('data-name') || '';
                     var rowId = (li.getAttribute('data-flow-id') || '').toLowerCase();
+                    var layerOk = !layer || rowLayer === layer;
+                    var categoryOk = !category || rowCategory === category;
                     var actorOk = !actor || rowActor === actor;
                     var tierOk = !tier || rowTier === tier;
                     var searchOk = !search || rowName.indexOf(search) !== -1 || rowId.indexOf(search) !== -1;
-                    var show = actorOk && tierOk && searchOk;
+                    var show = layerOk && categoryOk && actorOk && tierOk && searchOk;
                     li.classList.toggle('is-hidden', !show);
                     if (show) visibleCount++;
                 });

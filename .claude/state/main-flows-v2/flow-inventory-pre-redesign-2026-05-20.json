@@ -1,0 +1,3268 @@
+{
+  "schema_version": 1,
+  "generated_by": "scripts/regen-main-flows.py — source-of-truth maintained here, NOT in HTML",
+  "source_doc": ".claude/state/wave-zero-dry-run/remediation/proposed-MAIN_FLOWS.md",
+  "architecture_audit": ".claude/state/wave-zero-dry-run/architecture-audit.md",
+  "columns": [
+    {
+      "id": "actor",
+      "label": "Actors",
+      "subtitle": "Who interacts with PARBAUGHS",
+      "color_token": "--col-actor",
+      "components": [
+        {
+          "id": "actor.member",
+          "label": "Member",
+          "subtitle": "Auth'd league member"
+        },
+        {
+          "id": "actor.commissioner",
+          "label": "Commissioner",
+          "subtitle": "Per-league admin"
+        },
+        {
+          "id": "actor.founder",
+          "label": "Founder",
+          "subtitle": "Platform-level (Zach)"
+        },
+        {
+          "id": "actor.invitee",
+          "label": "Invitee",
+          "subtitle": "Pre-claim link recipient"
+        },
+        {
+          "id": "actor.guest",
+          "label": "Guest",
+          "subtitle": "Unauth visitor"
+        }
+      ]
+    },
+    {
+      "id": "client",
+      "label": "Client surfaces",
+      "subtitle": "src/pages/* + Capacitor",
+      "color_token": "--col-client",
+      "components": [
+        {
+          "id": "client.hq-home",
+          "label": "HQ Home",
+          "subtitle": "src/pages/home.js"
+        },
+        {
+          "id": "client.hq-playnow",
+          "label": "Play Now",
+          "subtitle": "src/pages/playnow.js"
+        },
+        {
+          "id": "client.hq-roundhistory",
+          "label": "Round detail",
+          "subtitle": "src/pages/round.js"
+        },
+        {
+          "id": "client.hq-leagues",
+          "label": "Leagues + standings",
+          "subtitle": "src/pages/leagues.js"
+        },
+        {
+          "id": "client.hq-members",
+          "label": "Members + Find",
+          "subtitle": "src/pages/members.js"
+        },
+        {
+          "id": "client.hq-feed",
+          "label": "Activity feed",
+          "subtitle": "src/pages/feed.js"
+        },
+        {
+          "id": "client.hq-wagers",
+          "label": "Wagers + bounties",
+          "subtitle": "src/pages/wagers.js"
+        },
+        {
+          "id": "client.hq-teetimes",
+          "label": "Calendar + tee",
+          "subtitle": "src/pages/calendar.js"
+        },
+        {
+          "id": "client.hq-trophy",
+          "label": "Trophy Room",
+          "subtitle": "src/pages/trophyroom.js"
+        },
+        {
+          "id": "client.hq-range",
+          "label": "Range",
+          "subtitle": "src/pages/range.js"
+        },
+        {
+          "id": "client.hq-spectator",
+          "label": "Spectator HUD",
+          "subtitle": "src/pages/spectator.js"
+        },
+        {
+          "id": "client.hq-settings",
+          "label": "Settings",
+          "subtitle": "src/pages/settings.js"
+        },
+        {
+          "id": "client.hq-admin",
+          "label": "Admin",
+          "subtitle": "src/pages/admin.js"
+        },
+        {
+          "id": "client.mobile-capacitor",
+          "label": "Mobile (Capacitor)",
+          "subtitle": "iOS + Android wrapper"
+        }
+      ]
+    },
+    {
+      "id": "fn",
+      "label": "Auth + Functions",
+      "subtitle": "Firebase Auth + 8 Cloud Functions",
+      "color_token": "--col-auth-fn",
+      "components": [
+        {
+          "id": "fn.auth",
+          "label": "Firebase Auth",
+          "subtitle": "Email/password"
+        },
+        {
+          "id": "fn.search-courses",
+          "label": "searchCourses",
+          "subtitle": "Proxy → GolfCourseAPI"
+        },
+        {
+          "id": "fn.validate-invite",
+          "label": "validateInvite",
+          "subtitle": "onRequest"
+        },
+        {
+          "id": "fn.send-push",
+          "label": "sendPushNotification",
+          "subtitle": "onCreate(pendingPush)"
+        },
+        {
+          "id": "fn.on-member-role-change",
+          "label": "onMemberRoleChange",
+          "subtitle": "onUpdate(members)"
+        },
+        {
+          "id": "fn.on-league-delete",
+          "label": "onLeagueDelete",
+          "subtitle": "onDelete(leagues)"
+        },
+        {
+          "id": "fn.join-league",
+          "label": "joinLeague",
+          "subtitle": "onCall"
+        },
+        {
+          "id": "fn.on-founder-access-log",
+          "label": "onFounderAccessLog",
+          "subtitle": "onCreate(founder_access_logs)"
+        },
+        {
+          "id": "fn.expire-suspensions",
+          "label": "expireSuspensions",
+          "subtitle": "Scheduled"
+        }
+      ]
+    },
+    {
+      "id": "data",
+      "label": "Firestore (data)",
+      "subtitle": "30 collections, 12 groups",
+      "color_token": "--col-data",
+      "components": [
+        {
+          "id": "data.members",
+          "label": "members",
+          "subtitle": "Profiles, handicaps, leagues[]"
+        },
+        {
+          "id": "data.leagues",
+          "label": "leagues",
+          "subtitle": "League docs + memberUids"
+        },
+        {
+          "id": "data.rounds",
+          "label": "rounds (+live)",
+          "subtitle": "rounds, liverounds, syncrounds, scramble_rounds"
+        },
+        {
+          "id": "data.dms",
+          "label": "dms + chat",
+          "subtitle": "DMs, messages, chat threads"
+        },
+        {
+          "id": "data.notifications",
+          "label": "notifications",
+          "subtitle": "+ pendingPush queue"
+        },
+        {
+          "id": "data.parcoins",
+          "label": "parcoin ledger",
+          "subtitle": "parcoin_transactions"
+        },
+        {
+          "id": "data.wagers-bounties",
+          "label": "wagers + bounties",
+          "subtitle": "bounties + partygames"
+        },
+        {
+          "id": "data.events",
+          "label": "events + tee",
+          "subtitle": "calendar_events, teetimes, trips"
+        },
+        {
+          "id": "data.courses",
+          "label": "courses + reviews",
+          "subtitle": "courses + course_reviews"
+        },
+        {
+          "id": "data.social",
+          "label": "social + photos",
+          "subtitle": "social_actions + photos"
+        },
+        {
+          "id": "data.config",
+          "label": "config + misc",
+          "subtitle": "config, errors, reports, presence"
+        },
+        {
+          "id": "data.invites",
+          "label": "invites",
+          "subtitle": "Invite codes"
+        }
+      ]
+    },
+    {
+      "id": "dist",
+      "label": "Distribution",
+      "subtitle": "GitHub Pages + Capacitor",
+      "color_token": "--col-distribution",
+      "components": [
+        {
+          "id": "dist.gh-pages",
+          "label": "GitHub Pages",
+          "subtitle": "alrightlad.github.io/smoky-mountain-open"
+        },
+        {
+          "id": "dist.capacitor-ios",
+          "label": "iOS (Capacitor)",
+          "subtitle": ".github/workflows/ios-build.yml"
+        },
+        {
+          "id": "dist.capacitor-android",
+          "label": "Android (Capacitor)",
+          "subtitle": ".github/workflows/android-build.yml"
+        }
+      ]
+    },
+    {
+      "id": "ext",
+      "label": "External services",
+      "subtitle": "Outbound API integrations",
+      "color_token": "--col-external",
+      "components": [
+        {
+          "id": "ext.golfcourseapi",
+          "label": "GolfCourseAPI",
+          "subtitle": "Course search (via fn proxy)"
+        },
+        {
+          "id": "ext.open-meteo",
+          "label": "Open-Meteo",
+          "subtitle": "Weather + geocoding"
+        },
+        {
+          "id": "ext.fcm",
+          "label": "FCM",
+          "subtitle": "Push notifications"
+        },
+        {
+          "id": "ext.anthropic",
+          "label": "Anthropic API",
+          "subtitle": "Phase 4 — AI Caddie (planned)"
+        }
+      ]
+    }
+  ],
+  "flows": [
+    {
+      "id": "F1",
+      "name": "Log a round",
+      "primary_user_goal": "Member captures a round in progress or after play, sees handicap update on Home.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S4",
+        "W1.S2"
+      ],
+      "status": "shipped-on-current-system",
+      "path": [
+        "actor.member",
+        "client.hq-home",
+        "client.hq-playnow",
+        "data.courses",
+        "data.rounds",
+        "data.members",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-home",
+          "label": "Open Home",
+          "description": "Member lands on HQ Home (home.js) after auth; League Pulse + active-round override render from current league context."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-home",
+          "to": "client.hq-playnow",
+          "label": "Tap 'Log a round'",
+          "description": "Router.go('playnow') routes to src/pages/playnow.js. Form scaffolds via renderLogHoleGrid() (rounds.js:369)."
+        },
+        {
+          "n": 3,
+          "from": "client.hq-playnow",
+          "to": "data.courses",
+          "label": "Course lookup",
+          "description": "PB.getCourseByName(name) hits in-memory cache (data.js:285); on miss, route to searchCourses fn."
+        },
+        {
+          "n": 4,
+          "from": "client.hq-playnow",
+          "to": "data.rounds",
+          "label": "Submit round",
+          "description": "_submitRoundEntry(formData) writes round doc with score, holeScores[], firData, girData, puttsData, etc. Timestamp = date_noon_local (B.44)."
+        },
+        {
+          "n": 5,
+          "from": "data.rounds",
+          "to": "data.members",
+          "label": "Handicap recompute",
+          "description": "Round write triggers handicap recompute via WHS calc in src/core/handicap.js; members doc updated with new differential."
+        },
+        {
+          "n": 6,
+          "from": "data.members",
+          "to": "client.hq-home",
+          "label": "Home reflects new handicap",
+          "description": "Home re-renders on next visit (Router.go('home')) showing updated handicap + last-round summary."
+        },
+        {
+          "n": 7,
+          "from": "client.hq-home",
+          "to": "dist.gh-pages",
+          "label": "Static serve via GH Pages",
+          "description": "All client surfaces serve from alrightlad.github.io/smoky-mountain-open per deploy.yml workflow."
+        }
+      ]
+    },
+    {
+      "id": "F2",
+      "name": "View League Pulse / leaderboard",
+      "primary_user_goal": "Member sees recent league activity, hot streaks, and standings.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S2",
+        "W1.S11",
+        "W1.S13"
+      ],
+      "status": "shipped-on-current-system",
+      "path": [
+        "actor.member",
+        "client.hq-home",
+        "client.hq-feed",
+        "client.hq-leagues",
+        "data.rounds",
+        "data.leagues",
+        "data.members"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-home",
+          "label": "Open Home",
+          "description": "Home renders League Pulse band above the fold (home.js:1842+)."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-home",
+          "to": "data.rounds",
+          "label": "Pulse pulls rounds",
+          "description": "PB.getRounds() returns recent rounds, filtered by activeLeague leagueId field (per CLAUDE.md league-scoping rules)."
+        },
+        {
+          "n": 3,
+          "from": "client.hq-home",
+          "to": "data.members",
+          "label": "Resolves player names",
+          "description": "fbMemberCache populated at auth; rounds[].player resolves via PB.getPlayer(uid)."
+        },
+        {
+          "n": 4,
+          "from": "client.hq-home",
+          "to": "client.hq-feed",
+          "label": "Tap pulse card",
+          "description": "Pulse card click → Router.go('feed') for full activity stream."
+        },
+        {
+          "n": 5,
+          "from": "client.hq-feed",
+          "to": "client.hq-leagues",
+          "label": "Tap leagues",
+          "description": "Bottom nav 'Leagues' → src/pages/leagues.js; standings table renders."
+        },
+        {
+          "n": 6,
+          "from": "client.hq-leagues",
+          "to": "data.leagues",
+          "label": "Read standings",
+          "description": "Leagues page reads league.memberUids[] + computes per-member season points."
+        }
+      ]
+    },
+    {
+      "id": "F3",
+      "name": "Find a player + add as friend",
+      "primary_user_goal": "Member discovers another PARBAUGHS member, sends friend request, builds cross-league social graph.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S3"
+      ],
+      "status": "shipping-W1.S3",
+      "path": [
+        "actor.member",
+        "client.hq-members",
+        "data.members",
+        "data.notifications",
+        "ext.fcm",
+        "fn.send-push"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-members",
+          "label": "Open Members",
+          "description": "Router.go('members') loads src/pages/members.js — A-Z directory with public profiles."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-members",
+          "to": "data.members",
+          "label": "Read member rows",
+          "description": "Members page queries members collection filtered by privacy=public OR friend-of-current-user."
+        },
+        {
+          "n": 3,
+          "from": "client.hq-members",
+          "to": "data.members",
+          "label": "Send friend request",
+          "description": "Tap CTA → write friend-request doc; recipient's members doc gets pending friend entry (W1.S3 redesigns this)."
+        },
+        {
+          "n": 4,
+          "from": "data.members",
+          "to": "data.notifications",
+          "label": "Notification queued",
+          "description": "Recipient gets a notifications entry; pendingPush doc enqueues a push."
+        },
+        {
+          "n": 5,
+          "from": "data.notifications",
+          "to": "fn.send-push",
+          "label": "sendPushNotification fires",
+          "description": "Cloud Function onCreate(pendingPush) reads recipient's fcmToken and dispatches FCM payload."
+        },
+        {
+          "n": 6,
+          "from": "fn.send-push",
+          "to": "ext.fcm",
+          "label": "Deliver to FCM",
+          "description": "FCM admin SDK ships the payload; pendingPush doc deleted post-send."
+        }
+      ]
+    },
+    {
+      "id": "F4",
+      "name": "Post + settle a ParCoin wager",
+      "primary_user_goal": "Member challenges another member for stakes; coins escrow, round plays, winner takes both.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S6",
+        "W1.S4"
+      ],
+      "status": "planned-W1.S6",
+      "path": [
+        "actor.member",
+        "client.hq-wagers",
+        "data.wagers-bounties",
+        "data.parcoins",
+        "client.hq-playnow",
+        "data.rounds"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-wagers",
+          "label": "Open Wagers",
+          "description": "Router.go('wagers') → src/pages/wagers.js; current league's open wagers list."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-wagers",
+          "to": "data.wagers-bounties",
+          "label": "Compose wager",
+          "description": "Member fills opponent + stakes + terms; writes pending wager doc to bounties collection."
+        },
+        {
+          "n": 3,
+          "from": "data.wagers-bounties",
+          "to": "data.parcoins",
+          "label": "Escrow coins (on accept)",
+          "description": "Opponent accept triggers parcoin_transactions entries: BOTH players' balances debited; wager flagged escrowed."
+        },
+        {
+          "n": 4,
+          "from": "actor.member",
+          "to": "client.hq-playnow",
+          "label": "Play the round",
+          "description": "Both players log a round (F1) for the stakes course."
+        },
+        {
+          "n": 5,
+          "from": "client.hq-playnow",
+          "to": "data.rounds",
+          "label": "Round outcome",
+          "description": "Submitted rounds resolve the wager (lower score wins, etc. — settlement logic per W1.S6 spec)."
+        },
+        {
+          "n": 6,
+          "from": "data.rounds",
+          "to": "data.parcoins",
+          "label": "Settle winnings",
+          "description": "Winner's balance credited 2× stakes; loser's already-debited; ledger entry on both sides."
+        },
+        {
+          "n": 7,
+          "from": "data.parcoins",
+          "to": "actor.member",
+          "label": "Notification + Home update",
+          "description": "Wager outcome notification fires; Home reflects new balance + W/L record."
+        }
+      ]
+    },
+    {
+      "id": "F5",
+      "name": "Book or RSVP to a tee time",
+      "primary_user_goal": "Member posts a tee time or RSVPs to a peer's posted slot.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S8"
+      ],
+      "status": "shipped-on-current-system",
+      "path": [
+        "actor.member",
+        "client.hq-teetimes",
+        "data.events",
+        "client.hq-feed",
+        "data.notifications",
+        "fn.send-push",
+        "ext.fcm"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-teetimes",
+          "label": "Open Calendar / Tee",
+          "description": "src/pages/calendar.js + teetimes.js; upcoming slots render with RSVP CTAs."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-teetimes",
+          "to": "data.events",
+          "label": "Post tee time",
+          "description": "writeTeeTime(date, course, openings) → teetimes collection doc with leagueId scope."
+        },
+        {
+          "n": 3,
+          "from": "data.events",
+          "to": "client.hq-feed",
+          "label": "Surfaces in feed",
+          "description": "Feed activity stream picks up tee time event card; visible to league members."
+        },
+        {
+          "n": 4,
+          "from": "client.hq-feed",
+          "to": "data.events",
+          "label": "RSVP click",
+          "description": "Other member taps RSVP → tee time doc's rsvps[] array updated."
+        },
+        {
+          "n": 5,
+          "from": "data.events",
+          "to": "data.notifications",
+          "label": "Host notified of fill",
+          "description": "When openings_count reaches threshold, host gets a notifications entry + ParCoin reward (15 coins per CLAUDE.md economy)."
+        },
+        {
+          "n": 6,
+          "from": "data.notifications",
+          "to": "fn.send-push",
+          "label": "Push fires",
+          "description": "Standard send-push path (same as F3 step 5)."
+        }
+      ]
+    },
+    {
+      "id": "F6",
+      "name": "Earn an achievement / see Trophy Room update",
+      "primary_user_goal": "Member crosses a milestone (PB, season champ, range streak); celebration toast + Trophy Room entry.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S9",
+        "W1.S4",
+        "W1.S6",
+        "W1.S10"
+      ],
+      "status": "shipped-on-current-system",
+      "path": [
+        "actor.member",
+        "client.hq-playnow",
+        "data.rounds",
+        "data.parcoins",
+        "client.hq-trophy",
+        "data.config"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-playnow",
+          "label": "Trigger action",
+          "description": "Member completes round / range session / wager — any can trigger an achievement check."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-playnow",
+          "to": "data.rounds",
+          "label": "Submit triggers check",
+          "description": "On round submit, achievement engine evaluates against earned vs unearned. PB detection: this round's score < member.personalBest18."
+        },
+        {
+          "n": 3,
+          "from": "data.rounds",
+          "to": "data.parcoins",
+          "label": "ParCoin reward",
+          "description": "Achievement unlock → parcoin_transactions credit per CLAUDE.md economy table (100 for 18H PB, 50 for 9H PB)."
+        },
+        {
+          "n": 4,
+          "from": "data.rounds",
+          "to": "client.hq-trophy",
+          "label": "Toast + Trophy Room",
+          "description": "Toast renders inline (ach-celebrate keyframe, respecting prefers-reduced-motion per v8.1.3). Trophy Room (trophyroom.js) gains the new entry on next visit."
+        },
+        {
+          "n": 5,
+          "from": "client.hq-trophy",
+          "to": "data.config",
+          "label": "Achievement state",
+          "description": "Some achievement data lives in members.achievements[] or pending_celebrations collection for cross-device sync."
+        }
+      ]
+    },
+    {
+      "id": "F7",
+      "name": "Range session log",
+      "primary_user_goal": "Member logs a practice session with drill focus + feel rating; aggregates render on Range page.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S10"
+      ],
+      "status": "shipped-on-current-system",
+      "path": [
+        "actor.member",
+        "client.hq-home",
+        "client.hq-range",
+        "data.rounds",
+        "data.parcoins",
+        "client.hq-feed"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-home",
+          "label": "Tap 'Log range'",
+          "description": "Home CTA → Router.go('range') → src/pages/range.js."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-home",
+          "to": "client.hq-range",
+          "label": "Start session timer",
+          "description": "Range session timer (start/pause/stop) + drill tags + feel rating (1-5)."
+        },
+        {
+          "n": 3,
+          "from": "client.hq-range",
+          "to": "data.rounds",
+          "label": "Submit session",
+          "description": "Range session doc written (separate from rounds — uses syncrounds or rangelive collection per page mode)."
+        },
+        {
+          "n": 4,
+          "from": "data.rounds",
+          "to": "data.parcoins",
+          "label": "Reward if ≥30 min",
+          "description": "If session duration ≥ 30 min, ParCoin reward (10 coins) per CLAUDE.md economy."
+        },
+        {
+          "n": 5,
+          "from": "data.rounds",
+          "to": "client.hq-feed",
+          "label": "Surfaces in feed",
+          "description": "Activity feed picks up the session as a feed entry, visible to league members."
+        }
+      ]
+    },
+    {
+      "id": "F8",
+      "name": "Spectator + Caddy verify",
+      "primary_user_goal": "Member (or friend cross-league) watches a live round, Caddy surfaces insights, replay survives after round closes.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S5",
+        "W1.S11"
+      ],
+      "status": "shipping-W1.S5",
+      "path": [
+        "actor.member",
+        "client.hq-feed",
+        "client.hq-spectator",
+        "data.rounds",
+        "data.social",
+        "data.notifications"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-feed",
+          "label": "See live-round card",
+          "description": "Feed surfaces an in-progress round; live-now indicator visible (per W1.S3 member detail line spec)."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-feed",
+          "to": "client.hq-spectator",
+          "label": "Tap to spectate",
+          "description": "Router.go('spectator?roundId=X') → src/pages/spectator.js; Spectator HUD overlays score + hole + last shot."
+        },
+        {
+          "n": 3,
+          "from": "client.hq-spectator",
+          "to": "data.rounds",
+          "label": "Subscribe to liverounds",
+          "description": "Spectator subscribes to liverounds collection updates for the specific round; hole-by-hole updates stream."
+        },
+        {
+          "n": 4,
+          "from": "client.hq-spectator",
+          "to": "data.social",
+          "label": "Caddy insight",
+          "description": "AI Caddie (rule-based for non-Pro, Anthropic-backed for Pro per Phase 4) surfaces per-hole context. Currently rule-based via src/core/caddie.js."
+        },
+        {
+          "n": 5,
+          "from": "data.rounds",
+          "to": "data.notifications",
+          "label": "Round closes",
+          "description": "Player's _submitRoundEntry completes the round; spectator's view transitions to final card; optional 'watched X play Y' social action recorded."
+        }
+      ]
+    },
+    {
+      "id": "F9",
+      "name": "Mobile onboarding (first launch)",
+      "primary_user_goal": "New invitee opens app for the first time, validates invite, completes signup, lands in product.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S14",
+        "W3.M6"
+      ],
+      "status": "planned",
+      "path": [
+        "actor.member",
+        "client.hq-admin",
+        "fn.validate-invite",
+        "data.invites",
+        "dist.capacitor-android"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-admin",
+          "label": "Open surface",
+          "description": "Mobile onboarding (first launch): user opens hq admin surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-admin",
+          "to": "fn.validate-invite",
+          "label": "Invoke function",
+          "description": "Mobile onboarding (first launch): client invokes validate invite cloud function."
+        },
+        {
+          "n": 3,
+          "from": "fn.validate-invite",
+          "to": "data.invites",
+          "label": "Function writes",
+          "description": "Mobile onboarding (first launch): function writes invites."
+        },
+        {
+          "n": 4,
+          "from": "data.invites",
+          "to": "dist.capacitor-android",
+          "label": "Serve to client",
+          "description": "Mobile onboarding (first launch): state surfaces back to client via capacitor android."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F10",
+      "name": "Settings — appearance + privacy + notifications",
+      "primary_user_goal": "Adjust theme (light/dark), set public/private profile, configure push notifications.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S14"
+      ],
+      "status": "shipped",
+      "path": [
+        "actor.member",
+        "client.hq-settings",
+        "fn.send-push",
+        "data.notifications",
+        "data.members",
+        "dist.gh-pages",
+        "ext.fcm"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-settings",
+          "label": "Open surface",
+          "description": "Settings — appearance + privacy + notifications: user opens hq settings surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-settings",
+          "to": "fn.send-push",
+          "label": "Invoke function",
+          "description": "Settings — appearance + privacy + notifications: client invokes send push cloud function."
+        },
+        {
+          "n": 3,
+          "from": "fn.send-push",
+          "to": "data.notifications",
+          "label": "Function writes",
+          "description": "Settings — appearance + privacy + notifications: function writes notifications."
+        },
+        {
+          "n": 4,
+          "from": "data.notifications",
+          "to": "data.members",
+          "label": "Cross-collection update",
+          "description": "Settings — appearance + privacy + notifications: change in notifications propagates to members."
+        },
+        {
+          "n": 5,
+          "from": "data.members",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Settings — appearance + privacy + notifications: state surfaces back to client via gh pages."
+        },
+        {
+          "n": 6,
+          "from": "dist.gh-pages",
+          "to": "ext.fcm",
+          "label": "External service",
+          "description": "Settings — appearance + privacy + notifications: external service fcm contributes."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F11",
+      "name": "View Caddy Notes (member changelog)",
+      "primary_user_goal": "Read what changed in the app this week.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.I3"
+      ],
+      "status": "shipped",
+      "path": [
+        "actor.member",
+        "client.hq-home",
+        "data.config",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-home",
+          "label": "Open surface",
+          "description": "View Caddy Notes (member changelog): user opens hq home surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-home",
+          "to": "data.config",
+          "label": "Read/write data",
+          "description": "View Caddy Notes (member changelog): client reads/writes config collection."
+        },
+        {
+          "n": 3,
+          "from": "data.config",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "View Caddy Notes (member changelog): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F12",
+      "name": "Direct message between members",
+      "primary_user_goal": "Send a 1:1 message to another member (in-league or friend cross-league).",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S12"
+      ],
+      "status": "shipping",
+      "path": [
+        "actor.member",
+        "client.hq-feed",
+        "data.dms",
+        "data.members",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-feed",
+          "label": "Open surface",
+          "description": "Direct message between members: user opens hq feed surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-feed",
+          "to": "data.dms",
+          "label": "Read/write data",
+          "description": "Direct message between members: client reads/writes dms collection."
+        },
+        {
+          "n": 3,
+          "from": "data.dms",
+          "to": "data.members",
+          "label": "Cross-collection update",
+          "description": "Direct message between members: change in dms propagates to members."
+        },
+        {
+          "n": 4,
+          "from": "data.members",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Direct message between members: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F13",
+      "name": "League chat (group)",
+      "primary_user_goal": "Group conversation among all members of an active league.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S12"
+      ],
+      "status": "shipping",
+      "path": [
+        "actor.member",
+        "client.hq-feed",
+        "data.dms",
+        "data.members",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-feed",
+          "label": "Open surface",
+          "description": "League chat (group): user opens hq feed surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-feed",
+          "to": "data.dms",
+          "label": "Read/write data",
+          "description": "League chat (group): client reads/writes dms collection."
+        },
+        {
+          "n": 3,
+          "from": "data.dms",
+          "to": "data.members",
+          "label": "Cross-collection update",
+          "description": "League chat (group): change in dms propagates to members."
+        },
+        {
+          "n": 4,
+          "from": "data.members",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "League chat (group): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F14",
+      "name": "View Activity feed",
+      "primary_user_goal": "See chronological log of rounds, range sessions, achievements, chat highlights across the league.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S11",
+        "W1.S2"
+      ],
+      "status": "shipping",
+      "path": [
+        "actor.member",
+        "client.hq-range",
+        "data.rounds",
+        "data.members",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-range",
+          "label": "Open surface",
+          "description": "View Activity feed: user opens hq range surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-range",
+          "to": "data.rounds",
+          "label": "Read/write data",
+          "description": "View Activity feed: client reads/writes rounds collection."
+        },
+        {
+          "n": 3,
+          "from": "data.rounds",
+          "to": "data.members",
+          "label": "Cross-collection update",
+          "description": "View Activity feed: change in rounds propagates to members."
+        },
+        {
+          "n": 4,
+          "from": "data.members",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "View Activity feed: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F15",
+      "name": "View season standings",
+      "primary_user_goal": "See per-season points (Stableford-style, handicap-adjusted) and where I rank.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S13",
+        "W1.S11"
+      ],
+      "status": "shipping",
+      "path": [
+        "actor.member",
+        "client.hq-leagues",
+        "data.leagues",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-leagues",
+          "label": "Open surface",
+          "description": "View season standings: user opens hq leagues surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-leagues",
+          "to": "data.leagues",
+          "label": "Read/write data",
+          "description": "View season standings: client reads/writes leagues collection."
+        },
+        {
+          "n": 3,
+          "from": "data.leagues",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "View season standings: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F16",
+      "name": "View Trophy Room",
+      "primary_user_goal": "Browse my earned achievements and progress toward unearned ones.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S9"
+      ],
+      "status": "shipping",
+      "path": [
+        "actor.member",
+        "client.hq-trophy",
+        "data.members",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-trophy",
+          "label": "Open surface",
+          "description": "View Trophy Room: user opens hq trophy surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-trophy",
+          "to": "data.members",
+          "label": "Read/write data",
+          "description": "View Trophy Room: client reads/writes members collection."
+        },
+        {
+          "n": 3,
+          "from": "data.members",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "View Trophy Room: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F17",
+      "name": "View course directory + course detail",
+      "primary_user_goal": "Search for a course, see its layout, par, my history at it, league records there.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S13"
+      ],
+      "status": "shipped",
+      "path": [
+        "actor.member",
+        "client.hq-trophy",
+        "fn.search-courses",
+        "data.courses",
+        "data.rounds",
+        "dist.gh-pages",
+        "ext.golfcourseapi"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-trophy",
+          "label": "Open surface",
+          "description": "View course directory + course detail: user opens hq trophy surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-trophy",
+          "to": "fn.search-courses",
+          "label": "Invoke function",
+          "description": "View course directory + course detail: client invokes search courses cloud function."
+        },
+        {
+          "n": 3,
+          "from": "fn.search-courses",
+          "to": "data.courses",
+          "label": "Function writes",
+          "description": "View course directory + course detail: function writes courses."
+        },
+        {
+          "n": 4,
+          "from": "data.courses",
+          "to": "data.rounds",
+          "label": "Cross-collection update",
+          "description": "View course directory + course detail: change in courses propagates to rounds."
+        },
+        {
+          "n": 5,
+          "from": "data.rounds",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "View course directory + course detail: state surfaces back to client via gh pages."
+        },
+        {
+          "n": 6,
+          "from": "dist.gh-pages",
+          "to": "ext.golfcourseapi",
+          "label": "External service",
+          "description": "View course directory + course detail: external service golfcourseapi contributes."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F18",
+      "name": "Set up a scramble team",
+      "primary_user_goal": "Form a 2v2 / 3v3 / 4v4 team for an upcoming scramble round.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S7"
+      ],
+      "status": "shipping",
+      "path": [
+        "actor.member",
+        "client.hq-wagers",
+        "data.rounds",
+        "data.wagers-bounties",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-wagers",
+          "label": "Open surface",
+          "description": "Set up a scramble team: user opens hq wagers surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-wagers",
+          "to": "data.rounds",
+          "label": "Read/write data",
+          "description": "Set up a scramble team: client reads/writes rounds collection."
+        },
+        {
+          "n": 3,
+          "from": "data.rounds",
+          "to": "data.wagers-bounties",
+          "label": "Cross-collection update",
+          "description": "Set up a scramble team: change in rounds propagates to wagers bounties."
+        },
+        {
+          "n": 4,
+          "from": "data.wagers-bounties",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Set up a scramble team: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F19",
+      "name": "Play a party game",
+      "primary_user_goal": "Run a quick on-course game (e.g., closest-to-pin, longest drive) with the foursome.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S7"
+      ],
+      "status": "planned",
+      "path": [
+        "actor.member",
+        "client.hq-wagers",
+        "data.courses",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-wagers",
+          "label": "Open surface",
+          "description": "Play a party game: user opens hq wagers surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-wagers",
+          "to": "data.courses",
+          "label": "Read/write data",
+          "description": "Play a party game: client reads/writes courses collection."
+        },
+        {
+          "n": 3,
+          "from": "data.courses",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Play a party game: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F20",
+      "name": "Post + claim a bounty",
+      "primary_user_goal": "Post a coin reward for a specific outcome (course record, hole-in-one, etc.); whoever achieves it claims.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S6"
+      ],
+      "status": "shipping",
+      "path": [
+        "actor.member",
+        "client.hq-wagers",
+        "data.wagers-bounties",
+        "data.courses",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-wagers",
+          "label": "Open surface",
+          "description": "Post + claim a bounty: user opens hq wagers surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-wagers",
+          "to": "data.wagers-bounties",
+          "label": "Read/write data",
+          "description": "Post + claim a bounty: client reads/writes wagers bounties collection."
+        },
+        {
+          "n": 3,
+          "from": "data.wagers-bounties",
+          "to": "data.courses",
+          "label": "Cross-collection update",
+          "description": "Post + claim a bounty: change in wagers bounties propagates to courses."
+        },
+        {
+          "n": 4,
+          "from": "data.courses",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Post + claim a bounty: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F21",
+      "name": "Challenge another member",
+      "primary_user_goal": "Issue a head-to-head challenge (different from wager — no ParCoin escrow required).",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S6"
+      ],
+      "status": "shipping",
+      "path": [
+        "actor.member",
+        "client.hq-wagers",
+        "data.wagers-bounties",
+        "data.parcoins",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-wagers",
+          "label": "Open surface",
+          "description": "Challenge another member: user opens hq wagers surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-wagers",
+          "to": "data.wagers-bounties",
+          "label": "Read/write data",
+          "description": "Challenge another member: client reads/writes wagers bounties collection."
+        },
+        {
+          "n": 3,
+          "from": "data.wagers-bounties",
+          "to": "data.parcoins",
+          "label": "Cross-collection update",
+          "description": "Challenge another member: change in wagers bounties propagates to parcoins."
+        },
+        {
+          "n": 4,
+          "from": "data.parcoins",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Challenge another member: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F22",
+      "name": "Buy cosmetic from shop",
+      "primary_user_goal": "Spend earned ParCoins on a ring, banner, name effect, or title.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.I3"
+      ],
+      "status": "shipped",
+      "path": [
+        "actor.member",
+        "client.hq-trophy",
+        "data.parcoins",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-trophy",
+          "label": "Open surface",
+          "description": "Buy cosmetic from shop: user opens hq trophy surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-trophy",
+          "to": "data.parcoins",
+          "label": "Read/write data",
+          "description": "Buy cosmetic from shop: client reads/writes parcoins collection."
+        },
+        {
+          "n": 3,
+          "from": "data.parcoins",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Buy cosmetic from shop: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F23",
+      "name": "View rich list (top earners)",
+      "primary_user_goal": "See league leaderboard of ParCoin lifetime earnings.",
+      "actor": "actor.member",
+      "served_by_ships": [],
+      "status": "shipped",
+      "path": [
+        "actor.member",
+        "client.hq-leagues",
+        "data.parcoins",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-leagues",
+          "label": "Open surface",
+          "description": "View rich list (top earners): user opens hq leagues surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-leagues",
+          "to": "data.parcoins",
+          "label": "Read/write data",
+          "description": "View rich list (top earners): client reads/writes parcoins collection."
+        },
+        {
+          "n": 3,
+          "from": "data.parcoins",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "View rich list (top earners): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F24",
+      "name": "View round detail (any historical round)",
+      "primary_user_goal": "Read scorecard, hole-by-hole, score relative to handicap, attestation status of any past round.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S4"
+      ],
+      "status": "shipping",
+      "path": [
+        "actor.member",
+        "client.hq-roundhistory",
+        "data.rounds",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-roundhistory",
+          "label": "Open surface",
+          "description": "View round detail (any historical round): user opens hq roundhistory surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-roundhistory",
+          "to": "data.rounds",
+          "label": "Read/write data",
+          "description": "View round detail (any historical round): client reads/writes rounds collection."
+        },
+        {
+          "n": 3,
+          "from": "data.rounds",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "View round detail (any historical round): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F25",
+      "name": "View round history (my rounds list)",
+      "primary_user_goal": "Scroll my complete round history with filters by course / format / season.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S4"
+      ],
+      "status": "shipping",
+      "path": [
+        "actor.member",
+        "client.hq-leagues",
+        "data.rounds",
+        "data.courses",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-leagues",
+          "label": "Open surface",
+          "description": "View round history (my rounds list): user opens hq leagues surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-leagues",
+          "to": "data.rounds",
+          "label": "Read/write data",
+          "description": "View round history (my rounds list): client reads/writes rounds collection."
+        },
+        {
+          "n": 3,
+          "from": "data.rounds",
+          "to": "data.courses",
+          "label": "Cross-collection update",
+          "description": "View round history (my rounds list): change in rounds propagates to courses."
+        },
+        {
+          "n": 4,
+          "from": "data.courses",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "View round history (my rounds list): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F26",
+      "name": "Sync round (multi-player attestation)",
+      "primary_user_goal": "Multiple players in the same round share a single scorecard with mutual attestation.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S4"
+      ],
+      "status": "shipping",
+      "path": [
+        "actor.member",
+        "client.hq-roundhistory",
+        "data.rounds",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-roundhistory",
+          "label": "Open surface",
+          "description": "Sync round (multi-player attestation): user opens hq roundhistory surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-roundhistory",
+          "to": "data.rounds",
+          "label": "Read/write data",
+          "description": "Sync round (multi-player attestation): client reads/writes rounds collection."
+        },
+        {
+          "n": 3,
+          "from": "data.rounds",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Sync round (multi-player attestation): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F27",
+      "name": "Trip / multi-round event",
+      "primary_user_goal": "Group golf trip with multiple rounds tracked together (e.g., Smoky Mountain Open).",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S8"
+      ],
+      "status": "shipping",
+      "path": [
+        "actor.member",
+        "client.hq-teetimes",
+        "data.rounds",
+        "data.events",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-teetimes",
+          "label": "Open surface",
+          "description": "Trip / multi-round event: user opens hq teetimes surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-teetimes",
+          "to": "data.rounds",
+          "label": "Read/write data",
+          "description": "Trip / multi-round event: client reads/writes rounds collection."
+        },
+        {
+          "n": 3,
+          "from": "data.rounds",
+          "to": "data.events",
+          "label": "Cross-collection update",
+          "description": "Trip / multi-round event: change in rounds propagates to events."
+        },
+        {
+          "n": 4,
+          "from": "data.events",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Trip / multi-round event: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F28",
+      "name": "View Records (course records, season records)",
+      "primary_user_goal": "Browse all-time records across courses and seasons.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S9"
+      ],
+      "status": "shipping",
+      "path": [
+        "actor.member",
+        "client.hq-trophy",
+        "data.courses",
+        "data.rounds",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-trophy",
+          "label": "Open surface",
+          "description": "View Records (course records, season records): user opens hq trophy surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-trophy",
+          "to": "data.courses",
+          "label": "Read/write data",
+          "description": "View Records (course records, season records): client reads/writes courses collection."
+        },
+        {
+          "n": 3,
+          "from": "data.courses",
+          "to": "data.rounds",
+          "label": "Cross-collection update",
+          "description": "View Records (course records, season records): change in courses propagates to rounds."
+        },
+        {
+          "n": 4,
+          "from": "data.rounds",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "View Records (course records, season records): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F29",
+      "name": "View Aces (hole-in-one log)",
+      "primary_user_goal": "Browse historical hole-in-one entries (rare achievement).",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S9"
+      ],
+      "status": "shipping",
+      "path": [
+        "actor.member",
+        "client.hq-trophy",
+        "data.members",
+        "data.rounds",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-trophy",
+          "label": "Open surface",
+          "description": "View Aces (hole-in-one log): user opens hq trophy surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-trophy",
+          "to": "data.members",
+          "label": "Read/write data",
+          "description": "View Aces (hole-in-one log): client reads/writes members collection."
+        },
+        {
+          "n": 3,
+          "from": "data.members",
+          "to": "data.rounds",
+          "label": "Cross-collection update",
+          "description": "View Aces (hole-in-one log): change in members propagates to rounds."
+        },
+        {
+          "n": 4,
+          "from": "data.rounds",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "View Aces (hole-in-one log): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F30",
+      "name": "View season recap",
+      "primary_user_goal": "End-of-season retrospective: highlight reels, awards ceremony, season-stat aggregates.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S10"
+      ],
+      "status": "planned",
+      "path": [
+        "actor.member",
+        "client.hq-leagues",
+        "data.leagues",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-leagues",
+          "label": "Open surface",
+          "description": "View season recap: user opens hq leagues surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-leagues",
+          "to": "data.leagues",
+          "label": "Read/write data",
+          "description": "View season recap: client reads/writes leagues collection."
+        },
+        {
+          "n": 3,
+          "from": "data.leagues",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "View season recap: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F31",
+      "name": "View FAQ / Rules",
+      "primary_user_goal": "Read how things work — handicaps, ParCoins, attestation, etiquette.",
+      "actor": "actor.member",
+      "served_by_ships": [],
+      "status": "shipped",
+      "path": [
+        "actor.member",
+        "client.hq-settings",
+        "data.parcoins",
+        "data.config",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-settings",
+          "label": "Open surface",
+          "description": "View FAQ / Rules: user opens hq settings surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-settings",
+          "to": "data.parcoins",
+          "label": "Read/write data",
+          "description": "View FAQ / Rules: client reads/writes parcoins collection."
+        },
+        {
+          "n": 3,
+          "from": "data.parcoins",
+          "to": "data.config",
+          "label": "Cross-collection update",
+          "description": "View FAQ / Rules: change in parcoins propagates to config."
+        },
+        {
+          "n": 4,
+          "from": "data.config",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "View FAQ / Rules: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F32",
+      "name": "Send a member invite (sharable link)",
+      "primary_user_goal": "Generate an invite link for a prospective member; they validate and join.",
+      "actor": "actor.commissioner",
+      "served_by_ships": [
+        "W1.S14"
+      ],
+      "status": "shipped",
+      "path": [
+        "actor.commissioner",
+        "client.hq-admin",
+        "fn.validate-invite",
+        "data.invites",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.commissioner",
+          "to": "client.hq-admin",
+          "label": "Open surface",
+          "description": "Send a member invite (sharable link): user opens hq admin surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-admin",
+          "to": "fn.validate-invite",
+          "label": "Invoke function",
+          "description": "Send a member invite (sharable link): client invokes validate invite cloud function."
+        },
+        {
+          "n": 3,
+          "from": "fn.validate-invite",
+          "to": "data.invites",
+          "label": "Function writes",
+          "description": "Send a member invite (sharable link): function writes invites."
+        },
+        {
+          "n": 4,
+          "from": "data.invites",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Send a member invite (sharable link): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F33",
+      "name": "View other member's public profile",
+      "primary_user_goal": "Read another member's public profile — avatar, handicap, level, home course, bio.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S3"
+      ],
+      "status": "shipping",
+      "path": [
+        "actor.member",
+        "client.hq-members",
+        "data.courses",
+        "data.members",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-members",
+          "label": "Open surface",
+          "description": "View other member's public profile: user opens hq members surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-members",
+          "to": "data.courses",
+          "label": "Read/write data",
+          "description": "View other member's public profile: client reads/writes courses collection."
+        },
+        {
+          "n": 3,
+          "from": "data.courses",
+          "to": "data.members",
+          "label": "Cross-collection update",
+          "description": "View other member's public profile: change in courses propagates to members."
+        },
+        {
+          "n": 4,
+          "from": "data.members",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "View other member's public profile: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F34",
+      "name": "Social action — trash talk / spotlight / victory lap",
+      "primary_user_goal": "Apply a coin-cost social effect to another member (Spotlight of Shame, Victory Lap, etc.).",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S6",
+        "W1.S11"
+      ],
+      "status": "shipped",
+      "path": [
+        "actor.member",
+        "client.hq-feed",
+        "data.social",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-feed",
+          "label": "Open surface",
+          "description": "Social action — trash talk / spotlight / victory lap: user opens hq feed surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-feed",
+          "to": "data.social",
+          "label": "Read/write data",
+          "description": "Social action — trash talk / spotlight / victory lap: client reads/writes social collection."
+        },
+        {
+          "n": 3,
+          "from": "data.social",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Social action — trash talk / spotlight / victory lap: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F35",
+      "name": "Toggle multi-league active state",
+      "primary_user_goal": "Switch which league is the 'active' lens for the app (per-league scoring + members visible).",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S13"
+      ],
+      "status": "shipped",
+      "path": [
+        "actor.member",
+        "client.hq-members",
+        "data.leagues",
+        "data.members",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-members",
+          "label": "Open surface",
+          "description": "Toggle multi-league active state: user opens hq members surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-members",
+          "to": "data.leagues",
+          "label": "Read/write data",
+          "description": "Toggle multi-league active state: client reads/writes leagues collection."
+        },
+        {
+          "n": 3,
+          "from": "data.leagues",
+          "to": "data.members",
+          "label": "Cross-collection update",
+          "description": "Toggle multi-league active state: change in leagues propagates to members."
+        },
+        {
+          "n": 4,
+          "from": "data.members",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Toggle multi-league active state: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F36",
+      "name": "Create or join an additional league",
+      "primary_user_goal": "Start a new league (any member can host) or accept invite to join another.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.S13"
+      ],
+      "status": "planned",
+      "path": [
+        "actor.member",
+        "client.hq-admin",
+        "fn.validate-invite",
+        "data.invites",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-admin",
+          "label": "Open surface",
+          "description": "Create or join an additional league: user opens hq admin surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-admin",
+          "to": "fn.validate-invite",
+          "label": "Invoke function",
+          "description": "Create or join an additional league: client invokes validate invite cloud function."
+        },
+        {
+          "n": 3,
+          "from": "fn.validate-invite",
+          "to": "data.invites",
+          "label": "Function writes",
+          "description": "Create or join an additional league: function writes invites."
+        },
+        {
+          "n": 4,
+          "from": "data.invites",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Create or join an additional league: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F37",
+      "name": "Commissioner — approve / reject member application",
+      "primary_user_goal": "Review pending member applications, approve or reject with note.",
+      "actor": "actor.commissioner",
+      "served_by_ships": [
+        "W1.S14"
+      ],
+      "status": "planned",
+      "path": [
+        "actor.commissioner",
+        "client.hq-admin",
+        "fn.on-member-role-change",
+        "data.members",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.commissioner",
+          "to": "client.hq-admin",
+          "label": "Open surface",
+          "description": "Commissioner — approve / reject member application: user opens hq admin surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-admin",
+          "to": "fn.on-member-role-change",
+          "label": "Invoke function",
+          "description": "Commissioner — approve / reject member application: client invokes on member role change cloud function."
+        },
+        {
+          "n": 3,
+          "from": "fn.on-member-role-change",
+          "to": "data.members",
+          "label": "Function writes",
+          "description": "Commissioner — approve / reject member application: function writes members."
+        },
+        {
+          "n": 4,
+          "from": "data.members",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Commissioner — approve / reject member application: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F38",
+      "name": "Commissioner — suspend / restore member",
+      "primary_user_goal": "Temporarily suspend a member (rule violation) or restore from suspension.",
+      "actor": "actor.commissioner",
+      "served_by_ships": [
+        "W1.S14"
+      ],
+      "status": "planned",
+      "path": [
+        "actor.commissioner",
+        "client.hq-admin",
+        "fn.on-member-role-change",
+        "data.members",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.commissioner",
+          "to": "client.hq-admin",
+          "label": "Open surface",
+          "description": "Commissioner — suspend / restore member: user opens hq admin surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-admin",
+          "to": "fn.on-member-role-change",
+          "label": "Invoke function",
+          "description": "Commissioner — suspend / restore member: client invokes on member role change cloud function."
+        },
+        {
+          "n": 3,
+          "from": "fn.on-member-role-change",
+          "to": "data.members",
+          "label": "Function writes",
+          "description": "Commissioner — suspend / restore member: function writes members."
+        },
+        {
+          "n": 4,
+          "from": "data.members",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Commissioner — suspend / restore member: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F39",
+      "name": "Commissioner — transfer commissioner role",
+      "primary_user_goal": "Hand off commissioner role to another league member.",
+      "actor": "actor.commissioner",
+      "served_by_ships": [
+        "W1.S14"
+      ],
+      "status": "planned",
+      "path": [
+        "actor.commissioner",
+        "client.hq-admin",
+        "fn.on-member-role-change",
+        "data.members",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.commissioner",
+          "to": "client.hq-admin",
+          "label": "Open surface",
+          "description": "Commissioner — transfer commissioner role: user opens hq admin surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-admin",
+          "to": "fn.on-member-role-change",
+          "label": "Invoke function",
+          "description": "Commissioner — transfer commissioner role: client invokes on member role change cloud function."
+        },
+        {
+          "n": 3,
+          "from": "fn.on-member-role-change",
+          "to": "data.members",
+          "label": "Function writes",
+          "description": "Commissioner — transfer commissioner role: function writes members."
+        },
+        {
+          "n": 4,
+          "from": "data.members",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Commissioner — transfer commissioner role: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F40",
+      "name": "Commissioner — delete league (cascade)",
+      "primary_user_goal": "Permanently delete a league (rare; requires confirmation + cascade).",
+      "actor": "actor.commissioner",
+      "served_by_ships": [
+        "W1.S14"
+      ],
+      "status": "planned",
+      "path": [
+        "actor.commissioner",
+        "client.hq-admin",
+        "fn.on-league-delete",
+        "data.members",
+        "data.leagues",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.commissioner",
+          "to": "client.hq-admin",
+          "label": "Open surface",
+          "description": "Commissioner — delete league (cascade): user opens hq admin surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-admin",
+          "to": "fn.on-league-delete",
+          "label": "Invoke function",
+          "description": "Commissioner — delete league (cascade): client invokes on league delete cloud function."
+        },
+        {
+          "n": 3,
+          "from": "fn.on-league-delete",
+          "to": "data.members",
+          "label": "Function writes",
+          "description": "Commissioner — delete league (cascade): function writes members."
+        },
+        {
+          "n": 4,
+          "from": "data.members",
+          "to": "data.leagues",
+          "label": "Cross-collection update",
+          "description": "Commissioner — delete league (cascade): change in members propagates to leagues."
+        },
+        {
+          "n": 5,
+          "from": "data.leagues",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Commissioner — delete league (cascade): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F41",
+      "name": "Founder — platform admin (cross-league)",
+      "primary_user_goal": "Founder-only platform-wide admin actions (impersonate, cross-league audit).",
+      "actor": "actor.founder",
+      "served_by_ships": [
+        "W1.S14"
+      ],
+      "status": "shipped",
+      "path": [
+        "actor.founder",
+        "client.hq-admin",
+        "fn.on-founder-access-log",
+        "data.dms",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.founder",
+          "to": "client.hq-admin",
+          "label": "Open surface",
+          "description": "Founder — platform admin (cross-league): user opens hq admin surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-admin",
+          "to": "fn.on-founder-access-log",
+          "label": "Invoke function",
+          "description": "Founder — platform admin (cross-league): client invokes on founder access log cloud function."
+        },
+        {
+          "n": 3,
+          "from": "fn.on-founder-access-log",
+          "to": "data.dms",
+          "label": "Function writes",
+          "description": "Founder — platform admin (cross-league): function writes dms."
+        },
+        {
+          "n": 4,
+          "from": "data.dms",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Founder — platform admin (cross-league): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F42",
+      "name": "Founder — report a member bug (in-app channel)",
+      "primary_user_goal": "Member files a bug report from inside the app (annotated screenshot + steps).",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W1.I1"
+      ],
+      "status": "planned",
+      "path": [
+        "actor.member",
+        "client.hq-admin",
+        "data.config",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-admin",
+          "label": "Open surface",
+          "description": "Founder — report a member bug (in-app channel): user opens hq admin surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-admin",
+          "to": "data.config",
+          "label": "Read/write data",
+          "description": "Founder — report a member bug (in-app channel): client reads/writes config collection."
+        },
+        {
+          "n": 3,
+          "from": "data.config",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Founder — report a member bug (in-app channel): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F43",
+      "name": "Crisis banner (founder remote toggle)",
+      "primary_user_goal": "Founder displays a NOTICE / ALERT / CRITICAL banner to all members (e.g., maintenance window, outage).",
+      "actor": "actor.founder",
+      "served_by_ships": [
+        "W1.I5"
+      ],
+      "status": "planned",
+      "path": [
+        "actor.founder",
+        "client.hq-admin",
+        "data.members",
+        "data.config",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.founder",
+          "to": "client.hq-admin",
+          "label": "Open surface",
+          "description": "Crisis banner (founder remote toggle): user opens hq admin surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-admin",
+          "to": "data.members",
+          "label": "Read/write data",
+          "description": "Crisis banner (founder remote toggle): client reads/writes members collection."
+        },
+        {
+          "n": 3,
+          "from": "data.members",
+          "to": "data.config",
+          "label": "Cross-collection update",
+          "description": "Crisis banner (founder remote toggle): change in members propagates to config."
+        },
+        {
+          "n": 4,
+          "from": "data.config",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Crisis banner (founder remote toggle): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F44",
+      "name": "Mobile Home screen (mobile Clubhouse Wave 3)",
+      "primary_user_goal": "Mobile equivalent of Home — CTA card + headline stats + League Pulse + agate.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W3.M2"
+      ],
+      "status": "planned",
+      "path": [
+        "actor.member",
+        "client.mobile-capacitor",
+        "data.members",
+        "dist.capacitor-android"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.mobile-capacitor",
+          "label": "Open surface",
+          "description": "Mobile Home screen (mobile Clubhouse Wave 3): user opens mobile capacitor surface."
+        },
+        {
+          "n": 2,
+          "from": "client.mobile-capacitor",
+          "to": "data.members",
+          "label": "Read/write data",
+          "description": "Mobile Home screen (mobile Clubhouse Wave 3): client reads/writes members collection."
+        },
+        {
+          "n": 3,
+          "from": "data.members",
+          "to": "dist.capacitor-android",
+          "label": "Serve to client",
+          "description": "Mobile Home screen (mobile Clubhouse Wave 3): state surfaces back to client via capacitor android."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F45",
+      "name": "Mobile Play tab (start a round w/ GPS)",
+      "primary_user_goal": "Mobile Play tab — course / format / players / settings; uses GPS, offline queue.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W3.M3"
+      ],
+      "status": "planned",
+      "path": [
+        "actor.member",
+        "client.hq-settings",
+        "data.rounds",
+        "data.courses",
+        "dist.capacitor-android"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-settings",
+          "label": "Open surface",
+          "description": "Mobile Play tab (start a round w/ GPS): user opens hq settings surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-settings",
+          "to": "data.rounds",
+          "label": "Read/write data",
+          "description": "Mobile Play tab (start a round w/ GPS): client reads/writes rounds collection."
+        },
+        {
+          "n": 3,
+          "from": "data.rounds",
+          "to": "data.courses",
+          "label": "Cross-collection update",
+          "description": "Mobile Play tab (start a round w/ GPS): change in rounds propagates to courses."
+        },
+        {
+          "n": 4,
+          "from": "data.courses",
+          "to": "dist.capacitor-android",
+          "label": "Serve to client",
+          "description": "Mobile Play tab (start a round w/ GPS): state surfaces back to client via capacitor android."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F46",
+      "name": "Mobile Stats tab",
+      "primary_user_goal": "Mobile Stats — KPI row + handicap trend + drill-in section list + share-as-image.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W3.M4"
+      ],
+      "status": "planned",
+      "path": [
+        "actor.member",
+        "client.hq-range",
+        "data.members",
+        "dist.capacitor-android"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-range",
+          "label": "Open surface",
+          "description": "Mobile Stats tab: user opens hq range surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-range",
+          "to": "data.members",
+          "label": "Read/write data",
+          "description": "Mobile Stats tab: client reads/writes members collection."
+        },
+        {
+          "n": 3,
+          "from": "data.members",
+          "to": "dist.capacitor-android",
+          "label": "Serve to client",
+          "description": "Mobile Stats tab: state surfaces back to client via capacitor android."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F47",
+      "name": "Mobile Feed tab",
+      "primary_user_goal": "Mobile Feed — sub-segmented (rounds / range / chat highlights) with image attachments + mentions + pin.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W3.M5"
+      ],
+      "status": "planned",
+      "path": [
+        "actor.member",
+        "client.hq-range",
+        "data.rounds",
+        "data.dms",
+        "dist.capacitor-android"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-range",
+          "label": "Open surface",
+          "description": "Mobile Feed tab: user opens hq range surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-range",
+          "to": "data.rounds",
+          "label": "Read/write data",
+          "description": "Mobile Feed tab: client reads/writes rounds collection."
+        },
+        {
+          "n": 3,
+          "from": "data.rounds",
+          "to": "data.dms",
+          "label": "Cross-collection update",
+          "description": "Mobile Feed tab: change in rounds propagates to dms."
+        },
+        {
+          "n": 4,
+          "from": "data.dms",
+          "to": "dist.capacitor-android",
+          "label": "Serve to client",
+          "description": "Mobile Feed tab: state surfaces back to client via capacitor android."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F48",
+      "name": "Mobile More tab (Settings + Admin)",
+      "primary_user_goal": "Mobile More — Play / League / You / League mgmt / About sections; settings, admin (commissioner-only).",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W3.M6"
+      ],
+      "status": "planned",
+      "path": [
+        "actor.member",
+        "client.hq-settings",
+        "data.dms",
+        "data.members",
+        "dist.capacitor-android"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-settings",
+          "label": "Open surface",
+          "description": "Mobile More tab (Settings + Admin): user opens hq settings surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-settings",
+          "to": "data.dms",
+          "label": "Read/write data",
+          "description": "Mobile More tab (Settings + Admin): client reads/writes dms collection."
+        },
+        {
+          "n": 3,
+          "from": "data.dms",
+          "to": "data.members",
+          "label": "Cross-collection update",
+          "description": "Mobile More tab (Settings + Admin): change in dms propagates to members."
+        },
+        {
+          "n": 4,
+          "from": "data.members",
+          "to": "dist.capacitor-android",
+          "label": "Serve to client",
+          "description": "Mobile More tab (Settings + Admin): state surfaces back to client via capacitor android."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F49",
+      "name": "Identity — new-member signup (discriminator)",
+      "primary_user_goal": "New member signs up under the Discord-style displayname#XXXX identity primitive.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "W4.I4"
+      ],
+      "status": "planned",
+      "path": [
+        "actor.member",
+        "client.hq-admin",
+        "fn.auth",
+        "data.members",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-admin",
+          "label": "Open surface",
+          "description": "Identity — new-member signup (discriminator): user opens hq admin surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-admin",
+          "to": "fn.auth",
+          "label": "Invoke function",
+          "description": "Identity — new-member signup (discriminator): client invokes auth cloud function."
+        },
+        {
+          "n": 3,
+          "from": "fn.auth",
+          "to": "data.members",
+          "label": "Function writes",
+          "description": "Identity — new-member signup (discriminator): function writes members."
+        },
+        {
+          "n": 4,
+          "from": "data.members",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Identity — new-member signup (discriminator): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F50",
+      "name": "Identity — founder-led migration of existing 20",
+      "primary_user_goal": "Founder runs production migration assigning discriminators to existing 20 members.",
+      "actor": "actor.founder",
+      "served_by_ships": [
+        "W4.I2"
+      ],
+      "status": "planned",
+      "path": [
+        "actor.founder",
+        "client.hq-admin",
+        "data.members",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.founder",
+          "to": "client.hq-admin",
+          "label": "Open surface",
+          "description": "Identity — founder-led migration of existing 20: user opens hq admin surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-admin",
+          "to": "data.members",
+          "label": "Read/write data",
+          "description": "Identity — founder-led migration of existing 20: client reads/writes members collection."
+        },
+        {
+          "n": 3,
+          "from": "data.members",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Identity — founder-led migration of existing 20: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F51",
+      "name": "Swing analyzer (video upload + analysis)",
+      "primary_user_goal": "Upload swing video, receive AI analysis with form recommendations.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "Launch.PhaseC"
+      ],
+      "status": "speculative",
+      "path": [
+        "actor.member",
+        "client.hq-range",
+        "data.members",
+        "dist.gh-pages",
+        "ext.anthropic"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-range",
+          "label": "Open surface",
+          "description": "Swing analyzer (video upload + analysis): user opens hq range surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-range",
+          "to": "data.members",
+          "label": "Read/write data",
+          "description": "Swing analyzer (video upload + analysis): client reads/writes members collection."
+        },
+        {
+          "n": 3,
+          "from": "data.members",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Swing analyzer (video upload + analysis): state surfaces back to client via gh pages."
+        },
+        {
+          "n": 4,
+          "from": "dist.gh-pages",
+          "to": "ext.anthropic",
+          "label": "External service",
+          "description": "Swing analyzer (video upload + analysis): external service anthropic contributes."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F52",
+      "name": "Training drills with dummy animations",
+      "primary_user_goal": "Walk through animated practice drills (chip, putt, swing path).",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "Launch.PhaseC"
+      ],
+      "status": "speculative",
+      "path": [
+        "actor.member",
+        "client.hq-range",
+        "data.members",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-range",
+          "label": "Open surface",
+          "description": "Training drills with dummy animations: user opens hq range surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-range",
+          "to": "data.members",
+          "label": "Read/write data",
+          "description": "Training drills with dummy animations: client reads/writes members collection."
+        },
+        {
+          "n": 3,
+          "from": "data.members",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Training drills with dummy animations: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F53",
+      "name": "Subscription signup (Launch Phase A)",
+      "primary_user_goal": "Member subscribes to Pro / League+ tier per Founder-defined pricing model.",
+      "actor": "actor.member",
+      "served_by_ships": [
+        "Launch.PhaseA"
+      ],
+      "status": "speculative",
+      "path": [
+        "actor.member",
+        "client.hq-settings",
+        "fn.auth",
+        "data.members",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.member",
+          "to": "client.hq-settings",
+          "label": "Open surface",
+          "description": "Subscription signup (Launch Phase A): user opens hq settings surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-settings",
+          "to": "fn.auth",
+          "label": "Invoke function",
+          "description": "Subscription signup (Launch Phase A): client invokes auth cloud function."
+        },
+        {
+          "n": 3,
+          "from": "fn.auth",
+          "to": "data.members",
+          "label": "Function writes",
+          "description": "Subscription signup (Launch Phase A): function writes members."
+        },
+        {
+          "n": 4,
+          "from": "data.members",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Subscription signup (Launch Phase A): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F54",
+      "name": "Grandfather logic for founding 20",
+      "primary_user_goal": "Founding 20 retain free / discounted access per locked Q.",
+      "actor": "actor.founder",
+      "served_by_ships": [
+        "Launch.PhaseA"
+      ],
+      "status": "speculative",
+      "path": [
+        "actor.founder",
+        "client.hq-admin",
+        "data.members",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.founder",
+          "to": "client.hq-admin",
+          "label": "Open surface",
+          "description": "Grandfather logic for founding 20: user opens hq admin surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-admin",
+          "to": "data.members",
+          "label": "Read/write data",
+          "description": "Grandfather logic for founding 20: client reads/writes members collection."
+        },
+        {
+          "n": 3,
+          "from": "data.members",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Grandfather logic for founding 20: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F55",
+      "name": "Cron — Downloads watcher (decisions + amendments)",
+      "primary_user_goal": "Every 5 min, scan Founder's Downloads for decisions-*.json / amendments-*.json and apply.",
+      "actor": "actor.founder",
+      "served_by_ships": [
+        "PLC-5",
+        "Amendments-2/4"
+      ],
+      "status": "shipped",
+      "path": [
+        "actor.founder",
+        "client.hq-admin",
+        "data.dms",
+        "data.config",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.founder",
+          "to": "client.hq-admin",
+          "label": "Open surface",
+          "description": "Cron — Downloads watcher (decisions + amendments): user opens hq admin surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-admin",
+          "to": "data.dms",
+          "label": "Read/write data",
+          "description": "Cron — Downloads watcher (decisions + amendments): client reads/writes dms collection."
+        },
+        {
+          "n": 3,
+          "from": "data.dms",
+          "to": "data.config",
+          "label": "Cross-collection update",
+          "description": "Cron — Downloads watcher (decisions + amendments): change in dms propagates to config."
+        },
+        {
+          "n": 4,
+          "from": "data.config",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Cron — Downloads watcher (decisions + amendments): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F56",
+      "name": "Cron — Maintenance (daily 02:55)",
+      "primary_user_goal": "Daily git fetch + GC + junk quarantine + log rotation + dep updates + state audit + regen-all sanity + daily report + local commit.",
+      "actor": "actor.founder",
+      "served_by_ships": [
+        "FIX-B"
+      ],
+      "status": "shipped",
+      "path": [
+        "actor.founder",
+        "client.hq-home",
+        "data.config",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.founder",
+          "to": "client.hq-home",
+          "label": "Open surface",
+          "description": "Cron — Maintenance (daily 02:55): user opens hq home surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-home",
+          "to": "data.config",
+          "label": "Read/write data",
+          "description": "Cron — Maintenance (daily 02:55): client reads/writes config collection."
+        },
+        {
+          "n": 3,
+          "from": "data.config",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Cron — Maintenance (daily 02:55): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F57",
+      "name": "Cron — Overnight triage (daily 03:00)",
+      "primary_user_goal": "Daily 4-hour-budget Claude Code launch to process FIQ + bug reports overnight.",
+      "actor": "actor.founder",
+      "served_by_ships": [
+        "OT-2..5"
+      ],
+      "status": "shipped",
+      "path": [
+        "actor.founder",
+        "client.hq-settings",
+        "data.config",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.founder",
+          "to": "client.hq-settings",
+          "label": "Open surface",
+          "description": "Cron — Overnight triage (daily 03:00): user opens hq settings surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-settings",
+          "to": "data.config",
+          "label": "Read/write data",
+          "description": "Cron — Overnight triage (daily 03:00): client reads/writes config collection."
+        },
+        {
+          "n": 3,
+          "from": "data.config",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Cron — Overnight triage (daily 03:00): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F58",
+      "name": "Proposal lifecycle (proactive cycle → Founder review → apply)",
+      "primary_user_goal": "Proactive orchestrator generates 1-3 proposals; Founder reviews via proposals.html; watcher applies decisions.",
+      "actor": "actor.founder",
+      "served_by_ships": [
+        "PLC-1..7"
+      ],
+      "status": "shipped",
+      "path": [
+        "actor.founder",
+        "client.hq-admin",
+        "data.config",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.founder",
+          "to": "client.hq-admin",
+          "label": "Open surface",
+          "description": "Proposal lifecycle (proactive cycle → Founder review → apply): user opens hq admin surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-admin",
+          "to": "data.config",
+          "label": "Read/write data",
+          "description": "Proposal lifecycle (proactive cycle → Founder review → apply): client reads/writes config collection."
+        },
+        {
+          "n": 3,
+          "from": "data.config",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Proposal lifecycle (proactive cycle → Founder review → apply): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F59",
+      "name": "Amendments lifecycle (governance change → Founder review → apply)",
+      "primary_user_goal": "Agent authors governance amendment draft; Founder reviews via amendments.html; watcher applies via apply-amendments.sh.",
+      "actor": "actor.founder",
+      "served_by_ships": [
+        "Amendments-1..4"
+      ],
+      "status": "shipping",
+      "path": [
+        "actor.founder",
+        "client.hq-admin",
+        "fn.auth",
+        "data.dms",
+        "data.config",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.founder",
+          "to": "client.hq-admin",
+          "label": "Open surface",
+          "description": "Amendments lifecycle (governance change → Founder review → apply): user opens hq admin surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-admin",
+          "to": "fn.auth",
+          "label": "Invoke function",
+          "description": "Amendments lifecycle (governance change → Founder review → apply): client invokes auth cloud function."
+        },
+        {
+          "n": 3,
+          "from": "fn.auth",
+          "to": "data.dms",
+          "label": "Function writes",
+          "description": "Amendments lifecycle (governance change → Founder review → apply): function writes dms."
+        },
+        {
+          "n": 4,
+          "from": "data.dms",
+          "to": "data.config",
+          "label": "Cross-collection update",
+          "description": "Amendments lifecycle (governance change → Founder review → apply): change in dms propagates to config."
+        },
+        {
+          "n": 5,
+          "from": "data.config",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Amendments lifecycle (governance change → Founder review → apply): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F60",
+      "name": "Discussion bubble lifecycle (open → vote → close)",
+      "primary_user_goal": "Multi-agent deliberation with voters / bubble-only participants; closes on quorum or stays open long-running.",
+      "actor": "actor.founder",
+      "served_by_ships": [
+        "PLC-3"
+      ],
+      "status": "shipped",
+      "path": [
+        "actor.founder",
+        "client.hq-home",
+        "data.social",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.founder",
+          "to": "client.hq-home",
+          "label": "Open surface",
+          "description": "Discussion bubble lifecycle (open → vote → close): user opens hq home surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-home",
+          "to": "data.social",
+          "label": "Read/write data",
+          "description": "Discussion bubble lifecycle (open → vote → close): client reads/writes social collection."
+        },
+        {
+          "n": 3,
+          "from": "data.social",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Discussion bubble lifecycle (open → vote → close): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F61",
+      "name": "Heartbeat cycle (regen-all chain)",
+      "primary_user_goal": "Every cron fire: telemetry aggregation → reports regen → ops views regen → round-trip test.",
+      "actor": "actor.founder",
+      "served_by_ships": [
+        "DC-5",
+        "regen-all chain"
+      ],
+      "status": "shipped",
+      "path": [
+        "actor.founder",
+        "client.hq-teetimes",
+        "data.rounds",
+        "data.events",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.founder",
+          "to": "client.hq-teetimes",
+          "label": "Open surface",
+          "description": "Heartbeat cycle (regen-all chain): user opens hq teetimes surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-teetimes",
+          "to": "data.rounds",
+          "label": "Read/write data",
+          "description": "Heartbeat cycle (regen-all chain): client reads/writes rounds collection."
+        },
+        {
+          "n": 3,
+          "from": "data.rounds",
+          "to": "data.events",
+          "label": "Cross-collection update",
+          "description": "Heartbeat cycle (regen-all chain): change in rounds propagates to events."
+        },
+        {
+          "n": 4,
+          "from": "data.events",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Heartbeat cycle (regen-all chain): state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    },
+    {
+      "id": "F62",
+      "name": "Token observability + manual quota anchoring",
+      "primary_user_goal": "Founder sees where tokens went (by agent / cron / ship) and anchors percentages via manual paste from claude.ai billing.",
+      "actor": "actor.founder",
+      "served_by_ships": [
+        "TU-1..5",
+        "DC-9"
+      ],
+      "status": "shipped",
+      "path": [
+        "actor.founder",
+        "client.hq-admin",
+        "data.config",
+        "dist.gh-pages"
+      ],
+      "steps": [
+        {
+          "n": 1,
+          "from": "actor.founder",
+          "to": "client.hq-admin",
+          "label": "Open surface",
+          "description": "Token observability + manual quota anchoring: user opens hq admin surface."
+        },
+        {
+          "n": 2,
+          "from": "client.hq-admin",
+          "to": "data.config",
+          "label": "Read/write data",
+          "description": "Token observability + manual quota anchoring: client reads/writes config collection."
+        },
+        {
+          "n": 3,
+          "from": "data.config",
+          "to": "dist.gh-pages",
+          "label": "Serve to client",
+          "description": "Token observability + manual quota anchoring: state surfaces back to client via gh pages."
+        }
+      ],
+      "_generated_by": "scripts/generate-flow-paths.py (iter 16, 2026-05-14)"
+    }
+  ]
+}
