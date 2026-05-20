@@ -166,7 +166,19 @@
          *   on-path adds subtle warm-tinted background fill so selected
          *     nodes don't look like "transparent outlines" but rather like
          *     bright brass-glow elements with light fill (rgba 9% amber). */
-        .mf-grid.has-selection .mf-node { opacity: 0.25; transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1), border-color 250ms cubic-bezier(0.4, 0, 0.2, 1), transform 250ms cubic-bezier(0.4, 0, 0.2, 1), background 250ms cubic-bezier(0.4, 0, 0.2, 1); }
+        /* M5.13 (2026-05-20): Founder reckoning — main-flows "still doesn't show
+         * the flow in a sleek clean way". Janowiak frame 01 ground truth:
+         * off-path nodes are NEARLY INVISIBLE (5-15% of background) — only
+         * labels visible, borders disappear. PARBAUGHS at 0.25 still showed
+         * full borders on every off-path node = visual noise. Drop to 0.18,
+         * AND zero out borders on off-path nodes so only label text remains
+         * (much closer to Janowiak's "labels-only ghost" pattern). */
+        .mf-grid.has-selection .mf-node {
+            opacity: 0.18;
+            border-color: transparent !important;
+            background: transparent !important;
+            transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1), border-color 250ms cubic-bezier(0.4, 0, 0.2, 1), transform 250ms cubic-bezier(0.4, 0, 0.2, 1), background 250ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
         .mf-grid.has-selection .mf-node.is-on-path {
             opacity: 1;
             border-color: var(--accent-brass);
