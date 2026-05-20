@@ -710,3 +710,4 @@
 {"event_type": "session.team-work.summary", "timestamp": "2026-05-20T20:02:24.608433+00:00", "data": {"agent": "engineer", "ship_id": "AMD-020", "tokens_estimated": 0, "note": "post-commit-hook"}, "agent": "engineer", "ship_id": "AMD-020", "cron_source": "manual-session"}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-20T20:02:25.362063+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-20T20:02:34.798731+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"timestamp":"2026-05-20T20:03:20.7788586Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"928f58c1fe31","cron_source":"downloads-watcher"}}
