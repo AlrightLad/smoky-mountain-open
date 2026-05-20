@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T23:17:14Z",
-  "generated_at": "2026-05-20T23:17:14Z",
+  "timestamp": "2026-05-20T23:17:20Z",
+  "generated_at": "2026-05-20T23:17:20Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "red",
-  "raw_status": "red",
-  "summary": "watcher errored",
-  "as_of": "2026-05-20T23:17:13Z",
+  "status": "green",
+  "raw_status": "green",
+  "summary": "watcher no-new-files 0.1min ago",
+  "as_of": "2026-05-20T23:17:17Z",
   "stale": false,
-  "age_hours": 0.0,
+  "age_hours": 0.0016666666666666668,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -30,13 +30,6 @@
     },
     {
       "category": "stall",
-      "status": "incomplete",
-      "name": "2026-05-20T23-17-13Z-downloads-watcher.log",
-      "note": "[23:17:13] AUTO-COMMIT routine cron output before preflight: 2 files",
-      "when": "2026-05-20T23:17:13Z"
-    },
-    {
-      "category": "stall",
       "status": "skip-dirty",
       "name": "2026-05-20T23-16-28Z-downloads-watcher.log",
       "note": "[23:16:29] SKIP working tree dirty with non-routine files: scripts/cron/downloads-watcher.ps1",
@@ -48,6 +41,13 @@
       "name": "2026-05-20T23-16-27Z-downloads-watcher.log",
       "note": "[23:16:28] SKIP working tree dirty with non-routine files: scripts/cron/downloads-watcher.ps1",
       "when": "2026-05-20T23:16:27Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-20T23-16-26Z-downloads-watcher.log",
+      "note": "[23:16:27] SKIP working tree dirty with non-routine files: scripts/cron/downloads-watcher.ps1",
+      "when": "2026-05-20T23:16:26Z"
     }
   ],
   "links": [
@@ -64,6 +64,6 @@
   "_meta": {
     "watcher_runs_inspected": 10,
     "consecutive_skips": 0,
-    "age_minutes": 0.0
+    "age_minutes": 0.1
   }
 }
