@@ -1,12 +1,12 @@
 {
-  "ts": "2026-05-20T06:06:54Z",
-  "timestamp": "2026-05-20T06:06:54Z",
-  "generated_at": "2026-05-20T06:06:54Z",
-  "last_pass_at_utc": "2026-05-20T06:06:54Z",
+  "ts": "2026-05-20T06:06:57Z",
+  "timestamp": "2026-05-20T06:06:57Z",
+  "generated_at": "2026-05-20T06:06:57Z",
+  "last_pass_at_utc": "2026-05-20T06:06:57Z",
   "last_pass_at_human": "2026-05-20 06:06 UTC",
-  "status": "PASS",
+  "status": "PASS-COMMIT",
   "age_minutes": 0,
   "duration_seconds": 0,
-  "head_sha": "de2392f",
-  "source": "post-commit-hook"
+  "head_sha": "c37adde",
+  "source": "post-commit-hook-fast"
 }
