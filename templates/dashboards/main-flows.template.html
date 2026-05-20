@@ -486,17 +486,33 @@
             border-color: var(--border-subtle);
         }
 
-        /* M5.9 — arrow visibility. M5.8 kept stroke-width 1.5px which is
-         * thin-but-not-invisible at 4K but at 1920x1080 reads as ghost-
-         * lines. Janowiak's arrows are clearly bright yellow. Bump to 2px
-         * + stroke-linecap=round softens corners. */
+        /* 2026-05-20 iter4 (Founder "arrows and flow need to be cleaner"):
+         * Override M5.9. The 2px stroke + Q-curve paths + sub-pixel coords
+         * (e.g. y=39.6484375) were anti-aliasing to a blur smear. Three fixes:
+         *   1. stroke 2 → 3 (more visible)
+         *   2. stroke-linecap butt (no rounded ends causing flare)
+         *   3. shape-rendering geometricPrecision (browser smooth-line hint)
+         *   4. paint-order normal so stroke sits below arrow heads
+         * Coordinate rounding handled in the JS path generator (see edge
+         * drawing in template's IIFE). */
         .mf-arrow-line {
             fill: none;
             stroke: var(--accent-brass);
-            stroke-width: 2;
+            stroke-width: 3;
             stroke-dasharray: none;
-            stroke-linecap: round;
+            stroke-linecap: butt;
+            stroke-linejoin: round;
             opacity: 1;
+            shape-rendering: geometricPrecision;
+            vector-effect: non-scaling-stroke;
+        }
+        .mf-arrow-head {
+            fill: var(--accent-brass);
+            shape-rendering: geometricPrecision;
+        }
+        .mf-arrow-badge-bg {
+            fill: var(--accent-brass);
+            shape-rendering: geometricPrecision;
         }
         .mf-arrow-head {
             fill: var(--accent-brass);
@@ -1201,20 +1217,41 @@
                 defs.innerHTML = '<marker id="mf-arrow-head-marker" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="mf-arrow-head" d="M 0 0 L 10 5 L 0 10 z"/></marker>';
                 ARROWS.appendChild(defs);
 
+                // 2026-05-20 iter4 (Founder "arrows and flow need to be cleaner"):
+                // round all coordinates to integers before emitting path d.
+                // Sub-pixel coords (y=39.6484375) caused anti-aliasing smear;
+                // integer coords paint sharply on standard DPI. Also straighten
+                // horizontal segments — Q-curves between same-row nodes were
+                // creating tiny curve dips. Use straight L for horizontal jumps,
+                // Q only for column-jumps (different rows).
+                var rnd = function (n) { return Math.round(n); };
                 flow.steps.forEach(function (s, idx) {
                     var a = nodeCenter(s.from);
                     var b = nodeCenter(s.to);
                     if (!a || !b) return;
                     var dx = b.x - a.x;
-                    var ax = a.x + Math.sign(dx) * (a.rx + 4);
-                    var ay = a.y;
-                    var bx = b.x - Math.sign(dx) * (b.rx + 8);
-                    var by = b.y;
-                    var mx = (ax + bx) / 2;
-                    var my = (ay + by) / 2 + (Math.abs(dx) > 1 ? 0 : 40);
+                    var dy = b.y - a.y;
+                    var ax = rnd(a.x + Math.sign(dx) * (a.rx + 4));
+                    var ay = rnd(a.y);
+                    var bx = rnd(b.x - Math.sign(dx) * (b.rx + 8));
+                    var by = rnd(b.y);
                     var path = document.createElementNS(ns, 'path');
                     path.setAttribute('class', 'mf-arrow-line');
-                    path.setAttribute('d', 'M ' + ax + ' ' + ay + ' Q ' + mx + ' ' + my + ' ' + bx + ' ' + by);
+                    var d;
+                    if (Math.abs(dy) < 4) {
+                        // Same row: straight horizontal line (no Q-curve dip).
+                        d = 'M ' + ax + ' ' + ay + ' L ' + bx + ' ' + by;
+                    } else {
+                        // Different row: orthogonal "elbow" routing — horizontal
+                        // out from source, vertical to target row, horizontal
+                        // to target. Much cleaner than a Q-curve through space.
+                        var midX = rnd((ax + bx) / 2);
+                        d = 'M ' + ax + ' ' + ay
+                          + ' L ' + midX + ' ' + ay
+                          + ' L ' + midX + ' ' + by
+                          + ' L ' + bx + ' ' + by;
+                    }
+                    path.setAttribute('d', d);
                     path.setAttribute('marker-end', 'url(#mf-arrow-head-marker)');
                     ARROWS.appendChild(path);
 

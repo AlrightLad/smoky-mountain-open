@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T19:58:07Z",
-  "generated_at": "2026-05-20T19:58:07Z",
+  "timestamp": "2026-05-20T20:02:13Z",
+  "generated_at": "2026-05-20T20:02:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "green",
-  "raw_status": "green",
-  "summary": "watcher no-new-files 1.6min ago",
-  "as_of": "2026-05-20T19:56:31Z",
+  "status": "yellow",
+  "raw_status": "yellow",
+  "summary": "watcher last run: skip-dirty",
+  "as_of": "2026-05-20T20:00:48Z",
   "stale": false,
-  "age_hours": 0.02666666666666667,
+  "age_hours": 0.02333333333333333,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -31,6 +31,13 @@
     {
       "category": "stall",
       "status": "skip-dirty",
+      "name": "2026-05-20T20-00-48Z-downloads-watcher.log",
+      "note": "[20:00:48] SKIP working tree dirty with non-routine files: dashboard-clean.png, dashboard-sparkline-fixed.png, main-flows-iter4-arrows.png, templates/dashboards/main-flows.template.html",
+      "when": "2026-05-20T20:00:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
       "name": "2026-05-20T19-55-48Z-downloads-watcher.log",
       "note": "[19:55:48] SKIP working tree dirty with non-routine files: templates/dashboards/dashboard.template.html",
       "when": "2026-05-20T19:55:48Z"
@@ -41,13 +48,6 @@
       "name": "2026-05-20T19-55-38Z-downloads-watcher.log",
       "note": "[19:55:38] SKIP working tree dirty with non-routine files: templates/dashboards/dashboard.template.html",
       "when": "2026-05-20T19:55:38Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-20T19-55-35Z-downloads-watcher.log",
-      "note": "[19:55:35] SKIP working tree dirty with non-routine files: templates/dashboards/dashboard.template.html",
-      "when": "2026-05-20T19:55:35Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 0,
-    "age_minutes": 1.6
+    "consecutive_skips": 1,
+    "age_minutes": 1.4
   }
 }
