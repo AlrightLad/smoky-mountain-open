@@ -451,6 +451,13 @@
                 .pb-kpi-sparkline rect.pb-spark-bar:hover { opacity: 1; }
                 .pb-kpi-card.is-hero .pb-kpi-sparkline rect.pb-spark-bar { opacity: 0.65; }
                 .pb-kpi-card.is-hero .pb-kpi-sparkline rect.pb-spark-bar.is-max { opacity: 1; }
+                .pb-kpi-sparkline text.pb-spark-label {
+                    font-family: var(--font-mono);
+                    font-size: 9px;
+                    fill: var(--pb-chalk-400);
+                    letter-spacing: 0.04em;
+                    text-transform: uppercase;
+                }
                 .pb-kpi-sparkline path.pb-spark-line {
                     fill: none;
                     stroke: currentColor;
@@ -1067,20 +1074,31 @@
                     // crisp shape-rendering. Round all coords to integers.
                     var hover = opts && opts.hoverLabels ? opts.hoverLabels : [];
                     var max = Math.max.apply(null, values) || 1;
+                    var labels = opts && opts.barLabels ? opts.barLabels : [];
+                    var showLabels = labels.length === values.length && h >= 56;
+                    var labelH = showLabels ? 12 : 0;
+                    var chartH = h - labelH;
                     var gap = Math.max(2, Math.floor(w / values.length / 4));
                     var barW = Math.floor((w - gap * (values.length - 1)) / values.length);
                     var pad = 2;
-                    var floorY = h - 1;
+                    var floorY = chartH - 1;
                     var bars = values.map(function (v, i) {
                         var bx = i * (barW + gap);
-                        var bh = Math.max(2, Math.round((h - pad * 2) * (v / max)));
+                        var bh = Math.max(2, Math.round((chartH - pad * 2) * (v / max)));
                         var by = floorY - bh;
                         var label = hover[i] != null ? hover[i] : String(v);
                         var isMax = v === max;
                         var cls = 'pb-spark-bar' + (isMax ? ' is-max' : '');
-                        return '<rect class="' + cls + '" x="' + bx + '" y="' + by
+                        var rect = '<rect class="' + cls + '" x="' + bx + '" y="' + by
                              + '" width="' + barW + '" height="' + bh
                              + '" rx="1"><title>' + label + '</title></rect>';
+                        if (showLabels) {
+                            var lx = bx + barW / 2;
+                            var ly = h - 2;
+                            rect += '<text class="pb-spark-label" x="' + lx.toFixed(1) + '" y="' + ly
+                                 + '" text-anchor="middle">' + labels[i] + '</text>';
+                        }
+                        return rect;
                     }).join('');
                     svg.innerHTML = bars;
                 }
@@ -1171,8 +1189,22 @@
                 function _hl(date, v, fmt) {
                     return date + ': ' + (fmt ? fmt(v) : v);
                 }
+                // iter6 polish: per-bar day-of-week labels under hero sparkline
+                function _shortDay(label) {
+                    if (!label) return '';
+                    // Convert 'YYYY-MM-DD' or 'MM-DD' to 'Mon'/'Tue' etc.
+                    var parts = String(label).split('-');
+                    var year = parts.length === 3 ? parts[0] : new Date().getFullYear();
+                    var mo = parts.length === 3 ? parts[1] : parts[0];
+                    var dy = parts.length === 3 ? parts[2] : parts[1];
+                    if (!mo || !dy) return label.slice(-2);
+                    var d = new Date(Number(year), Number(mo) - 1, Number(dy));
+                    if (isNaN(d.getTime())) return label.slice(-2);
+                    return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()];
+                }
                 drawSpark('[data-spark="weekly-tokens"]', tokenValues, {
-                    hoverLabels: tokenLabels.map(function (l, i) { return _hl(l, tokenValues[i] || 0, fmtNum); })
+                    hoverLabels: tokenLabels.map(function (l, i) { return _hl(l, tokenValues[i] || 0, fmtNum); }),
+                    barLabels: tokenLabels.map(_shortDay)
                 });
                 drawSpark('[data-spark="daily-tokens"]', tokenValues, {
                     hoverLabels: tokenLabels.map(function (l, i) { return _hl(l, tokenValues[i] || 0, fmtNum); })
