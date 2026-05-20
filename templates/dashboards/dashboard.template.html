@@ -443,6 +443,12 @@
                     stroke-linecap: round;
                     stroke-linejoin: round;
                     opacity: 1;
+                    /* M5.14 (2026-05-20, Founder "graphs blurry"): preserveAspectRatio=none
+                     * was non-uniformly stretching strokes (1.6x x-stretch caused
+                     * horizontal blur). Force uniform-thickness stroke via
+                     * vector-effect: non-scaling-stroke. Stroke renders at the CSS
+                     * value (2px) regardless of viewBox scaling. */
+                    vector-effect: non-scaling-stroke;
                 }
                 .pb-kpi-card.is-hero .pb-kpi-sparkline path.pb-spark-line {
                     stroke-width: 2.5;
@@ -459,6 +465,7 @@
                     fill: currentColor;
                     stroke: var(--pb-billiard-green-800);
                     stroke-width: 1.5;
+                    vector-effect: non-scaling-stroke;
                 }
                 /* Cycle 2: hover affordance on sparkline points — Datadog
                    pattern. The transparent hover rects highlight the column
