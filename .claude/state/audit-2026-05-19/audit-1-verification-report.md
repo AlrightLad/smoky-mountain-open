@@ -22,12 +22,14 @@
 | D8 | P10 actionability sweep | **GREEN** | Visual sweep of 10 dashboards confirms: every count has destination + status badge (e.g., "0 · OK · NO DRAFTS · See .claude/state/amendments/pending/"); empty states classified as legitimate/loading/error/misconfigured per AMD-026; no bare counts without destinations observed. PROP-014 surfaces correctly on proposals.html and index.html "PROPOSALS PENDING · 1 · FOUNDER · 1 TO REVIEW". |
 | D9 | Heartbeat freshness < 60 min | **YELLOW** | 6 of 11 aggregates fresh (≤ 3 min); 3 stale (76–641 min); 2 lack `generated_at` field (schema gap on goal-status.json + current-snapshot.json). Root cause: aggregator scripts are PASSIVE consolidators that aggregate the most recent producer output — producers (AgentShield, smoke, FIQ scan, audit-allow-list, scan-shipped-proposals) only run on explicit invocation. Cron post-commit-regen refreshes the lightweight aggregators only. Documented design gap; not auto-fixable in this audit cycle. Surface for Founder decision. |
 | D10 | Activity feed completeness | **GREEN** | Spot-check 10 random recent commit SHAs against activity.html: 10/10 found (2 hits each: rendered display + JSON data block). Cron-routine commits + ship commits + spec install all present. |
-| D11 | Verification-packet drift | **GREEN** | All 5 traced-value source paths intact: (1) `~/.claude/projects/*.jsonl` (32 transcripts) → `aggregate-token-usage.py` → `token-usage-snapshot.json`; (2) `.claude/state/heartbeats/regen-all-last-pass.json` (fresh, 2026-05-20T07:07:48Z); (3) `.claude/state/security/baseline-*/` dirs (multiple historical baselines preserved); (4) `.claude/state/main-flows-v2/M4-M5-SCORE-2026-05-18-session-2.md` + competitive references; (5) AMD-026 + P10 catalog + 3 phase logs. Values drifted (4.10B→4.69B tokens-this-week, etc.) as expected from 24h of additional session activity. |
+| D11 | Verification-packet drift | **YELLOW** (downgraded post-Founder-redirect 2026-05-20) | Values 1-3 + 5: all source chains intact. **Value 4 (Main-flows TASTE 9.5) FAILS visual sign-off per Founder 2026-05-20:** *"main flows tab is still not right or matching the video... extremely messy and hard to understand."* Per AMD-028, ≥9.5 self-rating REQUIRES Founder visual sign-off; the packet claimed 9.5 without it, and now-actual sign-off = NOT 9.5. **Remediation in flight:** commit `40abde4` redesign adds layer + category filter axes (App/Orch + Debug/Ships/Data), drops default visible flows from 62 → 24, V1 capture at `.claude/state/main-flows-v2/redesign-2026-05-20-iter1.png`. Self-rating iter1: ~7.5/10. Awaiting Founder visual judgment on iter1. |
 | D12 | Workflow review (5 sampled ships) | **GREEN** | 5 commits sampled: `bf16c47` (PROP-014 community design audit), `e0c7f06` (heartbeat fast-path idempotency), `de2392f` (M5.14 sparkline non-scaling-stroke), `238212b` (AMD-028 quorum tightening), `2e809fd` (M5.13 ghost-invisible Janowiak parity). Applied AMD-028 heuristic to each: ZERO self-rating violations, ZERO false-closure patterns, ZERO snapshot-PASS, ZERO count-without-destination. Every commit cites root cause + concrete fix + (where applicable) Founder source quote. |
 | D13 | 9-bubble deliberation gate | **APPROVE** (5/9 ship quorum met — see deliberation below; per-bubble Security/Truth/Action: no veto) |
 | D14 | Founder approval string | PENDING — Founder writes `FOUNDER-APPROVED-G1-{ISO-8601-TS}` below |
 
-**Net: 10 GREEN, 3 YELLOW, 0 RED.** All 3 YELLOWs surfaced for Founder gap-approval per spec.
+**Net: 9 GREEN, 4 YELLOW, 0 RED** (D11 downgraded post-Founder-redirect 2026-05-20). All 4 YELLOWs surfaced for Founder gap-approval per spec.
+
+**Honest correction (2026-05-20):** Original D11 GREEN was authored before Founder's main-flows visual sign-off. Founder's 2026-05-20 redirect on main-flows triggered AMD-028's recursion-breaker (≥9.5 needs Founder sign-off; sign-off was NOT given). D11 downgraded to YELLOW. The audit FAILED to catch this on first pass — exactly the false-positive pattern AMD-028 was authored to prevent. Surfaced honestly + remediation ship `40abde4` in flight rather than papering over.
 
 ---
 
@@ -69,6 +71,29 @@ Likely root causes (for Goal 2 diagnostic-first investigation):
 
 **WHERE:** `.claude/hooks/post-commit-routine.sh` + `scripts/regen-all.sh` cron path
 **WHAT-ACTION:** (a) Founder gap-approves the partial-observation; OR (b) audit is re-run with a passive 30-min watch window. Recommendation: gap-approve — the cron cadence is verified working (3 cron-routine commits visible in the last 30 min of git log).
+
+### D11 — Verification-packet Value 4 (main-flows TASTE 9.5) FAILS sign-off
+
+**Observation (post-audit Founder redirect 2026-05-20):**
+
+Original D11 verdict was GREEN because all 5 traced-value source chains were on disk + the source documents existed. The verdict mishandled Value 4 specifically: the packet claimed main-flows TASTE = 9.5/10, and my D1 row noted *"per AMD-028 agent-self-rating cap is 9.0 — re-rating to 9.5 requires Founder visual sign-off (not done this audit)."* I should have downgraded D11 then. I didn't.
+
+Founder feedback 2026-05-20 made the failure explicit:
+
+> "main flows tab is still not right or matching the video I sent and being clean in design it is extremely messy and had to understand, review, see the workflow that happens for each event. Remember this is the backend of how data moves and visual that should be updated based on parbaugh changes to have a quick diagram that you and I can review"
+
+**Why YELLOW not RED:** the AMD-028 recursion-breaker worked as designed — Founder caught the inflation. The audit didn't catch it but the substrate did.
+
+**Remediation in flight (commit `40abde4`):**
+- Added layer + category filter axes (App/Orch + Debug/Ships/Data) to main-flows
+- Default landing view filters to App + Debug → drops visible flows from 62 → 24
+- Auto-categorization script (`scripts/categorize-main-flows.py`) keeps the substrate self-healing on future regens
+- 9 existing orch flows surface on Orch toggle; new orch nodes deferred to follow-on ship
+- V1 capture at `.claude/state/main-flows-v2/redesign-2026-05-20-iter1.png` for Founder visual judgment
+- Iter1 self-rating: ~7.5/10 (4 chip rows = visually dense; 24 flows = 2-3x Janowiak's 9 — still room to improve)
+
+**WHERE:** `templates/dashboards/main-flows.template.html` + `scripts/categorize-main-flows.py` + `.claude/state/main-flows-v2/redesign-2026-05-20-iter1.png`
+**WHAT-ACTION:** Founder reviews iter1, redirects if still off; engineer iterates toward 9.0+; visual sign-off only on Founder explicit `FOUNDER-VISUAL-SIGNOFF-{score}-{TS}` (per AMD-028).
 
 ### D9 — Aggregate freshness design gap
 
@@ -258,7 +283,7 @@ Per Goal 1 scope (excludes Goal 2 work):
 | G1-D8 | P10 sweep zero violations | ✅ no bare counts observed |
 | G1-D9 | All aggregates < 60 min | ⚠️ 5 stale + 2 schema-gap — SURFACED FOR GAP-APPROVAL (design gap, not regression) |
 | G1-D10 | Activity feed 10/10 SHAs present | ✅ 10/10 found |
-| G1-D11 | Verification packet sources still match | ✅ all 5 source chains intact |
+| G1-D11 | Verification packet sources still match | ⚠️ 4 of 5 sources GREEN; Value 4 (main-flows TASTE 9.5) FAILS Founder visual sign-off per 2026-05-20 redirect — SURFACED FOR GAP-APPROVAL with remediation in flight (commit 40abde4 main-flows redesign) |
 | G1-D12 | 5 ships audited, findings logged | ✅ all 5 PASS AMD-028 heuristic |
 | G1-D13 | 9-bubble deliberation APPROVE 5/9 + no veto | ✅ 9/9 above quorum; no veto |
 | G1-D14 | Founder writes FOUNDER-APPROVED-G1-{TS} | ⏳ awaiting Founder |
