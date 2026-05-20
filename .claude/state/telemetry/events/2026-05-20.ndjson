@@ -80,3 +80,7 @@
 {"event_type": "session.team-work.summary", "timestamp": "2026-05-20T05:51:40.123198+00:00", "data": {"agent": "engineer", "ship_id": "PROP-006", "tokens_estimated": 0, "note": "post-commit-hook"}, "agent": "engineer", "ship_id": "PROP-006", "cron_source": "manual-session"}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-20T05:51:40.809385+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-20T05:51:50.440308+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"timestamp":"2026-05-20T05:52:12.6771767Z","event_type":"cron.token-sidecar.end","data":{"org_monthly_pct":null,"stale_seconds":null,"estimated_tokens":0,"cron_source":"token-sidecar","duration_seconds":0,"success":true,"claude_invoked":false,"data_source":"auto-derived","run_id":"68639e3dccb6","weekly_pct":null}}
+{"event_type": "session.team-work.summary", "timestamp": "2026-05-20T05:55:33.868593+00:00", "data": {"agent": "engineer", "ship_id": "manual-emit-20260520T055533Z", "tokens_estimated": 0, "note": "post-commit-hook"}, "agent": "engineer", "ship_id": "manual-emit-20260520T055533Z", "cron_source": "manual-session"}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-20T05:55:34.661968+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-20T05:55:44.745398+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
