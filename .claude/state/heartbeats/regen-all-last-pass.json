@@ -1,12 +1,12 @@
 {
-  "ts": "2026-05-20T19:03:42Z",
-  "timestamp": "2026-05-20T19:03:42Z",
-  "generated_at": "2026-05-20T19:03:42Z",
-  "last_pass_at_utc": "2026-05-20T19:03:42Z",
-  "last_pass_at_human": "2026-05-20 19:03 UTC",
-  "status": "PASS",
+  "ts": "2026-05-20T19:04:42Z",
+  "timestamp": "2026-05-20T19:04:42Z",
+  "generated_at": "2026-05-20T19:04:42Z",
+  "last_pass_at_utc": "2026-05-20T19:04:42Z",
+  "last_pass_at_human": "2026-05-20 19:04 UTC",
+  "status": "GATE-FAIL",
   "age_minutes": 0,
   "duration_seconds": 0,
-  "head_sha": "dd5e9a3",
-  "source": "post-commit-hook"
+  "head_sha": "91622ec",
+  "source": "regen-all.sh"
 }

@@ -27,8 +27,9 @@
   "authored_by": "claude-code",
   "bubble_of_record": null,
   "estimate_tokens_to_apply": 3000,
-  "status": "applied-this-ship",
-  "operating_status": "Founder approved 2026-05-20 inline ('I approve let's move forward'). Impeccable installed + 2 distilled docs authored + coexistence-policy updated this ship. Skill discovery should pick up `impeccable` at next Claude Code session start. UI/UX Pro Max SKIP rationale captured below."
+  "status": "applied",
+  "applied_at": "2026-05-20T18:40:00Z",
+  "operating_status": "Founder approved 2026-05-20 inline ('I approve let's move forward'). Impeccable installed at ~/.claude/skills/impeccable/ (39 markdown files); 2 distilled docs authored; coexistence-policy updated. Skill discovery verified live in same session (`impeccable` appeared in skills list). File moved pending/ → applied/ on 2026-05-20T18:40:00Z per second Founder approval cycle ('I see a approval I approved awhile ago about impeccable but nothing is being pushed')."
 }
 ---
 
