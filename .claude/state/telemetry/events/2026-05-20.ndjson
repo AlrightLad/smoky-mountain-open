@@ -690,3 +690,4 @@
 {"event_type": "session.team-work.summary", "timestamp": "2026-05-20T19:56:02.542152+00:00", "data": {"agent": "engineer", "ship_id": "manual-emit-20260520T195602Z", "tokens_estimated": 0, "note": "post-commit-hook"}, "agent": "engineer", "ship_id": "manual-emit-20260520T195602Z", "cron_source": "manual-session"}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-20T19:56:03.269126+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-20T19:56:13.370097+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"timestamp":"2026-05-20T19:56:18.5636004Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"c5f9d3fdc6cd","cron_source":"downloads-watcher"}}
