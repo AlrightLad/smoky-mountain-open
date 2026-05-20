@@ -527,16 +527,34 @@
                 LIST.innerHTML = flows.map(renderFlowCard).join('');
                 bindFlows();
                 applyFilters();
-                // Auto-expand first visible
-                var firstVisible = LIST.querySelector('.mf-flow:not(.is-hidden)');
-                if (firstVisible) firstVisible.classList.add('is-open');
+                // Auto-expand first visible OR URL hash target
+                var hash = (location.hash || '').replace(/^#/, '');
+                var target = hash ? LIST.querySelector('.mf-flow[data-flow-id="' + hash + '"]') : null;
+                if (target) {
+                    // Open URL-targeted flow + relax filter so it's visible
+                    target.classList.remove('is-hidden');
+                    target.classList.add('is-open');
+                    requestAnimationFrame(function () {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    });
+                } else {
+                    var firstVisible = LIST.querySelector('.mf-flow:not(.is-hidden)');
+                    if (firstVisible) firstVisible.classList.add('is-open');
+                }
             }
 
             function bindFlows() {
                 LIST.querySelectorAll('.mf-flow-summary').forEach(function (el) {
-                    el.addEventListener('click', function () {
+                    el.addEventListener('click', function (ev) {
                         var flow = el.closest('.mf-flow');
+                        var wasOpen = flow.classList.contains('is-open');
                         flow.classList.toggle('is-open');
+                        // Deep-link: update URL hash for shareable flow state
+                        if (!wasOpen) {
+                            history.replaceState(null, '', '#' + flow.getAttribute('data-flow-id'));
+                        } else if (location.hash === '#' + flow.getAttribute('data-flow-id')) {
+                            history.replaceState(null, '', location.pathname + location.search);
+                        }
                     });
                     el.addEventListener('keydown', function (ev) {
                         if (ev.key === 'Enter' || ev.key === ' ') {

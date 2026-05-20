@@ -458,6 +458,14 @@
                     letter-spacing: 0.04em;
                     text-transform: uppercase;
                 }
+                .pb-kpi-card.is-hero .pb-kpi-sparkline text.pb-spark-label {
+                    font-size: 10px;
+                    fill: var(--pb-chalk-300);
+                }
+                .pb-kpi-sparkline text.pb-spark-label.is-max {
+                    fill: var(--accent-brass);
+                    font-weight: 700;
+                }
                 .pb-kpi-sparkline path.pb-spark-line {
                     fill: none;
                     stroke: currentColor;
@@ -1095,7 +1103,8 @@
                         if (showLabels) {
                             var lx = bx + barW / 2;
                             var ly = h - 2;
-                            rect += '<text class="pb-spark-label" x="' + lx.toFixed(1) + '" y="' + ly
+                            var labelCls = 'pb-spark-label' + (isMax ? ' is-max' : '');
+                            rect += '<text class="' + labelCls + '" x="' + lx.toFixed(1) + '" y="' + ly
                                  + '" text-anchor="middle">' + labels[i] + '</text>';
                         }
                         return rect;
