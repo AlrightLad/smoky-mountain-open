@@ -593,3 +593,8 @@
 {"event_type": "session.team-work.summary", "timestamp": "2026-05-20T18:24:35.714516+00:00", "data": {"agent": "engineer", "ship_id": "AMD-028", "tokens_estimated": 0, "note": "post-commit-hook"}, "agent": "engineer", "ship_id": "AMD-028", "cron_source": "manual-session"}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-20T18:24:36.399467+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-20T18:24:46.349129+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"timestamp":"2026-05-20T18:25:48.5435289Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"57bd642dbfac","cron_source":"downloads-watcher"}}
+{"timestamp":"2026-05-20T18:25:48.7668204Z","event_type":"cron.downloads-watcher.end","data":{"success":true,"exit_reason":"skip-dirty","cron_source":"downloads-watcher","duration_ms":292,"claude_invoked":false,"run_id":"57bd642dbfac"}}
+{"event_type": "session.team-work.summary", "timestamp": "2026-05-20T18:26:08.705865+00:00", "data": {"agent": "engineer", "ship_id": "AMD-028", "tokens_estimated": 0, "note": "post-commit-hook"}, "agent": "engineer", "ship_id": "AMD-028", "cron_source": "manual-session"}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-20T18:26:09.370020+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-20T18:26:19.034867+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
