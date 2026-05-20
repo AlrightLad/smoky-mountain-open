@@ -1,13 +1,13 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T16:57:13Z",
-  "generated_at": "2026-05-20T16:57:13Z",
+  "timestamp": "2026-05-20T17:02:13Z",
+  "generated_at": "2026-05-20T17:02:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
   "summary": "watcher errored · 1 in inbox",
-  "as_of": "2026-05-20T16:55:48Z",
+  "as_of": "2026-05-20T17:00:48Z",
   "stale": false,
   "age_hours": 0.02333333333333333,
   "counts": {
@@ -31,6 +31,13 @@
     {
       "category": "stall",
       "status": "incomplete",
+      "name": "2026-05-20T17-00-48Z-downloads-watcher.log",
+      "note": "[17:00:50] SKIP working tree still dirty after auto-commit attempt",
+      "when": "2026-05-20T17:00:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "incomplete",
       "name": "2026-05-20T16-55-48Z-downloads-watcher.log",
       "note": "[16:55:50] SKIP working tree still dirty after auto-commit attempt",
       "when": "2026-05-20T16:55:48Z"
@@ -41,13 +48,6 @@
       "name": "2026-05-20T16-50-48Z-downloads-watcher.log",
       "note": "[16:50:50] SKIP working tree still dirty after auto-commit attempt",
       "when": "2026-05-20T16:50:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "incomplete",
-      "name": "2026-05-20T16-45-48Z-downloads-watcher.log",
-      "note": "[16:45:50] SKIP working tree still dirty after auto-commit attempt",
-      "when": "2026-05-20T16:45:48Z"
     }
   ],
   "links": [
