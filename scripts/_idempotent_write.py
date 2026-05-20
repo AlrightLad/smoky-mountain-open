@@ -109,6 +109,9 @@ TIMESTAMP_KEYS_DEFAULT: list[str] = [
     # ----- Timestamp / staleness-derivative fields -----
     "timestamp",
     "generated_at",
+    "updated_at",                          # session 5 (2026-05-20): architecture-review-v2.1 wrote updated_at every run
+    "last_updated",                        # variant naming
+    "created_at",                          # for aggregate-only contexts (NOT for entity creation dates)
     "as_of",
     "snapshot_at",
     "age_hours",                           # derived `now - as_of` drift
