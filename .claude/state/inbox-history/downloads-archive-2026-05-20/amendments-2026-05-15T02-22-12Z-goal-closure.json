@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "amendments",
+  "source_report_generated_at": "2026-05-15T02:22:12.000000+00:00",
+  "generated_at": "2026-05-15T02:22:12.000Z",
+  "exported_by": "/goal-2026-05-15-Objective-8-closure",
+  "decisions": [
+    {
+      "amendment_id": "AMD-021",
+      "decision": "approve",
+      "note": "Reserved slot authored this session per goal-roadmap line 17 'strict closure; workarounds replaced with proven fix + proof'. Operating ACTIVE per Founder verbal directive encoded in /goal spec. Ratified via /goal Objective 8 closure path.",
+      "decided_at": "2026-05-15T02:22:12.000Z"
+    },
+    {
+      "amendment_id": "AMD-025",
+      "decision": "approve",
+      "note": "Ship spec standard authored per Founder 'NEW SHIP STANDARD' directive (system reminder 2026-05-15T01:54Z). 10 mandatory sections + research-first discipline. Operating ACTIVE per Founder directive at authoring time. Ratified via /goal Objective 8 closure path.",
+      "decided_at": "2026-05-15T02:22:12.000Z"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "kind": "amendments",
+  "source_report_generated_at": "2026-05-14T03:37:50.266524+00:00",
+  "generated_at": "2026-05-14T04:04:14.099Z",
+  "decisions": [
+    {
+      "amendment_id": "AMD-001",
+      "decision": "approve",
+      "note": "",
+      "decided_at": "2026-05-14T04:04:14.099Z"
+    },
+    {
+      "amendment_id": "AMD-002",
+      "decision": "approve",
+      "note": "",
+      "decided_at": "2026-05-14T04:04:14.099Z"
+    },
+    {
+      "amendment_id": "AMD-003",
+      "decision": "approve",
+      "note": "",
+      "decided_at": "2026-05-14T04:04:14.099Z"
+    },
+    {
+      "amendment_id": "AMD-004",
+      "decision": "approve",
+      "note": "",
+      "decided_at": "2026-05-14T04:04:14.099Z"
+    },
+    {
+      "amendment_id": "AMD-005",
+      "decision": "approve",
+      "note": "",
+      "decided_at": "2026-05-14T04:04:14.099Z"
+    },
+    {
+      "amendment_id": "AMD-006",
+      "decision": "approve",
+      "note": "",
+      "decided_at": "2026-05-14T04:04:14.099Z"
+    },
+    {
+      "amendment_id": "AMD-007",
+      "decision": "approve",
+      "note": "",
+      "decided_at": "2026-05-14T04:04:14.099Z"
+    },
+    {
+      "amendment_id": "AMD-008",
+      "decision": "approve",
+      "note": "",
+      "decided_at": "2026-05-14T04:04:14.099Z"
+    },
+    {
+      "amendment_id": "AMD-009",
+      "decision": "approve",
+      "note": "",
+      "decided_at": "2026-05-14T04:04:14.099Z"
+    },
+    {
+      "amendment_id": "AMD-010",
+      "decision": "approve",
+      "note": "",
+      "decided_at": "2026-05-14T04:04:14.099Z"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "kind": "escalations",
+  "schema_version": 1,
+  "exported_at": "2026-05-14T18:02:32.387Z",
+  "decisions": [
+    {
+      "escalation_id": "ESC-003",
+      "action": "approve",
+      "decision_options": [
+        "a"
+      ],
+      "decision_text": "",
+      "note": ""
+    }
+  ]
+}
