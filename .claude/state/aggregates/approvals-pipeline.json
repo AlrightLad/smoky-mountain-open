@@ -1,17 +1,17 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T06:37:13Z",
-  "generated_at": "2026-05-20T06:37:13Z",
+  "timestamp": "2026-05-20T06:46:41Z",
+  "generated_at": "2026-05-20T06:46:41Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "red",
-  "raw_status": "red",
-  "summary": "watcher errored · 1 in inbox",
-  "as_of": "2026-05-20T06:35:48Z",
+  "status": "yellow",
+  "raw_status": "yellow",
+  "summary": "watcher last run: skip-dirty · 1 in inbox",
+  "as_of": "2026-05-20T06:45:48Z",
   "stale": false,
-  "age_hours": 0.02333333333333333,
+  "age_hours": 0.015000000000000001,
   "counts": {
-    "proposals_pending": 0,
+    "proposals_pending": 1,
     "proposals_approved": 0,
     "proposals_deferred": 0,
     "proposals_rejected": 0,
@@ -30,24 +30,24 @@
     },
     {
       "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-20T06-45-48Z-downloads-watcher.log",
+      "note": "[06:45:48] SKIP working tree dirty with non-routine files: .claude/state/design-research/huashu-distilled.md, .claude/state/design-research/taste-skill-distilled.md, .claude/state/phase-0/coexistence-",
+      "when": "2026-05-20T06:45:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "incomplete",
+      "name": "2026-05-20T06-40-48Z-downloads-watcher.log",
+      "note": "[06:40:50] SKIP working tree still dirty after auto-commit attempt",
+      "when": "2026-05-20T06:40:48Z"
+    },
+    {
+      "category": "stall",
       "status": "incomplete",
       "name": "2026-05-20T06-35-48Z-downloads-watcher.log",
       "note": "[06:35:50] SKIP working tree still dirty after auto-commit attempt",
       "when": "2026-05-20T06:35:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "incomplete",
-      "name": "2026-05-20T06-30-48Z-downloads-watcher.log",
-      "note": "[06:30:50] SKIP working tree still dirty after auto-commit attempt",
-      "when": "2026-05-20T06:30:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "incomplete",
-      "name": "2026-05-20T06-25-48Z-downloads-watcher.log",
-      "note": "[06:25:50] SKIP working tree still dirty after auto-commit attempt",
-      "when": "2026-05-20T06:25:48Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 0,
-    "age_minutes": 1.4
+    "consecutive_skips": 1,
+    "age_minutes": 0.9
   }
 }
