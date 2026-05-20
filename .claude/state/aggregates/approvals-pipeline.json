@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T22:17:14Z",
-  "generated_at": "2026-05-20T22:17:14Z",
+  "timestamp": "2026-05-20T22:22:13Z",
+  "generated_at": "2026-05-20T22:22:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "green",
-  "raw_status": "green",
-  "summary": "watcher no-new-files 1.3min ago",
-  "as_of": "2026-05-20T22:15:58Z",
+  "status": "yellow",
+  "raw_status": "yellow",
+  "summary": "watcher last run: skip-dirty",
+  "as_of": "2026-05-20T22:20:48Z",
   "stale": false,
-  "age_hours": 0.021666666666666667,
+  "age_hours": 0.02333333333333333,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -31,6 +31,13 @@
     {
       "category": "stall",
       "status": "skip-dirty",
+      "name": "2026-05-20T22-20-48Z-downloads-watcher.log",
+      "note": "[22:20:50] SKIP working tree dirty with non-routine after auto-commit: claude/state/heartbeats/regen-all-last-pass.json",
+      "when": "2026-05-20T22:20:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
       "name": "2026-05-20T22-15-48Z-downloads-watcher.log",
       "note": "[22:15:50] SKIP working tree dirty with non-routine after auto-commit: claude/state/heartbeats/watcher-last-run.json, claude/state/telemetry/events/2026-05-20.ndjson",
       "when": "2026-05-20T22:15:48Z"
@@ -41,13 +48,6 @@
       "name": "2026-05-20T22-10-48Z-downloads-watcher.log",
       "note": "[22:10:51] SKIP working tree dirty with non-routine after auto-commit: claude/state/heartbeats/regen-all-last-pass.json",
       "when": "2026-05-20T22:10:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-20T22-05-48Z-downloads-watcher.log",
-      "note": "[22:05:51] SKIP working tree dirty with non-routine after auto-commit: claude/state/heartbeats/regen-all-last-pass.json",
-      "when": "2026-05-20T22:05:48Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 0,
-    "age_minutes": 1.3
+    "consecutive_skips": 1,
+    "age_minutes": 1.4
   }
 }
