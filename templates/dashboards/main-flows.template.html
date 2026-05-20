@@ -506,6 +506,24 @@
          * Per M5.8 note: "compromise filter chrome to read as density-aware
          * utility". */
         .mf-rail-chips { padding: 4px var(--space-3) 0; gap: 2px; }
+        .mf-rail-advanced { margin-top: var(--space-1); padding: 0 var(--space-3); }
+        .mf-rail-advanced-summary {
+            font-family: var(--font-mono);
+            font-size: 0.6875rem;
+            color: var(--pb-chalk-400);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            padding: 2px 0;
+            user-select: none;
+            list-style: none;
+            transition: color 140ms ease-out;
+        }
+        .mf-rail-advanced-summary::-webkit-details-marker { display: none; }
+        .mf-rail-advanced-summary::before { content: '+ '; }
+        .mf-rail-advanced[open] .mf-rail-advanced-summary::before { content: '− '; }
+        .mf-rail-advanced-summary:hover { color: var(--accent-brass); }
+        .mf-rail-advanced[open] .mf-rail-chips { padding: 4px 0 0; }
         .mf-rail-chip {
             padding: 1px 6px;
             font-size: 0.5625rem;
@@ -630,21 +648,29 @@
                         <button class="mf-rail-chip" data-category="data">data</button>
                         <button class="mf-rail-chip" data-category="">all</button>
                     </div>
-                    <div class="mf-rail-chips" data-axis="actor" aria-label="Filter by actor">
-                        <button class="mf-rail-chip is-on" data-actor="">all actors</button>
-                        <button class="mf-rail-chip" data-actor="member">member</button>
-                        <button class="mf-rail-chip" data-actor="commissioner">commish</button>
-                        <button class="mf-rail-chip" data-actor="founder">founder</button>
-                        <button class="mf-rail-chip" data-actor="system">system</button>
-                        <button class="mf-rail-chip" data-actor="agent">agent</button>
-                    </div>
-                    <div class="mf-rail-chips" data-axis="tier" aria-label="Filter by tier">
-                        <button class="mf-rail-chip is-on" data-tier="">all tiers</button>
-                        <button class="mf-rail-chip" data-tier="core">core</button>
-                        <button class="mf-rail-chip" data-tier="supplementary">supp</button>
-                        <button class="mf-rail-chip" data-tier="admin">admin</button>
-                        <button class="mf-rail-chip" data-tier="system">system</button>
-                    </div>
+                    <!-- Iter2 2026-05-20: secondary axes (actor/tier) collapse
+                         behind an 'advanced' toggle to cut chip-row density.
+                         Janowiak shows ZERO filter chips; we keep two primary
+                         (layer + category) + an opt-in disclosure for the
+                         secondary actor/tier filters. Default closed. -->
+                    <details class="mf-rail-advanced">
+                        <summary class="mf-rail-advanced-summary">advanced filters</summary>
+                        <div class="mf-rail-chips" data-axis="actor" aria-label="Filter by actor">
+                            <button class="mf-rail-chip is-on" data-actor="">all actors</button>
+                            <button class="mf-rail-chip" data-actor="member">member</button>
+                            <button class="mf-rail-chip" data-actor="commissioner">commish</button>
+                            <button class="mf-rail-chip" data-actor="founder">founder</button>
+                            <button class="mf-rail-chip" data-actor="system">system</button>
+                            <button class="mf-rail-chip" data-actor="agent">agent</button>
+                        </div>
+                        <div class="mf-rail-chips" data-axis="tier" aria-label="Filter by tier">
+                            <button class="mf-rail-chip is-on" data-tier="">all tiers</button>
+                            <button class="mf-rail-chip" data-tier="core">core</button>
+                            <button class="mf-rail-chip" data-tier="supplementary">supp</button>
+                            <button class="mf-rail-chip" data-tier="admin">admin</button>
+                            <button class="mf-rail-chip" data-tier="system">system</button>
+                        </div>
+                    </details>
                     <ul class="mf-flows-list" id="mf-flows-list"></ul>
                     <!-- Ship R9: "Clear selection" affordance at bottom of rail per reference-spec.md § 19 -->
                     <button type="button" class="mf-rail-clear" id="mf-rail-clear" hidden>Clear selection</button>
