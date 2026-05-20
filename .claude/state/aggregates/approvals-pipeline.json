@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T19:11:12Z",
-  "generated_at": "2026-05-20T19:11:12Z",
+  "timestamp": "2026-05-20T19:22:13Z",
+  "generated_at": "2026-05-20T19:22:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "yellow",
   "raw_status": "yellow",
   "summary": "watcher last run: skip-dirty",
-  "as_of": "2026-05-20T19:10:48Z",
+  "as_of": "2026-05-20T19:20:48Z",
   "stale": false,
-  "age_hours": 0.006666666666666667,
+  "age_hours": 0.02333333333333333,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -31,23 +31,23 @@
     {
       "category": "stall",
       "status": "skip-dirty",
-      "name": "2026-05-20T19-10-48Z-downloads-watcher.log",
-      "note": "[19:10:48] SKIP working tree dirty with non-routine files: .claude/state/inbox-history/downloads-archive-2026-05-20/amendments-2026-05-14T02-21-09.json, .claude/state/inbox-history/downloads-archive-2",
-      "when": "2026-05-20T19:10:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "error",
-      "name": "2026-05-20T19-08-35Z-downloads-watcher.log",
-      "note": "[19:08:40] FAIL 1 apply-decisions.sh failures",
-      "when": "2026-05-20T19:08:35Z"
+      "name": "2026-05-20T19-20-48Z-downloads-watcher.log",
+      "note": "[19:20:48] SKIP working tree dirty with non-routine files: main-flows-iter3.png, main-flows-iter3-orch.png, main-flows-iter3-orch-fixed.png, templates/dashboards/main-flows.template.html",
+      "when": "2026-05-20T19:20:48Z"
     },
     {
       "category": "stall",
       "status": "incomplete",
-      "name": "2026-05-20T19-05-48Z-downloads-watcher.log",
-      "note": "[19:05:50] SKIP working tree still dirty after auto-commit attempt",
-      "when": "2026-05-20T19:05:48Z"
+      "name": "2026-05-20T19-15-48Z-downloads-watcher.log",
+      "note": "[19:15:50] SKIP working tree still dirty after auto-commit attempt",
+      "when": "2026-05-20T19:15:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-20T19-10-48Z-downloads-watcher.log",
+      "note": "[19:10:48] SKIP working tree dirty with non-routine files: .claude/state/inbox-history/downloads-archive-2026-05-20/amendments-2026-05-14T02-21-09.json, .claude/state/inbox-history/downloads-archive-2",
+      "when": "2026-05-20T19:10:48Z"
     }
   ],
   "links": [
@@ -64,6 +64,6 @@
   "_meta": {
     "watcher_runs_inspected": 10,
     "consecutive_skips": 1,
-    "age_minutes": 0.4
+    "age_minutes": 1.4
   }
 }
