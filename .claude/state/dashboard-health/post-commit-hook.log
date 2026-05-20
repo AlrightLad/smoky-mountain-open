@@ -1,61 +1,47 @@
-=== post-commit hook fired 2026-05-20T05:49:57Z HEAD=3c8bc2a ===
+=== post-commit hook fired 2026-05-20T05:51:40Z HEAD=0a2bad5 ===
 [scaffold-from-templates] done: scaffolded=0 skipped=11
 
 --- scripts/scan-shipped-proposals.py ---
-Exception in thread Thread-1 (_readerthread):
-Traceback (most recent call last):
-  File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
-    self.run()
-  File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012, in run
-    self._target(*self._args, **self._kwargs)
-  File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\subprocess.py", line 1599, in _readerthread
-    buffer.append(fh.read())
-                  ^^^^^^^^^
-  File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 23, in decode
-    return codecs.charmap_decode(input,self.errors,decoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 104558: character maps to <undefined>
-[scan-shipped] approved=2 candidate-commits-90d=0
-[scan-shipped] done: moved=0 skipped_already_shipped=0 warnings=0
+[scan-shipped] approved/ is empty; nothing to scan
 
 --- scripts/aggregate-telemetry.py ---
 [aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json (write-content-changed)
 [aggregate] meter_status=wired-real
-[aggregate] events=4080 handoffs=1 bubbles=7 proposals_pending=0
+[aggregate] events=4085 handoffs=1 bubbles=7 proposals_pending=0
 
 --- scripts/ingest-session-transcripts.py ---
-[ingest-session-transcripts] scanned bba09b44-bbb9-447a-97ee-4b5aab895cbe.jsonl: +9 new entries (offset 13316009\u219213379091)
-[ingest-session-transcripts] scanned 29 JSONL file(s), found 9 new assistant turns
-[ingest-session-transcripts] wrote session-transcript-summary.json (60 buckets, 6991038727 total tokens, 29 sessions) [write-content-changed]
+[ingest-session-transcripts] scanned bba09b44-bbb9-447a-97ee-4b5aab895cbe.jsonl: +11 new entries (offset 13379091\u219213417673)
+[ingest-session-transcripts] scanned 29 JSONL file(s), found 11 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (60 buckets, 7001103209 total tokens, 29 sessions) [write-content-changed]
 
 --- scripts/aggregate-token-usage.py ---
-[aggregate-token] real_events=61 estimated_events=2591 manual_entries=0
-[aggregate-token] all-time: real=6991140727 estimated=7292040 manual=0
+[aggregate-token] real_events=61 estimated_events=2592 manual_entries=0
+[aggregate-token] all-time: real=7001205209 estimated=7292040 manual=0
 [aggregate-token] snapshot write=True (write-content-changed) -> .claude\state\telemetry\aggregates\token-usage-snapshot.json
 [aggregate-token] cursor   write=True (write-content-changed) -> .claude\state\telemetry\aggregates\.token-usage-cursor.json
 
 --- scripts/aggregate-test-health.py ---
-[aggregate-test-health] OK status=green timestamp=2026-05-20T05:49:59Z write=False (skip-idempotent-grace-content-unchanged-33764s)
+[aggregate-test-health] OK status=green timestamp=2026-05-20T05:51:41Z write=False (skip-idempotent-grace-content-unchanged-33866s)
 
 --- scripts/aggregate-security-health.py ---
-[aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=False (skip-idempotent-grace-content-unchanged-33765s)
+[aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=False (skip-idempotent-grace-content-unchanged-33867s)
 
 --- scripts/aggregate-approvals-pipeline.py ---
-[aggregate-approvals-pipeline] OK status=red summary=watcher cycling · applies blocked (10 skips on dirty tree) write=False (skip-idempotent-fresh-168s)
+[aggregate-approvals-pipeline] OK status=red summary=watcher errored write=True (write-content-changed)
 
 --- scripts/aggregate-architecture-review.py ---
 [aggregate-architecture-review] OK status=green findings=0 pending_recs=0 write=True (write-content-changed)
 
 --- scripts/aggregate-fiq-status.py ---
-[aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-33770s)
+[aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-33873s)
 
 --- scripts/aggregate-self-tests.py ---
 [aggregate-self-tests] starting D40 parity checks across 5 aggregators
-  [aggregate-test-health] PASS status=green age=33768s
-  [aggregate-security-health] PASS status=green age=33767s
-  [aggregate-approvals-pipeline] PASS status=red age=170s
-  [aggregate-architecture-review] PASS status=green age=-2s
-  [aggregate-fiq-status] PASS status=green age=33770s
+  [aggregate-test-health] PASS status=green age=33871s
+  [aggregate-security-health] PASS status=green age=33870s
+  [aggregate-approvals-pipeline] PASS status=red age=-1s
+  [aggregate-architecture-review] PASS status=green age=-1s
+  [aggregate-fiq-status] PASS status=green age=33873s
 [aggregate-self-tests] OK all 5 aggregators pass parity
 
 --- scripts/inject-health-banners.py ---
@@ -70,13 +56,9 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 104558: c
 
 --- scripts/regen-proposals.py ---
 [regen-proposals] running shipped-scan first...
-  [scan] [scan-shipped] approved=2 candidate-commits-90d=4
-  [scan] [scan-shipped] WARN commit 9ff9883 references PROP-003.A but it's not in approved/ (may be already-shipped, rejected, or typo)
-  [scan] [scan-shipped] WARN commit 2361e06 references PROP-003.B but it's not in approved/ (may be already-shipped, rejected, or typo)
-  [scan] [scan-shipped] WARN commit 7fdcf7e references PROP-004 but it's not in approved/ (may be already-shipped, rejected, or typo)
-  [scan] [scan-shipped] done: moved=0 skipped_already_shipped=0 warnings=3
+  [scan] [scan-shipped] approved/ is empty; nothing to scan
 [regen-proposals] OK   proposals.html
-[regen-proposals] counts: pending=0 approved=2 deferred=0 shipped=4 rejected=0
+[regen-proposals] counts: pending=0 approved=0 deferred=0 shipped=6 rejected=0
 
 --- scripts/regen-amendments.py ---
 [regen-amendments] OK   amendments.html
@@ -89,7 +71,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 104558: c
 --- scripts/regen-dashboard.py ---
 [regen-dashboard] OK   dashboard.html
 [regen-dashboard] meter_status=wired-real
-[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=4080
+[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=4085
 
 --- scripts/regen-main-flows.py ---
 [regen-main-flows] WARN: 6 orphan components in grid (referenced by no flow's path):
@@ -103,7 +85,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 104558: c
 [regen-main-flows] 6 columns, 47 components, 62 flows; orphans=6
 
 --- scripts/regen-activity.py ---
-[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=159 commits=732)
+[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=160 commits=736)
 
 --- scripts/dry-run-regen-ops-views.py ---
 [regen] 7 bubbles (activity.html owned by regen-activity.py; proposals.html owned by regen-proposals.py)
@@ -111,15 +93,15 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 104558: c
 
 --- scripts/regen-token-usage.py ---
 [regen-token-usage] OK   token-usage.html
-[regen-token-usage] all-time: real=6991140727 estimated=7292040 manual=0
+[regen-token-usage] all-time: real=7001205209 estimated=7292040 manual=0
 [regen-token-usage] pie_views slices: agent=3 work=2 session_top10=10
 
 --- scripts/regen-index.py ---
 [regen-index] OK   index.html
-[regen-index] ships=30 proposals_pending=0 bubbles=1 halt=none git=3c8bc2a4
-[write-regen-heartbeat] OK ts=2026-05-20T05:50:10Z source=post-commit-hook status=PASS
+[regen-index] ships=30 proposals_pending=0 bubbles=1 halt=none git=0a2bad53
+[write-regen-heartbeat] OK ts=2026-05-20T05:51:52Z source=post-commit-hook status=PASS
 
 --- P9.5 self-test ---
 [ingest-session-transcripts] scanned 29 JSONL file(s), found 0 new assistant turns
-[ingest-session-transcripts] skipped session-transcript-summary.json (60 buckets, 6991038727 total tokens, 29 sessions) [skip-idempotent-fresh-12s]
-[ingest-session-transcripts] SELF-TEST OK: 29 JSONLs \u2192 6991038727 tokens across 60 buckets
+[ingest-session-transcripts] skipped session-transcript-summary.json (60 buckets, 7001103209 total tokens, 29 sessions) [skip-idempotent-fresh-11s]
+[ingest-session-transcripts] SELF-TEST OK: 29 JSONLs \u2192 7001103209 tokens across 60 buckets
