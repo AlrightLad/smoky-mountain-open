@@ -129,6 +129,296 @@
       "tokens_consumed": 0,
       "outcome": "PLACEHOLDER",
       "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260516-2037",
+      "type": "heartbeat",
+      "started_at": "2026-05-16T20:37:41Z",
+      "ended_at": "2026-05-16T20:37:41Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260517-0155",
+      "type": "heartbeat",
+      "started_at": "2026-05-17T01:55:39Z",
+      "ended_at": "2026-05-17T01:55:39Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260517-0638",
+      "type": "heartbeat",
+      "started_at": "2026-05-17T06:38:47Z",
+      "ended_at": "2026-05-17T06:38:47Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260517-0926",
+      "type": "heartbeat",
+      "started_at": "2026-05-17T09:26:48Z",
+      "ended_at": "2026-05-17T09:26:48Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "ship-20260517-1159",
+      "type": "ship",
+      "started_at": "2026-05-17T11:59:54Z",
+      "ended_at": "2026-05-17T11:59:54Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Ship cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260517-1253",
+      "type": "heartbeat",
+      "started_at": "2026-05-17T12:53:19Z",
+      "ended_at": "2026-05-17T12:53:19Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260517-1643",
+      "type": "heartbeat",
+      "started_at": "2026-05-17T16:43:33Z",
+      "ended_at": "2026-05-17T16:43:33Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260517-2038",
+      "type": "heartbeat",
+      "started_at": "2026-05-17T20:38:36Z",
+      "ended_at": "2026-05-17T20:38:36Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260518-0205",
+      "type": "heartbeat",
+      "started_at": "2026-05-18T02:05:30Z",
+      "ended_at": "2026-05-18T02:05:30Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "proactive-20260518-0501",
+      "type": "proactive",
+      "started_at": "2026-05-18T05:01:45Z",
+      "ended_at": "2026-05-18T05:01:45Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Proactive cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260518-0753",
+      "type": "heartbeat",
+      "started_at": "2026-05-18T07:53:45Z",
+      "ended_at": "2026-05-18T07:53:45Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260518-1136",
+      "type": "heartbeat",
+      "started_at": "2026-05-18T11:36:30Z",
+      "ended_at": "2026-05-18T11:36:30Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "ship-20260518-1429",
+      "type": "ship",
+      "started_at": "2026-05-18T14:29:46Z",
+      "ended_at": "2026-05-18T14:29:46Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Ship cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260518-1451",
+      "type": "heartbeat",
+      "started_at": "2026-05-18T14:51:54Z",
+      "ended_at": "2026-05-18T14:51:54Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260518-1751",
+      "type": "heartbeat",
+      "started_at": "2026-05-18T17:51:23Z",
+      "ended_at": "2026-05-18T17:51:23Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260518-2101",
+      "type": "heartbeat",
+      "started_at": "2026-05-18T21:01:25Z",
+      "ended_at": "2026-05-18T21:01:25Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260519-0205",
+      "type": "heartbeat",
+      "started_at": "2026-05-19T02:05:57Z",
+      "ended_at": "2026-05-19T02:05:57Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260519-0735",
+      "type": "heartbeat",
+      "started_at": "2026-05-19T07:35:26Z",
+      "ended_at": "2026-05-19T07:35:26Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260519-1052",
+      "type": "heartbeat",
+      "started_at": "2026-05-19T10:52:44Z",
+      "ended_at": "2026-05-19T10:52:44Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "ship-20260519-1355",
+      "type": "ship",
+      "started_at": "2026-05-19T13:55:39Z",
+      "ended_at": "2026-05-19T13:55:39Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Ship cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260519-1432",
+      "type": "heartbeat",
+      "started_at": "2026-05-19T14:32:03Z",
+      "ended_at": "2026-05-19T14:32:03Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260519-1756",
+      "type": "heartbeat",
+      "started_at": "2026-05-19T17:56:20Z",
+      "ended_at": "2026-05-19T17:56:20Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260519-2111",
+      "type": "heartbeat",
+      "started_at": "2026-05-19T21:11:17Z",
+      "ended_at": "2026-05-19T21:11:17Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260520-0204",
+      "type": "heartbeat",
+      "started_at": "2026-05-20T02:04:30Z",
+      "ended_at": "2026-05-20T02:04:30Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260520-0734",
+      "type": "heartbeat",
+      "started_at": "2026-05-20T07:34:24Z",
+      "ended_at": "2026-05-20T07:34:24Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260520-1040",
+      "type": "heartbeat",
+      "started_at": "2026-05-20T10:40:57Z",
+      "ended_at": "2026-05-20T10:40:57Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "ship-20260520-1337",
+      "type": "ship",
+      "started_at": "2026-05-20T13:37:50Z",
+      "ended_at": "2026-05-20T13:37:50Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Ship cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260520-1431",
+      "type": "heartbeat",
+      "started_at": "2026-05-20T14:31:44Z",
+      "ended_at": "2026-05-20T14:31:44Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260520-1809",
+      "type": "heartbeat",
+      "started_at": "2026-05-20T18:09:32Z",
+      "ended_at": "2026-05-20T18:09:32Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
     }
   ]
 }
