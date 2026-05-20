@@ -1,13 +1,13 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T06:17:13Z",
-  "generated_at": "2026-05-20T06:17:13Z",
+  "timestamp": "2026-05-20T06:22:13Z",
+  "generated_at": "2026-05-20T06:22:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
   "summary": "watcher errored · 1 in inbox",
-  "as_of": "2026-05-20T06:15:48Z",
+  "as_of": "2026-05-20T06:20:48Z",
   "stale": false,
   "age_hours": 0.02333333333333333,
   "counts": {
@@ -31,6 +31,13 @@
     {
       "category": "stall",
       "status": "incomplete",
+      "name": "2026-05-20T06-20-48Z-downloads-watcher.log",
+      "note": "[06:20:50] SKIP working tree still dirty after auto-commit attempt",
+      "when": "2026-05-20T06:20:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "incomplete",
       "name": "2026-05-20T06-15-48Z-downloads-watcher.log",
       "note": "[06:15:50] SKIP working tree still dirty after auto-commit attempt",
       "when": "2026-05-20T06:15:48Z"
@@ -41,13 +48,6 @@
       "name": "2026-05-20T06-10-48Z-downloads-watcher.log",
       "note": "[06:10:50] FAIL 1 apply-decisions.sh failures",
       "when": "2026-05-20T06:10:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-20T06-05-48Z-downloads-watcher.log",
-      "note": "[06:05:48] SKIP working tree dirty with non-routine files: scripts/visual-audit/dashboard/activity-desktop.png, scripts/visual-audit/dashboard/activity-desktop-wide.png, scripts/visual-audit/dashboard",
-      "when": "2026-05-20T06:05:48Z"
     }
   ],
   "links": [
