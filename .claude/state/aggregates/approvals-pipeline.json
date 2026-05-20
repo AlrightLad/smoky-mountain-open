@@ -1,13 +1,13 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T23:07:14Z",
-  "generated_at": "2026-05-20T23:07:14Z",
+  "timestamp": "2026-05-20T23:12:14Z",
+  "generated_at": "2026-05-20T23:12:14Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
-  "summary": "watcher cycling · applies blocked (4 skips on dirty tree)",
-  "as_of": "2026-05-20T23:05:48Z",
+  "summary": "watcher cycling · applies blocked (5 skips on dirty tree)",
+  "as_of": "2026-05-20T23:10:48Z",
   "stale": false,
   "age_hours": 0.02333333333333333,
   "counts": {
@@ -31,6 +31,13 @@
     {
       "category": "stall",
       "status": "skip-dirty",
+      "name": "2026-05-20T23-10-48Z-downloads-watcher.log",
+      "note": "[23:10:51] SKIP working tree dirty with non-routine after auto-commit: claude/state/heartbeats/regen-all-last-pass.json",
+      "when": "2026-05-20T23:10:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
       "name": "2026-05-20T23-05-48Z-downloads-watcher.log",
       "note": "[23:05:51] SKIP working tree dirty with non-routine after auto-commit: claude/state/heartbeats/regen-all-last-pass.json",
       "when": "2026-05-20T23:05:48Z"
@@ -41,13 +48,6 @@
       "name": "2026-05-20T23-00-48Z-downloads-watcher.log",
       "note": "[23:00:51] SKIP working tree dirty with non-routine after auto-commit: claude/state/heartbeats/regen-all-last-pass.json",
       "when": "2026-05-20T23:00:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-20T22-55-48Z-downloads-watcher.log",
-      "note": "[22:55:51] SKIP working tree dirty with non-routine after auto-commit: claude/state/heartbeats/regen-all-last-pass.json",
-      "when": "2026-05-20T22:55:48Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 4,
+    "consecutive_skips": 5,
     "age_minutes": 1.4
   }
 }
