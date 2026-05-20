@@ -1,22 +1,22 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-20T19:07:13Z",
-  "generated_at": "2026-05-20T19:07:13Z",
+  "timestamp": "2026-05-20T19:08:40Z",
+  "generated_at": "2026-05-20T19:08:40Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
-  "summary": "watcher errored · 1 in inbox",
-  "as_of": "2026-05-20T19:05:48Z",
+  "summary": "watcher errored · 4 in inbox",
+  "as_of": "2026-05-20T19:08:35Z",
   "stale": false,
-  "age_hours": 0.02333333333333333,
+  "age_hours": 0.0016666666666666668,
   "counts": {
-    "proposals_pending": 1,
+    "proposals_pending": 0,
     "proposals_approved": 0,
     "proposals_deferred": 0,
     "proposals_rejected": 0,
     "proposals_shipped": 6,
-    "proposals_inbox": 0,
+    "proposals_inbox": 3,
     "amendments_inbox": 1,
     "escalations_inbox": 0
   },
@@ -25,8 +25,15 @@
       "category": "marker",
       "status": "info",
       "name": "last-processed-decisions",
-      "note": "file=decisions-canary-2026-05-19T00-37-22Z.json kind=decisions",
-      "when": "2026-05-19T00:40:53.1743276Z"
+      "note": "file=decisions-canary-2026-05-20T19-05-19Z.json kind=decisions",
+      "when": "2026-05-20T19:08:40.7809674Z"
+    },
+    {
+      "category": "stall",
+      "status": "error",
+      "name": "2026-05-20T19-08-35Z-downloads-watcher.log",
+      "note": "[19:08:40] FAIL 1 apply-decisions.sh failures",
+      "when": "2026-05-20T19:08:35Z"
     },
     {
       "category": "stall",
@@ -41,13 +48,6 @@
       "name": "2026-05-20T19-00-48Z-downloads-watcher.log",
       "note": "[19:00:48] SKIP working tree dirty with non-routine files: .claude/state/stop-decisions/2026-05-20.ndjson",
       "when": "2026-05-20T19:00:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-20T18-55-48Z-downloads-watcher.log",
-      "note": "[18:55:48] SKIP working tree dirty with non-routine files: .claude/state/stop-decisions/2026-05-20.ndjson",
-      "when": "2026-05-20T18:55:48Z"
     }
   ],
   "links": [
@@ -64,6 +64,6 @@
   "_meta": {
     "watcher_runs_inspected": 10,
     "consecutive_skips": 0,
-    "age_minutes": 1.4
+    "age_minutes": 0.1
   }
 }
