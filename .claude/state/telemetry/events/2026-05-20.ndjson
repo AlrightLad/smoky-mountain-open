@@ -810,3 +810,5 @@
 {"event_type": "session.team-work.summary", "timestamp": "2026-05-20T22:15:16.423045+00:00", "data": {"agent": "engineer", "ship_id": "manual-emit-20260520T221516Z", "tokens_estimated": 0, "note": "post-commit-hook"}, "agent": "engineer", "ship_id": "manual-emit-20260520T221516Z", "cron_source": "manual-session"}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-20T22:15:17.104330+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-20T22:15:26.783723+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"timestamp":"2026-05-20T22:15:48.8323619Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"25a374cba97e","cron_source":"downloads-watcher"}}
+{"timestamp":"2026-05-20T22:15:48.9200426Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"962715fa0ed3","cron_source":"downloads-watcher"}}
