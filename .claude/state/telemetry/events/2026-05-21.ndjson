@@ -1099,3 +1099,4 @@
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T19:04:57.481395+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"timestamp":"2026-05-21T19:05:48.8013456Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"69505c8880b0","cron_source":"downloads-watcher"}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T19:05:55.547346+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T19:06:03.821519+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
