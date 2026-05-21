@@ -48,8 +48,23 @@ SCAFFOLDED=0
 SKIPPED=0
 
 # Copy each *.template.html → corresponding *.html in DEST.
+# Skip sub-page templates (used by regen scripts for child pages like
+# docs/reports/sessions/<date>.html — they don't belong at top-level).
+SKIP_TEMPLATES=("session-detail.template.html")
 for template in "$TEMPLATES"/*.template.html; do
     [ -f "$template" ] || continue
+    tname="$(basename "$template")"
+    skip=0
+    for s in "${SKIP_TEMPLATES[@]}"; do
+        if [ "$tname" = "$s" ]; then
+            skip=1
+            break
+        fi
+    done
+    if [ "$skip" -eq 1 ]; then
+        SKIPPED=$((SKIPPED + 1))
+        continue
+    fi
     fname="$(basename "$template" .template.html).html"
     dest_file="$DEST/$fname"
     if [ -f "$dest_file" ] && [ "$FORCE" -eq 0 ]; then

@@ -1,13 +1,13 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T17:57:13Z",
-  "generated_at": "2026-05-21T17:57:13Z",
+  "timestamp": "2026-05-21T18:07:14Z",
+  "generated_at": "2026-05-21T18:07:14Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
   "summary": "watcher cycling · applies blocked (10 skips on dirty tree)",
-  "as_of": "2026-05-21T17:55:48Z",
+  "as_of": "2026-05-21T18:05:48Z",
   "stale": false,
   "age_hours": 0.02333333333333333,
   "counts": {
@@ -31,23 +31,23 @@
     {
       "category": "stall",
       "status": "skip-dirty",
+      "name": "2026-05-21T18-05-48Z-downloads-watcher.log",
+      "note": "[18:05:48] SKIP working tree dirty with non-routine files: .claude/state/dashboard-health/post-commit-hook.log, docs/reports/app-health.html, docs/reports/founder-checklist.html, docs/reports/session-",
+      "when": "2026-05-21T18:05:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-21T18-00-48Z-downloads-watcher.log",
+      "note": "[18:00:48] SKIP working tree dirty with non-routine files: .claude/state/critique/session-detail-probe.png, .husky/post-commit, .husky/pre-commit, docs/reports/founder-checklist.html, docs/reports/ses",
+      "when": "2026-05-21T18:00:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
       "name": "2026-05-21T17-55-48Z-downloads-watcher.log",
       "note": "[17:55:48] SKIP working tree dirty with non-routine files: docs/reports/founder-checklist.html, docs/reports/sessions.html",
       "when": "2026-05-21T17:55:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-21T17-50-48Z-downloads-watcher.log",
-      "note": "[17:50:48] SKIP working tree dirty with non-routine files: .claude/state/founder-checklist-state.json, .claude/state/stop-verification/2026-05-21T15-12-12Z.log, .claude/state/stop-verification/2026-05",
-      "when": "2026-05-21T17:50:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-21T17-45-48Z-downloads-watcher.log",
-      "note": "[17:45:48] SKIP working tree dirty with non-routine files: .claude/state/founder-checklist-state.json, .claude/state/stop-verification/2026-05-21T15-12-12Z.log, .claude/state/stop-verification/2026-05",
-      "when": "2026-05-21T17:45:48Z"
     }
   ],
   "links": [

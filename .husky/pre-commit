@@ -123,6 +123,13 @@ if [ -n "$DASHBOARD_PATHS" ]; then
   if [ -f "scripts/dry-run-regen-ops-views.py" ]; then
     python scripts/dry-run-regen-ops-views.py > /dev/null 2>&1 || true
   fi
+  # Dashboard freshness sentinel — detects empty payloads + count mismatches
+  # (e.g. ships_today=0 when ship-progress has today's entries) + auto-repairs.
+  # Writes .claude/state/aggregates/dashboard-freshness.json which the dashboard
+  # reads to show a red banner if any page can't be auto-repaired.
+  if [ -f "scripts/dashboard-freshness-sentinel.py" ]; then
+    python scripts/dashboard-freshness-sentinel.py > /dev/null 2>&1 || true
+  fi
 
   if ! node tests/dashboard-smoke/run.js > /tmp/dashboard-smoke-precommit.log 2>&1; then
     echo ""

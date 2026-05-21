@@ -140,7 +140,8 @@ scripts/regen-app-health.py
 scripts/regen-sessions.py
 scripts/regen-session-detail.py
 scripts/regen-founder-checklist.py
-scripts/regen-index.py"
+scripts/regen-index.py
+scripts/dashboard-freshness-sentinel.py"
 
 FAILED=""
 for s in $REGEN_SCRIPTS; do
