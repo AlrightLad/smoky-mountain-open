@@ -1,6 +1,6 @@
 {
   "schema_version": "app-health-v1.0",
-  "generated_at": "2026-05-21T00:00:44.568025Z",
+  "generated_at": "2026-05-21T00:22:58.673367Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 86.6,
   "overall_grade": "A-",

@@ -348,6 +348,104 @@
         </section>
 
         <section class="pb-section">
+            <h2 class="pb-section-title">App health</h2>
+            <!-- 2026-05-21 (Founder 'I don't see it on the dashboard, never want
+                 to open files from the repo'): App Health summary card surfaces
+                 the 12-dimension Goal-2 audit RIGHT HERE on the main dashboard.
+                 Click any chip → app-health.html detail page. Top attention
+                 items inline so Founder reads them without click-out. -->
+            <a class="ah-summary-card" href="app-health.html" style="display: block; text-decoration: none; color: inherit; padding: var(--space-5); background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-card) 70%, rgba(212, 168, 87, 0.04) 100%); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); margin-bottom: var(--space-4); transition: border-color 180ms ease-out, transform 180ms ease-out;">
+                <style>
+                    .ah-summary-card:hover { border-color: var(--accent-brass-dim, rgba(212, 168, 87, 0.45)); transform: translateY(-1px); }
+                    .ah-summary-grid { display: grid; grid-template-columns: 200px minmax(0, 1fr) auto; gap: var(--space-5); align-items: center; }
+                    @media (max-width: 720px) { .ah-summary-grid { grid-template-columns: 1fr; } }
+                    .ah-summary-grade {
+                        font-size: 5rem;
+                        line-height: 1;
+                        font-weight: 700;
+                        letter-spacing: -0.05em;
+                        color: var(--accent-brass);
+                        text-align: center;
+                    }
+                    .ah-summary-score {
+                        font-family: var(--font-mono);
+                        font-size: 0.875rem;
+                        color: var(--text-secondary);
+                        text-align: center;
+                        margin-top: 4px;
+                    }
+                    .ah-summary-attention-list {
+                        list-style: none; margin: 0; padding: 0;
+                        display: flex; flex-direction: column; gap: var(--space-2);
+                    }
+                    .ah-summary-attention-item {
+                        display: grid;
+                        grid-template-columns: 70px 1fr;
+                        gap: var(--space-3);
+                        font-size: 0.8125rem;
+                        line-height: 1.5;
+                        padding: var(--space-2);
+                        border-left: 2px solid var(--accent-brass);
+                        background: var(--bg-page);
+                        border-radius: var(--radius-sm);
+                    }
+                    .ah-summary-attention-dim {
+                        font-family: var(--font-mono);
+                        font-size: 0.625rem;
+                        color: var(--accent-brass);
+                        font-weight: 700;
+                        text-transform: uppercase;
+                        letter-spacing: 0.05em;
+                    }
+                    .ah-summary-attention-what {
+                        color: var(--text-primary);
+                        font-weight: 600;
+                        margin-bottom: 2px;
+                    }
+                    .ah-summary-attention-action {
+                        color: var(--accent-brass);
+                        font-size: 0.75rem;
+                    }
+                    .ah-summary-cta {
+                        font-family: var(--font-mono);
+                        font-size: 0.75rem;
+                        color: var(--accent-brass);
+                        text-transform: uppercase;
+                        letter-spacing: 0.1em;
+                        font-weight: 600;
+                        white-space: nowrap;
+                    }
+                    .ah-summary-cta::after { content: " →"; }
+                    .ah-summary-headline {
+                        font-family: var(--font-mono);
+                        font-size: 0.6875rem;
+                        text-transform: uppercase;
+                        letter-spacing: 0.14em;
+                        color: var(--accent-brass);
+                        font-weight: 600;
+                        margin-bottom: var(--space-1);
+                    }
+                    .ah-summary-empty {
+                        font-style: italic;
+                        color: var(--text-tertiary);
+                        font-size: 0.875rem;
+                    }
+                </style>
+                <div class="ah-summary-grid">
+                    <div>
+                        <div class="ah-summary-grade" data-ah-summary-grade>—</div>
+                        <div class="ah-summary-score" data-ah-summary-score>— / 100</div>
+                    </div>
+                    <div>
+                        <div class="ah-summary-headline">What needs your attention</div>
+                        <ul class="ah-summary-attention-list" data-ah-summary-attention></ul>
+                    </div>
+                    <div class="ah-summary-cta">Open App Health</div>
+                </div>
+            </a>
+        </section>
+
+        <section class="pb-section">
             <h2 class="pb-section-title">This week</h2>
             <!--
               Tokens-this-week prefers PROP-003.a sidecar (.claude/state/quota-status.json)
@@ -1577,6 +1675,7 @@
                 }
                 // AMD-007 P18.6: Founder Review Queue.
                 renderFounderQueue(data.founder_queue || null);
+                renderAppHealthSummary(data.app_health_summary || null);
 
                 // phase-I iter3 (2026-05-19): tag legitimate-empty cards
                 // (value === "0" or "—") so CSS can soften the visual weight
@@ -1884,6 +1983,37 @@
                 + '  </svg>'
                 + '  <div class="r7-legend">' + countLegend + '</div>'
                 + '</div>';
+        }
+
+        function renderAppHealthSummary(s) {
+            var gradeEl = document.querySelector('[data-ah-summary-grade]');
+            var scoreEl = document.querySelector('[data-ah-summary-score]');
+            var listEl = document.querySelector('[data-ah-summary-attention]');
+            if (!s || !gradeEl) { return; }
+            function escAh(str) {
+                return String(str == null ? '' : str)
+                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
+            }
+            gradeEl.textContent = s.overall_grade || '—';
+            if (scoreEl) {
+                scoreEl.textContent = (s.overall_score != null ? s.overall_score : '—') + ' / 100 · weighted';
+            }
+            if (listEl) {
+                var atts = s.attention_items || [];
+                if (atts.length === 0) {
+                    listEl.innerHTML = '<li class="ah-summary-empty">Nothing needs your attention right now. All scored dimensions ≥ 80.</li>';
+                } else {
+                    listEl.innerHTML = atts.slice(0, 3).map(function (a) {
+                        return '<li class="ah-summary-attention-item">'
+                            + '<div class="ah-summary-attention-dim">' + escAh((a.dimension || '').split('_')[0]) + '</div>'
+                            + '<div>'
+                            + '<div class="ah-summary-attention-what">' + escAh(a.what || '') + '</div>'
+                            + '<div class="ah-summary-attention-action">' + escAh(a.what_action || '') + '</div>'
+                            + '</div></li>';
+                    }).join('');
+                }
+            }
         }
 
         function renderFounderQueue(fq) {

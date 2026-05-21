@@ -1682,7 +1682,29 @@ def build_dashboard_data():
         "quota_status": quota_status_override,
         # AMD-007 P18.6: Founder Review Queue.
         "founder_queue": build_founder_queue(),
+        # 2026-05-21 Goal-2 follow-up: embed App Health summary INLINE so the
+        # main dashboard renders the A-F grade + top attention items without
+        # fetching cross-directory (HTTP server scope is docs/reports/ only).
+        "app_health_summary": _load_app_health_summary(),
     }
+
+
+def _load_app_health_summary() -> dict:
+    """Read .claude/state/aggregates/app-health.json + slim down to dashboard-
+    summary shape (grade, score, top 3 attention items)."""
+    try:
+        path = STATE / "aggregates" / "app-health.json"
+        if not path.exists():
+            return {}
+        d = json.loads(path.read_text(encoding="utf-8"))
+        return {
+            "overall_grade": d.get("overall_grade"),
+            "overall_score": d.get("overall_score"),
+            "generated_at": d.get("generated_at"),
+            "attention_items": (d.get("attention_items") or [])[:3],
+        }
+    except (OSError, json.JSONDecodeError):
+        return {}
 
 
 def swap_data_block(html_path: Path, new_data: dict):
