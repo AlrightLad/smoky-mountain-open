@@ -673,3 +673,6 @@
 {"timestamp":"2026-05-21T13:30:01.6380904Z","event_type":"cron.proposal-readiness.start","data":{"claude_invoked":false,"run_id":"f46442ae5836","cron_source":"proposal-readiness","estimated_tokens":0}}
 {"timestamp":"2026-05-21T13:30:01.7368005Z","event_type":"cron.proposal-readiness.end","data":{"exit_code":0,"run_id":"f46442ae5836","deferred_count":0,"estimated_tokens":0,"success":true,"duration_seconds":0,"ready_count":0,"cron_source":"proposal-readiness"}}
 {"timestamp":"2026-05-21T13:30:49.3005282Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"0128b541142c","cron_source":"downloads-watcher"}}
+{"timestamp":"2026-05-21T13:30:53.7006609Z","event_type":"cron.downloads-watcher.end","data":{"success":true,"exit_reason":"no-new-files","cron_source":"downloads-watcher","duration_ms":4488,"claude_invoked":false,"run_id":"0128b541142c"}}
+{"timestamp":"2026-05-21T13:32:13.3488426Z","event_type":"cron.token-sidecar.end","data":{"org_monthly_pct":null,"stale_seconds":null,"estimated_tokens":0,"cron_source":"token-sidecar","duration_seconds":0,"success":true,"claude_invoked":false,"data_source":"none","run_id":"7fa559d54bf7","weekly_pct":null}}
+{"timestamp":"2026-05-21T13:35:49.2857333Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"43a5048faf44","cron_source":"downloads-watcher"}}
