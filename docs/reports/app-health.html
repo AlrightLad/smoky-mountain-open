@@ -590,6 +590,47 @@
                         text-transform: lowercase;
                         letter-spacing: 0.04em;
                     }
+                    /* ARCHIVE — completed items collapsed by default */
+                    .ah-improve-archive {
+                        margin-top: var(--space-4);
+                        border: 1px solid var(--border-subtle);
+                        border-radius: var(--radius-md);
+                        background: rgba(143, 201, 156, 0.04);
+                    }
+                    .ah-improve-archive > summary {
+                        padding: var(--space-3) var(--space-4);
+                        cursor: pointer;
+                        user-select: none;
+                        font-family: var(--font-mono);
+                        font-size: 0.8125rem;
+                        color: rgba(143, 201, 156, 0.95);
+                        font-weight: 600;
+                        letter-spacing: 0.03em;
+                    }
+                    .ah-improve-archive > summary:hover { color: #8fc99c; }
+                    .ah-improve-archive[open] > summary { border-bottom: 1px solid var(--border-subtle); }
+                    .ah-improve-archive-table { margin: 0; }
+                    .ah-improve-archive-table tr.ah-row-archived td { color: rgba(160, 180, 170, 0.7); text-decoration: line-through; }
+                    .ah-improve-archive-table tr.ah-row-archived .ah-improve-dim { text-decoration: none; color: rgba(143, 201, 156, 0.85); }
+                    .ah-improve-archive-table tr.ah-row-archived .ah-improve-dim::before { content: "✓ "; color: #8fc99c; font-weight: 700; }
+                    .ah-improve-archive-table .ah-archive-evidence {
+                        text-decoration: none;
+                        color: var(--text-tertiary);
+                        font-size: 0.75rem;
+                        font-style: italic;
+                        line-height: 1.4;
+                    }
+                    /* Honest-score caveat — yellow border so Founder sees it */
+                    .ah-honest-caveat {
+                        margin-top: var(--space-3);
+                        padding: var(--space-3) var(--space-4);
+                        border-left: 3px solid #dcbf73;
+                        background: rgba(220, 191, 115, 0.06);
+                        font-size: 0.8125rem;
+                        color: var(--text-secondary);
+                        line-height: 1.5;
+                    }
+                    .ah-honest-caveat strong { color: #dcbf73; }
                 </style>
                 <div class="ah-improve-title">How to improve · weak areas</div>
                 <p class="ah-improve-sub">This page is NOT a feel-good tab. It's brutal feedback. Below is the prioritized improvement plan — top of the list = biggest score lift per hour of work. Items are agent-actionable unless explicitly marked Founder-action.</p>
@@ -755,6 +796,15 @@
                 <p class="ah-improve-sub" style="margin-top: var(--space-3); border-top: 1px solid var(--border-subtle); padding-top: var(--space-3);">
                     Total addressable lift across all tiers: <strong style="color: var(--accent-brass);" data-ah="addressable-lift">~+180</strong> score points (current <strong data-ah="current-score">—</strong> → ceiling ~95+). At industry-grade quality, an A grade is achievable but requires 60-80 hours of focused engineering work spread across the next 4-6 ships. Tier 1 alone (estimated 14-21 hours) closes the biggest gaps: brings smoke test green + adds security middleware + wires real performance/a11y measurement.
                 </p>
+
+                <div class="ah-honest-caveat">
+                    <strong>Honest scoring caveat:</strong> the current <strong data-ah="current-score-2">—</strong> reflects items
+                    <em>shipped</em>, not necessarily <em>battle-tested under real member load</em>. Several "✓ archived" items pass file-existence + happy-path
+                    invocation but have not yet faced production traffic at 20-member scale. The score should be read as a
+                    floor — "this is what's in place" — not a ceiling — "this is what's bulletproof". The Wave 1 backlog
+                    (W1.A5 home.js split, W1.A6 router extract, W1.A8 Lighthouse perf) addresses the load-bearing gaps the
+                    score doesn't yet penalize. Read the per-dimension drilldown above for component-by-component honesty.
+                </div>
             </section>
         </div>
     </main>
@@ -1059,6 +1109,10 @@
                     var remaining = Math.max(0, Math.round((95 - data.overall_score) * 1.0));
                     liftEl.textContent = remaining > 0 ? ('~+' + remaining) : '<+5 (at ceiling)';
                 }
+                var currentScore2 = document.querySelector('[data-ah="current-score-2"]');
+                if (currentScore2 && data.overall_score != null) {
+                    currentScore2.textContent = data.overall_grade + ' (' + data.overall_score + ')';
+                }
                 // Add "planned Wn.x" tag to rows with data-planned attribute
                 document.querySelectorAll('tr[data-planned]').forEach(function(tr) {
                     var dim = tr.querySelector('.ah-improve-dim');
@@ -1074,6 +1128,62 @@
                     var reason = tr.getAttribute('data-done-reason') || tr.getAttribute('data-partial-reason');
                     if (reason) tr.setAttribute('title', reason);
                 });
+
+                // ARCHIVE EXTRACTION (2026-05-21 Founder direction): "once they are
+                // completed they can be added to an archive/completed section please
+                // for easier viewing". Move every .ah-row-done into a collapsed
+                // archive section below the active improvement plan.
+                (function buildArchive() {
+                    var doneRows = Array.from(document.querySelectorAll('tr.ah-row-done'));
+                    if (doneRows.length === 0) return;
+                    // Build the archive container (after the .ah-improve-sub footer)
+                    var improveSection = document.querySelector('.ah-improve-section, .ah-improve-group');
+                    var insertAfter = document.querySelectorAll('.ah-improve-group');
+                    if (!insertAfter.length) return;
+                    var afterEl = insertAfter[insertAfter.length - 1].parentElement;
+
+                    var details = document.createElement('details');
+                    details.className = 'ah-improve-archive';
+                    details.innerHTML = '<summary>✓ Archive — ' + doneRows.length + ' completed items (click to expand)</summary>'
+                        + '<table class="ah-improve-table ah-improve-archive-table">'
+                        + '<thead><tr><th style="width:90px">Dim</th><th>Action</th><th style="width:80px">Effort</th><th style="width:90px">Lift</th><th>Evidence</th></tr></thead>'
+                        + '<tbody></tbody></table>';
+                    var archiveBody = details.querySelector('tbody');
+
+                    doneRows.forEach(function(row) {
+                        // Build new archive row from the original cells
+                        var dimCell = row.querySelector('.ah-improve-dim');
+                        var actionCell = row.querySelector('.ah-improve-action');
+                        var effortCell = row.querySelector('.ah-improve-effort');
+                        var impactCell = row.querySelector('.ah-improve-impact');
+                        var reason = row.getAttribute('data-done-reason') || '';
+                        var newRow = document.createElement('tr');
+                        newRow.className = 'ah-row-archived';
+                        newRow.innerHTML =
+                            '<td class="ah-improve-dim">' + (dimCell ? dimCell.innerHTML : '') + '</td>' +
+                            '<td class="ah-improve-action">' + (actionCell ? actionCell.innerHTML : '') + '</td>' +
+                            '<td class="ah-improve-effort">' + (effortCell ? effortCell.innerHTML : '') + '</td>' +
+                            '<td class="ah-improve-impact">' + (impactCell ? impactCell.innerHTML : '') + '</td>' +
+                            '<td class="ah-archive-evidence">' + reason + '</td>';
+                        archiveBody.appendChild(newRow);
+                        // Remove from active table
+                        row.parentNode.removeChild(row);
+                    });
+
+                    // Insert archive after the last improve-group, before the footer paragraph
+                    var footerP = afterEl.querySelector('.ah-improve-sub:last-of-type');
+                    if (footerP) {
+                        afterEl.insertBefore(details, footerP);
+                    } else {
+                        afterEl.appendChild(details);
+                    }
+
+                    // Remove any improve-group that now has zero rows (empty tier)
+                    document.querySelectorAll('.ah-improve-group').forEach(function(g) {
+                        var rows = g.querySelectorAll('tbody tr');
+                        if (rows.length === 0) g.style.display = 'none';
+                    });
+                })();
                 // Audit schedule panel
                 var trig = data.audit_trigger || {};
                 var trigWhenEl = document.querySelector('[data-trigger-when]');

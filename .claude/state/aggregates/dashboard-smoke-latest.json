@@ -1,6 +1,6 @@
 {
   "schema_version": "dashboard-smoke-v1",
-  "generated_at": "2026-05-21T19:16:32.813Z",
+  "generated_at": "2026-05-21T19:17:17.142Z",
   "total": 12,
   "passed": 12,
   "results": [
@@ -9,7 +9,7 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 27106,
+        "bodyTextLen": 27196,
         "kpiPopulated": 8,
         "kpiTotal": 8,
         "navLinkCount": 11,
