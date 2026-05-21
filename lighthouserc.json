@@ -1,0 +1,34 @@
+{
+  "ci": {
+    "collect": {
+      "staticDistDir": "./dist",
+      "url": [
+        "http://localhost/index.html",
+        "http://localhost/index.html#/profile",
+        "http://localhost/index.html#/feed",
+        "http://localhost/index.html#/scorecard",
+        "http://localhost/index.html#/round-detail",
+        "http://localhost/index.html#/calendar"
+      ],
+      "numberOfRuns": 1,
+      "settings": {
+        "preset": "desktop",
+        "throttlingMethod": "simulate",
+        "onlyCategories": ["performance", "accessibility", "best-practices", "seo"]
+      }
+    },
+    "assert": {
+      "preset": "lighthouse:no-pwa",
+      "assertions": {
+        "categories:performance": ["warn", { "minScore": 0.7 }],
+        "categories:accessibility": ["warn", { "minScore": 0.9 }],
+        "categories:best-practices": ["warn", { "minScore": 0.8 }],
+        "categories:seo": ["warn", { "minScore": 0.8 }]
+      }
+    },
+    "upload": {
+      "target": "filesystem",
+      "outputDir": "./.claude/state/aggregates/lighthouse"
+    }
+  }
+}

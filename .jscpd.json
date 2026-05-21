@@ -1,0 +1,18 @@
+{
+  "threshold": 5,
+  "reporters": ["console", "json"],
+  "output": "./.claude/state/aggregates/jscpd",
+  "minTokens": 50,
+  "minLines": 8,
+  "format": ["javascript"],
+  "absolute": true,
+  "ignore": [
+    "**/node_modules/**",
+    "**/.claude/**",
+    "**/dist/**",
+    "**/docs/reports/**",
+    "**/tests/e2e/test-results/**",
+    "**/.archive/**",
+    "**/src/**/*.min.js"
+  ]
+}

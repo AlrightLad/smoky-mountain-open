@@ -1,0 +1,1165 @@
+{
+  "statistics": {
+    "detectionDate": "2026-05-21T01:37:39.889Z",
+    "formats": {
+      "javascript": {
+        "sources": {
+          "C:/Users/Zach/smoky-mountain-open/functions/lib/validators.js": {
+            "lines": 85,
+            "tokens": 437,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/functions/lib/rate-limit.js": {
+            "lines": 86,
+            "tokens": 535,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/functions/index.js": {
+            "lines": 907,
+            "tokens": 9074,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/wagers.js": {
+            "lines": 484,
+            "tokens": 8065,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/trophyroom.js": {
+            "lines": 316,
+            "tokens": 6492,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/trips.js": {
+            "lines": 412,
+            "tokens": 6063,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/teetimes.js": {
+            "lines": 302,
+            "tokens": 4788,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/syncround.js": {
+            "lines": 314,
+            "tokens": 4652,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/standings.js": {
+            "lines": 172,
+            "tokens": 2676,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/social.js": {
+            "lines": 139,
+            "tokens": 2138,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/shop.js": {
+            "lines": 266,
+            "tokens": 5261,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/settings.js": {
+            "lines": 371,
+            "tokens": 4160,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/seasonrecap.js": {
+            "lines": 193,
+            "tokens": 3435,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 8,
+            "duplicatedTokens": 134,
+            "percentage": 4.15,
+            "percentageTokens": 3.9,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/scramblelive.js": {
+            "lines": 200,
+            "tokens": 2756,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/scramble.js": {
+            "lines": 614,
+            "tokens": 10473,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/scorecard.js": {
+            "lines": 488,
+            "tokens": 7717,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/rules.js": {
+            "lines": 86,
+            "tokens": 726,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/rounds.js": {
+            "lines": 961,
+            "tokens": 14325,
+            "sources": 1,
+            "clones": 4,
+            "duplicatedLines": 40,
+            "duplicatedTokens": 558,
+            "percentage": 4.16,
+            "percentageTokens": 3.9,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/roundhistory.js": {
+            "lines": 179,
+            "tokens": 3234,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/round.js": {
+            "lines": 216,
+            "tokens": 2316,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/richlist.js": {
+            "lines": 151,
+            "tokens": 2218,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/records.js": {
+            "lines": 325,
+            "tokens": 5497,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/rangelive.js": {
+            "lines": 106,
+            "tokens": 1070,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/range.js": {
+            "lines": 373,
+            "tokens": 4706,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/partygames.js": {
+            "lines": 169,
+            "tokens": 2558,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/onboarding.js": {
+            "lines": 237,
+            "tokens": 2092,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/more.js": {
+            "lines": 72,
+            "tokens": 1051,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/merch.js": {
+            "lines": 30,
+            "tokens": 274,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/leagues.js": {
+            "lines": 490,
+            "tokens": 6436,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/invite.js": {
+            "lines": 101,
+            "tokens": 1305,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/findplayers.js": {
+            "lines": 100,
+            "tokens": 1323,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/feed.js": {
+            "lines": 822,
+            "tokens": 10968,
+            "sources": 1,
+            "clones": 4,
+            "duplicatedLines": 32,
+            "duplicatedTokens": 410,
+            "percentage": 3.89,
+            "percentageTokens": 3.74,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/faq.js": {
+            "lines": 111,
+            "tokens": 1252,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/drills.js": {
+            "lines": 73,
+            "tokens": 1061,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/dms.js": {
+            "lines": 194,
+            "tokens": 3032,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/chat.js": {
+            "lines": 878,
+            "tokens": 13857,
+            "sources": 1,
+            "clones": 3,
+            "duplicatedLines": 35,
+            "duplicatedTokens": 453,
+            "percentage": 3.99,
+            "percentageTokens": 3.27,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/challenges.js": {
+            "lines": 102,
+            "tokens": 1389,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/calendar.js": {
+            "lines": 428,
+            "tokens": 7296,
+            "sources": 1,
+            "clones": 3,
+            "duplicatedLines": 27,
+            "duplicatedTokens": 515,
+            "percentage": 6.31,
+            "percentageTokens": 7.06,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/caddynotes.js": {
+            "lines": 896,
+            "tokens": 9749,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/bounties.js": {
+            "lines": 238,
+            "tokens": 3123,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/awards.js": {
+            "lines": 128,
+            "tokens": 2321,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 8,
+            "duplicatedTokens": 134,
+            "percentage": 6.25,
+            "percentageTokens": 5.77,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/admin.js": {
+            "lines": 984,
+            "tokens": 14110,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/activity.js": {
+            "lines": 125,
+            "tokens": 1816,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/pages/aces.js": {
+            "lines": 222,
+            "tokens": 2506,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/core/weather.js": {
+            "lines": 552,
+            "tokens": 6010,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 36,
+            "duplicatedTokens": 314,
+            "percentage": 6.52,
+            "percentageTokens": 5.22,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/core/utils.js": {
+            "lines": 216,
+            "tokens": 2898,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/core/transitions.js": {
+            "lines": 60,
+            "tokens": 392,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/core/theme.js": {
+            "lines": 191,
+            "tokens": 1647,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/core/sync.js": {
+            "lines": 926,
+            "tokens": 13185,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/core/parcoins.js": {
+            "lines": 235,
+            "tokens": 2087,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 16,
+            "duplicatedTokens": 226,
+            "percentage": 6.81,
+            "percentageTokens": 10.83,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/core/page-shell.js": {
+            "lines": 294,
+            "tokens": 2484,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/core/notification-types.js": {
+            "lines": 96,
+            "tokens": 1011,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/core/loading.js": {
+            "lines": 207,
+            "tokens": 1647,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/core/haptics.js": {
+            "lines": 61,
+            "tokens": 502,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/core/handicap.js": {
+            "lines": 165,
+            "tokens": 2237,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 16,
+            "duplicatedTokens": 294,
+            "percentage": 9.7,
+            "percentageTokens": 13.14,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/core/firebase.js": {
+            "lines": 948,
+            "tokens": 12621,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/core/charts.js": {
+            "lines": 155,
+            "tokens": 2943,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/core/caddie.js": {
+            "lines": 378,
+            "tokens": 7019,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/core/bottomsheet.js": {
+            "lines": 414,
+            "tokens": 3948,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/core/animate.js": {
+            "lines": 147,
+            "tokens": 1177,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "C:/Users/Zach/smoky-mountain-open/src/core/analytics.js": {
+            "lines": 263,
+            "tokens": 4665,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 19454,
+          "tokens": 266806,
+          "sources": 61,
+          "clones": 11,
+          "duplicatedLines": 109,
+          "duplicatedTokens": 1519,
+          "percentage": 0.56,
+          "percentageTokens": 0.57,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      }
+    },
+    "total": {
+      "lines": 19454,
+      "tokens": 266806,
+      "sources": 61,
+      "clones": 11,
+      "duplicatedLines": 109,
+      "duplicatedTokens": 1519,
+      "percentage": 0.56,
+      "percentageTokens": 0.57,
+      "newDuplicatedLines": 0,
+      "newClones": 0
+    }
+  },
+  "duplicates": [
+    {
+      "format": "javascript",
+      "lines": 9,
+      "fragment": "var score = 0;\n  filledScores.forEach(function(s) { score += parseInt(s) || 0; });\n\n  var course = PB.getCourseByName(courseName);\n  var holesMode = document.getElementById(\"rf-holes\") ? document.getElementById(\"rf-holes\").value : \"18\";\n  var is9hole = holesMode === \"front9\" || holesMode === \"back9\";\n  var rating = parseFloat(document.getElementById(\"rf-rating\").value) || (course ? course.rating : 72);\n  var slope = parseInt(document.getElementById(\"rf-slope\").value) || (course ? course.slope : 113);\n  if",
+      "tokens": 0,
+      "firstFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/pages/rounds.js",
+        "start": 822,
+        "end": 830,
+        "startLoc": {
+          "line": 822,
+          "column": 3,
+          "position": 12307
+        },
+        "endLoc": {
+          "line": 830,
+          "column": 5,
+          "position": 12487
+        }
+      },
+      "secondFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/pages/rounds.js",
+        "start": 678,
+        "end": 687,
+        "startLoc": {
+          "line": 678,
+          "column": 3,
+          "position": 9957
+        },
+        "endLoc": {
+          "line": 687,
+          "column": 4,
+          "position": 10138
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 13,
+      "fragment": ",\n    holesPlayed: filledScores.length,\n    holesMode: holesMode,\n    holeScores: hbhData.holeScores,\n    firData: hbhData.firData,\n    girData: hbhData.girData,\n    puttsData: hbhData.puttsData,\n    bunkerData: hbhData.bunkerData,\n    sandData: hbhData.sandData,\n    upDownData: hbhData.upDownData,\n    missData: hbhData.missData,\n    penaltyData: hbhData.penaltyData\n  }",
+      "tokens": 0,
+      "firstFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/pages/rounds.js",
+        "start": 844,
+        "end": 856,
+        "startLoc": {
+          "line": 844,
+          "column": 55,
+          "position": 12689
+        },
+        "endLoc": {
+          "line": 856,
+          "column": 4,
+          "position": 12788
+        }
+      },
+      "secondFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/pages/rounds.js",
+        "start": 699,
+        "end": 710,
+        "startLoc": {
+          "line": 699,
+          "column": 97,
+          "position": 10290
+        },
+        "endLoc": {
+          "line": 710,
+          "column": 38,
+          "position": 10387
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 9,
+      "fragment": ",\r\n          page: \"feed\"\r\n        });\r\n      }\r\n      setTimeout(function() { window._suppressRoundsRerender = false; }, 2000);\r\n    });\r\n  }).catch(function(err) {\r\n    window._suppressRoundsRerender = false;\r\n    if (typeof pbWarn === \"function\") pbWarn(\"[feed] toggleCommentLike failed:\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/pages/feed.js",
+        "start": 709,
+        "end": 717,
+        "startLoc": {
+          "line": 709,
+          "column": 58,
+          "position": 9698
+        },
+        "endLoc": {
+          "line": 717,
+          "column": 80,
+          "position": 9790
+        }
+      },
+      "secondFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/pages/feed.js",
+        "start": 552,
+        "end": 560,
+        "startLoc": {
+          "line": 552,
+          "column": 70,
+          "position": 7442
+        },
+        "endLoc": {
+          "line": 560,
+          "column": 73,
+          "position": 7534
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 9,
+      "fragment": "var commentBtn = document.querySelector('[data-round-id=\"' + roundId + '\"] [data-action=\"comment\"]');\r\n  var prevCommentCount = 0;\r\n  if (commentBtn) {\r\n    var span = commentBtn.querySelector('span');\r\n    var m = span && span.textContent.match(/Comment\\s+(\\d+)/);\r\n    if (m) prevCommentCount = parseInt(m[1], 10);\r\n  }\r\n\r\n  // Snapshot the comment row's content for potential revert (re-append on",
+      "tokens": 0,
+      "firstFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/pages/feed.js",
+        "start": 744,
+        "end": 752,
+        "startLoc": {
+          "line": 744,
+          "column": 3,
+          "position": 10045
+        },
+        "endLoc": {
+          "line": 752,
+          "column": 75,
+          "position": 10158
+        }
+      },
+      "secondFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/pages/feed.js",
+        "start": 598,
+        "end": 605,
+        "startLoc": {
+          "line": 598,
+          "column": 3,
+          "position": 8018
+        },
+        "endLoc": {
+          "line": 605,
+          "column": 6,
+          "position": 8129
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 13,
+      "fragment": ";\r\n  }\r\n\r\n  function _revertComments() {\r\n    if (localMsg) {\r\n      if (prevComments === null) delete localMsg.comments;\r\n      else localMsg.comments = prevComments;\r\n      var feed = document.getElementById(\"chatFeed\");\r\n      if (feed) feed.innerHTML = renderChatMessages(liveChat);\r\n    }\r\n  }\r\n\r\n  db",
+      "tokens": 0,
+      "firstFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/pages/chat.js",
+        "start": 841,
+        "end": 853,
+        "startLoc": {
+          "line": 841,
+          "column": 60,
+          "position": 13300
+        },
+        "endLoc": {
+          "line": 853,
+          "column": 5,
+          "position": 13408
+        }
+      },
+      "secondFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/pages/chat.js",
+        "start": 660,
+        "end": 672,
+        "startLoc": {
+          "line": 660,
+          "column": 21,
+          "position": 10892
+        },
+        "endLoc": {
+          "line": 672,
+          "column": 69,
+          "position": 11000
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 9,
+      "fragment": "+= '<div class=\"cal-day empty\"></div>';\r\n  for (var d=1;d<=daysInMonth;d++) {\r\n    var ds=calYear+\"-\"+String(calMonth+1).padStart(2,\"0\")+\"-\"+String(d).padStart(2,\"0\");\r\n    var isT=ds===todayStr,isS=ds===calSelectedDate;\r\n    var evs=eventMap[ds]||[];\r\n    var bg=isS?\"var(--gold)\":\"transparent\";\r\n    var cl=isS?\"var(--bg)\":isT?\"var(--gold)\":\"var(--cream)\";\r\n    var dots=[];\r\n    var",
+      "tokens": 0,
+      "firstFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/pages/calendar.js",
+        "start": 321,
+        "end": 329,
+        "startLoc": {
+          "line": 321,
+          "column": 35,
+          "position": 5700
+        },
+        "endLoc": {
+          "line": 329,
+          "column": 8,
+          "position": 5839
+        }
+      },
+      "secondFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/pages/calendar.js",
+        "start": 29,
+        "end": 37,
+        "startLoc": {
+          "line": 29,
+          "column": 34,
+          "position": 448
+        },
+        "endLoc": {
+          "line": 37,
+          "column": 7,
+          "position": 587
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 12,
+      "fragment": ";\r\n    var ht={};\r\n    evs.forEach(function(ev){\r\n      if(ev.type===\"event\"&&!ht.e){dots.push(\"var(--gold)\");ht.e=1;}\r\n      if(ev.type===\"round\"&&!ht.r){dots.push(\"#4CAF50\");ht.r=1;}\r\n      if(ev.type===\"range\"&&!ht.rng){dots.push(\"var(--blue)\");ht.rng=1;}\r\n      if(ev.type===\"tee\"&&!ht.t){dots.push(\"var(--pink)\");ht.t=1;}\r\n    });\r\n    var dH='';\r\n    if(dots.length===1)dH='<div style=\"width:4px;height:4px;border-radius:50%;background:'+dots[0]+';margin:1px auto 0\"></div>';\r\n    else if(dots.length>1){dH='<div style=\"display:flex;justify-content:center;gap:2px;margin-top:1px\">';dots.slice(0,4).forEach(function(c){dH+='<div style=\"width:3px;height:3px;border-radius:50%;background:'+c+'\"></div>';});dH+='</div>';}\r\n    gh",
+      "tokens": 0,
+      "firstFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/pages/calendar.js",
+        "start": 328,
+        "end": 339,
+        "startLoc": {
+          "line": 328,
+          "column": 16,
+          "position": 5835
+        },
+        "endLoc": {
+          "line": 339,
+          "column": 7,
+          "position": 6072
+        }
+      },
+      "secondFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/pages/chat.js",
+        "start": 202,
+        "end": 48,
+        "startLoc": {
+          "line": 202,
+          "column": 63,
+          "position": 3712
+        },
+        "endLoc": {
+          "line": 48,
+          "column": 6,
+          "position": 838
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 9,
+      "fragment": "var allRounds = [];\n  players.forEach(function(p) {\n    PB.getPlayerRounds(p.id).forEach(function(r) {\n      if (r.date && r.date >= year + \"-03-01\" && r.date <= year + \"-09-30\") {\n        allRounds.push(Object.assign({playerName: p.name || p.username, playerId: p.id}, r));\n      }\n    });\n  });\n  var indivAwardRounds",
+      "tokens": 0,
+      "firstFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/pages/awards.js",
+        "start": 21,
+        "end": 29,
+        "startLoc": {
+          "line": 21,
+          "column": 3,
+          "position": 231
+        },
+        "endLoc": {
+          "line": 29,
+          "column": 23,
+          "position": 365
+        }
+      },
+      "secondFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/pages/seasonrecap.js",
+        "start": 6,
+        "end": 14,
+        "startLoc": {
+          "line": 6,
+          "column": 3,
+          "position": 85
+        },
+        "endLoc": {
+          "line": 14,
+          "column": 18,
+          "position": 219
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 19,
+      "fragment": ");\r\n\r\n    function pack(data, cachedAt, isFresh) {\r\n      if (!data) return null;\r\n      return {\r\n        temp: data.temp,\r\n        condition: data.condition,\r\n        windSpeed: data.windSpeed,\r\n        windDir: data.windDir,\r\n        windDeg: data.windDeg,\r\n        humidity: data.humidity,\r\n        locationName: data.locationName,\r\n        cachedAt: cachedAt,\r\n        isFresh: isFresh,\r\n        displayString: _formatDisplay(data, format, includeWind)\r\n      };\r\n    }\r\n\r\n    if",
+      "tokens": 0,
+      "firstFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/core/weather.js",
+        "start": 283,
+        "end": 301,
+        "startLoc": {
+          "line": 283,
+          "column": 50,
+          "position": 2928
+        },
+        "endLoc": {
+          "line": 301,
+          "column": 7,
+          "position": 3085
+        }
+      },
+      "secondFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/core/weather.js",
+        "start": 205,
+        "end": 223,
+        "startLoc": {
+          "line": 205,
+          "column": 43,
+          "position": 2187
+        },
+        "endLoc": {
+          "line": 223,
+          "column": 41,
+          "position": 2344
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 9,
+      "fragment": "amount,\r\n    reason: reason,\r\n    label: label,\r\n    createdAt: fsTimestamp()\r\n  }).catch(function(err) { pbWarn(\"[ParCoin] Transaction log failed:\", err.message); });\r\n\r\n  // Update local profile cache\r\n  if (currentProfile && (uid === (currentUser ? currentUser.uid : null))) {\r\n    currentProfile.parcoins = (currentProfile.parcoins || 0) -",
+      "tokens": 0,
+      "firstFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/core/parcoins.js",
+        "start": 108,
+        "end": 116,
+        "startLoc": {
+          "line": 108,
+          "column": 14,
+          "position": 945
+        },
+        "endLoc": {
+          "line": 116,
+          "column": 63,
+          "position": 1058
+        }
+      },
+      "secondFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/core/parcoins.js",
+        "start": 64,
+        "end": 72,
+        "startLoc": {
+          "line": 64,
+          "column": 13,
+          "position": 505
+        },
+        "endLoc": {
+          "line": 72,
+          "column": 63,
+          "position": 618
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 9,
+      "fragment": "var eligible = [];\r\n  for (var i = 0; i < rounds.length; i++) {\r\n    var r = rounds[i];\r\n    if (!r.score || !r.rating || !r.slope) continue;\r\n    if (r.format === \"scramble\" || r.format === \"scramble4\") continue;\r\n    if (r.holesPlayed && r.holesPlayed < 18) continue;\r\n    eligible.push(r);\r\n  }\r\n  eligible",
+      "tokens": 0,
+      "firstFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/core/handicap.js",
+        "start": 126,
+        "end": 134,
+        "startLoc": {
+          "line": 126,
+          "column": 3,
+          "position": 1642
+        },
+        "endLoc": {
+          "line": 134,
+          "column": 11,
+          "position": 1789
+        }
+      },
+      "secondFile": {
+        "name": "C:/Users/Zach/smoky-mountain-open/src/core/handicap.js",
+        "start": 73,
+        "end": 82,
+        "startLoc": {
+          "line": 73,
+          "column": 3,
+          "position": 932
+        },
+        "endLoc": {
+          "line": 82,
+          "column": 70,
+          "position": 1081
+        }
+      }
+    }
+  ]
+}

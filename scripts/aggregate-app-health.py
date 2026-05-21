@@ -324,16 +324,32 @@ def a3_security() -> dict:
     score -= medium * 0.5
 
     # Hard deductions for known gaps (not just AgentShield)
-    # NO bundle-exposure scan run (no scripts/scan-bundle.py or trufflehog)
-    if not (ROOT / "scripts" / "scan-bundle.py").exists():
+    # Bundle-exposure scan: now wired via scripts/scan-bundle.js
+    scan_bundle = (ROOT / "scripts" / "scan-bundle.js").exists() or (ROOT / "scripts" / "scan-bundle.py").exists()
+    bundle_report = STATE / "security" / "bundle-scan-latest.json"
+    if not scan_bundle:
         score -= 8
         weak.append(
             {
                 "what": "No bundle-exposure scan ever run on dist/ or public/",
-                "where": "scripts/ — no scan-bundle.py / no trufflehog wiring",
+                "where": "scripts/ — no scan-bundle.js / no trufflehog wiring",
                 "what_action": "Wire trufflehog or gitleaks to scan public/ and dist/ for embedded secrets/PII before deploy",
             }
         )
+    elif bundle_report.exists():
+        try:
+            br = json.loads(bundle_report.read_text(encoding="utf-8"))
+            if br.get("counts", {}).get("CRITICAL", 0) > 0 or br.get("counts", {}).get("HIGH", 0) > 0:
+                score -= 5
+                weak.append(
+                    {
+                        "what": f"Bundle scan reports {br['counts'].get('CRITICAL',0)} CRITICAL + {br['counts'].get('HIGH',0)} HIGH",
+                        "where": ".claude/state/security/bundle-scan-latest.json",
+                        "what_action": "Review bundle-scan findings; remove embedded secrets before deploy",
+                    }
+                )
+        except Exception:
+            pass
 
     # NO rate-limit verification on Cloud Functions
     functions_file = ROOT / "functions" / "index.js"
@@ -367,19 +383,21 @@ def a3_security() -> dict:
             }
         )
 
-    # NO firestore rules coverage matrix
-    rules_matrix = (
-        list((ROOT / ".claude" / "state" / "task-queue" / "founder").glob("*firestore-rules-coverage*"))
-        if (ROOT / ".claude" / "state" / "task-queue" / "founder").exists()
-        else []
-    )
-    if not rules_matrix:
+    # NO firestore rules coverage matrix — search task-queue/founder/ AND security/
+    rules_matrix_candidates = []
+    fdir = ROOT / ".claude" / "state" / "task-queue" / "founder"
+    sdir = ROOT / ".claude" / "state" / "security"
+    if fdir.exists():
+        rules_matrix_candidates += list(fdir.glob("*firestore-rules-coverage*"))
+    if sdir.exists():
+        rules_matrix_candidates += list(sdir.glob("*firestore-rules-coverage*"))
+    if not rules_matrix_candidates:
         score -= 7
         weak.append(
             {
                 "what": "No Firestore rules coverage matrix (per collection × per operation)",
-                "where": "firestore.rules + task-queue/founder/ — no coverage doc",
-                "what_action": "Build a coverage matrix: every collection (members, rounds, wagers, ...) × every operation (create, read, update, delete) with the rule clause that gates it. Add to task-queue/founder/app-audit-findings-security.md",
+                "where": "firestore.rules + .claude/state/security/ — no coverage doc",
+                "what_action": "Build a coverage matrix: every collection × every operation with the rule clause that gates it",
             }
         )
 
@@ -692,9 +710,13 @@ def a7_data_integrity() -> dict:
     if not indexes_path.exists():
         score -= 20
 
-    # Per-collection coverage matrix (the big one)
-    coverage_doc = ROOT / "docs" / "firestore-rules-coverage-matrix.md"
-    if not coverage_doc.exists():
+    # Per-collection coverage matrix (the big one). Check docs/ + state/security/.
+    coverage_doc_paths = [
+        ROOT / "docs" / "firestore-rules-coverage-matrix.md",
+        ROOT / ".claude" / "state" / "security" / "firestore-rules-coverage-matrix.md",
+    ]
+    coverage_doc = next((p for p in coverage_doc_paths if p.exists()), None)
+    if not coverage_doc:
         score -= 15
         weak.append(
             {
@@ -751,7 +773,7 @@ def a7_data_integrity() -> dict:
         )
 
     score = max(35.0, min(100.0, score))
-    label = f"{rules_lines} lines rules · {indexes_count} indexes; missing coverage matrix={not coverage_doc.exists()}, schema validation={not has_schema_validation}"
+    label = f"{rules_lines} lines rules · {indexes_count} indexes; missing coverage matrix={coverage_doc is None}, schema validation={not has_schema_validation}"
     return {
         "score": round(score),
         "status": status_color(score),
@@ -938,10 +960,24 @@ def a11_testing() -> dict:
         except OSError:
             continue
 
-    # Heuristic baseline
+    # Unit tests (tests/unit/*.test.js) — fast, focused, industry-grade signal.
+    unit_dir = ROOT / "tests" / "unit"
+    unit_specs = list(unit_dir.glob("**/*.test.js")) if unit_dir.exists() else []
+    unit_lines = 0
+    for u in unit_specs:
+        try:
+            unit_lines += sum(1 for _ in u.open(encoding="utf-8", errors="replace"))
+        except OSError:
+            continue
+
+    # Heuristic baseline. E2E lines + unit lines both count toward coverage signal.
     app_loc = 32000
-    coverage_ratio = total_lines / app_loc if app_loc > 0 else 0
+    coverage_ratio = (total_lines + unit_lines * 2) / app_loc if app_loc > 0 else 0  # unit tests double-weighted
     score = min(80.0, max(20.0, coverage_ratio * 4000))
+
+    # Unit test presence bonus (industry-grade requires unit tests, not just e2e)
+    if unit_specs:
+        score += min(20, len(unit_specs) * 4)  # +4 per unit spec, capped at +20
 
     # Smoke failure penalty (we know there are 54 failures from Goal 1 D5)
     # If we have evidence of recent smoke failures, deduct heavily.

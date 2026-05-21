@@ -1,0 +1,33 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "src/main.js",
+    "src/core/**/*.js",
+    "src/pages/**/*.js",
+    "scripts/**/*.{js,mjs}",
+    "tests/**/*.js",
+    "functions/index.js",
+    "vite.config.js",
+    "vitest.config.js",
+    "eslint.config.js",
+    "playwright.config.js"
+  ],
+  "project": [
+    "src/**/*.{js,mjs}",
+    "scripts/**/*.{js,mjs}",
+    "functions/**/*.js",
+    "tests/**/*.js"
+  ],
+  "ignore": [
+    "dist/**",
+    "node_modules/**",
+    ".claude/**",
+    "docs/reports/**",
+    "src/**/*.min.js",
+    "functions/lib/**",
+    "tests/e2e/test-results/**"
+  ],
+  "ignoreDependencies": [
+    "globals"
+  ]
+}

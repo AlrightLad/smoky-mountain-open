@@ -26,6 +26,16 @@ const { FieldValue, Timestamp } = require('firebase-admin/firestore');
 const https = require('https');
 const crypto = require('crypto');
 
+// Goal 2 A7 (zod input validation) + A3 (rate limiting).
+// Both are code-only — production behavior unchanged until firebase deploy
+// is approved per AMD-018 gate 1.
+const {
+  validateInviteRequestSchema,
+  joinLeagueRequestSchema,
+  searchCoursesQuerySchema,
+} = require('./lib/validators');
+const rateLimit = require('./lib/rate-limit');
+
 // NOTE on FieldValue / Timestamp imports:
 // Under firebase-admin v13 + firebase-functions v7, the legacy namespace
 // access `admin.firestore.FieldValue` is not reliably available inside
@@ -133,9 +143,23 @@ exports.searchCourses = functions.https.onRequest((req, res) => {
   res.set('Access-Control-Allow-Methods', 'GET');
   res.set('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
-  const query = req.query.q;
-  const apiKey = req.query.key;
-  if (!query || !apiKey) { res.status(400).json({ error: 'Missing q or key' }); return; }
+
+  // Rate limit by client IP (60/min) — cost-amplification defense.
+  const ip = rateLimit.clientIp(req);
+  const limit = rateLimit.check('searchCourses', ip, rateLimit.LIMITS.searchCourses);
+  if (!limit.allowed) {
+    res.status(429).json({ error: 'Too many requests. Try again in a minute.' });
+    return;
+  }
+
+  // Zod input validation. Replaces the prior ad-hoc check.
+  const parsed = searchCoursesQuerySchema.safeParse({ q: req.query.q, key: req.query.key });
+  if (!parsed.success) {
+    res.status(400).json({ error: 'Invalid input', detail: parsed.error.issues[0].message });
+    return;
+  }
+  const { q: query, key: apiKey } = parsed.data;
+
   const url = `https://api.golfcourseapi.com/v1/search?search_query=${encodeURIComponent(query)}`;
   https.get(url, { headers: { 'Authorization': 'Key ' + apiKey } }, (apiRes) => {
     let data = '';
@@ -157,7 +181,22 @@ exports.validateInvite = functions.https.onRequest(async (req, res) => {
   res.set('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
   if (req.method !== 'POST') { res.status(405).json({ valid: false, reason: 'Method not allowed' }); return; }
-  const { code, email } = req.body || {};
+
+  // Rate limit by IP (30/min) — invite-code brute-force defense.
+  const ip = rateLimit.clientIp(req);
+  const limit = rateLimit.check('validateInvite', ip, rateLimit.LIMITS.validateInvite);
+  if (!limit.allowed) {
+    res.status(429).json({ valid: false, reason: 'Too many attempts. Try again in a minute.' });
+    return;
+  }
+
+  // Zod validation. Email is optional; older clients without email still work.
+  const parsed = validateInviteRequestSchema.safeParse(req.body || {});
+  if (!parsed.success) {
+    res.json({ valid: false, reason: parsed.error.issues[0].message });
+    return;
+  }
+  const { code, email } = parsed.data;
 
   // Email blocklist (layered before invite-code validation). Populated
   // by onMemberRoleChange when a member is banned. Email is optional
@@ -547,12 +586,21 @@ exports.joinLeague = functions
       throw new functions.https.HttpsError('unauthenticated', 'Sign in required');
     }
     const uid = context.auth.uid;
-    const leagueId = data && data.leagueId;
-    const inviteCode = data && data.inviteCode;
-    if (!leagueId || !inviteCode) {
+
+    // Rate limit by uid (10/min) — anti-spam.
+    const limit = rateLimit.check('joinLeague', uid, rateLimit.LIMITS.joinLeague);
+    if (!limit.allowed) {
       throw new functions.https.HttpsError(
-        'invalid-argument', 'leagueId and inviteCode are required');
+        'resource-exhausted', 'Too many join attempts. Wait a minute and try again.');
     }
+
+    // Zod input validation.
+    const parsed = joinLeagueRequestSchema.safeParse(data || {});
+    if (!parsed.success) {
+      throw new functions.https.HttpsError(
+        'invalid-argument', parsed.error.issues[0].message);
+    }
+    const { leagueId, inviteCode } = parsed.data;
 
     // Validate invite.
     const result = await validateInviteCode(inviteCode);

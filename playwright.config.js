@@ -14,6 +14,10 @@ module.exports = defineConfig({
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    // Mobile viewports (Goal 2 A10 — industry-grade mobile-first verification).
+    // Use `npx playwright test --project=iphone-14` to run mobile-only.
+    { name: 'iphone-14', use: { ...devices['iPhone 14'] } },
+    { name: 'pixel-7', use: { ...devices['Pixel 7'] } },
   ],
   webServer: {
     command: 'npm run dev',
