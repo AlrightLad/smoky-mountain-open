@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T03:37:14Z",
-  "generated_at": "2026-05-21T03:37:14Z",
+  "timestamp": "2026-05-21T03:41:11Z",
+  "generated_at": "2026-05-21T03:41:11Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
   "summary": "watcher cycling · applies blocked (10 skips on dirty tree)",
-  "as_of": "2026-05-21T03:35:49Z",
+  "as_of": "2026-05-21T03:40:49Z",
   "stale": false,
-  "age_hours": 0.02333333333333333,
+  "age_hours": 0.006666666666666667,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -31,6 +31,13 @@
     {
       "category": "stall",
       "status": "skip-dirty",
+      "name": "2026-05-21T03-40-49Z-downloads-watcher.log",
+      "note": "[03:40:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-15/screenshots/audit-2026-05-15-dashboard-1440.png, .claude/state/dashboard-audit-2026-05-15/screenshot",
+      "when": "2026-05-21T03:40:49Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
       "name": "2026-05-21T03-35-49Z-downloads-watcher.log",
       "note": "[03:35:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-15/screenshots/audit-2026-05-15-dashboard-1440.png, .claude/state/dashboard-audit-2026-05-15/screenshot",
       "when": "2026-05-21T03:35:49Z"
@@ -41,13 +48,6 @@
       "name": "2026-05-21T03-30-49Z-downloads-watcher.log",
       "note": "[03:30:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-15/screenshots/audit-2026-05-15-dashboard-1440.png, .claude/state/dashboard-audit-2026-05-15/screenshot",
       "when": "2026-05-21T03:30:49Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-21T03-25-49Z-downloads-watcher.log",
-      "note": "[03:25:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-15/screenshots/audit-2026-05-15-dashboard-1440.png, .claude/state/dashboard-audit-2026-05-15/screenshot",
-      "when": "2026-05-21T03:25:49Z"
     }
   ],
   "links": [
@@ -64,6 +64,6 @@
   "_meta": {
     "watcher_runs_inspected": 10,
     "consecutive_skips": 10,
-    "age_minutes": 1.4
+    "age_minutes": 0.4
   }
 }

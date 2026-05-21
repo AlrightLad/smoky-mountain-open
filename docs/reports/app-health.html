@@ -742,7 +742,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T03:40:40.186566Z",
+  "generated_at": "2026-05-21T03:41:19.955115Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 78.9,
   "overall_grade": "B",
@@ -750,11 +750,11 @@
     "A1_roadmap": {
       "score": 70,
       "status": "yellow",
-      "label": "2 complete, 2 in flight",
+      "label": "3 complete, 2 in flight",
       "source": ".claude/state/ship-progress/*.json",
       "weak_points": [
         {
-          "what": "Only 2 ships marked complete in ship-progress/",
+          "what": "Only 3 ships marked complete in ship-progress/",
           "where": ".claude/state/ship-progress/",
           "what_action": "Continue Wave 1 ships; mark complete via apply-decisions watcher"
         }
@@ -971,7 +971,7 @@
   },
   "attention_items": [
     {
-      "what": "Only 2 ships marked complete in ship-progress/",
+      "what": "Only 3 ships marked complete in ship-progress/",
       "where": ".claude/state/ship-progress/",
       "what_action": "Continue Wave 1 ships; mark complete via apply-decisions watcher",
       "dimension": "A1_roadmap"
@@ -1004,7 +1004,7 @@
   "founder_attention": [],
   "agent_attention": [
     {
-      "what": "Only 2 ships marked complete in ship-progress/",
+      "what": "Only 3 ships marked complete in ship-progress/",
       "where": ".claude/state/ship-progress/",
       "what_action": "Continue Wave 1 ships; mark complete via apply-decisions watcher",
       "dimension": "A1_roadmap"
@@ -1035,15 +1035,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "3f167b97",
-    "subject": "[W1.I5] crisis banner â€” 3-tier (CRITICAL/ALERT/NOTICE) via platform_announcements collection. CORE-tier loader, member-dismissible per session for NOTICE/ALERT, Founder-only dismissal for CRITICAL. window.setCrisisBanner(tier, msg, link, label) API.",
-    "committed_at": "2026-05-20T23:40:23-04:00",
-    "trigger": "app-commit",
-    "is_app_commit": true,
-    "app_files_touched": [
-      "src/core/crisis-banner.js"
-    ],
-    "total_files_touched": 2
+    "sha": "053f5dcb",
+    "subject": "[W1.I5] ship-progress: complete",
+    "committed_at": "2026-05-20T23:41:06-04:00",
+    "trigger": "substrate-commit",
+    "is_app_commit": false,
+    "app_files_touched": [],
+    "total_files_touched": 1
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
