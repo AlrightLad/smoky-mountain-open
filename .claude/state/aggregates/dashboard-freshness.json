@@ -1,6 +1,6 @@
 {
   "schema_version": "dashboard-freshness-v1",
-  "generated_at": "2026-05-21T20:02:22.641251+00:00",
+  "generated_at": "2026-05-21T20:03:52.522164+00:00",
   "pages": [
     {
       "file": "dashboard.html",
@@ -68,7 +68,7 @@
       "ships_today_source_ship_progress": 9,
       "ships_today_dashboard_trend": 9,
       "ships_this_week_dashboard": 16,
-      "commits_today_git": 68,
+      "commits_today_git": 69,
       "mismatch": false
     }
   },
@@ -79,6 +79,6 @@
     "pages_unrepairable": 0,
     "mismatches_found": 0
   },
-  "duration_seconds": 0.38,
+  "duration_seconds": 0.46,
   "overall_status": "green"
 }
