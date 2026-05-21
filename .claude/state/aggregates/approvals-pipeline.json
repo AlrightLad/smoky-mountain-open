@@ -1,13 +1,13 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T20:27:14Z",
-  "generated_at": "2026-05-21T20:27:14Z",
+  "timestamp": "2026-05-21T20:32:14Z",
+  "generated_at": "2026-05-21T20:32:14Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
   "summary": "watcher errored",
-  "as_of": "2026-05-21T20:25:48Z",
+  "as_of": "2026-05-21T20:30:48Z",
   "stale": false,
   "age_hours": 0.02333333333333333,
   "counts": {
@@ -31,16 +31,9 @@
     {
       "category": "stall",
       "status": "incomplete",
-      "name": "2026-05-21T20-25-48Z-downloads-watcher.log",
-      "note": "[20:26:34]   [drift-sweep] [dashboard-smoke] dashboard files staged ΓÇö running smoke gate...",
-      "when": "2026-05-21T20:25:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-21T19-50-48Z-downloads-watcher.log",
-      "note": "[19:50:49] SKIP working tree dirty with non-routine files: .claude/hooks/encoding-hygiene.sh, .claude/settings.json, scripts/REGEN_REGISTRY.json",
-      "when": "2026-05-21T19:50:48Z"
+      "name": "2026-05-21T20-30-48Z-downloads-watcher.log",
+      "note": "[20:31:34]   [drift-sweep] [dashboard-smoke] dashboard files staged ΓÇö running smoke gate...",
+      "when": "2026-05-21T20:30:48Z"
     }
   ],
   "links": [
