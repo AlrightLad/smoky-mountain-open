@@ -742,10 +742,10 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T01:09:58.981111Z",
+  "generated_at": "2026-05-21T01:10:50.837575Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 55.2,
-  "overall_grade": "C-",
+  "overall_score": 54.6,
+  "overall_grade": "D",
   "dimensions": {
     "A1_roadmap": {
       "score": 70,
@@ -1030,11 +1030,16 @@
       ]
     },
     "A12_operational": {
-      "score": 62,
-      "status": "yellow",
-      "label": "pipeline=yellow · 2 recent skip-dirty · error-tracking=False · incident-doc=True",
+      "score": 52,
+      "status": "red",
+      "label": "pipeline=yellow · 3 recent skip-dirty · error-tracking=False · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
+        {
+          "what": "3 of last 10 cron watcher runs hit skip-dirty",
+          "where": "scripts/cron/logs/*-downloads-watcher.log",
+          "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
+        },
         {
           "what": "No error-tracking service wired (Sentry/Datadog/Rollbar) — production exceptions invisible",
           "where": "package.json — no @sentry/*",
@@ -1119,13 +1124,15 @@
     }
   ],
   "audit_trigger": {
-    "sha": "58074abc",
-    "subject": "[goal-2 tier-1] continue: incident-response + eslint + smoke-fix hypothesis + security tightening surfaced",
-    "committed_at": "2026-05-20T21:09:44-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 1
+    "sha": "bf14117c",
+    "subject": "[goal-2 tier-1] incident-response + smoke-fix hypothesis + security tightening surfaced",
+    "committed_at": "2026-05-20T21:10:34-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "src/core/firebase.js"
+    ],
+    "total_files_touched": 5
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
