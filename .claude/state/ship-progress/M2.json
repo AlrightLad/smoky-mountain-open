@@ -1,0 +1,24 @@
+{
+  "ship_id": "M2",
+  "name": "Mobile Home tab (3 screens + shared chrome)",
+  "wave": 3,
+  "status": "complete-baseline",
+  "ship_plan": "docs/agents/ships/M2.md",
+  "spec_consumed": ["docs/CLUBHOUSE_SPEC-3a-Home.md (521 lines)"],
+  "implementation": {
+    "modules": [
+      "src/pages/home.js _renderMobileHome (lines 162+) — mobile-editorial layout below HQ_BREAKPOINT 720px",
+      "src/core/page-shell.js — bypassed at mobile per architecture (mobile renders inline)",
+      "PB.native.* helpers (M1) available for camera/GPS/haptics on iOS"
+    ]
+  },
+  "acceptance_criteria": [
+    { "id": 1, "criterion": "Mobile Home renders below 720px viewport", "status": "PASS-baseline", "evidence": "_isHQViewport() check + _renderMobileHome dispatch" },
+    { "id": 2, "criterion": "Editorial greeting + live round + stats strip + pulses + tee times", "status": "PASS-baseline", "evidence": "_renderMobileHome composes all sections per CLUBHOUSE_SPEC-3a-Home.md states" }
+  ],
+  "follow_ons": [
+    "Per-state visual V1 against canonical mock",
+    "iOS Capacitor build validation (Apple Developer + macOS workstream)"
+  ],
+  "outcome": "BASELINE-COMPLETE — mobile Home shipped via responsive home.js; iOS-specific testing pending Wave 3 build environment"
+}

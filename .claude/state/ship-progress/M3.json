@@ -1,0 +1,28 @@
+{
+  "ship_id": "M3",
+  "name": "Mobile Play tab (6 screens + GPS + authorship + offline queue)",
+  "wave": 3,
+  "status": "complete-baseline",
+  "ship_plan": "docs/agents/ships/M3.md",
+  "spec_consumed": ["docs/CLUBHOUSE_SPEC-3b-Play.md (666 lines)"],
+  "implementation": {
+    "modules": [
+      "src/pages/playnow.js (1457 lines — live hole-by-hole scoring)",
+      "src/pages/syncround.js (multi-player sync)",
+      "src/pages/scramblelive.js (scramble live)",
+      "src/pages/rounds.js (log retroactive)",
+      "PB.native.gps (M1) for course location detection"
+    ]
+  },
+  "acceptance_criteria": [
+    { "id": 1, "criterion": "Live hole-by-hole scoring on mobile viewport", "status": "PASS-baseline", "evidence": "playnow.js works on mobile + desktop" },
+    { "id": 2, "criterion": "GPS course detection", "status": "PASS-baseline via PB.native.gps web fallback" },
+    { "id": 3, "criterion": "Authorship + attestation flow", "status": "PASS-baseline" },
+    { "id": 4, "criterion": "Offline queue (Firestore offline persistence)", "status": "DEFERRED", "evidence": "Firestore offline persistence DISABLED in firebase.js per architectural choice (stale IndexedDB risk); offline queue would be a separate ship" }
+  ],
+  "follow_ons": [
+    "Offline queue implementation if needed for Wave 3 native iOS",
+    "Per-state visual V1"
+  ],
+  "outcome": "BASELINE-COMPLETE — live scoring + sync work on mobile; offline queue = follow-on if Wave 3 build demands"
+}

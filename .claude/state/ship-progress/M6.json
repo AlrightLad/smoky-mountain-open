@@ -1,0 +1,28 @@
+{
+  "ship_id": "M6",
+  "name": "Mobile More tab + TestFlight enrollment (4 screens + Settings + Admin + cost dashboard)",
+  "wave": 3,
+  "status": "partial",
+  "ship_plan": "docs/agents/ships/M6.md",
+  "spec_consumed": ["docs/CLUBHOUSE_SPEC-3e-More.md (490 lines)"],
+  "implementation": {
+    "modules": [
+      "src/pages/more.js — More tab",
+      "src/pages/settings.js — Settings (26229 chars)",
+      "src/pages/admin.js (985 lines — Founder admin)",
+      "src/pages/bugreport.js (W1.I1) — Report a Bug entry"
+    ]
+  },
+  "acceptance_criteria": [
+    { "id": 1, "criterion": "More tab navigation hub on mobile", "status": "PASS-baseline" },
+    { "id": 2, "criterion": "Settings (display/notifications/account)", "status": "PASS-baseline" },
+    { "id": 3, "criterion": "Admin surface (Founder-only)", "status": "PASS-baseline" },
+    { "id": 4, "criterion": "Cost dashboard (member-facing if subscription model active)", "status": "DEFERRED — not currently a member-facing feature" },
+    { "id": 5, "criterion": "TestFlight enrollment for founding 20", "status": "BLOCKED — requires Apple Developer Program (Founder workstream) + iOS build (macOS + Xcode)" }
+  ],
+  "founder_action_required": [
+    "Apple Developer Program (LLC + D-U-N-S + Apple Developer Org tier)",
+    "TestFlight build via macOS + Xcode → upload → invite founding 20"
+  ],
+  "outcome": "PARTIAL — More + Settings + Admin shipped; TestFlight enrollment blocked on Apple Developer workstream"
+}

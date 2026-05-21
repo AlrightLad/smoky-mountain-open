@@ -1,0 +1,23 @@
+{
+  "ship_id": "M5",
+  "name": "Mobile Feed tab (4 screens + image attachments + mentions + pin)",
+  "wave": 3,
+  "status": "partial",
+  "ship_plan": "docs/agents/ships/M5.md",
+  "spec_consumed": ["docs/CLUBHOUSE_SPEC-3c-Feed.md (513 lines)"],
+  "implementation": {
+    "modules": [
+      "src/pages/feed.js (823 lines)",
+      "src/pages/activity.js (126 lines)",
+      "PB.native.camera (M1) for photo capture on iOS"
+    ]
+  },
+  "acceptance_criteria": [
+    { "id": 1, "criterion": "Feed surface (chronological round + activity entries)", "status": "PASS-baseline" },
+    { "id": 2, "criterion": "Engagement (kudos + comments + share)", "status": "PASS-baseline (W1.S11 shipped)" },
+    { "id": 3, "criterion": "Image attachments", "status": "DEFERRED — W1.I1 follow-on (image upload pipeline)" },
+    { "id": 4, "criterion": "@mentions with autocomplete", "status": "DEFERRED — depends on fbMemberCache + dedicated UI" },
+    { "id": 5, "criterion": "Pin (Founder admin)", "status": "DEFERRED" }
+  ],
+  "outcome": "PARTIAL — feed core shipped; image attach + mentions + pin = follow-on (depends on W1.I1 image pipeline + new UI)"
+}

@@ -1,0 +1,24 @@
+{
+  "ship_id": "M4",
+  "name": "Mobile Stats tab (5 screens + Records cache + share-as-image)",
+  "wave": 3,
+  "status": "complete-baseline",
+  "ship_plan": "docs/agents/ships/M4.md",
+  "spec_consumed": ["docs/CLUBHOUSE_SPEC-3d-Stats.md (528 lines)"],
+  "implementation": {
+    "modules": [
+      "src/pages/standings.js (174 lines)",
+      "src/pages/records.js (328 lines)",
+      "src/pages/trophyroom.js (317 lines)",
+      "src/pages/awards.js (129 lines)",
+      "src/pages/aces.js (224 lines)",
+      "src/pages/members.js share-card render (html2canvas) — share-as-image flow"
+    ]
+  },
+  "acceptance_criteria": [
+    { "id": 1, "criterion": "Standings + records + trophy + awards + aces on mobile viewport", "status": "PASS-baseline" },
+    { "id": 2, "criterion": "Records local cache (avoid Firestore re-read on tab switch)", "status": "DEFERRED — fbMemberCache covers members but Records cache not yet implemented" },
+    { "id": 3, "criterion": "Share-as-image flow (html2canvas)", "status": "PASS-baseline", "evidence": "members.js + share-card template handle share-as-image via html2canvas" }
+  ],
+  "outcome": "BASELINE-COMPLETE"
+}
