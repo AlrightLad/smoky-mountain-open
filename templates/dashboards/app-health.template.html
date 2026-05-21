@@ -788,9 +788,13 @@
                                                             : 'ah-schedule-trigger-substrate');
                     var trigLabel = trig.is_app_commit ? 'app commit'
                                   : (trig.trigger || 'unknown');
-                    trigByEl.innerHTML = '<span class="' + trigCls + '">' + esc(trigLabel) + '</span>'
-                        + '<code>' + esc(trig.sha || '—') + '</code> '
-                        + '<span style="color: var(--text-secondary);">' + esc(trig.subject || '—') + '</span>';
+                    // 2026-05-21 (Founder visual audit): stacking the chip + sha
+                    // + message vertically so the long commit-message text does
+                    // not visually overlap the chip on its line. Cleaner read.
+                    trigByEl.innerHTML = '<div style="display:flex;flex-direction:column;gap:4px;">'
+                        + '<div><span class="' + trigCls + '">' + esc(trigLabel) + '</span> <code>' + esc(trig.sha || '—') + '</code></div>'
+                        + '<div style="color: var(--text-secondary); font-size: 0.8125rem; line-height: 1.35; word-break: break-word;">' + esc(trig.subject || '—') + '</div>'
+                        + '</div>';
                 }
                 // Founder-action section (only show if items exist)
                 var founderActions = data.founder_attention || [];

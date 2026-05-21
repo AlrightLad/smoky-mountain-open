@@ -1,0 +1,47 @@
+﻿{
+    "schema_version":  "cron-health-v1",
+    "generated_at":  "2026-05-21T02:43:33Z",
+    "status":  "green",
+    "tasks":  [
+                  {
+                      "name":  "PARBAUGHS-Daily-Maintenance",
+                      "state":  "Ready",
+                      "hidden":  true,
+                      "run_level":  "Limited",
+                      "last_result":  0,
+                      "last_run":  "2026-05-21T02:32:27Z"
+                  },
+                  {
+                      "name":  "PARBAUGHS-Downloads-Watcher",
+                      "state":  "Ready",
+                      "hidden":  true,
+                      "run_level":  "Limited",
+                      "last_result":  0,
+                      "last_run":  "2026-05-21T02:40:48Z"
+                  },
+                  {
+                      "name":  "PARBAUGHS-Overnight-Triage",
+                      "state":  "Ready",
+                      "hidden":  true,
+                      "run_level":  "Limited",
+                      "last_result":  0,
+                      "last_run":  "2026-05-21T02:32:25Z"
+                  },
+                  {
+                      "name":  "PARBAUGHS-Proposal-Readiness-Scanner",
+                      "state":  "Ready",
+                      "hidden":  true,
+                      "run_level":  "Limited",
+                      "last_result":  0,
+                      "last_run":  "2026-05-21T02:32:24Z"
+                  },
+                  {
+                      "name":  "PARBAUGHS-Token-Sidecar",
+                      "state":  "Ready",
+                      "hidden":  true,
+                      "run_level":  "Limited",
+                      "last_result":  0,
+                      "last_run":  "2026-05-21T02:42:12Z"
+                  }
+              ]
+}

@@ -98,6 +98,19 @@
     function ensureIndicator() {
         var el = document.getElementById(INDICATOR_ID);
         if (el) return el;
+
+        // 2026-05-21 (Founder visual audit): the live indicator was overlapping
+        // content text near the bottom of pages because pages had no
+        // bottom-padding for it. Adding body padding-bottom + reducing the
+        // indicator's visual prominence so it reads as a status badge, not
+        // as text overlay.
+        if (!document.getElementById('pb-live-indicator-padding')) {
+            var style = document.createElement('style');
+            style.id = 'pb-live-indicator-padding';
+            style.textContent = 'body { padding-bottom: 64px !important; }';
+            document.head.appendChild(style);
+        }
+
         el = document.createElement('button');
         el.id = INDICATOR_ID;
         el.type = 'button';
@@ -105,15 +118,24 @@
         el.title = 'Live data — click to refresh now';
         el.style.cssText = [
             'position:fixed', 'right:16px', 'bottom:16px',
-            'padding:6px 10px', 'border-radius:999px',
-            'background:rgba(20,40,30,0.85)', 'color:var(--text-secondary, #c8d4cf)',
-            'border:1px solid rgba(201,169,97,0.35)',
+            'padding:5px 9px', 'border-radius:999px',
+            'background:rgba(20,40,30,0.6)',
+            'backdrop-filter:blur(8px)',
+            '-webkit-backdrop-filter:blur(8px)',
+            'color:var(--text-secondary, #c8d4cf)',
+            'border:1px solid rgba(201,169,97,0.25)',
             'font-family:var(--font-mono, JetBrains Mono, ui-monospace, monospace)',
-            'font-size:11px', 'letter-spacing:0.04em',
+            'font-size:10px', 'letter-spacing:0.03em',
             'cursor:pointer', 'z-index:9999',
-            'transition:background 180ms ease-out, border-color 180ms ease-out'
+            'opacity:0.72',
+            'transition:background 180ms ease-out, border-color 180ms ease-out, opacity 180ms ease-out'
         ].join(';');
-        el.innerHTML = '<span style="color:#4CAF50;margin-right:6px">●</span><span data-live-text>live · just now</span>';
+        el.addEventListener('mouseenter', function () { el.style.opacity = '1'; });
+        el.addEventListener('mouseleave', function () {
+            // Only dim if not in "new data available" mode
+            if (el.dataset.alert !== '1') el.style.opacity = '0.72';
+        });
+        el.innerHTML = '<span style="color:#4CAF50;margin-right:5px">●</span><span data-live-text>live · just now</span>';
         el.addEventListener('click', function () {
             saveStateAndReload();
         });
