@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T00:02:14Z",
-  "generated_at": "2026-05-21T00:02:14Z",
+  "timestamp": "2026-05-21T00:05:47Z",
+  "generated_at": "2026-05-21T00:05:47Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "yellow",
-  "raw_status": "yellow",
-  "summary": "watcher cycling · last 2 runs skipped on dirty tree",
-  "as_of": "2026-05-21T00:00:48Z",
+  "status": "red",
+  "raw_status": "red",
+  "summary": "watcher cycling · applies blocked (4 skips on dirty tree)",
+  "as_of": "2026-05-21T00:05:47Z",
   "stale": false,
-  "age_hours": 0.02333333333333333,
+  "age_hours": 0.0,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -31,16 +31,23 @@
     {
       "category": "stall",
       "status": "skip-dirty",
-      "name": "2026-05-21T00-00-48Z-downloads-watcher.log",
-      "note": "[00:00:49] SKIP working tree dirty with non-routine files: .claude/state/audit-2026-05-19/audit-1-verification-report.md, docs/reports/app-health.html, scripts/aggregate-app-health.py, scripts/regen-a",
-      "when": "2026-05-21T00:00:48Z"
+      "name": "2026-05-21T00-05-47Z-downloads-watcher.log",
+      "note": "[00:05:47] SKIP working tree dirty with non-routine files: .claude/state/audit-2026-05-19/audit-1-verification-report.md",
+      "when": "2026-05-21T00:05:47Z"
     },
     {
       "category": "stall",
       "status": "skip-dirty",
-      "name": "2026-05-20T23-55-48Z-downloads-watcher.log",
-      "note": "[23:55:49] SKIP working tree dirty with non-routine files: .claude/state/audit-2026-05-19/audit-1-verification-report.md",
-      "when": "2026-05-20T23:55:48Z"
+      "name": "2026-05-21T00-05-46Z-downloads-watcher.log",
+      "note": "[00:05:46] SKIP working tree dirty with non-routine files: .claude/state/audit-2026-05-19/audit-1-verification-report.md",
+      "when": "2026-05-21T00:05:46Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-21T00-00-48Z-downloads-watcher.log",
+      "note": "[00:00:49] SKIP working tree dirty with non-routine files: .claude/state/audit-2026-05-19/audit-1-verification-report.md, docs/reports/app-health.html, scripts/aggregate-app-health.py, scripts/regen-a",
+      "when": "2026-05-21T00:00:48Z"
     }
   ],
   "links": [
@@ -56,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 2,
-    "age_minutes": 1.4
+    "consecutive_skips": 4,
+    "age_minutes": 0.0
   }
 }
