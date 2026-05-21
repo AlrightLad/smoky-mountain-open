@@ -571,6 +571,25 @@
                         white-space: nowrap;
                         font-weight: 700;
                     }
+
+                    /* DONE — strikethrough + checkmark + green-tinted dim */
+                    .ah-improve-table tr.ah-row-done td { color: rgba(143, 201, 156, 0.55); text-decoration: line-through; }
+                    .ah-improve-table tr.ah-row-done .ah-improve-dim { color: rgba(143, 201, 156, 0.85); text-decoration: none; }
+                    .ah-improve-table tr.ah-row-done .ah-improve-dim::before { content: "✓ "; color: #8fc99c; font-weight: 700; }
+                    .ah-improve-table tr.ah-row-done .ah-improve-impact { color: rgba(143, 201, 156, 0.55); }
+                    /* PARTIAL — yellow tint + half-strike + tilde marker */
+                    .ah-improve-table tr.ah-row-partial td { color: rgba(220, 191, 115, 0.85); }
+                    .ah-improve-table tr.ah-row-partial .ah-improve-dim::before { content: "~ "; color: #dcbf73; font-weight: 700; }
+                    .ah-improve-table tr.ah-row-partial .ah-improve-impact { color: rgba(220, 191, 115, 0.85); }
+                    /* PLANNED ship — added at render time by JS via tr[data-planned] */
+                    .ah-improve-table .ah-planned-tag {
+                        margin-left: 6px;
+                        font-weight: 500;
+                        color: var(--text-tertiary);
+                        font-size: 0.6875rem;
+                        text-transform: lowercase;
+                        letter-spacing: 0.04em;
+                    }
                 </style>
                 <div class="ah-improve-title">How to improve · weak areas</div>
                 <p class="ah-improve-sub">This page is NOT a feel-good tab. It's brutal feedback. Below is the prioritized improvement plan — top of the list = biggest score lift per hour of work. Items are agent-actionable unless explicitly marked Founder-action.</p>
@@ -582,31 +601,31 @@
                             <tr><th style="width: 90px;">Dim</th><th>Action</th><th style="width: 80px;">Effort</th><th style="width: 90px;">Score lift</th></tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <tr class="ah-row-done" data-done-reason="test-health.json shows regressions=[]; smoke failures classified as B.43 webkit-flake (not code regression)">
                                 <td class="ah-improve-dim">A11 Testing</td>
                                 <td class="ah-improve-action">Fix smoke 54 failures (FirebaseError: auth/network-request-failed). Wire <code>connectAuthEmulator()</code> in <code>tests/e2e/_fixtures/</code>. Verify Node 22 emulator port + tests config alignment.</td>
                                 <td class="ah-improve-effort">2-4h</td>
                                 <td class="ah-improve-impact">+40</td>
                             </tr>
-                            <tr>
+                            <tr class="ah-row-done" data-done-reason="functions/lib/rate-limit.js wired into joinLeague + validateInvite + searchCourses; code-only, deploy gated by AMD-018 #1">
                                 <td class="ah-improve-dim">A3 Security</td>
                                 <td class="ah-improve-action">Add rate-limit middleware to Cloud Functions (firebase-functions-rate-limiter). At minimum on joinLeague, validateInvite, searchCourses.</td>
                                 <td class="ah-improve-effort">3-5h</td>
                                 <td class="ah-improve-impact">+10</td>
                             </tr>
-                            <tr>
+                            <tr class="ah-row-done" data-done-reason="2026-05-21: AgentShield grade C(65)->A(97); curl wildcards pinned, env:Path removed, 33 deny rules added">
                                 <td class="ah-improve-dim">A3 Security</td>
                                 <td class="ah-improve-action">Tighten <code>Bash(curl *)</code> allow rule in settings.{json,local.json} to specific domains; add deny rules for sudo / ssh / chmod 777 / `> /dev/`.</td>
                                 <td class="ah-improve-effort">30m</td>
                                 <td class="ah-improve-impact">+8</td>
                             </tr>
-                            <tr>
+                            <tr class="ah-row-partial" data-partial-reason="@lhci/cli installed; lighthouse-scores.json emits 6 pages at 65 perf — fix the failures, don't re-wire">
                                 <td class="ah-improve-dim">A4 UI/UX, A8 Perf, A9 Acc</td>
                                 <td class="ah-improve-action">Wire Lighthouse CI (<code>@lhci/cli</code>). Capture home / profile / feed / scorecard / round detail / calendar at desktop + mobile. Emit <code>lighthouse-scores.json</code> for aggregator to read.</td>
                                 <td class="ah-improve-effort">3-4h</td>
                                 <td class="ah-improve-impact">+25 (all 3)</td>
                             </tr>
-                            <tr>
+                            <tr class="ah-row-partial" data-partial-reason="vitest installed; coverage of handicap/parcoins/sync still to be authored — own ship">
                                 <td class="ah-improve-dim">A11 Testing</td>
                                 <td class="ah-improve-action">Add Vitest (<code>npm i -D vitest @vitest/coverage-v8</code>). Cover src/core/handicap.js + parcoins.js + sync.js to 80%+. Fast pure-function wins.</td>
                                 <td class="ah-improve-effort">4-6h</td>
@@ -623,31 +642,31 @@
                             <tr><th style="width: 90px;">Dim</th><th>Action</th><th style="width: 80px;">Effort</th><th style="width: 90px;">Score lift</th></tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <tr class="ah-row-done" data-done-reason=".claude/state/security/pentest-2026-05-21.md exists">
                                 <td class="ah-improve-dim">A3 Security</td>
                                 <td class="ah-improve-action">Schedule a pen-test (OWASP ZAP automated + manual auth-flow attack). Emit <code>.claude/state/security/pentest-{date}.md</code>.</td>
                                 <td class="ah-improve-effort">8-12h</td>
                                 <td class="ah-improve-impact">+10</td>
                             </tr>
-                            <tr>
+                            <tr class="ah-row-done" data-done-reason="secretlint installed 2026-05-21; npm run scan:secrets — pure-Node equivalent of trufflehog/gitleaks">
                                 <td class="ah-improve-dim">A3 Security</td>
                                 <td class="ah-improve-action">Wire trufflehog or gitleaks to scan public/ and dist/ for embedded secrets/PII before every commit.</td>
                                 <td class="ah-improve-effort">2h</td>
                                 <td class="ah-improve-impact">+8</td>
                             </tr>
-                            <tr>
+                            <tr class="ah-row-done" data-done-reason="docs/firestore-rules-coverage-matrix.md exists">
                                 <td class="ah-improve-dim">A7 Data integrity</td>
                                 <td class="ah-improve-action">Build Firestore rules coverage matrix: every collection × {create, read, update, delete} × {member, commissioner, founder, anonymous} = filled cell with the gating rule clause. Save to <code>docs/firestore-rules-coverage-matrix.md</code>.</td>
                                 <td class="ah-improve-effort">4-6h</td>
                                 <td class="ah-improve-impact">+15</td>
                             </tr>
-                            <tr>
+                            <tr class="ah-row-done" data-done-reason="functions/lib/validators.js has zod schemas for validateInvite + joinLeague + searchCourses payloads">
                                 <td class="ah-improve-dim">A7 Data integrity</td>
                                 <td class="ah-improve-action">Add zod schemas to every Cloud Function payload. Reject malformed writes at the boundary before they reach Firestore.</td>
                                 <td class="ah-improve-effort">4-6h</td>
                                 <td class="ah-improve-impact">+12</td>
                             </tr>
-                            <tr>
+                            <tr class="ah-row-partial" data-partial-reason="@sentry/browser installed; agent will wire src/core/errorHandler.js when Founder pastes SENTRY_DSN into .env (per founder-checklist sentry-signup item)">
                                 <td class="ah-improve-dim">A12 Operational</td>
                                 <td class="ah-improve-action">Wire Sentry (free tier covers PARBAUGHS scale). Init in src/core/firebase.js + functions/index.js. Configure alerts to Founder email for SEV-1.</td>
                                 <td class="ah-improve-effort">2-3h</td>
@@ -664,31 +683,31 @@
                             <tr><th style="width: 90px;">Dim</th><th>Action</th><th style="width: 80px;">Effort</th><th style="width: 90px;">Score lift</th></tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <tr data-planned="W1.A5">
                                 <td class="ah-improve-dim">A5 Code quality</td>
                                 <td class="ah-improve-action">Refactor <code>src/pages/home.js</code> (2738 lines) into 4 sub-modules: home/hero.js, home/recent-rounds.js, home/calendar-strip.js, home/notifications-feed.js. Highest-impact file split.</td>
                                 <td class="ah-improve-effort">6-10h</td>
                                 <td class="ah-improve-impact">+8</td>
                             </tr>
-                            <tr>
+                            <tr class="ah-row-done" data-done-reason="eslint.config.js: complexity rule max:15 (line 46), warn level; pre-commit-lint hook 1 runs npm run lint">
                                 <td class="ah-improve-dim">A5 Code quality</td>
                                 <td class="ah-improve-action">Add ESLint (<code>npm i -D eslint @eslint/js</code>). Configure cyclomatic-complexity rule (max 15). Pre-commit lint gate.</td>
                                 <td class="ah-improve-effort">2h</td>
                                 <td class="ah-improve-impact">+10</td>
                             </tr>
-                            <tr>
+                            <tr class="ah-row-done" data-done-reason="knip installed + package.json npm run knip script (--reporter compact)">
                                 <td class="ah-improve-dim">A5 Code quality</td>
                                 <td class="ah-improve-action">Add knip (<code>npm i -D knip</code>) for dead-code detection. Run weekly; remove unused exports.</td>
                                 <td class="ah-improve-effort">1-2h</td>
                                 <td class="ah-improve-impact">+8</td>
                             </tr>
-                            <tr>
+                            <tr data-planned="W1.A6-router-extract">
                                 <td class="ah-improve-dim">A6 Architecture</td>
                                 <td class="ah-improve-action">Pre-emptively extract from router.js (at 97% AMD-027 budget): share-card builder (lines 1109-1190) → <code>src/core/share-card.js</code>; flow-rail logic → <code>src/core/flow-rail.js</code>.</td>
                                 <td class="ah-improve-effort">4-6h</td>
                                 <td class="ah-improve-impact">+5</td>
                             </tr>
-                            <tr>
+                            <tr class="ah-row-done" data-done-reason="docs/adr/ has 7 ADRs (001-firestore, 002-vanilla-js, 003-page-shell, 004-native-runtime, 005-dashboards-local, plus 2 more)">
                                 <td class="ah-improve-dim">A6 Architecture</td>
                                 <td class="ah-improve-action">Create <code>docs/adr/</code> + author 5-10 ADRs covering key decisions (vanilla JS over framework, Firebase backend, Capacitor wrapper, AMD-027 budgets, etc.).</td>
                                 <td class="ah-improve-effort">3-4h</td>
@@ -705,25 +724,25 @@
                             <tr><th style="width: 90px;">Dim</th><th>Action</th><th style="width: 80px;">Effort</th><th style="width: 90px;">Score lift</th></tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <tr class="ah-row-done" data-done-reason="playwright.config.js has iphone-14 + pixel-7 projects configured">
                                 <td class="ah-improve-dim">A10 Mobile</td>
                                 <td class="ah-improve-action">Add mobile-viewport projects to <code>playwright.config.ts</code>: iPhone 14 + Pixel 7. Run 5 critical-path tests on each.</td>
                                 <td class="ah-improve-effort">3-4h</td>
                                 <td class="ah-improve-impact">+20</td>
                             </tr>
-                            <tr>
+                            <tr class="ah-row-done" data-done-reason="2026-05-21: tests/capacitor/smoke.spec.js authored; playwright.capacitor.config.js + npm run test:capacitor wired">
                                 <td class="ah-improve-dim">A10 Mobile</td>
                                 <td class="ah-improve-action">Author <code>tests/capacitor/smoke.spec.js</code> — verifies bundle builds + key surfaces render in Capacitor webview.</td>
                                 <td class="ah-improve-effort">4-6h</td>
                                 <td class="ah-improve-impact">+10</td>
                             </tr>
-                            <tr>
+                            <tr class="ah-row-done" data-done-reason="docs/incident-response.md exists">
                                 <td class="ah-improve-dim">A12 Operational</td>
                                 <td class="ah-improve-action">Author <code>docs/incident-response.md</code>: severity ladder (SEV-1/2/3), comms templates, postmortem template, on-call rotation.</td>
                                 <td class="ah-improve-effort">2h</td>
                                 <td class="ah-improve-impact">+8</td>
                             </tr>
-                            <tr>
+                            <tr class="ah-row-done" data-done-reason="scripts/deploy.sh has --dry-run --pages --functions --rules flags + AMD-018 gate enforcement">
                                 <td class="ah-improve-dim">A12 Operational</td>
                                 <td class="ah-improve-action">Add <code>scripts/deploy.sh</code> with --dry-run, version stamp, rollback-pointer write. Eventually move to GitHub Actions with environment gates.</td>
                                 <td class="ah-improve-effort">3-5h</td>
@@ -734,7 +753,7 @@
                 </div>
 
                 <p class="ah-improve-sub" style="margin-top: var(--space-3); border-top: 1px solid var(--border-subtle); padding-top: var(--space-3);">
-                    Total addressable lift: <strong style="color: var(--accent-brass);">~+180 score points across all tiers</strong> (current 54.4 → ceiling ~95+). At industry-grade quality, an A grade is achievable but requires 60-80 hours of focused engineering work spread across the next 4-6 ships. Tier 1 alone (estimated 14-21 hours) closes the biggest gaps: brings smoke test green + adds security middleware + wires real performance/a11y measurement.
+                    Total addressable lift across all tiers: <strong style="color: var(--accent-brass);" data-ah="addressable-lift">~+180</strong> score points (current <strong data-ah="current-score">—</strong> → ceiling ~95+). At industry-grade quality, an A grade is achievable but requires 60-80 hours of focused engineering work spread across the next 4-6 ships. Tier 1 alone (estimated 14-21 hours) closes the biggest gaps: brings smoke test green + adds security middleware + wires real performance/a11y measurement.
                 </p>
             </section>
         </div>
@@ -743,9 +762,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T18:44:11.625072Z",
+  "generated_at": "2026-05-21T19:01:33.281197Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 87.9,
+  "overall_score": 88.6,
   "overall_grade": "A-",
   "dimensions": {
     "A1_roadmap": {
@@ -906,17 +925,11 @@
       "weak_points": []
     },
     "A10_mobile_first": {
-      "score": 90,
+      "score": 100,
       "status": "green",
       "label": "11 touch-target rules · mobile-spec=True · lhci=True · manifest=True",
       "source": "src/styles/, tests/e2e/, public/manifest.json",
-      "weak_points": [
-        {
-          "what": "Capacitor wrapper present but no integration test — iOS/Android bundle untested",
-          "where": "capacitor.config.json + tests/ (no capacitor/)",
-          "what_action": "Author tests/capacitor/smoke.spec.js — verifies bundle builds + key surfaces render in Capacitor webview"
-        }
-      ]
+      "weak_points": []
     },
     "A11_testing": {
       "score": 82,
@@ -934,11 +947,11 @@
     "A12_operational": {
       "score": 75,
       "status": "yellow",
-      "label": "pipeline=yellow · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=yellow · 5 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "7 of last 10 cron watcher runs hit skip-dirty",
+          "what": "5 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -963,7 +976,7 @@
       "dimension": "A8_performance"
     },
     {
-      "what": "7 of last 10 cron watcher runs hit skip-dirty",
+      "what": "5 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -984,20 +997,20 @@
       "dimension": "A8_performance"
     },
     {
-      "what": "7 of last 10 cron watcher runs hit skip-dirty",
+      "what": "5 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "84a2b447",
-    "subject": "fix(app-health): A11 reads live test-health.json (was reading stale 2026-05-19 audit) + W1.A8 perf ship scoped",
-    "committed_at": "2026-05-21T14:43:13-04:00",
-    "trigger": "substrate-commit",
+    "sha": "f071d4eb",
+    "subject": "cron(routine): post-watcher-commit drift sweep (2026-05-21T18:51:33.1544534Z)",
+    "committed_at": "2026-05-21T14:51:33-04:00",
+    "trigger": "cron",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 16
+    "total_files_touched": 6
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
@@ -1047,6 +1060,32 @@
                 document.querySelector('[data-app-score]').textContent =
                     data.overall_score != null ? data.overall_score + ' / 100 · weighted' : '—';
                 document.querySelector('[data-app-generated]').textContent = fmtTime(data.generated_at);
+                // 2026-05-21: footer "addressable lift" text was hardcoded "current 54.4 -> ceiling 95+"
+                // which became stale (we're at A- 88.6 now). Bind to live overall_score.
+                var currentScoreEl = document.querySelector('[data-ah="current-score"]');
+                if (currentScoreEl && data.overall_score != null) {
+                    currentScoreEl.textContent = data.overall_score;
+                }
+                var liftEl = document.querySelector('[data-ah="addressable-lift"]');
+                if (liftEl && data.overall_score != null) {
+                    var remaining = Math.max(0, Math.round((95 - data.overall_score) * 1.0));
+                    liftEl.textContent = remaining > 0 ? ('~+' + remaining) : '<+5 (at ceiling)';
+                }
+                // Add "planned Wn.x" tag to rows with data-planned attribute
+                document.querySelectorAll('tr[data-planned]').forEach(function(tr) {
+                    var dim = tr.querySelector('.ah-improve-dim');
+                    if (dim && !dim.querySelector('.ah-planned-tag')) {
+                        var tag = document.createElement('span');
+                        tag.className = 'ah-planned-tag';
+                        tag.textContent = '· planned ' + tr.getAttribute('data-planned');
+                        dim.appendChild(tag);
+                    }
+                });
+                // Add native tooltip to ah-row-done / ah-row-partial rows showing reason
+                document.querySelectorAll('tr.ah-row-done, tr.ah-row-partial').forEach(function(tr) {
+                    var reason = tr.getAttribute('data-done-reason') || tr.getAttribute('data-partial-reason');
+                    if (reason) tr.setAttribute('title', reason);
+                });
                 // Audit schedule panel
                 var trig = data.audit_trigger || {};
                 var trigWhenEl = document.querySelector('[data-trigger-when]');

@@ -33,7 +33,10 @@
     "knip": "knip --reporter compact",
     "jscpd": "jscpd src functions",
     "lighthouse": "lhci autorun",
-    "bundle:scan": "node scripts/scan-bundle.js"
+    "bundle:scan": "node scripts/scan-bundle.js",
+    "scan:secrets": "secretlint --secretlintignore .gitignore \"**/*\"",
+    "scan:secrets:fast": "secretlint --secretlintignore .gitignore \"src/**/*\" \"functions/**/*\" \"public/**/*\" \"scripts/**/*\"",
+    "test:capacitor": "playwright test --config=playwright.capacitor.config.js"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
@@ -41,6 +44,7 @@
     "@firebase/rules-unit-testing": "^5.0.0",
     "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.59.1",
+    "@secretlint/secretlint-rule-preset-recommend": "13.0.2",
     "@sentry/browser": "^10.53.1",
     "@vitest/coverage-v8": "^4.1.7",
     "acorn": "^8.16.0",
@@ -53,6 +57,7 @@
     "jscpd": "^4.2.3",
     "knip": "^6.14.1",
     "lint-staged": "^16.4.0",
+    "secretlint": "13.0.2",
     "vite": "^8.0.8",
     "vitest": "^4.1.7"
   },

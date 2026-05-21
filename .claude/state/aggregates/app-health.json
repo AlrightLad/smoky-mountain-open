@@ -1,8 +1,8 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T18:44:11.625072Z",
+  "generated_at": "2026-05-21T19:01:33.281197Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 87.9,
+  "overall_score": 88.6,
   "overall_grade": "A-",
   "dimensions": {
     "A1_roadmap": {
@@ -163,17 +163,11 @@
       "weak_points": []
     },
     "A10_mobile_first": {
-      "score": 90,
+      "score": 100,
       "status": "green",
       "label": "11 touch-target rules · mobile-spec=True · lhci=True · manifest=True",
       "source": "src/styles/, tests/e2e/, public/manifest.json",
-      "weak_points": [
-        {
-          "what": "Capacitor wrapper present but no integration test — iOS/Android bundle untested",
-          "where": "capacitor.config.json + tests/ (no capacitor/)",
-          "what_action": "Author tests/capacitor/smoke.spec.js — verifies bundle builds + key surfaces render in Capacitor webview"
-        }
-      ]
+      "weak_points": []
     },
     "A11_testing": {
       "score": 82,
@@ -191,11 +185,11 @@
     "A12_operational": {
       "score": 75,
       "status": "yellow",
-      "label": "pipeline=yellow · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=yellow · 5 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "7 of last 10 cron watcher runs hit skip-dirty",
+          "what": "5 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -220,7 +214,7 @@
       "dimension": "A8_performance"
     },
     {
-      "what": "7 of last 10 cron watcher runs hit skip-dirty",
+      "what": "5 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -241,20 +235,20 @@
       "dimension": "A8_performance"
     },
     {
-      "what": "7 of last 10 cron watcher runs hit skip-dirty",
+      "what": "5 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "84a2b447",
-    "subject": "fix(app-health): A11 reads live test-health.json (was reading stale 2026-05-19 audit) + W1.A8 perf ship scoped",
-    "committed_at": "2026-05-21T14:43:13-04:00",
-    "trigger": "substrate-commit",
+    "sha": "f071d4eb",
+    "subject": "cron(routine): post-watcher-commit drift sweep (2026-05-21T18:51:33.1544534Z)",
+    "committed_at": "2026-05-21T14:51:33-04:00",
+    "trigger": "cron",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 16
+    "total_files_touched": 6
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
