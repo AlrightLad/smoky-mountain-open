@@ -1,8 +1,8 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T05:37:35.432070Z",
+  "generated_at": "2026-05-21T05:40:45.363062Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 80.2,
+  "overall_score": 80.7,
   "overall_grade": "B+",
   "dimensions": {
     "A1_roadmap": {
@@ -118,7 +118,7 @@
       }
     },
     "A6_architecture": {
-      "score": 81,
+      "score": 87,
       "status": "green",
       "label": "0 architectural concerns · scan clean (AMD-027 budgets in effect)",
       "source": ".claude/state/aggregates/architecture-review.json + src/ walk",
@@ -127,11 +127,6 @@
           "what": "functions/index.js is 908 lines holding 8 Cloud Functions monolithically",
           "where": "functions/index.js",
           "what_action": "Split into functions/auth.js + functions/notifications.js + functions/league.js + functions/courses.js. Or move to firebase-functions-multi-file structure."
-        },
-        {
-          "what": "No module-boundary enforcement (no eslint-plugin-boundaries / depcheck)",
-          "where": "package.json — devDependencies missing",
-          "what_action": "Add eslint-plugin-boundaries; declare src/pages → src/core direction; fail commit on upward imports"
         },
         {
           "what": "src/core/router.js at 2917 / 3000 lines (97%+ of AMD-027 budget) — next non-trivial feature will overflow",
@@ -282,13 +277,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "0afc7dca",
-    "subject": "[session] final state: B+ (81.0). 7 GREEN / 3 yellow / 1 RED (A3 Founder-gated). A6 73->81 via ADRs Â· A12 60->90 via skip-dirty resolution. 24 ships tracked.",
-    "committed_at": "2026-05-21T01:37:20-04:00",
+    "sha": "71c61009",
+    "subject": "[A6] eslint-plugin-boundaries â€” module-boundary enforcement on src/core/native/ (no cross-module imports between native helpers; share via PB.native namespace). A6 81 -> 87.",
+    "committed_at": "2026-05-21T01:40:30-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 1
+    "total_files_touched": 3
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
