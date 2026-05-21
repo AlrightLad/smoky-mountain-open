@@ -134,6 +134,7 @@ scripts/regen-main-flows.py
 scripts/regen-activity.py
 scripts/dry-run-regen-ops-views.py
 scripts/regen-token-usage.py
+scripts/consolidate-lighthouse.py
 scripts/aggregate-app-health.py
 scripts/regen-app-health.py
 scripts/regen-index.py"
@@ -171,6 +172,41 @@ if [ -f "scripts/write-regen-heartbeat.py" ]; then
     HEARTBEAT_SOURCE="post-commit-hook" \
     HEARTBEAT_DURATION="0" \
     "$PY" scripts/write-regen-heartbeat.py >> "$SCAFFOLD_LOG" 2>&1 || true
+fi
+
+# 2026-05-21 — Standing orchestration checks (per docs/dashboard-troubleshooting.md).
+# These run on every commit + emit health JSON the dashboard consumes.
+#
+# (1) Cron task health (PowerShell, runs on Windows only — POSIX no-op).
+if command -v powershell.exe >/dev/null 2>&1; then
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "
+        \$ErrorActionPreference = 'Continue'
+        \$tasks = Get-ScheduledTask -TaskName 'PARBAUGHS*' -ErrorAction SilentlyContinue
+        \$results = @()
+        foreach (\$t in \$tasks) {
+          \$info = Get-ScheduledTaskInfo -TaskName \$t.TaskName
+          \$results += [pscustomobject]@{
+            name = \$t.TaskName
+            state = \$t.State.ToString()
+            hidden = [bool]\$t.Settings.Hidden
+            run_level = \$t.Principal.RunLevel.ToString()
+            last_result = \$info.LastTaskResult
+            last_run = if (\$info.LastRunTime) { \$info.LastRunTime.ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ') } else { \$null }
+          }
+        }
+        \$report = [ordered]@{
+          schema_version = 'cron-health-v1'
+          generated_at = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
+          status = 'green'
+          tasks = \$results
+        }
+        \$report | ConvertTo-Json -Depth 6 | Out-File -FilePath '.claude/state/aggregates/cron-health.json' -Encoding utf8
+    " >/dev/null 2>&1 || true
+fi
+
+# (2) Repo secret scan (fast — only flags new committed secrets).
+if [ -f "scripts/scan-repo-secrets.js" ]; then
+    node scripts/scan-repo-secrets.js >/dev/null 2>&1 || true
 fi
 
 # Phase T1 D34 — P9.5 automated truthfulness self-check.
