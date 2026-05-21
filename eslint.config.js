@@ -9,6 +9,7 @@
 // .eslintrc syntax is in maintenance mode.
 
 import globals from "globals";
+import boundaries from "eslint-plugin-boundaries";
 
 // NOTE 2026-05-21: NOT spreading js.configs.recommended because it sets
 // dozens of rules to "error" level (no-undef, no-unused-vars, etc.).
@@ -70,6 +71,33 @@ export default [
     rules: {
       "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
     },
+  },
+  {
+    // M1 native runtime abstraction — enforce module boundaries within
+    // src/core/native/. Each native helper module imports nothing else
+    // (web-fallback pattern); this prevents accidental cross-module
+    // coupling. Wider boundaries enforcement is partial because PARBAUGHS
+    // app code uses <script>-tag includes, not ES modules.
+    files: ["src/core/native/**/*.js"],
+    plugins: { boundaries },
+    settings: {
+      "boundaries/elements": [
+        { type: "native-module", pattern: "src/core/native/*.js" }
+      ]
+    },
+    rules: {
+      "boundaries/no-unknown-files": "warn",
+      "boundaries/element-types": ["warn", {
+        default: "allow",
+        rules: [
+          {
+            from: "native-module",
+            disallow: ["native-module"],  // native helpers should NOT depend on each other
+            message: "Native helper modules should not import each other; share via window.PB.native namespace"
+          }
+        ]
+      }]
+    }
   },
   {
     files: ["tests/**/*.js", "tests/e2e/**/*.js"],
