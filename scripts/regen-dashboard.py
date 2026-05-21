@@ -1686,7 +1686,32 @@ def build_dashboard_data():
         # main dashboard renders the A-F grade + top attention items without
         # fetching cross-directory (HTTP server scope is docs/reports/ only).
         "app_health_summary": _load_app_health_summary(),
+        # 2026-05-21 Founder data-accuracy directive: surface git commit
+        # counts alongside ship counts. They are NOT the same — the dashboard
+        # was misleading by showing only ship-progress count.
+        "git_activity_7d": _count_commits_window(7),
+        "git_activity_24h": _count_commits_window(1),
     }
+
+
+def _count_commits_window(days: int) -> dict:
+    """Return {'total', 'cron_routine', 'non_routine'} commits in last N days."""
+    try:
+        import subprocess
+        r = subprocess.run(
+            ["git", "log", "--pretty=%s", f"--since={days}.days"],
+            cwd=str(ROOT), capture_output=True, text=True, timeout=20, check=False,
+        )
+        lines = [ln for ln in (r.stdout or "").splitlines() if ln.strip()]
+        cron_count = sum(1 for ln in lines if ln.startswith("cron(routine)"))
+        return {
+            "total": len(lines),
+            "cron_routine": cron_count,
+            "non_routine": len(lines) - cron_count,
+            "window_days": days,
+        }
+    except (OSError, subprocess.SubprocessError):
+        return {"total": 0, "cron_routine": 0, "non_routine": 0, "window_days": days}
 
 
 def _load_app_health_summary() -> dict:

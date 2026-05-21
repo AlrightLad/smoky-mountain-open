@@ -712,11 +712,11 @@
                     <span class="pb-action-badge" data-who="cron" data-kpi-badge="weekly-tokens">cron &middot; aggregator refreshes</span>
                 </a>
                 <a class="pb-kpi-card is-neutral" href="token-usage.html" style="text-decoration: none; color: inherit;" title="Click to open the Token Usage dashboard">
-                    <span class="pb-kpi-label">Tokens today (UTC)</span>
+                    <span class="pb-kpi-label">Tokens today (EST)</span>
                     <span class="pb-kpi-value" data-kpi="daily-tokens">&mdash;</span>
                     <span class="pb-kpi-delta is-flat" data-kpi-delta="daily-tokens" hidden></span>
                     <svg class="pb-kpi-sparkline is-info" data-spark="daily-tokens" viewBox="0 0 200 32" preserveAspectRatio="none" aria-hidden="true"></svg>
-                    <span class="pb-kpi-sub" data-kpi-sub="daily-tokens">day-to-date · UTC</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="daily-tokens">day-to-date · EST</span>
                     <span class="pb-action-badge" data-who="cron" data-kpi-badge="daily-tokens">cron &middot; aggregator refreshes</span>
                 </a>
                 <div class="pb-kpi-card" data-kpi-card="manual-quota" title="Anthropic billing quota. Source: .claude/state/quota-status.json or manual paste. Run scripts/refresh-quota-manual.ps1 to anchor a paste.">
@@ -726,13 +726,22 @@
                     <span class="pb-kpi-sub" data-kpi-sub="manual-quota">no recent paste &mdash; run <code>scripts/refresh-quota-manual.ps1</code></span>
                     <span class="pb-action-badge" data-who="founder" data-kpi-badge="manual-quota">founder &middot; paste from claude.ai</span>
                 </div>
-                <a class="pb-kpi-card is-positive" href="../../.claude/state/ship-progress/" style="text-decoration: none; color: inherit;" title="Click to open ship-progress directory">
-                    <span class="pb-kpi-label">Ships this week</span>
+                <a class="pb-kpi-card is-positive" href="../../.claude/state/ship-progress/" style="text-decoration: none; color: inherit;" title="Ships marked complete in .claude/state/ship-progress/*.json. NOT the same as commit count — see 'Commits 7d' for that.">
+                    <span class="pb-kpi-label">Ships shipped (7d)</span>
                     <span class="pb-kpi-value" data-kpi="ships-week">&mdash;</span>
                     <span class="pb-kpi-delta is-flat" data-kpi-delta="ships-week" hidden></span>
                     <svg class="pb-kpi-sparkline is-success" data-spark="ships-week" viewBox="0 0 200 32" preserveAspectRatio="none" aria-hidden="true"></svg>
-                    <span class="pb-kpi-sub">approved &amp; shipped</span>
+                    <span class="pb-kpi-sub">ship-progress/*.json marked complete</span>
                     <span class="pb-action-badge" data-who="none" data-kpi-badge="ships-week">ok &middot; per ship-progress/</span>
+                </a>
+                <!-- 2026-05-21 (Founder data-accuracy directive): explicit commit
+                     count surface alongside ship count. Commits ≠ ships; this
+                     card answers "how much code activity happened?" honestly. -->
+                <a class="pb-kpi-card is-positive" href="activity.html" style="text-decoration: none; color: inherit;" title="Total git commits in the last 7 days (cron + agent + Founder). Cron commits ARE counted here — toggle 'Hide cron routine' on activity page to filter them out.">
+                    <span class="pb-kpi-label">Commits (7d)</span>
+                    <span class="pb-kpi-value" data-kpi="commits-7d">&mdash;</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="commits-7d">all git commits including cron routine</span>
+                    <span class="pb-action-badge" data-who="cron" data-kpi-badge="commits-7d">cron &middot; counts on each commit</span>
                 </a>
                 <a class="pb-kpi-card is-positive" href="../../.claude/state/halts/" style="text-decoration: none; color: inherit;" title="Click to open halts directory">
                     <span class="pb-kpi-label">Halts this week</span>
@@ -1079,6 +1088,17 @@
                 }
 
                 setText('[data-kpi="ships-week"]', String(data.ships_this_week || 0));
+
+                // 2026-05-21 commits-7d surface (Founder data-accuracy directive)
+                var git7 = data.git_activity_7d || {};
+                var totalCommits = git7.total || 0;
+                var nonRoutine = git7.non_routine || 0;
+                var cronRoutine = git7.cron_routine || 0;
+                setText('[data-kpi="commits-7d"]', String(totalCommits));
+                var commitsSub = document.querySelector('[data-kpi-sub="commits-7d"]');
+                if (commitsSub) {
+                    commitsSub.textContent = nonRoutine + ' substantive · ' + cronRoutine + ' cron routine';
+                }
 
                 // KPI strip: row 2 + 3
                 setText('[data-kpi="halts-week"]', String(data.halts_this_week || 0));
