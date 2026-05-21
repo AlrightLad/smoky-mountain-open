@@ -1,13 +1,13 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T18:27:13Z",
-  "generated_at": "2026-05-21T18:27:13Z",
+  "timestamp": "2026-05-21T18:32:13Z",
+  "generated_at": "2026-05-21T18:32:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "red",
-  "raw_status": "red",
-  "summary": "watcher errored",
-  "as_of": "2026-05-21T18:25:48Z",
+  "status": "yellow",
+  "raw_status": "yellow",
+  "summary": "watcher last run: skip-dirty",
+  "as_of": "2026-05-21T18:30:48Z",
   "stale": false,
   "age_hours": 0.02333333333333333,
   "counts": {
@@ -30,10 +30,10 @@
     },
     {
       "category": "stall",
-      "status": "error",
-      "name": "2026-05-21T18-25-48Z-downloads-watcher.log",
-      "note": "[18:26:33]   [auto-commit] ERROR: dashboard smoke failed. Tail of log:",
-      "when": "2026-05-21T18:25:48Z"
+      "status": "skip-dirty",
+      "name": "2026-05-21T18-30-48Z-downloads-watcher.log",
+      "note": "[18:31:32] SKIP working tree dirty with non-routine after auto-commit: .claude/hooks/hook-13-design-quality.sh",
+      "when": "2026-05-21T18:30:48Z"
     },
     {
       "category": "stall",
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 0,
+    "consecutive_skips": 1,
     "age_minutes": 1.4
   }
 }

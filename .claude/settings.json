@@ -238,7 +238,6 @@
       "PowerShell(Get-Command *)",
       "PowerShell(Get-ChildItem *)",
       "PowerShell(py *)",
-      "PowerShell($env:Path *)",
       "Edit(scripts/**)",
       "Edit(tests/**)",
       "Edit(src/**)",

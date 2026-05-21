@@ -54,8 +54,11 @@ for c in \
     "$LOCALAPPDATA/Programs/Python/Python311/python.exe" \
     "/usr/bin/python3" \
     "/usr/local/bin/python3"; do
-    if [ -x "$c" ] >/dev/null 2>&1 || command -v "$c" >/dev/null 2>&1; then
+    if [ -x "$c" ]; then
         PY="$c"; break
+    fi
+    if cmd_path=$(command -v "$c"); then
+        PY="$cmd_path"; break
     fi
 done
 if [ -z "$PY" ]; then

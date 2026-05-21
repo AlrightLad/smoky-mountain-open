@@ -44,29 +44,29 @@ fi
 warnings=()
 
 # 1. Tailwind-stock colors (we use Clubhouse tokens, not Tailwind defaults)
-if grep -nE '(bg|text|border)-(blue|red|green|yellow|gray|slate|zinc)-(400|500|600|700)' "$abs_file" >/dev/null 2>&1; then
-    matches=$(grep -nE '(bg|text|border)-(blue|red|green|yellow|gray|slate|zinc)-(400|500|600|700)' "$abs_file" | head -3)
+matches=$(grep -nE '(bg|text|border)-(blue|red|green|yellow|gray|slate|zinc)-(400|500|600|700)' "$abs_file" | head -3) || true
+if [ -n "$matches" ]; then
     warnings+=("Tailwind-default color tokens detected (PARBAUGHS uses Clubhouse --pb-* tokens):")
     while IFS= read -r line; do warnings+=("  $line"); done <<< "$matches"
 fi
 
 # 2. Generic AI-template copy
-if grep -nE '\b(Get Started|Learn More|Click Here|Welcome to)\b' "$abs_file" >/dev/null 2>&1; then
-    matches=$(grep -nE '\b(Get Started|Learn More|Click Here|Welcome to)\b' "$abs_file" | head -2)
-    warnings+=("Generic AI-template copy detected (rewrite with PARBAUGHS voice — see docs/CADDY_NOTES_STYLE.md):")
+matches=$(grep -nE '\b(Get Started|Learn More|Click Here|Welcome to)\b' "$abs_file" | head -2) || true
+if [ -n "$matches" ]; then
+    warnings+=("Generic AI-template copy detected (rewrite with PARBAUGHS voice - see docs/CADDY_NOTES_STYLE.md):")
     while IFS= read -r line; do warnings+=("  $line"); done <<< "$matches"
 fi
 
 # 3. Default font without explicit token
-if grep -nE 'font-family:\s*(Inter|Roboto|system-ui|-apple-system|sans-serif)' "$abs_file" 2>/dev/null | grep -v 'var(--font-' >/dev/null 2>&1; then
-    matches=$(grep -nE 'font-family:\s*(Inter|Roboto|system-ui|-apple-system|sans-serif)' "$abs_file" | head -2)
+matches=$(grep -nE 'font-family:\s*(Inter|Roboto|system-ui|-apple-system|sans-serif)' "$abs_file" | grep -v 'var(--font-' | head -2) || true
+if [ -n "$matches" ]; then
     warnings+=("Default font-family without token reference (use var(--font-display|body|mono)):")
     while IFS= read -r line; do warnings+=("  $line"); done <<< "$matches"
 fi
 
 # 4. Hardcoded #000 / #fff (CLAUDE.md ban: 'No hardcoded colors except Visual Reference')
-if grep -nE '#000(000)?\b|#fff(fff)?\b' "$abs_file" 2>/dev/null | grep -v 'rgba\|--accent' >/dev/null 2>&1; then
-    matches=$(grep -nE '#000(000)?\b|#fff(fff)?\b' "$abs_file" | head -2)
+matches=$(grep -nE '#000(000)?\b|#fff(fff)?\b' "$abs_file" | grep -v 'rgba\|--accent' | head -2) || true
+if [ -n "$matches" ]; then
     warnings+=("Hardcoded #000/#fff (CLAUDE.md: use Clubhouse tokens; Visual Reference is the only exception):")
     while IFS= read -r line; do warnings+=("  $line"); done <<< "$matches"
 fi
