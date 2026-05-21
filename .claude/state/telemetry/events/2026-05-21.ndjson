@@ -1135,3 +1135,4 @@
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T19:22:17.930035+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T19:23:23.637525+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"timestamp":"2026-05-21T19:25:48.9557473Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"f753ee6eb449","cron_source":"downloads-watcher"}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T19:25:55.591884+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
