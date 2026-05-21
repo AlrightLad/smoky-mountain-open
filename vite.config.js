@@ -2,7 +2,19 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import { readFileSync, readdirSync } from 'fs';
 
-var CORE_FILES = ['utils.js', 'notification-types.js', 'theme.js', 'animate.js', 'handicap.js', 'firebase.js', 'data.js', 'sync.js', 'parcoins.js', 'weather.js', 'caddie.js', 'charts.js', 'analytics.js', 'transitions.js', 'router.js', 'page-shell.js', 'bottomsheet.js', 'haptics.js', 'loading.js', 'crisis-banner.js'];
+var CORE_FILES = ['utils.js', 'notification-types.js', 'theme.js', 'animate.js', 'handicap.js', 'firebase.js', 'data.js', 'sync.js', 'parcoins.js', 'weather.js', 'caddie.js', 'charts.js', 'analytics.js', 'transitions.js', 'router.js', 'page-shell.js', 'bottomsheet.js', 'haptics.js', 'loading.js', 'crisis-banner.js',
+  // M1 Capacitor native runtime abstraction — each module attaches to PB.native.<name>
+  // and provides uniform interface (native via Capacitor plugin OR web fallback).
+  // Load order: index first (declares namespace + runtime detection), then sub-modules.
+  'native/index.js',
+  'native/device.js',
+  'native/storage.js',
+  'native/gps.js',
+  'native/camera.js',
+  'native/haptics.js',
+  'native/share.js',
+  'native/push.js'
+];
 
 // Pages needed for initial render (home + settings reachable from nav)
 var IMMEDIATE_PAGES = ['home.js', 'settings.js', 'onboarding.js'];

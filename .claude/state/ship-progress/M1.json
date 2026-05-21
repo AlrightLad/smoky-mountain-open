@@ -1,0 +1,39 @@
+{
+  "ship_id": "M1",
+  "name": "Capacitor harness + native runtime abstraction (iOS Wave 3)",
+  "wave": 3,
+  "status": "complete-baseline",
+  "ship_plan": "docs/agents/ships/M1.md",
+  "spec_consumed": [
+    "docs/CLUBHOUSE_SPEC-4-Wave3-implementation.md (578 lines — Wave 3 implementation overview, § 7.4 native helper architecture)"
+  ],
+  "implementation": {
+    "modules": [
+      "capacitor.config.json — appId=com.parbaughs.app, appName=Parbaughs, webDir=dist",
+      "src/core/native/index.js — runtime detection + namespace declaration",
+      "src/core/native/device.js — platform/OS/model info",
+      "src/core/native/storage.js — key-value persistence (Preferences plugin → localStorage)",
+      "src/core/native/gps.js — geolocation (Geolocation plugin → navigator.geolocation)",
+      "src/core/native/camera.js — photo capture (Camera plugin → file picker)",
+      "src/core/native/haptics.js — touch feedback (Haptics plugin → navigator.vibrate)",
+      "src/core/native/share.js — share sheet (Share plugin → Web Share API → clipboard)",
+      "src/core/native/push.js — push notifications architected (Launch Phase B activation)",
+      "vite.config.js — CORE_FILES extended with native/* subdir paths"
+    ],
+    "test_coverage": "Smoke 26/26 chromium — modules load without affecting web flows"
+  },
+  "acceptance_criteria": [
+    { "id": 1, "criterion": "Bundle ID locked at com.parbaughs.app", "status": "PASS", "evidence": "capacitor.config.json appId" },
+    { "id": 2, "criterion": "iOS 16 minimum target", "status": "DEFERRED-TO-XCODE-CONFIG", "evidence": "iOS folder not yet generated (requires macOS + Xcode); minimum target setting lands when npx cap add ios runs on Apple Developer-enrolled machine" },
+    { "id": 3, "criterion": "Native helper modules with web fallback (camera, GPS, haptics, share, device, storage, push)", "status": "PASS", "evidence": "7 modules in src/core/native/ each with native + web paths via PB.native.isNative() detection" },
+    { "id": 4, "criterion": "1:1 native-and-web parity in dev workflow", "status": "PASS", "evidence": "Same module interface, runtime-detection internal — screen code in M2-M6 imports without conditional branches" },
+    { "id": 5, "criterion": "Push architected but not activated", "status": "PASS", "evidence": "src/core/native/push.js — _launchPhaseBActive=false flag gates registration; flip to true at Launch Phase B with Apple Developer + APNs cert" },
+    { "id": 6, "criterion": "Cold launch to first paint ≤1500ms iPhone 12 baseline", "status": "DEFERRED-TO-XCODE-BUILD", "evidence": "Web baseline 65/100 Lighthouse Performance; iOS cold launch measurement requires actual iOS build (macOS/Xcode)" }
+  ],
+  "founder_action_required": [
+    "Apple Developer Program enrollment (LLC + D-U-N-S + Apple Developer Org tier) — parallel workstream, gates M6 + Launch Phase B per spec",
+    "macOS machine + Xcode for npx cap add ios → ios/ project generation → iOS 16 target configuration"
+  ],
+  "outcome": "BASELINE-COMPLETE — Capacitor config + 7 native helper modules + Vite wiring shipped. iOS Xcode project generation + cold-launch measurement deferred to Apple Developer workstream.",
+  "downstream_consumers": "M2 Home tab · M3 Play tab · M4 Stats tab · M5 Feed tab · M6 More tab. All consume PB.native.* uniformly."
+}
