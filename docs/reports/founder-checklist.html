@@ -191,32 +191,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "founder-checklist-v2",
-  "generated_at": "2026-05-21T17:42:21.681474Z",
-  "generated_at_pretty": "2026-05-21 17:42 UTC",
+  "generated_at": "2026-05-21T17:52:21.260813Z",
+  "generated_at_pretty": "2026-05-21 17:52 UTC",
   "items": [
-    {
-      "slug": "staging-firebase-project",
-      "title": "Founder action — Activate parbaughs-staging Firebase project",
-      "category": "money",
-      "severity": "yellow",
-      "blocker": "Firebase project creation requires:\n- Founder Google account authentication (biometric/MFA — AMD-018 item #11)\n- Founder console access (not exposed to agent CLI)\n- Per-project billing setup (Founder financial authority)",
-      "howto": "1. **Open Firebase console:** https://console.firebase.google.com/\n2. **Create new project** named `parbaughs-staging` - Use the same Google account that owns `parbaughs` - Region: us-central1 (match production) - Enable Google Analytics: **No** (staging doesn't need analytics)\n3. **Enable required services:** - Authentication → Sign-in providers → Email/Password ON - Firestore Database → Create d",
-      "walkthrough": "`docs/walkthroughs/staging-firebase-project.md` — opens in your browser. ~4 minutes total:\n- **Step 1** (2 min) — Click \"Create database\" in Firebase console → Firestore enabled\n- **Step 2** (1 min) — Toggle Email/Password ON in Auth providers\n- **Step 3** (1 min) — Paste pre-built `.env.staging` block into PowerShell\nVerify runs automatically when you Mark complete; it confirms the project is reachable via `firebase projects:list`.",
-      "walkthrough_html": "<h1>Walkthrough — Activate parbaughs-staging Firebase project</h1>\n<p><strong>Founder time:</strong> ~5 minutes of console clicks + 1 minute paste.<br>\n<strong>Status (as of 2026-05-21):</strong> Project + Web App created by agent. Firestore/Auth need Founder console enable.</p>\n<hr>\n<h2>What the agent already completed (no action needed)</h2>\n<table>\n<thead>\n<tr>\n<th>Step</th>\n<th>State</th>\n<th>Evidence</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>1. Create <code>parbaughs-staging</code> Firebase project</td>\n<td>DONE</td>\n<td><code>firebase projects:list</code> shows it (project number 608660343453)</td>\n</tr>\n<tr>\n<td>2. Create Web app <code>parbaughs-staging-web</code></td>\n<td>DONE</td>\n<td>App ID <code>1:608660343453:web:c64f8ec9d09fd4c84a2274</code></td>\n</tr>\n<tr>\n<td>3. Pull SDK config</td>\n<td>DONE</td>\n<td>API key + authDomain + storageBucket captured below</td>\n</tr>\n<tr>\n<td>4. <code>.firebaserc</code> multi-project map</td>\n<td>DONE</td>\n<td><code>default=parbaughs · production=parbaughs · staging=parbaughs-staging</code></td>\n</tr>\n<tr>\n<td>5. <code>scripts/deploy.sh</code> honors <code>--target=staging</code></td>\n<td>DONE</td>\n<td>pre-existing</td>\n</tr>\n<tr>\n<td>6. <code>docs/deployment-environments.md</code></td>\n<td>DONE</td>\n<td>pre-existing</td>\n</tr>\n</tbody>\n</table>\n<p>What's left is <strong>two console enables</strong> (Firestore + Auth) because Google's API gate denies agent-side calls without elevated console session.</p>\n<hr>\n<h2>Step 1 — Enable Firestore (2 min)</h2>\n<ol>\n<li>Open: <a href=\"https://console.firebase.google.com/project/parbaughs-staging/firestore\">https://console.firebase.google.com/project/parbaughs-staging/firestore</a></li>\n<li>Click <strong>Create database</strong></li>\n<li><strong>Mode:</strong> Production (start in locked mode; rules deploy will replace this)</li>\n<li><strong>Location:</strong> <code>nam5 (us-central)</code> — match production for low cross-region latency</li>\n<li>Click <strong>Enable</strong></li>\n</ol>\n<p>When the database initialization completes (~30s), Firestore is on.</p>\n<hr>\n<h2>Step 2 — Enable Email/Password authentication (1 min)</h2>\n<p><strong>AMD-018 gate #3 pre-auth scope:</strong> This step authorizes ONLY Email/Password provider for parbaughs-staging. OAuth / SMS / Phone / Anonymous / any other provider require a separate Founder pre-auth record before agent enables them.</p>\n<ol>\n<li>Open: <a href=\"https://console.firebase.google.com/project/parbaughs-staging/authentication/providers\">https://console.firebase.google.com/project/parbaughs-staging/authentication/providers</a></li>\n<li>Click <strong>Get started</strong> (first-time)</li>\n<li>Under <strong>Sign-in providers</strong>, click <strong>Email/Password</strong></li>\n<li>Toggle the first switch <strong>ON</strong> (Email/Password)</li>\n<li>Leave the second switch (Email link) <strong>OFF</strong> — production doesn't use it</li>\n<li>Click <strong>Save</strong></li>\n</ol>\n<hr>\n<h2>Step 3 — Create <code>.env.staging</code> locally (1 min — Founder paste)</h2>\n<p>This file is gitignored (<code>.env*</code> pattern). It only lives on your machine.</p>\n<p>Copy the SDK config from Firebase console:</p>\n<ol>\n<li>Open: <a href=\"https://console.firebase.google.com/project/parbaughs-staging/settings/general\">https://console.firebase.google.com/project/parbaughs-staging/settings/general</a></li>\n<li>Scroll to <strong>Your apps</strong> → <code>parbaughs-staging-web</code></li>\n<li>Click the <strong>Config</strong> radio button under \"SDK setup and configuration\"</li>\n<li>Copy the values shown (apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId)</li>\n</ol>\n<p>Then in PowerShell at the repo root — replace the <code>&lt;paste-from-firebase-console&gt;</code> placeholders below with the values you just copied:</p>\n<pre><code class=\"language-powershell\">@'\n# PARBAUGHS Staging environment — created 2026-05-21\n# Source: docs/walkthroughs/staging-firebase-project.md\nFIREBASE_PROJECT_ID=parbaughs-staging\nFIREBASE_APP_ID=&lt;paste-appId-from-console&gt;\nFIREBASE_API_KEY=&lt;paste-apiKey-from-console&gt;\nFIREBASE_AUTH_DOMAIN=parbaughs-staging.firebaseapp.com\nFIREBASE_STORAGE_BUCKET=parbaughs-staging.firebasestorage.app\nFIREBASE_MESSAGING_SENDER_ID=&lt;paste-messagingSenderId-from-console&gt;\nFIREBASE_PROJECT_NUMBER=&lt;paste-projectNumber-from-console&gt;\n'@ | Out-File -Encoding utf8 -NoNewline .env.staging\n</code></pre>\n<p>Verify the file exists + is gitignored:</p>\n<pre><code class=\"language-powershell\">Test-Path .env.staging                  # True\ngit check-ignore .env.staging           # echoes .env.staging (means: ignored)\n</code></pre>\n<details>\n<summary>About Firebase Web API keys — public-by-design (click to expand)</summary>\n\nFirebase Web API keys identify the project, they don't authenticate the caller. They are designed to be embedded in client bundles where every member can see them. The actual auth boundary is:\n\n1. **Firestore Security Rules** (`firestore.rules`) — enforce who reads/writes what\n2. **Cloud Function authentication** (callable-function context.auth checks)\n3. **App Check** (optional — verifies legitimate app origin)\n\nSee <https://firebase.google.com/docs/projects/api-keys> for the canonical explanation.\n\nThis is why the agent does NOT treat Firebase Web API keys as secrets. The `.env.staging` gitignore is still good hygiene (defense in depth), but no value in the file above is a credential.\n\nBy contrast, things that ARE secrets and require gate-protected.sh handling:\n- Firebase service-account JSON (`scripts/.service-account.json`) — server-side admin auth\n- Cloud Function runtime environment variables containing API keys for paid services\n- Sentry DSN if you tighten DSN rotation\n- OAuth client secrets\n\nFor those, the agent surfaces a Founder action and does not commit them anywhere.\n\n</details>\n\n<hr>\n<h2>Step 4 — Deploy Firestore rules + indexes to staging (1 min — Founder runs)</h2>\n<p>Once Firestore is enabled (Step 1 must finish), these deploys go to staging. <strong>You run these directly in PowerShell</strong> — the agent cannot deploy rules/indexes autonomously (AMD-018 gate #1 + #2 require Founder pre-auth per deploy, and this task only pre-authorizes gate #3 / Email-Password provider). If you want the agent to handle subsequent deploys, file a separate Founder pre-auth for gates #1 + #2 scoped to parbaughs-staging.</p>\n<pre><code class=\"language-powershell\">firebase deploy --only firestore:rules --project staging\nfirebase deploy --only firestore:indexes --project staging\n</code></pre>\n<hr>\n<h2>Step 5 — Verify (auto-runs when you Mark complete)</h2>\n<p>When you click \"Mark complete (copy command)\" on the Founder Checklist, the verify<br>\ncommand runs automatically:</p>\n<pre><code class=\"language-powershell\">firebase projects:list 2&gt;&amp;1 | Select-String parbaughs-staging\n</code></pre>\n<p>Expected output contains <code>parbaughs-staging</code> → verification passes → dashboard<br>\nflips item to \"verified-closed\".</p>\n<hr>\n<h2>Done conditions</h2>\n<ul>\n<li>[x] Project exists in Firebase console (agent verified)</li>\n<li>[x] Web app config captured to walkthrough (agent verified)</li>\n<li>[ ] Firestore enabled (Founder — Step 1)</li>\n<li>[ ] Email/Password auth enabled (Founder — Step 2)</li>\n<li>[ ] <code>.env.staging</code> exists locally (Founder — Step 3)</li>\n<li>[ ] Rules + indexes deployed (Founder authorizes, agent runs — Step 4)</li>\n</ul>\n<p>After all checkboxes are green, the <code>staging-firebase-project</code> item drops off the<br>\nFounder Checklist and W1.I4 (Staging environment) is unblocked.</p>\n<hr>\n<h2>What this unblocks</h2>\n<ul>\n<li><strong>W1.I4</strong> — Wave 1 Iteration 4 (Staging environment) ship</li>\n<li><strong>Wave 2 reveal-moment staging</strong> — test new features in real Firebase before production</li>\n<li><strong>Wave 4 migration testing</strong> — safe schema changes</li>\n<li><strong>Wave 3 TestFlight</strong> — iOS pre-production builds point at staging</li>\n<li><strong>Smoke deploy-and-verify</strong> — automation can hammer staging without affecting members</li>\n</ul>",
-      "verify_command": "if (Test-Path .env.staging) { 'env-ok'; firebase projects:list 2>&1 | Select-String parbaughs-staging } else { 'env-staging-missing' }",
-      "verify_expected": "env-ok[\\s\\S]*parbaughs-staging",
-      "time_estimate": "2 min",
-      "unblocks": "W1",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/staging-firebase-project.md",
-      "lifecycle": "open",
-      "lifecycle_meta": {
-        "marked_at": null,
-        "verified_at": null,
-        "verification_status": null,
-        "verify_output_excerpt": null
-      }
-    },
     {
       "slug": "sentry-signup",
       "title": "Founder action — Sign up for Sentry (free tier, no credit card)",
@@ -265,12 +242,6 @@
     }
   ],
   "closed_recently": [
-    {
-      "slug": "d31-zero-critical-decision",
-      "title": "D31 zero-CRITICAL — Founder decision required",
-      "status": "closed",
-      "verified_at": null
-    },
     {
       "slug": "dashboard-completion-verification",
       "title": "FOUNDER VERIFICATION PACKET — dashboard-completion-spec-2026-05-18",
@@ -324,17 +295,23 @@
       "title": "Founder action — Silence + re-enable PARBAUGHS cron tasks (ONE TIME)",
       "status": "closed",
       "verified_at": null
+    },
+    {
+      "slug": "staging-firebase-project",
+      "title": "Founder action — Activate parbaughs-staging Firebase project",
+      "status": "verified-closed",
+      "verified_at": "2026-05-21T17:45:27Z"
     }
   ],
   "counts": {
-    "open": 3,
-    "money": 3,
+    "open": 2,
+    "money": 2,
     "account": 0,
     "physical": 0,
     "red": 0,
-    "yellow": 1,
+    "yellow": 0,
     "green": 2,
-    "closed_total": 16
+    "closed_total": 17
   }
 }
     </script>

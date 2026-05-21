@@ -1,7 +1,15 @@
 {
     "schema_version":  1,
-    "updated_at":  "2026-05-21T16:25:43Z",
+    "updated_at":  "2026-05-21T17:45:25Z",
     "items":  {
-
+                  "staging-firebase-project":  {
+                                                   "status":  "verified-closed",
+                                                   "marked_at":  "2026-05-21T17:45:25Z",
+                                                   "verify_command":  "if (Test-Path .env.staging) { \u0027env-ok\u0027; firebase projects:list 2\u003e\u00261 | Select-String parbaughs-staging } else { \u0027env-staging-missing\u0027 }",
+                                                   "verify_expected":  "env-ok[\\s\\S]*parbaughs-staging",
+                                                   "verified_at":  "2026-05-21T17:45:27Z",
+                                                   "verify_output_excerpt":  "env-ok\r\n\r\n\u001b[90mΓöé\u001b[39m Parbaughs Staging    \u001b[90mΓöé\u001b[39m \u001b[36m\u001b[1mparbaughs-staging (current)\u001b[22m\u001b[39m \u001b[90mΓöé\u001b[39m 608660343453   \u001b[90mΓöé\u001b[39m \u001b[33m[Not specified]\u001b[39m      \u001b[90mΓöé\u001b[39m",
+                                                   "verification_status":  "verified-closed"
+                                               }
               }
 }

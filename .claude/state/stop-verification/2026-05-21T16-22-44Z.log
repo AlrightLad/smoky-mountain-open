@@ -1,0 +1,14 @@
+=== Stop verification 2026-05-21T16-22-44Z ===
+Repo: C:/Users/Zach/smoky-mountain-open
+3af4aafa499026c5ec985a6cf5b131f26a0f5e81
+ M .claude/state/aggregates/dashboard-smoke-latest.json
+ M .claude/state/aggregates/test-health.json
+ M .claude/state/founder-checklist-state.json
+ M .claude/state/heartbeats/regen-all-last-pass.json
+ M .claude/state/telemetry/aggregates/.token-usage-cursor.json
+ M .claude/state/telemetry/aggregates/current-snapshot.json
+ M .claude/state/telemetry/aggregates/token-usage-snapshot.json
+ M .claude/state/telemetry/events/2026-05-21.ndjson
+ M docs/reports/founder-checklist.html
+?? .claude/state/stop-verification/
+=== End ===

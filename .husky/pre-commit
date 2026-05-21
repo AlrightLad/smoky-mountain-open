@@ -117,6 +117,12 @@ if [ -n "$DASHBOARD_PATHS" ]; then
       python "scripts/$s.py" > /dev/null 2>&1 || true
     fi
   done
+  # dry-run-regen-ops-views.py writes proposals/amendments/escalations/discussion-bubbles
+  # data blocks. Same root-cause class as sessions/founder-checklist — template overwrites
+  # zeroed the file until next post-commit. Repopulate inside pre-commit window.
+  if [ -f "scripts/dry-run-regen-ops-views.py" ]; then
+    python scripts/dry-run-regen-ops-views.py > /dev/null 2>&1 || true
+  fi
 
   if ! node tests/dashboard-smoke/run.js > /tmp/dashboard-smoke-precommit.log 2>&1; then
     echo ""
