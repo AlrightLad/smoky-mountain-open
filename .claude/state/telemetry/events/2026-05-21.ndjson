@@ -495,3 +495,6 @@
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T10:01:00.364405+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T10:01:01.442035+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"timestamp":"2026-05-21T10:02:13.0151839Z","event_type":"cron.token-sidecar.end","data":{"org_monthly_pct":null,"stale_seconds":null,"estimated_tokens":0,"cron_source":"token-sidecar","duration_seconds":0,"success":true,"claude_invoked":false,"data_source":"none","run_id":"868c454d166f","weekly_pct":null}}
+{"event_type": "session.team-work.summary", "timestamp": "2026-05-21T10:03:01.810216+00:00", "data": {"agent": "engineer", "ship_id": "manual-emit-20260521T100301Z", "tokens_estimated": 0, "note": "post-commit-hook"}, "agent": "engineer", "ship_id": "manual-emit-20260521T100301Z", "cron_source": "manual-session"}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T10:03:02.656813+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T10:03:12.428038+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
