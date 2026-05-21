@@ -403,6 +403,15 @@
             "command": "bash .claude/hooks/skill-approval-gate.sh"
           }
         ]
+      },
+      {
+        "matcher": "mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/hook-14-mcp-health-check.sh"
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -412,6 +421,14 @@
           {
             "type": "command",
             "command": "bash .claude/hooks/post-edit-syntax.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/hook-12-console-log-edit.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/hook-13-design-quality.sh"
           }
         ]
       }

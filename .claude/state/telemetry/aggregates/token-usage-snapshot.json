@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-21T18:09:29.093664+00:00",
+  "generated_at": "2026-05-21T18:12:13.844440+00:00",
   "_meter_status": "wired-real",
   "session_transcripts": {
     "generated_at": "2026-05-21T18:09:28.366928+00:00",
@@ -153,9 +153,9 @@
   },
   "quota_status": {
     "state": "fresh",
-    "as_of": "2026-05-21T18:07:12.8535676Z",
-    "age_seconds": 136,
-    "weekly_tokens": 5757696228,
+    "as_of": "2026-05-21T18:12:12.7714135Z",
+    "age_seconds": 1,
+    "weekly_tokens": 5771622011,
     "weekly_cap": null,
     "weekly_pct": null,
     "org_monthly_tokens": 0,
@@ -751,11 +751,11 @@
     "estimated": 8187220,
     "manual": 0,
     "first_event_at": "2026-04-17T22:45:30.161000+00:00",
-    "last_event_at": "2026-05-21T18:08:40.318000+00:00"
+    "last_event_at": "2026-05-21T18:12:13+00:00"
   },
   "_counts": {
     "real_events": 82,
-    "estimated_events": 3591,
+    "estimated_events": 3593,
     "manual_entries": 0
   }
 }
