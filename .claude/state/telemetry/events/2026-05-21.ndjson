@@ -396,3 +396,6 @@
 {"event_type": "session.team-work.summary", "timestamp": "2026-05-21T08:02:58.901827+00:00", "data": {"agent": "engineer", "ship_id": "manual-emit-20260521T080258Z", "tokens_estimated": 0, "note": "post-commit-hook"}, "agent": "engineer", "ship_id": "manual-emit-20260521T080258Z", "cron_source": "manual-session"}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T08:02:59.785741+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T08:03:09.428403+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T08:03:50.084011+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"timestamp":"2026-05-21T08:04:34.5157881Z","event_type":"cron.overnight-triage.complete","data":{"stdout_lines":10,"duration_seconds":272,"stderr_lines":0,"exit_code":null}}
+{"timestamp":"2026-05-21T08:05:48.7453149Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"83f0446f870c","cron_source":"downloads-watcher"}}
