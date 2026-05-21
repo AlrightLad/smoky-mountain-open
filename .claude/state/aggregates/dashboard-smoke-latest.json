@@ -1,6 +1,6 @@
 {
   "schema_version": "dashboard-smoke-v1",
-  "generated_at": "2026-05-21T20:11:31.353Z",
+  "generated_at": "2026-05-21T20:12:14.946Z",
   "total": 12,
   "passed": 12,
   "results": [
@@ -9,7 +9,7 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 27542,
+        "bodyTextLen": 27557,
         "kpiPopulated": 8,
         "kpiTotal": 8,
         "navLinkCount": 11,
@@ -60,7 +60,7 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 7116,
+        "bodyTextLen": 6917,
         "kpiPopulated": 37,
         "kpiTotal": 38,
         "navLinkCount": 11,
@@ -196,16 +196,23 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 2558,
+        "bodyTextLen": 3164,
         "kpiPopulated": 3,
         "kpiTotal": 3,
         "navLinkCount": 11,
-        "axeViolations": 0,
+        "axeViolations": 1,
         "axeSerious": 0
       },
       "axe": {
-        "violations": [],
-        "total": 0
+        "violations": [
+          {
+            "id": "aria-allowed-role",
+            "impact": "minor",
+            "help": "ARIA role should be appropriate for the element",
+            "count": 3
+          }
+        ],
+        "total": 1
       }
     }
   ]
