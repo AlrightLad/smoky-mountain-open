@@ -14,7 +14,7 @@ var DEFERRED_PAGES = [
   'scorecard.js', 'rounds.js', 'courses.js', 'records.js',
   'teetimes.js', 'range.js', 'activity.js', 'rangelive.js', 'calendar.js',
   'more.js', 'feed.js', 'chat.js', 'dms.js', 'invite.js', 'admin.js',
-  'faq.js', 'caddynotes.js', 'trophyroom.js', 'partygames.js',
+  'faq.js', 'caddynotes.js', 'bugreport.js', 'trophyroom.js', 'partygames.js',
   'syncround.js', 'scramblelive.js', 'seasonrecap.js', 'awards.js',
   'round.js', 'spectator.js', 'shop.js', 'wagers.js', 'social.js', 'bounties.js', 'richlist.js', 'roundhistory.js', 'leagues.js', 'findplayers.js', 'drills.js'
 ];
