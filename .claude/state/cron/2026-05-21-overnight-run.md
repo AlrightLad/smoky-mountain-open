@@ -168,3 +168,97 @@ Critic attestation: **The work product reflects honest reporting against the ove
 ## Exit
 
 Exiting clean per overnight directive. Committing local state changes; NOT pushing (Founder reviews local diff first).
+
+---
+
+# Pass 2 — Mid-day re-fire (same date)
+
+**Started:** 2026-05-21T~12:00Z (re-invocation of the overnight runbook, ~9h after Pass 1 at ~02:40Z)
+**Finished:** 2026-05-21T12:02:16Z
+**Mode:** Autonomous (no Founder available)
+**Disposition:** Both inboxes still empty (same as Pass 1); heartbeat-only path executed again; **round-trip failures: 7** (identical set to Pass 1). Token usage advanced (`all_time real=8,520,738,214 estimated=7,795,140`); telemetry events advanced; dashboard HTMLs regenerated on disk (gitignored). No new failure categories. No prior failures resolved (Founder has not applied 2026-05-20 / Pass 1 recommendations yet).
+
+## Step 1 — FIQ triage (re-check)
+
+`.claude/state/founder-input-queue/` still does not exist (`Glob` returns no files). **FIQ grades distribution:** A=0, B=0, C=0, D=0, F=0. Same as Pass 1.
+
+## Step 2 — Bug-report triage (re-check)
+
+`.claude/state/bug-reports/inbox/` still does not exist; parent `.claude/state/bug-reports/` also absent. **0 reports processed, 0 bubbles opened, 0 proposals authored.** Same as Pass 1.
+
+## Step 3 — Heartbeat (re-run)
+
+Ran `powershell -ExecutionPolicy Bypass -File scripts/regen-all.ps1` a second time.
+
+Sub-step outcomes (same 12 sub-steps complete; round-trip gates the wrapper):
+
+- scan-shipped-proposals: ok
+- aggregate-telemetry: ok
+- aggregate-token-usage: ok
+- inject-health-banners: ok
+- regen-proposals: ok
+- regen-amendments: ok
+- regen-escalations: ok
+- regen-dashboard: ok
+- regen-ops-views: ok
+- regen-main-flows: ok
+- regen-token-usage: ok (`all_time real=8,520,738,214 estimated=7,795,140 manual=0`)
+- regen-index: ok
+- **round-trip-test: FAIL (7 failures)** — identical set:
+  - `lifecycle:shipped-fields: prop=PROP-010`
+  - `lifecycle:shipped-fields: prop=PROP-006`
+  - `theme:dashboard.html: raw hex count 1 > allowed 0`
+  - `protected:main-flows: missing: ['mf-workspace', 'mf-grid', '6-column declared', 'SVG arrows', 'flows list rail', 'steps panel', 'arch-before-rail', 'rail search input', 'rail filter chips', 'rail sources flow_rail']`
+  - `proposal-readiness:markers: 1 issues`
+  - `scroll-reachability: exit 1`
+  - `escalations:lifecycle: 3 issues`
+
+**Delta vs Pass 1:** 0 net change. All 7 failures carried over from Pass 1 / 2026-05-20 diagnoses — same root causes, same fix shapes. No new failure categories surfaced this pass. No prior failures cleared. Token usage between Pass 1 (`real=7,922,271,729`) and Pass 2 (`real=8,520,738,214`) increased by ~598M ticks of estimator activity — consistent with the ~12 cron-routine fires (telemetry + watcher commits at 02:30→11:55Z) recorded since Pass 1; no anomalous burn.
+
+User-context-gate WARN drift advanced from 8666.2 min (Pass 1) to 9234.2 min (Pass 2). Still WARN, still not blocking.
+
+**Heartbeat side-effects that DID land this pass:**
+
+- `.claude/state/telemetry/aggregates/current-snapshot.json` re-refreshed
+- `.claude/state/telemetry/aggregates/token-usage-snapshot.json` + `.token-usage-cursor.json` advanced
+- `.claude/state/telemetry/events/2026-05-21.ndjson` appended
+- `.claude/state/heartbeats/watcher-last-run.json` updated
+- Dashboard HTMLs regenerated on disk (gitignored)
+
+**Rollback note:** Same benign `pathspec 'docs/reports/dashboard.html' did not match any file(s) known to git` errors from `regen-all.ps1:104` on round-trip-fail rollback path. Dashboards are gitignored per 2026-05-14 directive; expected behavior, not a bug.
+
+## Step 3b — Wellness refresh (re-check)
+
+No subagent participated in Pass 2 either (heartbeat-only path; FIQ + bug-report inboxes still empty). No wellness state updates required. `.claude/state/wellness/engineer.json` remains the V6 dry-run synthetic instance.
+
+## Step 4 — Session journal
+
+Appended to this same file (per runbook directive of one `.claude/state/cron/<YYYY-MM-DD>-overnight-run.md` per date).
+
+## Step 5 — Blockers requiring Founder attention (re-stated)
+
+No change from Pass 1's priority order. Repeated here for index continuity:
+
+1. **(carry-over)** Update `tests/round-trip-test.py:1463-1553` `mf_checks` block to match the new vertical-expandable-flow-list paradigm in `docs/reports/main-flows.html` (Founder-directed iter6 recreate on 2026-05-20). Sentinel spec staleness, not a regression.
+2. **(carry-over)** Investigate `scroll-reachability` failure — run `node scripts/visual-audit/verify-scroll-reachability.mjs` standalone to surface which exact surface fails (`iter-8-dashboard-bottom.png` hypothesis from Pass 1).
+3. **(carry-over)** `mkdir -p .claude/state/escalations/{approved,deferred,rejected}` + `.gitkeep` files to satisfy `escalations:lifecycle` 3 missing directories.
+4. **(carry-over)** Delete or rewrite stale `.claude/state/proposals/shipped/PROP-006.json` + `PROP-010.json` deferral-marker sidecars. Clears 3 failures simultaneously (lifecycle × 2 + proposal-readiness × 1).
+5. **(carry-over)** Replace `#1a2b25` in `templates/dashboards/dashboard.template.html` (or `scripts/regen-dashboard.py`) with appropriate `var(--*)` token.
+6. **(soft-warn)** `user-context-gate` drift 9234.2 min (~6.4 days). Founder-driven `node scripts/visual-audit/founder-context-capture.mjs` when convenient.
+7. **No PROP-NNN authored, no FIQ entries graded, no bug reports processed** — both inboxes empty for both passes. Per overnight discipline, no autonomous PROP authorship from heartbeat observations.
+
+## Critic metric-integrity attestation (METRIC_INTEGRITY_PROTOCOL § 3.1) — Pass 2
+
+**Verdict: HONEST.**
+
+- **Bug reports diagnosed?** None to diagnose (inbox path absent). Heartbeat failures match Pass 1 set exactly; not re-diagnosed redundantly to pad output — explicitly named "identical set" with reference back to Pass 1.
+- **Proposals cite specific evidence?** Zero proposals authored. Honest count.
+- **FIQ grades honest?** Zero entries graded. Honest count.
+
+Cross-check (Protocol § 2 Rule 3): heartbeat ran end-to-end in ~30s; all 12 sub-steps before round-trip succeeded; round-trip failure list verbatim from script output; token-usage delta arithmetic explicit (598M ticks attributable to ~12 cron fires between passes; no anomaly). No fabricated finding, no inflated count, no regenerated text where reference would do. Carry-over disposition is named and not re-diagnosed.
+
+Critic attestation: **Pass 2 reflects honest re-run of the heartbeat boundary against an unchanged inbox. The Pass 1 diagnostics remain the canonical record for Founder application; Pass 2's value is the refreshed telemetry/dashboards and the time-stamped re-verification that no inbox entries arrived in the 9h gap. No metric was gamed; no carry-over failure was silently dropped; no resolution was claimed that did not happen. Heartbeat boundary is the substantive output.**
+
+## Exit (Pass 2)
+
+Exiting clean. Committing local state changes; NOT pushing.
