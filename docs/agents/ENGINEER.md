@@ -168,3 +168,59 @@ Engineer does NOT carry session memory across ships. Start fresh by reading comm
 5. Vite-split: version bumps need utils.js APP_VERSION AND package.json AND sw.js CACHE_NAME
 6. firebase.json runtime overrides package.json engines
 7. serviceAccountKey.json gitignored; delete after admin script use
+
+## Credential hygiene (post-INC-2026-05-21-001)
+
+**NEVER inline real credentials in any committed file.** This includes:
+
+- Firebase Web SDK config (`apiKey`, `appId`, `messagingSenderId`) - even though
+  Firebase Web keys are "public-by-design" they leave a leak-pattern trail that
+  conditions the team to do the same with truly-private credentials next time
+- Service account JSON contents
+- API keys for any third-party service (Anthropic, Sentry, OpenAI, etc.)
+- OAuth client secrets / refresh tokens
+- Session cookies, JWTs, or any per-user identifier shape
+
+**Walkthroughs use placeholder syntax**: `<copy-from-firebase-console>`,
+`<paste-your-DSN-here>`, `<from-1password>`. The Founder copies from the
+actual source, never from a doc that has the real value.
+
+**Pre-commit secret-scan**: `.husky/pre-commit` runs `secretlint` on every
+staged text file. Commit BLOCKS if any credential pattern is detected. To
+add an intentional exception (e.g. a documented fake test fixture), scope
+it in `.secretlintrc.json`.
+
+**If a credential leaks anyway**: log an incident under
+`.claude/state/incidents/YYYY-MM-DD-credential-leak.md` with severity, blast
+radius, rotation plan, and link to commit SHA(s). The aggregator deducts
+score until incident `status: closed`. Closing requires resolution of every
+listed action item.
+
+## Grind-to-completion discipline (post-INC-2026-05-21-002)
+
+**Never finish a session with dirty tree, watcher RED/yellow, or items
+queued to "future ships" that could be closed now.** Founder direction
+2026-05-21: "you need to work to completion and complete ALL TASK and
+issues you come across not stop and say tell me to go again that's not
+helpful or effective you see the issue you fix it end of story".
+
+Operational discipline:
+- After every commit, verify `git status -s` is empty AND
+  approvals-pipeline.json status == "green". If either fails, KEEP WORKING.
+- Tasks marked "planned WX.X" are NOT permission to stop. Either complete
+  them or continue to the next attached task. Backlog is a continuation,
+  not a stop sign.
+- When an issue surfaces (text overlap, blank page, broken regen, dirty
+  cron output): fix-now, verify-now, commit-now, push-now. Do not stack
+  issues; close each one before the next surfaces.
+- The ONLY legitimate stop conditions are AMD-017 Q1 (A-G) with every
+  queue empty AND working tree clean. Anything else is a false stop.
+
+## Agent self-editing scope (post-2026-05-21 governance update)
+
+`docs/agents/*.md` files are agent-editable (no Founder pre-approval needed)
+EXCEPT the narrow authority-defining list: AMD-018.md, SANITY_HALT.md,
+WAVE_PLAN.md. The agent updates ENGINEER.md, ORCHESTRATOR.md, CRITIC.md
+(etc.) to capture learnings, new rules from incidents, and self-improvement
+discoveries. Every edit must be documented in the active session summary
+with: what changed, why, and effectiveness after the change.
