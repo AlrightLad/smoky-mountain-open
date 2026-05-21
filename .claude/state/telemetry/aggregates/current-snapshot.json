@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-05-21T18:25:05.392468+00:00",
-  "as_of": "2026-05-21T18:25:05.392468+00:00",
+  "generated_at": "2026-05-21T18:27:13.108348+00:00",
+  "as_of": "2026-05-21T18:27:13.108348+00:00",
   "_meter_status": "wired-real",
   "_meter_note": "Token meter is wired to real data via PROP-003.a sidecar (.claude/state/quota-status.json). weekly_tokens reflects the most recent meter reading. See quota_status block for org-monthly percentage + freshness.",
   "quota_status": {
     "state": "fresh",
-    "as_of": "2026-05-21T18:22:12.7803752Z",
-    "age_seconds": 172,
-    "weekly_tokens": 5783214509,
+    "as_of": "2026-05-21T18:27:12.8093209Z",
+    "age_seconds": 0,
+    "weekly_tokens": 5798481364,
     "weekly_cap": null,
     "weekly_pct": null,
     "org_monthly_tokens": 0,
@@ -16,10 +16,10 @@
     "data_source": "auto-derived",
     "_warning": "auto-derived rolling-7d window from session-transcript-summary.by_day_total; run scripts/refresh-quota-manual.ps1 to paste claude.ai % for the claude-ai-anchored reset-boundary view"
   },
-  "weekly_tokens": 5783214509,
+  "weekly_tokens": 5798481364,
   "weekly_tokens_estimated": 0,
   "weekly_tokens_methodology": "measured: cycle.budget.checkpoint deltas + cycle.paused tokens + legacy 'tokens' field. estimated: session.team-work.summary tokens_estimated (operator-asserted, NOT measurements). Both filtered to past 7 days. For ground truth, paste from claude.ai via scripts/refresh-quota-manual.ps1.",
-  "weekly_cost": 138797.15,
+  "weekly_cost": 139163.55,
   "ships_this_week": 15,
   "ships_trend_7d": {
     "labels": [
@@ -287,7 +287,7 @@
     }
   ],
   "_aggregate_counts": {
-    "events_total": 6119,
+    "events_total": 6125,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,

@@ -1,8 +1,8 @@
 {
   "schema_version": "dashboard-smoke-v1",
-  "generated_at": "2026-05-21T18:26:33.176Z",
+  "generated_at": "2026-05-21T18:27:17.016Z",
   "total": 12,
-  "passed": 11,
+  "passed": 12,
   "results": [
     {
       "file": "activity.html",
@@ -142,12 +142,10 @@
     },
     {
       "file": "main-flows.html",
-      "passed": false,
-      "issues": [
-        "body text only 394 chars (min 500)"
-      ],
+      "passed": true,
+      "issues": [],
       "stats": {
-        "bodyTextLen": 394,
+        "bodyTextLen": 3549,
         "kpiPopulated": 0,
         "kpiTotal": 0,
         "navLinkCount": 11,
