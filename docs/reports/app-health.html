@@ -742,9 +742,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T05:35:40.666926Z",
+  "generated_at": "2026-05-21T05:37:35.432070Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 81.0,
+  "overall_score": 80.2,
   "overall_grade": "B+",
   "dimensions": {
     "A1_roadmap": {
@@ -941,9 +941,9 @@
       ]
     },
     "A12_operational": {
-      "score": 90,
-      "status": "green",
-      "label": "pipeline=green · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "score": 75,
+      "status": "yellow",
+      "label": "pipeline=yellow · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
@@ -954,7 +954,7 @@
       ],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "no-new-files"
+        "watcher_exit_reason": "skip-dirty"
       }
     }
   },
@@ -982,6 +982,12 @@
       "where": "tests/e2e/flows/01-all-users-baseline.spec.js + 06-notifications-*.spec.js",
       "what_action": "Diagnose emulator-Auth port wiring: (1) `firebase init emulators` and confirm auth port; (2) ensure tests/e2e/_fixtures/ calls connectAuthEmulator(); (3) verify Node 22 vs 24 mismatch warning resolved",
       "dimension": "A11_testing"
+    },
+    {
+      "what": "6 of last 10 cron watcher runs hit skip-dirty",
+      "where": "scripts/cron/logs/*-downloads-watcher.log",
+      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
+      "dimension": "A12_operational"
     }
   ],
   "founder_attention": [],
@@ -1009,12 +1015,18 @@
       "where": "tests/e2e/flows/01-all-users-baseline.spec.js + 06-notifications-*.spec.js",
       "what_action": "Diagnose emulator-Auth port wiring: (1) `firebase init emulators` and confirm auth port; (2) ensure tests/e2e/_fixtures/ calls connectAuthEmulator(); (3) verify Node 22 vs 24 mismatch warning resolved",
       "dimension": "A11_testing"
+    },
+    {
+      "what": "6 of last 10 cron watcher runs hit skip-dirty",
+      "where": "scripts/cron/logs/*-downloads-watcher.log",
+      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
+      "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "8bdb0d30",
-    "subject": "[smoke-log] multi-browser update: chromium 26/26, firefox 26/26, webkit 22/26 + webkit-mobile 23/26 (7 known B.43 timing flakes, NOT functional regressions). 97/104 = 93.3%.",
-    "committed_at": "2026-05-21T01:35:25-04:00",
+    "sha": "0afc7dca",
+    "subject": "[session] final state: B+ (81.0). 7 GREEN / 3 yellow / 1 RED (A3 Founder-gated). A6 73->81 via ADRs Â· A12 60->90 via skip-dirty resolution. 24 ships tracked.",
+    "committed_at": "2026-05-21T01:37:20-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
