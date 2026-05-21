@@ -62,10 +62,16 @@ try {
     // Offline persistence disabled — causes stale IndexedDB cache issues for a real-time community app.
     // Firestore real-time listeners handle live sync; server is always authoritative.
     if (window.location.search.indexOf("emulator=1") !== -1) {
-      db.useEmulator("localhost", 8080);
-      auth.useEmulator("http://localhost:9099", { disableWarnings: true });
+      // 2026-05-21 (Goal 2 A11 smoke fix hypothesis): use 127.0.0.1 not
+      // localhost. Windows + Node 20+ resolves `localhost` to ::1 (IPv6)
+      // by default; Firebase auth emulator binds to 127.0.0.1 (IPv4) only.
+      // Result: auth/network-request-failed across all smoke tests.
+      // The Firestore emulator binds dual-stack so 8080 was fine, but
+      // 9099 isn't dual-stack in older firebase-tools versions.
+      db.useEmulator("127.0.0.1", 8080);
+      auth.useEmulator("http://127.0.0.1:9099", { disableWarnings: true });
       window._pbEmulator = true;
-      pbLog("[FB] Emulator mode — Firestore :8080, Auth :9099");
+      pbLog("[FB] Emulator mode — Firestore 127.0.0.1:8080, Auth 127.0.0.1:9099");
     }
     firebaseAvailable = true;
     pbLog("[FB] Ready");

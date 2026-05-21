@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "node scripts/lint.js",
+    "lint": "eslint src/ scripts/ --ext .js",
     "verify": "node scripts/verify.js",
     "verify:ci": "node scripts/verify.js --json --fail-fast",
     "verify:drift": "node scripts/verify.js --check=global-vs-scoped",
@@ -23,14 +23,18 @@
     "smoke:headed": "cross-env HEADED=1 node tests/smoke/run.js",
     "smoke:debug": "cross-env HEADED=1 SLOWMO=500 DEVTOOLS=1 node tests/smoke/run.js",
     "ship-gate": "node scripts/ship-gate.js",
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint:fix": "eslint src/ scripts/ --ext .js --fix"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
     "@firebase/rules-unit-testing": "^5.0.0",
     "@playwright/test": "^1.59.1",
     "acorn": "^8.16.0",
     "cross-env": "^10.1.0",
+    "eslint": "^9.39.4",
     "firebase-admin": "^13.8.0",
+    "globals": "^17.6.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "vite": "^8.0.8"
