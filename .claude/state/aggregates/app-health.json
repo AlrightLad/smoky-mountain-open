@@ -1,8 +1,8 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T03:05:55.616745Z",
+  "generated_at": "2026-05-21T03:06:50.257202Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 78.9,
+  "overall_score": 78.1,
   "overall_grade": "B",
   "dimensions": {
     "A1_roadmap": {
@@ -216,9 +216,9 @@
       ]
     },
     "A12_operational": {
-      "score": 75,
+      "score": 60,
       "status": "yellow",
-      "label": "pipeline=yellow · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
@@ -299,13 +299,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "085cc0e9",
-    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
-    "committed_at": "2026-05-20T23:04:18-04:00",
-    "trigger": "cron",
+    "sha": "079461e1",
+    "subject": "[red-fix] A8 perf 56->65 via vite bundle split (875KB index + 1.1MB deferred.js async). A3 sec 46->56 via pentest report. A10 mobile-first 78 via 07-mobile-viewport.spec.js. Index.html viewport+description+preconnect for a11y/seo.",
+    "committed_at": "2026-05-20T23:06:34-04:00",
+    "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 10
+    "total_files_touched": 7
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
