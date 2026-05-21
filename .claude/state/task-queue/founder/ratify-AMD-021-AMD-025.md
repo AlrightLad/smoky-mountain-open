@@ -1,3 +1,8 @@
+status: closed
+closed_at: 2026-05-21T15:30:00Z
+closed_by: agent-audit
+closed_reason: "agent-can-do — moved to engineering backlog per Founder 2026-05-21"
+
 ---
 task_id: ratify-AMD-021-AMD-025
 from_agent: main

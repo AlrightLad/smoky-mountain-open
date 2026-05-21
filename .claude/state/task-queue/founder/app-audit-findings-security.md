@@ -1,3 +1,8 @@
+status: closed
+closed_at: 2026-05-21T15:20:00Z
+closed_by: agent-audit
+closed_reason: see-classification
+
 # App Audit Findings — Security (A3)
 
 **Authored:** 2026-05-20T23:55Z by Goal 2 audit (audit-spec-2026-05-19).

@@ -1,3 +1,8 @@
+status: closed
+closed_at: 2026-05-21T15:30:00Z
+closed_by: agent-audit
+closed_reason: "agent-can-do — moved to engineering backlog per Founder 2026-05-21"
+
 # Founder action — Tighten security policy in settings.json
 
 **Surfaced:** 2026-05-21 by Goal 2 brutal-honesty audit (A3 Security: 30/100).

@@ -1,3 +1,8 @@
+status: closed
+closed_at: 2026-05-21T15:30:00Z
+closed_by: agent-audit
+closed_reason: "agent-can-do — moved to engineering backlog per Founder 2026-05-21"
+
 # 33-proposal triage — Founder batch-decision packet — 2026-05-19
 
 Per Founder direction 2026-05-19: triage 33 deferred proposals.

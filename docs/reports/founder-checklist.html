@@ -9,13 +9,18 @@
         .fc-page-wrap { max-width: var(--max-content); margin: 0 auto; padding: var(--space-5) var(--space-4); }
         .fc-hero { padding: var(--space-5) 0 var(--space-4); border-bottom: 1px solid var(--border-subtle); margin-bottom: var(--space-5); }
         .fc-hero h1 { font-family: var(--font-display); font-size: 2.5rem; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 var(--space-2); color: var(--accent-claret); }
-        .fc-hero p { color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.5; max-width: 720px; margin: 0; }
+        .fc-hero p { color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.55; max-width: 760px; margin: 0; }
 
-        .fc-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-3); margin-bottom: var(--space-5); }
+        .fc-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: var(--space-3); margin-bottom: var(--space-5); }
         .fc-stat-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-3); }
+        .fc-stat-card.is-red { border-color: rgba(196, 90, 90, 0.4); }
+        .fc-stat-card.is-yellow { border-color: rgba(200, 168, 92, 0.4); }
+        .fc-stat-card.is-green { border-color: rgba(120, 178, 128, 0.4); }
         .fc-stat-label { font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-tertiary); margin-bottom: var(--space-1); }
         .fc-stat-value { font-family: var(--font-display); font-size: 2rem; font-weight: 600; line-height: 1; color: var(--text-primary); }
-        .fc-stat-value.is-blocking { color: var(--accent-claret); }
+        .fc-stat-value.is-red { color: #c45a5a; }
+        .fc-stat-value.is-yellow { color: #c8a85c; }
+        .fc-stat-value.is-green { color: #78b280; }
         .fc-stat-sub { font-size: 0.75rem; color: var(--text-secondary); margin-top: var(--space-1); }
 
         .fc-section-title { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.13em; color: var(--accent-brass); margin: var(--space-5) 0 var(--space-3); font-weight: 600; }
@@ -23,21 +28,29 @@
         .fc-item {
             background: var(--bg-card);
             border: 1px solid var(--border-subtle);
-            border-left: 3px solid var(--accent-brass);
+            border-left: 4px solid var(--accent-brass);
             border-radius: var(--radius-md);
             padding: var(--space-4);
             margin-bottom: var(--space-3);
         }
-        .fc-item.is-money { border-left-color: var(--accent-claret); }
-        .fc-item.is-account { border-left-color: var(--accent-teal); }
-        .fc-item.is-physical { border-left-color: var(--accent-violet); }
+        .fc-item.sev-red { border-left-color: #c45a5a; }
+        .fc-item.sev-yellow { border-left-color: #c8a85c; }
+        .fc-item.sev-green { border-left-color: #78b280; }
 
-        .fc-item-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); margin-bottom: var(--space-2); }
-        .fc-item-title { font-size: 1.0625rem; font-weight: 600; color: var(--text-primary); margin: 0; flex: 1; }
-        .fc-item-tag { font-family: var(--font-mono); font-size: 0.625rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: var(--radius-pill); flex-shrink: 0; }
-        .fc-item-tag.is-money { background: rgba(156,74,74,.18); color: var(--accent-claret); }
-        .fc-item-tag.is-account { background: rgba(74,138,156,.18); color: var(--accent-teal); }
-        .fc-item-tag.is-physical { background: rgba(140,90,180,.18); color: var(--accent-violet); }
+        .fc-item-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); margin-bottom: var(--space-2); flex-wrap: wrap; }
+        .fc-item-title { font-size: 1.0625rem; font-weight: 600; color: var(--text-primary); margin: 0; flex: 1; min-width: 200px; }
+        .fc-item-badges { display: flex; gap: var(--space-2); flex-wrap: wrap; flex-shrink: 0; }
+
+        .fc-badge { font-family: var(--font-mono); font-size: 0.625rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: var(--radius-pill); white-space: nowrap; }
+        .fc-badge.sev-red { background: rgba(196, 90, 90, 0.18); color: #d97676; }
+        .fc-badge.sev-yellow { background: rgba(200, 168, 92, 0.18); color: #dcbf73; }
+        .fc-badge.sev-green { background: rgba(120, 178, 128, 0.18); color: #8fc99c; }
+        .fc-badge.cat-money { background: rgba(156,74,74,.18); color: var(--accent-claret); }
+        .fc-badge.cat-account { background: rgba(74,138,156,.18); color: var(--accent-teal); }
+        .fc-badge.cat-physical { background: rgba(140,90,180,.18); color: var(--accent-violet); }
+        .fc-badge.lc-marked { background: rgba(200,168,92,.22); color: #dcbf73; }
+        .fc-badge.lc-verified { background: rgba(120,178,128,.22); color: #8fc99c; }
+        .fc-badge.lc-failed { background: rgba(196,90,90,.22); color: #d97676; }
 
         .fc-item-blocker { font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.5; margin: 0 0 var(--space-3); padding: var(--space-2) var(--space-3); background: var(--bg-page); border-radius: var(--radius-sm); border-left: 2px solid var(--border-subtle); }
         .fc-item-blocker strong { color: var(--text-primary); }
@@ -46,11 +59,35 @@
         .fc-item-howto { font-size: 0.875rem; color: var(--text-primary); line-height: 1.5; margin: 0; }
         .fc-item-howto code { background: var(--bg-page); padding: 1px 6px; border-radius: 2px; font-size: 0.8125rem; }
 
+        details.fc-walkthrough { margin-top: var(--space-3); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--bg-page); }
+        details.fc-walkthrough > summary { padding: var(--space-2) var(--space-3); cursor: pointer; font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-brass); user-select: none; }
+        details.fc-walkthrough > summary:hover { color: var(--text-primary); }
+        details.fc-walkthrough[open] > summary { border-bottom: 1px solid var(--border-subtle); color: var(--text-primary); }
+        .fc-walk-body { padding: var(--space-3); font-size: 0.875rem; color: var(--text-primary); line-height: 1.55; white-space: pre-wrap; }
+        .fc-walk-body code { background: var(--bg-card); padding: 1px 6px; border-radius: 2px; font-size: 0.8125rem; }
+
+        .fc-actions { display: flex; gap: var(--space-2); margin-top: var(--space-3); flex-wrap: wrap; align-items: center; }
+        .fc-action-btn { font-family: var(--font-mono); font-size: 0.75rem; padding: 8px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); background: var(--bg-page); color: var(--text-primary); cursor: pointer; transition: all 0.15s ease; }
+        .fc-action-btn:hover { background: var(--bg-card); border-color: var(--accent-brass); color: var(--accent-brass); }
+        .fc-action-btn.is-primary { background: var(--accent-moss); color: #0a0a0a; border-color: transparent; font-weight: 600; }
+        .fc-action-btn.is-primary:hover { background: #78b280; color: #000; }
+        .fc-action-btn.is-copied { background: var(--accent-teal); color: #0a0a0a; }
+        .fc-action-help { font-size: 0.75rem; color: var(--text-tertiary); }
+
         .fc-item-impact { display: flex; gap: var(--space-3); margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--border-subtle); font-size: 0.75rem; color: var(--text-secondary); flex-wrap: wrap; }
         .fc-item-impact-cell strong { color: var(--text-primary); font-family: var(--font-mono); font-weight: 600; }
 
+        .fc-verify-output { margin-top: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--bg-page); border-radius: var(--radius-sm); border-left: 2px solid #c45a5a; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); white-space: pre-wrap; max-height: 200px; overflow: auto; }
+
         .fc-empty { padding: var(--space-6); background: var(--bg-card); border: 1px dashed var(--accent-moss); border-radius: var(--radius-md); text-align: center; color: var(--text-secondary); }
         .fc-empty strong { color: var(--accent-moss); }
+        .fc-empty .fc-empty-title { font-size: 1.5rem; color: var(--accent-moss); margin-bottom: var(--space-2); }
+
+        .fc-recently-closed { margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--border-subtle); }
+        .fc-recently-closed-list { display: grid; gap: var(--space-2); }
+        .fc-rc-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.8125rem; color: var(--text-tertiary); padding: var(--space-1) 0; }
+        .fc-rc-item .fc-rc-title { color: var(--text-secondary); }
+        .fc-rc-item .fc-rc-when { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--text-tertiary); }
     </style>
 </head>
 <body class="pb-app">
@@ -77,24 +114,29 @@
         <div class="fc-page-wrap">
             <section class="fc-hero">
                 <h1>Founder Checklist</h1>
-                <p>Only items the orchestration team cannot complete due to software limitations. Each item explains the exact blocker + how to apply. Per Founder rule: the only Founder involvement should be when money needs to be spent OR when biometric / external auth is required.</p>
+                <p>Items where the orchestration team genuinely needs you — money, external auth, or hardware. Each item is rated <strong style="color:#d97676">red (urgent)</strong>, <strong style="color:#dcbf73">yellow (would benefit)</strong>, or <strong style="color:#8fc99c">green (quality lift)</strong>. Click <em>Review walkthrough</em> to see the exact steps, then <em>Mark complete</em> when done — orchestration auto-verifies and updates this list.</p>
             </section>
 
             <section class="fc-stats">
-                <div class="fc-stat-card">
-                    <div class="fc-stat-label">Open items</div>
-                    <div class="fc-stat-value is-blocking" data-fc="open-count">—</div>
-                    <div class="fc-stat-sub">awaiting your action</div>
+                <div class="fc-stat-card is-red">
+                    <div class="fc-stat-label">Red — urgent</div>
+                    <div class="fc-stat-value is-red" data-fc="red-count">—</div>
+                    <div class="fc-stat-sub">blocking downstream work</div>
+                </div>
+                <div class="fc-stat-card is-yellow">
+                    <div class="fc-stat-label">Yellow — benefit</div>
+                    <div class="fc-stat-value is-yellow" data-fc="yellow-count">—</div>
+                    <div class="fc-stat-sub">would improve app</div>
+                </div>
+                <div class="fc-stat-card is-green">
+                    <div class="fc-stat-label">Green — quality</div>
+                    <div class="fc-stat-value is-green" data-fc="green-count">—</div>
+                    <div class="fc-stat-sub">grade / polish</div>
                 </div>
                 <div class="fc-stat-card">
-                    <div class="fc-stat-label">Money required</div>
-                    <div class="fc-stat-value" data-fc="money-count">—</div>
-                    <div class="fc-stat-sub">paid services / accounts</div>
-                </div>
-                <div class="fc-stat-card">
-                    <div class="fc-stat-label">External auth</div>
-                    <div class="fc-stat-value" data-fc="auth-count">—</div>
-                    <div class="fc-stat-sub">biometric / MFA / console login</div>
+                    <div class="fc-stat-label">Closed this batch</div>
+                    <div class="fc-stat-value" data-fc="closed-total">—</div>
+                    <div class="fc-stat-sub">spot-checked + verified</div>
                 </div>
                 <div class="fc-stat-card">
                     <div class="fc-stat-label">Last refreshed</div>
@@ -103,220 +145,145 @@
                 </div>
             </section>
 
-            <h2 class="fc-section-title">Open items</h2>
+            <h2 class="fc-section-title">Open items — sorted by urgency</h2>
             <div id="fc-items">
                 <div class="fc-empty">Loading…</div>
             </div>
+
+            <section class="fc-recently-closed">
+                <h2 class="fc-section-title">Recently closed (spot history)</h2>
+                <div class="fc-recently-closed-list" id="fc-recent"></div>
+            </section>
         </div>
     </main>
 
     <footer class="pb-page-footer">
-        Source: <code>.claude/state/task-queue/founder/</code> ·
+        Source: <code>.claude/state/task-queue/founder/</code> · Mark complete: <code>powershell scripts/founder-mark-complete.ps1 &lt;slug&gt;</code> ·
         <a href="dashboard.html">Dashboard</a> · <a href="sessions.html">Sessions</a>
     </footer>
 
     <script id="report-data" type="application/json">
 {
-  "schema_version": "founder-checklist-v1",
-  "generated_at": "2026-05-21T15:14:32.988185Z",
-  "generated_at_pretty": "2026-05-21 15:14 UTC",
+  "schema_version": "founder-checklist-v2",
+  "generated_at": "2026-05-21T15:26:32.697466Z",
+  "generated_at_pretty": "2026-05-21 15:26 UTC",
   "items": [
     {
-      "title": "App Audit Findings — Architecture (A6)",
-      "category": "account",
-      "blocker": "",
-      "howto": "",
-      "time_estimate": "",
-      "unblocks": "",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/app-audit-findings-architecture.md"
-    },
-    {
-      "title": "App Audit Findings — Code Quality (A5)",
-      "category": "account",
-      "blocker": "",
-      "howto": "",
-      "time_estimate": "",
-      "unblocks": "",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/app-audit-findings-code-quality.md"
-    },
-    {
-      "title": "App Audit Findings — Security (A3)",
-      "category": "account",
-      "blocker": "",
-      "howto": "",
-      "time_estimate": "",
-      "unblocks": "",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/app-audit-findings-security.md"
-    },
-    {
-      "title": "App Audit Findings — Testing Coverage (A11)",
-      "category": "account",
-      "blocker": "",
-      "howto": "",
-      "time_estimate": "2 hour",
-      "unblocks": "",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/app-audit-findings-testing.md"
-    },
-    {
-      "title": "App Audit Findings — UI/UX (A4)",
-      "category": "account",
-      "blocker": "",
-      "howto": "",
-      "time_estimate": "",
-      "unblocks": "",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/app-audit-findings-ui.md"
-    },
-    {
-      "title": "FOUNDER VERIFICATION PACKET — Goal 2 App Audit + App Health Dashboard",
-      "category": "account",
-      "blocker": "",
-      "howto": "",
-      "time_estimate": "4 hour",
-      "unblocks": "",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/app-audit-verification.md"
-    },
-    {
-      "title": "D31 zero-CRITICAL — Founder decision required",
-      "category": "account",
-      "blocker": "",
-      "howto": "",
-      "time_estimate": "",
-      "unblocks": "",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/d31-zero-critical-decision.md"
-    },
-    {
-      "title": "FOUNDER VERIFICATION PACKET — dashboard-completion-spec-2026-05-18",
-      "category": "money",
-      "blocker": "",
-      "howto": "",
-      "time_estimate": "83M",
-      "unblocks": "",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/dashboard-completion-verification.md"
-    },
-    {
-      "title": "ECC GAP-FILL hooks — activation steps for Founder",
-      "category": "account",
-      "blocker": "",
-      "howto": "",
-      "time_estimate": "",
-      "unblocks": "",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/ecc-gap-fill-activation-steps.md"
-    },
-    {
-      "title": "Founder decision — ECC vs PARBAUGHS hook adoption",
-      "category": "money",
-      "blocker": "",
-      "howto": "",
-      "time_estimate": "",
-      "unblocks": "",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/hook-comparison-decision.md"
-    },
-    {
-      "title": "Policy allow-list FINAL — Founder ratification required",
-      "category": "money",
-      "blocker": "",
-      "howto": "",
-      "time_estimate": "",
-      "unblocks": "",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/policy-allow-list-FINAL.md"
-    },
-    {
-      "title": "Policy overpermissiveness ratification — Founder decision required",
-      "category": "account",
-      "blocker": "",
-      "howto": "",
-      "time_estimate": "",
-      "unblocks": "",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/policy-overpermissiveness-ratification.md"
-    },
-    {
-      "title": "33-proposal triage — Founder batch-decision packet — 2026-05-19",
-      "category": "money",
-      "blocker": "",
-      "howto": "",
-      "time_estimate": "",
-      "unblocks": "",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/proposal-triage-2026-05-19.md"
-    },
-    {
-      "title": "ratify-AMD-021-AMD-025",
-      "category": "account",
-      "blocker": "",
-      "howto": "",
-      "time_estimate": "",
-      "unblocks": "",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/ratify-AMD-021-AMD-025.md"
-    },
-    {
-      "title": "Founder ad-hoc directive queue",
-      "category": "account",
-      "blocker": "",
-      "howto": "",
-      "time_estimate": "",
-      "unblocks": "",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/README.md"
-    },
-    {
-      "title": "Tighten security policy in settings.json",
-      "category": "account",
-      "blocker": "`.claude/settings.json` + `.claude/settings.local.json` are on the substrate DENY list for Edit/Write (correct per AMD-018 substrate protection). Agent cannot make these changes directly — Founder must approve + apply.",
-      "howto": "Option A — Direct edit by you: 1. Open `.claude/settings.json` 2. Apply the three changes above 3. Commit: `git commit -am \"[security] tighten Bash(curl *) + add deny rules + Stop hook\"` 4. Run `npx ecc-agentshield scan` to confirm score lift Option B — Authorize agent to apply by writing this in conversation: > \"Apply security-policy-tightening — I authorize the .claude/settings.json edits per ta",
-      "time_estimate": "",
-      "unblocks": "",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/security-policy-tightening.md"
-    },
-    {
-      "title": "set-execution-policy-currentuser",
-      "category": "account",
-      "blocker": "",
-      "howto": "",
-      "time_estimate": "one-time",
-      "unblocks": "",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/set-execution-policy-currentuser.md"
-    },
-    {
-      "title": "Silence + re-enable PARBAUGHS cron tasks (ONE TIME)",
-      "category": "account",
-      "blocker": "The agent can edit files and run cmdlets, but **cannot trigger UAC consent on your behalf** (and even if it could, triggering UAC during your session is exactly what you asked us to avoid). The \"Run as administrator\" + UAC consent must come from you directly.\n\nOnce consented, the rebuild runs unatte",
-      "howto": "1. Open File Explorer to `C:\\Users\\Zach\\smoky-mountain-open\\scripts\\cron\\` 2. **Right-click `silence-cron-LAUNCH.cmd` → \"Run as administrator\"** 3. Approve the **single UAC prompt** that pops up 4. A console window opens, runs the rebuild, then waits for keypress 5. Press any key to close After this, the cron tasks run completely silently — you'll never see them again. The agent can also modify th",
-      "time_estimate": "one-time",
-      "unblocks": "",
-      "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/silence-cron-tasks.md"
-    },
-    {
+      "slug": "staging-firebase-project",
       "title": "Create parbaughs-staging Firebase project",
       "category": "money",
+      "severity": "yellow",
       "blocker": "Firebase project creation requires:\n- Founder Google account authentication (biometric/MFA — AMD-018 item #11)\n- Founder console access (not exposed to agent CLI)\n- Per-project billing setup (Founder financial authority)",
-      "howto": "1. **Open Firebase console:** https://console.firebase.google.com/ 2. **Create new project** named `parbaughs-staging` - Use the same Google account that owns `parbaughs` - Region: us-central1 (match production) - Enable Google Analytics: **No** (staging doesn't need analytics) 3. **Enable required services:** - Authentication → Sign-in providers → Email/Password ON - Firestore Database → Create d",
-      "time_estimate": "",
+      "howto": "1. **Open Firebase console:** https://console.firebase.google.com/\n2. **Create new project** named `parbaughs-staging` - Use the same Google account that owns `parbaughs` - Region: us-central1 (match production) - Enable Google Analytics: **No** (staging doesn't need analytics)\n3. **Enable required services:** - Authentication → Sign-in providers → Email/Password ON - Firestore Database → Create d",
+      "walkthrough": "Step-by-step Founder walkthrough lives in `docs/walkthroughs/staging-firebase-project.md`. Click the source-doc link below to review before starting. The agent has pre-built `.firebaserc`, deploy.sh, and the environment scaffolding — your job is the console click-through (5 min) + paste the API key into `.env.staging` (2 min).",
+      "verify_command": "firebase projects:list 2>&1 | Select-String parbaughs-staging",
+      "verify_expected": "parbaughs-staging",
+      "time_estimate": "5 min",
       "unblocks": "W1",
       "impact_dim": "",
-      "source_doc": ".claude/state/task-queue/founder/staging-firebase-project.md"
+      "source_doc": ".claude/state/task-queue/founder/staging-firebase-project.md",
+      "lifecycle": "open",
+      "lifecycle_meta": {
+        "marked_at": null,
+        "verified_at": null,
+        "verification_status": null,
+        "verify_output_excerpt": null
+      }
+    },
+    {
+      "slug": "hook-comparison-decision",
+      "title": "Founder decision — ECC vs PARBAUGHS hook adoption",
+      "category": "money",
+      "severity": "green",
+      "blocker": "",
+      "howto": "",
+      "walkthrough": "This is a taste-call: agent has shortlisted 4 ECC hooks worth adopting (MCP health-check, design-quality, console.log warning, cost-tracker — defer). Full head-to-head detail in `.claude/state/dashboard-audit-2026-05-18/HOOK-COMPARISON.md`. Open the source doc to review individual hook descriptions + decline-or-accept boxes. No urgency — agent has not been blocked on this decision, but addressing it lifts Code Quality (A5) by ~5 points.\n---",
+      "verify_command": "",
+      "verify_expected": "",
+      "time_estimate": "",
+      "unblocks": "",
+      "impact_dim": "",
+      "source_doc": ".claude/state/task-queue/founder/hook-comparison-decision.md",
+      "lifecycle": "open",
+      "lifecycle_meta": {
+        "marked_at": null,
+        "verified_at": null,
+        "verification_status": null,
+        "verify_output_excerpt": null
+      }
+    }
+  ],
+  "closed_recently": [
+    {
+      "slug": "d31-zero-critical-decision",
+      "title": "D31 zero-CRITICAL — Founder decision required",
+      "status": "closed",
+      "verified_at": null
+    },
+    {
+      "slug": "dashboard-completion-verification",
+      "title": "FOUNDER VERIFICATION PACKET — dashboard-completion-spec-2026-05-18",
+      "status": "closed",
+      "verified_at": null
+    },
+    {
+      "slug": "ecc-gap-fill-activation-steps",
+      "title": "ECC GAP-FILL hooks — activation steps for Founder",
+      "status": "closed",
+      "verified_at": null
+    },
+    {
+      "slug": "policy-allow-list-FINAL",
+      "title": "Policy allow-list FINAL — Founder ratification required",
+      "status": "closed",
+      "verified_at": null
+    },
+    {
+      "slug": "policy-overpermissiveness-ratification",
+      "title": "Policy overpermissiveness ratification — Founder decision required",
+      "status": "closed",
+      "verified_at": null
+    },
+    {
+      "slug": "proposal-triage-2026-05-19",
+      "title": "33-proposal triage — Founder batch-decision packet — 2026-05-19",
+      "status": "closed",
+      "verified_at": null
+    },
+    {
+      "slug": "ratify-AMD-021-AMD-025",
+      "title": "ratify-AMD-021-AMD-025",
+      "status": "closed",
+      "verified_at": null
+    },
+    {
+      "slug": "security-policy-tightening",
+      "title": "Tighten security policy in settings.json",
+      "status": "closed",
+      "verified_at": null
+    },
+    {
+      "slug": "set-execution-policy-currentuser",
+      "title": "set-execution-policy-currentuser",
+      "status": "closed",
+      "verified_at": null
+    },
+    {
+      "slug": "silence-cron-tasks",
+      "title": "Silence + re-enable PARBAUGHS cron tasks (ONE TIME)",
+      "status": "closed",
+      "verified_at": null
     }
   ],
   "counts": {
-    "open": 19,
-    "money": 5,
-    "account": 14,
-    "physical": 0
+    "open": 2,
+    "money": 2,
+    "account": 0,
+    "physical": 0,
+    "red": 0,
+    "yellow": 1,
+    "green": 1,
+    "closed_total": 16
   }
 }
     </script>
@@ -325,44 +292,110 @@
             try {
                 var data = JSON.parse(document.getElementById('report-data').textContent);
                 var items = data.items || [];
+                var counts = data.counts || {};
 
                 function esc(s) { return s == null ? '' : String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
-                function escCode(s) { return esc(s).replace(/`([^`]+)`/g, '<code>$1</code>'); }
+                function fmtInline(s) {
+                    return esc(s).replace(/`([^`]+)`/g, '<code>$1</code>');
+                }
 
-                // Categorize
-                var byCat = { money: 0, account: 0, physical: 0 };
-                items.forEach(function(it) {
-                    var c = (it.category || 'account').toLowerCase();
-                    if (byCat[c] != null) byCat[c]++;
-                });
-
-                document.querySelector('[data-fc="open-count"]').textContent = items.length;
-                document.querySelector('[data-fc="money-count"]').textContent = byCat.money;
-                document.querySelector('[data-fc="auth-count"]').textContent = byCat.account + byCat.physical;
+                document.querySelector('[data-fc="red-count"]').textContent = counts.red || 0;
+                document.querySelector('[data-fc="yellow-count"]').textContent = counts.yellow || 0;
+                document.querySelector('[data-fc="green-count"]').textContent = counts.green || 0;
+                document.querySelector('[data-fc="closed-total"]').textContent = counts.closed_total || 0;
                 document.querySelector('[data-fc="generated"]').textContent = data.generated_at_pretty || (new Date()).toISOString().slice(0, 16).replace('T', ' ');
 
                 var container = document.getElementById('fc-items');
                 if (!items.length) {
-                    container.innerHTML = '<div class="fc-empty"><strong>You\'re clear!</strong><br>No Founder-blocking items right now. Everything the agents needed your input for has been resolved.</div>';
-                    return;
+                    container.innerHTML = '<div class="fc-empty"><div class="fc-empty-title">You\'re clear.</div><strong>0 Founder-blocking items.</strong><br>Every checklist item that was on you has been resolved or verified. Orchestration team is unblocked.</div>';
+                } else {
+                    container.innerHTML = items.map(function(it) {
+                        var sev = (it.severity || 'green').toLowerCase();
+                        var cat = (it.category || 'account').toLowerCase();
+                        var slug = esc(it.slug);
+                        var markCmd = 'powershell -ExecutionPolicy Bypass -File scripts/founder-mark-complete.ps1 ' + slug;
+
+                        var lc = (it.lifecycle || 'open').toLowerCase();
+                        var lcBadge = '';
+                        if (lc === 'marked-complete-by-founder') lcBadge = '<span class="fc-badge lc-marked">marked · verifying</span>';
+                        if (lc === 'verification-failed') lcBadge = '<span class="fc-badge lc-failed">verify failed</span>';
+
+                        var verifyExcerpt = '';
+                        if (lc === 'verification-failed' && it.lifecycle_meta && it.lifecycle_meta.verify_output_excerpt) {
+                            verifyExcerpt = '<div class="fc-verify-output">'
+                                + '<strong style="color:#d97676">Verification output:</strong>\n'
+                                + esc(it.lifecycle_meta.verify_output_excerpt)
+                                + '</div>';
+                        }
+
+                        return '<div class="fc-item sev-' + esc(sev) + '">'
+                             + '<div class="fc-item-head">'
+                             + '<h3 class="fc-item-title">' + esc(it.title || '') + '</h3>'
+                             + '<div class="fc-item-badges">'
+                             + '<span class="fc-badge sev-' + esc(sev) + '">' + esc(sev) + '</span>'
+                             + '<span class="fc-badge cat-' + esc(cat) + '">' + esc(cat) + '</span>'
+                             + lcBadge
+                             + '</div>'
+                             + '</div>'
+                             + (it.blocker ? '<p class="fc-item-blocker"><strong>Why agent can\'t do this:</strong> ' + fmtInline(it.blocker) + '</p>' : '')
+                             + (it.howto ? '<div class="fc-item-section-label">Quick summary</div><p class="fc-item-howto">' + fmtInline(it.howto) + '</p>' : '')
+                             + (it.walkthrough ? '<details class="fc-walkthrough"><summary>Review walkthrough →</summary><div class="fc-walk-body">' + fmtInline(it.walkthrough) + '</div></details>' : '')
+                             + verifyExcerpt
+                             + '<div class="fc-actions">'
+                             +     '<button class="fc-action-btn is-primary" data-mark-cmd="' + esc(markCmd) + '">Mark complete (copy command)</button>'
+                             +     (it.source_doc ? '<a class="fc-action-btn" href="' + esc(it.source_doc) + '" target="_blank" rel="noopener">Open source doc</a>' : '')
+                             +     '<span class="fc-action-help">Paste in PowerShell — verification runs automatically</span>'
+                             + '</div>'
+                             + '<div class="fc-item-impact">'
+                             + (it.time_estimate ? '<span class="fc-item-impact-cell">Time: <strong>' + esc(it.time_estimate) + '</strong></span>' : '')
+                             + (it.unblocks ? '<span class="fc-item-impact-cell">Unblocks: <strong>' + esc(it.unblocks) + '</strong></span>' : '')
+                             + (it.impact_dim ? '<span class="fc-item-impact-cell">Dashboard lift: <strong>' + esc(it.impact_dim) + '</strong></span>' : '')
+                             + '</div>'
+                             + '</div>';
+                    }).join('');
                 }
-                container.innerHTML = items.map(function(it) {
-                    var cat = (it.category || 'account').toLowerCase();
-                    return '<div class="fc-item is-' + esc(cat) + '">'
-                         + '<div class="fc-item-head">'
-                         + '<h3 class="fc-item-title">' + esc(it.title || '') + '</h3>'
-                         + '<span class="fc-item-tag is-' + esc(cat) + '">' + esc(cat) + '</span>'
-                         + '</div>'
-                         + (it.blocker ? '<p class="fc-item-blocker"><strong>Why agent can\'t do this:</strong> ' + escCode(it.blocker) + '</p>' : '')
-                         + (it.howto ? '<div class="fc-item-section-label">How to complete</div><p class="fc-item-howto">' + escCode(it.howto) + '</p>' : '')
-                         + (it.source_doc ? '<div class="fc-item-section-label">Source</div><p class="fc-item-howto"><a href="' + esc(it.source_doc) + '" style="color:var(--accent-brass)">' + esc(it.source_doc) + '</a></p>' : '')
-                         + '<div class="fc-item-impact">'
-                         + (it.time_estimate ? '<span class="fc-item-impact-cell">Time: <strong>' + esc(it.time_estimate) + '</strong></span>' : '')
-                         + (it.unblocks ? '<span class="fc-item-impact-cell">Unblocks: <strong>' + esc(it.unblocks) + '</strong></span>' : '')
-                         + (it.impact_dim ? '<span class="fc-item-impact-cell">Dashboard lift: <strong>' + esc(it.impact_dim) + '</strong></span>' : '')
-                         + '</div>'
-                         + '</div>';
-                }).join('');
+
+                // Mark-complete: copy command to clipboard, swap button label
+                container.addEventListener('click', function(e) {
+                    var btn = e.target.closest('[data-mark-cmd]');
+                    if (!btn) return;
+                    var cmd = btn.getAttribute('data-mark-cmd');
+                    if (!cmd) return;
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(cmd).then(function () {
+                            btn.textContent = 'Command copied — paste in PowerShell';
+                            btn.classList.add('is-copied');
+                            setTimeout(function() {
+                                btn.textContent = 'Mark complete (copy command)';
+                                btn.classList.remove('is-copied');
+                            }, 4500);
+                        });
+                    } else {
+                        var ta = document.createElement('textarea');
+                        ta.value = cmd;
+                        document.body.appendChild(ta);
+                        ta.select();
+                        try { document.execCommand('copy'); } catch (e) {}
+                        document.body.removeChild(ta);
+                        btn.textContent = 'Copied — paste in PowerShell';
+                        btn.classList.add('is-copied');
+                    }
+                });
+
+                // Recently closed
+                var recent = document.getElementById('fc-recent');
+                var closed = data.closed_recently || [];
+                if (!closed.length) {
+                    recent.innerHTML = '<div class="fc-rc-item"><span class="fc-rc-title">No items closed in this batch.</span></div>';
+                } else {
+                    recent.innerHTML = closed.map(function(c) {
+                        var when = c.verified_at || c.closed_at || '';
+                        return '<div class="fc-rc-item">'
+                             + '<span class="fc-rc-title">' + esc(c.title || c.slug) + ' · <code style="color:var(--text-tertiary)">' + esc(c.status || '') + '</code></span>'
+                             + '<span class="fc-rc-when">' + esc(when) + '</span>'
+                             + '</div>';
+                    }).join('');
+                }
             } catch (e) {
                 console.error('Founder Checklist render failed:', e);
                 document.getElementById('fc-items').innerHTML = '<div class="fc-empty">Failed to render: ' + (e && e.message) + '</div>';

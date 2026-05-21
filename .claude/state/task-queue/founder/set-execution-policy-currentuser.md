@@ -5,7 +5,10 @@ to_agent: founder
 created_at: 2026-05-15T02:00:00Z
 priority: HIGH
 type: founder-action
-status: pending
+status: closed
+closed_at: 2026-05-21T15:25:00Z
+closed_by: agent-spotcheck
+closed_reason: "Get-ExecutionPolicy -Scope CurrentUser returns RemoteSigned (already set)"
 related_files:
   - scripts/cron/install-all.ps1
   - scripts/cron/downloads-watcher.ps1

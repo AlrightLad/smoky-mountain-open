@@ -1,3 +1,8 @@
+status: closed
+closed_at: 2026-05-21T15:20:00Z
+closed_by: agent-audit
+closed_reason: see-classification
+
 # D31 zero-CRITICAL — Founder decision required
 
 **Status:** AWAITING FOUNDER APPROVAL — D31 spec criterion structurally blocked by AgentShield 1.5.0 limitation.

@@ -1,8 +1,19 @@
+---
+status: open
+severity: green
+priority: MEDIUM
+walkthrough_doc: ".claude/state/dashboard-audit-2026-05-18/HOOK-COMPARISON.md"
+---
+
 # Founder decision — ECC vs PARBAUGHS hook adoption
 **Date prepared:** 2026-05-18
 **Prepared by:** Claude Code (Engineer/QA)
 **Pair document (full detail):** `.claude/state/dashboard-audit-2026-05-18/HOOK-COMPARISON.md`
 **Status:** AWAITING FOUNDER APPROVAL — no installations happen until you check boxes below.
+
+## Walkthrough
+
+This is a taste-call: agent has shortlisted 4 ECC hooks worth adopting (MCP health-check, design-quality, console.log warning, cost-tracker — defer). Full head-to-head detail in `.claude/state/dashboard-audit-2026-05-18/HOOK-COMPARISON.md`. Open the source doc to review individual hook descriptions + decline-or-accept boxes. No urgency — agent has not been blocked on this decision, but addressing it lifts Code Quality (A5) by ~5 points.
 
 ---
 

@@ -1,3 +1,8 @@
+status: closed
+closed_at: 2026-05-21T15:20:00Z
+closed_by: agent-audit
+closed_reason: see-classification
+
 # Policy overpermissiveness ratification — Founder decision required
 
 **Status:** AWAITING FOUNDER APPROVAL — `Bash(*)` wildcard in `.claude/settings.json` flagged as CRITICAL by AgentShield.

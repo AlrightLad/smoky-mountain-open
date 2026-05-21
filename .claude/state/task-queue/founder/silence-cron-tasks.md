@@ -1,3 +1,8 @@
+status: closed
+closed_at: 2026-05-21T15:20:00Z
+closed_by: agent-audit
+closed_reason: see-classification
+
 # Founder action — Silence + re-enable PARBAUGHS cron tasks (ONE TIME)
 
 **Surfaced:** 2026-05-21 by agent in response to Founder request "they do not run silently on my workstation so if I am browsing or gaming the powershell prompt comes up on my screen".

@@ -1,3 +1,8 @@
+status: closed
+closed_at: 2026-05-21T15:20:00Z
+closed_by: agent-audit
+closed_reason: see-classification
+
 # Policy allow-list FINAL — Founder ratification required
 
 **Status:** FOUNDER-ALLOW-LIST-APPROVED-2026-05-19T03:00:00Z (blanket approval 2026-05-19) — APPLIED to `.claude/settings.json` per Founder direction. Closes 3 of 18 AgentShield CRITICAL findings (validated post-apply via re-scan).

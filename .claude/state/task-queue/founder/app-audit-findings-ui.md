@@ -1,3 +1,8 @@
+status: closed
+closed_at: 2026-05-21T15:30:00Z
+closed_by: agent-audit
+closed_reason: "agent-can-do — moved to engineering backlog per Founder 2026-05-21"
+
 # App Audit Findings — UI/UX (A4)
 
 **Authored:** 2026-05-20T23:55Z by Goal 2 audit.

@@ -1,6 +1,19 @@
+---
+status: open
+severity: yellow
+priority: HIGH
+verify_command: "firebase projects:list 2>&1 | Select-String parbaughs-staging"
+verify_expected: "parbaughs-staging"
+walkthrough_doc: docs/walkthroughs/staging-firebase-project.md
+---
+
 # Founder action — Create parbaughs-staging Firebase project
 
 **Surfaced:** 2026-05-21 by W1.I4 ship scaffolding. Project creation requires Founder console access (AMD-018 gate 3 — auth provider config).
+
+## Walkthrough
+
+Step-by-step Founder walkthrough lives in `docs/walkthroughs/staging-firebase-project.md`. Click the source-doc link below to review before starting. The agent has pre-built `.firebaserc`, deploy.sh, and the environment scaffolding — your job is the console click-through (5 min) + paste the API key into `.env.staging` (2 min).
 
 ## What this unblocks
 
