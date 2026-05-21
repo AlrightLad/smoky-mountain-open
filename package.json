@@ -22,6 +22,8 @@
     "smoke:full": "cross-env BROWSERS=chromium,firefox,webkit,webkit-mobile node tests/smoke/run.js",
     "smoke:headed": "cross-env HEADED=1 node tests/smoke/run.js",
     "smoke:debug": "cross-env HEADED=1 SLOWMO=500 DEVTOOLS=1 node tests/smoke/run.js",
+    "smoke:dashboards": "node tests/dashboard-smoke/run.js",
+    "smoke:all": "npm run smoke && npm run smoke:dashboards",
     "ship-gate": "node scripts/ship-gate.js",
     "prepare": "husky",
     "lint:fix": "eslint src/ scripts/ --ext .js --fix",
