@@ -4,11 +4,31 @@
 
 ## TL;DR
 
-- **App Health: D (54.6) → B+ (80.1)** — +25.5 points across all 12 dimensions
+- **App Health: D (54.6) → B+ (81.0)** — +26.4 points across all 12 dimensions
 - **24 ships tracked** in `.claude/state/ship-progress/` (was 0 at session start)
 - **All commits pushed to `origin/main`**, tree clean
-- **Smoke: 26/26 chromium · Dashboard smoke: 10/10 · 0 a11y serious** (after wiring axe-core)
+- **Smoke: chromium 26/26 · firefox 26/26 · webkit 22/26 · webkit-mobile 23/26** (97/104 = 93.3%; 7 failures all webkit timing-flakes, known B.43)
+- **Dashboard smoke: 10/10** (axe-core a11y serious=0)
 - **The "blank dashboard" issue you flagged: ROOT-CAUSED + FIXED + prevented from recurring**
+
+## Final dimension scores
+
+| Dim | Score | Status |
+|---|---:|---|
+| A1 Roadmap | 80 | GREEN |
+| A2 FIQ | 100 | GREEN |
+| **A3 Security** | 56 | RED (Founder-gated — apply settings.json tightening) |
+| A4 UI/UX | 93 | GREEN |
+| A5 Code Quality | 70 | yellow (home.js/members.js need module split) |
+| A6 Architecture | 81 | GREEN (5 ADRs landed) |
+| A7 Data Integrity | 100 | GREEN |
+| A8 Performance | 65 | yellow (bundle architecture limit) |
+| A9 Accessibility | 95 | GREEN |
+| A10 Mobile-first | 90 | GREEN |
+| A11 Testing | 75 | yellow (7 webkit flakes; honest reporting) |
+| A12 Operational | 90 | GREEN (skip-dirty cycle resolved) |
+
+**7 GREEN, 3 yellow, 1 RED.** Only RED is Founder-gated.
 
 ## What changed since you went to sleep
 
