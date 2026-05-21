@@ -286,7 +286,8 @@
 
         <section class="mt-4">
             <details>
-                <summary class="pb-section-title" style="cursor: pointer;">Deferred <span class="section-count" data-section-count="deferred">—</span> <a href="../../.claude/state/proposals/deferred/" style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--accent-brass); text-decoration: none; margin-left: var(--space-2);" title="Open .claude/state/proposals/deferred/" onclick="event.stopPropagation();">→ archive dir</a></summary>
+                <summary class="pb-section-title" style="cursor: pointer;">Deferred <span class="section-count" data-section-count="deferred">—</span></summary>
+                <a href="../../.claude/state/proposals/deferred/" style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--accent-brass); text-decoration: none; display: inline-block; margin: var(--space-1) 0 var(--space-2);" title="Open .claude/state/proposals/deferred/">→ archive dir</a>
                 <p class="text-muted" style="font-size: 0.8125rem; margin: var(--space-2) 0 var(--space-3);">Founder deferred for later consideration. Un-deferring is a future feature.</p>
                 <div id="proposal-list-deferred"></div>
             </details>
@@ -294,7 +295,8 @@
 
         <section class="mt-4">
             <details>
-                <summary class="pb-section-title" style="cursor: pointer;">Shipped — archive <span class="section-count" data-section-count="shipped">—</span> <a href="../../.claude/state/proposals/shipped/" style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--accent-brass); text-decoration: none; margin-left: var(--space-2);" title="Open .claude/state/proposals/shipped/" onclick="event.stopPropagation();">→ archive dir</a></summary>
+                <summary class="pb-section-title" style="cursor: pointer;">Shipped — archive <span class="section-count" data-section-count="shipped">—</span></summary>
+                <a href="../../.claude/state/proposals/shipped/" style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--accent-brass); text-decoration: none; display: inline-block; margin: var(--space-1) 0 var(--space-2);" title="Open .claude/state/proposals/shipped/">→ archive dir</a>
                 <p class="text-muted" style="font-size: 0.8125rem; margin: var(--space-2) 0 var(--space-3);">Last 50 shown. Append-only audit trail in <code>.claude/state/proposals/shipped-log.md</code>. Each card cites the implementing commit (short sha).</p>
                 <div id="proposal-list-shipped"></div>
             </details>
@@ -302,7 +304,8 @@
 
         <section class="mt-4">
             <details>
-                <summary class="pb-section-title" style="cursor: pointer;">Rejected — archive <span class="section-count" data-section-count="rejected">—</span> <a href="../../.claude/state/proposals/rejected/" style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--accent-brass); text-decoration: none; margin-left: var(--space-2);" title="Open .claude/state/proposals/rejected/" onclick="event.stopPropagation();">→ archive dir</a></summary>
+                <summary class="pb-section-title" style="cursor: pointer;">Rejected — archive <span class="section-count" data-section-count="rejected">—</span></summary>
+                <a href="../../.claude/state/proposals/rejected/" style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--accent-brass); text-decoration: none; display: inline-block; margin: var(--space-1) 0 var(--space-2);" title="Open .claude/state/proposals/rejected/">→ archive dir</a>
                 <p class="text-muted" style="font-size: 0.8125rem; margin: var(--space-2) 0 var(--space-3);">Last 50 shown. Terminal archive.</p>
                 <div id="proposal-list-rejected"></div>
             </details>
@@ -319,7 +322,7 @@
             <div class="collapsible-content">
                 <p class="text-muted" style="font-size: 0.8125rem; margin: var(--space-2) 0 var(--space-3);">If the JSON below is <code>{}</code>, the data block has not yet been swapped. Run <code>python scripts/regen-proposals.py</code> (or <code>scripts/regen-all.ps1</code> for the full pipeline) to repopulate from <code>.claude/state/proposals/</code>.</p>
                 <div class="card">
-                    <pre id="raw-data-display" style="overflow-x: auto; max-height: 400px; color: var(--text-secondary); font-size: 0.75rem;"></pre>
+                    <pre id="raw-data-display" tabindex="0" aria-label="Raw proposal data — scrollable" style="overflow-x: auto; max-height: 400px; color: var(--text-secondary); font-size: 0.75rem;"></pre>
                 </div>
             </div>
         </section>

@@ -36,6 +36,7 @@
     "bundle:scan": "node scripts/scan-bundle.js"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.3",
     "@eslint/js": "^9.39.4",
     "@firebase/rules-unit-testing": "^5.0.0",
     "@lhci/cli": "^0.15.1",

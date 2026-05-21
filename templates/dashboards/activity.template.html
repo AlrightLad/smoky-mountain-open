@@ -128,23 +128,23 @@
                          doc-or-chore, session.team-work.summary, cron.*.end).
                          Dropdown now populates dynamically from the data
                          (see filter-scenario population in the render script). -->
-                    <select id="filter-scenario"><option value="all">All scenarios</option></select>
+                    <select id="filter-scenario" aria-label="Filter by scenario"><option value="all">All scenarios</option></select>
                 </div>
                 <div class="act-filter">
                     <span class="act-filter-label">Agent</span>
-                    <select id="filter-agent"><option value="all">Any agent</option></select>
+                    <select id="filter-agent" aria-label="Filter by agent"><option value="all">Any agent</option></select>
                 </div>
                 <div class="act-filter">
                     <span class="act-filter-label">Ship</span>
-                    <select id="filter-ship"><option value="all">All ships</option></select>
+                    <select id="filter-ship" aria-label="Filter by ship"><option value="all">All ships</option></select>
                 </div>
                 <div class="act-filter">
                     <span class="act-filter-label">Range</span>
-                    <select id="filter-range"><option value="24h" selected>Last 24h</option><option value="7d">Last 7 days</option><option value="30d">Last 30 days</option><option value="all">All time</option></select>
+                    <select id="filter-range" aria-label="Filter by time range"><option value="24h" selected>Last 24h</option><option value="7d">Last 7 days</option><option value="30d">Last 30 days</option><option value="all">All time</option></select>
                 </div>
                 <div class="act-filter">
                     <span class="act-filter-label">Cron noise</span>
-                    <select id="filter-cron"><option value="hide" selected>Hide cron routine</option><option value="show">Show all</option></select>
+                    <select id="filter-cron" aria-label="Filter cron routine visibility"><option value="hide" selected>Hide cron routine</option><option value="show">Show all</option></select>
                 </div>
                 <span class="act-count" id="activity-count-display">— shown</span>
             </div>

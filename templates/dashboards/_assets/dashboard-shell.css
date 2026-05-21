@@ -911,7 +911,10 @@ a.pb-action-badge:hover { filter: brightness(1.15); }
     letter-spacing: 0.1em;
 }
 
-/* Shared input look — applies to .pb-select, .pb-input, .pb-textarea. */
+/* Shared input look — applies to .pb-select, .pb-input, .pb-textarea.
+   2026-05-21 fix: added box-sizing + max-width: 100% so inputs respect
+   their flex-column parent width instead of overflowing 26px to the right
+   (detector caught this as grid-overflow on design-system page). */
 .pb-select,
 .pb-input,
 .pb-textarea {
@@ -924,6 +927,8 @@ a.pb-action-badge:hover { filter: brightness(1.15); }
     font-size: var(--text-sm);
     line-height: 1.4;
     min-width: 140px;
+    max-width: 100%;
+    box-sizing: border-box;
     transition: border-color var(--duration-fast) var(--ease-out),
                 box-shadow var(--duration-fast) var(--ease-out);
 }
