@@ -71,6 +71,26 @@ scripts/__pycache__/
 tests/__pycache__/
 **/*.pyc
 
+# 2026-05-21 repo cleanup: visual-audit output PNGs are regenerable artifacts,
+# not source. Keep .mjs sources, gitignore the PNGs + JSON outputs.
+scripts/visual-audit/2026-*/
+scripts/visual-audit/*.png
+.claude/state/visual-audit-*/
+.claude/state/main-flows-v2/reference-frames/*.png
+.claude/state/main-flows-v2/reference-frames/*.jpg
+.claude/state/main-flows-v2/iter*/
+.claude/state/main-flows-v2/*.png
+.claude/state/main-flows-v2/*.jpg
+.claude/state/user-journey-audits/
+.claude/state/dashboard-audit-*/*.png
+.claude/state/app-audit-*/*.png
+.claude/state/bug-investigation-*/*.png
+.claude/state/audit-2026-*/*.png
+
+# Repo secret scan output — regenerable; pre-commit hook flags excerpts
+.claude/state/security/repo-secret-scan-latest.json
+.claude/state/security/bundle-scan-latest.json
+
 # Per AMD-020 auto-clean — exclude Python bytecode caches from tree
 .playwright-mcp/
 
