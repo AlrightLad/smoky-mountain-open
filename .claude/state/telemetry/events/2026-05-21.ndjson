@@ -1200,3 +1200,5 @@
 {"timestamp":"2026-05-21T20:00:02.6183795Z","event_type":"cron.overnight-triage.complete","data":{"stdout_lines":0,"duration_seconds":0,"stderr_lines":2,"exit_code":null}}
 {"timestamp":"2026-05-21T20:00:48.8818927Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"3c65c3ff07f0","cron_source":"downloads-watcher"}}
 {"timestamp":"2026-05-21T20:00:53.8854989Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"b3c5c38fbe29","cron_source":"downloads-watcher"}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T20:00:55.215097+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T20:01:00.062611+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
