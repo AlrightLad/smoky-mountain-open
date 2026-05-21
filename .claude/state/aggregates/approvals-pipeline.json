@@ -1,7 +1,7 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T19:56:15Z",
-  "generated_at": "2026-05-21T19:56:15Z",
+  "timestamp": "2026-05-21T19:57:14Z",
+  "generated_at": "2026-05-21T19:57:14Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
@@ -9,7 +9,7 @@
   "summary": "watcher errored",
   "as_of": "2026-05-21T19:55:48Z",
   "stale": false,
-  "age_hours": 0.008333333333333333,
+  "age_hours": 0.02333333333333333,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -32,7 +32,7 @@
       "category": "stall",
       "status": "incomplete",
       "name": "2026-05-21T19-55-48Z-downloads-watcher.log",
-      "note": "[19:55:51]   [auto-commit] [dashboard-smoke] dashboard files staged ΓÇö running smoke gate...",
+      "note": "[19:56:34]   [drift-sweep] [dashboard-smoke] dashboard files staged ΓÇö running smoke gate...",
       "when": "2026-05-21T19:55:48Z"
     },
     {
@@ -64,6 +64,6 @@
   "_meta": {
     "watcher_runs_inspected": 10,
     "consecutive_skips": 0,
-    "age_minutes": 0.5
+    "age_minutes": 1.4
   }
 }
