@@ -1,8 +1,8 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T03:04:15.856987Z",
+  "generated_at": "2026-05-21T03:05:55.616745Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 78.5,
+  "overall_score": 78.9,
   "overall_grade": "B",
   "dimensions": {
     "A1_roadmap": {
@@ -165,13 +165,13 @@
       ]
     },
     "A8_performance": {
-      "score": 57,
-      "status": "red",
-      "label": "Lighthouse Performance 57/100 across 6 pages",
+      "score": 65,
+      "status": "yellow",
+      "label": "Lighthouse Performance 65/100 across 6 pages",
       "source": ".claude/state/aggregates/lighthouse-scores.json",
       "weak_points": [
         {
-          "what": "Lighthouse Performance = 57/100 across 6 pages (target: 75+)",
+          "what": "Lighthouse Performance = 65/100 across 6 pages (target: 75+)",
           "where": ".claude/state/aggregates/lighthouse-scores.json",
           "what_action": "Open .lighthouseci/*.html — fix top performance failures per page"
         }
@@ -259,7 +259,7 @@
       "dimension": "A6_architecture"
     },
     {
-      "what": "Lighthouse Performance = 57/100 across 6 pages (target: 75+)",
+      "what": "Lighthouse Performance = 65/100 across 6 pages (target: 75+)",
       "where": ".claude/state/aggregates/lighthouse-scores.json",
       "what_action": "Open .lighthouseci/*.html — fix top performance failures per page",
       "dimension": "A8_performance"
@@ -292,17 +292,17 @@
       "dimension": "A6_architecture"
     },
     {
-      "what": "Lighthouse Performance = 57/100 across 6 pages (target: 75+)",
+      "what": "Lighthouse Performance = 65/100 across 6 pages (target: 75+)",
       "where": ".claude/state/aggregates/lighthouse-scores.json",
       "what_action": "Open .lighthouseci/*.html — fix top performance failures per page",
       "dimension": "A8_performance"
     }
   ],
   "audit_trigger": {
-    "sha": "68595b44",
-    "subject": "Overnight triage 2026-05-21 - 0 reports, 0 proposals, 0 FIQ entries graded",
-    "committed_at": "2026-05-20T23:04:01-04:00",
-    "trigger": "substrate-commit",
+    "sha": "085cc0e9",
+    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
+    "committed_at": "2026-05-20T23:04:18-04:00",
+    "trigger": "cron",
     "is_app_commit": false,
     "app_files_touched": [],
     "total_files_touched": 10

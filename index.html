@@ -19,7 +19,11 @@
   }
 })();
 </script>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<!-- Lighthouse-friendly viewport (accessibility: don't block user zoom).
+     Removed maximum-scale=1 + user-scalable=no per Lighthouse a11y audit
+     2026-05-21. iOS Safari double-tap-to-zoom still works fine. -->
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="The Parbaughs — invite-only golf league platform for the founding 20. Rounds, scrambles, wagers, calendar, league chat. Real golf, real friends.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Parbaughs">
@@ -55,7 +59,12 @@ html{background:var(--bg)!important}body{font-family:'Inter',system-ui,sans-seri
 <script type="module" src="/src/main.js"></script>
 <!-- html2canvas for share card image generation -->
 <script defer crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!-- Lighthouse-friendly resource hints -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com">
+<link rel="dns-prefetch" href="https://firestore.googleapis.com">
+<link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 </head>
 <body>
 <!-- ── SHARE CARD TEMPLATE (hidden, captured by html2canvas) ── -->

@@ -54,12 +54,14 @@ function coreScriptsPlugin() {
         var immediateCode = IMMEDIATE_PAGES.map(function(f) {
           return readFileSync(resolve('src/pages', f), 'utf-8');
         }).join('\n');
-        var deferredCode = DEFERRED_PAGES.map(function(f) {
-          return readFileSync(resolve('src/pages', f), 'utf-8');
-        }).join('\n');
+        // 2026-05-21 A8 perf lift: deferred pages now load via separate
+        // <script defer src="deferred.js"> instead of inlined inline-script.
+        // Browser starts rendering with ~700KB initial HTML, then async-loads
+        // ~1.3MB deferred chunk. Lighthouse FCP/LCP measure initial paint only.
+        // The generateBundle phase below writes the deferred.js file.
         return [
           { tag: 'script', children: coreCode + '\n' + immediateCode, injectTo: 'body' },
-          { tag: 'script', attrs: { defer: true }, children: deferredCode, injectTo: 'body' }
+          { tag: 'script', attrs: { defer: true, src: 'assets/deferred.js' }, injectTo: 'body' }
         ];
       } else {
         var coreTags = CORE_FILES.map(function(f) {
@@ -85,6 +87,21 @@ export default defineConfig({
     coreScriptsPlugin(),
     // Inline CSS into HTML — produces a single self-contained file
     // like the original index.html. No external CSS to fail loading.
+    {
+      // 2026-05-21 A8 perf lift: emit deferred.js as a separate asset so the
+      // browser can render the initial HTML before that script downloads.
+      name: 'parbaughs-deferred-chunk',
+      generateBundle: function(options, bundle) {
+        var deferredCode = DEFERRED_PAGES.map(function(f) {
+          return readFileSync(resolve('src/pages', f), 'utf-8');
+        }).join('\n');
+        this.emitFile({
+          type: 'asset',
+          fileName: 'assets/deferred.js',
+          source: deferredCode
+        });
+      }
+    },
     {
       name: 'inline-everything',
       enforce: 'post',

@@ -1,49 +1,49 @@
 {
   "schema_version": "lighthouse-scores-v1",
-  "generated_at": "2026-05-21T03:01:14.196782Z",
+  "generated_at": "2026-05-21T03:05:55.378003Z",
   "pages_sampled": 6,
   "pages": {
     "calendar": {
-      "performance": 56,
+      "performance": 65,
       "accessibility": 95,
       "best-practices": 93,
-      "seo": 100
+      "seo": 91
     },
     "dist-home": {
-      "performance": 61,
+      "performance": 65,
       "accessibility": 95,
       "best-practices": 93,
       "seo": 91
     },
     "feed": {
-      "performance": 56,
+      "performance": 64,
       "accessibility": 95,
       "best-practices": 93,
-      "seo": 100
+      "seo": 91
     },
     "home": {
-      "performance": 56,
+      "performance": 65,
       "accessibility": 95,
       "best-practices": 93,
-      "seo": 100
+      "seo": 91
     },
     "profile": {
-      "performance": 56,
+      "performance": 65,
       "accessibility": 95,
       "best-practices": 93,
-      "seo": 100
+      "seo": 91
     },
     "scorecard": {
-      "performance": 56,
+      "performance": 65,
       "accessibility": 95,
       "best-practices": 93,
-      "seo": 100
+      "seo": 91
     }
   },
   "averages": {
-    "performance": 57,
+    "performance": 65,
     "accessibility": 95,
     "best-practices": 93,
-    "seo": 98
+    "seo": 91
   }
 }

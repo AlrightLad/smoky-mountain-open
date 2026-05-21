@@ -917,8 +917,12 @@ def a10_mobile_first() -> dict:
         )
 
     # Lighthouse mobile config?
-    lhci_config = ROOT / "lighthouserc.js"
-    has_lhci = lhci_config.exists() or (ROOT / ".lighthouserc.json").exists()
+    has_lhci = (
+        (ROOT / "lighthouserc.js").exists()
+        or (ROOT / "lighthouserc.json").exists()
+        or (ROOT / ".lighthouserc.json").exists()
+        or (AGG / "lighthouse-scores.json").exists()
+    )
     if not has_lhci:
         score -= 12
         weak.append(
