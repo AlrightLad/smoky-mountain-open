@@ -1,0 +1,37 @@
+{
+  "ship_id": "W1.S4",
+  "name": "Round capture core (Sync Round, Scorecard, Round detail, Round History, Rounds page)",
+  "wave": 1,
+  "status": "complete-baseline",
+  "started_at": "2026-05-21T04:50:00Z",
+  "completed_at": "2026-05-21T04:55:00Z",
+  "ship_plan": "docs/agents/ships/W1.S4.md",
+  "spec_consumed": [
+    "docs/CLUBHOUSE_SPEC-HQ-3c-Scorecard.md (278 lines — round detail surface, 4 states: Final/Own-vs-Spectator/Multi-card/Disputed)"
+  ],
+  "implementation": {
+    "modules": [
+      "src/pages/syncround.js (live scoring)",
+      "src/pages/scorecard.js (490 lines — round detail)",
+      "src/pages/round.js (legacy round view)",
+      "src/pages/roundhistory.js (history index)",
+      "src/pages/rounds.js (rounds page — log form + list)",
+      "src/pages/playnow.js (1457 lines — live hole-by-hole scoring)"
+    ],
+    "test_coverage": "tests/smoke/scenarios/s24-26 (rounds page dispatch, round detail manage section, B.44 retroactive timestamp). 26/26 smoke pass."
+  },
+  "acceptance_criteria": [
+    { "id": 1, "criterion": "Round capture flows: live (Play Now) + retroactive (Log Round) + multi-player (Sync Round)", "status": "PASS-baseline", "evidence": "playnow.js + rounds.js + syncround.js cover the 3 flows; v8.22.0 Ship 5+7 hardened retroactive logging" },
+    { "id": 2, "criterion": "Round detail page (scorecard) — final state, hole-by-hole, stats", "status": "PASS-baseline", "evidence": "scorecard.js renders complete view via Router.register('scorecard')" },
+    { "id": 3, "criterion": "Own vs spectator copy variants", "status": "DEFERRED", "evidence": "Visual V1 vs Parbaughs HQ Final v2.html mock pending; current implementation handles both roles but spec-fidelity not yet verified pixel-level" },
+    { "id": 4, "criterion": "Multi-card foursome view", "status": "DEFERRED", "evidence": "Scramble flow exists (scramblelive.js); explicit foursome scorecard view (4 members in one table) not yet a dedicated state" },
+    { "id": 5, "criterion": "Disputed / under review state", "status": "FOLLOW-ON", "evidence": "Dispute infrastructure (Founder review) exists for member reports; round-level dispute UI is a future ship" }
+  ],
+  "smoke_at_close": "26/26 chromium (S24/25/26 directly cover this surface)",
+  "outcome": "BASELINE-COMPLETE — core capture + detail flows work end-to-end; per-state visual V1 verification against canonical mock is a follow-on ship.",
+  "follow_ons": [
+    "Visual V1 against #v-scorecard section of Parbaughs HQ Final v2.html mock (mock not in repo; markdown spec is contract)",
+    "Multi-card foursome scorecard state — combine 4 members in one table",
+    "Disputed/under-review round state UI"
+  ]
+}
