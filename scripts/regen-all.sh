@@ -61,6 +61,8 @@ STEPS=(
     "regen-ops-views|scripts/dry-run-regen-ops-views.py"
     "regen-main-flows|scripts/regen-main-flows.py"
     "regen-token-usage|scripts/regen-token-usage.py"
+    "aggregate-app-health|scripts/aggregate-app-health.py"
+    "regen-app-health|scripts/regen-app-health.py"
     "regen-index|scripts/regen-index.py"
 )
 

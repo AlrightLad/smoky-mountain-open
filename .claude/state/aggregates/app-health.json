@@ -1,0 +1,257 @@
+{
+  "schema_version": "app-health-v1.0",
+  "generated_at": "2026-05-21T00:00:44.568025Z",
+  "source": "scripts/aggregate-app-health.py",
+  "overall_score": 86.6,
+  "overall_grade": "A-",
+  "dimensions": {
+    "A1_roadmap": {
+      "score": 70,
+      "status": "yellow",
+      "label": "0 complete, 0 in flight",
+      "source": ".claude/state/ship-progress/*.json",
+      "weak_points": [
+        {
+          "what": "Only 0 ships marked complete in ship-progress/",
+          "where": ".claude/state/ship-progress/",
+          "what_action": "Continue Wave 1 ships; mark complete via apply-decisions watcher"
+        }
+      ]
+    },
+    "A2_fiq": {
+      "score": 100,
+      "status": "green",
+      "label": "26/26 deployed · 0 pending",
+      "source": ".claude/state/aggregates/fiq-status.json",
+      "weak_points": []
+    },
+    "A3_security": {
+      "score": 80,
+      "status": "green",
+      "label": "Grade B 80/100 · 0 CRITICAL · 20 HIGH",
+      "source": ".claude\\state\\security\\baseline-20260519-031500\\agentshield-post-cleanup.txt",
+      "weak_points": [
+        {
+          "what": "20 HIGH (non-CRITICAL) findings — known acceptable",
+          "where": ".claude\\state\\security\\baseline-20260519-031500\\agentshield-post-cleanup.txt",
+          "what_action": "Triage via task-queue/founder/d31-zero-critical-decision.md"
+        }
+      ]
+    },
+    "A4_uiux": {
+      "score": 80,
+      "status": "green",
+      "label": "3 open / 1 crit / 1 high / 1 med (prior audit)",
+      "source": ".claude/state/app-audit-2026-05-14/SUMMARY.md",
+      "weak_points": [
+        {
+          "what": "3 UI/UX findings open from prior audit",
+          "where": ".claude/state/app-audit-2026-05-14/SUMMARY.md",
+          "what_action": "Lighthouse scans + WCAG audit (Phase 2)"
+        }
+      ]
+    },
+    "A5_code_quality": {
+      "score": 75,
+      "status": "yellow",
+      "label": "0 core + 10 page files over budget",
+      "source": "src/core/, src/pages/ vs AMD-027 budgets",
+      "weak_points": [
+        {
+          "what": "src/pages/home.js is 2738 lines (budget 800)",
+          "where": "src/pages/home.js",
+          "what_action": "Split into modules per AMD-027 budget"
+        },
+        {
+          "what": "src/pages/members.js is 2120 lines (budget 800)",
+          "where": "src/pages/members.js",
+          "what_action": "Split into modules per AMD-027 budget"
+        },
+        {
+          "what": "src/pages/playnow.js is 1457 lines (budget 800)",
+          "where": "src/pages/playnow.js",
+          "what_action": "Split into modules per AMD-027 budget"
+        },
+        {
+          "what": "src/pages/spectator.js is 1136 lines (budget 800)",
+          "where": "src/pages/spectator.js",
+          "what_action": "Split into modules per AMD-027 budget"
+        },
+        {
+          "what": "src/pages/courses.js is 1126 lines (budget 800)",
+          "where": "src/pages/courses.js",
+          "what_action": "Split into modules per AMD-027 budget"
+        }
+      ],
+      "details": {
+        "over_budget_count": 10,
+        "files": [
+          {
+            "file": "src/pages/admin.js",
+            "lines": 985,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/caddynotes.js",
+            "lines": 897,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/chat.js",
+            "lines": 880,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/courses.js",
+            "lines": 1126,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/feed.js",
+            "lines": 823,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/home.js",
+            "lines": 2738,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/members.js",
+            "lines": 2120,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/playnow.js",
+            "lines": 1457,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/rounds.js",
+            "lines": 963,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/spectator.js",
+            "lines": 1136,
+            "budget": 800
+          }
+        ]
+      }
+    },
+    "A6_architecture": {
+      "score": 95,
+      "status": "green",
+      "label": "0 architectural concerns · scan clean (AMD-027 budgets in effect)",
+      "source": ".claude/state/aggregates/architecture-review.json",
+      "weak_points": []
+    },
+    "A7_data_integrity": {
+      "score": 100,
+      "status": "green",
+      "label": "733 lines rules · 26 indexes",
+      "source": "firestore.rules + firestore.indexes.json",
+      "weak_points": []
+    },
+    "A8_performance": {
+      "score": null,
+      "status": "not-measured",
+      "label": "Lighthouse not yet wired",
+      "source": "phase-2-deferred",
+      "weak_points": [
+        {
+          "what": "Performance dimension not yet measured",
+          "where": "scripts/aggregate-app-health.py",
+          "what_action": "Wire Lighthouse CLI; capture 6 key pages; emit lighthouse-scores.json"
+        }
+      ]
+    },
+    "A9_accessibility": {
+      "score": null,
+      "status": "not-measured",
+      "label": "WCAG 2.1 AA scan not yet wired",
+      "source": "phase-2-deferred",
+      "weak_points": [
+        {
+          "what": "Accessibility dimension not yet measured",
+          "where": "scripts/aggregate-app-health.py",
+          "what_action": "Wire axe-core CLI; per-page scan; emit a11y-scores.json"
+        }
+      ]
+    },
+    "A10_mobile_first": {
+      "score": 80,
+      "status": "green",
+      "label": "11 44pt touch-target rules found",
+      "source": "src/styles/*.css grep min-height: 44",
+      "weak_points": [
+        {
+          "what": "Mobile viewport rendering not yet measured at 375px",
+          "where": "tests/e2e/ — no mobile viewport spec yet",
+          "what_action": "Add Playwright mobile-viewport spec (375x812)"
+        }
+      ]
+    },
+    "A11_testing": {
+      "score": 100,
+      "status": "green",
+      "label": "6 specs · 677 LOC (vs ~32000 app LOC)",
+      "source": "tests/e2e/flows/*.spec.js",
+      "weak_points": [
+        {
+          "what": "Smoke 54 failures on baseline tests (FirebaseError: auth/network-request-failed)",
+          "where": "tests/e2e/flows/01-all-users-baseline.spec.js",
+          "what_action": "Diagnose Firebase auth emulator port mismatch + fix in tests/e2e/_fixtures/"
+        },
+        {
+          "what": "No unit test framework wired (vitest/jest)",
+          "where": "package.json — only playwright present",
+          "what_action": "Add vitest for src/core/ unit coverage"
+        }
+      ]
+    },
+    "A12_operational": {
+      "score": 75,
+      "status": "yellow",
+      "label": "watcher last run: skip-dirty",
+      "source": ".claude/state/aggregates/approvals-pipeline.json",
+      "weak_points": [
+        {
+          "what": "watcher last run: skip-dirty",
+          "where": ".claude/state/aggregates/approvals-pipeline.json",
+          "what_action": "Trigger watcher manually + diagnose log"
+        }
+      ],
+      "details": {
+        "watcher_last_status": "PASS",
+        "watcher_exit_reason": "skip-dirty"
+      }
+    }
+  },
+  "attention_items": [
+    {
+      "what": "Only 0 ships marked complete in ship-progress/",
+      "where": ".claude/state/ship-progress/",
+      "what_action": "Continue Wave 1 ships; mark complete via apply-decisions watcher",
+      "dimension": "A1_roadmap"
+    },
+    {
+      "what": "src/pages/home.js is 2738 lines (budget 800)",
+      "where": "src/pages/home.js",
+      "what_action": "Split into modules per AMD-027 budget",
+      "dimension": "A5_code_quality"
+    },
+    {
+      "what": "watcher last run: skip-dirty",
+      "where": ".claude/state/aggregates/approvals-pipeline.json",
+      "what_action": "Trigger watcher manually + diagnose log",
+      "dimension": "A12_operational"
+    }
+  ],
+  "honest_disclosures": [
+    "A8 (Performance) + A9 (Accessibility) deferred to Phase 2: tooling not yet wired (Lighthouse + axe-core).",
+    "A4 (UI/UX) score derived from prior 2026-05-14 audit summary, not live Lighthouse.",
+    "A11 (Testing) score is a spec-LOC-vs-app-LOC proxy until unit-coverage tooling is added.",
+    "A5 (Code quality) is file-size budget compliance only — not cyclomatic, dead-code, or duplication."
+  ]
+}
