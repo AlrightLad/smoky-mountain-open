@@ -1,9 +1,9 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T18:37:34.793473Z",
+  "generated_at": "2026-05-21T18:38:33.247451Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 80.0,
-  "overall_grade": "B",
+  "overall_score": 81.5,
+  "overall_grade": "B+",
   "dimensions": {
     "A1_roadmap": {
       "score": 80,
@@ -194,9 +194,9 @@
       ]
     },
     "A12_operational": {
-      "score": 60,
-      "status": "yellow",
-      "label": "pipeline=red · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "score": 90,
+      "status": "green",
+      "label": "pipeline=green · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
@@ -235,12 +235,6 @@
       "where": "tests/e2e/flows/01-all-users-baseline.spec.js + 06-notifications-*.spec.js",
       "what_action": "Diagnose emulator-Auth port wiring: (1) `firebase init emulators` and confirm auth port; (2) ensure tests/e2e/_fixtures/ calls connectAuthEmulator(); (3) verify Node 22 vs 24 mismatch warning resolved",
       "dimension": "A11_testing"
-    },
-    {
-      "what": "7 of last 10 cron watcher runs hit skip-dirty",
-      "where": "scripts/cron/logs/*-downloads-watcher.log",
-      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
-      "dimension": "A12_operational"
     }
   ],
   "founder_attention": [],
@@ -268,22 +262,16 @@
       "where": "tests/e2e/flows/01-all-users-baseline.spec.js + 06-notifications-*.spec.js",
       "what_action": "Diagnose emulator-Auth port wiring: (1) `firebase init emulators` and confirm auth port; (2) ensure tests/e2e/_fixtures/ calls connectAuthEmulator(); (3) verify Node 22 vs 24 mismatch warning resolved",
       "dimension": "A11_testing"
-    },
-    {
-      "what": "7 of last 10 cron watcher runs hit skip-dirty",
-      "where": "scripts/cron/logs/*-downloads-watcher.log",
-      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
-      "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "b98734b6",
-    "subject": "cron(routine): post-watcher-commit drift sweep (2026-05-21T18:36:33.6038766Z)",
-    "committed_at": "2026-05-21T14:36:33-04:00",
-    "trigger": "cron",
+    "sha": "3693ebb7",
+    "subject": "fix(security): A3 grade B(89) â†’ A(97) â€” pin curl wildcards to specific URLs + complete deny list",
+    "committed_at": "2026-05-21T14:37:35-04:00",
+    "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 6
+    "total_files_touched": 13
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",

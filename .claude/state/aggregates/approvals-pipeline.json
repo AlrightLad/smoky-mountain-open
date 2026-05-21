@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T18:37:13Z",
-  "generated_at": "2026-05-21T18:37:13Z",
+  "timestamp": "2026-05-21T18:38:27Z",
+  "generated_at": "2026-05-21T18:38:27Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "red",
-  "raw_status": "red",
-  "summary": "watcher errored",
+  "status": "green",
+  "raw_status": "green",
+  "summary": "watcher no-new-files 2.7min ago",
   "as_of": "2026-05-21T18:35:48Z",
   "stale": false,
-  "age_hours": 0.02333333333333333,
+  "age_hours": 0.045000000000000005,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -30,13 +30,6 @@
     },
     {
       "category": "stall",
-      "status": "incomplete",
-      "name": "2026-05-21T18-35-48Z-downloads-watcher.log",
-      "note": "[18:36:35]   [drift-sweep] [dashboard-smoke] dashboard files staged ΓÇö running smoke gate...",
-      "when": "2026-05-21T18:35:48Z"
-    },
-    {
-      "category": "stall",
       "status": "skip-dirty",
       "name": "2026-05-21T18-30-48Z-downloads-watcher.log",
       "note": "[18:31:32] SKIP working tree dirty with non-routine after auto-commit: .claude/hooks/hook-13-design-quality.sh",
@@ -48,6 +41,13 @@
       "name": "2026-05-21T18-20-48Z-downloads-watcher.log",
       "note": "[18:20:48] SKIP working tree dirty with non-routine files: .claude/state/stop-verification/2026-05-21T18-20-31Z.log, docs/reports/founder-checklist.html, docs/reports/sessions.html",
       "when": "2026-05-21T18:20:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-21T18-15-48Z-downloads-watcher.log",
+      "note": "[18:15:48] SKIP working tree dirty with non-routine files: .claude/state/dashboard-health/post-commit-hook.log, docs/reports/app-health.html, docs/reports/founder-checklist.html, docs/reports/sessions",
+      "when": "2026-05-21T18:15:48Z"
     }
   ],
   "links": [
@@ -64,6 +64,6 @@
   "_meta": {
     "watcher_runs_inspected": 10,
     "consecutive_skips": 0,
-    "age_minutes": 1.4
+    "age_minutes": 2.7
   }
 }
