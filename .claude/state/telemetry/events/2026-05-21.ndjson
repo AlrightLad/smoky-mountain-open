@@ -4,3 +4,6 @@
 {"event_type": "session.team-work.summary", "timestamp": "2026-05-21T00:24:10.090535+00:00", "data": {"agent": "engineer", "ship_id": "manual-emit-20260521T002410Z", "tokens_estimated": 0, "note": "post-commit-hook"}, "agent": "engineer", "ship_id": "manual-emit-20260521T002410Z", "cron_source": "manual-session"}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T00:24:10.834408+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T00:24:21.430888+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "session.team-work.summary", "timestamp": "2026-05-21T00:35:17.881247+00:00", "data": {"agent": "engineer", "ship_id": "manual-emit-20260521T003517Z", "tokens_estimated": 0, "note": "post-commit-hook"}, "agent": "engineer", "ship_id": "manual-emit-20260521T003517Z", "cron_source": "manual-session"}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T00:35:18.617467+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T00:35:28.284600+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
