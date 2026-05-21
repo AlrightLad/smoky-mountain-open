@@ -1,13 +1,13 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T11:07:14Z",
-  "generated_at": "2026-05-21T11:07:14Z",
+  "timestamp": "2026-05-21T11:42:14Z",
+  "generated_at": "2026-05-21T11:42:14Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "green",
   "raw_status": "green",
   "summary": "watcher no-new-files 1.4min ago",
-  "as_of": "2026-05-21T11:05:48Z",
+  "as_of": "2026-05-21T11:40:49Z",
   "stale": false,
   "age_hours": 0.02333333333333333,
   "counts": {
@@ -41,13 +41,6 @@
       "name": "2026-05-21T10-55-49Z-downloads-watcher.log",
       "note": "[10:55:49] SKIP working tree dirty with non-routine files: .claude/state/stop-decisions/2026-05-21.ndjson",
       "when": "2026-05-21T10:55:49Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-21T10-50-48Z-downloads-watcher.log",
-      "note": "[10:50:49] SKIP working tree dirty with non-routine files: .claude/state/stop-decisions/2026-05-21.ndjson",
-      "when": "2026-05-21T10:50:48Z"
     }
   ],
   "links": [
