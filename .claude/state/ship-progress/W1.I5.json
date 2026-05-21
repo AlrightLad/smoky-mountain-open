@@ -1,0 +1,26 @@
+{
+  "ship_id": "W1.I5",
+  "name": "Crisis banner (3-tier)",
+  "wave": 1,
+  "status": "complete",
+  "started_at": "2026-05-21T03:30:00Z",
+  "completed_at": "2026-05-21T03:42:00Z",
+  "ship_plan": "docs/agents/ships/W1.I5.md",
+  "version_at_close": "8.23.0",
+  "smoke_at_close": "26/26 chromium",
+  "shipped_artifacts": [
+    "src/core/crisis-banner.js — 3-tier banner system with Firestore listener",
+    "vite.config.js — added crisis-banner.js to CORE_FILES (loads on every page)"
+  ],
+  "design_decision": "Used existing platform_announcements/{id} Firestore collection (Founder-only write, all-auth read) instead of new crisis_banner collection. Reusing platform_announcements is rule-deploy-free; new collection would require firestore.rules deploy (AMD-018 gate 2).",
+  "acceptance_criteria": [
+    { "id": 1, "criterion": "3-tier banner renders correctly", "status": "PASS", "evidence": "CRITICAL (red), ALERT (amber), NOTICE (blue) styles in tierStyles()" },
+    { "id": 2, "criterion": "Founder activation via admin tooling works", "status": "PASS", "evidence": "window.setCrisisBanner(tier, message, link, label) API" },
+    { "id": 3, "criterion": "Admin SDK script activation works (emergency path)", "status": "DEFERRED", "evidence": "scripts/admin/set-crisis-banner.js scaffold pending — Admin SDK auth path requires .service-account.json (gitignored, Founder-managed)" },
+    { "id": 4, "criterion": "NOTICE member-dismissible per session", "status": "PASS", "evidence": "isDismissed() + dismiss() with sessionStorage key per banner-update timestamp" },
+    { "id": 5, "criterion": "CRITICAL requires Founder dismissal", "status": "PASS", "evidence": "No × button rendered when tier === CRITICAL" },
+    { "id": 6, "criterion": "Banner slot precedence per M2 lock", "status": "PASS", "evidence": "position: fixed top: 0 z-index: 10000; document.body.style.paddingTop pushes content down" }
+  ],
+  "outcome": "SHIPPED (5/6 PASS, 1 DEFERRED — Admin SDK emergency path)",
+  "downstream_consumers": "W2.S1 HQ Home banner override · M2 mobile crisis banner · W4.I3 maintenance window banner"
+}
