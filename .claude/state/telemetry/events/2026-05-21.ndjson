@@ -1,0 +1,3 @@
+{"event_type": "session.team-work.summary", "timestamp": "2026-05-21T00:04:57.908024+00:00", "data": {"agent": "engineer", "ship_id": "AMD-027", "tokens_estimated": 0, "note": "post-commit-hook"}, "agent": "engineer", "ship_id": "AMD-027", "cron_source": "manual-session"}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T00:04:58.738268+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T00:05:08.458696+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
