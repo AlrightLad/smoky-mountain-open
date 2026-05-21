@@ -22,12 +22,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Rounds reborn</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Log a round from your desk after the fact \u2014 paper scorecard in hand, type it in any time.", tag: "NEW" },
-    { item: "Edit any round you've logged. Fix that mis-keyed hole 7 score, change the format, swap the date.", tag: "NEW" },
-    { item: "Rounds got their own home \u2014 handicap, history, and the log form all live on one page now.", tag: "IMPROVED" },
-    { item: "Round detail has a clear \"Manage round\" section with Edit + Delete grouped together.", tag: "IMPROVED" },
-    { item: "\"Play Now\" no longer in the sidebar. The green live-round cards on Today are how you start or resume a round.", tag: "IMPROVED" },
-    { item: "Retroactive rounds now sort to their actual play date \u2014 log a Tuesday round on Friday and it appears on Tuesday in your feed.", tag: "IMPROVED" }
+    { item: "The Caddy Notes got a fresh layout. Recent Updates shows the last 3 ships, What's in the Bag stays complete, and On the Range hints at what's next without spoiling.", tag: "IMPROVED" }
   ];
 
   currentNotes.forEach(function(r) { h += renderEntry(r); });
@@ -814,8 +809,13 @@ Router.register("caddynotes", function() {
     }
   ];
 
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Past Releases</span></div>';
-  archiveNotes.forEach(function(block) {
+  // W1.I3 restructure: limit "Recent updates" to last 3 releases for clarity.
+  // Older releases are still in archiveNotes (so version history is preserved)
+  // but only the 3 most recent are surfaced in the UI. Members who want deep
+  // history can ask The Caddy. Universal content per locked CTO_INTERFACE.md.
+  h += '<div class="section"><div class="sec-head"><span class="sec-title">Recent Updates</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">The last three ships, in plain language.</div>';
+  archiveNotes.slice(0, 3).forEach(function(block) {
     h += '<div class="card" style="margin-bottom:8px;overflow:hidden">';
     h += '<div onclick="var e=this.nextElementSibling;var c=this.querySelector(\'svg\');var open=e.style.display===\'block\';e.style.display=open?\'none\':\'block\';c.style.transform=open?\'rotate(0deg)\':\'rotate(90deg)\';" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:12px 14px;gap:8px;min-height:48px">';
     h += '<div style="flex:1;min-width:0">';
@@ -872,19 +872,18 @@ Router.register("caddynotes", function() {
   });
   h += '</div></div></div>';
 
-  // On the Range — Coming Soon
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--muted)">On the Range — Coming Soon</span></div>';
+  // W1.I3 restructure: "Coming Soon" trimmed to a vague forward-looking
+  // teaser (4 plain-language directions, no leaks of unshipped specifics).
+  // Cumulative inventory lives in "What's in the Bag" above; this section
+  // is intentionally light on detail per locked governance.
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--muted)">On the Range</span></div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">A few directions we\'re heading. Details land here when they\'re real.</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--muted);line-height:1.8">';
   var upcoming = [
-    "AI Caddie Insights — post-round analysis and practice plans",
-    "Swing Analysis — video upload with AI feedback",
-    "Course GPS & Yardages — front, middle, back of green",
-    "Apple Watch Companion — score entry from your wrist",
-    "Multi-League Support — create and manage your own league",
-    "Public Profiles — opt-in shareable profile links",
-    "Season Pass Cosmetics — limited edition items each season",
-    "Prediction Markets — bet on event outcomes",
-    "Native Mobile App — iOS and Android"
+    "Sharper Clubhouse polish, page by page.",
+    "More ways to play together — scrambles, party games, trips.",
+    "ParCoins economy continues to grow — earn while you play.",
+    "Mobile app on the way for the founding 20."
   ];
   upcoming.forEach(function(u) {
     h += '<div style="padding:2px 0;display:flex;gap:8px;align-items:flex-start"><span style="color:var(--muted2);flex-shrink:0;margin-top:4px"><svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/></svg></span><span>' + u + '</span></div>';
