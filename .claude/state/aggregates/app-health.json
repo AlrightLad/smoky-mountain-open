@@ -1,6 +1,6 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T06:55:38.723477Z",
+  "generated_at": "2026-05-21T07:03:21.807375Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 82.0,
   "overall_grade": "B+",
@@ -196,7 +196,7 @@
     "A12_operational": {
       "score": 100,
       "status": "green",
-      "label": "pipeline=green · 0 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=green · 1 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [],
       "details": {
@@ -259,13 +259,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "ebf19bd6",
-    "subject": "Maintenance run 2026-05-21",
-    "committed_at": "2026-05-21T02:55:24-04:00",
+    "sha": "908a9f6e",
+    "subject": "Overnight triage 2026-05-21 - 0 reports, 0 proposals, 0 FIQ entries graded",
+    "committed_at": "2026-05-21T03:03:07-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 2
+    "total_files_touched": 7
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
