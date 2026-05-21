@@ -289,7 +289,7 @@
             <div class="pb-page-title-row">
                 <div>
                     <h1 class="pb-page-title">App Health</h1>
-                    <p class="pb-page-subtitle">Permanent surface for PARBAUGHS application status. 12 audit dimensions scored 0-100, weighted into an overall grade. Each score traces to its source; each weak point answers WHAT/WHERE/WHAT-ACTION per P10.</p>
+                    <p class="pb-page-subtitle">Permanent surface for PARBAUGHS application status. 12 audit dimensions scored 0-100, weighted into an overall grade. <strong>Refreshes after every commit + every 5 min via cron.</strong> If anything needs you specifically, it shows up at the top in the brass-bordered "Founder action required" panel with exactly WHAT to do and HOW.</p>
                 </div>
             </div>
 
@@ -314,8 +314,155 @@
                 </div>
             </section>
 
+            <!-- Audit schedule panel: explain WHEN this page refreshes -->
+            <section class="ah-schedule" data-schedule-section>
+                <style>
+                    .ah-schedule {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr 1fr;
+                        gap: var(--space-3);
+                        padding: var(--space-3) var(--space-4);
+                        background: var(--bg-page);
+                        border: 1px solid var(--border-subtle);
+                        border-radius: var(--radius-sm);
+                        margin-bottom: var(--space-4);
+                    }
+                    @media (max-width: 720px) {
+                        .ah-schedule { grid-template-columns: 1fr; }
+                    }
+                    .ah-schedule-cell {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 4px;
+                    }
+                    .ah-schedule-label {
+                        font-family: var(--font-mono);
+                        font-size: 0.6875rem;
+                        color: var(--text-tertiary);
+                        text-transform: uppercase;
+                        letter-spacing: 0.08em;
+                    }
+                    .ah-schedule-value {
+                        font-size: 0.875rem;
+                        color: var(--text-primary);
+                        line-height: 1.4;
+                    }
+                    .ah-schedule-value code {
+                        font-family: var(--font-mono);
+                        font-size: 0.75rem;
+                        color: var(--accent-brass);
+                        background: var(--bg-card);
+                        padding: 1px 6px;
+                        border-radius: 2px;
+                    }
+                    .ah-schedule-trigger-app {
+                        display: inline-block;
+                        font-family: var(--font-mono);
+                        font-size: 0.6875rem;
+                        text-transform: uppercase;
+                        letter-spacing: 0.06em;
+                        padding: 2px 8px;
+                        border-radius: var(--radius-pill);
+                        background: rgba(63, 176, 127, 0.18);
+                        color: var(--col-data, #3fb07f);
+                        margin-right: 4px;
+                    }
+                    .ah-schedule-trigger-cron,
+                    .ah-schedule-trigger-substrate {
+                        display: inline-block;
+                        font-family: var(--font-mono);
+                        font-size: 0.6875rem;
+                        text-transform: uppercase;
+                        letter-spacing: 0.06em;
+                        padding: 2px 8px;
+                        border-radius: var(--radius-pill);
+                        background: rgba(212, 168, 87, 0.12);
+                        color: var(--text-tertiary);
+                        border: 1px solid var(--border-subtle);
+                        margin-right: 4px;
+                    }
+                </style>
+                <div class="ah-schedule-cell">
+                    <div class="ah-schedule-label">Last audit</div>
+                    <div class="ah-schedule-value" data-trigger-when>—</div>
+                </div>
+                <div class="ah-schedule-cell">
+                    <div class="ah-schedule-label">Triggered by</div>
+                    <div class="ah-schedule-value" data-trigger-by>—</div>
+                </div>
+                <div class="ah-schedule-cell">
+                    <div class="ah-schedule-label">Next audit</div>
+                    <div class="ah-schedule-value">On next commit, or within 5 min via cron. Refreshes after every PARBAUGHS app commit + wave close.</div>
+                </div>
+            </section>
+
+            <!-- Founder action — only visible if items exist -->
+            <section class="ah-founder-action" data-founder-action-section hidden>
+                <style>
+                    .ah-founder-action {
+                        padding: var(--space-4) var(--space-5);
+                        background: rgba(212, 168, 87, 0.08);
+                        border: 2px solid var(--accent-brass);
+                        border-radius: var(--radius-md);
+                        margin-bottom: var(--space-4);
+                    }
+                    .ah-founder-action-title {
+                        font-family: var(--font-mono);
+                        font-size: 0.8125rem;
+                        letter-spacing: 0.14em;
+                        color: var(--accent-brass);
+                        text-transform: uppercase;
+                        font-weight: 700;
+                        margin-bottom: var(--space-3);
+                    }
+                    .ah-founder-action-sub {
+                        font-size: 0.8125rem;
+                        color: var(--text-secondary);
+                        margin-bottom: var(--space-3);
+                    }
+                    .ah-founder-action-item {
+                        display: grid;
+                        grid-template-columns: 1fr;
+                        gap: 6px;
+                        padding: var(--space-3) var(--space-4);
+                        background: var(--bg-card);
+                        border-radius: var(--radius-sm);
+                        margin-bottom: var(--space-2);
+                        border-left: 3px solid var(--accent-brass);
+                    }
+                    .ah-founder-action-what {
+                        font-size: 1rem;
+                        font-weight: 600;
+                        color: var(--text-primary);
+                    }
+                    .ah-founder-action-where-label,
+                    .ah-founder-action-howto-label {
+                        font-family: var(--font-mono);
+                        font-size: 0.625rem;
+                        color: var(--text-tertiary);
+                        text-transform: uppercase;
+                        letter-spacing: 0.08em;
+                        margin-top: 4px;
+                    }
+                    .ah-founder-action-where {
+                        font-family: var(--font-mono);
+                        font-size: 0.75rem;
+                        color: var(--accent-brass);
+                        word-break: break-all;
+                    }
+                    .ah-founder-action-howto {
+                        font-size: 0.875rem;
+                        color: var(--text-primary);
+                        line-height: 1.5;
+                    }
+                </style>
+                <div class="ah-founder-action-title">⚠ Founder action required</div>
+                <div class="ah-founder-action-sub">These items can ONLY be closed by you. Each shows exactly WHAT to do and HOW.</div>
+                <div data-founder-action-list></div>
+            </section>
+
             <section class="ah-attention" data-attention-section>
-                <div class="ah-attention-title">What needs your attention</div>
+                <div class="ah-attention-title">What the team is handling</div>
                 <ul class="ah-attention-list" data-attention-list></ul>
             </section>
 
@@ -380,13 +527,44 @@
                 document.querySelector('[data-app-score]').textContent =
                     data.overall_score != null ? data.overall_score + ' / 100 · weighted' : '—';
                 document.querySelector('[data-app-generated]').textContent = fmtTime(data.generated_at);
-                // Attention list
+                // Audit schedule panel
+                var trig = data.audit_trigger || {};
+                var trigWhenEl = document.querySelector('[data-trigger-when]');
+                var trigByEl = document.querySelector('[data-trigger-by]');
+                if (trigWhenEl) trigWhenEl.textContent = fmtTime(trig.committed_at);
+                if (trigByEl) {
+                    var trigCls = trig.is_app_commit ? 'ah-schedule-trigger-app'
+                                : (trig.trigger === 'cron' ? 'ah-schedule-trigger-cron'
+                                                            : 'ah-schedule-trigger-substrate');
+                    var trigLabel = trig.is_app_commit ? 'app commit'
+                                  : (trig.trigger || 'unknown');
+                    trigByEl.innerHTML = '<span class="' + trigCls + '">' + esc(trigLabel) + '</span>'
+                        + '<code>' + esc(trig.sha || '—') + '</code> '
+                        + '<span style="color: var(--text-secondary);">' + esc(trig.subject || '—') + '</span>';
+                }
+                // Founder-action section (only show if items exist)
+                var founderActions = data.founder_attention || [];
+                var founderSection = document.querySelector('[data-founder-action-section]');
+                var founderListEl = document.querySelector('[data-founder-action-list]');
+                if (founderActions.length > 0 && founderSection && founderListEl) {
+                    founderSection.hidden = false;
+                    founderListEl.innerHTML = founderActions.map(function (a) {
+                        return '<div class="ah-founder-action-item">'
+                            + '<div class="ah-founder-action-what">' + esc(a.what || '') + '</div>'
+                            + '<div class="ah-founder-action-where-label">Where to look</div>'
+                            + '<div class="ah-founder-action-where">' + esc(a.where || '—') + '</div>'
+                            + '<div class="ah-founder-action-howto-label">How to complete</div>'
+                            + '<div class="ah-founder-action-howto">' + esc(a.what_action || '—') + '</div>'
+                            + '</div>';
+                    }).join('');
+                }
+                // Agent-handles attention list (only items NOT in founder-action)
                 var attEl = document.querySelector('[data-attention-list]');
-                var atts = data.attention_items || [];
-                if (atts.length === 0) {
-                    attEl.innerHTML = '<li style="color: var(--text-tertiary); font-style: italic;">Nothing requires immediate attention. All scored dimensions ≥ 80.</li>';
+                var agentAtts = data.agent_attention || data.attention_items || [];
+                if (agentAtts.length === 0) {
+                    attEl.innerHTML = '<li style="color: var(--text-tertiary); font-style: italic;">Nothing requires team attention right now. All scored dimensions ≥ 80.</li>';
                 } else {
-                    attEl.innerHTML = atts.map(function (a) {
+                    attEl.innerHTML = agentAtts.map(function (a) {
                         return '<li class="ah-attention-item">'
                             + '<div class="ah-attention-dim">' + esc(a.dimension || '') + '</div>'
                             + '<div class="ah-attention-body">'

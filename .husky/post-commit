@@ -134,6 +134,8 @@ scripts/regen-main-flows.py
 scripts/regen-activity.py
 scripts/dry-run-regen-ops-views.py
 scripts/regen-token-usage.py
+scripts/aggregate-app-health.py
+scripts/regen-app-health.py
 scripts/regen-index.py"
 
 FAILED=""
@@ -201,6 +203,7 @@ docs/reports/token-usage.html
 docs/reports/discussion-bubbles.html
 docs/reports/design-system.html
 docs/reports/index.html
+docs/reports/app-health.html
 .claude/state/telemetry/aggregates
 .claude/state/telemetry/events
 .claude/state/dashboard-health

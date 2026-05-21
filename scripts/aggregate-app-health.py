@@ -54,12 +54,18 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+import shlex
+
 ROOT = Path(__file__).resolve().parents[1]
 STATE = ROOT / ".claude" / "state"
 AGG = STATE / "aggregates"
 SECURITY_DIR = STATE / "security"
 APP_AUDIT_DIR = STATE / "app-audit-2026-05-14"
 OUT = AGG / "app-health.json"
+
+# PARBAUGHS app code paths — when these change in a commit, that commit
+# counts as "an app commit" for the per-commit audit cadence.
+APP_PATHS = ("src/", "functions/", "public/")
 
 # Per AMD-027 file-size budgets
 CORE_BUDGETS = {
@@ -72,6 +78,61 @@ PAGE_BUDGET = 800  # default page-tier rule
 
 def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def capture_audit_trigger() -> dict:
+    """Capture the current HEAD commit metadata + whether it touched app code.
+
+    Used to render the 'Audit schedule' panel on the App Health page so
+    Founder knows when the last audit ran, what triggered it, and whether
+    that trigger was a PARBAUGHS app commit (vs a substrate-only commit
+    that still re-ran the aggregator on cron cadence).
+    """
+    try:
+        sha = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=str(ROOT), capture_output=True, text=True, timeout=5, check=False,
+        ).stdout.strip()
+        msg = subprocess.run(
+            ["git", "log", "-1", "--pretty=%s"],
+            cwd=str(ROOT), capture_output=True, text=True, timeout=5, check=False,
+        ).stdout.strip()
+        ts = subprocess.run(
+            ["git", "log", "-1", "--pretty=%cI"],
+            cwd=str(ROOT), capture_output=True, text=True, timeout=5, check=False,
+        ).stdout.strip()
+        files = subprocess.run(
+            ["git", "show", "--name-only", "--pretty=", "HEAD"],
+            cwd=str(ROOT), capture_output=True, text=True, timeout=5, check=False,
+        ).stdout.strip().splitlines()
+        app_files = [f for f in files if any(f.startswith(p) for p in APP_PATHS)]
+        is_app_commit = bool(app_files)
+        # Classify the trigger
+        if is_app_commit:
+            trigger = "app-commit"
+        elif msg.startswith("cron(routine)"):
+            trigger = "cron"
+        else:
+            trigger = "substrate-commit"
+        return {
+            "sha": sha or "unknown",
+            "subject": msg or "—",
+            "committed_at": ts or now_iso(),
+            "trigger": trigger,
+            "is_app_commit": is_app_commit,
+            "app_files_touched": app_files[:10],
+            "total_files_touched": len(files),
+        }
+    except Exception:
+        return {
+            "sha": "unknown",
+            "subject": "git probe failed",
+            "committed_at": now_iso(),
+            "trigger": "unknown",
+            "is_app_commit": False,
+            "app_files_touched": [],
+            "total_files_touched": 0,
+        }
 
 
 def load_json(p: Path) -> dict:
@@ -630,14 +691,49 @@ def main() -> int:
             attention.append({**weak[0], "dimension": key})
     attention = attention[:5]
 
+    # Split attention items by who-handles. Founder-actionable items are
+    # surfaced separately so the dashboard can call them out distinctly.
+    # Heuristic: items whose what_action mentions 'Founder' or 'approve' or
+    # 'task-queue/founder/' are Founder-actionable; everything else is the
+    # agent's to handle.
+    founder_action_kw = ("founder", "approve", "task-queue/founder", "decide", "ratify")
+    founder_attention = []
+    agent_attention = []
+    for item in attention:
+        action_l = (item.get("what_action") or "").lower()
+        if any(kw in action_l for kw in founder_action_kw):
+            founder_attention.append(item)
+        else:
+            agent_attention.append(item)
+
+    trigger = capture_audit_trigger()
     out = {
-        "schema_version": "app-health-v1.0",
+        "schema_version": "app-health-v1.1",
         "generated_at": now_iso(),
         "source": "scripts/aggregate-app-health.py",
         "overall_score": overall_score,
         "overall_grade": overall_grade,
         "dimensions": dimensions,
         "attention_items": attention,
+        # New in v1.1: split by who-handles + audit-trigger context for the
+        # 'Audit schedule' panel on app-health.html.
+        "founder_attention": founder_attention,
+        "agent_attention": agent_attention,
+        "audit_trigger": trigger,
+        "cadence": {
+            "policy": (
+                "Per-commit (any commit re-runs the audit via husky post-commit "
+                "hook) + per-cron-cycle (5-min watcher fires regen-all + this "
+                "aggregator). For PARBAUGHS app commits specifically, the "
+                "is_app_commit flag is set so the dashboard distinguishes "
+                "app-code-driven refreshes from substrate-driven ones."
+            ),
+            "next_scheduled": "on next commit, OR within 5 minutes via cron",
+            "founder_cadence_request": (
+                "Audit should refresh after each app commit + after each wave "
+                "close — wired 2026-05-21 per Founder request."
+            ),
+        },
         "honest_disclosures": [
             "A8 (Performance) + A9 (Accessibility) deferred to Phase 2: tooling not yet wired (Lighthouse + axe-core).",
             "A4 (UI/UX) score derived from prior 2026-05-14 audit summary, not live Lighthouse.",
