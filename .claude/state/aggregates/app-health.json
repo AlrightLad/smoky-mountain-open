@@ -1,6 +1,6 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T05:01:36.405141Z",
+  "generated_at": "2026-05-21T05:03:01.262329Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 79.4,
   "overall_grade": "B",
@@ -287,13 +287,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "29827ea4",
-    "subject": "[ship-progress] M2/M3/M4 baseline-complete (mobile renders via responsive home/playnow/standings); M5 partial (image attach + mentions = follow-on); M6 partial (TestFlight blocked on Apple Dev workstream)",
-    "committed_at": "2026-05-21T01:01:21-04:00",
+    "sha": "fc8c6c04",
+    "subject": "[ops] post-commit: bug triage + dashboard smoke (non-blocking log). Keeps dashboard-smoke-latest.json fresh on every commit.",
+    "committed_at": "2026-05-21T01:02:46-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 5
+    "total_files_touched": 1
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
