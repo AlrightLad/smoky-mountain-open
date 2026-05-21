@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T01:00:41Z",
-  "generated_at": "2026-05-21T01:00:41Z",
+  "timestamp": "2026-05-21T01:07:13Z",
+  "generated_at": "2026-05-21T01:07:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "green",
-  "raw_status": "green",
-  "summary": "watcher no-new-files 0.0min ago",
-  "as_of": "2026-05-21T01:00:39Z",
+  "status": "yellow",
+  "raw_status": "yellow",
+  "summary": "watcher last run: skip-dirty",
+  "as_of": "2026-05-21T01:05:49Z",
   "stale": false,
-  "age_hours": 0.0,
+  "age_hours": 0.02333333333333333,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -27,6 +27,13 @@
       "name": "last-processed-decisions",
       "note": "file=decisions-canary-2026-05-20T19-05-19Z.json kind=decisions",
       "when": "2026-05-20T19:08:40.7809674Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-21T01-05-49Z-downloads-watcher.log",
+      "note": "[01:05:49] SKIP working tree dirty with non-routine files: .claude/state/task-queue/founder/security-policy-tightening.md, docs/incident-response.md",
+      "when": "2026-05-21T01:05:49Z"
     },
     {
       "category": "stall",
@@ -49,7 +56,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 0,
-    "age_minutes": 0.0
+    "consecutive_skips": 1,
+    "age_minutes": 1.4
   }
 }
