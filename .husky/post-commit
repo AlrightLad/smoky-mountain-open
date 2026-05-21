@@ -273,6 +273,9 @@ docs/reports/discussion-bubbles.html
 docs/reports/design-system.html
 docs/reports/index.html
 docs/reports/app-health.html
+docs/reports/sessions.html
+docs/reports/founder-checklist.html
+.claude/state/founder-checklist-state.json
 .claude/state/telemetry/aggregates
 .claude/state/telemetry/events
 .claude/state/dashboard-health
