@@ -1710,7 +1710,7 @@
                     }).join('');
                 }
                 // AMD-007 P18.6: Founder Review Queue.
-                renderFounderQueue(data.founder_queue || null);
+                renderFounderQueue(data.founder_queue || null, data);
                 renderAppHealthSummary(data.app_health_summary || null);
 
                 // phase-I iter3 (2026-05-19): tag legitimate-empty cards
@@ -2052,7 +2052,7 @@
             }
         }
 
-        function renderFounderQueue(fq) {
+        function renderFounderQueue(fq, data) {
             if (!fq) {
                 return;
             }
@@ -2316,51 +2316,63 @@
                     ? '<a href="../../.claude/state/halts/" style="color: inherit; text-decoration: underline;">ok &middot; verify dir</a>'
                     : '<a href="../../.claude/state/halts/" style="color: inherit; text-decoration: underline;">FOUNDER &middot; review ' + halts.length + ' halt file' + (halts.length === 1 ? '' : 's') + '</a>');
 
-            // 2026-05-21 (Founder data-flow audit F-4 fix): cron-health card
-            var ch = data.cron_health || {};
-            var chStatus = ch.status || 'unknown';
-            var chTasks = ch.tasks || [];
-            var chReadyCount = chTasks.filter(function(t){ return t.state === 'Ready'; }).length;
-            var chTotalCount = chTasks.length;
-            var chBadCount = chTotalCount - chReadyCount;
-            if (chTotalCount === 0) {
-                setText('[data-fq="cron-health"]', 'unknown');
-                setText('[data-fq="cron-health-sub"]', 'cron-health.json missing — run scripts/cron/check-cron-health.ps1');
-                setFqBadge('cron-health', 'founder', 'FOUNDER · register PARBAUGHS-* tasks');
-            } else {
-                setText('[data-fq="cron-health"]', chBadCount === 0 ? 'all ' + chTotalCount + ' ready' : chBadCount + '/' + chTotalCount + ' need attention');
-                setText('[data-fq="cron-health-sub"]', chBadCount === 0 ? 'PARBAUGHS-* tasks running silently' : 'investigate ' + chBadCount + ' task(s)');
-                setFqBadge('cron-health',
-                    chBadCount === 0 ? 'none' : 'founder',
-                    chBadCount === 0 ? 'cron · all green' : 'FOUNDER · review ' + chBadCount + ' task(s)');
-                var cronCard = document.querySelector('[data-fq-health="cron"]');
-                if (cronCard) {
-                    cronCard.style.borderLeftStyle = 'solid';
-                    cronCard.style.borderLeftWidth = '3px';
-                    cronCard.style.borderLeftColor = chBadCount === 0 ? 'var(--accent-positive, #4CAF50)' : 'var(--accent-warning, #F59E42)';
+            // 2026-05-21 (Founder data-flow audit F-4 fix): cron-health card.
+            // Wrapped in try/catch so a failure here can't blank downstream
+            // sections (root-cause learning from earlier blank-dashboard bug:
+            // a single ReferenceError took out half the page).
+            try {
+                var ch = (data && data.cron_health) || {};
+                var chTasks = ch.tasks || [];
+                var chReadyCount = chTasks.filter(function(t){ return t && t.state === 'Ready'; }).length;
+                var chTotalCount = chTasks.length;
+                var chBadCount = chTotalCount - chReadyCount;
+                if (chTotalCount === 0) {
+                    setText('[data-fq="cron-health"]', 'unknown');
+                    setText('[data-fq="cron-health-sub"]', 'cron-health.json missing — run scripts/cron/check-cron-health.ps1');
+                    setFqBadge('cron-health', 'founder', 'FOUNDER · register PARBAUGHS-* tasks');
+                } else {
+                    setText('[data-fq="cron-health"]', chBadCount === 0 ? 'all ' + chTotalCount + ' ready' : chBadCount + '/' + chTotalCount + ' need attention');
+                    setText('[data-fq="cron-health-sub"]', chBadCount === 0 ? 'PARBAUGHS-* tasks running silently' : 'investigate ' + chBadCount + ' task(s)');
+                    setFqBadge('cron-health',
+                        chBadCount === 0 ? 'none' : 'founder',
+                        chBadCount === 0 ? 'cron · all green' : 'FOUNDER · review ' + chBadCount + ' task(s)');
+                    var cronCard = document.querySelector('[data-fq-health="cron"]');
+                    if (cronCard) {
+                        cronCard.style.borderLeftStyle = 'solid';
+                        cronCard.style.borderLeftWidth = '3px';
+                        cronCard.style.borderLeftColor = chBadCount === 0 ? 'var(--accent-positive, #4CAF50)' : 'var(--accent-warning, #F59E42)';
+                    }
                 }
+            } catch (e) {
+                console.error('cron-health card render failed:', e);
             }
 
-            // 2026-05-21 (Founder data-flow audit F-5 fix): visual integrity card
-            var vi = data.visual_integrity || {};
-            var viOverlaps = vi.overlaps_total != null ? vi.overlaps_total : -1;
-            var viGeneratedAt = vi.generated_at || null;
-            if (viOverlaps < 0) {
-                setText('[data-fq="visual-integrity"]', 'not yet measured');
-                setText('[data-fq="visual-integrity-sub"]', 'run scripts/visual-audit/capture-dashboards-all.mjs');
-                setFqBadge('visual-integrity', 'cron', 'audit · on-demand');
-            } else {
-                setText('[data-fq="visual-integrity"]', viOverlaps === 0 ? 'clean — 0 overlaps' : viOverlaps + ' overlaps detected');
-                setText('[data-fq="visual-integrity-sub"]', 'last audit ' + (viGeneratedAt ? fmtTime(viGeneratedAt) : 'unknown'));
-                setFqBadge('visual-integrity',
-                    viOverlaps === 0 ? 'none' : 'founder',
-                    viOverlaps === 0 ? 'audit · all clean' : 'FOUNDER · review ' + viOverlaps + ' overlap(s)');
-                var viCard = document.querySelector('[data-fq-health="visual"]');
-                if (viCard) {
-                    viCard.style.borderLeftStyle = 'solid';
-                    viCard.style.borderLeftWidth = '3px';
-                    viCard.style.borderLeftColor = viOverlaps === 0 ? 'var(--accent-positive, #4CAF50)' : 'var(--accent-warning, #F59E42)';
+            // 2026-05-21 (Founder data-flow audit F-5 fix): visual integrity card.
+            // Wrapped in try/catch — see comment above.
+            try {
+                var vi = (data && data.visual_integrity) || {};
+                var viOverlaps = vi.overlaps_total != null ? vi.overlaps_total : -1;
+                var viGeneratedAt = vi.generated_at || null;
+                if (viOverlaps < 0) {
+                    setText('[data-fq="visual-integrity"]', 'not yet measured');
+                    setText('[data-fq="visual-integrity-sub"]', 'run scripts/visual-audit/capture-dashboards-all.mjs');
+                    setFqBadge('visual-integrity', 'cron', 'audit · on-demand');
+                } else {
+                    setText('[data-fq="visual-integrity"]', viOverlaps === 0 ? 'clean — 0 overlaps' : viOverlaps + ' overlaps detected');
+                    var viWhen = viGeneratedAt ? new Date(viGeneratedAt).toISOString().slice(0, 16).replace('T', ' ') + ' UTC' : 'unknown';
+                    setText('[data-fq="visual-integrity-sub"]', 'last audit ' + viWhen);
+                    setFqBadge('visual-integrity',
+                        viOverlaps === 0 ? 'none' : 'founder',
+                        viOverlaps === 0 ? 'audit · all clean' : 'FOUNDER · review ' + viOverlaps + ' overlap(s)');
+                    var viCard = document.querySelector('[data-fq-health="visual"]');
+                    if (viCard) {
+                        viCard.style.borderLeftStyle = 'solid';
+                        viCard.style.borderLeftWidth = '3px';
+                        viCard.style.borderLeftColor = viOverlaps === 0 ? 'var(--accent-positive, #4CAF50)' : 'var(--accent-warning, #F59E42)';
+                    }
                 }
+            } catch (e) {
+                console.error('visual-integrity card render failed:', e);
             }
 
             // R-Banner (2026-05-15 dashboard-completion B1-B4): render the 4 health
