@@ -24,9 +24,9 @@ Front-matter fields (YAML, in --- block at top of each .md):
   walkthrough_doc: optional path to a separate detailed walkthrough .md
 
 Severity defaults derived from priority+keywords if not declared:
-  red    — production-safety / security / blocks downstream work
-  yellow — would benefit app but not blocking
-  green  — quality-of-life / nice-to-have
+  red    -- production-safety / security / blocks downstream work
+  yellow -- would benefit app but not blocking
+  green  -- quality-of-life / nice-to-have
 
 Categorization (money/account/physical) is computed from text keywords.
 """
@@ -55,10 +55,10 @@ def parse_frontmatter(text: str) -> dict:
 
     Contract (must match scripts/founder-mark-complete.ps1 parser exactly):
       - Front-matter is the YAML block between two `---` lines at file start
-      - Flat key:value pairs only — no multi-line values, no nested objects
+      - Flat key:value pairs only -- no multi-line values, no nested objects
       - Values are stripped of one layer of surrounding double or single quotes
       - Colon-followed-by-letters INSIDE a quoted value is preserved (don't
-        write `verify_command: foo: bar` — wrap in quotes: `"foo: bar"`)
+        write `verify_command: foo: bar` -- wrap in quotes: `"foo: bar"`)
       - Lines starting with `#` are comments
     """
     m = FRONTMATTER_RE.match(text)
@@ -108,7 +108,7 @@ def extract_title(text: str, fallback: str) -> str:
     m = re.search(r'^#\s+(.+)$', text, re.MULTILINE)
     if m:
         title = m.group(1).strip()
-        title = re.sub(r'^Founder action\s*[\-—:]\s*', '', title, flags=re.IGNORECASE)
+        title = re.sub(r'^Founder action\s*[-:]\s*', '', title, flags=re.IGNORECASE)
         return title
     return fallback
 
@@ -180,7 +180,7 @@ def extract_unblocks(text: str) -> str:
 
 
 def extract_impact_dim(text: str) -> str:
-    m = re.search(r'\b(A\d{1,2}[A-Z_a-z]*)\s*(?:Security|Performance|Operational|Code Quality|UI/UX|Architecture|Testing|Mobile|Roadmap|FIQ|Data Integrity|Accessibility)?\s*(\d+\s*→\s*\d+)', text)
+    m = re.search(r'\b(A\d{1,2}[A-Z_a-z]*)\s*(?:Security|Performance|Operational|Code Quality|UI/UX|Architecture|Testing|Mobile|Roadmap|FIQ|Data Integrity|Accessibility)?\s*(\d+\s*->\s*\d+)', text)
     if m:
         return m.group(1) + " " + m.group(2)
     return ""
@@ -199,7 +199,7 @@ def is_closed(text: str, filename: str, fm: dict) -> bool:
 
 
 def load_state() -> dict:
-    """Load founder-mark-complete state — sidecar JSON.
+    """Load founder-mark-complete state -- sidecar JSON.
 
     Critique F5: utf-8-sig handles legacy state files written by earlier
     Out-File -Encoding utf8 (which writes UTF-8 WITH BOM on PowerShell 5.1).

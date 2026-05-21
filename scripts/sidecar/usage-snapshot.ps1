@@ -152,15 +152,15 @@ $status = [ordered]@{
 }
 
 # BUG-6 fix (2026-05-16): Founder reported "sidecar for token counter is
-# still not working" because manual-quota-log perpetually absent → sidecar
-# perpetually reported data_source=none → UI perpetually showed "sidecar
+# still not working" because manual-quota-log perpetually absent -> sidecar
+# perpetually reported data_source=none -> UI perpetually showed "sidecar
 # empty". That made the sidecar a half-baked feature on a Founder-only
 # workstation where claude.ai pastes are infrequent.
 #
 # Fix: when manual paste is absent OR empty, AUTO-DERIVE from the measured
 # weekly_tokens in current-snapshot.json (real cycle telemetry, 7-day
-# window — per BUG-7 fix). Mark data_source="auto-derived" so the UI can
-# show the value with an honest "measured · paste for ground truth %"
+# window -- per BUG-7 fix). Mark data_source="auto-derived" so the UI can
+# show the value with an honest "measured - paste for ground truth %"
 # label instead of "sidecar empty".
 function Get-AutoDerivedWeeklyTokens {
     param([string]$repoRoot)
@@ -281,7 +281,7 @@ Emit-CronTelemetry -repoRoot $repoRoot -eventType "cron.token-sidecar.end" -data
 
 # BUG-1/BUG-4 fix (2026-05-16): refresh dashboard.html + activity.html + main-flows.html
 # locally on every sidecar tick so the rendered surfaces stay current even when no
-# commit fires (downloads-watcher SKIPs on dirty tree → no post-commit hook →
+# commit fires (downloads-watcher SKIPs on dirty tree -> no post-commit hook ->
 # dashboard goes stale). The watcher / commit pipeline still owns the COMMITTED
 # state; this only keeps the working-tree HTML in sync with the latest data so the
 # operator's local browser at http://localhost:8765 shows reality.

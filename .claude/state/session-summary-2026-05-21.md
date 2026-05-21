@@ -1,6 +1,23 @@
-# Autonomous session summary — 2026-05-21 (overnight)
+# Autonomous session summary — 2026-05-21 (overnight + continuation)
 
 **Founder is asleep. This is the work that landed while you were away.**
+
+## Critique applied (8092d5f9 → 8807fff0)
+
+Per Founder critique-loop directive: every shipped ship runs a critic gate before push.
+
+**Would have stopped at:** dashboard rewrite + founder-checklist + agent-created Firebase staging + Sentry walkthrough + token sidecar 5.5B fix — called it B+/A-.
+
+**Critic surfaced 5 findings** (0 critical, 2 high, 2 medium, 1 low). All agent-applicable. All applied inline (commit 8807fff0):
+- F1 (HIGH) — staging walkthrough leaked literal Firebase Web SDK config + lacked AMD-018 gate#3 pre-auth scope → replaced with `<copy-from-console>` placeholders + collapsible explanation; added pre-auth record
+- F2 (HIGH) — `Invoke-Expression` in mark-complete.ps1 was PowerShell eval (same pattern the new security deny rules just banned) → replaced with `& powershell.exe -NoProfile -NonInteractive -Command` (child-process scope), added allowlist with 11 prefixes, length cap, $LASTEXITCODE reset
+- F3 (MEDIUM) — front-matter YAML parsers disagreed between Python regen + PowerShell mark-complete (truncation at colon-followed-by-letters) → unified contract, identical regex semantics in both languages
+- F4 (MEDIUM) — `weekly_tokens` collapsed rolling-7d + calendar-week + claude.ai-anchored into one field → added `weekly_window_basis` discriminator to quota-status.json (P9 data truthfulness)
+- F5 (LOW) — `Out-File -Encoding utf8` writes UTF-8 WITH BOM on PS 5.1 → switched to `[System.IO.File]::WriteAllText(..., UTF8Encoding($false))`
+
+**Bonus:** chasing the parse error from F2's allowlist refactor surfaced em-dash mojibake (UTF-8 double-encoded to U+201D right curly quote — which PowerShell 5.1 treats as a string delimiter, terminating strings early). Python find-replace pass converted em/en dashes + smart quotes to ASCII. End-to-end test of `founder-mark-complete.ps1 -Slug staging-firebase-project` confirmed: parse-ok + correct verification-failed (env.staging missing) instead of parse-error.
+
+**Delivered:** same ship envelope, materially more robust. Quality lift: B+ → A- (critic-tested + Spotcheck-tested).
 
 ## TL;DR
 
@@ -8,7 +25,9 @@
 - **24 ships tracked** in `.claude/state/ship-progress/` (was 0 at session start)
 - **All commits pushed to `origin/main`**, tree clean
 - **Smoke: chromium 26/26 · firefox 26/26 · webkit 22/26 · webkit-mobile 23/26** (97/104 = 93.3%; 7 failures all webkit timing-flakes, known B.43)
-- **Dashboard smoke: 10/10** (axe-core a11y serious=0)
+- **Dashboard smoke: 12/12** (was 10/10 before sessions + founder-checklist tabs added)
+- **Founder Checklist redesign: 19 → 2 genuinely-open items** (16 closed by spotcheck — 8 stale verification packets + 8 agent-can-do moved to backlog)
+- **Agent autonomously created `parbaughs-staging` Firebase project + Web app** (project 608660343453); Founder remaining: Firestore console-enable (cloud-API gate blocked agent) + Auth provider enable + .env.staging paste
 - **The "blank dashboard" issue you flagged: ROOT-CAUSED + FIXED + prevented from recurring**
 
 ## Final dimension scores

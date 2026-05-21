@@ -104,16 +104,14 @@ For those, the agent surfaces a Founder action and does not commit them anywhere
 
 ---
 
-## Step 4 — Deploy Firestore rules + indexes to staging (1 min)
+## Step 4 — Deploy Firestore rules + indexes to staging (1 min — Founder runs)
 
-Once Firestore is enabled (Step 1 must finish), the agent can do this from `scripts/deploy.sh` after AMD-018 gate 2 approval. **You authorize once; agent runs the deploy:**
+Once Firestore is enabled (Step 1 must finish), these deploys go to staging. **You run these directly in PowerShell** — the agent cannot deploy rules/indexes autonomously (AMD-018 gate #1 + #2 require Founder pre-auth per deploy, and this task only pre-authorizes gate #3 / Email-Password provider). If you want the agent to handle subsequent deploys, file a separate Founder pre-auth for gates #1 + #2 scoped to parbaughs-staging.
 
 ```powershell
 firebase deploy --only firestore:rules --project staging
 firebase deploy --only firestore:indexes --project staging
 ```
-
-The agent will surface a one-click "deploy rules" button on the dashboard once Firestore is live, or you can run the commands above directly.
 
 ---
 

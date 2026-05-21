@@ -3,7 +3,7 @@ status: open
 severity: yellow
 priority: HIGH
 verify_command: "if (Test-Path .env.staging) { 'env-ok'; firebase projects:list 2>&1 | Select-String parbaughs-staging } else { 'env-staging-missing' }"
-verify_expected: "env-ok[\\s\\S]*parbaughs-staging"
+verify_expected: "env-ok[\s\S]*parbaughs-staging"
 walkthrough_doc: docs/walkthroughs/staging-firebase-project.md
 ---
 

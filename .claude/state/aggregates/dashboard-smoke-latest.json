@@ -1,15 +1,15 @@
 {
   "schema_version": "dashboard-smoke-v1",
-  "generated_at": "2026-05-21T15:58:47.681Z",
+  "generated_at": "2026-05-21T16:07:03.290Z",
   "total": 12,
-  "passed": 12,
+  "passed": 11,
   "results": [
     {
       "file": "activity.html",
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 27956,
+        "bodyTextLen": 27887,
         "kpiPopulated": 8,
         "kpiTotal": 8,
         "navLinkCount": 11,
@@ -43,7 +43,7 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 8887,
+        "bodyTextLen": 8874,
         "kpiPopulated": 0,
         "kpiTotal": 0,
         "navLinkCount": 11,
@@ -57,11 +57,13 @@
     },
     {
       "file": "dashboard.html",
-      "passed": true,
-      "issues": [],
+      "passed": false,
+      "issues": [
+        "only 66% KPIs populated (25/38); sample unpopulated: amendments-pending, bubbles-flagged, proposals-pending, escalations-count, round-trip, working-tree, working-tree-action, halts-count, cron-health, visual-integrity"
+      ],
       "stats": {
-        "bodyTextLen": 7530,
-        "kpiPopulated": 37,
+        "bodyTextLen": 3372,
+        "kpiPopulated": 25,
         "kpiTotal": 38,
         "navLinkCount": 11,
         "axeViolations": 0,
@@ -94,7 +96,7 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 9366,
+        "bodyTextLen": 1213,
         "kpiPopulated": 4,
         "kpiTotal": 4,
         "navLinkCount": 11,

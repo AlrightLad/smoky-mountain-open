@@ -45,10 +45,28 @@ def parse_summary(path: Path) -> dict:
     date_match = re.search(r'(\d{4}-\d{2}-\d{2})', path.stem)
     date = date_match.group(1) if date_match else "—"
 
-    # Grade + score
-    grade_match = GRADE_RE.search(text)
-    grade = grade_match.group(1) if grade_match else "—"
-    score = grade_match.group(2) if grade_match else ""
+    # Grade + score — preference order:
+    # 1. Explicit "Final grade:" / "Final: GRADE (NN)" / "Final score: GRADE (NN)"
+    # 2. "GRADE_A → GRADE_B" arrow pattern → take GRADE_B (final state)
+    # 3. First GRADE_RE match (legacy fallback)
+    grade, score = "—", ""
+    final_match = re.search(
+        r'(?:Final(?:\s+(?:grade|score))?|Ship grade)[:\s]+\*?\*?([A-F][+-]?)\s*\((\d+(?:\.\d+)?)\)',
+        text, re.IGNORECASE,
+    )
+    if final_match:
+        grade, score = final_match.group(1), final_match.group(2)
+    else:
+        arrow_match = re.search(
+            r'[A-F][+-]?\s*\(\d+(?:\.\d+)?\)\s*[→\-]>?\s*([A-F][+-]?)\s*\((\d+(?:\.\d+)?)\)',
+            text,
+        )
+        if arrow_match:
+            grade, score = arrow_match.group(1), arrow_match.group(2)
+        else:
+            generic = GRADE_RE.search(text)
+            if generic:
+                grade, score = generic.group(1), generic.group(2)
 
     # Delta
     delta_match = DELTA_RE.search(text)

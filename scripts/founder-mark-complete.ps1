@@ -1,6 +1,6 @@
 # Founder Checklist  -  Mark Complete + auto-verify
 #
-# Founder clicks "Mark Complete" on docs/reports/founder-checklist.html → button
+# Founder clicks "Mark Complete" on docs/reports/founder-checklist.html -> button
 # copies a command like `bash scripts/founder-mark-complete.ps1 <slug>` to clipboard.
 # Founder pastes + runs in PowerShell. This script:
 #   1. Writes the marker to .claude/state/founder-checklist-state.json
