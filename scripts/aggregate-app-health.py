@@ -443,30 +443,46 @@ def a3_security() -> dict:
 
 
 def a4_uiux() -> dict:
-    """Brutally honest: NO live Lighthouse → not-measured.
+    """Lighthouse Best-Practices score for the UI/UX dimension.
 
-    The prior 2026-05-14 audit's text-summary is NOT a substitute for
-    real Lighthouse measurements. High-level companies (Stripe, Linear,
-    Vercel) score UI/UX via Lighthouse + WebPageTest + RUM + WCAG axe
-    scans, not by counting open findings in a summary doc.
+    If lighthouse-scores.json is present, use its best-practices average.
+    Otherwise emit not-measured.
     """
+    scores_path = AGG / "lighthouse-scores.json"
+    if not scores_path.exists():
+        return {
+            "score": None,
+            "status": "not-measured",
+            "label": "Lighthouse not wired — score honestly unknown",
+            "source": "no live measurement",
+            "weak_points": [
+                {
+                    "what": "UI/UX dimension UNMEASURED — no Lighthouse run on record",
+                    "where": "scripts/aggregate-app-health.py · A4 function",
+                    "what_action": "Run npm run build + python scripts/consolidate-lighthouse.py to emit lighthouse-scores.json",
+                }
+            ],
+        }
+    try:
+        d = json.loads(scores_path.read_text(encoding="utf-8"))
+        score = d.get("averages", {}).get("best-practices") or 0
+        pages = d.get("pages_sampled", 0)
+    except Exception:
+        score = 0
+        pages = 0
+    weak = []
+    if score < 90:
+        weak.append({
+            "what": f"Lighthouse Best-Practices = {score}/100 across {pages} pages (target: 90+)",
+            "where": ".claude/state/aggregates/lighthouse-scores.json",
+            "what_action": "Open .lighthouseci/*.html — top BP failures include image aspect ratios, console errors, deprecated APIs. Fix top 3 per page.",
+        })
     return {
-        "score": None,
-        "status": "not-measured",
-        "label": "Lighthouse not wired — score honestly unknown (NOT 80)",
-        "source": "no live measurement",
-        "weak_points": [
-            {
-                "what": "UI/UX dimension UNMEASURED — no live Lighthouse, no WebPageTest, no RUM",
-                "where": "scripts/aggregate-app-health.py · A4 function",
-                "what_action": "Wire Lighthouse CLI (npm i -D @lhci/cli). Capture home/profile/feed/scorecard/round-detail/calendar at desktop + mobile viewports. Emit lighthouse-scores.json. Re-run on every commit via post-commit hook.",
-            },
-            {
-                "what": "Prior 2026-05-14 audit had 1 CRITICAL + 3 HIGH + 4 MEDIUM findings; most reported CLOSED but no V1 re-verification",
-                "where": ".claude/state/app-audit-2026-05-14/SUMMARY.md",
-                "what_action": "Re-run user-journey audit at desktop + mobile viewport; V1 capture each member-facing page; update SUMMARY.md status column",
-            },
-        ],
+        "score": score,
+        "status": status_color(score),
+        "label": f"Lighthouse BP {score}/100 across {pages} pages",
+        "source": ".claude/state/aggregates/lighthouse-scores.json",
+        "weak_points": weak,
     }
 
 
@@ -800,6 +816,42 @@ def not_measured(name: str, gap: str, next_action: str) -> dict:
             }
         ],
     }
+
+
+def _lighthouse_category(cat_key: str, pretty: str, target: int) -> dict:
+    """Read averaged Lighthouse score for a category from the consolidated JSON."""
+    scores_path = AGG / "lighthouse-scores.json"
+    if not scores_path.exists():
+        return not_measured(pretty, f"{pretty} not measured (no Lighthouse run)", f"Run npm run build + python scripts/consolidate-lighthouse.py")
+    try:
+        d = json.loads(scores_path.read_text(encoding="utf-8"))
+        score = d.get("averages", {}).get(cat_key) or 0
+        pages = d.get("pages_sampled", 0)
+    except Exception:
+        score = 0
+        pages = 0
+    weak = []
+    if score < target:
+        weak.append({
+            "what": f"Lighthouse {pretty} = {score}/100 across {pages} pages (target: {target}+)",
+            "where": ".claude/state/aggregates/lighthouse-scores.json",
+            "what_action": f"Open .lighthouseci/*.html — fix top {pretty.lower()} failures per page",
+        })
+    return {
+        "score": score,
+        "status": status_color(score),
+        "label": f"Lighthouse {pretty} {score}/100 across {pages} pages",
+        "source": ".claude/state/aggregates/lighthouse-scores.json",
+        "weak_points": weak,
+    }
+
+
+def a8_performance() -> dict:
+    return _lighthouse_category("performance", "Performance", 75)
+
+
+def a9_accessibility() -> dict:
+    return _lighthouse_category("accessibility", "Accessibility", 90)
 
 
 # ---- A10 Mobile-first ------------------------------------------------------
@@ -1226,16 +1278,8 @@ def main() -> int:
         "A5_code_quality": a5_code_quality(),
         "A6_architecture": a6_architecture(),
         "A7_data_integrity": a7_data_integrity(),
-        "A8_performance": not_measured(
-            "Performance",
-            "Lighthouse not yet wired",
-            "Wire Lighthouse CLI; capture 6 key pages; emit lighthouse-scores.json",
-        ),
-        "A9_accessibility": not_measured(
-            "Accessibility",
-            "WCAG 2.1 AA scan not yet wired",
-            "Wire axe-core CLI; per-page scan; emit a11y-scores.json",
-        ),
+        "A8_performance": a8_performance(),
+        "A9_accessibility": a9_accessibility(),
         "A10_mobile_first": a10_mobile_first(),
         "A11_testing": a11_testing(),
         "A12_operational": a12_operational(),

@@ -108,3 +108,7 @@ tests/__pycache__/
 /docs/reports/ships/
 /docs/reports/waves/
 /docs/reports/weekly/
+dist/
+.lighthouseci/
+.claude/state/aggregates/lighthouse/*.json
+!.claude/state/aggregates/lighthouse-scores.json
