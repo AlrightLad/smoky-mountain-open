@@ -95,6 +95,25 @@ DASHBOARD_PATHS=$(git diff --cached --name-only -- \
 
 if [ -n "$DASHBOARD_PATHS" ]; then
   echo "[dashboard-smoke] dashboard files staged — running smoke gate..."
+
+  # Sync staged templates → docs/reports BEFORE smoke runs.
+  # docs/reports/*.html is gitignored (Founder-local-only), but the smoke
+  # asserts against rendered HTML. A staged template change must be reflected
+  # in docs/reports before smoke can pass.
+  for t in templates/dashboards/*.template.html; do
+    base=$(basename "$t" .template.html)
+    target="docs/reports/${base}.html"
+    if [ -f "$target" ]; then
+      cp "$t" "$target"
+    fi
+  done
+  # Re-run regen scripts so data blocks are repopulated post-sync.
+  for s in regen-activity regen-amendments regen-app-health regen-dashboard regen-escalations regen-index regen-main-flows regen-proposals regen-token-usage; do
+    if [ -f "scripts/$s.py" ]; then
+      python "scripts/$s.py" > /dev/null 2>&1 || true
+    fi
+  done
+
   if ! node tests/dashboard-smoke/run.js > /tmp/dashboard-smoke-precommit.log 2>&1; then
     echo ""
     echo "ERROR: dashboard smoke failed. Tail of log:"
