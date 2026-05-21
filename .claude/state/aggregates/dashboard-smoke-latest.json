@@ -1,6 +1,6 @@
 {
   "schema_version": "dashboard-smoke-v1",
-  "generated_at": "2026-05-21T18:27:17.016Z",
+  "generated_at": "2026-05-21T18:28:04.398Z",
   "total": 12,
   "passed": 12,
   "results": [
@@ -9,7 +9,7 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 27324,
+        "bodyTextLen": 27317,
         "kpiPopulated": 8,
         "kpiTotal": 8,
         "navLinkCount": 11,
@@ -60,7 +60,7 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 7275,
+        "bodyTextLen": 7114,
         "kpiPopulated": 37,
         "kpiTotal": 38,
         "navLinkCount": 11,
@@ -196,7 +196,7 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 3167,
+        "bodyTextLen": 3168,
         "kpiPopulated": 3,
         "kpiTotal": 3,
         "navLinkCount": 11,
