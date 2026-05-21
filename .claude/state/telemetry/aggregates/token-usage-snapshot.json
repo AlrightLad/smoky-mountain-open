@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-05-21T02:07:15.917743+00:00",
+  "generated_at": "2026-05-21T02:06:48.669829+00:00",
   "_meter_status": "wired-estimated-sidecar-empty",
   "session_transcripts": {
-    "generated_at": "2026-05-21T02:07:15.220769+00:00",
+    "generated_at": "2026-05-21T02:06:48.027026+00:00",
     "source": "~/.claude/projects/C--Users-Zach-smoky-mountain-open/*.jsonl",
     "session_count": 32,
     "bucket_count": 65,
@@ -154,7 +154,7 @@
   "quota_status": {
     "state": "empty",
     "as_of": "2026-05-21T01:12:12.4069643Z",
-    "age_seconds": 3303,
+    "age_seconds": 3276,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
