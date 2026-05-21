@@ -1133,3 +1133,5 @@
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T19:22:06.054456+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"timestamp":"2026-05-21T19:22:12.9692482Z","event_type":"cron.token-sidecar.end","data":{"org_monthly_pct":null,"stale_seconds":null,"estimated_tokens":0,"cron_source":"token-sidecar","duration_seconds":0,"success":true,"claude_invoked":false,"data_source":"auto-derived","run_id":"63de567a92f6","weekly_pct":null}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T19:22:17.930035+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T19:23:23.637525+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"timestamp":"2026-05-21T19:25:48.9557473Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"f753ee6eb449","cron_source":"downloads-watcher"}}
