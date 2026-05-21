@@ -7,13 +7,20 @@ verify_expected: "parbaughs-staging"
 walkthrough_doc: docs/walkthroughs/staging-firebase-project.md
 ---
 
-# Founder action — Create parbaughs-staging Firebase project
+# Founder action — Activate parbaughs-staging Firebase project
 
-**Surfaced:** 2026-05-21 by W1.I4 ship scaffolding. Project creation requires Founder console access (AMD-018 gate 3 — auth provider config).
+**Surfaced:** 2026-05-21 by W1.I4 ship scaffolding.
+**Updated 2026-05-21 15:35Z:** Agent already created the project + Web app autonomously. Only Firestore enable + Auth provider enable + .env.staging paste remain.
 
 ## Walkthrough
 
-Step-by-step Founder walkthrough lives in `docs/walkthroughs/staging-firebase-project.md`. Click the source-doc link below to review before starting. The agent has pre-built `.firebaserc`, deploy.sh, and the environment scaffolding — your job is the console click-through (5 min) + paste the API key into `.env.staging` (2 min).
+`docs/walkthroughs/staging-firebase-project.md` — opens in your browser. ~4 minutes total:
+
+- **Step 1** (2 min) — Click "Create database" in Firebase console → Firestore enabled
+- **Step 2** (1 min) — Toggle Email/Password ON in Auth providers
+- **Step 3** (1 min) — Paste pre-built `.env.staging` block into PowerShell
+
+Verify runs automatically when you Mark complete; it confirms the project is reachable via `firebase projects:list`.
 
 ## What this unblocks
 
