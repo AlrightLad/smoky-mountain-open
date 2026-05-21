@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T19:57:14Z",
-  "generated_at": "2026-05-21T19:57:14Z",
+  "timestamp": "2026-05-21T20:00:09Z",
+  "generated_at": "2026-05-21T20:00:09Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "red",
-  "raw_status": "red",
-  "summary": "watcher errored",
-  "as_of": "2026-05-21T19:55:48Z",
+  "status": "green",
+  "raw_status": "green",
+  "summary": "watcher no-new-files 1.7min ago",
+  "as_of": "2026-05-21T19:58:28Z",
   "stale": false,
-  "age_hours": 0.02333333333333333,
+  "age_hours": 0.028333333333333332,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -30,13 +30,6 @@
     },
     {
       "category": "stall",
-      "status": "incomplete",
-      "name": "2026-05-21T19-55-48Z-downloads-watcher.log",
-      "note": "[19:56:34]   [drift-sweep] [dashboard-smoke] dashboard files staged ΓÇö running smoke gate...",
-      "when": "2026-05-21T19:55:48Z"
-    },
-    {
-      "category": "stall",
       "status": "skip-dirty",
       "name": "2026-05-21T19-50-48Z-downloads-watcher.log",
       "note": "[19:50:49] SKIP working tree dirty with non-routine files: .claude/hooks/encoding-hygiene.sh, .claude/settings.json, scripts/REGEN_REGISTRY.json",
@@ -48,6 +41,13 @@
       "name": "2026-05-21T19-45-48Z-downloads-watcher.log",
       "note": "[19:45:49] SKIP working tree dirty with non-routine files: .claude/hooks/governance-protection.sh, docs/agents/ENGINEER.md",
       "when": "2026-05-21T19:45:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-21T19-35-48Z-downloads-watcher.log",
+      "note": "[19:35:49] SKIP working tree dirty with non-routine files: .claude/state/critique/handling-section.png, .claude/state/incidents/2026-05-21-credential-leak.md, .claude/state/incidents/2026-05-21-proces",
+      "when": "2026-05-21T19:35:48Z"
     }
   ],
   "links": [
@@ -64,6 +64,6 @@
   "_meta": {
     "watcher_runs_inspected": 10,
     "consecutive_skips": 0,
-    "age_minutes": 1.4
+    "age_minutes": 1.7
   }
 }
