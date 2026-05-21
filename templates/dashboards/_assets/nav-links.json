@@ -1,0 +1,16 @@
+{
+  "_": "Single source of truth for dashboard navigation order. ALL templates MUST render in this order. Dashboard smoke asserts exact match. Updates require touching this file + propagating via scripts/sync-nav-links.py.",
+  "links": [
+    { "href": "dashboard.html",          "label": "Dashboard" },
+    { "href": "app-health.html",         "label": "App Health" },
+    { "href": "activity.html",           "label": "Activity" },
+    { "href": "discussion-bubbles.html", "label": "Discussion Bubbles" },
+    { "href": "proposals.html",          "label": "Proposals" },
+    { "href": "amendments.html",         "label": "Amendments" },
+    { "href": "main-flows.html",         "label": "Main Flows" },
+    { "href": "design-system.html",      "label": "Design System" },
+    { "href": "token-usage.html",        "label": "Tokens" },
+    { "href": "sessions.html",           "label": "Sessions" },
+    { "href": "founder-checklist.html",  "label": "Founder Checklist" }
+  ]
+}

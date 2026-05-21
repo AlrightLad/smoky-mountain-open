@@ -43,17 +43,22 @@ const SETTLE_MS = 2500;
 const KPI_POPULATED_THRESHOLD = 0.7;  // 70%+ KPI cells must be populated
 const MIN_BODY_TEXT_CHARS = 500;
 
+// 2026-05-21 (Founder directive iteration 2): nav order must be IDENTICAL
+// across all dashboard tabs. App Health locked to position 2 (right after
+// Dashboard). Source-of-truth: templates/dashboards/_assets/nav-links.json.
+// Index tab REPLACED by Founder Checklist per Founder directive.
 const EXPECTED_NAV_LINKS = [
   'dashboard.html',
+  'app-health.html',
   'activity.html',
   'discussion-bubbles.html',
   'proposals.html',
   'amendments.html',
   'main-flows.html',
   'design-system.html',
-  'app-health.html',  // Founder directive 2026-05-21
   'token-usage.html',
-  'index.html',
+  'sessions.html',
+  'founder-checklist.html',
 ];
 
 async function checkPage(browser, file) {
@@ -202,10 +207,19 @@ async function checkPage(browser, file) {
   if (!h1Text || h1Text.length < 2) {
     issues.push('h1 missing or empty');
   }
-  // Nav consistency: expected links should all be present (order checked separately)
-  const missingNav = EXPECTED_NAV_LINKS.filter((href) => !navLinks.includes(href));
-  if (missingNav.length > 0) {
-    issues.push('nav missing: ' + missingNav.join(', '));
+  // Nav order MUST match EXPECTED_NAV_LINKS exactly (Founder directive 2026-05-21
+  // iteration 2: same position no matter the tab). Compare ordered.
+  // navLinks may have trailing/leading links (the brand <a> isn't in pb-page-nav-links).
+  const expected = EXPECTED_NAV_LINKS.join(',');
+  const actual = navLinks.join(',');
+  if (actual !== expected) {
+    const missing = EXPECTED_NAV_LINKS.filter((h) => !navLinks.includes(h));
+    const extra = navLinks.filter((h) => !EXPECTED_NAV_LINKS.includes(h));
+    if (missing.length || extra.length) {
+      issues.push('nav mismatch: missing=[' + missing.join(',') + '] extra=[' + extra.join(',') + ']');
+    } else {
+      issues.push('nav order mismatch: expected=' + expected + ' got=' + actual);
+    }
   }
   if (offScreen > 0) {
     issues.push(`${offScreen} text element(s) off-screen with content`);

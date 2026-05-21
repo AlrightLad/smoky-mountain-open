@@ -367,15 +367,16 @@
             <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
             <div class="pb-page-nav-links">
                 <a href="dashboard.html">Dashboard</a>
+                <a href="app-health.html">App Health</a>
                 <a href="activity.html">Activity</a>
                 <a href="discussion-bubbles.html" class="is-active">Discussion Bubbles</a>
                 <a href="proposals.html">Proposals</a>
                 <a href="amendments.html">Amendments</a>
                 <a href="main-flows.html">Main Flows</a>
                 <a href="design-system.html">Design System</a>
-                <a href="app-health.html">App Health</a>
                 <a href="token-usage.html">Tokens</a>
-                <a href="index.html">Index</a>
+                <a href="sessions.html">Sessions</a>
+                <a href="founder-checklist.html">Founder Checklist</a>
             </div>
         </nav>
     </header>
@@ -408,37 +409,34 @@
                  now 9-bubble quorum 3 (8 data + Actionability process bubble).
                  The underlying data shape stays 8-bubble because Actionability
                  is a process-bubble, not a data-bubble. -->
+            <!-- 2026-05-21 (Founder UX fix): removed <a> wrappers on KPI cards.
+                 They linked to ../../.claude/state/discussion-bubbles/ which the
+                 browser served as a file:// folder listing — Founder clicked
+                 expecting to read chats, got code/folder browser instead.
+                 Cards now display-only; thread list below is the click target. -->
             <div class="pb-kpi-grid">
                 <div class="pb-kpi-card">
-                    <a class="pb-kpi-link" href="../../.claude/state/discussion-bubbles/" title="Open .claude/state/discussion-bubbles/ source directory" style="text-decoration: none; color: inherit; display: contents;">
-                        <span class="pb-kpi-label">Total bubbles</span>
-                        <span class="pb-kpi-value" data-kpi="bubbles-total">&mdash;</span>
-                        <span class="pb-kpi-sub" data-kpi-sub="bubbles-total">recorded threads</span>
-                    </a>
+                    <span class="pb-kpi-label">Total bubbles</span>
+                    <span class="pb-kpi-value" data-kpi="bubbles-total">&mdash;</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="bubbles-total">recorded threads</span>
                     <span class="pb-action-badge" data-who="cron" data-db-badge="bubbles-total">cron &middot; per-bubble refresh</span>
                 </div>
                 <div class="pb-kpi-card is-warning">
-                    <a class="pb-kpi-link" href="../../.claude/state/discussion-bubbles/" title="Open .claude/state/discussion-bubbles/ source directory" style="text-decoration: none; color: inherit; display: contents;">
-                        <span class="pb-kpi-label">Open</span>
-                        <span class="pb-kpi-value" data-kpi="bubbles-open">&mdash;</span>
-                        <span class="pb-kpi-sub" data-kpi-sub="bubbles-open">awaiting decision</span>
-                    </a>
+                    <span class="pb-kpi-label">Open</span>
+                    <span class="pb-kpi-value" data-kpi="bubbles-open">&mdash;</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="bubbles-open">awaiting decision</span>
                     <span class="pb-action-badge" data-who="none" data-db-badge="bubbles-open">ok &middot; quorum reached</span>
                 </div>
                 <div class="pb-kpi-card is-positive">
-                    <a class="pb-kpi-link" href="../../.claude/state/discussion-bubbles/" title="Open .claude/state/discussion-bubbles/ source directory" style="text-decoration: none; color: inherit; display: contents;">
-                        <span class="pb-kpi-label">Closed (7d)</span>
-                        <span class="pb-kpi-value" data-kpi="bubbles-closed-7d">&mdash;</span>
-                        <span class="pb-kpi-sub" data-kpi-sub="bubbles-closed-7d">approved or rejected this week</span>
-                    </a>
+                    <span class="pb-kpi-label">Closed (7d)</span>
+                    <span class="pb-kpi-value" data-kpi="bubbles-closed-7d">&mdash;</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="bubbles-closed-7d">approved or rejected this week</span>
                     <span class="pb-action-badge" data-who="none" data-db-badge="bubbles-closed-7d">ok &middot; closures archived</span>
                 </div>
                 <div class="pb-kpi-card is-info">
-                    <a class="pb-kpi-link" href="../../.claude/state/discussion-bubbles/" title="Open .claude/state/discussion-bubbles/ source directory" style="text-decoration: none; color: inherit; display: contents;">
-                        <span class="pb-kpi-label">Approved w/ dissent</span>
-                        <span class="pb-kpi-value" data-kpi="bubbles-dissent">&mdash;</span>
-                        <span class="pb-kpi-sub" data-kpi-sub="bubbles-dissent">non-unanimous outcomes (9-bubble quorum 3 per AMD-026)</span>
-                    </a>
+                    <span class="pb-kpi-label">Approved w/ dissent</span>
+                    <span class="pb-kpi-value" data-kpi="bubbles-dissent">&mdash;</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="bubbles-dissent">non-unanimous outcomes</span>
                     <span class="pb-action-badge" data-who="none" data-db-badge="bubbles-dissent">ok &middot; reconciled</span>
                 </div>
             </div>

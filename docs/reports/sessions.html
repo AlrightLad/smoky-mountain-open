@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sessions — PARBAUGHS Orchestration</title>
+    <link rel="stylesheet" href="_assets/dashboard-shell.css">
+    <style>
+        .sess-page-wrap { max-width: var(--max-content); margin: 0 auto; padding: var(--space-5) var(--space-4); }
+        .sess-hero { padding: var(--space-5) 0 var(--space-4); border-bottom: 1px solid var(--border-subtle); margin-bottom: var(--space-5); }
+        .sess-hero h1 { font-family: var(--font-display); font-size: 2.5rem; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 var(--space-2); }
+        .sess-hero p { color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.5; max-width: 720px; margin: 0; }
+
+        .sess-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: var(--space-4); }
+
+        .sess-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            transition: border-color 180ms ease-out, transform 180ms ease-out, box-shadow 180ms ease-out;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            min-height: 200px;
+        }
+        .sess-card:hover { border-color: var(--accent-brass); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.18); }
+
+        .sess-card-date { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--text-tertiary); font-weight: 600; }
+        .sess-card-title { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; line-height: 1.25; margin: 0; color: var(--text-primary); }
+        .sess-card-grade {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: var(--radius-pill);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+        .sess-card-grade.is-a { background: rgba(74,128,103,.18); color: var(--accent-moss); }
+        .sess-card-grade.is-b { background: rgba(74,138,156,.18); color: var(--accent-teal); }
+        .sess-card-grade.is-c { background: rgba(212,168,87,.18); color: var(--accent-amber); }
+        .sess-card-grade.is-d { background: rgba(156,74,74,.18); color: var(--accent-claret); }
+        .sess-card-grade.is-f { background: rgba(156,74,74,.28); color: var(--accent-claret); }
+        .sess-card-delta { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--text-secondary); }
+        .sess-card-delta.is-up { color: var(--accent-moss); }
+        .sess-card-delta.is-down { color: var(--accent-claret); }
+
+        .sess-card-summary { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.5; margin: 0; flex: 1; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+
+        .sess-card-foot { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); padding-top: var(--space-2); border-top: 1px solid var(--border-subtle); }
+        .sess-card-foot-stat { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--text-tertiary); }
+        .sess-card-cta { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-brass); font-weight: 600; }
+
+        .sess-empty { padding: var(--space-6); background: var(--bg-card); border: 1px dashed var(--border-subtle); border-radius: var(--radius-md); text-align: center; color: var(--text-secondary); }
+    </style>
+</head>
+<body class="pb-app">
+    <header class="pb-page-header">
+        <nav class="pb-page-nav">
+            <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
+            <div class="pb-page-nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="app-health.html">App Health</a>
+                <a href="activity.html">Activity</a>
+                <a href="discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="proposals.html">Proposals</a>
+                <a href="amendments.html">Amendments</a>
+                <a href="main-flows.html">Main Flows</a>
+                <a href="design-system.html">Design System</a>
+                <a href="token-usage.html">Tokens</a>
+                <a href="sessions.html" class="is-active">Sessions</a>
+                <a href="founder-checklist.html">Founder Checklist</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="pb-page-main">
+        <div class="sess-page-wrap">
+            <section class="sess-hero">
+                <h1>Sessions</h1>
+                <p>Every autonomous work session, captured. Each card opens the full summary — what shipped, what was deferred, the critique loop's findings, and the quality grade. Sessions update in place when the critique loop finds further refinement opportunities.</p>
+            </section>
+
+            <section>
+                <div id="sessions-grid" class="sess-grid">
+                    <div class="sess-empty">Loading sessions…</div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="pb-page-footer">
+        Source: <code>.claude/state/session-summary-*.md</code> ·
+        <a href="dashboard.html">Dashboard</a>
+    </footer>
+
+    <script id="report-data" type="application/json">
+{
+  "schema_version": "sessions-v1",
+  "generated_at": "2026-05-21T15:14:32.906776Z",
+  "sessions": [
+    {
+      "file": ".claude/state/session-summary-2026-05-21.md",
+      "detail_path": "../../.claude/state/session-summary-2026-05-21.md",
+      "date": "2026-05-21",
+      "title": "Autonomous session summary — 2026-05-21 (overnight)",
+      "grade": "D",
+      "score": "score 54.6",
+      "delta": "+26.4 points",
+      "ships_shipped": "24",
+      "commits": "—",
+      "summary": "App Health: D (54.6) → B+ (81.0)** — +26.4 points across all 12 dimensions\n- **24 ships tracked** in `.claude/state/ship-progress/` (was 0 at session start)\n- **All commits pushed to `origin/main`**, tree clean\n- **Smoke: chromium 26/26 · firefox 26/26 · webkit 22/26 · webkit-mobile 23/26** (97/104 = 93.3%; 7 failures all webkit timing-flakes, known B.43)\n- **Dashboard smoke: 10/10** (axe-core a11",
+      "critique_applied": false,
+      "runtime": "overnight"
+    }
+  ]
+}
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                var data = JSON.parse(document.getElementById('report-data').textContent);
+                var sessions = data.sessions || [];
+                var grid = document.getElementById('sessions-grid');
+                if (!sessions.length) {
+                    grid.innerHTML = '<div class="sess-empty">No sessions captured yet. The first session summary lands at <code>.claude/state/session-summary-YYYY-MM-DD.md</code>.</div>';
+                    return;
+                }
+                function esc(s) { return s == null ? '' : String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
+                function gradeClass(g) {
+                    if (!g) return '';
+                    var l = String(g).trim()[0].toLowerCase();
+                    if (l === 'a') return 'is-a';
+                    if (l === 'b') return 'is-b';
+                    if (l === 'c') return 'is-c';
+                    if (l === 'd') return 'is-d';
+                    return 'is-f';
+                }
+                function deltaClass(d) {
+                    if (!d) return '';
+                    if (d.indexOf('+') === 0) return 'is-up';
+                    if (d.indexOf('-') === 0) return 'is-down';
+                    return '';
+                }
+                grid.innerHTML = sessions.map(function(s) {
+                    return '<a class="sess-card" href="' + esc(s.detail_path || '#') + '">'
+                         + '<div class="sess-card-date">' + esc(s.date || 'session') + ' · ' + esc(s.runtime || '') + '</div>'
+                         + '<h2 class="sess-card-title">' + esc(s.title || 'Autonomous session') + '</h2>'
+                         + '<div style="display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap">'
+                         + '<span class="sess-card-grade ' + gradeClass(s.grade) + '">' + esc(s.grade || '—') + '</span>'
+                         + '<span class="sess-card-delta ' + deltaClass(s.delta) + '">' + esc(s.delta || '') + '</span>'
+                         + '<span class="sess-card-delta">' + esc(s.score || '') + '</span>'
+                         + '</div>'
+                         + '<p class="sess-card-summary">' + esc(s.summary || '') + '</p>'
+                         + '<div class="sess-card-foot">'
+                         + '<span class="sess-card-foot-stat">' + esc(s.ships_shipped || '0') + ' ships · ' + esc(s.commits || '0') + ' commits</span>'
+                         + '<span class="sess-card-cta">Open ' + (s.critique_applied ? '✦' : '→') + '</span>'
+                         + '</div>'
+                         + '</a>';
+                }).join('');
+            } catch (e) {
+                console.error('Sessions render failed:', e);
+                document.getElementById('sessions-grid').innerHTML = '<div class="sess-empty">Failed to render sessions: ' + (e && e.message) + '</div>';
+            }
+        });
+    </script>
+    <script src="_assets/live-refresh.js" defer></script>
+</body>
+</html>

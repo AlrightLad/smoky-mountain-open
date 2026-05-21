@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Founder Checklist — PARBAUGHS Orchestration</title>
+    <link rel="stylesheet" href="_assets/dashboard-shell.css">
+    <style>
+        .fc-page-wrap { max-width: var(--max-content); margin: 0 auto; padding: var(--space-5) var(--space-4); }
+        .fc-hero { padding: var(--space-5) 0 var(--space-4); border-bottom: 1px solid var(--border-subtle); margin-bottom: var(--space-5); }
+        .fc-hero h1 { font-family: var(--font-display); font-size: 2.5rem; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 var(--space-2); color: var(--accent-claret); }
+        .fc-hero p { color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.5; max-width: 720px; margin: 0; }
+
+        .fc-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-3); margin-bottom: var(--space-5); }
+        .fc-stat-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-3); }
+        .fc-stat-label { font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-tertiary); margin-bottom: var(--space-1); }
+        .fc-stat-value { font-family: var(--font-display); font-size: 2rem; font-weight: 600; line-height: 1; color: var(--text-primary); }
+        .fc-stat-value.is-blocking { color: var(--accent-claret); }
+        .fc-stat-sub { font-size: 0.75rem; color: var(--text-secondary); margin-top: var(--space-1); }
+
+        .fc-section-title { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.13em; color: var(--accent-brass); margin: var(--space-5) 0 var(--space-3); font-weight: 600; }
+
+        .fc-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-left: 3px solid var(--accent-brass);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-3);
+        }
+        .fc-item.is-money { border-left-color: var(--accent-claret); }
+        .fc-item.is-account { border-left-color: var(--accent-teal); }
+        .fc-item.is-physical { border-left-color: var(--accent-violet); }
+
+        .fc-item-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); margin-bottom: var(--space-2); }
+        .fc-item-title { font-size: 1.0625rem; font-weight: 600; color: var(--text-primary); margin: 0; flex: 1; }
+        .fc-item-tag { font-family: var(--font-mono); font-size: 0.625rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: var(--radius-pill); flex-shrink: 0; }
+        .fc-item-tag.is-money { background: rgba(156,74,74,.18); color: var(--accent-claret); }
+        .fc-item-tag.is-account { background: rgba(74,138,156,.18); color: var(--accent-teal); }
+        .fc-item-tag.is-physical { background: rgba(140,90,180,.18); color: var(--accent-violet); }
+
+        .fc-item-blocker { font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.5; margin: 0 0 var(--space-3); padding: var(--space-2) var(--space-3); background: var(--bg-page); border-radius: var(--radius-sm); border-left: 2px solid var(--border-subtle); }
+        .fc-item-blocker strong { color: var(--text-primary); }
+
+        .fc-item-section-label { font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); margin: var(--space-3) 0 var(--space-1); font-weight: 600; }
+        .fc-item-howto { font-size: 0.875rem; color: var(--text-primary); line-height: 1.5; margin: 0; }
+        .fc-item-howto code { background: var(--bg-page); padding: 1px 6px; border-radius: 2px; font-size: 0.8125rem; }
+
+        .fc-item-impact { display: flex; gap: var(--space-3); margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--border-subtle); font-size: 0.75rem; color: var(--text-secondary); flex-wrap: wrap; }
+        .fc-item-impact-cell strong { color: var(--text-primary); font-family: var(--font-mono); font-weight: 600; }
+
+        .fc-empty { padding: var(--space-6); background: var(--bg-card); border: 1px dashed var(--accent-moss); border-radius: var(--radius-md); text-align: center; color: var(--text-secondary); }
+        .fc-empty strong { color: var(--accent-moss); }
+    </style>
+</head>
+<body class="pb-app">
+    <header class="pb-page-header">
+        <nav class="pb-page-nav">
+            <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
+            <div class="pb-page-nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="app-health.html">App Health</a>
+                <a href="activity.html">Activity</a>
+                <a href="discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="proposals.html">Proposals</a>
+                <a href="amendments.html">Amendments</a>
+                <a href="main-flows.html">Main Flows</a>
+                <a href="design-system.html">Design System</a>
+                <a href="token-usage.html">Tokens</a>
+                <a href="sessions.html">Sessions</a>
+                <a href="founder-checklist.html" class="is-active">Founder Checklist</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="pb-page-main">
+        <div class="fc-page-wrap">
+            <section class="fc-hero">
+                <h1>Founder Checklist</h1>
+                <p>Only items the orchestration team cannot complete due to software limitations. Each item explains the exact blocker + how to apply. Per Founder rule: the only Founder involvement should be when money needs to be spent OR when biometric / external auth is required.</p>
+            </section>
+
+            <section class="fc-stats">
+                <div class="fc-stat-card">
+                    <div class="fc-stat-label">Open items</div>
+                    <div class="fc-stat-value is-blocking" data-fc="open-count">—</div>
+                    <div class="fc-stat-sub">awaiting your action</div>
+                </div>
+                <div class="fc-stat-card">
+                    <div class="fc-stat-label">Money required</div>
+                    <div class="fc-stat-value" data-fc="money-count">—</div>
+                    <div class="fc-stat-sub">paid services / accounts</div>
+                </div>
+                <div class="fc-stat-card">
+                    <div class="fc-stat-label">External auth</div>
+                    <div class="fc-stat-value" data-fc="auth-count">—</div>
+                    <div class="fc-stat-sub">biometric / MFA / console login</div>
+                </div>
+                <div class="fc-stat-card">
+                    <div class="fc-stat-label">Last refreshed</div>
+                    <div class="fc-stat-value" data-fc="generated" style="font-size:0.875rem; font-family: var(--font-mono); line-height: 1.4; padding-top:8px">—</div>
+                    <div class="fc-stat-sub">per-commit</div>
+                </div>
+            </section>
+
+            <h2 class="fc-section-title">Open items</h2>
+            <div id="fc-items">
+                <div class="fc-empty">Loading…</div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="pb-page-footer">
+        Source: <code>.claude/state/task-queue/founder/</code> ·
+        <a href="dashboard.html">Dashboard</a> · <a href="sessions.html">Sessions</a>
+    </footer>
+
+    <script id="report-data" type="application/json">
+{}
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                var data = JSON.parse(document.getElementById('report-data').textContent);
+                var items = data.items || [];
+
+                function esc(s) { return s == null ? '' : String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
+                function escCode(s) { return esc(s).replace(/`([^`]+)`/g, '<code>$1</code>'); }
+
+                // Categorize
+                var byCat = { money: 0, account: 0, physical: 0 };
+                items.forEach(function(it) {
+                    var c = (it.category || 'account').toLowerCase();
+                    if (byCat[c] != null) byCat[c]++;
+                });
+
+                document.querySelector('[data-fc="open-count"]').textContent = items.length;
+                document.querySelector('[data-fc="money-count"]').textContent = byCat.money;
+                document.querySelector('[data-fc="auth-count"]').textContent = byCat.account + byCat.physical;
+                document.querySelector('[data-fc="generated"]').textContent = data.generated_at_pretty || (new Date()).toISOString().slice(0, 16).replace('T', ' ');
+
+                var container = document.getElementById('fc-items');
+                if (!items.length) {
+                    container.innerHTML = '<div class="fc-empty"><strong>You\'re clear!</strong><br>No Founder-blocking items right now. Everything the agents needed your input for has been resolved.</div>';
+                    return;
+                }
+                container.innerHTML = items.map(function(it) {
+                    var cat = (it.category || 'account').toLowerCase();
+                    return '<div class="fc-item is-' + esc(cat) + '">'
+                         + '<div class="fc-item-head">'
+                         + '<h3 class="fc-item-title">' + esc(it.title || '') + '</h3>'
+                         + '<span class="fc-item-tag is-' + esc(cat) + '">' + esc(cat) + '</span>'
+                         + '</div>'
+                         + (it.blocker ? '<p class="fc-item-blocker"><strong>Why agent can\'t do this:</strong> ' + escCode(it.blocker) + '</p>' : '')
+                         + (it.howto ? '<div class="fc-item-section-label">How to complete</div><p class="fc-item-howto">' + escCode(it.howto) + '</p>' : '')
+                         + (it.source_doc ? '<div class="fc-item-section-label">Source</div><p class="fc-item-howto"><a href="' + esc(it.source_doc) + '" style="color:var(--accent-brass)">' + esc(it.source_doc) + '</a></p>' : '')
+                         + '<div class="fc-item-impact">'
+                         + (it.time_estimate ? '<span class="fc-item-impact-cell">Time: <strong>' + esc(it.time_estimate) + '</strong></span>' : '')
+                         + (it.unblocks ? '<span class="fc-item-impact-cell">Unblocks: <strong>' + esc(it.unblocks) + '</strong></span>' : '')
+                         + (it.impact_dim ? '<span class="fc-item-impact-cell">Dashboard lift: <strong>' + esc(it.impact_dim) + '</strong></span>' : '')
+                         + '</div>'
+                         + '</div>';
+                }).join('');
+            } catch (e) {
+                console.error('Founder Checklist render failed:', e);
+                document.getElementById('fc-items').innerHTML = '<div class="fc-empty">Failed to render: ' + (e && e.message) + '</div>';
+            }
+        });
+    </script>
+    <script src="_assets/live-refresh.js" defer></script>
+</body>
+</html>

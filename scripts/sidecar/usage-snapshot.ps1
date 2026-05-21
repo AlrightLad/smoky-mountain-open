@@ -158,13 +158,41 @@ $status = [ordered]@{
 # label instead of "sidecar empty".
 function Get-AutoDerivedWeeklyTokens {
     param([string]$repoRoot)
+    # Two-source fallback (2026-05-21 Founder data-accuracy fix):
+    # 1. current-snapshot.json (cycle telemetry)
+    # 2. session-transcript-summary.json (claude.ai conversation JSONL roll-up)
+    #
+    # current-snapshot may be 0 if no cycles are tagged for the week. Session
+    # transcripts persist all token usage. Fall through to the broader source
+    # when the narrower one is empty.
     $snapPath = Join-Path $repoRoot ".claude\state\telemetry\aggregates\current-snapshot.json"
-    if (-not (Test-Path $snapPath)) { return $null }
-    try {
-        $snap = Get-Content $snapPath -Raw -Encoding utf8 | ConvertFrom-Json
-        $measured = [int]($snap.weekly_tokens)
-        if ($measured -gt 0) { return $measured }
-    } catch { return $null }
+    if (Test-Path $snapPath) {
+        try {
+            $snap = Get-Content $snapPath -Raw -Encoding utf8 | ConvertFrom-Json
+            $measured = [int]($snap.weekly_tokens)
+            if ($measured -gt 0) { return $measured }
+        } catch { }
+    }
+    # Fallback: session-transcript-summary.json carries by_day_total (~/.claude/projects/*.jsonl roll-up).
+    # Sum the last 7 days (including today) to compute weekly_real_7d on the fly.
+    $transPath = Join-Path $repoRoot ".claude\state\telemetry\aggregates\session-transcript-summary.json"
+    if (Test-Path $transPath) {
+        try {
+            $trans = Get-Content $transPath -Raw -Encoding utf8 | ConvertFrom-Json
+            $byDay = $trans.by_day_total
+            if ($byDay) {
+                $cutoff = (Get-Date).AddDays(-7).Date
+                [int64]$sum = 0
+                foreach ($prop in $byDay.PSObject.Properties) {
+                    try {
+                        $d = [datetime]::ParseExact($prop.Name, "yyyy-MM-dd", $null)
+                        if ($d -ge $cutoff) { $sum += [int64]$prop.Value }
+                    } catch { }
+                }
+                if ($sum -gt 0) { return $sum }
+            }
+        } catch { }
+    }
     return $null
 }
 

@@ -150,15 +150,16 @@
             <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
             <div class="pb-page-nav-links">
                 <a href="dashboard.html">Dashboard</a>
+                <a href="app-health.html">App Health</a>
                 <a href="activity.html">Activity</a>
                 <a href="discussion-bubbles.html">Discussion Bubbles</a>
                 <a href="proposals.html" class="is-active">Proposals</a>
                 <a href="amendments.html">Amendments</a>
                 <a href="main-flows.html">Main Flows</a>
                 <a href="design-system.html">Design System</a>
-                <a href="app-health.html">App Health</a>
                 <a href="token-usage.html">Tokens</a>
-                <a href="index.html">Index</a>
+                <a href="sessions.html">Sessions</a>
+                <a href="founder-checklist.html">Founder Checklist</a>
             </div>
         </nav>
     </header>
@@ -199,13 +200,14 @@
                  pending bucket / session marks; WHERE = .claude/state/
                  proposals/pending/; WHAT-ACTION = team authors a proposal /
                  Founder marks approve/reject/defer. See updateCounts() below. -->
+            <!-- 2026-05-21 (Founder UX fix): removed <a> wrap on Pending KPI.
+                 The link redirected to a file:// folder listing instead of
+                 showing the actual proposals on the page (the list IS below). -->
             <div class="pb-kpi-grid is-decision-queue">
                 <div class="pb-kpi-card">
-                    <a class="pb-kpi-link" href="../../.claude/state/proposals/pending/" title="Open .claude/state/proposals/pending/ to verify count" style="text-decoration: none; color: inherit; display: contents;">
-                        <span class="pb-kpi-label">Pending</span>
-                        <span class="pb-kpi-value" id="count-pending">&mdash;</span>
-                        <span class="pb-kpi-sub" data-kpi-sub="pending">awaiting Founder review</span>
-                    </a>
+                    <span class="pb-kpi-label">Pending</span>
+                    <span class="pb-kpi-value" id="count-pending">&mdash;</span>
+                    <span class="pb-kpi-sub" data-kpi-sub="pending">awaiting Founder review</span>
                     <span class="pb-action-badge" data-who="none" data-prp-badge="pending">ok &middot; no pending</span>
                 </div>
                 <div class="pb-kpi-card is-positive">
