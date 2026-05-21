@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-05-21T18:42:13.083296+00:00",
-  "as_of": "2026-05-21T18:42:13.083296+00:00",
+  "generated_at": "2026-05-21T18:43:58.497296+00:00",
+  "as_of": "2026-05-21T18:43:58.497296+00:00",
   "_meter_status": "wired-real",
   "_meter_note": "Token meter is wired to real data via PROP-003.a sidecar (.claude/state/quota-status.json). weekly_tokens reflects the most recent meter reading. See quota_status block for org-monthly percentage + freshness.",
   "quota_status": {
     "state": "fresh",
     "as_of": "2026-05-21T18:42:12.8001034Z",
-    "age_seconds": 0,
+    "age_seconds": 105,
     "weekly_tokens": 5827920271,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -20,7 +20,7 @@
   "weekly_tokens_estimated": 0,
   "weekly_tokens_methodology": "measured: cycle.budget.checkpoint deltas + cycle.paused tokens + legacy 'tokens' field. estimated: session.team-work.summary tokens_estimated (operator-asserted, NOT measurements). Both filtered to past 7 days. For ground truth, paste from claude.ai via scripts/refresh-quota-manual.ps1.",
   "weekly_cost": 139870.09,
-  "ships_this_week": 15,
+  "ships_this_week": 16,
   "ships_trend_7d": {
     "labels": [
       "Fri",
@@ -38,7 +38,7 @@
       0,
       2,
       3,
-      8
+      9
     ]
   },
   "handoffs_trend_7d": {
@@ -166,6 +166,18 @@
   },
   "recent_ships": [
     {
+      "id": "W1.A8-performance-lighthouse",
+      "title": "Lift Lighthouse Performance 65 -> 85+ across all 6 sampled pages",
+      "kind": "ship",
+      "status": "planned",
+      "completed_at": "2026-05-21T18:45:00Z",
+      "tokens": null,
+      "tokens_source": "unknown",
+      "tokens_events_matched": 0,
+      "cost_usd": null,
+      "source_path": ".claude/state/ship-progress/W1.A8-performance-lighthouse.json"
+    },
+    {
       "id": "W1.A5-page-size-refactor",
       "title": "Split src/pages/ files over 800-line AMD-027 budget",
       "kind": "ship",
@@ -272,22 +284,10 @@
       "tokens_events_matched": 0,
       "cost_usd": null,
       "source_path": ".claude/state/ship-progress/W1.I3.json"
-    },
-    {
-      "id": "W1.S1",
-      "title": "W1.S1",
-      "kind": "ship",
-      "status": "in-progress",
-      "completed_at": "2026-05-20T21:55:00Z",
-      "tokens": null,
-      "tokens_source": "unknown",
-      "tokens_events_matched": 0,
-      "cost_usd": null,
-      "source_path": ".claude/state/ship-progress/W1.S1.json"
     }
   ],
   "_aggregate_counts": {
-    "events_total": 6154,
+    "events_total": 6157,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
