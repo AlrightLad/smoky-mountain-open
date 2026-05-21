@@ -1,0 +1,118 @@
+{
+  "schema_version": "dashboard-smoke-v1",
+  "generated_at": "2026-05-21T03:58:10.645Z",
+  "total": 10,
+  "passed": 10,
+  "results": [
+    {
+      "file": "activity.html",
+      "passed": true,
+      "issues": [],
+      "stats": {
+        "bodyTextLen": 26552,
+        "kpiPopulated": 8,
+        "kpiTotal": 8,
+        "navLinkCount": 10
+      }
+    },
+    {
+      "file": "amendments.html",
+      "passed": true,
+      "issues": [],
+      "stats": {
+        "bodyTextLen": 1918,
+        "kpiPopulated": 4,
+        "kpiTotal": 4,
+        "navLinkCount": 10
+      }
+    },
+    {
+      "file": "app-health.html",
+      "passed": true,
+      "issues": [],
+      "stats": {
+        "bodyTextLen": 8729,
+        "kpiPopulated": 0,
+        "kpiTotal": 0,
+        "navLinkCount": 10
+      }
+    },
+    {
+      "file": "dashboard.html",
+      "passed": true,
+      "issues": [],
+      "stats": {
+        "bodyTextLen": 7871,
+        "kpiPopulated": 37,
+        "kpiTotal": 38,
+        "navLinkCount": 10
+      }
+    },
+    {
+      "file": "design-system.html",
+      "passed": true,
+      "issues": [],
+      "stats": {
+        "bodyTextLen": 8384,
+        "kpiPopulated": 0,
+        "kpiTotal": 0,
+        "navLinkCount": 10
+      }
+    },
+    {
+      "file": "discussion-bubbles.html",
+      "passed": true,
+      "issues": [],
+      "stats": {
+        "bodyTextLen": 9329,
+        "kpiPopulated": 4,
+        "kpiTotal": 4,
+        "navLinkCount": 10
+      }
+    },
+    {
+      "file": "escalations.html",
+      "passed": true,
+      "issues": [],
+      "stats": {
+        "bodyTextLen": 2110,
+        "kpiPopulated": 4,
+        "kpiTotal": 4,
+        "navLinkCount": 11
+      }
+    },
+    {
+      "file": "main-flows.html",
+      "passed": true,
+      "issues": [],
+      "stats": {
+        "bodyTextLen": 3528,
+        "kpiPopulated": 0,
+        "kpiTotal": 0,
+        "navLinkCount": 10
+      }
+    },
+    {
+      "file": "proposals.html",
+      "passed": true,
+      "issues": [],
+      "stats": {
+        "bodyTextLen": 29119,
+        "kpiPopulated": 0,
+        "kpiTotal": 0,
+        "navLinkCount": 10
+      }
+    },
+    {
+      "file": "token-usage.html",
+      "passed": true,
+      "issues": [],
+      "stats": {
+        "bodyTextLen": 3185,
+        "kpiPopulated": 3,
+        "kpiTotal": 3,
+        "navLinkCount": 10
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T03:54:37.501867Z",
+  "generated_at": "2026-05-21T03:58:50.112453Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 78.9,
   "overall_grade": "B",
@@ -293,13 +293,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "2c2ce00b",
-    "subject": "[FIX] dashboard blank: renderFounderQueue scope bug + per-section try/catch hardening + fmtTime fix. 0 console errors verified via diag.",
-    "committed_at": "2026-05-20T23:54:23-04:00",
+    "sha": "898e7b75",
+    "subject": "[PREVENT] dashboard smoke suite (Founder standard) â€” 9 assertions per page incl. console errors, KPI population, nav consistency. + nav fixes (dashboard+token-usage missing App Health). 10/10 pass.",
+    "committed_at": "2026-05-20T23:58:34-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 2
+    "total_files_touched": 4
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
