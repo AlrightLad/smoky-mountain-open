@@ -63,8 +63,31 @@
         details.fc-walkthrough > summary { padding: var(--space-2) var(--space-3); cursor: pointer; font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-brass); user-select: none; }
         details.fc-walkthrough > summary:hover { color: var(--text-primary); }
         details.fc-walkthrough[open] > summary { border-bottom: 1px solid var(--border-subtle); color: var(--text-primary); }
-        .fc-walk-body { padding: var(--space-3); font-size: 0.875rem; color: var(--text-primary); line-height: 1.55; white-space: pre-wrap; }
-        .fc-walk-body code { background: var(--bg-card); padding: 1px 6px; border-radius: 2px; font-size: 0.8125rem; }
+        .fc-walk-body { padding: var(--space-4); font-size: 0.875rem; color: var(--text-primary); line-height: 1.6; }
+        .fc-walk-body.is-summary-only { white-space: pre-wrap; padding: var(--space-3); line-height: 1.55; }
+
+        /* Founder reads full walkthrough HERE — no "open source doc" trip needed */
+        .fc-walk-body h1 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; margin: 0 0 var(--space-3); color: var(--text-primary); }
+        .fc-walk-body h2 { font-family: var(--font-display); font-size: 1.125rem; font-weight: 600; margin: var(--space-4) 0 var(--space-2); color: var(--accent-brass); border-bottom: 1px solid var(--border-subtle); padding-bottom: var(--space-1); }
+        .fc-walk-body h3 { font-size: 1rem; font-weight: 600; margin: var(--space-3) 0 var(--space-2); color: var(--text-primary); }
+        .fc-walk-body h4 { font-size: 0.9375rem; font-weight: 600; margin: var(--space-3) 0 var(--space-1); color: var(--text-secondary); }
+        .fc-walk-body p { margin: 0 0 var(--space-2); }
+        .fc-walk-body ul, .fc-walk-body ol { margin: 0 0 var(--space-3); padding-left: var(--space-4); }
+        .fc-walk-body li { margin-bottom: var(--space-1); line-height: 1.55; }
+        .fc-walk-body code { background: var(--bg-card); padding: 2px 6px; border-radius: 3px; font-family: var(--font-mono); font-size: 0.8125rem; color: var(--accent-teal); }
+        .fc-walk-body pre { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: var(--space-3); overflow-x: auto; margin: 0 0 var(--space-3); }
+        .fc-walk-body pre code { background: transparent; padding: 0; color: var(--text-primary); font-size: 0.8125rem; line-height: 1.5; }
+        .fc-walk-body a { color: var(--accent-brass); text-decoration: underline; text-underline-offset: 2px; }
+        .fc-walk-body a:hover { color: var(--accent-claret); }
+        .fc-walk-body strong { font-weight: 600; color: var(--text-primary); }
+        .fc-walk-body img { max-width: 100%; height: auto; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); margin: var(--space-2) 0; }
+        .fc-walk-body table { width: 100%; border-collapse: collapse; margin: var(--space-3) 0; font-size: 0.8125rem; }
+        .fc-walk-body th, .fc-walk-body td { border: 1px solid var(--border-subtle); padding: 8px 12px; text-align: left; }
+        .fc-walk-body th { background: var(--bg-card); font-weight: 600; color: var(--text-primary); }
+        .fc-walk-body details { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3); margin: var(--space-2) 0; }
+        .fc-walk-body details > summary { cursor: pointer; font-weight: 600; color: var(--accent-brass); }
+        .fc-walk-body hr { border: none; border-top: 1px solid var(--border-subtle); margin: var(--space-4) 0; }
+        .fc-walk-body blockquote { border-left: 3px solid var(--accent-brass); padding-left: var(--space-3); margin: var(--space-2) 0; color: var(--text-secondary); font-style: italic; }
 
         .fc-actions { display: flex; gap: var(--space-2); margin-top: var(--space-3); flex-wrap: wrap; align-items: center; }
         .fc-action-btn { font-family: var(--font-mono); font-size: 0.75rem; padding: 8px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); background: var(--bg-page); color: var(--text-primary); cursor: pointer; transition: all 0.15s ease; }
@@ -217,11 +240,14 @@
                              + '</div>'
                              + (it.blocker ? '<p class="fc-item-blocker"><strong>Why agent can\'t do this:</strong> ' + fmtInline(it.blocker) + '</p>' : '')
                              + (it.howto ? '<div class="fc-item-section-label">Quick summary</div><p class="fc-item-howto">' + fmtInline(it.howto) + '</p>' : '')
-                             + (it.walkthrough ? '<details class="fc-walkthrough"><summary>Review walkthrough →</summary><div class="fc-walk-body">' + fmtInline(it.walkthrough) + '</div></details>' : '')
+                             // Walkthrough — prefer full HTML doc; fall back to inline summary if walkthrough_doc absent.
+                             // Founder reads here (HQ-style); no need to open external files.
+                             + (it.walkthrough_html
+                                   ? '<details class="fc-walkthrough"><summary>Full walkthrough — read here ↓</summary><div class="fc-walk-body">' + it.walkthrough_html + '</div></details>'
+                                   : (it.walkthrough ? '<details class="fc-walkthrough"><summary>Quick walkthrough →</summary><div class="fc-walk-body is-summary-only">' + fmtInline(it.walkthrough) + '</div></details>' : ''))
                              + verifyExcerpt
                              + '<div class="fc-actions">'
                              +     '<button class="fc-action-btn is-primary" data-mark-cmd="' + esc(markCmd) + '">Mark complete (copy command)</button>'
-                             +     (it.source_doc ? '<a class="fc-action-btn" href="' + esc(it.source_doc) + '" target="_blank" rel="noopener">Open source doc</a>' : '')
                              +     '<span class="fc-action-help">Paste in PowerShell — verification runs automatically</span>'
                              + '</div>'
                              + '<div class="fc-item-impact">'

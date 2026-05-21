@@ -144,7 +144,11 @@ def extract_howto(text: str) -> str:
 
 
 def extract_walkthrough(text: str, fm: dict) -> str:
-    """Multi-step walkthrough Founder reviews before doing the work."""
+    """Multi-step walkthrough Founder reviews before doing the work.
+
+    Returns the inline summary (short — shown in card). For the FULL walkthrough
+    rendered as HTML, see load_walkthrough_html which reads walkthrough_doc.
+    """
     # 1. Explicit walkthrough section
     s = extract_section(
         text,
@@ -158,6 +162,40 @@ def extract_walkthrough(text: str, fm: dict) -> str:
         r'##\s*How\s+to\s+(?:apply|complete|do).*?\n+(.+?)(?=\n##|\n#|\Z)',
     )
     return s[:1500]
+
+
+def load_walkthrough_html(fm: dict) -> str:
+    """Load the full walkthrough_doc file, render markdown -> HTML.
+
+    Per Founder directive 2026-05-21: "walkthroughs should not open source doc
+    but just show the full doc in a way I can easily review and read it...
+    can even show an image if needed. This makes the dashboard more of a hq".
+
+    Returns sanitized-ish HTML (markdown library output). Empty string if no
+    walkthrough_doc declared or file missing.
+    """
+    rel_path = fm.get("walkthrough_doc")
+    if not rel_path:
+        return ""
+    full_path = ROOT / rel_path
+    if not full_path.exists():
+        return f"<p><em>walkthrough_doc not found: {rel_path}</em></p>"
+    try:
+        md_text = full_path.read_text(encoding="utf-8")
+    except OSError:
+        return f"<p><em>walkthrough_doc unreadable: {rel_path}</em></p>"
+    try:
+        import markdown
+        html = markdown.markdown(
+            md_text,
+            extensions=["fenced_code", "tables", "nl2br"],
+            output_format="html5",
+        )
+        return html
+    except ImportError:
+        # Fallback: emit pre-wrapped raw markdown if package missing
+        from html import escape
+        return f"<pre>{escape(md_text)}</pre>"
 
 
 def extract_time(text: str) -> str:
@@ -260,6 +298,7 @@ def main() -> int:
                 "blocker": extract_blocker(text),
                 "howto": extract_howto(text),
                 "walkthrough": extract_walkthrough(text, fm),
+                "walkthrough_html": load_walkthrough_html(fm),
                 "verify_command": fm.get("verify_command", ""),
                 "verify_expected": fm.get("verify_expected", ""),
                 "time_estimate": extract_time(text),
