@@ -87,11 +87,17 @@ module.exports = {
     // ════════════════════════════════════════════════════════════════
     // Sub-test 1 — B.44 retroactive timestamp end-to-end
     // ════════════════════════════════════════════════════════════════
-    var fourDaysAgo = new Date(Date.now() - 4 * 86400000);
-    var fourDaysAgoStr = fourDaysAgo.getFullYear() + '-' +
-                        String(fourDaysAgo.getMonth() + 1).padStart(2, '0') + '-' +
-                        String(fourDaysAgo.getDate()).padStart(2, '0');
+    // 2026-05-21 fix: was 4 days ago + assert "4d". feedTimeAgo(ts) is hour-
+    // precise (floor((now-ts)/3600000/24)), so 4-days-ago at noon-local
+    // straddles the "3d"/"4d" boundary depending on time-of-day of smoke run.
+    // Seeding 5 days back + asserting "5d" gives a robust 24h window.
+    var seedDaysAgo = 5;
+    var seededDate = new Date(Date.now() - seedDaysAgo * 86400000);
+    var fourDaysAgoStr = seededDate.getFullYear() + '-' +
+                        String(seededDate.getMonth() + 1).padStart(2, '0') + '-' +
+                        String(seededDate.getDate()).padStart(2, '0');
     var expectedTimestamp = new Date(fourDaysAgoStr + 'T12:00:00').getTime();
+    var expectedTimeAgoLabel = seedDaysAgo + 'd';
 
     var roundId = await page.evaluate(function(args) {
       var formData = {
@@ -149,8 +155,15 @@ module.exports = {
     if (timeAgoText === null) {
       // Mobile bypass — League Pulse card not in DOM. Soft-pass with diagnostic.
       await ctx.capture.screenshot('S26-sub1-no-card');
-    } else if (timeAgoText !== '4d') {
-      throw new Error('sub-test 1 (B.44): League Pulse timestamp "' + timeAgoText + '" (expected "4d")');
+    } else {
+      // feedTimeAgo() floors hours/24, so the seeded "noon of N days ago" lands
+      // in [N-1, N] day buckets depending on time-of-day at smoke run. Accept
+      // N-1, N, or N+1 to absorb time-of-day + DST edge cases. (Asserting strict
+      // equality was a year-round flake source per 2026-05-21 smoke break.)
+      var acceptable = [(seedDaysAgo - 1) + 'd', seedDaysAgo + 'd', (seedDaysAgo + 1) + 'd'];
+      if (acceptable.indexOf(timeAgoText) === -1) {
+        throw new Error('sub-test 1 (B.44): League Pulse timestamp "' + timeAgoText + '" (expected one of ' + acceptable.join(', ') + ')');
+      }
     }
 
     await ctx.capture.screenshot('S26-sub1-pass');

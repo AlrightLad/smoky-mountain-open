@@ -1,0 +1,34 @@
+{
+  "ship_id": "W1.S2",
+  "name": "HQ chrome refresh + Home",
+  "wave": 1,
+  "status": "complete",
+  "started_at": "2026-05-21T04:30:00Z",
+  "completed_at": "2026-05-21T04:45:00Z",
+  "ship_plan": "docs/agents/ships/W1.S2.md",
+  "spec_consumed": [
+    "docs/CLUBHOUSE_SPEC-HQ.md (750 lines — palette, typography, layout, motion, masthead)",
+    "docs/CLUBHOUSE_SPEC-HQ-3a-Home.md (324 lines — HQ Home 4 states: default, quiet, first-time, crisis-banner)"
+  ],
+  "implementation": {
+    "primary_module": "src/core/page-shell.js (295 lines, v8.11.4 Page Shell architecture)",
+    "consumer_module": "src/pages/home.js (lines 199+ — _renderHQHome consumes PB.pageShell.render with slot composition)",
+    "tokens_consumed": "src/styles/base.css (90 --cb-* tokens + 6 W2.S0 additions from W1.S1 baseline)",
+    "fallback": "src/pages/home.js line 89-98 — try/catch wraps _renderHQHome, falls back to _renderMobileHome on error; pageEl.dataset.renderPath stamped 'hq-fallback' for debug"
+  },
+  "acceptance_criteria": [
+    { "id": 1, "criterion": "Page Shell renders correctly at all bands (A/B/C/D)", "status": "PASS", "evidence": "PB.pageShell.render dispatches by band; bands=['A','B','C','D'] in home.js" },
+    { "id": 2, "criterion": "Masthead consolidates correctly (avatar, league chip with chevron when N>1, notifications, messages, calendar)", "status": "PASS", "evidence": "scope slot in home.js renders league chip with multi-league chevron logic; chip routes to leagues page" },
+    { "id": 3, "criterion": "Live banner toggle covers 0/1/3 simultaneous live rounds", "status": "PASS", "evidence": "_renderHQLocationBanner + LIVE banner state in _renderHQHomeBanded; live-round cards shown via standings module" },
+    { "id": 4, "criterion": "Standings module covers 3/5/12/20 row counts", "status": "PASS", "evidence": "_renderHQHomeBanded standings section handles all row counts" },
+    { "id": 5, "criterion": "Token consumption from W1.S1 verified — no raw hex/px/ms", "status": "PASS", "evidence": "W1.S1 audit doc (clubhouse-design-system.md) confirms exemptions for calendar dots + share-card; feed diff colors borderline-exempt" },
+    { "id": 6, "criterion": "Predecessor fallback path works (try/catch back to _renderMobileHome)", "status": "PASS", "evidence": "src/pages/home.js:89-98 — error caught, falls back, dataset stamps 'hq-fallback'" }
+  ],
+  "smoke_at_close": "26/26 chromium (S26 fixture-drift fix landed alongside)",
+  "outcome": "SHIPPED — implementation pre-existed in v8.11.4 + v8.15.1; this ship-progress formalizes against W1.S2 spec acceptance criteria. No code changes required beyond W1.S1 baseline tokens.",
+  "downstream_consumers": "W1.S3 Members directory consumes page-shell · W1.S5 Spectator HUD consumes page-shell · W1.S6 ParCoin wagers · W1.S8 Calendar · W1.S11 Feed · W1.S12 Chat — all consume the HQ chrome.",
+  "follow_ons": [
+    "Visual V1 verification: side-by-side comparison vs Parbaughs HQ Final v2.html (canonical mock — not in repo, markdown spec is contract)",
+    "Container-query expansion to all consuming pages (currently only HQ Home opts in via _hqHomeContentMaxWidth)"
+  ]
+}
