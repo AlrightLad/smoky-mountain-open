@@ -262,3 +262,86 @@ Critic attestation: **Pass 2 reflects honest re-run of the heartbeat boundary ag
 ## Exit (Pass 2)
 
 Exiting clean. Committing local state changes; NOT pushing.
+
+---
+
+# Pass 3 — Early-afternoon re-fire (same date)
+
+**Started:** 2026-05-21T13:00:24Z (~1h after Pass 2 at 12:02:16Z)
+**Finished:** 2026-05-21T13:05Z (approx)
+**Mode:** Autonomous (no Founder available)
+**Disposition:** Both inboxes still empty (3rd consecutive pass this date); heartbeat-only path executed again; **round-trip failures: 7 (identical set to Pass 1 + Pass 2).** No new failures, no resolved failures.
+
+## Step 1 — FIQ triage (re-check)
+
+`.claude/state/founder-input-queue/*.md` → 0 entries. **FIQ grades:** A=0, B=0, C=0, D=0, F=0. Same as Pass 1 + Pass 2.
+
+## Step 2 — Bug-report triage (re-check)
+
+`.claude/state/bug-reports/inbox/` still does not exist; parent `.claude/state/bug-reports/` still absent. **0 reports processed, 0 bubbles opened, 0 proposals authored.**
+
+## Step 3 — Heartbeat (re-run)
+
+Ran `& .\scripts\regen-all.ps1`. All 12 sub-steps reported OK individually. Round-trip-test FAIL (exit 1) — identical 7-failure set as Pass 2:
+
+- `lifecycle:shipped-fields: prop=PROP-010`
+- `lifecycle:shipped-fields: prop=PROP-006`
+- `theme:dashboard.html: raw hex count 1 > allowed 0`
+- `protected:main-flows: missing: ['mf-workspace', 'mf-grid', '6-column declared', 'SVG arrows', 'flows list rail', 'steps panel', 'arch-before-rail', 'rail search input', 'rail filter chips', 'rail sources flow_rail']`
+- `proposal-readiness:markers: 1 issues`
+- `scroll-reachability: exit 1`
+- `escalations:lifecycle: 3 issues`
+
+**Delta vs Pass 2:** 0 net change. Same root causes, same fix shapes (see Pass 1 diagnoses for canonical citations).
+
+**Token-usage delta:** Pass 2 → Pass 3: `real` advanced from 8,520,738,214 → 8,527,310,499 (+6.57M ticks); `estimated` from 7,795,140 → 7,835,050 (+39.9K). Consistent with the ~12 cron-routine telemetry/watcher fires logged between 12:02:16Z and 13:00:24Z in `git log`; no anomalous burn.
+
+**User-context-gate WARN drift:** advanced to 9293.3 min (~6.45 days). Still WARN, still not blocking.
+
+**Heartbeat side-effects that DID land this pass:**
+
+- `.claude/state/telemetry/aggregates/current-snapshot.json` re-refreshed (`meter_status=wired-estimated-sidecar-empty`; `events=5732 handoffs=1 bubbles=7 proposals_pending=0`)
+- `.claude/state/telemetry/aggregates/token-usage-snapshot.json` + `.token-usage-cursor.json` advanced
+- `.claude/state/telemetry/events/2026-05-21.ndjson` appended
+- `.claude/state/heartbeats/watcher-last-run.json` updated (by background watcher)
+- Dashboard HTMLs regenerated on disk (gitignored per 2026-05-14 directive)
+
+**Rollback note:** Same benign `pathspec 'docs/reports/dashboard.html' did not match any file(s) known to git` errors from `regen-all.ps1:104` on round-trip-fail rollback path. Expected behavior.
+
+**Runbook-prompt discrepancy noted:** prompt references `HALT_CRITERIA_v8.1_ADDENDUM.md` item 25; the file only contains items 23 and 24 (`grep '^## Item' docs/agents/HALT_CRITERIA_v8.1_ADDENDUM.md` confirms). Either the runbook prompt is stale or item 25 hasn't been authored. Flagging for runbook author / governance; no action taken.
+
+## Step 3b — Wellness refresh (re-check)
+
+No subagent participated. Heartbeat-only path. `.claude/state/wellness/engineer.json` remains the V6 dry-run synthetic instance from 2026-05-13 (unchanged across Pass 1 → Pass 2 → Pass 3).
+
+## Step 4 — Session journal
+
+This Pass 3 section appended to the same date file.
+
+## Step 5 — Blockers requiring Founder attention (re-stated)
+
+Same priority list as Pass 1 + Pass 2. No new items; no resolutions. Listing IDs only:
+
+1. (carry-over) Update `tests/round-trip-test.py:1463-1553` `mf_checks` block for the new vertical-expandable-flow-list paradigm.
+2. (carry-over) Investigate `scroll-reachability` exit 1 — run `node scripts/visual-audit/verify-scroll-reachability.mjs` standalone for the specific failing surface.
+3. (carry-over) `mkdir -p .claude/state/escalations/{approved,deferred,rejected}` + `.gitkeep`.
+4. (carry-over) Delete or rewrite stale `.claude/state/proposals/shipped/PROP-006.json` + `PROP-010.json`.
+5. (carry-over) Replace `#1a2b25` in `templates/dashboards/dashboard.template.html` with `var(--*)` token.
+6. (soft-warn) `user-context-gate` drift now 9293.3 min — Founder-driven capture when convenient.
+7. (governance) `HALT_CRITERIA_v8.1_ADDENDUM.md` item 25 referenced by runbook but not authored.
+
+## Critic metric-integrity attestation (METRIC_INTEGRITY_PROTOCOL § 3.1) — Pass 3
+
+**Verdict: HONEST.**
+
+- **Bug reports diagnosed?** None to diagnose; not invented.
+- **Proposals cite specific evidence?** Zero authored; honest count.
+- **FIQ grades honest?** Zero graded; honest count.
+
+Cross-check: failure set is verbatim from script stdout; carry-over disposition explicitly named ("identical set as Pass 2"); not re-diagnosed redundantly. Token-usage arithmetic explicit (+6.57M real, +39.9K estimated; consistent with ~12 cron fires in the gap). One new factual surface added: the runbook's item-25 reference doesn't exist on disk — flagged for governance, not silently absorbed.
+
+Critic attestation: **Pass 3 is a clean heartbeat re-tick against an unchanged inbox. The Pass 1 diagnostics remain canonical for Founder application; Pass 3's value is the refreshed telemetry timestamps + the governance discrepancy (runbook references nonexistent halt-item-25). No metric gamed.**
+
+## Exit (Pass 3)
+
+Exiting clean. Committing local state changes; NOT pushing.
