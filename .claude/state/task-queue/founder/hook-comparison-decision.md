@@ -1,5 +1,8 @@
 ---
-status: open
+status: closed
+closed_at: 2026-05-21T18:10:00Z
+closed_by: agent
+closed_reason: "Founder approved all 3 firm recommendations 2026-05-21 (Rec 4 deferred to Phase T). Hooks 12, 13, 14 authored + wired via scripts/apply-ecc-hook-adoption.py. FOUNDER-APPROVED-HOOK-INSTALL-2026-05-21T18:10:00Z."
 severity: green
 priority: MEDIUM
 walkthrough_doc: ".claude/state/dashboard-audit-2026-05-18/HOOK-COMPARISON.md"
