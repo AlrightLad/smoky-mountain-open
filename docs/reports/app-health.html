@@ -742,7 +742,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T03:11:07.639780Z",
+  "generated_at": "2026-05-21T03:15:09.006660Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 78.1,
   "overall_grade": "B",
@@ -1041,13 +1041,16 @@
     }
   ],
   "audit_trigger": {
-    "sha": "e7a04c21",
-    "subject": "[ops] wire standing checks into post-commit: cron-health JSON (PowerShell) + repo secret scan (Node). docs/dashboard-troubleshooting.md compliance.",
-    "committed_at": "2026-05-20T23:10:53-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 1
+    "sha": "2518b33b",
+    "subject": "[W1.I1] Member bug report form â€” src/pages/bugreport.js + More page entry. Uses feature_requests Firestore (member-create + Founder-read). Image-attach follow-on.",
+    "committed_at": "2026-05-20T23:14:52-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "src/pages/bugreport.js",
+      "src/pages/more.js"
+    ],
+    "total_files_touched": 3
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
