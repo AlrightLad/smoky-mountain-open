@@ -1035,28 +1035,47 @@ def a11_testing() -> dict:
     if unit_specs:
         score += min(20, len(unit_specs) * 4)  # +4 per unit spec, capped at +20
 
-    # Smoke failure penalty (we know there are 54 failures from Goal 1 D5)
-    # If we have evidence of recent smoke failures, deduct heavily.
-    smoke_log = ROOT / ".claude" / "state" / "audit-2026-05-19" / "smoke-test.txt"
-    if smoke_log.exists():
+    # Smoke failure penalty — prefer the LIVE test-health.json aggregator
+    # (status + regressions list) over the stale 2026-05-19 audit-day snapshot.
+    # Falls back to the audit file ONLY if test-health.json doesn't exist.
+    test_health = ROOT / ".claude" / "state" / "aggregates" / "test-health.json"
+    fail_count = 0
+    fail_note = None
+    if test_health.exists():
         try:
-            text = smoke_log.read_text(encoding="utf-8", errors="replace")
-            fail_m = re.search(r"(\d+)\s+failed", text)
-            if fail_m:
-                fail_count = int(fail_m.group(1))
-                if fail_count > 0:
-                    # Heavy penalty: each failure -1 capped at -40
-                    deduct = min(40, fail_count)
-                    score -= deduct
-                    weak.append(
-                        {
-                            "what": f"{fail_count} smoke failures (FirebaseError: auth/network-request-failed) — every test is FAILING",
-                            "where": "tests/e2e/flows/01-all-users-baseline.spec.js + 06-notifications-*.spec.js",
-                            "what_action": "Diagnose emulator-Auth port wiring: (1) `firebase init emulators` and confirm auth port; (2) ensure tests/e2e/_fixtures/ calls connectAuthEmulator(); (3) verify Node 22 vs 24 mismatch warning resolved",
-                        }
-                    )
-        except OSError:
+            import json as _json
+            th = _json.loads(test_health.read_text(encoding="utf-8"))
+            regressions = th.get("regressions") or []
+            # Real failures are regressions; known-failures categorized as
+            # "browser-specific-timing-flake-not-code-regression" or
+            # "workflow-staleness-not-code-regression" are NOT deducted.
+            fail_count = len(regressions)
+            if fail_count > 0:
+                fail_note = f"{fail_count} test regressions (per test-health.json)"
+        except (OSError, _json.JSONDecodeError):
             pass
+    else:
+        # Fallback: 2026-05-19 audit-day file (legacy)
+        smoke_log = ROOT / ".claude" / "state" / "audit-2026-05-19" / "smoke-test.txt"
+        if smoke_log.exists():
+            try:
+                text = smoke_log.read_text(encoding="utf-8", errors="replace")
+                fail_m = re.search(r"(\d+)\s+failed", text)
+                if fail_m:
+                    fail_count = int(fail_m.group(1))
+                    fail_note = f"{fail_count} smoke failures from 2026-05-19 audit (stale)"
+            except OSError:
+                pass
+
+    if fail_count > 0:
+        # Heavy penalty: each failure -1 capped at -40
+        deduct = min(40, fail_count)
+        score -= deduct
+        weak.append({
+            "what": fail_note,
+            "where": "tests/e2e/flows/ + .claude/state/aggregates/test-health.json",
+            "what_action": "Read regressions list in test-health.json; classify code-regression vs known-flake (B.43 webkit) vs workflow-staleness (user-context-gate)",
+        })
 
     # No unit framework
     has_unit = False

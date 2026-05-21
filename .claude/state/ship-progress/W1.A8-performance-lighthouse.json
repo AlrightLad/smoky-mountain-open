@@ -1,0 +1,66 @@
+{
+  "ship_id": "W1.A8-performance-lighthouse",
+  "wave": 1,
+  "tier": "engineering-backlog",
+  "title": "Lift Lighthouse Performance 65 -> 85+ across all 6 sampled pages",
+  "status": "planned",
+  "owner": "next-session",
+  "created_at": "2026-05-21T18:45:00Z",
+  "blocking": [],
+  "blocked_by": ["W1.A5-page-size-refactor"],
+  "scope": {
+    "current_lighthouse_scores": {
+      "calendar": 65,
+      "dist-home": 65,
+      "feed": 64,
+      "home": 65,
+      "profile": 65,
+      "rounds": 65
+    },
+    "industry_bar_solo_saas": 85,
+    "gap": 20
+  },
+  "diagnosis": {
+    "bundle_size": "dist/index.html: 897KB / gzip 224KB | dist/assets/deferred.js: 1.1MB",
+    "main_blocker": "Vanilla JS pattern bundles entire app into index.html. Member on iPhone over cellular sees slow first paint.",
+    "deps_runtime": "Only chalk (1 prod dep). 1.1MB is all app code.",
+    "code_split_present": "vite.config.js declares IMMEDIATE_PAGES + DEFERRED_PAGES but actual code-split-on-route may not be working as expected."
+  },
+  "approach": {
+    "phase_1_quick_wins": [
+      "Audit vite manualChunks — is splitting actually firing per-page?",
+      "Lazy-route via dynamic import on first navigation to each page (router-level, not bundle-time)",
+      "Compress images: course-placeholder.jpg, Logo.jpg, flag-logo.jpg, watermark - WebP + responsive sizes",
+      "Inline only critical above-the-fold CSS; defer rest with rel=preload"
+    ],
+    "phase_2_architecture": [
+      "Service worker pre-cache strategy for member-facing static assets",
+      "Brotli compression at GitHub Pages level (HTTP headers via .nojekyll + manifest)",
+      "Sourcemap upload to Sentry (off-main-bundle)"
+    ],
+    "phase_3_micro_optimizations": [
+      "Replace any sync handicap calculation with web worker for large round sets",
+      "Preconnect Firebase + GolfCourseAPI domains in <head>",
+      "Add fetchpriority=high to LCP image"
+    ]
+  },
+  "depends_on": "W1.A5 home.js split lands first (separating page concerns clears the path for per-route lazy load)",
+  "expected_lift": {
+    "lighthouse_perf": "65 -> 82-87 (industry bar: 85)",
+    "A8_score": "65 -> 85 (+20)",
+    "overall_grade": "A- (88.6) -> A (~92)"
+  },
+  "estimated_effort": "2-3 sessions",
+  "acceptance_criteria": [
+    "Lighthouse Performance >= 80 on all 6 sampled pages",
+    "dist/index.html < 200KB (gzip < 60KB)",
+    "First Contentful Paint < 2s on Slow 4G simulation",
+    "Time to Interactive < 4s on Slow 4G",
+    "No regression in member-facing UX (verify via Tier 2 Playwright)"
+  ],
+  "cross_refs": [
+    ".claude/state/aggregates/lighthouse-scores.json",
+    ".claude/state/task-queue/founder/app-audit-findings-architecture.md (closed)",
+    "W1.A5-page-size-refactor.json (predecessor)"
+  ]
+}

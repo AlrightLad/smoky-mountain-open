@@ -1,0 +1,80 @@
+
+  AgentShield Security Report
+  2026-05-21T18:40:47.722Z
+  Target: C:\Users\Zach\smoky-mountain-open\.claude
+
+  Grade: A (97/100)
+
+  Score Breakdown
+  Secrets        ████████████████████ 100
+  Permissions    █████████████████░░░ 85
+  Hooks          ████████████████████ 100
+  MCP Servers    ████████████████████ 100
+  Agents         ████████████████████ 100
+
+  Skill Health
+  Skills discovered: 21
+  Instrumented:      21
+  Versioned:         21
+  Rollback-ready:    21
+  With history:      0
+
+  parbaughs-audit-protocol.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-audit-protocol.APPROVAL.md
+  parbaughs-audit-protocol — unobserved (unobserved)
+    File: skills\parbaughs-audit-protocol.md
+  parbaughs-caddy-notes-classifier.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-caddy-notes-classifier.APPROVAL.md
+  parbaughs-caddy-notes-classifier — unobserved (unobserved)
+    File: skills\parbaughs-caddy-notes-classifier.md
+  parbaughs-critic-checklist.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-critic-checklist.APPROVAL.md
+  parbaughs-critic-checklist — unobserved (unobserved)
+    File: skills\parbaughs-critic-checklist.md
+  parbaughs-cross-surface-dependency-audit.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-cross-surface-dependency-audit.APPROVAL.md
+  parbaughs-cross-surface-dependency-audit — unobserved (unobserved)
+    File: skills\parbaughs-cross-surface-dependency-audit.md
+  design-bot-v2 — unobserved (unobserved)
+    File: skills\parbaughs-design-bot.md
+  parbaughs-firestore-writer-audit.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-firestore-writer-audit.APPROVAL.md
+  parbaughs-firestore-writer-audit — unobserved (unobserved)
+    File: skills\parbaughs-firestore-writer-audit.md
+  parbaughs-namespace-collision-check.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-namespace-collision-check.APPROVAL.md
+  parbaughs-namespace-collision-check — unobserved (unobserved)
+    File: skills\parbaughs-namespace-collision-check.md
+  parbaughs-ship-planner.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-ship-planner.APPROVAL.md
+  parbaughs-ship-planner — unobserved (unobserved)
+    File: skills\parbaughs-ship-planner.md
+  parbaughs-smoke-failure-triage.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-smoke-failure-triage.APPROVAL.md
+  parbaughs-smoke-failure-triage — unobserved (unobserved)
+    File: skills\parbaughs-smoke-failure-triage.md
+  parbaughs-version-triple-bumper.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-version-triple-bumper.APPROVAL.md
+  parbaughs-version-triple-bumper — unobserved (unobserved)
+    File: skills\parbaughs-version-triple-bumper.md
+  parbaughs-visual-verification-protocol.APPROVAL — unobserved (unobserved)
+    File: skills\parbaughs-visual-verification-protocol.APPROVAL.md
+  parbaughs-visual-verification-protocol — unobserved (unobserved)
+    File: skills\parbaughs-visual-verification-protocol.md
+
+  Summary
+  Files scanned: 38
+  Findings: 1 total — 0 critical, 1 high, 0 medium, 0 low, 0 info
+
+  Findings
+
+  ● HIGH (1)
+
+    ● All mutable tool categories allowed simultaneously
+      settings.json
+      The allow list grants Bash, Write, and Edit access. Even with scoped patterns, having all three categories means the agent can run commands, create files, and modify files — effectively unrestricted write access to the system. Consider whether all three are truly needed.
+      Fix: Remove one or more mutable tool categories if not needed
+
+  ─────────────────────────────────────────
+  AgentShield — Security auditor for AI agent configs
+
