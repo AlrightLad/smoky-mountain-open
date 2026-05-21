@@ -1,6 +1,6 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T04:59:30.826810Z",
+  "generated_at": "2026-05-21T05:01:36.405141Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 79.4,
   "overall_grade": "B",
@@ -8,7 +8,7 @@
     "A1_roadmap": {
       "score": 80,
       "status": "green",
-      "label": "15 complete, 4 in flight",
+      "label": "18 complete, 6 in flight",
       "source": ".claude/state/ship-progress/*.json",
       "weak_points": []
     },
@@ -287,13 +287,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "6d60c354",
-    "subject": "[ops] gitignore: catch dashboard-audit-*/screenshots/ recursive PNGs + main-flows-v2 iter HTMLs (fixes watcher skip-dirty cycle). + Bug Triage Listener cron script (categorizes feature_requests P0-P3). + aggregator complete-baseline status recognition.",
-    "committed_at": "2026-05-21T00:58:43-04:00",
+    "sha": "29827ea4",
+    "subject": "[ship-progress] M2/M3/M4 baseline-complete (mobile renders via responsive home/playnow/standings); M5 partial (image attach + mentions = follow-on); M6 partial (TestFlight blocked on Apple Dev workstream)",
+    "committed_at": "2026-05-21T01:01:21-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 3
+    "total_files_touched": 5
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
