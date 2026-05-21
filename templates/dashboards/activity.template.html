@@ -139,7 +139,11 @@
                 </div>
                 <div class="act-filter">
                     <span class="act-filter-label">Range</span>
-                    <select id="filter-range"><option value="24h">Last 24h</option><option value="7d" selected>Last 7 days</option><option value="30d">Last 30 days</option><option value="all">All time</option></select>
+                    <select id="filter-range"><option value="24h" selected>Last 24h</option><option value="7d">Last 7 days</option><option value="30d">Last 30 days</option><option value="all">All time</option></select>
+                </div>
+                <div class="act-filter">
+                    <span class="act-filter-label">Cron noise</span>
+                    <select id="filter-cron"><option value="hide" selected>Hide cron routine</option><option value="show">Show all</option></select>
                 </div>
                 <span class="act-count" id="activity-count-display">— shown</span>
             </div>
@@ -222,11 +226,26 @@
                 scenarioSel.appendChild(o);
             });
 
+            // 2026-05-21 (Founder visual feedback): activity page rendered
+            // 500 items @ ~230px each = 115K-pixel-tall page. Adding cron-noise
+            // filter + render cap so the viewport is usable.
+            var RENDER_CAP = 100;
+            function isCronNoise(h) {
+                var na = (h.next_action || '').toLowerCase();
+                var sc = h.scenario || '';
+                return sc === 'cron-routine'
+                    || na.indexOf('cron(routine)') === 0
+                    || na.indexOf('post-commit dashboard regen') !== -1
+                    || na.indexOf('auto-commit telemetry') !== -1
+                    || na.indexOf('post-watcher-commit drift') !== -1;
+            }
+
             function render() {
                 var fS = document.getElementById('filter-scenario').value;
                 var fA = document.getElementById('filter-agent').value;
                 var fSh = document.getElementById('filter-ship').value;
                 var fR = document.getElementById('filter-range').value;
+                var fC = document.getElementById('filter-cron').value;
                 var now = new Date();
                 var co = { '24h': new Date(now-24*3600*1000), '7d': new Date(now-7*86400*1000), '30d': new Date(now-30*86400*1000), 'all': new Date(0) };
                 var fil = (data.handoffs || []).filter(function (h) {
@@ -234,10 +253,17 @@
                     if (fA !== 'all' && h.from_agent !== fA && h.to_agent !== fA) return false;
                     if (fSh !== 'all' && h.ship_id !== fSh) return false;
                     if (new Date(h.created_at) < co[fR]) return false;
+                    if (fC === 'hide' && isCronNoise(h)) return false;
                     return true;
                 }).sort(function (a, b) { return new Date(b.created_at) - new Date(a.created_at); });
 
-                document.getElementById('activity-count-display').textContent = fil.length + ' shown';
+                var totalMatched = fil.length;
+                if (fil.length > RENDER_CAP) {
+                    fil = fil.slice(0, RENDER_CAP);
+                    document.getElementById('activity-count-display').textContent = fil.length + ' of ' + totalMatched + ' shown (capped — narrow filters or change Range)';
+                } else {
+                    document.getElementById('activity-count-display').textContent = fil.length + ' shown';
+                }
                 var lastDay = '', html = '<div class="act-stream">';
                 fil.forEach(function (h) {
                     var day = new Date(h.created_at).toISOString().slice(0,10);
@@ -264,7 +290,7 @@
                 html += '</div>';
                 document.getElementById('activity-stream').innerHTML = html;
             }
-            ['filter-scenario','filter-agent','filter-ship','filter-range'].forEach(function (id) { document.getElementById(id).addEventListener('change', render); });
+            ['filter-scenario','filter-agent','filter-ship','filter-range','filter-cron'].forEach(function (id) { var el = document.getElementById(id); if (el) el.addEventListener('change', render); });
             render();
         });
     </script>
