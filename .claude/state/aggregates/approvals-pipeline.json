@@ -1,13 +1,13 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T18:12:13Z",
-  "generated_at": "2026-05-21T18:12:13Z",
+  "timestamp": "2026-05-21T18:17:13Z",
+  "generated_at": "2026-05-21T18:17:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
   "summary": "watcher cycling · applies blocked (10 skips on dirty tree)",
-  "as_of": "2026-05-21T18:10:48Z",
+  "as_of": "2026-05-21T18:15:48Z",
   "stale": false,
   "age_hours": 0.02333333333333333,
   "counts": {
@@ -31,6 +31,13 @@
     {
       "category": "stall",
       "status": "skip-dirty",
+      "name": "2026-05-21T18-15-48Z-downloads-watcher.log",
+      "note": "[18:15:48] SKIP working tree dirty with non-routine files: .claude/state/dashboard-health/post-commit-hook.log, docs/reports/app-health.html, docs/reports/founder-checklist.html, docs/reports/sessions",
+      "when": "2026-05-21T18:15:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
       "name": "2026-05-21T18-10-48Z-downloads-watcher.log",
       "note": "[18:10:48] SKIP working tree dirty with non-routine files: .claude/state/dashboard-health/post-commit-hook.log, docs/reports/app-health.html, docs/reports/founder-checklist.html, docs/reports/sessions",
       "when": "2026-05-21T18:10:48Z"
@@ -41,13 +48,6 @@
       "name": "2026-05-21T18-05-48Z-downloads-watcher.log",
       "note": "[18:05:48] SKIP working tree dirty with non-routine files: .claude/state/dashboard-health/post-commit-hook.log, docs/reports/app-health.html, docs/reports/founder-checklist.html, docs/reports/session-",
       "when": "2026-05-21T18:05:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-21T18-00-48Z-downloads-watcher.log",
-      "note": "[18:00:48] SKIP working tree dirty with non-routine files: .claude/state/critique/session-detail-probe.png, .husky/post-commit, .husky/pre-commit, docs/reports/founder-checklist.html, docs/reports/ses",
-      "when": "2026-05-21T18:00:48Z"
     }
   ],
   "links": [
