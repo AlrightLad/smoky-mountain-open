@@ -137,6 +137,8 @@ scripts/regen-token-usage.py
 scripts/consolidate-lighthouse.py
 scripts/aggregate-app-health.py
 scripts/regen-app-health.py
+scripts/regen-sessions.py
+scripts/regen-founder-checklist.py
 scripts/regen-index.py"
 
 FAILED=""
@@ -153,6 +155,24 @@ done
 if [ -n "$FAILED" ]; then
     echo "[post-commit] WARN regen failures:$FAILED" >&2
     echo "[post-commit] see $SCAFFOLD_LOG for diagnostics" >&2
+fi
+
+# 2026-05-21 — Visual-gate (mandatory, Founder directive). Headless-render every
+# dashboard page; assert each contains the expected primary content. Catches
+# regen-misses where the file exists but the JSON payload is empty, and
+# stuck-loading states where the page never finishes rendering.
+#
+# Non-blocking on commit (auto-cron commits would loop), but writes a summary
+# to $SCAFFOLD_LOG so post-commit health surfacing flags it. Real ship-close
+# discipline: run `node tests/dashboard-smoke/visual-gate.mjs` manually before
+# any push and require its exit-zero before signing off.
+if [ -f "tests/dashboard-smoke/visual-gate.mjs" ]; then
+    echo "" >> "$SCAFFOLD_LOG"
+    echo "--- visual-gate ---" >> "$SCAFFOLD_LOG"
+    if ! node tests/dashboard-smoke/visual-gate.mjs >> "$SCAFFOLD_LOG" 2>&1; then
+        echo "[post-commit] WARN visual-gate found pages with empty/missing content" >&2
+        echo "[post-commit] see $SCAFFOLD_LOG '--- visual-gate ---' section" >&2
+    fi
 fi
 
 # 2026-05-19 heartbeat-redundancy fix (Path 1): write the regen heartbeat
