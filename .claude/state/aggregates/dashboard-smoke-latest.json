@@ -1,15 +1,15 @@
 {
   "schema_version": "dashboard-smoke-v1",
-  "generated_at": "2026-05-21T16:28:28.624Z",
+  "generated_at": "2026-05-21T16:39:28.453Z",
   "total": 12,
-  "passed": 12,
+  "passed": 11,
   "results": [
     {
       "file": "activity.html",
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 27776,
+        "bodyTextLen": 27789,
         "kpiPopulated": 8,
         "kpiTotal": 8,
         "navLinkCount": 11,
@@ -43,7 +43,7 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 8904,
+        "bodyTextLen": 8950,
         "kpiPopulated": 0,
         "kpiTotal": 0,
         "navLinkCount": 11,
@@ -57,10 +57,12 @@
     },
     {
       "file": "dashboard.html",
-      "passed": true,
-      "issues": [],
+      "passed": false,
+      "issues": [
+        "2 console error(s): Fetch API cannot load file:///C:/Users/Zach/smoky-mountain-open/docs/reports/dashboard.html?_live=17 | [live-refresh] poll failed: TypeError: Failed to fetch\n    at poll (file:///C:/Users/Zach/smoky-moun"
+      ],
       "stats": {
-        "bodyTextLen": 7534,
+        "bodyTextLen": 7537,
         "kpiPopulated": 37,
         "kpiTotal": 38,
         "navLinkCount": 11,
@@ -128,7 +130,7 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 1059,
+        "bodyTextLen": 2813,
         "kpiPopulated": 0,
         "kpiTotal": 0,
         "navLinkCount": 11,
@@ -179,7 +181,7 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 591,
+        "bodyTextLen": 1033,
         "kpiPopulated": 0,
         "kpiTotal": 0,
         "navLinkCount": 11,
@@ -196,7 +198,7 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 3168,
+        "bodyTextLen": 3167,
         "kpiPopulated": 3,
         "kpiTotal": 3,
         "navLinkCount": 11,

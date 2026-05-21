@@ -1,6 +1,6 @@
 ﻿{
     "schema_version":  "cron-health-v1",
-    "generated_at":  "2026-05-21T16:27:50Z",
+    "generated_at":  "2026-05-21T16:38:50Z",
     "status":  "green",
     "tasks":  [
                   {
@@ -17,7 +17,7 @@
                       "hidden":  true,
                       "run_level":  "Limited",
                       "last_result":  0,
-                      "last_run":  "2026-05-21T16:25:48Z"
+                      "last_run":  "2026-05-21T16:35:48Z"
                   },
                   {
                       "name":  "PARBAUGHS-Overnight-Triage",
@@ -33,7 +33,7 @@
                       "hidden":  true,
                       "run_level":  "Limited",
                       "last_result":  0,
-                      "last_run":  "2026-05-21T16:15:01Z"
+                      "last_run":  "2026-05-21T16:30:01Z"
                   },
                   {
                       "name":  "PARBAUGHS-Token-Sidecar",
@@ -41,7 +41,7 @@
                       "hidden":  true,
                       "run_level":  "Limited",
                       "last_result":  0,
-                      "last_run":  "2026-05-21T16:27:12Z"
+                      "last_run":  "2026-05-21T16:37:12Z"
                   }
               ]
 }

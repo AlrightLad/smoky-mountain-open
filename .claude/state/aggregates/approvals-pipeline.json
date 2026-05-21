@@ -1,13 +1,13 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T16:27:13Z",
-  "generated_at": "2026-05-21T16:27:13Z",
+  "timestamp": "2026-05-21T16:37:13Z",
+  "generated_at": "2026-05-21T16:37:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
   "summary": "watcher cycling · applies blocked (10 skips on dirty tree)",
-  "as_of": "2026-05-21T16:25:48Z",
+  "as_of": "2026-05-21T16:35:48Z",
   "stale": false,
   "age_hours": 0.02333333333333333,
   "counts": {
@@ -31,23 +31,23 @@
     {
       "category": "stall",
       "status": "skip-dirty",
+      "name": "2026-05-21T16-35-48Z-downloads-watcher.log",
+      "note": "[16:35:48] SKIP working tree dirty with non-routine files: .claude/state/critique/founder-checklist-expanded.png, .claude/state/critique/founder-checklist-real.png, .claude/state/critique/founder-chec",
+      "when": "2026-05-21T16:35:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-21T16-30-48Z-downloads-watcher.log",
+      "note": "[16:30:48] SKIP working tree dirty with non-routine files: .claude/state/critique/founder-checklist-expanded.png, .claude/state/critique/founder-checklist-screenshot.png, .claude/state/critique/probe-",
+      "when": "2026-05-21T16:30:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
       "name": "2026-05-21T16-25-48Z-downloads-watcher.log",
       "note": "[16:25:48] SKIP working tree dirty with non-routine files: .claude/state/critique/founder-checklist-screenshot.png, .claude/state/critique/probe-fc.mjs, .claude/state/founder-checklist-state.json, .cl",
       "when": "2026-05-21T16:25:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-21T16-20-48Z-downloads-watcher.log",
-      "note": "[16:20:48] SKIP working tree dirty with non-routine files: .claude/state/founder-checklist-state.json, .claude/state/stop-verification/2026-05-21T15-12-12Z.log, .claude/state/stop-verification/2026-05",
-      "when": "2026-05-21T16:20:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-21T16-15-48Z-downloads-watcher.log",
-      "note": "[16:15:48] SKIP working tree dirty with non-routine files: .claude/state/founder-checklist-state.json, .claude/state/stop-verification/2026-05-21T15-12-12Z.log, .claude/state/stop-verification/2026-05",
-      "when": "2026-05-21T16:15:48Z"
     }
   ],
   "links": [

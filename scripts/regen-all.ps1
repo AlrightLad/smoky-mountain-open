@@ -60,6 +60,10 @@ $steps = @(
     @{ Name = "regen-ops-views";         Script = "scripts/dry-run-regen-ops-views.py" },
     @{ Name = "regen-main-flows";        Script = "scripts/regen-main-flows.py" },
     @{ Name = "regen-token-usage";       Script = "scripts/regen-token-usage.py" },
+    @{ Name = "aggregate-app-health";    Script = "scripts/aggregate-app-health.py" },
+    @{ Name = "regen-app-health";        Script = "scripts/regen-app-health.py" },
+    @{ Name = "regen-sessions";          Script = "scripts/regen-sessions.py" },
+    @{ Name = "regen-founder-checklist"; Script = "scripts/regen-founder-checklist.py" },
     @{ Name = "regen-index";             Script = "scripts/regen-index.py" }
 )
 

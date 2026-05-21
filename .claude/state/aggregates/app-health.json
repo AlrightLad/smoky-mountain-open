@@ -1,6 +1,6 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T16:27:49.272595Z",
+  "generated_at": "2026-05-21T16:38:32.646548Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 80.0,
   "overall_grade": "B",
@@ -277,13 +277,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "53660a01",
-    "subject": "fix(founder-checklist): clear test-pollution state + add no-cache meta â€” Founder saw blank-cached page",
-    "committed_at": "2026-05-21T12:26:51-04:00",
+    "sha": "5dda8877",
+    "subject": "fix(visual-gate): mandatory headless render+assert on every commit â€” post-commit was regenerating SOME pages and SKIPPING sessions+founder-checklist",
+    "committed_at": "2026-05-21T12:37:33-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 3
+    "total_files_touched": 5
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
