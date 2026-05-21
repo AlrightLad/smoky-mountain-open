@@ -742,9 +742,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T02:04:20.200370Z",
+  "generated_at": "2026-05-21T02:07:27.854782Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 71.4,
+  "overall_score": 74.4,
   "overall_grade": "B-",
   "dimensions": {
     "A1_roadmap": {
@@ -761,9 +761,9 @@
       ]
     },
     "A2_fiq": {
-      "score": 75,
-      "status": "yellow",
-      "label": "26 declared / 0 deployed (drift)",
+      "score": 100,
+      "status": "green",
+      "label": "26/26 deployed · 0 pending",
       "source": ".claude/state/aggregates/fiq-status.json",
       "weak_points": []
     },
@@ -771,7 +771,7 @@
       "score": 46,
       "status": "red",
       "label": "AgentShield grade B; honest score 46/100 · 0 CRITICAL · 20 HIGH · 7 MED",
-      "source": ".claude/state/security/baseline-20260519-031500/agentshield-post-cleanup.txt",
+      "source": ".claude\\state\\security\\baseline-20260519-031500\\agentshield-post-cleanup.txt",
       "weak_points": [
         {
           "what": "No penetration test record on disk",
@@ -780,28 +780,17 @@
         },
         {
           "what": "20 HIGH findings — at industry-grade this is technical debt, NOT 'acceptable'",
-          "where": ".claude/state/security/baseline-20260519-031500/agentshield-post-cleanup.txt",
+          "where": ".claude\\state\\security\\baseline-20260519-031500\\agentshield-post-cleanup.txt",
           "what_action": "Top 3: tighten Bash(curl *) allow rule to specific domains; add deny rules for sudo/ssh/chmod 777; replace `>/dev/null 2>&1` in hooks with audit log writes"
         }
       ]
     },
     "A4_uiux": {
-      "score": null,
-      "status": "not-measured",
-      "label": "Lighthouse not wired — score honestly unknown (NOT 80)",
-      "source": "no live measurement",
-      "weak_points": [
-        {
-          "what": "UI/UX dimension UNMEASURED — no live Lighthouse, no WebPageTest, no RUM",
-          "where": "scripts/aggregate-app-health.py · A4 function",
-          "what_action": "Wire Lighthouse CLI (npm i -D @lhci/cli). Capture home/profile/feed/scorecard/round-detail/calendar at desktop + mobile viewports. Emit lighthouse-scores.json. Re-run on every commit via post-commit hook."
-        },
-        {
-          "what": "Prior 2026-05-14 audit had 1 CRITICAL + 3 HIGH + 4 MEDIUM findings; most reported CLOSED but no V1 re-verification",
-          "where": ".claude/state/app-audit-2026-05-14/SUMMARY.md",
-          "what_action": "Re-run user-journey audit at desktop + mobile viewport; V1 capture each member-facing page; update SUMMARY.md status column"
-        }
-      ]
+      "score": 93,
+      "status": "green",
+      "label": "Lighthouse BP 93/100 across 5 pages",
+      "source": ".claude/state/aggregates/lighthouse-scores.json",
+      "weak_points": []
     },
     "A5_code_quality": {
       "score": 70,
@@ -834,28 +823,23 @@
             "budget": 800
           },
           {
+            "file": "src/pages/caddynotes.js",
+            "lines": 897,
+            "budget": 800
+          },
+          {
             "file": "src/pages/chat.js",
             "lines": 880,
             "budget": 800
           },
           {
-            "file": "src/pages/feed.js",
-            "lines": 823,
-            "budget": 800
-          },
-          {
-            "file": "src/pages/rounds.js",
-            "lines": 963,
-            "budget": 800
-          },
-          {
-            "file": "src/pages/spectator.js",
-            "lines": 1136,
-            "budget": 800
-          },
-          {
             "file": "src/pages/courses.js",
             "lines": 1126,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/feed.js",
+            "lines": 823,
             "budget": 800
           },
           {
@@ -869,13 +853,18 @@
             "budget": 800
           },
           {
-            "file": "src/pages/caddynotes.js",
-            "lines": 897,
+            "file": "src/pages/playnow.js",
+            "lines": 1457,
             "budget": 800
           },
           {
-            "file": "src/pages/playnow.js",
-            "lines": 1457,
+            "file": "src/pages/rounds.js",
+            "lines": 963,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/spectator.js",
+            "lines": 1136,
             "budget": 800
           }
         ]
@@ -923,28 +912,28 @@
       ]
     },
     "A8_performance": {
-      "score": null,
-      "status": "not-measured",
-      "label": "Lighthouse not yet wired",
-      "source": "phase-2-deferred",
+      "score": 56,
+      "status": "red",
+      "label": "Lighthouse Performance 56/100 across 5 pages",
+      "source": ".claude/state/aggregates/lighthouse-scores.json",
       "weak_points": [
         {
-          "what": "Performance dimension not yet measured",
-          "where": "scripts/aggregate-app-health.py",
-          "what_action": "Wire Lighthouse CLI; capture 6 key pages; emit lighthouse-scores.json"
+          "what": "Lighthouse Performance = 56/100 across 5 pages (target: 75+)",
+          "where": ".claude/state/aggregates/lighthouse-scores.json",
+          "what_action": "Open .lighthouseci/*.html — fix top performance failures per page"
         }
       ]
     },
     "A9_accessibility": {
-      "score": null,
-      "status": "not-measured",
-      "label": "WCAG 2.1 AA scan not yet wired",
-      "source": "phase-2-deferred",
+      "score": 89,
+      "status": "green",
+      "label": "Lighthouse Accessibility 89/100 across 5 pages",
+      "source": ".claude/state/aggregates/lighthouse-scores.json",
       "weak_points": [
         {
-          "what": "Accessibility dimension not yet measured",
-          "where": "scripts/aggregate-app-health.py",
-          "what_action": "Wire axe-core CLI; per-page scan; emit a11y-scores.json"
+          "what": "Lighthouse Accessibility = 89/100 across 5 pages (target: 90+)",
+          "where": ".claude/state/aggregates/lighthouse-scores.json",
+          "what_action": "Open .lighthouseci/*.html — fix top accessibility failures per page"
         }
       ]
     },
@@ -990,11 +979,17 @@
       ]
     },
     "A12_operational": {
-      "score": 100,
-      "status": "green",
-      "label": "pipeline=missing · 0 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "score": 75,
+      "status": "yellow",
+      "label": "pipeline=yellow · 3 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
-      "weak_points": [],
+      "weak_points": [
+        {
+          "what": "3 of last 10 cron watcher runs hit skip-dirty",
+          "where": "scripts/cron/logs/*-downloads-watcher.log",
+          "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
+        }
+      ],
       "details": {
         "watcher_last_status": "PASS",
         "watcher_exit_reason": "no-new-files"
@@ -1027,10 +1022,10 @@
       "dimension": "A6_architecture"
     },
     {
-      "what": "No mobile-viewport Playwright specs (iPhone/Pixel)",
-      "where": "tests/e2e/flows/ — no specs configured for mobile viewport",
-      "what_action": "Add `projects: [{ name: 'iphone-14', use: devices['iPhone 14'] }, { name: 'pixel-7', use: devices['Pixel 7'] }]` to playwright.config.ts. Run 5 critical-path tests on each.",
-      "dimension": "A10_mobile_first"
+      "what": "Lighthouse Performance = 56/100 across 5 pages (target: 75+)",
+      "where": ".claude/state/aggregates/lighthouse-scores.json",
+      "what_action": "Open .lighthouseci/*.html — fix top performance failures per page",
+      "dimension": "A8_performance"
     }
   ],
   "founder_attention": [],
@@ -1060,20 +1055,20 @@
       "dimension": "A6_architecture"
     },
     {
-      "what": "No mobile-viewport Playwright specs (iPhone/Pixel)",
-      "where": "tests/e2e/flows/ — no specs configured for mobile viewport",
-      "what_action": "Add `projects: [{ name: 'iphone-14', use: devices['iPhone 14'] }, { name: 'pixel-7', use: devices['Pixel 7'] }]` to playwright.config.ts. Run 5 critical-path tests on each.",
-      "dimension": "A10_mobile_first"
+      "what": "Lighthouse Performance = 56/100 across 5 pages (target: 75+)",
+      "where": ".claude/state/aggregates/lighthouse-scores.json",
+      "what_action": "Open .lighthouseci/*.html — fix top performance failures per page",
+      "dimension": "A8_performance"
     }
   ],
   "audit_trigger": {
-    "sha": "8e73b09",
-    "subject": "chore(cycle): heartbeat 2026-05-21T02:03:59Z",
-    "committed_at": "2026-05-21T02:03:59Z",
+    "sha": "3d945318",
+    "subject": "[lighthouse] baseline pass: A4 93 A8 56 A9 89 -> app health B- 74.4. 5 pages sampled.",
+    "committed_at": "2026-05-20T22:07:13-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 3
+    "total_files_touched": 4
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
