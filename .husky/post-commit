@@ -209,6 +209,19 @@ if [ -f "scripts/scan-repo-secrets.js" ]; then
     node scripts/scan-repo-secrets.js >/dev/null 2>&1 || true
 fi
 
+# (3) Bug Triage Listener — categorize feature_requests P0-P3.
+if [ -f "scripts/cron/bug-triage-listener.py" ]; then
+    "$PY" scripts/cron/bug-triage-listener.py >/dev/null 2>&1 || true
+fi
+
+# (4) Dashboard smoke (post-commit, NON-blocking — log only).
+# Runs on every commit so we always have a fresh dashboard-smoke-latest.json
+# on the dashboard surface. Failures here don't block (pre-commit already gated
+# dashboard-touching commits); this just keeps the dashboard's smoke card live.
+if [ -f "tests/dashboard-smoke/run.js" ]; then
+    node tests/dashboard-smoke/run.js > /tmp/dashboard-smoke-postcommit.log 2>&1 || true
+fi
+
 # Phase T1 D34 — P9.5 automated truthfulness self-check.
 # Asserts that session-transcript ingestion + aggregator produce non-zero
 # output when source files are present. Catches silent data-loss bugs
