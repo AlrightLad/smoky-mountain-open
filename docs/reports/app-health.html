@@ -742,9 +742,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T02:01:23.816752Z",
+  "generated_at": "2026-05-21T02:04:20.200370Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 72.3,
+  "overall_score": 71.4,
   "overall_grade": "B-",
   "dimensions": {
     "A1_roadmap": {
@@ -761,9 +761,9 @@
       ]
     },
     "A2_fiq": {
-      "score": 100,
-      "status": "green",
-      "label": "26/26 deployed · 0 pending",
+      "score": 75,
+      "status": "yellow",
+      "label": "26 declared / 0 deployed (drift)",
       "source": ".claude/state/aggregates/fiq-status.json",
       "weak_points": []
     },
@@ -771,7 +771,7 @@
       "score": 46,
       "status": "red",
       "label": "AgentShield grade B; honest score 46/100 · 0 CRITICAL · 20 HIGH · 7 MED",
-      "source": ".claude\\state\\security\\baseline-20260519-031500\\agentshield-post-cleanup.txt",
+      "source": ".claude/state/security/baseline-20260519-031500/agentshield-post-cleanup.txt",
       "weak_points": [
         {
           "what": "No penetration test record on disk",
@@ -780,7 +780,7 @@
         },
         {
           "what": "20 HIGH findings — at industry-grade this is technical debt, NOT 'acceptable'",
-          "where": ".claude\\state\\security\\baseline-20260519-031500\\agentshield-post-cleanup.txt",
+          "where": ".claude/state/security/baseline-20260519-031500/agentshield-post-cleanup.txt",
           "what_action": "Top 3: tighten Bash(curl *) allow rule to specific domains; add deny rules for sudo/ssh/chmod 777; replace `>/dev/null 2>&1` in hooks with audit log writes"
         }
       ]
@@ -834,23 +834,28 @@
             "budget": 800
           },
           {
-            "file": "src/pages/caddynotes.js",
-            "lines": 897,
-            "budget": 800
-          },
-          {
             "file": "src/pages/chat.js",
             "lines": 880,
             "budget": 800
           },
           {
-            "file": "src/pages/courses.js",
-            "lines": 1126,
+            "file": "src/pages/feed.js",
+            "lines": 823,
             "budget": 800
           },
           {
-            "file": "src/pages/feed.js",
-            "lines": 823,
+            "file": "src/pages/rounds.js",
+            "lines": 963,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/spectator.js",
+            "lines": 1136,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/courses.js",
+            "lines": 1126,
             "budget": 800
           },
           {
@@ -864,18 +869,13 @@
             "budget": 800
           },
           {
+            "file": "src/pages/caddynotes.js",
+            "lines": 897,
+            "budget": 800
+          },
+          {
             "file": "src/pages/playnow.js",
             "lines": 1457,
-            "budget": 800
-          },
-          {
-            "file": "src/pages/rounds.js",
-            "lines": 963,
-            "budget": 800
-          },
-          {
-            "file": "src/pages/spectator.js",
-            "lines": 1136,
             "budget": 800
           }
         ]
@@ -990,17 +990,11 @@
       ]
     },
     "A12_operational": {
-      "score": 75,
-      "status": "yellow",
-      "label": "pipeline=yellow · 3 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "score": 100,
+      "status": "green",
+      "label": "pipeline=missing · 0 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
-      "weak_points": [
-        {
-          "what": "3 of last 10 cron watcher runs hit skip-dirty",
-          "where": "scripts/cron/logs/*-downloads-watcher.log",
-          "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
-        }
-      ],
+      "weak_points": [],
       "details": {
         "watcher_last_status": "PASS",
         "watcher_exit_reason": "no-new-files"
@@ -1073,14 +1067,12 @@
     }
   ],
   "audit_trigger": {
-    "sha": "38145668",
-    "subject": "[W1.S1] design system codification baseline: sunlight-mode CSS scaffold + audit doc + ship-progress JSON",
-    "committed_at": "2026-05-20T22:01:08-04:00",
-    "trigger": "app-commit",
-    "is_app_commit": true,
-    "app_files_touched": [
-      "src/styles/base.css"
-    ],
+    "sha": "8e73b09",
+    "subject": "chore(cycle): heartbeat 2026-05-21T02:03:59Z",
+    "committed_at": "2026-05-21T02:03:59Z",
+    "trigger": "substrate-commit",
+    "is_app_commit": false,
+    "app_files_touched": [],
     "total_files_touched": 3
   },
   "cadence": {

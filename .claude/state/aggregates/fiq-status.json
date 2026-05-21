@@ -1,14 +1,14 @@
 {
   "schema_version": "fiq-status-v1.0",
-  "timestamp": "2026-05-20T21:37:14Z",
-  "generated_at": "2026-05-20T21:37:14Z",
-  "head_sha": "cfeda35f",
-  "status": "green",
-  "summary": "FIQ clean \u00b7 26 declared / 26 deployed (0 pending builds)",
+  "timestamp": "2026-05-21T02:04:10Z",
+  "generated_at": "2026-05-21T02:04:10Z",
+  "head_sha": "8e73b09",
+  "status": "unknown",
+  "summary": "declared=26; deployed-count unknown (firebase CLI not in PATH)",
   "declared_count": 26,
-  "deployed_count": 26,
+  "deployed_count": null,
   "pending_builds": 0,
-  "firebase_cli_error": null,
+  "firebase_cli_error": "firebase CLI not in PATH",
   "source_files": [
     "firestore.indexes.json",
     "firebase firestore:indexes (CLI live query)"
