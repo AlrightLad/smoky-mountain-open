@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import { readFileSync, readdirSync } from 'fs';
 
-var CORE_FILES = ['utils.js', 'notification-types.js', 'theme.js', 'animate.js', 'handicap.js', 'firebase.js', 'data.js', 'sync.js', 'parcoins.js', 'weather.js', 'caddie.js', 'charts.js', 'analytics.js', 'transitions.js', 'router.js', 'page-shell.js', 'bottomsheet.js', 'haptics.js', 'loading.js'];
+var CORE_FILES = ['utils.js', 'notification-types.js', 'theme.js', 'animate.js', 'handicap.js', 'firebase.js', 'data.js', 'sync.js', 'parcoins.js', 'weather.js', 'caddie.js', 'charts.js', 'analytics.js', 'transitions.js', 'router.js', 'page-shell.js', 'bottomsheet.js', 'haptics.js', 'loading.js', 'crisis-banner.js'];
 
 // Pages needed for initial render (home + settings reachable from nav)
 var IMMEDIATE_PAGES = ['home.js', 'settings.js', 'onboarding.js'];
@@ -15,6 +15,8 @@ var DEFERRED_PAGES = [
   'teetimes.js', 'range.js', 'activity.js', 'rangelive.js', 'calendar.js',
   'more.js', 'feed.js', 'chat.js', 'dms.js', 'invite.js', 'admin.js',
   'faq.js', 'caddynotes.js', 'bugreport.js', 'trophyroom.js', 'partygames.js',
+  // crisis-banner.js was here briefly — moved to src/core/ since it must
+  // load on every page (Firestore listener + overlay rendering).
   'syncround.js', 'scramblelive.js', 'seasonrecap.js', 'awards.js',
   'round.js', 'spectator.js', 'shop.js', 'wagers.js', 'social.js', 'bounties.js', 'richlist.js', 'roundhistory.js', 'leagues.js', 'findplayers.js', 'drills.js'
 ];
