@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T05:10:50Z",
-  "generated_at": "2026-05-21T05:10:50Z",
+  "timestamp": "2026-05-21T05:17:13Z",
+  "generated_at": "2026-05-21T05:17:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "red",
-  "raw_status": "red",
-  "summary": "watcher cycling · applies blocked (10 skips on dirty tree)",
-  "as_of": "2026-05-21T05:10:48Z",
+  "status": "green",
+  "raw_status": "green",
+  "summary": "watcher no-new-files 1.4min ago",
+  "as_of": "2026-05-21T05:15:48Z",
   "stale": false,
-  "age_hours": 0.0,
+  "age_hours": 0.02333333333333333,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 10,
-    "age_minutes": 0.0
+    "consecutive_skips": 0,
+    "age_minutes": 1.4
   }
 }
