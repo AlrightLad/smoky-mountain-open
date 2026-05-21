@@ -1,8 +1,8 @@
 {
   "schema_version": "test-health-v1.1",
-  "timestamp": "2026-05-21T16:09:42Z",
-  "generated_at": "2026-05-21T16:09:42Z",
-  "head_sha": "1f4a99f8",
+  "timestamp": "2026-05-21T16:27:16Z",
+  "generated_at": "2026-05-21T16:27:16Z",
+  "head_sha": "3af4aafa",
   "status": "green",
   "summary": "round-trip + regen passing",
   "checks_run": 1,
