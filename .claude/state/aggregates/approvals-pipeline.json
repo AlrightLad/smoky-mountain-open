@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T05:47:13Z",
-  "generated_at": "2026-05-21T05:47:13Z",
+  "timestamp": "2026-05-21T06:03:16Z",
+  "generated_at": "2026-05-21T06:03:16Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "green",
   "raw_status": "green",
-  "summary": "watcher no-new-files 1.4min ago",
-  "as_of": "2026-05-21T05:45:48Z",
+  "summary": "watcher no-new-files 2.5min ago",
+  "as_of": "2026-05-21T06:00:48Z",
   "stale": false,
-  "age_hours": 0.02333333333333333,
+  "age_hours": 0.041666666666666664,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -41,13 +41,6 @@
       "name": "2026-05-21T05-35-48Z-downloads-watcher.log",
       "note": "[05:35:48] SKIP working tree dirty with non-routine files: .claude/state/dashboard-health/post-commit-hook.log, docs/reports/app-health.html",
       "when": "2026-05-21T05:35:48Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-21T05-10-48Z-downloads-watcher.log",
-      "note": "[05:10:48] SKIP working tree dirty with non-routine files: .claude/state/dashboard-health/post-commit-hook.log",
-      "when": "2026-05-21T05:10:48Z"
     }
   ],
   "links": [
@@ -64,6 +57,6 @@
   "_meta": {
     "watcher_runs_inspected": 10,
     "consecutive_skips": 0,
-    "age_minutes": 1.4
+    "age_minutes": 2.5
   }
 }
