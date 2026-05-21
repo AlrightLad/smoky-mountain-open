@@ -1,6 +1,6 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T15:28:43.170503Z",
+  "generated_at": "2026-05-21T15:38:22.127433Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 80.0,
   "overall_grade": "B",
@@ -196,11 +196,11 @@
     "A12_operational": {
       "score": 60,
       "status": "yellow",
-      "label": "pipeline=red · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 8 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "6 of last 10 cron watcher runs hit skip-dirty",
+          "what": "8 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -237,7 +237,7 @@
       "dimension": "A11_testing"
     },
     {
-      "what": "6 of last 10 cron watcher runs hit skip-dirty",
+      "what": "8 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -270,20 +270,20 @@
       "dimension": "A11_testing"
     },
     {
-      "what": "6 of last 10 cron watcher runs hit skip-dirty",
+      "what": "8 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "e8a6c51e",
-    "subject": "feat(founder-checklist): severity + mark-complete + verify + spotcheck â€” 19â†’2 open items",
-    "committed_at": "2026-05-21T11:27:47-04:00",
+    "sha": "8092d5f9",
+    "subject": "feat(founder): agent created Firebase staging project + Sentry walkthrough + PROP-010 closeout",
+    "committed_at": "2026-05-21T11:37:27-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 22
+    "total_files_touched": 7
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
