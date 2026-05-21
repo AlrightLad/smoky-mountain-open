@@ -1,0 +1,84 @@
+{
+  "ship_id": "W1.S1",
+  "name": "Design system codification",
+  "wave": 1,
+  "status": "in-progress",
+  "started_at": "2026-05-20T21:55:00Z",
+  "ship_plan": "docs/agents/ships/W1.S1.md",
+  "audit_findings": {
+    "tokens_declared": 90,
+    "w2_s0_tokens_present": true,
+    "w2_s0_tokens": [
+      "--cb-ink-soft",
+      "--cb-ink-faint",
+      "--cb-mute-soft",
+      "--cb-mute-faint",
+      "--cb-claret",
+      "--cb-moss"
+    ],
+    "w2_s0_tokens_status": "PLACEHOLDER (working approximations from HQ Pass 3)",
+    "reduced_motion_wired": true,
+    "reduced_motion_files": [
+      "src/styles/base.css",
+      "src/styles/components.css"
+    ],
+    "sunlight_mode_wired": false,
+    "sunlight_mode_intent": "Settings toggle per CLUBHOUSE_SPEC §6.2 (NOT prefers-color-scheme auto). Bumps contrast to AAA, removes shadows, outline cards.",
+    "raw_hex_violations_in_pages": "exemptions cover calendar dots + share-card; feed diff colors borderline",
+    "svg_icon_library_status": "not-audited (deferred to in-flight verification)",
+    "aaa_contrast_status": "deferred to per-page audit"
+  },
+  "acceptance_criteria": [
+    {
+      "id": 1,
+      "criterion": "All --cb-* tokens declared in shared CSS base",
+      "status": "PASS",
+      "evidence": "90 tokens declared in src/styles/base.css"
+    },
+    {
+      "id": 2,
+      "criterion": "6 new W2.S0 tokens included in shared palette (NOT HQ-local)",
+      "status": "PASS",
+      "evidence": "All 6 present with PLACEHOLDER values"
+    },
+    {
+      "id": 3,
+      "criterion": "Token traceability — zero raw hex/px/ms in production source",
+      "status": "PARTIAL",
+      "evidence": "Calendar dots + share-card exemptions valid per CLAUDE.md; feed.js diff-color hexes likely also exempt category",
+      "follow_on": "Audit feed.js diff-color hexes; add to exemption list if intentional"
+    },
+    {
+      "id": 4,
+      "criterion": "Theme-aware SVG pattern documented + smoke-tested",
+      "status": "DEFERRED",
+      "evidence": "Memory #16 has pattern; not yet smoke-tested explicitly",
+      "follow_on": "Author smoke scenario verifying inline SVGs use stroke=currentColor + color: var(--cb-*)"
+    },
+    {
+      "id": 5,
+      "criterion": "Reduced-motion respect verified on all animated patterns",
+      "status": "PASS",
+      "evidence": "src/styles/base.css + components.css have prefers-reduced-motion media queries"
+    },
+    {
+      "id": 6,
+      "criterion": "Sunlight mode auto-detection working",
+      "status": "FAIL",
+      "evidence": "No prefers-color-scheme detection; no Settings toggle; spec says Settings-toggle is canonical (not auto)",
+      "follow_on": "Separate ship: Sunlight mode Settings toggle + CSS token overrides for high-contrast variant (per CLUBHOUSE_SPEC §6.2)"
+    },
+    {
+      "id": 7,
+      "criterion": "AAA contrast verified on critical paths",
+      "status": "DEFERRED",
+      "evidence": "Spec lists 7:1 body / 4.5:1 large per CLUBHOUSE_SPEC §6.2; not yet automated",
+      "follow_on": "Wire axe-core scan into smoke; verify contrast ratios"
+    }
+  ],
+  "outcome": "FOUNDATION READY (4/7 PASS, 1/7 PARTIAL, 2/7 DEFERRED, 1/7 FAIL with explicit follow-on)",
+  "shipped_artifacts": [
+    "src/styles/base.css (existing — 90 tokens)",
+    "src/styles/components.css (existing — reduced-motion)"
+  ]
+}

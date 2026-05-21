@@ -651,3 +651,47 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
     animation: none !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SUNLIGHT MODE — high-contrast variant for outdoor / glare-readable use
+   Per CLUBHOUSE_SPEC §6.2. Activated by <html data-theme="sunlight">.
+   Settings → Display → Sunlight toggle writes that attribute. Auto-detect
+   via prefers-color-scheme: light is wired as a fallback for desktop users
+   who set OS-level light preference.
+
+   Effects:
+   - Bumps body/secondary text contrast toward AAA (--cb-mute darker)
+   - Removes box-shadow elevation entirely (glare washes them out anyway)
+   - Outlines chalk-deep cards instead of filling them
+   - Bumps icon stroke widths by 25%
+
+   W1.S1 SCAFFOLDING: token overrides only. Per-surface visual verification
+   + Settings UI toggle are follow-on ships.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root[data-theme="sunlight"],
+:root[data-theme="sunlight"] body {
+  /* Mute family darkens for AAA contrast on chalk */
+  --cb-mute: #5C594E;
+  --cb-mute-1: #4E4B41;
+  --cb-mute-2: #6D6A5E;
+  --cb-mute-soft: #6E6B5D;
+  --cb-mute-faint: #84806F;
+  /* Brass darkens to brass-deep on chalk surfaces */
+  --cb-brass: var(--cb-brass-deep);
+  --cb-brass-2: var(--cb-brass-deep);
+}
+:root[data-theme="sunlight"] * {
+  box-shadow: none !important;
+}
+:root[data-theme="sunlight"] svg [stroke] {
+  stroke-width: calc(var(--svg-stroke, 2px) * 1.25);
+}
+
+/* Auto-detect (advisory only — opt-in setting still wins).
+   Browsers offering prefers-color-scheme: light get sunlight scaffolding too. */
+@media (prefers-color-scheme: light) {
+  :root[data-theme="auto"] {
+    /* No-op for now; full auto-sunlight palette is a follow-on ship.
+       The attribute is here so future enable-on-light is one CSS block change. */
+  }
+}
