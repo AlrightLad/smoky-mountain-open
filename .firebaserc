@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "parbaughs"
+    "default": "parbaughs",
+    "production": "parbaughs",
+    "staging": "parbaughs-staging"
   }
 }
