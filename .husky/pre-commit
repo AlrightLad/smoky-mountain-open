@@ -108,7 +108,11 @@ if [ -n "$DASHBOARD_PATHS" ]; then
     fi
   done
   # Re-run regen scripts so data blocks are repopulated post-sync.
-  for s in regen-activity regen-amendments regen-app-health regen-dashboard regen-escalations regen-index regen-main-flows regen-proposals regen-token-usage; do
+  # 2026-05-21 Founder root-cause: regen-sessions + regen-founder-checklist MUST
+  # be here. Pre-commit copies templates (containing {} empty) to docs/reports/.
+  # If a regen isn't run here, the file stays empty after commit until
+  # post-commit fires ~5s later. That window is when Founder saw "blank page".
+  for s in regen-activity regen-amendments regen-app-health regen-dashboard regen-escalations regen-index regen-main-flows regen-proposals regen-token-usage regen-sessions regen-founder-checklist; do
     if [ -f "scripts/$s.py" ]; then
       python "scripts/$s.py" > /dev/null 2>&1 || true
     fi
