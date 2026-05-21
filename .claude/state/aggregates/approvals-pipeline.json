@@ -1,13 +1,13 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T14:32:14Z",
-  "generated_at": "2026-05-21T14:32:14Z",
+  "timestamp": "2026-05-21T15:07:14Z",
+  "generated_at": "2026-05-21T15:07:14Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "green",
-  "raw_status": "green",
-  "summary": "watcher no-new-files 1.4min ago",
-  "as_of": "2026-05-21T14:30:49Z",
+  "status": "yellow",
+  "raw_status": "yellow",
+  "summary": "watcher cycling · last 2 runs skipped on dirty tree",
+  "as_of": "2026-05-21T15:05:48Z",
   "stale": false,
   "age_hours": 0.02333333333333333,
   "counts": {
@@ -27,6 +27,20 @@
       "name": "last-processed-decisions",
       "note": "file=decisions-canary-2026-05-20T19-05-19Z.json kind=decisions",
       "when": "2026-05-20T19:08:40.7809674Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-21T15-05-48Z-downloads-watcher.log",
+      "note": "[15:05:48] SKIP working tree dirty with non-routine files: .claude/hooks/stop-verification.sh, .claude/settings.json, .claude/state/wellness/engineer.json, docs/reports/app-health.html, docs/reports/f",
+      "when": "2026-05-21T15:05:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-21T15-00-48Z-downloads-watcher.log",
+      "note": "[15:00:48] SKIP working tree dirty with non-routine files: docs/reports/app-health.html, docs/reports/founder-checklist.html, docs/reports/sessions.html, scripts/regen-founder-checklist.py, scripts/re",
+      "when": "2026-05-21T15:00:48Z"
     }
   ],
   "links": [
@@ -42,7 +56,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 0,
+    "consecutive_skips": 2,
     "age_minutes": 1.4
   }
 }

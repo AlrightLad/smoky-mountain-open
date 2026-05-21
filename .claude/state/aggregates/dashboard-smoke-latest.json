@@ -1,18 +1,18 @@
 {
   "schema_version": "dashboard-smoke-v1",
-  "generated_at": "2026-05-21T14:04:00.649Z",
-  "total": 10,
-  "passed": 10,
+  "generated_at": "2026-05-21T15:09:54.529Z",
+  "total": 12,
+  "passed": 12,
   "results": [
     {
       "file": "activity.html",
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 28210,
+        "bodyTextLen": 28276,
         "kpiPopulated": 8,
         "kpiTotal": 8,
-        "navLinkCount": 10,
+        "navLinkCount": 11,
         "axeViolations": 0,
         "axeSerious": 0
       },
@@ -26,10 +26,10 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 1918,
+        "bodyTextLen": 1939,
         "kpiPopulated": 4,
         "kpiTotal": 4,
-        "navLinkCount": 10,
+        "navLinkCount": 11,
         "axeViolations": 0,
         "axeSerious": 0
       },
@@ -43,10 +43,10 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 8608,
+        "bodyTextLen": 8631,
         "kpiPopulated": 0,
         "kpiTotal": 0,
-        "navLinkCount": 10,
+        "navLinkCount": 11,
         "axeViolations": 0,
         "axeSerious": 0
       },
@@ -60,10 +60,10 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 7584,
+        "bodyTextLen": 7500,
         "kpiPopulated": 37,
         "kpiTotal": 38,
-        "navLinkCount": 10,
+        "navLinkCount": 11,
         "axeViolations": 0,
         "axeSerious": 0
       },
@@ -77,10 +77,10 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 8384,
+        "bodyTextLen": 8405,
         "kpiPopulated": 0,
         "kpiTotal": 0,
-        "navLinkCount": 10,
+        "navLinkCount": 11,
         "axeViolations": 0,
         "axeSerious": 0
       },
@@ -94,10 +94,10 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 1192,
+        "bodyTextLen": 9366,
         "kpiPopulated": 4,
         "kpiTotal": 4,
-        "navLinkCount": 10,
+        "navLinkCount": 11,
         "axeViolations": 0,
         "axeSerious": 0
       },
@@ -111,9 +111,26 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 2110,
+        "bodyTextLen": 2119,
         "kpiPopulated": 4,
         "kpiTotal": 4,
+        "navLinkCount": 11,
+        "axeViolations": 0,
+        "axeSerious": 0
+      },
+      "axe": {
+        "violations": [],
+        "total": 0
+      }
+    },
+    {
+      "file": "founder-checklist.html",
+      "passed": true,
+      "issues": [],
+      "stats": {
+        "bodyTextLen": 5224,
+        "kpiPopulated": 0,
+        "kpiTotal": 0,
         "navLinkCount": 11,
         "axeViolations": 0,
         "axeSerious": 0
@@ -128,10 +145,10 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 3528,
+        "bodyTextLen": 3549,
         "kpiPopulated": 0,
         "kpiTotal": 0,
-        "navLinkCount": 10,
+        "navLinkCount": 11,
         "axeViolations": 0,
         "axeSerious": 0
       },
@@ -145,10 +162,27 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 29077,
+        "bodyTextLen": 29098,
         "kpiPopulated": 0,
         "kpiTotal": 0,
-        "navLinkCount": 10,
+        "navLinkCount": 11,
+        "axeViolations": 0,
+        "axeSerious": 0
+      },
+      "axe": {
+        "violations": [],
+        "total": 0
+      }
+    },
+    {
+      "file": "sessions.html",
+      "passed": true,
+      "issues": [],
+      "stats": {
+        "bodyTextLen": 1017,
+        "kpiPopulated": 0,
+        "kpiTotal": 0,
+        "navLinkCount": 11,
         "axeViolations": 0,
         "axeSerious": 0
       },
@@ -162,10 +196,10 @@
       "passed": true,
       "issues": [],
       "stats": {
-        "bodyTextLen": 3184,
+        "bodyTextLen": 3206,
         "kpiPopulated": 3,
         "kpiTotal": 3,
-        "navLinkCount": 10,
+        "navLinkCount": 11,
         "axeViolations": 1,
         "axeSerious": 0
       },

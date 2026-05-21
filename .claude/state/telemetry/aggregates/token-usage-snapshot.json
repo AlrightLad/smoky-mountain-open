@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-05-21T15:07:14.510410+00:00",
+  "generated_at": "2026-05-21T15:09:02.564028+00:00",
   "_meter_status": "wired-estimated-sidecar-empty",
   "session_transcripts": {
-    "generated_at": "2026-05-21T14:02:39.719796+00:00",
+    "generated_at": "2026-05-21T15:09:01.768716+00:00",
     "source": "~/.claude/projects/C--Users-Zach-smoky-mountain-open/*.jsonl",
-    "session_count": 45,
-    "bucket_count": 78,
-    "all_time_total_tokens": 8533212699,
-    "weekly_real_7d": 5408399635,
+    "session_count": 46,
+    "bucket_count": 79,
+    "all_time_total_tokens": 8621905474,
+    "weekly_real_7d": 5497092410,
     "by_day_total": {
       "2026-04-17": 294853821,
       "2026-04-20": 362592283,
@@ -28,10 +28,10 @@
       "2026-05-18": 235919411,
       "2026-05-19": 487882167,
       "2026-05-20": 611933923,
-      "2026-05-21": 937526407
+      "2026-05-21": 1026219182
     },
     "by_model_total": {
-      "claude-opus-4-7": 8533212699,
+      "claude-opus-4-7": 8621905474,
       "<synthetic>": 0
     }
   },
@@ -39,46 +39,46 @@
     "agent_role": [
       {
         "label": "main",
-        "tokens": 8533212699,
-        "usd_cost": 17877.0662
+        "tokens": 8621905474,
+        "usd_cost": 18210.7618
       },
       {
         "label": "orchestrator",
         "tokens": 7916300,
-        "usd_cost": 16.5846
+        "usd_cost": 16.7204
       },
       {
         "label": "engineer",
         "tokens": 102000,
-        "usd_cost": 0.2137
+        "usd_cost": 0.2154
       }
     ],
     "work_category": [
       {
         "label": "manual-session",
-        "tokens": 8540514699,
-        "usd_cost": 17892.3639
+        "tokens": 8629207474,
+        "usd_cost": 18226.1847
       },
       {
         "label": "overnight-triage",
         "tokens": 716300,
-        "usd_cost": 1.5006
+        "usd_cost": 1.5129
       }
     ],
     "session_top10": [
+      {
+        "label": "a3e3471a \u00b7 2026-05-20",
+        "tokens": 1438359440,
+        "usd_cost": 3062.4574,
+        "session_id_prefix": "a3e3471a",
+        "day": "2026-05-20"
+      },
       {
         "label": "e7cd3197 \u00b7 2026-05-13",
         "tokens": 1423362757,
         "usd_cost": 2539.3535,
         "session_id_prefix": "e7cd3197",
         "day": "2026-05-13"
-      },
-      {
-        "label": "a3e3471a \u00b7 2026-05-20",
-        "tokens": 1358446896,
-        "usd_cost": 2752.3541,
-        "session_id_prefix": "a3e3471a",
-        "day": "2026-05-20"
       },
       {
         "label": "88ea64e7 \u00b7 2026-05-14",
@@ -145,7 +145,7 @@
         "cache_read": 1.5
       },
       "model": "claude-opus-4-7",
-      "effective_rate_per_mtok": 2.095,
+      "effective_rate_per_mtok": 2.1122,
       "session_breakdown_source": "session-transcript-summary.json buckets (per-input/output/cache-split)",
       "agent_work_category_breakdown_source": "by_agent and by_cron aggregates (no per-input/output split \u2014 cost computed as tokens \u00d7 effective_avg_rate derived from session_transcripts overall mix)",
       "top_session_count": 10
@@ -154,7 +154,7 @@
   "quota_status": {
     "state": "empty",
     "as_of": "2026-05-21T15:07:13.4719058Z",
-    "age_seconds": 1,
+    "age_seconds": 109,
     "weekly_tokens": 0,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -182,10 +182,10 @@
       }
     },
     "main": {
-      "real": 8533212699,
+      "real": 8621905474,
       "estimated": 0,
       "manual": 0,
-      "total_real_plus_estimated": 8533212699,
+      "total_real_plus_estimated": 8621905474,
       "by_day": {
         "2026-05-13": {
           "real": 672098066,
@@ -264,7 +264,7 @@
           "estimated": 0
         },
         "2026-05-21": {
-          "real": 937526407,
+          "real": 1026219182,
           "estimated": 0
         }
       }
@@ -352,10 +352,10 @@
   },
   "by_cron": {
     "manual-session": {
-      "real": 8533314699,
+      "real": 8622007474,
       "estimated": 7200000,
       "manual": 0,
-      "total_real_plus_estimated": 8540514699,
+      "total_real_plus_estimated": 8629207474,
       "by_day": {
         "2026-05-13": {
           "real": 672200066,
@@ -434,7 +434,7 @@
           "estimated": 0
         },
         "2026-05-21": {
-          "real": 937526407,
+          "real": 1026219182,
           "estimated": 0
         }
       }
@@ -634,10 +634,10 @@
   },
   "by_ship": {
     "unattributed": {
-      "real": 8533314699,
+      "real": 8622007474,
       "estimated": 716300,
       "manual": 0,
-      "total_real_plus_estimated": 8534030999,
+      "total_real_plus_estimated": 8622723774,
       "by_day": {
         "2026-05-13": {
           "real": 672200066,
@@ -716,7 +716,7 @@
           "estimated": 49400
         },
         "2026-05-21": {
-          "real": 937526407,
+          "real": 1026219182,
           "estimated": 574860
         }
       }
@@ -747,14 +747,14 @@
     }
   },
   "all_time": {
-    "real": 8533314699,
+    "real": 8622007474,
     "estimated": 7916300,
     "manual": 0,
     "first_event_at": "2026-04-17T22:45:30.161000+00:00",
-    "last_event_at": "2026-05-21T15:07:13+00:00"
+    "last_event_at": "2026-05-21T15:08:56.002000+00:00"
   },
   "_counts": {
-    "real_events": 79,
+    "real_events": 80,
     "estimated_events": 3502,
     "manual_entries": 0
   }

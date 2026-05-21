@@ -1,8 +1,8 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T14:02:52.029448Z",
+  "generated_at": "2026-05-21T15:09:15.979196Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 82.0,
+  "overall_score": 81.2,
   "overall_grade": "B+",
   "dimensions": {
     "A1_roadmap": {
@@ -194,14 +194,14 @@
       ]
     },
     "A12_operational": {
-      "score": 100,
+      "score": 85,
       "status": "green",
-      "label": "pipeline=green · 0 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=yellow · 2 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "no-new-files"
+        "watcher_exit_reason": "skip-dirty"
       }
     }
   },
@@ -259,9 +259,9 @@
     }
   ],
   "audit_trigger": {
-    "sha": "13b1d978",
+    "sha": "f8dd1fcb",
     "subject": "Overnight triage 2026-05-21 - 0 reports, 0 proposals, 0 FIQ entries graded",
-    "committed_at": "2026-05-21T10:02:36-04:00",
+    "committed_at": "2026-05-21T11:08:58-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
