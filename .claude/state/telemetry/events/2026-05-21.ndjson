@@ -1214,3 +1214,5 @@
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T20:04:55.300672+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"timestamp":"2026-05-21T20:05:48.8892609Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"2f0a44a5bd1c","cron_source":"downloads-watcher"}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T20:05:55.040842+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T20:06:11.596973+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T20:06:39.498805+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
