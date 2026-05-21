@@ -136,6 +136,21 @@ try {
         '^\.claude/state/escalations/inbox/.+\.json$',
         '^\.claude/state/proposals/\.last-processed-decisions\.json$',
 
+        # 2026-05-21 (Founder root-cause fix) — dashboard regen output is
+        # Class A routine. Without these patterns the watcher SKIPped every
+        # cycle after any regen ran (founder-checklist.html and sessions.html
+        # are rewritten by every post-commit + every 5-min sidecar).
+        '^docs/reports/.+\.html$',
+        '^docs/reports/sessions/.+\.html$',
+        '^\.claude/state/founder-checklist-state\.json$',
+        '^\.claude/state/dashboard-health/.+\.log$',
+        '^\.claude/state/critique/.+\.(md|json)$',
+        '^\.claude/state/stop-verification/.+\.log$',
+        '^\.claude/state/cron/.+\.(md|json)$',
+        '^\.claude/state/cycle-history\.json$',
+        '^\.claude/state/heartbeat/.+\.log$',
+        '^docs/agents/SESSION_JOURNAL\.md$',
+
         # Sibling-agent EnterWorktree dirs + verify canary. Both surfaced by
         # test-qa CRITICAL-watcher-allowlist-worktrees-and-canary (2026-05-15):
         # 6 consecutive watcher SKIPs were caused by a leftover worktree dir

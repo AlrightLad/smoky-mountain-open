@@ -222,7 +222,8 @@ if command -v powershell.exe >/dev/null 2>&1; then
           status = 'green'
           tasks = \$results
         }
-        \$report | ConvertTo-Json -Depth 6 | Out-File -FilePath '.claude/state/aggregates/cron-health.json' -Encoding utf8
+        \$json = \$report | ConvertTo-Json -Depth 6
+        [System.IO.File]::WriteAllText('.claude/state/aggregates/cron-health.json', \$json, (New-Object System.Text.UTF8Encoding(\$false)))
     " >/dev/null 2>&1 || true
 fi
 

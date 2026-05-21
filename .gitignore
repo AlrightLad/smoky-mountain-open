@@ -148,3 +148,6 @@ dist/
 .claude/state/critique/founder-checklist-screenshot.png
 .claude/state/critique/sessions-real.png
 .claude/state/sessions-watch.log
+
+# Stop hook logs (session-end markers, not source)
+.claude/state/stop-verification/

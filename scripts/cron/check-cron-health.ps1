@@ -27,7 +27,8 @@ if (-not $tasks) {
     })
     tasks = @()
   }
-  $report | ConvertTo-Json -Depth 6 | Out-File -FilePath $OutFile -Encoding utf8
+  $json = $report | ConvertTo-Json -Depth 6
+  [System.IO.File]::WriteAllText($OutFile, $json, (New-Object System.Text.UTF8Encoding($false)))
   Write-Host "[cron-health] missing - no PARBAUGHS-* tasks found"
   exit 1
 }
@@ -129,7 +130,8 @@ $out = [ordered]@{
   tasks = $taskReports
 }
 
-$out | ConvertTo-Json -Depth 6 | Out-File -FilePath $OutFile -Encoding utf8
+$json = $out | ConvertTo-Json -Depth 6
+[System.IO.File]::WriteAllText($OutFile, $json, (New-Object System.Text.UTF8Encoding($false)))
 
 Write-Host ("[cron-health] " + $overall + " - " + $issues.Count + " issues across " + $taskReports.Count + " tasks")
 if ($overall -eq "red") { exit 1 }
