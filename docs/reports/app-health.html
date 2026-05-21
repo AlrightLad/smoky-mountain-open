@@ -743,7 +743,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T17:41:53.764018Z",
+  "generated_at": "2026-05-21T17:53:40.085096Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 80.0,
   "overall_grade": "B",
@@ -1020,13 +1020,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "69f95d96",
-    "subject": "fix(pre-commit): ACTUAL fix â€” add regen-sessions + regen-founder-checklist to pre-commit regen loop (the prior commit failed to land the Edit)",
-    "committed_at": "2026-05-21T13:40:55-04:00",
+    "sha": "f793e632",
+    "subject": "fix: clean dirty tree + add discussion-bubbles + activity regens to pre-commit loop",
+    "committed_at": "2026-05-21T13:52:42-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 3
+    "total_files_touched": 22
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
