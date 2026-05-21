@@ -1,0 +1,18 @@
+{
+  "ship_id": "W1.S3",
+  "name": "Members directory + Find Players",
+  "wave": 1,
+  "status": "partial",
+  "ship_plan": "docs/agents/ships/W1.S3.md",
+  "implementation": {
+    "modules": ["src/pages/members.js (2120 lines)", "src/pages/findplayers.js (101 lines)"]
+  },
+  "acceptance_criteria": [
+    { "id": 1, "criterion": "A-Z by username Discord-style format (e.g. username#XXXX)", "status": "BLOCKED on Wave 4 identity (W4.I1-I5)", "evidence": "Current implementation uses single-name members; Discord-style requires identity migration" },
+    { "id": 2, "criterion": "Championship status badges from W1.S9", "status": "DEFERRED — W1.S9 baseline-complete, badge integration pending" },
+    { "id": 3, "criterion": "Friend request flow (send / accept / decline)", "status": "BASELINE — findplayers.js renders cross-league member search; friend-relationship schema not yet implemented" },
+    { "id": 4, "criterion": "Founding 20 auto-friended per memory #28", "status": "DEFERRED on friend-relationship schema" },
+    { "id": 5, "criterion": "fbMemberCache populated for @mention autocomplete", "status": "PASS-baseline", "evidence": "src/core/data.js fbMemberCache populated on auth + listener" }
+  ],
+  "outcome": "PARTIAL — directory + search exist; Discord-identity + friend-relationship features blocked on Wave 4 identity migration"
+}

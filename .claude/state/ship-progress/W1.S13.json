@@ -1,0 +1,20 @@
+{
+  "ship_id": "W1.S13",
+  "name": "Courses + Leagues + More",
+  "wave": 1,
+  "status": "complete-baseline",
+  "ship_plan": "docs/agents/ships/W1.S13.md",
+  "implementation": {
+    "modules": [
+      "src/pages/courses.js (1126 lines)",
+      "src/pages/leagues.js (491 lines)",
+      "src/pages/more.js (More page — info + bug report entry added W1.I1)"
+    ]
+  },
+  "acceptance_criteria": [
+    { "id": 1, "criterion": "Courses surface — search via GolfCourseAPI + community-writable", "status": "PASS-baseline", "evidence": "courses.js + functions/searchCourses (zod-validated + rate-limited per A3 security)" },
+    { "id": 2, "criterion": "Leagues surface — list + create + join + commissioner admin", "status": "PASS-baseline", "evidence": "leagues.js + joinLeague Cloud Function (callable)" },
+    { "id": 3, "criterion": "More page — navigation hub for info / settings / extras", "status": "PASS-baseline", "evidence": "more.js with sections; bug report entry added via W1.I1" }
+  ],
+  "outcome": "BASELINE-COMPLETE"
+}

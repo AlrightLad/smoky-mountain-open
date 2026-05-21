@@ -1,0 +1,18 @@
+{
+  "ship_id": "W1.S10",
+  "name": "Season Recap + Range",
+  "wave": 1,
+  "status": "complete-baseline",
+  "ship_plan": "docs/agents/ships/W1.S10.md",
+  "implementation": {
+    "modules": [
+      "src/pages/seasonrecap.js (194 lines)",
+      "src/pages/range.js (374 lines)"
+    ]
+  },
+  "acceptance_criteria": [
+    { "id": 1, "criterion": "Season recap aggregator (auto-generated wrap-up)", "status": "PASS-baseline" },
+    { "id": 2, "criterion": "Range session logging + ParCoin reward (10/session per parcoins.js)", "status": "PASS-baseline" }
+  ],
+  "outcome": "BASELINE-COMPLETE"
+}

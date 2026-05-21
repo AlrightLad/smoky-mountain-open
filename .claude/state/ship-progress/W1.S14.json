@@ -1,0 +1,19 @@
+{
+  "ship_id": "W1.S14",
+  "name": "Admin + Onboarding (Critical Feature Registry trigger)",
+  "wave": 1,
+  "status": "partial",
+  "ship_plan": "docs/agents/ships/W1.S14.md",
+  "implementation": {
+    "modules": [
+      "src/pages/admin.js (985 lines)",
+      "src/pages/onboarding.js (238 lines)"
+    ]
+  },
+  "acceptance_criteria": [
+    { "id": 1, "criterion": "Admin surface (Founder-only — member management, reports, errors)", "status": "PASS-baseline" },
+    { "id": 2, "criterion": "Onboarding flow (new member sign-up + invite validation + first-round seed)", "status": "PASS-baseline" },
+    { "id": 3, "criterion": "Critical Feature Registry — Founder synchronous presence verification", "status": "FOUNDER-PRESENCE-REQUIRED", "evidence": "Per CLUBHOUSE governance: any Critical Feature change requires Founder verification IN PERSON; this ship can ship baseline but final ratification needs Founder verbal/visual confirmation" }
+  ],
+  "outcome": "PARTIAL — implementation baseline-complete; Critical Feature Registry ratification awaits synchronous Founder presence"
+}

@@ -1,0 +1,23 @@
+{
+  "ship_id": "W1.S11",
+  "name": "Feed + Activity",
+  "wave": 1,
+  "status": "complete-baseline",
+  "ship_plan": "docs/agents/ships/W1.S11.md",
+  "implementation": {
+    "modules": [
+      "src/pages/feed.js (823 lines)",
+      "src/pages/activity.js (126 lines)"
+    ],
+    "test_coverage": "Multiple smoke scenarios — S13 action row, S14 kudos persistence, S15 comment persistence, S16/17/18 HQ Home cards"
+  },
+  "acceptance_criteria": [
+    { "id": 1, "criterion": "Feed surface — chronological round + activity entries", "status": "PASS-baseline" },
+    { "id": 2, "criterion": "Engagement (kudos + comments + share)", "status": "PASS-baseline", "evidence": "v8.19.0 Ship 5+3 hardened kudos + comments persistence" },
+    { "id": 3, "criterion": "Activity feed surfacing across home + activity page", "status": "PASS-baseline" }
+  ],
+  "follow_ons": [
+    "Image attachments (depends on W1.I1 image-upload pipeline) — W1.I1 text-only form shipped; pipeline follow-on"
+  ],
+  "outcome": "BASELINE-COMPLETE — feed core + engagement shipped; image attach pending W1.I1 follow-on"
+}

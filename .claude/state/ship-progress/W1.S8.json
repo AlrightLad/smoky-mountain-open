@@ -1,0 +1,21 @@
+{
+  "ship_id": "W1.S8",
+  "name": "Calendar + Tee Times + Trips",
+  "wave": 1,
+  "status": "complete-baseline",
+  "ship_plan": "docs/agents/ships/W1.S8.md",
+  "implementation": {
+    "modules": [
+      "src/pages/calendar.js (429 lines)",
+      "src/pages/teetimes.js (305 lines)",
+      "src/pages/trips.js (414 lines)"
+    ],
+    "test_coverage": "S25 manage-section visibility + tee-time RSVP flow tested in smoke (v8.18.0 Ship 5+2)"
+  },
+  "acceptance_criteria": [
+    { "id": 1, "criterion": "Calendar view (month/week aggregation of rounds + events)", "status": "PASS-baseline" },
+    { "id": 2, "criterion": "Tee Time post + RSVP + notification flow", "status": "PASS-baseline", "evidence": "v8.18.0 Ship 5+2 hardened RSVP; teetimes.js complete" },
+    { "id": 3, "criterion": "Trips post + scorekeeping + leaderboard", "status": "PASS-baseline" }
+  ],
+  "outcome": "BASELINE-COMPLETE"
+}

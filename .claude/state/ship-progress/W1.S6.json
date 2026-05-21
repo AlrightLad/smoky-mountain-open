@@ -1,0 +1,27 @@
+{
+  "ship_id": "W1.S6",
+  "name": "ParCoin economy: Wagers + Bounties + Challenges",
+  "wave": 1,
+  "status": "complete-baseline",
+  "ship_plan": "docs/agents/ships/W1.S6.md",
+  "implementation": {
+    "modules": [
+      "src/pages/wagers.js (485 lines — 6 wager types incl. Nassau, Beat Their Score)",
+      "src/pages/bounties.js (239 lines)",
+      "src/pages/challenges.js (103 lines)",
+      "src/core/parcoins.js (236 lines — earn/spend math + 9 earning triggers per CLAUDE.md ParCoin Economy)"
+    ],
+    "test_coverage": "tests/unit/parcoins.test.js (18 tests passing — invariants on earn rates)"
+  },
+  "acceptance_criteria": [
+    { "id": 1, "criterion": "Wager match types (Nassau, Beat Their Score, etc — 6 types)", "status": "PASS-baseline" },
+    { "id": 2, "criterion": "Bounty post + claim flow", "status": "PASS-baseline" },
+    { "id": 3, "criterion": "Challenge issue + accept flow", "status": "PASS-baseline" },
+    { "id": 4, "criterion": "ParCoin economy invariants (round 50/25/10 earn rates, daily login 1)", "status": "PASS — unit tests assert", "evidence": "tests/unit/parcoins.test.js 18/18 passing" }
+  ],
+  "follow_ons": [
+    "Move award/spend to Cloud Function callable for atomic increment (A04 pentest finding)",
+    "Per-state visual V1 against canonical mock"
+  ],
+  "outcome": "BASELINE-COMPLETE — 4 ParCoin surfaces shipped + economy math unit-tested"
+}
