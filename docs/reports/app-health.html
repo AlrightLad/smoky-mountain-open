@@ -742,7 +742,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T04:54:44.795463Z",
+  "generated_at": "2026-05-21T04:59:30.826810Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 79.4,
   "overall_grade": "B",
@@ -1029,22 +1029,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "e3b5b19b",
-    "subject": "[M1] Capacitor harness scaffolding: 7 native helper modules (device/storage/gps/camera/haptics/share/push) with web fallback. PB.native.* interface â€” screen code in M2-M6 imports without conditional branches. Push architected, Launch Phase B activation. iOS Xcode generation = Founder workstream.",
-    "committed_at": "2026-05-21T00:54:28-04:00",
-    "trigger": "app-commit",
-    "is_app_commit": true,
-    "app_files_touched": [
-      "src/core/native/camera.js",
-      "src/core/native/device.js",
-      "src/core/native/gps.js",
-      "src/core/native/haptics.js",
-      "src/core/native/index.js",
-      "src/core/native/push.js",
-      "src/core/native/share.js",
-      "src/core/native/storage.js"
-    ],
-    "total_files_touched": 10
+    "sha": "6d60c354",
+    "subject": "[ops] gitignore: catch dashboard-audit-*/screenshots/ recursive PNGs + main-flows-v2 iter HTMLs (fixes watcher skip-dirty cycle). + Bug Triage Listener cron script (categorizes feature_requests P0-P3). + aggregator complete-baseline status recognition.",
+    "committed_at": "2026-05-21T00:58:43-04:00",
+    "trigger": "substrate-commit",
+    "is_app_commit": false,
+    "app_files_touched": [],
+    "total_files_touched": 3
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
