@@ -962,3 +962,11 @@
 {"event_type": "session.team-work.summary", "timestamp": "2026-05-21T17:38:29.864833+00:00", "data": {"agent": "engineer", "ship_id": "manual-emit-20260521T173829Z", "tokens_estimated": 0, "note": "post-commit-hook"}, "agent": "engineer", "ship_id": "manual-emit-20260521T173829Z", "cron_source": "manual-session"}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T17:38:30.762684+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T17:38:41.409886+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T17:39:46.506992+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"timestamp":"2026-05-21T17:40:48.6674103Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"943562edef6d","cron_source":"downloads-watcher"}}
+{"timestamp":"2026-05-21T17:40:48.9141978Z","event_type":"cron.downloads-watcher.end","data":{"success":true,"exit_reason":"skip-dirty","cron_source":"downloads-watcher","duration_ms":333,"claude_invoked":false,"run_id":"943562edef6d"}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T17:41:00.817304+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "session.team-work.summary", "timestamp": "2026-05-21T17:41:38.294873+00:00", "data": {"agent": "engineer", "ship_id": "manual-emit-20260521T174138Z", "tokens_estimated": 0, "note": "post-commit-hook"}, "agent": "engineer", "ship_id": "manual-emit-20260521T174138Z", "cron_source": "manual-session"}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T17:41:39.265591+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-21T17:41:50.824514+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"timestamp":"2026-05-21T17:42:12.8877251Z","event_type":"cron.token-sidecar.end","data":{"org_monthly_pct":null,"stale_seconds":null,"estimated_tokens":0,"cron_source":"token-sidecar","duration_seconds":0,"success":true,"claude_invoked":false,"data_source":"auto-derived","run_id":"343fbd6ed55a","weekly_pct":null}}
