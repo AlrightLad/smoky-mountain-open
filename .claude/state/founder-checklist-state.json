@@ -1,15 +1,7 @@
 {
     "schema_version":  1,
-    "updated_at":  "2026-05-21T15:55:48Z",
+    "updated_at":  "2026-05-21T16:25:43Z",
     "items":  {
-                  "staging-firebase-project":  {
-                                                   "status":  "verification-failed",
-                                                   "marked_at":  "2026-05-21T15:55:48Z",
-                                                   "verify_command":  "if (Test-Path .env.staging) { \u0027env-ok\u0027; firebase projects:list 2\u003e\u00261 | Select-String parbaughs-staging } else { \u0027env-staging-missing\u0027 }",
-                                                   "verify_expected":  "env-ok[\\\\s\\\\S]*parbaughs-staging",
-                                                   "verified_at":  "2026-05-21T15:55:49Z",
-                                                   "verify_output_excerpt":  "env-staging-missing",
-                                                   "verification_status":  "verification-failed"
-                                               }
+
               }
 }
