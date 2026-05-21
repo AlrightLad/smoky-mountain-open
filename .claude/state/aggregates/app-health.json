@@ -1,9 +1,9 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T01:43:51.561989Z",
+  "generated_at": "2026-05-21T01:57:23.041555Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 66.6,
-  "overall_grade": "C+",
+  "overall_score": 72.3,
+  "overall_grade": "B-",
   "dimensions": {
     "A1_roadmap": {
       "score": 70,
@@ -230,13 +230,13 @@
       ]
     },
     "A11_testing": {
-      "score": 42,
-      "status": "red",
+      "score": 80,
+      "status": "green",
       "label": "6 specs · 677 LOC · unit-test=True · coverage-tool=True",
       "source": "tests/e2e/flows/, package.json, smoke-test.txt",
       "weak_points": [
         {
-          "what": "54 smoke failures (FirebaseError: auth/network-request-failed) — every test is FAILING",
+          "what": "2 smoke failures (FirebaseError: auth/network-request-failed) — every test is FAILING",
           "where": "tests/e2e/flows/01-all-users-baseline.spec.js + 06-notifications-*.spec.js",
           "what_action": "Diagnose emulator-Auth port wiring: (1) `firebase init emulators` and confirm auth port; (2) ensure tests/e2e/_fixtures/ calls connectAuthEmulator(); (3) verify Node 22 vs 24 mismatch warning resolved"
         },
@@ -331,13 +331,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "b8005352",
-    "subject": "[tier-cleanup] eslint: tests/unit/ uses sourceType module (Vitest ESM)",
-    "committed_at": "2026-05-20T21:43:36-04:00",
-    "trigger": "substrate-commit",
+    "sha": "60f59e8d",
+    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
+    "committed_at": "2026-05-20T21:43:54-04:00",
+    "trigger": "cron",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 1
+    "total_files_touched": 12
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
