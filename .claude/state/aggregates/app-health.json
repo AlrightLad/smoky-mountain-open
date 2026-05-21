@@ -1,6 +1,6 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T01:43:21.307810Z",
+  "generated_at": "2026-05-21T01:43:51.561989Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 66.6,
   "overall_grade": "C+",
@@ -331,19 +331,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "48afc2bd",
-    "subject": "[tier-cleanup] app health D to C+ via vitest+knip+jscpd+zod+rate-limit+bundle-scan+rules-matrix+sentry+alerting+deploy+cron-silencer",
-    "committed_at": "2026-05-20T21:43:02-04:00",
-    "trigger": "app-commit",
-    "is_app_commit": true,
-    "app_files_touched": [
-      "functions/index.js",
-      "functions/lib/rate-limit.js",
-      "functions/lib/validators.js",
-      "functions/package-lock.json",
-      "functions/package.json"
-    ],
-    "total_files_touched": 32
+    "sha": "b8005352",
+    "subject": "[tier-cleanup] eslint: tests/unit/ uses sourceType module (Vitest ESM)",
+    "committed_at": "2026-05-20T21:43:36-04:00",
+    "trigger": "substrate-commit",
+    "is_app_commit": false,
+    "app_files_touched": [],
+    "total_files_touched": 1
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
