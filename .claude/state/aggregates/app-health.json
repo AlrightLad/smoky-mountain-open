@@ -1,6 +1,6 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T04:43:58.331088Z",
+  "generated_at": "2026-05-21T04:46:31.248038Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 78.9,
   "overall_grade": "B",
@@ -293,13 +293,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "db0a10ed",
-    "subject": "[a11y+gate] discussion-bubbles message-stream tabindex (scrollable-region-focusable). + pre-commit auto-syncs templates -> docs/reports before smoke (closes a gap where template changes alone didn't get smoke-validated)",
-    "committed_at": "2026-05-21T00:43:10-04:00",
+    "sha": "51ef0361",
+    "subject": "[ship-progress] W1.S4 + W1.S5 + W1.S9 baseline-complete â€” implementations pre-exist (scorecard/spectator/trophy/records/awards/aces/standings). Per-state visual V1 deferred to mock-comparison ships. Smoke 26/26 covers the surfaces.",
+    "committed_at": "2026-05-21T00:46:15-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 17
+    "total_files_touched": 3
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
