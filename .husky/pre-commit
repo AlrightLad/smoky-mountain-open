@@ -75,3 +75,34 @@ if [ "$UTILS_VER" != "$PKG_VER" ]; then
   echo "Fix version drift before committing."
   exit 1
 fi
+
+# Dashboard smoke gate — runs ONLY when dashboard-relevant files staged.
+# Founder standard 2026-05-21: dashboard gets the same level of audit/smoke
+# as the app. Catches regressions before they land on main.
+#
+# Triggers on changes to:
+#   - templates/dashboards/**
+#   - docs/reports/**  (renderer scripts emit here)
+#   - scripts/regen-*.py
+#   - scripts/aggregate-*.py
+#   - tests/dashboard-smoke/**
+DASHBOARD_PATHS=$(git diff --cached --name-only -- \
+  'templates/dashboards/**' \
+  'docs/reports/**' \
+  'scripts/regen-*.py' \
+  'scripts/aggregate-*.py' \
+  'tests/dashboard-smoke/**' 2>/dev/null)
+
+if [ -n "$DASHBOARD_PATHS" ]; then
+  echo "[dashboard-smoke] dashboard files staged — running smoke gate..."
+  if ! node tests/dashboard-smoke/run.js > /tmp/dashboard-smoke-precommit.log 2>&1; then
+    echo ""
+    echo "ERROR: dashboard smoke failed. Tail of log:"
+    tail -20 /tmp/dashboard-smoke-precommit.log
+    echo ""
+    echo "Run: npm run smoke:dashboards"
+    echo "Fix the failures before committing."
+    exit 1
+  fi
+  echo "[dashboard-smoke] OK"
+fi
