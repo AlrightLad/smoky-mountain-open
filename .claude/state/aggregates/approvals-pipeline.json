@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T02:17:28Z",
-  "generated_at": "2026-05-21T02:17:28Z",
+  "timestamp": "2026-05-21T02:32:57Z",
+  "generated_at": "2026-05-21T02:32:57Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "yellow",
   "raw_status": "yellow",
-  "summary": "watcher last fired 61.7min ago (>10min cadence)",
-  "as_of": "2026-05-21T01:15:49Z",
+  "summary": "watcher last run: skip-dirty",
+  "as_of": "2026-05-21T02:32:26Z",
   "stale": false,
-  "age_hours": 1.0283333333333333,
+  "age_hours": 0.008333333333333333,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -31,6 +31,13 @@
     {
       "category": "stall",
       "status": "skip-dirty",
+      "name": "2026-05-21T02-32-26Z-downloads-watcher.log",
+      "note": "[02:32:27] SKIP working tree dirty with non-routine files: .claude/state/visual-audit-2026-05-21/activity-1366.png, .claude/state/visual-audit-2026-05-21/activity-1920.png, scripts/visual-audit/captur",
+      "when": "2026-05-21T02:32:26Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
       "name": "2026-05-21T01-10-49Z-downloads-watcher.log",
       "note": "[01:10:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-health/post-commit-hook.log",
       "when": "2026-05-21T01:10:49Z"
@@ -41,13 +48,6 @@
       "name": "2026-05-21T01-05-49Z-downloads-watcher.log",
       "note": "[01:05:49] SKIP working tree dirty with non-routine files: .claude/state/task-queue/founder/security-policy-tightening.md, docs/incident-response.md",
       "when": "2026-05-21T01:05:49Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-21T00-55-49Z-downloads-watcher.log",
-      "note": "[00:55:49] SKIP working tree dirty with non-routine files: scripts/aggregate-app-health.py, templates/dashboards/app-health.template.html",
-      "when": "2026-05-21T00:55:49Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 0,
-    "age_minutes": 61.7
+    "consecutive_skips": 1,
+    "age_minutes": 0.5
   }
 }
