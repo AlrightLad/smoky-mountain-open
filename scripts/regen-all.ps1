@@ -63,6 +63,7 @@ $steps = @(
     @{ Name = "aggregate-app-health";    Script = "scripts/aggregate-app-health.py" },
     @{ Name = "regen-app-health";        Script = "scripts/regen-app-health.py" },
     @{ Name = "regen-sessions";          Script = "scripts/regen-sessions.py" },
+    @{ Name = "regen-session-detail";    Script = "scripts/regen-session-detail.py" },
     @{ Name = "regen-founder-checklist"; Script = "scripts/regen-founder-checklist.py" },
     @{ Name = "regen-index";             Script = "scripts/regen-index.py" }
 )

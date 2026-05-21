@@ -104,9 +104,17 @@ def parse_summary(path: Path) -> dict:
     if "overnight" in text.lower()[:200]:
         runtime = "overnight"
 
+    # Detail path: prefer the rendered HTML page (sessions/<date>.html). Fall
+    # back to the source .md only if the HTML hasn't been generated yet.
+    detail_html = ROOT / "docs" / "reports" / "sessions" / f"{date}.html"
+    if detail_html.exists():
+        detail_path = f"sessions/{date}.html"
+    else:
+        detail_path = "../../" + str(path.relative_to(ROOT)).replace("\\", "/")
+
     return {
         "file": str(path.relative_to(ROOT)).replace("\\", "/"),
-        "detail_path": "../../" + str(path.relative_to(ROOT)).replace("\\", "/"),
+        "detail_path": detail_path,
         "date": date,
         "title": title,
         "grade": grade,

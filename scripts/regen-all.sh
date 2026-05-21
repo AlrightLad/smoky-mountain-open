@@ -64,6 +64,7 @@ STEPS=(
     "aggregate-app-health|scripts/aggregate-app-health.py"
     "regen-app-health|scripts/regen-app-health.py"
     "regen-sessions|scripts/regen-sessions.py"
+    "regen-session-detail|scripts/regen-session-detail.py"
     "regen-founder-checklist|scripts/regen-founder-checklist.py"
     "regen-index|scripts/regen-index.py"
 )

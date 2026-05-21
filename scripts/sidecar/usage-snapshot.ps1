@@ -316,6 +316,7 @@ if ($pythonExe) {
         "scripts\regen-activity.py",
         "scripts\regen-token-usage.py",
         "scripts\regen-sessions.py",
+        "scripts\regen-session-detail.py",
         "scripts\regen-founder-checklist.py"
     )
     foreach ($script in $regenScripts) {

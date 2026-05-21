@@ -138,6 +138,7 @@ scripts/consolidate-lighthouse.py
 scripts/aggregate-app-health.py
 scripts/regen-app-health.py
 scripts/regen-sessions.py
+scripts/regen-session-detail.py
 scripts/regen-founder-checklist.py
 scripts/regen-index.py"
 

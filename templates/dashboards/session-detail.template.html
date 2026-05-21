@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Session detail — PARBAUGHS Orchestration</title>
+    <link rel="stylesheet" href="../_assets/dashboard-shell.css">
+    <style>
+        .sd-wrap { max-width: var(--max-content); margin: 0 auto; padding: var(--space-5) var(--space-4); }
+        .sd-back { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-tertiary); text-decoration: none; margin-bottom: var(--space-3); display: inline-block; }
+        .sd-back:hover { color: var(--accent-brass); }
+
+        .sd-hero { padding: var(--space-5) 0 var(--space-4); border-bottom: 1px solid var(--border-subtle); margin-bottom: var(--space-5); }
+        .sd-hero-date { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-tertiary); margin-bottom: var(--space-1); }
+        .sd-hero h1 { font-family: var(--font-display); font-size: 2.25rem; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 var(--space-3); color: var(--text-primary); line-height: 1.2; }
+        .sd-hero-grade { display: flex; gap: var(--space-3); align-items: baseline; flex-wrap: wrap; }
+        .sd-grade-badge { font-family: var(--font-display); font-size: 3rem; font-weight: 600; line-height: 1; padding: 4px 18px; border-radius: var(--radius-md); }
+        .sd-grade-badge.is-a { background: rgba(120,178,128,.18); color: #8fc99c; }
+        .sd-grade-badge.is-b { background: rgba(200,168,92,.18); color: #dcbf73; }
+        .sd-grade-badge.is-c { background: rgba(200,140,80,.22); color: #e0a06f; }
+        .sd-grade-badge.is-d { background: rgba(196,90,90,.22); color: #d97676; }
+        .sd-grade-badge.is-f { background: rgba(196,60,60,.32); color: #ee6060; }
+        .sd-score-line { display: flex; gap: var(--space-3); align-items: baseline; }
+        .sd-score-line .num { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; color: var(--text-primary); }
+        .sd-score-line .lbl { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); }
+        .sd-delta { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; padding: 2px 10px; border-radius: var(--radius-pill); }
+        .sd-delta.is-up { background: rgba(120,178,128,.18); color: #8fc99c; }
+        .sd-delta.is-down { background: rgba(196,90,90,.22); color: #d97676; }
+
+        .sd-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: var(--space-3); margin-bottom: var(--space-5); }
+        .sd-stat { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-3); }
+        .sd-stat-label { font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-tertiary); margin-bottom: var(--space-1); }
+        .sd-stat-value { font-family: var(--font-display); font-size: 1.875rem; font-weight: 600; line-height: 1; color: var(--text-primary); }
+        .sd-stat-sub { font-size: 0.75rem; color: var(--text-secondary); margin-top: var(--space-1); }
+
+        .sd-section-title { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.13em; color: var(--accent-brass); margin: var(--space-5) 0 var(--space-3); font-weight: 600; }
+
+        /* Brutal grading table — Industry vs Us */
+        .sd-grading-table { width: 100%; border-collapse: collapse; margin: var(--space-3) 0 var(--space-5); font-size: 0.875rem; }
+        .sd-grading-table th { font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border-subtle); font-weight: 600; }
+        .sd-grading-table td { padding: 12px; border-bottom: 1px solid var(--border-subtle); vertical-align: top; }
+        .sd-grading-table .dim-name { font-weight: 600; color: var(--text-primary); }
+        .sd-grading-table .score-cell { font-family: var(--font-mono); font-size: 0.9375rem; font-weight: 600; }
+        .sd-bar-row { display: flex; align-items: center; gap: var(--space-2); }
+        .sd-bar-track { flex: 1; height: 8px; background: var(--bg-page); border-radius: 4px; overflow: hidden; position: relative; max-width: 200px; }
+        .sd-bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+        .sd-bar-fill.is-green { background: linear-gradient(90deg, #5a9d72, #78b280); }
+        .sd-bar-fill.is-yellow { background: linear-gradient(90deg, #b88a35, #dcbf73); }
+        .sd-bar-fill.is-red { background: linear-gradient(90deg, #a04040, #d97676); }
+        .sd-bar-indicator { position: absolute; top: -2px; bottom: -2px; width: 2px; background: rgba(255,255,255,0.45); }
+        .sd-bar-indicator::before { content: ''; position: absolute; top: -4px; left: -3px; width: 8px; height: 8px; background: var(--text-primary); border-radius: 50%; }
+        .sd-bar-value { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); min-width: 50px; }
+        .sd-gap-cell { font-family: var(--font-mono); font-size: 0.8125rem; }
+        .sd-gap-cell.is-bad { color: #d97676; }
+        .sd-gap-cell.is-meh { color: #dcbf73; }
+        .sd-gap-cell.is-good { color: #8fc99c; }
+        .sd-honest-row { color: var(--text-secondary); font-size: 0.8125rem; padding: 8px 12px 16px; font-style: italic; line-height: 1.4; }
+
+        /* Brutal verdict block */
+        .sd-verdict { background: var(--bg-card); border: 1px solid var(--border-subtle); border-left: 4px solid var(--accent-claret); border-radius: var(--radius-md); padding: var(--space-4); margin: var(--space-3) 0 var(--space-5); }
+        .sd-verdict h3 { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-claret); margin: 0 0 var(--space-2); font-weight: 700; }
+        .sd-verdict p { font-size: 0.9375rem; color: var(--text-primary); line-height: 1.55; margin: 0 0 var(--space-2); }
+        .sd-verdict ul { margin: var(--space-2) 0 0; padding-left: var(--space-4); }
+        .sd-verdict li { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 4px; }
+
+        /* Critique applied block */
+        .sd-critique { background: var(--bg-card); border: 1px solid var(--border-subtle); border-left: 4px solid var(--accent-teal); border-radius: var(--radius-md); padding: var(--space-4); margin: var(--space-3) 0 var(--space-5); }
+        .sd-critique h3 { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-teal); margin: 0 0 var(--space-2); font-weight: 700; }
+        .sd-critique-finding { padding: var(--space-2) 0; border-bottom: 1px solid var(--border-subtle); }
+        .sd-critique-finding:last-child { border-bottom: 0; }
+        .sd-critique-sev { font-family: var(--font-mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-pill); margin-right: var(--space-2); display: inline-block; }
+        .sd-critique-sev.is-critical { background: rgba(196,60,60,.32); color: #ee6060; }
+        .sd-critique-sev.is-high { background: rgba(196,90,90,.22); color: #d97676; }
+        .sd-critique-sev.is-medium { background: rgba(200,168,92,.18); color: #dcbf73; }
+        .sd-critique-sev.is-low { background: rgba(120,178,128,.18); color: #8fc99c; }
+
+        /* Markdown-rendered body */
+        .sd-body { font-size: 0.9375rem; color: var(--text-primary); line-height: 1.65; }
+        .sd-body h1, .sd-body h2 { font-family: var(--font-display); font-weight: 600; margin: var(--space-5) 0 var(--space-3); }
+        .sd-body h1 { font-size: 1.75rem; }
+        .sd-body h2 { font-size: 1.25rem; color: var(--accent-brass); border-bottom: 1px solid var(--border-subtle); padding-bottom: var(--space-1); }
+        .sd-body h3 { font-size: 1.0625rem; font-weight: 600; margin: var(--space-4) 0 var(--space-2); color: var(--text-primary); }
+        .sd-body h4 { font-size: 0.9375rem; font-weight: 600; margin: var(--space-3) 0 var(--space-2); color: var(--text-secondary); }
+        .sd-body p { margin: 0 0 var(--space-3); }
+        .sd-body ul, .sd-body ol { margin: 0 0 var(--space-3); padding-left: var(--space-4); }
+        .sd-body li { margin-bottom: var(--space-1); }
+        .sd-body code { background: var(--bg-card); padding: 2px 6px; border-radius: 3px; font-size: 0.8125rem; color: var(--accent-teal); font-family: var(--font-mono); }
+        .sd-body pre { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: var(--space-3); overflow-x: auto; margin: 0 0 var(--space-3); }
+        .sd-body pre code { background: transparent; padding: 0; font-size: 0.8125rem; color: var(--text-primary); }
+        .sd-body table { width: 100%; border-collapse: collapse; margin: var(--space-3) 0; font-size: 0.8125rem; }
+        .sd-body th, .sd-body td { border: 1px solid var(--border-subtle); padding: 8px 12px; text-align: left; }
+        .sd-body th { background: var(--bg-card); font-weight: 600; }
+        .sd-body strong { color: var(--text-primary); font-weight: 600; }
+        .sd-body a { color: var(--accent-brass); text-decoration: underline; text-underline-offset: 2px; }
+        .sd-body hr { border: none; border-top: 1px solid var(--border-subtle); margin: var(--space-4) 0; }
+
+        /* Sparkline graph */
+        .sd-spark { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-3); margin-bottom: var(--space-3); }
+        .sd-spark-label { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); margin-bottom: var(--space-2); }
+        .sd-spark-svg { width: 100%; height: 60px; display: block; }
+    </style>
+</head>
+<body class="pb-app">
+    <header class="pb-page-header">
+        <nav class="pb-page-nav">
+            <a href="../index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
+            <div class="pb-page-nav-links">
+                <a href="../dashboard.html">Dashboard</a>
+                <a href="../app-health.html">App Health</a>
+                <a href="../activity.html">Activity</a>
+                <a href="../discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="../proposals.html">Proposals</a>
+                <a href="../amendments.html">Amendments</a>
+                <a href="../main-flows.html">Main Flows</a>
+                <a href="../design-system.html">Design System</a>
+                <a href="../token-usage.html">Tokens</a>
+                <a href="../sessions.html" class="is-active">Sessions</a>
+                <a href="../founder-checklist.html">Founder Checklist</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="pb-page-main">
+        <div class="sd-wrap">
+            <a href="../sessions.html" class="sd-back">&larr; All sessions</a>
+
+            <section class="sd-hero">
+                <div class="sd-hero-date" data-sd="date">&mdash;</div>
+                <h1 data-sd="title">Session</h1>
+                <div class="sd-hero-grade">
+                    <span class="sd-grade-badge is-b" data-sd="grade">&mdash;</span>
+                    <div class="sd-score-line">
+                        <span class="num" data-sd="score">&mdash;</span><span class="lbl">final score / 100</span>
+                    </div>
+                    <span class="sd-delta is-up" data-sd="delta">&mdash;</span>
+                </div>
+            </section>
+
+            <section class="sd-stats">
+                <div class="sd-stat">
+                    <div class="sd-stat-label">Ships shipped</div>
+                    <div class="sd-stat-value" data-sd="ships">&mdash;</div>
+                    <div class="sd-stat-sub">tracked in ship-progress</div>
+                </div>
+                <div class="sd-stat">
+                    <div class="sd-stat-label">Commits</div>
+                    <div class="sd-stat-value" data-sd="commits">&mdash;</div>
+                    <div class="sd-stat-sub">substantive (non-cron)</div>
+                </div>
+                <div class="sd-stat">
+                    <div class="sd-stat-label">Critique findings</div>
+                    <div class="sd-stat-value" data-sd="findings_count">&mdash;</div>
+                    <div class="sd-stat-sub" data-sd="findings_breakdown">&mdash;</div>
+                </div>
+                <div class="sd-stat">
+                    <div class="sd-stat-label">Runtime</div>
+                    <div class="sd-stat-value" data-sd="runtime" style="font-size: 1.25rem; padding-top: 6px;">&mdash;</div>
+                    <div class="sd-stat-sub">approximate</div>
+                </div>
+            </section>
+
+            <h2 class="sd-section-title">Brutal grading vs industry standards</h2>
+            <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: var(--space-3);">
+                Scored honestly against benchmarks for production SaaS, then adjusted for a solo founder + AI team (20 members, free-tier infra). The "Honest" column says what the number actually means &mdash; not the polite version.
+            </p>
+            <table class="sd-grading-table">
+                <thead>
+                    <tr>
+                        <th>Dimension</th>
+                        <th style="text-align: right;">Industry bar (solo SaaS)</th>
+                        <th style="text-align: right;">PARBAUGHS</th>
+                        <th>Gap</th>
+                        <th>Honest read</th>
+                    </tr>
+                </thead>
+                <tbody id="sd-grading-rows">
+                    <tr><td colspan="5" style="text-align: center; color: var(--text-tertiary);">Loading dimension scores&hellip;</td></tr>
+                </tbody>
+            </table>
+
+            <div class="sd-verdict" id="sd-verdict">
+                <h3>Brutal verdict</h3>
+                <p data-sd="verdict_headline">&mdash;</p>
+                <ul id="sd-verdict-list"></ul>
+            </div>
+
+            <div class="sd-critique" id="sd-critique" hidden>
+                <h3>Critique applied this session</h3>
+                <div id="sd-critique-findings"></div>
+            </div>
+
+            <h2 class="sd-section-title">Full session report</h2>
+            <div class="sd-body" id="sd-body">Loading&hellip;</div>
+        </div>
+    </main>
+
+    <footer class="pb-page-footer">
+        Source: <code data-sd="source_file">&mdash;</code> &middot;
+        <a href="../sessions.html">All sessions</a> &middot; <a href="../dashboard.html">Dashboard</a>
+    </footer>
+
+    <script id="report-data" type="application/json">
+{}
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                var data = JSON.parse(document.getElementById('report-data').textContent);
+                if (!data || !data.title) {
+                    document.getElementById('sd-body').textContent = 'No session data loaded (regen ran on empty source).';
+                    return;
+                }
+
+                function esc(s) { return s == null ? '' : String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
+                function gradeClass(g) {
+                    if (!g) return 'is-f';
+                    var l = String(g).trim()[0].toLowerCase();
+                    return ({a:'is-a',b:'is-b',c:'is-c',d:'is-d',f:'is-f'})[l] || 'is-f';
+                }
+
+                document.querySelector('[data-sd="date"]').textContent = data.date || '';
+                document.querySelector('[data-sd="title"]').textContent = data.title || 'Session';
+                var gradeEl = document.querySelector('[data-sd="grade"]');
+                gradeEl.textContent = data.grade || '—';
+                gradeEl.className = 'sd-grade-badge ' + gradeClass(data.grade);
+                document.querySelector('[data-sd="score"]').textContent = data.score || '—';
+                var deltaEl = document.querySelector('[data-sd="delta"]');
+                deltaEl.textContent = data.delta || '';
+                deltaEl.className = 'sd-delta ' + ((data.delta && data.delta.indexOf('-') === 0) ? 'is-down' : 'is-up');
+
+                document.querySelector('[data-sd="ships"]').textContent = data.ships_shipped || '—';
+                document.querySelector('[data-sd="commits"]').textContent = data.commits || '—';
+                document.querySelector('[data-sd="findings_count"]').textContent = data.findings_count || 0;
+                document.querySelector('[data-sd="findings_breakdown"]').textContent = data.findings_breakdown || '';
+                document.querySelector('[data-sd="runtime"]').textContent = data.runtime || '—';
+                document.querySelector('[data-sd="source_file"]').textContent = data.source_file || '';
+
+                // Grading rows
+                var dims = data.dimensions || [];
+                if (dims.length) {
+                    document.getElementById('sd-grading-rows').innerHTML = dims.map(function(d) {
+                        var pct = (d.score / 100) * 100;
+                        var fillClass = d.score >= 85 ? 'is-green' : d.score >= 65 ? 'is-yellow' : 'is-red';
+                        var gap = d.score - d.industry_bar;
+                        var gapClass = gap >= 5 ? 'is-good' : gap >= -10 ? 'is-meh' : 'is-bad';
+                        var gapText = (gap > 0 ? '+' : '') + gap;
+                        return '<tr>'
+                             + '<td><div class="dim-name">' + esc(d.name) + '</div></td>'
+                             + '<td class="score-cell" style="text-align:right">' + d.industry_bar + '</td>'
+                             + '<td class="score-cell" style="text-align:right">'
+                             +    '<div class="sd-bar-row">'
+                             +       '<span class="sd-bar-value">' + d.score + '</span>'
+                             +       '<div class="sd-bar-track">'
+                             +          '<div class="sd-bar-fill ' + fillClass + '" style="width:' + pct + '%"></div>'
+                             +          '<div class="sd-bar-indicator" style="left:' + d.industry_bar + '%"></div>'
+                             +       '</div>'
+                             +    '</div>'
+                             + '</td>'
+                             + '<td class="sd-gap-cell ' + gapClass + '">' + esc(gapText) + '</td>'
+                             + '<td style="color: var(--text-secondary); font-size: 0.8125rem">' + esc(d.honest) + '</td>'
+                             + '</tr>';
+                    }).join('');
+                }
+
+                // Verdict
+                var verdictData = data.verdict || {};
+                document.querySelector('[data-sd="verdict_headline"]').textContent = verdictData.headline || 'No brutal verdict authored for this session yet.';
+                if (verdictData.points && verdictData.points.length) {
+                    document.getElementById('sd-verdict-list').innerHTML = verdictData.points.map(function(p) {
+                        return '<li>' + esc(p) + '</li>';
+                    }).join('');
+                }
+
+                // Critique
+                var critique = data.critique || null;
+                if (critique && critique.findings && critique.findings.length) {
+                    document.getElementById('sd-critique').hidden = false;
+                    document.getElementById('sd-critique-findings').innerHTML = critique.findings.map(function(f) {
+                        return '<div class="sd-critique-finding">'
+                             + '<span class="sd-critique-sev is-' + esc((f.severity || 'low').toLowerCase()) + '">' + esc(f.severity || 'low') + '</span>'
+                             + '<strong>' + esc(f.id || '') + '</strong> &mdash; '
+                             + esc(f.summary || '')
+                             + '</div>';
+                    }).join('');
+                }
+
+                // Full body (pre-rendered HTML from markdown)
+                document.getElementById('sd-body').innerHTML = data.body_html || '<em>No body rendered.</em>';
+
+            } catch (e) {
+                console.error('Session detail render failed:', e);
+                document.getElementById('sd-body').innerHTML = '<p style="color: #d97676">Render failed: ' + (e && e.message) + '</p>';
+            }
+        });
+    </script>
+    <script src="../_assets/live-refresh.js" defer></script>
+</body>
+</html>

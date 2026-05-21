@@ -306,6 +306,31 @@ def walk_completed_artifacts():
                 "source_path": str(f.relative_to(ROOT)).replace("\\", "/"),
             })
 
+    # 2026-05-21 Founder feedback: "Activity count graph showing no ship or
+    # commits today" — ship-progress JSON entries (engineering ships authored
+    # by the agent each day) are real ships and need to count in ships_this_week.
+    # Walk them and add to the unified list.
+    ship_progress_dir = ROOT / ".claude" / "state" / "ship-progress"
+    if ship_progress_dir.exists():
+        for f in sorted(ship_progress_dir.glob("*.json")):
+            try:
+                import json as _json
+                sp = _json.loads(f.read_text(encoding="utf-8"))
+            except (OSError, _json.JSONDecodeError):
+                continue
+            ts = sp.get("created_at") or sp.get("completed_at") or sp.get("started_at") or ""
+            if not ts:
+                continue
+            out.append({
+                "kind": "ship",
+                "id": sp.get("ship_id") or f.stem,
+                "title": sp.get("title") or f.stem,
+                "status": sp.get("status") or "tracked",
+                "completed_at": ts,
+                "completed_at_iso": ts,
+                "source_path": str(f.relative_to(ROOT)).replace("\\", "/"),
+            })
+
     # If no shipped artifacts found, fall back to mining ship-close commits
     # from git history so recent_ships still surfaces something useful
     # during transitional state (e.g., before any proposals/escalations move
