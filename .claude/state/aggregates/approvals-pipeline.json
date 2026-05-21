@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T04:02:06Z",
-  "generated_at": "2026-05-21T04:02:06Z",
+  "timestamp": "2026-05-21T04:22:13Z",
+  "generated_at": "2026-05-21T04:22:13Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
   "raw_status": "red",
   "summary": "watcher cycling · applies blocked (10 skips on dirty tree)",
-  "as_of": "2026-05-21T04:00:49Z",
+  "as_of": "2026-05-21T04:20:49Z",
   "stale": false,
-  "age_hours": 0.021666666666666667,
+  "age_hours": 0.02333333333333333,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -31,23 +31,23 @@
     {
       "category": "stall",
       "status": "skip-dirty",
-      "name": "2026-05-21T04-00-49Z-downloads-watcher.log",
-      "note": "[04:00:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-15/screenshots/audit-2026-05-15-dashboard-1440.png, .claude/state/dashboard-audit-2026-05-15/screenshot",
-      "when": "2026-05-21T04:00:49Z"
+      "name": "2026-05-21T04-20-49Z-downloads-watcher.log",
+      "note": "[04:20:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-15/screenshots/audit-2026-05-15-dashboard-1440.png, .claude/state/dashboard-audit-2026-05-15/screenshot",
+      "when": "2026-05-21T04:20:49Z"
     },
     {
       "category": "stall",
       "status": "skip-dirty",
-      "name": "2026-05-21T03-55-49Z-downloads-watcher.log",
-      "note": "[03:55:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-15/screenshots/audit-2026-05-15-dashboard-1440.png, .claude/state/dashboard-audit-2026-05-15/screenshot",
-      "when": "2026-05-21T03:55:49Z"
+      "name": "2026-05-21T04-15-49Z-downloads-watcher.log",
+      "note": "[04:15:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-15/screenshots/audit-2026-05-15-dashboard-1440.png, .claude/state/dashboard-audit-2026-05-15/screenshot",
+      "when": "2026-05-21T04:15:49Z"
     },
     {
       "category": "stall",
       "status": "skip-dirty",
-      "name": "2026-05-21T03-50-49Z-downloads-watcher.log",
-      "note": "[03:50:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-15/screenshots/audit-2026-05-15-dashboard-1440.png, .claude/state/dashboard-audit-2026-05-15/screenshot",
-      "when": "2026-05-21T03:50:49Z"
+      "name": "2026-05-21T04-10-49Z-downloads-watcher.log",
+      "note": "[04:10:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-15/screenshots/audit-2026-05-15-dashboard-1440.png, .claude/state/dashboard-audit-2026-05-15/screenshot",
+      "when": "2026-05-21T04:10:49Z"
     }
   ],
   "links": [
@@ -64,6 +64,6 @@
   "_meta": {
     "watcher_runs_inspected": 10,
     "consecutive_skips": 10,
-    "age_minutes": 1.3
+    "age_minutes": 1.4
   }
 }
