@@ -82,10 +82,15 @@ scripts/visual-audit/*.png
 .claude/state/main-flows-v2/*.png
 .claude/state/main-flows-v2/*.jpg
 .claude/state/user-journey-audits/
-.claude/state/dashboard-audit-*/*.png
-.claude/state/app-audit-*/*.png
-.claude/state/bug-investigation-*/*.png
-.claude/state/audit-2026-*/*.png
+.claude/state/dashboard-audit-*/**/*.png
+.claude/state/dashboard-audit-*/screenshots/
+.claude/state/app-audit-*/**/*.png
+.claude/state/bug-investigation-*/**/*.png
+.claude/state/audit-2026-*/**/*.png
+.claude/state/main-flows-v2/iter-*-side-by-side.html
+.claude/state/main-flows-v2/*-visual-review.md
+# Bug triage cron output (regenerable)
+.claude/state/aggregates/bug-triage-latest.json
 
 # Repo secret scan output — regenerable; pre-commit hook flags excerpts
 .claude/state/security/repo-secret-scan-latest.json

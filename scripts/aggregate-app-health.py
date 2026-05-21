@@ -193,9 +193,9 @@ def a1_roadmap() -> dict:
             try:
                 s = json.loads(f.read_text(encoding="utf-8"))
                 status = (s.get("status") or "").lower()
-                if status == "complete":
+                if status == "complete" or status == "complete-baseline":
                     completed += 1
-                elif status in ("in-flight", "shipping", "in-progress"):
+                elif status in ("in-flight", "shipping", "in-progress", "partial"):
                     in_flight += 1
             except Exception:
                 continue
