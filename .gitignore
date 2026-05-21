@@ -137,3 +137,14 @@ dist/
 .lighthouseci/
 .claude/state/aggregates/lighthouse/*.json
 !.claude/state/aggregates/lighthouse-scores.json
+
+# Visual-gate screenshots (per-run output, not source)
+.claude/state/visual-gate/
+
+# Critique probe artifacts (debugging tools)
+.claude/state/critique/probe-*.mjs
+.claude/state/critique/founder-checklist-expanded.png
+.claude/state/critique/founder-checklist-real.png
+.claude/state/critique/founder-checklist-screenshot.png
+.claude/state/critique/sessions-real.png
+.claude/state/sessions-watch.log

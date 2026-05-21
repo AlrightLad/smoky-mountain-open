@@ -314,7 +314,9 @@ if ($pythonExe) {
         "scripts\inject-health-banners.py",
         "scripts\regen-dashboard.py",
         "scripts\regen-activity.py",
-        "scripts\regen-token-usage.py"
+        "scripts\regen-token-usage.py",
+        "scripts\regen-sessions.py",
+        "scripts\regen-founder-checklist.py"
     )
     foreach ($script in $regenScripts) {
         $fullPath = Join-Path $repoRoot $script
