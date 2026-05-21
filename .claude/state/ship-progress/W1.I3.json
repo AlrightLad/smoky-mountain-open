@@ -1,0 +1,25 @@
+{
+  "ship_id": "W1.I3",
+  "name": "Caddy Notes restructure (3-section)",
+  "wave": 1,
+  "status": "complete",
+  "started_at": "2026-05-20T22:00:00Z",
+  "completed_at": "2026-05-20T22:15:00Z",
+  "ship_plan": "docs/agents/ships/W1.I3.md",
+  "version_at_close": "8.23.0",
+  "smoke_at_close": "26/26 chromium",
+  "shipped_artifacts": [
+    "src/pages/caddynotes.js — slice(0,3) limit on archiveNotes",
+    "src/pages/caddynotes.js — On the Range trimmed to 4 vague forward-looking bullets"
+  ],
+  "acceptance_criteria": [
+    { "id": 1, "criterion": "3-section structure renders correctly", "status": "PASS", "evidence": "Recent Updates / What's in the Bag / On the Range visible in app" },
+    { "id": 2, "criterion": "Universal content (no audience tiers)", "status": "PASS", "evidence": "No per-role branching" },
+    { "id": 3, "criterion": "Roadmap teaser doesn't leak unshipped details", "status": "PASS", "evidence": "4 vague bullets ('More ways to play', 'ParCoins economy continues to grow', etc.)" },
+    { "id": 4, "criterion": "All ships' Caddy Notes entries migrate cleanly", "status": "PASS", "evidence": "archiveNotes preserved; only display limit changed" }
+  ],
+  "caddy_notes_updated": true,
+  "version_trinity_bumped": "8.22.0 -> 8.23.0",
+  "outcome": "SHIPPED",
+  "downstream_consumers": "All Wave 1+ ships use 3-section Caddy Notes structure for updates."
+}

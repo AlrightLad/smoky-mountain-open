@@ -1,0 +1,27 @@
+{
+  "ship_id": "W1.I4",
+  "name": "Staging environment scaffolding",
+  "wave": 1,
+  "status": "in-progress",
+  "started_at": "2026-05-21T02:50:00Z",
+  "ship_plan": "docs/agents/ships/W1.I4.md",
+  "shipped_artifacts": [
+    ".firebaserc — multi-project config (default/production/staging)",
+    "scripts/deploy.sh — --target=staging flag",
+    "docs/deployment-environments.md — staging vs production deploy flow"
+  ],
+  "founder_action_required": [
+    {
+      "file": "task-queue/founder/staging-firebase-project.md",
+      "what": "Create parbaughs-staging Firebase project in console",
+      "blocked_reason": "AMD-018 gate 3 — auth provider config requires Founder console access + biometric/MFA"
+    }
+  ],
+  "acceptance_criteria": [
+    { "id": 1, "criterion": ".firebaserc supports multi-project switching", "status": "PASS" },
+    { "id": 2, "criterion": "deploy.sh --target=staging selects staging project", "status": "PASS" },
+    { "id": 3, "criterion": "parbaughs-staging Firebase project exists", "status": "BLOCKED — Founder console action pending" },
+    { "id": 4, "criterion": "Smoke automation deploys to staging", "status": "BLOCKED on criterion 3" }
+  ],
+  "outcome": "SCAFFOLDED — Founder action pending for project creation"
+}

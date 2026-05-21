@@ -742,19 +742,19 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T03:19:26.378343Z",
+  "generated_at": "2026-05-21T03:21:48.970615Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 78.1,
+  "overall_score": 78.9,
   "overall_grade": "B",
   "dimensions": {
     "A1_roadmap": {
       "score": 70,
       "status": "yellow",
-      "label": "0 complete, 1 in flight",
+      "label": "2 complete, 2 in flight",
       "source": ".claude/state/ship-progress/*.json",
       "weak_points": [
         {
-          "what": "Only 0 ships marked complete in ship-progress/",
+          "what": "Only 2 ships marked complete in ship-progress/",
           "where": ".claude/state/ship-progress/",
           "what_action": "Continue Wave 1 ships; mark complete via apply-decisions watcher"
         }
@@ -894,17 +894,11 @@
       ]
     },
     "A7_data_integrity": {
-      "score": 92,
+      "score": 100,
       "status": "green",
       "label": "733 lines rules · 26 indexes; missing coverage matrix=False, schema validation=False",
       "source": "firestore.rules + firestore.indexes.json + docs/ + functions/index.js + scripts/migrations/",
-      "weak_points": [
-        {
-          "what": "No migration scripts directory — schema changes have no audit trail",
-          "where": "scripts/migrations/ (missing)",
-          "what_action": "Create scripts/migrations/. Author up/down pair for every schema change with --dry-run flag + log to .claude/state/migrations-applied/."
-        }
-      ]
+      "weak_points": []
     },
     "A8_performance": {
       "score": 65,
@@ -977,7 +971,7 @@
   },
   "attention_items": [
     {
-      "what": "Only 0 ships marked complete in ship-progress/",
+      "what": "Only 2 ships marked complete in ship-progress/",
       "where": ".claude/state/ship-progress/",
       "what_action": "Continue Wave 1 ships; mark complete via apply-decisions watcher",
       "dimension": "A1_roadmap"
@@ -1010,7 +1004,7 @@
   "founder_attention": [],
   "agent_attention": [
     {
-      "what": "Only 0 ships marked complete in ship-progress/",
+      "what": "Only 2 ships marked complete in ship-progress/",
       "where": ".claude/state/ship-progress/",
       "what_action": "Continue Wave 1 ships; mark complete via apply-decisions watcher",
       "dimension": "A1_roadmap"
@@ -1041,13 +1035,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "0aa832bb",
-    "subject": "[ops] activity dashboard: hide-cron-routine default filter + 100-item render cap. Reduces page height 117K -> 11K pixels for usable scrolling.",
-    "committed_at": "2026-05-20T23:19:12-04:00",
-    "trigger": "substrate-commit",
+    "sha": "64a6a5c7",
+    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
+    "committed_at": "2026-05-20T23:19:31-04:00",
+    "trigger": "cron",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 1
+    "total_files_touched": 15
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
