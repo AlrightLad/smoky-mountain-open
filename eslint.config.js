@@ -83,6 +83,18 @@ export default [
     },
   },
   {
+    // Unit tests (tests/unit/*.test.js + helpers) use ESM imports per Vitest requirement.
+    files: ["tests/unit/**/*.js"],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "module",
+      globals: { ...globals.node },
+    },
+    rules: {
+      "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+    },
+  },
+  {
     // Ignore generated + vendor + state
     ignores: [
       "docs/reports/**",
