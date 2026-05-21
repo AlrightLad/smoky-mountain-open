@@ -486,16 +486,266 @@
                     <ul class="ah-findings-list" data-disclosures-list></ul>
                 </div>
             </section>
+
+            <!-- HOW TO IMPROVE — prioritized improvement plan, brutally specific -->
+            <section class="ah-improve">
+                <style>
+                    .ah-improve {
+                        padding: var(--space-5) var(--space-5);
+                        background: var(--bg-card);
+                        border: 1px solid var(--border-subtle);
+                        border-radius: var(--radius-md);
+                        margin-bottom: var(--space-4);
+                    }
+                    .ah-improve-title {
+                        font-family: var(--font-mono);
+                        font-size: 0.875rem;
+                        text-transform: uppercase;
+                        letter-spacing: 0.14em;
+                        color: var(--accent-brass);
+                        font-weight: 700;
+                        margin-bottom: var(--space-1);
+                    }
+                    .ah-improve-sub {
+                        font-size: 0.875rem;
+                        color: var(--text-secondary);
+                        line-height: 1.5;
+                        margin-bottom: var(--space-4);
+                        max-width: 75ch;
+                    }
+                    .ah-improve-group {
+                        margin-bottom: var(--space-4);
+                    }
+                    .ah-improve-group-title {
+                        font-family: var(--font-mono);
+                        font-size: 0.75rem;
+                        text-transform: uppercase;
+                        letter-spacing: 0.1em;
+                        color: var(--text-tertiary);
+                        margin-bottom: var(--space-2);
+                        padding-bottom: 4px;
+                        border-bottom: 1px solid var(--border-subtle);
+                    }
+                    .ah-improve-table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        font-size: 0.8125rem;
+                    }
+                    .ah-improve-table th {
+                        text-align: left;
+                        font-family: var(--font-mono);
+                        font-size: 0.625rem;
+                        color: var(--text-tertiary);
+                        text-transform: uppercase;
+                        letter-spacing: 0.06em;
+                        padding: var(--space-2);
+                        border-bottom: 1px solid var(--border-subtle);
+                    }
+                    .ah-improve-table td {
+                        padding: var(--space-2);
+                        border-bottom: 1px solid var(--border-subtle);
+                        vertical-align: top;
+                        line-height: 1.45;
+                    }
+                    .ah-improve-dim {
+                        font-family: var(--font-mono);
+                        font-size: 0.6875rem;
+                        color: var(--accent-brass);
+                        font-weight: 700;
+                        white-space: nowrap;
+                    }
+                    .ah-improve-action {
+                        color: var(--text-primary);
+                    }
+                    .ah-improve-effort {
+                        font-family: var(--font-mono);
+                        font-size: 0.75rem;
+                        color: var(--text-tertiary);
+                        white-space: nowrap;
+                    }
+                    .ah-improve-impact {
+                        font-family: var(--font-mono);
+                        font-size: 0.75rem;
+                        color: var(--col-data, #3fb07f);
+                        white-space: nowrap;
+                        font-weight: 700;
+                    }
+                </style>
+                <div class="ah-improve-title">How to improve · weak areas</div>
+                <p class="ah-improve-sub">This page is NOT a feel-good tab. It's brutal feedback. Below is the prioritized improvement plan — top of the list = biggest score lift per hour of work. Items are agent-actionable unless explicitly marked Founder-action.</p>
+
+                <div class="ah-improve-group">
+                    <div class="ah-improve-group-title">Tier 1 — Highest impact (do these first)</div>
+                    <table class="ah-improve-table">
+                        <thead>
+                            <tr><th style="width: 90px;">Dim</th><th>Action</th><th style="width: 80px;">Effort</th><th style="width: 90px;">Score lift</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="ah-improve-dim">A11 Testing</td>
+                                <td class="ah-improve-action">Fix smoke 54 failures (FirebaseError: auth/network-request-failed). Wire <code>connectAuthEmulator()</code> in <code>tests/e2e/_fixtures/</code>. Verify Node 22 emulator port + tests config alignment.</td>
+                                <td class="ah-improve-effort">2-4h</td>
+                                <td class="ah-improve-impact">+40</td>
+                            </tr>
+                            <tr>
+                                <td class="ah-improve-dim">A3 Security</td>
+                                <td class="ah-improve-action">Add rate-limit middleware to Cloud Functions (firebase-functions-rate-limiter). At minimum on joinLeague, validateInvite, searchCourses.</td>
+                                <td class="ah-improve-effort">3-5h</td>
+                                <td class="ah-improve-impact">+10</td>
+                            </tr>
+                            <tr>
+                                <td class="ah-improve-dim">A3 Security</td>
+                                <td class="ah-improve-action">Tighten <code>Bash(curl *)</code> allow rule in settings.{json,local.json} to specific domains; add deny rules for sudo / ssh / chmod 777 / `> /dev/`.</td>
+                                <td class="ah-improve-effort">30m</td>
+                                <td class="ah-improve-impact">+8</td>
+                            </tr>
+                            <tr>
+                                <td class="ah-improve-dim">A4 UI/UX, A8 Perf, A9 Acc</td>
+                                <td class="ah-improve-action">Wire Lighthouse CI (<code>@lhci/cli</code>). Capture home / profile / feed / scorecard / round detail / calendar at desktop + mobile. Emit <code>lighthouse-scores.json</code> for aggregator to read.</td>
+                                <td class="ah-improve-effort">3-4h</td>
+                                <td class="ah-improve-impact">+25 (all 3)</td>
+                            </tr>
+                            <tr>
+                                <td class="ah-improve-dim">A11 Testing</td>
+                                <td class="ah-improve-action">Add Vitest (<code>npm i -D vitest @vitest/coverage-v8</code>). Cover src/core/handicap.js + parcoins.js + sync.js to 80%+. Fast pure-function wins.</td>
+                                <td class="ah-improve-effort">4-6h</td>
+                                <td class="ah-improve-impact">+15</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="ah-improve-group">
+                    <div class="ah-improve-group-title">Tier 2 — Real-world security (industry-grade gaps)</div>
+                    <table class="ah-improve-table">
+                        <thead>
+                            <tr><th style="width: 90px;">Dim</th><th>Action</th><th style="width: 80px;">Effort</th><th style="width: 90px;">Score lift</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="ah-improve-dim">A3 Security</td>
+                                <td class="ah-improve-action">Schedule a pen-test (OWASP ZAP automated + manual auth-flow attack). Emit <code>.claude/state/security/pentest-{date}.md</code>.</td>
+                                <td class="ah-improve-effort">8-12h</td>
+                                <td class="ah-improve-impact">+10</td>
+                            </tr>
+                            <tr>
+                                <td class="ah-improve-dim">A3 Security</td>
+                                <td class="ah-improve-action">Wire trufflehog or gitleaks to scan public/ and dist/ for embedded secrets/PII before every commit.</td>
+                                <td class="ah-improve-effort">2h</td>
+                                <td class="ah-improve-impact">+8</td>
+                            </tr>
+                            <tr>
+                                <td class="ah-improve-dim">A7 Data integrity</td>
+                                <td class="ah-improve-action">Build Firestore rules coverage matrix: every collection × {create, read, update, delete} × {member, commissioner, founder, anonymous} = filled cell with the gating rule clause. Save to <code>docs/firestore-rules-coverage-matrix.md</code>.</td>
+                                <td class="ah-improve-effort">4-6h</td>
+                                <td class="ah-improve-impact">+15</td>
+                            </tr>
+                            <tr>
+                                <td class="ah-improve-dim">A7 Data integrity</td>
+                                <td class="ah-improve-action">Add zod schemas to every Cloud Function payload. Reject malformed writes at the boundary before they reach Firestore.</td>
+                                <td class="ah-improve-effort">4-6h</td>
+                                <td class="ah-improve-impact">+12</td>
+                            </tr>
+                            <tr>
+                                <td class="ah-improve-dim">A12 Operational</td>
+                                <td class="ah-improve-action">Wire Sentry (free tier covers PARBAUGHS scale). Init in src/core/firebase.js + functions/index.js. Configure alerts to Founder email for SEV-1.</td>
+                                <td class="ah-improve-effort">2-3h</td>
+                                <td class="ah-improve-impact">+15</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="ah-improve-group">
+                    <div class="ah-improve-group-title">Tier 3 — Code quality + architecture hygiene</div>
+                    <table class="ah-improve-table">
+                        <thead>
+                            <tr><th style="width: 90px;">Dim</th><th>Action</th><th style="width: 80px;">Effort</th><th style="width: 90px;">Score lift</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="ah-improve-dim">A5 Code quality</td>
+                                <td class="ah-improve-action">Refactor <code>src/pages/home.js</code> (2738 lines) into 4 sub-modules: home/hero.js, home/recent-rounds.js, home/calendar-strip.js, home/notifications-feed.js. Highest-impact file split.</td>
+                                <td class="ah-improve-effort">6-10h</td>
+                                <td class="ah-improve-impact">+8</td>
+                            </tr>
+                            <tr>
+                                <td class="ah-improve-dim">A5 Code quality</td>
+                                <td class="ah-improve-action">Add ESLint (<code>npm i -D eslint @eslint/js</code>). Configure cyclomatic-complexity rule (max 15). Pre-commit lint gate.</td>
+                                <td class="ah-improve-effort">2h</td>
+                                <td class="ah-improve-impact">+10</td>
+                            </tr>
+                            <tr>
+                                <td class="ah-improve-dim">A5 Code quality</td>
+                                <td class="ah-improve-action">Add knip (<code>npm i -D knip</code>) for dead-code detection. Run weekly; remove unused exports.</td>
+                                <td class="ah-improve-effort">1-2h</td>
+                                <td class="ah-improve-impact">+8</td>
+                            </tr>
+                            <tr>
+                                <td class="ah-improve-dim">A6 Architecture</td>
+                                <td class="ah-improve-action">Pre-emptively extract from router.js (at 97% AMD-027 budget): share-card builder (lines 1109-1190) → <code>src/core/share-card.js</code>; flow-rail logic → <code>src/core/flow-rail.js</code>.</td>
+                                <td class="ah-improve-effort">4-6h</td>
+                                <td class="ah-improve-impact">+5</td>
+                            </tr>
+                            <tr>
+                                <td class="ah-improve-dim">A6 Architecture</td>
+                                <td class="ah-improve-action">Create <code>docs/adr/</code> + author 5-10 ADRs covering key decisions (vanilla JS over framework, Firebase backend, Capacitor wrapper, AMD-027 budgets, etc.).</td>
+                                <td class="ah-improve-effort">3-4h</td>
+                                <td class="ah-improve-impact">+8</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="ah-improve-group">
+                    <div class="ah-improve-group-title">Tier 4 — Mobile-first + operational maturity</div>
+                    <table class="ah-improve-table">
+                        <thead>
+                            <tr><th style="width: 90px;">Dim</th><th>Action</th><th style="width: 80px;">Effort</th><th style="width: 90px;">Score lift</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="ah-improve-dim">A10 Mobile</td>
+                                <td class="ah-improve-action">Add mobile-viewport projects to <code>playwright.config.ts</code>: iPhone 14 + Pixel 7. Run 5 critical-path tests on each.</td>
+                                <td class="ah-improve-effort">3-4h</td>
+                                <td class="ah-improve-impact">+20</td>
+                            </tr>
+                            <tr>
+                                <td class="ah-improve-dim">A10 Mobile</td>
+                                <td class="ah-improve-action">Author <code>tests/capacitor/smoke.spec.js</code> — verifies bundle builds + key surfaces render in Capacitor webview.</td>
+                                <td class="ah-improve-effort">4-6h</td>
+                                <td class="ah-improve-impact">+10</td>
+                            </tr>
+                            <tr>
+                                <td class="ah-improve-dim">A12 Operational</td>
+                                <td class="ah-improve-action">Author <code>docs/incident-response.md</code>: severity ladder (SEV-1/2/3), comms templates, postmortem template, on-call rotation.</td>
+                                <td class="ah-improve-effort">2h</td>
+                                <td class="ah-improve-impact">+8</td>
+                            </tr>
+                            <tr>
+                                <td class="ah-improve-dim">A12 Operational</td>
+                                <td class="ah-improve-action">Add <code>scripts/deploy.sh</code> with --dry-run, version stamp, rollback-pointer write. Eventually move to GitHub Actions with environment gates.</td>
+                                <td class="ah-improve-effort">3-5h</td>
+                                <td class="ah-improve-impact">+7</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p class="ah-improve-sub" style="margin-top: var(--space-3); border-top: 1px solid var(--border-subtle); padding-top: var(--space-3);">
+                    Total addressable lift: <strong style="color: var(--accent-brass);">~+180 score points across all tiers</strong> (current 54.4 → ceiling ~95+). At industry-grade quality, an A grade is achievable but requires 60-80 hours of focused engineering work spread across the next 4-6 ships. Tier 1 alone (estimated 14-21 hours) closes the biggest gaps: brings smoke test green + adds security middleware + wires real performance/a11y measurement.
+                </p>
+            </section>
         </div>
     </main>
 
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T00:35:30.281218Z",
+  "generated_at": "2026-05-21T00:56:04.547084Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 87.7,
-  "overall_grade": "A-",
+  "overall_score": 54.4,
+  "overall_grade": "D",
   "dimensions": {
     "A1_roadmap": {
       "score": 70,
@@ -518,36 +768,61 @@
       "weak_points": []
     },
     "A3_security": {
-      "score": 80,
-      "status": "green",
-      "label": "Grade B 80/100 · 0 CRITICAL · 20 HIGH",
+      "score": 30,
+      "status": "red",
+      "label": "AgentShield grade B; honest score 30/100 · 0 CRITICAL · 20 HIGH · 7 MED",
       "source": ".claude\\state\\security\\baseline-20260519-031500\\agentshield-post-cleanup.txt",
       "weak_points": [
         {
-          "what": "20 HIGH (non-CRITICAL) findings — known acceptable",
+          "what": "No bundle-exposure scan ever run on dist/ or public/",
+          "where": "scripts/ — no scan-bundle.py / no trufflehog wiring",
+          "what_action": "Wire trufflehog or gitleaks to scan public/ and dist/ for embedded secrets/PII before deploy"
+        },
+        {
+          "what": "No rate-limit middleware on Cloud Functions",
+          "where": "functions/index.js — no rateLimit / tooManyRequests checks",
+          "what_action": "Add per-IP and per-user rate-limit middleware (firebase-functions-rate-limiter or equivalent) on at least joinLeague + validateInvite + searchCourses"
+        },
+        {
+          "what": "No penetration test record on disk",
+          "where": ".claude/state/security/ — no pentest-*.{md,json}",
+          "what_action": "Schedule a manual pen-test (OWASP ZAP scan + manual auth-flow attack) and emit pentest-{date}.md report"
+        },
+        {
+          "what": "No Firestore rules coverage matrix (per collection × per operation)",
+          "where": "firestore.rules + task-queue/founder/ — no coverage doc",
+          "what_action": "Build a coverage matrix: every collection (members, rounds, wagers, ...) × every operation (create, read, update, delete) with the rule clause that gates it. Add to task-queue/founder/app-audit-findings-security.md"
+        },
+        {
+          "what": "20 HIGH findings — at industry-grade this is technical debt, NOT 'acceptable'",
           "where": ".claude\\state\\security\\baseline-20260519-031500\\agentshield-post-cleanup.txt",
-          "what_action": "Triage via task-queue/founder/d31-zero-critical-decision.md"
+          "what_action": "Top 3: tighten Bash(curl *) allow rule to specific domains; add deny rules for sudo/ssh/chmod 777; replace `>/dev/null 2>&1` in hooks with audit log writes"
         }
       ]
     },
     "A4_uiux": {
-      "score": 80,
-      "status": "green",
-      "label": "3 open / 1 crit / 1 high / 1 med (prior audit)",
-      "source": ".claude/state/app-audit-2026-05-14/SUMMARY.md",
+      "score": null,
+      "status": "not-measured",
+      "label": "Lighthouse not wired — score honestly unknown (NOT 80)",
+      "source": "no live measurement",
       "weak_points": [
         {
-          "what": "3 UI/UX findings open from prior audit",
+          "what": "UI/UX dimension UNMEASURED — no live Lighthouse, no WebPageTest, no RUM",
+          "where": "scripts/aggregate-app-health.py · A4 function",
+          "what_action": "Wire Lighthouse CLI (npm i -D @lhci/cli). Capture home/profile/feed/scorecard/round-detail/calendar at desktop + mobile viewports. Emit lighthouse-scores.json. Re-run on every commit via post-commit hook."
+        },
+        {
+          "what": "Prior 2026-05-14 audit had 1 CRITICAL + 3 HIGH + 4 MEDIUM findings; most reported CLOSED but no V1 re-verification",
           "where": ".claude/state/app-audit-2026-05-14/SUMMARY.md",
-          "what_action": "Lighthouse scans + WCAG audit (Phase 2)"
+          "what_action": "Re-run user-journey audit at desktop + mobile viewport; V1 capture each member-facing page; update SUMMARY.md status column"
         }
       ]
     },
     "A5_code_quality": {
-      "score": 75,
-      "status": "yellow",
-      "label": "0 core + 10 page files over budget",
-      "source": "src/core/, src/pages/ vs AMD-027 budgets",
+      "score": 47,
+      "status": "red",
+      "label": "0 core + 10 page files over budget; missing eslint=True, knip=True, jscpd=True",
+      "source": "src/core/, src/pages/, package.json",
       "weak_points": [
         {
           "what": "src/pages/home.js is 2738 lines (budget 800)",
@@ -565,14 +840,19 @@
           "what_action": "Split into modules per AMD-027 budget"
         },
         {
-          "what": "src/pages/spectator.js is 1136 lines (budget 800)",
-          "where": "src/pages/spectator.js",
-          "what_action": "Split into modules per AMD-027 budget"
+          "what": "No ESLint configured — no lint discipline on commit",
+          "where": "package.json devDependencies",
+          "what_action": "npm i -D eslint @eslint/js && add lint script + pre-commit hook to enforce"
         },
         {
-          "what": "src/pages/courses.js is 1126 lines (budget 800)",
-          "where": "src/pages/courses.js",
-          "what_action": "Split into modules per AMD-027 budget"
+          "what": "No dead-code detection (knip/ts-prune missing)",
+          "where": "package.json devDependencies",
+          "what_action": "npm i -D knip && add `knip` script to surface unused exports"
+        },
+        {
+          "what": "No code-duplication scan (jscpd missing)",
+          "where": "package.json devDependencies",
+          "what_action": "npm i -D jscpd && add `jscpd src/` script"
         }
       ],
       "details": {
@@ -632,18 +912,50 @@
       }
     },
     "A6_architecture": {
-      "score": 95,
-      "status": "green",
+      "score": 73,
+      "status": "yellow",
       "label": "0 architectural concerns · scan clean (AMD-027 budgets in effect)",
-      "source": ".claude/state/aggregates/architecture-review.json",
-      "weak_points": []
+      "source": ".claude/state/aggregates/architecture-review.json + src/ walk",
+      "weak_points": [
+        {
+          "what": "No ADR (Architectural Decision Record) directory — architecture choices undocumented",
+          "where": "docs/adr/ (missing)",
+          "what_action": "Create docs/adr/ + author 5-10 ADRs for key choices (vanilla JS over framework, Firebase backend, Capacitor mobile wrapper, per-page bundle, etc.)"
+        },
+        {
+          "what": "functions/index.js is 860 lines holding 8 Cloud Functions monolithically",
+          "where": "functions/index.js",
+          "what_action": "Split into functions/auth.js + functions/notifications.js + functions/league.js + functions/courses.js. Or move to firebase-functions-multi-file structure."
+        },
+        {
+          "what": "No module-boundary enforcement (no eslint-plugin-boundaries / depcheck)",
+          "where": "package.json — devDependencies missing",
+          "what_action": "Add eslint-plugin-boundaries; declare src/pages → src/core direction; fail commit on upward imports"
+        },
+        {
+          "what": "src/core/router.js at 2917 / 3000 lines (97%+ of AMD-027 budget) — next non-trivial feature will overflow",
+          "where": "src/core/router.js",
+          "what_action": "Pre-emptively extract: share-card builder (lines 1109-1190) → src/core/share-card.js; flow-rail logic → src/core/flow-rail.js"
+        }
+      ]
     },
     "A7_data_integrity": {
-      "score": 100,
-      "status": "green",
-      "label": "733 lines rules · 26 indexes",
-      "source": "firestore.rules + firestore.indexes.json",
-      "weak_points": []
+      "score": 77,
+      "status": "yellow",
+      "label": "733 lines rules · 26 indexes; missing coverage matrix=True, schema validation=False",
+      "source": "firestore.rules + firestore.indexes.json + docs/ + functions/index.js + scripts/migrations/",
+      "weak_points": [
+        {
+          "what": "No Firestore rules coverage matrix — can't verify every collection × operation is gated",
+          "where": "docs/firestore-rules-coverage-matrix.md (missing)",
+          "what_action": "Build matrix: list every collection × {create, read, update, delete} × {member, commissioner, founder, anonymous}. Fill in rule clause that allows/denies each cell."
+        },
+        {
+          "what": "No migration scripts directory — schema changes have no audit trail",
+          "where": "scripts/migrations/ (missing)",
+          "what_action": "Create scripts/migrations/. Author up/down pair for every schema change with --dry-run flag + log to .claude/state/migrations-applied/."
+        }
+      ]
     },
     "A8_performance": {
       "score": null,
@@ -672,45 +984,81 @@
       ]
     },
     "A10_mobile_first": {
-      "score": 80,
-      "status": "green",
-      "label": "11 44pt touch-target rules found",
-      "source": "src/styles/*.css grep min-height: 44",
+      "score": 58,
+      "status": "red",
+      "label": "11 touch-target rules · mobile-spec=False · lhci=False · manifest=True",
+      "source": "src/styles/, tests/e2e/, public/manifest.json",
       "weak_points": [
         {
-          "what": "Mobile viewport rendering not yet measured at 375px",
-          "where": "tests/e2e/ — no mobile viewport spec yet",
-          "what_action": "Add Playwright mobile-viewport spec (375x812)"
+          "what": "No mobile-viewport Playwright specs (iPhone/Pixel)",
+          "where": "tests/e2e/flows/ — no specs configured for mobile viewport",
+          "what_action": "Add `projects: [{ name: 'iphone-14', use: devices['iPhone 14'] }, { name: 'pixel-7', use: devices['Pixel 7'] }]` to playwright.config.ts. Run 5 critical-path tests on each."
+        },
+        {
+          "what": "No Lighthouse mobile config — mobile perf score unmeasured",
+          "where": "lighthouserc.js / .lighthouserc.json (missing)",
+          "what_action": "Add @lhci/cli; configure mobile preset + 6 page URLs; run in CI"
+        },
+        {
+          "what": "Capacitor wrapper present but no integration test — iOS/Android bundle untested",
+          "where": "capacitor.config.json + tests/ (no capacitor/)",
+          "what_action": "Author tests/capacitor/smoke.spec.js — verifies bundle builds + key surfaces render in Capacitor webview"
         }
       ]
     },
     "A11_testing": {
-      "score": 100,
-      "status": "green",
-      "label": "6 specs · 677 LOC (vs ~32000 app LOC)",
-      "source": "tests/e2e/flows/*.spec.js",
+      "score": 15,
+      "status": "red",
+      "label": "6 specs · 677 LOC · unit-test=False · coverage-tool=False",
+      "source": "tests/e2e/flows/, package.json, smoke-test.txt",
       "weak_points": [
         {
-          "what": "Smoke 54 failures on baseline tests (FirebaseError: auth/network-request-failed)",
-          "where": "tests/e2e/flows/01-all-users-baseline.spec.js",
-          "what_action": "Diagnose Firebase auth emulator port mismatch + fix in tests/e2e/_fixtures/"
+          "what": "54 smoke failures (FirebaseError: auth/network-request-failed) — every test is FAILING",
+          "where": "tests/e2e/flows/01-all-users-baseline.spec.js + 06-notifications-*.spec.js",
+          "what_action": "Diagnose emulator-Auth port wiring: (1) `firebase init emulators` and confirm auth port; (2) ensure tests/e2e/_fixtures/ calls connectAuthEmulator(); (3) verify Node 22 vs 24 mismatch warning resolved"
         },
         {
-          "what": "No unit test framework wired (vitest/jest)",
-          "where": "package.json — only playwright present",
-          "what_action": "Add vitest for src/core/ unit coverage"
+          "what": "No unit test framework wired — src/core/ logic only tested via slow e2e",
+          "where": "package.json devDependencies",
+          "what_action": "npm i -D vitest. Start with handicap.js + parcoins.js + sync.js (pure functions, fast wins). Target 80%+ coverage on src/core/."
+        },
+        {
+          "what": "No coverage reporter — true coverage % unknown",
+          "where": "package.json devDependencies",
+          "what_action": "npm i -D @vitest/coverage-v8. Add `npm test -- --coverage` to CI. Fail commit on <70%."
+        },
+        {
+          "what": "No visual regression suite",
+          "where": "tests/visual/ (missing)",
+          "what_action": "Add Playwright screenshot+compare for 6 key pages. Fail on >2% pixel diff."
         }
       ]
     },
     "A12_operational": {
-      "score": 95,
-      "status": "green",
-      "label": "watcher no-new-files 4.6min ago",
-      "source": ".claude/state/aggregates/approvals-pipeline.json",
-      "weak_points": [],
+      "score": 69,
+      "status": "yellow",
+      "label": "pipeline=green · 1 recent skip-dirty · error-tracking=False · incident-doc=False",
+      "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
+      "weak_points": [
+        {
+          "what": "No error-tracking service wired (Sentry/Datadog/Rollbar) — production exceptions invisible",
+          "where": "package.json — no @sentry/*",
+          "what_action": "npm i @sentry/browser @sentry/node. Init in src/core/firebase.js (browser) + functions/index.js (node). Free tier covers PARBAUGHS scale."
+        },
+        {
+          "what": "No incident response playbook",
+          "where": "docs/incident-response.md (missing)",
+          "what_action": "Author docs/incident-response.md: who-pages-who, severity ladder (SEV-1/2/3), comms templates, postmortem template"
+        },
+        {
+          "what": "No alerting configuration — Founder won't know about prod issues",
+          "where": "docs/alerting.md OR .claude/state/alerting-config.json (missing)",
+          "what_action": "Configure Firebase Crashlytics alerts to Founder email/SMS. Add Cloud Function 5xx rate alert. Document in docs/alerting.md."
+        }
+      ],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "no-new-files"
+        "watcher_exit_reason": "skip-dirty"
       }
     }
   },
@@ -722,13 +1070,38 @@
       "dimension": "A1_roadmap"
     },
     {
+      "what": "No bundle-exposure scan ever run on dist/ or public/",
+      "where": "scripts/ — no scan-bundle.py / no trufflehog wiring",
+      "what_action": "Wire trufflehog or gitleaks to scan public/ and dist/ for embedded secrets/PII before deploy",
+      "dimension": "A3_security"
+    },
+    {
       "what": "src/pages/home.js is 2738 lines (budget 800)",
       "where": "src/pages/home.js",
       "what_action": "Split into modules per AMD-027 budget",
       "dimension": "A5_code_quality"
+    },
+    {
+      "what": "No ADR (Architectural Decision Record) directory — architecture choices undocumented",
+      "where": "docs/adr/ (missing)",
+      "what_action": "Create docs/adr/ + author 5-10 ADRs for key choices (vanilla JS over framework, Firebase backend, Capacitor mobile wrapper, per-page bundle, etc.)",
+      "dimension": "A6_architecture"
+    },
+    {
+      "what": "No Firestore rules coverage matrix — can't verify every collection × operation is gated",
+      "where": "docs/firestore-rules-coverage-matrix.md (missing)",
+      "what_action": "Build matrix: list every collection × {create, read, update, delete} × {member, commissioner, founder, anonymous}. Fill in rule clause that allows/denies each cell.",
+      "dimension": "A7_data_integrity"
     }
   ],
-  "founder_attention": [],
+  "founder_attention": [
+    {
+      "what": "No Firestore rules coverage matrix — can't verify every collection × operation is gated",
+      "where": "docs/firestore-rules-coverage-matrix.md (missing)",
+      "what_action": "Build matrix: list every collection × {create, read, update, delete} × {member, commissioner, founder, anonymous}. Fill in rule clause that allows/denies each cell.",
+      "dimension": "A7_data_integrity"
+    }
+  ],
   "agent_attention": [
     {
       "what": "Only 0 ships marked complete in ship-progress/",
@@ -737,20 +1110,32 @@
       "dimension": "A1_roadmap"
     },
     {
+      "what": "No bundle-exposure scan ever run on dist/ or public/",
+      "where": "scripts/ — no scan-bundle.py / no trufflehog wiring",
+      "what_action": "Wire trufflehog or gitleaks to scan public/ and dist/ for embedded secrets/PII before deploy",
+      "dimension": "A3_security"
+    },
+    {
       "what": "src/pages/home.js is 2738 lines (budget 800)",
       "where": "src/pages/home.js",
       "what_action": "Split into modules per AMD-027 budget",
       "dimension": "A5_code_quality"
+    },
+    {
+      "what": "No ADR (Architectural Decision Record) directory — architecture choices undocumented",
+      "where": "docs/adr/ (missing)",
+      "what_action": "Create docs/adr/ + author 5-10 ADRs for key choices (vanilla JS over framework, Firebase backend, Capacitor mobile wrapper, per-page bundle, etc.)",
+      "dimension": "A6_architecture"
     }
   ],
   "audit_trigger": {
-    "sha": "dfe9c20f",
-    "subject": "[app-health] iter2 â€” clearer page + audit-schedule panel + commit-triggered refresh",
-    "committed_at": "2026-05-20T20:35:16-04:00",
-    "trigger": "substrate-commit",
+    "sha": "624f7dd9",
+    "subject": "cron(routine): post-watcher-commit drift sweep (2026-05-21T00:50:51.5313353Z)",
+    "committed_at": "2026-05-20T20:50:51-04:00",
+    "trigger": "cron",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 11
+    "total_files_touched": 1
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",

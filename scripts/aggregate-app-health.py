@@ -266,7 +266,22 @@ def a2_fiq() -> dict:
 
 
 def a3_security() -> dict:
-    # Find latest agentshield-*.txt
+    """Brutally honest enterprise-grade security scoring.
+
+    Industry rubric (per OWASP ASVS + NIST CSF + vendor security postures
+    of Stripe / Auth0 / etc.):
+    - Zero CRITICAL is BASELINE, not bonus
+    - 20 HIGH findings is a SIGNIFICANT debt, not 'acceptable'
+    - Permissive `Bash(curl *)` ALLOW = unrestricted egress = unacceptable
+    - Missing deny rules for sudo/ssh/chmod 777 = privilege escalation gap
+    - No bundle-exposure scan run = unknown blind spot
+    - No rate-limit verification on Cloud Functions = abuse-prevention gap
+    - No penetration test ever run = critical gap
+
+    AgentShield grade alone is NOT industry-grade — it scans config, not
+    code logic, not auth flows, not data exfil paths. We weight it
+    heavily but cap the score by what's ACTUALLY been verified.
+    """
     latest = None
     if SECURITY_DIR.exists():
         baselines = sorted(SECURITY_DIR.glob("baseline-*"), reverse=True)
@@ -277,6 +292,7 @@ def a3_security() -> dict:
                 break
     crit = 0
     high = 0
+    medium = 0
     grade_num = None
     grade_letter_as = "—"
     if latest:
@@ -292,31 +308,110 @@ def a3_security() -> dict:
             hm = re.search(r"(\d+)\s+high", text)
             if hm:
                 high = int(hm.group(1))
+            mm = re.search(r"(\d+)\s+medium", text)
+            if mm:
+                medium = int(mm.group(1))
         except Exception:
             pass
-    score = grade_num
+
+    # Brutally honest scoring — start at 100 and DEDUCT for every gap
+    score = 100.0
+    weak = []
+
+    # AgentShield findings
+    score -= crit * 15  # each CRITICAL: -15
+    score -= high * 2   # each HIGH: -2 (20 HIGH = -40)
+    score -= medium * 0.5
+
+    # Hard deductions for known gaps (not just AgentShield)
+    # NO bundle-exposure scan run (no scripts/scan-bundle.py or trufflehog)
+    if not (ROOT / "scripts" / "scan-bundle.py").exists():
+        score -= 8
+        weak.append(
+            {
+                "what": "No bundle-exposure scan ever run on dist/ or public/",
+                "where": "scripts/ — no scan-bundle.py / no trufflehog wiring",
+                "what_action": "Wire trufflehog or gitleaks to scan public/ and dist/ for embedded secrets/PII before deploy",
+            }
+        )
+
+    # NO rate-limit verification on Cloud Functions
+    functions_file = ROOT / "functions" / "index.js"
+    has_rate_limit = False
+    if functions_file.exists():
+        try:
+            text = functions_file.read_text(encoding="utf-8", errors="replace")
+            if "rateLimit" in text or "rate-limit" in text or "tooManyRequests" in text:
+                has_rate_limit = True
+        except OSError:
+            pass
+    if not has_rate_limit:
+        score -= 10
+        weak.append(
+            {
+                "what": "No rate-limit middleware on Cloud Functions",
+                "where": "functions/index.js — no rateLimit / tooManyRequests checks",
+                "what_action": "Add per-IP and per-user rate-limit middleware (firebase-functions-rate-limiter or equivalent) on at least joinLeague + validateInvite + searchCourses",
+            }
+        )
+
+    # NO penetration test ever conducted
+    pentest_files = list(SECURITY_DIR.glob("pentest-*")) if SECURITY_DIR.exists() else []
+    if not pentest_files:
+        score -= 10
+        weak.append(
+            {
+                "what": "No penetration test record on disk",
+                "where": ".claude/state/security/ — no pentest-*.{md,json}",
+                "what_action": "Schedule a manual pen-test (OWASP ZAP scan + manual auth-flow attack) and emit pentest-{date}.md report",
+            }
+        )
+
+    # NO firestore rules coverage matrix
+    rules_matrix = (
+        list((ROOT / ".claude" / "state" / "task-queue" / "founder").glob("*firestore-rules-coverage*"))
+        if (ROOT / ".claude" / "state" / "task-queue" / "founder").exists()
+        else []
+    )
+    if not rules_matrix:
+        score -= 7
+        weak.append(
+            {
+                "what": "No Firestore rules coverage matrix (per collection × per operation)",
+                "where": "firestore.rules + task-queue/founder/ — no coverage doc",
+                "what_action": "Build a coverage matrix: every collection (members, rounds, wagers, ...) × every operation (create, read, update, delete) with the rule clause that gates it. Add to task-queue/founder/app-audit-findings-security.md",
+            }
+        )
+
+    # AgentShield findings always show as weak points
+    if crit > 0:
+        weak.insert(
+            0,
+            {
+                "what": f"{crit} CRITICAL findings — MUST be remediated before any production deploy",
+                "where": str(latest.relative_to(ROOT)) if latest else "—",
+                "what_action": "Run `npx ecc-agentshield scan` + remediate top CRITICALs immediately",
+            },
+        )
+    if high > 0:
+        weak.append(
+            {
+                "what": f"{high} HIGH findings — at industry-grade this is technical debt, NOT 'acceptable'",
+                "where": str(latest.relative_to(ROOT)) if latest else "—",
+                "what_action": (
+                    "Top 3: tighten Bash(curl *) allow rule to specific domains; "
+                    "add deny rules for sudo/ssh/chmod 777; replace `>/dev/null 2>&1` "
+                    "in hooks with audit log writes"
+                ),
+            }
+        )
+
+    score = max(30.0, min(100.0, score))
     label = (
-        f"Grade {grade_letter_as} {grade_num}/100 · {crit} CRITICAL · {high} HIGH"
+        f"AgentShield grade {grade_letter_as}; honest score {round(score)}/100 · {crit} CRITICAL · {high} HIGH · {medium} MED"
         if grade_num is not None
         else "no scan baseline found"
     )
-    weak = []
-    if crit > 0:
-        weak.append(
-            {
-                "what": f"{crit} CRITICAL findings in AgentShield",
-                "where": str(latest.relative_to(ROOT)) if latest else "—",
-                "what_action": "Run `npx ecc-agentshield scan` + remediate top CRITICALs",
-            }
-        )
-    elif high > 0:
-        weak.append(
-            {
-                "what": f"{high} HIGH (non-CRITICAL) findings — known acceptable",
-                "where": str(latest.relative_to(ROOT)) if latest else "—",
-                "what_action": "Triage via task-queue/founder/d31-zero-critical-decision.md",
-            }
-        )
     return {
         "score": round(score) if score is not None else None,
         "status": status_color(score),
@@ -330,41 +425,29 @@ def a3_security() -> dict:
 
 
 def a4_uiux() -> dict:
-    """Composite from prior app-audit findings + known-bug log."""
-    summary = APP_AUDIT_DIR / "SUMMARY.md"
-    if not summary.exists():
-        return {
-            "score": None,
-            "status": "not-measured",
-            "label": "No prior audit on disk; Lighthouse not yet wired",
-            "source": "phase-2-deferred",
-            "weak_points": [
-                {
-                    "what": "UI/UX dimension not yet measured (Lighthouse + WCAG scans deferred to Phase 2)",
-                    "where": "scripts/aggregate-app-health.py · A4 function",
-                    "what_action": "Wire Lighthouse CLI to capture 6+ key pages + emit lighthouse-scores.json",
-                }
-            ],
-        }
-    txt = summary.read_text(encoding="utf-8", errors="replace")
-    critical = len(re.findall(r"### CRITICAL \((\d+)\)", txt))
-    high = len(re.findall(r"### HIGH \((\d+)\)", txt))
-    medium = len(re.findall(r"### MEDIUM \((\d+)\)", txt))
-    # Count open findings (text-based heuristic)
-    open_count = len(re.findall(r"Diagnosed; not yet fixed|DEFERRED", txt))
-    # Score: more findings = lower
-    score = max(40.0, 95.0 - (open_count * 5))
+    """Brutally honest: NO live Lighthouse → not-measured.
+
+    The prior 2026-05-14 audit's text-summary is NOT a substitute for
+    real Lighthouse measurements. High-level companies (Stripe, Linear,
+    Vercel) score UI/UX via Lighthouse + WebPageTest + RUM + WCAG axe
+    scans, not by counting open findings in a summary doc.
+    """
     return {
-        "score": round(score),
-        "status": status_color(score),
-        "label": f"{open_count} open / {critical} crit / {high} high / {medium} med (prior audit)",
-        "source": ".claude/state/app-audit-2026-05-14/SUMMARY.md",
+        "score": None,
+        "status": "not-measured",
+        "label": "Lighthouse not wired — score honestly unknown (NOT 80)",
+        "source": "no live measurement",
         "weak_points": [
             {
-                "what": f"{open_count} UI/UX findings open from prior audit",
+                "what": "UI/UX dimension UNMEASURED — no live Lighthouse, no WebPageTest, no RUM",
+                "where": "scripts/aggregate-app-health.py · A4 function",
+                "what_action": "Wire Lighthouse CLI (npm i -D @lhci/cli). Capture home/profile/feed/scorecard/round-detail/calendar at desktop + mobile viewports. Emit lighthouse-scores.json. Re-run on every commit via post-commit hook.",
+            },
+            {
+                "what": "Prior 2026-05-14 audit had 1 CRITICAL + 3 HIGH + 4 MEDIUM findings; most reported CLOSED but no V1 re-verification",
                 "where": ".claude/state/app-audit-2026-05-14/SUMMARY.md",
-                "what_action": "Lighthouse scans + WCAG audit (Phase 2)",
-            }
+                "what_action": "Re-run user-journey audit at desktop + mobile viewport; V1 capture each member-facing page; update SUMMARY.md status column",
+            },
         ],
     }
 
@@ -373,6 +456,7 @@ def a4_uiux() -> dict:
 
 
 def a5_code_quality() -> dict:
+    """Brutally honest: file-size + missing-tooling penalties."""
     over_budget = []
     core_dir = ROOT / "src" / "core"
     pages_dir = ROOT / "src" / "pages"
@@ -394,23 +478,70 @@ def a5_code_quality() -> dict:
         if lines > PAGE_BUDGET:
             over_budget.append({"file": rel, "lines": lines, "budget": PAGE_BUDGET})
     total_violations = len(over_budget)
-    # Score: page violations are less critical than core violations
     core_over = sum(1 for x in over_budget if x["file"].startswith("src/core/"))
     page_over = sum(1 for x in over_budget if x["file"].startswith("src/pages/"))
-    score = max(40.0, 95.0 - (core_over * 10) - (page_over * 2))
+    # Brutally honest: file-size is 50% of code quality; missing tools count
+    score = 100.0 - (core_over * 12) - (page_over * 3)
+    # NO eslint with cyclomatic-complexity rule? -10
+    # NO unit test framework (covered in A11)? -5
+    # NO dead-code detection (knip)? -8
+    # NO duplication scan (jscpd)? -5
+    pkg_json = ROOT / "package.json"
+    has_eslint = False
+    has_dead_code_tool = False
+    has_dup_tool = False
+    if pkg_json.exists():
+        try:
+            text = pkg_json.read_text(encoding="utf-8")
+            has_eslint = "eslint" in text
+            has_dead_code_tool = "knip" in text or "ts-prune" in text
+            has_dup_tool = "jscpd" in text
+        except OSError:
+            pass
+    if not has_eslint:
+        score -= 10
+    if not has_dead_code_tool:
+        score -= 8
+    if not has_dup_tool:
+        score -= 5
+    score = max(25.0, min(100.0, score))
     weak = [
         {
             "what": f"{x['file']} is {x['lines']} lines (budget {x['budget']})",
             "where": x["file"],
             "what_action": "Split into modules per AMD-027 budget",
         }
-        for x in sorted(over_budget, key=lambda x: -x["lines"])[:5]
+        for x in sorted(over_budget, key=lambda x: -x["lines"])[:3]
     ]
+    if not has_eslint:
+        weak.append(
+            {
+                "what": "No ESLint configured — no lint discipline on commit",
+                "where": "package.json devDependencies",
+                "what_action": "npm i -D eslint @eslint/js && add lint script + pre-commit hook to enforce",
+            }
+        )
+    if not has_dead_code_tool:
+        weak.append(
+            {
+                "what": "No dead-code detection (knip/ts-prune missing)",
+                "where": "package.json devDependencies",
+                "what_action": "npm i -D knip && add `knip` script to surface unused exports",
+            }
+        )
+    if not has_dup_tool:
+        weak.append(
+            {
+                "what": "No code-duplication scan (jscpd missing)",
+                "where": "package.json devDependencies",
+                "what_action": "npm i -D jscpd && add `jscpd src/` script",
+            }
+        )
     return {
         "score": round(score),
         "status": status_color(score),
-        "label": f"{core_over} core + {page_over} page files over budget",
-        "source": "src/core/, src/pages/ vs AMD-027 budgets",
+        "label": f"{core_over} core + {page_over} page files over budget; missing eslint={not has_eslint}, knip={not has_dead_code_tool}, jscpd={not has_dup_tool}",
+        "source": "src/core/, src/pages/, package.json",
         "weak_points": weak,
         "details": {"over_budget_count": total_violations, "files": over_budget[:10]},
     }
@@ -420,37 +551,104 @@ def a5_code_quality() -> dict:
 
 
 def a6_architecture() -> dict:
+    """Brutally honest: aggregator-clean is necessary but not sufficient.
+
+    Industry rubric: 'architecture' includes module boundaries, dependency
+    direction (no upward imports), domain-driven layering, ADR records,
+    extensibility tests. PARBAUGHS has NONE of these formally — just
+    file-size compliance.
+    """
     src = AGG / "architecture-review.json"
     d = load_json(src)
-    if not d:
-        return {
-            "score": None,
-            "status": "not-measured",
-            "label": "no architecture-review aggregate found",
-            "source": "phase-2-deferred",
-            "weak_points": [
-                {
-                    "what": "Architecture review aggregator missing",
-                    "where": "scripts/aggregate-architecture-review.py",
-                    "what_action": "Run + ensure JSON emitted",
-                }
-            ],
-        }
-    findings = d.get("findings") or []
-    score = max(50.0, 95.0 - (len(findings) * 3))
-    return {
-        "score": round(score),
-        "status": status_color(score),
-        "label": d.get("summary") or f"{len(findings)} findings",
-        "source": ".claude/state/aggregates/architecture-review.json",
-        "weak_points": [
+    findings = (d.get("findings") if d else []) or []
+
+    # Hard deductions
+    score = 100.0
+    weak = []
+
+    # Aggregator findings
+    score -= len(findings) * 3
+    for f in findings[:5]:
+        weak.append(
             {
                 "what": (f.get("note") or f.get("title") or "architecture finding")[:120],
                 "where": f.get("path") or f.get("source") or "—",
                 "what_action": f.get("action") or "Review + refactor",
             }
-            for f in findings[:5]
-        ],
+        )
+
+    # NO ADR (Architectural Decision Record) directory
+    adr_dir = ROOT / "docs" / "adr"
+    if not adr_dir.exists():
+        score -= 8
+        weak.append(
+            {
+                "what": "No ADR (Architectural Decision Record) directory — architecture choices undocumented",
+                "where": "docs/adr/ (missing)",
+                "what_action": "Create docs/adr/ + author 5-10 ADRs for key choices (vanilla JS over framework, Firebase backend, Capacitor mobile wrapper, per-page bundle, etc.)",
+            }
+        )
+
+    # functions/index.js holds 8 functions in 860 lines — monolithic
+    fn_file = ROOT / "functions" / "index.js"
+    if fn_file.exists():
+        try:
+            fn_lines = sum(1 for _ in fn_file.open(encoding="utf-8", errors="replace"))
+            if fn_lines > 500:
+                score -= 8
+                weak.append(
+                    {
+                        "what": f"functions/index.js is {fn_lines} lines holding 8 Cloud Functions monolithically",
+                        "where": "functions/index.js",
+                        "what_action": "Split into functions/auth.js + functions/notifications.js + functions/league.js + functions/courses.js. Or move to firebase-functions-multi-file structure.",
+                    }
+                )
+        except OSError:
+            pass
+
+    # No formal module-boundary lint (e.g., eslint-plugin-boundaries)
+    pkg = ROOT / "package.json"
+    has_boundaries = False
+    if pkg.exists():
+        try:
+            text = pkg.read_text(encoding="utf-8")
+            has_boundaries = "eslint-plugin-boundaries" in text or "depcheck" in text
+        except OSError:
+            pass
+    if not has_boundaries:
+        score -= 6
+        weak.append(
+            {
+                "what": "No module-boundary enforcement (no eslint-plugin-boundaries / depcheck)",
+                "where": "package.json — devDependencies missing",
+                "what_action": "Add eslint-plugin-boundaries; declare src/pages → src/core direction; fail commit on upward imports",
+            }
+        )
+
+    # router.js at 97% of AMD-027 budget — pre-emptive deduction
+    router_file = ROOT / "src" / "core" / "router.js"
+    if router_file.exists():
+        try:
+            router_lines = sum(1 for _ in router_file.open(encoding="utf-8", errors="replace"))
+            if router_lines > 2700:
+                score -= 5
+                weak.append(
+                    {
+                        "what": f"src/core/router.js at {router_lines} / 3000 lines (97%+ of AMD-027 budget) — next non-trivial feature will overflow",
+                        "where": "src/core/router.js",
+                        "what_action": "Pre-emptively extract: share-card builder (lines 1109-1190) → src/core/share-card.js; flow-rail logic → src/core/flow-rail.js",
+                    }
+                )
+        except OSError:
+            pass
+
+    score = max(35.0, min(100.0, score))
+    return {
+        "score": round(score),
+        "status": status_color(score),
+        "label": (d.get("summary") if d else None) or f"{len(findings)} aggregator findings + {len(weak)} structural gaps",
+        "source": ".claude/state/aggregates/architecture-review.json + src/ walk",
+        "weak_points": weak[:5],
     }
 
 
@@ -458,13 +656,17 @@ def a6_architecture() -> dict:
 
 
 def a7_data_integrity() -> dict:
+    """Brutally honest: 'files exist' is the floor, not the ceiling.
+
+    Industry-grade data integrity:
+    - Per-collection × per-operation rules coverage matrix
+    - Schema validation on Cloud Function writes (zod/joi)
+    - Migration scripts with up/down + dry-run + audit log
+    - Backup + restore verified
+    - No anonymous reads on PII collections
+    """
     rules_path = ROOT / "firestore.rules"
     indexes_path = ROOT / "firestore.indexes.json"
-    issues = []
-    if not rules_path.exists():
-        issues.append("firestore.rules missing")
-    if not indexes_path.exists():
-        issues.append("firestore.indexes.json missing")
     rules_lines = 0
     if rules_path.exists():
         rules_lines = sum(1 for _ in rules_path.open(encoding="utf-8", errors="replace"))
@@ -474,24 +676,88 @@ def a7_data_integrity() -> dict:
             idx = json.loads(indexes_path.read_text(encoding="utf-8"))
             indexes_count = len(idx.get("indexes") or [])
         except Exception:
-            issues.append("firestore.indexes.json parse error")
-    score = 100.0 if not issues else 60.0
-    if rules_lines > 0:
-        score = min(100.0, score)
-    label = f"{rules_lines} lines rules · {indexes_count} indexes"
+            pass
+
+    score = 100.0
+    weak = []
+    if not rules_path.exists():
+        score -= 30
+        weak.append(
+            {
+                "what": "firestore.rules missing — no auth enforcement",
+                "where": "repo root",
+                "what_action": "Restore firestore.rules",
+            }
+        )
+    if not indexes_path.exists():
+        score -= 20
+
+    # Per-collection coverage matrix (the big one)
+    coverage_doc = ROOT / "docs" / "firestore-rules-coverage-matrix.md"
+    if not coverage_doc.exists():
+        score -= 15
+        weak.append(
+            {
+                "what": "No Firestore rules coverage matrix — can't verify every collection × operation is gated",
+                "where": "docs/firestore-rules-coverage-matrix.md (missing)",
+                "what_action": "Build matrix: list every collection × {create, read, update, delete} × {member, commissioner, founder, anonymous}. Fill in rule clause that allows/denies each cell.",
+            }
+        )
+
+    # Schema validation library on Cloud Function writes
+    fn_file = ROOT / "functions" / "index.js"
+    has_schema_validation = False
+    if fn_file.exists():
+        try:
+            text = fn_file.read_text(encoding="utf-8", errors="replace")
+            has_schema_validation = any(lib in text for lib in ("zod", "joi", "ajv", "yup"))
+        except OSError:
+            pass
+    if not has_schema_validation:
+        score -= 12
+        weak.append(
+            {
+                "what": "No schema validation on Cloud Function writes",
+                "where": "functions/index.js — no zod/joi/ajv/yup",
+                "what_action": "npm i zod (in functions/). Wrap every Cloud Function payload in zod.parse() before writing to Firestore.",
+            }
+        )
+
+    # Migration script discipline
+    migration_dir = ROOT / "scripts" / "migrations"
+    if not migration_dir.exists() or not list(migration_dir.glob("*")):
+        score -= 8
+        weak.append(
+            {
+                "what": "No migration scripts directory — schema changes have no audit trail",
+                "where": "scripts/migrations/ (missing)",
+                "what_action": "Create scripts/migrations/. Author up/down pair for every schema change with --dry-run flag + log to .claude/state/migrations-applied/.",
+            }
+        )
+
+    # Backup + restore evidence
+    backup_evidence = (
+        list((ROOT / ".claude" / "state").glob("backup-*"))
+        + list((ROOT / "backups").glob("*") if (ROOT / "backups").exists() else [])
+    )
+    if not backup_evidence:
+        score -= 8
+        weak.append(
+            {
+                "what": "No backup/restore evidence — recovery not verified",
+                "where": ".claude/state/backup-*/ (none)",
+                "what_action": "Schedule weekly Firestore export to GCS bucket + quarterly verified restore drill. Document in backups/last-restore.md.",
+            }
+        )
+
+    score = max(35.0, min(100.0, score))
+    label = f"{rules_lines} lines rules · {indexes_count} indexes; missing coverage matrix={not coverage_doc.exists()}, schema validation={not has_schema_validation}"
     return {
         "score": round(score),
         "status": status_color(score),
         "label": label,
-        "source": "firestore.rules + firestore.indexes.json",
-        "weak_points": [
-            {
-                "what": issue,
-                "where": "repo root",
-                "what_action": "Investigate + restore",
-            }
-            for issue in issues
-        ],
+        "source": "firestore.rules + firestore.indexes.json + docs/ + functions/index.js + scripts/migrations/",
+        "weak_points": weak[:5],
     }
 
 
@@ -518,9 +784,20 @@ def not_measured(name: str, gap: str, next_action: str) -> dict:
 
 
 def a10_mobile_first() -> dict:
-    """Grep for 44pt-touch-target + min-height patterns per CLAUDE.md rule."""
-    page_files = list((ROOT / "src" / "pages").glob("*.js"))
-    css_files = list((ROOT / "src" / "styles").glob("*.css")) if (ROOT / "src" / "styles").exists() else []
+    """Brutally honest: CSS rules grep is not mobile testing.
+
+    Industry-grade mobile-first:
+    - Playwright mobile-viewport specs (iPhone 14 + Android Pixel 7)
+    - Lighthouse mobile audit (separate from desktop)
+    - Real device testing via BrowserStack / Sauce Labs
+    - Capacitor wrapper integration test
+    - PWA manifest + service worker validated
+    """
+    css_files = (
+        list((ROOT / "src" / "styles").glob("*.css"))
+        if (ROOT / "src" / "styles").exists()
+        else []
+    )
     touch_target_hits = 0
     for f in css_files:
         try:
@@ -528,20 +805,92 @@ def a10_mobile_first() -> dict:
             touch_target_hits += len(re.findall(r"min-height:\s*44\w*", text))
         except OSError:
             continue
-    score = 80.0 if touch_target_hits > 0 else 60.0
-    label = f"{touch_target_hits} 44pt touch-target rules found"
+
+    # Brutal: CSS rule presence is necessary but FAR from sufficient
+    score = 100.0
+    weak = []
+
+    if touch_target_hits == 0:
+        score -= 25
+        weak.append(
+            {
+                "what": "No 44pt-touch-target CSS rules found — mobile tap targets unsafe",
+                "where": "src/styles/*.css",
+                "what_action": "Add `min-height: 44pt` to every interactive element (buttons, links, form fields)",
+            }
+        )
+
+    # Mobile-viewport e2e specs?
+    e2e_dir = ROOT / "tests" / "e2e" / "flows"
+    has_mobile_spec = False
+    if e2e_dir.exists():
+        for f in e2e_dir.glob("*.spec.js"):
+            try:
+                text = f.read_text(encoding="utf-8", errors="replace")
+                if "iPhone" in text or "375" in text or "390" in text or "Pixel" in text:
+                    has_mobile_spec = True
+                    break
+            except OSError:
+                continue
+    if not has_mobile_spec:
+        score -= 20
+        weak.append(
+            {
+                "what": "No mobile-viewport Playwright specs (iPhone/Pixel)",
+                "where": "tests/e2e/flows/ — no specs configured for mobile viewport",
+                "what_action": "Add `projects: [{ name: 'iphone-14', use: devices['iPhone 14'] }, { name: 'pixel-7', use: devices['Pixel 7'] }]` to playwright.config.ts. Run 5 critical-path tests on each.",
+            }
+        )
+
+    # Lighthouse mobile config?
+    lhci_config = ROOT / "lighthouserc.js"
+    has_lhci = lhci_config.exists() or (ROOT / ".lighthouserc.json").exists()
+    if not has_lhci:
+        score -= 12
+        weak.append(
+            {
+                "what": "No Lighthouse mobile config — mobile perf score unmeasured",
+                "where": "lighthouserc.js / .lighthouserc.json (missing)",
+                "what_action": "Add @lhci/cli; configure mobile preset + 6 page URLs; run in CI",
+            }
+        )
+
+    # PWA manifest?
+    manifest_path = ROOT / "public" / "manifest.json"
+    if not manifest_path.exists():
+        score -= 8
+        weak.append(
+            {
+                "what": "No PWA manifest — install-to-home-screen broken on mobile",
+                "where": "public/manifest.json (missing)",
+                "what_action": "Author manifest.json with icons (192/512), theme-color, display=standalone, start_url",
+            }
+        )
+
+    # Capacitor integration test?
+    capacitor_config = ROOT / "capacitor.config.json"
+    has_capacitor_test = False
+    if capacitor_config.exists():
+        # Check if there's any integration test
+        cap_test_dir = ROOT / "tests" / "capacitor"
+        has_capacitor_test = cap_test_dir.exists()
+    if capacitor_config.exists() and not has_capacitor_test:
+        score -= 10
+        weak.append(
+            {
+                "what": "Capacitor wrapper present but no integration test — iOS/Android bundle untested",
+                "where": "capacitor.config.json + tests/ (no capacitor/)",
+                "what_action": "Author tests/capacitor/smoke.spec.js — verifies bundle builds + key surfaces render in Capacitor webview",
+            }
+        )
+
+    score = max(25.0, min(100.0, score))
     return {
         "score": round(score),
         "status": status_color(score),
-        "label": label,
-        "source": "src/styles/*.css grep min-height: 44",
-        "weak_points": [
-            {
-                "what": "Mobile viewport rendering not yet measured at 375px",
-                "where": "tests/e2e/ — no mobile viewport spec yet",
-                "what_action": "Add Playwright mobile-viewport spec (375x812)",
-            }
-        ],
+        "label": f"{touch_target_hits} touch-target rules · mobile-spec={has_mobile_spec} · lhci={has_lhci} · manifest={manifest_path.exists()}",
+        "source": "src/styles/, tests/e2e/, public/manifest.json",
+        "weak_points": weak[:5],
     }
 
 
@@ -549,9 +898,38 @@ def a10_mobile_first() -> dict:
 
 
 def a11_testing() -> dict:
+    """Brutally honest: 6 specs + 54 failures + no unit framework = D.
+
+    Industry-grade testing:
+    - Unit tests with 80%+ line coverage on src/core/ business logic
+    - Integration tests against emulator with FRESH FIXTURES
+    - E2E tests covering critical paths at multiple viewports
+    - Visual regression tests (Playwright + comparison)
+    - Smoke MUST pass before any commit
+    """
     spec_dir = ROOT / "tests" / "e2e" / "flows"
+    pkg = ROOT / "package.json"
+
+    score = 100.0
+    weak = []
+
     if not spec_dir.exists():
-        return not_measured("Testing coverage", "tests/e2e/flows/ missing", "Wire Playwright tests")
+        score = 15.0
+        weak.append(
+            {
+                "what": "tests/e2e/flows/ missing — no e2e suite at all",
+                "where": "tests/e2e/flows/",
+                "what_action": "Bootstrap Playwright + create 5 critical-path specs",
+            }
+        )
+        return {
+            "score": round(score),
+            "status": status_color(score),
+            "label": "no e2e suite",
+            "source": "tests/e2e/flows/",
+            "weak_points": weak,
+        }
+
     specs = list(spec_dir.glob("*.spec.js"))
     total_lines = 0
     for s in specs:
@@ -559,30 +937,91 @@ def a11_testing() -> dict:
             total_lines += sum(1 for _ in s.open(encoding="utf-8", errors="replace"))
         except OSError:
             continue
-    # Heuristic: 6 spec files / 677 LOC vs ~32,000 LOC of app code
-    app_loc = 32000  # rough
+
+    # Heuristic baseline
+    app_loc = 32000
     coverage_ratio = total_lines / app_loc if app_loc > 0 else 0
-    # If we had real coverage tooling we'd score 0-100; here we use spec-to-app ratio
-    # As a proxy: 1:50 = 100, 1:100 = 75, 1:200 = 50
-    score = min(100.0, max(30.0, coverage_ratio * 5000))
-    label = f"{len(specs)} specs · {total_lines} LOC (vs ~{app_loc} app LOC)"
+    score = min(80.0, max(20.0, coverage_ratio * 4000))
+
+    # Smoke failure penalty (we know there are 54 failures from Goal 1 D5)
+    # If we have evidence of recent smoke failures, deduct heavily.
+    smoke_log = ROOT / ".claude" / "state" / "audit-2026-05-19" / "smoke-test.txt"
+    if smoke_log.exists():
+        try:
+            text = smoke_log.read_text(encoding="utf-8", errors="replace")
+            fail_m = re.search(r"(\d+)\s+failed", text)
+            if fail_m:
+                fail_count = int(fail_m.group(1))
+                if fail_count > 0:
+                    # Heavy penalty: each failure -1 capped at -40
+                    deduct = min(40, fail_count)
+                    score -= deduct
+                    weak.append(
+                        {
+                            "what": f"{fail_count} smoke failures (FirebaseError: auth/network-request-failed) — every test is FAILING",
+                            "where": "tests/e2e/flows/01-all-users-baseline.spec.js + 06-notifications-*.spec.js",
+                            "what_action": "Diagnose emulator-Auth port wiring: (1) `firebase init emulators` and confirm auth port; (2) ensure tests/e2e/_fixtures/ calls connectAuthEmulator(); (3) verify Node 22 vs 24 mismatch warning resolved",
+                        }
+                    )
+        except OSError:
+            pass
+
+    # No unit framework
+    has_unit = False
+    if pkg.exists():
+        try:
+            text = pkg.read_text(encoding="utf-8")
+            has_unit = any(t in text for t in ("vitest", "jest", "mocha", "ava"))
+        except OSError:
+            pass
+    if not has_unit:
+        score -= 15
+        weak.append(
+            {
+                "what": "No unit test framework wired — src/core/ logic only tested via slow e2e",
+                "where": "package.json devDependencies",
+                "what_action": "npm i -D vitest. Start with handicap.js + parcoins.js + sync.js (pure functions, fast wins). Target 80%+ coverage on src/core/.",
+            }
+        )
+
+    # No coverage tool
+    has_coverage = False
+    if pkg.exists():
+        try:
+            text = pkg.read_text(encoding="utf-8")
+            has_coverage = "c8" in text or "nyc" in text or "@vitest/coverage" in text
+        except OSError:
+            pass
+    if not has_coverage:
+        score -= 8
+        weak.append(
+            {
+                "what": "No coverage reporter — true coverage % unknown",
+                "where": "package.json devDependencies",
+                "what_action": "npm i -D @vitest/coverage-v8. Add `npm test -- --coverage` to CI. Fail commit on <70%.",
+            }
+        )
+
+    # No visual regression
+    visual_regression_dir = ROOT / "tests" / "visual"
+    if not visual_regression_dir.exists():
+        score -= 6
+        weak.append(
+            {
+                "what": "No visual regression suite",
+                "where": "tests/visual/ (missing)",
+                "what_action": "Add Playwright screenshot+compare for 6 key pages. Fail on >2% pixel diff.",
+            }
+        )
+
+    score = max(15.0, min(100.0, score))
+    label = f"{len(specs)} specs · {total_lines} LOC · unit-test={has_unit} · coverage-tool={has_coverage}"
     return {
         "score": round(score),
         "status": status_color(score),
         "label": label,
-        "source": "tests/e2e/flows/*.spec.js",
-        "weak_points": [
-            {
-                "what": "Smoke 54 failures on baseline tests (FirebaseError: auth/network-request-failed)",
-                "where": "tests/e2e/flows/01-all-users-baseline.spec.js",
-                "what_action": "Diagnose Firebase auth emulator port mismatch + fix in tests/e2e/_fixtures/",
-            },
-            {
-                "what": "No unit test framework wired (vitest/jest)",
-                "where": "package.json — only playwright present",
-                "what_action": "Add vitest for src/core/ unit coverage",
-            },
-        ],
+        "source": "tests/e2e/flows/, package.json, smoke-test.txt",
+        "weak_points": weak[:5],
     }
 
 
@@ -590,38 +1029,122 @@ def a11_testing() -> dict:
 
 
 def a12_operational() -> dict:
-    """Approval pipeline + watcher state + heartbeat freshness as proxy."""
+    """Brutally honest: GREEN now ≠ enterprise-grade operational maturity.
+
+    Industry-grade operational health:
+    - Uptime SLA defined + monitored
+    - Error tracking (Sentry / Datadog APM) wired
+    - Alerting routes (PagerDuty / Opsgenie) configured
+    - Incident response playbook
+    - Postmortem culture (last 5 incidents documented)
+    - Deploy automation with rollback verified
+    """
     pipeline = load_json(AGG / "approvals-pipeline.json")
     watcher = load_json(STATE / "heartbeats" / "watcher-last-run.json")
     status = (pipeline.get("status") or "").lower()
     summary = pipeline.get("summary") or ""
-    if status == "green":
-        score = 95.0
-    elif status == "yellow":
-        score = 75.0
-    elif status == "red":
-        score = 50.0
-    else:
-        score = None
-    watcher_exit = watcher.get("exit_reason") or ""
+
+    score = 100.0
     weak = []
-    if status != "green":
+
+    # Pipeline status
+    if status == "green":
+        pass
+    elif status == "yellow":
+        score -= 15
+    elif status == "red":
+        score -= 30
+
+    # Count recent skip-dirty in watcher history (operational reliability signal)
+    skip_count = 0
+    if SECURITY_DIR.parent.exists():
+        logs_dir = ROOT / "scripts" / "cron" / "logs"
+        if logs_dir.exists():
+            recent = sorted(logs_dir.glob("*-downloads-watcher.log"), reverse=True)[:10]
+            for f in recent:
+                try:
+                    text = f.read_text(encoding="utf-8", errors="replace")
+                    if "SKIP working tree dirty" in text or "SKIP working tree still dirty" in text:
+                        skip_count += 1
+                except OSError:
+                    continue
+    if skip_count >= 3:
+        score -= 10
         weak.append(
             {
-                "what": summary or "Approvals pipeline not green",
-                "where": ".claude/state/aggregates/approvals-pipeline.json",
-                "what_action": "Trigger watcher manually + diagnose log",
+                "what": f"{skip_count} of last 10 cron watcher runs hit skip-dirty",
+                "where": "scripts/cron/logs/*-downloads-watcher.log",
+                "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
             }
         )
+
+    # No error tracking (Sentry/Datadog)
+    pkg = ROOT / "package.json"
+    has_error_tracking = False
+    if pkg.exists():
+        try:
+            text = pkg.read_text(encoding="utf-8")
+            has_error_tracking = any(t in text for t in ("sentry", "@sentry", "datadog", "rollbar"))
+        except OSError:
+            pass
+    if not has_error_tracking:
+        score -= 15
+        weak.append(
+            {
+                "what": "No error-tracking service wired (Sentry/Datadog/Rollbar) — production exceptions invisible",
+                "where": "package.json — no @sentry/*",
+                "what_action": "npm i @sentry/browser @sentry/node. Init in src/core/firebase.js (browser) + functions/index.js (node). Free tier covers PARBAUGHS scale.",
+            }
+        )
+
+    # No incident-response doc
+    incident_doc = ROOT / "docs" / "incident-response.md"
+    if not incident_doc.exists():
+        score -= 8
+        weak.append(
+            {
+                "what": "No incident response playbook",
+                "where": "docs/incident-response.md (missing)",
+                "what_action": "Author docs/incident-response.md: who-pages-who, severity ladder (SEV-1/2/3), comms templates, postmortem template",
+            }
+        )
+
+    # No alerting wiring
+    alerting_doc = (ROOT / "docs" / "alerting.md").exists() or (
+        ROOT / ".claude" / "state" / "alerting-config.json"
+    ).exists()
+    if not alerting_doc:
+        score -= 8
+        weak.append(
+            {
+                "what": "No alerting configuration — Founder won't know about prod issues",
+                "where": "docs/alerting.md OR .claude/state/alerting-config.json (missing)",
+                "what_action": "Configure Firebase Crashlytics alerts to Founder email/SMS. Add Cloud Function 5xx rate alert. Document in docs/alerting.md.",
+            }
+        )
+
+    # No deploy automation with rollback
+    deploy_script = ROOT / "scripts" / "deploy.sh"
+    if not deploy_script.exists() and not (ROOT / ".github" / "workflows" / "deploy.yml").exists():
+        score -= 7
+        weak.append(
+            {
+                "what": "No deploy automation — manual firebase deploy invites mistakes",
+                "where": "scripts/deploy.sh + .github/workflows/deploy.yml (missing)",
+                "what_action": "Add scripts/deploy.sh with --dry-run, version stamp, rollback-pointer write. Future: GitHub Action with environment gates.",
+            }
+        )
+
+    score = max(30.0, min(100.0, score))
     return {
-        "score": round(score) if score is not None else None,
+        "score": round(score),
         "status": status_color(score),
-        "label": summary or "no pipeline data",
-        "source": ".claude/state/aggregates/approvals-pipeline.json",
-        "weak_points": weak,
+        "label": f"pipeline={status} · {skip_count} recent skip-dirty · error-tracking={has_error_tracking} · incident-doc={incident_doc.exists()}",
+        "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
+        "weak_points": weak[:5],
         "details": {
             "watcher_last_status": watcher.get("status"),
-            "watcher_exit_reason": watcher_exit,
+            "watcher_exit_reason": watcher.get("exit_reason") or "",
         },
     }
 
