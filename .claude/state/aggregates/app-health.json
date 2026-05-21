@@ -1,9 +1,31 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T19:22:20.947898Z",
+  "generated_at": "2026-05-21T19:33:51.648397Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 88.6,
-  "overall_grade": "A-",
+  "overall_score": 81.6,
+  "overall_grade": "B+",
+  "incidents_deduction": {
+    "sev1": 0,
+    "sev2": 1,
+    "sev3": 1,
+    "incidents": [
+      {
+        "id": "2026-05-21-credential-leak",
+        "severity": "SEV-3",
+        "status": "contained",
+        "path": ".claude/state/incidents/2026-05-21-credential-leak.md"
+      },
+      {
+        "id": "2026-05-21-process-failures",
+        "severity": "SEV-2",
+        "status": "contained",
+        "path": ".claude/state/incidents/2026-05-21-process-failures.md"
+      }
+    ],
+    "pre_deduction_score": 88.6,
+    "deduction": 7,
+    "post_deduction_score": 81.6
+  },
   "dimensions": {
     "A1_roadmap": {
       "score": 80,
@@ -242,13 +264,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "c5d8c997",
-    "subject": "feat(app-health): Archive section for completed items + honest A- scoring caveat + capacitor smoke 6/6 passing",
-    "committed_at": "2026-05-21T15:21:18-04:00",
-    "trigger": "substrate-commit",
+    "sha": "15e57e87",
+    "subject": "cron(routine): post-watcher-commit drift sweep (2026-05-21T19:26:34.3435134Z)",
+    "committed_at": "2026-05-21T15:26:34-04:00",
+    "trigger": "cron",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 15
+    "total_files_touched": 6
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",

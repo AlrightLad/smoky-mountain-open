@@ -51,7 +51,7 @@ import json
 import re
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 import shlex
@@ -1309,6 +1309,85 @@ def main() -> int:
     }
     overall_score, overall_grade = compute_overall(dimensions)
 
+    # 2026-05-21 Founder direction "the grade system should be brutally honest
+    # and challenging the orchestration team to continue to provide
+    # professional and effective results". The weighted dimension score
+    # reflects what's IN-PLACE but doesn't penalize PROCESS-QUALITY failures
+    # (credential leaks, repeated re-do cycles, broken-promise bugs).
+    #
+    # Deduct from overall based on incidents in the last 30 days:
+    #   SEV-1: -10 (catastrophic outage / data loss / production breach)
+    #   SEV-2: -5  (significant degradation / process pattern failure)
+    #   SEV-3: -2  (contained issue / leaked-but-safe artifact)
+    #
+    # Each incident lives at .claude/state/incidents/YYYY-MM-DD-*.md with
+    # front-matter severity field.
+    incidents_dir = STATE / "incidents"
+    incident_deduction = 0
+    incident_summary = {"sev1": 0, "sev2": 0, "sev3": 0, "incidents": []}
+    if incidents_dir.exists():
+        cutoff = datetime.now(timezone.utc) - timedelta(days=30)
+        for f in sorted(incidents_dir.glob("*.md")):
+            try:
+                text = f.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
+            # Parse minimal front-matter
+            sev = None
+            status = None
+            for line in text.split("\n", 50):
+                if line.strip().startswith("severity:"):
+                    sev = line.split(":", 1)[1].strip().upper()
+                if line.strip().startswith("status:"):
+                    status = line.split(":", 1)[1].strip().lower()
+            # Skip closed-and-superseded incidents
+            if status in ("closed", "superseded"):
+                continue
+            # Date from filename
+            date_m = re.search(r'(\d{4}-\d{2}-\d{2})', f.stem)
+            if date_m:
+                try:
+                    incident_date = datetime.fromisoformat(date_m.group(1) + "T00:00:00+00:00")
+                    if incident_date < cutoff:
+                        continue  # too old
+                except ValueError:
+                    pass
+            if sev == "SEV-1":
+                incident_deduction += 10
+                incident_summary["sev1"] += 1
+            elif sev == "SEV-2":
+                incident_deduction += 5
+                incident_summary["sev2"] += 1
+            elif sev == "SEV-3":
+                incident_deduction += 2
+                incident_summary["sev3"] += 1
+            incident_summary["incidents"].append({
+                "id": f.stem,
+                "severity": sev,
+                "status": status,
+                "path": str(f.relative_to(ROOT)).replace("\\", "/"),
+            })
+
+    if incident_deduction > 0:
+        overall_score_pre = overall_score
+        overall_score = max(0, round(overall_score - incident_deduction, 1))
+        # Recompute grade based on new score
+        if overall_score >= 95: overall_grade = "A+"
+        elif overall_score >= 90: overall_grade = "A"
+        elif overall_score >= 85: overall_grade = "A-"
+        elif overall_score >= 80: overall_grade = "B+"
+        elif overall_score >= 75: overall_grade = "B"
+        elif overall_score >= 70: overall_grade = "B-"
+        elif overall_score >= 65: overall_grade = "C+"
+        elif overall_score >= 60: overall_grade = "C"
+        elif overall_score >= 55: overall_grade = "C-"
+        elif overall_score >= 50: overall_grade = "D"
+        else: overall_grade = "F"
+        # Stash pre-deduction for honest display
+        incident_summary["pre_deduction_score"] = overall_score_pre
+        incident_summary["deduction"] = incident_deduction
+        incident_summary["post_deduction_score"] = overall_score
+
     # Top attention items: pick top 1-2 weak points per dimension by score
     attention: list[dict] = []
     for key, d in dimensions.items():
@@ -1339,6 +1418,7 @@ def main() -> int:
         "source": "scripts/aggregate-app-health.py",
         "overall_score": overall_score,
         "overall_grade": overall_grade,
+        "incidents_deduction": incident_summary,  # process-quality penalty
         "dimensions": dimensions,
         "attention_items": attention,
         # New in v1.1: split by who-handles + audit-trigger context for the

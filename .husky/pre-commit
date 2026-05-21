@@ -142,3 +142,21 @@ if [ -n "$DASHBOARD_PATHS" ]; then
   fi
   echo "[dashboard-smoke] OK"
 fi
+
+# Secret-scan gate (post-INC-2026-05-21-001 credential-leak prevention).
+# Runs secretlint against staged TEXT files only. Blocks commit if any
+# credential pattern is detected. Skips binaries, lockfiles, and generated
+# dashboard output (docs/reports/ is regen-driven, not Founder-authored).
+STAGED_TEXT=$(git diff --cached --name-only --diff-filter=ACMR 2>/dev/null | grep -E '\.(md|html|js|ts|jsx|tsx|json|yml|yaml|ps1|sh|py)$' | grep -v 'package-lock\.json' | grep -v '^docs/reports/' || true)
+if [ -n "$STAGED_TEXT" ] && [ -f ".secretlintrc.json" ] && [ -d node_modules/secretlint ]; then
+    if ! echo "$STAGED_TEXT" | tr '\n' '\0' | xargs -0 npx --no-install secretlint --secretlintignore .gitignore --maskSecrets > /tmp/secretlint-precommit.log 2>&1; then
+        echo ""
+        echo "ERROR: secretlint detected credentials in staged files. Tail of log:"
+        tail -20 /tmp/secretlint-precommit.log
+        echo ""
+        echo "See .claude/state/incidents/2026-05-21-credential-leak.md for context."
+        echo "If false positive, scope an exception in .secretlintrc.json."
+        exit 1
+    fi
+    echo "[secret-scan] OK"
+fi

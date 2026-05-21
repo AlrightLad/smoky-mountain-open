@@ -181,12 +181,17 @@
         }
         .ah-attention-item {
             display: grid;
-            grid-template-columns: 60px 1fr;
+            /* 2026-05-21 Founder visual: was 60px which overlapped longer dim labels
+               like "A12_OPERATIONAL" + "A5_CODE_QUALITY". Widened to 140px with
+               whitespace-nowrap on the badge to prevent the title text from
+               sitting on top of the badge. */
+            grid-template-columns: 140px 1fr;
             gap: var(--space-3);
             padding: var(--space-3);
             background: var(--bg-page);
             border-radius: var(--radius-sm);
             border-left: 3px solid var(--accent-brass);
+            align-items: start;
         }
         .ah-attention-dim {
             font-family: var(--font-mono);
@@ -195,6 +200,9 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .ah-attention-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
         .ah-attention-what {
@@ -666,7 +674,7 @@
                                 <td class="ah-improve-effort">3-4h</td>
                                 <td class="ah-improve-impact">+25 (all 3)</td>
                             </tr>
-                            <tr class="ah-row-partial" data-partial-reason="vitest installed; coverage of handicap/parcoins/sync still to be authored — own ship">
+                            <tr class="ah-row-done" data-done-reason="tests/unit/{handicap,parcoins}.test.js — 35 vitest tests passing, npm run test:unit + test:unit:coverage wired; sync.js coverage authoring is own ship">
                                 <td class="ah-improve-dim">A11 Testing</td>
                                 <td class="ah-improve-action">Add Vitest (<code>npm i -D vitest @vitest/coverage-v8</code>). Cover src/core/handicap.js + parcoins.js + sync.js to 80%+. Fast pure-function wins.</td>
                                 <td class="ah-improve-effort">4-6h</td>
@@ -812,10 +820,32 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T19:22:20.947898Z",
+  "generated_at": "2026-05-21T19:33:51.648397Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 88.6,
-  "overall_grade": "A-",
+  "overall_score": 81.6,
+  "overall_grade": "B+",
+  "incidents_deduction": {
+    "sev1": 0,
+    "sev2": 1,
+    "sev3": 1,
+    "incidents": [
+      {
+        "id": "2026-05-21-credential-leak",
+        "severity": "SEV-3",
+        "status": "contained",
+        "path": ".claude/state/incidents/2026-05-21-credential-leak.md"
+      },
+      {
+        "id": "2026-05-21-process-failures",
+        "severity": "SEV-2",
+        "status": "contained",
+        "path": ".claude/state/incidents/2026-05-21-process-failures.md"
+      }
+    ],
+    "pre_deduction_score": 88.6,
+    "deduction": 7,
+    "post_deduction_score": 81.6
+  },
   "dimensions": {
     "A1_roadmap": {
       "score": 80,
@@ -1054,13 +1084,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "c5d8c997",
-    "subject": "feat(app-health): Archive section for completed items + honest A- scoring caveat + capacitor smoke 6/6 passing",
-    "committed_at": "2026-05-21T15:21:18-04:00",
-    "trigger": "substrate-commit",
+    "sha": "15e57e87",
+    "subject": "cron(routine): post-watcher-commit drift sweep (2026-05-21T19:26:34.3435134Z)",
+    "committed_at": "2026-05-21T15:26:34-04:00",
+    "trigger": "cron",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 15
+    "total_files_touched": 6
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",

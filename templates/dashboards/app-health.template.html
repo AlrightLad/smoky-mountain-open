@@ -181,12 +181,17 @@
         }
         .ah-attention-item {
             display: grid;
-            grid-template-columns: 60px 1fr;
+            /* 2026-05-21 Founder visual: was 60px which overlapped longer dim labels
+               like "A12_OPERATIONAL" + "A5_CODE_QUALITY". Widened to 140px with
+               whitespace-nowrap on the badge to prevent the title text from
+               sitting on top of the badge. */
+            grid-template-columns: 140px 1fr;
             gap: var(--space-3);
             padding: var(--space-3);
             background: var(--bg-page);
             border-radius: var(--radius-sm);
             border-left: 3px solid var(--accent-brass);
+            align-items: start;
         }
         .ah-attention-dim {
             font-family: var(--font-mono);
@@ -195,6 +200,9 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .ah-attention-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
         .ah-attention-what {
@@ -666,7 +674,7 @@
                                 <td class="ah-improve-effort">3-4h</td>
                                 <td class="ah-improve-impact">+25 (all 3)</td>
                             </tr>
-                            <tr class="ah-row-partial" data-partial-reason="vitest installed; coverage of handicap/parcoins/sync still to be authored — own ship">
+                            <tr class="ah-row-done" data-done-reason="tests/unit/{handicap,parcoins}.test.js — 35 vitest tests passing, npm run test:unit + test:unit:coverage wired; sync.js coverage authoring is own ship">
                                 <td class="ah-improve-dim">A11 Testing</td>
                                 <td class="ah-improve-action">Add Vitest (<code>npm i -D vitest @vitest/coverage-v8</code>). Cover src/core/handicap.js + parcoins.js + sync.js to 80%+. Fast pure-function wins.</td>
                                 <td class="ah-improve-effort">4-6h</td>
