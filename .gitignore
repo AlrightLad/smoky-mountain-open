@@ -151,3 +151,11 @@ dist/
 
 # Stop hook logs (session-end markers, not source)
 .claude/state/stop-verification/
+
+# 2026-05-21 (post-INC-002): files regenerated EVERY post-commit by the regen
+# pipeline itself, causing infinite dirty-tree pulse. They're computed on-demand
+# by the dashboard at file:// from source-of-truth state, so untracking them is
+# safe — the dashboard regenerates them as needed.
+.claude/state/aggregates/dashboard-freshness.json
+.claude/state/aggregates/dashboard-smoke-latest.json
+.claude/state/heartbeats/regen-all-last-pass.json

@@ -1,6 +1,6 @@
 {
   "schema_version": "dashboard-freshness-v1",
-  "generated_at": "2026-05-21T20:13:53.776610+00:00",
+  "generated_at": "2026-05-21T20:14:55.251283+00:00",
   "pages": [
     {
       "file": "dashboard.html",
@@ -79,6 +79,6 @@
     "pages_unrepairable": 0,
     "mismatches_found": 0
   },
-  "duration_seconds": 0.41,
+  "duration_seconds": 0.44,
   "overall_status": "green"
 }
