@@ -1,4 +1,4 @@
-# Founder Checklist — Mark Complete + auto-verify
+# Founder Checklist  -  Mark Complete + auto-verify
 #
 # Founder clicks "Mark Complete" on docs/reports/founder-checklist.html → button
 # copies a command like `bash scripts/founder-mark-complete.ps1 <slug>` to clipboard.
@@ -52,15 +52,46 @@ if (Test-Path $statePath) {
 
 $now = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 
-# Parse the item's .md for verify_command
+# Parse the item's .md front-matter  -  must match the Python parser in
+# scripts/regen-founder-checklist.py exactly. Contract:
+#   - Front-matter is the YAML block between two `---` lines at the file start
+#   - Flat key:value pairs only; no multi-line values
+#   - Values are stripped of one layer of surrounding quotes
+#   - Colon-followed-by-letters inside a quoted value is preserved
 $mdContent = Get-Content $mdPath -Raw -Encoding utf8
 $verifyCmd = $null
 $verifyExpected = $null
-if ($mdContent -match '(?ms)^verify_command:\s*(.+?)(?=\r?\n[a-z_]+:|\r?\n---|\r?\n\r?\n)') {
-    $verifyCmd = $matches[1].Trim().Trim('"').Trim("'")
+if ($mdContent -match '(?s)\A---\s*\r?\n(.*?)\r?\n---\s*\r?\n') {
+    $fmBlock = $matches[1]
+    foreach ($line in $fmBlock -split "`r?`n") {
+        if ($line -match '^([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$') {
+            $k = $matches[1]
+            $v = $matches[2].Trim()
+            if (($v.StartsWith('"') -and $v.EndsWith('"')) -or ($v.StartsWith("'") -and $v.EndsWith("'"))) {
+                $v = $v.Substring(1, $v.Length - 2)
+            }
+            if ($k -eq 'verify_command')  { $verifyCmd = $v }
+            if ($k -eq 'verify_expected') { $verifyExpected = $v }
+        }
+    }
 }
-if ($mdContent -match '(?ms)^verify_expected:\s*(.+?)(?=\r?\n[a-z_]+:|\r?\n---|\r?\n\r?\n)') {
-    $verifyExpected = $matches[1].Trim().Trim('"').Trim("'")
+
+# Critique F2 (HIGH): allowlist verify_command  -  prevent payload smuggling.
+# Accept only verify commands that START with one of these whitelisted cmds.
+# This catches both pure-PowerShell pipelines and external invocations.
+$ALLOWED_VERIFY_PREFIXES = @(
+    'if ', 'Test-Path', 'Select-String', 'Get-Content', 'Get-ChildItem',
+    'firebase', 'git', 'npm', 'node', 'python', 'gh '
+)
+function Test-VerifyCommandAllowed {
+    param([string]$cmd)
+    if (-not $cmd) { return $false }
+    if ($cmd.Length -gt 200) { return $false }    # Length cap
+    $trimmed = $cmd.TrimStart()
+    foreach ($prefix in $ALLOWED_VERIFY_PREFIXES) {
+        if ($trimmed.StartsWith($prefix, [System.StringComparison]::Ordinal)) { return $true }
+    }
+    return $false
 }
 
 Write-Host "Marking complete: $Slug" -ForegroundColor Cyan
@@ -77,23 +108,42 @@ $itemState = [ordered]@{
 }
 
 # Run verify_command if present
-if ($verifyCmd) {
+# Critique F2 (HIGH): allowlist check before any execution; refused commands
+# fall through to the trust-only branch with verification_status=refused.
+$verifyRefused = $false
+if ($verifyCmd -and -not (Test-VerifyCommandAllowed -cmd $verifyCmd)) {
+    Write-Host ""
+    Write-Host "  REFUSED: verify_command failed allowlist check." -ForegroundColor Red
+    Write-Host "  Allowed prefixes: $($ALLOWED_VERIFY_PREFIXES -join ', ')"
+    Write-Host "  Got: '$verifyCmd'"
+    $itemState.verification_status = "refused-not-allowlisted"
+    $itemState.status = "verification-failed"
+    $itemState.verify_output_excerpt = "REFUSED: verify_command did not start with an allowlisted prefix."
+    $verifyRefused = $true
+}
+
+if ($verifyCmd -and -not $verifyRefused) {
     Write-Host ""
     Write-Host "Running verification:" -ForegroundColor Yellow
     Write-Host "  > $verifyCmd"
     Write-Host ""
     $output = $null
     $exitCode = 0
+    # Critique F2 (HIGH): execute in a child powershell process so $LASTEXITCODE
+    # is scoped to THIS verification run, not inherited from the previous external
+    # command. Avoids Invoke-Expression (PowerShell's eval, banned by new policy).
+    $global:LASTEXITCODE = 0
     try {
-        $output = Invoke-Expression $verifyCmd 2>&1 | Out-String
+        $output = & powershell.exe -NoProfile -NonInteractive -Command $verifyCmd 2>&1 | Out-String
         $exitCode = $LASTEXITCODE
         if ($null -eq $exitCode) { $exitCode = 0 }
+        if (-not $?) { $exitCode = 1 }
     } catch {
         $output = $_.Exception.Message
         $exitCode = 1
     }
     $itemState.verified_at = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-    $excerpt = $output.Trim()
+    $excerpt = "$output".Trim()
     if ($excerpt.Length -gt 500) { $excerpt = $excerpt.Substring(0, 500) + "..." }
     $itemState.verify_output_excerpt = $excerpt
 
@@ -117,14 +167,17 @@ if ($verifyCmd) {
         Write-Host "  Output (first 500 chars):"
         Write-Host $excerpt
     }
-} else {
+}
+
+# Separate branch: no verify_command at all (trust the Founder mark)
+if (-not $verifyCmd -and -not $verifyRefused) {
     Write-Host ""
-    Write-Host "  No verify_command in item .md — accepting Founder mark on trust." -ForegroundColor Yellow
+    Write-Host "  No verify_command in item .md  -  accepting Founder mark on trust." -ForegroundColor Yellow
     $itemState.verification_status = "trust-only-no-verify"
     $itemState.status = "verified-closed"
 }
 
-# Persist state — convert hashtable values back to PSCustomObject for clean JSON
+# Persist state  -  convert hashtable values back to PSCustomObject for clean JSON
 $serialized = @{
     schema_version = 1
     updated_at = $now
@@ -143,7 +196,11 @@ function Convert-HashtablesDeep {
     return $obj
 }
 $out = Convert-HashtablesDeep $serialized
-$out | ConvertTo-Json -Depth 6 | Out-File $statePath -Encoding utf8
+# Critique F5 (LOW): Out-File -Encoding utf8 writes UTF-8 WITH BOM on Windows PS 5.1.
+# Python's read_text(encoding="utf-8") does NOT strip the BOM. Use the explicit
+# no-BOM encoder so regen-founder-checklist.py can parse the state cleanly.
+$json = $out | ConvertTo-Json -Depth 6
+[System.IO.File]::WriteAllText($statePath, $json, (New-Object System.Text.UTF8Encoding($false)))
 
 # Trigger founder-checklist regen so the dashboard reflects state immediately
 $regenScript = Join-Path $repoRoot "scripts\regen-founder-checklist.py"

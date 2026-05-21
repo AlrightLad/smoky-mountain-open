@@ -2,8 +2,8 @@
 status: open
 severity: yellow
 priority: HIGH
-verify_command: "firebase projects:list 2>&1 | Select-String parbaughs-staging"
-verify_expected: "parbaughs-staging"
+verify_command: "if (Test-Path .env.staging) { 'env-ok'; firebase projects:list 2>&1 | Select-String parbaughs-staging } else { 'env-staging-missing' }"
+verify_expected: "env-ok[\\s\\S]*parbaughs-staging"
 walkthrough_doc: docs/walkthroughs/staging-firebase-project.md
 ---
 
@@ -11,6 +11,14 @@ walkthrough_doc: docs/walkthroughs/staging-firebase-project.md
 
 **Surfaced:** 2026-05-21 by W1.I4 ship scaffolding.
 **Updated 2026-05-21 15:35Z:** Agent already created the project + Web app autonomously. Only Firestore enable + Auth provider enable + .env.staging paste remain.
+
+## AMD-018 gate #3 pre-auth scope (record)
+
+This task pre-authorizes ONLY the following auth-provider scope for `parbaughs-staging`:
+
+- **Email/Password provider** — enable
+- All other providers (OAuth / SMS / Phone / Anonymous / SAML / OIDC) — require a SEPARATE Founder pre-auth record before agent enables them
+- Production project (`parbaughs`) — NOT touched by this task; remains under its own pre-auth scope
 
 ## Walkthrough
 

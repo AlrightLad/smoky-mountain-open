@@ -129,9 +129,15 @@ if (Test-Path $logFile) {
 # Compose the quota-status.json payload
 $now = (Get-Date).ToUniversalTime()
 $status = [ordered]@{
-    schema_version = 1
+    schema_version = 2
     as_of = $now.ToString("o")
     data_source = "none"
+    # Critique F4 (P9 data truthfulness): explicitly disambiguate which 7-day
+    # window the weekly_tokens value represents. "claude-ai-anchored" = anchored
+    # to claude.ai's reset boundary (manual paste). "rolling-7d" = last 7 calendar
+    # days from now (auto-derived from session-transcript-summary.by_day_total).
+    # null = no data available.
+    weekly_window_basis = $null
     stale_seconds = $null
     weekly_tokens = 0
     weekly_cap = $weeklyCap
@@ -201,8 +207,9 @@ if (-not (Test-Path $logFile)) {
     if ($autoTokens) {
         $status.data_source = "auto-derived"
         $status.weekly_tokens = $autoTokens
-        $status."_warning" = "auto-derived from measured cycle telemetry (last 7 days); run scripts/refresh-quota-manual.ps1 to paste claude.ai % for live quota tracking"
-        Log "auto-derived: weekly_tokens=$autoTokens (manual-quota-log absent)"
+        $status.weekly_window_basis = "rolling-7d"
+        $status."_warning" = "auto-derived rolling-7d window from session-transcript-summary.by_day_total; run scripts/refresh-quota-manual.ps1 to paste claude.ai % for the claude-ai-anchored reset-boundary view"
+        Log "auto-derived: weekly_tokens=$autoTokens basis=rolling-7d (manual-quota-log absent)"
     } else {
         $status.data_source = "none"
         $status."_warning" = "no measured telemetry and no manual paste; run scripts/refresh-quota-manual.ps1"
@@ -213,8 +220,9 @@ if (-not (Test-Path $logFile)) {
     if ($autoTokens) {
         $status.data_source = "auto-derived"
         $status.weekly_tokens = $autoTokens
-        $status."_warning" = "auto-derived from measured cycle telemetry (last 7 days); manual-quota-log present but contains no parseable entries"
-        Log "auto-derived: weekly_tokens=$autoTokens (manual-quota-log empty)"
+        $status.weekly_window_basis = "rolling-7d"
+        $status."_warning" = "auto-derived rolling-7d window from session-transcript-summary.by_day_total; manual-quota-log present but contains no parseable entries"
+        Log "auto-derived: weekly_tokens=$autoTokens basis=rolling-7d (manual-quota-log empty)"
     } else {
         $status.data_source = "none"
         $status."_warning" = "manual-quota-log.ndjson exists but contains no parseable entries"
@@ -230,6 +238,7 @@ if (-not (Test-Path $logFile)) {
     } else {
         $status.data_source = "manual-paste"
     }
+    $status.weekly_window_basis = "claude-ai-anchored"
     if ($weeklyEntry) {
         $pct = [double]$weeklyEntry.percentage / 100.0
         $status.weekly_pct = [math]::Round($pct, 6)

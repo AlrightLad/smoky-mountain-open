@@ -34,6 +34,8 @@ When the database initialization completes (~30s), Firestore is on.
 
 ## Step 2 — Enable Email/Password authentication (1 min)
 
+**AMD-018 gate #3 pre-auth scope:** This step authorizes ONLY Email/Password provider for parbaughs-staging. OAuth / SMS / Phone / Anonymous / any other provider require a separate Founder pre-auth record before agent enables them.
+
 1. Open: <https://console.firebase.google.com/project/parbaughs-staging/authentication/providers>
 2. Click **Get started** (first-time)
 3. Under **Sign-in providers**, click **Email/Password**
@@ -47,19 +49,26 @@ When the database initialization completes (~30s), Firestore is on.
 
 This file is gitignored (`.env*` pattern). It only lives on your machine.
 
-Open PowerShell at the repo root and paste:
+Copy the SDK config from Firebase console:
+
+1. Open: <https://console.firebase.google.com/project/parbaughs-staging/settings/general>
+2. Scroll to **Your apps** → `parbaughs-staging-web`
+3. Click the **Config** radio button under "SDK setup and configuration"
+4. Copy the values shown (apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId)
+
+Then in PowerShell at the repo root — replace the `<paste-from-firebase-console>` placeholders below with the values you just copied:
 
 ```powershell
 @'
 # PARBAUGHS Staging environment — created 2026-05-21
 # Source: docs/walkthroughs/staging-firebase-project.md
 FIREBASE_PROJECT_ID=parbaughs-staging
-FIREBASE_APP_ID=1:608660343453:web:c64f8ec9d09fd4c84a2274
-FIREBASE_API_KEY=AIzaSyCO0WYQntITwU7ndI3B0ZXlvcxDZdvtF3M
+FIREBASE_APP_ID=<paste-appId-from-console>
+FIREBASE_API_KEY=<paste-apiKey-from-console>
 FIREBASE_AUTH_DOMAIN=parbaughs-staging.firebaseapp.com
 FIREBASE_STORAGE_BUCKET=parbaughs-staging.firebasestorage.app
-FIREBASE_MESSAGING_SENDER_ID=608660343453
-FIREBASE_PROJECT_NUMBER=608660343453
+FIREBASE_MESSAGING_SENDER_ID=<paste-messagingSenderId-from-console>
+FIREBASE_PROJECT_NUMBER=<paste-projectNumber-from-console>
 '@ | Out-File -Encoding utf8 -NoNewline .env.staging
 ```
 
@@ -70,7 +79,28 @@ Test-Path .env.staging                  # True
 git check-ignore .env.staging           # echoes .env.staging (means: ignored)
 ```
 
-> Firebase Web API keys are public by design (they identify the project, not authenticate). The auth boundary is Firestore rules + Cloud Function security — both of which deploy as part of the staging promotion process. Treating `.env.staging` as private is still good hygiene (gitignore is unconditional) but no key here is a credential.
+<details>
+<summary>About Firebase Web API keys — public-by-design (click to expand)</summary>
+
+Firebase Web API keys identify the project, they don't authenticate the caller. They are designed to be embedded in client bundles where every member can see them. The actual auth boundary is:
+
+1. **Firestore Security Rules** (`firestore.rules`) — enforce who reads/writes what
+2. **Cloud Function authentication** (callable-function context.auth checks)
+3. **App Check** (optional — verifies legitimate app origin)
+
+See <https://firebase.google.com/docs/projects/api-keys> for the canonical explanation.
+
+This is why the agent does NOT treat Firebase Web API keys as secrets. The `.env.staging` gitignore is still good hygiene (defense in depth), but no value in the file above is a credential.
+
+By contrast, things that ARE secrets and require gate-protected.sh handling:
+- Firebase service-account JSON (`scripts/.service-account.json`) — server-side admin auth
+- Cloud Function runtime environment variables containing API keys for paid services
+- Sentry DSN if you tighten DSN rotation
+- OAuth client secrets
+
+For those, the agent surfaces a Founder action and does not commit them anywhere.
+
+</details>
 
 ---
 

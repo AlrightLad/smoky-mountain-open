@@ -49,17 +49,30 @@ The string between the quotes after `dsn:` IS your DSN. Copy it.
 
 ## Step 3 — Paste DSN into env files (2 min)
 
-Open PowerShell at the repo root. Replace the placeholder with your actual DSN.
+Open PowerShell at the repo root. Replace `<paste-your-dsn-here>` with the actual DSN from Step 2. The `` `r`n `` is an explicit newline prefix — without it, Add-Content can append to the previous line if the env file doesn't end with a newline.
 
 ```powershell
 # Production .env
-Add-Content -Path .env -Value 'SENTRY_DSN=<paste-your-dsn-here>'
+Add-Content -Path .env -Value "`r`nSENTRY_DSN=<paste-your-dsn-here>"
 
 # Staging .env (only if you've activated the staging Firebase project)
 if (Test-Path .env.staging) {
-    Add-Content -Path .env.staging -Value 'SENTRY_DSN=<paste-your-dsn-here>'
+    Add-Content -Path .env.staging -Value "`r`nSENTRY_DSN=<paste-your-dsn-here>"
 }
 ```
+
+<details>
+<summary>About Sentry DSNs — semi-public (click to expand)</summary>
+
+A Sentry DSN identifies the project + grants permission to SEND events. It does NOT grant access to read events, manage settings, or delete data — those require an auth token (which IS a secret).
+
+The DSN is intended to be embedded in client bundles. However, treating it as semi-private is still good hygiene:
+- Anyone with the DSN can submit arbitrary events to your project (eats free-tier quota)
+- Sentry supports DSN rotation if compromised (Settings → Client Keys → New Key)
+
+The agent treats DSN as **rotatable secret-ish** — keeps it in `.env`/`.env.staging` (gitignored), surfaces a rotation walkthrough if leaked, but does not block on it.
+
+</details>
 
 Verify:
 

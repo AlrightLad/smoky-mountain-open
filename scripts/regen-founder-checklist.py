@@ -51,7 +51,16 @@ FRONTMATTER_RE = re.compile(r'\A---\s*\n(.*?)\n---\s*\n', re.DOTALL)
 
 
 def parse_frontmatter(text: str) -> dict:
-    """Parse simple YAML front-matter (flat key: value)."""
+    """Parse simple YAML front-matter (flat key: value).
+
+    Contract (must match scripts/founder-mark-complete.ps1 parser exactly):
+      - Front-matter is the YAML block between two `---` lines at file start
+      - Flat key:value pairs only — no multi-line values, no nested objects
+      - Values are stripped of one layer of surrounding double or single quotes
+      - Colon-followed-by-letters INSIDE a quoted value is preserved (don't
+        write `verify_command: foo: bar` — wrap in quotes: `"foo: bar"`)
+      - Lines starting with `#` are comments
+    """
     m = FRONTMATTER_RE.match(text)
     if not m:
         return {}
@@ -61,11 +70,9 @@ def parse_frontmatter(text: str) -> dict:
         line = line.rstrip()
         if not line or line.startswith('#'):
             continue
-        # Match key: value (don't split on indented continuations)
         km = re.match(r'^([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$', line)
         if km:
             key, val = km.group(1), km.group(2).strip()
-            # Strip surrounding quotes
             if (val.startswith('"') and val.endswith('"')) or (val.startswith("'") and val.endswith("'")):
                 val = val[1:-1]
             fm[key] = val
@@ -192,11 +199,17 @@ def is_closed(text: str, filename: str, fm: dict) -> bool:
 
 
 def load_state() -> dict:
-    """Load founder-mark-complete state — sidecar JSON."""
+    """Load founder-mark-complete state — sidecar JSON.
+
+    Critique F5: utf-8-sig handles legacy state files written by earlier
+    Out-File -Encoding utf8 (which writes UTF-8 WITH BOM on PowerShell 5.1).
+    New writes from founder-mark-complete.ps1 use the no-BOM encoder, but
+    utf-8-sig stays for defense-in-depth on legacy files.
+    """
     if not STATE_PATH.exists():
         return {"items": {}}
     try:
-        return json.loads(STATE_PATH.read_text(encoding="utf-8"))
+        return json.loads(STATE_PATH.read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError):
         return {"items": {}}
 
