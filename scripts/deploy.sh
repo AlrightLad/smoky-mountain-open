@@ -21,20 +21,25 @@ TARGET_PAGES=0
 TARGET_FUNCTIONS=0
 TARGET_RULES=0
 VERSION=""
+PROJECT="production"  # default; --target=staging selects parbaughs-staging
 
 for arg in "$@"; do
   case "$arg" in
-    --dry-run)    DRY_RUN=1 ;;
-    --pages)      TARGET_PAGES=1 ;;
-    --functions)  TARGET_FUNCTIONS=1 ;;
-    --rules)      TARGET_RULES=1 ;;
-    --version=*)  VERSION="${arg#*=}" ;;
+    --dry-run)         DRY_RUN=1 ;;
+    --pages)           TARGET_PAGES=1 ;;
+    --functions)       TARGET_FUNCTIONS=1 ;;
+    --rules)           TARGET_RULES=1 ;;
+    --version=*)       VERSION="${arg#*=}" ;;
+    --target=staging)  PROJECT="staging" ;;
+    --target=production) PROJECT="production" ;;
     *)
       echo "Unknown arg: $arg"
       exit 2
       ;;
   esac
 done
+
+echo "Deploy target: $PROJECT"
 
 if [ "$TARGET_PAGES" = "0" ] && [ "$TARGET_FUNCTIONS" = "0" ] && [ "$TARGET_RULES" = "0" ]; then
   echo "Pick at least one target: --pages --functions --rules"
