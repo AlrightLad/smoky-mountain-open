@@ -1,12 +1,12 @@
 {
-  "ts": "2026-05-21T16:09:54Z",
-  "timestamp": "2026-05-21T16:09:54Z",
-  "generated_at": "2026-05-21T16:09:54Z",
-  "last_pass_at_utc": "2026-05-21T16:09:54Z",
-  "last_pass_at_human": "2026-05-21 16:09 UTC",
+  "ts": "2026-05-21T16:21:13Z",
+  "timestamp": "2026-05-21T16:21:13Z",
+  "generated_at": "2026-05-21T16:21:13Z",
+  "last_pass_at_utc": "2026-05-21T16:21:13Z",
+  "last_pass_at_human": "2026-05-21 16:21 UTC",
   "status": "GATE-FAIL",
   "age_minutes": 0,
   "duration_seconds": 0,
-  "head_sha": "1f4a99f8",
+  "head_sha": "3082190e",
   "source": "post-commit-hook"
 }
