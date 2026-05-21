@@ -41,10 +41,14 @@ const CONTRACTS = [
     { file: 'design-system.html',       selector: '.token-row, .ds-token, .pb-page-main *', min: 5, role: 'design tokens' },
     { file: 'discussion-bubbles.html',  selector: '.db-thread, .pb-kpi-value', min: 1, role: 'threads OR KPIs' },
     { file: 'escalations.html',         selector: '.esc-row, .pb-kpi-value', min: 1, role: 'rows OR KPIs' },
-    { file: 'founder-checklist.html',   selector: '.fc-item, .fc-empty .fc-empty-title', min: 1, role: 'checklist items OR all-clear empty state (NOT loading state)' },
+    // founder-checklist: items expected when data has open items. Strict — .fc-item only,
+    // NOT .fc-empty fallback, because Founder doesn't want to see "you're clear" if there
+    // are real open items the regen failed to render.
+    { file: 'founder-checklist.html',   selector: '.fc-item', min: 1, role: 'open checklist items (strict, NO empty-state fallback)' },
     { file: 'main-flows.html',          selector: 'main img, main video, .pb-page-main *', min: 1, role: 'main-flows content' },
     { file: 'proposals.html',           selector: '.prop-row, .pb-kpi-value', min: 1, role: 'proposal rows OR KPIs' },
-    { file: 'sessions.html',            selector: '.sess-card, .sessions-empty', min: 1, role: 'session cards OR explicit empty state' },
+    // sessions: cards expected when summaries exist. Strict — .sess-card only.
+    { file: 'sessions.html',            selector: '.sess-card', min: 1, role: 'session cards (strict, NO empty-state fallback)' },
     { file: 'token-usage.html',         selector: '.token-row, .pb-kpi-value, .tu-card', min: 1, role: 'token rows OR cards' },
 ];
 
