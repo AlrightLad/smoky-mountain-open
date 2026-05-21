@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-21T19:09:18.307789+00:00",
+  "generated_at": "2026-05-21T19:12:13.970521+00:00",
   "_meter_status": "wired-real",
   "session_transcripts": {
     "generated_at": "2026-05-21T19:09:17.547819+00:00",
@@ -44,8 +44,8 @@
       },
       {
         "label": "orchestrator",
-        "tokens": 8187220,
-        "usd_cost": 17.1976
+        "tokens": 8277310,
+        "usd_cost": 17.3868
       },
       {
         "label": "engineer",
@@ -61,8 +61,8 @@
       },
       {
         "label": "overnight-triage",
-        "tokens": 987220,
-        "usd_cost": 2.0737
+        "tokens": 1077310,
+        "usd_cost": 2.2629
       }
     ],
     "session_top10": [
@@ -153,9 +153,9 @@
   },
   "quota_status": {
     "state": "fresh",
-    "as_of": "2026-05-21T19:07:12.8881933Z",
-    "age_seconds": 125,
-    "weekly_tokens": 5908430696,
+    "as_of": "2026-05-21T19:12:12.8973761Z",
+    "age_seconds": 1,
+    "weekly_tokens": 5912742066,
     "weekly_cap": null,
     "weekly_pct": null,
     "org_monthly_tokens": 0,
@@ -271,9 +271,9 @@
     },
     "orchestrator": {
       "real": 0,
-      "estimated": 8187220,
+      "estimated": 8277310,
       "manual": 0,
-      "total_real_plus_estimated": 8187220,
+      "total_real_plus_estimated": 8277310,
       "by_day": {
         "2026-05-14": {
           "real": 0,
@@ -301,7 +301,7 @@
         },
         "2026-05-21": {
           "real": 0,
-          "estimated": 845780
+          "estimated": 935870
         }
       }
     },
@@ -521,9 +521,9 @@
     },
     "overnight-triage": {
       "real": 0,
-      "estimated": 987220,
+      "estimated": 1077310,
       "manual": 0,
-      "total_real_plus_estimated": 987220,
+      "total_real_plus_estimated": 1077310,
       "by_day": {
         "2026-05-13": {
           "real": 0,
@@ -547,7 +547,7 @@
         },
         "2026-05-21": {
           "real": 0,
-          "estimated": 845780
+          "estimated": 935870
         }
       }
     },
@@ -635,9 +635,9 @@
   "by_ship": {
     "unattributed": {
       "real": 9037657130,
-      "estimated": 987220,
+      "estimated": 1077310,
       "manual": 0,
-      "total_real_plus_estimated": 9038644350,
+      "total_real_plus_estimated": 9038734440,
       "by_day": {
         "2026-05-13": {
           "real": 672200066,
@@ -717,7 +717,7 @@
         },
         "2026-05-21": {
           "real": 1441868838,
-          "estimated": 845780
+          "estimated": 935870
         }
       }
     },
@@ -748,14 +748,14 @@
   },
   "all_time": {
     "real": 9037657130,
-    "estimated": 8187220,
+    "estimated": 8277310,
     "manual": 0,
     "first_event_at": "2026-04-17T22:45:30.161000+00:00",
-    "last_event_at": "2026-05-21T19:09:10.763000+00:00"
+    "last_event_at": "2026-05-21T19:12:13+00:00"
   },
   "_counts": {
     "real_events": 83,
-    "estimated_events": 3621,
+    "estimated_events": 3623,
     "manual_entries": 0
   }
 }
