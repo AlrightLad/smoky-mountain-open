@@ -742,7 +742,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T03:34:47.703200Z",
+  "generated_at": "2026-05-21T03:40:40.186566Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 78.9,
   "overall_grade": "B",
@@ -954,11 +954,11 @@
     "A12_operational": {
       "score": 60,
       "status": "yellow",
-      "label": "pipeline=red · 9 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 10 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "9 of last 10 cron watcher runs hit skip-dirty",
+          "what": "10 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -1035,12 +1035,14 @@
     }
   ],
   "audit_trigger": {
-    "sha": "cf35a0fc",
-    "subject": "[ops] dashboard system-health: cron-tasks card + visual-integrity card (P10 â€” surface what scripts emit). Closes F-4 + F-5 from data-flow audit.",
-    "committed_at": "2026-05-20T23:34:11-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
+    "sha": "3f167b97",
+    "subject": "[W1.I5] crisis banner â€” 3-tier (CRITICAL/ALERT/NOTICE) via platform_announcements collection. CORE-tier loader, member-dismissible per session for NOTICE/ALERT, Founder-only dismissal for CRITICAL. window.setCrisisBanner(tier, msg, link, label) API.",
+    "committed_at": "2026-05-20T23:40:23-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "src/core/crisis-banner.js"
+    ],
     "total_files_touched": 2
   },
   "cadence": {

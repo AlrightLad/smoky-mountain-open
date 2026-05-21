@@ -1,14 +1,14 @@
 {
   "schema_version": "architecture-review-v2.1",
-  "timestamp": "2026-05-21T00:02:14Z",
-  "generated_at": "2026-05-21T00:02:14Z",
-  "updated_at": "2026-05-21T00:02:14Z",
+  "timestamp": "2026-05-21T03:37:14Z",
+  "generated_at": "2026-05-21T03:37:14Z",
+  "updated_at": "2026-05-21T03:37:14Z",
   "source": "scripts/aggregate-architecture-review.py (autonomous-v1)",
   "available": true,
   "status": "green",
   "raw_status": "green",
   "summary": "0 architectural concerns · scan clean (AMD-027 budgets in effect)",
-  "as_of": "2026-05-21T00:02:14Z",
+  "as_of": "2026-05-21T03:37:14Z",
   "stale": false,
   "age_hours": 0,
   "counts": {
@@ -29,7 +29,7 @@
   "details": [],
   "recommendations": [],
   "scan": {
-    "src_core_files_scanned": 19,
+    "src_core_files_scanned": 20,
     "functions_scanned": true,
     "recommendations_dir_scanned": true
   },
