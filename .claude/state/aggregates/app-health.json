@@ -1,6 +1,6 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T19:33:51.648397Z",
+  "generated_at": "2026-05-21T19:36:19.681893Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 81.6,
   "overall_grade": "B+",
@@ -207,11 +207,11 @@
     "A12_operational": {
       "score": 75,
       "status": "yellow",
-      "label": "pipeline=yellow · 4 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=yellow · 5 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "4 of last 10 cron watcher runs hit skip-dirty",
+          "what": "5 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -236,7 +236,7 @@
       "dimension": "A8_performance"
     },
     {
-      "what": "4 of last 10 cron watcher runs hit skip-dirty",
+      "what": "5 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -257,20 +257,20 @@
       "dimension": "A8_performance"
     },
     {
-      "what": "4 of last 10 cron watcher runs hit skip-dirty",
+      "what": "5 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "15e57e87",
-    "subject": "cron(routine): post-watcher-commit drift sweep (2026-05-21T19:26:34.3435134Z)",
-    "committed_at": "2026-05-21T15:26:34-04:00",
-    "trigger": "cron",
+    "sha": "4b2be62e",
+    "subject": "feat(app-health): log credential leak + process incidents + brutal grading (A- â†’ B+) + fix team-handling text overlap",
+    "committed_at": "2026-05-21T15:35:19-04:00",
+    "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 6
+    "total_files_touched": 18
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
