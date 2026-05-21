@@ -1,13 +1,13 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T19:17:14Z",
-  "generated_at": "2026-05-21T19:17:14Z",
+  "timestamp": "2026-05-21T19:22:09Z",
+  "generated_at": "2026-05-21T19:22:09Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "red",
-  "raw_status": "red",
-  "summary": "watcher errored",
-  "as_of": "2026-05-21T19:15:48Z",
+  "status": "yellow",
+  "raw_status": "yellow",
+  "summary": "watcher last run: skip-dirty",
+  "as_of": "2026-05-21T19:20:48Z",
   "stale": false,
   "age_hours": 0.02333333333333333,
   "counts": {
@@ -30,10 +30,10 @@
     },
     {
       "category": "stall",
-      "status": "incomplete",
-      "name": "2026-05-21T19-15-48Z-downloads-watcher.log",
-      "note": "[19:16:35]   [drift-sweep] [dashboard-smoke] dashboard files staged ΓÇö running smoke gate...",
-      "when": "2026-05-21T19:15:48Z"
+      "status": "skip-dirty",
+      "name": "2026-05-21T19-20-48Z-downloads-watcher.log",
+      "note": "[19:20:49] SKIP working tree dirty with non-routine files: .claude/state/critique/app-health-end.png, .claude/state/critique/app-health-very-bottom.png, templates/dashboards/app-health.template.html, ",
+      "when": "2026-05-21T19:20:48Z"
     },
     {
       "category": "stall",
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 0,
+    "consecutive_skips": 1,
     "age_minutes": 1.4
   }
 }
