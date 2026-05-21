@@ -742,9 +742,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T00:56:04.547084Z",
+  "generated_at": "2026-05-21T00:57:08.007966Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 54.4,
+  "overall_score": 53.5,
   "overall_grade": "D",
   "dimensions": {
     "A1_roadmap": {
@@ -1035,9 +1035,9 @@
       ]
     },
     "A12_operational": {
-      "score": 69,
-      "status": "yellow",
-      "label": "pipeline=green · 1 recent skip-dirty · error-tracking=False · incident-doc=False",
+      "score": 54,
+      "status": "red",
+      "label": "pipeline=yellow · 1 recent skip-dirty · error-tracking=False · incident-doc=False",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
@@ -1129,13 +1129,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "624f7dd9",
-    "subject": "cron(routine): post-watcher-commit drift sweep (2026-05-21T00:50:51.5313353Z)",
-    "committed_at": "2026-05-20T20:50:51-04:00",
-    "trigger": "cron",
+    "sha": "963b1949",
+    "subject": "[app-health] iter3 â€” brutal-honesty rescore + improvement plan section",
+    "committed_at": "2026-05-20T20:56:53-04:00",
+    "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 1
+    "total_files_touched": 10
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",

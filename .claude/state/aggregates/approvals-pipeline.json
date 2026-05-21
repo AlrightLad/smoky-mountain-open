@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T00:37:13Z",
-  "generated_at": "2026-05-21T00:37:13Z",
+  "timestamp": "2026-05-21T00:56:58Z",
+  "generated_at": "2026-05-21T00:56:58Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "green",
-  "raw_status": "green",
-  "summary": "watcher no-new-files 1.4min ago",
-  "as_of": "2026-05-21T00:35:48Z",
+  "status": "yellow",
+  "raw_status": "yellow",
+  "summary": "watcher last run: skip-dirty",
+  "as_of": "2026-05-21T00:55:49Z",
   "stale": false,
-  "age_hours": 0.02333333333333333,
+  "age_hours": 0.02,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -31,9 +31,9 @@
     {
       "category": "stall",
       "status": "skip-dirty",
-      "name": "2026-05-21T00-20-48Z-downloads-watcher.log",
-      "note": "[00:20:49] SKIP working tree dirty with non-routine files: templates/dashboards/dashboard.template.html",
-      "when": "2026-05-21T00:20:48Z"
+      "name": "2026-05-21T00-55-49Z-downloads-watcher.log",
+      "note": "[00:55:49] SKIP working tree dirty with non-routine files: scripts/aggregate-app-health.py, templates/dashboards/app-health.template.html",
+      "when": "2026-05-21T00:55:49Z"
     }
   ],
   "links": [
@@ -49,7 +49,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 0,
-    "age_minutes": 1.4
+    "consecutive_skips": 1,
+    "age_minutes": 1.2
   }
 }
