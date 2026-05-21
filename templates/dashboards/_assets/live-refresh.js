@@ -157,6 +157,10 @@
     }
 
     function poll() {
+        // file:// protocol blocks fetch in modern browsers (CORS-equivalent
+        // restriction). Smoke runs against file:// and there's no live data
+        // source to poll from disk, so bail before the fetch attempt.
+        if (location.protocol === 'file:') return;
         var url = location.pathname + '?_live=' + Date.now();
         fetch(url, { cache: 'no-cache' }).then(function (r) {
             if (!r.ok) throw new Error('http ' + r.status);
