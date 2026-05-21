@@ -1691,7 +1691,50 @@ def build_dashboard_data():
         # was misleading by showing only ship-progress count.
         "git_activity_7d": _count_commits_window(7),
         "git_activity_24h": _count_commits_window(1),
+        # 2026-05-21 (data-flow audit F-4, F-5 fixes): surface cron-health +
+        # visual-audit findings as dashboard cards so the Founder doesn't have
+        # to manually check whether scripts are working.
+        "cron_health": _load_cron_health(),
+        "visual_integrity": _load_visual_integrity(),
     }
+
+
+def _load_cron_health() -> dict:
+    """Read .claude/state/aggregates/cron-health.json (emitted by post-commit hook).
+    Uses utf-8-sig to tolerate the BOM PowerShell writes when emitting from Out-File."""
+    try:
+        path = STATE / "aggregates" / "cron-health.json"
+        if not path.exists():
+            return {}
+        return json.loads(path.read_text(encoding="utf-8-sig"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def _load_visual_integrity() -> dict:
+    """Read latest visual-audit findings; summarize overlap totals."""
+    try:
+        # Find the most recent visual-audit dir
+        from datetime import date
+        candidates = sorted([
+            d for d in (STATE).glob("visual-audit-*")
+            if d.is_dir() and (d / "visual-audit-findings.json").exists()
+        ], reverse=True)
+        if not candidates:
+            return {}
+        findings_path = candidates[0] / "visual-audit-findings.json"
+        f = json.loads(findings_path.read_text(encoding="utf-8"))
+        total = 0
+        for page, info in f.items():
+            for vp, vpinfo in (info.get("viewports") or {}).items():
+                total += vpinfo.get("overlap_count", 0)
+        # Get mtime as proxy for generated_at
+        mtime = findings_path.stat().st_mtime
+        from datetime import datetime as dt, timezone as tz
+        generated = dt.fromtimestamp(mtime, tz=tz.utc).isoformat().replace("+00:00", "Z")
+        return {"overlaps_total": total, "pages_checked": len(f), "generated_at": generated}
+    except (OSError, json.JSONDecodeError):
+        return {}
 
 
 def _count_commits_window(days: int) -> dict:

@@ -318,9 +318,25 @@
                         <span class="pb-kpi-label">Active halts</span>
                         <span class="pb-kpi-value" data-fq="halts-count">&mdash;</span>
                         <span class="pb-kpi-sub" data-fq="halts-summary">unresolved system faults</span>
-                        <!-- AMD-026 P10: halts surface gets WHO badge — Founder
-                             when >0. Always renders the inspect link. -->
                         <span class="pb-action-badge" data-who="none" data-fq-badge="halts"><a href="../../.claude/state/halts/" style="color: inherit; text-decoration: underline;">ok &middot; verify dir</a></span>
+                    </div>
+                    <!-- 2026-05-21 (Founder data-flow audit F-4 fix): cron-health
+                         card. Reads .claude/state/aggregates/cron-health.json which
+                         the post-commit hook emits via PowerShell on every commit. -->
+                    <div class="pb-kpi-card" data-fq-health="cron" title="PARBAUGHS scheduled task health (Daily Maintenance, Downloads Watcher, Overnight Triage, Proposal Readiness, Token Sidecar). Source: .claude/state/aggregates/cron-health.json. RED if any task State != Ready or LastResult != 0.">
+                        <span class="pb-kpi-label">Cron tasks</span>
+                        <span class="pb-kpi-value is-small" data-fq="cron-health" style="white-space: normal; line-height: 1.3;">&mdash;</span>
+                        <span class="pb-kpi-sub" data-fq="cron-health-sub">5 PARBAUGHS-* tasks</span>
+                        <span class="pb-action-badge" data-who="cron" data-fq-badge="cron-health">cron &middot; per-commit refresh</span>
+                    </div>
+                    <!-- 2026-05-21 (Founder data-flow audit F-5 fix): visual integrity
+                         card. Reads .claude/state/visual-audit-*/visual-audit-findings.json
+                         which capture-dashboards-all.mjs emits. -->
+                    <div class="pb-kpi-card" data-fq-health="visual" title="Dashboard visual integrity. Detects text-overlap on every docs/reports/*.html via Playwright + DOM overlap heuristic. RED if overlaps detected at 1920 or 1366 viewport.">
+                        <span class="pb-kpi-label">Dashboard visual integrity</span>
+                        <span class="pb-kpi-value is-small" data-fq="visual-integrity" style="white-space: normal; line-height: 1.3;">&mdash;</span>
+                        <span class="pb-kpi-sub" data-fq="visual-integrity-sub">overlap detector last run</span>
+                        <span class="pb-action-badge" data-who="cron" data-fq-badge="visual-integrity">audit &middot; on-demand</span>
                     </div>
                 </div>
                 <div id="health-banner-architecture-detail" class="pb-health-banner-detail" data-fq-banner-detail="architecture" hidden style="margin-top: var(--space-3); padding: var(--space-3); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--surface-secondary);"></div>
@@ -2299,6 +2315,53 @@
                 halts.length === 0
                     ? '<a href="../../.claude/state/halts/" style="color: inherit; text-decoration: underline;">ok &middot; verify dir</a>'
                     : '<a href="../../.claude/state/halts/" style="color: inherit; text-decoration: underline;">FOUNDER &middot; review ' + halts.length + ' halt file' + (halts.length === 1 ? '' : 's') + '</a>');
+
+            // 2026-05-21 (Founder data-flow audit F-4 fix): cron-health card
+            var ch = data.cron_health || {};
+            var chStatus = ch.status || 'unknown';
+            var chTasks = ch.tasks || [];
+            var chReadyCount = chTasks.filter(function(t){ return t.state === 'Ready'; }).length;
+            var chTotalCount = chTasks.length;
+            var chBadCount = chTotalCount - chReadyCount;
+            if (chTotalCount === 0) {
+                setText('[data-fq="cron-health"]', 'unknown');
+                setText('[data-fq="cron-health-sub"]', 'cron-health.json missing — run scripts/cron/check-cron-health.ps1');
+                setFqBadge('cron-health', 'founder', 'FOUNDER · register PARBAUGHS-* tasks');
+            } else {
+                setText('[data-fq="cron-health"]', chBadCount === 0 ? 'all ' + chTotalCount + ' ready' : chBadCount + '/' + chTotalCount + ' need attention');
+                setText('[data-fq="cron-health-sub"]', chBadCount === 0 ? 'PARBAUGHS-* tasks running silently' : 'investigate ' + chBadCount + ' task(s)');
+                setFqBadge('cron-health',
+                    chBadCount === 0 ? 'none' : 'founder',
+                    chBadCount === 0 ? 'cron · all green' : 'FOUNDER · review ' + chBadCount + ' task(s)');
+                var cronCard = document.querySelector('[data-fq-health="cron"]');
+                if (cronCard) {
+                    cronCard.style.borderLeftStyle = 'solid';
+                    cronCard.style.borderLeftWidth = '3px';
+                    cronCard.style.borderLeftColor = chBadCount === 0 ? 'var(--accent-positive, #4CAF50)' : 'var(--accent-warning, #F59E42)';
+                }
+            }
+
+            // 2026-05-21 (Founder data-flow audit F-5 fix): visual integrity card
+            var vi = data.visual_integrity || {};
+            var viOverlaps = vi.overlaps_total != null ? vi.overlaps_total : -1;
+            var viGeneratedAt = vi.generated_at || null;
+            if (viOverlaps < 0) {
+                setText('[data-fq="visual-integrity"]', 'not yet measured');
+                setText('[data-fq="visual-integrity-sub"]', 'run scripts/visual-audit/capture-dashboards-all.mjs');
+                setFqBadge('visual-integrity', 'cron', 'audit · on-demand');
+            } else {
+                setText('[data-fq="visual-integrity"]', viOverlaps === 0 ? 'clean — 0 overlaps' : viOverlaps + ' overlaps detected');
+                setText('[data-fq="visual-integrity-sub"]', 'last audit ' + (viGeneratedAt ? fmtTime(viGeneratedAt) : 'unknown'));
+                setFqBadge('visual-integrity',
+                    viOverlaps === 0 ? 'none' : 'founder',
+                    viOverlaps === 0 ? 'audit · all clean' : 'FOUNDER · review ' + viOverlaps + ' overlap(s)');
+                var viCard = document.querySelector('[data-fq-health="visual"]');
+                if (viCard) {
+                    viCard.style.borderLeftStyle = 'solid';
+                    viCard.style.borderLeftWidth = '3px';
+                    viCard.style.borderLeftColor = viOverlaps === 0 ? 'var(--accent-positive, #4CAF50)' : 'var(--accent-warning, #F59E42)';
+                }
+            }
 
             // R-Banner (2026-05-15 dashboard-completion B1-B4): render the 4 health
             // banners (test, security, approvals, architecture) from
