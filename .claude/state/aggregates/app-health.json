@@ -1,9 +1,9 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-21T05:03:01.262329Z",
+  "generated_at": "2026-05-21T05:06:58.746805Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 79.4,
-  "overall_grade": "B",
+  "overall_score": 80.1,
+  "overall_grade": "B+",
   "dimensions": {
     "A1_roadmap": {
       "score": 80,
@@ -118,16 +118,11 @@
       }
     },
     "A6_architecture": {
-      "score": 73,
-      "status": "yellow",
+      "score": 81,
+      "status": "green",
       "label": "0 architectural concerns · scan clean (AMD-027 budgets in effect)",
       "source": ".claude/state/aggregates/architecture-review.json + src/ walk",
       "weak_points": [
-        {
-          "what": "No ADR (Architectural Decision Record) directory — architecture choices undocumented",
-          "where": "docs/adr/ (missing)",
-          "what_action": "Create docs/adr/ + author 5-10 ADRs for key choices (vanilla JS over framework, Firebase backend, Capacitor mobile wrapper, per-page bundle, etc.)"
-        },
         {
           "what": "functions/index.js is 908 lines holding 8 Cloud Functions monolithically",
           "where": "functions/index.js",
@@ -235,12 +230,6 @@
       "dimension": "A5_code_quality"
     },
     {
-      "what": "No ADR (Architectural Decision Record) directory — architecture choices undocumented",
-      "where": "docs/adr/ (missing)",
-      "what_action": "Create docs/adr/ + author 5-10 ADRs for key choices (vanilla JS over framework, Firebase backend, Capacitor mobile wrapper, per-page bundle, etc.)",
-      "dimension": "A6_architecture"
-    },
-    {
       "what": "Lighthouse Performance = 65/100 across 6 pages (target: 75+)",
       "where": ".claude/state/aggregates/lighthouse-scores.json",
       "what_action": "Open .lighthouseci/*.html — fix top performance failures per page",
@@ -268,12 +257,6 @@
       "dimension": "A5_code_quality"
     },
     {
-      "what": "No ADR (Architectural Decision Record) directory — architecture choices undocumented",
-      "where": "docs/adr/ (missing)",
-      "what_action": "Create docs/adr/ + author 5-10 ADRs for key choices (vanilla JS over framework, Firebase backend, Capacitor mobile wrapper, per-page bundle, etc.)",
-      "dimension": "A6_architecture"
-    },
-    {
       "what": "Lighthouse Performance = 65/100 across 6 pages (target: 75+)",
       "where": ".claude/state/aggregates/lighthouse-scores.json",
       "what_action": "Open .lighthouseci/*.html — fix top performance failures per page",
@@ -287,13 +270,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "fc8c6c04",
-    "subject": "[ops] post-commit: bug triage + dashboard smoke (non-blocking log). Keeps dashboard-smoke-latest.json fresh on every commit.",
-    "committed_at": "2026-05-21T01:02:46-04:00",
+    "sha": "6062a7ea",
+    "subject": "[A6] Architectural Decision Records â€” 5 baseline ADRs (Firestore source of truth, vanilla JS, Page Shell, native runtime abstraction, dashboards-local-only). A6 73 -> 81. Overall B -> B+ (80.1).",
+    "committed_at": "2026-05-21T01:06:43-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 1
+    "total_files_touched": 7
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
