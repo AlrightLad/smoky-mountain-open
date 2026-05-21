@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-21T02:49:11Z",
-  "generated_at": "2026-05-21T02:49:11Z",
+  "timestamp": "2026-05-21T02:52:02Z",
+  "generated_at": "2026-05-21T02:52:02Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "green",
-  "raw_status": "green",
-  "summary": "watcher no-new-files 3.4min ago",
-  "as_of": "2026-05-21T02:45:49Z",
+  "status": "yellow",
+  "raw_status": "yellow",
+  "summary": "watcher last run: skip-dirty",
+  "as_of": "2026-05-21T02:50:49Z",
   "stale": false,
-  "age_hours": 0.056666666666666664,
+  "age_hours": 0.02,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -31,6 +31,13 @@
     {
       "category": "stall",
       "status": "skip-dirty",
+      "name": "2026-05-21T02-50-49Z-downloads-watcher.log",
+      "note": "[02:50:49] SKIP working tree dirty with non-routine files: .claude/state/dashboard-audit-2026-05-15/screenshots/audit-2026-05-15-dashboard-1440.png, .claude/state/dashboard-audit-2026-05-15/screenshot",
+      "when": "2026-05-21T02:50:49Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
       "name": "2026-05-21T02-40-49Z-downloads-watcher.log",
       "note": "[02:40:49] SKIP working tree dirty with non-routine files: .claude/state/visual-audit-2026-05-21/activity-1366.png, .claude/state/visual-audit-2026-05-21/activity-1920.png, .claude/state/visual-audit-",
       "when": "2026-05-21T02:40:49Z"
@@ -41,13 +48,6 @@
       "name": "2026-05-21T02-35-49Z-downloads-watcher.log",
       "note": "[02:35:49] SKIP working tree dirty with non-routine files: .claude/state/visual-audit-2026-05-21/activity-1366.png, .claude/state/visual-audit-2026-05-21/activity-1920.png, .claude/state/visual-audit-",
       "when": "2026-05-21T02:35:49Z"
-    },
-    {
-      "category": "stall",
-      "status": "skip-dirty",
-      "name": "2026-05-21T02-32-26Z-downloads-watcher.log",
-      "note": "[02:32:27] SKIP working tree dirty with non-routine files: .claude/state/visual-audit-2026-05-21/activity-1366.png, .claude/state/visual-audit-2026-05-21/activity-1920.png, scripts/visual-audit/captur",
-      "when": "2026-05-21T02:32:26Z"
     }
   ],
   "links": [
@@ -63,7 +63,7 @@
   "source_path": ".claude/state/proposals/ + scripts/cron/logs/",
   "_meta": {
     "watcher_runs_inspected": 10,
-    "consecutive_skips": 0,
-    "age_minutes": 3.4
+    "consecutive_skips": 1,
+    "age_minutes": 1.2
   }
 }
