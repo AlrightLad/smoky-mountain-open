@@ -159,3 +159,4 @@ dist/
 .claude/state/aggregates/dashboard-freshness.json
 .claude/state/aggregates/dashboard-smoke-latest.json
 .claude/state/heartbeats/regen-all-last-pass.json
+.claude/state/heartbeats/watcher-last-run.json
