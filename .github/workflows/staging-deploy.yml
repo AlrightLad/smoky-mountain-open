@@ -1,0 +1,39 @@
+name: Deploy to Firebase Hosting (staging)
+
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+  # Also expose a daily auto-deploy of main -> staging so the staging URL
+  # always reflects the latest code (without auto-promoting to production
+  # GitHub Pages which only fires on main push).
+  schedule:
+    - cron: '0 5 * * *'  # 5 AM UTC daily
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name == 'staging' && 'staging' || 'main' }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm install
+
+      - run: npm run build
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_STAGING }}
+          projectId: parbaughs-staging
+          channelId: live
+        env:
+          FIREBASE_CLI_EXPERIMENTS: webframeworks
