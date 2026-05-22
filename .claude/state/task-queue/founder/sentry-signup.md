@@ -2,9 +2,9 @@
 status: open
 severity: green
 priority: MEDIUM
-verify_command: "if (Test-Path .env.staging) { Select-String -Path .env.staging -Pattern 'SENTRY_DSN' } else { 'NOT_FOUND' }"
-verify_expected: "SENTRY_DSN="
 walkthrough_doc: docs/walkthroughs/sentry-signup.md
+verify_command: "$envFile = if (Test-Path .env.staging) { '.env.staging' } else { '.env' }; $line = Select-String -Path $envFile -Pattern '^SENTRY_DSN=(.+)$' | Select-Object -First 1; if (-not $line) { 'FAIL' } else { $value = $line.Matches[0].Groups[1].Value; if ($value -match '^https://[a-f0-9]+@o[0-9]+\\.ingest\\.(us|de|eu)\\.sentry\\.io/[0-9]+$') { 'PASS' } else { 'FAIL' } }"
+verify_expected: "PASS"
 ---
 
 # Founder action — Sign up for Sentry (free tier, no credit card)

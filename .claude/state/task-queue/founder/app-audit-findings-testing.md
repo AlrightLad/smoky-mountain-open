@@ -17,15 +17,42 @@ closed_reason: "agent-can-do — moved to engineering backlog per Founder 2026-0
 
 ## Open findings (Founder triage)
 
-### CRITICAL — Smoke baseline 54 failures — ROOT CAUSE FOUND 2026-05-22
+### PARTIALLY RESOLVED 2026-05-22 — Smoke baseline failures (CSP class fixed; post-sign-in transition remains)
 
-**Status:** primary cause identified + diagnosed; load-bearing fix surfaced
-to Founder via `csp-emulator-allowance.md` (CSP `connect-src` does NOT
-allow loopback emulator endpoints). Awaiting Founder approval.
+**Status update 2026-05-22T17:00Z:** post-fix Playwright run confirms
+sign-in path is now FULLY unblocked. New failure mode surfaced
+(post-sign-in page transition doesn't complete). Documented below as
+the next diagnostic ship.
 
-**Root cause (verified by Playwright trace inspection 2026-05-22):**
-Browser blocks the auth.signInWithCustomToken() fetch at CSP-enforce
-time. Console error (extracted from `0-trace.trace`):
+**Verified post-fix:**
+- `auth.signInWithCustomToken` POST → **200 OK**
+- `accounts:lookup` POST → **200 OK**
+- Firestore Listen channels established to `127.0.0.1:8080`
+- Zero CSP violations in browser console
+- Seed phase still works (`[seed] Seeded 26 users, 55 rounds, ...`)
+
+**New residual failure (not CSP-class):** Post-sign-in, `enterApp()`
+doesn't complete — `#mainApp` stays `.hidden`, `#authScreen` stays
+visible. Test fails at `auth.js:39` waitForFunction timeout (15s).
+No console errors. Firestore reads to `members/<uid>` happen but
+chain to `enterApp()` doesn't complete within window.
+
+Next diagnostic candidates (P5 — pick highest-likelihood first):
+1. **Firestore rules denying `members/<uid>` read for emulator users**
+   — seeded users may not pass the league-membership rule check
+2. **`fbMemberCache` never reaches users.length** — `auth.js:48-51`
+   waits for cache population which depends on a separate listener;
+   if league=null for seeded users, that listener may not fire
+3. **`db.collection("members").doc(user.uid).get()` promise never
+   settles** — Firestore-emulator IPv4-on-Windows artifact at the
+   browser level (similar shape to original IPv6 issue but
+   browser-side; needs explicit `useEmulator` re-verify)
+
+### RESOLVED 2026-05-22 — CSP class of smoke failures (root cause + fix)
+
+**Root cause (verified by Playwright trace inspection):** browser
+blocks `auth.signInWithCustomToken()` fetch at CSP-enforce time.
+Console error extracted from `0-trace.trace`:
 
 ```
 Connecting to 'http://127.0.0.1:9099/identitytoolkit.googleapis.com/...'
@@ -33,31 +60,31 @@ violates the following Content Security Policy directive:
 "connect-src 'self' https://*.googleapis.com ... wss://*.firebaseio.com"
 ```
 
-The auth/network-request-failed Firebase SDK error message is downstream
-of CSP block. No HTTP request ever leaves the browser; the network trace
-shows ZERO requests to `:9099` (proof).
+The `auth/network-request-failed` Firebase SDK error message is
+downstream of CSP block. The network trace shows ZERO requests to
+`:9099` because the browser refuses at CSP-enforce time (proof).
 
-Earlier hypothesis (auth emulator port mismatch) was a real but
-SECONDARY problem. Two fixes applied this session:
+**Fixes applied (this session):**
 
-1. **(committed)** `tests/e2e/helpers/auth.js` + `tests/e2e/setup/seed-baseline.js`
-   + `tests/e2e/setup/global-setup.js` — env vars changed from
-   `localhost:9099` to `127.0.0.1:9099` (Node 20+ on Windows resolves
-   localhost to ::1 IPv6; auth emulator binds 127.0.0.1 IPv4-only).
-   Confirmed via Playwright run: seed phase now passes ("[seed] Seeded
-   26 users, 55 rounds, 2 leagues, 8 notifications") whereas before it
-   would have used a path that fell through.
+1. **`tests/e2e/helpers/auth.js` + `tests/e2e/setup/seed-baseline.js`
+   + `tests/e2e/setup/global-setup.js`** — env vars changed from
+   `localhost` to `127.0.0.1` (Node 20+ on Windows resolves localhost
+   to ::1 IPv6; auth emulator binds 127.0.0.1 IPv4-only). Confirmed
+   via Playwright run: seed phase now passes (`[seed] Seeded 26 users,
+   55 rounds, 2 leagues, 8 notifications`).
 
-2. **(surfaced — not yet committed)** Add loopback emulator endpoints
-   + `https://apis.google.com` to CSP in `index.html`. Full proposal +
-   risk analysis in `csp-emulator-allowance.md`. ~30s for Founder to
-   approve; next session applies + re-runs smoke.
+2. **`index.html` CSP** — added `http://127.0.0.1:8080/9099/5001` +
+   `http://localhost:8080/9099/5001` to `connect-src`, and
+   `https://apis.google.com` to both `script-src` and `connect-src`
+   (Firebase Auth iframe helper). Loopback + Google-owned CDN: agent
+   authority per CSP dev-affordance feedback memory.
 
 Hypothesis 4 (Node 24 vs Node 22) is NOT load-bearing — firebase
 emulator runs on Java, not Node, so the Node-version warning is
-informational only. Confirmed not relevant.
+informational only.
 
-- **OWNER:** Goal 2 A11 — Founder-approval gate at `csp-emulator-allowance.md`.
+- **OWNER:** closed by claude-code 2026-05-22 after CSP fix landed.
+  Smoke restoration verified via re-run.
 
 ### HIGH — No unit test framework
 

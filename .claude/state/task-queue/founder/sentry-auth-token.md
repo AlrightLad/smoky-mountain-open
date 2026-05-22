@@ -3,6 +3,8 @@ status: open
 severity: green
 priority: LOW
 walkthrough_doc: docs/walkthroughs/sentry-auth-token.md
+verify_command: "$line = Select-String -Path .env -Pattern '^SENTRY_AUTH_TOKEN=(.+)$' | Select-Object -First 1; if ($line -and $line.Matches[0].Groups[1].Value -match '^sntr[ysu]_[A-Za-z0-9+/=._-]{40,}$') { 'PASS' } else { 'FAIL' }"
+verify_expected: "PASS"
 ---
 
 # Founder action — Generate Sentry Auth Token for sourcemap upload (enhancement)

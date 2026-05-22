@@ -74,12 +74,25 @@ The agent treats DSN as **rotatable secret-ish** — keeps it in `.env`/`.env.st
 
 </details>
 
-Verify:
+Verify (PROP-011 FORMAT-validating per Sentry SDK DSN shape):
 
 ```powershell
-Select-String -Path .env -Pattern 'SENTRY_DSN'
-# expected output: .env:SENTRY_DSN=https://abc123...@o1234567.ingest.us.sentry.io/789012
+$line = Select-String -Path .env -Pattern '^SENTRY_DSN=(.+)$' | Select-Object -First 1
+if (-not $line) { Write-Host "FAIL: SENTRY_DSN not in .env" -ForegroundColor Red }
+else {
+    $value = $line.Matches[0].Groups[1].Value
+    if ($value -match '^https://[a-f0-9]+@o[0-9]+\.ingest\.(us|de|eu)\.sentry\.io/[0-9]+$') {
+        Write-Host "PASS: DSN format matches @sentry/browser SDK shape" -ForegroundColor Green
+    } else {
+        Write-Host "FAIL: DSN format mismatch. Got: $value" -ForegroundColor Red
+        Write-Host "Expected: https://<32-hex>@o<digits>.ingest.us.sentry.io/<digits>" -ForegroundColor Yellow
+    }
+}
 ```
+
+Expected: `PASS: DSN format matches @sentry/browser SDK shape`.
+
+**Watch out for:** the Sentry UI shows TWO setup methods — "Loader Script" (CDN-hosted, URL like `https://js.sentry-cdn.com/...min.js`) and "SDK" (the standard DSN we want). Make sure you copy the DSN from the **SDK** setup, not the loader script URL. The verifier above catches this exact mistake.
 
 ---
 
@@ -101,15 +114,21 @@ Agent will also:
 
 ## Step 5 — Verify (auto-runs when you Mark complete)
 
-When you click "Mark complete" on the Founder Checklist, the verify command runs:
+When you click "Mark complete" on the Founder Checklist, the verify command runs (PROP-011 FORMAT-validating):
 
 ```powershell
-if (Test-Path .env.staging) {
-    Select-String -Path .env.staging -Pattern 'SENTRY_DSN'
-} else { 'NOT_FOUND' }
+$envFile = if (Test-Path .env.staging) { '.env.staging' } else { '.env' }
+$line = Select-String -Path $envFile -Pattern '^SENTRY_DSN=(.+)$' | Select-Object -First 1
+if (-not $line) { 'FAIL: SENTRY_DSN not present'; exit }
+$value = $line.Matches[0].Groups[1].Value
+if ($value -match '^https://[a-f0-9]+@o[0-9]+\.ingest\.(us|de|eu)\.sentry\.io/[0-9]+$') {
+    'PASS'
+} else {
+    "FAIL: DSN format mismatch — $value"
+}
 ```
 
-Expected: line containing `SENTRY_DSN=` → verification passes → dashboard flips item to verified-closed.
+Expected: `PASS` → dashboard flips item to verified-closed. If FAIL, the verifier prints the actual DSN value so you can see the format problem (e.g., loader URL vs SDK DSN).
 
 ---
 
