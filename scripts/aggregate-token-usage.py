@@ -565,7 +565,15 @@ def merge_to_snapshot(real_events, estimated_events, manual_entries, session_tra
         st = session_transcript_meta
         by_day = st.get("by_day_total", {}) or {}
         weekly_real_7d = 0
-        today = datetime.now(timezone.utc).date()
+        # 2026-05-21 fix: bucket by Founder-local date (America/New_York),
+        # not UTC. At 23:00 EDT it's already 03:00 UTC of next day; bucketing
+        # by UTC would put tonight under tomorrow.
+        try:
+            from zoneinfo import ZoneInfo
+            _founder_tz = ZoneInfo("America/New_York")
+        except Exception:
+            _founder_tz = timezone.utc
+        today = datetime.now(timezone.utc).astimezone(_founder_tz).date()
         for day_str_key, total in by_day.items():
             try:
                 d = datetime.strptime(day_str_key, "%Y-%m-%d").date()

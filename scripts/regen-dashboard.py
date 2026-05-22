@@ -1625,7 +1625,15 @@ def build_dashboard_data():
                 weekly_real = int(wr)
             by_day_total = session_block.get("by_day_total") or {}
             if by_day_total:
-                today = datetime.now(timezone.utc).date()
+                # 2026-05-21 fix: bucket by Founder-local date (America/New_York).
+                # At 23:00 EDT it's already 03:00 UTC tomorrow; UTC bucketing
+                # caused tonight's tokens to land under tomorrow's label.
+                try:
+                    from zoneinfo import ZoneInfo
+                    _founder_tz = ZoneInfo("America/New_York")
+                except Exception:
+                    _founder_tz = timezone.utc
+                today = datetime.now(timezone.utc).astimezone(_founder_tz).date()
                 for offset in range(6, -1, -1):
                     iso = (today - timedelta(days=offset)).strftime("%Y-%m-%d")
                     trend_labels.append(iso[5:])

@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-05-22T02:52:12.823495+00:00",
-  "as_of": "2026-05-22T02:52:12.823495+00:00",
+  "generated_at": "2026-05-22T03:02:22.582855+00:00",
+  "as_of": "2026-05-22T03:02:22.582855+00:00",
   "_meter_status": "wired-real",
   "_meter_note": "Token meter is wired to real data via PROP-003.a sidecar (.claude/state/quota-status.json). weekly_tokens reflects the most recent meter reading. See quota_status block for org-monthly percentage + freshness.",
   "quota_status": {
     "state": "fresh",
-    "as_of": "2026-05-22T02:52:12.5764812Z",
-    "age_seconds": 0,
+    "as_of": "2026-05-22T03:02:12.5903289Z",
+    "age_seconds": 9,
     "weekly_tokens": 6108729630,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -23,33 +23,33 @@
   "ships_this_week": 14,
   "ships_trend_7d": {
     "labels": [
+      "Fri",
       "Sat",
       "Sun",
       "Mon",
       "Tue",
       "Wed",
-      "Thu",
-      "Fri"
+      "Thu"
     ],
     "values": [
       0,
       0,
       0,
-      2,
-      3,
-      9,
-      0
+      1,
+      1,
+      6,
+      6
     ]
   },
   "handoffs_trend_7d": {
     "labels": [
+      "Fri",
       "Sat",
       "Sun",
       "Mon",
       "Tue",
       "Wed",
-      "Thu",
-      "Fri"
+      "Thu"
     ],
     "values": [
       0,
@@ -63,13 +63,13 @@
   },
   "bubbles_trend_7d": {
     "labels": [
+      "Fri",
       "Sat",
       "Sun",
       "Mon",
       "Tue",
       "Wed",
-      "Thu",
-      "Fri"
+      "Thu"
     ],
     "values": [
       0,
@@ -94,13 +94,13 @@
   },
   "token_trend_7d": {
     "labels": [
+      "Fri",
       "Sat",
       "Sun",
       "Mon",
       "Tue",
       "Wed",
-      "Thu",
-      "Fri"
+      "Thu"
     ],
     "values": [
       0,
@@ -114,13 +114,13 @@
   },
   "cycle_outcomes_7d": {
     "labels": [
+      "Fri",
       "Sat",
       "Sun",
       "Mon",
       "Tue",
       "Wed",
-      "Thu",
-      "Fri"
+      "Thu"
     ],
     "datasets": [
       {
@@ -287,7 +287,7 @@
     }
   ],
   "_aggregate_counts": {
-    "events_total": 6716,
+    "events_total": 6726,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,

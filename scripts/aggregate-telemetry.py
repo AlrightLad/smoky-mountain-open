@@ -714,10 +714,20 @@ def aggregate():
 
     # 7-day per-day buckets — Founder directive 2026-05-14: was hardcoded
     # [0]*7 placeholder. Now buckets real events by their timestamp date.
-    now = datetime.now(timezone.utc)
-    today = now.date()
-    days = [(now - timedelta(days=i)).strftime("%a") for i in range(6, -1, -1)]
-    day_dates = [(now - timedelta(days=i)).date() for i in range(6, -1, -1)]
+    # 2026-05-21 fix: bucket by FOUNDER-LOCAL date (America/New_York), not UTC.
+    # Founder reported "5-22 when it is still 5-21 11pm" — at 23:00 EDT, UTC
+    # is already 03:00 of the next day. Bucketing by UTC caused tonight's
+    # events to be charted under tomorrow's label.
+    try:
+        from zoneinfo import ZoneInfo
+        FOUNDER_TZ = ZoneInfo("America/New_York")
+    except Exception:
+        FOUNDER_TZ = timezone.utc  # fallback
+    now_utc = datetime.now(timezone.utc)
+    now_local = now_utc.astimezone(FOUNDER_TZ)
+    today = now_local.date()
+    days = [(now_local - timedelta(days=i)).strftime("%a") for i in range(6, -1, -1)]
+    day_dates = [(now_local - timedelta(days=i)).date() for i in range(6, -1, -1)]
     date_to_idx = {d: i for i, d in enumerate(day_dates)}
 
     def _event_date(e):
@@ -725,7 +735,9 @@ def aggregate():
         if not ts:
             return None
         try:
-            return datetime.fromisoformat(ts.replace("Z", "+00:00")).date()
+            # Convert event UTC timestamp to Founder-local date for bucketing
+            ev_utc = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+            return ev_utc.astimezone(FOUNDER_TZ).date()
         except (ValueError, TypeError):
             return None
 
@@ -816,7 +828,7 @@ def aggregate():
         if not ts:
             continue
         try:
-            d = datetime.fromisoformat(ts.replace("Z", "+00:00")).date()
+            d = datetime.fromisoformat(ts.replace("Z", "+00:00")).astimezone(FOUNDER_TZ).date()
         except (ValueError, TypeError):
             continue
         if d in date_to_idx:
@@ -832,7 +844,7 @@ def aggregate():
         if not ts:
             continue
         try:
-            d = datetime.fromisoformat(ts.replace("Z", "+00:00")).date()
+            d = datetime.fromisoformat(ts.replace("Z", "+00:00")).astimezone(FOUNDER_TZ).date()
         except (ValueError, TypeError):
             continue
         if d in date_to_idx:
@@ -848,7 +860,7 @@ def aggregate():
         if not ts:
             continue
         try:
-            d = datetime.fromisoformat(ts.replace("Z", "+00:00")).date()
+            d = datetime.fromisoformat(ts.replace("Z", "+00:00")).astimezone(FOUNDER_TZ).date()
         except (ValueError, TypeError):
             continue
         if d in date_to_idx:
@@ -932,8 +944,8 @@ def aggregate():
     snapshot = {
         # generated_at mirrors as_of for cross-aggregator freshness audits
         # (D9 schema gap fix 2026-05-20). Same value, conventional field name.
-        "generated_at": now.isoformat(),
-        "as_of": now.isoformat(),
+        "generated_at": now_utc.isoformat(),
+        "as_of": now_utc.isoformat(),
         "_meter_status": meter_status,
         "_meter_note": meter_note,
         "quota_status": quota_status_block,
