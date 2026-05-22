@@ -1,0 +1,24 @@
+{
+  "audit": "Ship 5+8 Members audit",
+  "timestamp": "2026-05-22T18:34:33.939Z",
+  "list": {
+    "cards": 60,
+    "search": true,
+    "sortBtns": 4,
+    "inviteCta": true
+  },
+  "detail": {
+    "heroPresent": false,
+    "xpBar": false,
+    "parcoinWallet": false,
+    "statGrid": 12,
+    "tabsPresent": 0,
+    "roundCount": "5"
+  },
+  "edit": {
+    "nameInput": false,
+    "saveBtn": true,
+    "formCount": 73
+  },
+  "consoleErrors": []
+}

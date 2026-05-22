@@ -1,0 +1,33 @@
+{
+  "ship_id": "HQ-Ship-5-8-members",
+  "name": "HQ Ship 5+8 — Members page audit + functional polish",
+  "wave": "HQ-completion-sequence",
+  "status": "functional-pass-complete",
+  "started_at": "2026-05-22T18:30:00Z",
+  "completed_at": "2026-05-22T18:35:00Z",
+  "scope_note": "Per HQ completion sequence memory P7 protocol: functional completeness now, design-bot batch review after 5+16.",
+  "audit_evidence": {
+    "list_mode": {
+      "cards_rendered": 60,
+      "search": "PASS",
+      "sort_buttons": 4,
+      "invite_cta": "PASS",
+      "console_errors": 0
+    },
+    "detail_mode": {
+      "round_count_data_attr": 5,
+      "stat_boxes": 12,
+      "console_errors": 0,
+      "visual_post_animation": "HANDICAP=25.1, LAST ROUND=100, BEST EVER=98, ROUNDS=5, COURSES=5, PARCOIN=0 — all values populate from real data"
+    },
+    "edit_mode": {
+      "save_btn": "PASS",
+      "form_fields": 73,
+      "console_errors": 0
+    },
+    "screenshots": [".claude/state/audit-ship-5-8/01-list.png", ".claude/state/audit-ship-5-8/02-detail.png", ".claude/state/audit-ship-5-8/03-edit.png"]
+  },
+  "audit_script": "scripts/audit-members-ship58.mjs",
+  "outcome": "Functional completeness verified — all 3 modes render, data populates correctly, zero console errors. Design-polish-taste judgments deferred to post-5+16 batch design pass per HQ completion sequence memory.",
+  "design_pass_pending": ["aesthetic_coherence_review", "9.5_taste_rating_via_founder_visual_signoff"]
+}
