@@ -1,25 +1,7 @@
 {
     "schema_version":  1,
-    "updated_at":  "2026-05-22T19:54:45Z",
+    "updated_at":  "2026-05-22T20:06:20Z",
     "items":  {
-                  "staging-firebase-project":  {
-                                                   "status":  "verified-closed",
-                                                   "marked_at":  "2026-05-21T17:45:25Z",
-                                                   "verify_command":  "if (Test-Path .env.staging) { \u0027env-ok\u0027; firebase projects:list 2\u003e\u00261 | Select-String parbaughs-staging } else { \u0027env-staging-missing\u0027 }",
-                                                   "verify_expected":  "env-ok[\\s\\S]*parbaughs-staging",
-                                                   "verified_at":  "2026-05-21T17:45:27Z",
-                                                   "verify_output_excerpt":  "env-ok\r\n\r\n\u001b[90mΓöé\u001b[39m Parbaughs Staging    \u001b[90mΓöé\u001b[39m \u001b[36m\u001b[1mparbaughs-staging (current)\u001b[22m\u001b[39m \u001b[90mΓöé\u001b[39m 608660343453   \u001b[90mΓöé\u001b[39m \u001b[33m[Not specified]\u001b[39m      \u001b[90mΓöé\u001b[39m",
-                                                   "verification_status":  "verified-closed"
-                                               },
-                  "sentry-signup":  {
-                                        "status":  "verified-closed",
-                                        "marked_at":  "2026-05-22T17:26:05Z",
-                                        "verify_command":  "node scripts/verify-sentry-dsn.mjs",
-                                        "verify_expected":  "PASS",
-                                        "verified_at":  "2026-05-22T17:26:05Z",
-                                        "verify_output_excerpt":  "PASS",
-                                        "verification_status":  "verified-closed"
-                                    },
                   "firestore-agent-access":  {
                                                  "status":  "verified-closed",
                                                  "marked_at":  "2026-05-22T19:54:45Z",
@@ -29,6 +11,24 @@
                                                  "verify_output_excerpt":  "PASS",
                                                  "verification_status":  "verified-closed"
                                              },
+                  "staging-firebase-project":  {
+                                                   "status":  "verified-closed",
+                                                   "marked_at":  "2026-05-21T17:45:25Z",
+                                                   "verify_command":  "if (Test-Path .env.staging) { \u0027env-ok\u0027; firebase projects:list 2\u003e\u00261 | Select-String parbaughs-staging } else { \u0027env-staging-missing\u0027 }",
+                                                   "verify_expected":  "env-ok[\\s\\S]*parbaughs-staging",
+                                                   "verified_at":  "2026-05-21T17:45:27Z",
+                                                   "verify_output_excerpt":  "env-ok\r\n\r\n\u001b[90mΓöé\u001b[39m Parbaughs Staging    \u001b[90mΓöé\u001b[39m \u001b[36m\u001b[1mparbaughs-staging (current)\u001b[22m\u001b[39m \u001b[90mΓöé\u001b[39m 608660343453   \u001b[90mΓöé\u001b[39m \u001b[33m[Not specified]\u001b[39m      \u001b[90mΓöé\u001b[39m",
+                                                   "verification_status":  "verified-closed"
+                                               },
+                  "sentry-auth-token":  {
+                                            "status":  "verified-closed",
+                                            "marked_at":  "2026-05-22T17:25:51Z",
+                                            "verify_command":  "node scripts/verify-sentry-auth-token.mjs",
+                                            "verify_expected":  "PASS",
+                                            "verified_at":  "2026-05-22T17:25:52Z",
+                                            "verify_output_excerpt":  "PASS",
+                                            "verification_status":  "verified-closed"
+                                        },
                   "staging-deploy-token":  {
                                                "status":  "verified-closed",
                                                "marked_at":  "2026-05-22T19:29:57Z",
@@ -38,14 +38,23 @@
                                                "verify_output_excerpt":  "PASS",
                                                "verification_status":  "verified-closed"
                                            },
-                  "sentry-auth-token":  {
-                                            "status":  "verified-closed",
-                                            "marked_at":  "2026-05-22T17:25:51Z",
-                                            "verify_command":  "node scripts/verify-sentry-auth-token.mjs",
-                                            "verify_expected":  "PASS",
-                                            "verified_at":  "2026-05-22T17:25:52Z",
-                                            "verify_output_excerpt":  "PASS",
-                                            "verification_status":  "verified-closed"
-                                        }
+                  "sentry-signup":  {
+                                        "status":  "verified-closed",
+                                        "marked_at":  "2026-05-22T17:26:05Z",
+                                        "verify_command":  "node scripts/verify-sentry-dsn.mjs",
+                                        "verify_expected":  "PASS",
+                                        "verified_at":  "2026-05-22T17:26:05Z",
+                                        "verify_output_excerpt":  "PASS",
+                                        "verification_status":  "verified-closed"
+                                    },
+                  "agent-unblock-permissions":  {
+                                                    "status":  "verification-failed",
+                                                    "marked_at":  "2026-05-22T20:06:20Z",
+                                                    "verify_command":  "node scripts/verify-agent-unblock.mjs",
+                                                    "verify_expected":  "PASS",
+                                                    "verified_at":  "2026-05-22T20:06:21Z",
+                                                    "verify_output_excerpt":  "Γ£ô firebase deploy --only hosting --project staging",
+                                                    "verification_status":  "verification-failed"
+                                                }
               }
 }
