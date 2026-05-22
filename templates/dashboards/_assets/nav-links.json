@@ -8,6 +8,7 @@
     { "href": "proposals.html",          "label": "Proposals" },
     { "href": "amendments.html",         "label": "Amendments" },
     { "href": "main-flows.html",         "label": "Main Flows" },
+    { "href": "harness-flow.html",       "label": "Harness & Flow" },
     { "href": "design-system.html",      "label": "Design System" },
     { "href": "token-usage.html",        "label": "Tokens" },
     { "href": "sessions.html",           "label": "Sessions" },

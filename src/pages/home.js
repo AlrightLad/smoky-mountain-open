@@ -505,6 +505,15 @@ function _renderPulses(pulses) {
     h += '<div style="padding:14px 16px;background:var(--cb-chalk-2);border-left:2px solid var(--cb-brass);border-radius:6px;margin-bottom:8px">';
     h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:4px">' + escHtml(p.eyebrow) + '</div>';
     h += '<div style="font-family:var(--font-ui);font-size:13px;color:var(--cb-ink);line-height:1.5">' + escHtml(p.text) + '</div>';
+    // v8.22+ (design-pass 2026-05-22): brass progress bar when a pulse carries
+    // a numeric progress (0-100). Currently only NEXT LEVEL sets it. Bar is
+    // 4px tall, brass-faint track + brass fill, with a subtle min-width on
+    // the fill so 0% still reads as "started" rather than empty.
+    if (typeof p.progress === "number" && p.progress >= 0 && p.progress <= 100) {
+      h += '<div style="margin-top:10px;height:4px;background:var(--cb-brass-faint, rgba(212,168,87,0.18));border-radius:2px;overflow:hidden">';
+      h += '<div style="height:100%;width:' + Math.max(p.progress, 4) + '%;background:var(--cb-brass);border-radius:2px;transition:width 600ms cubic-bezier(0.25,0.4,0.25,1)"></div>';
+      h += '</div>';
+    }
     h += '</div>';
   });
   h += '</div>';

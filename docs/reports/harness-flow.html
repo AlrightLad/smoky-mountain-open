@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harness & Flow — PARBAUGHS Orchestration</title>
+    <link rel="stylesheet" href="_assets/dashboard-shell.css">
+    <style>
+        /* harness-flow.html — author 2026-05-22.
+         * Founder directive: "show how the harness and current flow and agents
+         * apart of workflow operate, as a dashboard tab... also helps the AI
+         * see a diagram of it all."
+         *
+         * Layout strategy (peer-rubric anchors):
+         * - Linear: single brass accent, generous whitespace, restraint.
+         * - Stripe: mixed-tile hierarchy — hero diagram next to small KPIs.
+         * - Sentry: severity coding (active/staged/deferred) per row.
+         */
+
+        .hf-page { max-width: 1200px; margin: 0 auto; padding: 0 var(--space-3); }
+
+        /* Hero — 3-tier authority diagram + at-a-glance counts */
+        .hf-hero {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: var(--space-4);
+            margin-bottom: var(--space-5);
+        }
+        @media (max-width: 900px) {
+            .hf-hero { grid-template-columns: 1fr; }
+        }
+        .hf-hero-diagram {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+        }
+        .hf-hero-diagram svg { width: 100%; height: auto; flex: 1; }
+        .hf-hero-side {
+            display: grid;
+            grid-template-rows: repeat(3, 1fr);
+            gap: var(--space-3);
+        }
+        .hf-stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: var(--space-3) var(--space-4);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 92px;
+        }
+        .hf-stat-card .hf-stat-eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.6875rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+        }
+        .hf-stat-card .hf-stat-value {
+            font-family: var(--font-display, var(--font-body));
+            font-weight: 600;
+            font-size: 1.75rem;
+            color: var(--text-primary);
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+        }
+        .hf-stat-card .hf-stat-sub {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-top: 4px;
+        }
+
+        /* Layer sections — Harness / Agents / Flow / Governance / Audit */
+        .hf-layer {
+            margin-bottom: var(--space-5);
+        }
+        .hf-layer-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: var(--space-3);
+            margin-bottom: var(--space-3);
+            padding-bottom: var(--space-2);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .hf-layer-title {
+            font-family: var(--font-display, var(--font-body));
+            font-weight: 600;
+            font-size: 1.375rem;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+        .hf-layer-eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.6875rem;
+            color: var(--accent-brass);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 4px;
+        }
+        .hf-layer-summary {
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
+            font-family: var(--font-mono);
+        }
+        .hf-layer-prose {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+            max-width: 64ch;
+            margin-bottom: var(--space-3);
+        }
+
+        /* Component grid — items inside a layer */
+        .hf-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-2);
+        }
+        .hf-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: var(--space-3) var(--space-4);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: border-color 180ms var(--ease-default), transform 180ms var(--ease-default);
+        }
+        .hf-card:hover {
+            border-color: rgba(212, 168, 87, 0.45);
+            transform: translateY(-1px);
+        }
+        .hf-card-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: var(--space-2);
+        }
+        .hf-card-name {
+            font-weight: 600;
+            font-size: 0.9375rem;
+            color: var(--text-primary);
+            letter-spacing: -0.005em;
+        }
+        .hf-card-meta {
+            font-family: var(--font-mono);
+            font-size: 0.6875rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .hf-card-desc {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .hf-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 4px;
+        }
+        .hf-tag {
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            color: var(--text-tertiary);
+            background: var(--bg-elevated);
+            padding: 2px 7px;
+            border-radius: 999px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        .hf-tag.is-active   { color: var(--accent-moss);   background: rgba(78, 166, 105, 0.12); }
+        .hf-tag.is-staged   { color: var(--accent-brass);  background: rgba(212, 168, 87, 0.14); }
+        .hf-tag.is-deferred { color: var(--text-tertiary); background: var(--bg-elevated); }
+        .hf-tag.is-block    { color: var(--accent-claret); background: rgba(192, 79, 79, 0.14); }
+
+        /* Flow diagram — workflow lifecycle */
+        .hf-flow-diagram {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-3);
+            overflow-x: auto;
+        }
+        .hf-flow-row {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(110px, 1fr));
+            gap: var(--space-2);
+            align-items: stretch;
+        }
+        .hf-flow-step {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: var(--space-2) 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            position: relative;
+        }
+        .hf-flow-step + .hf-flow-step::before {
+            content: "→";
+            position: absolute;
+            left: calc(var(--space-2) * -0.7);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-brass);
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .hf-flow-stepname {
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-tertiary);
+        }
+        .hf-flow-steplabel {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+        .hf-flow-stepwho {
+            font-family: var(--font-mono);
+            font-size: 0.6875rem;
+            color: var(--accent-brass);
+        }
+
+        /* Lists for governance + audit */
+        .hf-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .hf-list-item {
+            background: var(--bg-elevated);
+            border-radius: var(--radius-sm);
+            padding: 10px var(--space-3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--space-3);
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+        .hf-list-item code {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        /* Footer */
+        .hf-footer {
+            margin-top: var(--space-6);
+            padding-top: var(--space-4);
+            border-top: 1px solid var(--border-subtle);
+            color: var(--text-tertiary);
+            font-size: 0.8125rem;
+            line-height: 1.6;
+            font-family: var(--font-mono);
+        }
+        .hf-footer a { color: var(--accent-brass); text-decoration: none; }
+        .hf-footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body class="pb-app">
+    <header class="pb-page-header">
+        <nav class="pb-page-nav">
+            <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
+            <div class="pb-page-nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="app-health.html">App Health</a>
+                <a href="activity.html">Activity</a>
+                <a href="discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="proposals.html">Proposals</a>
+                <a href="amendments.html">Amendments</a>
+                <a href="main-flows.html">Main Flows</a>
+                <a href="harness-flow.html" class="is-active">Harness &amp; Flow</a>
+                <a href="design-system.html">Design System</a>
+                <a href="token-usage.html">Tokens</a>
+                <a href="sessions.html">Sessions</a>
+                <a href="founder-checklist.html">Founder Checklist</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="pb-page-main hf-page">
+        <div class="pb-page-title-row">
+            <div>
+                <h1 class="pb-page-title">Harness &amp; Flow</h1>
+                <p class="pb-page-subtitle">How the orchestration runtime is wired — the harness layer, the agents, and the flow that turns a Founder directive into a shipped feature on staging.</p>
+            </div>
+            <div class="pb-page-meta">
+                <span>updated <span id="hf-updated">2026-05-22</span></span>
+                <span>scope <code>HQ + mobile (PWA)</code></span>
+            </div>
+        </div>
+
+        <!-- =================================================================
+             HERO — 3-tier authority diagram + at-a-glance counts
+             ================================================================= -->
+        <section class="hf-hero">
+            <div class="hf-hero-diagram" aria-label="Three-tier authority diagram">
+                <div class="hf-layer-eyebrow">three-tier authority</div>
+                <h2 class="hf-layer-title" style="margin-bottom: 12px;">Founder &middot; CTO &middot; Engineer</h2>
+                <svg viewBox="0 0 600 260" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Founder authorizes scope; Claude.ai CTO plans; Claude Code Engineer executes; ships return for Founder visual sign-off.">
+                    <defs>
+                        <marker id="hf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 Z" fill="#d4a857"/>
+                        </marker>
+                    </defs>
+                    <!-- Founder node -->
+                    <rect x="20" y="100" width="160" height="60" rx="10" ry="10" fill="rgba(212,168,87,0.08)" stroke="#d4a857" stroke-width="1.5"/>
+                    <text x="100" y="125" text-anchor="middle" font-family="var(--font-mono)" font-size="10" letter-spacing="1.5" fill="#d4a857" text-transform="uppercase">FOUNDER · ZACH</text>
+                    <text x="100" y="148" text-anchor="middle" font-family="var(--font-body)" font-size="13" font-weight="600" fill="#f4f0e8">authorizes scope</text>
+
+                    <!-- CTO node -->
+                    <rect x="220" y="40" width="160" height="60" rx="10" ry="10" fill="rgba(216,208,192,0.04)" stroke="rgba(216,208,192,0.30)" stroke-width="1.2"/>
+                    <text x="300" y="65" text-anchor="middle" font-family="var(--font-mono)" font-size="10" letter-spacing="1.5" fill="rgba(216,208,192,0.70)" text-transform="uppercase">CLAUDE.AI · CTO</text>
+                    <text x="300" y="88" text-anchor="middle" font-family="var(--font-body)" font-size="13" font-weight="600" fill="#f4f0e8">plans &amp; reviews</text>
+
+                    <!-- Engineer node -->
+                    <rect x="220" y="160" width="160" height="60" rx="10" ry="10" fill="rgba(216,208,192,0.04)" stroke="rgba(216,208,192,0.30)" stroke-width="1.2"/>
+                    <text x="300" y="185" text-anchor="middle" font-family="var(--font-mono)" font-size="10" letter-spacing="1.5" fill="rgba(216,208,192,0.70)" text-transform="uppercase">CLAUDE CODE · ENGINEER</text>
+                    <text x="300" y="208" text-anchor="middle" font-family="var(--font-body)" font-size="13" font-weight="600" fill="#f4f0e8">executes &amp; tests</text>
+
+                    <!-- Staging node -->
+                    <rect x="420" y="100" width="160" height="60" rx="10" ry="10" fill="rgba(78,166,105,0.06)" stroke="rgba(78,166,105,0.45)" stroke-width="1.2"/>
+                    <text x="500" y="125" text-anchor="middle" font-family="var(--font-mono)" font-size="10" letter-spacing="1.5" fill="rgba(78,166,105,0.85)" text-transform="uppercase">STAGING</text>
+                    <text x="500" y="148" text-anchor="middle" font-family="var(--font-body)" font-size="13" font-weight="600" fill="#f4f0e8">visible to Founder</text>
+
+                    <!-- Arrows -->
+                    <line x1="180" y1="120" x2="218" y2="80"  stroke="#d4a857" stroke-width="1.5" marker-end="url(#hf-arrow)"/>
+                    <line x1="180" y1="140" x2="218" y2="180" stroke="#d4a857" stroke-width="1.5" marker-end="url(#hf-arrow)"/>
+                    <line x1="382" y1="80"  x2="382" y2="160" stroke="rgba(216,208,192,0.30)" stroke-width="1.2" stroke-dasharray="3,3"/>
+                    <line x1="382" y1="120" x2="418" y2="120" stroke="#d4a857" stroke-width="1.5" marker-end="url(#hf-arrow)"/>
+                    <path d="M 500 100 C 500 30, 100 30, 100 98" stroke="rgba(78,166,105,0.50)" stroke-width="1.2" fill="none" marker-end="url(#hf-arrow)" stroke-dasharray="4,4"/>
+                    <text x="300" y="22" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="rgba(78,166,105,0.85)" letter-spacing="0.08em">FOUNDER VISUAL SIGN-OFF</text>
+                </svg>
+            </div>
+
+            <div class="hf-hero-side">
+                <a class="hf-stat-card" href="#agents" style="text-decoration:none;">
+                    <span class="hf-stat-eyebrow">AGENTS IN NETWORK</span>
+                    <span class="hf-stat-value">14</span>
+                    <span class="hf-stat-sub">6 core + 3 specialised + 4 decision-bubble + 1 scheduled</span>
+                </a>
+                <a class="hf-stat-card" href="#harness" style="text-decoration:none;">
+                    <span class="hf-stat-eyebrow">HARNESS COMPONENTS</span>
+                    <span class="hf-stat-value">9</span>
+                    <span class="hf-stat-sub">runtime + shells + plugins + hooks + skills + memory</span>
+                </a>
+                <a class="hf-stat-card" href="#governance" style="text-decoration:none;">
+                    <span class="hf-stat-eyebrow">GOVERNANCE ARTIFACTS</span>
+                    <span class="hf-stat-value">28&nbsp;<span style="font-size:0.875rem;color:var(--text-tertiary);font-weight:400;">AMD</span> &middot; 4&nbsp;<span style="font-size:0.875rem;color:var(--text-tertiary);font-weight:400;">PROP</span></span>
+                    <span class="hf-stat-sub">amendments applied + proposals shipped</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             LAYER 1 — HARNESS
+             ================================================================= -->
+        <section class="hf-layer" id="harness">
+            <header class="hf-layer-header">
+                <div>
+                    <div class="hf-layer-eyebrow">layer 1 of 5</div>
+                    <h2 class="hf-layer-title">The harness</h2>
+                </div>
+                <span class="hf-layer-summary">9 components &middot; foundation</span>
+            </header>
+            <p class="hf-layer-prose">
+                The runtime that hosts every agent action. Claude Code CLI is the engine; PowerShell + Bash are the shells; plugins and hooks shape what tool calls are permitted to do. Memory is the cross-session substrate that lets Founder context survive context-window compaction.
+            </p>
+            <div class="hf-grid">
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Claude Code CLI</span>
+                        <span class="hf-card-meta">Opus 4.7</span>
+                    </div>
+                    <div class="hf-card-desc">Interactive agent runtime. Reads CLAUDE.md, executes tool calls, hosts skills + plugins. Available as CLI, desktop app, web (claude.ai/code), VS Code + JetBrains extensions.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">active</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">PowerShell + Bash</span>
+                        <span class="hf-card-meta">shells</span>
+                    </div>
+                    <div class="hf-card-desc">Two shells exposed to the agent. PowerShell is primary (Windows 11 host); Bash is available via the Bash tool for POSIX scripts + git operations.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">active</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Superpowers</span>
+                        <span class="hf-card-meta">plugin v5.1.0</span>
+                    </div>
+                    <div class="hf-card-desc">Methodology spine. Brainstorming &middot; writing-plans &middot; executing-plans &middot; TDD &middot; subagent-driven-development &middot; verification-before-completion &middot; receiving + requesting code-review.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">active</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">superpowers-chrome</span>
+                        <span class="hf-card-meta">plugin v2.1.0</span>
+                    </div>
+                    <div class="hf-card-desc">Chrome DevTools Protocol control. Adds CDP path for browser automation beyond Playwright MCP.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-staged">staged</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">ECC (everything-claude-code)</span>
+                        <span class="hf-card-meta">plugin v2.0.0-rc.1</span>
+                    </div>
+                    <div class="hf-card-desc">Extended skills + agents library + AgentShield security scanner. Per Phase-0 coexistence policy, AgentShield is the primary scan path (<code>npx ecc-agentshield scan</code>).</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-staged">staged</span> <span class="hf-tag">security</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">PARBAUGHS hooks</span>
+                        <span class="hf-card-meta">.claude/hooks/</span>
+                    </div>
+                    <div class="hf-card-desc">9 PreToolUse / PostToolUse hooks: lint, syntax, encoding, gate-protected, gate-assertions, version-sync, console-log, MCP health, design-quality. Husky pre-commit runs lint-staged + version-sync at the git layer.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">active</span> <span class="hf-tag is-block">blocks edits</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">PARBAUGHS skills</span>
+                        <span class="hf-card-meta">.claude/skills/</span>
+                    </div>
+                    <div class="hf-card-desc">parbaughs-audit-protocol &middot; parbaughs-critic-checklist &middot; parbaughs-cross-surface-dependency-audit &middot; parbaughs-deep-research &middot; parbaughs-caddy-notes-classifier &middot; continuation-discipline + 7 global skills (impeccable, frontend-design, theme-factory, webapp-testing, &hellip;).</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">active</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Memory system</span>
+                        <span class="hf-card-meta">~/.claude/projects/&hellip;</span>
+                    </div>
+                    <div class="hf-card-desc">File-based persistence: user / feedback / project / reference memories indexed by <code>MEMORY.md</code>. Survives context-window compaction. 22 memory rules locked.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">active</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">AMD-018 11-gate</span>
+                        <span class="hf-card-meta">authorization</span>
+                    </div>
+                    <div class="hf-card-desc">11 categories require Founder pre-authorization in <code>task-queue/founder/</code>: Cloud Functions deploy, Firestore rules, Auth config, payments, credentials, secrets, prod data, force-pushes, App Store, DNS, biometric.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">active</span> <span class="hf-tag is-block">blocks ship</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             LAYER 2 — AGENTS
+             ================================================================= -->
+        <section class="hf-layer" id="agents">
+            <header class="hf-layer-header">
+                <div>
+                    <div class="hf-layer-eyebrow">layer 2 of 5</div>
+                    <h2 class="hf-layer-title">The agent network</h2>
+                </div>
+                <span class="hf-layer-summary">14 agents &middot; 4 tiers</span>
+            </header>
+            <p class="hf-layer-prose">
+                Six agents in two layers: a sequential core (Orchestrator → Engineer → Critic) and three parallel authorities that challenge it (Flow Documenter, UI Polisher, End User). Three more activate at specific waves (Performance, Security, Data Integrity). Four decision-bubble agents fire only when a bubble opens. One scheduled listener triages bug reports.
+            </p>
+            <div class="hf-grid">
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Orchestrator</span>
+                        <span class="hf-card-meta">core &middot; sequential</span>
+                    </div>
+                    <div class="hf-card-desc">Senior coordinator. Owns the plan. Escalates to Founder only on the AMD-018 11-gate list.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">active</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Engineer</span>
+                        <span class="hf-card-meta">core &middot; sequential</span>
+                    </div>
+                    <div class="hf-card-desc">Implements ships per Ship Plan. Audit-first protocol before any code lands.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">active</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Critic</span>
+                        <span class="hf-card-meta">core &middot; sequential</span>
+                    </div>
+                    <div class="hf-card-desc">Adversarial reviewer. 12 rejection criteria. Bounces failing work back to Orchestrator or Engineer.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">active</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Flow Documenter</span>
+                        <span class="hf-card-meta">parallel</span>
+                    </div>
+                    <div class="hf-card-desc">Maintains <code>docs/reports/main-flows.html</code> + this page. Updates on every ship that changes a flow.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">active</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">UI Polisher</span>
+                        <span class="hf-card-meta">parallel &middot; in-conversation</span>
+                    </div>
+                    <div class="hf-card-desc">Per Founder directive 2026-05-22, design work is done by Claude Code directly using orchestration + competitor research, NOT via separate design-bot conversation.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">active</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">End User</span>
+                        <span class="hf-card-meta">parallel</span>
+                    </div>
+                    <div class="hf-card-desc">Adversarial member testing. Sub-agents at varying skill levels (beginner, mid-handicap, scratch, lone wolf, league commissioner).</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">active</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Performance / Load</span>
+                        <span class="hf-card-meta">specialist &middot; W2 entry</span>
+                    </div>
+                    <div class="hf-card-desc">50-concurrent-member stress at wave gates. Catches listener thrash + Firestore read-budget violations.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-deferred">W2+</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Security Auditor</span>
+                        <span class="hf-card-meta">specialist &middot; launch A</span>
+                    </div>
+                    <div class="hf-card-desc">Adversarial probing — auth bypass, rule misconfiguration, injection vectors. Default-favors over Critic when findings conflict.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-staged">launch</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Data Integrity</span>
+                        <span class="hf-card-meta">specialist &middot; W2 entry</span>
+                    </div>
+                    <div class="hf-card-desc">Reconciles cross-platform writes (HQ ↔ mobile), Parcoin escrow balances, schema validation.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-deferred">W2+</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Devil's Advocate</span>
+                        <span class="hf-card-meta">bubble &middot; fires on 4+ tally</span>
+                    </div>
+                    <div class="hf-card-desc">Argues strongest opposing case against emerging consensus. No vote of its own — forces voting agents to strengthen reasoning or change vote.</div>
+                    <div class="hf-card-tags"><span class="hf-tag">bubble-only</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Historical Pattern</span>
+                        <span class="hf-card-meta">bubble &middot; auto-fires</span>
+                    </div>
+                    <div class="hf-card-desc">Reads INFERRED_DECISIONS.md + SESSION_JOURNAL.md + archived bubbles. Surfaces relevant patterns at every bubble open before voting.</div>
+                    <div class="hf-card-tags"><span class="hf-tag">bubble-only</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Future Self</span>
+                        <span class="hf-card-meta">bubble &middot; on-call</span>
+                    </div>
+                    <div class="hf-card-desc">Projects forward — if Option A wins, what does the codebase look like 5 ships from now, at wave close, at launch?</div>
+                    <div class="hf-card-tags"><span class="hf-tag">bubble-only</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Plain English Translator</span>
+                        <span class="hf-card-meta">bubble &middot; closes bubble</span>
+                    </div>
+                    <div class="hf-card-desc">Founder-readable summary of bubble debate at close. Strips agent jargon; surfaces actual trade-offs + learnings.</div>
+                    <div class="hf-card-tags"><span class="hf-tag">bubble-only</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Bug Triage Listener</span>
+                        <span class="hf-card-meta">scheduled &middot; 12am daily</span>
+                    </div>
+                    <div class="hf-card-desc">Scans new bug reports submitted via W1.I1 member surface. Categorizes, severity-tags, attempts auto-repair within P2/P3 scope.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-deferred">after W1.I1</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             LAYER 3 — FLOW
+             ================================================================= -->
+        <section class="hf-layer" id="flow">
+            <header class="hf-layer-header">
+                <div>
+                    <div class="hf-layer-eyebrow">layer 3 of 5</div>
+                    <h2 class="hf-layer-title">The workflow</h2>
+                </div>
+                <span class="hf-layer-summary">7 stages &middot; directive to staging</span>
+            </header>
+            <p class="hf-layer-prose">
+                A Founder directive enters at the left, runs through plan → TDD → implementation → review, and exits at the right as a staging deploy ready for Founder visual sign-off. Each stage is an agent or skill; the harness logs cross-stage decisions so subsequent sessions can pick up cold.
+            </p>
+
+            <div class="hf-flow-diagram">
+                <div class="hf-flow-row">
+                    <div class="hf-flow-step">
+                        <span class="hf-flow-stepname">stage 1</span>
+                        <span class="hf-flow-steplabel">Directive</span>
+                        <span class="hf-flow-stepwho">Founder</span>
+                    </div>
+                    <div class="hf-flow-step">
+                        <span class="hf-flow-stepname">stage 2</span>
+                        <span class="hf-flow-steplabel">Plan + spec</span>
+                        <span class="hf-flow-stepwho">Orchestrator + Plan agent</span>
+                    </div>
+                    <div class="hf-flow-step">
+                        <span class="hf-flow-stepname">stage 3</span>
+                        <span class="hf-flow-steplabel">TDD red</span>
+                        <span class="hf-flow-stepwho">tdd-guide</span>
+                    </div>
+                    <div class="hf-flow-step">
+                        <span class="hf-flow-stepname">stage 4</span>
+                        <span class="hf-flow-steplabel">Implement</span>
+                        <span class="hf-flow-stepwho">Engineer</span>
+                    </div>
+                    <div class="hf-flow-step">
+                        <span class="hf-flow-stepname">stage 5</span>
+                        <span class="hf-flow-steplabel">Review</span>
+                        <span class="hf-flow-stepwho">code-reviewer + security-reviewer + Critic</span>
+                    </div>
+                    <div class="hf-flow-step">
+                        <span class="hf-flow-stepname">stage 6</span>
+                        <span class="hf-flow-steplabel">Verify + smoke</span>
+                        <span class="hf-flow-stepwho">PROP-011 verifiers + Playwright</span>
+                    </div>
+                    <div class="hf-flow-step">
+                        <span class="hf-flow-stepname">stage 7</span>
+                        <span class="hf-flow-steplabel">Push + staging</span>
+                        <span class="hf-flow-stepwho">Engineer (AMD-018 gated)</span>
+                    </div>
+                </div>
+            </div>
+
+            <p class="hf-layer-prose">
+                Two skills bracket every action: <code>outcome-vs-task</code> fires at the START (enumerate &ge;3 approaches before the first try), <code>continuation-discipline</code> fires at the STOP (only stop on one of the 7 documented stop conditions). Together they guard against doing-mode failures and false stops.
+            </p>
+        </section>
+
+        <!-- =================================================================
+             LAYER 4 — GOVERNANCE
+             ================================================================= -->
+        <section class="hf-layer" id="governance">
+            <header class="hf-layer-header">
+                <div>
+                    <div class="hf-layer-eyebrow">layer 4 of 5</div>
+                    <h2 class="hf-layer-title">The governance</h2>
+                </div>
+                <span class="hf-layer-summary">28 AMD &middot; 4 PROP shipped &middot; 9 hooks</span>
+            </header>
+            <p class="hf-layer-prose">
+                Three artifact families govern day-to-day behavior. Amendments (AMDs) codify decisions retroactively; proposals (PROPs) carry deliberate design changes through Founder approval into ship. Hooks block file edits that would violate substrate invariants.
+            </p>
+            <div class="hf-grid">
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Amendments (AMD)</span>
+                        <span class="hf-card-meta">28 applied</span>
+                    </div>
+                    <div class="hf-card-desc">Recent: AMD-027 src/core file-size budget, AMD-028 quorum tightening + 9.4 self-rating cap, AMD-026 actionable surfacing, AMD-025 ship spec standard, AMD-024 architecture AI engineer agent.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">active</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Proposals (PROP)</span>
+                        <span class="hf-card-meta">4 shipped &middot; 9 deferred</span>
+                    </div>
+                    <div class="hf-card-desc">Shipped: PROP-002 main-flows operational view, PROP-006 outcome-vs-task skill, PROP-010 design-bot role formalization, PROP-011 verify-FORMAT validation.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">shipped</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Hooks (.claude/hooks/)</span>
+                        <span class="hf-card-meta">9 hooks &middot; substrate</span>
+                    </div>
+                    <div class="hf-card-desc">5 PARBAUGHS-specific (pre-commit-lint, post-edit-syntax, gate-assertions, gate-protected, pre-commit-version-sync) + 4 ECC follow-on (encoding-hygiene, gate-bash-edit, governance-protection, console-log, design-quality, mcp-health). Husky pre-commit runs lint-staged + version-sync at git layer.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">active</span> <span class="hf-tag is-block">may block</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Verifiers (PROP-011)</span>
+                        <span class="hf-card-meta">scripts/verify-*.mjs</span>
+                    </div>
+                    <div class="hf-card-desc">FORMAT-validating, not key-presence only. Two-tier: walkthrough PowerShell + machine <code>node scripts/verify-*.mjs</code>. Match the founder-mark-complete.ps1 allowlist.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">active</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Cron (scheduled)</span>
+                        <span class="hf-card-meta">PowerShell scheduled task</span>
+                    </div>
+                    <div class="hf-card-desc">Hourly: regen-dashboards + auto-commit telemetry + watcher preflight. Provides freshness for index.html + heartbeats + activity feed.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">active</span></div>
+                </div>
+                <div class="hf-card">
+                    <div class="hf-card-head">
+                        <span class="hf-card-name">Approval pipeline</span>
+                        <span class="hf-card-meta">task-queue/founder/</span>
+                    </div>
+                    <div class="hf-card-desc">AMD-022 inter-agent task queue. Founder approves AMD-018-gated work in <code>task-queue/founder/</code> via mark-complete or by-hand authorization.</div>
+                    <div class="hf-card-tags"><span class="hf-tag is-active">active</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             LAYER 5 — AUDIT TRAIL
+             ================================================================= -->
+        <section class="hf-layer" id="audit">
+            <header class="hf-layer-header">
+                <div>
+                    <div class="hf-layer-eyebrow">layer 5 of 5</div>
+                    <h2 class="hf-layer-title">The audit trail</h2>
+                </div>
+                <span class="hf-layer-summary">memory &middot; cron &middot; retrospectives</span>
+            </header>
+            <p class="hf-layer-prose">
+                Every decision lands as a durable artifact. Memory captures cross-conversation knowledge (Founder preferences, project state). Cron telemetry timestamps every hourly action. Retrospectives close each ship with hindsight + foresight.
+            </p>
+            <ul class="hf-list">
+                <li class="hf-list-item">
+                    <span><strong>Memory index</strong> &mdash; user / feedback / project / reference memories</span>
+                    <code>~/.claude/projects/&hellip;/memory/MEMORY.md</code>
+                </li>
+                <li class="hf-list-item">
+                    <span><strong>Cron telemetry</strong> &mdash; hourly action timestamps</span>
+                    <code>.claude/state/telemetry/events/&lt;date&gt;.ndjson</code>
+                </li>
+                <li class="hf-list-item">
+                    <span><strong>Heartbeats</strong> &mdash; watcher + regen status</span>
+                    <code>.claude/state/heartbeats/</code>
+                </li>
+                <li class="hf-list-item">
+                    <span><strong>Retrospectives</strong> &mdash; per-ship 5-component closure</span>
+                    <code>.claude/state/retrospectives/</code>
+                </li>
+                <li class="hf-list-item">
+                    <span><strong>Ship progress</strong> &mdash; per-ship acceptance JSON</span>
+                    <code>.claude/state/ship-progress/&lt;ship-id&gt;.json</code>
+                </li>
+                <li class="hf-list-item">
+                    <span><strong>Discussion bubbles</strong> &mdash; decision-bubble transcripts</span>
+                    <code>.claude/state/discussion-bubbles/</code>
+                </li>
+                <li class="hf-list-item">
+                    <span><strong>Stop decisions</strong> &mdash; daily stop-condition citations</span>
+                    <code>.claude/state/stop-decisions/&lt;date&gt;.ndjson</code>
+                </li>
+            </ul>
+        </section>
+
+        <footer class="hf-footer">
+            <p>Owner: Flow Documenter agent.</p>
+            <ul class="hf-list" style="margin-top:8px">
+                <li class="hf-list-item">
+                    <span>Spec source &mdash; orchestration role + protocol docs</span>
+                    <a href="../agents/" style="color:var(--accent-brass); text-decoration:none;">docs/agents/</a>
+                </li>
+                <li class="hf-list-item">
+                    <span>Applied amendments &mdash; AMD-001 through AMD-028</span>
+                    <a href="../../.claude/state/amendments/applied/" style="color:var(--accent-brass); text-decoration:none;">amendments/applied/</a>
+                </li>
+            </ul>
+            <p style="margin-top:8px">This page diagrams what's wired today (2026-05-22). When the orchestration changes &mdash; new agent, new hook, new flow stage &mdash; update <code>docs/reports/harness-flow.html</code> with the corresponding card or row.</p>
+        </footer>
+    </main>
+    <script id="report-data" type="application/json">
+{
+  "as_of": "2026-05-22T22:30:00+00:00",
+  "git_sha": "live",
+  "page": "harness-flow",
+  "layers": 5,
+  "agents": 14,
+  "harness_components": 9,
+  "amendments_applied": 28,
+  "proposals_shipped": 4,
+  "hooks": 9,
+  "skills_global": 10,
+  "skills_parbaughs": 11,
+  "_note": "Static counts — this page is hand-maintained, not regen-driven. Update when the orchestration changes."
+}
+    </script>
+</body>
+</html>

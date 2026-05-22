@@ -55,6 +55,7 @@ const EXPECTED_NAV_LINKS = [
   'proposals.html',
   'amendments.html',
   'main-flows.html',
+  'harness-flow.html',
   'design-system.html',
   'token-usage.html',
   'sessions.html',

@@ -467,10 +467,21 @@ function _renderStatsStrip(totalRounds, handicap, bestRound, bestRoundId, isNew)
 function _generatePulses(profile, myRounds, myLevel, season) {
   var pulses = [];
 
-  // Near level-up (≤ 200 XP to next)
-  if (myLevel && myLevel.level > 1 && (myLevel.nextLevelXp - myLevel.xp) <= 200 && (myLevel.nextLevelXp - myLevel.xp) > 0) {
+  // Near level-up (≤ 200 XP to next).
+  // v8.22+ (design-pass 2026-05-22): widened to ≤ 500 XP so the progress bar
+  // shows for more members; progress field carries the % toward next level
+  // so _renderPulses can draw a brass bar (peer-anchor: Linear / Vercel
+  // always pair a numeric callout with a visual indicator).
+  if (myLevel && myLevel.level > 1 && (myLevel.nextLevelXp - myLevel.xp) <= 500 && (myLevel.nextLevelXp - myLevel.xp) > 0) {
     var xpToNext = myLevel.nextLevelXp - myLevel.xp;
-    pulses.push({ eyebrow: "NEXT LEVEL", text: xpToNext + " XP to Level " + (myLevel.level + 1) + "." });
+    var levelSpan = myLevel.nextLevelXp - (myLevel.currentLevelXp || 0);
+    var progressedInLevel = levelSpan > 0 ? (myLevel.xp - (myLevel.currentLevelXp || 0)) : 0;
+    var pct = levelSpan > 0 ? Math.max(0, Math.min(100, Math.round(100 * progressedInLevel / levelSpan))) : 0;
+    pulses.push({
+      eyebrow: "NEXT LEVEL",
+      text: xpToNext + " XP to Level " + (myLevel.level + 1) + ".",
+      progress: pct
+    });
   }
 
   // 1-2 rounds: encourage handicap threshold

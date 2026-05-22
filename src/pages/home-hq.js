@@ -170,21 +170,82 @@ function _hqHeroPullquote(ctx) {
   var indiv = rounds.filter(function(r) { return r.format !== "scramble" && r.format !== "scramble4" && (!r.holesPlayed || r.holesPlayed >= 18); });
   var eyebrow, statValue, caption;
 
+  // v8.22+ (design-pass 2026-05-22): pullquote no longer duplicates the HCP
+  // value the quartet already shows. Decision order, most-emotional first:
+  //
+  //   1. LATEST ROUND   — the most recent score + delta vs. handicap (5+ rounds)
+  //   2. RECENT FORM    — 5-round avg vs. personal best (5+ rounds)
+  //   3. WARMING UP     — rounds-this-week vs. prior week (3-4 rounds)
+  //   4. FIRST ROUNDS   — countdown to official handicap (<3 rounds)
+  //
+  // Rationale (per feedback-better-than-competitors): the editorial pullquote
+  // is the emotional anchor; restating HCP is wasted real estate when the
+  // quartet directly below shows the same number. Stripe-style: lead with a
+  // comparative annotation, not a value the reader already knows.
+
   if (indiv.length >= 5) {
     var sorted = indiv.slice().sort(function(a,b) {
       var ax = a.timestamp || (a.date ? new Date(a.date).getTime() : 0);
       var bx = b.timestamp || (b.date ? new Date(b.date).getTime() : 0);
       return bx - ax;
     });
+    var latest = sorted[0];
     var last5 = sorted.slice(0, 5);
     var avg = Math.round(last5.reduce(function(a,r){return a+(r.score||0)},0) / 5);
-    var pr = ctx.bestRound;
-    eyebrow = "RECENT FORM";
-    statValue = String(avg);
-    caption = pr != null ? "Last 5 rounds avg. Personal best is " + pr + "." : "Average across your last 5 rounds.";
+    var hcap = ctx.handicap != null ? Number(ctx.handicap) : null;
+
+    // Prefer LATEST ROUND when we have a recent score; fall back to RECENT FORM.
+    if (latest && latest.score != null) {
+      eyebrow = "LATEST ROUND";
+      statValue = String(latest.score);
+      var par = _hqRoundParTotal(latest);
+      var vsPar = latest.score - par;
+      if (vsPar < 0) {
+        caption = Math.abs(vsPar) + " under par at " + (latest.course ? _shortenCourseName(latest.course) : "the course") + ".";
+      } else if (vsPar === 0) {
+        caption = "Even par at " + (latest.course ? _shortenCourseName(latest.course) : "the course") + ".";
+      } else if (hcap != null && (latest.score - par - hcap) < -1) {
+        // Beat handicap by 2+ strokes — celebrate
+        caption = "Beat your handicap by " + Math.abs(Math.round(latest.score - par - hcap)) + ".";
+      } else {
+        caption = vsPar + " over par at " + (latest.course ? _shortenCourseName(latest.course) : "the course") + ".";
+      }
+    } else {
+      eyebrow = "RECENT FORM";
+      statValue = String(avg);
+      var pr = ctx.bestRound;
+      caption = pr != null ? "Five-round average. Personal best is " + pr + "." : "Across your last five rounds.";
+    }
+  } else if (indiv.length >= 3) {
+    // 3-4 rounds — too few for trend, but more than provisional. Show
+    // WARMING UP with rounds-this-week comparative.
+    var nowMs = Date.now();
+    var weekAgo = nowMs - 7 * 86400000;
+    var twoWeeksAgo = nowMs - 14 * 86400000;
+    var thisWeek = indiv.filter(function(r) {
+      var t = r.timestamp || (r.date ? new Date(r.date).getTime() : 0);
+      return t >= weekAgo;
+    }).length;
+    var priorWeek = indiv.filter(function(r) {
+      var t = r.timestamp || (r.date ? new Date(r.date).getTime() : 0);
+      return t >= twoWeeksAgo && t < weekAgo;
+    }).length;
+    eyebrow = "THIS WEEK";
+    statValue = String(thisWeek);
+    if (thisWeek === 0) {
+      caption = "No rounds yet this week. The ladder is waiting.";
+    } else if (priorWeek === 0) {
+      caption = "First round" + (thisWeek === 1 ? "" : "s") + " of the season.";
+    } else if (thisWeek > priorWeek) {
+      caption = "Up from " + priorWeek + " the week before. Momentum.";
+    } else if (thisWeek === priorWeek) {
+      caption = "Same pace as last week. Steady.";
+    } else {
+      caption = "Down from " + priorWeek + " last week. Hit the course.";
+    }
   } else if (indiv.length < 3) {
     var n = 3 - indiv.length;
-    eyebrow = "HANDICAP";
+    eyebrow = "FIRST ROUNDS";
     statValue = String(indiv.length);
     caption = n + " more round" + (n === 1 ? "" : "s") + " until your handicap is official.";
   } else {
@@ -239,9 +300,40 @@ function _renderStatsSnapshotQuartet(ctx) {
   var hcap = ctx.handicap != null ? Number(ctx.handicap).toFixed(1) : "—";
   var hcapDelta = "—";
   var hcapDeltaColor = "var(--cb-mute)";
-  // Lacking persisted history — surface "OFFICIAL" if we have a real handicap, else "PROVISIONAL"
-  if (ctx.handicap != null) { hcapDelta = "OFFICIAL"; hcapDeltaColor = "var(--cb-moss)"; }
-  else if (ctx.myRounds && ctx.myRounds.length) { hcapDelta = "PROVISIONAL"; hcapDeltaColor = "var(--cb-mute)"; }
+  // v8.22+ (design-pass 2026-05-22): when 5+ individual rounds exist, swap the
+  // static OFFICIAL/PROVISIONAL caption for a trend arrow comparing the last-5
+  // scoring average against the all-time scoring average. Stripe-pattern delta
+  // indicator (peer-anchor: every Stripe stat carries a comparative). Falls
+  // back to OFFICIAL/PROVISIONAL when there's not enough history.
+  var indivForTrend = (ctx.myRounds || []).filter(function(r) {
+    return r.format !== "scramble" && r.format !== "scramble4" && (!r.holesPlayed || r.holesPlayed >= 18);
+  });
+  if (indivForTrend.length >= 5) {
+    var sortedTrend = indivForTrend.slice().sort(function(a,b) {
+      var ax = a.timestamp || (a.date ? new Date(a.date).getTime() : 0);
+      var bx = b.timestamp || (b.date ? new Date(b.date).getTime() : 0);
+      return bx - ax;
+    });
+    var last5avg = sortedTrend.slice(0, 5).reduce(function(a,r){return a+(r.score||0)},0) / 5;
+    var allAvg  = sortedTrend.reduce(function(a,r){return a+(r.score||0)},0) / sortedTrend.length;
+    var diff = last5avg - allAvg; // negative = improvement (lower score is better)
+    if (diff <= -1) {
+      hcapDelta = "▼ " + Math.abs(Math.round(diff)) + " STRKS IMPROVING";
+      hcapDeltaColor = "var(--cb-moss)";
+    } else if (diff >= 1) {
+      hcapDelta = "▲ " + Math.round(diff) + " STRKS HEAVIER";
+      hcapDeltaColor = "var(--cb-warn, var(--cb-mute))";
+    } else {
+      hcapDelta = "● STEADY";
+      hcapDeltaColor = "var(--cb-mute)";
+    }
+  } else if (ctx.handicap != null) {
+    hcapDelta = "OFFICIAL";
+    hcapDeltaColor = "var(--cb-moss)";
+  } else if (ctx.myRounds && ctx.myRounds.length) {
+    hcapDelta = "PROVISIONAL";
+    hcapDeltaColor = "var(--cb-mute)";
+  }
 
   var rounds = ctx.totalRounds != null ? ctx.totalRounds : 0;
   // v8.21.0 (Ship 5+6 Phase 2 / B.31): rolling 30-day window, replaces calendar-
