@@ -17,7 +17,7 @@ var CORE_FILES = ['utils.js', 'notification-types.js', 'theme.js', 'animate.js',
 ];
 
 // Pages needed for initial render (home + settings reachable from nav)
-var IMMEDIATE_PAGES = ['home.js', 'settings.js', 'onboarding.js'];
+var IMMEDIATE_PAGES = ['home.js', 'home-hq.js', 'home-live.js', 'home-charts.js', 'home-band.js', 'home-rail-newuser.js', 'settings.js', 'onboarding.js'];
 
 // Pages loaded after initial render (deferred for faster first paint)
 var DEFERRED_PAGES = [
