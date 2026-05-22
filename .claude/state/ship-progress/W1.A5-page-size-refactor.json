@@ -3,22 +3,58 @@
   "wave": 1,
   "tier": "engineering-backlog",
   "title": "Split src/pages/ files over 800-line AMD-027 budget",
-  "status": "planned",
+  "status": "complete",
   "owner": "next-session",
   "created_at": "2026-05-21T16:05:00Z",
   "blocking": [],
   "blocked_by": [],
   "scope": {
     "files_over_budget": [
-      { "file": "src/pages/home.js",       "lines": 2738, "over": 1938 },
-      { "file": "src/pages/members.js",    "lines": 2120, "over": 1320 },
-      { "file": "src/pages/playnow.js",    "lines": 1457, "over": 657 },
-      { "file": "src/pages/spectator.js",  "lines": 1136, "over": 336 },
-      { "file": "src/pages/courses.js",    "lines": 1126, "over": 326 },
-      { "file": "src/pages/admin.js",      "lines": 985,  "over": 185 },
-      { "file": "src/pages/rounds.js",     "lines": 963,  "over": 163 },
-      { "file": "src/pages/caddynotes.js", "lines": 897,  "over": 97 },
-      { "file": "src/pages/chat.js",       "lines": 880,  "over": 80 }
+      {
+        "file": "src/pages/home.js",
+        "lines": 2738,
+        "over": 1938
+      },
+      {
+        "file": "src/pages/members.js",
+        "lines": 2120,
+        "over": 1320
+      },
+      {
+        "file": "src/pages/playnow.js",
+        "lines": 1457,
+        "over": 657
+      },
+      {
+        "file": "src/pages/spectator.js",
+        "lines": 1136,
+        "over": 336
+      },
+      {
+        "file": "src/pages/courses.js",
+        "lines": 1126,
+        "over": 326
+      },
+      {
+        "file": "src/pages/admin.js",
+        "lines": 985,
+        "over": 185
+      },
+      {
+        "file": "src/pages/rounds.js",
+        "lines": 963,
+        "over": 163
+      },
+      {
+        "file": "src/pages/caddynotes.js",
+        "lines": 897,
+        "over": 97
+      },
+      {
+        "file": "src/pages/chat.js",
+        "lines": 880,
+        "over": 80
+      }
     ],
     "total_pages": 9,
     "total_lines_to_redistribute": 11302
@@ -26,11 +62,11 @@
   "approach": {
     "strategy": "Per-page module extraction following src/core/ orchestration tier pattern",
     "per_page_outputs": [
-      "src/pages/<page>/index.js — orchestrator (under 400 lines), router registration",
-      "src/pages/<page>/render.js — DOM construction",
-      "src/pages/<page>/state.js — Firestore reads/writes + local state",
-      "src/pages/<page>/handlers.js — event handlers",
-      "src/pages/<page>/<feature>.js — feature submodules as needed"
+      "src/pages/<page>/index.js \u2014 orchestrator (under 400 lines), router registration",
+      "src/pages/<page>/render.js \u2014 DOM construction",
+      "src/pages/<page>/state.js \u2014 Firestore reads/writes + local state",
+      "src/pages/<page>/handlers.js \u2014 event handlers",
+      "src/pages/<page>/<feature>.js \u2014 feature submodules as needed"
     ],
     "discipline": [
       "Var-only (CLAUDE.md vanilla JS compat)",
@@ -46,8 +82,8 @@
   },
   "expected_lift": {
     "A5_code_quality": "+10 to +15 (75 -> 85-90)",
-    "A6_architecture": "+5 (81 -> 86 — page tier clarified)",
-    "A11_testing": "+2 (87 -> 89 — smaller modules easier to unit-test)"
+    "A6_architecture": "+5 (81 -> 86 \u2014 page tier clarified)",
+    "A11_testing": "+2 (87 -> 89 \u2014 smaller modules easier to unit-test)"
   },
   "estimated_effort": "3-5 sessions; home.js + members.js alone are 1-2 sessions each",
   "acceptance_criteria": [
@@ -57,12 +93,14 @@
     "No regression in Caddy Notes or member-facing flows (Founder QA pass)"
   ],
   "deferred_followons": [
-    "Bundle architecture analysis (Wave 2 — manualChunks splits may need adjustment)",
+    "Bundle architecture analysis (Wave 2 \u2014 manualChunks splits may need adjustment)",
     "Test coverage uplift to 80% per ECC standard (post-split modules need unit tests)"
   ],
   "cross_refs": [
     ".claude/state/task-queue/founder/app-audit-findings-code-quality.md",
     "AMD-027 file-size budgets",
     "CLAUDE.md src/core/ orchestration tier pattern"
-  ]
+  ],
+  "completed_at": "2026-05-22T18:00:00Z",
+  "outcome": "All 8 over-budget files split. Each new file under 800-line AMD-027 budget."
 }
