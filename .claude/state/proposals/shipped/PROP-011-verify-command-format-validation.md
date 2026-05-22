@@ -34,7 +34,10 @@
   "bubble_of_record": null,
   "estimate_tokens_to_apply": 1800,
   "status": "shipped",
-  "operating_status": "Convention operative immediately for any new walkthrough or verifier authored this session. Past walkthroughs amended at apply-time."
+  "operating_status": "Convention operative immediately for any new walkthrough or verifier authored this session. Past walkthroughs amended at apply-time.",
+  "shipped_at": "2026-05-22T17:41:12Z",
+  "shipped_in_commit": "32864a35",
+  "shipped_note": "Shipped 2026-05-22 (commit 32864a35) — codified verify-FORMAT discipline via docs/agents/lessons-learned/VERIFY_COMMAND_DISCIPLINE.md + canonical verifiers scripts/verify-sentry-{auth-token,dsn}.mjs. shipped_at/shipped_in_commit fields added 2026-05-22 to satisfy round-trip immutability contract § 3 rule 5 (PROPOSAL_LIFECYCLE_v8.2) — same backfill pattern as PROP-006 + PROP-010."
 }
 ---
 
