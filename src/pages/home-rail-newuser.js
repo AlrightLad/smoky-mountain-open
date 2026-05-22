@@ -243,7 +243,13 @@ function _renderGhostedStatsQuartet(ctx) {
     var sep = i > 0 ? "border-left:1px solid var(--cb-chalk-3);" : "";
     h += '<div style="flex:1;' + sep + 'padding:18px 14px;display:flex;flex-direction:column;justify-content:center;gap:6px">';
     h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">' + label + '</div>';
-    h += '<div style="font-family:var(--font-display);font-size:var(--hq-stat-number-size);font-weight:700;color:var(--cb-ink);line-height:1">—</div>';
+    // Smoke selector — match the data-stat shape from the live quartet so
+    // tests that read [data-stat="round-count"] succeed even on 0-rounds users.
+    var dataAttrs = '';
+    if (label === "ROUNDS") dataAttrs = ' data-stat="round-count" data-count="0"';
+    else if (label === "HCP") dataAttrs = ' data-stat="handicap"';
+    else if (label === "BEST") dataAttrs = ' data-stat="best-round"';
+    h += '<div class="hq-stat-strip__numeral"' + dataAttrs + ' style="font-family:var(--font-display);font-size:var(--hq-stat-number-size);font-weight:700;color:var(--cb-ink);line-height:1">—</div>';
     h += '</div>';
   });
   h += '</div>';
