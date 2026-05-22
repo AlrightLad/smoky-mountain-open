@@ -184,3 +184,10 @@
 {"timestamp":"2026-05-22T05:07:20.4975434Z","event_type":"cron.downloads-watcher.end","data":{"success":true,"exit_reason":"no-new-files","cron_source":"downloads-watcher","duration_ms":91896,"claude_invoked":false,"run_id":"e75d4c38d94b"}}
 {"timestamp":"2026-05-22T05:10:48.7168985Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"662ce11356b0","cron_source":"downloads-watcher"}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T05:10:54.276873+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T05:11:40.155124+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"timestamp":"2026-05-22T05:12:12.8605147Z","event_type":"cron.token-sidecar.end","data":{"org_monthly_pct":null,"stale_seconds":null,"estimated_tokens":0,"cron_source":"token-sidecar","duration_seconds":0,"success":true,"claude_invoked":false,"data_source":"auto-derived","run_id":"9bd2be2a9f6e","weekly_pct":null}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T05:12:16.198287+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"timestamp":"2026-05-22T05:12:20.4945182Z","event_type":"cron.downloads-watcher.end","data":{"success":true,"exit_reason":"no-new-files","cron_source":"downloads-watcher","duration_ms":91861,"claude_invoked":false,"run_id":"662ce11356b0"}}
+{"event_type": "session.team-work.summary", "timestamp": "2026-05-22T05:13:25.518379+00:00", "data": {"agent": "engineer", "ship_id": "manual-emit-20260522T051325Z", "tokens_estimated": 0, "note": "post-commit-hook"}, "agent": "engineer", "ship_id": "manual-emit-20260522T051325Z", "cron_source": "manual-session"}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T05:13:26.849125+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T05:13:36.303914+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
