@@ -820,10 +820,10 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-22T20:26:11.182583Z",
+  "generated_at": "2026-05-22T20:36:49.385803Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 85.0,
-  "overall_grade": "A-",
+  "overall_score": 84.2,
+  "overall_grade": "B+",
   "incidents_deduction": {
     "sev1": 0,
     "sev2": 1,
@@ -842,9 +842,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 92.0,
+    "pre_deduction_score": 91.2,
     "deduction": 7,
-    "post_deduction_score": 85.0
+    "post_deduction_score": 84.2
   },
   "dimensions": {
     "A1_roadmap": {
@@ -953,9 +953,9 @@
       ]
     },
     "A12_operational": {
-      "score": 75,
+      "score": 60,
       "status": "yellow",
-      "label": "pipeline=yellow · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
@@ -1000,22 +1000,15 @@
     }
   ],
   "audit_trigger": {
-    "sha": "325e3eb8",
-    "subject": "refactor(core): split router.js â€” 2918 -> 686 lines (7 sub-files)",
-    "committed_at": "2026-05-22T16:25:52-04:00",
+    "sha": "f3c9d91a",
+    "subject": "fix(smoke): add data-stat selectors to ghosted stats quartet (0-rounds users)",
+    "committed_at": "2026-05-22T16:36:30-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
-      "src/core/router-achievement.js",
-      "src/core/router-activity-feed.js",
-      "src/core/router-ai-tournament.js",
-      "src/core/router-empty-states.js",
-      "src/core/router-notifications.js",
-      "src/core/router-sharecard.js",
-      "src/core/router-sidebar.js",
-      "src/core/router.js"
+      "src/pages/home-rail-newuser.js"
     ],
-    "total_files_touched": 9
+    "total_files_touched": 1
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
