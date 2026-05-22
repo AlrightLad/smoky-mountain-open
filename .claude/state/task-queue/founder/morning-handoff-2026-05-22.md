@@ -9,6 +9,35 @@ authored_at: 2026-05-22T20:50:00Z
 
 **Session:** 2026-05-22 (extended into overnight per Founder directive).
 
+## EXTENDED MARATHON RESULTS
+
+After your "do not come back until ALL work mentioned in repo" directive,
+continued grinding through:
+
+**Polish ships closed from docs/POST_SHIP_4A_BACKLOG.md (50+ items inventoried):**
+- B.32 follow-up — promoted editorial-clean scrollbar to platform-wide `.cb-scroll` utility
+- H5 — RECENT FORM panel value font 22→32px (visual-weight anchor per CTO 2026-05-06)
+- A.8 — drawer `aria-modal` + `role=dialog` (screen-reader modal context)
+- B.40 — removed dead `_renderHQGridInner` (~40 LOC, DEPRECATED v8.15.0)
+- B.41 — renamed `_firstName` → `_displayName` (function name now matches behavior)
+- A.3 — extracted spectator inline `placeholderStyle` to `.sphud-section` class
+
+**Ship-progress items advanced partial→complete:**
+- W1.S1 Design system codification — Sunlight Mode toggle wired per CLUBHOUSE_SPEC §6.2 (manual toggle in Settings, NOT prefers-color-scheme auto). 5/7 PASS, 2/7 DEFERRED.
+- W1.I4 Staging environment scaffolding — all 4 acceptance now PASS.
+
+**Still deferred (with reasoning per memory rules):**
+- W1.S3 Members directory — blocked on Wave 4 identity (W4.I1-I5)
+- W1.S14 Critical Feature Registry — needs Founder synchronous presence
+- M5 Mobile Feed — image-upload pipeline (W1.I1 follow-on)
+- M6 Mobile More — TestFlight enrollment
+- data.js IIFE refactor — closure restructure needs separate ship
+- A.7 handicap chart memoization — stale-data risk needs careful diagnosis
+- CLUBHOUSE_SPEC 1:1 fidelity — multi-pass spec awaiting Founder ratification
+- Most remaining backlog items in POST_SHIP_4A_BACKLOG.md — depend on post-5+16 HQ holistic polish ship + design-bot pass per P7 protocol
+
+
+
 **Staging URL (review here):** https://parbaughs-staging.web.app
 (seeded with 26 members, 2 leagues, 55 rounds — sign in with any prod
 account; the staging URL serves the latest CODE applied to your
