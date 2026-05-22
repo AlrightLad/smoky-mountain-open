@@ -349,7 +349,15 @@ function _renderStatsSnapshotQuartet(ctx) {
     h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase">' + escHtml(c.label) + '</div>';
     // Ship 5 Gate 2 (v8.15.1) — extracted to .hq-stat-strip__numeral so the
     // 'opsz' 60 axis declaration lives in CSS (memory P9 axis discipline).
-    h += '<div class="hq-stat-strip__numeral">' + escHtml(c.value) + '</div>';
+    // Smoke selector — `data-stat="round-count"` lets Playwright assert the
+    // visible round count on home (tests/e2e/flows/01-all-users-baseline).
+    // Same pattern as members-detail.js. Cell labels match the cells array
+    // above: HCP / ROUNDS / BEST / STREAK.
+    var cellDataAttrs = '';
+    if (c.label === "ROUNDS") cellDataAttrs = ' data-stat="round-count" data-count="' + escHtml(c.value) + '"';
+    else if (c.label === "HCP") cellDataAttrs = ' data-stat="handicap"';
+    else if (c.label === "BEST") cellDataAttrs = ' data-stat="best-round"';
+    h += '<div class="hq-stat-strip__numeral"' + cellDataAttrs + '>' + escHtml(c.value) + '</div>';
     if (c.caption) h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:600;letter-spacing:1.2px;color:' + c.captionColor + ';text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(c.caption) + '</div>';
     h += '</div>';
   });

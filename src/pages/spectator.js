@@ -758,16 +758,8 @@ function _triggerFinalModeVariant(doc) {
   }
 }
 
-// Attach to PB namespace for round.js consumption.
-// generateShotEntry exposed for in-house Gate 6 reuse via _handleSpectatorEmission
-// (and remains exposed for any future gate that needs editorial entry generation).
-// attachListener / detachListener are the public Gate 6 lifecycle hooks called
-// from round.js dispatch and router.js Router.go interception + beforeunload.
-if (typeof PB !== "undefined") {
-  PB.spectator = {
-    renderHUDShell: _renderSpectatorHUDShell,
-    generateShotEntry: generateShotEntry,
-    attachListener: _attachSpectatorListener,
-    detachListener: _detachSpectatorListener
-  };
-}
+// PB.spectator namespace is now wired in spectator-stream.js (which loads
+// after spectator.js + has access to all 4 functions). Moved per W1.A5
+// split — _attachSpectatorListener / _detachSpectatorListener were
+// extracted to spectator-stream.js, and binding them in this file before
+// spectator-stream.js executes threw ReferenceError at load.

@@ -366,3 +366,15 @@ function _applyChrome(key) {
   }
 }
 
+// Attach to PB namespace for round.js consumption.
+// Moved here from spectator.js per W1.A5 split — this file loads after
+// spectator.js and has access to all 4 functions referenced.
+if (typeof PB !== "undefined") {
+  PB.spectator = {
+    renderHUDShell: _renderSpectatorHUDShell,
+    generateShotEntry: generateShotEntry,
+    attachListener: _attachSpectatorListener,
+    detachListener: _detachSpectatorListener
+  };
+}
+
