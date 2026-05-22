@@ -77,6 +77,24 @@ function renderRoundsList() {
 
     historyItems.sort(function(a,b){ return (b.ts||0) - (a.ts||0); });
 
+    // v8.22+ (design-pass 2026-05-22): compute viewer's personal-best score
+    // so the PR star can render inline on the matching round. Filters out
+    // scrambles + partial-hole rounds since those don't count for
+    // handicap/PR per existing handicap.js rules. Uses `myRounds`
+    // (already filtered to player === myId / myLocal at line 37) — not the
+    // league-wide `rounds` — so PR carries personal semantic.
+    var prScore = null;
+    var prRoundId = null;
+    myRounds.forEach(function(r) {
+      if (r.format === "scramble" || r.format === "scramble4") return;
+      if (r.holesPlayed && r.holesPlayed < 18) return;
+      if (!r.score || r.score <= 0) return;
+      if (prScore === null || r.score < prScore) {
+        prScore = r.score;
+        prRoundId = r.id;
+      }
+    });
+
     h += '<div class="section"><div class="sec-head"><span class="sec-title">Round history</span><span class="sec-link">' + rounds.length + ' total</span></div>';
     h += '<div style="max-height:500px;overflow-y:auto;-webkit-overflow-scrolling:touch">';
     historyItems.forEach(function(item) {
@@ -87,9 +105,36 @@ function renderRoundsList() {
         var histCourse = PB.getCourseByName(r.course);
         var histTee = r.tee || (histCourse ? histCourse.tee : "") || "";
         var fmtLabel = r.format && r.format !== 'stroke' ? ' · ' + r.format.charAt(0).toUpperCase() + r.format.slice(1) : "";
-        h += '<div class="card"><div class="round-card"><div class="rc-top"><div onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer;flex:1"><div class="rc-course">' + escHtml(r.course) + '</div><div class="rc-date">' + r.date + ' · ' + escHtml(r.playerName||"") + (histTee ? ' · ' + histTee : '') + (r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? ' · Back 9' : ' · Front 9') : '') + fmtLabel + '</div></div>';
-        h += '<div style="display:flex;align-items:center;gap:8px"><div class="rc-score">' + r.score + '</div>';
-        h += '<button class="btn-sm outline" style="font-size:9px;padding:4px 8px;flex-shrink:0" onclick="event.stopPropagation();showRoundShareCard(\'' + r.id + '\')">Share</button>';
+        // ±N to par delta — score minus par totals (uses holePars when present, else 72)
+        var rPar = 72;
+        if (r.holePars && r.holePars.length) {
+          var pSum = 0; for (var pi = 0; pi < r.holePars.length; pi++) { pSum += (parseInt(r.holePars[pi]) || 0); }
+          if (pSum > 0) rPar = pSum;
+        } else if (r.course && typeof PB !== "undefined" && PB.getCourseByName) {
+          var rc = PB.getCourseByName(r.course);
+          if (rc && rc.par) rPar = (r.holesPlayed && r.holesPlayed <= 9) ? Math.round(rc.par / 2) : rc.par;
+        }
+        var vsPar = (r.score && r.score > 0) ? (r.score - rPar) : null;
+        var vsParStr = "";
+        var vsParColor = "var(--cb-mute, var(--muted))";
+        if (vsPar !== null) {
+          if (vsPar < 0)      { vsParStr = vsPar + ""; vsParColor = "var(--cb-moss, var(--success, #4ea669))"; }
+          else if (vsPar === 0) { vsParStr = "E"; }
+          else                  { vsParStr = "+" + vsPar; }
+        }
+        var isPR = (r.id === prRoundId);
+
+        h += '<div class="card"><div class="round-card"><div class="rc-top"><div onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer;flex:1"><div class="rc-course">' + escHtml(r.course);
+        if (isPR) {
+          h += ' <span title="Personal best" style="display:inline-flex;align-items:center;gap:3px;font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--gold, var(--cb-brass));background:rgba(201,169,97,0.16);padding:2px 6px;border-radius:3px;vertical-align:middle">★ PR</span>';
+        }
+        h += '</div><div class="rc-date">' + r.date + ' · ' + escHtml(r.playerName||"") + (histTee ? ' · ' + histTee : '') + (r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? ' · Back 9' : ' · Front 9') : '') + fmtLabel + '</div></div>';
+        h += '<div style="display:flex;align-items:center;gap:8px"><div style="text-align:right"><div class="rc-score">' + r.score + '</div>';
+        if (vsParStr) {
+          h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;color:' + vsParColor + ';letter-spacing:0.5px;margin-top:2px;line-height:1">' + vsParStr + ' to par</div>';
+        }
+        h += '</div>';
+        h += '<button class="btn-sm outline" style="font-size:9px;padding:4px 8px;flex-shrink:0;border-color:var(--gold,var(--cb-brass));color:var(--gold,var(--cb-brass))" onclick="event.stopPropagation();showRoundShareCard(\'' + r.id + '\')">Share</button>';
         h += '</div></div>';
         if (quip) h += '<div class="rc-quip">' + quip + '</div>';
         h += '</div></div>';
