@@ -21,3 +21,5 @@
 {"event_type": "session.team-work.summary", "timestamp": "2026-05-22T02:28:44.116470+00:00", "data": {"agent": "engineer", "ship_id": "manual-emit-20260522T022844Z", "tokens_estimated": 0, "note": "post-commit-hook"}, "agent": "engineer", "ship_id": "manual-emit-20260522T022844Z", "cron_source": "manual-session"}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T02:28:45.433387+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T02:28:55.472934+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T02:29:59.547273+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T02:30:54.051575+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
