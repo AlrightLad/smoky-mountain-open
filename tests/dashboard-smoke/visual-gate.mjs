@@ -41,10 +41,12 @@ const CONTRACTS = [
     { file: 'design-system.html',       selector: '.token-row, .ds-token, .pb-page-main *', min: 5, role: 'design tokens' },
     { file: 'discussion-bubbles.html',  selector: '.db-thread, .pb-kpi-value', min: 1, role: 'threads OR KPIs' },
     { file: 'escalations.html',         selector: '.esc-row, .pb-kpi-value', min: 1, role: 'rows OR KPIs' },
-    // founder-checklist: items expected when data has open items. Strict — .fc-item only,
-    // NOT .fc-empty fallback, because Founder doesn't want to see "you're clear" if there
-    // are real open items the regen failed to render.
-    { file: 'founder-checklist.html',   selector: '.fc-item', min: 1, role: 'open checklist items (strict, NO empty-state fallback)' },
+    // founder-checklist: items expected when data has open items. The contract
+    // splits the empty-state from the regen-failed case via the JSON-data check:
+    // if data.counts.open === 0 AND .fc-empty is rendered, that's LEGITIMATE
+    // empty (Founder is clear). If counts.open > 0 but .fc-item count is 0,
+    // that's REGEN FAILURE (Founder action-required items not rendered).
+    { file: 'founder-checklist.html',   selector: '.fc-item', min: 1, role: 'open checklist items', emptyStateOk: true, emptyStateSelector: '.fc-empty', emptyStateDataCheck: 'open===0' },
     { file: 'main-flows.html',          selector: 'main img, main video, .pb-page-main *', min: 1, role: 'main-flows content' },
     { file: 'proposals.html',           selector: '.prop-row, .pb-kpi-value', min: 1, role: 'proposal rows OR KPIs' },
     // sessions: cards expected when summaries exist. Strict — .sess-card only.
@@ -88,14 +90,34 @@ for (const contract of CONTRACTS) {
         await page.screenshot({ path: shot, fullPage: false });
 
         if (count < contract.min) {
-            failures.push({
-                file: contract.file,
-                error: `expected >=${contract.min} of [${contract.selector}], found ${count}`,
-                count,
-                min: contract.min,
-                screenshot: path.relative(REPO, shot),
-                consoleErrors: consoleErrs.slice(0, 3),
-            });
+            // emptyStateOk: if the contract opts in, AND the page renders
+            // .fc-empty AND data.counts.open === 0, treat as LEGITIMATE empty.
+            // Distinguishes "Founder is clear" from "regen failed to render".
+            let legitimateEmpty = false;
+            if (contract.emptyStateOk) {
+                const hasEmptyState = await page.locator(contract.emptyStateSelector).count() > 0;
+                if (hasEmptyState) {
+                    const dataOpen = await page.evaluate(() => {
+                        const el = document.getElementById('report-data');
+                        if (!el) return null;
+                        try { return JSON.parse(el.textContent || '{}').counts?.open ?? null; }
+                        catch { return null; }
+                    });
+                    if (dataOpen === 0) legitimateEmpty = true;
+                }
+            }
+            if (legitimateEmpty) {
+                process.stdout.write(`  PASS  ${contract.file.padEnd(28)} ${count} items + legitimate empty-state (counts.open=0)\n`);
+            } else {
+                failures.push({
+                    file: contract.file,
+                    error: `expected >=${contract.min} of [${contract.selector}], found ${count}`,
+                    count,
+                    min: contract.min,
+                    screenshot: path.relative(REPO, shot),
+                    consoleErrors: consoleErrs.slice(0, 3),
+                });
+            }
         } else if (stuckLoading) {
             failures.push({
                 file: contract.file,
