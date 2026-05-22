@@ -545,7 +545,9 @@ def main():
     ]
     # Match either legacy .page-nav or canonical .pb-page-nav while migration is in progress.
     nav_re = re.compile(r'<nav class="(?:pb-)?page-nav">(.*?)</nav>', re.DOTALL)
-    active_re = re.compile(r'href="([^"]+)"[^>]*\bclass="is-active"')
+    # Match either standalone `class="is-active"` OR multi-class
+    # `class="pb-page-brand is-active"` etc.
+    active_re = re.compile(r'href="([^"]+)"[^>]*\bclass="[^"]*\bis-active\b[^"]*"')
     for page, expected_active in NAV_PAGES:
         p = REPORTS_SRC / page
         if not p.exists():
