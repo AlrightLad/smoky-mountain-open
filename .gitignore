@@ -171,3 +171,11 @@ docs/reports/sessions.html
 .claude/state/telemetry/aggregates/token-usage-snapshot.json
 .claude/state/telemetry/aggregates/.token-usage-cursor.json
 .claude/state/telemetry/events/*.ndjson
+# 2026-05-22 chronic-pulse-fix: locally-computed aggregator caches. Each regen
+# cycle rewrites these; tracking them caused 500-900 commits per file of pure
+# pulse noise. They are recomputed from source files (proposals/, amendments/,
+# escalations/, ship-progress/, telemetry/manual-quota-log.ndjson, etc.) so
+# fresh checkouts regenerate them via the cron pipeline.
+.claude/state/aggregates/*.json
+.claude/state/heartbeats/*.json
+.claude/state/heartbeat/*.log
