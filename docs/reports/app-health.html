@@ -285,7 +285,7 @@
                 <a href="proposals.html">Proposals</a>
                 <a href="amendments.html">Amendments</a>
                 <a href="main-flows.html">Main Flows</a>
-                <a href="harness-flow.html">Harness &amp; Flow</a>
+                <a href="harness-flow.html">Harness & Flow</a>
                 <a href="design-system.html">Design System</a>
                 <a href="token-usage.html">Tokens</a>
                 <a href="sessions.html">Sessions</a>
@@ -821,10 +821,10 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-22T22:02:09.333099Z",
+  "generated_at": "2026-05-22T22:23:00.976724Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 85.0,
-  "overall_grade": "A-",
+  "overall_score": 84.2,
+  "overall_grade": "B+",
   "incidents_deduction": {
     "sev1": 0,
     "sev2": 1,
@@ -843,9 +843,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 92.0,
+    "pre_deduction_score": 91.2,
     "deduction": 7,
-    "post_deduction_score": 85.0
+    "post_deduction_score": 84.2
   },
   "dimensions": {
     "A1_roadmap": {
@@ -954,13 +954,13 @@
       ]
     },
     "A12_operational": {
-      "score": 75,
+      "score": 60,
       "status": "yellow",
-      "label": "pipeline=yellow · 4 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "4 of last 10 cron watcher runs hit skip-dirty",
+          "what": "6 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -979,7 +979,7 @@
       "dimension": "A8_performance"
     },
     {
-      "what": "4 of last 10 cron watcher runs hit skip-dirty",
+      "what": "6 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -994,20 +994,24 @@
       "dimension": "A8_performance"
     },
     {
-      "what": "4 of last 10 cron watcher runs hit skip-dirty",
+      "what": "6 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "126e2244",
-    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
-    "committed_at": "2026-05-22T17:44:27-04:00",
-    "trigger": "cron",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 4
+    "sha": "10b2cff2",
+    "subject": "feat: harness-flow dashboard tab + design-pass iter1",
+    "committed_at": "2026-05-22T18:21:56-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "src/pages/home-hq.js",
+      "src/pages/home-rail-newuser.js",
+      "src/pages/home.js"
+    ],
+    "total_files_touched": 92
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
