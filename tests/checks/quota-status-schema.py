@@ -72,8 +72,11 @@ def validate(payload):
         fails.append(f"missing required keys: {sorted(missing)}")
         return fails
 
-    if payload.get("schema_version") != 1:
-        fails.append(f"schema_version must be 1, got {payload.get('schema_version')!r}")
+    # Accept v1 or v2 — v2 added optional org_monthly_* fields per PROP-004
+    # (org_monthly quota_type enum). Required-keys check above still gates
+    # the core schema; version bump is informational.
+    if payload.get("schema_version") not in (1, 2):
+        fails.append(f"schema_version must be 1 or 2, got {payload.get('schema_version')!r}")
 
     ds = payload.get("data_source")
     if ds not in ALLOWED_DATA_SOURCES:
