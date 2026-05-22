@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "written_at": "2026-05-22T17:48:00Z",
+  "written_by": "overnight-triage-cycle-P",
+  "reason": "metric-integrity-deferred",
+  "resume_after": "next-cron-fire",
+  "next_atomic_unit": "next-cycle-Critic-reviews-cadence-pattern",
+  "context_required": [
+    ".claude/state/cron/2026-05-22-overnight-run-P.md"
+  ],
+  "summary": "Cycle P (16th overnight-triage fire of UTC 2026-05-22) declined to generate a 16th near-identical journal + re-run regen-all. Substantive output is the cadence-pattern surfacing in cycle P's journal § Blockers. 15 prior commits today carry identical subject 'Overnight triage 2026-05-22 - 0 reports, 0 proposals, 0 FIQ entries graded'. Next cycle's Critic should read cycle P's journal before re-running the prompt; if the inbox state is still empty AND cadence is unchanged, next cycle should also exit non-substantively rather than add to noise.",
+  "founder_action_items": [
+    "Investigate cron cadence — 16 fires/UTC date on empty-inbox path is producing compounding journal noise",
+    "Tighten empty-inbox exit in the overnight-triage prompt (guard on last-commit-recency + dashboard-freshness)",
+    "Investigate why FIQ + bug-reports inboxes never appeared on disk (path mismatch, broken hook, or aspirational paths in directive)"
+  ]
+}
