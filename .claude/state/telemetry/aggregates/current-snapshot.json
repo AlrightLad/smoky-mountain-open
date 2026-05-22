@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-05-22T05:20:55.963022+00:00",
-  "as_of": "2026-05-22T05:20:55.963022+00:00",
+  "generated_at": "2026-05-22T05:22:21.639606+00:00",
+  "as_of": "2026-05-22T05:22:21.639606+00:00",
   "_meter_status": "wired-real",
   "_meter_note": "Token meter is wired to real data via PROP-003.a sidecar (.claude/state/quota-status.json). weekly_tokens reflects the most recent meter reading. See quota_status block for org-monthly percentage + freshness.",
   "quota_status": {
     "state": "fresh",
-    "as_of": "2026-05-22T05:17:12.7557846Z",
-    "age_seconds": 223,
+    "as_of": "2026-05-22T05:22:12.7926287Z",
+    "age_seconds": 8,
     "weekly_tokens": 4023356646,
     "weekly_cap": null,
     "weekly_pct": null,
@@ -287,7 +287,7 @@
     }
   ],
   "_aggregate_counts": {
-    "events_total": 6913,
+    "events_total": 6916,
     "cycles_started": 2,
     "cycles_paused": 2,
     "cycles_resumed": 2,
