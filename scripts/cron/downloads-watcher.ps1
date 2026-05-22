@@ -195,8 +195,23 @@ try {
         $env:GIT_COMMITTER_NAME  = "PARBAUGHS Cron"
         $env:GIT_COMMITTER_EMAIL = "cron@parbaughs.local"
         $msg = "cron(routine): auto-commit telemetry output before watcher preflight (" + (Get-Date).ToUniversalTime().ToString("o") + ")"
-        & git commit -m $msg 2>&1 | ForEach-Object { Log "  [auto-commit] $_" }
-        if ($LASTEXITCODE -ne 0) {
+
+        # 2026-05-22 fix: HEAD-lock retry. When sidecar + watcher run
+        # concurrently they race for the git ref lock and one fails with
+        # "fatal: cannot lock ref 'HEAD'". Retry with backoff (200/500/1000ms)
+        # before giving up. Single retry usually wins since the conflicting
+        # commit completes within 100ms.
+        $commitOk = $false
+        foreach ($attemptDelay in @(0, 250, 750, 1500)) {
+            if ($attemptDelay -gt 0) { Start-Sleep -Milliseconds $attemptDelay }
+            $output = & git commit -m $msg 2>&1
+            $output | ForEach-Object { Log "  [auto-commit] $_" }
+            if ($LASTEXITCODE -eq 0) { $commitOk = $true; break }
+            $errStr = ($output | Out-String)
+            if ($errStr -notmatch "cannot lock ref|index\.lock|fatal: Unable to create") { break }
+            Log "  [auto-commit] HEAD-lock contention, retrying after ${attemptDelay}ms..."
+        }
+        if (-not $commitOk) {
             Log "WARN auto-commit of routine output failed (continuing - preflight will recheck)"
         }
     }
@@ -244,7 +259,16 @@ try {
         $env:GIT_COMMITTER_NAME  = "PARBAUGHS Cron"
         $env:GIT_COMMITTER_EMAIL = "cron@parbaughs.local"
         $msg2 = "cron(routine): post-watcher-commit drift sweep (" + (Get-Date).ToUniversalTime().ToString("o") + ")"
-        & git commit -m $msg2 2>&1 | ForEach-Object { Log "  [drift-sweep] $_" }
+        # 2026-05-22 fix: same HEAD-lock retry as pre-flight auto-commit above
+        foreach ($attemptDelay in @(0, 250, 750, 1500)) {
+            if ($attemptDelay -gt 0) { Start-Sleep -Milliseconds $attemptDelay }
+            $output2 = & git commit -m $msg2 2>&1
+            $output2 | ForEach-Object { Log "  [drift-sweep] $_" }
+            if ($LASTEXITCODE -eq 0) { break }
+            $errStr2 = ($output2 | Out-String)
+            if ($errStr2 -notmatch "cannot lock ref|index\.lock|fatal: Unable to create") { break }
+            Log "  [drift-sweep] HEAD-lock contention, retrying after ${attemptDelay}ms..."
+        }
         # Don't fail the watcher if this second commit also dirties (post-commit
         # hook will keep firing); just proceed to Downloads scan.
     }

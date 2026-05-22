@@ -313,11 +313,24 @@ if [ -n "$DIRTY" ]; then
         # intermittently failed during the auto-clean window (e.g., 11/12
         # pages pass with a race-condition mid-write), causing auto-clean's
         # git commit to silently fail and leave the tree dirty.
-        GIT_AUTHOR_NAME="PARBAUGHS Dashboard Agent" \
-        GIT_AUTHOR_EMAIL="dashboard@parbaughs.local" \
-        GIT_COMMITTER_NAME="PARBAUGHS Dashboard Agent" \
-        GIT_COMMITTER_EMAIL="dashboard@parbaughs.local" \
-        git commit --no-verify -m "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)" >/dev/null 2>&1 || true
+        # 2026-05-22 fix: HEAD-lock retry. Concurrent cron tasks
+        # (sidecar + watcher + this post-commit) race for the git ref lock.
+        # On "cannot lock ref" failure, sleep + retry up to 3 times.
+        export GIT_AUTHOR_NAME="PARBAUGHS Dashboard Agent"
+        export GIT_AUTHOR_EMAIL="dashboard@parbaughs.local"
+        export GIT_COMMITTER_NAME="PARBAUGHS Dashboard Agent"
+        export GIT_COMMITTER_EMAIL="dashboard@parbaughs.local"
+        for delay in 0 0.25 0.75 1.5; do
+            if [ "$delay" != "0" ]; then sleep "$delay"; fi
+            ERR_OUT=$(git commit --no-verify -m "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)" 2>&1)
+            RC=$?
+            if [ $RC -eq 0 ]; then break; fi
+            # Only retry on lock errors; otherwise bail
+            case "$ERR_OUT" in
+                *"cannot lock ref"*|*"index.lock"*|*"Unable to create"*) ;;
+                *) break ;;
+            esac
+        done
     fi
 fi
 
