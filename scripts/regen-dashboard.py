@@ -623,7 +623,21 @@ def approvals_pipeline_status():
                     raw_last = s
                     break
             if exit_reason is None and lines:
-                exit_reason = "incomplete"
+                # 2026-05-22 fix: distinguish "mid-execution" from "errored
+                # out". If the log's START line is fresh (<90s ago) the
+                # watcher is still running — don't false-flag as errored.
+                # Only logs older than 90s without a DONE/SKIP/FAIL marker
+                # are genuinely incomplete (the process crashed mid-run).
+                from datetime import datetime as _dt, timezone as _tz, timedelta as _td
+                is_in_progress = False
+                if ts_dt is not None:
+                    try:
+                        age = _dt.now(_tz.utc) - ts_dt
+                        if age < _td(seconds=90):
+                            is_in_progress = True
+                    except (TypeError, ValueError):
+                        pass
+                exit_reason = "in-progress" if is_in_progress else "incomplete"
                 raw_last = lines[-1].strip()
             watcher_runs.append({
                 "ts_iso": ts_iso,
@@ -709,8 +723,11 @@ def approvals_pipeline_status():
     last_errored = bool(most_recent) and most_recent["exit_reason"] in (
         "error", "incomplete"
     )
+    # 2026-05-22: "in-progress" is mid-execution, not a real error — don't
+    # flag the pipeline red just because the watcher is still running.
+    last_in_progress = bool(most_recent) and most_recent["exit_reason"] == "in-progress"
 
-    fresh_success_reasons = {"applied", "no-op", "no-new-files"}
+    fresh_success_reasons = {"applied", "no-op", "no-new-files", "in-progress"}
     if most_recent is None:
         status = "missing"
         summary = "no downloads-watcher logs found"

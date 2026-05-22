@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-22T04:12:14Z",
-  "generated_at": "2026-05-22T04:12:14Z",
+  "timestamp": "2026-05-22T04:17:45Z",
+  "generated_at": "2026-05-22T04:17:45Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "red",
-  "raw_status": "red",
-  "summary": "watcher errored",
-  "as_of": "2026-05-22T04:12:11Z",
+  "status": "green",
+  "raw_status": "green",
+  "summary": "watcher no-new-files 2.0min ago",
+  "as_of": "2026-05-22T04:15:48Z",
   "stale": false,
-  "age_hours": 0.0016666666666666668,
+  "age_hours": 0.03333333333333333,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -27,13 +27,6 @@
       "name": "last-processed-decisions",
       "note": "file=decisions-canary-2026-05-20T19-05-19Z.json kind=decisions",
       "when": "2026-05-20T19:08:40.7809674Z"
-    },
-    {
-      "category": "stall",
-      "status": "incomplete",
-      "name": "2026-05-22T04-12-11Z-downloads-watcher.log",
-      "note": "[04:12:13] AUTO-COMMIT post-commit drift: 2 routine files",
-      "when": "2026-05-22T04:12:11Z"
     },
     {
       "category": "stall",
@@ -57,6 +50,6 @@
   "_meta": {
     "watcher_runs_inspected": 10,
     "consecutive_skips": 0,
-    "age_minutes": 0.1
+    "age_minutes": 2.0
   }
 }
