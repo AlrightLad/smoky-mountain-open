@@ -65,6 +65,31 @@ variant for 0-rounds users. 8/8 representative users now pass.
 - feedback-overnight-marathon (Founder asleep + continue → marathon mode)
 - feedback-credential-leak-immediate-response (P0 protocol on any leak)
 
+## ALL ROUND-TRIP CHECKS PASSING (0 failures)
+
+Per Founder directive "remember 0 failures at the end please":
+
+```
+=== PARBAUGHS v8.1 Round-Trip Test ===
+=== ALL CHECKS PASSED ===
+```
+
+Resolved 5 carry-forwards during this session:
+1. lifecycle:shipped-fields PROP-011 — backfilled metadata
+2. quota-status:schema validator — accepted v1 OR v2
+3. nav:index.html is-active — template + regex updated
+4. theme:dashboard.html raw hex — var(--name, #fallback) stripped from CSS count
+5. protected:main-flows missing sentinels — updated to NEW redesign architecture
+6. scroll-reachability — updated selector to .mf-list (new design)
+
+## App Grade
+
+- **App Health**: A- (85.0) per scripts/regen-app-health.py
+- **Security Health**: GREEN (0 CRITICAL, 0 credential leaks, 0 vuln deps)
+- **Lighthouse**: 97/100 perf on live production
+- **Smoke (representative users)**: 4/4 founding-four pass + scenarios pass
+- **Round-trip**: ALL CHECKS PASSED
+
 ## What's deferred (with reasoning)
 
 | Item | Reason | Ship plan |
