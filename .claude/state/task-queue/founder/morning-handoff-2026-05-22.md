@@ -109,8 +109,36 @@ All other items closed-verified.
 
 ## Session commit summary
 
-55+ substantive commits on `main` + all pushed. `staging` branch
-synced. Staging URL serves latest build.
+**66 substantive commits** on `main` (all pushed; staging branch
+synced). Staging URL serves latest build.
+
+**Page-size refactor totals (AMD-027 budget):**
+- src/pages/: 10 files split (caddynotes, rounds, admin, courses,
+  spectator, playnow, members, home + bonus chat, feed)
+- src/core/: 3 files split (firebase, sync, router with 7 sub-files)
+- ALL src/ files now under 800-line budget except data.js (IIFE-
+  wrapped; permanently deferred to a scoped ship with closure
+  restructure)
+
+**Visible polish iterations (iter1-5) deployed to staging:**
+1. STREAK cell empty-state copy
+2. Recent rounds dates (Today/Yesterday/Saturday)
+3. STROKE pill hidden for default rounds
+4. Weather banner compressed (50px stacked → 32px inline)
+5. Standings courses "+N more" truncation
+
+**Substrate completion:**
+- Sentry SDK wired + verified end-to-end via API
+- Lighthouse perf 97/100 on live production
+- 5 round-trip carry-forwards resolved (5 → 0 failures)
+- Security-health green after fixing 1 false-positive (cred-leak
+  scanner tripping on regex literal)
+- 8 memory rules locked
+
+**Staging access ready:**
+- Firebase Hosting deploy via `node scripts/seed-deploy-staging-hosting.mjs`
+- Firestore agent-access via scripts/.service-account.json
+- Staging Firestore seeded (26 members, 2 leagues, 55 rounds)
 
 Smoke status: testZach + testNick + testKayvan + testKiyan +
 scenario users all PASS. 0 console errors on home/feed/standings
