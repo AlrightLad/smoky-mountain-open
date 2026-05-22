@@ -58,7 +58,18 @@ Router.register("standings", function(params) {
       h += '<div><div style="font-size:14px;font-weight:600">' + s.username + '</div>';
       h += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + s.rounds + ' rds · Avg: ' + (s.avg||"—") + ' · Best: ' + (s.best||"—") + '</div>';
       if (s.courses && s.courses.length) {
-        h += '<div style="font-size:9px;color:var(--muted2);margin-top:3px;line-height:1.4">' + s.courses.join(', ') + '</div>';
+        // Polish 2026-05-22 (iter4): cap displayed courses at 4 with "+N more"
+        // overflow tail. Long lists (8+ courses for active members) were
+        // wrapping to 2-3 lines and visually flattening the rank hierarchy.
+        // Top 4 + "+N more" keeps row height predictable across ranks.
+        var courseList = s.courses;
+        var courseStr;
+        if (courseList.length > 4) {
+          courseStr = courseList.slice(0, 4).join(', ') + ' +' + (courseList.length - 4) + ' more';
+        } else {
+          courseStr = courseList.join(', ');
+        }
+        h += '<div style="font-size:9px;color:var(--muted2);margin-top:3px;line-height:1.4">' + courseStr + '</div>';
       }
       h += '</div></div>';
       h += '<div style="text-align:right"><div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--gold)" data-count="' + (s.points||0) + '">0</div>';
