@@ -1,0 +1,27 @@
+{
+  "timestamp": "2026-05-22T18:43:59.730Z",
+  "pages": [
+    {
+      "ship": "5+15",
+      "name": "onboarding",
+      "page_present": true,
+      "inner_size": 1857,
+      "h1_present": false,
+      "buttons": 2,
+      "cards": 0,
+      "errors_during_render": 0
+    },
+    {
+      "ship": "5+16",
+      "name": "caddynotes",
+      "page_present": true,
+      "inner_size": 20996,
+      "h1_present": true,
+      "buttons": 4,
+      "cards": 9,
+      "errors_during_render": 0
+    }
+  ],
+  "all_console_errors": [],
+  "all_page_errors": []
+}

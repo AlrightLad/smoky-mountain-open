@@ -1,0 +1,13 @@
+{
+  "ship_id": "HQ-Ship-5-15-onboarding",
+  "name": "HQ Ship 5+15 — onboarding audit + functional polish",
+  "wave": "HQ-completion-sequence",
+  "status": "functional-pass-complete",
+  "started_at": "2026-05-22T18:55:00Z",
+  "completed_at": "2026-05-22T19:00:00Z",
+  "audit_script": "scripts/audit-hq-final-pages.mjs",
+  "audit_report": ".claude/state/audit-hq-final-2026-05-22/report.json",
+  "audit_screenshot": ".claude/state/audit-hq-final-2026-05-22/5-15-onboarding.png",
+  "outcome": "Page renders with zero console errors. Functional completeness verified. Aesthetic/taste polish deferred to post-5+16 design batch.",
+  "design_pass_pending": ["aesthetic_coherence_review", "5+15 onboarding spec rewrite per HQ memory", "5+16 caddy notes verify per HQ memory"]
+}
