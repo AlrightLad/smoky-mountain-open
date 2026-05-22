@@ -23,3 +23,4 @@
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T02:28:55.472934+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T02:29:59.547273+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T02:30:54.051575+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T02:31:22.195155+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
