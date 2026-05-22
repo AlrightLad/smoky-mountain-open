@@ -160,3 +160,14 @@ dist/
 .claude/state/aggregates/dashboard-smoke-latest.json
 .claude/state/heartbeats/regen-all-last-pass.json
 .claude/state/heartbeats/watcher-last-run.json
+
+# 2026-05-22 (post-INC-002 chronic-pulse fix): files re-written by every cron
+# cycle / regen / post-commit. They are LOCAL caches the aggregators recompute
+# from source data. Tracking them caused 800+ commits per file of pure pulse
+# noise + "still dirty" cycles. Untracked here so the tree converges to clean.
+docs/reports/founder-checklist.html
+docs/reports/sessions.html
+.claude/state/telemetry/aggregates/current-snapshot.json
+.claude/state/telemetry/aggregates/token-usage-snapshot.json
+.claude/state/telemetry/aggregates/.token-usage-cursor.json
+.claude/state/telemetry/events/*.ndjson
