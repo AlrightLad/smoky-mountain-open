@@ -820,9 +820,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-22T17:54:06.826396Z",
+  "generated_at": "2026-05-22T17:56:19.049806Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 82.8,
+  "overall_score": 82.3,
   "overall_grade": "B+",
   "incidents_deduction": {
     "sev1": 0,
@@ -842,9 +842,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 89.8,
+    "pre_deduction_score": 89.3,
     "deduction": 7,
-    "post_deduction_score": 82.8
+    "post_deduction_score": 82.3
   },
   "dimensions": {
     "A1_roadmap": {
@@ -882,9 +882,9 @@
       "weak_points": []
     },
     "A5_code_quality": {
-      "score": 82,
+      "score": 85,
       "status": "green",
-      "label": "0 core + 6 page files over budget; missing eslint=False, knip=False, jscpd=False",
+      "label": "0 core + 5 page files over budget; missing eslint=False, knip=False, jscpd=False",
       "source": "src/core/, src/pages/, package.json",
       "weak_points": [
         {
@@ -904,7 +904,7 @@
         }
       ],
       "details": {
-        "over_budget_count": 6,
+        "over_budget_count": 5,
         "files": [
           {
             "file": "src/pages/chat.js",
@@ -929,11 +929,6 @@
           {
             "file": "src/pages/playnow.js",
             "lines": 1457,
-            "budget": 800
-          },
-          {
-            "file": "src/pages/spectator.js",
-            "lines": 1136,
             "budget": 800
           }
         ]
@@ -1005,9 +1000,9 @@
       ]
     },
     "A12_operational": {
-      "score": 75,
+      "score": 60,
       "status": "yellow",
-      "label": "pipeline=yellow · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
@@ -1052,14 +1047,14 @@
     }
   ],
   "audit_trigger": {
-    "sha": "cc058e8b",
-    "subject": "refactor(W1.A5/B4): extract courses renderCourseDetail â€” 1127 -> 790 lines",
-    "committed_at": "2026-05-22T13:53:47-04:00",
+    "sha": "f22852b1",
+    "subject": "refactor(W1.A5/B5): extract spectator stream subsystem â€” 1137 -> 773 lines",
+    "committed_at": "2026-05-22T13:56:00-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
-      "src/pages/courses-detail.js",
-      "src/pages/courses.js"
+      "src/pages/spectator-stream.js",
+      "src/pages/spectator.js"
     ],
     "total_files_touched": 3
   },
