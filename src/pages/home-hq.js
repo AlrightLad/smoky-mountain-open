@@ -233,9 +233,13 @@ function _hqHeroPullquote(ctx) {
     caption = "Your handicap sits at " + statValue + ".";
   }
 
-  var h = '<div style="background:var(--cb-chalk-2);border-left:6px solid var(--cb-brass);padding:16px 20px;border-radius:0 8px 8px 0">';
-  h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:6px">' + escHtml(eyebrow) + '</div>';
-  h += '<div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--cb-ink);line-height:1.1;margin-bottom:4px">' + escHtml(statValue) + '</div>';
+  // H5 (2026-05-22 polish) — value font bumped 22 -> 32px so the panel's
+  // headline number anchors the visual weight. Per CTO review 2026-05-06:
+  // 'should anchor visual weight as the panel's headline number'.
+  // font-variant-numeric for lining tabular figures (matches stats quartet).
+  var h = '<div style="background:var(--cb-chalk-2);border-left:6px solid var(--cb-brass);padding:18px 22px;border-radius:0 8px 8px 0">';
+  h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:8px">' + escHtml(eyebrow) + '</div>';
+  h += '<div style="font-family:var(--font-display);font-size:32px;font-weight:700;color:var(--cb-ink);line-height:1.05;margin-bottom:6px;font-variant-numeric:lining-nums tabular-nums">' + escHtml(statValue) + '</div>';
   h += '<div style="font-family:var(--font-ui);font-size:12px;color:var(--cb-charcoal);line-height:1.4">' + escHtml(caption) + '</div>';
   h += '</div>';
   return h;
