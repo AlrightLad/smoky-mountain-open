@@ -1,7 +1,16 @@
 {
     "schema_version":  1,
-    "updated_at":  "2026-05-21T17:45:25Z",
+    "updated_at":  "2026-05-22T14:57:43Z",
     "items":  {
+                  "sentry-signup":  {
+                                        "status":  "verified-closed",
+                                        "marked_at":  "2026-05-22T14:57:43Z",
+                                        "verify_command":  "if (Test-Path .env.staging) { Select-String -Path .env.staging -Pattern \u0027SENTRY_DSN\u0027 } else { \u0027NOT_FOUND\u0027 }",
+                                        "verify_expected":  "SENTRY_DSN=",
+                                        "verified_at":  "2026-05-22T14:57:44Z",
+                                        "verify_output_excerpt":  ".env.staging:8:SENTRY_DSN=https://js.sentry-cdn.com/418aee49304f37aaa503f0bda2366419.min.js",
+                                        "verification_status":  "verified-closed"
+                                    },
                   "staging-firebase-project":  {
                                                    "status":  "verified-closed",
                                                    "marked_at":  "2026-05-21T17:45:25Z",
