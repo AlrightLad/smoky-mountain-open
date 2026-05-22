@@ -820,10 +820,10 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-22T20:19:44.219104Z",
+  "generated_at": "2026-05-22T20:22:30.702606Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 85.3,
-  "overall_grade": "A-",
+  "overall_score": 84.6,
+  "overall_grade": "B+",
   "incidents_deduction": {
     "sev1": 0,
     "sev2": 1,
@@ -842,9 +842,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 92.3,
+    "pre_deduction_score": 91.6,
     "deduction": 7,
-    "post_deduction_score": 85.3
+    "post_deduction_score": 84.6
   },
   "dimensions": {
     "A1_roadmap": {
@@ -958,9 +958,9 @@
       ]
     },
     "A12_operational": {
-      "score": 90,
-      "status": "green",
-      "label": "pipeline=green · 5 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "score": 75,
+      "status": "yellow",
+      "label": "pipeline=yellow · 5 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
@@ -971,7 +971,7 @@
       ],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "no-new-files"
+        "watcher_exit_reason": "skip-dirty"
       }
     }
   },
@@ -981,6 +981,12 @@
       "where": ".claude/state/aggregates/lighthouse-scores.json",
       "what_action": "Open .lighthouseci/*.html — fix top performance failures per page",
       "dimension": "A8_performance"
+    },
+    {
+      "what": "5 of last 10 cron watcher runs hit skip-dirty",
+      "where": "scripts/cron/logs/*-downloads-watcher.log",
+      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
+      "dimension": "A12_operational"
     }
   ],
   "founder_attention": [],
@@ -990,17 +996,23 @@
       "where": ".claude/state/aggregates/lighthouse-scores.json",
       "what_action": "Open .lighthouseci/*.html — fix top performance failures per page",
       "dimension": "A8_performance"
+    },
+    {
+      "what": "5 of last 10 cron watcher runs hit skip-dirty",
+      "where": "scripts/cron/logs/*-downloads-watcher.log",
+      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
+      "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "a2801731",
-    "subject": "refactor(core): split firebase.js â€” 950 -> 755 lines (Photo system extracted)",
-    "committed_at": "2026-05-22T16:19:25-04:00",
+    "sha": "ad0fae4e",
+    "subject": "refactor(core): split sync.js â€” 928 -> 340 lines (Trip/Event attestation extracted)",
+    "committed_at": "2026-05-22T16:22:10-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
-      "src/core/firebase-photos.js",
-      "src/core/firebase.js"
+      "src/core/sync-attestation.js",
+      "src/core/sync.js"
     ],
     "total_files_touched": 3
   },
