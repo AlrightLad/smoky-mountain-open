@@ -20,49 +20,9 @@ function _renderHQHomeBanded(ctx) {
   return h;
 }
 
-// DEPRECATED v8.15.0 (Ship 5 Gate 1) — superseded by _renderHQHomeBanded above.
-// Function retained for reference until follow-on ship retires the 5-band JS-
-// branched layout entirely. Do not consume in new code paths.
-//
-// HQ three-column grid. At 1280-1439px renders lead (480) + features (400) only.
-// At ≥1440px adds the agate rail (196). Content capped at 1152px and centered.
-// Ship 1b-i: typed placeholders in each column. Ship 1b-ii fills lead + features;
-// Ship 1b-iii fills agate.
-// Inner grid — bounded width + horizontal padding now live in _renderHQHome's
-// content wrapper. This emits only the column flex container.
-function _renderHQGridInner(ctx) {
-  var band = _currentBand();
-  var h = '<div style="padding-top:32px;display:flex">';
-
-  if (band === "A") {
-    // Band A (720-959): single content column, full-width within 640px wrapper.
-    // Chart + features column dropped; activity feed promoted into lead flow.
-    h += '<div style="width:100%;min-width:0">';
-    h += _renderHQLeadColumnBandA(ctx);
-    h += '</div>';
-  } else if (band === "B") {
-    // Band B (960-1279): single 600px lead column, chart promoted into flow.
-    h += '<div style="width:600px;flex-shrink:0">';
-    h += _renderHQLeadColumnBandB(ctx);
-    h += '</div>';
-  } else {
-    // Bands C (1280-1439) and D (1440+): lead + features (+ agate at D).
-    h += '<div style="width:480px;flex-shrink:0">';
-    h += _renderHQLeadColumn(ctx);
-    h += '</div>';
-    h += '<div style="width:400px;flex-shrink:0;margin-left:32px">';
-    h += _renderHQFeaturesColumn(ctx);
-    h += '</div>';
-    if (band === "D") {
-      h += '<div style="width:196px;flex-shrink:0;margin-left:24px">';
-      h += _renderHQAgateRail(ctx);
-      h += '</div>';
-    }
-  }
-
-  h += '</div>';
-  return h;
-}
+// REMOVED 2026-05-22 (B.40) — _renderHQGridInner was DEPRECATED v8.15.0 by
+// _renderHQHomeBanded. No call sites remained; only inline comment refs.
+// Removed alongside other home.js dead code cleanup per backlog item B.40.
 
 // Empty-column placeholder. Visible during Ship 1b-i so the grid architecture is
 // inspectable before column components arrive in Ships 1b-ii and 1b-iii.
