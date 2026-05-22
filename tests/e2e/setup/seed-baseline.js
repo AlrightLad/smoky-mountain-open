@@ -4,8 +4,10 @@
 // Also called from global-setup.js before Playwright test runs.
 // Idempotent — safe to run repeatedly.
 
-process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
-process.env.FIREBASE_AUTH_EMULATOR_HOST = 'localhost:9099';
+// Use 127.0.0.1 (IPv4) not localhost — see tests/e2e/helpers/auth.js
+// for the Windows + Node 20+ IPv6 resolution bug this avoids.
+process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
+process.env.FIREBASE_AUTH_EMULATOR_HOST = '127.0.0.1:9099';
 process.env.GCLOUD_PROJECT = 'parbaughs';
 
 const admin = require('firebase-admin');
@@ -28,7 +30,7 @@ async function assertEmulator() {
     await db.collection('_e2e_ping').limit(1).get();
   } catch (e) {
     throw new Error(
-      'Firebase emulator not reachable at localhost:8080 / localhost:9099. ' +
+      'Firebase emulator not reachable at 127.0.0.1:8080 / 127.0.0.1:9099. ' +
       'Start it in another terminal: npm run emulator:start\n  (' + e.message + ')'
     );
   }

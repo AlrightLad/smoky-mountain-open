@@ -17,16 +17,47 @@ closed_reason: "agent-can-do — moved to engineering backlog per Founder 2026-0
 
 ## Open findings (Founder triage)
 
-### CRITICAL — Smoke baseline 54 failures (carries forward from Goal 1 D5)
+### CRITICAL — Smoke baseline 54 failures — ROOT CAUSE FOUND 2026-05-22
 
-- **WHAT:** `tests/e2e/flows/01-all-users-baseline.spec.js` and `tests/e2e/flows/06-notifications-v8-17-0-v-*.spec.js` all fail with `FirebaseError: Firebase: A network AuthError (such as timeout, interrupted connection or unreachable host) has occurred. (auth/network-request-failed)`.
-- **WHERE:** Test config likely in `playwright.config.ts` + `tests/e2e/_fixtures/`; emulator port config in `firebase.json`.
-- **WHAT-ACTION:** Possible root causes (run diagnostic on each):
-  1. Auth emulator port mismatch — tests expect `localhost:9099`, emulator running elsewhere
-  2. Race between Playwright test launch and emulator readiness — need `await emulator.ready()` in beforeAll
-  3. Missing `connectAuthEmulator(auth, "http://127.0.0.1:9099")` call in test fixtures
-  4. Node 24 (host) vs Node 22 (functions) mismatch — `firebase.json` requested node 22, emulator falling back to 24
-- **OWNER:** Goal 2 A11 follow-on ship.
+**Status:** primary cause identified + diagnosed; load-bearing fix surfaced
+to Founder via `csp-emulator-allowance.md` (CSP `connect-src` does NOT
+allow loopback emulator endpoints). Awaiting Founder approval.
+
+**Root cause (verified by Playwright trace inspection 2026-05-22):**
+Browser blocks the auth.signInWithCustomToken() fetch at CSP-enforce
+time. Console error (extracted from `0-trace.trace`):
+
+```
+Connecting to 'http://127.0.0.1:9099/identitytoolkit.googleapis.com/...'
+violates the following Content Security Policy directive:
+"connect-src 'self' https://*.googleapis.com ... wss://*.firebaseio.com"
+```
+
+The auth/network-request-failed Firebase SDK error message is downstream
+of CSP block. No HTTP request ever leaves the browser; the network trace
+shows ZERO requests to `:9099` (proof).
+
+Earlier hypothesis (auth emulator port mismatch) was a real but
+SECONDARY problem. Two fixes applied this session:
+
+1. **(committed)** `tests/e2e/helpers/auth.js` + `tests/e2e/setup/seed-baseline.js`
+   + `tests/e2e/setup/global-setup.js` — env vars changed from
+   `localhost:9099` to `127.0.0.1:9099` (Node 20+ on Windows resolves
+   localhost to ::1 IPv6; auth emulator binds 127.0.0.1 IPv4-only).
+   Confirmed via Playwright run: seed phase now passes ("[seed] Seeded
+   26 users, 55 rounds, 2 leagues, 8 notifications") whereas before it
+   would have used a path that fell through.
+
+2. **(surfaced — not yet committed)** Add loopback emulator endpoints
+   + `https://apis.google.com` to CSP in `index.html`. Full proposal +
+   risk analysis in `csp-emulator-allowance.md`. ~30s for Founder to
+   approve; next session applies + re-runs smoke.
+
+Hypothesis 4 (Node 24 vs Node 22) is NOT load-bearing — firebase
+emulator runs on Java, not Node, so the Node-version warning is
+informational only. Confirmed not relevant.
+
+- **OWNER:** Goal 2 A11 — Founder-approval gate at `csp-emulator-allowance.md`.
 
 ### HIGH — No unit test framework
 

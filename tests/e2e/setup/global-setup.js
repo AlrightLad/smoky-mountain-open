@@ -16,8 +16,10 @@ function ping(host, port) {
 
 module.exports = async () => {
   try {
-    await ping('localhost', 8080);
-    await ping('localhost', 9099);
+    // 127.0.0.1 not localhost — see tests/e2e/helpers/auth.js for the
+    // Windows + Node 20+ IPv6 resolution bug behind this.
+    await ping('127.0.0.1', 8080);
+    await ping('127.0.0.1', 9099);
   } catch (e) {
     console.error('\n  Firebase emulator not running.');
     console.error('  Start it in another terminal:  npm run emulator:start');

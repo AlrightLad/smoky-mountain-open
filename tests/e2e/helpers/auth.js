@@ -2,8 +2,13 @@
 // Mints a custom token against the Auth emulator via firebase-admin,
 // then injects it into the browser context using the app's compat SDK.
 
-process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
-process.env.FIREBASE_AUTH_EMULATOR_HOST = 'localhost:9099';
+// Use 127.0.0.1 (IPv4) not localhost. Node 20+ on Windows resolves
+// `localhost` to ::1 (IPv6); the Firebase Auth emulator binds 127.0.0.1
+// IPv4-only -> auth/network-request-failed across the whole smoke suite.
+// The app-side fix landed in src/core/firebase.js 2026-05-21; this is
+// the matching firebase-admin (Node) side.
+process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
+process.env.FIREBASE_AUTH_EMULATOR_HOST = '127.0.0.1:9099';
 process.env.GCLOUD_PROJECT = 'parbaughs';
 
 const admin = require('firebase-admin');
