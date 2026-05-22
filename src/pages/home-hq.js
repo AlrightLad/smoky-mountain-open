@@ -469,9 +469,32 @@ function _renderRecentRoundRow(r) {
   var diffColor = diff === null ? "var(--cb-mute)" : (diff < 0 ? "var(--cb-moss)" : (diff > 0 ? "var(--cb-claret)" : "var(--cb-mute)"));
 
   var fmt = (r.format || "stroke").toUpperCase();
-  var fmtPill = fmt === "STROKE" ? "STROKE" : fmt;
+  // STROKE is the default format; showing the pill on every row is visual
+  // noise that drowns out the non-default formats (scramble, alt-shot,
+  // best-ball) that the pill exists to highlight. Hide on stroke default.
+  var showFmtPill = fmt !== "STROKE";
+  var fmtPillLabel = fmt;
+
   var holeLabel = r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? "Back 9" : "Front 9") : "18 holes";
+
+  // Editorial date label: relative day name for recent rounds (Today /
+  // Yesterday / day-of-week within the last week), full date otherwise.
+  // Recent rounds feel "present" instead of historical when shown as
+  // "Saturday" rather than "May 22, 2026".
   var dateLabel = r.date || "";
+  if (r.date) {
+    try {
+      var roundDay = new Date(r.date + "T00:00:00");
+      var today = new Date(); today.setHours(0,0,0,0);
+      var daysAgo = Math.floor((today - roundDay) / 86400000);
+      if (daysAgo === 0) dateLabel = "Today";
+      else if (daysAgo === 1) dateLabel = "Yesterday";
+      else if (daysAgo >= 2 && daysAgo <= 6) {
+        dateLabel = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][roundDay.getDay()];
+      }
+      // older: keep r.date as-is
+    } catch (e) { /* fall back to raw r.date */ }
+  }
 
   var h = '<div onclick="Router.go(\'rounds\',{roundId:\'' + (r.id || "") + '\'})" style="height:var(--hq-recent-row-height);border-bottom:1px solid var(--cb-chalk-3);display:flex;align-items:center;gap:14px;padding:0 4px;cursor:pointer">';
   // Score block
@@ -484,8 +507,11 @@ function _renderRecentRoundRow(r) {
   h += '<div style="font-family:var(--font-ui);font-size:14px;font-weight:600;color:var(--cb-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(r.course || "Unknown") + '</div>';
   h += '<div style="font-family:var(--font-mono);font-size:10px;color:var(--cb-mute);letter-spacing:0.8px;margin-top:3px">' + escHtml(dateLabel) + ' · ' + escHtml(holeLabel) + '</div>';
   h += '</div>';
-  // Format pill
-  h += '<div style="flex-shrink:0;font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--cb-brass);background:var(--cb-chalk-2);padding:5px 9px;border-radius:var(--r-1);text-transform:uppercase">' + escHtml(fmtPill) + '</div>';
+  // Format pill — only render for non-default formats (scramble, alt-shot, etc).
+  // STROKE is the default; pill on every row washed out the call-out value.
+  if (showFmtPill) {
+    h += '<div style="flex-shrink:0;font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--cb-brass);background:var(--cb-chalk-2);padding:5px 9px;border-radius:var(--r-1);text-transform:uppercase">' + escHtml(fmtPillLabel) + '</div>';
+  }
   h += '</div>';
   return h;
 }
