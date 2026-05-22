@@ -310,10 +310,27 @@ function _renderStatsSnapshotQuartet(ctx) {
     }
   }
 
+  // STREAK cell — "current under-par streak". When streak === 0, prior copy
+  // "{rounds} LOGGED" read as if the cell measured rounds, not streaks. Empty
+  // state now shows "0" with a clearer "AT EVEN OR WORSE" caption when there's
+  // round history, or "—" + "NO STREAK YET" when there's no history at all.
   var streak = _hqStreakCount(ctx.myRounds);
-  var streakVal = streak > 0 ? String(streak) : "—";
-  var streakCaption = streak > 0 ? streak + " UNDER" : rounds + " LOGGED";
-  var streakColor = streak > 0 ? "var(--cb-moss)" : "var(--cb-mute)";
+  var streakVal;
+  var streakCaption;
+  var streakColor;
+  if (streak > 0) {
+    streakVal = String(streak);
+    streakCaption = streak + " UNDER";
+    streakColor = "var(--cb-moss)";
+  } else if (rounds > 0) {
+    streakVal = "0";
+    streakCaption = "AT EVEN OR WORSE";
+    streakColor = "var(--cb-mute)";
+  } else {
+    streakVal = "—";
+    streakCaption = "NO STREAK YET";
+    streakColor = "var(--cb-mute)";
+  }
 
   // Captions kept naturally short; CSS text-overflow:ellipsis on the caption
   // div handles overflow (e.g., long course names in BEST cell) at narrow bands.
