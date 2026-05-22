@@ -36,6 +36,24 @@ Router.register("settings", function(params) {
   h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-subtle);font-size:11px;color:var(--text-muted);line-height:1.5">The full theme picker arrives in an upcoming update. Six editorial themes — three ready, three to earn.</div>';
   h += '</div></div></div>';
 
+  // Sunlight Mode toggle — W1.S1 (CLUBHOUSE_SPEC §6.2) — manual setting,
+  // NOT prefers-color-scheme auto. Bumps contrast to AAA, removes shadows,
+  // outlines cards. Activated via <html data-theme="sunlight">. Reads/writes
+  // localStorage 'pb_sunlight' (per CLAUDE.md allowed-keys list pattern).
+  var _sunlightActive = false;
+  try { _sunlightActive = localStorage.getItem('pb_sunlight') === '1'; } catch(e) {}
+  h += '<div class="section" style="margin-top:16px">';
+  h += '<div class="sec-head"><span class="sec-title">Sunlight Mode</span></div>';
+  h += '<div class="card"><div class="card-body" style="padding:16px">';
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px">';
+  h += '<div style="flex:1;min-width:0">';
+  h += '<div style="font-size:13px;font-weight:600;color:var(--text-primary)">High-contrast outdoor mode</div>';
+  h += '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.4">Bumps contrast for glare-readable screens. Removes shadows, outlines cards. Toggle on when the sun is winning.</div>';
+  h += '</div>';
+  h += '<button type="button" id="sunlight-toggle" onclick="toggleSunlightMode()" aria-pressed="' + (_sunlightActive ? 'true' : 'false') + '" style="flex-shrink:0;background:' + (_sunlightActive ? 'var(--cb-brass)' : 'var(--cb-chalk-2)') + ';color:' + (_sunlightActive ? 'var(--cb-chalk)' : 'var(--cb-ink)') + ';border:1px solid ' + (_sunlightActive ? 'var(--cb-brass)' : 'var(--border-subtle)') + ';border-radius:var(--r-2);padding:8px 14px;font:600 11px/1 var(--font-mono);letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;min-width:64px">' + (_sunlightActive ? 'On' : 'Off') + '</button>';
+  h += '</div>';
+  h += '</div></div></div>';
+
   // ════════════════════════════════════════════════════════════════════════
   // LOCATION (v8.11.0 · Member Location ship)
   // Three states driven by currentProfile.location:
@@ -371,3 +389,60 @@ function clearLocation() {
   });
 }
 
+
+// Sunlight Mode toggle (W1.S1 / CLUBHOUSE_SPEC §6.2) — manual setting
+// for high-contrast outdoor / glare-readable use. Applies via
+// <html data-theme="sunlight">; CSS lives in src/styles/base.css.
+// Persists in localStorage 'pb_sunlight' ('1' = on, absent/0 = off).
+function toggleSunlightMode() {
+  var on = false;
+  try { on = localStorage.getItem('pb_sunlight') === '1'; } catch(e) {}
+  var next = !on;
+  try {
+    if (next) localStorage.setItem('pb_sunlight', '1');
+    else localStorage.removeItem('pb_sunlight');
+  } catch(e) {}
+  // Apply / remove the data-theme="sunlight" attribute. Preserves any
+  // existing palette theme (clubhouse / twilight_links / linen_draft)
+  // by toggling a SECONDARY data attribute layered on top.
+  var html = document.documentElement;
+  if (next) {
+    // Stash the current palette theme so we can restore it when sunlight
+    // turns off (sunlight palette is a global override, not a palette swap).
+    var current = html.getAttribute('data-theme') || 'clubhouse';
+    html.setAttribute('data-palette-theme', current);
+    html.setAttribute('data-theme', 'sunlight');
+  } else {
+    var palette = html.getAttribute('data-palette-theme') || 'clubhouse';
+    html.setAttribute('data-theme', palette);
+    html.removeAttribute('data-palette-theme');
+  }
+  if (typeof Router !== 'undefined' && Router.toast) {
+    Router.toast(next ? 'Sunlight mode on' : 'Sunlight mode off');
+  }
+  // Re-render settings page so the toggle button reflects new state
+  if (typeof Router !== 'undefined' && Router.go) {
+    Router.go('settings', {}, true);
+  }
+}
+
+// Restore Sunlight Mode preference on app boot — runs once per page
+// load via this function being called from the auth flow. Idempotent:
+// safe to call multiple times.
+function applySunlightModeFromStorage() {
+  try {
+    if (localStorage.getItem('pb_sunlight') === '1') {
+      var html = document.documentElement;
+      var current = html.getAttribute('data-theme') || 'clubhouse';
+      if (current !== 'sunlight') {
+        html.setAttribute('data-palette-theme', current);
+        html.setAttribute('data-theme', 'sunlight');
+      }
+    }
+  } catch(e) {}
+}
+
+// Auto-apply on script load so the mode persists across reloads.
+if (typeof document !== 'undefined' && document.documentElement) {
+  applySunlightModeFromStorage();
+}

@@ -2,26 +2,45 @@
   "ship_id": "W1.I4",
   "name": "Staging environment scaffolding",
   "wave": 1,
-  "status": "in-progress",
+  "status": "complete",
   "started_at": "2026-05-21T02:50:00Z",
   "ship_plan": "docs/agents/ships/W1.I4.md",
   "shipped_artifacts": [
-    ".firebaserc — multi-project config (default/production/staging)",
-    "scripts/deploy.sh — --target=staging flag",
-    "docs/deployment-environments.md — staging vs production deploy flow"
+    ".firebaserc \u2014 multi-project config (default/production/staging)",
+    "scripts/deploy.sh \u2014 --target=staging flag",
+    "docs/deployment-environments.md \u2014 staging vs production deploy flow"
   ],
   "founder_action_required": [
     {
       "file": "task-queue/founder/staging-firebase-project.md",
       "what": "Create parbaughs-staging Firebase project in console",
-      "blocked_reason": "AMD-018 gate 3 — auth provider config requires Founder console access + biometric/MFA"
+      "blocked_reason": "AMD-018 gate 3 \u2014 auth provider config requires Founder console access + biometric/MFA"
     }
   ],
   "acceptance_criteria": [
-    { "id": 1, "criterion": ".firebaserc supports multi-project switching", "status": "PASS" },
-    { "id": 2, "criterion": "deploy.sh --target=staging selects staging project", "status": "PASS" },
-    { "id": 3, "criterion": "parbaughs-staging Firebase project exists", "status": "BLOCKED — Founder console action pending" },
-    { "id": 4, "criterion": "Smoke automation deploys to staging", "status": "BLOCKED on criterion 3" }
+    {
+      "id": 1,
+      "criterion": ".firebaserc supports multi-project switching",
+      "status": "PASS"
+    },
+    {
+      "id": 2,
+      "criterion": "deploy.sh --target=staging selects staging project",
+      "status": "PASS"
+    },
+    {
+      "id": 3,
+      "criterion": "parbaughs-staging Firebase project exists",
+      "status": "PASS",
+      "evidence_2026_05_22": "Resolved this session \u2014 parbaughs-staging Firebase project ACTIVE, Hosting deployed at https://parbaughs-staging.web.app, smoke automation via scripts/seed-deploy-staging-hosting.mjs wrapper."
+    },
+    {
+      "id": 4,
+      "criterion": "Smoke automation deploys to staging",
+      "status": "PASS",
+      "evidence_2026_05_22": "Resolved this session \u2014 parbaughs-staging Firebase project ACTIVE, Hosting deployed at https://parbaughs-staging.web.app, smoke automation via scripts/seed-deploy-staging-hosting.mjs wrapper."
+    }
   ],
-  "outcome": "SCAFFOLDED — Founder action pending for project creation"
+  "outcome": "COMPLETE \u2014 staging env fully operational. Hosting deploys + Firestore seeding both working via agent.",
+  "completed_at": "2026-05-22T21:30:00Z"
 }
