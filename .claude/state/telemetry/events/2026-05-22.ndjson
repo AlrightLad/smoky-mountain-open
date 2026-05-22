@@ -77,3 +77,4 @@
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T03:45:54.175328+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T03:46:38.096665+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T03:50:54.206226+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T03:51:38.090276+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
