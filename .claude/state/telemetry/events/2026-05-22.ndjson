@@ -123,3 +123,4 @@
 {"timestamp":"2026-05-22T04:20:51.2316270Z","event_type":"cron.downloads-watcher.end","data":{"success":true,"exit_reason":"no-new-files","cron_source":"downloads-watcher","duration_ms":2661,"claude_invoked":false,"run_id":"0a5b489daaa2"}}
 {"timestamp":"2026-05-22T04:22:12.7263280Z","event_type":"cron.token-sidecar.end","data":{"org_monthly_pct":null,"stale_seconds":null,"estimated_tokens":0,"cron_source":"token-sidecar","duration_seconds":0,"success":true,"claude_invoked":false,"data_source":"auto-derived","run_id":"cd23c02a06f0","weekly_pct":null}}
 {"timestamp":"2026-05-22T04:25:48.6223797Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"5cc71eab0f3c","cron_source":"downloads-watcher"}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T04:25:53.969098+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
