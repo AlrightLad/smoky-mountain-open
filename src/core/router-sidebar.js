@@ -17,8 +17,14 @@ function _wireSidebar() {
   if (!sidebar || sidebar._pbWired) return;
   sidebar._pbWired = true;
   _bindHQDrawerSwipe();
-  // Initialize aria-hidden = true (drawer starts closed at Band A; ignored at ≥960).
+  // A.8 (2026-05-22): a11y semantics for drawer mode (Band A 720-959px).
+  // role=dialog + aria-modal=true wired so screen readers treat the
+  // sidebar as a modal focus context when open. aria-hidden gates
+  // visibility per band; aria-label provides accessible name.
   sidebar.setAttribute("aria-hidden", "true");
+  sidebar.setAttribute("role", "dialog");
+  sidebar.setAttribute("aria-modal", "false"); // becomes "true" when opened at Band A
+  sidebar.setAttribute("aria-label", "Navigation drawer");
   sidebar.addEventListener("click", function(e) {
     var item = e.target.closest(".rr-sidebar__item");
     if (!item) return;
@@ -69,6 +75,7 @@ window._openHQDrawer = function() {
   window._drawerOpen = true;
   document.body.classList.add("hq-drawer-open");
   sidebar.setAttribute("aria-hidden", "false");
+  sidebar.setAttribute("aria-modal", "true"); // A.8 — modal focus context when drawer is open
   // Build focusable list inside drawer. Skip aria-disabled (Notifications stub).
   _drawerFocusables = Array.prototype.slice.call(
     sidebar.querySelectorAll('a, button:not([aria-disabled="true"]), [tabindex]:not([tabindex="-1"])')
@@ -85,6 +92,7 @@ window._closeHQDrawer = function() {
   window._drawerOpen = false;
   document.body.classList.remove("hq-drawer-open");
   sidebar.setAttribute("aria-hidden", "true");
+  sidebar.setAttribute("aria-modal", "false"); // A.8 — release modal focus context on close
   document.removeEventListener("keydown", _drawerKeydown);
   // Restore focus to the element that opened the drawer (typically hamburger).
   if (_drawerLastFocused && typeof _drawerLastFocused.focus === "function") {
