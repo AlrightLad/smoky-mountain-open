@@ -65,7 +65,7 @@ $line = Select-String -Path .env -Pattern '^SENTRY_AUTH_TOKEN=(.+)$' |
     Select-Object -First 1
 if ($line) {
     $value = $line.Matches[0].Groups[1].Value
-    if ($value -match '^sntr[ysu]_[A-Za-z0-9+/=._-]{40,}$') {
+    if ($value -match '^sntr[a-z]{1,2}_[A-Za-z0-9+/=._-]{40,}$') {
         Write-Host "PASS: token format matches Sentry auth token shape" -ForegroundColor Green
     } else {
         Write-Host "FAIL: token format mismatch. Got: $value" -ForegroundColor Red
@@ -104,7 +104,7 @@ When you click "Mark complete" on the Founder Checklist, the verify command runs
 ```powershell
 $line = Select-String -Path .env -Pattern '^SENTRY_AUTH_TOKEN=(.+)$' |
     Select-Object -First 1
-if ($line -and $line.Matches[0].Groups[1].Value -match '^sntr[ysu]_[A-Za-z0-9+/=._-]{40,}$') {
+if ($line -and $line.Matches[0].Groups[1].Value -match '^sntr[a-z]{1,2}_[A-Za-z0-9+/=._-]{40,}$') {
     'PASS'
 } else {
     'FAIL'
@@ -135,7 +135,7 @@ build-time plugin fails with a confusing error.
 
 **"Token doesn't show up in the verify command"** — make sure you used `Add-Content` (appends a new line) and not `Set-Content` (overwrites the whole file). If `.env` was overwritten, restore from the most recent git stash or re-create from `.env.example`.
 
-**"Verify says FAIL: format mismatch"** — copy the token output from Sentry exactly. The token starts with `sntr[ysu]_` followed by ≥40 chars. If you accidentally captured a DSN (`https://…sentry.io/…`) instead of the auth token, regenerate via Step 1.
+**"Verify says FAIL: format mismatch"** — copy the token output from Sentry exactly. The token starts with `sntr<1-2 lowercase letters>_` (e.g., `sntrys_`, `sntryu_`) followed by ≥40 chars. If you accidentally captured a DSN (`https://…sentry.io/…`) instead of the auth token, regenerate via Step 1.
 
 **"Lost the token, can I see it again?"** — no. Sentry shows the token only at creation. Delete the existing one in Settings → Auth Tokens and generate a new one with the same scopes.
 

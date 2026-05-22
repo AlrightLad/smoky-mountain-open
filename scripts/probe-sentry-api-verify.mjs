@@ -22,17 +22,19 @@ if (!tokenMatch) {
     process.exit(2);
 }
 
-const dsn = dsnMatch[1].trim();
-const token = tokenMatch[1].trim();
+const dsn = dsnMatch[1].replace(/[\r\n\s]+$/, '').trim();
+const token = tokenMatch[1].replace(/[\r\n\s]+$/, '').trim();
+console.log('Token length:', token.length, '(prefix:', token.slice(0, 7) + ')');
 
 // FORMAT validate the token per PROP-011 (don't query API with a malformed token)
-if (!/^sntr[ysu]_[A-Za-z0-9+/=._-]{40,}$/.test(token)) {
+// Sentry prefix is 2 chars between 'sntr' and '_': sntrys_, sntryu_, etc.
+if (!/^sntr[a-z]{1,2}_[A-Za-z0-9+/=._-]{40,}$/.test(token)) {
     console.error('FAIL: SENTRY_AUTH_TOKEN format does not match Sentry auth-token shape');
-    console.error('       Expected: sntr[ysu]_<40+ chars>');
+    console.error('       Expected: sntr<1-2 lowercase>_<40+ chars>');
     console.error('       Got:      ' + token.slice(0, 8) + '...' + token.slice(-4));
     process.exit(2);
 }
-console.log('Token format: PASS (sntr[ysu]_ + 40+ chars)');
+console.log('Token format: PASS (sntr<prefix>_ + 40+ chars)');
 
 const dsnParts = dsn.match(/^https:\/\/([a-f0-9]+)@o(\d+)\.ingest\.(us|de|eu)\.sentry\.io\/(\d+)$/);
 if (!dsnParts) { console.error('FAIL: DSN format mismatch'); process.exit(2); }
@@ -46,7 +48,7 @@ const headers = { 'Authorization': 'Bearer ' + token, 'Accept': 'application/jso
 
 // Step 1: Resolve org slug from org ID
 console.log('--- Step 1: Resolve org via /api/0/organizations/ ---');
-const orgsRes = await fetch('https://sentry.io/api/0/organizations/?owner=1', { headers });
+const orgsRes = await fetch('https://sentry.io/api/0/organizations/', { headers });
 console.log('  HTTP ' + orgsRes.status);
 if (!orgsRes.ok) {
     console.error('  Body: ' + (await orgsRes.text()).slice(0, 300));
