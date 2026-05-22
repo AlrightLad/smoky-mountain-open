@@ -1,17 +1,19 @@
 {
   "schema_version": 1,
-  "written_at": "2026-05-22T17:48:00Z",
-  "written_by": "overnight-triage-cycle-P",
-  "reason": "metric-integrity-deferred",
+  "written_at": "2026-05-22T19:04:00Z",
+  "written_by": "overnight-triage-cycle-Q",
+  "reason": "heartbeat-ok",
   "resume_after": "next-cron-fire",
-  "next_atomic_unit": "next-cycle-Critic-reviews-cadence-pattern",
+  "next_atomic_unit": "next-cycle-checks-inbox-and-substrate-motion",
   "context_required": [
+    ".claude/state/cron/2026-05-22-overnight-run-Q.md",
     ".claude/state/cron/2026-05-22-overnight-run-P.md"
   ],
-  "summary": "Cycle P (16th overnight-triage fire of UTC 2026-05-22) declined to generate a 16th near-identical journal + re-run regen-all. Substantive output is the cadence-pattern surfacing in cycle P's journal § Blockers. 15 prior commits today carry identical subject 'Overnight triage 2026-05-22 - 0 reports, 0 proposals, 0 FIQ entries graded'. Next cycle's Critic should read cycle P's journal before re-running the prompt; if the inbox state is still empty AND cadence is unchanged, next cycle should also exit non-substantively rather than add to noise.",
+  "summary": "Cycle Q (17th overnight-triage fire of UTC 2026-05-22) cleared cycle P's metric-integrity-deferred flag after testing P's handoff condition explicitly. P's condition (inbox empty AND cadence unchanged) was broken: 9 Founder substantive commits landed in the ~5h gap between P (14:07Z) and Q (19:02Z), including chore c514647d which directly modified a round-trip-implicated file (PROP-011 approved-file). Re-ran regen-all; round-trip moved 5→6 failures (5 carry-forward + 1 new PROP-011 lifecycle gap introduced by the chore). App-health jumped B+/82.8 → A-/85.3. Substantive heartbeat captured with attributions; not noise. Cycle P's founder_action_items remain valid (preserved below) — the cadence concern still applies even when the current fire was substantive.",
   "founder_action_items": [
-    "Investigate cron cadence — 16 fires/UTC date on empty-inbox path is producing compounding journal noise",
-    "Tighten empty-inbox exit in the overnight-triage prompt (guard on last-commit-recency + dashboard-freshness)",
-    "Investigate why FIQ + bug-reports inboxes never appeared on disk (path mismatch, broken hook, or aspirational paths in directive)"
+    "Investigate cron cadence — 17 fires/UTC date is still excessive for an empty-inbox path; cycle Q only produced substantive work because of a 5h gap that let Founder commits accumulate",
+    "Tighten empty-inbox exit in the overnight-triage prompt (guard on last-commit-recency + dashboard-freshness + substrate-stillness signal)",
+    "Investigate why FIQ + bug-reports inboxes never appeared on disk (path mismatch, broken hook, or aspirational paths in directive)",
+    "PROP-011 lifecycle-fields gap surfaced by c514647d — same contract pattern that fixed PROP-006 + PROP-010 in cycle O"
   ]
 }
