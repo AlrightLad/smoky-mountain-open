@@ -820,7 +820,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-22T18:35:44.534723Z",
+  "generated_at": "2026-05-22T18:42:09.874402Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 83.8,
   "overall_grade": "B+",
@@ -1005,13 +1005,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "8eb8ee89",
-    "subject": "ship(HQ-5-8): Members page audit â€” functional pass complete",
-    "committed_at": "2026-05-22T14:35:27-04:00",
+    "sha": "c8e174db",
+    "subject": "ship(HQ-5-9..5-14): functional pass â€” Bounties, Wagers, Scrambles, Trips, Trophy Room, Range",
+    "committed_at": "2026-05-22T14:41:52-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 6
+    "total_files_touched": 14
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
