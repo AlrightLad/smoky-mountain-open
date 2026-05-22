@@ -111,7 +111,7 @@ function _buildHomeContext() {
   var season = PB.getSeasonStandings(new Date().getFullYear());
   var state = _homeState(myRounds);
   var greetingWord = state === "new" ? "Welcome" : _greetingForTime();
-  var firstName = _firstName(currentProfile);
+  var firstName = _displayName(currentProfile);  // B.41 — was _firstName
 
   // Materialized stats preferred (kept in sync by persistPlayerStats).
   // v8.11.7: handicap + bestRound fall back to live computation when cached
@@ -409,15 +409,17 @@ function _greetingForTime() {
 // Previously stripped Mr/Mrs/Dr titles via a `titles` array — but CTO uses
 // "Mr Parbaugh" as a deliberate displayname and the strip was rendering
 // just "Parbaugh." Members configure their displayname; greeting renders
-// what they configured, no transform. Function name kept (`_firstName`)
-// because 4 callers reference it; renaming would be a separate cleanup.
-// Note: the avatar-initial extraction at line 824 now uses the first char
-// of the full displayName ("M" for "Mr Parbaugh"), which is acceptable —
-// matches what members see in their own profile chrome.
-function _firstName(profile) {
+// what they configured, no transform.
+//
+// B.41 (2026-05-22): renamed _firstName -> _displayName since the function
+// now returns the full display name as configured. _firstName retained as
+// an alias so external references (if any survive concatenation) don't
+// break; remove alias after one full main-deploy cycle confirms no consumers.
+function _displayName(profile) {
   if (!profile) return "Friend";
   return profile.name || profile.username || "Friend";
 }
+function _firstName(profile) { return _displayName(profile); }
 
 function _formatDateEyebrow() {
   var d = new Date();
