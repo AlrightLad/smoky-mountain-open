@@ -133,3 +133,4 @@
 {"timestamp":"2026-05-22T04:30:02.0376384Z","event_type":"cron.proposal-readiness.start","data":{"claude_invoked":false,"run_id":"5760b71d4db2","cron_source":"proposal-readiness","estimated_tokens":0}}
 {"timestamp":"2026-05-22T04:30:02.1430929Z","event_type":"cron.proposal-readiness.end","data":{"exit_code":0,"run_id":"5760b71d4db2","deferred_count":0,"estimated_tokens":0,"success":true,"duration_seconds":0,"ready_count":0,"cron_source":"proposal-readiness"}}
 {"timestamp":"2026-05-22T04:30:48.6260740Z","event_type":"cron.downloads-watcher.start","data":{"claude_invoked":false,"run_id":"1114aa5a88a3","cron_source":"downloads-watcher"}}
+{"timestamp":"2026-05-22T04:30:51.0678913Z","event_type":"cron.downloads-watcher.end","data":{"success":true,"exit_reason":"no-new-files","cron_source":"downloads-watcher","duration_ms":2527,"claude_invoked":false,"run_id":"1114aa5a88a3"}}
