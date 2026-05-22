@@ -179,3 +179,7 @@ docs/reports/sessions.html
 .claude/state/aggregates/*.json
 .claude/state/heartbeats/*.json
 .claude/state/heartbeat/*.log
+
+# Lighthouse audit output (regen-able)
+.lighthouseci-live/
+.lighthouseci/
