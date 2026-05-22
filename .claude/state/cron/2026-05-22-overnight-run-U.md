@@ -162,3 +162,40 @@ Writing `.claude/state/last-verify.json` with:
 - 5 Founder-action items (URGENT #0 from T removed as resolved; 5 remaining carry-overs preserved)
 
 Cycle U exits clean. Pause discipline honored — no commit block, no Founder-presence race condition, substrate forward.
+
+---
+
+## Addendum (post-close) — commit race with Founder, runbook-message-format deviation
+
+Between cycle U `git add` (23:04Z) and cycle U `git commit` attempt, Founder ran their own `git commit -a` / `git add -A` flow at **2026-05-22T23:05:03Z**, producing commit **`0c06b8e1 refactor(home-hq): extract league-this-week strip to its own file (AMD-027)`**.
+
+Founder's commit absorbed all of cycle U's staged artifacts alongside their refactor work:
+
+| File | Originator | Landed in commit |
+|---|---|---|
+| `.claude/state/cron/2026-05-22-overnight-run-T.md` (cleanup) | cycle U | 0c06b8e1 |
+| `.claude/state/cron/2026-05-22-overnight-run-U.md` (this file, pre-addendum) | cycle U | 0c06b8e1 |
+| `.claude/state/wellness/engineer.json` | cycle U | 0c06b8e1 |
+| `.claude/state/last-verify.json` (pre-addendum) | cycle U | 0c06b8e1 |
+| `docs/reports/app-health.html` (regen output) | cycle U | 0c06b8e1 |
+| `docs/reports/sessions/2026-05-21.html` | post-commit-hook | 0c06b8e1 |
+| `src/pages/home-hq.js` (-161 LOC) | Founder | 0c06b8e1 |
+| `src/pages/home-hq-league-week.js` (+161 LOC, new) | Founder | 0c06b8e1 |
+| `vite.config.js` (IMMEDIATE_PAGES list update) | Founder | 0c06b8e1 |
+| 27 iter9 PNG captures in `.claude/state/design-pass-2026-05-22/captures/` | Founder | 0c06b8e1 |
+| 4 post-commit-hook telemetry artifacts | post-commit-hook | af01f8f2 (next auto-commit) |
+
+**Net outcome:** substrate is forward, all data preserved, working tree clean (12 commits ahead of origin). No data loss, no broken state.
+
+**Deviation from runbook:** the mandated commit message format `"Overnight triage 2026-05-22 - 0 reports, 0 proposals, 0 FIQ entries graded"` was NOT used — cycle U's work landed under Founder's refactor commit message instead. The follow-up commit containing THIS addendum + updated `last-verify.json` uses the runbook format for honest record-keeping.
+
+**Race-detection lesson** (for future cycles): When Founder is actively in the working tree:
+- `git add <my-paths>` followed by another agent/Founder running `git commit -a` will sweep my paths into Founder's commit
+- The `git status --short` check before `git add` may show empty staging, but Founder can stage between checks
+- Cycle T avoided this by detecting `MM` race and deferring the commit entirely; cycle U observed the same Founder-presence signal post-add and could not safely undo
+- **Recommended future-cycle remedy**: `git stash push -- <my-paths>` followed by attempted commit, then unstash, if Founder-presence signal appears during cycle. This isolates cycle artifacts from Founder's staging area atomically.
+
+**Critic metric-integrity reassessment (post-race):** still HONEST. Substrate is in valid state. The race outcome is documented in this addendum, not buried. Future cycles reading git log + this journal can reconstruct what happened. The deviation from runbook commit message is transparent, not hidden.
+
+Cycle U fully closed.
+

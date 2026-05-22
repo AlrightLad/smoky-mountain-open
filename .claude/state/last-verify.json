@@ -1,22 +1,23 @@
 {
   "schema_version": 1,
-  "written_at": "2026-05-22T23:04:00Z",
-  "written_by": "overnight-triage-cycle-U",
-  "reason": "heartbeat-ok",
+  "written_at": "2026-05-22T23:08:00Z",
+  "written_by": "overnight-triage-cycle-U-addendum",
+  "reason": "heartbeat-ok-race-resolved",
   "resume_after": "next-cron-fire",
   "next_atomic_unit": "next-cycle-checks-inbox",
-  "commit_status": "committed",
-  "founder_presence_detected_at": null,
+  "commit_status": "committed-via-race-absorption",
+  "founder_presence_detected_at": "2026-05-22T23:05:03Z",
   "context_required": [
     ".claude/state/cron/2026-05-22-overnight-run-U.md",
     ".claude/state/cron/2026-05-22-overnight-run-T.md"
   ],
-  "summary": "Cycle U (21st overnight-triage fire of UTC 2026-05-22) ran heartbeat after ~1h T gap. Both queues absent on disk for 21st consecutive cycle. regen-all clean: ALL CHECKS PASSED, round-trip 0 failures (24.2s elapsed). Cycle T's deferred WIP (harness-flow.html + capture-harness-flow.mjs + design-pass-2026-05-22/) was resolved by Founder at 10b2cff2 between cycles T+U (option (a): integrate dashboard). Cycle U includes cycle T's deferred journal in its commit — substrate-forward cleanup since both T-defer rationales (smoke-gate block + Founder presence) are resolved. Working tree quiescent for Founder paths (no src/pages/, templates/dashboards/, functions/ mods) at cycle open. Metric-integrity: HONEST — heartbeat-only work is substantive (regen + round-trip + smoke gate sustained green), no fluff generated, deferred cycle T artifacts cleaned forward with explicit rationale.",
+  "summary": "Cycle U (21st overnight-triage fire of UTC 2026-05-22) ran heartbeat after ~1h T gap. Both queues absent on disk for 21st consecutive cycle. regen-all clean: ALL CHECKS PASSED, round-trip 0 failures (24.2s elapsed). Cycle T's deferred WIP was resolved by Founder at 10b2cff2 between cycles T+U. Cycle U attempted commit including cycle T's deferred journal cleanup. RACE: Founder ran git commit -a at 23:05:03Z during cycle U's commit window — Founder's commit 0c06b8e1 (refactor home-hq AMD-027) absorbed all cycle U staged artifacts (T journal, U journal, wellness, last-verify, app-health regen) alongside Founder's own refactor work + 27 iter9 design-pass PNGs. Post-commit-hook then fired creating af01f8f2 cron(routine) that absorbed remaining telemetry artifacts. Net outcome: substrate fully forward, working tree clean (12 commits ahead of origin), no data loss. Deviation from runbook: mandated commit message format was NOT used — cycle U work landed under Founder's commit message instead. Follow-up commit with this addendum uses the runbook format for honest record-keeping. Metric-integrity post-race: HONEST — substrate state valid, race documented transparently in journal addendum, future cycles can reconstruct via git log.",
   "founder_action_items": [
-    "Cron cadence — now 21 empty-inbox fires/UTC date (was 20 at cycle T). Suggested remedy unchanged: add guard at Step 0 of overnight-triage prompt — exit clean if no motion in task-queue/founder/, escalations/inbox/, or bug-reports/inbox/ in last 3h AND regen-all last-pass < 60 min old. Would reduce nightly fires from ~24 to ~6-8.",
+    "Cron cadence — now 21 empty-inbox fires/UTC date (was 20 at cycle T, 19 at S). Suggested remedy unchanged: add guard at Step 0 of overnight-triage prompt — exit clean if no motion in task-queue/founder/, escalations/inbox/, or bug-reports/inbox/ in last 3h AND regen-all last-pass < 60 min old. Would reduce nightly fires from ~24 to ~6-8.",
+    "**NEW (cycle U lesson):** Commit-race mitigation. When Founder runs `git commit -a` / `git add -A` during a cron cycle's commit window, the cron's staged artifacts get absorbed into Founder's commit (not the cron's runbook-mandated commit message). Recommended runbook patch: cron cycles should `git stash push -- <my-paths>` before attempting commit if Founder-presence signal appears mid-cycle (mixed-authorship staging detected via `git diff --cached --stat` showing src/, functions/, templates/ paths the cron did not author). This isolates cycle artifacts from Founder's staging area atomically.",
     "A8_performance: Lighthouse 65/100 on 1 page (target 75+) — open .lighthouseci/*.html, fix top failures (carry-over from cycles S+T).",
     "A12_operational: 8/10 cron watcher runs hit skip-dirty — check .husky/post-commit mid-run dirtying + routinePatterns allowlist coverage (carry-over from cycles S+T).",
-    "main-flows.html user-context capture ~7.87 days stale — run `node scripts/visual-audit/founder-context-capture.mjs` before next ship-close (natural drift, not blocking; same diagnosis as cycles S+T).",
+    "main-flows.html user-context capture ~7.87 days stale — run `node scripts/visual-audit/founder-context-capture.mjs` before next ship-close (natural drift, not blocking).",
     "quota-status weekly_cap field still null — no % computation possible (preserved Founder-triage item from cycles R+S+T)."
   ]
 }
