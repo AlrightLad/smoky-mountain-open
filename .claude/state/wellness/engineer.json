@@ -1,17 +1,17 @@
 {
   "agent": "engineer",
-  "_note": "Updated 2026-05-22 overnight-triage. Tonight's run was heartbeat-only (FIQ + bug-reports inbox both absent on disk per directive's empty-inbox branch). Two safe substrate-hygiene fixes applied (escalations lifecycle dirs + PROP-006/PROP-010 shipped-fields metadata). Five remaining round-trip failures journaled for Founder review.",
+  "_note": "Updated 2026-05-22 cycle U overnight-triage. Heartbeat-only branch (FIQ + bug-reports inbox both ABSENT on disk for 21st consecutive cycle of 2026-05-22). regen-all clean: ALL CHECKS PASSED, round-trip 0 failures sustained. Founder presence quiescent in working tree at cycle open (cycle T's WIP committed at 10b2cff2). Cycle T's deferred journal included in cycle U commit — substrate-forward cleanup since both T-defer rationales (smoke-gate block + Founder presence) are resolved.",
   "ships_closed_since_last_rest": 0,
-  "tokens_consumed_since_last_rest": 22000,
-  "hours_active_since_last_rest": 0.4,
+  "tokens_consumed_since_last_rest": 14000,
+  "hours_active_since_last_rest": 0.25,
   "thresholds": {
     "ships_closed": 5,
     "tokens_consumed": 100000,
     "hours_active": 8
   },
   "thresholds_crossed": [],
-  "last_wellness_checkpoint_at": "2026-05-22T17:08:00Z",
-  "current_wellness_checkpoint_at": "2026-05-22T17:08:00Z",
+  "last_wellness_checkpoint_at": "2026-05-22T22:02:30Z",
+  "current_wellness_checkpoint_at": "2026-05-22T23:04:00Z",
   "status": "active",
   "rest_started_at": null,
   "min_rest_duration_seconds": 1800,
@@ -21,5 +21,5 @@
     "tokens_consumed_since_last_rest": 0,
     "hours_active_since_last_rest": 0
   },
-  "substantive_output_at_checkpoint": "Engineer completed overnight-triage 2026-05-22 heartbeat-only cycle. Disk-check confirmed FIQ queue + bug-reports inbox both absent (no directories on disk). Ran regen-all.ps1 → 8 round-trip failures. Diagnosed each; auto-fixed 3 safe-class items: (1) mkdir approved/ deferred/ rejected/ under .claude/state/escalations/ with .gitkeep (escalations:lifecycle); (2) added shipped_at + shipped_in_commit to PROP-006/PROP-010 frontmatter (immutability contract § 3 rule 5 backfill from governance commit 0a2bad5). Re-ran heartbeat → 5 remaining failures, all pre-existing Founder-decision-boundary substrate issues: nav:index.html is-active mismatch, theme:dashboard.html raw hex var fallback, protected:main-flows sentinels (stale-validator vs iter6 redesign 6027f2d8), scroll-reachability (same root cause), quota-status sidecar schema_version=2 vs validator-expected 1. Journaled for Founder review. No proposals authored per directive's no-auto-cross-Founder-boundary rule. Metric-integrity attestation: substantive auto-fixes verified via regen-all re-run delta (8→5 failures); honest documentation of remaining 5 with cited git commits + file:line evidence. Within healthy bands on all thresholds."
+  "substantive_output_at_checkpoint": "Engineer completed overnight-triage 2026-05-22 cycle U heartbeat-only flow. Disk-check confirmed FIQ queue + bug-reports inbox both absent (no directories on disk — 21st consecutive empty-inbox cycle of UTC 2026-05-22). Ran scripts/regen-all.ps1 → ALL CHECKS PASSED with round-trip 0 failures (24.2s elapsed). Single yellow note (user-context-gate, main-flows.html ~11335 min stale = 7.87d) is Founder-action carry-over, same diagnosis as cycles S+T. Cycle T's WIP (harness-flow.html + capture-harness-flow.mjs + design-pass-2026-05-22/) committed by Founder at 10b2cff2 between cycles T+U — smoke-gate block fully resolved. No new proposals authored (no inbox signal). Metric-integrity attestation: HONEST — work was 1 heartbeat + 1 wellness update + 1 last-verify update + 1 journal + 1 commit (incl. cleanup of cycle T's deferred journal). No fluff generated. Cron-cadence concern now 21+ empty-inbox fires/day, re-flagged via journal. Within healthy bands on all thresholds (14000/100000 tokens, 0.25/8 hours, 0/5 ships)."
 }

@@ -1,21 +1,22 @@
 {
   "schema_version": 1,
-  "written_at": "2026-05-22T21:07:00Z",
-  "written_by": "overnight-triage-cycle-S",
+  "written_at": "2026-05-22T23:04:00Z",
+  "written_by": "overnight-triage-cycle-U",
   "reason": "heartbeat-ok",
   "resume_after": "next-cron-fire",
-  "next_atomic_unit": "next-cycle-checks-inbox-and-substrate-motion",
+  "next_atomic_unit": "next-cycle-checks-inbox",
+  "commit_status": "committed",
+  "founder_presence_detected_at": null,
   "context_required": [
-    ".claude/state/cron/2026-05-22-overnight-run-S.md",
-    ".claude/state/cron/2026-05-22-overnight-run-R.md"
+    ".claude/state/cron/2026-05-22-overnight-run-U.md",
+    ".claude/state/cron/2026-05-22-overnight-run-T.md"
   ],
-  "summary": "Cycle S (19th overnight-triage fire of UTC 2026-05-22) ran heartbeat after ~60 min R gap. Regen at 21:01:43Z observed round-trip 5 -> 1 failure (sole carry-over: scroll-reachability). Then Founder shipped f1a5c11f at 21:04:13Z driving ALL -> 0, folding in scroll-reachability selector fix (.mf-flows-list -> .mf-list in verify-scroll-reachability.mjs) + VAR_FALLBACK_RE leniency that was WIP at regen time. 10 Founder substantive commits + 11 routine auto-commits in R->S window; f1a5c11f arrives 2.5 min after my regen completes (race during commit-prep). Final state: round-trip 0 failures across all gates per Founder authoritative commit. App-health A-/85.0 (new app-health-v1.1 schema; 2 actionable attention items: A8_performance Lighthouse + A12_operational watcher skip-dirty). +182M real tokens, +~$4.4K cost over ~1h (60x heartbeat-floor cadence; ship-sprint sustained from Q->R window). Both inboxes confirmed empty for 19th consecutive cycle of 2026-05-22.",
+  "summary": "Cycle U (21st overnight-triage fire of UTC 2026-05-22) ran heartbeat after ~1h T gap. Both queues absent on disk for 21st consecutive cycle. regen-all clean: ALL CHECKS PASSED, round-trip 0 failures (24.2s elapsed). Cycle T's deferred WIP (harness-flow.html + capture-harness-flow.mjs + design-pass-2026-05-22/) was resolved by Founder at 10b2cff2 between cycles T+U (option (a): integrate dashboard). Cycle U includes cycle T's deferred journal in its commit — substrate-forward cleanup since both T-defer rationales (smoke-gate block + Founder presence) are resolved. Working tree quiescent for Founder paths (no src/pages/, templates/dashboards/, functions/ mods) at cycle open. Metric-integrity: HONEST — heartbeat-only work is substantive (regen + round-trip + smoke gate sustained green), no fluff generated, deferred cycle T artifacts cleaned forward with explicit rationale.",
   "founder_action_items": [
-    "Round-trip 0 failures confirmed per f1a5c11f commit message (not re-verified by agent regen to avoid inflation; cycle T will naturally pick up 0-failure state).",
-    "A8_performance: Lighthouse 65/100 on 1 page (target 75+) — open .lighthouseci/*.html, fix top failures",
-    "A12_operational: 8/10 cron watcher runs hit skip-dirty — check .husky/post-commit mid-run dirtying + routinePatterns allowlist coverage",
-    "Cron cadence: 19 fires/UTC date for empty-inbox cycles still excessive — tighten empty-inbox exit guard in overnight-triage prompt (suggestion: --skip-if-no-substrate-motion-since-N-min)",
-    "main-flows.html user-context capture ~7.79 days stale — pre-ship-close reminder",
-    "weekly_cap field still null in quota-status (no % computation possible) — preserved Founder-triage item from cycle R"
+    "Cron cadence — now 21 empty-inbox fires/UTC date (was 20 at cycle T). Suggested remedy unchanged: add guard at Step 0 of overnight-triage prompt — exit clean if no motion in task-queue/founder/, escalations/inbox/, or bug-reports/inbox/ in last 3h AND regen-all last-pass < 60 min old. Would reduce nightly fires from ~24 to ~6-8.",
+    "A8_performance: Lighthouse 65/100 on 1 page (target 75+) — open .lighthouseci/*.html, fix top failures (carry-over from cycles S+T).",
+    "A12_operational: 8/10 cron watcher runs hit skip-dirty — check .husky/post-commit mid-run dirtying + routinePatterns allowlist coverage (carry-over from cycles S+T).",
+    "main-flows.html user-context capture ~7.87 days stale — run `node scripts/visual-audit/founder-context-capture.mjs` before next ship-close (natural drift, not blocking; same diagnosis as cycles S+T).",
+    "quota-status weekly_cap field still null — no % computation possible (preserved Founder-triage item from cycles R+S+T)."
   ]
 }
