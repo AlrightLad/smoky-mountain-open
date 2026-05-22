@@ -26,7 +26,7 @@ var DEFERRED_PAGES = [
   'scorecard.js', 'rounds.js', 'courses.js', 'records.js',
   'teetimes.js', 'range.js', 'activity.js', 'rangelive.js', 'calendar.js',
   'more.js', 'feed.js', 'chat.js', 'dms.js', 'invite.js', 'admin.js',
-  'faq.js', 'caddynotes.js', 'bugreport.js', 'trophyroom.js', 'partygames.js',
+  'faq.js', 'caddynotes-archive.js', 'caddynotes.js', 'bugreport.js', 'trophyroom.js', 'partygames.js',
   // crisis-banner.js was here briefly — moved to src/core/ since it must
   // load on every page (Firestore listener + overlay rendering).
   'syncround.js', 'scramblelive.js', 'seasonrecap.js', 'awards.js',
