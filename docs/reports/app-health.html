@@ -820,7 +820,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-22T21:06:49.848661Z",
+  "generated_at": "2026-05-22T21:08:29.043635Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 85.0,
   "overall_grade": "A-",
@@ -1000,13 +1000,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "f593eb99",
-    "subject": "Merge branch 'main' of https://github.com/AlrightLad/smoky-mountain-open",
-    "committed_at": "2026-05-22T17:06:33-04:00",
+    "sha": "84193f3c",
+    "subject": "ops(handoff): update with 0-failures + app-grade A- result",
+    "committed_at": "2026-05-22T17:08:11-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 0
+    "total_files_touched": 1
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
