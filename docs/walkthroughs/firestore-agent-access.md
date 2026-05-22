@@ -7,7 +7,38 @@ breaks every time it restarts).
 
 ---
 
-## Two options
+## Already have a service account?
+
+If you already generated a service account JSON for parbaughs-staging
+(e.g., for the staging-deploy GitHub Actions secret), **don't
+overwrite — reuse it.**
+
+The same service-account JSON can be used for both:
+- GitHub Actions `FIREBASE_SERVICE_ACCOUNT_STAGING` secret (staging
+  deploys)
+- `scripts/.service-account.json` local file (agent Firestore access)
+
+If you still have the original JSON file downloaded (Downloads folder
+or saved elsewhere), copy it to `scripts/.service-account.json`:
+
+```powershell
+# Adjust the source path to wherever you saved the JSON earlier
+Copy-Item "$env:USERPROFILE\Downloads\parbaughs-staging-firebase-adminsdk-*.json" `
+          -Destination "scripts\.service-account.json"
+```
+
+If you no longer have the file (you only pasted it into the GitHub
+secret + deleted the local copy), you'll need to generate a new key.
+The existing service account stays valid — you're just creating
+another credential for the same account. Both will work in parallel.
+**Do NOT delete the existing key** if it's powering the staging-deploy
+workflow; just add a new one.
+
+Skip to Step 4 (verify) once `scripts/.service-account.json` is in place.
+
+---
+
+## Two options (only if creating from scratch)
 
 | Option | Time | Scope | Recommendation |
 |---|---|---|---|
