@@ -821,9 +821,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-22T22:23:00.976724Z",
+  "generated_at": "2026-05-22T22:32:49.966159Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 84.2,
+  "overall_score": 83.9,
   "overall_grade": "B+",
   "incidents_deduction": {
     "sev1": 0,
@@ -843,9 +843,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 91.2,
+    "pre_deduction_score": 90.9,
     "deduction": 7,
-    "post_deduction_score": 84.2
+    "post_deduction_score": 83.9
   },
   "dimensions": {
     "A1_roadmap": {
@@ -883,14 +883,26 @@
       "weak_points": []
     },
     "A5_code_quality": {
-      "score": 100,
+      "score": 97,
       "status": "green",
-      "label": "0 core + 0 page files over budget; missing eslint=False, knip=False, jscpd=False",
+      "label": "0 core + 1 page files over budget; missing eslint=False, knip=False, jscpd=False",
       "source": "src/core/, src/pages/, package.json",
-      "weak_points": [],
+      "weak_points": [
+        {
+          "what": "src/pages/home-hq.js is 861 lines (budget 800)",
+          "where": "src/pages/home-hq.js",
+          "what_action": "Split into modules per AMD-027 budget"
+        }
+      ],
       "details": {
-        "over_budget_count": 0,
-        "files": []
+        "over_budget_count": 1,
+        "files": [
+          {
+            "file": "src/pages/home-hq.js",
+            "lines": 861,
+            "budget": 800
+          }
+        ]
       }
     },
     "A6_architecture": {
@@ -956,11 +968,11 @@
     "A12_operational": {
       "score": 60,
       "status": "yellow",
-      "label": "pipeline=red · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 8 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "6 of last 10 cron watcher runs hit skip-dirty",
+          "what": "8 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -979,7 +991,7 @@
       "dimension": "A8_performance"
     },
     {
-      "what": "6 of last 10 cron watcher runs hit skip-dirty",
+      "what": "8 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -994,24 +1006,23 @@
       "dimension": "A8_performance"
     },
     {
-      "what": "6 of last 10 cron watcher runs hit skip-dirty",
+      "what": "8 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "10b2cff2",
-    "subject": "feat: harness-flow dashboard tab + design-pass iter1",
-    "committed_at": "2026-05-22T18:21:56-04:00",
+    "sha": "957f800c",
+    "subject": "feat(home-hq): The league this week â€” 4-stat weekly strip (W2.S1 pull-forward)",
+    "committed_at": "2026-05-22T18:32:02-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
-      "src/pages/home-hq.js",
-      "src/pages/home-rail-newuser.js",
-      "src/pages/home.js"
+      "src/pages/home-band.js",
+      "src/pages/home-hq.js"
     ],
-    "total_files_touched": 92
+    "total_files_touched": 29
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
