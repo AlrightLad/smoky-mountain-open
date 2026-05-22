@@ -820,9 +820,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-22T17:47:08.164608Z",
+  "generated_at": "2026-05-22T17:49:33.980408Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 81.8,
+  "overall_score": 82.2,
   "overall_grade": "B+",
   "incidents_deduction": {
     "sev1": 0,
@@ -842,9 +842,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 88.8,
+    "pre_deduction_score": 89.2,
     "deduction": 7,
-    "post_deduction_score": 81.8
+    "post_deduction_score": 82.2
   },
   "dimensions": {
     "A1_roadmap": {
@@ -882,9 +882,9 @@
       "weak_points": []
     },
     "A5_code_quality": {
-      "score": 73,
+      "score": 76,
       "status": "yellow",
-      "label": "0 core + 9 page files over budget; missing eslint=False, knip=False, jscpd=False",
+      "label": "0 core + 8 page files over budget; missing eslint=False, knip=False, jscpd=False",
       "source": "src/core/, src/pages/, package.json",
       "weak_points": [
         {
@@ -904,7 +904,7 @@
         }
       ],
       "details": {
-        "over_budget_count": 9,
+        "over_budget_count": 8,
         "files": [
           {
             "file": "src/pages/admin.js",
@@ -939,11 +939,6 @@
           {
             "file": "src/pages/playnow.js",
             "lines": 1457,
-            "budget": 800
-          },
-          {
-            "file": "src/pages/rounds.js",
-            "lines": 963,
             "budget": 800
           },
           {
@@ -1079,13 +1074,16 @@
     }
   ],
   "audit_trigger": {
-    "sha": "69930c74",
-    "subject": "Merge branch 'main' of https://github.com/AlrightLad/smoky-mountain-open",
-    "committed_at": "2026-05-22T13:46:51-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 0
+    "sha": "f3ce7216",
+    "subject": "refactor(W1.A5/B2): extract rounds log-hole subsystem â€” 964 -> 738 lines",
+    "committed_at": "2026-05-22T13:49:14-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "src/pages/rounds-loghole.js",
+      "src/pages/rounds.js"
+    ],
+    "total_files_touched": 4
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
