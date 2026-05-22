@@ -820,7 +820,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-22T19:19:07.079306Z",
+  "generated_at": "2026-05-22T19:22:29.030570Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 85.3,
   "overall_grade": "A-",
@@ -960,11 +960,11 @@
     "A12_operational": {
       "score": 90,
       "status": "green",
-      "label": "pipeline=green · 5 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=green · 4 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "5 of last 10 cron watcher runs hit skip-dirty",
+          "what": "4 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -993,9 +993,9 @@
     }
   ],
   "audit_trigger": {
-    "sha": "ce8f0fec",
-    "subject": "fix(lifecycle): backfill PROP-011 shipped_at + shipped_in_commit fields",
-    "committed_at": "2026-05-22T15:18:48-04:00",
+    "sha": "6716723d",
+    "subject": "feat(hosting): firebase.json hosting block for parbaughs-staging deploys",
+    "committed_at": "2026-05-22T15:22:11-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
