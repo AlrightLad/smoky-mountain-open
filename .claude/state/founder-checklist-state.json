@@ -1,6 +1,6 @@
 {
     "schema_version":  1,
-    "updated_at":  "2026-05-22T20:10:12Z",
+    "updated_at":  "2026-05-22T20:12:23Z",
     "items":  {
                   "firestore-agent-access":  {
                                                  "status":  "verified-closed",
@@ -30,13 +30,13 @@
                                                "verification_status":  "verified-closed"
                                            },
                   "agent-unblock-permissions":  {
-                                                    "status":  "verification-failed",
-                                                    "marked_at":  "2026-05-22T20:10:12Z",
+                                                    "status":  "verified-closed",
+                                                    "marked_at":  "2026-05-22T20:12:23Z",
                                                     "verify_command":  "node scripts/verify-agent-unblock.mjs",
                                                     "verify_expected":  "PASS",
-                                                    "verified_at":  "2026-05-22T20:10:12Z",
-                                                    "verify_output_excerpt":  "Γ£ô firebase deploy --only hosting --project staging",
-                                                    "verification_status":  "verification-failed"
+                                                    "verified_at":  "2026-05-22T20:12:23Z",
+                                                    "verify_output_excerpt":  "PASS",
+                                                    "verification_status":  "verified-closed"
                                                 },
                   "sentry-signup":  {
                                         "status":  "verified-closed",
