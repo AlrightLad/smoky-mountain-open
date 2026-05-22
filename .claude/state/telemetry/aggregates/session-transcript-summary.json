@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-22T03:04:47.605335+00:00",
+  "generated_at": "2026-05-22T03:11:50.046754+00:00",
   "schema_version": 1,
   "source": "~/.claude/projects/C--Users-Zach-smoky-mountain-open/*.jsonl",
   "session_count": 51,
   "bucket_count": 85,
-  "all_time_total_tokens": 9263754273,
+  "all_time_total_tokens": 9271807188,
   "by_day_total": {
     "2026-04-17": 294853821,
     "2026-04-20": 362592283,
@@ -26,10 +26,10 @@
     "2026-05-19": 487882167,
     "2026-05-20": 611933923,
     "2026-05-21": 1573217869,
-    "2026-05-22": 94850112
+    "2026-05-22": 102903027
   },
   "by_model_total": {
-    "claude-opus-4-7": 9263754273,
+    "claude-opus-4-7": 9271807188,
     "<synthetic>": 0
   },
   "buckets": {
@@ -1116,27 +1116,27 @@
       "session_id": "a3e3471a-7db9-4c9d-a1f1-37284a43520d",
       "day": "2026-05-22",
       "model": "claude-opus-4-7",
-      "turn_count": 108,
-      "input_tokens": 128,
-      "output_tokens": 91935,
-      "cache_read_input_tokens": 88651689,
-      "cache_creation_input_tokens": 1690828,
-      "total": 90434580,
+      "turn_count": 111,
+      "input_tokens": 131,
+      "output_tokens": 93546,
+      "cache_read_input_tokens": 91252506,
+      "cache_creation_input_tokens": 1695077,
+      "total": 93041260,
       "first_ts": "2026-05-22T02:12:04.957Z",
-      "last_ts": "2026-05-22T03:02:49.777Z"
+      "last_ts": "2026-05-22T03:05:27.368Z"
     },
     "b802673e-3b45-4ab4-90be-c298c4c2072c|2026-05-22|claude-opus-4-7": {
       "session_id": "b802673e-3b45-4ab4-90be-c298c4c2072c",
       "day": "2026-05-22",
       "model": "claude-opus-4-7",
-      "turn_count": 59,
-      "input_tokens": 87,
-      "output_tokens": 58372,
-      "cache_read_input_tokens": 4120345,
-      "cache_creation_input_tokens": 236728,
-      "total": 4415532,
+      "turn_count": 106,
+      "input_tokens": 134,
+      "output_tokens": 131494,
+      "cache_read_input_tokens": 9379124,
+      "cache_creation_input_tokens": 351015,
+      "total": 9861767,
       "first_ts": "2026-05-22T03:00:14.064Z",
-      "last_ts": "2026-05-22T03:04:36.002Z"
+      "last_ts": "2026-05-22T03:11:43.970Z"
     }
   }
 }
