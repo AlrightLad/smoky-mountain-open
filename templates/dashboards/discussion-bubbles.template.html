@@ -508,6 +508,15 @@
         (function () {
             'use strict';
 
+            // ----- Local-time helper (2026-05-21 Founder direction: show EST/local + TZ, not UTC) -----
+            function _fmtLocal(d) {
+                if (!d || isNaN(d.getTime())) return '—';
+                var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
+                var tz = d.toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ').pop() || 'local';
+                return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+                    + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ' ' + tz;
+            }
+
             // ----- Read embedded data -----
             const data = JSON.parse(document.getElementById('report-data').textContent);
             const bubbles = data.discussion_bubbles || [];
@@ -529,7 +538,7 @@
                 setText('[data-kpi="bubbles-open"]',      String(open));
                 setText('[data-kpi="bubbles-closed-7d"]', String(closed7d));
                 setText('[data-kpi="bubbles-dissent"]',   String(dissent));
-                setText('[data-meta="generated-at"]', new Date().toISOString().slice(0,16).replace('T',' ') + ' UTC');
+                setText('[data-meta="generated-at"]', _fmtLocal(new Date()));
 
                 // AMD-026 P10 Phase 3 retrofit 2026-05-19: swap KPI sub-labels
                 // to legitimate-empty classification when counts are 0. WHAT =

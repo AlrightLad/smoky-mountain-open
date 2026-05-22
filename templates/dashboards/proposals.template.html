@@ -346,6 +346,7 @@
     <script>
         const STORAGE_KEY = 'parbaughs-proposal-decisions-v1';
 
+        function _fmtLocal(d) { if (!d || isNaN(d.getTime())) return '—'; var pad = function(n) { return n < 10 ? '0' + n : '' + n; }; var tz = d.toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ').pop() || 'local'; return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ' ' + tz; }
         document.addEventListener('DOMContentLoaded', function () {
             const data = JSON.parse(document.getElementById('report-data').textContent);
             document.getElementById('raw-data-display').textContent = JSON.stringify(data, null, 2);
@@ -809,7 +810,7 @@
             }
 
             function formatTime(iso) {
-                return new Date(iso).toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
+                return _fmtLocal(new Date(iso));
             }
             function escapeHtml(s) {
                 if (s === null || s === undefined) return '';

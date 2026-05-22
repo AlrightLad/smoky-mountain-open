@@ -933,6 +933,7 @@
     </script>
 
     <script>
+        function _fmtLocal(d) { if (!d || isNaN(d.getTime())) return '—'; var pad = function(n) { return n < 10 ? '0' + n : '' + n; }; var tz = d.toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ').pop() || 'local'; return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ' ' + tz; }
         document.addEventListener('DOMContentLoaded', function () {
             try {
                 var data = JSON.parse(document.getElementById('report-data').textContent);
@@ -979,6 +980,29 @@
                 }
                 function fmtTime(iso) {
                     if (!iso) return '—';
+                    // 2026-05-21 Founder direction: show local + TZ short name.
+                    // Founder is EST/EDT (UTC-4 currently); rendering raw UTC
+                    // caused "2026-05-22" to display at 10pm Founder-time.
+                    try {
+                        var d = new Date(iso);
+                        if (!isNaN(d.getTime())) {
+                            var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
+                            var local = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+                                + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+                            var tz = d.toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ').pop() || 'local';
+                            return local + ' ' + tz;
+                        }
+                    } catch (e) {}
+                    try {
+                        var d = new Date(iso);
+                        if (!isNaN(d.getTime())) {
+                            var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
+                            var local = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+                                + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+                            var tz = d.toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ').pop() || 'local';
+                            return local + ' ' + tz;
+                        }
+                    } catch (e) {}
                     return iso.replace('T', ' ').slice(0, 16) + ' UTC';
                 }
 
@@ -1214,7 +1238,7 @@
                     (mq && mq.anchored_at) ? 'ok · refresh weekly' : 'FOUNDER · paste to refresh');
 
                 // Generated-at meta line
-                var now = new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+                var now = _fmtLocal(new Date());
                 setText('[data-meta="generated-at"]', now);
 
                 // ====================================================

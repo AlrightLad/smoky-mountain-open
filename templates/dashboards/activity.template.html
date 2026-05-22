@@ -164,10 +164,11 @@
 {}
     </script>
     <script>
+        function _fmtLocal(d) { if (!d || isNaN(d.getTime())) return '—'; var pad = function(n) { return n < 10 ? '0' + n : '' + n; }; var tz = d.toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ').pop() || 'local'; return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ' ' + tz; }
         document.addEventListener('DOMContentLoaded', function () {
             var data = JSON.parse(document.getElementById('report-data').textContent);
             function esc(s) { return s == null ? '' : String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
-            function fmt(iso) { return new Date(iso).toISOString().replace('T',' ').slice(0,16) + ' UTC'; }
+            function fmt(iso) { return _fmtLocal(new Date(iso)); }
             function setText(sel, value) { var el = document.querySelector(sel); if (el != null) el.textContent = value; }
 
             // KPI strip: derive from data block.
@@ -209,7 +210,7 @@
                     : 'cron · ' + scenariosInUse.size + ' of 11 covered');
 
             // Generated-at meta line
-            setText('[data-meta="generated-at"]', new Date().toISOString().slice(0,16).replace('T',' ') + ' UTC');
+            setText('[data-meta="generated-at"]', _fmtLocal(new Date()));
 
             // Populate filter selects
             var agentSel = document.getElementById('filter-agent');
