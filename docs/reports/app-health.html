@@ -820,9 +820,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-22T21:28:49.817419Z",
+  "generated_at": "2026-05-22T21:31:45.278089Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 85.7,
+  "overall_score": 85.0,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -842,9 +842,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 92.7,
+    "pre_deduction_score": 92.0,
     "deduction": 7,
-    "post_deduction_score": 85.7
+    "post_deduction_score": 85.0
   },
   "dimensions": {
     "A1_roadmap": {
@@ -953,9 +953,9 @@
       ]
     },
     "A12_operational": {
-      "score": 90,
-      "status": "green",
-      "label": "pipeline=green · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "score": 75,
+      "status": "yellow",
+      "label": "pipeline=yellow · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
@@ -966,7 +966,7 @@
       ],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "no-new-files"
+        "watcher_exit_reason": "skip-dirty"
       }
     }
   },
@@ -976,6 +976,12 @@
       "where": ".claude/state/aggregates/lighthouse-scores.json",
       "what_action": "Open .lighthouseci/*.html — fix top performance failures per page",
       "dimension": "A8_performance"
+    },
+    {
+      "what": "6 of last 10 cron watcher runs hit skip-dirty",
+      "where": "scripts/cron/logs/*-downloads-watcher.log",
+      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
+      "dimension": "A12_operational"
     }
   ],
   "founder_attention": [],
@@ -985,16 +991,22 @@
       "where": ".claude/state/aggregates/lighthouse-scores.json",
       "what_action": "Open .lighthouseci/*.html — fix top performance failures per page",
       "dimension": "A8_performance"
+    },
+    {
+      "what": "6 of last 10 cron watcher runs hit skip-dirty",
+      "where": "scripts/cron/logs/*-downloads-watcher.log",
+      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
+      "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "5a21ea0e",
-    "subject": "polish(home/H5): RECENT FORM panel value font 22 -> 32px (visual-weight anchor)",
-    "committed_at": "2026-05-22T17:28:29-04:00",
+    "sha": "3e2de410",
+    "subject": "feat(a11y): A.8 â€” drawer aria-modal + role=dialog (mobile nav)",
+    "committed_at": "2026-05-22T17:31:25-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
-      "src/pages/home-hq.js"
+      "src/core/router-sidebar.js"
     ],
     "total_files_touched": 1
   },
