@@ -131,3 +131,23 @@ Every claim above traces to a specific tool result earlier in this session.
 ## Exit
 
 Exiting clean per overnight directive. Committing journal + post-regen cron-territory state changes via path-limited `git commit --` form. NOT pushing (Founder reviews local diff first).
+
+## Postscript — Husky × cron-watcher race (substrate observation)
+
+**Observed at 05:05–05:06Z this session.** Intended commit sequence failed due to a race between Husky's `lint-staged` and the cron-watcher's 5-min auto-commit interval:
+
+1. 05:05:30Z (approx): I ran `git commit -m "Overnight triage 2026-05-22 - 0 reports, 0 proposals, 0 FIQ entries graded"` after staging journal + heartbeat-territory state via path-limited `git add`.
+2. Husky pre-commit fired `lint-staged`, which stashes working-tree state internally before running checks.
+3. 05:05:49Z: cron-watcher fired `auto-commit telemetry output before watcher preflight` (commit `b4139f46`), grabbing app-health.json + token-usage-snapshot.json + .token-usage-cursor.json + app-health.html — files that had been staged in my path-limited add but matched the cron-watcher's expected commit territory.
+4. `lint-staged` returned "could not find any staged files"; Husky surfaced non-zero; my commit aborted.
+5. 05:06:35Z: cron-watcher fired `post-watcher-commit drift sweep` (commit `19df2cd3`), sweeping the still-present journal + remaining heartbeat-territory changes (current-snapshot.json, 2026-05-22.ndjson, founder-checklist.html, sessions.html) into a commit with the **cron's own message**, not the user-required "Overnight triage 2026-05-22 - ..." format.
+
+**Substantive substrate issue, not a one-off error.** The 5-min cron-watcher cadence + Husky's lint-staged stash mechanic creates a deterministic race during any human-or-agent commit that overlaps a watcher tick. Mitigation paths (for a future Founder-decision proposal — not authored this run):
+
+1. Watch-window-aware commit retry: agents detect "no staged files" + working-tree intact, re-stage, re-commit on next cycle.
+2. Pause cron-watcher during agent-driven commits via a lock-file convention.
+3. Agents commit with `--no-verify` (skips Husky) — **REJECTED per global directive** ("Never skip hooks (--no-verify) unless the user has explicitly asked for it").
+4. Detect race + emit explicit FIQ entry asking Founder to choose between (1) and (2).
+
+**This run's resolution:** the substantive content (this journal) was preserved in commit `19df2cd3`; the second commit below this postscript captures the user-required message format. Race documented for follow-up; no proposal authored this run (carry-forward observation; first occurrence in cron-territory I've explicitly diagnosed).
+
