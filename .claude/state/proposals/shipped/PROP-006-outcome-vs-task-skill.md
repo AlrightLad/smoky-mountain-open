@@ -31,8 +31,11 @@
   "authored_by": "claude-code",
   "bubble_of_record": null,
   "estimate_tokens_to_apply": 1500,
-  "status": "pending",
-  "operating_status": "Skill content + structure operate immediately per the engineering-mindset directive even before formal approval. This proposal codifies it for the next agent loop."
+  "status": "shipped",
+  "operating_status": "Skill content + structure operate immediately per the engineering-mindset directive even before formal approval. This proposal codifies it for the next agent loop.",
+  "shipped_at": "2026-05-20T05:51:38Z",
+  "shipped_in_commit": "0a2bad5",
+  "shipped_note": "Governance move to shipped/ per Founder authorization 2026-05-19 (founder-blanket-approval; engineering-autonomous). Artifacts: skill at ~/.claude/skills/outcome-vs-task/SKILL.md (out-of-repo user-global skills dir, operational since 2026-05-14). shipped_at + shipped_in_commit fields added 2026-05-22 overnight-triage to satisfy round-trip immutability contract § 3 rule 5 (fields were inadvertently omitted in the governance commit; this is a hygiene backfill, not a content change)."
 }
 ---
 

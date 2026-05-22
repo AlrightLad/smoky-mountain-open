@@ -33,8 +33,11 @@
   "authored_by": "claude-code",
   "bubble_of_record": null,
   "estimate_tokens_to_apply": 2500,
-  "status": "pending",
-  "operating_status": "Design-bot protocol operative immediately per Founder directive. This proposal codifies it for the next agent loop."
+  "status": "shipped",
+  "operating_status": "Design-bot protocol operative immediately per Founder directive. This proposal codifies it for the next agent loop.",
+  "shipped_at": "2026-05-20T05:51:38Z",
+  "shipped_in_commit": "0a2bad5",
+  "shipped_note": "Governance move to shipped/ per Founder authorization 2026-05-19 (founder-blanket-approval; engineering-autonomous). Co-shipped with PROP-006 in commit 0a2bad5. Round-trip coverage block (design-review surface gate) deferred to Phase G design-batch per dashboard-completion-spec D39. shipped_at + shipped_in_commit fields added 2026-05-22 overnight-triage to satisfy round-trip immutability contract § 3 rule 5 (fields were inadvertently omitted in the governance commit; this is a hygiene backfill, not a content change)."
 }
 ---
 

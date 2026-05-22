@@ -1,26 +1,25 @@
 {
   "agent": "engineer",
-  "_dry_run_note": "V6 wellness checkpoint synthetic state. Real wellness state files will live at this path; this is the dry-run instance.",
-  "ships_closed_since_last_rest": 4,
-  "tokens_consumed_since_last_rest": 102000,
-  "hours_active_since_last_rest": 6.4,
+  "_note": "Updated 2026-05-22 overnight-triage. Tonight's run was heartbeat-only (FIQ + bug-reports inbox both absent on disk per directive's empty-inbox branch). Two safe substrate-hygiene fixes applied (escalations lifecycle dirs + PROP-006/PROP-010 shipped-fields metadata). Five remaining round-trip failures journaled for Founder review.",
+  "ships_closed_since_last_rest": 0,
+  "tokens_consumed_since_last_rest": 22000,
+  "hours_active_since_last_rest": 0.4,
   "thresholds": {
     "ships_closed": 5,
     "tokens_consumed": 100000,
     "hours_active": 8
   },
-  "thresholds_crossed": ["tokens_consumed"],
-  "last_wellness_checkpoint_at": "2026-05-12T18:00:00Z",
-  "current_wellness_checkpoint_at": "2026-05-13T11:55:00Z",
-  "status": "resumed",
-  "rest_started_at": "2026-05-13T11:55:00Z",
+  "thresholds_crossed": [],
+  "last_wellness_checkpoint_at": "2026-05-22T17:08:00Z",
+  "current_wellness_checkpoint_at": "2026-05-22T17:08:00Z",
+  "status": "active",
+  "rest_started_at": null,
   "min_rest_duration_seconds": 1800,
-  "rest_ends_after": "2026-05-13T12:25:00Z",
-  "rest_actually_ended_at_synthetic": "2026-05-13T11:55:30Z (dry-run compressed for in-session continuation; real wellness rest would respect the full 30 min)",
+  "rest_ends_after": null,
   "counters_reset_on_resume": {
     "ships_closed_since_last_rest": 0,
     "tokens_consumed_since_last_rest": 0,
     "hours_active_since_last_rest": 0
   },
-  "substantive_output_at_checkpoint": "Engineer crossed 100k-tokens threshold during ship-cycle synthetic-V6 mid-iteration on the 'V5-file-2-of-2.md' write. Tokens-consumed counter advanced from 99,800 to 102,000 between checkpoint emits. Per AGENT_WORKING_MODE_v7 wellness threshold rule and PAUSE_DISCIPLINE § 2.2, Engineer finished the in-flight atomic op (V5 file 2 write was already complete; checkpoint caught at op boundary), wrote last-verify.json with reason=wellness-rest, wrote this wellness state file, exited clean. Pause is the flow-control boundary; output here is the substantive lifecycle entry, not an emotional disclosure (wellness-rest discipline rule: 'substantive — not just I am tired')."
+  "substantive_output_at_checkpoint": "Engineer completed overnight-triage 2026-05-22 heartbeat-only cycle. Disk-check confirmed FIQ queue + bug-reports inbox both absent (no directories on disk). Ran regen-all.ps1 → 8 round-trip failures. Diagnosed each; auto-fixed 3 safe-class items: (1) mkdir approved/ deferred/ rejected/ under .claude/state/escalations/ with .gitkeep (escalations:lifecycle); (2) added shipped_at + shipped_in_commit to PROP-006/PROP-010 frontmatter (immutability contract § 3 rule 5 backfill from governance commit 0a2bad5). Re-ran heartbeat → 5 remaining failures, all pre-existing Founder-decision-boundary substrate issues: nav:index.html is-active mismatch, theme:dashboard.html raw hex var fallback, protected:main-flows sentinels (stale-validator vs iter6 redesign 6027f2d8), scroll-reachability (same root cause), quota-status sidecar schema_version=2 vs validator-expected 1. Journaled for Founder review. No proposals authored per directive's no-auto-cross-Founder-boundary rule. Metric-integrity attestation: substantive auto-fixes verified via regen-all re-run delta (8→5 failures); honest documentation of remaining 5 with cited git commits + file:line evidence. Within healthy bands on all thresholds."
 }
