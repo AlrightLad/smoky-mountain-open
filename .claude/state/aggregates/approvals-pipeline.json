@@ -1,7 +1,7 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-22T02:45:50Z",
-  "generated_at": "2026-05-22T02:45:50Z",
+  "timestamp": "2026-05-22T02:45:54Z",
+  "generated_at": "2026-05-22T02:45:54Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
   "status": "red",
@@ -9,7 +9,7 @@
   "summary": "watcher errored",
   "as_of": "2026-05-22T02:45:48Z",
   "stale": false,
-  "age_hours": 0.0,
+  "age_hours": 0.0016666666666666668,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -32,7 +32,7 @@
       "category": "stall",
       "status": "incomplete",
       "name": "2026-05-22T02-45-48Z-downloads-watcher.log",
-      "note": "[02:45:48] AUTO-COMMIT routine cron output before preflight: 9 files",
+      "note": "[02:45:54]   [drift-sweep] \u001b[0;34mΓåÆ\u001b[0m lint-staged could not find any staged files matching configured tasks.",
       "when": "2026-05-22T02:45:48Z"
     },
     {
@@ -64,6 +64,6 @@
   "_meta": {
     "watcher_runs_inspected": 10,
     "consecutive_skips": 0,
-    "age_minutes": 0.0
+    "age_minutes": 0.1
   }
 }
