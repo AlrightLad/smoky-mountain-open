@@ -23,7 +23,7 @@ var IMMEDIATE_PAGES = ['home.js', 'settings.js', 'onboarding.js'];
 var DEFERRED_PAGES = [
   'merch.js', 'rules.js', 'members.js', 'scramble.js', 'aces.js',
   'playnow.js', 'standings.js', 'challenges.js', 'trips.js',
-  'scorecard.js', 'rounds.js', 'courses.js', 'records.js',
+  'scorecard.js', 'rounds.js', 'rounds-loghole.js', 'courses.js', 'records.js',
   'teetimes.js', 'range.js', 'activity.js', 'rangelive.js', 'calendar.js',
   'more.js', 'feed.js', 'chat.js', 'dms.js', 'invite.js', 'admin.js',
   'faq.js', 'caddynotes-archive.js', 'caddynotes.js', 'bugreport.js', 'trophyroom.js', 'partygames.js',
