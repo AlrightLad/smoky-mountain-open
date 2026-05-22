@@ -36,19 +36,15 @@ function _renderSpectatorHUDShell(round) {
     h += _renderLiveRoundSecondary({ mode: 'live-page', round: round });
   }
 
-  // Gate 3-5 placeholders. Mono mute-2 11px text per v8.13.0 placeholder convention.
-  // Each placeholder occupies a logical section of the HUD; replaced as gates ship.
-  var placeholderStyle = 'padding:24px 0;border-top:1px solid var(--cb-chalk-3);margin-top:24px';
-  var labelStyle = 'font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute-2)';
-
-  // v8.13.3 Gate 3 — PerHoleStrip lands here. Wrapper preserved for visual
-  // rhythm consistency with remaining Gate 4-5 placeholders.
-  h += '<div style="' + placeholderStyle + '">' + _renderPerHoleStrip(round, 'live') + '</div>';
-  // v8.13.5 Gate 4 — StatsPanel + CoursePanel land here.
-  h += '<div style="' + placeholderStyle + '">' + _renderStatsPanel(round, 'live') + '</div>';
-  h += '<div style="' + placeholderStyle + '">' + _renderCoursePanel(round) + '</div>';
-  // v8.13.6 Gate 5 — RecentShotsFeed lands here.
-  h += '<div style="' + placeholderStyle + '">' + _renderRecentShotsFeed(round, 'live') + '</div>';
+  // A.3 (2026-05-22): extracted inline placeholderStyle to .sphud-section
+  // CSS class — lets mobile reflow override section gap without !important.
+  // Each section is a logical chunk of the HUD; mono mute-2 11px text per
+  // v8.13.0 placeholder convention (still used in unfilled gate paths).
+  // v8.13.3+ Gates 3-5: PerHoleStrip, StatsPanel, CoursePanel, RecentShotsFeed.
+  h += '<div class="sphud-section">' + _renderPerHoleStrip(round, 'live') + '</div>';
+  h += '<div class="sphud-section">' + _renderStatsPanel(round, 'live') + '</div>';
+  h += '<div class="sphud-section">' + _renderCoursePanel(round) + '</div>';
+  h += '<div class="sphud-section">' + _renderRecentShotsFeed(round, 'live') + '</div>';
 
   return h;
 }

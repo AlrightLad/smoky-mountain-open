@@ -867,6 +867,16 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .sphud-hero-eyebrow--alert{color:var(--alert)}
 .sphud-hero-eyebrow--mute{color:var(--cb-mute-2)}
 
+/* A.3 (2026-05-22) — extracted from spectator.js inline placeholderStyle so
+   mobile reflow can override section gap without !important. Used to
+   separate HUD sections: per-hole strip, stats panel, course panel, recent
+   shots feed. */
+.sphud-section {
+  padding: 24px 0;
+  border-top: 1px solid var(--cb-chalk-3);
+  margin-top: 24px;
+}
+
 /* ──────────────────────────────────────────────────────────────────────────
    Spotlight visual upgrade (v8.14.0 · Ship 4a Gate 8a)
    Locked palette + editorial type + v2 mock structure. Avatar dropped per
