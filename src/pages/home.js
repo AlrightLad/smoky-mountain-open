@@ -317,11 +317,17 @@ function _renderHQLocationBanner() {
   var status = PB.weather.getResolutionStatus();
   if (status.resolved) return "";
   var locationName = escHtml(status.name);
-  var h = '<div style="background:var(--cb-chalk-2);border-bottom:1px solid var(--cb-chalk-3);padding:var(--sp-3) var(--sp-5);display:flex;flex-direction:column;gap:var(--sp-1);margin-top:var(--sp-3);border-radius:var(--r-3)">';
-  h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--cb-ink);line-height:1.3">';
-  h += "We're showing weather for " + locationName + ".";
-  h += '</div>';
-  h += '<a onclick="Router.go(\'settings\',{section:\'location\'})" style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.5px;color:var(--cb-brass);text-transform:uppercase;cursor:pointer;text-decoration:none;align-self:flex-start" role="link" tabindex="0">Set your location →</a>';
+  // Polish 2026-05-22 (iter3): banner was a stacked 2-row card with 18px
+  // display headline + below-link CTA — felt heavy for a hint message.
+  // Compressed to single-row inline layout: subtle ui-font hint + inline
+  // brass action link. Less visual weight, faster scan. Card chrome
+  // simplified to thin left rule (matches other "informational" patterns
+  // in design system).
+  var h = '<div style="background:var(--cb-chalk-2);border-left:3px solid var(--cb-brass);padding:10px 14px;margin-top:var(--sp-3);border-radius:var(--r-2);display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;font-family:var(--font-ui)">';
+  h += '<span style="font-size:13px;color:var(--cb-charcoal);line-height:1.3">';
+  h += "Showing weather for " + locationName + ".";
+  h += '</span>';
+  h += '<a onclick="Router.go(\'settings\',{section:\'location\'})" style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--cb-brass);text-transform:uppercase;cursor:pointer;text-decoration:none" role="link" tabindex="0">Set your location →</a>';
   h += '</div>';
   return h;
 }
