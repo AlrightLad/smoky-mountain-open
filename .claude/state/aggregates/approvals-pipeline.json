@@ -1,15 +1,15 @@
 {
   "schema_version": "approvals-pipeline-v1.1",
-  "timestamp": "2026-05-22T02:36:15Z",
-  "generated_at": "2026-05-22T02:36:15Z",
+  "timestamp": "2026-05-22T02:38:21Z",
+  "generated_at": "2026-05-22T02:38:21Z",
   "source": "regen-dashboard.approvals_pipeline_status()",
   "available": true,
-  "status": "red",
-  "raw_status": "red",
-  "summary": "watcher errored",
+  "status": "green",
+  "raw_status": "green",
+  "summary": "watcher no-new-files 2.6min ago",
   "as_of": "2026-05-22T02:35:48Z",
   "stale": false,
-  "age_hours": 0.008333333333333333,
+  "age_hours": 0.043333333333333335,
   "counts": {
     "proposals_pending": 0,
     "proposals_approved": 0,
@@ -30,13 +30,6 @@
     },
     {
       "category": "stall",
-      "status": "incomplete",
-      "name": "2026-05-22T02-35-48Z-downloads-watcher.log",
-      "note": "[02:35:50]   [auto-commit] [dashboard-smoke] dashboard files staged ΓÇö running smoke gate...",
-      "when": "2026-05-22T02:35:48Z"
-    },
-    {
-      "category": "stall",
       "status": "skip-dirty",
       "name": "2026-05-22T02-20-48Z-downloads-watcher.log",
       "note": "[02:20:48] SKIP working tree dirty with non-routine files: templates/dashboards/activity.template.html, templates/dashboards/dashboard.template.html, templates/dashboards/discussion-bubbles.template.h",
@@ -48,6 +41,13 @@
       "name": "2026-05-22T02-10-48Z-downloads-watcher.log",
       "note": "[02:10:48] SKIP working tree dirty with non-routine files: .claude/state/stop-decisions/2026-05-21.ndjson",
       "when": "2026-05-22T02:10:48Z"
+    },
+    {
+      "category": "stall",
+      "status": "skip-dirty",
+      "name": "2026-05-22T02-05-48Z-downloads-watcher.log",
+      "note": "[02:05:48] SKIP working tree dirty with non-routine files: .claude/state/stop-decisions/2026-05-21.ndjson",
+      "when": "2026-05-22T02:05:48Z"
     }
   ],
   "links": [
@@ -64,6 +64,6 @@
   "_meta": {
     "watcher_runs_inspected": 10,
     "consecutive_skips": 0,
-    "age_minutes": 0.5
+    "age_minutes": 2.6
   }
 }
