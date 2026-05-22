@@ -22,7 +22,7 @@ var IMMEDIATE_PAGES = ['home.js', 'settings.js', 'onboarding.js'];
 // Pages loaded after initial render (deferred for faster first paint)
 var DEFERRED_PAGES = [
   'merch.js', 'rules.js', 'members.js', 'scramble.js', 'aces.js',
-  'playnow.js', 'standings.js', 'challenges.js', 'trips.js',
+  'playnow.js', 'playnow-scoring.js', 'standings.js', 'challenges.js', 'trips.js',
   'scorecard.js', 'rounds.js', 'rounds-loghole.js', 'courses.js', 'courses-detail.js', 'records.js',
   'teetimes.js', 'range.js', 'activity.js', 'rangelive.js', 'calendar.js',
   'more.js', 'feed.js', 'chat.js', 'dms.js', 'invite.js', 'admin.js', 'admin-diagnostic.js',
