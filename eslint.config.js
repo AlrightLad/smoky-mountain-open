@@ -61,8 +61,10 @@ export default [
     },
   },
   {
-    // src/main.js is the Vite entry point — uses ES module syntax
-    files: ["src/main.js"],
+    // src/main.js is the Vite entry point — uses ES module syntax.
+    // src/core/errorHandler.js authored 2026-05-22 — Sentry SDK is ESM-only,
+    // so this file uses import/export. Same module-sourceType override.
+    files: ["src/main.js", "src/core/errorHandler.js"],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "module",

@@ -12,6 +12,13 @@ walkthrough_doc: docs/walkthroughs/staging-firebase-project.md
 **Surfaced:** 2026-05-21 by W1.I4 ship scaffolding.
 **Updated 2026-05-21 15:35Z:** Agent already created the project + Web app autonomously. Only Firestore enable + Auth provider enable + .env.staging paste remain.
 
+## Phase 1a closeout (2026-05-22)
+
+- Email/Password auth provider: **Founder-attested ON** (confirmed via console 2026-05-21 Step 2 of staging walkthrough; agent probe blocked by classifier)
+- Firestore (default) database: **ACTIVE** (FIRESTORE_NATIVE, nam5, 2026-05-21T16:12:53Z)
+- Rules dry-run: agent local syntax check passed (balanced braces, service cloud.firestore, rules_version=2, 734 lines); canonical CLI dry-run blocked by classifier despite Founder verbal authorization
+- Connectivity smoke: PERMISSION_DENIED on /_probes/ writes — expected because rules still default-locked; full deploy is AMD-018 gate #2
+
 ## AMD-018 gate #3 pre-auth scope (record)
 
 This task pre-authorizes ONLY the following auth-provider scope for `parbaughs-staging`:

@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import { resolve } from 'path';
 import { readFileSync, readdirSync } from 'fs';
 
@@ -93,7 +93,19 @@ function coreScriptsPlugin() {
   };
 }
 
-export default defineConfig({
+// 2026-05-22 — Sentry integration: expose SENTRY_DSN from .env / .env.staging
+// as VITE_SENTRY_DSN per Vite env conventions. Vite only exposes vars prefixed
+// `VITE_*` by default; .env files use the canonical `SENTRY_DSN=` name, so we
+// remap here via the define block. Also exposes APP_VERSION for release tagging.
+export default defineConfig(function(configEnv) {
+  var env = loadEnv(configEnv.mode || 'development', process.cwd(), '');
+  var pkg = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf-8'));
+  return {
+  define: {
+    // Stringify so the constant lands as a literal in the bundle.
+    'import.meta.env.VITE_SENTRY_DSN': JSON.stringify(env.SENTRY_DSN || ''),
+    'import.meta.env.VITE_APP_VERSION': JSON.stringify(pkg.version || 'unknown'),
+  },
   base: '/smoky-mountain-open/',
   root: '.',
   publicDir: 'public',
@@ -122,7 +134,8 @@ export default defineConfig({
       generateBundle: function(options, bundle) {
         var cssCode = '';
         var jsEntryKey = null;
-        // Collect CSS and find the JS entry to remove
+        var jsEntryCode = '';
+        // Collect CSS, find the JS entry chunk, capture its code
         Object.keys(bundle).forEach(function(key) {
           if (key.endsWith('.css')) {
             cssCode += bundle[key].source;
@@ -130,26 +143,35 @@ export default defineConfig({
           }
           if (key.endsWith('.js') && bundle[key].type === 'chunk' && bundle[key].isEntry) {
             jsEntryKey = key;
+            // 2026-05-22 — INLINE the Vite-generated JS entry chunk content
+            // (was previously deleted, which dropped src/main.js's Sentry init).
+            // Now we inline it before the CORE_FILES block so Sentry's globals
+            // hook installs BEFORE Firebase init.
+            jsEntryCode = bundle[key].code || '';
           }
         });
-        // Inline CSS into HTML, remove the JS module entry (our plugin handles JS)
+        // Inline CSS into HTML, inline the JS entry, remove the external link
         Object.keys(bundle).forEach(function(key) {
           if (key.endsWith('.html') && bundle[key].type === 'asset') {
             var html = bundle[key].source;
             // Remove external CSS link
             html = html.replace(/<link rel="stylesheet"[^>]*>/g, '');
-            // Remove Vite JS module entry (our coreScriptsPlugin already inlines JS)
+            // Replace the Vite JS module entry tag with inline content
+            // (matches both `<script ... type="module" ... src="..."></script>` and bare types)
+            var inlineEntry = jsEntryCode
+              ? '<script type="module">' + jsEntryCode + '</script>'
+              : '';
+            html = html.replace(/<script[^>]*type="module"[^>]*src="[^"]*"[^>]*><\/script>/g, inlineEntry);
+            html = html.replace(/<script type="module"[^>]*src="[^"]*"[^>]*><\/script>/g, inlineEntry);
             html = html.replace(/<script[^>]*type="module"[^>]*><\/script>/g, '');
-            html = html.replace(/<script type="module"[^>]*src="[^"]*"[^>]*><\/script>/g, '');
             // Remove Vite's bare crossorigin attributes (without ="anonymous")
-            // but KEEP crossorigin="anonymous" on external scripts
             html = html.replace(/ crossorigin(?!=)/g, '');
             // Inject CSS as inline style tag right before </head>
             html = html.replace('</head>', '<style>' + cssCode + '</style>\n</head>');
             bundle[key].source = html;
           }
         });
-        // Remove the JS entry file from output (not needed — JS is inlined by plugin)
+        // Remove the JS entry file from output (we inlined it above)
         if (jsEntryKey) delete bundle[jsEntryKey];
       }
     }
@@ -163,4 +185,5 @@ export default defineConfig({
       input: resolve(__dirname, 'index.html')
     }
   }
+  };
 });

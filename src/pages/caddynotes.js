@@ -22,7 +22,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Rounds reborn</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "The Caddy Notes got a fresh layout. Recent Updates shows the last 3 ships, What's in the Bag stays complete, and On the Range hints at what's next without spoiling.", tag: "IMPROVED" }
+    { item: "Behind-the-scenes: error monitoring wired up so the team catches crashes faster.", tag: "INFRA" }
   ];
 
   currentNotes.forEach(function(r) { h += renderEntry(r); });
@@ -30,6 +30,12 @@ Router.register("caddynotes", function() {
 
   // Past Releases (newest first; each block collapses by default)
   var archiveNotes = [
+    {
+      version: "v8.23.0", date: "May 2026", headline: "Caddy Notes refresh",
+      items: [
+        { item: "The Caddy Notes got a fresh layout. Recent Updates shows the last 3 ships, What's in the Bag stays complete, and On the Range hints at what's next without spoiling.", tag: "IMPROVED" }
+      ]
+    },
     {
       version: "v8.21.0", date: "May 2026", headline: "League Pulse polish",
       items: [

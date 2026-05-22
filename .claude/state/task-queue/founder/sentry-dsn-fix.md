@@ -1,9 +1,10 @@
 ---
-status: open
+status: closed
+closed_at: 2026-05-22T15:30:00Z
+closed_by: founder
+closed_reason: "Founder paste-replaced DSN values in both .env files. Verify re-ran: both .env and .env.staging show VALID SDK DSN format (https://<key>@o<orgId>.ingest.us.sentry.io/<projectId>). Phase 2 unblocked."
 severity: red
 priority: HIGH
-verify_command: "if (Test-Path .env) { Select-String -Path .env -Pattern '^SENTRY_DSN=https://[a-f0-9]+@o\\d+\\.ingest\\.(us|de)\\.sentry\\.io/\\d+$' } else { 'NOT_FOUND' }"
-verify_expected: "SENTRY_DSN=https://"
 walkthrough_doc: docs/walkthroughs/sentry-dsn-fix.md
 ---
 
