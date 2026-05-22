@@ -1,8 +1,8 @@
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-22T02:45:59.894415Z",
+  "generated_at": "2026-05-22T02:49:22.384004Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 81.3,
+  "overall_score": 82.8,
   "overall_grade": "B+",
   "incidents_deduction": {
     "sev1": 0,
@@ -22,9 +22,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 88.3,
+    "pre_deduction_score": 89.8,
     "deduction": 7,
-    "post_deduction_score": 81.3
+    "post_deduction_score": 82.8
   },
   "dimensions": {
     "A1_roadmap": {
@@ -205,9 +205,9 @@
       ]
     },
     "A12_operational": {
-      "score": 70,
-      "status": "yellow",
-      "label": "pipeline=red · 2 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "score": 100,
+      "status": "green",
+      "label": "pipeline=green · 2 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [],
       "details": {
@@ -246,13 +246,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "1f17fa70",
-    "subject": "cron(routine): post-watcher-commit drift sweep (2026-05-22T02:45:52.7724568Z)",
-    "committed_at": "2026-05-21T22:45:52-04:00",
-    "trigger": "cron",
+    "sha": "1b4322c8",
+    "subject": "fix(post-commit): use --no-verify in auto-clean step to break pre-commit smoke-race-condition dirty-tree loop",
+    "committed_at": "2026-05-21T22:48:24-04:00",
+    "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 2
+    "total_files_touched": 10
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
