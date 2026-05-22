@@ -47,6 +47,8 @@ const SURFACES = [
     { key: "feed",        route: "/feed",       wait: "[data-page='feed'], .feed-list" },
     { key: "profile",     route: "/profile",    wait: "[data-page='profile'], .pr-page" },
     { key: "settings",    route: "/settings",   wait: "[data-page='settings'], .st-page" },
+    { key: "trophyroom",  route: "/trophyroom", wait: "[data-page='trophyroom'], .trophy-room" },
+    { key: "shop",        route: "/shop",       wait: "[data-page='shop'], .shop-grid" },
 ];
 
 const USERS = (await import(pathToFileURL(resolve(REPO, "tests/e2e/setup/fixtures/users.js")).href)).users;

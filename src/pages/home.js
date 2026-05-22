@@ -191,9 +191,62 @@ function _renderMobileHome(ctx) {
     if (upcoming && upcoming.length > 0) h += _renderTeeTimesSection(upcoming);
   }
 
+  // v8.22+ (design-pass 2026-05-22): inject league pulse on mobile home so
+  // members see what others are doing without navigating to /feed. Mirrors
+  // the HQ League Pulse section but compressed: eyebrow + 3 most-recent
+  // activity items as compact rows, no time-bucket grouping (space at a
+  // premium on mobile). Routes to /feed on tap.
+  if (ctx.state !== "new" && typeof _hqBuildActivityItems === "function") {
+    h += _renderMobileLeaguePulse();
+  }
+
   h += renderPageFooter();
 
   document.querySelector('[data-page="home"]').innerHTML = h;
+}
+
+// Compact league pulse for mobile home — 3 most-recent activity items as
+// avatar + line cards. Per design-pass 2026-05-22: gives mobile members
+// social context without leaving home. Routes the entire section to /feed
+// on tap of "FULL FEED →".
+function _renderMobileLeaguePulse() {
+  var items;
+  try { items = _hqBuildActivityItems(3); } catch(e) { items = []; }
+  if (!items || !items.length) return "";
+  var leagueName = (typeof window !== "undefined" && window._activeLeagueName) || "Parbaughs";
+
+  var h = '<div style="padding:0 22px;margin-top:20px">';
+  // Eyebrow + full feed link
+  h += '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px">';
+  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase">' + escHtml(String(leagueName).toUpperCase()) + ' · PULSE</div>';
+  h += '<div onclick="Router.go(\'feed\')" style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--cb-brass);cursor:pointer;text-transform:uppercase">Full feed →</div>';
+  h += '</div>';
+
+  // Item rows
+  h += '<div style="display:flex;flex-direction:column;gap:8px">';
+  items.slice(0, 3).forEach(function(it) {
+    var clickAttr = it.dest ? ' onclick="' + it.dest + '"' : '';
+    h += '<div' + clickAttr + ' style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--cb-chalk-2);border-radius:8px;' + (it.dest ? 'cursor:pointer;' : '') + '">';
+    // Avatar (32px)
+    var actorPlayer = (it.actorUid && typeof PB !== "undefined" && PB.getPlayer) ? PB.getPlayer(it.actorUid) : null;
+    if (typeof renderAvatar === "function") {
+      h += '<div style="flex-shrink:0">' + renderAvatar(actorPlayer || { name: it.actorName || "?", id: "" }, 28, !!actorPlayer) + '</div>';
+    }
+    // Body
+    h += '<div style="flex:1;min-width:0">';
+    if (it.entityType) {
+      h += '<div style="font-family:var(--font-mono);font-size:8px;font-weight:700;letter-spacing:1.5px;color:var(--cb-mute);text-transform:uppercase;margin-bottom:3px">' + escHtml(it.entityType) + '</div>';
+    }
+    h += '<div style="font-family:var(--font-ui);font-size:12px;color:var(--cb-ink);line-height:1.4;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">' + escHtml(it.text) + '</div>';
+    if (it.sub) h += '<div style="font-family:var(--font-mono);font-size:9px;color:var(--cb-mute);margin-top:2px;letter-spacing:0.3px">' + escHtml(it.sub) + '</div>';
+    h += '</div>';
+    // Time
+    h += '<div style="flex-shrink:0;font-family:var(--font-mono);font-size:9px;color:var(--cb-mute);letter-spacing:0.3px">' + escHtml(it.timeAgo) + '</div>';
+    h += '</div>';
+  });
+  h += '</div>';
+  h += '</div>';
+  return h;
 }
 
 // HQ desktop layout — thin orchestrator over PB.pageShell (v8.11.4 refactor).
