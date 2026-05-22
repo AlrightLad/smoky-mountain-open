@@ -151,6 +151,14 @@ try {
         '^\.claude/state/heartbeat/.+\.log$',
         '^docs/agents/SESSION_JOURNAL\.md$',
 
+        # 2026-05-21 second-pass fix — additional artifacts that pulse every
+        # cycle but are routine cron/agent output, not real changes:
+        '^\.claude/state/stop-decisions/.+\.ndjson$',        # Stop hook session-end markers
+        '^\.claude/state/incidents/.+\.md$',                 # Incident reports (Class A)
+        '^\.claude/state/aggregates/founder-checklist-staleness\.json$',  # weekly staleness audit
+        '^\.claude/state/aggregates/architecture-review\.json$',
+        '^\.claude/state/aggregates/fiq-status\.json$',
+
         # Sibling-agent EnterWorktree dirs + verify canary. Both surfaced by
         # test-qa CRITICAL-watcher-allowlist-worktrees-and-canary (2026-05-15):
         # 6 consecutive watcher SKIPs were caused by a leftover worktree dir

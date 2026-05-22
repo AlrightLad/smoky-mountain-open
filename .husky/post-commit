@@ -283,7 +283,9 @@ docs/reports/founder-checklist.html
 .claude/state/telemetry/events
 .claude/state/dashboard-health
 .claude/state/aggregates
-.claude/state/heartbeats"
+.claude/state/heartbeats
+.claude/state/stop-decisions
+.claude/state/incidents"
 
 DIRTY=""
 for p in $CLASS_A_PATHS; do
