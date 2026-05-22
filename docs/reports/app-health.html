@@ -821,21 +821,15 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-22T22:32:49.966159Z",
+  "generated_at": "2026-05-22T22:40:40.724877Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 83.9,
-  "overall_grade": "B+",
+  "overall_score": 86.7,
+  "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
     "sev2": 1,
-    "sev3": 1,
+    "sev3": 0,
     "incidents": [
-      {
-        "id": "2026-05-21-credential-leak",
-        "severity": "SEV-3",
-        "status": "contained",
-        "path": ".claude/state/incidents/2026-05-21-credential-leak.md"
-      },
       {
         "id": "2026-05-21-process-failures",
         "severity": "SEV-2",
@@ -843,9 +837,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 90.9,
-    "deduction": 7,
-    "post_deduction_score": 83.9
+    "pre_deduction_score": 91.7,
+    "deduction": 5,
+    "post_deduction_score": 86.7
   },
   "dimensions": {
     "A1_roadmap": {
@@ -878,7 +872,7 @@
     "A4_uiux": {
       "score": 93,
       "status": "green",
-      "label": "Lighthouse BP 93/100 across 1 pages",
+      "label": "Lighthouse BP 93/100 across 6 pages",
       "source": ".claude/state/aggregates/lighthouse-scores.json",
       "weak_points": []
     },
@@ -926,22 +920,16 @@
       "weak_points": []
     },
     "A8_performance": {
-      "score": 65,
-      "status": "yellow",
-      "label": "Lighthouse Performance 65/100 across 1 pages",
+      "score": 80,
+      "status": "green",
+      "label": "Lighthouse Performance 80/100 across 6 pages",
       "source": ".claude/state/aggregates/lighthouse-scores.json",
-      "weak_points": [
-        {
-          "what": "Lighthouse Performance = 65/100 across 1 pages (target: 75+)",
-          "where": ".claude/state/aggregates/lighthouse-scores.json",
-          "what_action": "Open .lighthouseci/*.html — fix top performance failures per page"
-        }
-      ]
+      "weak_points": []
     },
     "A9_accessibility": {
       "score": 95,
       "status": "green",
-      "label": "Lighthouse Accessibility 95/100 across 1 pages",
+      "label": "Lighthouse Accessibility 95/100 across 6 pages",
       "source": ".claude/state/aggregates/lighthouse-scores.json",
       "weak_points": []
     },
@@ -968,11 +956,11 @@
     "A12_operational": {
       "score": 60,
       "status": "yellow",
-      "label": "pipeline=red · 8 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 9 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "8 of last 10 cron watcher runs hit skip-dirty",
+          "what": "9 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -985,13 +973,7 @@
   },
   "attention_items": [
     {
-      "what": "Lighthouse Performance = 65/100 across 1 pages (target: 75+)",
-      "where": ".claude/state/aggregates/lighthouse-scores.json",
-      "what_action": "Open .lighthouseci/*.html — fix top performance failures per page",
-      "dimension": "A8_performance"
-    },
-    {
-      "what": "8 of last 10 cron watcher runs hit skip-dirty",
+      "what": "9 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -1000,29 +982,20 @@
   "founder_attention": [],
   "agent_attention": [
     {
-      "what": "Lighthouse Performance = 65/100 across 1 pages (target: 75+)",
-      "where": ".claude/state/aggregates/lighthouse-scores.json",
-      "what_action": "Open .lighthouseci/*.html — fix top performance failures per page",
-      "dimension": "A8_performance"
-    },
-    {
-      "what": "8 of last 10 cron watcher runs hit skip-dirty",
+      "what": "9 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "957f800c",
-    "subject": "feat(home-hq): The league this week â€” 4-stat weekly strip (W2.S1 pull-forward)",
-    "committed_at": "2026-05-22T18:32:02-04:00",
-    "trigger": "app-commit",
-    "is_app_commit": true,
-    "app_files_touched": [
-      "src/pages/home-band.js",
-      "src/pages/home-hq.js"
-    ],
-    "total_files_touched": 29
+    "sha": "3202ba2e",
+    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
+    "committed_at": "2026-05-22T18:33:48-04:00",
+    "trigger": "cron",
+    "is_app_commit": false,
+    "app_files_touched": [],
+    "total_files_touched": 4
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",

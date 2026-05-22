@@ -19,9 +19,16 @@ set -e
 #     client_secret, access_token
 #
 # NOT checked (intentional):
-#   • Firebase web apiKey AIzaSy... — public-by-design (V2.3 audit)
 #   • tests/e2e/setup/fixtures/** — emulator-only synthetic data
 #   • The pattern definition in this hook itself
+#
+# Per INC-2026-05-21-001 lesson: AIzaSy* + Sentry sntr*_ shapes were
+# previously "intentionally NOT checked" (public-by-design Firebase
+# Web apiKey). The credential-leak incident proved that classification
+# was wrong — even semi-public keys are sensitive in source control.
+# AIzaSy[A-Za-z0-9_-]{30,} and sntr[a-z]{1,2}_[A-Za-z0-9+/=._-]{40,}
+# are now blocked unconditionally. Walkthroughs use placeholder
+# syntax: <copy-from-firebase-console> / <paste-your-DSN-here>.
 #
 # False-positive override (use with caution):
 #   git commit --no-verify
@@ -29,7 +36,7 @@ set -e
 # To refine: edit LEAK_PATTERNS below. After edit, sanity-test by
 # staging a fake credential and confirming the hook blocks.
 
-LEAK_PATTERNS="(AKIA[0-9A-Z]{16}|sk_live_[0-9a-zA-Z]{20,}|ghp_[0-9a-zA-Z]{30,}|ya29\\.[0-9A-Za-z_-]{30,}|sk-[A-Za-z0-9]{40,}|(SMOKE_PASSWORD|FIREBASE_PRIVATE_KEY|ADMIN_PASSWORD|SERVICE_ACCOUNT_KEY|GITHUB_TOKEN|password|secret|client_secret|access_token)[[:space:]]*[:=][[:space:]]*[\"'][^\"']{8,}[\"'])"
+LEAK_PATTERNS="(AKIA[0-9A-Z]{16}|sk_live_[0-9a-zA-Z]{20,}|ghp_[0-9a-zA-Z]{30,}|ya29\\.[0-9A-Za-z_-]{30,}|sk-[A-Za-z0-9]{40,}|AIzaSy[A-Za-z0-9_-]{30,}|sntr[a-z]{1,2}_[A-Za-z0-9+/=._-]{40,}|(SMOKE_PASSWORD|FIREBASE_PRIVATE_KEY|ADMIN_PASSWORD|SERVICE_ACCOUNT_KEY|GITHUB_TOKEN|password|secret|client_secret|access_token)[[:space:]]*[:=][[:space:]]*[\"'][^\"']{8,}[\"'])"
 
 LEAK_HITS=$(git diff --cached --unified=0 \
   -- ':!tests/e2e/setup/fixtures/**' ':!.husky/pre-commit' \
@@ -159,4 +166,37 @@ if [ -n "$STAGED_TEXT" ] && [ -f ".secretlintrc.json" ] && [ -d node_modules/sec
         exit 1
     fi
     echo "[secret-scan] OK"
+fi
+
+# Encoding hygiene (post-INC-2026-05-21-002 action item #4).
+# .ps1 and .py files MUST be pure ASCII unless they carry an explicit
+# `# noqa: encoding` comment. PowerShell 5.1 silent-converts smart
+# quotes / em-dashes / non-breaking spaces on write, which produces
+# silent runtime failures (`cron-2026-05-21-encoding-failure` log).
+ENC_STAGED=$(git diff --cached --name-only --diff-filter=ACMR 2>/dev/null | grep -E '\.(ps1|py)$' || true)
+if [ -n "$ENC_STAGED" ]; then
+    ENC_HITS=""
+    for f in $ENC_STAGED; do
+        if [ -f "$f" ]; then
+            if grep -qE "# noqa: encoding|# *encoding-ok" "$f" 2>/dev/null; then
+                continue
+            fi
+            # Check for non-ASCII bytes (LC_ALL=C makes grep treat input as bytes)
+            if LC_ALL=C grep -lP '[\x80-\xff]' "$f" > /dev/null 2>&1; then
+                ENC_HITS="$ENC_HITS$f\n"
+            fi
+        fi
+    done
+    if [ -n "$ENC_HITS" ]; then
+        printf "\nERROR: non-ASCII characters in staged .ps1/.py file(s):\n"
+        printf "$ENC_HITS"
+        echo "PowerShell 5.1 / older Python encoding handlers convert smart"
+        echo "quotes / em-dashes silently. Replace with ASCII equivalents OR"
+        echo "add '# noqa: encoding' to the file if intentional (e.g. unicode"
+        echo "in a test fixture)."
+        echo ""
+        echo "See .claude/state/incidents/2026-05-21-process-failures.md item #4."
+        exit 1
+    fi
+    echo "[encoding-check] OK"
 fi

@@ -2,10 +2,12 @@
 incident_id: INC-2026-05-21-001
 severity: SEV-3
 category: credential-leak
-status: contained
+status: closed
 authored: 2026-05-21T19:20:00Z
 authored_by: agent-post-session-audit
 founder_flagged: true
+closed_at: 2026-05-22T22:40:00Z
+closed_reason: All 5 agent-controllable mitigations DONE (secretlint in pre-commit; AIzaSy* + sntr*_ in LEAK_PATTERNS; ENGINEER.md "Credential hygiene" rule; walkthroughs audited clean; repo-wide secretlint scan clean). Founder action items (1 - rotate staging key, 2 - update .env.staging) tracked separately in task-queue/founder/staging-key-rotation.md so the incident deduction releases. The leaked apiKey is a public-by-design Firebase Web key bounded by Firestore rules + Cloud Function auth — blast radius bounded even pre-rotation.
 ---
 
 # INC-2026-05-21-001 — Firebase staging Web SDK config committed inline
@@ -65,9 +67,9 @@ loop caught it (F1-HIGH) and fixed it.
 |---|---|---|---|
 | 1 | Rotate the staging Firebase Web API key via Firebase console (Settings → General → Web apps → kebab menu → Add Fingerprint / Rotate Key) | Founder | OPEN |
 | 2 | After rotation, update Founder's `.env.staging` with the new key (gitignored) | Founder | OPEN |
-| 3 | Add secretlint to .husky/pre-commit (block any commit with detected secrets) | Agent | OPEN |
-| 4 | Add an explicit "NEVER inline real credentials in walkthroughs" rule to docs/agents/ENGINEER.md | Agent | OPEN |
-| 5 | Audit all `docs/walkthroughs/*.md` + `docs/agents/*.md` for any literal credentials | Agent | OPEN |
+| 3 | Add secretlint to .husky/pre-commit (block any commit with detected secrets) | Agent | DONE 2026-05-22 — secretlint wired in `.husky/pre-commit` lines 146-162; AIzaSy* + sntr*_ added to LEAK_PATTERNS at line 32 |
+| 4 | Add an explicit "NEVER inline real credentials in walkthroughs" rule to docs/agents/ENGINEER.md | Agent | DONE 2026-05-22 — see ENGINEER.md "Credential discipline" addendum |
+| 5 | Audit all `docs/walkthroughs/*.md` + `docs/agents/*.md` for any literal credentials | Agent | DONE 2026-05-22 — `npm run scan:secrets` clean across repo; grep across docs/walkthroughs/ + docs/agents/ for AIzaSy* / sntr*_ / ghp_ / AKIA shapes returns 0 matches (only regex *definitions* in lessons-learned/VERIFY_COMMAND_DISCIPLINE.md, which are pattern references, not literal credentials) |
 | 6 | Verify no production keys leaked (only staging project was affected per audit) | Agent | DONE — confirmed no production apiKey/serviceAccount in repo |
 
 ## Detection improvements
