@@ -820,9 +820,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-22T16:01:34.019457Z",
+  "generated_at": "2026-05-22T16:05:35.676700Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 82.1,
+  "overall_score": 82.8,
   "overall_grade": "B+",
   "incidents_deduction": {
     "sev1": 0,
@@ -842,9 +842,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 89.1,
+    "pre_deduction_score": 89.8,
     "deduction": 7,
-    "post_deduction_score": 82.1
+    "post_deduction_score": 82.8
   },
   "dimensions": {
     "A1_roadmap": {
@@ -1025,14 +1025,14 @@
       ]
     },
     "A12_operational": {
-      "score": 85,
+      "score": 100,
       "status": "green",
-      "label": "pipeline=yellow · 1 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=green · 1 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "skip-dirty"
+        "watcher_exit_reason": "no-new-files"
       }
     }
   },
@@ -1066,13 +1066,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "d95a829e",
-    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
-    "committed_at": "2026-05-22T12:01:27-04:00",
-    "trigger": "cron",
+    "sha": "d2c9231f",
+    "subject": "Overnight triage 2026-05-22 - 0 reports, 0 proposals, 0 FIQ entries graded",
+    "committed_at": "2026-05-22T12:05:17-04:00",
+    "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 4
+    "total_files_touched": 1
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
