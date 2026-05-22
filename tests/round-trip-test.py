@@ -1366,6 +1366,10 @@ def main():
     # count returns to 6 (the --col-* tokens only).
     print(cyan("\n[theme] Theme convergence guard (no raw hex in dashboard <style>)..."))
     HEX_IN_CSS_RE = re.compile(r"#[0-9a-fA-F]{3,8}\b")
+    # Strip var(--name, #fallback) — the hex is a legitimate fallback used
+    # for SSR / no-CSS-vars contexts. The var() reference is the canonical
+    # token; the fallback is a secondary safety net, not a token violation.
+    VAR_FALLBACK_RE = re.compile(r"var\(--[a-zA-Z0-9_-]+,\s*#[0-9a-fA-F]{3,8}\)")
     THEME_PAGES = [
         ("dashboard.html",          0),
         ("activity.html",           0),
@@ -1386,7 +1390,10 @@ def main():
         style_blocks = re.findall(r"<style[^>]*>(.*?)</style>", text, flags=re.DOTALL)
         style_attrs  = re.findall(r'style="([^"]*)"', text)
         css_text = "\n".join(style_blocks) + "\n" + "\n".join(style_attrs)
-        hex_in_css = HEX_IN_CSS_RE.findall(css_text)
+        # Strip legitimate var(--name, #fallback) patterns before counting
+        # raw hex — the fallback is design-token discipline-compliant.
+        css_text_stripped = VAR_FALLBACK_RE.sub("", css_text)
+        hex_in_css = HEX_IN_CSS_RE.findall(css_text_stripped)
         if len(hex_in_css) > allowed_hex:
             print(red(f"  ✗ {fname:32s} {len(hex_in_css)} raw hex value(s) in CSS contexts (allowed: {allowed_hex})"))
             print(red(f"     samples: {hex_in_css[:5]}"))
@@ -1516,19 +1523,23 @@ def main():
         except json.JSONDecodeError:
             pass
 
+    # Updated sentinels per 2026-05-20 main-flows redesign (commit 40abde46)
+    # — Founder visual-sign-off redirected from the Janowiak-density grid
+    # to a list-based layer + category filter UI. Old sentinels (mf-workspace,
+    # mf-grid, repeat(6, ...), SVG arrows, mf-flows-list, mf-steps-list,
+    # mf-rail-search/-chips/-arch-before) checked the OLD architecture +
+    # are intentionally absent post-redesign.
     mf_checks = [
-        ("mf-workspace",      'class="mf-workspace"' in mf_html),
-        ("mf-grid",           'class="mf-grid"'      in mf_html or 'id="mf-grid"' in mf_html),
-        ("6-column declared", "repeat(6," in mf_html),
-        ("SVG arrows",        '<svg class="mf-arrows"' in mf_html or 'id="mf-arrows"' in mf_html),
-        ("flows list rail",   'class="mf-flows-list"' in mf_html or 'id="mf-flows-list"' in mf_html),
-        ("steps panel",       'class="mf-steps-list"' in mf_html or 'id="mf-steps-list"' in mf_html),
-        ("arch-before-rail",  arch_first),
-        # Ship 3 / Founder Q2 (2026-05-14): rail must carry search + filter
-        # chips + render all 62 flows from data.flow_rail (not just F1-F8).
-        ("rail search input",   'id="mf-rail-search"' in mf_html),
-        ("rail filter chips",   'class="mf-rail-chips"' in mf_html),
-        ("rail sources flow_rail", "railEntries()" in mf_html and "data.flow_rail" in mf_html),
+        ("mf-page-wrap",           'class="mf-page-wrap"' in mf_html),
+        ("mf-filter-bar",          'class="mf-filter-bar"' in mf_html),
+        ("mf-filter-chip",         'class="mf-chip"' in mf_html),
+        ("mf-list",                'class="mf-list"' in mf_html),
+        ("mf-flow card",           'class="mf-flow"' in mf_html),
+        ("mf-flow-detail grid",    'class="mf-flow-detail-grid"' in mf_html or 'class="mf-flow-detail"' in mf_html),
+        ("mf-search input",        'class="mf-search"' in mf_html),
+        ("mf-search-count counter", 'class="mf-search-count"' in mf_html),
+        ("mf-flow-toggle expand",  'class="mf-flow-toggle"' in mf_html),
+        ("mf-empty empty-state",   'class="mf-empty"' in mf_html),
         # Ship 4 / Founder brief 2026-05-14: content-count sentinels grounded
         # in the data block so display-layer regressions surface immediately.
         ("expected components (data)", expected_total_components is not None and expected_total_components >= 40),

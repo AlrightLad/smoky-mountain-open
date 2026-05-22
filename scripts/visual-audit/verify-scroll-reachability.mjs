@@ -42,15 +42,19 @@ const REPORTS_DIR = resolve(REPO_ROOT, "docs", "reports");
 
 const SURFACES = [
     {
-        name: "main-flows rail (62 flows)",
+        // Updated 2026-05-22 per main-flows redesign (commit 40abde46) —
+        // moved from a rail-with-inner-scroll to a page-scrolled flow list.
+        // The container selector is now '.mf-list' and items '.mf-flow';
+        // scrollKind 'inner' kept because the list still scrolls within a
+        // bounded container at desktop width.
+        name: "main-flows list (62 flows)",
         file: "main-flows.html",
         viewport: { width: 1920, height: 1080 },
-        // Inner-scroller: the rail list itself, not the page body.
         scrollKind: "inner",
-        container: ".mf-flows-list",
-        lastItemSelector: ".mf-flows-list .mf-flows-item:last-child",
-        captureClipSelector: ".mf-rail",
-        capturePath: ".claude/state/main-flows-v2/iter-8-rail-bottom.png",
+        container: ".mf-list",
+        lastItemSelector: ".mf-list .mf-flow:last-child",
+        captureClipSelector: ".mf-page-wrap",
+        capturePath: ".claude/state/main-flows-v2/iter-8-list-bottom.png",
         expectedItemText: "F62",
     },
     {
