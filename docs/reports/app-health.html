@@ -820,7 +820,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-22T20:36:49.385803Z",
+  "generated_at": "2026-05-22T20:43:41.737473Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 84.2,
   "overall_grade": "B+",
@@ -1000,15 +1000,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "f3c9d91a",
-    "subject": "fix(smoke): add data-stat selectors to ghosted stats quartet (0-rounds users)",
-    "committed_at": "2026-05-22T16:36:30-04:00",
-    "trigger": "app-commit",
-    "is_app_commit": true,
-    "app_files_touched": [
-      "src/pages/home-rail-newuser.js"
-    ],
-    "total_files_touched": 1
+    "sha": "7955bb3c",
+    "subject": "fix(round-trip): quota-status schema validator now accepts v1 OR v2",
+    "committed_at": "2026-05-22T16:43:23-04:00",
+    "trigger": "substrate-commit",
+    "is_app_commit": false,
+    "app_files_touched": [],
+    "total_files_touched": 2
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
