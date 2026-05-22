@@ -59,6 +59,13 @@ async function captureProfile(profile, token) {
 
     const browser = await chromium.launch({ headless: true });
     const ctx = await browser.newContext({ viewport: { width: profile.width, height: profile.height } });
+    // Pre-seed localStorage BEFORE any app code runs so the welcome toast
+    // is suppressed on first sign-in (test users hit a fresh context every
+    // run otherwise). Real members see the toast once on sign-in then never
+    // again; this gives us the same "already seen it" state for captures.
+    await ctx.addInitScript(() => {
+        try { localStorage.setItem("pb_clubhouse_welcomed", "1"); } catch (e) {}
+    });
     const page = await ctx.newPage();
 
     page.on("console", (msg) => {
@@ -84,10 +91,30 @@ async function captureProfile(profile, token) {
             && auth && auth.classList.contains("hidden");
     }, { timeout: 15000 });
 
+    // Suppress the one-time "Clubhouse is open" welcome toast for capture
+    // cleanliness. Real members see it for 5s on first sign-in then never
+    // again; for screenshots the toast obscures content.
+    await page.evaluate(() => {
+        try { localStorage.setItem("pb_clubhouse_welcomed", "1"); } catch (e) {}
+        // Remove any toast already in the DOM from this session
+        document.querySelectorAll(".toast").forEach(el => el.remove());
+    });
+
     for (const s of SURFACES) {
         try {
-            await page.evaluate((r) => { if (typeof window.navigateTo === "function") window.navigateTo(r); else location.hash = r; }, s.route);
-            await page.waitForTimeout(800);
+            // Use the app's actual Router. The exposed global is `Router` (a
+            // top-level var). For the home route we navigate to "/" which
+            // Router.go('home') handles; for other routes drop the leading
+            // slash and call Router.go(name).
+            await page.evaluate((r) => {
+                var name = r === "/" ? "home" : r.replace(/^\//, "");
+                if (typeof Router !== "undefined" && Router.go) {
+                    Router.go(name);
+                } else {
+                    location.hash = "#/" + name;
+                }
+            }, s.route);
+            await page.waitForTimeout(900);
             try {
                 await page.waitForSelector(s.wait, { timeout: 4000 });
             } catch {

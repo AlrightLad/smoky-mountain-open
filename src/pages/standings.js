@@ -47,15 +47,35 @@ Router.register("standings", function(params) {
 
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Standings</span></div>';
   if (season.standings.length) {
+    // v8.22+ (design-pass 2026-05-22): highlight the viewer's own row so
+    // they can locate themselves at a glance in long leagues. Per Linear
+    // pattern: subtle brass-tinted background + brass left-border + small
+    // "YOU" chip. Currently we only emphasise 1st place; adding a viewer
+    // mark gives a second "find-me" affordance without disrupting the
+    // primary podium hierarchy.
+    var viewerUid = (typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : null;
+    var viewerClaimed = (typeof currentProfile !== "undefined" && currentProfile) ? currentProfile.claimedFrom : null;
     season.standings.forEach(function(s, idx) {
       var medal = idx === 0 ? '1st' : idx === 1 ? '2nd' : idx === 2 ? '3rd' : (idx+1) + '';
       var medalColor = idx === 0 ? 'var(--gold)' : idx === 1 ? 'var(--medal-silver)' : idx === 2 ? 'var(--medal-bronze)' : 'var(--muted)';
       var isFirst = idx === 0;
-      h += '<div class="card" style="' + (isFirst ? 'border-color:rgba(var(--gold-rgb),.2);background:linear-gradient(135deg,var(--grad-card),var(--card))' : '') + '">';
+      var isViewer = !!(viewerUid && (s.id === viewerUid || s.id === viewerClaimed));
+      var cardStyle = '';
+      if (isFirst) {
+        cardStyle = 'border-color:rgba(var(--gold-rgb),.2);background:linear-gradient(135deg,var(--grad-card),var(--card))';
+      } else if (isViewer) {
+        // Viewer's row — brass-faint background + brass left rule
+        cardStyle = 'border-left:3px solid var(--gold);background:rgba(var(--gold-rgb),0.04);transition:background 180ms ease-out';
+      }
+      h += '<div class="card" style="' + cardStyle + '" data-rank="' + (idx + 1) + (isViewer ? '" data-viewer="1' : '') + '">';
       h += '<div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center">';
       h += '<div style="display:flex;align-items:center;gap:14px">';
       h += '<div style="font-size:16px;width:32px;text-align:center;font-weight:800;color:' + medalColor + '">' + medal + '</div>';
-      h += '<div><div style="font-size:14px;font-weight:600">' + s.username + '</div>';
+      h += '<div><div style="font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px">' + s.username;
+      if (isViewer) {
+        h += '<span style="font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--gold);background:rgba(var(--gold-rgb),0.14);padding:2px 6px;border-radius:3px">YOU</span>';
+      }
+      h += '</div>';
       h += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + s.rounds + ' rds · Avg: ' + (s.avg||"—") + ' · Best: ' + (s.best||"—") + '</div>';
       if (s.courses && s.courses.length) {
         // Polish 2026-05-22 (iter4): cap displayed courses at 4 with "+N more"
