@@ -44,3 +44,4 @@
 {"event_type": "session.team-work.summary", "timestamp": "2026-05-22T02:45:45.777093+00:00", "data": {"agent": "engineer", "ship_id": "manual-emit-20260522T024545Z", "tokens_estimated": 0, "note": "post-commit-hook"}, "agent": "engineer", "ship_id": "manual-emit-20260522T024545Z", "cron_source": "manual-session"}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T02:45:47.227385+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
 {"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T02:45:57.375084+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
+{"event_type": "proposal.shipped_scan.complete", "timestamp": "2026-05-22T02:47:01.677356+00:00", "data": {"moved": 0, "skipped_already_shipped": 0, "warnings": []}}
