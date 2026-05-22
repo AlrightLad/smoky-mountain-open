@@ -820,9 +820,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-22T17:41:29.696902Z",
+  "generated_at": "2026-05-22T17:45:29.875904Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 81.6,
+  "overall_score": 81.8,
   "overall_grade": "B+",
   "incidents_deduction": {
     "sev1": 0,
@@ -842,9 +842,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 88.6,
+    "pre_deduction_score": 88.8,
     "deduction": 7,
-    "post_deduction_score": 81.6
+    "post_deduction_score": 81.8
   },
   "dimensions": {
     "A1_roadmap": {
@@ -882,9 +882,9 @@
       "weak_points": []
     },
     "A5_code_quality": {
-      "score": 70,
+      "score": 73,
       "status": "yellow",
-      "label": "0 core + 10 page files over budget; missing eslint=False, knip=False, jscpd=False",
+      "label": "0 core + 9 page files over budget; missing eslint=False, knip=False, jscpd=False",
       "source": "src/core/, src/pages/, package.json",
       "weak_points": [
         {
@@ -904,16 +904,11 @@
         }
       ],
       "details": {
-        "over_budget_count": 10,
+        "over_budget_count": 9,
         "files": [
           {
             "file": "src/pages/admin.js",
             "lines": 985,
-            "budget": 800
-          },
-          {
-            "file": "src/pages/caddynotes.js",
-            "lines": 902,
             "budget": 800
           },
           {
@@ -1084,13 +1079,16 @@
     }
   ],
   "audit_trigger": {
-    "sha": "32864a35",
-    "subject": "feat(prop-011-apply): codify verify-FORMAT discipline + lessons-learned doc",
-    "committed_at": "2026-05-22T13:41:12-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 3
+    "sha": "8f07ab28",
+    "subject": "refactor(W1.A5/B1): extract caddynotes archive â€” 902 -> 120 lines",
+    "committed_at": "2026-05-22T13:45:10-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "src/pages/caddynotes-archive.js",
+      "src/pages/caddynotes.js"
+    ],
+    "total_files_touched": 4
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
