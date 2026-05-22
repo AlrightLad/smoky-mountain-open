@@ -820,9 +820,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-22T17:56:19.049806Z",
+  "generated_at": "2026-05-22T17:58:37.183185Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 82.3,
+  "overall_score": 82.6,
   "overall_grade": "B+",
   "incidents_deduction": {
     "sev1": 0,
@@ -842,9 +842,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 89.3,
+    "pre_deduction_score": 89.6,
     "deduction": 7,
-    "post_deduction_score": 82.3
+    "post_deduction_score": 82.6
   },
   "dimensions": {
     "A1_roadmap": {
@@ -882,9 +882,9 @@
       "weak_points": []
     },
     "A5_code_quality": {
-      "score": 85,
+      "score": 88,
       "status": "green",
-      "label": "0 core + 5 page files over budget; missing eslint=False, knip=False, jscpd=False",
+      "label": "0 core + 4 page files over budget; missing eslint=False, knip=False, jscpd=False",
       "source": "src/core/, src/pages/, package.json",
       "weak_points": [
         {
@@ -898,13 +898,13 @@
           "what_action": "Split into modules per AMD-027 budget"
         },
         {
-          "what": "src/pages/playnow.js is 1457 lines (budget 800)",
-          "where": "src/pages/playnow.js",
+          "what": "src/pages/chat.js is 880 lines (budget 800)",
+          "where": "src/pages/chat.js",
           "what_action": "Split into modules per AMD-027 budget"
         }
       ],
       "details": {
-        "over_budget_count": 5,
+        "over_budget_count": 4,
         "files": [
           {
             "file": "src/pages/chat.js",
@@ -924,11 +924,6 @@
           {
             "file": "src/pages/members.js",
             "lines": 2120,
-            "budget": 800
-          },
-          {
-            "file": "src/pages/playnow.js",
-            "lines": 1457,
             "budget": 800
           }
         ]
@@ -1047,14 +1042,14 @@
     }
   ],
   "audit_trigger": {
-    "sha": "f22852b1",
-    "subject": "refactor(W1.A5/B5): extract spectator stream subsystem â€” 1137 -> 773 lines",
-    "committed_at": "2026-05-22T13:56:00-04:00",
+    "sha": "b6cfb820",
+    "subject": "refactor(W1.A5/B6): extract playnow scoring subsystem â€” 1458 -> 745 lines",
+    "committed_at": "2026-05-22T13:58:18-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
-      "src/pages/spectator-stream.js",
-      "src/pages/spectator.js"
+      "src/pages/playnow-scoring.js",
+      "src/pages/playnow.js"
     ],
     "total_files_touched": 3
   },
