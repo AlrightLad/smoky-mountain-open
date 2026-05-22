@@ -1,6 +1,6 @@
 {
     "schema_version":  1,
-    "updated_at":  "2026-05-22T19:29:57Z",
+    "updated_at":  "2026-05-22T19:54:45Z",
     "items":  {
                   "staging-firebase-project":  {
                                                    "status":  "verified-closed",
@@ -11,6 +11,24 @@
                                                    "verify_output_excerpt":  "env-ok\r\n\r\n\u001b[90mΓöé\u001b[39m Parbaughs Staging    \u001b[90mΓöé\u001b[39m \u001b[36m\u001b[1mparbaughs-staging (current)\u001b[22m\u001b[39m \u001b[90mΓöé\u001b[39m 608660343453   \u001b[90mΓöé\u001b[39m \u001b[33m[Not specified]\u001b[39m      \u001b[90mΓöé\u001b[39m",
                                                    "verification_status":  "verified-closed"
                                                },
+                  "sentry-signup":  {
+                                        "status":  "verified-closed",
+                                        "marked_at":  "2026-05-22T17:26:05Z",
+                                        "verify_command":  "node scripts/verify-sentry-dsn.mjs",
+                                        "verify_expected":  "PASS",
+                                        "verified_at":  "2026-05-22T17:26:05Z",
+                                        "verify_output_excerpt":  "PASS",
+                                        "verification_status":  "verified-closed"
+                                    },
+                  "firestore-agent-access":  {
+                                                 "status":  "verified-closed",
+                                                 "marked_at":  "2026-05-22T19:54:45Z",
+                                                 "verify_command":  "node scripts/verify-firestore-agent-access.mjs",
+                                                 "verify_expected":  "PASS",
+                                                 "verified_at":  "2026-05-22T19:54:46Z",
+                                                 "verify_output_excerpt":  "PASS",
+                                                 "verification_status":  "verified-closed"
+                                             },
                   "staging-deploy-token":  {
                                                "status":  "verified-closed",
                                                "marked_at":  "2026-05-22T19:29:57Z",
@@ -28,15 +46,6 @@
                                             "verified_at":  "2026-05-22T17:25:52Z",
                                             "verify_output_excerpt":  "PASS",
                                             "verification_status":  "verified-closed"
-                                        },
-                  "sentry-signup":  {
-                                        "status":  "verified-closed",
-                                        "marked_at":  "2026-05-22T17:26:05Z",
-                                        "verify_command":  "node scripts/verify-sentry-dsn.mjs",
-                                        "verify_expected":  "PASS",
-                                        "verified_at":  "2026-05-22T17:26:05Z",
-                                        "verify_output_excerpt":  "PASS",
-                                        "verification_status":  "verified-closed"
-                                    }
+                                        }
               }
 }
