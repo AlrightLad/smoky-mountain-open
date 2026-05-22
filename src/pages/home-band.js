@@ -202,6 +202,10 @@ function _renderHQLeadColumnIdle(ctx) {
   var h = '<div style="display:flex;flex-direction:column;gap:var(--sp-6)">';
   h += _renderEditorialGreetingHero(ctx);
   h += _renderStatsSnapshotQuartet(ctx);
+  // W2.S1 pull-forward (2026-05-22 design pass): "The league this week"
+  // 4-stat strip with delta vs prior week per CLUBHOUSE_SPEC-HQ-3a-Home.md
+  // § 3a.1.5 Section B. Inserted between personal quartet + season ladder.
+  h += _renderLeagueThisWeekStrip(ctx);
   h += _renderSeasonLadderTop10(ctx);
   // v8.16.1 Item 1 — idle state shows 6 recent rounds (was 3). Active state
   // stays at 2 per Q-AUDIT-Q1A ruling (live round is the focus when active).
@@ -255,6 +259,7 @@ function _renderHQLeadColumnBandBIdle(ctx) {
   var h = '<div style="display:flex;flex-direction:column;gap:var(--sp-6)">';
   h += _renderEditorialGreetingHero(ctx);
   h += _renderStatsSnapshotQuartet(ctx);
+  h += _renderLeagueThisWeekStrip(ctx);
   h += _renderHandicapTrendChart(ctx, { width: 600 });  // promoted from features
   h += _renderSeasonLadderTop10(ctx);
   var recent = (ctx.myRounds || []).slice(0, 3);
