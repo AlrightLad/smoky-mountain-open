@@ -1,21 +1,21 @@
 {
   "schema_version": 1,
-  "written_at": "2026-05-22T20:08:00Z",
-  "written_by": "overnight-triage-cycle-R",
+  "written_at": "2026-05-22T21:07:00Z",
+  "written_by": "overnight-triage-cycle-S",
   "reason": "heartbeat-ok",
   "resume_after": "next-cron-fire",
   "next_atomic_unit": "next-cycle-checks-inbox-and-substrate-motion",
   "context_required": [
-    ".claude/state/cron/2026-05-22-overnight-run-R.md",
-    ".claude/state/cron/2026-05-22-overnight-run-Q.md"
+    ".claude/state/cron/2026-05-22-overnight-run-S.md",
+    ".claude/state/cron/2026-05-22-overnight-run-R.md"
   ],
-  "summary": "Cycle R (18th overnight-triage fire of UTC 2026-05-22) ran heartbeat after ~58 min Q gap. 12 Founder substantive commits + 11 routine auto-commits in window; ce8f0fec at 19:18:48Z directly fixed cycle Q's PROP-011 lifecycle gap (file moved approved/ -> shipped/ with required fields). Round-trip moved 6 -> 5 failures. quota-status:schema failure mode sharpened from bare 'exit 4' to actionable 'schema_version must be 1, got 2' (JSON bumped to v2 at .claude/state/quota-status.json:1, validator still expects v1). App-health regressed A-/85.3 -> B+/83.8 (pre-deduction 92.3 -> 90.8; same incident structure; one dimension regressed — likely a yellow/red flip from staging-feature ship-sprint). +151M real tokens, +$3,624 cost over ~1h (~50x heartbeat-floor cadence; active ship-sprint signature). Both inboxes confirmed empty for 18th consecutive cycle of 2026-05-22.",
+  "summary": "Cycle S (19th overnight-triage fire of UTC 2026-05-22) ran heartbeat after ~60 min R gap. Regen at 21:01:43Z observed round-trip 5 -> 1 failure (sole carry-over: scroll-reachability). Then Founder shipped f1a5c11f at 21:04:13Z driving ALL -> 0, folding in scroll-reachability selector fix (.mf-flows-list -> .mf-list in verify-scroll-reachability.mjs) + VAR_FALLBACK_RE leniency that was WIP at regen time. 10 Founder substantive commits + 11 routine auto-commits in R->S window; f1a5c11f arrives 2.5 min after my regen completes (race during commit-prep). Final state: round-trip 0 failures across all gates per Founder authoritative commit. App-health A-/85.0 (new app-health-v1.1 schema; 2 actionable attention items: A8_performance Lighthouse + A12_operational watcher skip-dirty). +182M real tokens, +~$4.4K cost over ~1h (60x heartbeat-floor cadence; ship-sprint sustained from Q->R window). Both inboxes confirmed empty for 19th consecutive cycle of 2026-05-22.",
   "founder_action_items": [
-    "quota-status validator bump 1 -> 2 (data side already bumped in cycle R window; validator side pending — half-progress, complete the contract)",
-    "App-health regression A- -> B+ over ~1h — identify which of 12 dimensions flipped (likely from staging-feature commits dc8b6423/6716723d/7e6da6b8/0fc5e578/d1527dd0)",
-    "Investigate cron cadence — 18 fires/UTC date for empty-inbox path is still excessive; preserved from cycles P + Q",
-    "Tighten empty-inbox exit in overnight-triage prompt (guard on last-commit-recency + dashboard-freshness + substrate-stillness signal)",
-    "Investigate why FIQ + bug-reports inboxes never appeared on disk (path mismatch, broken hook, or aspirational paths in directive)",
-    "main-flows.html user-context capture ~7.74 days stale — pre-ship-close reminder"
+    "Round-trip 0 failures confirmed per f1a5c11f commit message (not re-verified by agent regen to avoid inflation; cycle T will naturally pick up 0-failure state).",
+    "A8_performance: Lighthouse 65/100 on 1 page (target 75+) — open .lighthouseci/*.html, fix top failures",
+    "A12_operational: 8/10 cron watcher runs hit skip-dirty — check .husky/post-commit mid-run dirtying + routinePatterns allowlist coverage",
+    "Cron cadence: 19 fires/UTC date for empty-inbox cycles still excessive — tighten empty-inbox exit guard in overnight-triage prompt (suggestion: --skip-if-no-substrate-motion-since-N-min)",
+    "main-flows.html user-context capture ~7.79 days stale — pre-ship-close reminder",
+    "weekly_cap field still null in quota-status (no % computation possible) — preserved Founder-triage item from cycle R"
   ]
 }
