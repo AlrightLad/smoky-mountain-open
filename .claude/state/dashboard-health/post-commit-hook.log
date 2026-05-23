@@ -133,3 +133,20 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
   PASS  amendments.html              4 amendment rows OR KPIs (>=1)
   PASS  app-health.html              14 dimension cards (>=5)
   PASS  design-system.html           451 design tokens (>=5)
+  PASS  discussion-bubbles.html      4 threads OR KPIs (>=1)
+  PASS  escalations.html             4 rows OR KPIs (>=1)
+  PASS  founder-checklist.html       1 open checklist items (>=1)
+  PASS  main-flows.html              24 main-flows content (>=1)
+  PASS  proposals.html               4 proposal rows OR KPIs (>=1)
+  PASS  token-usage.html             3 token rows OR cards (>=1)
+
+visual-gate: 1 FAILURE(S)
+  FAIL  sessions.html
+    expected >=1 of [.sess-card], found 0
+    screenshot: .claude\state\visual-gate\sessions.png
+[write-regen-heartbeat] OK ts=2026-05-23T04:11:47Z source=post-commit-hook status=GATE-FAIL
+
+--- P9.5 self-test ---
+[ingest-session-transcripts] scanned 73 JSONL file(s), found 0 new assistant turns
+[ingest-session-transcripts] skipped session-transcript-summary.json (113 buckets, 10962628648 total tokens, 76 sessions) [skip-idempotent-fresh-73s]
+[ingest-session-transcripts] SELF-TEST OK: 73 JSONLs \u2192 10962628648 tokens across 113 buckets
