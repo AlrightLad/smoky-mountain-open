@@ -66,7 +66,7 @@ var Router = (function() {
       { match: ["activity","rounds","playnow","range","scramble-live","syncround"] },
       { match: ["courses"] },
       { match: ["trips","scorecard","teetimes","tee-create","partygames"] },
-      { match: ["more","members","profile-edit","records","aces","scramble","challenges","trophyroom","rules","merch"] }
+      { match: ["more","members","profile","profile-edit","records","aces","scramble","challenges","trophyroom","rules","merch"] }
     ];
     var buttons = nav.querySelectorAll("button");
     tabs.forEach(function(t, i) {

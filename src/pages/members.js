@@ -9,6 +9,24 @@ Router.register("members", function(params) {
   else renderMemberList();
 });
 
+// /profile route — shortcut to the viewer's own member detail. Previously
+// unregistered, so navigating to /profile rendered a blank chrome-only
+// page. Redirects to /members?id=<viewer-uid> so the renderer writes to
+// the canonical members container (avoids two-container ambiguity).
+Router.register("profile", function(params) {
+  var uid = null;
+  if (typeof currentUser !== "undefined" && currentUser && currentUser.uid) {
+    uid = currentUser.uid;
+  } else if (typeof currentProfile !== "undefined" && currentProfile && currentProfile.claimedFrom) {
+    uid = currentProfile.claimedFrom;
+  }
+  if (uid) {
+    Router.go("members", { id: uid });
+  } else {
+    Router.go("members");
+  }
+});
+
 function renderMemberList() {
   var players = PB.getPlayers();
   
