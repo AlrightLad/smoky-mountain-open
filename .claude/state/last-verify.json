@@ -1,22 +1,22 @@
 {
   "schema_version": 1,
-  "written_at": "2026-05-23T00:05:00Z",
-  "written_by": "overnight-triage-cycle-A-2026-05-23",
+  "written_at": "2026-05-23T01:05:00Z",
+  "written_by": "overnight-triage-cycle-B-2026-05-23",
   "reason": "heartbeat-ok",
   "resume_after": "next-cron-fire",
   "next_atomic_unit": "next-cycle-checks-inbox",
   "commit_status": "committed",
   "founder_presence_detected_at": null,
   "context_required": [
-    ".claude/state/cron/2026-05-23-overnight-run.md",
-    ".claude/state/cron/2026-05-22-overnight-run-U.md"
+    ".claude/state/cron/2026-05-23-overnight-run-B.md",
+    ".claude/state/cron/2026-05-23-overnight-run.md"
   ],
-  "summary": "Cycle A (1st overnight-triage fire of UTC 2026-05-23, following 21 cycles of 2026-05-22) ran heartbeat after ~1h U→A gap. Both queues absent on disk for 22nd consecutive cycle counting across UTC day boundary. regen-all clean: ALL CHECKS PASSED, round-trip 0 failures (23s elapsed). Cycle U's commit-race was fully resolved by post-close addendum; Founder shipped 2 substantive home-mobile commits (League Pulse + Stripe captions) + 4 cron auto-commits in the U→A window with no overnight-substrate engagement. Cycle A used the runbook-mandated commit message format per cycle U's recommended-future-cycle remedy. Metric-integrity attestation: HONEST — heartbeat + wellness + journal + commit, no fluff, no rubber-stamping.",
+  "summary": "Cycle B (2nd overnight-triage fire of UTC 2026-05-23, ~56min after cycle A) ran heartbeat-only. Both queues absent on disk for 23rd consecutive cycle. regen-all clean: ALL CHECKS PASSED, round-trip 0 failures (23s elapsed). Cycle B open at 01:01:05Z initially observed Founder-quiescent tree (last commit c8551dad cron-routine), but Founder shipped v8.23.1 in 3 commits DURING the cycle (01:02-01:04Z): ee6b9ccf feat(caddy-notes) v8.23.1 catalogs design-pass session + eb6f0d20 post-commit cron regen + 05ed1ebc visual-regression final bless. Working tree at cycle B open had 3 pre-existing non-cycle items left untouched (M src/pages/caddynotes.js — Founder's polish-pass draft that then shipped as ee6b9ccf — and two untracked design-pass dirs settings-viewport/ + captures/iter24/). My regen-all produced app-health.html with audit_trigger.sha=c8551dad (now stale vs newest 05ed1ebc); commit it stale-but-honest, watcher post-commit will produce fresh regen. Race-with-Founder scenario like cycle U; mid-cycle honesty addendum appended to journal correcting initial 'quiescent / likely sleep' narrative. Metric-integrity attestation: HONEST — caught and corrected the inaccurate handoff claim before commit. Cron-cadence concern now flagged 7 cycles in a row; the race itself is exactly what the suggested Step-0 guard would mitigate.",
   "founder_action_items": [
-    "Cron cadence — now 22 consecutive empty-inbox fires across UTC day boundary (21 of 2026-05-22 + cycle A of 2026-05-23). Suggested remedy unchanged from cycles R→U: add guard at Step 0 of overnight-triage prompt — exit clean if no motion in task-queue/founder/, escalations/inbox/, or bug-reports/inbox/ in last 3h AND regen-all last-pass < 60 min old. Would reduce nightly fires from ~24 to ~6-8 while preserving real heartbeat coverage. **Founder decision required (6th consecutive cycle flagging this).**",
-    "A8_performance: Lighthouse 65/100 on 1 page (target 75+) — open .lighthouseci/*.html, fix top failures (carry-over from cycles S+T+U).",
-    "A12_operational: 8/10 cron watcher runs hit skip-dirty — check .husky/post-commit mid-run dirtying + routinePatterns allowlist coverage (carry-over from cycles S+T+U).",
-    "main-flows.html user-context capture ~7.91 days stale — run `node scripts/visual-audit/founder-context-capture.mjs` before next ship-close (natural drift, not blocking).",
-    "quota-status weekly_cap field still null — no % computation possible (preserved Founder-triage item from cycles R+S+T+U)."
+    "Cron cadence — now 23 consecutive empty-inbox fires (22 of 2026-05-22 + cycles A+B of 2026-05-23). Suggested remedy unchanged from cycles R→A: add guard at Step 0 of overnight-triage prompt — exit clean if no motion in task-queue/founder/, escalations/inbox/, or bug-reports/inbox/ in last 3h AND regen-all last-pass < 60 min old. Would reduce nightly fires from ~24 to ~6-8 while preserving real heartbeat coverage. **Founder decision required (7th consecutive cycle flagging this).**",
+    "A8_performance: Lighthouse 65/100 on 1 page (target 75+) — open .lighthouseci/*.html, fix top failures (carry-over from cycles S+T+U+A).",
+    "A12_operational: 8/10 cron watcher runs hit skip-dirty — check .husky/post-commit mid-run dirtying + routinePatterns allowlist coverage (carry-over from cycles S+T+U+A).",
+    "main-flows.html user-context capture ~7.95 days stale — run `node scripts/visual-audit/founder-context-capture.mjs` before next ship-close (natural drift, not blocking).",
+    "quota-status weekly_cap field still null — no % computation possible (preserved Founder-triage item from cycles R+S+T+U+A)."
   ]
 }
