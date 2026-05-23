@@ -68,6 +68,7 @@ const SURFACES = [
     { key: "scramble",    route: "/scramble",   wait: "[data-page='scramble']" },
     { key: "seasonrecap", route: "/seasonrecap",wait: "[data-page='seasonrecap']" },
     { key: "partygames",  route: "/partygames", wait: "[data-page='partygames']" },
+    { key: "roundhistory", route: "/roundhistory", wait: "[data-page='roundhistory']" },
 ];
 
 const USERS = (await import(pathToFileURL(resolve(REPO, "tests/e2e/setup/fixtures/users.js")).href)).users;
