@@ -19,10 +19,19 @@ Router.register("caddynotes", function() {
 
   // Current Release
   h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · Rounds reborn</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · The polish pass</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "Behind-the-scenes: error monitoring wired up so the team catches crashes faster.", tag: "INFRA" }
+    { item: "Home greets you by time of day — Good morning / Good afternoon / Good evening / Welcome back.", tag: "IMPROVED" },
+    { item: "\"The league this week\" stat strip on the home page — rounds, average, low score, and momentum vs last week.", tag: "NEW" },
+    { item: "Your handicap stat now shows a trend arrow when you have 5+ rounds — ▼ improving / ▲ heavier / ● steady.", tag: "IMPROVED" },
+    { item: "Round history now shows ±N to par under every score, and a ★ PR badge marks your personal best.", tag: "IMPROVED" },
+    { item: "Standings highlights your own row with a brass rule + YOU chip — easier to find yourself in the ladder.", tag: "IMPROVED" },
+    { item: "Trophy Room hero gets a warm gold halo behind your level — the moment should feel like a moment.", tag: "IMPROVED" },
+    { item: "Members directory groups by tier (Founding Four / Members) with brass eyebrows + counts.", tag: "IMPROVED" },
+    { item: "Mobile home now shows a League Pulse — last 3 league activity items right on home.", tag: "NEW" },
+    { item: "Course directory + Feed get warmer empty states with clear next-actions.", tag: "IMPROVED" },
+    { item: "Behind the scenes: visual regression suite catches design drift; pre-commit blocks accidental credential leaks; A- app-health floor maintained.", tag: "INFRA" }
   ];
 
   currentNotes.forEach(function(r) { h += renderEntry(r); });
