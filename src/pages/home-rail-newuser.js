@@ -438,6 +438,71 @@ function _renderStatsStrip(totalRounds, handicap, bestRound, bestRoundId, isNew)
   var hcapStr = (!isNew && handicap != null && !isNaN(handicap)) ? (+handicap).toFixed(1) : "—";
   var bestStr = (!isNew && bestRound != null) ? String(bestRound) : "—";
 
+  // v8.22+ (design-pass 2026-05-22): compute Stripe-style comparative
+  // captions for the mobile stats strip. Members get the same delta
+  // semantics as desktop without needing to navigate.
+  var roundsCaption = "", hcapCaption = "", bestCaption = "";
+  var roundsColor = "var(--cb-mute)", hcapColor = "var(--cb-mute)", bestColor = "var(--cb-mute)";
+
+  if (!isNew && typeof currentUser !== "undefined" && currentUser && typeof PB !== "undefined" && PB.getRounds) {
+    try {
+      var allRounds = PB.getRounds() || [];
+      var myUid = currentUser.uid;
+      var myLocal = (typeof currentProfile !== "undefined" && currentProfile) ? currentProfile.claimedFrom : null;
+      var myRounds = allRounds.filter(function(r) { return r.player === myUid || r.player === myLocal; });
+
+      // ROUNDS caption — last-30-day count
+      var nowMs = Date.now();
+      var thirtyAgo = nowMs - 30 * 86400000;
+      var last30 = myRounds.filter(function(r) {
+        var t = r.timestamp || (r.date ? new Date(r.date + "T00:00:00").getTime() : 0);
+        return t >= thirtyAgo;
+      }).length;
+      roundsCaption = "LAST 30D · " + last30;
+
+      // HCP caption — trend vs all-time average (5+ rounds)
+      var indiv = myRounds.filter(function(r) {
+        return r.format !== "scramble" && r.format !== "scramble4" && (!r.holesPlayed || r.holesPlayed >= 18);
+      });
+      if (indiv.length >= 5) {
+        var sorted = indiv.slice().sort(function(a, b) {
+          return (b.timestamp || 0) - (a.timestamp || 0);
+        });
+        var last5avg = sorted.slice(0, 5).reduce(function(a, r) { return a + (r.score || 0); }, 0) / 5;
+        var allAvg = sorted.reduce(function(a, r) { return a + (r.score || 0); }, 0) / sorted.length;
+        var diff = last5avg - allAvg;
+        if (diff <= -1) {
+          hcapCaption = "▼ TRENDING DOWN";
+          hcapColor = "var(--cb-moss, #4ea669)";
+        } else if (diff >= 1) {
+          hcapCaption = "▲ TRENDING UP";
+          hcapColor = "var(--cb-mute)";
+        } else {
+          hcapCaption = "● STEADY";
+        }
+      } else if (handicap != null) {
+        hcapCaption = "OFFICIAL";
+        hcapColor = "var(--cb-moss, #4ea669)";
+      } else if (myRounds.length) {
+        hcapCaption = "PROVISIONAL";
+      }
+
+      // BEST caption — course of personal best
+      if (bestRoundId) {
+        var br = myRounds.find(function(r) { return r.id === bestRoundId; });
+        if (br && br.course) {
+          // Use shortened course name if available
+          var cname = String(br.course).replace(/\s+golf\s+(&\s+)?country\s+club\s*$/i, "")
+                                       .replace(/\s+golf\s+club\s*$/i, "")
+                                       .replace(/\s+golf\s+links\s*$/i, "")
+                                       .replace(/\s+golf\s+(course|resort)\s*$/i, "")
+                                       .trim().toUpperCase();
+          bestCaption = cname.length > 16 ? cname.slice(0, 15) + "…" : cname;
+        }
+      }
+    } catch (e) { /* defensive — fall back to empty captions */ }
+  }
+
   var h = '<div style="padding:22px;display:grid;grid-template-columns:repeat(3, 1fr);gap:10px">';
 
   // ROUNDS
@@ -445,12 +510,14 @@ function _renderStatsStrip(totalRounds, handicap, bestRound, bestRoundId, isNew)
   h += '<div' + (roundsClickable ? ' class="tappable" onclick="Router.go(\'roundhistory\')"' : '') + ' style="padding:var(--sp-3) 10px;background:var(--cb-chalk-2);border-radius:10px;' + (roundsClickable ? 'cursor:pointer' : '') + '">';
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:6px">ROUNDS</div>';
   h += '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + roundsStr + '</div>';
+  if (roundsCaption) h += '<div style="font-family:var(--font-mono);font-size:8.5px;font-weight:600;letter-spacing:0.8px;color:' + roundsColor + ';text-transform:uppercase;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + roundsCaption + '</div>';
   h += '</div>';
 
   // HCP
   h += '<div style="padding:var(--sp-3) 10px;background:var(--cb-chalk-2);border-radius:10px">';
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:6px">HCP</div>';
   h += '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + hcapStr + '</div>';
+  if (hcapCaption) h += '<div style="font-family:var(--font-mono);font-size:8.5px;font-weight:600;letter-spacing:0.8px;color:' + hcapColor + ';text-transform:uppercase;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + hcapCaption + '</div>';
   h += '</div>';
 
   // BEST
@@ -458,6 +525,7 @@ function _renderStatsStrip(totalRounds, handicap, bestRound, bestRoundId, isNew)
   h += '<div' + (bestClickable ? ' class="tappable" onclick="Router.go(\'rounds\',{roundId:\'' + escHtml(bestRoundId) + '\'})"' : '') + ' style="padding:var(--sp-3) 10px;background:var(--cb-chalk-2);border-radius:10px;' + (bestClickable ? 'cursor:pointer' : '') + '">';
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:6px">BEST</div>';
   h += '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + bestStr + '</div>';
+  if (bestCaption) h += '<div style="font-family:var(--font-mono);font-size:8.5px;font-weight:600;letter-spacing:0.8px;color:' + bestColor + ';text-transform:uppercase;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + bestCaption + '</div>';
   h += '</div>';
 
   h += '</div>';
