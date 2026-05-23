@@ -1,6 +1,6 @@
 {
-  "iter": "iter34",
-  "ts": "2026-05-23T02:56:26.906Z",
+  "iter": "iter38",
+  "ts": "2026-05-23T03:20:43.373Z",
   "pages": [
     {
       "profile": "hq",
@@ -63,7 +63,7 @@
       "page": "settings",
       "status": "pass",
       "diff": 0,
-      "total": 3038400,
+      "total": 3121920,
       "pct": 0
     },
     {
@@ -204,6 +204,22 @@
     },
     {
       "profile": "hq",
+      "page": "partygames",
+      "status": "pass",
+      "diff": 0,
+      "total": 1296000,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "seasonrecap",
+      "status": "pass",
+      "diff": 0,
+      "total": 3021120,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
       "page": "findplayers",
       "status": "pass",
       "diff": 0,
@@ -287,7 +303,7 @@
       "page": "settings",
       "status": "pass",
       "diff": 0,
-      "total": 837330,
+      "total": 880620,
       "pct": 0
     },
     {
@@ -428,6 +444,22 @@
     },
     {
       "profile": "iphone14",
+      "page": "partygames",
+      "status": "pass",
+      "diff": 0,
+      "total": 329160,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "seasonrecap",
+      "status": "pass",
+      "diff": 0,
+      "total": 794820,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
       "page": "findplayers",
       "status": "pass",
       "diff": 0,
@@ -511,7 +543,7 @@
       "page": "settings",
       "status": "pass",
       "diff": 0,
-      "total": 878796,
+      "total": 924528,
       "pct": 0
     },
     {
@@ -652,6 +684,22 @@
     },
     {
       "profile": "pixel7",
+      "page": "partygames",
+      "status": "pass",
+      "diff": 0,
+      "total": 376980,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "seasonrecap",
+      "status": "pass",
+      "diff": 0,
+      "total": 839656,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
       "page": "findplayers",
       "status": "pass",
       "diff": 0,
@@ -675,7 +723,7 @@
       "pct": 0
     }
   ],
-  "pass": 84,
+  "pass": 90,
   "fail": 0,
   "skip": 0
 }

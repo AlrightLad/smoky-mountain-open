@@ -44,6 +44,7 @@ const PAGES = [
     "range", "trips",
     "wagers", "bounties", "challenges",
     "richlist", "leagues",
+    "partygames", "seasonrecap",
     "findplayers", "scorecard", "scramble"
 ];
 
