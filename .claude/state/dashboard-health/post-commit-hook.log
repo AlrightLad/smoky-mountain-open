@@ -24,3 +24,12 @@
 [aggregate-test-health] OK status=yellow timestamp=2026-05-23T02:35:48Z write=False (skip-idempotent-grace-content-unchanged-1712s)
 
 --- scripts/aggregate-security-health.py ---
+[aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=False (skip-idempotent-grace-content-unchanged-20876s)
+
+--- scripts/aggregate-approvals-pipeline.py ---
+[aggregate-approvals-pipeline] OK status=green summary=watcher in-progress 0.1min ago · 1 in inbox write=True (write-content-changed)
+
+--- scripts/aggregate-architecture-review.py ---
+[aggregate-architecture-review] OK status=yellow findings=1 pending_recs=0 write=False (skip-idempotent-grace-content-unchanged-9311s)
+
+--- scripts/aggregate-fiq-status.py ---
