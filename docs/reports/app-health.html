@@ -821,9 +821,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-23T00:29:55.032166Z",
+  "generated_at": "2026-05-23T00:34:43.930824Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 88.4,
+  "overall_score": 89.2,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -837,9 +837,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 93.4,
+    "pre_deduction_score": 94.2,
     "deduction": 5,
-    "post_deduction_score": 88.4
+    "post_deduction_score": 89.2
   },
   "dimensions": {
     "A1_roadmap": {
@@ -936,9 +936,9 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 75,
-      "status": "yellow",
-      "label": "pipeline=yellow · 5 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "score": 90,
+      "status": "green",
+      "label": "pipeline=green · 5 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
@@ -949,34 +949,22 @@
       ],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "skip-dirty"
+        "watcher_exit_reason": "no-new-files"
       }
     }
   },
-  "attention_items": [
-    {
-      "what": "5 of last 10 cron watcher runs hit skip-dirty",
-      "where": "scripts/cron/logs/*-downloads-watcher.log",
-      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
-      "dimension": "A12_operational"
-    }
-  ],
+  "attention_items": [],
   "founder_attention": [],
-  "agent_attention": [
-    {
-      "what": "5 of last 10 cron watcher runs hit skip-dirty",
-      "where": "scripts/cron/logs/*-downloads-watcher.log",
-      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
-      "dimension": "A12_operational"
-    }
-  ],
+  "agent_attention": [],
   "audit_trigger": {
-    "sha": "af1bc3dc",
-    "subject": "chore(visual-audit): add courses + calendar surfaces to design-pass capture",
-    "committed_at": "2026-05-22T20:29:37-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
+    "sha": "e273ada4",
+    "subject": "feat(members): brass eyebrow tier separators (FOUNDING FOUR / MEMBERS)",
+    "committed_at": "2026-05-22T20:34:23-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "src/pages/members.js"
+    ],
     "total_files_touched": 40
   },
   "cadence": {
