@@ -189,11 +189,18 @@ function showShareCard(score, diffStr, course, playerName, fir, firHoles, gir, h
   h += '</div>';
 
   // ── Action label ──
-  h += '<div style="font-size:11px;color:var(--muted2);text-align:center;margin-bottom:10px;letter-spacing:.3px">Tap to save your scorecard as an image</div>';
+  h += '<div style="font-size:11px;color:var(--muted2);text-align:center;margin-bottom:10px;letter-spacing:.3px">Save the image, copy a link, or post a recap to the league feed.</div>';
 
-  // ── Buttons ──
+  // ── Buttons — W2.S3 3 share actions (2026-05-23 pull-forward) ──
+  // 1. Save image PNG (existing captureShareCard)
+  // 2. Copy round link (new — sharable URL to /rounds?roundId=X)
+  // 3. Post recap to feed as Chip (new — composes feed chat-card with round summary)
   h += '<div style="display:flex;flex-direction:column;gap:10px">';
   h += '<button class="btn full green" onclick="captureShareCard()" style="font-size:14px;padding:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;width:100%"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><rect x="1" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="9" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 4l1-2h3l1 2" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>Save image &amp; share to socials</button>';
+  h += '<div style="display:flex;gap:8px">';
+  h += '<button class="btn outline" onclick="copyRoundLink(window._shareRoundId)" style="flex:1;font-size:12px;padding:12px;display:flex;align-items:center;justify-content:center;gap:6px"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0"><path d="M6.5 4.5L4 7a3 3 0 004.243 4.243L11 8.5"/><path d="M9.5 11.5L12 9a3 3 0 00-4.243-4.243L5 7.5"/></svg>Copy link</button>';
+  h += '<button class="btn outline" onclick="postRoundRecapToFeed(window._shareRoundId)" style="flex:1;font-size:12px;padding:12px;display:flex;align-items:center;justify-content:center;gap:6px"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0"><path d="M2 6h12M2 10h8"/><circle cx="13" cy="10" r="1.5" fill="currentColor"/></svg>Post to feed</button>';
+  h += '</div>';
   h += '<button class="btn full outline" onclick="closeShareCard()" style="font-size:13px;padding:14px">Done</button>';
   h += '</div>';
 
@@ -385,7 +392,96 @@ function captureShareCard() {
 }
 function showRoundShareCard(roundId) {
   // Navigate to round detail page where the scorecard preview is embedded
+  // v8.22+ (W2.S3 pull-forward): stash roundId on window so the 3 share
+  // actions (save-image / copy-link / post-to-feed) can find it.
+  window._shareRoundId = roundId;
   Router.go("rounds", {roundId: roundId});
+}
+
+// W2.S3 share action #2 — copy a shareable URL to the round detail.
+// Real members can paste into iMessage / DMs / external chat. Uses the
+// canonical production URL even from staging so links survive.
+function copyRoundLink(roundId) {
+  if (!roundId) {
+    if (typeof Router !== "undefined" && Router.toast) Router.toast("No round to share");
+    return;
+  }
+  // Use production base for cross-channel link sharing; falls back to
+  // current origin when run locally for dev testing.
+  var base = "https://alrightlad.github.io/smoky-mountain-open";
+  if (typeof location !== "undefined" && location.origin && location.origin.indexOf("localhost") < 0 && location.origin.indexOf("staging") < 0) {
+    base = location.origin + (location.pathname.replace(/\/[^\/]*$/, "") || "");
+  }
+  var url = base + "/#/rounds?roundId=" + encodeURIComponent(roundId);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(function() {
+      if (typeof Router !== "undefined" && Router.toast) Router.toast("Round link copied");
+    }).catch(function() {
+      if (typeof Router !== "undefined" && Router.toast) Router.toast("Couldn't copy — long-press to copy manually: " + url);
+    });
+  } else if (typeof Router !== "undefined" && Router.toast) {
+    Router.toast(url);
+  }
+}
+
+// W2.S3 share action #3 — post the round recap as a Chip-style feed post.
+// Reads the round from PB.getRounds (offline-safe), composes a short recap,
+// and pushes to the feed via the existing chat-feed write path. When the
+// W1.S11 Chip composer ships, this swaps to use that surface; today it
+// uses the existing feed message pipeline.
+function postRoundRecapToFeed(roundId) {
+  if (!roundId) {
+    if (typeof Router !== "undefined" && Router.toast) Router.toast("No round to post");
+    return;
+  }
+  if (typeof PB === "undefined" || !PB.getRounds) {
+    if (typeof Router !== "undefined" && Router.toast) Router.toast("Couldn't find round");
+    return;
+  }
+  var r = (PB.getRounds() || []).find(function(rr) { return rr.id === roundId; });
+  if (!r) {
+    if (typeof Router !== "undefined" && Router.toast) Router.toast("Round not found");
+    return;
+  }
+  var par = 72;
+  if (r.holePars && r.holePars.length) {
+    var pSum = 0;
+    for (var i = 0; i < r.holePars.length; i++) pSum += (parseInt(r.holePars[i]) || 0);
+    if (pSum > 0) par = pSum;
+  }
+  var vsPar = (r.score && par) ? r.score - par : null;
+  var vsParStr = vsPar === null ? "" : (vsPar === 0 ? "even par" : (vsPar > 0 ? "+" + vsPar : String(vsPar)) + " to par");
+  var recap = "Logged " + (r.score || "—") + " at " + (r.course || "the course") + (vsParStr ? " — " + vsParStr : "") + ".";
+
+  // Push to feed if the chat-feed write path is available.
+  if (typeof db !== "undefined" && db && typeof leagueQuery === "function" && typeof currentUser !== "undefined" && currentUser) {
+    db.collection("chat").add({
+      text: recap,
+      author: (typeof currentProfile !== "undefined" && currentProfile && currentProfile.username) || "Member",
+      authorId: currentUser.uid,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      type: "round_recap",
+      roundId: roundId
+    }).then(function() {
+      if (typeof Router !== "undefined" && Router.toast) Router.toast("Recap posted to the feed");
+      closeShareCard();
+    }).catch(function(e) {
+      console.error("postRoundRecapToFeed error:", e);
+      if (typeof Router !== "undefined" && Router.toast) Router.toast("Couldn't post — try again");
+    });
+  } else if (typeof window !== "undefined" && window._feedItems) {
+    // Offline / local mode — push into in-memory feed
+    window._feedItems.unshift({
+      type: "chat",
+      author: "You",
+      text: recap,
+      ts: Date.now()
+    });
+    if (typeof Router !== "undefined" && Router.toast) Router.toast("Recap saved (offline)");
+    closeShareCard();
+  } else {
+    if (typeof Router !== "undefined" && Router.toast) Router.toast("Sign in to post recaps");
+  }
 }
 
 // ── Generic share image modal — used by all contexts ─────────────────────────
