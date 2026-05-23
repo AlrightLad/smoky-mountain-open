@@ -19,32 +19,42 @@ Router.register("records", function() {
   h += '<div class="m-arrow" style="color:var(--gold);font-size:20px">›</div></div></div>';
 
   // Navigation grid — 2 columns
+  // v8.22+ (design-pass 2026-05-22): added comparative caption beneath each
+  // numeral, brass for non-zero + mute for zero. Per AMD-026 Actionable
+  // Surfacing: zero-counts get context copy explaining WHY zero + what
+  // populates them.
   h += '<div class="qlinks" style="grid-template-columns:1fr 1fr;margin-bottom:12px">';
+
+  function statCard(route, value, label, zeroHint, populatedHint) {
+    var v = value || 0;
+    var cap = v > 0 ? populatedHint : zeroHint;
+    var capColor = v > 0 ? "var(--gold)" : "var(--muted)";
+    var s = '<div class="card" onclick="Router.go(\'' + route + '\')" style="cursor:pointer;margin-bottom:0"><div style="padding:14px 12px;text-align:center">';
+    s += '<div style="font-size:20px;font-family:var(--font-display);font-weight:700;color:var(--gold)">' + v + '</div>';
+    s += '<div style="font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.8px">' + label + '</div>';
+    if (cap) {
+      s += '<div style="font-size:9px;color:' + capColor + ';margin-top:4px;letter-spacing:0.4px;line-height:1.3">' + cap + '</div>';
+    }
+    s += '</div></div>';
+    return s;
+  }
 
   // Challenges
   var challengeCount = 0;
   try { PB.getPlayers().forEach(function(p){challengeCount += PB.getChallenges(p.id).filter(function(c){return c.status==="pending"}).length}); } catch(e) {}
-  h += '<div class="card" onclick="Router.go(\'challenges\')" style="cursor:pointer;margin-bottom:0"><div style="padding:14px 12px;text-align:center">';
-  h += '<div style="font-size:20px;font-family:var(--font-display);font-weight:700;color:var(--gold)">' + (challengeCount || "0") + '</div>';
-  h += '<div style="font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.8px">Challenges</div></div></div>';
+  h += statCard("challenges", challengeCount, "Challenges", "Tap to start one", "Pending");
 
   // Ace Wall
   var aceCount = (rec.holeInOnes && rec.holeInOnes.length) || 0;
-  h += '<div class="card" onclick="Router.go(\'aces\')" style="cursor:pointer;margin-bottom:0"><div style="padding:14px 12px;text-align:center">';
-  h += '<div style="font-size:20px;font-family:var(--font-display);font-weight:700;color:var(--gold)">' + aceCount + '</div>';
-  h += '<div style="font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.8px">Aces</div></div></div>';
+  h += statCard("aces", aceCount, "Aces", "Awaiting the first", "Immortalized");
 
   // Teams
   var teamCount = PB.getScrambleTeams().length;
-  h += '<div class="card" onclick="Router.go(\'scramble\')" style="cursor:pointer;margin-bottom:0"><div style="padding:14px 12px;text-align:center">';
-  h += '<div style="font-size:20px;font-family:var(--font-display);font-weight:700;color:var(--gold)">' + teamCount + '</div>';
-  h += '<div style="font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.8px">Teams</div></div></div>';
+  h += statCard("scramble", teamCount, "Teams", "Form a scramble team", "Active");
 
   // Courses
   var coursesPlayed = PB.getCourses().filter(function(c){return PB.getCourseRounds(c.name).length>0}).length;
-  h += '<div class="card" onclick="Router.go(\'courses\')" style="cursor:pointer;margin-bottom:0"><div style="padding:14px 12px;text-align:center">';
-  h += '<div style="font-size:20px;font-family:var(--font-display);font-weight:700;color:var(--gold)">' + coursesPlayed + '</div>';
-  h += '<div style="font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.8px">Courses played</div></div></div>';
+  h += statCard("courses", coursesPlayed, "Courses played", "Log a round to start", "In rotation");
 
   h += '</div>';
 
