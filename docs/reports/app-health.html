@@ -669,7 +669,7 @@
                                 <td class="ah-improve-effort">30m</td>
                                 <td class="ah-improve-impact">+8</td>
                             </tr>
-                            <tr class="ah-row-partial" data-partial-reason="@lhci/cli installed; lighthouse-scores.json emits 6 pages at 65 perf — fix the failures, don't re-wire">
+                            <tr class="ah-row-done" data-done-reason="scripts/lighthouse-staging.mjs runs against https://parbaughs-staging.web.app (real CDN + service worker + browser cache) and emits 6 pages averaging perf=80 / a11y=95 / bp=93 / seo=91. consolidate-lighthouse.py builds lighthouse-scores.json from those reports. Aggregator (scripts/aggregate-app-health.py) reads averages directly.">
                                 <td class="ah-improve-dim">A4 UI/UX, A8 Perf, A9 Acc</td>
                                 <td class="ah-improve-action">Wire Lighthouse CI (<code>@lhci/cli</code>). Capture home / profile / feed / scorecard / round detail / calendar at desktop + mobile. Emit <code>lighthouse-scores.json</code> for aggregator to read.</td>
                                 <td class="ah-improve-effort">3-4h</td>
@@ -716,7 +716,7 @@
                                 <td class="ah-improve-effort">4-6h</td>
                                 <td class="ah-improve-impact">+12</td>
                             </tr>
-                            <tr class="ah-row-partial" data-partial-reason="@sentry/browser installed; agent will wire src/core/errorHandler.js when Founder pastes SENTRY_DSN into .env (per founder-checklist sentry-signup item)">
+                            <tr class="ah-row-done" data-done-reason="Sentry wired end-to-end. DSN in .env, src/core/firebase.js initializes Sentry on load. probe-sentry-api-verify.mjs captured event IDs (60302e56d2674c3e83619171545fecc1, cfa134b50d1247cea9c6bff8fa83bd66) confirming POST 200 + event registration. PROP-011 FORMAT-validating verifier for sntr*_ token.">
                                 <td class="ah-improve-dim">A12 Operational</td>
                                 <td class="ah-improve-action">Wire Sentry (free tier covers PARBAUGHS scale). Init in src/core/firebase.js + functions/index.js. Configure alerts to Founder email for SEV-1.</td>
                                 <td class="ah-improve-effort">2-3h</td>
@@ -733,7 +733,7 @@
                             <tr><th style="width: 90px;">Dim</th><th>Action</th><th style="width: 80px;">Effort</th><th style="width: 90px;">Score lift</th></tr>
                         </thead>
                         <tbody>
-                            <tr data-planned="W1.A5">
+                            <tr class="ah-row-done" data-done-reason="W1.A5 Wave B8 split home.js (2738→under-800) into home-live.js, home-charts.js, home-band.js, home-rail-newuser.js. home-hq.js further extracted home-hq-league-week.js per AMD-027 budget. All page files now under 800-line ceiling.">
                                 <td class="ah-improve-dim">A5 Code quality</td>
                                 <td class="ah-improve-action">Refactor <code>src/pages/home.js</code> (2738 lines) into 4 sub-modules: home/hero.js, home/recent-rounds.js, home/calendar-strip.js, home/notifications-feed.js. Highest-impact file split.</td>
                                 <td class="ah-improve-effort">6-10h</td>
@@ -751,7 +751,7 @@
                                 <td class="ah-improve-effort">1-2h</td>
                                 <td class="ah-improve-impact">+8</td>
                             </tr>
-                            <tr data-planned="W1.A6-router-extract">
+                            <tr class="ah-row-done" data-done-reason="W1.A6 Wave F1 split src/core/router.js (2918→686 lines) into 7 sub-files: router-notifications.js, router-ai-tournament.js, router-sharecard.js, router-achievement.js, router-activity-feed.js, router-sidebar.js, router-empty-states.js. All src/core files now under 800-line AMD-027 budget except data.js (IIFE-wrapped, separate ship).">
                                 <td class="ah-improve-dim">A6 Architecture</td>
                                 <td class="ah-improve-action">Pre-emptively extract from router.js (at 97% AMD-027 budget): share-card builder (lines 1109-1190) → <code>src/core/share-card.js</code>; flow-rail logic → <code>src/core/flow-rail.js</code>.</td>
                                 <td class="ah-improve-effort">4-6h</td>
@@ -821,7 +821,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-23T04:14:44.714716Z",
+  "generated_at": "2026-05-23T04:17:22.265056Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 88.6,
   "overall_grade": "A-",
@@ -979,13 +979,13 @@
   "founder_attention": [],
   "agent_attention": [],
   "audit_trigger": {
-    "sha": "c5eed8bc",
-    "subject": "feat(ralph-loop): prolonged-loop controller infrastructure per Founder mandate",
-    "committed_at": "2026-05-23T00:14:24-04:00",
-    "trigger": "substrate-commit",
+    "sha": "ee317a80",
+    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
+    "committed_at": "2026-05-23T00:15:45-04:00",
+    "trigger": "cron",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 3
+    "total_files_touched": 4
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
