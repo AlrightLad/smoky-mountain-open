@@ -1,6 +1,6 @@
 {
-  "iter": "iter26",
-  "ts": "2026-05-23T01:16:40.331Z",
+  "iter": "iter34",
+  "ts": "2026-05-23T02:56:26.906Z",
   "pages": [
     {
       "profile": "hq",
@@ -64,6 +64,166 @@
       "status": "pass",
       "diff": 0,
       "total": 3038400,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "profile",
+      "status": "pass",
+      "diff": 0,
+      "total": 3558240,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "trophyroom",
+      "status": "pass",
+      "diff": 0,
+      "total": 12038400,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "shop",
+      "status": "pass",
+      "diff": 0,
+      "total": 3121920,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "courses",
+      "status": "pass",
+      "diff": 0,
+      "total": 1296000,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "calendar",
+      "status": "pass",
+      "diff": 0,
+      "total": 2409120,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "teetimes",
+      "status": "pass",
+      "diff": 0,
+      "total": 1296000,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "more",
+      "status": "pass",
+      "diff": 0,
+      "total": 2376000,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "records",
+      "status": "pass",
+      "diff": 0,
+      "total": 1808640,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "aces",
+      "status": "pass",
+      "diff": 0,
+      "total": 1296000,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "awards",
+      "status": "pass",
+      "diff": 0,
+      "total": 1800000,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "range",
+      "status": "pass",
+      "diff": 0,
+      "total": 1296000,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "trips",
+      "status": "pass",
+      "diff": 0,
+      "total": 1296000,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "wagers",
+      "status": "pass",
+      "diff": 0,
+      "total": 1296000,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "bounties",
+      "status": "pass",
+      "diff": 0,
+      "total": 1296000,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "challenges",
+      "status": "pass",
+      "diff": 0,
+      "total": 1296000,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "richlist",
+      "status": "pass",
+      "diff": 0,
+      "total": 1337760,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "leagues",
+      "status": "pass",
+      "diff": 0,
+      "total": 1296000,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "findplayers",
+      "status": "pass",
+      "diff": 0,
+      "total": 3728160,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "scorecard",
+      "status": "pass",
+      "diff": 0,
+      "total": 2766240,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "scramble",
+      "status": "pass",
+      "diff": 0,
+      "total": 1296000,
       "pct": 0
     },
     {
@@ -131,6 +291,166 @@
       "pct": 0
     },
     {
+      "profile": "iphone14",
+      "page": "profile",
+      "status": "pass",
+      "diff": 0,
+      "total": 932490,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "trophyroom",
+      "status": "pass",
+      "diff": 0,
+      "total": 3340740,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "shop",
+      "status": "pass",
+      "diff": 0,
+      "total": 863070,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "courses",
+      "status": "pass",
+      "diff": 0,
+      "total": 329160,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "calendar",
+      "status": "pass",
+      "diff": 0,
+      "total": 402480,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "teetimes",
+      "status": "pass",
+      "diff": 0,
+      "total": 329160,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "more",
+      "status": "pass",
+      "diff": 0,
+      "total": 645840,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "records",
+      "status": "pass",
+      "diff": 0,
+      "total": 490230,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "aces",
+      "status": "pass",
+      "diff": 0,
+      "total": 329160,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "awards",
+      "status": "pass",
+      "diff": 0,
+      "total": 487500,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "range",
+      "status": "pass",
+      "diff": 0,
+      "total": 329160,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "trips",
+      "status": "pass",
+      "diff": 0,
+      "total": 329160,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "wagers",
+      "status": "pass",
+      "diff": 0,
+      "total": 329160,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "bounties",
+      "status": "pass",
+      "diff": 0,
+      "total": 329160,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "challenges",
+      "status": "pass",
+      "diff": 0,
+      "total": 329160,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "richlist",
+      "status": "pass",
+      "diff": 0,
+      "total": 356460,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "leagues",
+      "status": "pass",
+      "diff": 0,
+      "total": 329160,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "findplayers",
+      "status": "pass",
+      "diff": 0,
+      "total": 1029600,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "scorecard",
+      "status": "pass",
+      "diff": 0,
+      "total": 753870,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "scramble",
+      "status": "pass",
+      "diff": 0,
+      "total": 329160,
+      "pct": 0
+    },
+    {
       "profile": "pixel7",
       "page": "home-hq",
       "status": "pass",
@@ -193,9 +513,169 @@
       "diff": 0,
       "total": 878796,
       "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "profile",
+      "status": "pass",
+      "diff": 0,
+      "total": 985092,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "trophyroom",
+      "status": "pass",
+      "diff": 0,
+      "total": 3507768,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "shop",
+      "status": "pass",
+      "diff": 0,
+      "total": 906400,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "courses",
+      "status": "pass",
+      "diff": 0,
+      "total": 376980,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "calendar",
+      "status": "pass",
+      "diff": 0,
+      "total": 431776,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "teetimes",
+      "status": "pass",
+      "diff": 0,
+      "total": 376980,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "more",
+      "status": "pass",
+      "diff": 0,
+      "total": 680212,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "records",
+      "status": "pass",
+      "diff": 0,
+      "total": 517884,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "aces",
+      "status": "pass",
+      "diff": 0,
+      "total": 376980,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "awards",
+      "status": "pass",
+      "diff": 0,
+      "total": 515000,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "range",
+      "status": "pass",
+      "diff": 0,
+      "total": 376980,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "trips",
+      "status": "pass",
+      "diff": 0,
+      "total": 376980,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "wagers",
+      "status": "pass",
+      "diff": 0,
+      "total": 376980,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "bounties",
+      "status": "pass",
+      "diff": 0,
+      "total": 376980,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "challenges",
+      "status": "pass",
+      "diff": 0,
+      "total": 376980,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "richlist",
+      "status": "pass",
+      "diff": 0,
+      "total": 376980,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "leagues",
+      "status": "pass",
+      "diff": 0,
+      "total": 376980,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "findplayers",
+      "status": "pass",
+      "diff": 0,
+      "total": 1087680,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "scorecard",
+      "status": "pass",
+      "diff": 0,
+      "total": 791452,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "scramble",
+      "status": "pass",
+      "diff": 0,
+      "total": 376980,
+      "pct": 0
     }
   ],
-  "pass": 24,
+  "pass": 84,
   "fail": 0,
   "skip": 0
 }

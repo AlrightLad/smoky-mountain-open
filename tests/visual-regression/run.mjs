@@ -35,7 +35,17 @@ const LAST_RUN = resolve(REPO, "tests", "visual-regression", "last-run");
 const CAPTURES_ROOT = resolve(REPO, ".claude", "state", "design-pass-2026-05-22", "captures");
 
 const PROFILES = ["hq", "iphone14", "pixel7"];
-const PAGES = ["home-hq", "standings", "members", "rounds", "caddynotes", "playnow", "feed", "settings"];
+const PAGES = [
+    "home-hq", "standings", "members", "rounds", "caddynotes",
+    "playnow", "feed", "settings",
+    "profile", "trophyroom", "shop",
+    "courses", "calendar", "teetimes", "more",
+    "records", "aces", "awards",
+    "range", "trips",
+    "wagers", "bounties", "challenges",
+    "richlist", "leagues",
+    "findplayers", "scorecard", "scramble"
+];
 
 // Per Founder spec "fail on >2% pixel diff"
 const DIFF_THRESHOLD = 0.02; // 2% of total pixels
