@@ -107,7 +107,33 @@ Router.register("courses", function(params) {
     }
     h += '</div></div></div>';
   });
-  h += '<div style="text-align:center;padding:12px;font-size:10px;color:var(--muted2)">' + courses.length + (showOurs ? ' league' : '') + ' course' + (courses.length !== 1 ? 's' : '') + '</div>';
+  // v8.22+ (design-pass 2026-05-22): when the directory is empty, show an
+  // engaging empty state instead of a bare "0 courses" footer. Per
+  // peer-anchor (Linear empty-states + 18Birdies onboarding): the empty
+  // moment is a teaching moment — explain what'll appear here + give a
+  // clear CTA to seed the first course.
+  if (courses.length === 0) {
+    h += '<div style="margin:24px 16px;padding:32px 24px;text-align:center;background:var(--bg2);border:1px dashed var(--border);border-radius:12px">';
+    h += '<div style="font-size:32px;margin-bottom:8px;opacity:0.7">⛳</div>';
+    h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--cream);margin-bottom:6px">';
+    h += showOurs ? "No league courses yet." : "Your directory is quiet.";
+    h += '</div>';
+    h += '<div style="font-size:12px;color:var(--muted);line-height:1.5;max-width:300px;margin:0 auto 16px">';
+    if (showOurs) {
+      h += "Once league members log a round at a course, it shows up here with shared best-scores. Try All Courses to see the full directory.";
+    } else {
+      h += "Search the box above to find a course in the GolfCourseAPI catalog, or tap +Add to enter one by hand.";
+    }
+    h += '</div>';
+    if (showOurs) {
+      h += '<button class="btn-sm green" onclick="window._courseViewMode=undefined;Router.go(\'courses\',{},true)" style="font-size:11px;padding:8px 18px">View all courses</button>';
+    } else {
+      h += '<button class="btn-sm green" onclick="promptAddCourse()" style="font-size:11px;padding:8px 18px">+ Add a course</button>';
+    }
+    h += '</div>';
+  } else {
+    h += '<div style="text-align:center;padding:12px;font-size:10px;color:var(--muted2)">' + courses.length + (showOurs ? ' league' : '') + ' course' + (courses.length !== 1 ? 's' : '') + '</div>';
+  }
   document.querySelector('[data-page="courses"]').innerHTML = h;
 });
 
