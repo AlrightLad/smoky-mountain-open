@@ -43,10 +43,33 @@ function renderRoundsList() {
 
   // Handicap (mirrors the legacy activity.js:38-42 treatment so the
   // member-visible header is unchanged across the surface migration).
+  // v8.22+ (design-pass 2026-05-22): added secondary metadata line
+  // beneath the headline numeral — total rounds + last-round date.
+  // Stripe-pattern: every headline needs a comparative annotation.
   if (hcap !== null) {
-    h += '<div class="hcap-box"><div class="hcap-val" data-count="' + (+hcap).toFixed(1) + '" data-count-decimals="1">0.0</div><div class="hcap-label">Your handicap index</div></div>';
+    h += '<div class="hcap-box"><div class="hcap-val" data-count="' + (+hcap).toFixed(1) + '" data-count-decimals="1">0.0</div><div class="hcap-label">Your handicap index</div>';
+    // Sub-line: rounds count + last-round date
+    var lastRound = myRounds.slice().sort(function(a,b){return (b.timestamp||0)-(a.timestamp||0);})[0];
+    var subBits = [];
+    subBits.push(myRounds.length + ' round' + (myRounds.length === 1 ? '' : 's'));
+    if (lastRound && lastRound.date) {
+      var dt = new Date(lastRound.date + "T00:00:00");
+      var days = Math.floor((Date.now() - dt.getTime()) / 86400000);
+      if (days === 0) subBits.push('played today');
+      else if (days === 1) subBits.push('played yesterday');
+      else if (days < 7) subBits.push('played ' + days + ' days ago');
+      else if (days < 30) subBits.push('last round ' + Math.floor(days / 7) + ' week' + (days < 14 ? '' : 's') + ' ago');
+      else subBits.push('last round ' + Math.floor(days / 30) + ' month' + (days < 60 ? '' : 's') + ' ago');
+    }
+    h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-top:8px">' + subBits.join(' · ') + '</div>';
+    h += '</div>';
   } else {
-    h += '<div class="hcap-box"><div class="hcap-val">—</div><div class="hcap-label">Your handicap index</div></div>';
+    h += '<div class="hcap-box"><div class="hcap-val">—</div><div class="hcap-label">Your handicap index</div>';
+    var nMore = Math.max(0, 3 - myRounds.length);
+    if (nMore > 0) {
+      h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-top:8px">' + nMore + ' more round' + (nMore === 1 ? '' : 's') + ' until official</div>';
+    }
+    h += '</div>';
   }
 
   // History — scramble-grouped, sorted, share buttons. Mirrors the
