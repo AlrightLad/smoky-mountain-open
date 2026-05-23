@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-23T04:18:29.106652+00:00",
+  "generated_at": "2026-05-23T04:25:21.111344+00:00",
   "schema_version": 1,
   "source": "~/.claude/projects/C--Users-Zach-smoky-mountain-open/*.jsonl",
   "session_count": 76,
   "bucket_count": 113,
-  "all_time_total_tokens": 10981254910,
+  "all_time_total_tokens": 11000195649,
   "by_day_total": {
     "2026-04-17": 294853821,
     "2026-04-20": 362592283,
@@ -27,10 +27,10 @@
     "2026-05-20": 611933923,
     "2026-05-21": 1573217869,
     "2026-05-22": 1386469504,
-    "2026-05-23": 425881245
+    "2026-05-23": 444821984
   },
   "by_model_total": {
-    "claude-opus-4-7": 10981254910,
+    "claude-opus-4-7": 11000195649,
     "<synthetic>": 0
   },
   "buckets": {
@@ -1429,27 +1429,27 @@
       "session_id": "a3e3471a-7db9-4c9d-a1f1-37284a43520d",
       "day": "2026-05-23",
       "model": "claude-opus-4-7",
-      "turn_count": 555,
-      "input_tokens": 650,
-      "output_tokens": 354586,
-      "cache_read_input_tokens": 376619425,
-      "cache_creation_input_tokens": 620808,
-      "total": 377595469,
+      "turn_count": 577,
+      "input_tokens": 687,
+      "output_tokens": 365166,
+      "cache_read_input_tokens": 395523983,
+      "cache_creation_input_tokens": 646372,
+      "total": 396536208,
       "first_ts": "2026-05-23T00:00:06.278Z",
-      "last_ts": "2026-05-23T04:17:35.892Z"
+      "last_ts": "2026-05-23T04:25:11.774Z"
     },
     "a3e3471a-7db9-4c9d-a1f1-37284a43520d|2026-05-23|<synthetic>": {
       "session_id": "a3e3471a-7db9-4c9d-a1f1-37284a43520d",
       "day": "2026-05-23",
       "model": "<synthetic>",
-      "turn_count": 1,
+      "turn_count": 2,
       "input_tokens": 0,
       "output_tokens": 0,
       "cache_read_input_tokens": 0,
       "cache_creation_input_tokens": 0,
       "total": 0,
       "first_ts": "2026-05-23T00:28:59.033Z",
-      "last_ts": "2026-05-23T00:28:59.033Z"
+      "last_ts": "2026-05-23T04:25:01.680Z"
     },
     "09798bfd-1ff6-4215-b4ab-cf5e421684c0|2026-05-23|claude-opus-4-7": {
       "session_id": "09798bfd-1ff6-4215-b4ab-cf5e421684c0",
