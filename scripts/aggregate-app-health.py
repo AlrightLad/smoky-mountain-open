@@ -1113,9 +1113,16 @@ def a11_testing() -> dict:
             }
         )
 
-    # No visual regression
+    # No visual regression — check both tests/visual/ (legacy) and
+    # tests/visual-regression/ (current). Suite is present if either
+    # path has a baselines/ dir or a run script.
     visual_regression_dir = ROOT / "tests" / "visual"
-    if not visual_regression_dir.exists():
+    visual_regression_dir_v2 = ROOT / "tests" / "visual-regression"
+    has_visual_suite = (
+        (visual_regression_dir.exists() and any(visual_regression_dir.iterdir()))
+        or ((visual_regression_dir_v2 / "baselines").exists() and (visual_regression_dir_v2 / "run.mjs").exists())
+    )
+    if not has_visual_suite:
         score -= 6
         weak.append(
             {

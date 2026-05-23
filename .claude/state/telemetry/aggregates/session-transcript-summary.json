@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-23T00:06:23.337318+00:00",
+  "generated_at": "2026-05-23T00:08:05.487653+00:00",
   "schema_version": 1,
   "source": "~/.claude/projects/C--Users-Zach-smoky-mountain-open/*.jsonl",
   "session_count": 72,
   "bucket_count": 108,
-  "all_time_total_tokens": 10576978216,
+  "all_time_total_tokens": 10582698832,
   "by_day_total": {
     "2026-04-17": 294853821,
     "2026-04-20": 362592283,
@@ -27,10 +27,10 @@
     "2026-05-20": 611933923,
     "2026-05-21": 1573217869,
     "2026-05-22": 1386469504,
-    "2026-05-23": 21604551
+    "2026-05-23": 27325167
   },
   "by_model_total": {
-    "claude-opus-4-7": 10576978216,
+    "claude-opus-4-7": 10582698832,
     "<synthetic>": 0
   },
   "buckets": {
@@ -1403,14 +1403,14 @@
       "session_id": "97e97223-6f21-4dd4-8476-d8d2da79df29",
       "day": "2026-05-23",
       "model": "claude-opus-4-7",
-      "turn_count": 82,
-      "input_tokens": 122,
-      "output_tokens": 114929,
-      "cache_read_input_tokens": 6683949,
-      "cache_creation_input_tokens": 332658,
-      "total": 7131658,
+      "turn_count": 90,
+      "input_tokens": 130,
+      "output_tokens": 122253,
+      "cache_read_input_tokens": 7637281,
+      "cache_creation_input_tokens": 339865,
+      "total": 8099529,
       "first_ts": "2026-05-23T00:00:16.504Z",
-      "last_ts": "2026-05-23T00:06:07.177Z"
+      "last_ts": "2026-05-23T00:06:46.874Z"
     },
     "a3e3471a-7db9-4c9d-a1f1-37284a43520d|2026-05-22|<synthetic>": {
       "session_id": "a3e3471a-7db9-4c9d-a1f1-37284a43520d",
@@ -1429,14 +1429,14 @@
       "session_id": "a3e3471a-7db9-4c9d-a1f1-37284a43520d",
       "day": "2026-05-23",
       "model": "claude-opus-4-7",
-      "turn_count": 28,
-      "input_tokens": 28,
-      "output_tokens": 26624,
-      "cache_read_input_tokens": 14409081,
-      "cache_creation_input_tokens": 37160,
-      "total": 14472893,
+      "turn_count": 37,
+      "input_tokens": 37,
+      "output_tokens": 31698,
+      "cache_read_input_tokens": 19150481,
+      "cache_creation_input_tokens": 43422,
+      "total": 19225638,
       "first_ts": "2026-05-23T00:00:06.278Z",
-      "last_ts": "2026-05-23T00:05:05.350Z"
+      "last_ts": "2026-05-23T00:07:29.001Z"
     }
   }
 }
