@@ -29,7 +29,36 @@ jobs:
 
       - run: npm run build
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      # 2026-05-23: deploy step is gated on the FIREBASE_SERVICE_ACCOUNT_STAGING
+      # secret being present. Founder hasn't pasted that into GitHub Actions
+      # yet (the local service-account.json works for local deploys via
+      # scripts/seed-deploy-staging-hosting.mjs). Until the secret lands, the
+      # Action runs build-only — no deploy attempted, no red run.
+      #
+      # To enable auto-deploy on push:
+      #   1. Firebase Console → parbaughs-staging → Project Settings →
+      #      Service Accounts → Generate new private key.
+      #   2. GitHub repo → Settings → Secrets and variables → Actions →
+      #      New repository secret:
+      #        Name:  FIREBASE_SERVICE_ACCOUNT_STAGING
+      #        Value: paste the JSON content of the service account key.
+      #   3. Save. Next push to staging fires this Action end-to-end.
+      - name: Check Firebase service account secret
+        id: check_secret
+        run: |
+          if [ -n "${{ secrets.FIREBASE_SERVICE_ACCOUNT_STAGING }}" ]; then
+            echo "secret_present=true" >> "$GITHUB_OUTPUT"
+            echo "Firebase staging service account secret detected — deploy will proceed."
+          else
+            echo "secret_present=false" >> "$GITHUB_OUTPUT"
+            echo "FIREBASE_SERVICE_ACCOUNT_STAGING secret NOT set."
+            echo "Action runs build-only (no deploy). See workflow comment for setup."
+            echo "Local deploys via scripts/seed-deploy-staging-hosting.mjs continue to work."
+          fi
+
+      - name: Deploy to Firebase Hosting (staging)
+        if: steps.check_secret.outputs.secret_present == 'true'
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_STAGING }}
