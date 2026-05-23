@@ -28,7 +28,10 @@ You are running in a prolonged Ralph loop. Per
    - **e. Health-score lift** — push toward A (90) / A+ (95).
 3. Execute the chosen item end-to-end:
    - Code change + tests + visual regression bless + commit + deploy
-     to staging.
+     to Firebase staging.
+   - **Push to origin/staging** so Founder can review the diff on
+     GitHub: `pwsh -File scripts/push-staging.ps1`. The Firebase
+     URL (visual) + GitHub staging branch (code) stay in lock-step.
    - Always-green guardrails: tree clean, approval pipeline GREEN,
      0 credential leaks, App Health ≥ A-.
 4. Append a one-line entry to `LOOP_JOURNAL.md` describing what
