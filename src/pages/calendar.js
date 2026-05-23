@@ -124,7 +124,17 @@ Router.register("calendar", function() {
     leagueQuery("scheduling_chat").orderBy("createdAt","desc").limit(20).get().then(function(snap) {
       var feed = document.getElementById("calChatFeed");
       if (!feed) return;
-      if (snap.empty) { feed.innerHTML = '<div style="text-align:center;font-size:10px;color:var(--muted);padding:20px">No messages yet \u2014 coordinate tee times here</div>'; return; }
+      if (snap.empty) {
+        // v8.22+ (design-pass 2026-05-22): match the dashed-card empty-state
+        // pattern used elsewhere (courses, feed). Gives the scheduling chat
+        // some visual presence + invites the first message instead of just
+        // disclaiming "nothing here".
+        feed.innerHTML = '<div style="margin:14px 0;padding:24px 16px;text-align:center;background:var(--bg2);border:1px dashed var(--border);border-radius:8px">' +
+          '<div style="font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--cream);margin-bottom:4px">No messages yet.</div>' +
+          '<div style="font-size:10.5px;color:var(--muted);line-height:1.5;max-width:240px;margin:0 auto">Use the box below to coordinate tee times, swap thoughts on next week\u2019s round, or call your shot.</div>' +
+          '</div>';
+        return;
+      }
       var ch = '';
       snap.forEach(function(doc) {
         var msg = doc.data();
