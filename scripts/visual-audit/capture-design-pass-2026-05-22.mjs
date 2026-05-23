@@ -58,6 +58,9 @@ const SURFACES = [
     { key: "awards",      route: "/awards",     wait: "[data-page='awards']" },
     { key: "range",       route: "/range",      wait: "[data-page='range']" },
     { key: "trips",       route: "/trips",      wait: "[data-page='trips']" },
+    { key: "wagers",      route: "/wagers",     wait: "[data-page='wagers']" },
+    { key: "bounties",    route: "/bounties",   wait: "[data-page='bounties']" },
+    { key: "challenges",  route: "/challenges", wait: "[data-page='challenges']" },
 ];
 
 const USERS = (await import(pathToFileURL(resolve(REPO, "tests/e2e/setup/fixtures/users.js")).href)).users;
