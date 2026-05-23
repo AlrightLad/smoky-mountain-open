@@ -17,6 +17,7 @@
     "A8_performance: Lighthouse 65/100 on 1 page (target 75+) — open .lighthouseci/*.html, fix top failures (carry-over from cycles S+T+U+A).",
     "A12_operational: 8/10 cron watcher runs hit skip-dirty — check .husky/post-commit mid-run dirtying + routinePatterns allowlist coverage (carry-over from cycles S+T+U+A).",
     "main-flows.html user-context capture ~7.95 days stale — run `node scripts/visual-audit/founder-context-capture.mjs` before next ship-close (natural drift, not blocking).",
-    "quota-status weekly_cap field still null — no % computation possible (preserved Founder-triage item from cycles R+S+T+U+A)."
+    "quota-status weekly_cap field still null — no % computation possible (preserved Founder-triage item from cycles R+S+T+U+A).",
+    "aggregate-fiq-status D40 parity GATE-FAIL — stale-timestamp 89976s (>24h hard threshold) tripped for the first time tonight because FIQ has had zero churn across 23 consecutive empty-inbox cycles. NOT an aggregator bug (status=green declared=26 deployed=26 ran cleanly; idempotent-write correctly skipped unchanged content). Gate firing as designed per scripts/aggregate-self-tests.py:138-141. Remedies all cross Founder-decision boundary: (1) add last_polled_at heartbeat field to decouple poll-staleness from content-staleness, (2) raise 24h threshold to 48-72h, (3) refine D40 parity to distinguish idempotent-skip-grace from aggregator-failed-and-stale, (4) accept the GATE-FAIL as a faithful signal and surface it on dashboard. First flagged 2026-05-23 cycle B post-commit. Will trip on every cycle until FIQ activity resumes or remedy lands."
   ]
 }

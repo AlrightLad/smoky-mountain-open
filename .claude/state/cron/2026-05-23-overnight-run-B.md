@@ -164,3 +164,30 @@ The cron-cadence concern (7th cycle of flagging) still stands — Founder didn't
 
 **Metric-integrity attestation revisited:** the attestation above ("HONEST. No fluff generated.") still holds — the corrected handoff narrative IS the discipline working. Catching this mid-cycle and writing the honest addendum is the right behavior. If I had silently committed the original "quiescent" claim, that would have been a fluff-vs-substantive failure.
 
+---
+
+## Post-commit finding — D40 parity gate-fail (new Founder-action item)
+
+The post-commit hook for `7f3386b8` ran the substrate's D40 parity self-tests and produced its first GATE-FAIL of this overnight run:
+
+```
+[aggregate-self-tests] FAIL (1 aggregators):
+  aggregate-fiq-status: stale-timestamp-89976s (>24h)
+```
+
+89976s = ~25 hours. Root cause traced via `scripts/aggregate-self-tests.py:138-141`: the post-2026-05-19 idempotent-write redesign deliberately tolerates stale aggregator timestamps when source data is unchanged, but adds a hard 24h ceiling. Since FIQ has had zero activity for 23 consecutive empty-inbox cycles (~22h+ elapsed at cycle B open + buffer), the 24h threshold tripped tonight for the first time.
+
+This is **the gate firing as designed**, NOT an aggregator bug. The legitimate failure mode the gate guards against (aggregator failed AND timestamp stale) does not apply here — `[aggregate-fiq-status] OK status=green declared=26 deployed=26` ran cleanly; the aggregator returned `skip-idempotent-grace-content-unchanged-89976s` because there was nothing to change.
+
+**Remedies (all Founder-decision boundary):**
+
+1. Have `aggregate-fiq-status` write a per-run `last_polled_at` heartbeat field that changes every run, decoupling staleness-of-poll from staleness-of-content (substrate redesign).
+2. Raise the D40 hard threshold from 24h to 48h or 72h to absorb the empty-FIQ pattern (gate policy change).
+3. Make `aggregate-self-tests.py` distinguish "idempotent-skip-grace exceeded" from "aggregator-failed-and-stale" in the D40 parity check (gate logic refinement).
+4. Accept the GATE-FAIL as a faithful signal: FIQ has been silent >24h, dashboard should reflect that — and add a banner on the dashboard surfacing it.
+
+Remedy (4) is the most truthful: it matches the cron-cadence concern (23 empty cycles = a real fact worth surfacing, not a noise to suppress). But the choice is Founder's.
+
+**This adds a 6th Founder-action item** to last-verify.json, flagged ONCE (first cycle to observe it). Carrying-forward expectation: this will trip on every cycle until either FIQ activity resumes OR a remedy lands.
+
+
