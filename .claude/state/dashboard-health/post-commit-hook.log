@@ -1,4 +1,4 @@
-=== post-commit hook fired 2026-05-23T13:06:03Z HEAD=bf838b5d ===
+=== post-commit hook fired 2026-05-23T13:39:34Z HEAD=ff4a47ae ===
 [scaffold-from-templates] done: scaffolded=0 skipped=15
 
 --- scripts/scan-shipped-proposals.py ---
@@ -7,43 +7,43 @@
 --- scripts/aggregate-telemetry.py ---
 [aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json (write-content-changed)
 [aggregate] meter_status=wired-real
-[aggregate] events=8959 handoffs=1 bubbles=7 proposals_pending=0
+[aggregate] events=8986 handoffs=1 bubbles=7 proposals_pending=0
 
 --- scripts/ingest-session-transcripts.py ---
-[ingest-session-transcripts] scanned 1b790ef8-69be-48ff-9cf9-6a7be794db45.jsonl: +6 new entries (offset 565357â†’587310)
-[ingest-session-transcripts] scanned f0d9b8c7-4a38-431e-bbe8-89e33b0eb195.jsonl: +52 new entries (offset 0â†’602330)
-[ingest-session-transcripts] scanned 82 JSONL file(s), found 58 new assistant turns
-[ingest-session-transcripts] wrote session-transcript-summary.json (122 buckets, 11050995042 total tokens, 85 sessions) [write-content-changed]
+[ingest-session-transcripts] scanned a3e3471a-7db9-4c9d-a1f1-37284a43520d.jsonl: +28 new entries (offset 124719187\u2192124992904)
+[ingest-session-transcripts] scanned f0d9b8c7-4a38-431e-bbe8-89e33b0eb195.jsonl: +12 new entries (offset 606385\u2192647641)
+[ingest-session-transcripts] scanned 82 JSONL file(s), found 40 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (122 buckets, 11070204553 total tokens, 85 sessions) [write-content-changed]
 
 --- scripts/aggregate-token-usage.py ---
-[aggregate-token] real_events=123 estimated_events=4847 manual_entries=0
-[aggregate-token] all-time: real=11051097042 estimated=10756280 manual=0
+[aggregate-token] real_events=123 estimated_events=4862 manual_entries=0
+[aggregate-token] all-time: real=11070306553 estimated=10820110 manual=0
 [aggregate-token] snapshot write=True (write-content-changed) -> .claude\state\telemetry\aggregates\token-usage-snapshot.json
 [aggregate-token] cursor   write=True (write-content-changed) -> .claude\state\telemetry\aggregates\.token-usage-cursor.json
 
 --- scripts/aggregate-test-health.py ---
-[aggregate-test-health] OK status=unknown timestamp=2026-05-23T13:06:06Z write=False (skip-idempotent-fresh-230s)
+[aggregate-test-health] OK status=yellow timestamp=2026-05-23T13:39:37Z write=False (skip-idempotent-grace-content-unchanged-1941s)
 
 --- scripts/aggregate-security-health.py ---
-[aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=False (skip-idempotent-grace-content-unchanged-58695s)
+[aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=False (skip-idempotent-grace-content-unchanged-60705s)
 
 --- scripts/aggregate-approvals-pipeline.py ---
-[aggregate-approvals-pipeline] OK status=red summary=watcher cycling Â· applies blocked (10 skips on dirty tree) Â· 1 in inbox write=True (write-content-changed)
+[aggregate-approvals-pipeline] OK status=red summary=watcher cycling · applies blocked (10 skips on dirty tree) · 1 in inbox write=False (skip-idempotent-fresh-146s)
 
 --- scripts/aggregate-architecture-review.py ---
-[aggregate-architecture-review] OK status=yellow findings=1 pending_recs=0 write=False (skip-idempotent-grace-content-unchanged-32577s)
+[aggregate-architecture-review] OK status=yellow findings=1 pending_recs=0 write=False (skip-idempotent-grace-content-unchanged-34587s)
 
 --- scripts/aggregate-fiq-status.py ---
-[aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-133138s)
+[aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-135149s)
 
 --- scripts/aggregate-self-tests.py ---
-[aggregate-self-tests] FAIL (2 aggregators):
-  aggregate-test-health: parity-fail: source-detected but status=unknown
-  aggregate-fiq-status: stale-timestamp-133138s (>24h)
+[aggregate-self-tests] FAIL (1 aggregators):
+  aggregate-fiq-status: stale-timestamp-135149s (>24h)
 [aggregate-self-tests] starting D40 parity checks across 5 aggregators
-  [aggregate-security-health] PASS status=green age=58697s
-  [aggregate-approvals-pipeline] PASS status=red age=2s
-  [aggregate-architecture-review] PASS status=yellow age=32579s
+  [aggregate-test-health] PASS status=yellow age=1947s
+  [aggregate-security-health] PASS status=green age=60708s
+  [aggregate-approvals-pipeline] PASS status=red age=149s
+  [aggregate-architecture-review] PASS status=yellow age=34590s
 
 --- scripts/inject-health-banners.py ---
 [inject-health-banners] banner-architecture      already-present
@@ -72,7 +72,7 @@
 --- scripts/regen-dashboard.py ---
 [regen-dashboard] OK   dashboard.html
 [regen-dashboard] meter_status=wired-real
-[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=8959
+[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=8986
 
 --- scripts/regen-main-flows.py ---
 [regen-main-flows] WARN: 6 orphan components in grid (referenced by no flow's path):
@@ -86,7 +86,7 @@
 [regen-main-flows] 6 columns, 47 components, 62 flows; orphans=6
 
 --- scripts/regen-activity.py ---
-[regen-activity] OK   activity.html â€” total=500 (handoffs=1 telemetry=475 commits=2090)
+[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=476 commits=2092)
 
 --- scripts/dry-run-regen-ops-views.py ---
 [regen] 7 bubbles (activity.html owned by regen-activity.py; proposals.html owned by regen-proposals.py)
@@ -94,7 +94,7 @@
 
 --- scripts/regen-token-usage.py ---
 [regen-token-usage] OK   token-usage.html
-[regen-token-usage] all-time: real=11051097042 estimated=10756280 manual=0
+[regen-token-usage] all-time: real=11070306553 estimated=10820110 manual=0
 [regen-token-usage] pie_views slices: agent=3 work=2 session_top10=10
 
 --- scripts/consolidate-lighthouse.py ---
@@ -105,10 +105,10 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
   seo               : 91
 
 --- scripts/aggregate-app-health.py ---
-[aggregate-app-health] overall=A- (88.0) Â· 1 attention items Â· .claude\state\aggregates\app-health.json
+[aggregate-app-health] overall=A- (88.0) · 1 attention items · .claude\state\aggregates\app-health.json
 
 --- scripts/regen-app-health.py ---
-[regen-app-health] OK  overall=A- (88.0) Â· 12 dimensions Â· docs\reports\app-health.html
+[regen-app-health] OK  overall=A- (88.0) · 12 dimensions · docs\reports\app-health.html
 
 --- scripts/regen-sessions.py ---
 [regen-sessions] OK   sessions.html 1 sessions
@@ -122,10 +122,10 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
 
 --- scripts/regen-index.py ---
 [regen-index] OK   index.html
-[regen-index] ships=26 proposals_pending=0 bubbles=1 halt=none git=bf838b5d
+[regen-index] ships=26 proposals_pending=0 bubbles=1 halt=none git=ff4a47ae
 
 --- scripts/dashboard-freshness-sentinel.py ---
-[dashboard-freshness] status=green ok=11 repaired=1 unrepairable=0 mismatches=1 duration=2.5s
+[dashboard-freshness] status=green ok=11 repaired=1 unrepairable=0 mismatches=1 duration=2.3s
 
 --- visual-gate ---
   PASS  dashboard.html               29 KPI cells populated (>=20)
@@ -142,10 +142,9 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
   PASS  token-usage.html             3 token rows OR cards (>=1)
 
 visual-gate: ALL 12 PAGES RENDER CONTENT
-[write-regen-heartbeat] OK ts=2026-05-23T13:06:39Z source=post-commit-hook status=GATE-FAIL
+[write-regen-heartbeat] OK ts=2026-05-23T13:40:10Z source=post-commit-hook status=GATE-FAIL
 
 --- P9.5 self-test ---
-[ingest-session-transcripts] scanned f0d9b8c7-4a38-431e-bbe8-89e33b0eb195.jsonl: +1 new entries (offset 602330â†’606385)
-[ingest-session-transcripts] scanned 82 JSONL file(s), found 1 new assistant turns
-[ingest-session-transcripts] wrote session-transcript-summary.json (122 buckets, 11051099542 total tokens, 85 sessions) [write-content-changed]
-[ingest-session-transcripts] SELF-TEST OK: 82 JSONLs â†’ 11051099542 tokens across 122 buckets
+[ingest-session-transcripts] scanned 82 JSONL file(s), found 0 new assistant turns
+[ingest-session-transcripts] skipped session-transcript-summary.json (122 buckets, 11070204553 total tokens, 85 sessions) [skip-idempotent-fresh-75s]
+[ingest-session-transcripts] SELF-TEST OK: 82 JSONLs \u2192 11070204553 tokens across 122 buckets
