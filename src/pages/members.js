@@ -156,14 +156,34 @@ function renderMemberListHtml(players, h) {
 
 function buildMemberCards(players) {
   var h = '';
-  var lastWasFounder = false;
+  // v8.22+ (design-pass 2026-05-22): tier visual separators. Prior
+  // implementation just dropped a 'Members' label when transitioning OUT
+  // of founders. This obscures the structure — members reading the list
+  // can't tell where founders end + the main league begins until they
+  // notice the missing star. New treatment: emit an explicit eyebrow at
+  // the START of each tier (FOUNDING FOUR / MEMBERS) with count + brass
+  // hairline above. Linear-style category headers.
+  var lastTier = null;
+  var foundingCount = players.filter(function(p){return p.founding || p.isFoundingFour;}).length;
+  var memberCount = players.length - foundingCount;
   players.forEach(function(p, idx) {
     var isFounder = p.founding || p.isFoundingFour;
-    // Divider between founders and rest
-    if (lastWasFounder && !isFounder) {
-      h += '<div style="padding:4px 16px 8px;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;border-top:1px solid var(--border);margin-top:4px;padding-top:12px">Members</div>';
+    var tier = isFounder ? "founder" : "member";
+    if (tier !== lastTier) {
+      var label, count;
+      if (tier === "founder") {
+        label = "FOUNDING FOUR";
+        count = foundingCount;
+      } else {
+        label = "MEMBERS";
+        count = memberCount;
+      }
+      h += '<div style="display:flex;align-items:baseline;justify-content:space-between;padding:' + (lastTier ? '18px' : '4px') + ' 16px 8px;border-top:' + (lastTier ? '1px solid var(--border)' : 'none') + ';margin-top:' + (lastTier ? '6px' : '0') + ';padding-top:' + (lastTier ? '14px' : '4px') + '">';
+      h += '<div style="font-family:var(--font-mono);font-size:9px;color:var(--gold,var(--cb-brass));letter-spacing:2px;font-weight:700;text-transform:uppercase">' + label + '</div>';
+      h += '<div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:1px;font-weight:600">' + count + '</div>';
+      h += '</div>';
+      lastTier = tier;
     }
-    lastWasFounder = isFounder;
     
     var avg = PB.getPlayerAvg(p.id);
     var rounds = PB.getPlayerRounds(p.id);
