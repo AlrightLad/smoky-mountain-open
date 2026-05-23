@@ -117,7 +117,13 @@ function _renderEditorialGreetingHero(ctx) {
   var h = '<div>';
   // Headline — Fraunces, scales 36/44/52/56 across bands
   h += '<div style="font-family:var(--font-display);font-size:var(--hq-hero-size);font-weight:var(--hq-hero-weight);line-height:1.05;letter-spacing:-2px;color:var(--cb-ink);margin-bottom:14px">';
-  h += 'Welcome back, <em style="font-style:italic;font-weight:700">' + escHtml(ctx.firstName) + '</em>.';
+  // v8.22+ (design-pass 2026-05-22): time-of-day greeting variant — mirrors
+  // mobile home's _greetingForTime. Editorial Fraunces register preserved;
+  // only the lead word changes. "Welcome back" reserved for late night since
+  // the masthead carries the day/edition already.
+  var _hqHour = new Date().getHours();
+  var _hqGreet = _hqHour < 12 ? "Good morning" : (_hqHour < 17 ? "Good afternoon" : (_hqHour < 22 ? "Good evening" : "Welcome back"));
+  h += _hqGreet + ', <em style="font-style:italic;font-weight:700">' + escHtml(ctx.firstName) + '</em>.';
   h += '</div>';
   // Subhead — scales 15/16/17/18
   h += '<div style="font-family:var(--font-ui);font-size:var(--hq-subhead-size);font-weight:500;color:var(--cb-charcoal);max-width:380px;line-height:1.45;margin-bottom:22px">' + escHtml(_hqHeroSubhead(ctx)) + '</div>';
