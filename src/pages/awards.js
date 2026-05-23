@@ -36,9 +36,14 @@ Router.register("awards", function(params) {
   }
   
   // 2. Scoring Champion (lowest avg)
-  var scoringChamp = season.standings.filter(function(s){return s.rounds >= 3}).sort(function(a,b){return a.avg-b.avg});
+  // v8.22+ (design-pass 2026-05-22): exclude null/NaN avg from this
+  // award. Was leaking 'Average: null' to the card when the top-ranked
+  // player had no avg yet — a data hole, not a useful award.
+  var scoringChamp = season.standings
+    .filter(function(s){return s.rounds >= 3 && s.avg != null && !isNaN(s.avg);})
+    .sort(function(a,b){return a.avg-b.avg});
   if (scoringChamp.length) {
-    ceremonyAwards.push({icon: "", title: "Scoring Champion", winner: scoringChamp[0].name||scoringChamp[0].username, detail: "Average: " + scoringChamp[0].avg, tier: "gold"});
+    ceremonyAwards.push({icon: "", title: "Scoring Champion", winner: scoringChamp[0].name||scoringChamp[0].username, detail: "Average: " + (+scoringChamp[0].avg).toFixed(1), tier: "gold"});
   }
   
   // 3. Round of the Year
