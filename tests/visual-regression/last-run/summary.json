@@ -1,6 +1,6 @@
 {
-  "iter": "iter17",
-  "ts": "2026-05-23T00:25:44.212Z",
+  "iter": "iter26",
+  "ts": "2026-05-23T01:16:40.331Z",
   "pages": [
     {
       "profile": "hq",
@@ -23,7 +23,7 @@
       "page": "members",
       "status": "pass",
       "diff": 0,
-      "total": 4255200,
+      "total": 4294080,
       "pct": 0
     },
     {
@@ -31,7 +31,7 @@
       "page": "rounds",
       "status": "pass",
       "diff": 0,
-      "total": 1637280,
+      "total": 1667520,
       "pct": 0
     },
     {
@@ -39,7 +39,7 @@
       "page": "caddynotes",
       "status": "pass",
       "diff": 0,
-      "total": 3191040,
+      "total": 3575520,
       "pct": 0
     },
     {
@@ -87,7 +87,7 @@
       "page": "members",
       "status": "pass",
       "diff": 0,
-      "total": 1152450,
+      "total": 1162980,
       "pct": 0
     },
     {
@@ -95,7 +95,7 @@
       "page": "rounds",
       "status": "pass",
       "diff": 0,
-      "total": 436020,
+      "total": 444210,
       "pct": 0
     },
     {
@@ -103,7 +103,7 @@
       "page": "caddynotes",
       "status": "pass",
       "diff": 0,
-      "total": 951210,
+      "total": 1207050,
       "pct": 0
     },
     {
@@ -151,7 +151,7 @@
       "page": "members",
       "status": "pass",
       "diff": 0,
-      "total": 1217460,
+      "total": 1228584,
       "pct": 0
     },
     {
@@ -159,7 +159,7 @@
       "page": "rounds",
       "status": "pass",
       "diff": 0,
-      "total": 460616,
+      "total": 469268,
       "pct": 0
     },
     {
@@ -167,7 +167,7 @@
       "page": "caddynotes",
       "status": "pass",
       "diff": 0,
-      "total": 961608,
+      "total": 1231468,
       "pct": 0
     },
     {
