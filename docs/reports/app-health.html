@@ -821,7 +821,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-23T02:51:21.333048Z",
+  "generated_at": "2026-05-23T02:53:00.913022Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.8,
   "overall_grade": "A-",
@@ -993,15 +993,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "850fa6a7",
-    "subject": "feat(findplayers): FOUNDING FOUR / MEMBERS tier separators + dashed empty state",
-    "committed_at": "2026-05-22T22:50:59-04:00",
-    "trigger": "app-commit",
-    "is_app_commit": true,
-    "app_files_touched": [
-      "src/pages/findplayers.js"
-    ],
-    "total_files_touched": 85
+    "sha": "a5f9b2c4",
+    "subject": "chore(visual-regression): bless findplayers tier separators baseline",
+    "committed_at": "2026-05-22T22:52:43-04:00",
+    "trigger": "substrate-commit",
+    "is_app_commit": false,
+    "app_files_touched": [],
+    "total_files_touched": 9
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
