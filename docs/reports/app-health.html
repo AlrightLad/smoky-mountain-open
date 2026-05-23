@@ -821,9 +821,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-22T23:55:44.448122Z",
+  "generated_at": "2026-05-23T00:00:50.085022Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 88.2,
+  "overall_score": 89.0,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -837,9 +837,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 93.2,
+    "pre_deduction_score": 94.0,
     "deduction": 5,
-    "post_deduction_score": 88.2
+    "post_deduction_score": 89.0
   },
   "dimensions": {
     "A1_roadmap": {
@@ -942,14 +942,14 @@
       ]
     },
     "A12_operational": {
-      "score": 85,
+      "score": 100,
       "status": "green",
-      "label": "pipeline=yellow · 2 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=green · 1 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "skip-dirty"
+        "watcher_exit_reason": "no-new-files"
       }
     }
   },
@@ -957,15 +957,15 @@
   "founder_attention": [],
   "agent_attention": [],
   "audit_trigger": {
-    "sha": "bdcfc7b5",
-    "subject": "feat(home-mobile): League Pulse â€” 3-row compact activity feed on mobile home",
-    "committed_at": "2026-05-22T19:55:23-04:00",
+    "sha": "fc06ca39",
+    "subject": "feat(home-mobile): Stripe-pattern stat captions on mobile quartet",
+    "committed_at": "2026-05-22T20:00:28-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
-      "src/pages/home.js"
+      "src/pages/home-rail-newuser.js"
     ],
-    "total_files_touched": 68
+    "total_files_touched": 34
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
