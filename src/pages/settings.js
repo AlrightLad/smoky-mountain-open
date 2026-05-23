@@ -33,7 +33,36 @@ Router.register("settings", function(params) {
   h += '<span style="font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)">Current theme</span>';
   h += '<span style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--text-primary)">' + escHtml(_activeThemeName) + '</span>';
   h += '</div>';
-  h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-subtle);font-size:11px;color:var(--text-muted);line-height:1.5">The full theme picker arrives in an upcoming update. Six editorial themes — three ready, three to earn.</div>';
+  // v8.22+ (design-pass 2026-05-22): theme preview swatches alongside the
+  // copy. Six small color-pair chips give members a visual sense of what's
+  // coming before the picker lands. Each chip is a primary + accent swatch
+  // representing the theme's surface + brass pair.
+  var _themePreviews = [
+    { name: "Clubhouse",       primary: "#f3ede1", accent: "#c89a4b", ready: true,  earned: true },
+    { name: "Twilight Links",  primary: "#1f2a35", accent: "#d4a857", ready: true,  earned: false },
+    { name: "Linen Draft",     primary: "#ebe3d1", accent: "#8b7158", ready: true,  earned: false },
+    { name: "Champion Sunday", primary: "#5b1f1f", accent: "#e0c071", ready: false, earned: false },
+    { name: "Bourbon Room",    primary: "#3d2a1f", accent: "#c89a4b", ready: false, earned: false },
+    { name: "Course Record",   primary: "#f5f0e3", accent: "#1a4032", ready: false, earned: false }
+  ];
+  h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-subtle);font-size:11px;color:var(--text-muted);line-height:1.5;margin-bottom:12px">The full theme picker arrives in an upcoming update. Six editorial themes — three ready, three to earn.</div>';
+  h += '<div style="display:flex;gap:8px;flex-wrap:wrap">';
+  _themePreviews.forEach(function(t) {
+    var isActive = (t.name === _activeThemeName);
+    var border = isActive ? 'border:2px solid var(--cb-brass)' : 'border:1px solid var(--border-subtle)';
+    var opacity = t.ready ? '1' : '0.5';
+    h += '<div title="' + escHtml(t.name) + (isActive ? ' (current)' : (t.ready ? ' (ready)' : ' (locked)')) + '" style="display:flex;flex-direction:column;align-items:center;gap:4px;opacity:' + opacity + '">';
+    h += '<div style="position:relative;width:48px;height:32px;border-radius:var(--r-1);' + border + ';overflow:hidden">';
+    h += '<div style="position:absolute;top:0;left:0;right:0;bottom:0;background:' + t.primary + '"></div>';
+    h += '<div style="position:absolute;bottom:4px;left:6px;width:14px;height:14px;border-radius:50%;background:' + t.accent + '"></div>';
+    if (!t.ready) {
+      h += '<div style="position:absolute;top:3px;right:3px;width:10px;height:10px"><svg viewBox="0 0 12 12" width="10" height="10" fill="' + t.accent + '"><path d="M3 5V3a3 3 0 116 0v2h.5a.5.5 0 01.5.5v5a.5.5 0 01-.5.5h-7a.5.5 0 01-.5-.5v-5a.5.5 0 01.5-.5H3zm1 0h4V3a2 2 0 10-4 0v2z"/></svg></div>';
+    }
+    h += '</div>';
+    h += '<div style="font-family:var(--font-mono);font-size:8px;font-weight:600;letter-spacing:0.5px;color:var(--text-muted);text-transform:uppercase;text-align:center;max-width:48px;line-height:1.2">' + escHtml(t.name.split(" ")[0]) + '</div>';
+    h += '</div>';
+  });
+  h += '</div>';
   h += '</div></div></div>';
 
   // Sunlight Mode toggle — W1.S1 (CLUBHOUSE_SPEC §6.2) — manual setting,
