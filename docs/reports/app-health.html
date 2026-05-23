@@ -821,9 +821,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-23T02:31:56.980634Z",
+  "generated_at": "2026-05-23T02:36:01.436199Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 88.3,
+  "overall_score": 89.1,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -837,9 +837,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 93.3,
+    "pre_deduction_score": 94.1,
     "deduction": 5,
-    "post_deduction_score": 88.3
+    "post_deduction_score": 89.1
   },
   "dimensions": {
     "A1_roadmap": {
@@ -958,14 +958,14 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 85,
+      "score": 100,
       "status": "green",
-      "label": "pipeline=yellow · 2 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=green · 2 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "skip-dirty-post-commit"
+        "watcher_exit_reason": "no-new-files"
       }
     }
   },
@@ -973,14 +973,12 @@
   "founder_attention": [],
   "agent_attention": [],
   "audit_trigger": {
-    "sha": "6dd8d6af",
-    "subject": "feat(calendar): dashed-card empty state for scheduling chat",
-    "committed_at": "2026-05-22T22:31:36-04:00",
-    "trigger": "app-commit",
-    "is_app_commit": true,
-    "app_files_touched": [
-      "src/pages/calendar.js"
-    ],
+    "sha": "66e36976",
+    "subject": "cron(routine): post-watcher-commit drift sweep (2026-05-23T02:35:52.9078929Z)",
+    "committed_at": "2026-05-22T22:35:52-04:00",
+    "trigger": "cron",
+    "is_app_commit": false,
+    "app_files_touched": [],
     "total_files_touched": 1
   },
   "cadence": {
