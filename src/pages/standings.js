@@ -103,6 +103,85 @@ Router.register("standings", function(params) {
   }
   h += '</div>';
 
+  // v8.22+ (design-pass 2026-05-22 / W2.S2 pull-forward): Trophy Watch agate —
+  // 5 sub-leaderboards showing who's winning each category this season.
+  // Per W2.S2 spec § Trophy Watch (5 starting trophies):
+  //   1. Stroke avg (lowest)
+  //   2. Net avg (lowest, hcap-adjusted)
+  //   3. Most birdies (count from rounds)
+  //   4. Best round (lowest single-round score)
+  //   5. Most rounds (count)
+  if (season.standings.length) {
+    function _twLeader(label, statKey, formatVal, sortDir) {
+      var pool = season.standings.filter(function(s) {
+        var v = s[statKey];
+        return v != null && !isNaN(v) && (statKey === "best" || statKey === "rounds" || s.rounds >= 3);
+      });
+      if (!pool.length) return null;
+      pool.sort(function(a, b) {
+        return sortDir === "desc" ? (b[statKey] - a[statKey]) : (a[statKey] - b[statKey]);
+      });
+      var top = pool[0];
+      return {
+        label: label,
+        winnerName: top.name || top.username || "Member",
+        winnerId: top.id,
+        value: formatVal(top[statKey])
+      };
+    }
+
+    var trophies = [];
+    var t1 = _twLeader("STROKE AVG", "avg", function(v){ return (+v).toFixed(1); }, "asc"); if (t1) trophies.push(t1);
+    var t2 = _twLeader("BEST ROUND", "best", function(v){ return String(v); }, "asc"); if (t2) trophies.push(t2);
+    var t3 = _twLeader("MOST ROUNDS", "rounds", function(v){ return v + " rds"; }, "desc"); if (t3) trophies.push(t3);
+    // Birdies count + Net avg need rounds-data join. Compute from PB.getRounds.
+    if (typeof PB !== "undefined" && PB.getRounds) {
+      var allRounds = PB.getRounds() || [];
+      var perPlayer = {};
+      allRounds.forEach(function(r) {
+        if (!r.player || !r.score || r.format === "scramble" || r.format === "scramble4") return;
+        if (!perPlayer[r.player]) perPlayer[r.player] = { birdies: 0, scores: [] };
+        // Birdies count — count holes where hole-score is at least 1 below hole-par
+        if (r.holeScores && r.holePars && r.holeScores.length === r.holePars.length) {
+          for (var i = 0; i < r.holeScores.length; i++) {
+            var sc = parseInt(r.holeScores[i]) || 0;
+            var pr = parseInt(r.holePars[i]) || 0;
+            if (sc > 0 && pr > 0 && sc <= pr - 1) perPlayer[r.player].birdies++;
+          }
+        }
+        perPlayer[r.player].scores.push(r.score);
+      });
+      var birdiePool = Object.keys(perPlayer).map(function(pid) {
+        return { id: pid, birdies: perPlayer[pid].birdies };
+      }).filter(function(p){ return p.birdies > 0; });
+      birdiePool.sort(function(a, b) { return b.birdies - a.birdies; });
+      if (birdiePool.length) {
+        var bWin = season.standings.find(function(s){ return s.id === birdiePool[0].id; });
+        if (bWin) trophies.push({
+          label: "MOST BIRDIES",
+          winnerName: bWin.name || bWin.username || "Member",
+          winnerId: bWin.id,
+          value: birdiePool[0].birdies + " ♦"
+        });
+      }
+    }
+
+    if (trophies.length) {
+      h += '<div class="section"><div class="sec-head"><span class="sec-title">Trophy Watch</span><span class="sec-link" style="font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:1px">This season</span></div>';
+      h += '<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:8px;padding:0 16px">';
+      trophies.forEach(function(t) {
+        h += '<div class="card" style="margin:0;cursor:pointer" onclick="Router.go(\'members\',{id:\'' + t.winnerId + '\'})">';
+        h += '<div style="padding:12px 14px">';
+        h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;margin-bottom:6px">' + t.label + '</div>';
+        h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--cream);margin-bottom:3px">' + escHtml(t.value) + '</div>';
+        h += '<div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(t.winnerName) + '</div>';
+        h += '</div></div>';
+      });
+      h += '</div></div>';
+    }
+  }
+
+
   h += '<div class="section"><div class="sec-head" onclick="toggleSection(\'season-rules\')" style="cursor:pointer"><span class="sec-title">Season rules</span><span class="sec-link" id="season-rules-toggle" style="display:inline-flex;transition:transform .2s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="transition:transform .2s;color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg></span></div>';
   h += '<div id="season-rules" style="display:none">';
   h += '<div class="club-row"><span class="club-name">Seasons</span><span class="club-yd">Spring (Mar\u2013May), Summer (Jun\u2013Aug), Fall (Sep\u2013Nov)</span></div>';
