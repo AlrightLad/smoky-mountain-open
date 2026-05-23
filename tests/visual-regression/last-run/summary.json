@@ -1,0 +1,201 @@
+{
+  "iter": "iter12",
+  "ts": "2026-05-23T00:04:38.212Z",
+  "pages": [
+    {
+      "profile": "hq",
+      "page": "home-hq",
+      "status": "pass",
+      "diff": 0,
+      "total": 2841120,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "standings",
+      "status": "pass",
+      "diff": 0,
+      "total": 2424960,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "members",
+      "status": "pass",
+      "diff": 0,
+      "total": 4255200,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "rounds",
+      "status": "pass",
+      "diff": 0,
+      "total": 1637280,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "caddynotes",
+      "status": "pass",
+      "diff": 0,
+      "total": 3191040,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "playnow",
+      "status": "pass",
+      "diff": 0,
+      "total": 1296000,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "feed",
+      "status": "pass",
+      "diff": 0,
+      "total": 1296000,
+      "pct": 0
+    },
+    {
+      "profile": "hq",
+      "page": "settings",
+      "status": "pass",
+      "diff": 0,
+      "total": 3038400,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "home-hq",
+      "status": "pass",
+      "diff": 0,
+      "total": 453180,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "standings",
+      "status": "pass",
+      "diff": 0,
+      "total": 657930,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "members",
+      "status": "pass",
+      "diff": 0,
+      "total": 1152450,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "rounds",
+      "status": "pass",
+      "diff": 0,
+      "total": 436020,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "caddynotes",
+      "status": "pass",
+      "diff": 0,
+      "total": 951210,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "playnow",
+      "status": "pass",
+      "diff": 0,
+      "total": 329160,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "feed",
+      "status": "pass",
+      "diff": 0,
+      "total": 329160,
+      "pct": 0
+    },
+    {
+      "profile": "iphone14",
+      "page": "settings",
+      "status": "pass",
+      "diff": 0,
+      "total": 837330,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "home-hq",
+      "status": "pass",
+      "diff": 0,
+      "total": 478744,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "standings",
+      "status": "pass",
+      "diff": 0,
+      "total": 695044,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "members",
+      "status": "pass",
+      "diff": 0,
+      "total": 1217460,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "rounds",
+      "status": "pass",
+      "diff": 0,
+      "total": 460616,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "caddynotes",
+      "status": "pass",
+      "diff": 0,
+      "total": 961608,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "playnow",
+      "status": "pass",
+      "diff": 0,
+      "total": 376980,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "feed",
+      "status": "pass",
+      "diff": 0,
+      "total": 376980,
+      "pct": 0
+    },
+    {
+      "profile": "pixel7",
+      "page": "settings",
+      "status": "pass",
+      "diff": 0,
+      "total": 878796,
+      "pct": 0
+    }
+  ],
+  "pass": 24,
+  "fail": 0,
+  "skip": 0
+}
