@@ -70,9 +70,34 @@ function filterPlayers() {
   });
 
   if (!players.length) {
-    el.innerHTML = '<div style="text-align:center;padding:32px 16px;font-size:12px;color:var(--muted)">No players found matching your search.</div>';
+    // v8.22+ (design-pass 2026-05-22): dashed-card empty state matching
+    // the courses/feed pattern. Per filter, distinct copy.
+    var noMatchLabel = q ? "No players match \"" + escHtml(query) + "\"" : (
+      _fpFilter === "beginner" ? "No beginners in the directory yet" :
+      _fpFilter === "intermediate" ? "No intermediates yet" :
+      _fpFilter === "advanced" ? "No advanced players yet" :
+      "No players found"
+    );
+    el.innerHTML = '<div style="margin:14px 16px;padding:30px 22px;text-align:center;background:var(--bg2);border:1px dashed var(--border);border-radius:12px">' +
+      '<div style="font-family:var(--font-display);font-size:16px;font-weight:600;color:var(--cream);margin-bottom:6px">' + noMatchLabel + '.</div>' +
+      '<div style="font-size:11px;color:var(--muted);line-height:1.5;max-width:280px;margin:0 auto">Adjust your search or the handicap filter. Profiles set to <span style="color:var(--birdie)">PUBLIC</span> show up across all leagues.</div>' +
+      '</div>';
     return;
   }
+
+  // v8.22+ (design-pass 2026-05-22): sort founders to the top + add tier
+  // eyebrows matching the Members directory pattern. Founders are visually
+  // distinguished, easier to discover for new members joining the league.
+  players.sort(function(a, b) {
+    var aF = (a.founding || a.isFoundingFour) ? 1 : 0;
+    var bF = (b.founding || b.isFoundingFour) ? 1 : 0;
+    if (aF !== bF) return bF - aF;
+    return (a.name || a.username || "").localeCompare(b.name || b.username || "");
+  });
+
+  var founderCount = players.filter(function(p){return p.founding || p.isFoundingFour;}).length;
+  var memberCount = players.length - founderCount;
+  var lastTier = null;
 
   var h = '<div style="padding:0 16px">';
   players.forEach(function(p) {
@@ -80,12 +105,27 @@ function filterPlayers() {
     var hcap = p.computedHandicap || p.handicap || null;
     var isPublic = p.profilePublic;
     var mutualLeagues = (p.leagues || []).filter(function(l) { return myLeagues.indexOf(l) !== -1; }).length;
+    var isFounder = !!(p.founding || p.isFoundingFour);
+    var tier = isFounder ? "founder" : "member";
+    if (tier !== lastTier) {
+      var label = tier === "founder" ? "FOUNDING FOUR" : "MEMBERS";
+      var count = tier === "founder" ? founderCount : memberCount;
+      h += '<div style="display:flex;align-items:baseline;justify-content:space-between;padding:' + (lastTier ? '18px' : '10px') + ' 0 8px;border-top:' + (lastTier ? '1px solid var(--border)' : 'none') + ';margin-top:' + (lastTier ? '6px' : '0') + '">';
+      h += '<div style="font-family:var(--font-mono);font-size:9px;color:var(--gold);letter-spacing:2px;font-weight:700;text-transform:uppercase">' + label + '</div>';
+      h += '<div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:1px;font-weight:600">' + count + '</div>';
+      h += '</div>';
+      lastTier = tier;
+    }
 
     h += '<div class="card" style="margin-bottom:6px;cursor:pointer" onclick="Router.go(\'members\',{id:\'' + pid + '\'})">';
     h += '<div style="padding:12px 16px;display:flex;align-items:center;gap:12px">';
     h += renderAvatar(p, 44, false);
     h += '<div style="flex:1;min-width:0">';
-    h += '<div style="font-size:13px;font-weight:600">' + renderUsername(p, 'color:var(--cream);', false) + '</div>';
+    h += '<div style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px">' + renderUsername(p, 'color:var(--cream);', false);
+    if (isFounder) {
+      h += '<svg viewBox="0 0 12 12" width="10" height="10" style="flex-shrink:0"><path d="M6 1l1.5 3 3.5.5-2.5 2.5.6 3.5L6 9l-3.1 1.5.6-3.5L1 4.5 4.5 4z" fill="var(--gold)" stroke="none"/></svg>';
+    }
+    h += '</div>';
     h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">';
     var meta = [];
     if (hcap !== null) meta.push("Hcap " + hcap);
