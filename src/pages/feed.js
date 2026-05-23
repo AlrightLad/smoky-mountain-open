@@ -186,10 +186,36 @@ function _renderFeedItems() {
   var filtered = _feedFilter === "all" ? items : items.filter(function(i) { return i.type === _feedFilter; });
   var fh = '';
   if (!filtered.length) {
-    fh = '<div style="padding:40px 16px;text-align:center"><div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".6"><circle cx="24" cy="24" r="18"/><path d="M16 28s3 4 8 4 8-4 8-4"/><circle cx="18" cy="18" r="2" fill="var(--gold)"/><circle cx="30" cy="18" r="2" fill="var(--gold)"/></svg></div>';
-    fh += '<div style="font-size:16px;font-weight:700;color:var(--cream)">No ' + (_feedFilter === "all" ? "Activity" : (_feedFilter === "round" ? "Rounds" : _feedFilter === "chat" ? "Messages" : "Range Sessions")) + ' Yet</div>';
-    fh += '<div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:280px;margin-left:auto;margin-right:auto">Play a round, hit the range, or drop a message in the feed to get things going.</div>';
-    fh += '<button class="btn full green" style="margin-top:16px;max-width:220px;margin-left:auto;margin-right:auto" onclick="Router.go(\'playnow\')">Log a Round</button></div>';
+    // v8.22+ (design-pass 2026-05-22): empty-state polish — per-filter
+    // copy + dashed-border card treatment mirroring the courses empty state
+    // (Linear empty-as-teaching-moment). The illustration is the smiley
+    // golfer icon already in place — kept for visual continuity.
+    var emptyLabel, emptyCopy, emptyCta, emptyCtaText;
+    if (_feedFilter === "round") {
+      emptyLabel = "No rounds posted yet";
+      emptyCopy = "Once members log rounds, they’ll appear here with score, course, and quips from The Caddy.";
+      emptyCta = "playnow"; emptyCtaText = "Log a Round";
+    } else if (_feedFilter === "chat") {
+      emptyLabel = "Quiet in here";
+      emptyCopy = "Drop a message in the composer above. League chat appears here in reverse-chron, scoped to your league.";
+      emptyCta = null; emptyCtaText = null;
+    } else if (_feedFilter === "range") {
+      emptyLabel = "No range sessions yet";
+      emptyCopy = "Track range work to build long-term skill data — sessions show alongside rounds in this feed.";
+      emptyCta = "range"; emptyCtaText = "Hit the range";
+    } else {
+      emptyLabel = "No activity yet";
+      emptyCopy = "Play a round, hit the range, or drop a message in the composer above to get things going.";
+      emptyCta = "playnow"; emptyCtaText = "Log a Round";
+    }
+    fh = '<div style="margin:24px 16px;padding:36px 24px;text-align:center;background:var(--bg2);border:1px dashed var(--border);border-radius:12px">';
+    fh += '<div style="margin-bottom:14px;display:flex;justify-content:center"><svg viewBox="0 0 48 48" width="56" height="56" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".7"><circle cx="24" cy="24" r="18"/><path d="M16 28s3 4 8 4 8-4 8-4"/><circle cx="18" cy="18" r="2" fill="var(--gold)"/><circle cx="30" cy="18" r="2" fill="var(--gold)"/></svg></div>';
+    fh += '<div style="font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--cream);margin-bottom:6px">' + emptyLabel + '.</div>';
+    fh += '<div style="font-size:12px;color:var(--muted);line-height:1.55;max-width:320px;margin:0 auto ' + (emptyCta ? '16px' : '0') + '">' + emptyCopy + '</div>';
+    if (emptyCta) {
+      fh += '<button class="btn-sm green" style="font-size:11px;padding:9px 22px" onclick="Router.go(\'' + emptyCta + '\')">' + emptyCtaText + '</button>';
+    }
+    fh += '</div>';
   }
   filtered.slice(0, 60).forEach(function(item) {
     if (item.type === "round") {
