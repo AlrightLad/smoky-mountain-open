@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-23T06:55:32.577102+00:00",
+  "generated_at": "2026-05-23T09:09:44.952006+00:00",
   "schema_version": 1,
   "source": "~/.claude/projects/C--Users-Zach-smoky-mountain-open/*.jsonl",
-  "session_count": 78,
-  "bucket_count": 115,
-  "all_time_total_tokens": 11027340055,
+  "session_count": 81,
+  "bucket_count": 118,
+  "all_time_total_tokens": 11032972934,
   "by_day_total": {
     "2026-04-17": 294853821,
     "2026-04-20": 362592283,
@@ -27,10 +27,10 @@
     "2026-05-20": 611933923,
     "2026-05-21": 1573217869,
     "2026-05-22": 1386469504,
-    "2026-05-23": 471966390
+    "2026-05-23": 477599269
   },
   "by_model_total": {
-    "claude-opus-4-7": 11027340055,
+    "claude-opus-4-7": 11032972934,
     "<synthetic>": 0
   },
   "buckets": {
@@ -1528,6 +1528,45 @@
       "total": 0,
       "first_ts": "2026-05-23T05:00:05.940Z",
       "last_ts": "2026-05-23T05:00:05.940Z"
+    },
+    "1c1fc6ca-fd9f-4ebe-9039-e684b983e3f3|2026-05-23|claude-opus-4-7": {
+      "session_id": "1c1fc6ca-fd9f-4ebe-9039-e684b983e3f3",
+      "day": "2026-05-23",
+      "model": "claude-opus-4-7",
+      "turn_count": 62,
+      "input_tokens": 126,
+      "output_tokens": 110383,
+      "cache_read_input_tokens": 5134924,
+      "cache_creation_input_tokens": 387446,
+      "total": 5632879,
+      "first_ts": "2026-05-23T09:00:11.234Z",
+      "last_ts": "2026-05-23T09:08:52.736Z"
+    },
+    "2634945b-37f7-461a-b074-e8ea0b5027fc|2026-05-23|<synthetic>": {
+      "session_id": "2634945b-37f7-461a-b074-e8ea0b5027fc",
+      "day": "2026-05-23",
+      "model": "<synthetic>",
+      "turn_count": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation_input_tokens": 0,
+      "total": 0,
+      "first_ts": "2026-05-23T08:00:05.877Z",
+      "last_ts": "2026-05-23T08:00:05.877Z"
+    },
+    "5d302121-664b-4b0a-a94b-15fe6a08ee82|2026-05-23|<synthetic>": {
+      "session_id": "5d302121-664b-4b0a-a94b-15fe6a08ee82",
+      "day": "2026-05-23",
+      "model": "<synthetic>",
+      "turn_count": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation_input_tokens": 0,
+      "total": 0,
+      "first_ts": "2026-05-23T07:00:06.053Z",
+      "last_ts": "2026-05-23T07:00:06.053Z"
     }
   }
 }
