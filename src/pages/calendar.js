@@ -116,7 +116,7 @@ Router.register("calendar", function() {
   h += '<div id="calChatFeed" style="max-height:300px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px"><div style="text-align:center;font-size:10px;color:var(--muted);padding:20px">Loading...</div></div>';
   h += '<div style="display:flex;gap:8px;padding:8px 16px;border-top:1px solid var(--border)">';
   h += '<input class="ff-input" id="calChatInput" placeholder="Discuss scheduling..." style="flex:1;margin:0;font-size:12px;padding:9px 14px;border-radius:20px" onkeydown="if(event.key===\'Enter\')sendCalChat()">';
-  h += '<button style="background:var(--gold);border:none;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0" onclick="sendCalChat()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--bg)" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>';
+  h += '<button aria-label="Send scheduling message" title="Send" style="background:var(--gold);border:none;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0" onclick="sendCalChat()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--bg)" stroke-width="2" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>';
   h += '</div>';
   document.querySelector('[data-page="calendar"]').innerHTML = h;
 
