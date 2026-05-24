@@ -105,7 +105,7 @@ Pending. Format: `Overnight triage 2026-05-24 cycle F - 0 reports, 0 proposals, 
 
 4. **quota-status weekly_cap field still null** — no % computation possible (preserved from cycles R→E).
 
-5. **aggregate-fiq-status D41 parity GATE-FAIL** — stale-timestamp >24h hard threshold tripped because FIQ has zero churn across 40 consecutive empty-inbox cycles. NOT an aggregator bug.
+5. **post-commit aggregate-self-tests FAIL on 2 aggregators (CORRECTED from prior cycles' carry-over wording).** Cycle F's post-commit-hook log (`.claude/state/dashboard-health/post-commit-hook.log` lines 37-46) shows: aggregate-fiq-status is **OK** status=green declared=26 deployed=26 (NOT failing). The actual aggregators producing the post-commit FAIL signal are `aggregate-test-health` (parity-fail: source-detected but status=unknown) and `aggregate-security-health` (stale-timestamp 134238s ~37.3h). Cycles D and E carry-over text named fiq-status; this is a metric-integrity correction. Founder-action: investigate whether test-health source-detection / status-mapping logic is broken, and why security-health timestamp is 37h stale (likely the security scanner hasn't run; possibly related to AgentShield invocation pattern).
 
 6. **A12_operational** — sustained yellow with continued oscillation across rolling-window mechanics.
 
@@ -124,7 +124,9 @@ Concrete questions answered:
 - **Did every new proposal cite a specific screen/state/edge-case it improves?** N/A — zero new proposals.
 - **Did the FIQ grades reflect rubric dimensions honestly?** N/A — zero FIQ entries (40th consecutive empty cycle). Grade tally A=0, B=0, C=0, D=0, F=0 is honest.
 
-**No new substantive observations this cycle.** Cycle F is appropriately tight per cycle E's own forward guidance ("pattern now well-established enough that future cycles in this empty-inbox/quiet-Founder window can remain concise"). The 5 material observations are reinforcement of cycle E's diagnoses — 5th consecutive ~1h gap (was 4), 4th cross-cycle token persistence (was 3rd), 6th Founder-absent cycle this UTC date (was 5th), untracked tree still 6 entries unchanged, stale-counter delta independently corroborates again. Recorded as continuation, not as new claims.
+**One metric-integrity correction this cycle.** Cycles D + E's carry-over #5 named `aggregate-fiq-status` as the post-commit GATE-FAIL source, but cycle F's direct read of the post-commit-hook log shows fiq-status is OK and the actual failing aggregators are `aggregate-test-health` (parity-fail) + `aggregate-security-health` (stale 37.3h). Corrected carry-over #5 accordingly. This is a substantive correction — without it, Founder would have been pointed at the wrong aggregator. Recorded in `metric_integrity_corrections_this_cycle` in last-verify.json.
+
+**No new substantive observations beyond that correction this cycle.** Cycle F is appropriately tight per cycle E's own forward guidance ("pattern now well-established enough that future cycles in this empty-inbox/quiet-Founder window can remain concise"). The 5 material observations are reinforcement of cycle E's diagnoses — 5th consecutive ~1h gap (was 4), 4th cross-cycle token persistence (was 3rd), 6th Founder-absent cycle this UTC date (was 5th), untracked tree still 6 entries unchanged, stale-counter delta independently corroborates again. Recorded as continuation, not as new claims.
 
 **Critic attestation: HONEST.** Cycle F is the right size for a heartbeat-only continuation cycle. No new findings were manufactured to look productive. The trend-counters were incremented honestly. Cycle E's "concise" framing applied.
 

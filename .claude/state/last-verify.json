@@ -21,11 +21,13 @@
     "A8_performance: Lighthouse 65/100 on 1 page (target 75+) — carry-over from cycles S→E; rolling-window mechanics.",
     "main-flows.html user-context capture ~9.33 days stale at cycle F (was 9.29 at cycle E) — run `node scripts/visual-audit/founder-context-capture.mjs` before next ship-close.",
     "quota-status weekly_cap field still null — no % computation possible (preserved from cycles R→E).",
-    "aggregate-fiq-status D41 parity GATE-FAIL — stale-timestamp >24h hard threshold tripped because FIQ has zero churn across 40 consecutive empty-inbox cycles. NOT an aggregator bug.",
+    "post-commit aggregate-self-tests FAIL on 2 aggregators (NOT fiq-status as prior cycles' carry-over named): aggregate-test-health parity-fail (source-detected but status=unknown) + aggregate-security-health stale-timestamp 134238s (~37.3h). aggregate-fiq-status is OK status=green this cycle. Metric-integrity correction filed (see corrections field). Founder-action: investigate whether test-health source-detection / status-mapping is broken, and why security-health timestamp is 37h stale.",
     "A12_operational — sustained yellow with continued oscillation across rolling-window mechanics.",
     "Heartbeat `status: GATE-FAIL` field semantics — DUAL-WRITE-PATH MODEL HOLDS at cycle F. Cycle F's regen-all wrote 4-field PASS schema correctly. Hypothesis (post-commit-hook may write GATE-FAIL only on NON-`cron(routine):` subjects) cannot be tested at cycle F (no non-routine commits between E and F). Founder-action: inspect `.husky/post-commit` source.",
     "Wellness token-counter semantics — THRESHOLD PERSISTS 4th cross-cycle cycle. Cumulative tokens_consumed_since_last_rest = ~230k (was 205k at cycle E; +25k cycle F). thresholds_crossed=['tokens_consumed'] PRESERVED. Cycle C's forward-look projection still on track (200k at E HIT; 300k at H-I unchanged). Founder-decision still LIVE for 5th cycle: (a) reset tokens per cron fire, (b) raise threshold, (c) auto-trigger rest when crossed-while-active, (d) leave current convention (current path)."
   ],
   "dropped_action_items_this_cycle": [],
-  "metric_integrity_corrections_this_cycle": []
+  "metric_integrity_corrections_this_cycle": [
+    "Carry-over #5 inherited from cycles D→E named `aggregate-fiq-status D40 parity GATE-FAIL` but cycle F's post-commit-hook log (.claude/state/dashboard-health/post-commit-hook.log lines 37-46) shows fiq-status is OK status=green declared=26 deployed=26. The actual aggregators producing the post-commit FAIL signal are aggregate-test-health (parity-fail: source-detected but status=unknown) and aggregate-security-health (stale-timestamp 134238s ~37.3h). Corrected action item #5 to name the actual failing aggregators. Critic attestation: this is a real metric-integrity finding, not a fluff manufacturing — surfaced because Founder-action language in carry-over #5 would have pointed Founder at the wrong aggregator. Honest correction."
+  ]
 }
