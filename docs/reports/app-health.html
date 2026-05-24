@@ -821,9 +821,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-24T20:06:31.504120Z",
+  "generated_at": "2026-05-24T20:34:52.279152Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 88.0,
+  "overall_score": 87.1,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -837,9 +837,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 93.0,
+    "pre_deduction_score": 92.1,
     "deduction": 5,
-    "post_deduction_score": 88.0
+    "post_deduction_score": 87.1
   },
   "dimensions": {
     "A1_roadmap": {
@@ -951,7 +951,7 @@
       "weak_points": []
     },
     "A11_testing": {
-      "score": 96,
+      "score": 88,
       "status": "green",
       "label": "7 specs · 767 LOC · unit-test=True · coverage-tool=True",
       "source": "tests/e2e/flows/, package.json, smoke-test.txt",
@@ -993,13 +993,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "a1c9e7ea",
-    "subject": "Overnight triage 2026-05-24 cycle J - 0 reports, 0 proposals, 0 FIQ entries graded",
-    "committed_at": "2026-05-24T16:05:29-04:00",
+    "sha": "ff14d2d1",
+    "subject": "chore: clean dirty tree â€” iter46 captures + overnight reports + stop-decisions",
+    "committed_at": "2026-05-24T16:34:34-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 4
+    "total_files_touched": 113
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
