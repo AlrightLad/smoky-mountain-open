@@ -291,7 +291,7 @@ html{background:var(--bg)!important}body{font-family:'Inter',system-ui,sans-seri
       <div style="font-size:16px;font-weight:700;color:var(--gold)">Notifications</div>
       <div style="display:flex;gap:14px;align-items:center">
         <button style="background:none;border:1px solid var(--border);color:var(--muted);font-size:10px;padding:12px 16px;border-radius:4px;cursor:pointer;font-family:inherit;min-height:44px" onclick="markAllNotifsRead()">Mark all read</button>
-        <button style="background:none;border:none;color:var(--cream);font-size:22px;cursor:pointer;line-height:1;font-weight:300;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center" onclick="closeNotifPanel()">×</button>
+        <button aria-label="Close notifications" title="Close" style="background:none;border:none;color:var(--cream);font-size:22px;cursor:pointer;line-height:1;font-weight:300;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center" onclick="closeNotifPanel()">×</button>
       </div>
     </div>
     <div id="notifList"></div>

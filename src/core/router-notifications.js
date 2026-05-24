@@ -83,7 +83,7 @@ function renderNotifItem(n, isRead) {
   h += '<span style="font-size:9px;color:var(--gold);cursor:pointer;font-weight:600" onclick="event.stopPropagation();handleNotifClick(\'' + idEsc + '\')">View →</span>';
   h += '</div></div></div>';
   // Dismiss X — read items DELETE; unread items mark read.
-  h += '<div onclick="event.stopPropagation();dismissNotif(\'' + idEsc + '\',' + (isRead ? 'true' : 'false') + ')" style="position:absolute;top:10px;right:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted2);font-size:14px;border-radius:4px;transition:background .15s" onmouseover="this.style.background=\'var(--bg3)\'" onmouseout="this.style.background=\'transparent\'">×</div>';
+  h += '<div role="button" tabindex="0" aria-label="' + (isRead ? "Delete notification" : "Mark as read") + '" title="' + (isRead ? "Delete" : "Mark as read") + '" onclick="event.stopPropagation();dismissNotif(\'' + idEsc + '\',' + (isRead ? 'true' : 'false') + ')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();event.stopPropagation();dismissNotif(\'' + idEsc + '\',' + (isRead ? 'true' : 'false') + ');}" style="position:absolute;top:10px;right:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted2);font-size:14px;border-radius:4px;transition:background .15s" onmouseover="this.style.background=\'var(--bg3)\'" onmouseout="this.style.background=\'transparent\'"><span aria-hidden="true">×</span></div>';
   h += '</div>';
   return h;
 }
