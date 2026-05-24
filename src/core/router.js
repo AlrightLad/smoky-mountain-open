@@ -282,6 +282,12 @@ function renderAvatar(p, size, clickToProfile) {
 // renderUsername(player, extraStyle) → HTML string
 // Renders the player's display name with their equipped name effect class.
 // If clickToProfile, wraps in an onclick span.
+//
+// W4.I1 display rules (2026-05-24): when the username carries a Discord-style
+// discriminator (base#XXXX), render the base at full opacity + the
+// #discriminator tag muted. Member identity reads cleanly without the tag
+// dominating; disambiguation context is still visible. When username has no
+// discriminator (legacy single-name members) the render is unchanged.
 function renderUsername(p, extraStyle, clickToProfile) {
   if (!p) return '<span style="' + (extraStyle || '') + '">Unknown</span>';
   var name = p.username || p.name || 'Member';
@@ -289,7 +295,21 @@ function renderUsername(p, extraStyle, clickToProfile) {
   var pid = p.id || '';
   var click = clickToProfile && pid ? ' onclick="event.stopPropagation();Router.go(\'members\',{id:\'' + pid + '\'})"' : '';
   var cursor = clickToProfile && pid ? 'cursor:pointer;' : '';
-  return '<span class="' + nameClass + '" style="' + cursor + (extraStyle || '') + '"' + click + '>' + escHtml(name) + '</span>';
+
+  // Detect discriminator suffix #XXXX (4 digits) per W4.I1 schema. The
+  // discriminator portion renders with reduced opacity + tighter weight so
+  // the base username stays the primary read.
+  var hashIdx = name.lastIndexOf('#');
+  var inner;
+  if (hashIdx > 0 && /^#\d{1,4}$/.test(name.slice(hashIdx))) {
+    var base = name.slice(0, hashIdx);
+    var tag  = name.slice(hashIdx);
+    inner = escHtml(base) + '<span class="username-discriminator" style="opacity:0.55;font-weight:500;letter-spacing:0.5px">' + escHtml(tag) + '</span>';
+  } else {
+    inner = escHtml(name);
+  }
+
+  return '<span class="' + nameClass + '" style="' + cursor + (extraStyle || '') + '"' + click + '>' + inner + '</span>';
 }
 
 // renderAvatarUsername(player, avatarSize, nameStyle) → HTML string
