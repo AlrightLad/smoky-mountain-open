@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-24T15:08:10.817659+00:00",
+  "generated_at": "2026-05-24T20:06:18.541164+00:00",
   "schema_version": 1,
   "source": "~/.claude/projects/C--Users-Zach-smoky-mountain-open/*.jsonl",
-  "session_count": 111,
-  "bucket_count": 150,
-  "all_time_total_tokens": 11243278999,
+  "session_count": 116,
+  "bucket_count": 155,
+  "all_time_total_tokens": 11254855274,
   "by_day_total": {
     "2026-04-17": 294853821,
     "2026-04-20": 362592283,
@@ -28,10 +28,10 @@
     "2026-05-21": 1573217869,
     "2026-05-22": 1386469504,
     "2026-05-23": 577719567,
-    "2026-05-24": 110185767
+    "2026-05-24": 121762042
   },
   "by_model_total": {
-    "claude-opus-4-7": 11243278999,
+    "claude-opus-4-7": 11254855274,
     "<synthetic>": 0
   },
   "buckets": {
@@ -1768,27 +1768,27 @@
       "session_id": "a3e3471a-7db9-4c9d-a1f1-37284a43520d",
       "day": "2026-05-24",
       "model": "<synthetic>",
-      "turn_count": 36,
+      "turn_count": 43,
       "input_tokens": 0,
       "output_tokens": 0,
       "cache_read_input_tokens": 0,
       "cache_creation_input_tokens": 0,
       "total": 0,
       "first_ts": "2026-05-24T00:17:58.679Z",
-      "last_ts": "2026-05-24T15:07:41.076Z"
+      "last_ts": "2026-05-24T15:19:02.915Z"
     },
     "a3e3471a-7db9-4c9d-a1f1-37284a43520d|2026-05-24|claude-opus-4-7": {
       "session_id": "a3e3471a-7db9-4c9d-a1f1-37284a43520d",
       "day": "2026-05-24",
       "model": "claude-opus-4-7",
-      "turn_count": 64,
-      "input_tokens": 89,
-      "output_tokens": 64937,
-      "cache_read_input_tokens": 1475584,
-      "cache_creation_input_tokens": 58737597,
-      "total": 60278207,
+      "turn_count": 72,
+      "input_tokens": 97,
+      "output_tokens": 67288,
+      "cache_read_input_tokens": 1660032,
+      "cache_creation_input_tokens": 66252920,
+      "total": 67980337,
       "first_ts": "2026-05-24T00:18:01.389Z",
-      "last_ts": "2026-05-24T15:07:41.888Z"
+      "last_ts": "2026-05-24T15:11:39.951Z"
     },
     "9bd6e04a-67d0-4ae9-bffc-41042d92e7ed|2026-05-24|<synthetic>": {
       "session_id": "9bd6e04a-67d0-4ae9-bffc-41042d92e7ed",
@@ -1950,14 +1950,14 @@
       "session_id": "7ad25a03-def8-4af0-80a4-bd1205d5080a",
       "day": "2026-05-24",
       "model": "claude-opus-4-7",
-      "turn_count": 55,
-      "input_tokens": 1011,
-      "output_tokens": 69591,
-      "cache_read_input_tokens": 3885449,
-      "cache_creation_input_tokens": 274834,
-      "total": 4230885,
+      "turn_count": 60,
+      "input_tokens": 1016,
+      "output_tokens": 75420,
+      "cache_read_input_tokens": 4444413,
+      "cache_creation_input_tokens": 278901,
+      "total": 4799750,
       "first_ts": "2026-05-24T15:00:12.196Z",
-      "last_ts": "2026-05-24T15:06:49.898Z"
+      "last_ts": "2026-05-24T15:08:51.206Z"
     },
     "84a09a59-6f9d-4baf-a772-abc180ccf418|2026-05-24|<synthetic>": {
       "session_id": "84a09a59-6f9d-4baf-a772-abc180ccf418",
@@ -1984,6 +1984,71 @@
       "total": 0,
       "first_ts": "2026-05-24T13:00:06.561Z",
       "last_ts": "2026-05-24T13:00:06.561Z"
+    },
+    "317535f6-736b-41c6-b7c2-ed1a48908056|2026-05-24|<synthetic>": {
+      "session_id": "317535f6-736b-41c6-b7c2-ed1a48908056",
+      "day": "2026-05-24",
+      "model": "<synthetic>",
+      "turn_count": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation_input_tokens": 0,
+      "total": 0,
+      "first_ts": "2026-05-24T18:00:06.189Z",
+      "last_ts": "2026-05-24T18:00:06.189Z"
+    },
+    "4632894b-461e-4fe3-8d10-274488bca6d2|2026-05-24|<synthetic>": {
+      "session_id": "4632894b-461e-4fe3-8d10-274488bca6d2",
+      "day": "2026-05-24",
+      "model": "<synthetic>",
+      "turn_count": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation_input_tokens": 0,
+      "total": 0,
+      "first_ts": "2026-05-24T19:00:06.111Z",
+      "last_ts": "2026-05-24T19:00:06.111Z"
+    },
+    "a4f8540a-0969-4611-a089-438b76196167|2026-05-24|<synthetic>": {
+      "session_id": "a4f8540a-0969-4611-a089-438b76196167",
+      "day": "2026-05-24",
+      "model": "<synthetic>",
+      "turn_count": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation_input_tokens": 0,
+      "total": 0,
+      "first_ts": "2026-05-24T16:00:06.081Z",
+      "last_ts": "2026-05-24T16:00:06.081Z"
+    },
+    "a6137f0b-f9bd-466b-9406-50684a963763|2026-05-24|claude-opus-4-7": {
+      "session_id": "a6137f0b-f9bd-466b-9406-50684a963763",
+      "day": "2026-05-24",
+      "model": "claude-opus-4-7",
+      "turn_count": 45,
+      "input_tokens": 81,
+      "output_tokens": 48632,
+      "cache_read_input_tokens": 3004096,
+      "cache_creation_input_tokens": 252471,
+      "total": 3305280,
+      "first_ts": "2026-05-24T20:00:12.702Z",
+      "last_ts": "2026-05-24T20:05:26.735Z"
+    },
+    "ba4cfce9-1489-467f-a8ef-1e47b848288e|2026-05-24|<synthetic>": {
+      "session_id": "ba4cfce9-1489-467f-a8ef-1e47b848288e",
+      "day": "2026-05-24",
+      "model": "<synthetic>",
+      "turn_count": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "cache_creation_input_tokens": 0,
+      "total": 0,
+      "first_ts": "2026-05-24T17:00:06.187Z",
+      "last_ts": "2026-05-24T17:00:06.187Z"
     }
   }
 }
