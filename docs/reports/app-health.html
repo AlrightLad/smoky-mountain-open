@@ -821,7 +821,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-24T20:34:52.279152Z",
+  "generated_at": "2026-05-25T01:02:07.201131Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.1,
   "overall_grade": "A-",
@@ -993,13 +993,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "ff14d2d1",
-    "subject": "chore: clean dirty tree â€” iter46 captures + overnight reports + stop-decisions",
-    "committed_at": "2026-05-24T16:34:34-04:00",
+    "sha": "dc8c5809",
+    "subject": "feat(sentry): scripts/sentry-fetch-events.mjs + Founder scope walkthrough",
+    "committed_at": "2026-05-24T21:01:48-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 113
+    "total_files_touched": 2
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
