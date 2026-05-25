@@ -719,6 +719,16 @@
       "tokens_consumed": 0,
       "outcome": "PLACEHOLDER",
       "summary": "Proactive cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260525-0811",
+      "type": "heartbeat",
+      "started_at": "2026-05-25T08:11:07Z",
+      "ended_at": "2026-05-25T08:11:07Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
     }
   ]
 }
