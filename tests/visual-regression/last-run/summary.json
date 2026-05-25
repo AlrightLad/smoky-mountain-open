@@ -1,21 +1,21 @@
 {
-  "iter": "iter38",
-  "ts": "2026-05-23T03:23:16.768Z",
+  "iter": "iter46",
+  "ts": "2026-05-25T01:04:20.535Z",
   "pages": [
     {
       "profile": "hq",
       "page": "home-hq",
       "status": "pass",
-      "diff": 0,
+      "diff": 6195,
       "total": 2841120,
-      "pct": 0
+      "pct": 0.218
     },
     {
       "profile": "hq",
       "page": "standings",
       "status": "pass",
       "diff": 0,
-      "total": 2424960,
+      "total": 2638080,
       "pct": 0
     },
     {
@@ -62,17 +62,17 @@
       "profile": "hq",
       "page": "settings",
       "status": "pass",
-      "diff": 0,
+      "diff": 251,
       "total": 3121920,
-      "pct": 0
+      "pct": 0.008
     },
     {
       "profile": "hq",
       "page": "profile",
       "status": "pass",
-      "diff": 0,
+      "diff": 2977,
       "total": 3558240,
-      "pct": 0
+      "pct": 0.084
     },
     {
       "profile": "hq",
@@ -86,9 +86,9 @@
       "profile": "hq",
       "page": "shop",
       "status": "pass",
-      "diff": 0,
+      "diff": 649,
       "total": 3121920,
-      "pct": 0
+      "pct": 0.021
     },
     {
       "profile": "hq",
@@ -102,9 +102,9 @@
       "profile": "hq",
       "page": "calendar",
       "status": "pass",
-      "diff": 0,
+      "diff": 194,
       "total": 2409120,
-      "pct": 0
+      "pct": 0.008
     },
     {
       "profile": "hq",
@@ -166,17 +166,17 @@
       "profile": "hq",
       "page": "wagers",
       "status": "pass",
-      "diff": 0,
+      "diff": 231,
       "total": 1296000,
-      "pct": 0
+      "pct": 0.018
     },
     {
       "profile": "hq",
       "page": "bounties",
       "status": "pass",
-      "diff": 0,
+      "diff": 117,
       "total": 1296000,
-      "pct": 0
+      "pct": 0.009
     },
     {
       "profile": "hq",
@@ -190,9 +190,9 @@
       "profile": "hq",
       "page": "richlist",
       "status": "pass",
-      "diff": 0,
+      "diff": 227,
       "total": 1337760,
-      "pct": 0
+      "pct": 0.017
     },
     {
       "profile": "hq",
@@ -246,16 +246,16 @@
       "profile": "iphone14",
       "page": "home-hq",
       "status": "pass",
-      "diff": 0,
+      "diff": 928,
       "total": 453180,
-      "pct": 0
+      "pct": 0.205
     },
     {
       "profile": "iphone14",
       "page": "standings",
       "status": "pass",
       "diff": 0,
-      "total": 657930,
+      "total": 779610,
       "pct": 0
     },
     {
@@ -302,17 +302,17 @@
       "profile": "iphone14",
       "page": "settings",
       "status": "pass",
-      "diff": 0,
+      "diff": 183,
       "total": 880620,
-      "pct": 0
+      "pct": 0.021
     },
     {
       "profile": "iphone14",
       "page": "profile",
       "status": "pass",
-      "diff": 0,
+      "diff": 2984,
       "total": 932490,
-      "pct": 0
+      "pct": 0.32
     },
     {
       "profile": "iphone14",
@@ -326,9 +326,9 @@
       "profile": "iphone14",
       "page": "shop",
       "status": "pass",
-      "diff": 0,
+      "diff": 596,
       "total": 863070,
-      "pct": 0
+      "pct": 0.069
     },
     {
       "profile": "iphone14",
@@ -342,9 +342,9 @@
       "profile": "iphone14",
       "page": "calendar",
       "status": "pass",
-      "diff": 0,
+      "diff": 191,
       "total": 402480,
-      "pct": 0
+      "pct": 0.047
     },
     {
       "profile": "iphone14",
@@ -406,17 +406,17 @@
       "profile": "iphone14",
       "page": "wagers",
       "status": "pass",
-      "diff": 0,
+      "diff": 239,
       "total": 329160,
-      "pct": 0
+      "pct": 0.073
     },
     {
       "profile": "iphone14",
       "page": "bounties",
       "status": "pass",
-      "diff": 0,
+      "diff": 142,
       "total": 329160,
-      "pct": 0
+      "pct": 0.043
     },
     {
       "profile": "iphone14",
@@ -430,9 +430,9 @@
       "profile": "iphone14",
       "page": "richlist",
       "status": "pass",
-      "diff": 0,
+      "diff": 220,
       "total": 356460,
-      "pct": 0
+      "pct": 0.062
     },
     {
       "profile": "iphone14",
@@ -486,16 +486,16 @@
       "profile": "pixel7",
       "page": "home-hq",
       "status": "pass",
-      "diff": 0,
+      "diff": 946,
       "total": 478744,
-      "pct": 0
+      "pct": 0.198
     },
     {
       "profile": "pixel7",
       "page": "standings",
       "status": "pass",
       "diff": 0,
-      "total": 695044,
+      "total": 823588,
       "pct": 0
     },
     {
@@ -542,17 +542,17 @@
       "profile": "pixel7",
       "page": "settings",
       "status": "pass",
-      "diff": 0,
+      "diff": 183,
       "total": 924528,
-      "pct": 0
+      "pct": 0.02
     },
     {
       "profile": "pixel7",
       "page": "profile",
       "status": "pass",
-      "diff": 0,
+      "diff": 2983,
       "total": 985092,
-      "pct": 0
+      "pct": 0.303
     },
     {
       "profile": "pixel7",
@@ -566,9 +566,9 @@
       "profile": "pixel7",
       "page": "shop",
       "status": "pass",
-      "diff": 0,
+      "diff": 551,
       "total": 906400,
-      "pct": 0
+      "pct": 0.061
     },
     {
       "profile": "pixel7",
@@ -582,9 +582,9 @@
       "profile": "pixel7",
       "page": "calendar",
       "status": "pass",
-      "diff": 0,
+      "diff": 185,
       "total": 431776,
-      "pct": 0
+      "pct": 0.043
     },
     {
       "profile": "pixel7",
@@ -646,17 +646,17 @@
       "profile": "pixel7",
       "page": "wagers",
       "status": "pass",
-      "diff": 0,
+      "diff": 239,
       "total": 376980,
-      "pct": 0
+      "pct": 0.063
     },
     {
       "profile": "pixel7",
       "page": "bounties",
       "status": "pass",
-      "diff": 0,
+      "diff": 142,
       "total": 376980,
-      "pct": 0
+      "pct": 0.038
     },
     {
       "profile": "pixel7",
@@ -670,9 +670,9 @@
       "profile": "pixel7",
       "page": "richlist",
       "status": "pass",
-      "diff": 0,
+      "diff": 229,
       "total": 376980,
-      "pct": 0
+      "pct": 0.061
     },
     {
       "profile": "pixel7",
