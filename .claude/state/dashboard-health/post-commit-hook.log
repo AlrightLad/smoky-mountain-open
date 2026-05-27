@@ -1,4 +1,4 @@
-=== post-commit hook fired 2026-05-27T07:55:20Z HEAD=9dc01c1 ===
+=== post-commit hook fired 2026-05-27T11:28:18Z HEAD=4460567 ===
 [scaffold-from-templates] scaffolded activity.html
 [scaffold-from-templates] scaffolded amendments.html
 [scaffold-from-templates] scaffolded dashboard.html
@@ -32,7 +32,7 @@
 [aggregate-token] cursor   write=True (write-no-prior-file) -> .claude/state/telemetry/aggregates/.token-usage-cursor.json
 
 --- scripts/aggregate-test-health.py ---
-[aggregate-test-health] OK status=unknown timestamp=2026-05-27T07:55:21Z write=True (write-no-prior-file)
+[aggregate-test-health] OK status=unknown timestamp=2026-05-27T11:28:18Z write=True (write-no-prior-file)
 
 --- scripts/aggregate-security-health.py ---
 [aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=True (write-no-prior-file)
@@ -50,8 +50,8 @@
 [aggregate-self-tests] FAIL (1 aggregators):
   aggregate-fiq-status: parity-fail: source-detected but status=unknown
 [aggregate-self-tests] starting D40 parity checks across 5 aggregators
-  [aggregate-test-health] PASS status=unknown age=5s
-  [aggregate-security-health] PASS status=green age=5s
+  [aggregate-test-health] PASS status=unknown age=6s
+  [aggregate-security-health] PASS status=green age=6s
   [aggregate-approvals-pipeline] PASS status=missing age=0s
   [aggregate-architecture-review] PASS status=yellow age=0s
 
@@ -132,7 +132,7 @@ Consolidated 0 pages -> .claude/state/aggregates/lighthouse-scores.json
 
 --- scripts/regen-index.py ---
 [regen-index] OK   index.html
-[regen-index] ships=18 proposals_pending=0 bubbles=1 halt=none git=9dc01c18
+[regen-index] ships=18 proposals_pending=0 bubbles=1 halt=none git=44605674
 
 --- scripts/dashboard-freshness-sentinel.py ---
 [dashboard-freshness] status=green ok=12 repaired=0 unrepairable=0 mismatches=0 duration=0.0s
@@ -156,7 +156,7 @@ browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwrigh
 }
 
 Node.js v20.20.2
-[write-regen-heartbeat] OK ts=2026-05-27T07:55:33Z source=post-commit-hook status=GATE-FAIL
+[write-regen-heartbeat] OK ts=2026-05-27T11:28:30Z source=post-commit-hook status=GATE-FAIL
 
 --- P9.5 self-test ---
 [ingest-session-transcripts] transcripts dir not found: /home/runner/.claude/projects/C--Users-Zach-smoky-mountain-open
