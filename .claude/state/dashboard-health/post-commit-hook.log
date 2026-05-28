@@ -1,4 +1,4 @@
-=== post-commit hook fired 2026-05-27T06:55:08Z HEAD=e91c3736 ===
+=== post-commit hook fired 2026-05-28T06:55:08Z HEAD=f8355f2e ===
 [scaffold-from-templates] done: scaffolded=0 skipped=15
 
 --- scripts/scan-shipped-proposals.py ---
@@ -7,67 +7,68 @@
 --- scripts/aggregate-telemetry.py ---
 [aggregate] WARN bad event 2026-05-26.ndjson:1: Unexpected UTF-8 BOM (decode using utf-8-sig): line 1 column 1 (char 0)
 [aggregate] WARN bad event 2026-05-27.ndjson:1: Unexpected UTF-8 BOM (decode using utf-8-sig): line 1 column 1 (char 0)
+[aggregate] WARN bad event 2026-05-28.ndjson:1: Unexpected UTF-8 BOM (decode using utf-8-sig): line 1 column 1 (char 0)
 [aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json (write-content-changed)
 [aggregate] meter_status=wired-real
-[aggregate] events=13144 handoffs=1 bubbles=7 proposals_pending=0
+[aggregate] events=14231 handoffs=1 bubbles=7 proposals_pending=0
 
 --- scripts/ingest-session-transcripts.py ---
-[ingest-session-transcripts] scanned 13b798e5-20ef-4d7c-90e1-6fa619bfb215.jsonl: +1 new entries (offset 0\u219242712)
-[ingest-session-transcripts] scanned 1477211e-c767-4b9b-9bb9-2d0f3ceea23c.jsonl: +1 new entries (offset 0\u219242977)
-[ingest-session-transcripts] scanned 19de4f11-4674-4089-8fe3-b836c7364f83.jsonl: +1 new entries (offset 0\u219242712)
-[ingest-session-transcripts] scanned 20538bc3-13f8-4650-b526-6ff85cfe225a.jsonl: +1 new entries (offset 0\u219242977)
-[ingest-session-transcripts] scanned 32082a23-7dcf-44d8-af6e-3ad747b7e306.jsonl: +1 new entries (offset 0\u219242712)
-[ingest-session-transcripts] scanned 397b8c38-2e49-4a0a-9def-d9ec4ad543e0.jsonl: +1 new entries (offset 0\u219242712)
-[ingest-session-transcripts] scanned 4446baf2-3d94-4526-b8f8-0a1763bf3dd6.jsonl: +1 new entries (offset 0\u219242712)
-[ingest-session-transcripts] scanned 4e8e5e53-143a-40a9-bc29-60bb000d8a34.jsonl: +1 new entries (offset 0\u219244816)
-[ingest-session-transcripts] scanned 58dab94e-b044-47b0-9e7e-4cccfc379c47.jsonl: +1 new entries (offset 0\u219242712)
-[ingest-session-transcripts] scanned 63cd3773-51f0-41a3-b0f4-9acb94b08bb0.jsonl: +1 new entries (offset 0\u219242712)
-[ingest-session-transcripts] scanned 6e8a0ca0-65f1-43a2-b100-21e7df218315.jsonl: +1 new entries (offset 0\u219242712)
-[ingest-session-transcripts] scanned 709f25d2-aef0-4fea-ba0b-bc528bf95ab8.jsonl: +1 new entries (offset 0\u219242712)
-[ingest-session-transcripts] scanned 7ce99616-5138-46bb-b223-7de0ceb4c3e3.jsonl: +1 new entries (offset 0\u219242978)
-[ingest-session-transcripts] scanned 8d05e864-c5d1-4745-b450-a993d3e6835c.jsonl: +1 new entries (offset 0\u219242712)
-[ingest-session-transcripts] scanned a6195fd8-8cc4-4729-945e-021911d6b0dc.jsonl: +1 new entries (offset 0\u219244816)
-[ingest-session-transcripts] scanned c5f1f4f3-edc8-465c-a2d4-e1339da9d9c5.jsonl: +1 new entries (offset 0\u219242978)
-[ingest-session-transcripts] scanned caf15907-1d93-4029-8e94-e3b5b0cbb7db.jsonl: +1 new entries (offset 0\u219242712)
-[ingest-session-transcripts] scanned cb51f2f4-5a52-4344-ae91-daaf721adf59.jsonl: +1 new entries (offset 0\u219242977)
-[ingest-session-transcripts] scanned ce2f00d7-a5e5-4b2e-b96b-581306764ad2.jsonl: +1 new entries (offset 0\u219244816)
-[ingest-session-transcripts] scanned cec38835-e8fb-4711-82a5-e4c6a25c16b0.jsonl: +1 new entries (offset 0\u219242712)
-[ingest-session-transcripts] scanned dd8108df-029c-427d-b078-f13f53fba435.jsonl: +1 new entries (offset 0\u219242712)
-[ingest-session-transcripts] scanned de15c3f5-976a-4555-8fe7-104433d34071.jsonl: +1 new entries (offset 0\u219244816)
-[ingest-session-transcripts] scanned fa6b5134-1e13-4062-b3bd-4b5879ae7978.jsonl: +1 new entries (offset 0\u219242712)
-[ingest-session-transcripts] scanned fef99c13-9d47-4eaa-8bbb-e2214ee5e90c.jsonl: +1 new entries (offset 0\u219244816)
-[ingest-session-transcripts] scanned 170 JSONL file(s), found 24 new assistant turns
-[ingest-session-transcripts] wrote session-transcript-summary.json (216 buckets, 11304592068 total tokens, 174 sessions) [write-content-changed]
+[ingest-session-transcripts] scanned 035b7b2f-703e-454d-bd98-b7d55df97b8a.jsonl: +1 new entries (offset 0\u219241274)
+[ingest-session-transcripts] scanned 0a2ff08f-3cdc-452e-aab8-c3c5679a2873.jsonl: +1 new entries (offset 0\u219242977)
+[ingest-session-transcripts] scanned 1f56b1e7-91ec-4cf1-a591-bf52d1b65ffb.jsonl: +1 new entries (offset 0\u219245081)
+[ingest-session-transcripts] scanned 33f14c19-bbe8-4fa4-a7c2-b855c03c4d4e.jsonl: +1 new entries (offset 0\u219242977)
+[ingest-session-transcripts] scanned 4687c179-6ba7-4252-92d6-0432e167bdd4.jsonl: +1 new entries (offset 0\u219242977)
+[ingest-session-transcripts] scanned 4a24ec20-2865-4b3d-8d63-1409c3ff931c.jsonl: +1 new entries (offset 0\u219242977)
+[ingest-session-transcripts] scanned 660065ab-412e-4188-a7c9-c559e8fe22de.jsonl: +1 new entries (offset 0\u219241274)
+[ingest-session-transcripts] scanned 6ecf6675-d32b-4599-afa8-bcd99dbbfa9b.jsonl: +1 new entries (offset 0\u219245081)
+[ingest-session-transcripts] scanned 7468a507-5a43-4fc0-8de9-e3391abcc478.jsonl: +1 new entries (offset 0\u219245081)
+[ingest-session-transcripts] scanned 8618dadb-2622-4821-9af3-929f864e9a88.jsonl: +1 new entries (offset 0\u219242977)
+[ingest-session-transcripts] scanned 8c18ca62-da51-4ab3-930d-c0a0ead5e17c.jsonl: +1 new entries (offset 0\u219242977)
+[ingest-session-transcripts] scanned 8dd65142-80f4-4c5c-a8ef-841283467c0f.jsonl: +1 new entries (offset 0\u219242977)
+[ingest-session-transcripts] scanned 98ae8138-8121-439e-8bd5-6eaf4a423003.jsonl: +1 new entries (offset 0\u219241274)
+[ingest-session-transcripts] scanned a2885e91-90c3-4e26-aeb7-e5d0d4c68b1c.jsonl: +1 new entries (offset 0\u219242977)
+[ingest-session-transcripts] scanned a4cdc395-c3f6-465c-9b6e-f99621ed3a85.jsonl: +1 new entries (offset 0\u219241098)
+[ingest-session-transcripts] scanned cb1d8048-cfaf-4959-95d5-df8246aca355.jsonl: +1 new entries (offset 0\u219242977)
+[ingest-session-transcripts] scanned cb928618-f7d0-46b8-866c-83c98da1ecf5.jsonl: +1 new entries (offset 0\u219242977)
+[ingest-session-transcripts] scanned d5aa2945-fa4d-47f6-b4fc-1d14180290f6.jsonl: +1 new entries (offset 0\u219245081)
+[ingest-session-transcripts] scanned daaa8326-5821-4d98-99f6-392469e50d15.jsonl: +1 new entries (offset 0\u219242977)
+[ingest-session-transcripts] scanned db6b922a-4cda-4f55-b47d-e03bf5838ca6.jsonl: +1 new entries (offset 0\u219242977)
+[ingest-session-transcripts] scanned ed604aff-73ae-4f40-b7c3-8fd0cafe702c.jsonl: +1 new entries (offset 0\u219245081)
+[ingest-session-transcripts] scanned f7a66d04-0d09-4742-8400-05cbceffa374.jsonl: +1 new entries (offset 0\u219242977)
+[ingest-session-transcripts] scanned fb0efa95-d809-4439-a024-9e47f75be8bc.jsonl: +1 new entries (offset 0\u219242978)
+[ingest-session-transcripts] scanned ff09f6cd-ea6b-42a8-b990-09c8b1249dd7.jsonl: +1 new entries (offset 0\u219241274)
+[ingest-session-transcripts] scanned 194 JSONL file(s), found 24 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (240 buckets, 11304592068 total tokens, 198 sessions) [write-content-changed]
 
 --- scripts/aggregate-token-usage.py ---
-[aggregate-token] real_events=217 estimated_events=7454 manual_entries=0
-[aggregate-token] all-time: real=11304694068 estimated=11844250 manual=0
+[aggregate-token] real_events=241 estimated_events=8151 manual_entries=0
+[aggregate-token] all-time: real=11304694068 estimated=11858940 manual=0
 [aggregate-token] snapshot write=True (write-content-changed) -> .claude\state\telemetry\aggregates\token-usage-snapshot.json
 [aggregate-token] cursor   write=True (write-content-changed) -> .claude\state\telemetry\aggregates\.token-usage-cursor.json
 
 --- scripts/aggregate-test-health.py ---
-[aggregate-test-health] OK status=yellow timestamp=2026-05-27T06:55:12Z write=False (skip-idempotent-grace-content-unchanged-172676s)
+[aggregate-test-health] OK status=yellow timestamp=2026-05-28T06:55:12Z write=False (skip-idempotent-grace-content-unchanged-259076s)
 
 --- scripts/aggregate-security-health.py ---
-[aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=False (skip-idempotent-grace-content-unchanged-382040s)
+[aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=False (skip-idempotent-grace-content-unchanged-468439s)
 
 --- scripts/aggregate-approvals-pipeline.py ---
-[aggregate-approvals-pipeline] OK status=green summary=watcher no-new-files 4.5min ago · 1 in inbox write=True (write-content-changed)
+[aggregate-approvals-pipeline] OK status=green summary=watcher no-new-files 4.4min ago · 1 in inbox write=True (write-content-changed)
 
 --- scripts/aggregate-architecture-review.py ---
-[aggregate-architecture-review] OK status=yellow findings=1 pending_recs=0 write=False (skip-idempotent-grace-content-unchanged-24780s)
+[aggregate-architecture-review] OK status=yellow findings=1 pending_recs=0 write=False (skip-idempotent-grace-content-unchanged-24777s)
 
 --- scripts/aggregate-fiq-status.py ---
-[aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-251283s)
+[aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-43080s)
 
 --- scripts/aggregate-self-tests.py ---
-[aggregate-self-tests] FAIL (3 aggregators):
-  aggregate-test-health: stale-timestamp-172681s (>24h)
-  aggregate-security-health: stale-timestamp-382042s (>24h)
-  aggregate-fiq-status: stale-timestamp-251283s (>24h)
+[aggregate-self-tests] FAIL (2 aggregators):
+  aggregate-test-health: stale-timestamp-259080s (>24h)
+  aggregate-security-health: stale-timestamp-468441s (>24h)
 [aggregate-self-tests] starting D40 parity checks across 5 aggregators
-  [aggregate-approvals-pipeline] PASS status=green age=2s
-  [aggregate-architecture-review] PASS status=yellow age=24782s
+  [aggregate-approvals-pipeline] PASS status=green age=-1s
+  [aggregate-architecture-review] PASS status=yellow age=24779s
+  [aggregate-fiq-status] PASS status=green age=43080s
 
 --- scripts/inject-health-banners.py ---
 [inject-health-banners] banner-architecture      already-present
@@ -96,7 +97,7 @@
 --- scripts/regen-dashboard.py ---
 [regen-dashboard] OK   dashboard.html
 [regen-dashboard] meter_status=wired-real
-[regen-dashboard] handoffs=7 ships=10 proposals_pending=0 bubbles=7 events=13144
+[regen-dashboard] handoffs=5 ships=10 proposals_pending=0 bubbles=7 events=14231
 
 --- scripts/regen-main-flows.py ---
 [regen-main-flows] WARN: 6 orphan components in grid (referenced by no flow's path):
@@ -110,7 +111,7 @@
 [regen-main-flows] 6 columns, 47 components, 62 flows; orphans=6
 
 --- scripts/regen-activity.py ---
-[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=504 commits=2146)
+[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=503 commits=2013)
 
 --- scripts/dry-run-regen-ops-views.py ---
 [regen] 7 bubbles (activity.html owned by regen-activity.py; proposals.html owned by regen-proposals.py)
@@ -118,7 +119,7 @@
 
 --- scripts/regen-token-usage.py ---
 [regen-token-usage] OK   token-usage.html
-[regen-token-usage] all-time: real=11304694068 estimated=11844250 manual=0
+[regen-token-usage] all-time: real=11304694068 estimated=11858940 manual=0
 [regen-token-usage] pie_views slices: agent=3 work=2 session_top10=10
 
 --- scripts/consolidate-lighthouse.py ---
@@ -146,7 +147,7 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
 
 --- scripts/regen-index.py ---
 [regen-index] OK   index.html
-[regen-index] ships=18 proposals_pending=0 bubbles=1 halt=none git=e91c3736
+[regen-index] ships=12 proposals_pending=0 bubbles=1 halt=none git=f8355f2e
 
 --- scripts/dashboard-freshness-sentinel.py ---
 [dashboard-freshness] status=green ok=12 repaired=0 unrepairable=0 mismatches=0 duration=0.5s
@@ -166,9 +167,9 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
   PASS  token-usage.html             3 token rows OR cards (>=1)
 
 visual-gate: ALL 12 PAGES RENDER CONTENT
-[write-regen-heartbeat] OK ts=2026-05-27T06:55:43Z source=post-commit-hook status=GATE-FAIL
+[write-regen-heartbeat] OK ts=2026-05-28T06:55:42Z source=post-commit-hook status=GATE-FAIL
 
 --- P9.5 self-test ---
-[ingest-session-transcripts] scanned 170 JSONL file(s), found 0 new assistant turns
-[ingest-session-transcripts] skipped session-transcript-summary.json (216 buckets, 11304592068 total tokens, 174 sessions) [skip-idempotent-fresh-74s]
-[ingest-session-transcripts] SELF-TEST OK: 170 JSONLs \u2192 11304592068 tokens across 216 buckets
+[ingest-session-transcripts] scanned 194 JSONL file(s), found 0 new assistant turns
+[ingest-session-transcripts] skipped session-transcript-summary.json (240 buckets, 11304592068 total tokens, 198 sessions) [skip-idempotent-fresh-73s]
+[ingest-session-transcripts] SELF-TEST OK: 194 JSONLs \u2192 11304592068 tokens across 240 buckets
