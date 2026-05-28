@@ -540,3 +540,79 @@ Heartbeat-only self-check — **Is tonight's substantive output real?** YES, mod
 - `docs/reports/app-health.html` — regen output (deterministic re-render, real 6-ins/6-del content diff this cycle)
 
 No code changes in cycle Q. No proposals. No FIQ writes. No bug-report state moves (inbox absent).
+
+---
+
+# Cycle R — appended 2026-05-28T23:02Z
+
+**Started:** 2026-05-28T23:01:44Z (cron-fired; regen-all START)
+**Finished:** 2026-05-28T23:02:05Z (regen-all "ALL DASHBOARDS REGENERATED" timestamp)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both absent)
+**Cycle:** R (52nd consecutive empty-inbox cycle; ~60 min wall-clock gap from cycle Q's 22:01:18Z close — sixth consecutive ~1h-cadence cycle)
+
+## Inbox state at run-start (cycle R)
+
+- `.claude/state/founder-input-queue/` — **directory does not exist** (Glob → no files; no `founder_input_queue.json` either)
+- `.claude/state/bug-reports/inbox/` — **directory does not exist** (the entire `.claude/state/bug-reports/` tree is absent; recursive search returned zero bug-report files)
+- `.claude/state/proposals/pending/` — only `.gitkeep` (no pending proposals)
+
+Note: the only `FIQ-` ids discoverable by grep live in `docs/FOUNDER_INPUT_QUEUE.md` and are the **FIQ-001 template examples** inside that governance doc (schema illustration), NOT live queue entries — `triaged_at` count is 0 in that file. No runtime FIQ store exists.
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle R)
+
+- FIQ entries triaged: **0** (queue absent)
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0
+- IDs: none
+
+## Step 2 — Bug-report triage (cycle R)
+
+- Bug reports processed: **0** (inbox absent)
+- Dispositions: none
+- No P3e discussion bubbles opened (nothing to deliberate)
+
+## Step 3 — Heartbeat (cycle R)
+
+- `scripts/regen-all.ps1` ran end-to-end 23:01:44Z → 23:02:05Z (~21s): **ALL CHECKS PASSED**, **round-trip test PASS**.
+- Heartbeat `regen-all-last-pass.json` written `status:"PASS"`.
+- Telemetry snapshot: events=15002 handoffs=1 bubbles=7 proposals_pending=0, meter_status=wired-real. Token aggregate: real=11,329,007,983 estimated=12,184,980 manual=0.
+- All ~30 guards green (meter-wiring 7/7, founder-queue 7/7, quota-type-enum, cross-dash consistency proposals_pending=0, lifecycle schemas proposals shipped=7 + amendments applied=28, escalations applied=3, protected-layouts 5/5 + 23/23 + 17 swatches, scroll-reachability 5/5, install-scripts 7 parse, quota-status sidecar, pause-discipline, wiring 5/5, app-health **A- 89.1** / 0 attention items, founder-checklist open=3 red=0 yellow=2 green=1 closed=25, index ships=12 git=4e106135).
+- One INFORMATIONAL `~` (not a failure): `user-context-gate` flags `main-flows.html` modified 19974.5 min after the last user-context capture (2026-05-14T23-07-48Z). Benign on a heartbeat-only night with no visual ship-close.
+- Wellness: `engineer.json` refreshed to cycle R (only agent participating tonight).
+
+## Cycle R counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 |
+| Bug reports processed | 0 |
+| New proposals authored | 0 |
+| Wellness state changes | 1 (engineer.json cycle R refresh) |
+
+## Blockers requiring Founder attention (cycle R)
+
+**No ship-blocking issues.** Awareness/carry-over items (all unchanged from cycle Q):
+
+1. **Carry-over — maintenance/post-commit-hook regen context differs from canonical wrapper.** The scheduled 06:55:02Z `maintenance-2026-05-28` cron logged `regen-all exit=1 (error)`, but the authoritative manual run of `scripts/regen-all.ps1` at 23:01 passed clean (7th consecutive clean canonical run). The maintenance wrapper runs in a partial/non-admin context. Not blocking — canonical gate is green.
+2. **Carry-over — writer-side BOM fix (`common.ps1:117`) remains unauthored as a proposal.** Consumer-side `utf-8-sig` tolerance (aggregate-telemetry.py:70) has now held SEVEN consecutive clean regen-all runs (cycles L–R). Deliberately not auto-promoted without Founder priority signal — refusing to inflate proposal counts.
+3. **Carry-over — `scripts/aggregate-self-tests.py` post-commit warning** (flagged cycle L) — separate from regen-all's pipeline; out-of-scope for step 3a. Still flagged for a future cycle.
+4. **Cron cadence** — cycles M–R all ~1h apart. Cadence steady at ~1h since cycle M. No Founder action required; awareness only.
+
+## Cycle R Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox absent). Cannot wave off what doesn't exist; absence verified directly (no `bug-reports/` tree anywhere under `.claude/state`).
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals tonight. The writer-side BOM remediation is held back from auto-promotion (honest scoping, not inflation).
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero FIQ entries tonight. Queue absent; the only `FIQ-` ids on disk are governance-doc template examples, not gradeable live entries — explicitly distinguished rather than mis-counted as triageable work.
+
+Heartbeat-only self-check — **Is tonight's substantive output real?** YES, modestly. A SEVENTH consecutive clean canonical regen-all confirms cycle L's BOM fix remains durable, contrasted honestly against the maintenance cron's `exit=1` (context difference, not a regression). **Drift-honesty note (correction to cycle Q's characterization):** this cycle `docs/reports/app-health.html` again shows a 6-ins/6-del diff (`git diff HEAD --stat`), but I inspected the actual hunk: it is PURELY the `generated_at` timestamp (22:04:39Z → 23:02:04Z) plus the `audit_trigger` metadata block re-pointing from `c40a0659` to the newer HEAD `4e106135` (sha/subject/trigger/total_files_touched). `overall_score` (89.1), `overall_grade` (A-), and all 12 dimension values are UNCHANGED. Cycle Q called this drift "material" — more precisely it is deterministic clock + commit-pointer re-render keyed to latest HEAD, not a dimension-value change. Corrected here rather than copy-pasted. Every claim is anchored to a quoted regen-all log line, the `git diff HEAD` hunk read verbatim, the heartbeat JSON, or the directory-absence checks. No invented productivity on an empty-queue night.
+
+**Critic attests cleanly: substantive heartbeat cycle, ship closes.**
+
+## Files changed in this cycle R run
+
+- `.claude/state/wellness/engineer.json` — cycle R update
+- `.claude/state/cron/2026-05-28-overnight-run.md` — this appended cycle R section
+- `docs/reports/app-health.html` — regen output (6-ins/6-del: generated_at timestamp + audit_trigger commit-pointer metadata only; score/grade/dims unchanged)
+
+No code changes in cycle R. No proposals. No FIQ writes. No bug-report state moves (inbox absent).
