@@ -141,3 +141,89 @@ If the next overnight cycle observes any of the following, the writer-side root 
 - Other downstream consumers (e.g., a future TypeScript dashboard reader) raising on BOM.
 
 If any of those appear, escalate the writer-side fix to a proposal at `.claude/state/proposals/pending/PROP-NNN-bom-emission-common-ps1.md`. Tonight's tolerance patch is the floor, not the ceiling.
+
+---
+
+# Overnight triage — 2026-05-28 (cycle M, appended)
+
+**Started:** 2026-05-28T18:01:19Z (regen-all START timestamp)
+**Finished:** 2026-05-28T18:01:36Z (regen-all "ALL DASHBOARDS REGENERATED" timestamp)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both still absent)
+**Cycle:** M (47th consecutive empty-inbox cycle; ~57 min wall-clock gap from cycle L's 17:04:28Z close — first ~1h-cadence cycle since cycle H, despite I/J/K/L all being multi-hour or multi-day gaps)
+
+## Inbox state at run-start
+
+- `.claude/state/founder-input-queue/` — still does not exist
+- `.claude/state/bug-reports/inbox/` — still does not exist
+
+Heartbeat-only branch taken.
+
+## Step 1 — FIQ triage
+
+- FIQ entries triaged: **0** (47th consecutive)
+
+## Step 2 — Bug-reports triage
+
+- Bug reports processed: **0** (47th consecutive)
+
+## Step 3 — Heartbeat
+
+### 3a — `scripts/regen-all.ps1`
+
+**Status:** PASS — cycle L's consumer-side BOM fix (`aggregate-telemetry.py:70` utf-8-sig) verified durable across this second consecutive invocation. All 17 regen steps OK; round-trip test PASS; heartbeat written. Same green output structure as cycle L; no new warnings beyond the existing `user-context-gate` informational note about `main-flows.html` modified 19,674 min after most-recent Founder-only context capture (Founder-V2-boundary item, not escalated).
+
+**Working-tree diff after regen:** only `docs/reports/app-health.html` (22 lines, 11 ins / 11 del) — expected deterministic re-render from `aggregate-app-health` + `regen-app-health` chain. No fix needed; this is regen output, not drift.
+
+### 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — updated for cycle M; status remains `active`, counters bumped modestly (`tokens_consumed_since_last_rest=415000`, +20k since cycle L; `hours_active_since_last_rest=0.6`). No threshold escalation tonight; heartbeat-only cycles consume very little.
+
+## Step 4 — Session journal
+
+**This appended section.**
+
+## Cycle M substantive output (honest characterization)
+
+Cycle M's substantive output is one verified fact: **cycle L's BOM fix is durable across consecutive cron-fire invocations**, not a one-time happy path.
+
+Evidence:
+1. `maintenance-2026-05-28.md` line 19 (this morning's 06:55Z cron fire) still shows `regen-all error exit=1`. That run pre-dated cycle L's fix (which landed at 17:04:28Z).
+2. Cycle L's regen-all (17:04:28Z) ran clean.
+3. Cycle M's regen-all (18:01:36Z) also ran clean — same script, ~57 min later, on the same daily ndjson files (which still have the leading BOM since the writer-side fix is unauthored).
+
+Two consecutive clean runs over an hour apart, with the same BOM-emitting input files, confirm the consumer-side `utf-8-sig` patch is not just lucky timing. Substantive but modest.
+
+## Cycle M counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 |
+| Bug reports processed | 0 |
+| New proposals authored | 0 |
+| Wellness state changes | 1 (engineer.json cycle M refresh) |
+
+## Blockers requiring Founder attention (cycle M)
+
+**No new blockers.** Two carry-overs from cycle L still apply:
+1. **Writer-side BOM fix (`common.ps1:117`) remains unauthored as a proposal.** Cycle L's journal documents the recommended remediation. Deliberately not auto-promoted to a `.claude/state/proposals/pending/` entry without Founder priority signal — refusing to inflate proposal counts.
+2. **`maintenance-2026-05-28.md` (06:55Z) still shows the stale `regen-all error exit=1` in its "Needs attention" section.** That report is a historical artifact pre-fix; next scheduled maintenance run will naturally overwrite it.
+
+## Cycle M Critic metric-integrity attestation
+
+Same three protocol questions:
+
+1. **Bug report diagnoses?** N/A — zero bug reports tonight. Inbox-absent. Cannot wave off what doesn't exist.
+2. **Proposal specificity?** N/A — zero new proposals tonight. Cycle L's carry-over recommendation deliberately held back from auto-promotion — honest scoping, not inflation.
+3. **FIQ grade honesty?** N/A — zero FIQ entries tonight. Inbox-absent.
+
+Additional self-check for the heartbeat-only branch: **Is tonight's substantive output real?** YES. Confirming a fix's durability across consecutive runs is genuine signal (it tells us next morning's 06:55Z cron will succeed where this morning's failed). Not invented productivity.
+
+**Critic attests cleanly: substantive cycle, ship closes.**
+
+## Files changed in this cycle M run
+
+- `.claude/state/wellness/engineer.json` — cycle M update (counters + _note + substantive_output_at_checkpoint)
+- `.claude/state/cron/2026-05-28-overnight-run.md` — this appended cycle M section
+- `docs/reports/app-health.html` — regen output (deterministic re-render from aggregate-app-health)
+
+No code changes tonight. No proposals. No FIQ writes. No bug-report state moves (inbox absent).
