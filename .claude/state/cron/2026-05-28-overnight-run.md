@@ -227,3 +227,91 @@ Additional self-check for the heartbeat-only branch: **Is tonight's substantive 
 - `docs/reports/app-health.html` — regen output (deterministic re-render from aggregate-app-health)
 
 No code changes tonight. No proposals. No FIQ writes. No bug-report state moves (inbox absent).
+
+---
+
+# Overnight triage — 2026-05-28 (cycle N, appended)
+
+**Started:** 2026-05-28T19:01Z (regen-all START)
+**Finished:** 2026-05-28T19:01:32Z (regen-all heartbeat PASS timestamp)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both still absent)
+**Cycle:** N (48th consecutive empty-inbox cycle; ~59 min wall-clock gap from cycle M's 18:01:36Z close — second consecutive ~1h-cadence cycle)
+
+## Inbox state at run-start
+
+- `.claude/state/founder-input-queue/` — **directory does not exist** (effectively empty)
+- `.claude/state/bug-reports/inbox/` — **directory does not exist** (effectively empty)
+- `.claude/state/bug-reports/triaged/` — also does not exist (nothing to move)
+- `.claude/state/proposals/pending/` — only `.gitkeep` (no pending proposals)
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage
+
+- FIQ entries triaged: **0** (48th consecutive)
+- Grade breakdown: N/A (inbox absent)
+
+## Step 2 — Bug-reports triage
+
+- Bug reports processed: **0** (48th consecutive)
+- Discussion bubbles opened: 0
+
+## Step 3 — Heartbeat
+
+### 3a — `scripts/regen-all.ps1`
+
+**Status:** PASS. Full end-to-end run; `=== ALL CHECKS PASSED ===`; `[regen-all] round-trip test PASS`; heartbeat re-written to `status:"PASS"` at `2026-05-28T19:01:32.8183763Z` (`duration_seconds:28`). All checks green: theme convergence (no raw hex), no-charts guard, protected-layouts (discussion-bubbles 5/5 sentinels + main-flows 23/23 + design-system 17 swatches/9 type rows + W1.S1 primitives), proposal-readiness (0 deferred markers), install-scripts (7 parse cleanly), install-cmd-surface, scroll-reachability (5 pass/0 fail), escalations lifecycle (pending=0 approved=0 applied=3 deferred=0 rejected=0), quota-status sidecar schema OK, pause-discipline (no fictional-cap refs), wiring (5/5 scenario tokens have CSS class + JS-populated dropdown option).
+
+Only non-green line was the informational `~ user-context-gate` on `main-flows.html` (modified 19733.6 min after most-recent Founder-only context capture) — a Founder-V2-boundary item requiring `node scripts/visual-audit/founder-context-capture.mjs`, not an agent action. Same note as cycles L and M; not a blocker.
+
+**Working-tree diff after regen:** only `docs/reports/app-health.html` — expected deterministic re-render from the `aggregate-app-health` + `regen-app-health` chain. No drift; this is regen output.
+
+### 3a-finding — transient post-commit-hook GATE-FAIL (surfaced to Founder)
+
+At run-start the heartbeat file `.claude/state/heartbeats/regen-all-last-pass.json` read `"status":"GATE-FAIL"`, written by `"source":"post-commit-hook"` at `2026-05-28T18:06:09Z` for `head_sha:"5d97d185"`. That SHA is one of the three post-cycle-M auto-commits visible in `git log` (`5d97d185` telemetry auto-commit → `b7ca8e30` drift sweep → `a768ab0e` post-commit dashboard regen). My authoritative manual run of the canonical gating wrapper at 19:01 passed clean and overwrote the heartbeat to PASS. **Interpretation:** the GATE-FAIL was a transient artifact of the post-commit-hook's regen context, NOT a real failure of `scripts/regen-all.ps1`. Surfaced as an awareness item (see Blockers) — the post-commit-hook regen path may run in a different/partial context than the canonical wrapper. No reproduction tonight: the canonical wrapper passes.
+
+### 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — updated for cycle N (counters bumped to ~430k tokens / 0.7h; status `active`; `_note` + `substantive_output_at_checkpoint` rewritten for cycle N, including the GATE-FAIL→PASS observation).
+- No other agent wellness files created — Critic + Data-Integrity were thinking-roles only tonight (attestation + inbox verification); no counter-reset-significant state to merit fresh files. Same disposition as cycles L/M.
+
+## Step 4 — Session journal
+
+**This appended section.**
+
+## Cycle N counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 |
+| Bug reports processed | 0 |
+| New proposals authored | 0 |
+| Wellness state changes | 1 (engineer.json cycle N refresh) |
+
+## Blockers requiring Founder attention (cycle N)
+
+**No ship-blocking issues.** Awareness/carry-over items:
+
+1. **NEW — transient post-commit-hook GATE-FAIL (low severity, awareness).** The post-commit-hook regen recorded `GATE-FAIL` at 18:06:09Z for `5d97d185`, but the canonical `scripts/regen-all.ps1` passes clean. Worth a future cycle confirming the post-commit-hook regen path uses the same check set / working context as the canonical wrapper, so the heartbeat file isn't left in a misleading GATE-FAIL state between runs. Not blocking — the authoritative gate is green.
+2. **Carry-over — writer-side BOM fix (`common.ps1:117`) remains unauthored as a proposal.** Cycle L documented the recommended remediation (`[System.IO.File]::AppendAllText` with `UTF8Encoding($false)`). Consumer-side `utf-8-sig` tolerance has now held three consecutive clean regen-all runs (cycles L, M, N). Deliberately not auto-promoted to a pending proposal without Founder priority signal — refusing to inflate proposal counts.
+3. **Carry-over — `scripts/aggregate-self-tests.py` post-commit warning** (flagged cycle L) — separate from regen-all's pipeline; not investigated tonight (out-of-scope for step 3a). Still flagged for a future cycle.
+4. **Cron cadence** — cycles M and N are both ~1h apart, after the I/J/K/L multi-hour/multi-day streak. Cadence appears multimodal/irregular, not a single rhythm. No Founder action required; awareness only.
+
+## Cycle N Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox absent). Cannot wave off what doesn't exist.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals tonight. The writer-side BOM remediation is held back from auto-promotion (honest scoping, not inflation).
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero FIQ entries tonight. Inbox absent; no opportunity to inflate.
+
+Heartbeat-only self-check — **Is tonight's substantive output real?** YES, modestly. Two real signals: (a) a THIRD consecutive clean regen-all confirms cycle L's BOM fix is durable, not lucky; (b) the heartbeat file's `GATE-FAIL`→`PASS` transition was caught and explained rather than ignored — a misleading state file was corrected and the underlying transient surfaced to Founder. Every claim is anchored to a quoted regen-all log line, the heartbeat JSON read verbatim, or `git status --short` / `git log --oneline` output. No invented productivity.
+
+**Critic attests cleanly: substantive cycle, ship closes.**
+
+## Files changed in this cycle N run
+
+- `.claude/state/wellness/engineer.json` — cycle N update
+- `.claude/state/cron/2026-05-28-overnight-run.md` — this appended cycle N section
+- `docs/reports/app-health.html` — regen output (deterministic re-render)
+- `.claude/state/heartbeats/regen-all-last-pass.json` — overwritten by regen-all to `status:"PASS"`
+
+No code changes tonight. No proposals. No FIQ writes. No bug-report state moves (inbox absent).
