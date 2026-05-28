@@ -1,4 +1,4 @@
-=== post-commit hook fired 2026-05-28T07:46:27Z HEAD=409e9cf ===
+=== post-commit hook fired 2026-05-28T11:28:11Z HEAD=5045a33 ===
 [scaffold-from-templates] scaffolded activity.html
 [scaffold-from-templates] scaffolded amendments.html
 [scaffold-from-templates] scaffolded dashboard.html
@@ -32,7 +32,7 @@
 [aggregate-token] cursor   write=True (write-no-prior-file) -> .claude/state/telemetry/aggregates/.token-usage-cursor.json
 
 --- scripts/aggregate-test-health.py ---
-[aggregate-test-health] OK status=unknown timestamp=2026-05-28T07:46:28Z write=True (write-no-prior-file)
+[aggregate-test-health] OK status=unknown timestamp=2026-05-28T11:28:12Z write=True (write-no-prior-file)
 
 --- scripts/aggregate-security-health.py ---
 [aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=True (write-no-prior-file)
@@ -132,7 +132,7 @@ Consolidated 0 pages -> .claude/state/aggregates/lighthouse-scores.json
 
 --- scripts/regen-index.py ---
 [regen-index] OK   index.html
-[regen-index] ships=12 proposals_pending=0 bubbles=1 halt=none git=409e9cfe
+[regen-index] ships=12 proposals_pending=0 bubbles=1 halt=none git=5045a338
 
 --- scripts/dashboard-freshness-sentinel.py ---
 [dashboard-freshness] status=green ok=12 repaired=0 unrepairable=0 mismatches=0 duration=0.0s
@@ -156,7 +156,7 @@ browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwrigh
 }
 
 Node.js v20.20.2
-[write-regen-heartbeat] OK ts=2026-05-28T07:46:40Z source=post-commit-hook status=GATE-FAIL
+[write-regen-heartbeat] OK ts=2026-05-28T11:28:24Z source=post-commit-hook status=GATE-FAIL
 
 --- P9.5 self-test ---
 [ingest-session-transcripts] transcripts dir not found: /home/runner/.claude/projects/C--Users-Zach-smoky-mountain-open
