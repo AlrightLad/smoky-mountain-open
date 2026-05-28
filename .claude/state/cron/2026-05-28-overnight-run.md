@@ -1,0 +1,143 @@
+# Overnight triage — 2026-05-28 (cycle L)
+
+**Started:** 2026-05-28T17:00Z (per runbook prompt; cron-fired at 17:00:01Z)
+**Finished:** 2026-05-28T17:04:28Z (regen-all heartbeat timestamp)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both absent)
+**Cycle:** L (46th consecutive empty-inbox cycle)
+
+## Inbox state at run-start
+
+- `.claude/state/founder-input-queue/` — **directory does not exist** (effectively empty)
+- `.claude/state/bug-reports/inbox/` — **directory does not exist** (effectively empty)
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage
+
+- FIQ entries triaged: **0**
+- Grade breakdown: N/A (inbox absent)
+- IDs: none
+
+## Step 2 — Bug-reports triage
+
+- Bug reports processed: **0**
+- IDs / dispositions: none
+- Discussion bubbles opened: 0
+
+## Step 3 — Heartbeat
+
+### 3a — `scripts/regen-all.ps1`
+
+**Status:** PASS (after surgical fix; see "Substantive engineering work" below)
+
+- `scan-shipped-proposals` — OK (approved/ empty; nothing to scan)
+- `aggregate-telemetry` — OK (was failing pre-fix; see below)
+- `aggregate-token-usage` — OK
+- `inject-health-banners` — OK
+- `regen-proposals` — OK
+- `regen-amendments` — OK
+- `regen-escalations` — OK
+- `regen-dashboard` — OK
+- `regen-ops-views` — OK
+- `regen-main-flows` — OK
+- `regen-token-usage` — OK
+- `aggregate-app-health` — OK
+- `regen-app-health` — OK
+- `regen-sessions` — OK
+- `regen-session-detail` — OK
+- `regen-founder-checklist` — OK
+- `regen-index` — OK
+- Round-trip test — **PASS** ("ALL CHECKS PASSED")
+- Heartbeat written: `.claude/state/heartbeats/regen-all-last-pass.json`
+
+### 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — updated (cycle L, 46th consecutive empty-inbox, regen-all unblock recorded)
+- Other agent wellness files (critic.json, data-integrity.json, design-bot.json) — **NOT created tonight**.
+  - Critic + Data-Integrity were thinking-roles invoked during this run (metric-integrity attestation + BOM verification respectively) but no counter-reset-significant state exists yet to merit a fresh wellness file. When a discussion bubble formally votes or a wellness threshold is crossed by one of these agents, a dedicated wellness file should be created then.
+
+## Step 4 — Session journal
+
+**This file.**
+
+## Substantive engineering work (not "fluff" — see Critic attestation below)
+
+### Problem discovered
+
+Maintenance runs on 2026-05-27 and 2026-05-28 (both `.claude/state/cron/maintenance-2026-05-2{7,8}.md`) flagged `regen-all` with `error exit=1` in their "Needs Founder attention" sections. Two consecutive days of broken heartbeat, surfaced only as a one-line bullet in the daily maintenance report.
+
+### Diagnosis (file:line evidence)
+
+1. `scripts/cron/logs/2026-05-28T06-55-02Z-maintenance.log` shows the failure chain:
+   - `scan-shipped-proposals` runs OK.
+   - `aggregate-telemetry` starts.
+   - Python writes to stderr: `[aggregate] WARN bad event 2026-05-26.ndjson:1: Unexpected UTF-8 BOM (decode using utf-8-sig): line 1 column 1 (char 0)`.
+   - PowerShell wraps that stderr line as a `NativeCommandError` ErrorRecord.
+   - `regen-all.ps1:18` sets `$ErrorActionPreference = "Stop"`, so the wrapped error terminates the script.
+   - Script exits 1 before any subsequent step (regen-dashboard, round-trip test) runs.
+2. Binary read of `.claude/state/telemetry/events/2026-05-2{6,7,8}.ndjson` confirmed all three files begin with `0xEF 0xBB 0xBF` (UTF-8 BOM).
+3. `scripts/aggregate-telemetry.py:70` reads `f.read_text(encoding="utf-8")` — strict UTF-8 raises on BOM, falls to the JSONDecodeError except branch, writes the WARN.
+4. `scripts/cron/common.ps1:117` is the writer: `Add-Content -Path $eventFile -Value $line -Encoding utf8`. In PS 5.1, `-Encoding utf8` is UTF-8 **with BOM** (the encoding name was redefined in PS Core 6+ but Windows PowerShell 5.1 retains the legacy BOM-emitting behavior). Every new daily ndjson file gets a BOM on its first event.
+
+### Fix applied tonight
+
+`scripts/aggregate-telemetry.py` line 70 — `encoding="utf-8"` → `encoding="utf-8-sig"`. Silent BOM tolerance at the consumer site. Single-character change. Defensive (handles any future BOM emitter, not just `common.ps1`). Comment added explaining the PS 5.1 / NativeCommandError chain for future maintainers.
+
+### Verification
+
+Ran `scripts\regen-all.ps1` end-to-end in this session. Final lines:
+- `[regen-all] round-trip test PASS`
+- `[regen-all] heartbeat written: ...regen-all-last-pass.json`
+- `ALL DASHBOARDS REGENERATED at 2026-05-28T17:04:28Z`
+
+`git status --short` after regen: only two files dirty — `docs/reports/app-health.html` (the regen output) and `scripts/aggregate-telemetry.py` (the fix). No regen rollback. No round-trip failures.
+
+### New proposals authored
+
+**0.** The fix tonight was a one-line defensive patch at the consumer; the writer-side root cause (`common.ps1:117`) is documented in this journal for Founder follow-up rather than queued as a proposal because (a) no FIQ entry has been opened on it, (b) the consumer-side patch is sufficient to keep heartbeat green, and (c) the proper writer-side fix needs a Founder-decision on whether to also strip BOMs from existing files vs. leaving them as historical artifacts. Both options are cheaply reversible; the agent default is "tolerate at consumer, fix writer in a future ship".
+
+## Blockers requiring Founder attention
+
+1. **Open root cause — PS 5.1 BOM emission in cron/common.ps1:117.** Tonight's fix patches the consumer; the writer still emits BOMs on each new daily telemetry file. Recommended remediation (single-area, ~5-line PowerShell change, fully revertible):
+   ```powershell
+   # Replace line 117:  Add-Content -Path $eventFile -Value $line -Encoding utf8
+   # With:
+   $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+   [System.IO.File]::AppendAllText($eventFile, $line + "`r`n", $utf8NoBom)
+   ```
+   Optional cleanup: strip BOMs from existing files under `.claude/state/telemetry/events/*.ndjson` so other future consumers (not just the patched aggregator) are unaffected. Both Founder-decision-eligible.
+
+2. **Cron schedule continues to drift from earlier ~1h-cluster hypothesis.** Cycles I (~3h), J (~5h), K (~5h), L (~3.7d wall-clock) are all non-~1h. The wellness file's _note documents this; no Founder action required tonight beyond awareness.
+
+3. **`scripts/aggregate-self-tests.py` post-commit-hook warning** noted in this morning's maintenance log: `[post-commit] WARN regen failures: scripts/aggregate-self-tests.py`. This is a separate script from regen-all's pipeline — not investigated tonight (out-of-scope: tonight's runbook step 3a is regen-all only). Flagging for future cycle.
+
+## Critic's metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+Substantive questions:
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence, or were any waved off?"**
+   - N/A — zero bug reports tonight (inbox absent). The runbook's heartbeat-only branch explicitly covers this scenario; no fluff possible because no claim was made.
+
+2. **"Did every new proposal cite a specific screen/state/edge-case it improves, or were any vague?"**
+   - N/A — zero new proposals tonight. The substantive engineering work tonight (regen-all unblock) was applied directly as a one-line defensive fix at the consumer site; the writer-side root cause is documented in this journal as a Founder-decision item rather than pre-queued as a proposal, which is honest scoping (the writer fix should be a Founder ship-decision, not an overnight-triage autonomous commit).
+
+3. **"Did the FIQ grades reflect rubric dimensions honestly, or did I inflate grades to clear inbox count?"**
+   - N/A — zero FIQ entries graded tonight. Inbox-absent path; no opportunity to inflate.
+
+**Substantive vs. fluff verdict:** This run produced one substantive engineering outcome — diagnosing and unblocking a 2-day-old silent heartbeat failure. Every claim above is anchored to a specific file:line or log line that can be independently verified. The wellness file's `_note` was rewritten to reflect cycle L specifically, not copy-pasted from cycle K. The fix was minimal (one character + a comment), defensive (covers all future BOM emitters at the consumer), and verified end-to-end before journaling. The unfixed writer-side root cause is named, not buried. **Critic attests cleanly: substantive run, ship closes.**
+
+## Files changed in this run
+
+- `scripts/aggregate-telemetry.py` — utf-8 → utf-8-sig + comment block
+- `.claude/state/wellness/engineer.json` — cycle L update
+- `.claude/state/cron/2026-05-28-overnight-run.md` — this journal
+- `docs/reports/app-health.html` — regen output (re-generated by regen-all)
+
+## Next-cycle pickup
+
+If the next overnight cycle observes any of the following, the writer-side root cause has surfaced again:
+- `aggregate-telemetry` step still emitting `[aggregate] WARN` to stderr.
+- New `2026-MM-DD.ndjson` files with a leading 0xEF 0xBB 0xBF byte sequence.
+- Other downstream consumers (e.g., a future TypeScript dashboard reader) raising on BOM.
+
+If any of those appear, escalate the writer-side fix to a proposal at `.claude/state/proposals/pending/PROP-NNN-bom-emission-common-ps1.md`. Tonight's tolerance patch is the floor, not the ceiling.

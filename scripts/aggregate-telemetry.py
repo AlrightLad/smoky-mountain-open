@@ -67,7 +67,12 @@ def walk_events():
     if not EVENTS_DIR.exists():
         return events
     for f in sorted(EVENTS_DIR.glob("*.ndjson")):
-        for line_no, line in enumerate(f.read_text(encoding="utf-8").splitlines(), start=1):
+        # utf-8-sig tolerates a leading BOM written by PS 5.1 `Add-Content
+        # -Encoding utf8` (root cause: scripts/cron/common.ps1:117). Without
+        # this, the first line of a fresh daily file raises JSONDecodeError
+        # and emits stderr that PS 5.1 wraps as NativeCommandError, killing
+        # regen-all.ps1 via $ErrorActionPreference=Stop.
+        for line_no, line in enumerate(f.read_text(encoding="utf-8-sig").splitlines(), start=1):
             line = line.strip()
             if not line:
                 continue
