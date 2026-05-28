@@ -939,6 +939,16 @@
       "tokens_consumed": 0,
       "outcome": "PLACEHOLDER",
       "summary": "Ship cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260528-1523",
+      "type": "heartbeat",
+      "started_at": "2026-05-28T15:23:58Z",
+      "ended_at": "2026-05-28T15:23:58Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
     }
   ]
 }
