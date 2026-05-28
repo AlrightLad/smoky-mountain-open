@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-28T22:05:42.239100+00:00",
+  "generated_at": "2026-05-28T23:05:24.186052+00:00",
   "schema_version": 1,
   "source": "~/.claude/projects/C--Users-Zach-smoky-mountain-open/*.jsonl",
-  "session_count": 214,
-  "bucket_count": 256,
-  "all_time_total_tokens": 11328905983,
+  "session_count": 215,
+  "bucket_count": 257,
+  "all_time_total_tokens": 11332643395,
   "by_day_total": {
     "2026-04-17": 294853821,
     "2026-04-20": 362592283,
@@ -32,12 +32,12 @@
     "2026-05-25": 22481740,
     "2026-05-26": 0,
     "2026-05-27": 0,
-    "2026-05-28": 24313915
+    "2026-05-28": 28051327
   },
   "by_model_total": {
     "claude-opus-4-7": 11313813486,
     "<synthetic>": 0,
-    "claude-opus-4-8": 15092497
+    "claude-opus-4-8": 18829909
   },
   "buckets": {
     "0c5538f6-fa47-44fc-9519-28830b98ff03|2026-05-13|claude-opus-4-7": {
@@ -3359,14 +3359,27 @@
       "session_id": "c3131f12-d545-4a41-af9f-3ea7f92cf4dd",
       "day": "2026-05-28",
       "model": "claude-opus-4-8",
-      "turn_count": 45,
-      "input_tokens": 63939,
-      "output_tokens": 41457,
-      "cache_read_input_tokens": 3591609,
-      "cache_creation_input_tokens": 381555,
-      "total": 4078560,
+      "turn_count": 47,
+      "input_tokens": 64537,
+      "output_tokens": 44855,
+      "cache_read_input_tokens": 3824919,
+      "cache_creation_input_tokens": 383439,
+      "total": 4317750,
       "first_ts": "2026-05-28T22:00:11.021Z",
-      "last_ts": "2026-05-28T22:05:40.923Z"
+      "last_ts": "2026-05-28T22:06:13.883Z"
+    },
+    "ac99556f-3959-4302-8bfc-9315f755cfd0|2026-05-28|claude-opus-4-8": {
+      "session_id": "ac99556f-3959-4302-8bfc-9315f755cfd0",
+      "day": "2026-05-28",
+      "model": "claude-opus-4-8",
+      "turn_count": 50,
+      "input_tokens": 27481,
+      "output_tokens": 40942,
+      "cache_read_input_tokens": 3068908,
+      "cache_creation_input_tokens": 360891,
+      "total": 3498222,
+      "first_ts": "2026-05-28T23:00:10.557Z",
+      "last_ts": "2026-05-28T23:04:22.819Z"
     }
   }
 }
