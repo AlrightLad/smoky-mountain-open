@@ -46,15 +46,15 @@ Router.register("teetimes", function() {
     h += '<div style="font-size:16px;font-weight:700;color:var(--cream)">No Tee Times Posted</div>';
     h += '<div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:280px;margin-left:auto;margin-right:auto">Post a tee time and your crew can RSVP. Never wonder who\u2019s playing this weekend again.</div>';
     h += '<button class="btn full green" style="margin-top:16px;max-width:280px;margin-left:auto;margin-right:auto" onclick="Router.go(\'tee-create\')">Post a Tee Time</button>';
-    h += '<div style="margin-top:20px;text-align:left;max-width:280px;margin-left:auto;margin-right:auto">';
-    h += '<div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Example tee times</div>';
+    h += '<div style="margin-top:20px;text-align:left">';
+    h += '<div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:center">Example tee times</div>';
     var exTees = [
       "Honey Run \u00b7 Saturday 8:30 AM \u00b7 2 spots open",
       "Out Door CC \u00b7 Sunday 7:00 AM \u00b7 Need 3 more",
       "Heritage Hills \u00b7 Friday 3:00 PM \u00b7 All welcome"
     ];
     exTees.forEach(function(ex) {
-      h += '<div style="padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:4px;font-size:11px;color:var(--muted);font-style:italic">' + ex + '</div>';
+      h += '<div style="padding:8px 12px;margin-bottom:4px;border:1px dashed var(--border);border-radius:var(--radius);font-size:11px;color:var(--muted);font-style:italic">' + ex + '</div>';
     });
     h += '</div></div>';
   }
