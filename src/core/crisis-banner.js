@@ -25,9 +25,9 @@
 
   function tierStyles(tier) {
     var styles = {
-      CRITICAL: { bg: '#8E2A2A', color: '#fff', icon: '⚠' },
-      ALERT:    { bg: '#A67034', color: '#fff', icon: '!' },
-      NOTICE:   { bg: '#3A5A78', color: '#fff', icon: 'i' }
+      CRITICAL: { bg: '#8E2A2A', color: '#fff', iconSvg: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' },
+      ALERT:    { bg: '#A67034', color: '#fff', iconSvg: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' },
+      NOTICE:   { bg: '#3A5A78', color: '#fff', iconSvg: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>' }
     };
     return styles[tier] || null;
   }
@@ -102,8 +102,8 @@
     ].join(';');
 
     var iconEl = document.createElement('span');
-    iconEl.textContent = styles.icon;
-    iconEl.style.cssText = 'font-weight:700;font-size:14px;flex-shrink:0;width:18px;text-align:center';
+    iconEl.innerHTML = styles.iconSvg;
+    iconEl.style.cssText = 'flex-shrink:0;width:18px;display:flex;align-items:center;justify-content:center';
     el.appendChild(iconEl);
 
     var tierEl = document.createElement('span');

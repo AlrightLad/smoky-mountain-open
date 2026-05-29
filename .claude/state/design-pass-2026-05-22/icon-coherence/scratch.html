@@ -1,0 +1,42 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>icon-coherence scratch</title><style>
+  body{margin:0;background:#9b9588;font-family:'Inter',-apple-system,system-ui,sans-serif;padding:28px}
+  .h{max-width:760px;margin:0 auto 8px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;color:#2a2620;text-transform:uppercase;letter-spacing:1.5px}
+  .qs-panel{max-width:520px;margin:0 auto 36px;background:#F4EFE4;border:1px solid #DCD4C0;border-radius:12px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.28)}
+  .qs-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #DCD4C0}
+  .qs-row:last-child{border-bottom:none}
+  .qs-active{background:#EBE5D6}
+  .qs-label{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;color:#14130F}
+  .qs-sub{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;color:#7A766B;letter-spacing:.5px;margin-top:2px}
+  .qs-type{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:9px;color:#7A766B;text-transform:uppercase;letter-spacing:1.5px}
+  .crisis{display:flex;align-items:center;gap:10px;padding:10px 14px;color:#fff;font-family:'Inter',sans-serif;font-size:13px;line-height:1.4;box-shadow:0 2px 8px rgba(0,0,0,.18);max-width:760px;margin:0 auto 10px;border-radius:6px}
+  .crisis .ic{flex-shrink:0;width:18px;display:flex;align-items:center;justify-content:center}
+  .crisis .tier{font-weight:700;letter-spacing:.06em;flex-shrink:0}
+  .crisis .msg{flex:1}
+</style></head><body>
+
+  <div class="h">Quick Search (Cmd-K) result rows — type icons honor their tint</div>
+  <div class="qs-panel">
+    <div class="qs-row qs-active">
+      <div style="width:28px;display:flex;align-items:center;justify-content:center;color:#B4893E;flex-shrink:0"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg></div>
+      <div style="flex:1"><div class="qs-label">Kayvan Parbaugh</div><div class="qs-sub">League member</div></div>
+      <div class="qs-type">member</div>
+    </div>
+    <div class="qs-row">
+      <div style="width:28px;display:flex;align-items:center;justify-content:center;color:#5A7D4E;flex-shrink:0"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v16"/><path d="M9 3l6.5 2-6.5 2"/><ellipse cx="11" cy="19.5" rx="7" ry="1.6"/></svg></div>
+      <div style="flex:1"><div class="qs-label">Honey Run Golf Club</div><div class="qs-sub">York, PA</div></div>
+      <div class="qs-type">course</div>
+    </div>
+    <div class="qs-row">
+      <div style="width:28px;display:flex;align-items:center;justify-content:center;color:#7A766B;flex-shrink:0"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="17" y2="12"/><polyline points="12 7 17 12 12 17"/></svg></div>
+      <div style="flex:1"><div class="qs-label">Trophy Room</div><div class="qs-sub">Level, achievements, titles</div></div>
+      <div class="qs-type">page</div>
+    </div>
+  </div>
+
+  <div class="h">Crisis Banner — three tiers, white line-art icon honors color:#fff</div>
+  <div class="crisis" style="background:#8E2A2A"><span class="ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="tier">CRITICAL</span><span class="msg">Scoring is temporarily paused while we fix a sync issue.</span></div>
+  <div class="crisis" style="background:#A67034"><span class="ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span><span class="tier">ALERT</span><span class="msg">Push notifications may be delayed this afternoon.</span></div>
+  <div class="crisis" style="background:#3A5A78"><span class="ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span><span class="tier">NOTICE</span><span class="msg">Summer season standings reset Monday.</span></div>
+
+</body></html>
