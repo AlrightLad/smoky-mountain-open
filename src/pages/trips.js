@@ -122,12 +122,12 @@ function renderTripCreate() {
   h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Select a preset or customize. The generator builds fair pairings based on player handicaps.</div>';
   h += '<div class="ff"><label class="ff-label">Tournament style</label><select class="ff-input" id="tc-style" onchange="updateFormatPreview()">';
   h += '<option value="custom">Custom (manual setup)</option>';
-  h += '<option value="classic">Classic — Stableford each day, cumulative points</option>';
-  h += '<option value="mixed">Mixed — Different format each day</option>';
-  h += '<option value="parbaugh">Parbaugh Championship — Handicap-adjusted stroke play</option>';
-  h += '<option value="ryder">Ryder Cup — Teams, alternating formats</option>';
-  h += '<option value="skins">Skins Weekend — Skins every round, pot carries over</option>';
-  h += '<option value="scramble">Scramble Showdown — Scramble format, balanced teams</option>';
+  h += '<option value="classic">Classic: Stableford each day, cumulative points</option>';
+  h += '<option value="mixed">Mixed: Different format each day</option>';
+  h += '<option value="parbaugh">Parbaugh Championship: Handicap-adjusted stroke play</option>';
+  h += '<option value="ryder">Ryder Cup: Teams, alternating formats</option>';
+  h += '<option value="skins">Skins Weekend: Skins every round, pot carries over</option>';
+  h += '<option value="scramble">Scramble Showdown: Scramble format, balanced teams</option>';
   h += '</select></div>';
   h += '<div id="formatPreview"></div>';
   h += '<div class="ff"><label class="ff-label">Championship multiplier on final round?</label><select class="ff-input" id="tc-champ"><option value="no">No</option><option value="1.5">1.5x points</option><option value="2">2x points</option></select></div>';
@@ -223,7 +223,7 @@ function getTournamentFormats(style, numRounds) {
       for (var i = 0; i < numRounds; i++) formats.push({ format: ryderRotation[i % ryderRotation.length], teeTime: "9:00 AM", desc: "Team format" });
       break;
     case "skins":
-      for (var i = 0; i < numRounds; i++) formats.push({ format: "skins", teeTime: "8:00 AM", desc: "Skins — pot carries over" });
+      for (var i = 0; i < numRounds; i++) formats.push({ format: "skins", teeTime: "8:00 AM", desc: "Skins: pot carries over" });
       break;
     case "scramble":
       for (var i = 0; i < numRounds; i++) formats.push({ format: "scramble", teeTime: "Shotgun 9:00 AM", desc: "Teams balanced by handicap" });
@@ -248,7 +248,7 @@ function updateFormatPreview() {
   
   var descriptions = {
     classic: "Every round is Modified Stableford. Points accumulate across all rounds. Highest total points wins. Simple, fair, and rewards consistent play across the whole event.",
-    mixed: "A different format each day keeps things fresh. Tests all aspects of your game — individual scoring, team play, head-to-head, and strategy.",
+    mixed: "A different format each day keeps things fresh. Tests all aspects of your game: individual scoring, team play, head-to-head, and strategy.",
     parbaugh: "Parbaugh Stroke Play levels the playing field. Each player's handicap adjusts their gross score so higher handicappers compete fairly against lower ones. The best net score wins.",
     ryder: "Split into two teams balanced by combined handicap. Alternate between best ball and scramble formats. Final day is individual match play. Team with most points wins.",
     skins: "Every hole is worth money (or bragging rights). Win the hole outright or the skin carries over, making the next hole worth double. High drama guaranteed.",

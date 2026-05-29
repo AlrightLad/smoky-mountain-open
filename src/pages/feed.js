@@ -201,7 +201,7 @@ function _renderFeedItems() {
       emptyCta = null; emptyCtaText = null;
     } else if (_feedFilter === "range") {
       emptyLabel = "No range sessions yet";
-      emptyCopy = "Track range work to build long-term skill data — sessions show alongside rounds in this feed.";
+      emptyCopy = "Track range work to build long-term skill data. Sessions show alongside rounds in this feed.";
       emptyCta = "range"; emptyCtaText = "Hit the range";
     } else {
       emptyLabel = "No activity yet";

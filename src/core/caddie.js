@@ -28,8 +28,8 @@ function caddieAnalyzeRound(round, playerRounds) {
     if (arr.length >= 2) {
       var avg = arr.reduce(function(a,b){return a+b},0) / arr.length;
       var avgStr = (avg >= 0 ? "+" : "") + (Math.round(avg * 10) / 10);
-      if (avg > 1.5) insights.push({text:"Par " + par + "s averaged " + avgStr + " over par — that\u2019s where strokes are leaking.", type:"negative"});
-      else if (avg <= 0.3) insights.push({text:"Par " + par + "s averaged " + avgStr + " — solid play on these holes.", type:"positive"});
+      if (avg > 1.5) insights.push({text:"Par " + par + "s averaged " + avgStr + " over par. That\u2019s where strokes are leaking.", type:"negative"});
+      else if (avg <= 0.3) insights.push({text:"Par " + par + "s averaged " + avgStr + ". Solid play on these holes.", type:"positive"});
     }
   });
 
@@ -315,25 +315,25 @@ function caddieAdvancedStatInsights(playerRounds) {
   var ss = typeof calcSandSavePct === "function" ? calcSandSavePct(playerRounds) : null;
   if (ss) {
     if (ss.pct < 30 && ss.bunker >= 5) {
-      insights.push({text:"Sand saves at " + ss.pct + "% (" + ss.saves + "/" + ss.bunker + " bunker escapes). The beach is costing strokes — 15 min of bunker practice twice a week and this number climbs fast.", type:"negative"});
+      insights.push({text:"Sand saves at " + ss.pct + "% (" + ss.saves + "/" + ss.bunker + " bunker escapes). The beach is costing strokes: 15 min of bunker practice twice a week and this number climbs fast.", type:"negative"});
     } else if (ss.pct > 60) {
-      insights.push({text:"Sand saves at " + ss.pct + "% — tour-caliber work from the bunker. Keep doing whatever you’re doing.", type:"positive"});
+      insights.push({text:"Sand saves at " + ss.pct + "%. Tour-caliber work from the bunker. Keep doing whatever you’re doing.", type:"positive"});
     }
   }
 
   var ud = typeof calcUpDownPct === "function" ? calcUpDownPct(playerRounds) : null;
   if (ud) {
     if (ud.pct < 20) {
-      insights.push({text:"Scrambling at " + ud.pct + "% — when you miss the green, the damage is sticking. Short game reps this week would save 2-3 strokes a round.", type:"negative"});
+      insights.push({text:"Scrambling at " + ud.pct + "%. When you miss the green, the damage is sticking. Short game reps this week would save 2-3 strokes a round.", type:"negative"});
     } else if (ud.pct > 50) {
-      insights.push({text:"Scrambling at " + ud.pct + "% — excellent recovery play. The short game is carrying your scoring.", type:"positive"});
+      insights.push({text:"Scrambling at " + ud.pct + "%. Excellent recovery play. The short game is carrying your scoring.", type:"positive"});
     }
   }
 
   var mt = typeof calcMissTendency === "function" ? calcMissTendency(playerRounds) : null;
   if (mt && mt.dominant) {
     var pct = Math.round(mt.counts[mt.dominant] / mt.total * 100);
-    insights.push({text:pct + "% of approach misses go " + mt.dominant + " — that’s a swing pattern, not bad luck. One lesson on alignment and contact could tighten this up fast.", type:"neutral"});
+    insights.push({text:pct + "% of approach misses go " + mt.dominant + ". That’s a swing pattern, not bad luck. One lesson on alignment and contact could tighten this up fast.", type:"neutral"});
   }
 
   var penTotal = 0, penRounds = 0;
@@ -352,7 +352,7 @@ function caddieAdvancedStatInsights(playerRounds) {
     var avgPen = penTotal / penRounds;
     if (avgPen > 2) {
       var avgStr = Math.round(avgPen * 10) / 10;
-      insights.push({text:"Averaging " + avgStr + " penalty strokes per round. Course management is the easy fix — club down from trouble, play to the fat side of greens, and this disappears.", type:"negative"});
+      insights.push({text:"Averaging " + avgStr + " penalty strokes per round. Course management is the easy fix: club down from trouble, play to the fat side of greens, and this disappears.", type:"negative"});
     }
   }
 

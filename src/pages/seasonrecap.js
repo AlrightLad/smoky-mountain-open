@@ -18,7 +18,7 @@ Router.register("seasonrecap", function(params) {
   h += '<div style="text-align:center;padding:24px 16px;background:linear-gradient(180deg,var(--grad-hero),var(--bg));border-bottom:1px solid var(--border)">';
   h += '';
   h += '<div style="font-family:var(--font-display);font-size:24px;color:var(--gold);font-weight:700">' + year + ' Season Recap</div>';
-  h += '<div style="font-size:11px;color:var(--muted);margin-top:6px">March 1 — September 30</div></div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:6px">March 1 – September 30</div></div>';
   
   // Overall stats
   var uniquePlayers = {};
@@ -168,7 +168,7 @@ Router.register("seasonrecap", function(params) {
   });
   
   if (!awards.length) {
-    h += '<div class="card"><div class="empty"><div class="empty-text">No awards yet — log some rounds!</div></div></div>';
+    h += '<div class="card"><div class="empty"><div class="empty-text">No awards yet, log some rounds!</div></div></div>';
   }
   h += '</div>';
   

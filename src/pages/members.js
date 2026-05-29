@@ -438,7 +438,7 @@ function renderAddMemberForm() {
 var _lastGeneratedInvite = null; // Survives page re-renders
 
 function generateInviteFromMembers() {
-  if (!db || !currentUser || !currentProfile) { Router.toast("Not ready — try refreshing"); return; }
+  if (!db || !currentUser || !currentProfile) { Router.toast("Not ready, try refreshing"); return; }
   var isComm = isFounderRole(currentProfile);
   if (!isComm && (currentProfile.invitesUsed||0) >= (currentProfile.maxInvites||3)) { Router.toast("No invites remaining"); return; }
   
@@ -485,7 +485,7 @@ function showGeneratedInvite() {
     + '<div class="code">' + code + '</div>'
     + '<div style="margin:10px 0 6px"><input type="text" readonly value="' + inviteLink + '" id="inviteLinkField" style="width:100%;font-size:10px;padding:8px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--cream);text-align:center;font-family:monospace" onclick="this.select()"></div>'
     + '<button class="btn full outline" onclick="copyInviteLink()" style="font-size:11px;padding:10px;margin-top:4px" id="copyInviteBtn">Copy invite link</button>'
-    + '<div class="hint" style="margin-top:8px">Send this link — the code auto-fills when they open it</div>'
+    + '<div class="hint" style="margin-top:8px">Send this link, the code auto-fills when they open it</div>'
     + '</div>';
 }
 
@@ -593,7 +593,7 @@ function toggleBadge(pid, badgeId) {
   if (idx !== -1) {
     badges.splice(idx, 1);
   } else {
-    if (badges.length >= 3) { Router.toast("Max 3 badges — remove one first"); return; }
+    if (badges.length >= 3) { Router.toast("Max 3 badges, remove one first"); return; }
     badges.push(badgeId);
   }
   

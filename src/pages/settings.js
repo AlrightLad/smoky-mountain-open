@@ -45,7 +45,7 @@ Router.register("settings", function(params) {
     { name: "Bourbon Room",    primary: "#3d2a1f", accent: "#c89a4b", ready: false, earned: false },
     { name: "Course Record",   primary: "#f5f0e3", accent: "#1a4032", ready: false, earned: false }
   ];
-  h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-subtle);font-size:11px;color:var(--text-muted);line-height:1.5;margin-bottom:12px">The full theme picker arrives in an upcoming update. Six editorial themes — three ready, three to earn.</div>';
+  h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-subtle);font-size:11px;color:var(--text-muted);line-height:1.5;margin-bottom:12px">The full theme picker arrives in an upcoming update. Six editorial themes: three ready, three to earn.</div>';
   h += '<div style="display:flex;gap:8px;flex-wrap:wrap">';
   _themePreviews.forEach(function(t) {
     var isActive = (t.name === _activeThemeName);
@@ -150,7 +150,7 @@ Router.register("settings", function(params) {
     h += '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="var(--birdie)" stroke-width="1.5"><path d="M4 8l3 3 5-6"/></svg>';
     h += '<span style="font-size:12px;color:var(--birdie);font-weight:600">Push notifications enabled</span></div>';
   } else if (permState === 'denied') {
-    h += '<div style="padding:10px 12px;background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);border-radius:var(--radius);font-size:11px;color:var(--muted)">Notifications blocked — update in your browser or device settings</div>';
+    h += '<div style="padding:10px 12px;background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);border-radius:var(--radius);font-size:11px;color:var(--muted)">Notifications blocked, update in your browser or device settings</div>';
   } else if (permState === 'unsupported') {
     h += '<div style="padding:10px 12px;font-size:11px;color:var(--muted)">Push notifications are not supported on this browser</div>';
   } else {

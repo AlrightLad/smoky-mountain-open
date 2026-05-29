@@ -16,7 +16,7 @@ Router.register("bugreport", function() {
   var h = '<div class="sh"><h2>Report a Bug</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
 
   h += '<div style="padding:16px;font-size:12px;color:var(--muted);line-height:1.6">';
-  h += 'Saw something broken? Send a quick note. Anonymous to other members — only the Commissioner reads these.';
+  h += 'Saw something broken? Send a quick note. Anonymous to other members; only the Commissioner reads these.';
   h += '</div>';
 
   h += '<div class="section">';
@@ -29,10 +29,10 @@ Router.register("bugreport", function() {
   h += '<div style="margin-bottom:14px">';
   h += '<label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:6px">Type</label>';
   h += '<select id="brType" style="width:100%;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--cream);font-size:13px;min-height:44px">';
-  h += '<option value="bug">Bug — something is broken</option>';
-  h += '<option value="ux">UX — confusing or hard to use</option>';
-  h += '<option value="feature">Feature request — new idea</option>';
-  h += '<option value="content">Content — typo or wrong info</option>';
+  h += '<option value="bug">Bug: something is broken</option>';
+  h += '<option value="ux">UX: confusing or hard to use</option>';
+  h += '<option value="feature">Feature request: new idea</option>';
+  h += '<option value="content">Content: typo or wrong info</option>';
   h += '</select>';
   h += '</div>';
 
@@ -40,9 +40,9 @@ Router.register("bugreport", function() {
   h += '<div style="margin-bottom:14px">';
   h += '<label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:6px">How bad?</label>';
   h += '<select id="brSeverity" style="width:100%;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--cream);font-size:13px;min-height:44px">';
-  h += '<option value="minor">Minor — annoying but workaround exists</option>';
-  h += '<option value="moderate" selected>Moderate — affects my round / game</option>';
-  h += '<option value="critical">Critical — app unusable / data lost</option>';
+  h += '<option value="minor">Minor: annoying but workaround exists</option>';
+  h += '<option value="moderate" selected>Moderate: affects my round / game</option>';
+  h += '<option value="critical">Critical: app unusable / data lost</option>';
   h += '</select>';
   h += '</div>';
 
@@ -126,12 +126,12 @@ function submitBugReport() {
     createdAt: fsTimestamp()
   }).then(function() {
     btn.textContent = 'Sent';
-    Router.toast('Thanks — the Commissioner has it.');
+    Router.toast('Thanks, the Commissioner has it.');
     setTimeout(function() { Router.go('home'); }, 1200);
   }).catch(function(err) {
     btn.disabled = false;
     btn.textContent = 'Send to the Commissioner';
     if (typeof pbWarn === 'function') pbWarn('[bugreport] submit failed:', err.message);
-    Router.toast('Couldn\'t send — try again.');
+    Router.toast('Couldn\'t send, try again.');
   });
 }

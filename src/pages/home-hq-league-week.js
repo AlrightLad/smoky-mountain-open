@@ -123,13 +123,13 @@ function _renderLeagueThisWeekStrip(ctx) {
     }
   }
 
-  // Format week window date label, e.g. "May 16 — May 22"
+  // Format week window date label, e.g. "May 16 – May 22"
   function _fmtMD(ms) {
     var d = new Date(ms);
     var mons = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     return mons[d.getMonth()] + " " + d.getDate();
   }
-  var windowLabel = _fmtMD(win.weekStart) + " — " + _fmtMD(win.end);
+  var windowLabel = _fmtMD(win.weekStart) + " – " + _fmtMD(win.end);
 
   // Render
   var h = '<section class="hq-league-week" style="display:flex;flex-direction:column;gap:14px">';

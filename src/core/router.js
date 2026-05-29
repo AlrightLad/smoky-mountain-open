@@ -369,7 +369,7 @@ function requestPushPermission() {
       _getFcmToken();
       Router.toast("Notifications enabled!");
     } else {
-      Router.toast("Notifications blocked — check browser settings");
+      Router.toast("Notifications blocked, check browser settings");
     }
   });
 }

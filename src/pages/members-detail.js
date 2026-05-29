@@ -495,7 +495,7 @@ function renderMemberDetailWithData(p) {
         h += svgBarChart(zoneData, {width:200, height:120, showLabels:true, showValues:true});
         zoneData.forEach(function(z) {
           var label = z.value <= 0.5 ? "Strong" : z.value <= 1.0 ? "Solid" : z.value <= 1.5 ? "Average" : z.value <= 2.0 ? "Needs work" : "Bleeding strokes";
-          h += '<div style="font-size:10px;color:var(--muted);margin-top:4px">' + z.label + 's: <span style="color:' + z.color + ';font-weight:600">+' + z.value + '</span> — ' + label + '</div>';
+          h += '<div style="font-size:10px;color:var(--muted);margin-top:4px">' + z.label + 's: <span style="color:' + z.color + ';font-weight:600">+' + z.value + '</span>, ' + label + '</div>';
         });
         h += '</div></div></div>';
       }
@@ -600,7 +600,7 @@ function renderMemberDetailWithData(p) {
     });
     achieveContent += '</div>';
   } else {
-    achieveContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No achievements yet — log rounds to unlock</div>';
+    achieveContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No achievements yet, log rounds to unlock</div>';
   }
   h += profSection("achieve-" + pid, "Achievements (" + achievements.length + ")", achieveContent, false);
   var teams = PB.getScrambleTeams();
@@ -676,9 +676,9 @@ function renderMemberDetailWithData(p) {
   });
   // Records held
   var rec = PB.getRecords();
-  if (rec.longestDrive && rec.longestDrive.by === p.name) accolades.push({type:"Record holder", detail:"Longest drive — " + rec.longestDrive.distance + " yds"});
-  if (rec.longestPutt && rec.longestPutt.by === p.name) accolades.push({type:"Record holder", detail:"Longest putt — " + rec.longestPutt.distance + " ft"});
-  if (rec.longestHoleOut && rec.longestHoleOut.by === p.name) accolades.push({type:"Record holder", detail:"Longest hole out — " + rec.longestHoleOut.distance + " yds"});
+  if (rec.longestDrive && rec.longestDrive.by === p.name) accolades.push({type:"Record holder", detail:"Longest drive: " + rec.longestDrive.distance + " yds"});
+  if (rec.longestPutt && rec.longestPutt.by === p.name) accolades.push({type:"Record holder", detail:"Longest putt: " + rec.longestPutt.distance + " ft"});
+  if (rec.longestHoleOut && rec.longestHoleOut.by === p.name) accolades.push({type:"Record holder", detail:"Longest hole out: " + rec.longestHoleOut.distance + " yds"});
   // Aces
   if (rec.holeInOnes) {
     rec.holeInOnes.forEach(function(a) {
@@ -719,7 +719,7 @@ function renderMemberDetailWithData(p) {
     var total = h2h.p1wins + h2h.p2wins + h2h.ties;
     if (total === 0) return; // Skip opponents with no shared rounds
     h2hHasMatches = true;
-    var record = h2h.p1wins + ' — ' + h2h.p2wins + (h2h.ties ? ' — ' + h2h.ties + 'T' : '');
+    var record = h2h.p1wins + ' – ' + h2h.p2wins + (h2h.ties ? ' – ' + h2h.ties + 'T' : '');
     var color = h2h.p1wins > h2h.p2wins ? 'var(--birdie)' : h2h.p2wins > h2h.p1wins ? 'var(--red)' : 'var(--gold)';
     h2hContent += '<div class="h2h-row" style="cursor:pointer" onclick="showRivalryDetail(\'' + pid + '\',\'' + opp.id + '\')"><div class="h2h-left">' + renderAvatar(opp, 28, false) + '<span class="h2h-name">' + renderUsername(opp, '', false) + '</span></div><span class="h2h-record" style="color:' + color + '">' + record + '</span></div>';
   });
@@ -748,7 +748,7 @@ function renderMemberDetailWithData(p) {
   if (histEl) {
     loadTransactionHistory(pid, 10).then(function(txns) {
       if (!txns.length) {
-        histEl.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No earnings yet — play a round to start earning!</div>';
+        histEl.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No earnings yet, play a round to start earning!</div>';
         return;
       }
       var th = '';

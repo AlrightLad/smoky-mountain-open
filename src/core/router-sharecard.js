@@ -155,7 +155,7 @@ function showShareCard(score, diffStr, course, playerName, fir, firHoles, gir, h
   if (played > 0) {
     scEl.innerHTML = buildScorecardHTML(holeScores, holesData, defaultPars, played);
   } else {
-    scEl.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,.3);font-size:16px;padding:20px 0">No hole-by-hole data — log with Play Now to see your scorecard here</div>';
+    scEl.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,.3);font-size:16px;padding:20px 0">No hole-by-hole data, log with Play Now to see your scorecard here</div>';
   }
 
   // ── Show full-page share card ────────────────────────────────────
@@ -326,7 +326,7 @@ function buildScorecardHTML(holeScores, holesData, defaultPars, played) {
 function captureShareCard() {
   var template = document.getElementById("pbShareTemplate");
   if (!template || typeof html2canvas === "undefined") {
-    Router.toast("Share not available — try updating the app");
+    Router.toast("Share not available, try updating the app");
     return;
   }
   Router.toast("Generating image...");
@@ -417,7 +417,7 @@ function copyRoundLink(roundId) {
     navigator.clipboard.writeText(url).then(function() {
       if (typeof Router !== "undefined" && Router.toast) Router.toast("Round link copied");
     }).catch(function() {
-      if (typeof Router !== "undefined" && Router.toast) Router.toast("Couldn't copy — long-press to copy manually: " + url);
+      if (typeof Router !== "undefined" && Router.toast) Router.toast("Couldn't copy, long-press to copy manually: " + url);
     });
   } else if (typeof Router !== "undefined" && Router.toast) {
     Router.toast(url);
@@ -451,7 +451,7 @@ function postRoundRecapToFeed(roundId) {
   }
   var vsPar = (r.score && par) ? r.score - par : null;
   var vsParStr = vsPar === null ? "" : (vsPar === 0 ? "even par" : (vsPar > 0 ? "+" + vsPar : String(vsPar)) + " to par");
-  var recap = "Logged " + (r.score || "—") + " at " + (r.course || "the course") + (vsParStr ? " — " + vsParStr : "") + ".";
+  var recap = "Logged " + (r.score || "—") + " at " + (r.course || "the course") + (vsParStr ? ", " + vsParStr : "") + ".";
 
   // Push to feed if the chat-feed write path is available.
   if (typeof db !== "undefined" && db && typeof leagueQuery === "function" && typeof currentUser !== "undefined" && currentUser) {
@@ -467,7 +467,7 @@ function postRoundRecapToFeed(roundId) {
       closeShareCard();
     }).catch(function(e) {
       console.error("postRoundRecapToFeed error:", e);
-      if (typeof Router !== "undefined" && Router.toast) Router.toast("Couldn't post — try again");
+      if (typeof Router !== "undefined" && Router.toast) Router.toast("Couldn't post, try again");
     });
   } else if (typeof window !== "undefined" && window._feedItems) {
     // Offline / local mode — push into in-memory feed
@@ -741,7 +741,7 @@ function copyShareText() {
         document.execCommand("copy");
         Router.toast("Copied!");
       }
-    } catch(e) { Router.toast("Couldn't copy — long press to select"); }
+    } catch(e) { Router.toast("Couldn't copy, long press to select"); }
     ta.style.left = "-9999px";
   }
 }

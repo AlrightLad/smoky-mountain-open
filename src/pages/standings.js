@@ -26,7 +26,7 @@ Router.register("standings", function(params) {
   var monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var sStart = new Date(season.seasonStart + "T12:00:00");
   var sEnd = new Date(season.seasonEnd + "T12:00:00");
-  h += '<div style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1.5px;text-transform:uppercase">' + monthNames[sStart.getMonth()] + ' ' + sStart.getDate() + ' — ' + monthNames[sEnd.getMonth()] + ' ' + sEnd.getDate() + ', ' + year + '</div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1.5px;text-transform:uppercase">' + monthNames[sStart.getMonth()] + ' ' + sStart.getDate() + ' – ' + monthNames[sEnd.getMonth()] +' ' + sEnd.getDate() + ', ' + year + '</div>';
   if (inSeason) {
     var daysLeft = Math.ceil((sEnd - now) / (1000*60*60*24));
     h += '<div style="display:inline-block;margin-top:10px;padding:5px 14px;background:rgba(var(--birdie-rgb),.08);border:1px solid rgba(var(--birdie-rgb),.15);border-radius:12px;font-size:10px;color:var(--birdie);font-weight:600;letter-spacing:.5px">IN SEASON · ' + daysLeft + ' DAYS LEFT</div>';
@@ -100,7 +100,7 @@ Router.register("standings", function(params) {
   } else {
     h += '<div class="card"><div class="empty" style="padding:28px"><div style="width:40px;height:40px;margin:0 auto 8px;opacity:.3;border-radius:8px;overflow:hidden"><img alt="" src="watermark.jpg" style="width:100%;height:100%;object-fit:cover"></div>';
     h += '<div class="empty-text">No rounds this season</div>';
-    h += '<div style="font-size:10px;color:var(--muted2);margin-top:4px">Log rounds March—September to appear</div></div></div>';
+    h += '<div style="font-size:10px;color:var(--muted2);margin-top:4px">Log rounds March–September to appear</div></div></div>';
   }
   h += '</div>';
 
@@ -190,7 +190,7 @@ Router.register("standings", function(params) {
   h += '<div class="club-row"><span class="club-name">Ranking method</span><span class="club-yd">Season point system</span></div>';
   h += '<div class="club-row"><span class="club-name">Base rules</span><span class="club-yd">USGA rules apply</span></div>';
   h += '<div class="club-row"><span class="club-name">Breakfast balls</span><span class="club-yd">2 per round (1 front, 1 back)</span></div>';
-  h += '<div class="club-row"><span class="club-name">Honor system</span><span class="club-yd">Scouts honor — attested scores earn 150 XP</span></div>';
+  h += '<div class="club-row"><span class="club-name">Honor system</span><span class="club-yd">Scouts honor: attested scores earn 150 XP</span></div>';
   h += '<div class="club-row"><span class="club-name">Inactivity</span><span class="club-yd">3 months = 3 rounds to reactivate</span></div>';
   h += '<div class="club-row"><span class="club-name">Eligible rounds</span><span class="club-yd">Public rounds only</span></div>';
   h += '<div class="club-row"><span class="club-name">Season winner</span><span class="club-yd">Earns title + Champion Red theme + ParCoins</span></div>';

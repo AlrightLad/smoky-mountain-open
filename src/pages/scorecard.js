@@ -21,10 +21,10 @@ Router.register("scorecard", function(params) {
   // Live indicator (only for active events)
   if (trip.status !== "closed") {
     h += '<div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:6px;font-size:10px;color:var(--birdie);background:rgba(var(--birdie-rgb),.05);border-bottom:1px solid var(--border)">';
-    h += '<div style="width:6px;height:6px;border-radius:50%;background:var(--birdie);animation:pulse 2s infinite"></div>Live scoring — updates sync across all devices</div>';
+    h += '<div style="width:6px;height:6px;border-radius:50%;background:var(--birdie);animation:pulse 2s infinite"></div>Live scoring, updates sync across all devices</div>';
   } else {
     h += '<div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:6px;font-size:10px;color:var(--gold);background:rgba(var(--gold-rgb),.05);border-bottom:1px solid var(--border)">';
-    h += '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h8v3L8 8l4 3v3H4v-3l4-3L4 5z"/></svg> Event closed — scores are final</div>';
+    h += '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h8v3L8 8l4 3v3H4v-3l4-3L4 5z"/></svg> Event closed, scores are final</div>';
   }
 
   // Commissioner controls (only for active events). Username fallback
@@ -90,7 +90,7 @@ function renderTripScorecard(trip, tripPlayers) {
     if (isRoundFinished) h += ' <span style="color:var(--birdie);margin-left:6px"><svg viewBox="0 0 16 16" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg> Scores locked</span>';
     h += '</div>';
   } else if (isComm) {
-    h += '<div style="padding:4px 16px 8px;font-size:10px;color:var(--muted2)">No scorekeeper assigned — all members can enter scores</div>';
+    h += '<div style="padding:4px 16px 8px;font-size:10px;color:var(--muted2)">No scorekeeper assigned, all members can enter scores</div>';
   }
 
   // Commissioner: assign scorekeeper
@@ -223,7 +223,7 @@ function renderTripScorecard(trip, tripPlayers) {
   if (isFounderRole(currentProfile)) {
     if (isRoundFinished) {
       h += '<div style="margin:16px;padding:14px 16px;background:rgba(var(--birdie-rgb),.06);border:1px solid rgba(var(--birdie-rgb),.2);border-radius:8px;display:flex;align-items:center;justify-content:space-between">';
-      h += '<div style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--birdie)" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 016 0"/></svg><div><div style="font-size:12px;font-weight:600;color:var(--birdie)">' + escHtml(c.n) + ' — Scores Locked</div><div style="font-size:10px;color:var(--muted);margin-top:1px">Only you can make changes</div></div></div>';
+      h += '<div style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--birdie)" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 016 0"/></svg><div><div style="font-size:12px;font-weight:600;color:var(--birdie)">' + escHtml(c.n) + ': Scores Locked</div><div style="font-size:10px;color:var(--muted);margin-top:1px">Only you can make changes</div></div></div>';
       h += '<button class="btn-sm outline" style="font-size:10px;color:var(--gold);border-color:rgba(var(--gold-rgb),.3);flex-shrink:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;min-height:48px" onclick="unlockTripRound(\'' + tid + '\',\'' + c.key + '\')">Unlock</button>';
       h += '</div>';
     } else {
@@ -263,7 +263,7 @@ function renderTripLB(trip, tripPlayers) {
     if (fb) return PB.getDisplayName(fb);
     var p = PB.getPlayer(id); return p ? PB.getDisplayName(p) : id;
   }).join(", ");
-  h += '<div class="rc"><div class="rh">Sequoyah National · Scramble</div><div class="rc-body"><div style="font-size:11px;color:var(--gold);margin-bottom:4px">' + scrambleTeamName + ' — ' + scrambleMemberNames + '</div>Team score: ' + (st || "—") + (st > 0 ? " (" + (st - 72 >= 0 ? "+" : "") + (st - 72) + ")" : "") + '</div></div>';
+  h += '<div class="rc"><div class="rh">Sequoyah National · Scramble</div><div class="rc-body"><div style="font-size:11px;color:var(--gold);margin-bottom:4px">' + scrambleTeamName + ': ' + scrambleMemberNames + '</div>Team score: ' + (st || "—") + (st > 0 ? " (" + (st - 72 >= 0 ? "+" : "") + (st - 72) + ")" : "") + '</div></div>';
   trip.courses.forEach(function(c) {
     if (c.s) return;
     h += '<div class="rc"><div class="rh">' + c.d + ' · ' + c.n + ' · ' + c.f + '</div>';
@@ -306,7 +306,7 @@ function renderTripLB(trip, tripPlayers) {
       h += '<div style="margin-top:10px;font-size:11px;color:var(--muted)">';
       trip.finalStandings.forEach(function(s, i) {
         var placeLabels = ["1st","2nd","3rd","4th","5th","6th"];
-        h += '<div style="padding:2px 0;color:' + (i === 0 ? 'var(--gold)' : 'var(--cream)') + '">' + (placeLabels[i]||"") + ' ' + escHtml(s.name) + ' — ' + s.points + ' pts</div>';
+        h += '<div style="padding:2px 0;color:' + (i === 0 ? 'var(--gold)' : 'var(--cream)') + '">' + (placeLabels[i]||"") + ' ' + escHtml(s.name) + ' – ' + s.points + ' pts</div>';
       });
       h += '</div>';
     }
@@ -382,7 +382,7 @@ function closeEvent(tripId) {
     // Post to activity feed
     var resultsText = trip.name + " has concluded!\n\nChampion: " + winner.name + " (" + winnerPts + " pts)\n\nFinal standings:\n";
     finalStandings.forEach(function(s, i) {
-      resultsText += (i + 1) + ". " + s.name + " — " + s.points + " pts\n";
+      resultsText += (i + 1) + ". " + s.name + " – " + s.points + " pts\n";
     });
     db.collection("chat").add(leagueDoc("chat", {
       id: genId(),
@@ -427,7 +427,7 @@ function renderTripPhotos(trip) {
     var allPhotos = photos.concat(localPhotos);
 
     if (!allPhotos.length) {
-      grid.innerHTML = '<div class="empty"><div class="empty-icon" style="font-size:14px;color:var(--muted)"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="4" width="12" height="9" rx="1"/><circle cx="8" cy="9" r="2.5"/><path d="M6 4l1-2h2l1 2"/></svg></div><div class="empty-text">No photos yet — add some from the trip!</div></div>';
+      grid.innerHTML = '<div class="empty"><div class="empty-icon" style="font-size:14px;color:var(--muted)"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="4" width="12" height="9" rx="1"/><circle cx="8" cy="9" r="2.5"/><path d="M6 4l1-2h2l1 2"/></svg></div><div class="empty-text">No photos yet, add some from the trip!</div></div>';
       return;
     }
 

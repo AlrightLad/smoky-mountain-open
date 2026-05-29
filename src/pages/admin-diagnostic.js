@@ -176,7 +176,7 @@ function copyDiagnosticText() {
     navigator.clipboard.writeText(window._diagnosticText).then(function() {
       Router.toast("Diagnostic copied to clipboard");
     }).catch(function() {
-      Router.toast("Could not copy — check browser permissions");
+      Router.toast("Could not copy, check browser permissions");
     });
   } else {
     // Fallback

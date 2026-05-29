@@ -160,7 +160,7 @@ Router.register("tee-create", function(params) {
   h += '<div class="ff"><label class="ff-label">Tee Time</label><input type="time" id="teeTime" class="ff-input"></div>';
   h += '<div class="ff"><label class="ff-label">Spots</label><select id="teeSpots" class="ff-input"><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option><option value="5">5+</option></select></div>';
   h += '<div class="ff"><label class="ff-label">Message (optional)</label><input type="text" id="teeMessage" class="ff-input" placeholder="Let\'s get after it" maxlength="100"></div>';
-  h += '<div class="ff"><label class="ff-label">Visibility</label><select id="teeVisibility" class="ff-input"><option value="public">Public — visible to all members</option><option value="private">Private — only you and invitees</option></select></div>';
+  h += '<div class="ff"><label class="ff-label">Visibility</label><select id="teeVisibility" class="ff-input"><option value="public">Public: visible to all members</option><option value="private">Private: only you and invitees</option></select></div>';
   h += '<button class="btn full green" onclick="submitTeeTime()">Post Tee Time</button>';
   h += '</div>';
   document.querySelector('[data-page="tee-create"]').innerHTML = h;
@@ -248,7 +248,7 @@ function rsvpTeeTime(teeId, response) {
     }
   }).catch(function(err) {
     pbWarn("[teetimes] RSVP failed:", err && err.message);
-    Router.toast("Couldn't RSVP — please try again");
+    Router.toast("Couldn't RSVP, please try again");
   });
 }
 
@@ -281,7 +281,7 @@ function cancelTeeTime(teeId) {
     }
   }).catch(function(err) {
     pbWarn("[teetimes] cancel failed:", err && err.message);
-    Router.toast("Couldn't cancel — please try again");
+    Router.toast("Couldn't cancel, please try again");
   });
 }
 
@@ -298,7 +298,7 @@ function markOfficial(teeId) {
     Router.toast("Marked official");
   }).catch(function(err) {
     pbWarn("[teetimes] markOfficial failed:", err && err.message);
-    Router.toast("Couldn't mark official — please try again");
+    Router.toast("Couldn't mark official, please try again");
   });
 }
 

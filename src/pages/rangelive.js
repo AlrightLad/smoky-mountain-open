@@ -8,7 +8,7 @@ Router.register("range", function() {
     // Intent field
     h += '<div style="padding:16px 16px 0">';
     h += '<div style="font-family:var(--font-display);font-size:17px;color:var(--gold);margin-bottom:2px">What are you working on?</div>';
-    h += '<div style="font-size:10px;color:var(--muted);margin-bottom:10px">Optional — helps track your focus over time</div>';
+    h += '<div style="font-size:10px;color:var(--muted);margin-bottom:10px">Optional: helps track your focus over time</div>';
     h += '<input class="ff-input" id="rangeFocusInput" placeholder="e.g. Driver path, wedge distance, putting..." autocomplete="off" value="' + escHtml(activeRangeFocus) + '" oninput="activeRangeFocus=this.value" style="margin-bottom:0">';
     h += '</div>';
 
@@ -26,7 +26,7 @@ Router.register("range", function() {
     // Visibility toggle
     h += '<div style="padding:0 16px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);margin-bottom:0">';
     h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">Visibility</div>';
-    h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + (rangeSessionPrivate ? 'Private — no XP, not on calendar' : 'Public — earns XP, shows on calendar') + '</div></div>';
+    h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + (rangeSessionPrivate ? 'Private: no XP, not on calendar' : 'Public: earns XP, shows on calendar') + '</div></div>';
     h += '<button id="rangeVisBtn" onclick="rangeSessionPrivate=!rangeSessionPrivate;Router.go(\'range\')" style="background:' + (rangeSessionPrivate ? 'rgba(var(--red-rgb),.15)' : 'rgba(var(--birdie-rgb),.1)') + ';border:1px solid ' + (rangeSessionPrivate ? 'rgba(var(--red-rgb),.3)' : 'rgba(var(--birdie-rgb),.2)') + ';color:' + (rangeSessionPrivate ? 'var(--red)' : 'var(--birdie)') + ';font:600 10px/1 Inter,sans-serif;padding:6px 12px;border-radius:4px;cursor:pointer">' + (rangeSessionPrivate ? '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg> Private' : '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><circle cx="8" cy="8" r="6"/><path d="M8 5v6M5 8h6"/></svg> Public') + '</button>';
     h += '</div>';
 

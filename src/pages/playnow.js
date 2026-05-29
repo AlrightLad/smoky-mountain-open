@@ -443,7 +443,7 @@ function renderPnScrambleTeamSelector() {
       h += '<div style="width:16px;height:16px;border-radius:8px;border:1.5px solid ' + (sel ? 'var(--gold)' : 'var(--border)') + ';background:' + (sel ? 'var(--gold)' : 'transparent') + ';display:flex;align-items:center;justify-content:center">' + (sel ? '<svg viewBox="0 0 10 10" width="8" height="8" fill="none" stroke="white" stroke-width="2"><path d="M2 5l2 2 4-4"/></svg>' : '') + '</div></div></div>';
     });
   } else {
-    h += '<div style="font-size:11px;color:var(--muted);padding:4px 0 10px">No teams yet — create one below.</div>';
+    h += '<div style="font-size:11px;color:var(--muted);padding:4px 0 10px">No teams yet, create one below.</div>';
   }
 
   h += '<div id="pn-create-team-toggle-wrap" style="margin-top:4px"><button class="btn-sm" onclick="pnToggleCreateTeam()" style="width:100%;padding:9px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer">+ Create new team</button></div>';

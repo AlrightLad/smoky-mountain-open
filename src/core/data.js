@@ -772,7 +772,7 @@ var PB = (function() {
       var great = ["Well under your number today. The Parbaughs bow before you.","This is the round you'll bring up in every conversation for 6 months.","Tell your playing partners to bring sunglasses, your game is blinding.","You peaked today. It's all downhill from here. Enjoy it."];
       highlights.push(great[seed % great.length]);
     } else if (diff <= 3) {
-      var solid = ["Solid round — right around your number.","Respectable. Playing to your handicap is harder than people think.","Kept it together out there. Consistency is king.","Played your game. No more, no less. That's discipline."];
+      var solid = ["Solid round, right around your number.","Respectable. Playing to your handicap is harder than people think.","Kept it together out there. Consistency is king.","Played your game. No more, no less. That's discipline."];
       highlights.push(solid[seed % solid.length]);
     } else if (diff <= 8) {
       var mid = ["The course won today, but you put up a fight.","A few bad holes away from a solid round. Shake it off.","Your short game carried your long game's dead weight today.","Not your best, not your worst. We call that a Tuesday."];

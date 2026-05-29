@@ -480,7 +480,7 @@ function finalizeAttestedRound(docId, data, overridden) {
       results = "\n";
       data.standings.forEach(function(s, i) {
         var medal = i === 0 ? "1st" : i === 1 ? "2nd" : i === 2 ? "3rd" : (i+1) + ".";
-        if (s.score > 0) results += medal + " " + s.name + " — " + s.score + (s.pts ? " (" + s.pts + " pts)" : "") + "\n";
+        if (s.score > 0) results += medal + " " + s.name + " – " + s.score + (s.pts ? " (" + s.pts + " pts)" : "") + "\n";
       });
     }
   }
@@ -512,7 +512,7 @@ function renderAttestationStatus(tripId, courseKey) {
         ah += '<div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px">Score Attestation</div>';
         
         if (data.status === "complete") {
-          ah += '<div style="font-size:11px;color:var(--birdie);margin-bottom:8px"> All players attested — scores are official</div>';
+          ah += '<div style="font-size:11px;color:var(--birdie);margin-bottom:8px"> All players attested, scores are official</div>';
         } else if (data.status === "overridden") {
           ah += '<div style="font-size:11px;color:var(--gold);margin-bottom:8px"> Scores finalized (Commissioner override)</div>';
         } else {

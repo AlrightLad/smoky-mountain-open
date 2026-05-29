@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.23.6";
+var APP_VERSION = "8.23.7";
 
 // ══════════════════════════════════════════════════════════════════════════
 // LEAGUE ISOLATION — Nuclear approach. Makes leaking PHYSICALLY IMPOSSIBLE.
@@ -50,10 +50,10 @@ function sendVerificationEmail() {
   var email = currentUser.email || "";
   Router.toast("Sending verification to " + email + "...");
   currentUser.sendEmailVerification().then(function() {
-    Router.toast("Verification email sent to " + email + " — check inbox and spam folder");
+    Router.toast("Verification email sent to " + email + ", check inbox and spam folder");
   }).catch(function(err) {
     var msg = "Failed to send verification email";
-    if (err && err.code === "auth/too-many-requests") msg = "Too many attempts — wait a few minutes and try again";
+    if (err && err.code === "auth/too-many-requests") msg = "Too many attempts, wait a few minutes and try again";
     else if (err && err.message) msg = err.message;
     Router.toast(msg);
     pbWarn("[Auth] Verification email error:", err);
@@ -64,7 +64,7 @@ function sendVerificationEmail() {
 function requireVerified(actionName) {
   if (!currentUser) { Router.toast("Sign in required"); return false; }
   if (currentUser.emailVerified) return true;
-  Router.toast("Verify your email to " + (actionName || "do this") + " — check Settings");
+  Router.toast("Verify your email to " + (actionName || "do this") + ", check Settings");
   return false;
 }
 

@@ -6,7 +6,7 @@
 
 var COSMETICS_CATALOG = [
   // ── PROFILE RINGS — Basic: 100-200, Mid: 300-500, Premium: 750-1500, Ultra: 2000+ ──
-  {id:"border_default_gold",cat:"border",name:"Classic Gold",      price:0,   desc:"The default Parbaugh gold — free for all members",  css:"2px solid #c9a84c",  preview:"#c9a84c"},
+  {id:"border_default_gold",cat:"border",name:"Classic Gold",      price:0,   desc:"The default Parbaugh gold, free for all members",  css:"2px solid #c9a84c",  preview:"#c9a84c"},
   {id:"border_bronze",     cat:"border", name:"Bronze Ring",       price:100, desc:"Subtle bronze glow",       css:"2px solid #CD7F32",          preview:"#CD7F32"},
   {id:"border_silver",     cat:"border", name:"Silver Ring",       price:150, desc:"Clean silver finish",       css:"2px solid #C0C0C0",          preview:"#C0C0C0"},
   {id:"border_birdie",     cat:"border", name:"Birdie Green",      price:150, desc:"Glowing green for under-par energy", css:"3px solid #4ade80",  preview:"#4ade80"},
@@ -16,7 +16,7 @@ var COSMETICS_CATALOG = [
   {id:"border_gold",       cat:"border", name:"Gold Ring",         price:300, desc:"Premium gold band",         css:"3px solid #c9a84c",          preview:"#c9a84c"},
   {id:"border_fire",       cat:"border", name:"Fire Ring",         price:300, desc:"Hot orange glow",           css:"3px solid #ff6b35",          preview:"#ff6b35"},
   {id:"border_emerald",    cat:"border", name:"Emerald Ring",      price:300, desc:"Deep green prestige",       css:"3px solid #50c878",          preview:"#50c878"},
-  {id:"border_champ_red",  cat:"border", name:"Championship Red",  price:300, desc:"Bold crimson — champion vibes",      css:"3px solid #d4243c",   preview:"#d4243c"},
+  {id:"border_champ_red",  cat:"border", name:"Championship Red",  price:300, desc:"Bold crimson, champion vibes",      css:"3px solid #d4243c",   preview:"#d4243c"},
   {id:"border_diamond",    cat:"border", name:"Diamond Ring",      price:400, desc:"Sparkling diamond edge",    css:"3px solid #b9f2ff",          preview:"#b9f2ff"},
   {id:"border_obsidian",   cat:"border", name:"Obsidian Edge",     price:400, desc:"Dark volcanic glass",       css:"3px solid #2d2d2d",          preview:"#555555"},
   {id:"border_platinum",   cat:"border", name:"Platinum Band",     price:500, desc:"Rare platinum finish",      css:"3px solid #e5e4e2",          preview:"#e5e4e2"},
@@ -28,28 +28,28 @@ var COSMETICS_CATALOG = [
   {id:"border_shimmer",    cat:"border", name:"Diamond Sparkle",   price:2500,desc:"Ultra-premium animated diamond ring",   css:"3px solid #b9f2ff",   preview:"#b9f2ff"},
 
   // ── PROFILE BANNERS — Basic: 100-200, Mid: 300-500, Premium: 750+ ──
-  {id:"banner_default",    cat:"banner", name:"Theme Default",     price:0,   desc:"Uses your active theme gradient — free for all",  css:"linear-gradient(180deg,var(--grad-hero),var(--bg))", preview:"var(--gold)"},
-  {id:"banner_classic",    cat:"banner", name:"Classic Pinstripe", price:100, desc:"Charcoal with gold pinstripe — pairs with Classic",    css:"linear-gradient(180deg,#0e1118 0%,#1a1f2c 50%,#0e1118 100%)", preview:"#0e1118"},
-  {id:"banner_flagstick",  cat:"banner", name:"Flagstick",        price:100, desc:"Silhouette gradient — works on any theme",               css:"linear-gradient(180deg,#1a2840,#0e1118,#1a2840)", preview:"#1a2840"},
+  {id:"banner_default",    cat:"banner", name:"Theme Default",     price:0,   desc:"Uses your active theme gradient, free for all",  css:"linear-gradient(180deg,var(--grad-hero),var(--bg))", preview:"var(--gold)"},
+  {id:"banner_classic",    cat:"banner", name:"Classic Pinstripe", price:100, desc:"Charcoal with gold pinstripe, pairs with Classic",    css:"linear-gradient(180deg,#0e1118 0%,#1a1f2c 50%,#0e1118 100%)", preview:"#0e1118"},
+  {id:"banner_flagstick",  cat:"banner", name:"Flagstick",        price:100, desc:"Silhouette gradient, works on any theme",               css:"linear-gradient(180deg,#1a2840,#0e1118,#1a2840)", preview:"#1a2840"},
   {id:"banner_sunset",     cat:"banner", name:"Sunset Fairway",    price:150, desc:"Warm orange-pink gradient", css:"linear-gradient(135deg,#ff6b35,#e8729a)", preview:"#ff6b35"},
   {id:"banner_ocean",      cat:"banner", name:"Ocean Drive",       price:150, desc:"Cool blue-teal sweep",      css:"linear-gradient(135deg,#2563eb,#06b6d4)", preview:"#2563eb"},
   {id:"banner_midnight",   cat:"banner", name:"Midnight Green",    price:150, desc:"Dark green Augusta vibe",   css:"linear-gradient(135deg,#064e3b,#059669)", preview:"#064e3b"},
   {id:"banner_arctic",     cat:"banner", name:"Arctic Dawn",      price:150, desc:"Icy white-blue morning",    css:"linear-gradient(135deg,#e0f2fe,#7dd3fc)", preview:"#7dd3fc"},
   {id:"banner_pine",       cat:"banner", name:"Pine Forest",      price:150, desc:"Deep forest green fade",    css:"linear-gradient(135deg,#1a3a2a,#2d6a4f)", preview:"#1a3a2a"},
-  {id:"banner_camo_pair",  cat:"banner", name:"Woodland Camo",    price:200, desc:"Olive and shadow — pairs with Camo",                   css:"linear-gradient(135deg,#12140e,#2e3122,#181a12)", preview:"#12140e"},
-  {id:"banner_masters_pair",cat:"banner", name:"Augusta Green",   price:200, desc:"Deep green with yellow trim — pairs with Masters",      css:"linear-gradient(135deg,#071a10,#0c2218,#1a3a28)", preview:"#071a10"},
-  {id:"banner_azalea_pair",cat:"banner", name:"Bloom Garden",     price:200, desc:"Dark with pink accents — pairs with Azalea",            css:"linear-gradient(135deg,#0e1118,#1a0e18,#0e1118)", preview:"#1a0e18"},
-  {id:"banner_usga_pair",  cat:"banner", name:"Navy Stripe",      price:200, desc:"Institutional navy — pairs with USGA",                  css:"linear-gradient(135deg,#0a1628,#142640,#0a1628)", preview:"#0a1628"},
-  {id:"banner_dark_pair",  cat:"banner", name:"Carbon Fiber",     price:200, desc:"Pure black with silver edge — pairs with Dark",          css:"linear-gradient(135deg,#000000,#141414,#000000)", preview:"#000000"},
-  {id:"banner_light_pair", cat:"banner", name:"Linen & Gold",     price:200, desc:"Warm cream with gold accent — pairs with Light",         css:"linear-gradient(135deg,#f5f3ee,#eceae4,#f5f3ee)", preview:"#f5f3ee"},
+  {id:"banner_camo_pair",  cat:"banner", name:"Woodland Camo",    price:200, desc:"Olive and shadow, pairs with Camo",                   css:"linear-gradient(135deg,#12140e,#2e3122,#181a12)", preview:"#12140e"},
+  {id:"banner_masters_pair",cat:"banner", name:"Augusta Green",   price:200, desc:"Deep green with yellow trim, pairs with Masters",      css:"linear-gradient(135deg,#071a10,#0c2218,#1a3a28)", preview:"#071a10"},
+  {id:"banner_azalea_pair",cat:"banner", name:"Bloom Garden",     price:200, desc:"Dark with pink accents, pairs with Azalea",            css:"linear-gradient(135deg,#0e1118,#1a0e18,#0e1118)", preview:"#1a0e18"},
+  {id:"banner_usga_pair",  cat:"banner", name:"Navy Stripe",      price:200, desc:"Institutional navy, pairs with USGA",                  css:"linear-gradient(135deg,#0a1628,#142640,#0a1628)", preview:"#0a1628"},
+  {id:"banner_dark_pair",  cat:"banner", name:"Carbon Fiber",     price:200, desc:"Pure black with silver edge, pairs with Dark",          css:"linear-gradient(135deg,#000000,#141414,#000000)", preview:"#000000"},
+  {id:"banner_light_pair", cat:"banner", name:"Linen & Gold",     price:200, desc:"Warm cream with gold accent, pairs with Light",         css:"linear-gradient(135deg,#f5f3ee,#eceae4,#f5f3ee)", preview:"#f5f3ee"},
   {id:"banner_storm",      cat:"banner", name:"Thunder Storm",     price:300, desc:"Deep purple-gray power",    css:"linear-gradient(135deg,#581c87,#374151)", preview:"#581c87"},
   {id:"banner_crimson",    cat:"banner", name:"Crimson Tide",     price:300, desc:"Bold red-to-black power",   css:"linear-gradient(135deg,#991b1b,#1f1f1f)", preview:"#991b1b"},
   {id:"banner_ember",      cat:"banner", name:"Ember Glow",       price:300, desc:"Warm amber to deep red",    css:"linear-gradient(135deg,#f59e0b,#b91c1c)", preview:"#f59e0b"},
-  {id:"banner_champ_pair", cat:"banner", name:"Burgundy Leather", price:300, desc:"Championship leather — pairs with Sunday Red",           css:"linear-gradient(135deg,#10080a,#301c22,#10080a)", preview:"#10080a"},
+  {id:"banner_champ_pair", cat:"banner", name:"Burgundy Leather", price:300, desc:"Championship leather, pairs with Sunday Red",           css:"linear-gradient(135deg,#10080a,#301c22,#10080a)", preview:"#10080a"},
   {id:"banner_mountain",   cat:"banner", name:"Mountain Range",   price:300, desc:"Golf trip mountain skyline vibes",                       css:"linear-gradient(180deg,#0f172a,#1e3a5f,#0f172a)", preview:"#0f172a"},
   {id:"banner_fairway",    cat:"banner", name:"Fairway Aerial",   price:300, desc:"Top-down fairway pattern",                               css:"linear-gradient(135deg,#064e3b,#0a7c5a,#064e3b)", preview:"#064e3b"},
   {id:"banner_gold_rush",  cat:"banner", name:"Gold Rush",         price:500, desc:"Rich gold gradient",        css:"linear-gradient(135deg,#92400e,#f59e0b)", preview:"#92400e"},
-  {id:"banner_golden_hr",  cat:"banner", name:"Golden Hour",      price:500, desc:"Sunset gradient — warm amber to deep navy",              css:"linear-gradient(180deg,#f59e0b,#c2410c,#1e1b4b)", preview:"#f59e0b"},
+  {id:"banner_golden_hr",  cat:"banner", name:"Golden Hour",      price:500, desc:"Sunset gradient, warm amber to deep navy",              css:"linear-gradient(180deg,#f59e0b,#c2410c,#1e1b4b)", preview:"#f59e0b"},
 
   // ── CARD THEMES — Mid-tier: 300-500. Each DRAMATICALLY different from default. ──
   {id:"card_neon",         cat:"card", name:"Neon Glow",           price:300, desc:"Bright green edge that pops",             css:"border-left:4px solid #4ade80;background:linear-gradient(90deg,rgba(74,222,128,.06),transparent 40%)", preview:"#4ade80"},
@@ -58,13 +58,13 @@ var COSMETICS_CATALOG = [
   {id:"card_vintage",      cat:"card", name:"Vintage Parchment",  price:300, desc:"Old-school scorecard warmth",              css:"border-left:4px solid #c4a97d;background:linear-gradient(90deg,rgba(196,169,125,.08),transparent 40%)", preview:"#c4a97d"},
   {id:"card_fire",         cat:"card", name:"Hot Shot",            price:400, desc:"Red-orange fire edge with heat tint",      css:"border-left:4px solid #ef4444;background:linear-gradient(90deg,rgba(239,68,68,.07),transparent 40%)", preview:"#ef4444"},
   {id:"card_ice",          cat:"card", name:"Ice Cold",            price:400, desc:"Cool blue frost with icy tint",            css:"border-left:4px solid #38bdf8;background:linear-gradient(90deg,rgba(56,189,248,.06),transparent 40%)", preview:"#38bdf8"},
-  {id:"card_stealth",      cat:"card", name:"Stealth Mode",       price:400, desc:"Dark charcoal — subtle but sharp",         css:"border-left:4px solid #374151;background:linear-gradient(90deg,rgba(55,65,81,.1),transparent 40%)", preview:"#555555"},
+  {id:"card_stealth",      cat:"card", name:"Stealth Mode",       price:400, desc:"Dark charcoal, subtle but sharp",         css:"border-left:4px solid #374151;background:linear-gradient(90deg,rgba(55,65,81,.1),transparent 40%)", preview:"#555555"},
   {id:"card_sunset",       cat:"card", name:"Sunset Strip",       price:400, desc:"Warm amber glow on your rounds",           css:"border-left:4px solid #f97316;background:linear-gradient(90deg,rgba(249,115,22,.07),transparent 40%)", preview:"#f97316"},
   {id:"card_birdie_streak",cat:"card", name:"Birdie Streak",      price:400, desc:"Electric green for under-par runs",        css:"border-left:4px solid #22d65e;background:linear-gradient(90deg,rgba(34,214,94,.07),transparent 40%)", preview:"#22d65e"},
   {id:"card_neon_night",   cat:"card", name:"Neon Night",         price:400, desc:"Hot pink neon glow on dark",               css:"border-left:4px solid #ff00ff;background:linear-gradient(90deg,rgba(255,0,255,.06),transparent 40%)", preview:"#ff00ff"},
-  {id:"card_dark_carbon",  cat:"card", name:"Dark Carbon",        price:500, desc:"Matte carbon fiber edge — ultimate stealth",css:"border-left:4px solid #1a1a1a;background:linear-gradient(90deg,rgba(0,0,0,.12),transparent 30%)", preview:"#444444"},
+  {id:"card_dark_carbon",  cat:"card", name:"Dark Carbon",        price:500, desc:"Matte carbon fiber edge, ultimate stealth",css:"border-left:4px solid #1a1a1a;background:linear-gradient(90deg,rgba(0,0,0,.12),transparent 30%)", preview:"#444444"},
   {id:"card_augusta",      cat:"card", name:"Augusta Green",      price:500, desc:"Deep Masters green prestige",              css:"border-left:4px solid #006633;background:linear-gradient(90deg,rgba(0,102,51,.08),transparent 40%)", preview:"#006633"},
-  {id:"card_gold_foil",    cat:"card", name:"Gold Foil",          price:500, desc:"Luxe metallic gold edge with shimmer — the ultimate flex", css:"border-left:4px solid #c9a84c;background:linear-gradient(90deg,rgba(201,168,76,.12),rgba(223,192,106,.05) 50%,transparent)", preview:"#c9a84c"},
+  {id:"card_gold_foil",    cat:"card", name:"Gold Foil",          price:500, desc:"Luxe metallic gold edge with shimmer, the ultimate flex", css:"border-left:4px solid #c9a84c;background:linear-gradient(90deg,rgba(201,168,76,.12),rgba(223,192,106,.05) 50%,transparent)", preview:"#c9a84c"},
 
   // ── NAME EFFECTS — Mid-tier: 300-500 ──
   {id:"name_shadow_depth", cat:"name", name:"Shadow Depth",        price:300, desc:"Deep shadow for a 3D carved look",  css:"text-shadow:2px 2px 4px rgba(0,0,0,.5)", preview:"#666666"},
@@ -78,16 +78,16 @@ var COSMETICS_CATALOG = [
   {id:"title_early_bird",    cat:"title", name:"Early Bird",          price:200, desc:"First tee time, every time",                     css:"", preview:"#fbbf24"},
   {id:"title_night_owl",     cat:"title", name:"Night Owl",           price:200, desc:"Twilight rounds are your specialty",              css:"", preview:"#818cf8"},
   {id:"title_grinder",       cat:"title", name:"Grinder",            price:300, desc:"For the player who never stops working",          css:"", preview:"var(--gold)"},
-  {id:"title_road_warrior",  cat:"title", name:"Road Warrior",        price:300, desc:"Plays everywhere — never the same course twice",  css:"", preview:"var(--gold)"},
+  {id:"title_road_warrior",  cat:"title", name:"Road Warrior",        price:300, desc:"Plays everywhere, never the same course twice",  css:"", preview:"var(--gold)"},
   {id:"title_iron_will",     cat:"title", name:"Iron Will",           price:300, desc:"Bounces back from every bad hole",                css:"", preview:"#6b7280"},
-  {id:"title_sharpshooter",  cat:"title", name:"Sharpshooter",       price:400, desc:"Precision approach game — deadly accurate",       css:"", preview:"var(--gold)"},
-  {id:"title_hot_streak",    cat:"title", name:"Hot Streak",          price:400, desc:"On fire lately — rounds keep getting better",     css:"", preview:"#ef4444"},
+  {id:"title_sharpshooter",  cat:"title", name:"Sharpshooter",       price:400, desc:"Precision approach game, deadly accurate",       css:"", preview:"var(--gold)"},
+  {id:"title_hot_streak",    cat:"title", name:"Hot Streak",          price:400, desc:"On fire lately, rounds keep getting better",     css:"", preview:"#ef4444"},
   {id:"title_sandbagger",    cat:"title", name:"Sandbagger",          price:500, desc:"Handicap says 25, plays like a 15. We see you.", css:"", preview:"var(--gold)"},
-  {id:"title_course_legend", cat:"title", name:"Course Legend",       price:500, desc:"Owns a course — everyone knows your name there", css:"", preview:"var(--gold)"},
+  {id:"title_course_legend", cat:"title", name:"Course Legend",       price:500, desc:"Owns a course, everyone knows your name there", css:"", preview:"var(--gold)"},
   {id:"title_big_spender",   cat:"title", name:"Big Spender",         price:750, desc:"ParCoins flow like water from your wallet",       css:"", preview:"var(--gold)"},
-  {id:"title_the_ace",       cat:"title", name:"The Ace",             price:0,   desc:"Reserved — awarded for a hole-in-one",            css:"", preview:"#FFD700", reserved:true},
-  {id:"title_founding_four", cat:"title", name:"The Original Four",   price:0,   desc:"Reserved — founding members only",                css:"", preview:"var(--gold)", reserved:true},
-  {id:"title_commissioner",  cat:"title", name:"The Commissioner",    price:0,   desc:"Reserved — league commissioner only",             css:"", preview:"var(--gold)", reserved:true}
+  {id:"title_the_ace",       cat:"title", name:"The Ace",             price:0,   desc:"Reserved, awarded for a hole-in-one",            css:"", preview:"#FFD700", reserved:true},
+  {id:"title_founding_four", cat:"title", name:"The Original Four",   price:0,   desc:"Reserved, founding members only",                css:"", preview:"var(--gold)", reserved:true},
+  {id:"title_commissioner",  cat:"title", name:"The Commissioner",    price:0,   desc:"Reserved, league commissioner only",             css:"", preview:"var(--gold)", reserved:true}
 ];
 
 var COSMETIC_CATS = {

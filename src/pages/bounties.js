@@ -44,7 +44,7 @@ function _renderBountyBoard(bounties, uid) {
     // Example bounties
     eh += '<div style="margin-top:20px;text-align:left">';
     eh += '<div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:center">Bounty Ideas</div>';
-    var examples = ["Break 80 at Heritage Hills — 100 coins", "Birdie Hole 7 at Briarwood — 50 coins", "Beat Mr Parbaugh\'s 98 at Sequoyah — 75 coins"];
+    var examples = ["Break 80 at Heritage Hills · 100 coins", "Birdie Hole 7 at Briarwood · 50 coins", "Beat Mr Parbaugh\'s 98 at Sequoyah · 75 coins"];
     examples.forEach(function(ex) {
       eh += '<div style="padding:8px 12px;margin-bottom:4px;background:var(--bg3);border:1px dashed var(--border);border-radius:var(--radius);font-size:11px;color:var(--muted2);font-style:italic">' + ex + '</div>';
     });
@@ -79,7 +79,7 @@ function _renderBountyCard(b, uid) {
   h += '<div style="font-size:8px;color:var(--muted);letter-spacing:.5px">COINS</div></div>';
   h += '</div>';
   if (isOwner) {
-    h += '<div style="margin-top:8px;font-size:10px;color:var(--muted);font-style:italic">Your bounty — waiting for someone to claim it</div>';
+    h += '<div style="margin-top:8px;font-size:10px;color:var(--muted);font-style:italic">Your bounty, waiting for someone to claim it</div>';
   }
   h += '</div></div>';
   return h;

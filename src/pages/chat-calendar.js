@@ -171,7 +171,7 @@ function refreshClubCal() {
     var sd = new Date(clubCalRangeStart + "T12:00:00");
     var ed = new Date(clubCalRangeEnd + "T12:00:00");
     var days = Math.round((ed - sd) / 86400000) + 1;
-    var eh = '<div style="font-size:11px;font-weight:600;color:var(--cream);margin-bottom:6px">' + monNames[sd.getMonth()] + ' ' + sd.getDate() + ' — ' + monNames[ed.getMonth()] + ' ' + ed.getDate() + ' (' + days + ' days)</div>';
+    var eh = '<div style="font-size:11px;font-weight:600;color:var(--cream);margin-bottom:6px">' + monNames[sd.getMonth()] + ' ' + sd.getDate() + ' – ' + monNames[ed.getMonth()] + ' ' + ed.getDate() + ' (' + days + ' days)</div>';
     
     var rangeEvents = [];
     liveTeeTimes.forEach(function(t) { if (t.date >= clubCalRangeStart && t.date <= clubCalRangeEnd && t.status !== "cancelled") rangeEvents.push({type:"tee",title:t.courseName||"Tee Time",date:t.date,time:t.time}); });
@@ -240,7 +240,7 @@ function refreshClubCal() {
         } else {
           // No course or tee time for this trip day
           eh += '<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border)">';
-          eh += '<div style="font-size:10px;color:var(--muted)"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="var(--muted)" stroke-width="1.5" style="vertical-align:middle"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg> No round scheduled — travel or rest day</div>';
+          eh += '<div style="font-size:10px;color:var(--muted)"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="var(--muted)" stroke-width="1.5" style="vertical-align:middle"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg> No round scheduled, travel or rest day</div>';
           eh += '</div>';
         }
         eh += '</div>';

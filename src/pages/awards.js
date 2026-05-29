@@ -125,7 +125,7 @@ Router.register("awards", function(params) {
   
   if (!ceremonyAwards.length) {
     h += '<div class="card" style="margin:16px"><div class="empty" style="padding:32px"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><path d="M12 22V2"/><path d="M12 2l8 4-8 4"/><circle cx="12" cy="22" r="2"/></svg></div><div class="empty-text">No season data yet</div>';
-    h += '<div style="font-size:10px;color:var(--muted2);margin-top:4px">Log rounds during the season (Mar—Sep) to unlock awards</div></div></div>';
+    h += '<div style="font-size:10px;color:var(--muted2);margin-top:4px">Log rounds during the season (Mar–Sep) to unlock awards</div></div></div>';
   }
   
   h += '<div style="text-align:center;padding:24px;font-size:10px;color:var(--muted2);font-style:italic">"It\'s not about the handicap you have, it\'s about the stories you make."</div>';

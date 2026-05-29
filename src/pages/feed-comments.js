@@ -171,7 +171,7 @@ function feedToggleLike(roundId) {
     window._suppressRoundsRerender = false;
     if (typeof pbWarn === "function") pbWarn("[feed] toggleLike failed:", err && err.message);
     _patchKudosButton(roundId, prevLiked, prevCount);
-    Router.toast("Couldn't add kudos — please try again");
+    Router.toast("Couldn't add kudos, please try again");
   });
 }
 
@@ -277,7 +277,7 @@ function feedSubmitComment(roundId) {
     // Revert: remove the optimistically-appended row + restore count.
     _removeCommentRowFromDOM(roundId, newIdx);
     _patchCommentCount(roundId, prevCommentCount);
-    Router.toast("Couldn't post comment — please try again");
+    Router.toast("Couldn't post comment, please try again");
   });
 }
 
@@ -328,7 +328,7 @@ function feedToggleCommentLike(roundId, commentIdx) {
     window._suppressRoundsRerender = false;
     if (typeof pbWarn === "function") pbWarn("[feed] toggleCommentLike failed:", err && err.message);
     _patchCommentLike(roundId, commentIdx, prevLiked, prevCount);
-    Router.toast("Couldn't add kudos — please try again");
+    Router.toast("Couldn't add kudos, please try again");
   });
 }
 
@@ -413,7 +413,7 @@ function feedDeleteComment(roundId, commentIdx) {
       _appendCommentRowToDOM(roundId, snapshotComment, visibleRows.length, {});
     }
     _patchCommentCount(roundId, prevCommentCount);
-    Router.toast("Couldn't delete comment — please try again");
+    Router.toast("Couldn't delete comment, please try again");
   });
 }
 

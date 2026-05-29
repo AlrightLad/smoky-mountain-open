@@ -241,7 +241,7 @@ function renderRoundEditForm(roundId) {
     }, 50);
   }).catch(function(err) {
     if (typeof pbWarn === "function") pbWarn("[rounds] edit fetch failed:", err && err.message);
-    Router.toast("Couldn't load round — please try again");
+    Router.toast("Couldn't load round, please try again");
     Router.go("rounds");
   });
 }
@@ -352,7 +352,7 @@ function shareRoundCard(roundId) {
   if (!round) return;
   var diff = Math.round((round.score - (round.rating || 72)) * 10) / 10;
   var label = diff === 0 ? "Even" : (diff > 0 ? "+" + diff : diff);
-  var text = round.playerName + " shot " + round.score + " (" + label + ") at " + round.course + " on " + round.date + " — The Parbaughs";
+  var text = round.playerName + " shot " + round.score + " (" + label + ") at " + round.course + " on " + round.date + ". The Parbaughs";
 
   if (navigator.share) {
     navigator.share({ title: "Parbaugh Round", text: text, url: "https://alrightlad.github.io/smoky-mountain-open/" }).catch(function(){});
@@ -713,7 +713,7 @@ function submitRoundEdit(roundId) {
       Router.go("rounds", { roundId: roundId });
     }).catch(function(err) {
       if (typeof pbWarn === "function") pbWarn("[rounds] edit submit failed:", err && err.message);
-      Router.toast("Couldn't save changes — please try again");
+      Router.toast("Couldn't save changes, please try again");
       // Form stays open; member's edits are preserved in the DOM for retry.
     });
   }

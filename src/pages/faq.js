@@ -6,8 +6,8 @@ Router.register("faq", function() {
     { title: "Getting Started", faqs: [
       {q:"How do I join?", a:"You need an invite code from a current member. They can generate one from <b>More → Members → Invite</b>. Enter the code when creating your account. You'll go through a quick onboarding flow to set up your profile."},
       {q:"How do I log a round?", a:"Two ways: <b>Play Now</b> (bottom nav) for live hole-by-hole scoring during your round, or <b>Activity → Log a Round</b> to enter scores after you play. Both earn ParCoins, XP, and count toward your handicap."},
-      {q:"How does my handicap work?", a:"Your handicap calculates automatically after 3 rounds using the official WHS formula — best score differentials × 0.96. It updates every time you log a round. Tap your handicap on your profile to see the full breakdown."},
-      {q:"Can I change my username?", a:"Nope — it's permanent. But you can change your display name, nickname, bio, and photo anytime from <b>your profile → Edit profile</b>."}
+      {q:"How does my handicap work?", a:"Your handicap calculates automatically after 3 rounds using the official WHS formula: best score differentials × 0.96. It updates every time you log a round. Tap your handicap on your profile to see the full breakdown."},
+      {q:"Can I change my username?", a:"Nope, it's permanent. But you can change your display name, nickname, bio, and photo anytime from <b>your profile → Edit profile</b>."}
     ]},
     { title: "ParCoins & Shop", faqs: [
       {q:"What are ParCoins?", a:"The in-game currency. You earn them by playing rounds (25-75 per round), hitting the range (10-20), unlocking achievements (25-100), daily logins (1-3), and more. Spend them in the <b>Cosmetics Shop</b> on profile borders, banners, and card themes. They have zero real-world cash value."},
@@ -17,7 +17,7 @@ Router.register("faq", function() {
     ]},
     { title: "Wagers & Bounties", faqs: [
       {q:"How do wagers work?", a:"<b>More → Wagers → New Wager</b>. Pick an opponent, choose a type (Stroke Play, Best 9, Most Pars, Fewest Putts, Nassau, or Beat Their Score), set a coin amount. Your coins go into escrow. When both of you play the same course on the same day, the wager resolves automatically."},
-      {q:"What's a Nassau wager?", a:"Three bets in one — front 9, back 9, and total. The coin amount is per leg, so a 50-coin Nassau costs 150 total. Each leg resolves independently."},
+      {q:"What's a Nassau wager?", a:"Three bets in one: front 9, back 9, and total. The coin amount is per leg, so a 50-coin Nassau costs 150 total. Each leg resolves independently."},
       {q:"What's Beat Their Score?", a:"Bet that you can beat a friend's personal best at a specific course. You pick the opponent and course, and it shows their best score as the target. You just need to play that course and beat it."},
       {q:"How do bounties work?", a:"<b>More → Bounty Board → Post Bounty</b>. Set a target score at a course (or birdie a specific hole) and put up coins. Anyone who hits the target claims the pot. Bounties expire after 7-30 days."}
     ]},
@@ -31,7 +31,7 @@ Router.register("faq", function() {
       {q:"What are Trash Talk actions?", a:"Spend ParCoins to mess with your friends. <b>Spotlight of Shame</b> (75 coins) pins their worst round to the feed. <b>Victory Lap</b> (50) plays a celebration on their screen. <b>Demand a Rematch</b> (30) posts a public challenge. Find these buttons on any player's profile."},
       {q:"How do DMs work?", a:"Tap the chat icon in the top nav bar → pick a member to message. Unread conversations show a blue indicator. Messages are private between you two."},
       {q:"How do tee times work?", a:"Post a tee time from <b>Tee Times</b> (or the + Tee Time quick action on home). Set the course, date, time, and spots. Other members RSVP to accept, maybe, or decline."},
-      {q:"Where's the Clubhouse?", a:"The chat icon in the nav bar. It's the group feed — post updates, trash talk, share thoughts. Also has an embedded calendar for scheduling."}
+      {q:"Where's the Clubhouse?", a:"The chat icon in the nav bar. It's the group feed: post updates, trash talk, share thoughts. Also has an embedded calendar for scheduling."}
     ]},
     { title: "Courses & Range", faqs: [
       {q:"How do I find courses?", a:"<b>Courses tab</b> in the bottom nav. Search 30,000+ courses via the golf course API. Courses you've played show your best scores. Tap any course for hole-by-hole details and tee info."},

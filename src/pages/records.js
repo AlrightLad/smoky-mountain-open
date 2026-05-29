@@ -15,7 +15,7 @@ Router.register("records", function() {
   h += '<div class="card" onclick="Router.go(\'standings\')" style="cursor:pointer;' + (inSeason ? 'border-color:rgba(var(--gold-rgb),.2);background:linear-gradient(135deg,var(--grad-card),var(--card))' : '') + '">';
   h += '<div style="padding:16px;display:flex;justify-content:space-between;align-items:center">';
   h += '<div><div style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--gold)">' + year + ' Season Standings</div>';
-  h += '<div style="font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.3px">March — September · ' + (inSeason ? 'In season' : 'Offseason') + '</div></div>';
+  h += '<div style="font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.3px">March – September · ' + (inSeason ? 'In season' : 'Offseason') + '</div></div>';
   h += '<div class="m-arrow" style="color:var(--gold);font-size:20px">›</div></div></div>';
 
   // Navigation grid — 2 columns
@@ -113,9 +113,9 @@ Router.register("records", function() {
     recContent += '<div class="hof-row"><span class="hof-label">Best round</span><span class="hof-val">—</span></div>';
   }
   var rec = PB.getRecords();
-  recContent += '<div class="hof-row"><span class="hof-label">Longest drive</span><span class="hof-val">' + (rec.longestDrive ? rec.longestDrive.distance + ' yds — ' + rec.longestDrive.by : "—") + '</span></div>';
-  recContent += '<div class="hof-row"><span class="hof-label">Longest putt</span><span class="hof-val">' + (rec.longestPutt ? rec.longestPutt.distance + ' ft — ' + rec.longestPutt.by : "—") + '</span></div>';
-  recContent += '<div class="hof-row"><span class="hof-label">Longest hole out</span><span class="hof-val">' + (rec.longestHoleOut ? rec.longestHoleOut.distance + ' yds — ' + rec.longestHoleOut.by : "—") + '</span></div>';
+  recContent += '<div class="hof-row"><span class="hof-label">Longest drive</span><span class="hof-val">' + (rec.longestDrive ? rec.longestDrive.distance + ' yds, ' + rec.longestDrive.by : "—") + '</span></div>';
+  recContent += '<div class="hof-row"><span class="hof-label">Longest putt</span><span class="hof-val">' + (rec.longestPutt ? rec.longestPutt.distance + ' ft, ' + rec.longestPutt.by : "—") + '</span></div>';
+  recContent += '<div class="hof-row"><span class="hof-label">Longest hole out</span><span class="hof-val">' + (rec.longestHoleOut ? rec.longestHoleOut.distance + ' yds, ' + rec.longestHoleOut.by : "—") + '</span></div>';
   recContent += '<div class="hof-row"><span class="hof-label">Chip-ins</span><span class="hof-val">' + (rec.chipIns || 0) + '</span></div>';
   recContent += '<div class="hof-row" onclick="Router.go(\'aces\')" style="cursor:pointer"><span class="hof-label">Hole-in-ones</span><span class="hof-val" style="color:var(--gold)">' + (rec.holeInOnes && rec.holeInOnes.length ? rec.holeInOnes.length + ' → View Ace Wall' : 'View Ace Wall →') + '</span></div>';
   h += hofCard("alltime", "All-time records", recContent);

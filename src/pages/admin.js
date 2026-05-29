@@ -272,7 +272,7 @@ function loadAdminMemberList() {
       if (isSuspended && m.suspendedUntil) {
         var until = m.suspendedUntil.toDate ? m.suspendedUntil.toDate() : new Date(m.suspendedUntil);
         h += '<div style="font-size:10px;color:var(--red);margin-bottom:8px">Suspended until ' + (until.getMonth()+1) + '/' + until.getDate() + '/' + until.getFullYear();
-        if (m.suspendedReason) h += ' — ' + escHtml(m.suspendedReason);
+        if (m.suspendedReason) h += ': ' + escHtml(m.suspendedReason);
         h += '</div>';
       }
 
@@ -511,7 +511,7 @@ function loadAdminCourses() {
     var dupCount = courses.filter(function(c){ return nameCounts[(c.name||"").toLowerCase()]>1; }).length;
     if (dupCount > 0) {
       h += '<div style="padding:8px 12px;background:rgba(var(--red-rgb),.1);border:1px solid rgba(var(--red-rgb),.2);border-radius:6px;font-size:11px;color:var(--red);margin-bottom:10px">';
-      h += dupCount + ' duplicate name' + (dupCount>1?'s':'') + ' detected — keep the API-imported version, remove the rest.';
+      h += dupCount + ' duplicate name' + (dupCount>1?'s':'') + ' detected: keep the API-imported version, remove the rest.';
       h += '</div>';
     }
 

@@ -193,7 +193,7 @@ function compressPhoto(dataUrl, maxKB, maxDim, callback) {
   };
   img.onerror = function() {
     pbWarn("[Photo] Failed to load image for compression");
-    Router.toast("Could not process image — try a different photo");
+    Router.toast("Could not process image, try a different photo");
   };
   img.src = dataUrl;
 }

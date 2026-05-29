@@ -150,7 +150,7 @@ function renderCreateWager(presetOpponent) {
   h += '<input type="hidden" id="wager-type" value="stroke"></div>';
 
   // Course (optional)
-  h += '<div class="ff"><label class="ff-label">Course (optional — leave blank for any)</label>';
+  h += '<div class="ff"><label class="ff-label">Course (optional, leave blank for any)</label>';
   h += '<input type="text" class="ff-input" id="wager-course" placeholder="Any course" oninput="showWagerCourseSearch(this)"></div>';
   h += '<div id="search-wager-course"></div>';
 
@@ -304,7 +304,7 @@ function declineWager(wagerId) {
     if (w.status !== "pending" || w.toUid !== currentUser.uid) return;
     // Refund challenger's escrow
     var totalCost = w.type === "nassau" ? w.amount * 3 : w.amount;
-    awardCoins(w.fromUid, totalCost, "wager_refund", "Wager declined — coins refunded");
+    awardCoins(w.fromUid, totalCost, "wager_refund", "Wager declined, coins refunded");
     db.collection("wagers").doc(wagerId).update({ status: "declined", declinedAt: fsTimestamp() }).then(function() {
       sendNotification(w.fromUid, {
         type: "wager_declined",
@@ -384,9 +384,9 @@ function _resolveWager(w, myRound, oppRound, myUid, oppUid) {
     var targetUid = w.fromUid === myUid ? oppUid : myUid;
     var targetRounds = PB.getPlayerRounds(targetUid).filter(function(r) { return r.course === w.course && r.format !== "scramble" && r.score; });
     var targetBest = targetRounds.length ? Math.min.apply(null, targetRounds.map(function(r){return r.score})) : 999;
-    if (challengerRound.score < targetBest) { winner = w.fromUid; detail = "Shot " + challengerRound.score + " vs target " + targetBest + " — BEAT IT!"; }
-    else if (challengerRound.score === targetBest) { winner = "tie"; detail = "Shot " + challengerRound.score + " vs target " + targetBest + " — tied!"; }
-    else { winner = w.toUid; detail = "Shot " + challengerRound.score + " vs target " + targetBest + " — didn't beat it"; }
+    if (challengerRound.score < targetBest) { winner = w.fromUid; detail = "Shot " + challengerRound.score + " vs target " + targetBest + ". BEAT IT!"; }
+    else if (challengerRound.score === targetBest) { winner = "tie"; detail = "Shot " + challengerRound.score + " vs target " + targetBest + ". Tied!"; }
+    else { winner = w.toUid; detail = "Shot " + challengerRound.score + " vs target " + targetBest + ". Didn't beat it."; }
   } else if (w.type === "nassau") {
     var res = _resolveNassau(myRound, oppRound, myUid, oppUid, w.amount);
     winner = res.overallWinner;
@@ -405,8 +405,8 @@ function _resolveWager(w, myRound, oppRound, myUid, oppUid) {
   if (winner === "tie") {
     // Refund both
     var refund = totalPot / 2;
-    awardCoins(myUid, refund, "wager_tie", "Wager tied — coins refunded");
-    awardCoins(oppUid, refund, "wager_tie", "Wager tied — coins refunded");
+    awardCoins(myUid, refund, "wager_tie", "Wager tied, coins refunded");
+    awardCoins(oppUid, refund, "wager_tie", "Wager tied, coins refunded");
   } else {
     awardCoins(winner, totalPot, "wager_win", "Won wager: " + detail);
   }
@@ -419,7 +419,7 @@ function _resolveWager(w, myRound, oppRound, myUid, oppUid) {
   // Notify both players
   var winnerName = winner === myUid ? "You" : (PB.getPlayer(winner) || {}).name || "Opponent";
   [myUid, oppUid].forEach(function(pid) {
-    sendNotification(pid, { type: "wager_result", title: "Wager resolved!", message: detail + " — " + (winner === "tie" ? "It's a tie! Coins refunded." : winnerName + " wins " + totalPot + " ParCoins!"), page: "wagers" });
+    sendNotification(pid, { type: "wager_result", title: "Wager resolved!", message: detail + " " + (winner === "tie" ? "It's a tie! Coins refunded." : winnerName + " wins " + totalPot + " ParCoins!"), page: "wagers" });
   });
 }
 

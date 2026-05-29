@@ -487,7 +487,7 @@ function _formatDateEyebrow() {
 function _hqMastheadSubhead(ctx) {
   var season = ctx && ctx.season;
   var standings = (season && season.standings) || [];
-  if (!standings.length) return "A small league with big games — log a round to claim your spot.";
+  if (!standings.length) return "A small league with big games, log a round to claim your spot.";
   var leader = standings[0];
   var leaderName = leader && (leader.name || leader.playerName) ? (leader.name || leader.playerName) : "the leader";
   var weekCount = standings.length;
@@ -708,7 +708,7 @@ function showRivalryDetail(p1id, p2id) {
   h += '<div class="rv-x">vs</div>';
   h += '<div class="rv-player">' + renderAvatar(p2, 56, true) + '<div class="rv-name">' + renderUsername(p2, 'font-size:12px;color:var(--cream);', false) + '</div></div>';
   h += '</div>';
-  h += '<div class="rv-score" style="margin-top:12px">' + h2h.p1wins + ' — ' + h2h.p2wins + '</div>';
+  h += '<div class="rv-score" style="margin-top:12px">' + h2h.p1wins + ' – ' + h2h.p2wins + '</div>';
   h += '<div class="rv-label">' + (h2h.ties > 0 ? h2h.ties + ' ties' : 'Head-to-head record') + '</div>';
   h += '</div>';
 
@@ -726,7 +726,7 @@ function showRivalryDetail(p1id, p2id) {
       var winColor = m.winner === "tie" ? "var(--muted)" : "var(--gold)";
       h += '<div class="card"><div class="card-body"><div style="display:flex;justify-content:space-between;align-items:center">';
       h += '<div><div style="font-size:12px;font-weight:600">' + escHtml(m.course) + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">' + m.date + '</div></div>';
-      h += '<div style="text-align:right"><div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:' + winColor + '">' + m.p1score + ' — ' + m.p2score + '</div>';
+      h += '<div style="text-align:right"><div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:' + winColor + '">' + m.p1score + ' – ' + m.p2score + '</div>';
       h += '<div style="font-size:9px;color:var(--muted)">' + escHtml(winnerName) + '</div></div>';
       h += '</div></div></div>';
     });

@@ -205,7 +205,7 @@ function renameScrambleTeam(teamId) {
   // Check for duplicate team names
   var dupTeam = teams.find(function(t){ return t.id !== teamId && t.name.toLowerCase() === newName.toLowerCase(); });
   if (dupTeam) { Router.toast("A team named '" + newName + "' already exists"); return; }
-  if (!db) { Router.toast("No connection — try again when online"); return; }
+  if (!db) { Router.toast("No connection, try again when online"); return; }
   // Firestore-first: write to Firestore, then update local state on success
   db.collection("scrambleTeams").doc(teamId).set({ name: newName }, { merge: true }).then(function() {
     team.name = newName; // update local state only after Firestore confirms
@@ -213,7 +213,7 @@ function renameScrambleTeam(teamId) {
     Router.go("scramble", { id: teamId });
   }).catch(function(err) {
     pbWarn("[renameTeam] failed:", err.message);
-    Router.toast("Couldn't save — check permissions");
+    Router.toast("Couldn't save, check permissions");
   });
 }
 
@@ -514,7 +514,7 @@ function renderLogTeamRound(teamId) {
 
   var h = '<div class="sh"><h2>Log team round</h2><button class="back" onclick="Router.go(\'scramble\',{id:\'' + teamId + '\'})">← Back</button></div>';
   h += '<div class="form-section">';
-  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:14px">Track a round you played together — no opponent needed. Counts toward your team\'s best score and round history.</div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:14px">Track a round you played together, no opponent needed. Counts toward your team\'s best score and round history.</div>';
   h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="tr-course" placeholder="Start typing..." autocomplete="off" oninput="showRoundCourseSearch(this)"><div id="search-round-course" class="search-results"></div></div>';
   h += '<div class="ff"><label class="ff-label">Team score</label><input type="number" class="ff-input" id="tr-score" placeholder="e.g. 68" min="40" max="120"></div>';
   h += formField("Date", "tr-date", localDateStr(), "date");

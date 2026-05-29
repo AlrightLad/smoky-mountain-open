@@ -155,7 +155,7 @@ function filterCourseDirectory(val) {
     var exactMatch = PB.getCourseByName(val.trim());
     if (!exactMatch) {
       manualEl.style.display = "block";
-      manualEl.innerHTML = '<div style="padding:0 16px 8px"><div class="card" style="cursor:pointer" onclick="quickAddCourseFromDir(\'' + escHtml(val.trim()).replace(/'/g, "\\'") + '\')"><div class="card-body" style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;color:var(--cream)">' + escHtml(val.trim()) + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Not in directory — tap to add manually</div></div><div style="font-size:10px;color:var(--gold);font-weight:600">+ Add</div></div></div></div>';
+      manualEl.innerHTML = '<div style="padding:0 16px 8px"><div class="card" style="cursor:pointer" onclick="quickAddCourseFromDir(\'' + escHtml(val.trim()).replace(/'/g, "\\'") + '\')"><div class="card-body" style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;color:var(--cream)">' + escHtml(val.trim()) + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Not in directory, tap to add manually</div></div><div style="font-size:10px;color:var(--gold);font-weight:600">+ Add</div></div></div></div>';
     } else {
       manualEl.style.display = "none";
     }
@@ -808,7 +808,7 @@ function verifyCourseData(courseId) {
     c.communityData.verifications = verifications;
     c.communityData.status = newStatus;
     awardCoins(currentUser.uid, 10, "scorecard_verify", "Verified scorecard at " + c.name, "scv_" + courseId);
-    Router.toast("Data verified! +10 ParCoins" + (newStatus === "verified" ? " — Course is now Community Verified!" : ""));
+    Router.toast("Data verified! +10 ParCoins" + (newStatus === "verified" ? ". Course is now Community Verified!" : ""));
     Router.go("courses", { id: courseId });
   }).catch(function(e) { Router.toast("Failed: " + e.message); });
 }

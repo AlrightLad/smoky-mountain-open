@@ -26,7 +26,7 @@ Router.register("partygames", function() {
     h += '<div style="margin:14px 16px;padding:30px 24px;text-align:center;background:var(--bg2);border:1px dashed var(--border);border-radius:12px">';
     h += '<div style="font-size:32px;margin-bottom:8px;opacity:0.7">🎲</div>';
     h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--cream);margin-bottom:6px">Party games unlock mid-round.</div>';
-    h += '<div style="font-size:12px;color:var(--muted);line-height:1.5;max-width:300px;margin:0 auto 14px">Start a round in Play Now and the games light up — bet a hole, run a Wolf line, call a Nassau, claim closest-to-the-pin.</div>';
+    h += '<div style="font-size:12px;color:var(--muted);line-height:1.5;max-width:300px;margin:0 auto 14px">Start a round in Play Now and the games light up: bet a hole, run a Wolf line, call a Nassau, claim closest-to-the-pin.</div>';
     h += '<button class="btn-sm green" style="font-size:11px;padding:9px 22px" onclick="Router.go(\'playnow\')">Play Now</button>';
     if (typeof PARTY_GAMES !== "undefined" && PARTY_GAMES && PARTY_GAMES.length) {
       h += '<div style="margin-top:18px;font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase">PREVIEW</div>';

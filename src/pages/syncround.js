@@ -12,7 +12,7 @@ Router.register("syncround", function(params) {
 
 function renderSyncRoundSetup() {
   var h = '<div class="sh"><h2>Parbaugh Round</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
-  h += '<div style="text-align:center;padding:20px 16px"><div style="font-size:11px;color:var(--muted);line-height:1.6">Play together on one shared scorecard. Everyone sees scores update in real-time. Counts as one round for each player — no double XP.</div></div>';
+  h += '<div style="text-align:center;padding:20px 16px"><div style="font-size:11px;color:var(--muted);line-height:1.6">Play together on one shared scorecard. Everyone sees scores update in real-time. Counts as one round for each player, no double XP.</div></div>';
   
   // Start new Parbaugh Round
   h += '<div class="form-section"><div class="form-title">Start a Parbaugh Round</div>';
@@ -284,7 +284,7 @@ function finishSyncRound(roundId) {
       Router.toast("Need at least 9 holes scored per player");
       return Promise.reject("not enough holes");
     }
-    if (skipped.length) Router.toast(skipped.join(", ") + " skipped — need 9+ holes");
+    if (skipped.length) Router.toast(skipped.join(", ") + " skipped, need 9+ holes");
     
     // Persist updated stats for all saved players
     setTimeout(function() {

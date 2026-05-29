@@ -18,19 +18,19 @@ function renderOnboardingStep() {
     {
       icon: '<svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="var(--gold)" stroke-width="1.5"><circle cx="32" cy="32" r="28"/><path d="M20 32l8 8 16-16"/></svg>',
       title: "Welcome to " + (window._activeLeagueName || "Parbaughs"),
-      sub: "This isn't another golf app. It's a private league for your crew — where every round matters, every rivalry is tracked, and every moment becomes a story.",
+      sub: "This isn't another golf app. It's a private league for your crew, where every round matters, every rivalry is tracked, and every moment becomes a story.",
       detail: "Members only. Invite only. Your home course."
     },
     {
       icon: '<svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="var(--gold)" stroke-width="1.5"><circle cx="32" cy="12" r="6"/><path d="M20 54l12-18 12 18"/><path d="M32 24v12"/></svg>',
       title: "Log Every Round",
-      sub: "Tap Play Now for live hole-by-hole scoring on the course, or log rounds after you play. FIR, GIR, putts — full stat tracking. Your handicap calculates automatically after 3 rounds.",
+      sub: "Tap Play Now for live hole-by-hole scoring on the course, or log rounds after you play. FIR, GIR, putts: full stat tracking. Your handicap calculates automatically after 3 rounds.",
       detail: "Find it: Play button on the home screen"
     },
     {
       icon: '<svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M8 52h48"/><rect x="12" y="28" width="8" height="24" rx="1"/><rect x="28" y="16" width="8" height="36" rx="1"/><rect x="44" y="36" width="8" height="16" rx="1"/></svg>',
       title: "Seasons & Events",
-      sub: "Three seasons per year — Spring, Summer, Fall. Compete in events with your crew, earn season points, and chase end-of-season awards. The Commissioner crowns champions.",
+      sub: "Three seasons per year: Spring, Summer, Fall. Compete in events with your crew, earn season points, and chase end-of-season awards. The Commissioner crowns champions.",
       detail: "Find it: Events tab + Standings page"
     },
     {
@@ -42,7 +42,7 @@ function renderOnboardingStep() {
     {
       icon: '<svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M32 10l6 12 14 2-10 10 2 14-12-6-12 6 2-14L12 24l14-2z"/></svg>',
       title: "Your Legacy Starts Now",
-      sub: "50+ achievements to unlock. XP levels from Rookie to G.O.A.T. Head-to-head rivalries. Shareable scorecards. 8 premium themes. This is your golf story — let's set up your profile.",
+      sub: "50+ achievements to unlock. XP levels from Rookie to G.O.A.T. Head-to-head rivalries. Shareable scorecards. 8 premium themes. This is your golf story. Let's set up your profile.",
       detail: ""
     }
   ];

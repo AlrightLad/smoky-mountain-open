@@ -164,7 +164,7 @@ function buildHandicapGraph(rounds, pid) {
   // Trend status
   var currentHcap = graphData[graphData.length - 1];
   if (currentHcap.inactive) {
-    result += '<div style="padding:8px 12px;background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);border-radius:var(--radius);font-size:11px;color:var(--red);margin-top:2px">Inactive — log 3 rounds to reactivate handicap</div>';
+    result += '<div style="padding:8px 12px;background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);border-radius:var(--radius);font-size:11px;color:var(--red);margin-top:2px">Inactive, log 3 rounds to reactivate handicap</div>';
   } else if (validPts.length >= 2) {
     var first = validPts[0].hcap, last = validPts[validPts.length - 1].hcap;
     var diff = last - first;

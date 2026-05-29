@@ -58,7 +58,7 @@ function isInviteExpired(invite) {
 }
 
 function generateInvite() {
-  if (!db || !currentUser || !currentProfile) { Router.toast("Not ready — try refreshing"); return; }
+  if (!db || !currentUser || !currentProfile) { Router.toast("Not ready, try refreshing"); return; }
   var isComm = isFounderRole(currentProfile);
   if (!isComm && (currentProfile.invitesUsed||0) >= (currentProfile.maxInvites||3)) { Router.toast("No invites remaining"); return; }
   var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; var code = "PB-";
@@ -97,7 +97,7 @@ function showGeneratedInviteSettings() {
     + '<div class="code">' + code + '</div>'
     + '<div style="margin:10px 0 6px"><input type="text" readonly value="' + inviteLink + '" id="inviteLinkField" style="width:100%;font-size:10px;padding:8px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--cream);text-align:center;font-family:monospace" onclick="this.select()"></div>'
     + '<button class="btn full outline" onclick="copyInviteLink()" style="font-size:11px;padding:10px;margin-top:4px" id="copyInviteBtn">Copy invite link</button>'
-    + '<div class="hint" style="margin-top:8px">Send this link — code auto-fills · Expires in ' + INVITE_EXPIRY_DAYS + ' days</div>'
+    + '<div class="hint" style="margin-top:8px">Send this link, code auto-fills · Expires in ' + INVITE_EXPIRY_DAYS + ' days</div>'
     + '</div>';
 }
 

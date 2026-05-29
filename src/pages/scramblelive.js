@@ -56,7 +56,7 @@ function renderScrambleLiveSetup() {
   h += '<input type="hidden" id="sl-rating" value=""><input type="hidden" id="sl-slope" value="">';
   
   if (!teams.length) {
-    h += '<div style="text-align:center;padding:12px;font-size:11px;color:var(--muted)">No scramble teams yet — <span style="color:var(--gold);cursor:pointer" onclick="Router.go(\'scramble\',{create:true})">create one first</span></div>';
+    h += '<div style="text-align:center;padding:12px;font-size:11px;color:var(--muted)">No scramble teams yet, <span style="color:var(--gold);cursor:pointer" onclick="Router.go(\'scramble\',{create:true})">create one first</span></div>';
   } else {
     h += '<button class="btn full green" onclick="startScrambleLive()" style="margin-top:8px">Start Scramble Round</button>';
   }

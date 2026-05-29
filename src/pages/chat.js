@@ -251,7 +251,7 @@ function toggleLike(docId) {
   }).catch(function(err) {
     if (typeof pbWarn === "function") pbWarn("[chat] toggleLike failed:", err && err.message);
     _revertLikes();
-    Router.toast("Couldn't add kudos — please try again");
+    Router.toast("Couldn't add kudos, please try again");
   });
 }
 
@@ -359,7 +359,7 @@ function submitComment(docId) {
   }).catch(function(err) {
     if (typeof pbWarn === "function") pbWarn("[chat] submitComment failed:", err && err.message);
     _revertComments();
-    Router.toast("Couldn't post comment — please try again");
+    Router.toast("Couldn't post comment, please try again");
   });
 }
 
@@ -420,7 +420,7 @@ function toggleCommentLike(docId, commentIdx) {
   }).catch(function(err) {
     if (typeof pbWarn === "function") pbWarn("[chat] toggleCommentLike failed:", err && err.message);
     _revertCommentLikes();
-    Router.toast("Couldn't add kudos — please try again");
+    Router.toast("Couldn't add kudos, please try again");
   });
 }
 
@@ -508,7 +508,7 @@ function deleteComment(docId, commentIndex) {
   }).catch(function(err) {
     if (typeof pbWarn === "function") pbWarn("[chat] deleteComment failed:", err && err.message);
     _revertComments();
-    Router.toast("Couldn't delete comment — please try again");
+    Router.toast("Couldn't delete comment, please try again");
   });
 }
 

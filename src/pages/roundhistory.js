@@ -28,7 +28,7 @@ Router.register("roundhistory", function(params) {
   var courseCounts = {};
   allRounds.forEach(function(r) { if (r.course) courseCounts[r.course] = (courseCounts[r.course]||0) + 1; });
   var mostPlayed = Object.keys(courseCounts).sort(function(a,b){return courseCounts[b]-courseCounts[a]})[0] || "—";
-  var dateRange = allRounds.length ? allRounds[allRounds.length-1].date + " — Present" : "";
+  var dateRange = allRounds.length ? allRounds[allRounds.length-1].date + " – Present" : "";
 
   // Unique courses and seasons for filters
   var courses = Object.keys(courseCounts).sort();

@@ -401,7 +401,7 @@ function doRegister() {
             welcomeName + " walked in like they own the place. Prove it on the course.",
             welcomeName + " reporting for duty. The Commissioner has been alerted and the roasts are loading.",
             welcomeName + " just joined and already thinks they can beat you. They probably can't. Probably.",
-            welcomeName + " is in. Someone get them a sleeve of balls — they'll need it.",
+            welcomeName + " is in. Someone get them a sleeve of balls, they'll need it.",
             welcomeName + " just entered the Parbaughs universe. Their handicap says one thing, their confidence says another.",
             welcomeName + " has joined. May their drives be long and their putts be short. We're not optimistic.",
             welcomeName + " is officially a member. The dress code is vibes only and the only rule is don't be slower than Nick."
@@ -425,7 +425,7 @@ function doRegister() {
     else if (e.code === "auth/weak-password") msg = "Password too weak";
     else if (e.code === "auth/invalid-email") msg = "Invalid email format";
     else if (e.code === "auth/operation-not-allowed") msg = "Email/password accounts not enabled";
-    else if (e.code === "auth/network-request-failed") msg = "Network error — check your connection";
+    else if (e.code === "auth/network-request-failed") msg = "Network error, check your connection";
     else if (e.message) msg = "Registration failed: " + e.message;
     console.error("[Auth] Registration error:", e);
     showError("regError", msg);
@@ -442,7 +442,7 @@ function doForgot() {
   var btn = document.querySelector("#forgotForm .auth-btn"); lockButton(btn);
   auth.sendPasswordResetEmail(email).then(function() {
     var el = document.getElementById("forgotError");
-    el.textContent = "Reset link sent to " + email + " — check your inbox and spam folder.";
+    el.textContent = "Reset link sent to " + email + ", check your inbox and spam folder.";
     el.style.color = "var(--birdie)";
     el.classList.add("show");
     if (btn) { btn.textContent = "Sent!"; btn.style.opacity = "0.5"; }

@@ -461,7 +461,7 @@ function regenerateInviteCode(lid) {
 
 function confirmDeleteLeague(lid, leagueName) {
   var typed = prompt("Type the league name to confirm deletion: \"" + leagueName + "\"");
-  if (typed !== leagueName) { Router.toast("Names don't match — deletion cancelled"); return; }
+  if (typed !== leagueName) { Router.toast("Names don't match, deletion cancelled"); return; }
   if (!db || !currentUser) return;
   // Remove league from all members
   db.collection("leagues").doc(lid).get().then(function(doc) {
