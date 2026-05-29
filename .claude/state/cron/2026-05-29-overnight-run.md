@@ -2154,3 +2154,112 @@ Heartbeat-only self-check — **Is tonight's substantive output real?** YES. Thi
 NOT staged (left for Founder/concurrent-process per cycle-K precedent): `.claude/state/emu-unified-2026-05-29.log` (modified, concurrent emulator log), `.pw-full-sweep.log` (untracked, playwright-full-sweep log), `.claude/state/critique-resume-2026-05-29/` (untracked, concurrent), and the concurrently-churning telemetry/post-commit-hook logs. `docs/reports/app-health.html` is NOT staged because it is byte-identical to HEAD (concurrent cron already committed the 87.1).
 
 No code changes in cycle AN. No proposals. No FIQ writes. No bug-report state moves (inbox absent). The A11_testing 88→92 gain is the concurrent test ships' (`60d6e2cc` BL-001 regression spec + `4811880a` mobile-viewport repair), already committed and reproduced byte-identically by this heartbeat's idempotent regen — surfaced, NOT caused by this triage cycle. A12 holds yellow on the same two unchanged concurrent artifacts — the cycle-AL-predicted oscillation persisting.
+
+---
+
+# Overnight triage — 2026-05-29 (cycle AO)
+
+**Started:** 2026-05-29T22:01:13Z (cron-fired; regen-all START)
+**Finished:** 2026-05-29T22:01:18Z (regen-all "ALL DASHBOARDS REGENERATED" timestamp; WRAPPER_EXIT=0)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both absent)
+**Cycle:** AO (75th consecutive empty-inbox cycle; ~1h wall-clock gap from cycle AN's 21:01:20Z open — twenty-ninth consecutive ~1h-cadence cycle since cycle M; twenty-third cycle of the 2026-05-29 UTC date).
+
+## Inbox state at run-start (cycle AO)
+
+- `.claude/state/founder-input-queue/` — **MISSING** (`test -d` → No such file or directory). 75th consecutive absent cycle. Baseline-empty per `FIQ_QUALITY_RUBRIC.md` §6 (auto-created on first write); NOT a HALT-23.1 operational-view failure.
+- `.claude/state/bug-reports/` — **entire tree MISSING** (inbox/ + triaged/ both absent). No reports to diagnose.
+- `.claude/state/proposals/pending/` — empty (`.gitkeep` only).
+- Working tree at run-start: **DIRTY with concurrent-process artifacts** — `M .claude/state/emu-unified-2026-05-29.log`, `?? .claude/state/critique-resume-2026-05-29/`, `?? .pw-full-sweep.log`, `?? tc-1-top.png`, `?? tourn-create-full.png`. None are this cycle's files. HEAD at run-start = `dc11a60d`.
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle AO)
+
+- FIQ entries triaged: **0** (queue directory absent).
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0.
+- IDs: none. The only `FIQ-` ids on disk are the FIQ-001 template examples inside `docs/FOUNDER_INPUT_QUEUE.md` (schema illustration), NOT live queue entries.
+
+## Step 2 — Bug-report triage (cycle AO)
+
+- Bug reports processed: **0** (inbox tree absent).
+- Dispositions: none. No P3e discussion bubbles opened (nothing to deliberate).
+
+## Step 3 — Heartbeat (cycle AO)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end 22:01:13Z → 22:01:18Z (WRAPPER_EXIT=0): **`=== ALL CHECKS PASSED ===`**, **`round-trip test PASS`**. Heartbeat `regen-all-last-pass.json` written. **30th consecutive clean canonical regen (cycles L–AO).**
+- All ~30 guards green: round-trip 4-view swap + theme convergence 7/7 (no raw hex) + no-charts + protected-layouts 5/5 + 23/23 + 17 swatches + W1.S1 + proposal-readiness 0 deferred + install-scripts 7 parse + install-cmd-surface + scroll-reachability 5/0/0 + escalations applied=3 + quota-status auto-derived (weekly_pct=None) + pause-discipline clean + wiring 5/5. Telemetry snapshot: events=16379 handoffs=1 bubbles=7 proposals_pending=0, meter_status=`wired-real` → HALT-25 not in effect. Token aggregate all-time: real=12,397,898,566 estimated=13,962,080 manual=0.
+- One INFORMATIONAL `~` (not a failure): `user-context-gate` flags `main-flows.html` modified 21353.7 min after the last user-context capture (2026-05-14T23-07-48Z) — benign on a heartbeat-only night.
+
+### 3a.1 — app-health HELD at 87.1 (A-) — a genuinely QUIET cycle, proven null (no guessing)
+
+**app-health 87.1 (cycle AN, A-) → 87.1 (cycle AO, A-) = no movement.** Unlike cycle AM (negative A12 re-oscillation) and cycle AN (positive A11 +0.5), cycle AO moved nothing. Proven, not assumed:
+
+1. **`git diff docs/reports/app-health.html` contains ONLY two hunks** — (a) `generated_at` 2026-05-29T21:51:42.303272Z → 2026-05-29T22:01:17.380397Z (deterministic clock) and (b) the `audit_trigger` commit-pointer block re-pointing `d9d24b97` (app-commit `feat(tournament): polish leaderboard motion + fix brass-on-chalk contrast`, 2 `app_files_touched`) → `dc11a60d` (cron `post-commit dashboard regen`, `is_app_commit:false`, `total_files_touched:4`). `overall_score` 87.1, `overall_grade` A-, and **all 12 dimension values are UNCHANGED** — a dimension change would appear as its own diff hunk, and none does. The "held at 87.1" claim is proven by the *absence* of dimension hunks, not asserted.
+2. `aggregate-app-health` logged `overall=A- (87.1) · 1 attention items` — the single attention_item is still **A12_operational**; `founder_attention` empty.
+
+### 3a.2 — Concurrent tournament-builder session active (A12 concurrent-process window; attributed by evidence)
+
+- **`M src/styles/components.css`** (a TRACKED SOURCE file — NOT a regen output, NOT this cycle's file) and untracked **`tc-2-shape.png`** APPEARED DURING the regen run (neither was present in run-start `git status`). The full post-regen status also shows `?? tc-1-top.png`, `?? tourn-create-full.png` (run-start) plus `M docs/reports/app-health.html` (my regen output).
+- Attributed by `git log`, not guessed: an in-flight tournament-builder create-UI session is iterating — today landed `dc11a60d` (cron regen), `d9d24b97` (leaderboard motion polish), `8d1815f5` (tournament view + leaderboard, Increment 3), `550abd8c` (Increment 2), `20885626` (Increment 1). The `tc-*` / `tourn-create-full` screenshots are that session's visual-verification artifacts; `components.css` is its in-progress edit.
+- **DISCIPLINE:** did NOT touch or stage `components.css`, the three screenshots, the modified `emu-unified-2026-05-29.log`, or the untracked `critique-resume-2026-05-29/` dir (concurrent-session / Founder-cleared territory per cycle-K precedent). Staged ONLY this cycle's own files via explicit pathspec (cycle-AB index-race lesson).
+
+**A12 oscillation status:** still yellow (1 attention item) — the downloads-watcher keeps skip-dirtying while the concurrent session's artifacts (`components.css` + `tc-*` screenshots + the lingering `emu-unified` log) hold the tree dirty. Re-settles green once they clear; Founder/concurrent-process territory. **No fix or proposal warranted** — quiet held cycle, no triage-findable defect; manufacturing one = ship-count gaming per Rule 2.
+
+### 3a.3 — founder-checklist open 3→6 (awareness, NOT heartbeat-caused)
+
+`regen-founder-checklist` logged `open=6 (red=0 yellow=4 green=2) closed_total=25` vs earlier cycles' `open=3`. This is **concurrent-ship drift**, not a heartbeat effect — the increase reflects in-flight work (tournament-builder increments + the standing `deleteMyAccount` AMD-018 deploy gate) seeding new checklist items. Deterministic from the checklist source; red=0 so nothing ship-blocking. Awareness only.
+
+### 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — updated for cycle AO (status `active`; token threshold remains crossed ~870k cumulative, 39th cross-cycle; no rest — heartbeat-only nights are light). `_note` + `substantive_output_at_checkpoint` rewritten with the 30th-consecutive-clean-regen observation, the proven-null 87.1-held trace (diff has no dimension hunks), and the concurrent tournament-session attribution via `git log`.
+- `.claude/state/wellness/critic.json` — updated for cycle AO (status `active`; threshold crossed ~195k; no rest). Critic forced the verbatim app-health.html diff read to prove "held" rather than assert it, grounded the concurrent `components.css` + screenshots in `git log`, and guarded against manufacturing busywork on a quiet night.
+
+## Step 4 — Session journal
+
+**This section.**
+
+## Cycle AO counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 |
+| Bug reports processed | 0 |
+| New proposals authored | 0 |
+| Wellness state changes | 2 (engineer.json + critic.json cycle AO refresh) |
+
+## Blockers requiring Founder attention (cycle AO)
+
+**No ship-blocking issues. No HALT criteria tripped** (meter_status `wired-real` → HALT 25 not in effect; FIQ dir absence is baseline-empty, not HALT-23.1 operational-view failure). Awareness / Founder-action items:
+
+1. **STANDING (P10 actionable, unchanged) — A12_operational holds at yellow.** **WHAT:** the downloads-watcher is skip-dirtying on lingering concurrent artifacts. **WHERE:** this cycle the in-flight tournament-builder session's `src/styles/components.css` (modified), `tc-1-top.png` / `tc-2-shape.png` / `tourn-create-full.png` (untracked), plus the pre-existing `.claude/state/emu-unified-2026-05-29.log` (modified) + `.pw-full-sweep.log` (untracked, repo root). **WHAT-ACTION:** once the concurrent tournament session commits/cleans its working files (and the two pre-existing artifacts clear), the watcher resumes clean → A12 re-settles green. Not an agent fix (skip-dirty is a safety feature; clearing concurrent dirty trees is Founder/concurrent-process territory per cycle-K precedent).
+2. **Carry-over (Founder-action, AMD-018 gate #1) — deploy `deleteMyAccount` Cloud Function.** Code committed; `firebase deploy --only functions` is an AMD-018 pre-auth gate (walkthrough at `task-queue/founder/deploy-deleteMyAccount-function.md`). Unchanged (overnight triage cannot cross this gate).
+3. **Awareness — `proposals_inbox` stale artifact.** `.claude/state/proposals/inbox/decisions-2026-05-22T16-32-33.json` was already processed (applied 2026-05-22T16:35:54Z) and has lingered since 05-22. Out of step-1/2 scope; candidate for `inbox/` → `inbox-archive/` housekeeping at Founder's discretion; not auto-moved.
+4. **Awareness — founder-checklist open 3→6** (red=0 yellow=4 green=2, closed=25). Concurrent-ship drift from tournament increments + the standing deploy gate; deterministic from the checklist source, nothing red/ship-blocking. Awareness only.
+5. **Carry-over — writer-side BOM fix (`common.ps1:117`) remains unauthored as a proposal.** Consumer-side `utf-8-sig` tolerance has held across all 30 canonical clean runs since cycle L. Not auto-promoted without a Founder priority signal — refusing to inflate proposal counts.
+6. **Carry-over — `scripts/aggregate-self-tests.py` post-commit warning** (flagged cycle L) — separate from regen-all's pipeline; out-of-scope for step 3a. Still flagged for a future cycle.
+7. **Cron cadence** — cycles M–AO all ~1h apart (twenty-ninth consecutive ~1h gap). No Founder action required; awareness only.
+
+No scope-creep candidates.
+
+## Cycle AO Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox tree absent, verified by directory-absence; not waved off).
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals. On a QUIET HELD night (87.1 held, no dimension moved) the easy spin is to manufacture a "refactor for code health" proposal to look productive. The Critic refused: there is no triage-findable defect, and A12 yellow is a concurrent-artifact skip-dirty oscillation (not a defect). NOT authoring a proposal is correct. Honest scoping, not inflation.
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero live FIQ entries.
+
+Heartbeat-only self-check — **Is tonight's substantive output real?** YES, modestly. The discipline this cycle was proving a NULL result with evidence rather than rubber-stamping: app-health HELD at 87.1 was PROVEN by reading `git diff docs/reports/app-health.html` verbatim and confirming it contains only the clock + commit-pointer hunks with NO dimension hunks (all 12 dims unchanged). The concurrent `M src/styles/components.css` + new screenshots that appeared mid-regen were attributed to an active tournament-builder session via `git log` (Increments 1–3 + leaderboard polish), NOT guessed. The cycle refused to manufacture a proposal on a no-defect night and staged only its own files via explicit pathspec, leaving the concurrent session's working files untouched. Every claim anchors to a quoted tool result earlier in this session.
+
+**Critic attests cleanly: substantive heartbeat cycle, ship closes.**
+
+## Files changed in this cycle AO run
+
+- `.claude/state/wellness/engineer.json` — cycle AO update
+- `.claude/state/wellness/critic.json` — cycle AO update
+- `.claude/state/cron/2026-05-29-overnight-run.md` — this journal (cycle AO section appended)
+- `docs/reports/app-health.html` — regen output (clock + commit-pointer metadata only: `generated_at` + `audit_trigger` re-pointed `d9d24b97`→`dc11a60d`; score 87.1 / grade A- / all 12 dims unchanged)
+
+NOT staged (concurrent-session / Founder-cleared territory per cycle-K precedent, via explicit pathspec per cycle-AB): `src/styles/components.css` (modified — in-flight tournament-builder edit), `tc-1-top.png` / `tc-2-shape.png` / `tourn-create-full.png` (untracked — concurrent verification screenshots), `.claude/state/emu-unified-2026-05-29.log` (modified — concurrent emulator log), `.pw-full-sweep.log` (untracked — playwright sweep log), `.claude/state/critique-resume-2026-05-29/` (untracked — concurrent).
+
+No code changes in cycle AO. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health HELD at 87.1 (A-) — proven null by the dimension-hunk-free diff; the concurrent `components.css` + screenshots belong to an active tournament-builder session (attributed via `git log`), surfaced and left untouched, NOT caused by this triage cycle.
