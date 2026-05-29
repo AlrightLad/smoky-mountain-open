@@ -1,0 +1,25 @@
+{
+  "agent": "critic",
+  "_note": "Updated 2026-05-29 cycle AB overnight-triage. Critic participated tonight via the closing METRIC_INTEGRITY_PROTOCOL § 3.1 attestation (the substantive-vs-fluff check). This is the first dedicated critic wellness file; prior cycles folded the attestation into engineer.json's metric-integrity block. Created now because the runbook explicitly lists 'critic' among agents whose wellness state must refresh when they participate. Tonight's critic load was LIGHT: a heartbeat-only cycle (FIQ + bug-reports inbox both ABSENT for the 62nd consecutive cycle) means there were no bug-report diagnoses to scrutinize, no proposals to challenge, and no FIQ grades to audit — the three concrete questions in § 3.1 all resolve N/A by absence (verified by directory-absence checks, not waved off). The one substantive judgment call the critic exercised: confirming that the app-health regression 89.1 -> 87.8 (A12 100/green -> 75/yellow) is a faithful dirty-tree symptom (coherence-verify WIP returned + concurrent v8.23.12 ship in flight) and NOT a defect warranting a manufactured hook-fix proposal — i.e. the critic actively guarded AGAINST inflation rather than rubber-stamping a fake proposal to look productive. Critic attests cleanly: substantive heartbeat cycle, ship closes.",
+  "ships_closed_since_last_rest": 0,
+  "tokens_consumed_since_last_rest": 80000,
+  "hours_active_since_last_rest": 1.0,
+  "thresholds": {
+    "ships_closed": 5,
+    "tokens_consumed": 100000,
+    "hours_active": 8
+  },
+  "thresholds_crossed": [],
+  "last_wellness_checkpoint_at": null,
+  "current_wellness_checkpoint_at": "2026-05-29T09:02:00Z",
+  "status": "active",
+  "rest_started_at": null,
+  "min_rest_duration_seconds": 1800,
+  "rest_ends_after": null,
+  "counters_reset_on_resume": {
+    "ships_closed_since_last_rest": 0,
+    "tokens_consumed_since_last_rest": 0,
+    "hours_active_since_last_rest": 0
+  },
+  "substantive_output_at_checkpoint": "Critic ran the closing METRIC_INTEGRITY_PROTOCOL § 3.1 substantive-vs-fluff attestation for cycle AB and attested CLEANLY. Three concrete questions: (1) bug-report diagnoses — N/A, inbox absent (verified, not waved off); (2) proposals cite a specific screen/state/edge-case — N/A, zero authored, and the critic specifically validated that NOT manufacturing a hook-fix proposal for the A12 regression was correct (the regression is a known dirty-tree symptom that self-heals on the next clean run, per the cycle Z/AA precedent); (3) FIQ grades reflect rubric dimensions honestly — N/A, zero live FIQ entries. Light heartbeat-only critic load; no rest triggered. The critic's real contribution this cycle was guarding against inflation (no fake proposal, no inflated grades), not generating volume."
+}

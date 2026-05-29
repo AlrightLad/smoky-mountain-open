@@ -52,7 +52,20 @@ const SURFACES = [
     { key: "trophyroom", route: "/trophyroom", wait: "[data-page='trophyroom']" },
     { key: "range",      route: "/range",      wait: "[data-page='range-detail'], [data-page='range']" },
     { key: "onboarding", route: "/onboarding", wait: "[data-page='onboarding']" },
+    // High-traffic nav + core-flow pages added 2026-05-29 for the HQ width-
+    // blowout class sweep (single-column lists/forms that strand content across
+    // the 1152px content area). Captured to triage which need the 680px cap.
+    { key: "rounds",       route: "/rounds",       wait: "[data-page='rounds']" },
+    { key: "roundhistory", route: "/roundhistory", wait: "[data-page='roundhistory']" },
+    { key: "shop",         route: "/shop",         wait: "[data-page='shop']" },
+    { key: "courses",      route: "/courses",      wait: "[data-page='courses']" },
+    { key: "settings",     route: "/settings",     wait: "[data-page='settings']" },
+    { key: "playnow",      route: "/playnow",      wait: "[data-page='playnow']" },
 ];
+
+// Optional surface filter: CV_ONLY="feed,settings" captures just those keys.
+const ONLY = (process.env.CV_ONLY || "").split(",").map((s) => s.trim()).filter(Boolean);
+const SURFACES_TO_CAPTURE = ONLY.length ? SURFACES.filter((s) => ONLY.includes(s.key)) : SURFACES;
 
 const USERS = (await import(pathToFileURL(resolve(REPO, "tests/e2e/setup/fixtures/users.js")).href)).users;
 const testZach = USERS.find(u => u.key === "testZach");
@@ -95,7 +108,7 @@ async function captureProfile(profile, token) {
         document.querySelectorAll(".toast").forEach(el => el.remove());
     });
 
-    for (const s of SURFACES) {
+    for (const s of SURFACES_TO_CAPTURE) {
         try {
             await page.evaluate((r) => {
                 var name = r === "/" ? "home" : r.replace(/^\//, "");

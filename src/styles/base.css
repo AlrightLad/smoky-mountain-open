@@ -580,6 +580,24 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
    Share) dispersed edge-to-edge. The same 680px reading column pulls the score
    back beside the post and clusters the actions, matching peer social feeds
    (X ≈600px, Strava ≈660px) and the mobile single-column layout.
+
+   v8.23.12 class sweep extends the family to the remaining single-column
+   list/form surfaces, triaged from HQ captures (coherence-verify/hq/*.png):
+     · rounds, roundhistory — round-card lists where score (right) stranded
+       ~1000px from the course name (left); detail/hero views also read better
+       centred at this width than spanning 1152px.
+     · settings — account card, location form, and the right-aligned toggles
+       (Make profile public, Sunlight mode) dispersed across the full area.
+     · courses — search box + course list + empty state stretched edge-to-edge.
+     · playnow, range — the Start-a-round and Range-Setup forms (and their
+       active scoring/session views) were composed mobile-first; full-width
+       fields and CTAs read as an oversized form. (Caps the setup route only:
+       range = rangelive.js [data-page="range"], NOT range-detail; playnow
+       covers both setup and the live scorecard, which is strictly narrower
+       and better at 680px than 1152px.)
+   Left full-width on purpose: standings/trophyroom/members/calendar/shop (rich
+   tables + grids that fill the area), home (multi-column), onboarding (its
+   wizard is already centred in its own ~340px column).
    ═══════════════════════════════════════════════════════════════════════════ */
 @media (min-width: 960px) {
   [data-page="scramble"],
@@ -587,7 +605,13 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
   [data-page="bounties"],
   [data-page="wagers"],
   [data-page="challenges"],
-  [data-page="feed"] {
+  [data-page="feed"],
+  [data-page="rounds"],
+  [data-page="roundhistory"],
+  [data-page="settings"],
+  [data-page="courses"],
+  [data-page="playnow"],
+  [data-page="range"] {
     max-width: 680px;
     margin-left: auto;
     margin-right: auto;

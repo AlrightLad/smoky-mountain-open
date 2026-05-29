@@ -819,3 +819,59 @@ No code changes in cycle AA. No proposals. No FIQ writes. No bug-report state mo
 ## Cycle AA post-commit addendum — stray untracked visual-audit diagnostic
 
 After the cycle-AA triage commit (`660d3470`) and its post-commit routine regen auto-commit (`77ce5e6c`), one **untracked** file remains in the tree: `scripts/visual-audit/diag-layout-boxmodel.mjs` (87 lines, mtime 2026-05-29T08:04:05Z, executable). Read verbatim, its header declares it a "Layout diagnostic for the compare/contrast/critique loop" that "signs in as testZach against the local emulator (same path as capture-coherence-verify)" and dumps the ground-truth box model for HQ routes — i.e. it is **part of the in-flight coherence-verify visual-audit design pass**, the same work-family as the `capture-coherence-verify.mjs` that headlined cycle-Z Blockers #1. It is **NOT this triage cycle's output** (run-start tree was clean; the file appeared mid-cycle from the concurrent visual-audit work). Consistent with cycle Z's discipline, this triage cycle did **not** stage or commit it — bundling a design-pass diagnostic into an "Overnight triage" commit would misrepresent the cycle's work, and committing a file this cycle did not author would be undisciplined. **Left untracked for Founder** to commit (alongside the design pass) or discard. Not a blocker; awareness only.
+
+---
+
+# Cycle AB — overnight triage 2026-05-29 (~09:01Z)
+
+**Branch:** HEARTBEAT-ONLY (steps 3–5). FIQ queue + bug-reports inbox **both ABSENT** — 62nd consecutive empty-inbox cycle. Tenth cycle of the 2026-05-29 UTC date; ~59min after cycle AA (16th consecutive ~1h cadence since cycle M).
+
+## Queue verification (steps 1–2 skipped, queues empty)
+- `.claude/state/founder-input-queue/` — **MISSING** (`test -d` → NO DIR). No FIQ entries to triage.
+- `.claude/state/bug-reports/` (inbox/ + triaged/) — **entire tree MISSING**. No bug reports to process.
+- `.claude/state/proposals/pending/` — only `.gitkeep`. No in-flight proposals.
+
+## FIQ entries triaged
+**Zero** — queue absent. (No A/B/C/D/F grades to report.)
+
+## Bug reports processed
+**Zero** — inbox absent. No P3e discussion bubbles opened (nothing to deliberate).
+
+## New proposals authored
+**Zero.** The app-health regression below is a known dirty-tree symptom, not a defect — no hook-fix proposal manufactured (see Critic attestation). Refusing to inflate proposal counts, consistent with cycles Z/AA.
+
+## Heartbeat (step 3a)
+`scripts/regen-all.ps1` ran 09:01:01Z → 09:01:07Z: **ALL CHECKS PASSED**, round-trip test **PASS**, `heartbeats/regen-all-last-pass.json` written. **17th consecutive clean canonical regen-all** (cycles L–AB). All ~30 guards green: round-trip 4-file swap, transcript tallies 3/3, cross-dash nav 9/9, meter-wiring 7/7 (`wired-real` → no HALT 25), founder-queue 7/7, quota-type-enum, theme convergence 7/7 (no raw hex), no-charts, protected-layouts 5/5 + 23/23 + 17 swatches + W1.S1, proposal-readiness 0 deferred, install-scripts 7 parse, scroll-reachability 5/0, escalations applied=3/pending=0, pause-discipline clean, wiring 5/5, lifecycle proposals shipped=7 + amendments applied=28.
+- One **INFORMATIONAL `~`** (not a failure): `user-context-gate` flags `main-flows.html` modified 20573.5 min after last user-context capture (2026-05-14T23-07-48Z). Benign on a heartbeat-only night with no visual ship-close.
+
+## Wellness state changes (step 3b)
+- `engineer.json` — cycle AB update. Token threshold **remains crossed** (~650k cumulative since last rest, 26th cross-cycle); status stays **active** (heartbeat-only nights are light: one script run + state-file writes; no rest triggered, consistent with cycles L–AA).
+- `critic.json` — **created this cycle** (first dedicated critic wellness file; runbook lists 'critic' among participants whose state refreshes). Light load; status active; no threshold crossed.
+
+## Substantive finding — app-health REGRESSED 89.1 → 87.8 (A- holds)
+Read line-by-line from `git diff docs/reports/app-health.html` (8-ins/13-del): `attention_items` 0 → 1; **A12_operational 100/green → 75/yellow** (watcher skip-dirty back to 7-of-10; attention item points to `scripts/cron/logs/*-downloads-watcher.log`). This is the **expected, non-pathological inverse** of cycle AA's recovery: AA's tree was clean so the watcher reported `no-new-files` and A12 healed; this cycle the tree is **dirty again**, so the watcher correctly refuses to auto-commit over it and skip-dirty climbs. Root cause is dirty-tree state, **NOT a hook regression** — same diagnosis as cycle Z. Will self-heal on the next clean run.
+
+## Blockers / awareness for Founder
+1. **CONCURRENT v8.23.12 SHIP IN FLIGHT (awareness, not blocking).** A `v8.23.11 → v8.23.12` ship appeared **mid-cycle** (NOT in the session-start snapshot): `package.json` version, `src/core/utils.js` `APP_VERSION`, and `public/sw.js` `CACHE_NAME` all bumped in sync to `8.23.12`, plus `src/styles/base.css` (+26 lines) and `src/pages/caddynotes.js` (Caddy Note update — per operational principle for a member-visible change). This is a **concurrent process's work, not this triage cycle's output**. I did **NOT** stage it — sweeping a half-written concurrent ship into an "Overnight triage" commit would misrepresent the cycle and risk a race. **Left for the concurrent process / Founder to complete and commit.**
+2. **Coherence-verify design-pass WIP returned (awareness).** 12 untracked PNGs under `.claude/state/design-pass-2026-05-22/coherence-verify/{hq,iphone14}/` + modified `scripts/visual-audit/capture-coherence-verify.mjs` — same work-family as cycle Z Blocker #1 / cycle AA addendum. NOT staged this cycle. Drives (with #1) the A12 dirty-tree regression above.
+3. **Carry-over — writer-side BOM fix (`common.ps1:117`) still unauthored as a proposal.** Consumer-side `utf-8-sig` tolerance has now held SEVENTEEN consecutive clean regen-all runs (cycles L–AB). Deliberately not auto-promoted without Founder priority signal.
+4. **Carry-over — `scripts/aggregate-self-tests.py` post-commit warning** (flagged cycle L) — separate from regen-all's pipeline; out-of-scope for step 3a. Still flagged.
+
+No HALT criteria tripped (meter_status `wired-real` → HALT 25 not in effect). No scope-creep candidates. No decisions awaiting Founder beyond the awareness items above.
+
+## Cycle AB Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox absent; verified by `test -d` → NO DIR on the entire `.claude/state/bug-reports/` tree). Cannot wave off what doesn't exist.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals. The Critic specifically validated that **NOT** manufacturing a hook-fix proposal for the A12 regression was correct: the regression is a faithful dirty-tree symptom (coherence-verify WIP + concurrent v8.23.12 ship) that self-heals on the next clean run, exactly as A12 did between cycles Z→AA. Guarding against inflation, not rubber-stamping.
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero live FIQ entries (queue absent).
+
+**Heartbeat-only self-check — is tonight's output real?** YES. The app-health diff was read line-by-line from `git diff`, not hand-waved: the 89.1→87.8 / A12 100→75 regression was diagnosed to root cause (dirty run-start tree) and explicitly NOT mislabeled. The concurrent v8.23.12 ship was confirmed by reading `git diff` of `package.json`/`utils.js`/`sw.js` (all synced) and deliberately **excluded** from the commit. Every claim anchors to a quoted regen-all log line, a `git diff` hunk read verbatim, the heartbeat JSON, or a directory-absence check. No invented productivity on an empty-queue night.
+
+**Critic attests cleanly: substantive heartbeat cycle, ship closes.**
+
+## Files changed in this cycle AB run
+- `.claude/state/wellness/engineer.json` — cycle AB update
+- `.claude/state/wellness/critic.json` — created (first dedicated critic wellness file)
+- `.claude/state/cron/2026-05-29-overnight-run.md` — this journal (cycle AB section appended)
+- `docs/reports/app-health.html` — regen output (8-ins/13-del: A12_operational 100/green → 75/yellow, attention_items 0 → 1, overall 89.1 → 87.8; A- holds). A faithful dirty-tree regression, the expected inverse of cycle AA's recovery.
+
+**Explicitly NOT staged** (not this cycle's work): the concurrent v8.23.12 ship (`package.json`, `src/core/utils.js`, `public/sw.js`, `src/styles/base.css`, `src/pages/caddynotes.js`) and the coherence-verify WIP (12 PNGs + `scripts/visual-audit/capture-coherence-verify.mjs`). Left for the concurrent process / Founder. No code changes, no proposals, no FIQ writes, no bug-report state moves (inbox absent) authored by this triage cycle.
