@@ -821,7 +821,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-29T09:21:42.569280Z",
+  "generated_at": "2026-05-29T09:46:30.720660Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.8,
   "overall_grade": "A-",
@@ -993,18 +993,20 @@
     }
   ],
   "audit_trigger": {
-    "sha": "d0423c89",
-    "subject": "feat(design): v8.23.13 HQ width cap sweep across remaining single-column pages",
-    "committed_at": "2026-05-29T05:21:20-04:00",
+    "sha": "2abbf97d",
+    "subject": "feat(design): v8.23.14 empty-state coherence (Challenges + emoji-icon sweep)",
+    "committed_at": "2026-05-29T05:46:07-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
       "public/sw.js",
       "src/core/utils.js",
       "src/pages/caddynotes.js",
-      "src/styles/base.css"
+      "src/pages/challenges.js",
+      "src/pages/courses.js",
+      "src/pages/partygames.js"
     ],
-    "total_files_touched": 21
+    "total_files_touched": 13
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
