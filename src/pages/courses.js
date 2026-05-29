@@ -122,7 +122,7 @@ Router.register("courses", function(params) {
     if (showOurs) {
       h += "Once league members log a round at a course, it shows up here with shared best-scores. Try All Courses to see the full directory.";
     } else {
-      h += "Search the box above to find a course in the GolfCourseAPI catalog, or tap +Add to enter one by hand.";
+      h += "Search the box above to find your course from thousands worldwide, or tap +Add to enter one by hand.";
     }
     h += '</div>';
     if (showOurs) {

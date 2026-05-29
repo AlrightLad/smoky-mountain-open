@@ -34,7 +34,6 @@ const PAGES = [
     'aces',
     'chat',
     'dms',
-    'social',
     'activity',
     'findplayers',
     'leagues',

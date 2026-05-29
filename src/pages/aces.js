@@ -67,8 +67,6 @@ function renderAceList() {
     h += '</div></div>';
   }
 
-  h += '<div style="padding:16px;text-align:center;font-size:10px;color:var(--muted2)">Parbaugh Directory course</div>';
-
   document.querySelector('[data-page="aces"]').innerHTML = h;
 }
 

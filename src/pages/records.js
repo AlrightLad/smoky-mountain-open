@@ -52,8 +52,13 @@ Router.register("records", function() {
   var teamCount = PB.getScrambleTeams().length;
   h += statCard("scramble", teamCount, "Teams", "Form a scramble team", "Active");
 
-  // Courses
-  var coursesPlayed = PB.getCourses().filter(function(c){return PB.getCourseRounds(c.name).length>0}).length;
+  // Courses — distinct course names across the league's public rounds, not the
+  // directory count. A member who logs rounds without curating the course
+  // directory still played those courses, so deriving from `rounds` keeps the
+  // value truthful (matches the distinct-course pattern in data.js/scramble.js).
+  var _coursesSeen = {};
+  rounds.forEach(function(r){ if (r.course) _coursesSeen[r.course] = 1; });
+  var coursesPlayed = Object.keys(_coursesSeen).length;
   h += statCard("courses", coursesPlayed, "Courses played", "Log a round to start", "In rotation");
 
   h += '</div>';
