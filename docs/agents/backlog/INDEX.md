@@ -22,6 +22,7 @@ Open backlog items for PARBAUGHS. Hybrid structure: this index file lists all op
 | BL-007 | League edit page + masthead showing current league name | P3 | Wave 2 | Open | [BL-007.md](./BL-007.md) |
 | BL-009 | Motion-naming decision: --duration-*/--dur-* hold DIFFERENT values, needs Founder canonical-timing call (dead --el-0/--el-4 fold into next base.css touch) | P3 | Wave 2 | Open (rescoped 2026-05-29) | [BL-009.md](./BL-009.md) |
 | BL-010 | Handicap trend chart performance cliff at 1000+ rounds | P3 | Post-Wave-4 | Open | [BL-010.md](./BL-010.md) |
+| BL-011 | Partner-rail side-stripe (`.sphud-partner`) — fix when render gate ships (dead CSS today) | P3 | Future gate | Open | [BL-011.md](./BL-011.md) |
 
 ## Backlog discipline
 
