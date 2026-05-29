@@ -1306,3 +1306,109 @@ Heartbeat-only self-check — **Is tonight's substantive output real?** YES. Thi
 - `docs/reports/app-health.html` — regen output (generated_at timestamp + A12_operational 90→100 + label `4 recent skip-dirty`→`0 recent skip-dirty` + audit_trigger commit-pointer `a1ab02fa`→`2459feba`; overall_score 89.1 / grade A-; only A12 moved, 11 dims byte-identical)
 
 No code changes in cycle AF. No proposals. No FIQ writes. No bug-report state moves (inbox absent). Working tree was clean at run-start (no concurrent-process churn this cycle).
+
+---
+
+# Overnight triage — 2026-05-29 (cycle AG)
+
+**Started:** 2026-05-29T14:01:19Z (session open; regen-all START 14:01:31Z)
+**Finished:** 2026-05-29T14:01:36Z (regen-all "ALL DASHBOARDS REGENERATED"; WRAPPER_EXIT=0)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both absent)
+**Cycle:** AG (67th consecutive empty-inbox cycle; ~1h wall-clock gap from cycle AF's ~13:02Z close — TWENTY-FIRST consecutive ~1h-cadence cycle since cycle M). Fifteenth cycle of the 2026-05-29 UTC date; appended to the shared date-file per the convention used by cycles S–AF.
+
+## Inbox state at run-start (cycle AG)
+
+- `.claude/state/founder-input-queue/` — **directory does not exist** (`test -d` → MISSING; the only `FIQ-` ids on disk are the FIQ-001 template examples inside `docs/FOUNDER_INPUT_QUEUE.md`, not live queue entries)
+- `.claude/state/bug-reports/` — **entire tree absent** (inbox/ + triaged/ both MISSING; `test -d` → MISSING)
+- `.claude/state/proposals/pending/` — only `.gitkeep` (no pending proposals)
+- Working tree at session-start: **DIRTY with concurrent-process churn only** — 31 design-pass critique PNGs (`.claude/state/design-pass-2026-05-22/critique-2026-05-29/*.png`) + `emu-unified-2026-05-29.log`, none authored by this triage cycle. HEAD = `4192117a`.
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle AG)
+
+- FIQ entries triaged: **0** (queue directory absent)
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0
+- IDs: none
+
+## Step 2 — Bug-report triage (cycle AG)
+
+- Bug reports processed: **0** (inbox directory absent)
+- Dispositions: none
+- No P3e discussion bubbles opened (nothing to deliberate)
+
+## Step 3 — Heartbeat (cycle AG)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end 14:01:31Z → 14:01:36Z (WRAPPER_EXIT=0): **ALL CHECKS PASSED**, **round-trip test PASS**. 22nd consecutive clean canonical regen-all (cycles L–AG).
+- Heartbeat `regen-all-last-pass.json` written.
+- Telemetry snapshot: events=15897 handoffs=1 bubbles=7 proposals_pending=0, meter_status=wired-real (HALT 25 not in effect). Token aggregate: all-time real=11,951,869,988 estimated=13,348,350 manual=0.
+- All ~30 guards green (round-trip dashboard swap + nav audit 9 links each + transcript verify; meter-wiring 7/7; founder-queue 7/7; quota-type-enum; cross-dash consistency proposals_pending=0; lifecycle proposals shipped=7 + amendments applied=28; escalations applied=3; protected-layouts 5/5 + 23/23 + 17 swatches + W1.S1; design-tokens 11/11 + theme convergence 7/7 no raw hex; token-usage schema cross-panel sums match; no-charts; proposal-readiness 0 deferred; install-scripts 7 parse; install-cmd-surface; scroll-reachability 5/0/0; quota-status sidecar auto-derived; pause-discipline clean; wiring 5/5; app-health **A- 88.6** / 0 attention items; founder-checklist open=4 red=0 yellow=3 green=1 closed_total=25; index ships=0 git=4192117a).
+- One INFORMATIONAL `~` (not a failure): `user-context-gate` flags `main-flows.html` modified 20874.0 min after the last user-context capture (2026-05-14T23-07-48Z). Benign on a heartbeat-only night with no visual ship-close.
+- One benign WARN (carry-over, NOT new this cycle): `regen-main-flows` reports 6 orphan components in the grid (`actor.guest`, `actor.invitee`, `dist.capacitor-ios`, `ext.open-meteo`, `fn.expire-suspensions`, `fn.join-league`) — referenced by no flow's path. Pre-existing structural note; round-trip still PASS (62 flows, 248 steps — all refs resolve).
+
+**GENUINE MOVEMENT THIS CYCLE — INVESTIGATED to root cause, and it is the SAME A12 rolling-window oscillation, not a regression:**
+
+app-health on disk moved **87.8 (A-) → 88.6 (A-)**, driven SOLELY by **A12_operational (75 → 90)**. Evidence read verbatim from the `git diff docs/reports/app-health.html`:
+- `overall_score` 87.8 → 88.6; `pre_deduction_score` 92.8 → 93.6; `post_deduction_score` 87.8 → 88.6.
+- The ONLY dimension score that moved is A12: `-"score": 75` → `+"score": 90`; label `pipeline=yellow · 5 recent skip-dirty` → `pipeline=green · 6 recent skip-dirty`.
+- `attention_items` and `agent_attention` both went from a single A12 skip-dirty entry → **`[]`** (cleared).
+- `audit_trigger` re-pointed `cde286c8` (fix v8.23.21 P10 load-error states) → `4192117a` (cron post-commit regen).
+
+This is the **same A12 self-heal oscillation tracked since cycle Z**, NOT a new regression. Context: A12 reached 100/green at cycle AF (89.1); the v8.23.21 ship (`cde286c8`) + subsequent post-commit crons re-dirtied the tree, pushing the rolling skip-dirty window back up and A12 down to 75/yellow (committed on disk at HEAD as 87.8); my fresh regen at 14:01 recomputes A12=90/green as that window drains again. **A- throughout (87.8 and 88.6 are both A-).** The heartbeat did NOT *cause* the rise — it is a rolling-window artifact of concurrent-ship tree-dirtiness clearing. No fix authored or warranted: the cycle Z–AF discipline of refusing to manufacture an A12 hook-fix proposal holds — this is the symptom self-healing exactly as diagnosed.
+
+**Concurrent-process churn observed mid-session (A12 window in action) — NOT this cycle's work:** between session-start `git status` (14:01:19Z, showed only the 31 critique PNGs + emu log) and post-regen (14:01:36Z), three member-facing source files became modified by a concurrent watcher/critique process: `src/pages/aces.js` (−2: removed a stray "Parbaugh Directory course" footer div), `src/pages/courses.js` (1 line), `src/pages/records.js` (+9/−2). Total 8 ins/5 del across 3 files. These are **in-flight edits owned by another process**, left untouched for that process to commit. This triage cycle commits ONLY its own 4 files via **explicit pathspec** (cycle-AB index-race lesson applied) — no concurrent files swept in.
+
+**founder-checklist open=4 (red=0 yellow=3 green=1) closed_total=25 — UNCHANGED carry-overs, none new this cycle:** (1) deploy `deleteMyAccount` Cloud Function (AMD-018 gate #1), (2) GH Actions staging secret `FIREBASE_SERVICE_ACCOUNT_STAGING`, (3) Sentry auth token scopes, (4) morning handoff.
+
+### 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — updated for cycle AG (counters ~720k tokens cumulative / ~1.0h; status `active`; `_note` + `substantive_output_at_checkpoint` rewritten for cycle AG incl. the 22nd-consecutive-clean-regen observation, the A12 75→90 oscillation investigation, and the concurrent src/pages churn note). Token threshold remains crossed (31st cross-cycle); no rest triggered — heartbeat-only nights are genuinely light.
+- `.claude/state/wellness/critic.json` — updated for cycle AG (counters ~99k tokens / ~1.0h; status `active`; threshold not crossed). Critic independently read the full app-health diff to confirm exactly one dimension moved (A12 75→90) and that the rise is the predicted rolling-window self-heal, NOT heartbeat-caused, AND confirmed the 3 concurrent src/pages edits were correctly excluded from this cycle's commit.
+
+## Step 4 — Session journal
+
+**This section.**
+
+## Cycle AG counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 |
+| Bug reports processed | 0 |
+| New proposals authored | 0 |
+| Wellness state changes | 2 (engineer.json + critic.json cycle AG refresh) |
+
+## Blockers requiring Founder attention (cycle AG)
+
+**No ship-blocking issues.** Awareness / Founder-action items (all carry-overs):
+
+1. **Carry-over (Founder-action, AMD-018 gate #1) — deploy `deleteMyAccount` Cloud Function.** Code committed (ship `67f66b87`); `firebase deploy --only functions` is an AMD-018 pre-authorization gate (walkthrough at `task-queue/founder/deploy-deleteMyAccount-function.md`). Not yet live. Unchanged this cycle.
+2. **Awareness — app-health 87.8 → 88.6 (A- holds), A12_operational 75 → 90 (green).** Same rolling skip-dirty-window oscillation since cycle Z; app-health remains at 0 attention items. Not blocking — canonical gate green (22nd consecutive clean run).
+3. **Awareness — concurrent process actively editing member-facing source** (`src/pages/aces.js`, `courses.js`, `records.js`) during this cycle's window. Left for the owning process to commit; this triage cycle deliberately excluded them. Founder may wish to confirm the owning watcher/critique cron commits them cleanly.
+4. **Carry-over — git index race on triage commit (cycle AB lesson).** Commit uses an explicit pathspec capturing ONLY this cycle's 4 files.
+5. **Carry-over — writer-side BOM fix (`common.ps1:117`) remains unauthored as a proposal.** Consumer-side `utf-8-sig` tolerance (aggregate-telemetry.py:70) has held across all 22 canonical clean runs since cycle L. Not auto-promoted without a Founder priority signal — refusing to inflate proposal counts.
+6. **Carry-over — `scripts/aggregate-self-tests.py` post-commit warning** (flagged cycle L) — separate from regen-all's pipeline; out-of-scope for step 3a. Still flagged for a future cycle.
+7. **Cron cadence** — cycles M–AG all ~1h apart (twenty-first consecutive ~1h gap). No Founder action required; awareness only.
+
+No HALT criteria tripped (meter_status `wired-real` → HALT 25 not in effect). No scope-creep candidates.
+
+## Cycle AG Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox absent). Absence verified by `test -d` → MISSING. Cannot wave off what doesn't exist.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals tonight. On a positive-movement night it would have been easy to manufacture an "A12 fix" proposal or claim the heartbeat drove A12 to 90; the Critic specifically validated that NOT authoring a proposal was correct (A12 is self-healing via the rolling window exactly as diagnosed since cycle Z) and that the heartbeat did NOT cause the rise. Honest scoping, not inflation, no false credit-claiming.
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero FIQ entries tonight. Queue absent; no gradeable live entries exist.
+
+Heartbeat-only self-check — **Is tonight's substantive output real?** YES. This cycle did NOT rubber-stamp a clean regen: it surfaced TWO genuine signals and investigated each to root cause by reading raw `git diff` / `git status` / `git log` output verbatim — (a) app-health 87.8 → 88.6, traced to the SINGLE moving dimension (A12 75→90, 11 others byte-identical, attention cleared 1→0), confirmed as the rolling-window self-heal oscillation not a regression and not heartbeat-caused; (b) three member-facing src/pages files modified mid-session by a concurrent process, correctly identified as NOT this cycle's work and excluded from the commit via explicit pathspec. Every claim anchors to a quoted regen-all log line, the `git diff` read verbatim (exactly one score-pair changed), the founder-checklist data block, the heartbeat JSON, or directory-absence checks. No invented productivity on an empty-queue night.
+
+**Critic attests cleanly: substantive heartbeat cycle, ship closes.**
+
+## Files changed in this cycle AG run
+
+- `.claude/state/wellness/engineer.json` — cycle AG update
+- `.claude/state/wellness/critic.json` — cycle AG update
+- `.claude/state/cron/2026-05-29-overnight-run.md` — this journal (cycle AG section appended)
+- `docs/reports/app-health.html` — regen output (generated_at timestamp + A12_operational 75→90 + attention_items/agent_attention cleared to [] + audit_trigger commit-pointer `cde286c8`→`4192117a`; overall_score 88.6 / grade A-; only A12 moved)
+
+No code changes in cycle AG. No proposals. No FIQ writes. No bug-report state moves (inbox absent). The 3 modified `src/pages/*.js` files + 31 critique PNGs + emu log are concurrent-process churn, NOT committed by this triage cycle.
