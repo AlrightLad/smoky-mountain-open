@@ -2,10 +2,11 @@
 /*
  * scripts/visual-audit/capture-coherence-verify.mjs
  *
- * Design Coherence Pass (2026-05-29) verification capture. Confirms the
- * decorative side-stripe borders removed from home (HQ + mobile),
- * standings, and the activity feed read cleanly with the on-brand
- * full-border + background-tint replacements.
+ * Design Coherence Pass capture harness. Signs in as testZach against the
+ * local emulator and screenshots each surface at HQ (1440) + iPhone (390)
+ * viewports for the compare/contrast/critique loop. Originally built to
+ * verify side-stripe removal (home/standings/feed/calendar); extended to the
+ * HQ surfaces awaiting Wave-2 aesthetic coherence review.
  *
  * Native-viewport (fullPage:false) so the output is legible when Read —
  * the design-pass harness uses fullPage which downscales past the 2000px
@@ -35,10 +36,21 @@ const PROFILES = [
 ];
 
 const SURFACES = [
-    { key: "home",      route: "/",          wait: "[data-stat='round-count'], [data-page='home']" },
-    { key: "standings", route: "/standings", wait: ".sp-list, [data-page='standings']" },
-    { key: "feed",      route: "/feed",      wait: "[data-page='feed'], .feed-list" },
-    { key: "calendar",  route: "/calendar",  wait: "[data-page='calendar'], .calendar-page", selectPopulatedDay: true },
+    { key: "home",       route: "/",           wait: "[data-stat='round-count'], [data-page='home']" },
+    { key: "standings",  route: "/standings",  wait: ".sp-list, [data-page='standings']" },
+    { key: "feed",       route: "/feed",       wait: "[data-page='feed'], .feed-list" },
+    { key: "calendar",   route: "/calendar",   wait: "[data-page='calendar'], .calendar-page", selectPopulatedDay: true },
+    // HQ surfaces awaiting Wave-2 aesthetic coherence review (design_pass_pending
+    // in .claude/state/ship-progress/HQ-Ship-5-*.json). Captured for the
+    // compare/contrast/critique loop against peer benchmarks (Linear/Stripe/etc).
+    { key: "members",    route: "/members",    wait: "[data-page='members']" },
+    { key: "bounties",   route: "/bounties",   wait: "[data-page='bounties']" },
+    { key: "wagers",     route: "/wagers",     wait: "[data-page='wagers']" },
+    { key: "scramble",   route: "/scramble",   wait: "[data-page='scramble']" },
+    { key: "trips",      route: "/trips",      wait: "[data-page='trips']" },
+    { key: "trophyroom", route: "/trophyroom", wait: "[data-page='trophyroom']" },
+    { key: "range",      route: "/range",      wait: "[data-page='range-detail'], [data-page='range']" },
+    { key: "onboarding", route: "/onboarding", wait: "[data-page='onboarding']" },
 ];
 
 const USERS = (await import(pathToFileURL(resolve(REPO, "tests/e2e/setup/fixtures/users.js")).href)).users;
