@@ -1519,3 +1519,105 @@ Heartbeat-only self-check — **Is tonight's substantive output real?** YES. Thi
 - `docs/reports/app-health.html` — regen output (generated_at timestamp + A8_performance 80→83 + A12 skip-dirty label 7→5 (score held at 90) + audit_trigger commit-pointer `b54d9584`→`32561c73`; overall_score 88.7 / grade A-; only A8 score moved)
 
 No code changes in cycle AH. No proposals. No FIQ writes. No bug-report state moves (inbox absent). The A8 performance improvement is the concurrent perf-minify ship's (`3ce96fd0`), surfaced by this heartbeat's regen, NOT authored by this triage cycle.
+
+---
+
+# Overnight triage — 2026-05-29 (cycle AI)
+
+**Started:** 2026-05-29T16:01:43Z
+**Finished:** 2026-05-29T16:02:30Z
+**Mode:** Autonomous overnight (no Founder available)
+**Cycle:** AI (69th consecutive empty-inbox cycle; ~1h wall-clock gap from cycle AH's ~15:02Z close — TWENTY-THIRD consecutive ~1h-cadence cycle since cycle M). Seventeenth cycle of the 2026-05-29 UTC date; appended to the shared date-file per the convention used by cycles S–AH.
+**Disposition:** Both inboxes ABSENT → heartbeat-only path (steps 3–5). **Genuine negative movement investigated to root cause: app-health 88.7 → 87.7 (A- holds), driven solely by A12_operational 90→75 from a CONCURRENT-SHIP dirty-tree skip-dirty transient — surfaced not caused by the heartbeat, self-healing, no fix warranted.**
+
+## Inbox state at run-start (cycle AI)
+
+- `.claude/state/founder-input-queue/` — **MISSING** (Glob `founder-input-queue/**/*` → no files; `ls` → no-such-directory). Auto-created on first write per `FIQ_QUALITY_RUBRIC.md` §6 baseline. 69th consecutive absent cycle.
+- `.claude/state/bug-reports/` — **entire tree MISSING** (inbox/ + triaged/ both absent via `ls`). No reports to diagnose.
+- `.claude/state/proposals/pending/` — empty.
+
+## Step 1 — FIQ triage (cycle AI)
+
+`.claude/state/founder-input-queue/` does not exist → zero entries to grade. **FIQ grades distribution:** A=0, B=0, C=0, D=0, F=0. Not a HALT (FIQ dir is not in the HALT-23.1 operational-view directory list; baseline is 0 per rubric §6).
+
+## Step 2 — Bug-report triage (cycle AI)
+
+`.claude/state/bug-reports/inbox/` does not exist (parent tree absent). No reports diagnosed, no discussion bubbles opened, no proposals authored, no FIQ escalations.
+
+## Step 3 — Heartbeat (cycle AI)
+
+### 3a — `scripts/regen-all.ps1`
+
+Ran end-to-end at 16:01:43Z. Heartbeat written `.claude/state/heartbeats/regen-all-last-pass.json` at 16:02:07Z: `{"status":"PASS","duration_seconds":29,...}`. **`=== ALL CHECKS PASSED ===` + `round-trip test PASS`.** 24th consecutive clean canonical regen (cycles L–AI). All ~30 guards green: design-tokens 11/11, theme convergence 7/7 (no raw hex), no-charts, protected-layouts 5/5 + 23/23 + 17 swatches + W1.S1, proposal-readiness 0 deferred, install-scripts 7 parse, install-cmd-surface, scroll-reachability 5/0/0, escalations applied=3/pending=0, quota-status auto-derived, pause-discipline clean, wiring 5/5. One INFORMATIONAL `~` (not a failure): user-context-gate flags main-flows.html 20994.1 min after last user-context capture (2026-05-14T23-07-48Z) — benign on a heartbeat-only night.
+
+### 3a.1 — Genuine movement traced to root cause (no guessing)
+
+**app-health 88.7 (A-, cycle AH committed) → 87.7 (A-, on disk).** The pre-regen read was **already 87.7**, so a prior post-commit-hook regen wrote it before my run; my regen reproduced 87.7 idempotently. The drop is driven **solely by A12_operational (90/green → 75/yellow)** — read verbatim from the app-health data block (`docs/reports/app-health.html:942-1004`):
+
+- **A8_performance HELD at 83/green** (`Lighthouse 83/100 across 6 pages`) — the cycle-AH perf-minify gain is sustained, NOT reversed.
+- **A12_operational 90 → 75**, status green → yellow, label `pipeline=green · 5 recent skip-dirty` → `pipeline=yellow · 4 recent skip-dirty`. **Note the skip-dirty count IMPROVED 5 → 4** — so the score driver is the **PIPELINE STATUS flip (green→yellow)**, NOT the skip-dirty count.
+- The other 10 dimensions are unchanged. `attention_items` + `agent_attention` each now carry **one** A12 item (P10-actionable WHAT/WHERE/WHAT-ACTION); `founder_attention` remains `[]`.
+
+**Causal chain (evidence cited verbatim):**
+
+1. `.claude/state/aggregates/approvals-pipeline.json` → `"status": "yellow"`, `"summary": "watcher last run: skip-dirty · 1 in inbox"`, `as_of: 2026-05-29T16:00:48Z`.
+2. The `downloads-watcher` hit skip-dirty on its **three most recent runs** (logs `2026-05-29T15-50-48Z`, `15-55-48Z`, `16-00-48Z-downloads-watcher.log`).
+3. The 16:00:48Z log note reads **verbatim**: `[16:00:48] SKIP working tree dirty with non-routine files: before-auth-desktop-v8.23.25.png, src/styles/components.css`.
+4. Those non-routine dirty files belong to the **concurrent in-flight v8.23.26 ship** — commit `6c2255b5` *"feat: crisp input affordance across auth + in-app inputs (v8.23.26)"* landed during this window; the working tree at run-time still carried its version-bump triad (`package.json` + `public/sw.js` + `src/core/utils.js`) + `src/pages/caddynotes.js` + `src/styles/components.css` + the untracked `before-auth-desktop-v8.23.25.png`.
+
+**Verdict:** the watcher **correctly refuses to run on a dirty tree** (safety-by-design); three consecutive skip-dirty fires rolled the pipeline window to yellow → A12 90→75 → overall 88.7→87.7. **The heartbeat SURFACED a transient operational signal from concurrent-ship churn; it did NOT cause the drop.** It self-heals once the ship's tree settles and fresh non-skip-dirty watcher runs roll into the 10-run window. Distinction from cycle AH (whose mover was A8, a *positive* perf-ship surfacing): cycle AI's mover is A12, a *negative* concurrent-ship dirty-tree transient. Both surfaced-not-caused by the heartbeat.
+
+**No fix authored or warranted.** The watcher skip-dirty mechanism is working as designed; the drop is concurrent-ship churn, not a defect; manufacturing a proposal for a self-healing transient would be ship-count gaming per `METRIC_INTEGRITY_PROTOCOL` Rule 2.
+
+**Working-tree state after regen:** concurrent-ship churn present (`package.json`, `public/sw.js`, `src/core/utils.js`, `src/pages/caddynotes.js`, `src/styles/components.css`, untracked `before-auth-desktop-v8.23.25.png`) **plus** this cycle's own `docs/reports/app-health.html`. This triage cycle commits ONLY its own files via **explicit pathspec** (cycle-AB index-race lesson applied) — none of the concurrent churn is committed.
+
+### 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — updated for cycle AI (counters ~765k tokens cumulative / ~1.0h; status `active`; token threshold remains crossed, 33rd cross-cycle; no rest — heartbeat-only nights are light). `_note` + `substantive_output_at_checkpoint` rewritten with the 24th-consecutive-clean-regen observation and the A12 90→75 evidence-backed causation trace.
+- `.claude/state/wellness/critic.json` — updated for cycle AI (counters ~116k tokens / ~1.0h; token threshold crossed since cycle AH; status `active`, no rest). Critic independently read the app-health block to confirm exactly one dimension moved (A12 90→75, A8 held at 83, 10 dims byte-identical), insisted on the skip-dirty-improved-5→4-yet-score-dropped nuance (proving the pipeline-status flip is the driver), and demanded causation evidence (watcher log skip-dirty note + concurrent ship commit) — confirming the heartbeat *surfaced* rather than *caused* the drop.
+
+## Step 4 — Session journal
+
+**This section.**
+
+## Cycle AI counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 |
+| Bug reports processed | 0 |
+| New proposals authored | 0 |
+| Wellness state changes | 2 (engineer.json + critic.json cycle AI refresh) |
+
+## Blockers requiring Founder attention (cycle AI)
+
+**No ship-blocking issues. No HALT criteria tripped** (meter_status `wired-real` → HALT 25 not in effect; FIQ dir absence is baseline-empty, not HALT-23.1 operational-view failure). Awareness / Founder-action items:
+
+1. **Awareness — app-health 88.7 → 87.7 (A- holds), A12_operational 90 → 75 (yellow).** TRANSIENT from the concurrent v8.23.26 ship leaving the tree dirty across three watcher runs (15:50/15:55/16:00:48Z); the watcher correctly skip-dirty'd. Self-heals once the ship's tree settles. A8 perf gain (83) sustained. **No action required** unless the dirty tree persists across many more watcher windows.
+2. **Carry-over (Founder-action, AMD-018 gate #1) — deploy `deleteMyAccount` Cloud Function.** Code committed; `firebase deploy --only functions` is an AMD-018 pre-auth gate (walkthrough at `task-queue/founder/deploy-deleteMyAccount-function.md`). Unchanged.
+3. **Awareness — `proposals_inbox=1` is a STALE artifact, not a live queue item.** `.claude/state/proposals/inbox/decisions-2026-05-22T16-32-33.json` was already processed (applied 2026-05-22T16:35:54Z per the approvals-pipeline marker) and has lingered since 05-22. Out of step-1/2 scope (FIQ + bug-reports). Candidate for `inbox/` → `inbox-archive/` housekeeping at Founder's discretion; not auto-moved (not tonight's scope; refusing to cross a proposal-lifecycle boundary unprompted).
+4. **Carry-over — git index race on triage commit (cycle AB lesson).** Commit uses an explicit pathspec capturing ONLY this cycle's own files; concurrent v8.23.26 ship churn left untouched.
+5. **Carry-over — writer-side BOM fix (`common.ps1:117`) remains unauthored as a proposal.** Consumer-side `utf-8-sig` tolerance has held across all 24 canonical clean runs since cycle L. Not auto-promoted without a Founder priority signal.
+6. **Carry-over — `scripts/aggregate-self-tests.py` post-commit warning** (flagged cycle L) — separate from regen-all's pipeline; out-of-scope for step 3a. Still flagged for a future cycle.
+7. **Cron cadence** — cycles M–AI all ~1h apart (twenty-third consecutive ~1h gap). No Founder action required; awareness only.
+
+No scope-creep candidates.
+
+## Cycle AI Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox tree absent). Absence verified by `ls` no-such-directory, not waved off.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals. On a NEGATIVE-movement night the easy spin runs two ways: false self-blame ("the heartbeat broke A12") or false dismissal ("nothing to see"). The Critic guarded against BOTH and validated that NOT authoring a proposal was correct — the A12 90→75 drop is a self-healing transient owned by the concurrent v8.23.26 ship's dirty tree, not a triage-findable defect. Honest scoping, not inflation.
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero live FIQ entries.
+
+Heartbeat-only self-check — **Is tonight's substantive output real?** YES. This cycle did NOT rubber-stamp a clean regen, and did NOT wave off a real signal: it surfaced a genuine NEGATIVE movement (app-health −1.0) and investigated it to root cause by reading raw `git log`, the app-health data block, `approvals-pipeline.json`, and the `downloads-watcher` log verbatim — tracing the drop to the SINGLE moving dimension (A12 90→75, A8 held, 10 dims unchanged), establishing the pipeline-status flip (not the skip-dirty count, which IMPROVED 5→4) as the driver, and naming the EXACT dirty files (`before-auth-desktop-v8.23.25.png`, `src/styles/components.css`) and the concurrent ship commit (`6c2255b5`) responsible. The crucial honesty move was distinguishing **surfaced** from **caused** on a negative night — the heartbeat reflected a concurrent ship's transient churn and claimed no blame for it, while still refusing to dismiss it. Every claim anchors to a quoted tool result earlier in this session.
+
+**Critic attests cleanly: substantive heartbeat cycle, ship closes.**
+
+## Files changed in this cycle AI run
+
+- `.claude/state/wellness/engineer.json` — cycle AI update
+- `.claude/state/wellness/critic.json` — cycle AI update
+- `.claude/state/cron/2026-05-29-overnight-run.md` — this journal (cycle AI section appended)
+- `docs/reports/app-health.html` — regen output (generated_at timestamp + A12_operational 90→75/green→yellow + one A12 attention_item/agent_attention; A8 held at 83; overall_score 87.7 / grade A-)
+
+No code changes in cycle AI. No proposals. No FIQ writes. No bug-report state moves (inbox absent). The A12 drop is the concurrent v8.23.26 ship's dirty-tree transient (commit `6c2255b5` + untracked PNG + components.css), surfaced by this heartbeat's regen, NOT caused by this triage cycle. The `package.json`/`public/sw.js`/`src/core/utils.js`/`src/pages/caddynotes.js`/`src/styles/components.css` modifications + untracked PNG are concurrent-ship churn, NOT committed by this triage cycle.
