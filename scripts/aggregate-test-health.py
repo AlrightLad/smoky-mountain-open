@@ -82,8 +82,19 @@ def main():
     last_rt_pass = None
     if heartbeat.exists():
         try:
-            hb = json.loads(heartbeat.read_text(encoding="utf-8"))
-            last_rt_pass = hb.get("ts") or hb.get("timestamp")
+            # utf-8-sig: regen-all.ps1 writes this file with a UTF-8 BOM (PS 5.1
+            # `-Encoding utf8`). Plain "utf-8" leaves the BOM in place, json.loads
+            # then throws, the except below swallows it, and last_rt_pass stays
+            # None -> "unknown". The second heartbeat read (heartbeat_status) below
+            # already uses utf-8-sig; this read must match.
+            hb = json.loads(heartbeat.read_text(encoding="utf-8-sig"))
+            # Heartbeat is written by two producers: write-regen-heartbeat.py
+            # (full schema: ts/timestamp/generated_at) and regen-all.ps1 (minimal
+            # schema: last_pass_at_utc only, written by the cron watcher). Per the
+            # heartbeat contract ("readers must tolerate missing keys"), fall back
+            # to last_pass_at_utc so a cron-written heartbeat isn't misread as
+            # "no heartbeat" -> unknown. (This was the D40 parity-fail root cause.)
+            last_rt_pass = hb.get("ts") or hb.get("timestamp") or hb.get("last_pass_at_utc")
         except (OSError, json.JSONDecodeError):
             pass
 

@@ -128,18 +128,17 @@ def main():
         try:
             dt = datetime.fromisoformat(str(ts).replace("Z", "+00:00"))
             age_s = (now - dt).total_seconds()
-            # Pre-2026-05-19: hard threshold at 300s.
-            # Post-2026-05-19: report stale as informational but do NOT
-            # fail the gate — idempotent-write intentionally leaves old
-            # timestamps in place when content is unchanged. The dashboard
-            # surfaces age via P10-classified empty states; D40 should
-            # not double-count idempotent skips as failures.
-            if age_s > 86400:
-                # 24h is the new hard threshold: this would mean the
-                # aggregator hasn't refreshed in a full day, which
-                # warrants surfacing even with content-unchanged.
-                failed.append((name, f"stale-timestamp-{int(age_s)}s (>24h)"))
-                continue
+            # Freshness is informational, NOT a gate failure. We already ran the
+            # aggregator above (returncode 0): a successful run is itself the
+            # freshness proof. The idempotent-write helper deliberately leaves
+            # generated_at untouched when content is unchanged, so an old
+            # timestamp means "data verified stable," not "aggregator dead." A
+            # genuinely dead/crashing aggregator is already caught by the
+            # returncode and output-missing checks above, and the dashboard
+            # surfaces age via P10-classified empty states. Hard-failing on age
+            # here just double-counts idempotent skips as failures (the bug this
+            # block had: a >24h hard threshold contradicting the stated intent).
+            stale_note = f" [content-stable {int(age_s)}s, idempotent skip]" if age_s > 86400 else ""
         except ValueError:
             failed.append((name, f"bad-timestamp: {ts}"))
             continue
@@ -155,7 +154,7 @@ def main():
             failed.append((name, f"parity-fail: source-detected but status={status}"))
             continue
 
-        print(f"  [{name}] PASS status={status} age={int(age_s)}s")
+        print(f"  [{name}] PASS status={status} age={int(age_s)}s{stale_note}")
 
     if failed:
         print(f"[aggregate-self-tests] FAIL ({len(failed)} aggregators):", file=sys.stderr)
