@@ -32,6 +32,74 @@ if [[ "${CLAUDE_PARBAUGHS_FOUNDER_PUSH:-}" == "1" ]]; then
   exit 0
 fi
 
+# ── Origin/main FREEZE (Founder directive: main stays frozen until sign-off) ──
+# Block any push whose destination ref on the remote is `main`. Staging pushes
+# (e.g. `git push origin main:staging`) are explicitly allowed — only the
+# destination ref matters. The Founder override above bypasses this for the
+# eventual staging→main replication after end-to-end sign-off.
+#
+# Threat model: a guardrail against an accidental `git push origin main` (or a
+# bare `git push` from the main branch, which defaults to origin/main) during
+# long autonomous runs — NOT an adversarial parser. Chained pushes past the
+# first `;`/`&&`/`||`/`|` are out of scope (covered by the deny-list + the
+# established main:staging workflow discipline).
+targets_main() {
+  local cmd="$1"
+  local rest="${cmd#*git push}"
+  # Only consider the first command segment (avoid false positives from
+  # trailing chained commands like `... && echo main`).
+  rest="${rest%%;*}"; rest="${rest%%&&*}"; rest="${rest%%||*}"; rest="${rest%%|*}"
+  local remote="" tok dst
+  local -a refspecs=()
+  for tok in $rest; do
+    case "$tok" in
+      -*) continue ;;            # skip flags (-u, --force, --set-upstream, ...)
+    esac
+    if [[ -z "$remote" ]]; then
+      remote="$tok"              # first positional = remote name
+    else
+      refspecs+=("$tok")         # remaining positionals = refspecs
+    fi
+  done
+  # No explicit refspec → default push of the current branch to its upstream.
+  if [[ ${#refspecs[@]} -eq 0 ]]; then
+    local cur; cur="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '')"
+    [[ "$cur" == "main" ]] && return 0
+    return 1
+  fi
+  for tok in "${refspecs[@]}"; do
+    tok="${tok#+}"               # strip force-update marker
+    if [[ "$tok" == *:* ]]; then
+      dst="${tok##*:}"           # destination ref after the colon
+    else
+      dst="$tok"                 # shorthand: src == dst
+    fi
+    [[ "$dst" == "main" || "$dst" == "refs/heads/main" ]] && return 0
+  done
+  return 1
+}
+
+if targets_main "$command"; then
+  {
+    echo ""
+    echo "─────────────────────────────────────────────────────────"
+    echo "PUSH BLOCKED — origin/main is FROZEN"
+    echo "─────────────────────────────────────────────────────────"
+    echo ""
+    echo "  Founder directive: main stays frozen until staging is"
+    echo "  reviewed end-to-end and explicitly signed off; THEN"
+    echo "  staging is replicated to main."
+    echo ""
+    echo "  Push to staging instead:"
+    echo "     git push origin main:staging"
+    echo ""
+    echo "  Founder override (post-sign-off main replication):"
+    echo "     CLAUDE_PARBAUGHS_FOUNDER_PUSH=1 git push ..."
+    echo ""
+  } >&2
+  exit 2
+fi
+
 state_file=".claude/state/last-verify.json"
 
 # Missing state file → allow (governance/doc-only commits, bootstrap, etc.)
