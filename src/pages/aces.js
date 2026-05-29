@@ -39,7 +39,7 @@ function renderAceList() {
       h += '</div></div>';
       h += '<div style="font-size:14px;font-weight:700;color:var(--gold)">ACE</div>';
       h += '</div>';
-      if (ace.description) h += '<div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.4;font-style:italic;border-left:2px solid var(--border);padding-left:10px">"' + ace.description + '"</div>';
+      if (ace.description) h += '<div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.4;font-style:italic">"' + ace.description + '"</div>';
       h += '</div></div>';
     });
   } else {

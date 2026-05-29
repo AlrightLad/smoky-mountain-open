@@ -293,7 +293,7 @@ input.s:disabled,
 .rc-course{font-size:var(--text-base);font-weight:600}
 .rc-date{font-size:var(--text-xs);color:var(--muted);margin-top:2px;letter-spacing:.3px}
 .rc-score{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:700;color:var(--gold)}
-.rc-quip{font-size:var(--text-sm);color:var(--gold2);margin-top:8px;font-style:italic;line-height:1.4;border-left:2px solid rgba(var(--gold-rgb),.15);padding-left:10px}
+.rc-quip{font-size:var(--text-sm);color:var(--gold2);margin-top:8px;font-style:italic;line-height:1.4}
 .rc-photo{margin-top:8px;border-radius:var(--r-2);overflow:hidden}
 .rc-photo img{width:100%;display:block}
 
