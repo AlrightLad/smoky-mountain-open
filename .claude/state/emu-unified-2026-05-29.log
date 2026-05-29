@@ -63,3 +63,138 @@ Issues? Report them at [4m[1mhttps://github.com/firebase/firebase-tools/issues
 [36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.6844ms
 [90m> [39m [DeleteAccount] Erased del_test_uid_2905 (photos: 1)
 [36m[1mi  functions:[22m[39m Finished "us-central1-deleteMyAccount" in 252.361ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.3774ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.6585ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.7464ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.9242ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.7858ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.4355ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3453ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3782ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.4014ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3323ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2133ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2502ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.6149ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3006ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3418ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.6498ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3601ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.5502ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.1189ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3165ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.408ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3251ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2932ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.477ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2439ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2319ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.7533ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.0499ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.5668ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.6904ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 28.3563ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.5525ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 23.8293ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 21.3497ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.4715ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 22.3243ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.7332ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 21.3425ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.6483ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 22.8407ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.7042ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 22.2597ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.7595ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 20.7496ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.4819ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 21.4441ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.6925ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 20.295ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.4695ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 20.6676ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3621ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 20.8172ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.4849ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 20.544ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.5847ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 16.9441ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 14.6545ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 17.8086ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 20.663ms

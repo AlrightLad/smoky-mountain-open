@@ -1,13 +1,26 @@
 // Wave-2 design critique pass (2026-05-29). Captures full-page baselines of
-// every HQ-tier surface at desktop width so I can Read + critique each one
-// against peer references and find the next genuine design improvement.
+// every HQ-tier surface so I can Read + critique each one against peer
+// references and find the next genuine design improvement.
 // Reuses the local emulator + dev-server auth path from capture-many-pages.mjs.
+//
+// Viewport is parameterized for the PWA's real form factors. Members run this
+// as a home-screen web app on iPhone + Android, so the critique loop must score
+// mobile, not just desktop. Override via env:
+//   CAPTURE_DEVICE  Playwright device descriptor (e.g. "iPhone 14 Pro",
+//                   "Pixel 7"); falls back to a 1440x900 desktop context.
+//   CAPTURE_OUT     output directory (defaults to the desktop dir).
+// The defaults reproduce the original desktop pass exactly.
 
-import { chromium } from 'playwright';
+import { chromium, devices } from 'playwright';
 import { mkdirSync, existsSync } from 'fs';
 
-const OUT = '.claude/state/design-pass-2026-05-22/critique-2026-05-29';
+const OUT = process.env.CAPTURE_OUT || '.claude/state/design-pass-2026-05-22/critique-2026-05-29';
 if (!existsSync(OUT)) mkdirSync(OUT, { recursive: true });
+
+const DEVICE = process.env.CAPTURE_DEVICE;
+const ctxOptions = (DEVICE && devices[DEVICE])
+    ? devices[DEVICE]
+    : { viewport: { width: 1440, height: 900 } };
 
 const PAGES = [
     'home',
@@ -43,8 +56,9 @@ const PAGES = [
 ];
 
 const b = await chromium.launch();
-const ctx = await b.newContext({ viewport: { width: 1440, height: 900 } });
+const ctx = await b.newContext(ctxOptions);
 const page = await ctx.newPage();
+console.log('Capturing at ' + (DEVICE && devices[DEVICE] ? DEVICE : 'desktop 1440x900') + ' -> ' + OUT);
 
 process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
 process.env.FIREBASE_AUTH_EMULATOR_HOST = '127.0.0.1:9099';
