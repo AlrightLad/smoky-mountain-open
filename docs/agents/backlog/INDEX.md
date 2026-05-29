@@ -21,9 +21,8 @@ Open backlog items for PARBAUGHS. Hybrid structure: this index file lists all op
 | BL-006 | Remove Play Now from desktop sidebar nav (part of Scorecard/Live HUD redesign Ship 2) | P3 | Wave 2 | Open | [BL-006.md](./BL-006.md) |
 | BL-007 | League edit page + masthead showing current league name | P3 | Wave 2 | Open | [BL-007.md](./BL-007.md) |
 | BL-008 | a11y: drawer aria-modal/role="dialog" toggling at Band A | P3 | Wave 2 | Open | [BL-008.md](./BL-008.md) |
-| BL-009 | Design system rationalization (consolidate --el-0/--el-4/--ease-standard, --duration-*/--dur-* drift) | P3 | Wave 2 | Open | [BL-009.md](./BL-009.md) |
+| BL-009 | Motion-naming decision: --duration-*/--dur-* hold DIFFERENT values, needs Founder canonical-timing call (dead --el-0/--el-4 fold into next base.css touch) | P3 | Wave 2 | Open (rescoped 2026-05-29) | [BL-009.md](./BL-009.md) |
 | BL-010 | Handicap trend chart performance cliff at 1000+ rounds | P3 | Post-Wave-4 | Open | [BL-010.md](./BL-010.md) |
-| BL-011 | HQ sidebar: duplicate .rr-sidebar__footer rules + stranded v8.5.x–v8.6.x CSS artifacts | P3 | Wave 2 | Open | [BL-011.md](./BL-011.md) |
 
 ## Backlog discipline
 
