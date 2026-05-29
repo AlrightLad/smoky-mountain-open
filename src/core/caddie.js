@@ -40,8 +40,8 @@ function caddieAnalyzeRound(round, playerRounds) {
     for (var bi = 9; bi < 18; bi++) back += scores[bi] || 0;
     var diff = front - back;
     if (Math.abs(diff) >= 3) {
-      if (diff > 0) insights.push({text:"Back 9 was " + diff + " strokes better than front \u2014 strong finish.", type:"positive"});
-      else insights.push({text:"Front 9 was " + Math.abs(diff) + " strokes better \u2014 fatigue or focus dropped on the back.", type:"negative"});
+      if (diff > 0) insights.push({text:"Back 9 was " + diff + " strokes better than front. Strong finish.", type:"positive"});
+      else insights.push({text:"Front 9 was " + Math.abs(diff) + " strokes better. Fatigue or focus dropped on the back.", type:"negative"});
     }
   }
 
@@ -61,8 +61,8 @@ function caddieAnalyzeRound(round, playerRounds) {
       if (girSave > 0.5) insights.push({text:"When you hit the green: " + Math.round(hitAvg*10)/10 + " avg. When you missed: " + Math.round(missAvg*10)/10 + " avg. GIR saves you " + girSave + " strokes per hole.", type:"neutral"});
     }
     var girPct = Math.round(girHit.length / (girHit.length + girMiss.length) * 100);
-    if (girPct < 25) insights.push({text:girPct + "% greens in regulation \u2014 we can do better. Focus on approach shots at the range this week.", type:"negative"});
-    else if (girPct >= 50) insights.push({text:girPct + "% GIR \u2014 great ball striking today.", type:"positive"});
+    if (girPct < 25) insights.push({text:girPct + "% greens in regulation. We can do better. Focus on approach shots at the range this week.", type:"negative"});
+    else if (girPct >= 50) insights.push({text:girPct + "% GIR. Great ball striking today.", type:"positive"});
   }
 
   // Putting
@@ -76,7 +76,7 @@ function caddieAnalyzeRound(round, playerRounds) {
     }
     if (totalPutts > 0) {
       if (threePutts >= 3) insights.push({text:threePutts + " three-putts today. Lag putting drills will save you " + threePutts + "+ strokes next round.", type:"negative"});
-      if (onePutts >= 4) insights.push({text:onePutts + " one-putts \u2014 the flat stick was working.", type:"positive"});
+      if (onePutts >= 4) insights.push({text:onePutts + " one-putts. The flat stick was working.", type:"positive"});
       var puttsPer = Math.round(totalPutts / numHoles * 10) / 10;
       if (puttsPer > 2.2) insights.push({text:puttsPer + " putts per hole. Tour average is 1.7. Prioritize putting practice.", type:"negative"});
     }
@@ -91,7 +91,7 @@ function caddieAnalyzeRound(round, playerRounds) {
     if (sd >= 2) doubles++;
   }
   if (doubles >= 3 && birdies < doubles) {
-    insights.push({text:birdies + " birdie" + (birdies!==1?"s":"") + " vs " + doubles + " double bogeys \u2014 the doubles are costing more than the birdies save. Damage control on bad holes is key.", type:"negative"});
+    insights.push({text:birdies + " birdie" + (birdies!==1?"s":"") + " vs " + doubles + " double bogeys. The doubles are costing more than the birdies save. Damage control on bad holes is key.", type:"negative"});
   }
 
   // Bogey streak detection
@@ -100,7 +100,7 @@ function caddieAnalyzeRound(round, playerRounds) {
     if ((scores[si] || 0) > (pars[si] || 4)) { streak++; if (streak > maxStreak) { maxStreak = streak; streakStart = si - streak + 1; } }
     else streak = 0;
   }
-  if (maxStreak >= 3) insights.push({text:"You bogeyed holes " + (streakStart+1) + " through " + (streakStart+maxStreak) + " \u2014 mid-round slumps happen. Take a deep breath and reset after every bad hole.", type:"negative"});
+  if (maxStreak >= 3) insights.push({text:"You bogeyed holes " + (streakStart+1) + " through " + (streakStart+maxStreak) + ". Mid-round slumps happen. Take a deep breath and reset after every bad hole.", type:"negative"});
 
   // Comparison to season average
   if (playerRounds && playerRounds.length >= 3) {
@@ -110,7 +110,7 @@ function caddieAnalyzeRound(round, playerRounds) {
       var avg = comparable.reduce(function(a,r){return a+r.score},0) / comparable.length;
       var diff2 = round.score - avg;
       if (diff2 <= -3) insights.push({text:"This round was " + Math.abs(Math.round(diff2)) + " strokes better than your average of " + Math.round(avg) + ". Outstanding day.", type:"positive"});
-      else if (diff2 >= 5) insights.push({text:"This was " + Math.round(diff2) + " strokes above your average of " + Math.round(avg) + ". One rough round doesn\u2019t define you \u2014 shake it off.", type:"negative"});
+      else if (diff2 >= 5) insights.push({text:"This was " + Math.round(diff2) + " strokes above your average of " + Math.round(avg) + ". One rough round doesn\u2019t define you. Shake it off.", type:"negative"});
     }
   }
 
@@ -160,7 +160,7 @@ function caddieScoutingReport(courseName, playerRounds) {
     holes.sort(function(a,b){return b.avg-a.avg});
     var hardest = holes[0];
     var easiest = holes[holes.length-1];
-    insights.push({text:"Your toughest hole: #" + hardest.hole + " (avg +" + hardest.avg + " over par). Play conservative here \u2014 aim for bogey, not par.", type:"negative"});
+    insights.push({text:"Your toughest hole: #" + hardest.hole + " (avg +" + hardest.avg + " over par). Play conservative here. Aim for bogey, not par.", type:"negative"});
     insights.push({text:"Your best hole: #" + easiest.hole + " (avg " + (easiest.avg >= 0 ? "+" : "") + easiest.avg + "). Trust your game here.", type:"positive"});
   }
 
@@ -200,9 +200,9 @@ function caddieGeneratePracticePlan(playerRounds) {
 
   // Find the weakest area
   var weaknesses = [];
-  if (girPct !== null && girPct < 30) weaknesses.push({area:"approaches", score:100-girPct, plan:"Your GIR is " + girPct + "% \u2014 below average. Spend 15 min hitting 150yd targets with your 7-iron. Then 10 min chipping from 30 yards. Finish with 5 min lag putts from 30+ feet."});
+  if (girPct !== null && girPct < 30) weaknesses.push({area:"approaches", score:100-girPct, plan:"Your GIR is " + girPct + "%, below average. Spend 15 min hitting 150yd targets with your 7-iron. Then 10 min chipping from 30 yards. Finish with 5 min lag putts from 30+ feet."});
   if (firPct !== null && firPct < 40) weaknesses.push({area:"driving", score:100-firPct, plan:"Only " + firPct + "% fairways hit. Start with 10 driver swings at 70% power focusing on center contact. Then 10 more at full speed. Finish with 10 min short game to offset the misses."});
-  if (puttAvg !== null && puttAvg > 2.0) weaknesses.push({area:"putting", score:Math.round(puttAvg*20), plan:puttAvg + " putts per hole \u2014 too many. Spend 15 min on the circle drill (3-footers). Then 10 min on lag putts from 30-40 feet. Finish with 5 min gate drill for stroke consistency."});
+  if (puttAvg !== null && puttAvg > 2.0) weaknesses.push({area:"putting", score:Math.round(puttAvg*20), plan:puttAvg + " putts per hole, too many. Spend 15 min on the circle drill (3-footers). Then 10 min on lag putts from 30-40 feet. Finish with 5 min gate drill for stroke consistency."});
   if (par3Avg !== null && par3Avg > 1.5) weaknesses.push({area:"par3s", score:Math.round(par3Avg*20), plan:"Par 3 scoring is +" + Math.round(par3Avg*10)/10 + " on average. Hit 10 balls each with your 150yd club and 180yd club. Focus on smooth tempo, not distance. Then 10 min chipping for when you miss the green."});
 
   if (!weaknesses.length) {
@@ -228,7 +228,7 @@ function caddieTrendAlerts(playerRounds) {
   for (var i = 1; i < Math.min(recent.length, 4); i++) {
     if (recent[i].score >= recent[i-1].score) { improving = false; break; }
   }
-  if (improving && recent.length >= 3) alerts.push({text:recent.length + "-round improving streak \u2014 keep it up! You\u2019re trending in the right direction.", type:"positive"});
+  if (improving && recent.length >= 3) alerts.push({text:recent.length + "-round improving streak. Keep it up! You\u2019re trending in the right direction.", type:"positive"});
 
   // Worsening trend
   var worsening = true;
@@ -242,7 +242,7 @@ function caddieTrendAlerts(playerRounds) {
     var lastDate = indiv[indiv.length-1].date;
     if (lastDate) {
       var daysSince = Math.round((Date.now() - new Date(lastDate+"T12:00:00").getTime()) / 86400000);
-      if (daysSince >= 14) alerts.push({text:"You haven\u2019t played in " + daysSince + " days. Your crew is pulling ahead \u2014 get out there!", type:"negative"});
+      if (daysSince >= 14) alerts.push({text:"You haven\u2019t played in " + daysSince + " days. Your crew is pulling ahead. Get out there!", type:"negative"});
     }
   }
 

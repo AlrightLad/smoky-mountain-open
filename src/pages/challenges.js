@@ -45,9 +45,9 @@ function renderChallengeList() {
     h += '<div style="margin-top:20px;text-align:left;max-width:280px;margin-left:auto;margin-right:auto">';
     h += '<div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Challenge ideas</div>';
     var examples = [
-      "Beat Kayvan\'s 107 at Connestee \u2014 50 coins",
-      "Most pars this weekend \u2014 Mr Parbaugh vs Nick \u2014 75 coins",
-      "Nassau at Honey Run \u2014 100 coins"
+      "Beat Kayvan\'s 107 at Connestee \u00b7 50 coins",
+      "Most pars this weekend, Mr Parbaugh vs Nick \u00b7 75 coins",
+      "Nassau at Honey Run \u00b7 100 coins"
     ];
     examples.forEach(function(ex) {
       h += '<div style="padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:4px;font-size:11px;color:var(--muted);font-style:italic">' + ex + '</div>';
