@@ -212,7 +212,7 @@ function refreshClubCal() {
         seenEventTitles[ev.title] = true;
         var _firstCourseKey = (ev.dayCourses && ev.dayCourses.length && ev.dayCourses[0].key) ? ev.dayCourses[0].key : "";
         var _evClick = ev.tripId ? "Router.go('scorecard',{tripId:'" + ev.tripId + "'" + (_firstCourseKey ? ",course:'" + _firstCourseKey + "'" : "") + "})" : "";
-        eh += '<div style="background:var(--bg3);border-left:3px solid var(--gold);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="' + _evClick + '">';
+        eh += '<div style="background:var(--bg3);border:1px solid rgba(var(--gold-rgb),.32);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="' + _evClick + '">';
         eh += '<div style="font-size:8px;color:var(--gold);font-weight:700;letter-spacing:.5px;margin-bottom:3px">EVENT</div>';
         eh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
         if (ev.location) eh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(ev.location) + '</div>';
@@ -249,7 +249,7 @@ function refreshClubCal() {
       // Tee times (blue) — only show standalone if no events on this day
       if (!eventEvs.length) {
         teeEvs.forEach(function(ev) {
-        eh += '<div style="background:var(--bg3);border-left:3px solid var(--blue);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="Router.go(\'teetimes\')">';
+        eh += '<div style="background:var(--bg3);border:1px solid rgba(var(--blue-rgb),.32);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="Router.go(\'teetimes\')">';
         eh += '<div style="font-size:8px;color:var(--blue);font-weight:700;letter-spacing:.5px;margin-bottom:3px">TEE TIME</div>';
         eh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
         if (ev.time) eh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + ev.time + '</div>';
@@ -269,7 +269,7 @@ function refreshClubCal() {
         Object.keys(courseGroups).forEach(function(course) {
           var group = courseGroups[course];
           // If single round, make the whole box clickable
-          var boxClick = group.length === 1 && group[0].roundId ? ' onclick="Router.go(\'rounds\',{roundId:\'' + group[0].roundId + '\'})" style="background:var(--bg3);border-left:3px solid var(--purple);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer"' : ' style="background:var(--bg3);border-left:3px solid var(--purple);border-radius:4px;padding:10px 12px;margin-bottom:6px"';
+          var boxClick = group.length === 1 && group[0].roundId ? ' onclick="Router.go(\'rounds\',{roundId:\'' + group[0].roundId + '\'})" style="background:var(--bg3);border:1px solid rgba(var(--purple-rgb),.32);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer"' : ' style="background:var(--bg3);border:1px solid rgba(var(--purple-rgb),.32);border-radius:4px;padding:10px 12px;margin-bottom:6px"';
           eh += '<div' + boxClick + '>';
           eh += '<div style="font-size:8px;color:var(--purple);font-weight:700;letter-spacing:.5px;margin-bottom:3px">ROUND' + (group.length > 1 ? 'S' : '') + '</div>';
           eh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(course) + '</div>';
@@ -290,7 +290,7 @@ function refreshClubCal() {
       // Range sessions (pink)
       if (rangeEvs.length) {
         rangeEvs.forEach(function(ev) {
-          eh += '<div style="background:var(--bg3);border-left:3px solid var(--pink);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="rangeActiveView=\'range\';Router.go(\'activity\')">';
+          eh += '<div style="background:var(--bg3);border:1px solid rgba(var(--pink-rgb),.32);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="rangeActiveView=\'range\';Router.go(\'activity\')">';
           eh += '<div style="font-size:8px;color:var(--pink);font-weight:700;letter-spacing:.5px;margin-bottom:3px">RANGE SESSION</div>';
           eh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + (ev.duration||0) + ' min</div>';
           if (ev.player) eh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(ev.player) + '</div>';

@@ -235,7 +235,7 @@ function _renderCalDayDetail(eventMap, ds) {
     if (seenTitles[ev.title]) return; seenTitles[ev.title] = true;
     var _ck = (ev.dayCourses&&ev.dayCourses.length&&ev.dayCourses[0].key)?ev.dayCourses[0].key:"";
     var _cl = ev.tripId ? "Router.go(\'scorecard\',{tripId:\'"+ev.tripId+"\'" + (_ck?",course:\'"+_ck+"\'":"") + "})" : "";
-    dh += '<div style="background:var(--bg3);border-left:3px solid var(--gold);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="'+_cl+'">';
+    dh += '<div style="background:var(--bg3);border:1px solid rgba(var(--gold-rgb),.32);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="'+_cl+'">';
     dh += '<div style="font-size:8px;color:var(--gold);font-weight:700;letter-spacing:.5px;margin-bottom:3px">EVENT</div>';
     dh += '<div style="font-size:13px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
     if (ev.location) dh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(ev.location) + '</div>';
@@ -259,7 +259,7 @@ function _renderCalDayDetail(eventMap, ds) {
   // Tee times
   if (!eventEvs.length) {
     teeEvs.forEach(function(ev) {
-      dh += '<div style="background:var(--bg3);border-left:3px solid var(--pink);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="Router.go(\'teetimes\')">';
+      dh += '<div style="background:var(--bg3);border:1px solid rgba(var(--pink-rgb),.32);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="Router.go(\'teetimes\')">';
       dh += '<div style="font-size:8px;color:var(--pink);font-weight:700;letter-spacing:.5px;margin-bottom:3px">TEE TIME</div>';
       dh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
       if (ev.time) dh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + ev.time + '</div>';
@@ -275,8 +275,8 @@ function _renderCalDayDetail(eventMap, ds) {
     Object.keys(cg).forEach(function(course) {
       var group = cg[course];
       var boxClick = group.length===1&&group[0].roundId ? ' onclick="Router.go(\'rounds\',{roundId:\''+group[0].roundId+'\'})"' : '';
-      dh += '<div style="background:var(--bg3);border-left:3px solid #4CAF50;border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer"'+boxClick+'>';
-      dh += '<div style="font-size:8px;color:#4CAF50;font-weight:700;letter-spacing:.5px;margin-bottom:3px">ROUND' + (group.length>1?"S":"") + '</div>';
+      dh += '<div style="background:var(--bg3);border:1px solid rgba(var(--cb-moss-rgb),.32);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer"'+boxClick+'>';
+      dh += '<div style="font-size:8px;color:var(--birdie);font-weight:700;letter-spacing:.5px;margin-bottom:3px">ROUND' + (group.length>1?"S":"") + '</div>';
       dh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(course) + '</div>';
       group.forEach(function(r) {
         var sc = r.score<=72?"var(--birdie)":r.score>=100?"var(--red)":"var(--cream)";
@@ -295,7 +295,7 @@ function _renderCalDayDetail(eventMap, ds) {
   // Range sessions
   rangeEvs.forEach(function(ev) {
     var rDest = ev.sessionId ? "Router.go(\'range-detail\',{sessionId:\'"+ev.sessionId+"\'})" : "Router.go(\'range\')";
-    dh += '<div style="background:var(--bg3);border-left:3px solid var(--blue);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="'+rDest+'">';
+    dh += '<div style="background:var(--bg3);border:1px solid rgba(var(--blue-rgb),.32);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="'+rDest+'">';
     dh += '<div style="font-size:8px;color:var(--blue);font-weight:700;letter-spacing:.5px;margin-bottom:3px">RANGE SESSION</div>';
     dh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + (ev.duration||0) + ' min</div>';
     if (ev.player) dh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(ev.player) + '</div>';

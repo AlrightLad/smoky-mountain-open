@@ -38,6 +38,7 @@ const SURFACES = [
     { key: "home",      route: "/",          wait: "[data-stat='round-count'], [data-page='home']" },
     { key: "standings", route: "/standings", wait: ".sp-list, [data-page='standings']" },
     { key: "feed",      route: "/feed",      wait: "[data-page='feed'], .feed-list" },
+    { key: "calendar",  route: "/calendar",  wait: "[data-page='calendar'], .calendar-page", selectPopulatedDay: true },
 ];
 
 const USERS = (await import(pathToFileURL(resolve(REPO, "tests/e2e/setup/fixtures/users.js")).href)).users;
@@ -94,6 +95,27 @@ async function captureProfile(profile, token) {
             await page.waitForTimeout(900);
             try { await page.waitForSelector(s.wait, { timeout: 4000 }); } catch {}
             await page.waitForTimeout(400);
+            if (s.selectPopulatedDay) {
+                await page.evaluate(() => {
+                    try {
+                        if (typeof _calBuildEventMap === "function" && typeof selectCalDay === "function") {
+                            var em = _calBuildEventMap();
+                            var keys = Object.keys(em || {});
+                            if (keys.length) selectCalDay(keys[0]);
+                        }
+                    } catch (e) {}
+                });
+                await page.waitForTimeout(600);
+                const detail = await page.$("#cal-day-detail");
+                if (detail) {
+                    await detail.scrollIntoViewIfNeeded();
+                    await page.waitForTimeout(200);
+                    const path = resolve(outProfile, `${s.key}.png`);
+                    await detail.screenshot({ path });
+                    console.log(`  [${profile.key}] ✓ ${s.key} (detail-clip)`);
+                    continue;
+                }
+            }
             const path = resolve(outProfile, `${s.key}.png`);
             await page.screenshot({ path, fullPage: false });
             console.log(`  [${profile.key}] ✓ ${s.key}`);
