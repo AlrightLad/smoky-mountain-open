@@ -60,6 +60,19 @@ const ALLOWLIST_FILE_PATTERNS = [
   // Local-only service account (gitignored — only exists on Founder's disk).
   // The scanner sees the on-disk file but it's never committed.
   /scripts\/\.service-account\.json$/,
+  // Gitignored env files (.env, .env.local, .env.staging, …) are the intended
+  // local secrets store. gitignore (.env.*) + gate-protected.sh both prevent
+  // them from ever being committed, so a credential here cannot leak via git.
+  // .env.example (committed template, placeholders only) is deliberately NOT
+  // matched so a real value mistakenly added to the template still trips.
+  /(^|\/)\.env(\.(?!example)[\w-]+)?$/,
+  // Incident reports document the credential shapes they are about; the closed
+  // INC-2026-05-21-001 report necessarily quotes the leaked public web key.
+  /\.claude\/state\/incidents\/.*\.md$/,
+  // Credential-leak SCAN CATALOG docs enumerate the key shapes they found (same
+  // class as the scanner's own output JSON, already allowlisted above). Narrow
+  // to the catalog filename only — other task-queue/founder docs stay scanned.
+  /\.claude\/state\/task-queue\/founder\/credential-leak-scan-.*\.md$/,
   // Test fixtures use deterministic non-production passwords for emulator-only flows.
   /tests\/e2e\/.*fixtures\//,
   /tests\/e2e\/setup\//,

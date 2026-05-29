@@ -1,6 +1,6 @@
 {
   "name": "the-parbaughs",
-  "version": "8.23.29",
+  "version": "8.23.30",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -37,6 +37,7 @@
     "bundle:scan": "node scripts/scan-bundle.js",
     "scan:secrets": "secretlint --secretlintignore .gitignore \"**/*\"",
     "scan:secrets:fast": "secretlint --secretlintignore .gitignore \"src/**/*\" \"functions/**/*\" \"public/**/*\" \"scripts/**/*\"",
+    "security:pentest": "node scripts/security/pentest-harness.mjs",
     "test:capacitor": "playwright test --config=playwright.capacitor.config.js",
     "visual:bless": "node tests/visual-regression/bless.mjs",
     "visual:check": "node tests/visual-regression/run.mjs"

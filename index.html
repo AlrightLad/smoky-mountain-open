@@ -3,6 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <script>
+// Clickjacking frame-buster. The authoritative defense is the
+// X-Frame-Options/CSP frame-ancestors headers (firebase.json), but GitHub
+// Pages production cannot set custom headers, so this JS fallback busts out of
+// any frame there. Non-blocking: if a cross-origin parent blocks top.location
+// access it throws and we swallow it (nothing more is possible from inside).
+(function(){ try { if (window.top !== window.self) { window.top.location = window.self.location.href; } } catch (e) {} })();
+</script>
+<script>
 // No-flash theme boot (v8.3.5 · Ship 0d-i). Reads pb_theme; migrates legacy
 // pb_appearance "light"/"dark" on first run. Defaults to "clubhouse".
 (function(){

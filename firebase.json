@@ -20,6 +20,13 @@
     ],
     "headers": [
       {
+        "source": "**",
+        "headers": [
+          { "key": "X-Frame-Options", "value": "DENY" },
+          { "key": "Content-Security-Policy", "value": "frame-ancestors 'none'" }
+        ]
+      },
+      {
         "source": "**/*.@(js|css|jpg|jpeg|png|webp|svg)",
         "headers": [
           { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }

@@ -369,7 +369,7 @@ async function runAll() {
 
     await runTest('banned: CAN still read own notifications (appeal outcome)', async () => {
       await withBan(BANNED, { reason: 'test' });
-      await seedDoc('notifications/n1', { toUid: BANNED, title: 'Appeal denied', message: 'x' });
+      await seedDoc('notifications/n1', { toUserId: BANNED, title: 'Appeal denied', message: 'x' });
       const db = authenticatedAs(BANNED);
       await assertSucceeds(db.collection('notifications').doc('n1').get());
     });
@@ -980,14 +980,14 @@ async function runAll() {
   await group('notifications', async () => {
     await runTest('target user reads own notification', async () => {
       await withPlatformRole(USER_A, 'user');
-      await seedDoc('notifications/n1', { toUid: USER_A, title: 't', message: 'm' });
+      await seedDoc('notifications/n1', { toUserId: USER_A, title: 't', message: 'm' });
       const db = authenticatedAs(USER_A);
       await assertSucceeds(db.collection('notifications').doc('n1').get());
     });
 
     await runTest('non-target cannot read notification', async () => {
       await withPlatformRole(USER_B, 'user');
-      await seedDoc('notifications/n1', { toUid: USER_A, title: 't', message: 'm' });
+      await seedDoc('notifications/n1', { toUserId: USER_A, title: 't', message: 'm' });
       const db = authenticatedAs(USER_B);
       await assertFails(db.collection('notifications').doc('n1').get());
     });
@@ -996,7 +996,7 @@ async function runAll() {
       await withSuspension(SUSP, {});
       const db = authenticatedAs(SUSP);
       await assertFails(db.collection('notifications').doc('n1').set({
-        toUid: USER_A, title: 't', message: 'm',
+        toUserId: USER_A, title: 't', message: 'm',
       }));
     });
   });
@@ -1605,7 +1605,7 @@ async function runAll() {
       });
       const db = authenticatedAs(USER_A);
       await assertSucceeds(db.collection('teetimes').doc('tt1').set({
-        leagueId: LEAGUE_A, createdBy: USER_A, course: 'course',
+        leagueId: LEAGUE_A, createdBy: USER_A, course: 'course', spots: 4,
       }));
     });
 
