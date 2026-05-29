@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.23.24";
+var APP_VERSION = "8.23.25";
 
 // ══════════════════════════════════════════════════════════════════════════
 // LEAGUE ISOLATION — Nuclear approach. Makes leaking PHYSICALLY IMPOSSIBLE.
@@ -102,6 +102,39 @@ function isFounderRole(member) { return platformRoleOf(member) === "founder"; }
 // Convenience: returns true if member is platform-banned (was "removed"
 // in v7 terminology — legacy fallback handles that).
 function isBannedRole(member) { return platformRoleOf(member) === "banned"; }
+
+// ── Member block list (App Store Guideline 1.2 — UGC moderation) ──────
+// Each member stores blockedUsers (an array of uids) on their OWN member
+// doc. Client-side filtering hides a blocked member's posts, chat, comments,
+// and direct messages from the blocker. Stored on the blocker's own doc so
+// no Firestore rules change is required (a member may already write their own
+// member doc). Server-enforced blocking (denying the blocked user's writes)
+// is a documented follow-up. The blocker side is what App Store 1.2 requires:
+// the ability to stop seeing and being contacted by an abusive user.
+function pbBlockedUids() {
+  return (typeof currentProfile !== "undefined" && currentProfile && Array.isArray(currentProfile.blockedUsers)) ? currentProfile.blockedUsers : [];
+}
+function pbIsBlocked(uid) {
+  if (!uid) return false;
+  return pbBlockedUids().indexOf(uid) !== -1;
+}
+// pbSetBlocked(uid, shouldBlock) — add/remove a uid from the signed-in
+// member's own blockedUsers array. Updates currentProfile in memory first so
+// filtering takes effect immediately, then persists the full computed array
+// (no concurrent writer to one's own list, so a full-array write is race-safe
+// and avoids a FieldValue dependency). Returns a Promise.
+function pbSetBlocked(uid, shouldBlock) {
+  if (!uid || typeof currentUser === "undefined" || !currentUser || typeof currentProfile === "undefined" || !currentProfile) {
+    return Promise.reject(new Error("not-ready"));
+  }
+  var list = Array.isArray(currentProfile.blockedUsers) ? currentProfile.blockedUsers.slice() : [];
+  var idx = list.indexOf(uid);
+  if (shouldBlock && idx === -1) list.push(uid);
+  else if (!shouldBlock && idx !== -1) list.splice(idx, 1);
+  currentProfile.blockedUsers = list;
+  if (!db) return Promise.resolve();
+  return db.collection("members").doc(currentUser.uid).update({ blockedUsers: list });
+}
 
 function pbLog() { if (PB_DEBUG && console.log) console.log.apply(console, arguments); }
 function pbWarn() {

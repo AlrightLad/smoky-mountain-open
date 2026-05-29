@@ -24,6 +24,8 @@ Router.register("dms", function() {
       if (isBannedRole(m)) return false;
       // v8.17.0 Path B+ hardening — hide test accounts from real-account viewers
       if (PB.isMemberVisibleToViewer && !PB.isMemberVisibleToViewer(m)) return false;
+      // App Store 1.2 — hide members the viewer has blocked from the DM list.
+      if (typeof pbIsBlocked === "function" && pbIsBlocked(m.id)) return false;
       if (m.id === myUid) return false;
       if (myClaimedFrom && m.id === myClaimedFrom) return false;
       if (m.claimedFrom && m.claimedFrom === myClaimedFrom && myClaimedFrom) return false;
@@ -122,7 +124,22 @@ Router.register("dms", function() {
 Router.register("dm-thread", function(params) {
   activeDmPartner = params ? params.partner : null;
   if (!activeDmPartner || !currentUser) { Router.go("dms"); return; }
-  
+
+  // App Store 1.2 — if the viewer has blocked this partner, show a blocked
+  // state instead of the conversation. Unblocking is offered inline.
+  if (typeof pbIsBlocked === "function" && pbIsBlocked(activeDmPartner)) {
+    if (dmListenerUnsub) { dmListenerUnsub(); dmListenerUnsub = null; }
+    var bThreadEl = document.querySelector('[data-page="dm-thread"]');
+    var bPartner = PB.getPlayer(activeDmPartner);
+    var bName = bPartner ? (bPartner.name || bPartner.username || "this member") : "this member";
+    bThreadEl.innerHTML = '<div class="dm-page-wrap"><div class="sh" style="flex-shrink:0"><h2 style="font-size:16px">Message</h2><button class="back" onclick="Router.go(\'dms\')">← Back</button></div>' +
+      '<div class="empty" style="padding-top:60px"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><circle cx="12" cy="12" r="10"/><path d="M4.9 4.9l14.2 14.2"/></svg></div>' +
+      '<div class="empty-text">You blocked ' + escHtml(bName) + '</div>' +
+      '<div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:280px;margin-left:auto;margin-right:auto">You will not see their messages or posts. Unblock them to resume contact.</div>' +
+      '<button class="btn-sm" style="margin-top:16px" onclick="dmUnblockPartner(\'' + activeDmPartner + '\')">Unblock</button></div></div>';
+    return;
+  }
+
   // Render immediately with loading state — don't wait for anything async
   var threadEl = document.querySelector('[data-page="dm-thread"]');
   threadEl.innerHTML = '<div class="dm-page-wrap"><div class="sh" id="dmThreadHeader" style="flex-shrink:0"><h2 style="font-size:16px">Message</h2><button class="back" onclick="Router.go(\'dms\')">← Back</button></div>' +
@@ -192,6 +209,18 @@ function sendDM() {
       });
     })
     .catch(function(){Router.toast("Failed to send")});
+}
+
+// App Store 1.2 — unblock from inside the blocked-thread state, then re-enter
+// the conversation so the member sees it restored immediately.
+function dmUnblockPartner(uid) {
+  if (!uid) return;
+  pbSetBlocked(uid, false).then(function() {
+    Router.toast("Unblocked");
+    Router.go("dm-thread", { partner: uid });
+  }).catch(function(e) {
+    Router.toast(typeof pbErrMsg === "function" ? pbErrMsg(e, "Couldn't unblock. Try again.") : "Couldn't unblock. Try again.");
+  });
 }
 
 

@@ -22,6 +22,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · The polish pass</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    { item: "You can now block another member from their profile. Once blocked, you stop seeing their posts, comments, and messages anywhere in the app, and you can unblock them anytime from Settings. Reporting a member is cleaner too: you pick a reason from a tidy list and it goes privately to the Commissioner, instead of the old typed-number popup.", tag: "NEW" },
     { item: "When an action can't go through, like posting a wager, saving an event, or sending a message, the app now explains it in plain language and points you to the fix (for example that you appear to be offline, or that you don't have permission), instead of flashing a confusing technical error.", tag: "IMPROVED" },
     { item: "Your Records page now counts Courses Played correctly: it tallies every distinct course you've actually logged a round at, so the number is right even before anyone fills in the course directory by hand. It used to read zero until courses were added manually.", tag: "FIXED" },
     { item: "Two small clean-ups: the Ace Wall no longer shows a stray line of placeholder text under your hole-in-ones, and the Courses page now invites you to find your course from thousands worldwide in plain language instead of naming the data service behind it.", tag: "IMPROVED" },

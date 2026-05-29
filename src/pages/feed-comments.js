@@ -15,6 +15,9 @@ function _renderCommentThread(roundId, comments, commentLikes) {
 }
 
 function _renderCommentRow(roundId, c, ci, commentLikes) {
+  // App Store 1.2 — skip comments from blocked members. Return empty (not a
+  // reindex) so ci stays aligned for like/delete actions on remaining rows.
+  if (typeof pbIsBlocked === "function" && pbIsBlocked(c.uid)) return '';
   var cLikes = (commentLikes && commentLikes[String(ci)]) || [];
   var iLikedC = (typeof currentUser !== "undefined" && currentUser) && cLikes.indexOf(currentUser.uid) !== -1;
   var ownComment = (typeof currentUser !== "undefined" && currentUser) && c.uid === currentUser.uid;

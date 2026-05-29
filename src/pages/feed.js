@@ -31,6 +31,10 @@ Router.register("feed", function(params) {
   function tryRender() {
     if (pending > 0) return;
     items.sort(function(a, b) { return b.ts - a.ts; });
+    // App Store 1.2 — hide posts authored by members the viewer has blocked.
+    window._feedItems = items.filter(function(it) {
+      return typeof pbIsBlocked !== "function" || !pbIsBlocked(it.playerId);
+    });
     _renderFeedItems();
   }
 

@@ -219,6 +219,24 @@ Router.register("settings", function(params) {
     h += '<div style="font-size:9px;color:var(--muted2);margin-top:4px;text-align:center">Removes your profile, photos, and sign-in. This cannot be undone.</div></div>';
   }
 
+  // Blocked members (App Store 1.2) — only shown when the member has blocked
+  // someone. Blocked members are hidden from feed, comments, and DMs, so this
+  // is the one discoverable place to review and unblock them.
+  var _blockedUids = typeof pbBlockedUids === "function" ? pbBlockedUids() : [];
+  if (currentUser && _blockedUids.length) {
+    h += '<div class="form-section" id="blocked-section"><div class="form-title">Blocked Members</div>';
+    h += '<div style="font-size:11px;color:var(--muted2);margin-bottom:10px;line-height:1.5">You will not see posts, comments, or messages from blocked members.</div>';
+    _blockedUids.forEach(function(uid) {
+      var bp = PB.getPlayer(uid);
+      var bname = bp ? (bp.name || bp.username || "Member") : "Former member";
+      h += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">';
+      h += '<span style="font-size:13px;color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(bname) + '</span>';
+      h += '<button class="btn-sm outline" style="flex-shrink:0" onclick="settingsUnblockMember(\'' + uid + '\')">Unblock</button>';
+      h += '</div>';
+    });
+    h += '</div>';
+  }
+
   // Legal
   h += '<div class="form-section"><div class="form-title">Legal</div>';
   h += '<div style="margin-bottom:12px"><button class="btn full outline" onclick="window.open(\'privacy.html\',\'_blank\',\'noopener\')">Privacy Policy</button></div>';
@@ -263,6 +281,18 @@ Router.register("settings", function(params) {
     }).catch(function() { /* silent — older browsers reject the query */ });
   }
 });
+
+// App Store 1.2 — unblock from the Settings list, then re-render Settings and
+// scroll back to the Blocked Members section (which vanishes once empty).
+function settingsUnblockMember(uid) {
+  if (!uid || typeof pbSetBlocked !== "function") return;
+  pbSetBlocked(uid, false).then(function() {
+    Router.toast("Unblocked");
+    Router.go("settings", { section: "blocked" });
+  }).catch(function(e) {
+    Router.toast(typeof pbErrMsg === "function" ? pbErrMsg(e, "Couldn't unblock. Try again.") : "Couldn't unblock. Try again.");
+  });
+}
 
 function togglePublicProfile() {
   if (!currentUser || !db) return;

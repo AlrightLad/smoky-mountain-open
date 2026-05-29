@@ -411,17 +411,11 @@ function resolveReport(reportId) {
 }
 
 // ========== MEMBER REPORT SYSTEM (any member can report) ==========
-function reportMember(memberId) {
-  if (!db || !currentUser) { Router.toast("Sign in to report"); return; }
-  if (memberId === currentUser.uid) { Router.toast("You can't report yourself"); return; }
-
-  var reasons = ["Score falsification", "Vulgar/inappropriate messages", "Unsportsmanlike conduct", "Harassment", "Other"];
-  var reasonIdx = prompt("Report reason:\n1. Score falsification\n2. Vulgar/inappropriate messages\n3. Unsportsmanlike conduct\n4. Harassment\n5. Other\n\nEnter number (1-5):");
-  if (!reasonIdx) return;
-  var reason = reasons[parseInt(reasonIdx) - 1] || "Other";
-  var details = prompt("Additional details (optional):", "");
-
-  db.collection("reports").add({
+// App Store 1.2 — branded report flow (replaces native prompt(), which is
+// unreliable in a mobile PWA). A member picks a reason, optionally adds detail,
+// and the report is written privately to /reports for the Commissioner.
+function _submitMemberReport(memberId, reason, details) {
+  return db.collection("reports").add({
     reportedUser: memberId,
     reportedBy: currentUser.uid,
     reason: reason,
@@ -437,11 +431,60 @@ function reportMember(memberId) {
       sendNotification(commissioner.id, {
         type: "report",
         title: "Member Report",
-        message: (currentProfile.name||"A member") + " reported " + (reported ? reported.name : memberId) + " for " + reason
+        message: ((currentProfile && currentProfile.name) || "A member") + " reported " + (reported ? reported.name : memberId) + " for " + reason
       });
     }
     Router.toast("Report submitted to the Commissioner");
-  }).catch(function() { Router.toast("Failed to submit report"); });
+  }).catch(function(e) {
+    Router.toast(typeof pbErrMsg === "function" ? pbErrMsg(e, "Couldn't submit the report. Try again.") : "Couldn't submit the report. Try again.");
+  });
+}
+
+function reportMember(memberId) {
+  if (!db || !currentUser) { Router.toast("Sign in to report"); return; }
+  if (memberId === currentUser.uid) { Router.toast("You can't report yourself"); return; }
+
+  var reasons = ["Score falsification", "Vulgar/inappropriate messages", "Unsportsmanlike conduct", "Harassment", "Other"];
+  var reasonBtns = reasons.map(function(r) {
+    return '<button type="button" class="pb-report-reason tappable" data-reason="' + escHtml(r) + '" style="text-align:left;padding:12px 14px;background:transparent;border:1px solid var(--cb-chalk-3);border-radius:8px;font-size:14px;color:var(--cb-ink);cursor:pointer">' + escHtml(r) + '</button>';
+  }).join('');
+
+  var selectedReason = null;
+  var sheetId = openBottomSheet({
+    size: "half",
+    title: "Report member",
+    content:
+      '<div style="padding-top:8px">' +
+        '<div style="font-size:13px;color:var(--cb-mute);line-height:1.5;margin-bottom:12px">Reports go privately to the Commissioner. What is the problem?</div>' +
+        '<div id="pbReportReasons" style="display:flex;flex-direction:column;gap:8px">' + reasonBtns + '</div>' +
+        '<textarea id="pbReportDetails" placeholder="Additional details (optional)" rows="3" style="width:100%;margin-top:12px;padding:12px 14px;border:1px solid var(--cb-chalk-3);border-radius:8px;font-size:14px;font-family:var(--font-ui);resize:vertical;box-sizing:border-box"></textarea>' +
+        '<button id="pbReportSubmit" class="tappable tappable--primary" style="width:100%;margin-top:12px;padding:13px;background:var(--cb-brass);border:none;border-radius:8px;font-size:14px;font-weight:600;color:var(--cb-ink);cursor:pointer;opacity:.5">Submit report</button>' +
+      '</div>'
+  });
+
+  setTimeout(function() {
+    var reasonEls = document.querySelectorAll("#pbReportReasons .pb-report-reason");
+    var submitEl = document.getElementById("pbReportSubmit");
+    reasonEls.forEach(function(btn) {
+      btn.onclick = function() {
+        selectedReason = btn.getAttribute("data-reason");
+        reasonEls.forEach(function(other) {
+          var on = other === btn;
+          other.style.borderColor = on ? "var(--cb-brass)" : "var(--cb-chalk-3)";
+          other.style.background = on ? "rgba(var(--cb-brass-rgb,180,137,62),.12)" : "transparent";
+          other.style.fontWeight = on ? "600" : "400";
+        });
+        if (submitEl) submitEl.style.opacity = "1";
+      };
+    });
+    if (submitEl) submitEl.onclick = function() {
+      if (!selectedReason) { Router.toast("Pick a reason first"); return; }
+      var detailsEl = document.getElementById("pbReportDetails");
+      var details = detailsEl ? detailsEl.value.trim() : "";
+      closeBottomSheet(sheetId);
+      _submitMemberReport(memberId, selectedReason, details);
+    };
+  }, 50);
 }
 
 function loadAdminInviteList() {

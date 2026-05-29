@@ -48,7 +48,13 @@ function renderMemberDetailWithData(p) {
   h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">';
   h += '<button class="back" onclick="Router.go(\'members\')" style="padding:6px 10px;min-height:40px">← Members</button>';
   if (isOwnProfile) h += '<button class="btn-sm green" onclick="Router.go(\'members\',{edit:\'' + pid + '\'})">Edit profile</button>';
-  else if (currentUser && currentUser.uid !== pid) h += '<button class="btn-sm outline" style="font-size:9px;color:var(--muted)" onclick="reportMember(\'' + pid + '\')">Report</button>';
+  else if (currentUser && currentUser.uid !== pid) {
+    var _isBlocked = typeof pbIsBlocked === "function" && pbIsBlocked(pid);
+    h += '<div style="display:flex;gap:6px;align-items:center">';
+    h += '<button class="btn-sm outline" style="font-size:9px;color:var(--muted)" onclick="toggleBlockMember(\'' + pid + '\')">' + (_isBlocked ? 'Unblock' : 'Block') + '</button>';
+    h += '<button class="btn-sm outline" style="font-size:9px;color:var(--muted)" onclick="reportMember(\'' + pid + '\')">Report</button>';
+    h += '</div>';
+  }
   h += '</div>';
   // Avatar + name block
   h += '<div style="text-align:center;padding-bottom:16px">';
@@ -771,3 +777,46 @@ function renderMemberDetailWithData(p) {
 }
 
 /* Handicap graph builder */
+
+// App Store 1.2 — block/unblock a member from their profile. Unblocking is
+// immediate; blocking shows a branded confirm sheet first. The block list lives
+// on the viewer's own member doc (see pbSetBlocked) so no rules change is
+// needed. After either action, re-render the profile so the button flips.
+function toggleBlockMember(pid) {
+  if (!pid || typeof pbSetBlocked !== "function") return;
+  var player = PB.getPlayer(pid);
+  var name = player ? (player.name || player.username || "this member") : "this member";
+  if (typeof pbIsBlocked === "function" && pbIsBlocked(pid)) {
+    pbSetBlocked(pid, false).then(function() {
+      Router.toast("Unblocked " + name);
+      renderMemberDetail(pid);
+    }).catch(function(e) {
+      Router.toast(typeof pbErrMsg === "function" ? pbErrMsg(e, "Couldn't unblock. Try again.") : "Couldn't unblock. Try again.");
+    });
+    return;
+  }
+  var sheetId = openBottomSheet({
+    size: "compact",
+    title: "Block " + name + "?",
+    content:
+      '<div style="font-size:14px;color:var(--cb-charcoal);line-height:1.5;padding-top:8px">You will no longer see their posts, comments, or messages anywhere in the app. You can unblock them anytime from Settings.</div>' +
+      '<div style="display:flex;gap:8px;margin-top:16px">' +
+        '<button id="pbBlockCancel" class="tappable" style="flex:1;padding:12px;background:transparent;border:1px solid var(--cb-chalk-3);border-radius:8px;font-size:14px;color:var(--cb-ink);cursor:pointer">Cancel</button>' +
+        '<button id="pbBlockConfirm" class="tappable tappable--primary" style="flex:1;padding:12px;background:var(--cb-brass);border:none;border-radius:8px;font-size:14px;font-weight:600;color:var(--cb-ink);cursor:pointer">Block</button>' +
+      '</div>'
+  });
+  setTimeout(function() {
+    var cancelBtn = document.getElementById("pbBlockCancel");
+    var confirmBtn = document.getElementById("pbBlockConfirm");
+    if (cancelBtn) cancelBtn.onclick = function() { closeBottomSheet(sheetId); };
+    if (confirmBtn) confirmBtn.onclick = function() {
+      closeBottomSheet(sheetId);
+      pbSetBlocked(pid, true).then(function() {
+        Router.toast("Blocked " + name);
+        renderMemberDetail(pid);
+      }).catch(function(e) {
+        Router.toast(typeof pbErrMsg === "function" ? pbErrMsg(e, "Couldn't block. Try again.") : "Couldn't block. Try again.");
+      });
+    };
+  }, 50);
+}
