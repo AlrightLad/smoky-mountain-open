@@ -821,7 +821,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-29T20:18:19.866780Z",
+  "generated_at": "2026-05-29T20:34:29.923377Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 86.6,
   "overall_grade": "A-",
@@ -1008,18 +1008,19 @@
     }
   ],
   "audit_trigger": {
-    "sha": "e07bc92c",
-    "subject": "feat(trophyroom): legible earned/locked achievement hierarchy (v8.23.32)",
-    "committed_at": "2026-05-29T16:17:56-04:00",
+    "sha": "0c322157",
+    "subject": "feat(feed): date-group dividers for activity timeline (v8.23.33)",
+    "committed_at": "2026-05-29T16:34:06-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
       "public/sw.js",
       "src/core/utils.js",
       "src/pages/caddynotes.js",
+      "src/pages/feed.js",
       "src/styles/components.css"
     ],
-    "total_files_touched": 6
+    "total_files_touched": 7
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
