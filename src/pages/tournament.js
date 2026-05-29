@@ -453,7 +453,7 @@ function submitTournamentCreate() {
   else Router.go("trips");
 }
 
-// ---------- View (Increment 3 builds the leaderboard; this is the lock-state cover) ----------
+// ---------- View: masthead + live leaderboard + field + schedule ----------
 function renderTournamentView(id) {
   var trips = (typeof PB !== "undefined" && PB.getTrips) ? PB.getTrips() : [];
   var t = trips.find(function (x) { return x.id === id; });
@@ -467,10 +467,13 @@ function renderTournamentView(id) {
   var league = (typeof window !== "undefined" && window._activeLeagueName) ? window._activeLeagueName : "The Parbaughs";
   var fmt = tournamentFormat(t.format || "stableford");
   var style = tournamentTeamStyle(t.teamStyle || "individual");
+  var closed = t.status === "closed";
+  var underway = !closed && t.startAt && Date.now() >= t.startAt;
+  var phase = closed ? "Final" : underway ? "Underway" : "Locked";
 
   var h = '<div class="sh"><h2>Tournament</h2><button class="back" onclick="Router.back(\'trips\')">← Back</button></div>';
   h += '<div class="tourn-masthead">';
-  h += '<div class="tourn-masthead__eyebrow">' + escHtml(league) + ' · <span style="color:var(--cb-brass)">' + (t.status === "closed" ? "Final" : "Locked") + '</span></div>';
+  h += '<div class="tourn-masthead__eyebrow">' + escHtml(league) + ' · <span style="color:var(--cb-brass)">' + phase + '</span></div>';
   h += '<div class="tourn-masthead__title">' + escHtml(t.name) + '</div>';
   h += '<div class="tourn-masthead__dek">for the title of <em>' + escHtml(t.winnerTitle || "Champion") + '</em></div>';
   h += '<div class="tourn-masthead__rule"></div>';
@@ -479,15 +482,95 @@ function renderTournamentView(id) {
   h += '<div class="tourn-masthead__meta">' + meta.filter(Boolean).map(function (p) { return escHtml(p); }).join(' <span style="opacity:.4">·</span> ') + '</div>';
   h += '</div>';
 
+  // Champion band — only when the tournament is closed and a winner is recorded.
+  if (closed && t.champion) {
+    var champName = _tournResolveName(t.champion);
+    h += '<div class="tourn-champion"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4h12v3a6 6 0 01-12 0V4z"/><path d="M6 5H4a2 2 0 002 4M18 5h2a2 2 0 01-2 4M9 18h6M10 18v-3M14 18v-3M8 21h8"/></svg>';
+    h += '<span class="tourn-champion__label">' + escHtml(t.winnerTitle || "Champion") + '</span>';
+    h += '<span class="tourn-champion__name">' + escHtml(champName) + '</span></div>';
+  }
+
+  // Leaderboard — the live (or seeded) standings.
+  h += '<div style="padding:0 16px">' + _tournLeaderboard(t) + '</div>';
+
   // Field + schedule from the stored plan.
   if (t.plan) {
     var planEl = JSON.parse(JSON.stringify(t.plan));
     h += '<div style="padding:0 16px">' + _tournViewPlan(planEl) + '</div>';
   }
 
-  h += '<div class="tourn-lock-note" style="margin:16px"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg><span>Name and title locked at creation' + (t.lockedAt ? ' · ' + new Date(t.lockedAt).toLocaleDateString() : '') + '. Live scoring + leaderboard arrive next.</span></div>';
+  h += '<div class="tourn-lock-note" style="margin:16px"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg><span>Name and title locked at creation' + (t.lockedAt ? ' · ' + new Date(t.lockedAt).toLocaleDateString() : '') + '. The field and format are set; standings update as rounds are posted.</span></div>';
 
   document.querySelector('[data-page="tournament"]').innerHTML = h;
+}
+
+// Resolve a champion id (or raw name) to a display name.
+function _tournResolveName(idOrName) {
+  if (typeof PB !== "undefined" && PB.getPlayer) {
+    var p = PB.getPlayer(idOrName);
+    if (p) return p.name || p.username || idOrName;
+  }
+  return idOrName;
+}
+
+// Leaderboard block: seeded form guide before play, live standings once rounds
+// are posted, final standings when closed. Consumes the engine's tournamentStandings.
+function _tournLeaderboard(t) {
+  var st = tournamentStandings(t);
+  var closed = t.status === "closed";
+  var label = closed ? "Final standings" : st.started ? "Standings" : "Form guide";
+  var h = '<div class="tourn-block"><div class="tourn-block__label">' + label + '</div>';
+
+  if (!st.started && !closed) {
+    var lead = (st.kind === "teams")
+      ? "Teams seeded by combined handicap. "
+      : "Seeded by handicap. ";
+    var when = _tournCountdown(t.startAt);
+    h += '<div class="tourn-lead-hint">' + lead + "Points post live as rounds are scored."
+      + (when ? ' <span class="tourn-lead-when">' + escHtml(when) + '</span>' : '') + '</div>';
+  }
+
+  if (!st.entries.length) {
+    h += '<div class="tourn-review-empty">No field recorded for this tournament.</div></div>';
+    return h;
+  }
+
+  st.entries.forEach(function (e) {
+    var leadCls = (st.started || closed) && e.rank === 1 ? ' tourn-lead-row--lead' : '';
+    var right = st.started
+      ? ((e.points != null ? e.points : 0) + " pts")
+      : (st.kind === "teams" ? "HCP " + _tournHcp(e.combinedHandicap) : "HCP " + _tournHcp(e.handicap));
+    h += '<div class="tourn-lead-row' + leadCls + '">';
+    h += '<span class="tourn-lead-rank">' + e.rank + '</span>';
+    h += '<div class="tourn-lead-body"><span class="tourn-lead-name">' + escHtml(e.name) + '</span>';
+    if (st.kind === "teams") {
+      h += '<span class="tourn-lead-sub">' + e.members.map(function (m) { return escHtml(m.name); }).join(", ") + '</span>';
+    }
+    h += '</div>';
+    h += '<span class="tourn-lead-val">' + escHtml(String(right)) + '</span>';
+    h += '</div>';
+  });
+  h += '</div>';
+  return h;
+}
+
+// Handicap to a uniform 1-decimal string so the leaderboard column stays aligned.
+function _tournHcp(n) {
+  var v = Number(n);
+  return isNaN(v) ? String(n) : v.toFixed(1);
+}
+
+// Human countdown to first tee. Past start → "Underway".
+function _tournCountdown(startAt) {
+  if (!startAt) return "";
+  var diff = startAt - Date.now();
+  if (diff <= 0) return "Underway";
+  var mins = Math.floor(diff / 60000);
+  var days = Math.floor(mins / 1440);
+  var hrs = Math.floor((mins % 1440) / 60);
+  if (days >= 1) return "Tees off in " + days + " day" + (days === 1 ? "" : "s") + (hrs ? " " + hrs + "h" : "");
+  if (hrs >= 1) return "Tees off in " + hrs + "h " + (mins % 60) + "m";
+  return "Tees off in " + mins + " min";
 }
 
 // Shared field+schedule renderer for the view (reuses the builder's block styles).

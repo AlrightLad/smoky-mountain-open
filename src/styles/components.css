@@ -2708,3 +2708,117 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   line-height: 1.4;
 }
 .tourn-cta__chev { color: var(--cb-mute); flex-shrink: 0; }
+
+/* --- Tournament view: champion band (Increment 3) --- */
+.tourn-champion {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: "icon label" "icon name";
+  align-items: center;
+  column-gap: var(--sp-3);
+  row-gap: 2px;
+  margin: 0 var(--sp-4) var(--sp-4);
+  padding: var(--sp-4) var(--sp-5);
+  background: rgba(var(--cb-brass-rgb), 0.10);
+  border: 1px solid rgba(var(--cb-brass-rgb), 0.30);
+  border-radius: var(--r-3);
+}
+.tourn-champion > svg {
+  grid-area: icon;
+  width: 44px;
+  height: 44px;
+  padding: 11px;
+  border-radius: 50%;
+  background: var(--cb-brass);
+  color: var(--cb-chalk);
+  box-sizing: border-box;
+}
+.tourn-champion__label {
+  grid-area: label;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--cb-brass);
+}
+.tourn-champion__name {
+  grid-area: name;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--cb-ink);
+  letter-spacing: -0.4px;
+  line-height: 1.1;
+}
+
+/* --- Tournament view: leaderboard (Increment 3) --- */
+.tourn-lead-hint {
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  color: var(--cb-mute);
+  line-height: 1.5;
+  margin-bottom: var(--sp-3);
+}
+.tourn-lead-when {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cb-brass);
+  white-space: nowrap;
+}
+.tourn-lead-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.tourn-lead-row:last-child { border-bottom: none; }
+.tourn-lead-rank {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--cb-mute);
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.tourn-lead-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.tourn-lead-name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--cb-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tourn-lead-sub {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--cb-mute);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tourn-lead-val {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cb-charcoal);
+  flex-shrink: 0;
+}
+.tourn-lead-row--lead {
+  background: rgba(var(--cb-brass-rgb), 0.10);
+  border-radius: var(--r-2);
+  border-bottom-color: transparent;
+}
+.tourn-lead-row--lead .tourn-lead-rank,
+.tourn-lead-row--lead .tourn-lead-val { color: var(--cb-brass); }

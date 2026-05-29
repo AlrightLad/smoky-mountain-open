@@ -278,3 +278,77 @@ function tournamentValidate(config) {
   if (!config.startAt) errors.push("Set a start date and time.");
   return { ok: errors.length === 0, errors: errors };
 }
+
+// ---- Standings / leaderboard ----
+// Truthful by construction. Before any round is posted the board shows the
+// SEEDED field (real handicaps = pre-tournament form). A tournament is a trip,
+// so once scores exist PB.getTripPoints supplies live totals and the board
+// re-ranks under the chosen point system. No score is ever invented: live
+// points are read ONLY for the stableford system, where the existing trip math
+// (getTripPoints) is exactly the tournament's point metric. Every other system
+// shows the seed view until per-round results infrastructure lands.
+function tournamentStandings(t) {
+  t = t || {};
+  var ps = tournamentPointSystem(t.pointSystem || "stableford");
+  var plan = t.plan || {};
+  var field = plan.field || {};
+  var live = _tournamentLivePoints(t);
+
+  // Team leaderboard (pairs / foursomes / ryder).
+  if (field.kind === "teams" && field.result && field.result.teams) {
+    var teams = field.result.teams.map(function (tm) {
+      var pts = 0;
+      if (live.has) {
+        tm.members.forEach(function (m) { pts += (live.byId[m.id] || 0); });
+      }
+      return {
+        name: tm.name,
+        members: tm.members,
+        combinedHandicap: tm.combinedHandicap,
+        points: live.has ? Math.round(pts * 10) / 10 : null
+      };
+    });
+    _tournamentRankInto(teams, ps.lowWins, live.has, function (tm) { return tm.combinedHandicap; });
+    return { kind: "teams", started: live.has, lowWins: ps.lowWins, pointSystem: ps, entries: teams };
+  }
+
+  // Individual / bracket leaderboard (seed by handicap).
+  var seeds = tournamentRankPlayers(t.members || []);
+  var entries = seeds.map(function (s) {
+    return { id: s.id, name: s.name, handicap: s.handicap, points: live.has ? (live.byId[s.id] || 0) : null };
+  });
+  _tournamentRankInto(entries, ps.lowWins, live.has, function (e) { return e.handicap; });
+  return { kind: "individual", started: live.has, lowWins: ps.lowWins, pointSystem: ps, entries: entries };
+}
+
+// Reads live per-player points if the tournament (a trip) has posted scores.
+// Gated to the stableford point system, where getTripPoints is the exact metric.
+// Returns { has, byId }; has=false means no truthful live total yet → seed view.
+function _tournamentLivePoints(t) {
+  var byId = {};
+  var has = false;
+  var canLive = (t.pointSystem || "stableford") === "stableford";
+  if (canLive && typeof PB !== "undefined" && PB.getTripPoints && t.courses && t.courses.length) {
+    (t.members || []).forEach(function (id) {
+      var p = PB.getTripPoints(t.id, id) || 0;
+      byId[id] = p;
+      if (p > 0) has = true;
+    });
+  }
+  return { has: has, byId: byId };
+}
+
+// Rank entries in place. Seed order first (ascending metric — lower handicap is
+// the stronger seed) so .seed is the deterministic pre-tournament rank. Once
+// scores exist, re-sort by points honoring lowWins. Assigns .seed and .rank.
+function _tournamentRankInto(entries, lowWins, started, seedMetric) {
+  entries.sort(function (a, b) { return seedMetric(a) - seedMetric(b); });
+  entries.forEach(function (e, i) { e.seed = i + 1; });
+  if (started) {
+    entries.sort(function (a, b) {
+      return lowWins ? (a.points - b.points) : (b.points - a.points);
+    });
+  }
+  entries.forEach(function (e, i) { e.rank = i + 1; });
+  return entries;
+}
