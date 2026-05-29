@@ -119,7 +119,7 @@ function loadHomeActivityFeed() {
         // Group scramble rounds into one feed entry
         var groupKey = (r.course||"") + "|" + (r.date||"");
         if (!scrambleGroups[groupKey]) {
-          scrambleGroups[groupKey] = { course: r.course, date: r.date, score: r.score, tee: r.tee, players: [], ts: r.createdAt ? r.createdAt.toMillis() : 0, rid: rid, likes: r.likes || [], comments: r.comments || [] };
+          scrambleGroups[groupKey] = { course: r.course, date: r.date, score: r.score, tee: r.tee, players: [], ts: tsMillis(r.createdAt), rid: rid, likes: r.likes || [], comments: r.comments || [] };
         }
         scrambleGroups[groupKey].players.push(r.playerName || "Parbaugh");
         return;
@@ -134,8 +134,8 @@ function loadHomeActivityFeed() {
       var likes = r.likes || [];
       var comments = r.comments || [];
       var isLiked = currentUser ? likes.indexOf(currentUser.uid) !== -1 : false;
-      var timeAgo = feedTimeAgo(r.createdAt ? r.createdAt.toMillis() : 0);
-      items.push({type:"round", roundId:rid, playerId:r.player, playerName:r.playerName||"A Parbaugh", name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + teeLabel + " · " + r.score + holeLabel + fmtLabel, quip:quip, score:r.score, date:r.date||"", ts:r.createdAt ? r.createdAt.toMillis() : 0, dest:"Router.go('rounds',{roundId:'" + rid + "'})", likeCount:likes.length, commentCount:comments.length, isLiked:isLiked, timeAgo:timeAgo});
+      var timeAgo = feedTimeAgo(tsMillis(r.createdAt));
+      items.push({type:"round", roundId:rid, playerId:r.player, playerName:r.playerName||"A Parbaugh", name:(r.playerName||"A Parbaugh") + " posted a round", sub:(r.course||"") + teeLabel + " · " + r.score + holeLabel + fmtLabel, quip:quip, score:r.score, date:r.date||"", ts:tsMillis(r.createdAt), dest:"Router.go('rounds',{roundId:'" + rid + "'})", likeCount:likes.length, commentCount:comments.length, isLiked:isLiked, timeAgo:timeAgo});
     });
     // Add grouped scramble entries
     Object.values(scrambleGroups).forEach(function(g) {
@@ -181,7 +181,7 @@ function loadHomeActivityFeed() {
       var isToday = t.date === today;
       var isFuture = t.date > today;
       var accepted = t.responses ? Object.keys(t.responses).filter(function(k){return t.responses[k]==="accepted";}).length : 0;
-      items.push({type:"tee_time", name:(t.postedByName||"Someone") + " posted a tee time", sub:(t.courseName||"Tee time") + " · " + (t.date||"") + (t.time ? " at " + t.time : "") + " · " + accepted + " going", date:t.date||"", ts:t.createdAt ? t.createdAt.toMillis() : 0, live:isToday, dest:"Router.go('teetimes')"});
+      items.push({type:"tee_time", name:(t.postedByName||"Someone") + " posted a tee time", sub:(t.courseName||"Tee time") + " · " + (t.date||"") + (t.time ? " at " + t.time : "") + " · " + accepted + " going", date:t.date||"", ts:tsMillis(t.createdAt), live:isToday, dest:"Router.go('teetimes')"});
     });
     pending--; tryRender();
   }).catch(function() { pending--; tryRender(); });
@@ -195,7 +195,7 @@ function loadHomeActivityFeed() {
       if (r.status === "discarded") return;
       var isLive = r.status === "active";
       var dest = isLive ? "Router.go('syncround',{roundId:'" + doc.id + "'})" : "";
-      items.push({type:"syncround", name:(r.createdByName||"A Parbaugh") + (isLive ? " is playing a Parbaugh Round" : " finished a Parbaugh Round"), sub:(r.courseName||"") + (r.format ? " · " + r.format : "") + (isLive ? " · Tap to join" : ""), date:"", ts:r.createdAt ? r.createdAt.toMillis() : 0, live:isLive, dest:dest});
+      items.push({type:"syncround", name:(r.createdByName||"A Parbaugh") + (isLive ? " is playing a Parbaugh Round" : " finished a Parbaugh Round"), sub:(r.courseName||"") + (r.format ? " · " + r.format : "") + (isLive ? " · Tap to join" : ""), date:"", ts:tsMillis(r.createdAt), live:isLive, dest:dest});
     });
     pending--; tryRender();
   }).catch(function() { pending--; tryRender(); });
@@ -213,7 +213,7 @@ function loadHomeActivityFeed() {
       if (thru < 1) return;
       var scoreTxt = lr.totalScore ? lr.totalScore + " thru " + thru : "thru " + thru;
       var dest = lr.roundId ? "Router.go('round',{roundId:'" + lr.roundId + "'})" : "";
-      items.push({type:"liveround", name:(lr.playerName||"A Parbaugh") + " is playing", sub:(lr.course||"") + " · " + scoreTxt, date:"", ts:lr.updatedAt ? lr.updatedAt.toMillis() : Date.now(), live:true, dest:dest});
+      items.push({type:"liveround", name:(lr.playerName||"A Parbaugh") + " is playing", sub:(lr.course||"") + " · " + scoreTxt, date:"", ts:tsMillis(lr.updatedAt) || Date.now(), live:true, dest:dest});
     });
     pending--; tryRender();
   }).catch(function() { pending--; tryRender(); });
@@ -232,7 +232,7 @@ function loadHomeActivityFeed() {
       var dest = "";
       if (msg.linkType === "event" && msg.tripId) dest = "Router.go('scorecard',{tripId:'" + msg.tripId + "'})";
       else if (msg.linkType === "round" && msg.roundId) dest = "Router.go('rounds',{roundId:'" + msg.roundId + "'})";
-      items.push({type:"chat", playerId:msg.authorId||"", name:(msg.system ? "The Caddy" : msg.authorName || msg.user || "Member"), sub:text, ts:msg.createdAt ? msg.createdAt.toMillis() : (msg.timestamp || 0), system:isSystem, dest:dest});
+      items.push({type:"chat", playerId:msg.authorId||"", name:(msg.system ? "The Caddy" : msg.authorName || msg.user || "Member"), sub:text, ts:tsMillis(msg.createdAt) || (msg.timestamp || 0), system:isSystem, dest:dest});
     });
     pending--; tryRender();
   }).catch(function() { pending--; tryRender(); });

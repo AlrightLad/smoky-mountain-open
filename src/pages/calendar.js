@@ -139,7 +139,7 @@ Router.register("calendar", function() {
       snap.forEach(function(doc) {
         var msg = doc.data();
         var author = msg.authorName || "Member";
-        var ts = msg.createdAt ? feedTimeAgo(msg.createdAt.toMillis()) : "";
+        var ts = msg.createdAt ? feedTimeAgo(tsMillis(msg.createdAt)) : "";
         ch += '<div style="padding:6px 0;border-bottom:1px solid var(--border)">';
         ch += '<div style="display:flex;justify-content:space-between"><span style="font-size:10px;font-weight:600;color:var(--gold)">' + escHtml(author) + '</span>';
         ch += '<span style="font-size:9px;color:var(--muted2)">' + ts + '</span></div>';

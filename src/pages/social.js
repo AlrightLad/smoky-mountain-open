@@ -28,7 +28,7 @@ function useSocialAction(actionKey, targetUid) {
   leagueQuery("social_actions").where("key", "==", cooldownKey).orderBy("createdAt", "desc").limit(1).get().then(function(snap) {
     if (snap.size > 0 && action.cooldownHours > 0) {
       var last = snap.docs[0].data();
-      var lastTime = last.createdAt ? last.createdAt.toMillis() : 0;
+      var lastTime = tsMillis(last.createdAt);
       var hoursAgo = (Date.now() - lastTime) / (1000 * 60 * 60);
       if (hoursAgo < action.cooldownHours) {
         var hoursLeft = Math.ceil(action.cooldownHours - hoursAgo);

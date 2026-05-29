@@ -70,7 +70,7 @@ Router.register("feed", function(params) {
           puttsData: r.puttsData || null,
           quip: quip,
           date: r.date || "",
-          ts: r.createdAt ? r.createdAt.toMillis() : 0,
+          ts: tsMillis(r.createdAt),
           roundId: rid,
           isScramble: isScramble,
           // v8.20.0 (Ship 5+5) — engagement fields surfaced for Kudos / Comment
@@ -116,7 +116,7 @@ Router.register("feed", function(params) {
           playerId: msg.authorId || "",
           author: msg.system ? "The Caddy" : msg.authorName || msg.user || "Member",
           text: msg.text || "",
-          ts: msg.createdAt ? msg.createdAt.toMillis() : (msg.timestamp || 0),
+          ts: tsMillis(msg.createdAt) || (msg.timestamp || 0),
           system: !!msg.system
         });
       });

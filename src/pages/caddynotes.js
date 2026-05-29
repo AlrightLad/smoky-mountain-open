@@ -32,6 +32,8 @@ Router.register("caddynotes", function() {
     { item: "Members directory groups by tier (Founding Four / Members) with brass eyebrows + counts.", tag: "IMPROVED" },
     { item: "Mobile home now shows a League Pulse — last 3 league activity items right on home.", tag: "NEW" },
     { item: "Course directory + Feed get warmer empty states with clear next-actions.", tag: "IMPROVED" },
+    { item: "Activity feed is steadier — rounds logged offline now show up correctly instead of leaving the feed blank until they sync.", tag: "IMPROVED" },
+    { item: "Toasts and notifications wear a cleaner full outline instead of a side stripe, so success and error states read clearly at a glance.", tag: "IMPROVED" },
     { item: "Behind the scenes: visual regression suite catches design drift; pre-commit blocks accidental credential leaks; A- app-health floor maintained.", tag: "INFRA" }
   ];
 

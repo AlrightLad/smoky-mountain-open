@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.23.2";
+var APP_VERSION = "8.23.3";
 
 // ══════════════════════════════════════════════════════════════════════════
 // LEAGUE ISOLATION — Nuclear approach. Makes leaking PHYSICALLY IMPOSSIBLE.
@@ -175,6 +175,18 @@ document.addEventListener("touchend", function(e) {
   }
 }, { passive: true });
 function fsTimestamp() { return (typeof firebase !== "undefined" && firebase.firestore) ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString(); }
+// tsMillis(v) — normalize any createdAt/timestamp shape to epoch millis.
+// Firestore Timestamp (.toMillis) is the prod shape; offline fsTimestamp() falls
+// back to an ISO string, legacy/seed rows can be raw numbers. Unguarded .toMillis()
+// throws on string/number and (caught silently) blanks the whole feed — see feed.js.
+function tsMillis(v) {
+  if (!v) return 0;
+  if (typeof v.toMillis === "function") return v.toMillis();
+  if (typeof v.toDate === "function") return v.toDate().getTime();
+  if (typeof v === "number") return v;
+  if (typeof v === "string") { var t = Date.parse(v); return isNaN(t) ? 0 : t; }
+  return 0;
+}
 function genId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 6); }
 function localDateStr(d) { d = d || new Date(); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
 

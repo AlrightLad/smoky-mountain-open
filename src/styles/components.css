@@ -697,7 +697,7 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .notif-item{padding:var(--sp-3) var(--sp-4);border-bottom:1px solid var(--border);cursor:pointer;transition:background var(--duration-fast) var(--ease-default)}
 .notif-item:hover{background:var(--bg3)}
 .notif-item:active{background:var(--bg3)}
-.notif-item.unread{background:rgba(var(--gold-rgb),.04);border-left:3px solid var(--gold)}
+.notif-item.unread{background:rgba(var(--gold-rgb),.08)}
 .notif-time{font-size:var(--text-xs);color:var(--muted2);margin-top:4px}
 .notif-item-icon{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;flex-shrink:0;margin-top:2px}
 .notif-item-icon--social{color:var(--gold)}
@@ -1599,6 +1599,12 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   #mainApp {
     padding-left: calc(var(--shell-side-w) + var(--shell-gutter));
   }
+  /* Achievement celebration aligns with the content column. Its base rule is
+     full-width (left:0;right:0) for mobile; on desktop that would lay the card
+     over the fixed sidebar's Sign out action, so reserve the sidebar width. */
+  .ach-celebrate {
+    left: calc(var(--shell-side-w) + var(--shell-gutter));
+  }
   /* Bottom tab bar hidden on desktop — sidebar is the nav here. */
   #bottomNav { display: none !important; }
 }
@@ -2111,7 +2117,7 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   border-radius: var(--r-3);
   padding: var(--sp-3) var(--sp-5);
   box-shadow: var(--el-2);
-  border-left: 4px solid var(--cb-brass);
+  border: 1px solid rgba(var(--cb-brass-rgb), .35);
   min-width: 280px;
   max-width: 480px;
   width: max-content;
@@ -2123,8 +2129,8 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 }
 .pb-toast.pb-toast--enter { opacity: 1; transform: translateY(0); }
 .pb-toast.pb-toast--exit  { opacity: 0; transform: translateY(-8px); }
-.pb-toast--success { border-left-color: var(--cb-moss); }
-.pb-toast--error   { border-left-color: var(--cb-claret); }
+.pb-toast--success { border-color: rgba(var(--cb-moss-rgb), .5); }
+.pb-toast--error   { border-color: rgba(var(--cb-claret-rgb), .5); }
 
 .pb-toast__eyebrow {
   font-family: var(--font-mono);
