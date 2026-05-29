@@ -91,7 +91,7 @@ function createSyncRound() {
   })).then(function(docRef) {
     Router.toast("Synced round created! Share with your group.");
     Router.go("syncround", { roundId: docRef.id });
-  }).catch(function(e) { Router.toast("Failed: " + e.message); });
+  }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't start the round.")); });
 }
 
 function joinSyncRound(roundId) {
@@ -111,7 +111,7 @@ function joinSyncRound(roundId) {
   db.collection("syncrounds").doc(roundId).update(update).then(function() {
     activeSyncRound = roundId;
     startSyncRoundListener(roundId);
-  }).catch(function(e) { Router.toast("Failed to join: " + e.message); Router.go("rounds"); });
+  }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't join the round.")); Router.go("rounds"); });
 }
 
 function startSyncRoundListener(roundId) {
@@ -311,5 +311,5 @@ function discardSyncRound(roundId) {
     if (syncRoundListener) { syncRoundListener(); syncRoundListener = null; }
     Router.toast("Round discarded.");
     Router.go("home");
-  }).catch(function(e) { Router.toast("Failed: " + e.message); });
+  }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't discard the round.")); });
 }

@@ -271,7 +271,7 @@ function togglePublicProfile() {
     if (currentProfile) currentProfile.profilePublic = newVal;
     Router.toast(newVal ? "Profile is now public" : "Profile is now private");
     Router.go("settings", {}, true);
-  }).catch(function(e) { Router.toast("Failed: " + e.message); });
+  }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't update your profile visibility.")); });
 }
 
 function sharePublicProfile() {
@@ -326,7 +326,7 @@ function _saveLocation(loc) {
     Router.toast("Location saved");
     Router.go("settings", {}, true);
   }).catch(function(e) {
-    Router.toast("Failed to save: " + (e.message || "unknown error"));
+    Router.toast(pbErrMsg(e, "Couldn't save your location."));
     _resetLocationDetectButton();
   });
 }
@@ -421,7 +421,7 @@ function clearLocation() {
     Router.toast("Location cleared");
     Router.go("settings", {}, true);
   }).catch(function(e) {
-    Router.toast("Failed to clear: " + (e.message || "unknown error"));
+    Router.toast(pbErrMsg(e, "Couldn't clear your location."));
   });
 }
 

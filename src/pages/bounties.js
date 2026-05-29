@@ -198,7 +198,7 @@ function submitBounty() {
     })).catch(function(){});
     Router.toast("Bounty posted!");
     Router.go("bounties", {}, true);
-  }).catch(function(err) { Router.toast("Failed: " + err.message); });
+  }).catch(function(err) { Router.toast(pbErrMsg(err, "Couldn't post the bounty.")); });
 }
 
 // Auto-check bounties when a round is logged

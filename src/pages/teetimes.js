@@ -199,7 +199,7 @@ function submitTeeTime() {
       sendNotification(p.id, { type: "tee_posted", title: "New Tee Time", message: _teeCreatorName + " posted: " + (course?course.name:"") + " · " + date + " · " + timeStr, page: "teetimes" });
     });
     Router.go("teetimes");
-  }).catch(function(e) { Router.toast("Failed: " + e.message); });
+  }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't post the tee time.")); });
 }
 
 function rsvpTeeTime(teeId, response) {

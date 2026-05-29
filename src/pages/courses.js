@@ -788,7 +788,7 @@ function submitScorecardData(courseId) {
       Router.toast("Scorecard edit submitted!");
     }
     Router.go("courses", { id: courseId });
-  }).catch(function(e) { Router.toast("Failed: " + e.message); });
+  }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't submit the scorecard.")); });
 }
 
 function verifyCourseData(courseId) {
@@ -810,6 +810,6 @@ function verifyCourseData(courseId) {
     awardCoins(currentUser.uid, 10, "scorecard_verify", "Verified scorecard at " + c.name, "scv_" + courseId);
     Router.toast("Data verified! +10 ParCoins" + (newStatus === "verified" ? ". Course is now Community Verified!" : ""));
     Router.go("courses", { id: courseId });
-  }).catch(function(e) { Router.toast("Failed: " + e.message); });
+  }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't verify the course data.")); });
 }
 

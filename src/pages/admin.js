@@ -549,7 +549,7 @@ function adminDeleteCourse(fsId, name) {
   db.collection("courses").doc(fsId).delete().then(function() {
     Router.toast('"' + name + '" removed');
     loadAdminCourses();
-  }).catch(function(err) { Router.toast("Error: " + err.message); });
+  }).catch(function(err) { Router.toast(pbErrMsg(err, "Couldn't remove the course.")); });
 }
 
 // ========== FULL DIAGNOSTIC (Commissioner only, READ-ONLY) ==========

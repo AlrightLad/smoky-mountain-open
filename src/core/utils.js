@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.23.23";
+var APP_VERSION = "8.23.24";
 
 // ══════════════════════════════════════════════════════════════════════════
 // LEAGUE ISOLATION — Nuclear approach. Makes leaking PHYSICALLY IMPOSSIBLE.
@@ -52,11 +52,7 @@ function sendVerificationEmail() {
   currentUser.sendEmailVerification().then(function() {
     Router.toast("Verification email sent to " + email + ", check inbox and spam folder");
   }).catch(function(err) {
-    var msg = "Failed to send verification email";
-    if (err && err.code === "auth/too-many-requests") msg = "Too many attempts, wait a few minutes and try again";
-    else if (err && err.message) msg = err.message;
-    Router.toast(msg);
-    pbWarn("[Auth] Verification email error:", err);
+    Router.toast(pbErrMsg(err, "Couldn't send the verification email. Please try again."));
   });
 }
 
@@ -130,6 +126,21 @@ function pbWarn() {
   } else if (PB_DEBUG && console.warn) {
     console.warn.apply(console, arguments);
   }
+}
+
+// pbErrMsg(err, fallback) — user-safe error text for toasts. Maps known
+// Firebase error codes to friendly, actionable copy; otherwise returns the
+// caller's fallback. Always logs the raw error via pbWarn (admin panel +
+// errors collection); NEVER returns the raw SDK message, which leaks internal
+// detail to members and reads as a defect (P10 actionable surfacing).
+function pbErrMsg(err, fallback) {
+  pbWarn("[Action error]", err);
+  var code = (err && err.code) || "";
+  if (code === "permission-denied" || code === "auth/insufficient-permission") return "You don't have permission to do that.";
+  if (code === "unavailable" || code === "auth/network-request-failed") return "You appear to be offline. Check your connection and try again.";
+  if (code === "unauthenticated") return "Please sign in again to continue.";
+  if (code === "resource-exhausted" || code === "auth/too-many-requests") return "Too many attempts. Wait a moment and try again.";
+  return fallback || "Something went wrong. Please try again.";
 }
 
 // ========== SECURITY UTILITIES ==========

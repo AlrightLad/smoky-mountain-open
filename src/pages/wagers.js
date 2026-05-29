@@ -289,7 +289,7 @@ function submitWager() {
     }
     Router.toast("Challenge sent to " + oppName + "!");
     Router.go("wagers");
-  }).catch(function(err) { Router.toast("Failed: " + err.message); });
+  }).catch(function(err) { Router.toast(pbErrMsg(err, "Couldn't send the wager.")); });
 }
 
 function acceptWager(wagerId) {
@@ -312,7 +312,7 @@ function acceptWager(wagerId) {
       Router.toast("Wager accepted! Game on.");
       Router.go("wagers", {}, true);
     });
-  }).catch(function(err) { Router.toast("Error: " + err.message); });
+  }).catch(function(err) { Router.toast(pbErrMsg(err, "Couldn't accept the wager.")); });
 }
 
 function declineWager(wagerId) {

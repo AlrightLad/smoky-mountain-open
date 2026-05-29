@@ -238,7 +238,7 @@ function purchaseCosmetic(itemId) {
     }).catch(function(){});
     Router.toast("Unlocked " + item.name + "!");
     Router.go("shop", {}, true);
-  }).catch(function(err) { Router.toast("Purchase failed: " + err.message); });
+  }).catch(function(err) { Router.toast(pbErrMsg(err, "Purchase failed. Please try again.")); });
 }
 
 function equipCosmetic(itemId, cat) {

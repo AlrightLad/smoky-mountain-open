@@ -320,7 +320,7 @@ function attestMyScore(tripId, courseKey) {
     if (allAttested) {
       finalizeAttestedRound(docId, data);
     }
-  }).catch(function(e) { Router.toast("Failed: " + e.message); });
+  }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't attest your score.")); });
 }
 
 function overrideAttestation(tripId, courseKey) {

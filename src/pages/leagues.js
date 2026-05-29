@@ -153,7 +153,7 @@ function submitCreateLeague() {
       Router.toast("League created! Invite code: " + inviteCode);
       Router.go("leagues", { id: slug });
     });
-  }).catch(function(e) { Router.toast("Failed: " + e.message); });
+  }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't create the league.")); });
 }
 
 function renderJoinLeague() {
@@ -202,7 +202,7 @@ function submitJoinLeague() {
     }
     Router.toast("Joined " + league.name + "!");
     Router.go("leagues");
-  }).catch(function(e) { Router.toast("Failed: " + e.message); });
+  }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't join the league.")); });
 }
 
 function renderLeagueDetail(lid) {
@@ -278,7 +278,7 @@ function renderLeagueDetail(lid) {
       _loadLeagueMembers(lid, l);
       _loadJoinRequests(lid);
     }
-  }).catch(function(e) { Router.toast("Error: " + e.message); });
+  }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't load the league.")); });
 }
 
 function switchLeague(lid) {
@@ -305,7 +305,7 @@ function switchLeague(lid) {
     if (typeof startTeeTimeListener === "function") startTeeTimeListener();
     if (typeof startRangeSessionListener === "function") startRangeSessionListener();
     Router.go("home");
-  }).catch(function(e) { Router.toast("Failed: " + e.message); });
+  }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't switch leagues.")); });
 }
 
 function requestJoinLeague(lid) {
@@ -334,7 +334,7 @@ function requestJoinLeague(lid) {
       });
     });
     Router.toast("Request sent! An admin will review it.");
-  }).catch(function(e) { Router.toast("Failed: " + e.message); });
+  }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't send your join request.")); });
 }
 
 // ── League member management ──

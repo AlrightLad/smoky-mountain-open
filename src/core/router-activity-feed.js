@@ -251,7 +251,7 @@ function sendHomeChat() {
     createdAt: fsTimestamp()
   })).then(function() {
     loadHomeActivityFeed(); // Refresh
-  }).catch(function(e) { Router.toast("Send failed: " + e.message); });
+  }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't send your message.")); });
 }
 
 function feedTimeAgo(ts) {

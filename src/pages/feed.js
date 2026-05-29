@@ -360,7 +360,7 @@ function sendFeedChat() {
     authorId: currentUser.uid,
     authorName: name,
     createdAt: fsTimestamp()
-  })).catch(function(e) { Router.toast("Send failed: " + e.message); });
+  })).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't send your message.")); });
 }
 
 function applyFeedFilter() {

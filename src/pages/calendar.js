@@ -400,7 +400,7 @@ function saveCalEvent() {
     if (typeof _liveCalEvents === "undefined") window._liveCalEvents = [];
     _liveCalEvents.push(doc);
     _updateCalendarInPlace();
-  }).catch(function(e) { Router.toast("Failed: " + e.message); });
+  }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't save the event.")); });
 }
 
 // ── Load calendar events from Firestore ──
@@ -433,7 +433,7 @@ function sendCalChat() {
     createdAt: fsTimestamp()
   })).then(function() {
     Router.go("calendar");
-  }).catch(function(e) { Router.toast("Send failed: " + e.message); });
+  }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't send your message.")); });
 }
 
 // ========== TRASH TALK FEED ==========
