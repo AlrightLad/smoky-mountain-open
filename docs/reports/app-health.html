@@ -821,9 +821,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-29T10:21:34.644395Z",
+  "generated_at": "2026-05-29T11:00:13.022918Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 87.8,
+  "overall_score": 87.1,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -837,9 +837,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 92.8,
+    "pre_deduction_score": 92.1,
     "deduction": 5,
-    "post_deduction_score": 87.8
+    "post_deduction_score": 87.1
   },
   "dimensions": {
     "A1_roadmap": {
@@ -912,11 +912,11 @@
     "A6_architecture": {
       "score": 92,
       "status": "green",
-      "label": "1 file-size finding",
+      "label": "2 file-size findings",
       "source": ".claude/state/aggregates/architecture-review.json + src/ walk",
       "weak_points": [
         {
-          "what": "functions/index.js is 908 lines holding 8 Cloud Functions monolithically",
+          "what": "functions/index.js is 1022 lines holding 8 Cloud Functions monolithically",
           "where": "functions/index.js",
           "what_action": "Split into functions/auth.js + functions/notifications.js + functions/league.js + functions/courses.js. Or move to firebase-functions-multi-file structure."
         }
@@ -958,13 +958,13 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 75,
+      "score": 60,
       "status": "yellow",
-      "label": "pipeline=yellow · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 8 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "6 of last 10 cron watcher runs hit skip-dirty",
+          "what": "8 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -977,7 +977,7 @@
   },
   "attention_items": [
     {
-      "what": "6 of last 10 cron watcher runs hit skip-dirty",
+      "what": "8 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -986,20 +986,29 @@
   "founder_attention": [],
   "agent_attention": [
     {
-      "what": "6 of last 10 cron watcher runs hit skip-dirty",
+      "what": "8 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "fb4c22ca",
-    "subject": "chore: add wave-2 design critique capture scripts + 2026-05-29 fold/fullpage baselines",
-    "committed_at": "2026-05-29T06:21:16-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 45
+    "sha": "67f66b87",
+    "subject": "fix(account): server-side account deletion (App Store 5.1.1(v) / GDPR Art. 17)",
+    "committed_at": "2026-05-29T06:59:51-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "functions/index.js",
+      "functions/lib/rate-limit.js",
+      "public/sw.js",
+      "src/core/bottomsheet.js",
+      "src/core/firebase.js",
+      "src/core/utils.js",
+      "src/pages/caddynotes.js",
+      "src/pages/settings.js"
+    ],
+    "total_files_touched": 17
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
