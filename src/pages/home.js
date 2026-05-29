@@ -373,10 +373,10 @@ function _renderHQLocationBanner() {
   // Polish 2026-05-22 (iter3): banner was a stacked 2-row card with 18px
   // display headline + below-link CTA — felt heavy for a hint message.
   // Compressed to single-row inline layout: subtle ui-font hint + inline
-  // brass action link. Less visual weight, faster scan. Card chrome
-  // simplified to thin left rule (matches other "informational" patterns
-  // in design system).
-  var h = '<div style="background:var(--cb-chalk-2);border-left:3px solid var(--cb-brass);padding:10px 14px;margin-top:var(--sp-3);border-radius:var(--r-2);display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;font-family:var(--font-ui)">';
+  // brass action link. Less visual weight, faster scan. Chrome is a full
+  // hairline brass-tinted border (Design Coherence Pass 2026-05-29 retired
+  // the decorative left-rule per the side-stripe ban).
+  var h = '<div style="background:var(--cb-chalk-2);border:1px solid rgba(var(--cb-brass-rgb),.22);padding:10px 14px;margin-top:var(--sp-3);border-radius:var(--r-2);display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;font-family:var(--font-ui)">';
   h += '<span style="font-size:13px;color:var(--cb-charcoal);line-height:1.3">';
   h += "Showing weather for " + locationName + ".";
   h += '</span>';
@@ -555,7 +555,7 @@ function _renderPulses(pulses) {
   if (!pulses || pulses.length === 0) return "";
   var h = '<div style="padding:0 22px">';
   pulses.forEach(function(p) {
-    h += '<div style="padding:14px 16px;background:var(--cb-chalk-2);border-left:2px solid var(--cb-brass);border-radius:6px;margin-bottom:8px">';
+    h += '<div style="padding:14px 16px;background:var(--cb-chalk-2);border:1px solid rgba(var(--cb-brass-rgb),.22);border-radius:6px;margin-bottom:8px">';
     h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:4px">' + escHtml(p.eyebrow) + '</div>';
     h += '<div style="font-family:var(--font-ui);font-size:13px;color:var(--cb-ink);line-height:1.5">' + escHtml(p.text) + '</div>';
     // v8.22+ (design-pass 2026-05-22): brass progress bar when a pulse carries

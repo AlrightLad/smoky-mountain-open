@@ -23,7 +23,7 @@ function renderActivityRange() {
 
   // Active session indicator
   if (activeRangeStart) {
-    h += '<div class="section"><div class="card" onclick="Router.go(\'range\')" style="cursor:pointer;border-left:3px solid var(--pink)">';
+    h += '<div class="section"><div class="card" onclick="Router.go(\'range\')" style="cursor:pointer;border-color:rgba(var(--pink-rgb),.4)">';
     h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:2px 0">';
     h += '<div><div style="font-size:12px;font-weight:600;color:var(--pink)">Session in progress</div>';
     h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">Tap to return</div></div>';
@@ -90,7 +90,7 @@ function renderActivityRange() {
     var dateObj = new Date(s.date+"T12:00:00");
     var monNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     var fmtDate = monNames[dateObj.getMonth()] + " " + dateObj.getDate();
-    h += '<div class="card" style="border-left:3px solid var(--pink)"><div style="display:flex;justify-content:space-between;align-items:flex-start">';
+    h += '<div class="card" style="border-color:rgba(var(--pink-rgb),.4)"><div style="display:flex;justify-content:space-between;align-items:flex-start">';
     h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream);display:flex;align-items:center;gap:4px">' + s.durationMin + ' min ' + feelIcon + '</div>';
     h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + fmtDate + '</div>';
     if (drillNames.length) h += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + drillNames.join(", ") + '</div>';

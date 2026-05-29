@@ -64,8 +64,9 @@ Router.register("standings", function(params) {
       if (isFirst) {
         cardStyle = 'border-color:rgba(var(--gold-rgb),.2);background:linear-gradient(135deg,var(--grad-card),var(--card))';
       } else if (isViewer) {
-        // Viewer's row — brass-faint background + brass left rule
-        cardStyle = 'border-left:3px solid var(--gold);background:rgba(var(--gold-rgb),0.04);transition:background 180ms ease-out';
+        // Viewer's row — gold-tinted full border + faint gold wash (matches the
+        // isFirst treatment above; side-stripe retired in the 2026-05-29 pass).
+        cardStyle = 'border-color:rgba(var(--gold-rgb),.45);background:rgba(var(--gold-rgb),0.05);transition:background 180ms ease-out';
       }
       h += '<div class="card" style="' + cardStyle + '" data-rank="' + (idx + 1) + (isViewer ? '" data-viewer="1' : '') + '">';
       h += '<div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center">';

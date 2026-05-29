@@ -10,7 +10,7 @@ function renderFeedItem(a) {
   if (a.type === "chat") {
     var clickAttr = a.dest ? ' onclick="' + a.dest + '" style="cursor:pointer"' : '';
     if (a.system) {
-      var h = '<div style="display:flex;gap:10px;padding:8px 16px;border-left:3px solid var(--birdie);margin:2px 0;background:rgba(var(--birdie-rgb),.03)"' + clickAttr + '>';
+      var h = '<div style="display:flex;gap:10px;padding:8px 16px;margin:2px 0;background:rgba(var(--birdie-rgb),.06);border-radius:8px"' + clickAttr + '>';
       h += '<div style="width:28px;height:28px;min-width:28px;border-radius:50%;background:rgba(var(--birdie-rgb),.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:14px">\u26f3</span></div>';
       h += '<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">';
       h += '<span style="font-size:10px;font-weight:700;color:var(--birdie)">The Caddy</span>';
@@ -19,7 +19,7 @@ function renderFeedItem(a) {
       h += '</div></div>';
       return h;
     }
-    var h = '<div style="display:flex;gap:10px;padding:8px 16px;border-left:2px solid rgba(var(--gold-rgb),.15);margin:1px 0"' + clickAttr + '>';
+    var h = '<div style="display:flex;gap:10px;padding:8px 16px;margin:1px 0"' + clickAttr + '>';
     h += renderAvatar(_fp, 28, true);
     h += '<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;align-items:center">';
     h += '<span style="font-size:10px;font-weight:700;color:var(--gold)">' + renderUsername(_fp, '', true) + '</span>';

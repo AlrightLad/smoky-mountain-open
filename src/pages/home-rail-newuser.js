@@ -379,7 +379,7 @@ function _renderUnfinishedTripBanner(trips, uid, claimedFrom) {
       if (courseDay && courseDay !== todayDay) return;
       var tid = escHtml(tr.id);
       var ck = escHtml(crs.key);
-      h += '<div data-trip-id="' + tid + '" data-course-key="' + ck + '" class="tappable" onclick="Router.go(\'scorecard\',{tripId:this.getAttribute(\'data-trip-id\'),course:this.getAttribute(\'data-course-key\')})" style="margin:18px 22px 0;padding:14px 16px;background:var(--cb-chalk-2);border-left:2px solid var(--cb-moss);border-radius:10px;cursor:pointer">';
+      h += '<div data-trip-id="' + tid + '" data-course-key="' + ck + '" class="tappable" onclick="Router.go(\'scorecard\',{tripId:this.getAttribute(\'data-trip-id\'),course:this.getAttribute(\'data-course-key\')})" style="margin:18px 22px 0;padding:14px 16px;background:var(--cb-chalk-2);border:1px solid rgba(var(--cb-moss-rgb),.3);border-radius:10px;cursor:pointer">';
       h += '<div style="display:flex;align-items:center;gap:10px;pointer-events:none">';
       h += '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--cb-moss)" stroke-width="1.5" style="flex-shrink:0"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>';
       h += '<div style="flex:1">';

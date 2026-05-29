@@ -229,7 +229,7 @@ function renderDrillChips() {
       h += '<div class="drill-chip' + (sel ? " selected" : "") + '" onclick="toggleRangeDrill(\'' + d.id + '\')">' + escHtml(d.name) + (sel ? '<span class="drill-x">×</span>' : '') + '</div>';
       if (d.howTo) h += '<span onclick="toggleDrillInfo(\'' + d.id + '\')" style="font-size:11px;color:var(--muted);cursor:pointer;padding:2px 6px;border-radius:50%;border:1px solid var(--border);line-height:1;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px">?</span>';
       h += '</div>';
-      h += '<div id="drillExpand-' + d.id + '" style="display:none;padding:6px 10px;margin:2px 0 4px;font-size:10px;background:var(--bg3);border-radius:4px;border-left:2px solid var(--gold)">';
+      h += '<div id="drillExpand-' + d.id + '" style="display:none;padding:6px 10px;margin:2px 0 4px;font-size:10px;background:var(--bg3);border-radius:4px;border:1px solid rgba(var(--gold-rgb),.3)">';
       if (d.equip && d.equip !== "None") h += '<div style="color:var(--gold);font-weight:600;margin-bottom:3px"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M2 8h12M8 2v12"/></svg> ' + escHtml(d.equip) + '</div>';
       else h += '<div style="color:var(--muted);margin-bottom:3px">No extra equipment needed</div>';
       if (d.howTo) h += '<div style="color:var(--cream);line-height:1.4">' + escHtml(d.howTo) + '</div>';

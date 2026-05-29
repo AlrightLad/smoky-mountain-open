@@ -264,7 +264,7 @@ function _hqHeroPullquote(ctx) {
   // headline number anchors the visual weight. Per CTO review 2026-05-06:
   // 'should anchor visual weight as the panel's headline number'.
   // font-variant-numeric for lining tabular figures (matches stats quartet).
-  var h = '<div style="background:var(--cb-chalk-2);border-left:6px solid var(--cb-brass);padding:18px 22px;border-radius:0 8px 8px 0">';
+  var h = '<div style="background:var(--cb-chalk-2);border:1px solid rgba(var(--cb-brass-rgb),.28);padding:18px 22px;border-radius:8px">';
   h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:8px">' + escHtml(eyebrow) + '</div>';
   h += '<div style="font-family:var(--font-display);font-size:32px;font-weight:700;color:var(--cb-ink);line-height:1.05;margin-bottom:6px;font-variant-numeric:lining-nums tabular-nums">' + escHtml(statValue) + '</div>';
   h += '<div style="font-family:var(--font-ui);font-size:12px;color:var(--cb-charcoal);line-height:1.4">' + escHtml(caption) + '</div>';
@@ -509,8 +509,8 @@ function _hqLadderRow(s, rank, leaderPts, isMe) {
   var name = s.username || s.name || "Member";
   var pts = s.points || 0;
   var gap = leaderPts - pts;
-  var bg = isMe ? "background:var(--cb-chalk-2);" : "";
-  var rule = isMe ? "border-left:3px solid var(--cb-brass);padding-left:9px;" : "padding-left:12px;";
+  var bg = isMe ? "background:rgba(var(--cb-brass-rgb),.10);" : "";
+  var rule = "padding-left:12px;";
   var weight = isMe ? "600" : "500";
   var click = s.id ? ' onclick="Router.go(\'members\',{id:\'' + s.id + '\'})"' : "";
   var h = '<div' + click + ' style="' + bg + rule + 'padding-right:12px;height:var(--hq-ladder-row-height);display:flex;align-items:center;gap:10px;cursor:pointer;border-radius:var(--r-1)">';

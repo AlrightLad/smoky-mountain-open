@@ -29,13 +29,14 @@ Router.register("caddynotes", function() {
     { item: "\"The league this week\" stat strip on the home page — rounds, average, low score, and momentum vs last week.", tag: "NEW" },
     { item: "Your handicap stat now shows a trend arrow when you have 5+ rounds — ▼ improving / ▲ heavier / ● steady.", tag: "IMPROVED" },
     { item: "Round history now shows ±N to par under every score, and a ★ PR badge marks your personal best.", tag: "IMPROVED" },
-    { item: "Standings highlights your own row with a brass rule + YOU chip — easier to find yourself in the ladder.", tag: "IMPROVED" },
+    { item: "Standings highlights your own row with a soft gold wash + YOU chip, so you can find yourself in the ladder at a glance.", tag: "IMPROVED" },
     { item: "Trophy Room hero gets a warm gold halo behind your level — the moment should feel like a moment.", tag: "IMPROVED" },
     { item: "Members directory groups by tier (Founding Four / Members) with brass eyebrows + counts.", tag: "IMPROVED" },
     { item: "Mobile home now shows a League Pulse — last 3 league activity items right on home.", tag: "NEW" },
     { item: "Course directory + Feed get warmer empty states with clear next-actions.", tag: "IMPROVED" },
     { item: "Activity feed is steadier — rounds logged offline now show up correctly instead of leaving the feed blank until they sync.", tag: "IMPROVED" },
     { item: "Toasts and notifications wear a cleaner full outline instead of a side stripe, so success and error states read clearly at a glance.", tag: "IMPROVED" },
+    { item: "More of the app now shares one clean card outline: the handicap callout, league pulse, range sessions, and feed cards dropped their colored edge-stripes for a single cohesive look.", tag: "IMPROVED" },
     { item: "Behind the scenes: visual regression suite catches design drift; pre-commit blocks accidental credential leaks; A- app-health floor maintained.", tag: "INFRA" }
   ];
 
