@@ -61,6 +61,28 @@ const SURFACES = [
     { key: "courses",      route: "/courses",      wait: "[data-page='courses']" },
     { key: "settings",     route: "/settings",     wait: "[data-page='settings']" },
     { key: "playnow",      route: "/playnow",      wait: "[data-page='playnow']" },
+    // v8.23.13 sweep — remaining single-column surfaces capped to the 680px
+    // reading column. Captured to V1-verify the cap centres content (and that
+    // the full-width control `members` grid stays edge-to-edge).
+    { key: "chat",        route: "/chat",        wait: "[data-page='chat']" },
+    { key: "dms",         route: "/dms",         wait: "[data-page='dms']" },
+    { key: "activity",    route: "/activity",    wait: "[data-page='activity']" },
+    { key: "teetimes",    route: "/teetimes",    wait: "[data-page='teetimes']" },
+    { key: "partygames",  route: "/partygames",  wait: "[data-page='partygames']" },
+    { key: "richlist",    route: "/richlist",    wait: "[data-page='richlist']" },
+    { key: "aces",        route: "/aces",        wait: "[data-page='aces']" },
+    { key: "awards",      route: "/awards",      wait: "[data-page='awards']" },
+    { key: "drills",      route: "/drills",      wait: "[data-page='drills']" },
+    { key: "findplayers", route: "/findplayers", wait: "[data-page='findplayers']" },
+    { key: "leagues",     route: "/leagues",     wait: "[data-page='leagues']" },
+    { key: "merch",       route: "/merch",       wait: "[data-page='merch']" },
+    { key: "rules",       route: "/rules",       wait: "[data-page='rules']" },
+    { key: "faq",         route: "/faq",         wait: "[data-page='faq']" },
+    { key: "bugreport",   route: "/bugreport",   wait: "[data-page='bugreport']" },
+    { key: "invite",      route: "/invite",      wait: "[data-page='invite']" },
+    { key: "more",        route: "/more",        wait: "[data-page='more']" },
+    { key: "seasonrecap", route: "/seasonrecap", wait: "[data-page='seasonrecap']" },
+    { key: "records",     route: "/records",     wait: "[data-page='records']" },
 ];
 
 // Optional surface filter: CV_ONLY="feed,settings" captures just those keys.

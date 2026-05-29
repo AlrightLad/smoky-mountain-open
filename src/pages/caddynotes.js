@@ -22,7 +22,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · The polish pass</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
-    { item: "On a wide desktop screen, the app's list and form pages, things like Feed, Rounds, Play Now, the Range, Settings, Courses, and the Bounty, Wager, Scramble, Trip, and Challenge boards, now keep their content in one tidy centered column instead of stretching the whole screen wide, so every row, score, and field reads at a glance (no more controls drifting way off across the page).", tag: "IMPROVED" },
+    { item: "On a wide desktop screen, the whole app now keeps its content in one tidy centered column: the Clubhouse, Feed, your Rounds, Play Now, the Range, messages, settings, and every board and list, instead of stretching the screen wide, so every row, score, and message reads at a glance (no more controls drifting way off across the page). Wide scorecards and the standings, members, and trophy grids still fill the space where it helps.", tag: "IMPROVED" },
     { item: "The Wagers page now welcomes you the way the Bounty Board does: a clear heading, a few example wagers to spark ideas, and one tap to get one going.", tag: "IMPROVED" },
     { item: "Clubhouse posts behave themselves: bounties, wagers, and chat messages no longer flash a phantom error after they actually go through, and a message that truly fails to send now says so.", tag: "IMPROVED" },
     { item: "Caddy's notes in the feed now sit in a softly tinted card, while everyone else's chat wears the same clean full outline as the rest of the app.", tag: "IMPROVED" },

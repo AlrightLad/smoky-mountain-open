@@ -595,6 +595,20 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
        range = rangelive.js [data-page="range"], NOT range-detail; playnow
        covers both setup and the live scorecard, which is strictly narrower
        and better at 680px than 1152px.)
+   v8.23.13 sweep completes the class across the remaining single-column member
+   surfaces (verified no wide table/grid via source audit): the social/chat pages
+   (chat=Clubhouse, dms, dm-thread, activity), event + roster lists (teetimes,
+   tee-create, partygames, richlist, aces, awards, drills, findplayers, leagues,
+   merch, records), text/reading pages (rules, faq), forms (bugreport, invite),
+   the more-menu, and seasonrecap. All previously stranded their single column
+   edge-to-edge across the 1152px content area; the 680px column matches the rest
+   of the app.
+   Deliberately NOT capped: round (self-centres at <=680px via its own wrappers +
+   a mobile reflow override), scorecard + syncround (wide hole-by-hole tables),
+   scramble-live (active team scoring with a horizontal scorecard strip), admin
+   (commissioner power-tool, dense data wants width), and profile (renders into
+   the shared [data-page="members"] grid container — capping it would also squish
+   the member directory, so it stays full-width with the directory).
    Left full-width on purpose: standings/trophyroom/members/calendar/shop (rich
    tables + grids that fill the area), home (multi-column), onboarding (its
    wizard is already centred in its own ~340px column).
@@ -611,7 +625,29 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
   [data-page="settings"],
   [data-page="courses"],
   [data-page="playnow"],
-  [data-page="range"] {
+  [data-page="range"],
+  /* v8.23.13 — social/chat, lists, text, forms (single-column, no wide table/grid) */
+  [data-page="chat"],
+  [data-page="dms"],
+  [data-page="dm-thread"],
+  [data-page="activity"],
+  [data-page="teetimes"],
+  [data-page="tee-create"],
+  [data-page="partygames"],
+  [data-page="richlist"],
+  [data-page="aces"],
+  [data-page="awards"],
+  [data-page="drills"],
+  [data-page="findplayers"],
+  [data-page="leagues"],
+  [data-page="merch"],
+  [data-page="rules"],
+  [data-page="faq"],
+  [data-page="bugreport"],
+  [data-page="invite"],
+  [data-page="more"],
+  [data-page="seasonrecap"],
+  [data-page="records"] {
     max-width: 680px;
     margin-left: auto;
     margin-right: auto;
