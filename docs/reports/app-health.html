@@ -821,9 +821,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-29T19:02:00.470996Z",
+  "generated_at": "2026-05-29T19:12:30.684792Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 88.1,
+  "overall_score": 87.4,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -837,9 +837,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 93.1,
+    "pre_deduction_score": 92.4,
     "deduction": 5,
-    "post_deduction_score": 88.1
+    "post_deduction_score": 87.4
   },
   "dimensions": {
     "A1_roadmap": {
@@ -968,36 +968,50 @@
     "A11_testing": {
       "score": 88,
       "status": "green",
-      "label": "8 specs · 880 LOC · unit-test=True · coverage-tool=True",
+      "label": "9 specs · 1035 LOC · unit-test=True · coverage-tool=True",
       "source": "tests/e2e/flows/, package.json, smoke-test.txt",
       "weak_points": []
     },
     "A12_operational": {
-      "score": 90,
-      "status": "green",
-      "label": "pipeline=green · 3 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "score": 75,
+      "status": "yellow",
+      "label": "pipeline=yellow · 4 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "3 of last 10 cron watcher runs hit skip-dirty",
+          "what": "4 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
       ],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "no-new-files"
+        "watcher_exit_reason": "skip-dirty"
       }
     }
   },
-  "attention_items": [],
+  "attention_items": [
+    {
+      "what": "4 of last 10 cron watcher runs hit skip-dirty",
+      "where": "scripts/cron/logs/*-downloads-watcher.log",
+      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
+      "dimension": "A12_operational"
+    }
+  ],
   "founder_attention": [],
-  "agent_attention": [],
+  "agent_attention": [
+    {
+      "what": "4 of last 10 cron watcher runs hit skip-dirty",
+      "where": "scripts/cron/logs/*-downloads-watcher.log",
+      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
+      "dimension": "A12_operational"
+    }
+  ],
   "audit_trigger": {
-    "sha": "37ea4d64",
-    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
-    "committed_at": "2026-05-29T14:40:08-04:00",
-    "trigger": "cron",
+    "sha": "60d6e2cc",
+    "subject": "test(playnow): BL-001 in-round par/yardage edit regression spec + close backlog",
+    "committed_at": "2026-05-29T15:12:07-04:00",
+    "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
     "total_files_touched": 4
