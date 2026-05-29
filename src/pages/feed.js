@@ -307,7 +307,7 @@ function _renderRoundCard(item) {
 // ── CHAT CARD (compact) ──
 function _renderChatCard(item) {
   var isSystem = item.system;
-  var h = '<div class="card" style="margin:3px 16px;border-left:3px solid ' + (isSystem ? 'var(--birdie)' : 'var(--border)') + '">';
+  var h = '<div class="card" style="margin:3px 16px' + (isSystem ? ';border-color:rgba(var(--birdie-rgb),.35);background:rgba(var(--birdie-rgb),.06)' : '') + '">';
   h += '<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 12px">';
   if (!isSystem) {
     h += renderAvatar(item.player, 28, true);
@@ -360,7 +360,7 @@ function sendFeedChat() {
     authorId: currentUser.uid,
     authorName: name,
     createdAt: fsTimestamp()
-  }))(function(e) { Router.toast("Send failed: " + e.message); });
+  })).catch(function(e) { Router.toast("Send failed: " + e.message); });
 }
 
 function applyFeedFilter() {

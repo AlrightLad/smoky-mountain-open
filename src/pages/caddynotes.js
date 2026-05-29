@@ -22,6 +22,8 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · The polish pass</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    { item: "Clubhouse posts behave themselves: bounties, wagers, and chat messages no longer flash a phantom error after they actually go through, and a message that truly fails to send now says so.", tag: "IMPROVED" },
+    { item: "Caddy's notes in the feed now sit in a softly tinted card, while everyone else's chat wears the same clean full outline as the rest of the app.", tag: "IMPROVED" },
     { item: "Privacy Policy and Terms of Service are now one tap away in Settings, and the privacy policy spells out exactly what we store, what stays opt-in (like location for weather), and what we never touch.", tag: "NEW" },
     { item: "Home greets you by time of day — Good morning / Good afternoon / Good evening / Welcome back.", tag: "IMPROVED" },
     { item: "\"The league this week\" stat strip on the home page — rounds, average, low score, and momentum vs last week.", tag: "NEW" },

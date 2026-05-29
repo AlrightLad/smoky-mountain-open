@@ -195,7 +195,7 @@ function submitBounty() {
       id: genId(),
       text: myName + " posted a " + pot + "-coin bounty: " + (type === "score" ? "Shoot " + bountyData.targetScore + " or better" : "Birdie hole " + bountyData.targetHole) + " at " + course + ". Who can claim it?",
       authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp()
-    }))(function(){});
+    })).catch(function(){});
     Router.toast("Bounty posted!");
     Router.go("bounties", {}, true);
   }).catch(function(err) { Router.toast("Failed: " + err.message); });
@@ -230,7 +230,7 @@ function checkBountyClaims(round) {
           id: genId(),
           text: myName + " CLAIMED the " + b.pot + "-coin bounty at " + b.course + "! " + (b.type === "score" ? "Shot " + round.score + " (target: " + b.targetScore + ")" : "Birdied hole " + b.targetHole),
           authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp()
-        }))(function(){});
+        })).catch(function(){});
         sendNotification(b.createdBy, { type: "bounty_claimed", title: "Bounty claimed!", message: myName + " claimed your " + b.pot + "-coin bounty at " + b.course, page: "bounties" });
         Router.toast("BOUNTY CLAIMED! +" + b.pot + " ParCoins!");
       }

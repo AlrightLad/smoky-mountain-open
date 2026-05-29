@@ -394,7 +394,7 @@ function closeEvent(tripId) {
       linkType: "event",
       timestamp: Date.now(),
       createdAt: fsTimestamp()
-    }))(function(){});
+    })).catch(function(){});
   }
   
   // Update local player wins

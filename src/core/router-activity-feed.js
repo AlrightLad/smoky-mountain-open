@@ -249,9 +249,9 @@ function sendHomeChat() {
     authorId: currentUser.uid,
     authorName: currentProfile ? PB.getDisplayName(currentProfile) : "Anon",
     createdAt: fsTimestamp()
-  }).then(function() {
+  })).then(function() {
     loadHomeActivityFeed(); // Refresh
-  }))(function(e) { Router.toast("Send failed: " + e.message); });
+  }).catch(function(e) { Router.toast("Send failed: " + e.message); });
 }
 
 function feedTimeAgo(ts) {

@@ -352,7 +352,7 @@ function saveRangeSession(mins, totalSec) {
       id: genId(),
       text: session.playerName + " just finished a " + mins + "-minute range session" + (session.drills.length ? " working on " + session.drills.length + " drill" + (session.drills.length>1?"s":"") : "") + " (+"+xp+" XP)",
       authorId: "system", authorName: "Parbaughs", createdAt: fsTimestamp()
-    }))(function(){});
+    })).catch(function(){});
   }
   activeRangeStart = null;
   activeRangeDrills = [];

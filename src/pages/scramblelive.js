@@ -190,7 +190,7 @@ function finishScrambleLive() {
       authorId: "system",
       authorName: "Parbaughs",
       createdAt: fsTimestamp()
-    }))(function(){});
+    })).catch(function(){});
   }
   
   scrambleLiveState = { active: false };

@@ -414,7 +414,7 @@ function doRegister() {
             authorName: "The Caddy",
             createdAt: fsTimestamp(),
             type: "welcome"
-          }))(function(){});
+          })).catch(function(){});
         });
       });
     });

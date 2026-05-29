@@ -117,7 +117,7 @@ function purchasePowerUp(key, cost) {
     db.collection("chat").add(leagueDoc("chat", {
       id: genId(), text: myName + " activated a Handicap Shield! Their next round won't count toward their handicap.",
       authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp()
-    }))(function(){});
+    })).catch(function(){});
   }
   Router.go("richlist", {}, true);
 }
@@ -137,7 +137,7 @@ function purchaseStatus(key, cost) {
     db.collection("chat").add(leagueDoc("chat", {
       id: genId(), text: myName + " is now a HOLE SPONSOR at " + course + " for " + PB.getCurrentSeason().label + "! Their name appears on scorecards.",
       authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp()
-    }))(function(){});
+    })).catch(function(){});
   } else if (key === "nameTournament") {
     var name = prompt("What do you want to name the next event?");
     if (!name || !name.trim()) { Router.toast("Cancelled"); return; }
@@ -146,7 +146,7 @@ function purchaseStatus(key, cost) {
     db.collection("chat").add(leagueDoc("chat", {
       id: genId(), text: myName + " spent 1,000 ParCoins to NAME THE NEXT TOURNAMENT: \"" + escHtml(name.trim()) + "\"",
       authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp()
-    }))(function(){});
+    })).catch(function(){});
   }
   Router.go("richlist", {}, true);
 }

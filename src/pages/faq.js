@@ -103,7 +103,7 @@ function openFeatureRequest() {
       authorName: "Parbaughs",
       createdAt: fsTimestamp(),
       type: "feature_request"
-    }))(function(){});
+    })).catch(function(){});
     
     Router.toast("Request sent! The Commissioner has been notified.");
   } else {

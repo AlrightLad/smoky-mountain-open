@@ -266,7 +266,7 @@ function submitWager() {
       db.collection("chat").add(leagueDoc("chat", {
         id: genId(), text: myName + " challenged " + oppName + " to a " + WAGER_TYPES[type].label + " wager for " + totalCost + " ParCoins" + (course ? " at " + course : "") + "!",
         authorId: "system", authorName: "Parbaughs", createdAt: fsTimestamp()
-      }))(function(){});
+      })).catch(function(){});
     }
     Router.toast("Challenge sent to " + oppName + "!");
     Router.go("wagers");

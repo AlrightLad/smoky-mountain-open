@@ -346,7 +346,7 @@ function createEventFromCal(startDate, endDate) {
         authorId: "system",
         authorName: "Parbaughs",
         createdAt: fsTimestamp()
-      }))(function(){});
+      })).catch(function(){});
       clubCalRangeStart = null;
       clubCalRangeEnd = null;
       clubCalSelectedDate = null;

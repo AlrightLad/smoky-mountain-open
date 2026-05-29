@@ -76,7 +76,7 @@ function _executeSocialAction(actionKey, targetUid, action, cooldownKey) {
       text: myName + " put " + targetName + " in the SPOTLIGHT OF SHAME for 24 hours. Their worst round: " + worstDesc + ". No hiding from this one.",
       authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp(),
       pinned: true, pinExpires: new Date(Date.now() + 24*60*60*1000).toISOString()
-    }))(function(){});
+    })).catch(function(){});
   } else if (actionKey === "victorylap") {
     // Store pending celebration for target
     db.collection("pending_celebrations").add({
@@ -89,13 +89,13 @@ function _executeSocialAction(actionKey, targetUid, action, cooldownKey) {
       id: genId(),
       text: myName + " is taking a VICTORY LAP on " + targetName + "! A celebration animation awaits them.",
       authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp()
-    }))(function(){});
+    })).catch(function(){});
   } else if (actionKey === "rematch") {
     db.collection("chat").add(leagueDoc("chat", {
       id: genId(),
       text: myName + " DEMANDS A REMATCH against " + targetName + "! This can't be ignored. Who's got next?",
       authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp()
-    }))(function(){});
+    })).catch(function(){});
   } else if (actionKey === "welcome") {
     // Give target a random starter cosmetic
     var starters = ["border_bronze", "banner_sunset", "card_neon"];
@@ -107,7 +107,7 @@ function _executeSocialAction(actionKey, targetUid, action, cooldownKey) {
       id: genId(),
       text: myName + " sent " + targetName + " a Welcome Gift! They unlocked a free cosmetic item.",
       authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp()
-    }))(function(){});
+    })).catch(function(){});
   }
 
   // Notify target
