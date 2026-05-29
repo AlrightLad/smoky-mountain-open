@@ -821,7 +821,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-29T11:13:35.430375Z",
+  "generated_at": "2026-05-29T11:19:55.579009Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.8,
   "overall_grade": "A-",
@@ -960,11 +960,11 @@
     "A12_operational": {
       "score": 75,
       "status": "yellow",
-      "label": "pipeline=yellow · 8 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=yellow · 9 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "8 of last 10 cron watcher runs hit skip-dirty",
+          "what": "9 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -977,7 +977,7 @@
   },
   "attention_items": [
     {
-      "what": "8 of last 10 cron watcher runs hit skip-dirty",
+      "what": "9 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -986,16 +986,16 @@
   "founder_attention": [],
   "agent_attention": [
     {
-      "what": "8 of last 10 cron watcher runs hit skip-dirty",
+      "what": "9 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "2d5d1971",
-    "subject": "fix(staging): build staging with root base so assets resolve on Firebase Hosting",
-    "committed_at": "2026-05-29T07:13:17-04:00",
+    "sha": "2b912e9b",
+    "subject": "chore(staging): V1 evidence for sign-in logo base-path fix",
+    "committed_at": "2026-05-29T07:19:37-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
