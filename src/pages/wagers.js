@@ -47,7 +47,7 @@ function renderWagerList() {
       var el = document.getElementById("wager-list");
       if (!el) return;
       if (!mine.length) {
-        el.innerHTML = '<div class="empty" style="padding:32px"><div style="font-size:28px;margin-bottom:6px"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div><div class="empty-text" style="color:var(--gold)">Ready to put your coins on the line?</div><div style="font-size:10px;color:var(--muted2);margin-top:4px">Challenge a friend and bet ParCoins on who plays better</div><button class="btn green" onclick="Router.go(\'wagers\',{create:true})" style="margin-top:12px;font-size:12px">Start a Wager</button></div>';
+        el.innerHTML = _wagerEmptyHTML();
         // Show completed wagers below
         _loadCompletedWagers(uid, el);
         return;
@@ -59,9 +59,28 @@ function renderWagerList() {
     }).catch(function(err) {
       pbWarn("[Wagers]", err.message);
       var el = document.getElementById("wager-list");
-      if (el) el.innerHTML = '<div class="empty" style="padding:32px"><div style="font-size:28px;margin-bottom:6px"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div><div class="empty-text" style="color:var(--gold)">Ready to put your coins on the line?</div><div style="font-size:10px;color:var(--muted2);margin-top:4px">Challenge a friend and bet ParCoins on who plays better</div><button class="btn green" onclick="Router.go(\'wagers\',{create:true})" style="margin-top:12px;font-size:12px">Start a Wager</button></div>';
+      if (el) el.innerHTML = _wagerEmptyHTML();
     });
   }
+}
+
+// Empty-state markup for the wager list. Mirrors the bounties board empty
+// state (icon + display-font status heading + body + CTA + idea chips) so the
+// two sibling betting surfaces read as one coherent family.
+function _wagerEmptyHTML() {
+  var eh = '<div style="padding:24px 16px;text-align:center">';
+  eh += '<div style="margin-bottom:12px"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>';
+  eh += '<div style="font-family:var(--font-display);font-size:18px;color:var(--gold);margin-bottom:6px">No Active Wagers</div>';
+  eh += '<div style="font-size:12px;color:var(--muted);line-height:1.5;max-width:280px;margin:0 auto 16px">Challenge a friend and bet ParCoins on who plays the better round. Coins lock when the wager is accepted and release once the round is scored.</div>';
+  eh += '<button class="btn full green" onclick="Router.go(\'wagers\',{create:true})" style="max-width:240px;margin:0 auto;font-size:13px;padding:14px">Start a Wager</button>';
+  eh += '<div style="margin-top:20px;text-align:left">';
+  eh += '<div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:center">Wager Ideas</div>';
+  var examples = ["Lower total at Heritage Hills · 100 coins", "Fewest putts next round · 50 coins", "Beat my best at Sequoyah · 75 coins"];
+  examples.forEach(function(ex) {
+    eh += '<div style="padding:8px 12px;margin-bottom:4px;background:var(--bg3);border:1px dashed var(--border);border-radius:var(--radius);font-size:11px;color:var(--muted2);font-style:italic">' + ex + '</div>';
+  });
+  eh += '</div></div>';
+  return eh;
 }
 
 function _loadCompletedWagers(uid, appendTo) {
