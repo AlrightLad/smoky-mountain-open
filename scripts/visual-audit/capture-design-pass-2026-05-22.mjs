@@ -80,6 +80,14 @@ const USERS = (await import(pathToFileURL(resolve(REPO, "tests/e2e/setup/fixture
 const testZach = USERS.find(u => u.key === "testZach");
 if (!testZach) throw new Error("testZach fixture missing");
 
+// Optional comma-separated filters for targeted re-capture during the
+// critique loop (e.g. SURFACE_FILTER=seasonrecap PROFILE_FILTER=iphone14).
+// Absent → full 36×3 sweep (original behavior).
+const SURFACE_FILTER = process.env.SURFACE_FILTER ? process.env.SURFACE_FILTER.split(",") : null;
+const PROFILE_FILTER = process.env.PROFILE_FILTER ? process.env.PROFILE_FILTER.split(",") : null;
+const ACTIVE_SURFACES = SURFACE_FILTER ? SURFACES.filter(s => SURFACE_FILTER.includes(s.key)) : SURFACES;
+const ACTIVE_PROFILES = PROFILE_FILTER ? PROFILES.filter(p => PROFILE_FILTER.includes(p.key)) : PROFILES;
+
 async function captureProfile(profile, token) {
     const outProfile = resolve(OUT, profile.key);
     await mkdir(outProfile, { recursive: true });
@@ -127,7 +135,7 @@ async function captureProfile(profile, token) {
         document.querySelectorAll(".toast").forEach(el => el.remove());
     });
 
-    for (const s of SURFACES) {
+    for (const s of ACTIVE_SURFACES) {
         try {
             // Use the app's actual Router. The exposed global is `Router` (a
             // top-level var). For the home route we navigate to "/" which
@@ -169,7 +177,7 @@ async function main() {
     console.log(`[capture-design-pass] iter=${ITER} profiles=${PROFILES.length} surfaces=${SURFACES.length}`);
     console.log(`[capture-design-pass] signing in as ${testZach.key} (${testZach.uid})`);
 
-    for (const profile of PROFILES) {
+    for (const profile of ACTIVE_PROFILES) {
         await captureProfile(profile, token);
     }
 
