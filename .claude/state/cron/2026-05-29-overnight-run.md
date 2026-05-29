@@ -1944,3 +1944,111 @@ Heartbeat-only self-check — **Is tonight's substantive output real?** YES. Thi
 - `docs/reports/app-health.html` — regen output (18-ins/39-del: `generated_at` timestamp + `overall_score` 87.4→88.1 + deduction block + the single A12_operational block 75→90 / status yellow→green / label 8→3 skip-dirty / exit-reason skip-dirty→no-new-files + the now-emptied `attention_items` array; all 11 non-A12 dims byte-identical vs HEAD)
 
 No code changes in cycle AL. No proposals. No FIQ writes. No bug-report state moves (inbox absent). The A12 75→90 recovery is the concurrent watcher cron's rolling-window improvement (5 most-recent clean runs 18:40→19:00Z after the BL-001 playnow ship committed at `421bf354`), present in the watcher logs before my 19:02 run and surfaced by this heartbeat's regen, NOT caused by this triage cycle.
+
+---
+
+# Overnight triage — 2026-05-29 (cycle AM)
+
+**Started:** 2026-05-29T20:01:17Z (session open; regen-all START ~20:01:50Z)
+**Finished:** 2026-05-29T20:02:17Z (regen-all "ALL DASHBOARDS REGENERATED"; heartbeat PASS written 20:02:40Z, duration 30s)
+**Mode:** Autonomous overnight (no Founder available)
+**Cycle:** AM (73rd consecutive empty-inbox cycle; ~1h wall-clock gap from cycle AL's ~19:02:40Z close — TWENTY-SEVENTH consecutive ~1h-cadence cycle since cycle M). Twenty-first cycle of the 2026-05-29 UTC date; appended to the shared date-file per the convention used by cycles S–AL.
+**Disposition:** Both inboxes ABSENT → heartbeat-only path (steps 3–5). **A12_operational has RE-OSCILLATED green→yellow exactly as cycle AL predicted — app-health 88.1 → 86.6 (A- holds), A12 90→60 (green→yellow), `attention_items` re-populated with the single A12 skip-dirty item. Surfaced not caused (the watcher is skip-dirtying on two lingering concurrent artifacts: `.claude/state/emu-unified-2026-05-29.log` + `.pw-full-sweep.log`); this cycle BOTH app-health A12 (yellow) and approvals-pipeline (red) coherently agree the watcher is blocked. No fix warranted — predicted oscillation, not a regression.**
+
+## Inbox state at run-start (cycle AM)
+
+- `.claude/state/founder-input-queue/` — **MISSING** (`ls` → No such file or directory). 73rd consecutive absent cycle. Baseline-empty per `FIQ_QUALITY_RUBRIC.md` §6 (auto-created on first write); NOT a HALT-23.1 operational-view failure.
+- `.claude/state/bug-reports/` — **entire tree MISSING** (inbox/ + triaged/ both absent). No reports to diagnose.
+- `.claude/state/proposals/pending/` — empty (`.gitkeep` only).
+- Working tree at run-start: **DIRTY with two concurrent-process artifacts** — `M .claude/state/emu-unified-2026-05-29.log` (modified) + `?? .pw-full-sweep.log` (untracked). NOT this cycle's files (concurrent emulator + playwright-full-sweep output). HEAD = `82940cae`. These two items are the root cause of the A12 re-oscillation (see Step 3a.1).
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle AM)
+
+- FIQ entries triaged: **0** (queue directory absent).
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0.
+- IDs: none. The only `FIQ-` ids on disk are the FIQ-001 template examples inside `docs/FOUNDER_INPUT_QUEUE.md` (schema illustration), NOT live queue entries.
+
+## Step 2 — Bug-report triage (cycle AM)
+
+- Bug reports processed: **0** (inbox tree absent).
+- Dispositions: none. No P3e discussion bubbles opened (nothing to deliberate).
+
+## Step 3 — Heartbeat (cycle AM)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end ~20:01:50Z → 20:02:17Z: **`=== ALL CHECKS PASSED ===`**, **`round-trip test PASS`**. Heartbeat `regen-all-last-pass.json` written `{"status":"PASS","duration_seconds":30,"last_pass_at_utc":"2026-05-29T20:02:40.7572519Z"}`. **28th consecutive clean canonical regen (cycles L–AM).**
+- All ~30 guards green: round-trip 4-view swap + theme convergence 7/7 (no raw hex) + no-charts + protected-layouts 5/5 + 23/23 + 17 swatches + W1.S1 + proposal-readiness 0 deferred + install-scripts 7 parse + install-cmd-surface + scroll-reachability 5/0/0 + escalations applied=3 + quota-status auto-derived (weekly_pct=None) + pause-discipline clean + wiring 5/5.
+- One INFORMATIONAL `~` (not a failure): `user-context-gate` flags `main-flows.html` modified 21234.7 min after the last user-context capture (2026-05-14T23-07-48Z) — benign on a heartbeat-only night with no visual ship-close.
+
+### 3a.1 — A12 RE-OSCILLATION green→yellow, traced to root cause + cross-signal reconciliation (no guessing; the symmetric inverse of cycle AL)
+
+**app-health 88.1 (A-, HEAD `82940cae` committed, generated 19:50:54Z) → 86.6 (A-, my 20:02 regen recomputed).** The A12 transient that cycle AL settled to green has re-oscillated back to yellow — exactly as AL predicted:
+
+1. **The drop is driven SOLELY by A12_operational 90→60 (green→yellow).** Read the `app-health.html` `git diff` verbatim — the other 11 dimensions HELD byte-identical: A1 80, A2 100, A3 98, A4 93, A5 88, A6 92, A7 100, **A8_performance 83/green (cycle-AH perf-minify gain STILL sustained)**, A9 95, A10 100, A11 88. `attention_items` + `agent_attention` are now each re-populated with the SINGLE A12 skip-dirty item (`founder_attention` still empty).
+2. **My `git diff docs/reports/app-health.html` (29 ins / 15 del) moved ONLY** the `generated_at` timestamp (`19:50:54.194968Z` → `20:02:16.261382Z`), `overall_score` 88.1→86.6, the deduction block 93.1/88.1→91.6/86.6, the single A12 block (90→60, status green→yellow, label `7 recent skip-dirty`→`8 recent skip-dirty`, pipeline green→red), the re-populated `attention_items`/`agent_attention` arrays, and the `audit_trigger` re-point `fbe4577a`→`82940cae`. No other dimension changed. (HEAD-committed `overall_score` confirmed `88.1` / A12 `90` via `git show HEAD:docs/reports/app-health.html` — my regen genuinely PRODUCED 86.6, so this superficially looks *caused*.)
+3. **Surfaced-not-caused despite my regen producing the lower number.** A12's INPUTS — the `downloads-watcher` logs + `approvals-pipeline.json` — are written by the **concurrent downloads-watcher cron**, NOT my regen; `aggregate-app-health.py` only READS them. The degradation was already present in the watcher logs before my 20:02 run; the heartbeat **surfaced** it.
+
+**Root cause grounded verbatim:** the last 10 `downloads-watcher` logs (20:00:48Z→19:15:48Z) are **8 skip-dirty + 2 CLEAN** — skip-dirty at 20:00/19:55/19:50/19:45/19:40/19:35/19:30/19:25Z; only 19:20Z + 19:15Z are `DONE no new decisions or amendments files`. The skip lines name the dirtying files verbatim, e.g. `[20:00:49] SKIP working tree dirty with non-routine files: .claude/state/emu-unified-2026-05-29.log, .pw-full-sweep.log` — **exactly the two pre-existing dirty working-tree items present at my run-start `git status`** (concurrent emulator + playwright-full-sweep artifacts; earlier windows 19:25–19:40Z also named `tests/e2e/flows/07-mobile-viewport.spec.js`, since committed at `4811880a`). The 8/10 skip-dirty ratio tipped A12 over the green→yellow threshold (the prior HEAD snapshot at 7/10 scored green 90; my 8/10 snapshot scores yellow 60).
+
+**Cross-signal CONSISTENCY this cycle:** `approvals-pipeline.json` (as_of 20:00:48Z) reads `"status": "red"`, `"summary": "watcher cycling · applies blocked (8 skips on dirty tree) · 1 in inbox"`, most-recent stall entry note quotes the SKIP line verbatim. BOTH signals coherently agree the watcher is currently blocked — A12 yellow + pipeline red point the same direction (not a two-window split like cycle AK, and the inverse of AL's both-green).
+
+**Verdict:** the heartbeat **SURFACED** the A12 re-oscillation; it did **NOT cause** it. The cause is the two concurrent artifacts dirtying the tree across watcher windows — concurrent-process / Founder territory. **No fix authored or warranted** — the watcher skip-dirty is a safety feature working as designed.
+
+**⚠ HONEST CHARACTERIZATION (the symmetric inverse of AL's positive-night discipline):** this is NOT a regression I introduced and NOT a new defect. Cycle AL explicitly wrote "A12 will oscillate yellow↔green again whenever a new ship holds the tree dirty across watcher windows." This cycle is that prediction coming true. Calling it a "regression" (false panic) or waving it off (deflection) would both be failure modes; it is correctly characterized as "the predicted re-oscillation back to yellow, driven by two lingering concurrent artifacts, re-settles green once they clear." Still A-, no agent fix warranted.
+
+**Working-tree state after regen:** `docs/reports/app-health.html` (my regen output) is dirty, plus the two pre-existing concurrent artifacts (`emu-unified-2026-05-29.log`, `.pw-full-sweep.log`) which I did NOT touch. This triage cycle commits ONLY its own files via explicit pathspec (cycle-AB index-race lesson) — the two concurrent artifacts are left for Founder/concurrent-process to clear (cycle-K precedent: Founder clears concurrent dirty trees, not the agent).
+
+### 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — updated for cycle AM (status `active`; token threshold remains crossed ~835k cumulative, 37th cross-cycle; no rest — heartbeat-only nights are light). `_note` + `substantive_output_at_checkpoint` rewritten with the 28th-consecutive-clean-regen observation and the A12 90→60 re-oscillation surfaced-not-caused trace (8/10-watcher-log grounding + skip-dirty-files-are-the-two-concurrent-artifacts + approvals-pipeline-red cross-check).
+- `.claude/state/wellness/critic.json` — updated for cycle AM (status `active`; threshold crossed ~174k; no rest). Critic independently confirmed exactly one dimension moved (A12 90→60, A8 held at 83, 10 dims held), guarded against the false-panic regression spin on a negative night (this is the AL-predicted oscillation, not a defect), and verified surfaced-not-caused (watcher-written inputs; degradation present before the 20:02 regen).
+
+## Step 4 — Session journal
+
+**This section.**
+
+## Cycle AM counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 |
+| Bug reports processed | 0 |
+| New proposals authored | 0 |
+| Wellness state changes | 2 (engineer.json + critic.json cycle AM refresh) |
+
+## Blockers requiring Founder attention (cycle AM)
+
+**No ship-blocking issues. No HALT criteria tripped** (meter_status `wired-real` → HALT 25 not in effect; FIQ dir absence is baseline-empty, not HALT-23.1 operational-view failure). Awareness / Founder-action items:
+
+1. **PREDICTED-OSCILLATION (P10 actionable) — A12_operational re-oscillated to yellow (60).** app-health 88.1 → 86.6 (A- holds), A12 90→60, `attention_items` re-populated, both app-health A12 (yellow) and approvals-pipeline (red) agree the watcher is blocked. **WHAT:** the downloads-watcher is skip-dirtying on two lingering concurrent artifacts — 8 of the last 10 watcher runs (20:00→19:25Z) skipped. **WHERE:** `.claude/state/emu-unified-2026-05-29.log` (modified) + `.pw-full-sweep.log` (untracked, repo root); evidence in `scripts/cron/logs/*-downloads-watcher.log` + `approvals-pipeline.json`. **WHAT-ACTION:** commit or `.gitignore` the two artifacts to let the watcher resume clean → A12 re-settles green. Not an agent fix (watcher skip-dirty is a safety feature working as designed; clearing concurrent dirty trees is Founder/concurrent-process territory per cycle-K precedent). A12 will continue to oscillate yellow↔green with each in-flight ship/sweep that holds the tree dirty.
+2. **Carry-over (Founder-action, AMD-018 gate #1) — deploy `deleteMyAccount` Cloud Function.** Code committed; `firebase deploy --only functions` is an AMD-018 pre-auth gate (walkthrough at `task-queue/founder/deploy-deleteMyAccount-function.md`). Unchanged from cycle AL (overnight triage cannot cross this gate).
+3. **Awareness — `proposals_inbox` stale artifact.** `.claude/state/proposals/inbox/decisions-2026-05-22T16-32-33.json` was already processed (applied 2026-05-22T16:35:54Z) and has lingered since 05-22 (`approvals-pipeline.json` still counts `proposals_inbox: 1`). Out of step-1/2 scope; candidate for `inbox/` → `inbox-archive/` housekeeping at Founder's discretion; not auto-moved.
+4. **Carry-over — writer-side BOM fix (`common.ps1:117`) remains unauthored as a proposal.** Consumer-side `utf-8-sig` tolerance has held across all 28 canonical clean runs since cycle L. Not auto-promoted without a Founder priority signal — refusing to inflate proposal counts.
+5. **Carry-over — `scripts/aggregate-self-tests.py` post-commit warning** (flagged cycle L) — separate from regen-all's pipeline; out-of-scope for step 3a. Still flagged for a future cycle.
+6. **Cron cadence** — cycles M–AM all ~1h apart (twenty-seventh consecutive ~1h gap). No Founder action required; awareness only.
+
+No scope-creep candidates.
+
+## Cycle AM Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox tree absent, verified by directory-absence; not waved off).
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals. On a NEGATIVE-movement night (A12 90→60, −1.5 overall) the easy spins are false-panic ("app-health is regressing!") or deflection ("not my problem"). The Critic guarded against both: this is the AL-PREDICTED re-oscillation driven by two lingering concurrent artifacts dirtying the tree, not a repair-able defect — the watcher skip-dirty is a safety feature. NOT authoring a proposal is correct (no triage-findable defect; manufacturing one = ship-count gaming per Rule 2). Honest scoping, not inflation.
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero live FIQ entries.
+
+Heartbeat-only self-check — **Is tonight's substantive output real?** YES. This cycle did NOT rubber-stamp a clean regen and did NOT panic at a negative number: it surfaced a genuine negative movement (A12 90→60, the predicted re-oscillation of the AI–AL transient) and investigated it to root cause by reading the `app-health.html` `git diff`, `git show HEAD:` (confirmed HEAD commits 88.1 so the regen genuinely produced 86.6), `approvals-pipeline.json`, and the last 10 `downloads-watcher` logs verbatim — tracing the drop to the SINGLE moving dimension (A12 90→60, A8 held, 10 dims held), proving surfaced-not-caused (A12 inputs are concurrent-watcher-written; the 8th skip at 20:00Z present before my regen), grounding the 8/10 ratio against the actual log list, and confirming the skip-dirty files are EXACTLY the two pre-existing concurrent artifacts in run-start `git status`. The crucial honesty move was refusing to call the oscillation a regression or a defect — it is the symmetric inverse of AL's "don't call a settle a permanent fix." Every claim anchors to a quoted tool result earlier in this session.
+
+**Critic attests cleanly: substantive heartbeat cycle, ship closes.**
+
+## Files changed in this cycle AM run
+
+- `.claude/state/wellness/engineer.json` — cycle AM update
+- `.claude/state/wellness/critic.json` — cycle AM update
+- `.claude/state/cron/2026-05-29-overnight-run.md` — this journal (cycle AM section appended)
+- `docs/reports/app-health.html` — regen output (29-ins/15-del: `generated_at` timestamp + `overall_score` 88.1→86.6 + deduction block + the single A12_operational block 90→60 / status green→yellow / label 7→8 skip-dirty / pipeline green→red + the re-populated `attention_items`/`agent_attention` arrays + `audit_trigger` re-point; all 11 non-A12 dims byte-identical vs HEAD)
+
+NOT staged (left for Founder/concurrent-process per cycle-K precedent): `.claude/state/emu-unified-2026-05-29.log` (modified, concurrent emulator log) + `.pw-full-sweep.log` (untracked, playwright-full-sweep log) — these two are the root cause of the A12 re-oscillation and clearing them is Founder territory.
+
+No code changes in cycle AM. No proposals. No FIQ writes. No bug-report state moves (inbox absent). The A12 90→60 re-oscillation is the concurrent watcher cron's rolling-window degradation (8 skip-dirty of last 10 runs 20:00→19:25Z, blocked by two lingering concurrent artifacts), present in the watcher logs before my 20:02 run and surfaced by this heartbeat's regen, NOT caused by this triage cycle — exactly the oscillation cycle AL predicted.
