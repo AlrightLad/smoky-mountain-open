@@ -420,11 +420,32 @@ var PB = (function() {
       miniGames: data.miniGames || [],
       bonusAwards: data.bonusAwards || []
     };
+    // Tournament fields — present only when the tournament builder creates the event.
+    // type defaults to "trip"; a tournament also carries the locked winner title and
+    // the generated format/team-style/point-system + field plan from tournament-engine.js.
+    if (data.type === "tournament") {
+      t.type = "tournament";
+      t.winnerTitle = data.winnerTitle || "Champion";
+      t.format = data.format || "stableford";
+      t.teamStyle = data.teamStyle || "individual";
+      t.pointSystem = data.pointSystem || "stableford";
+      t.startAt = data.startAt || null;          // epoch ms; lock boundary for name + title
+      t.plan = data.plan || null;                 // serialized tournamentGenerate() output
+      t.presetId = data.presetId || null;
+      t.lockedAt = Date.now();                    // name + winnerTitle frozen at creation
+    }
+    // Carry the legacy trip-generator hints when present (previously dropped).
+    if (data.tournamentStyle) t.tournamentStyle = data.tournamentStyle;
+    if (data.pairings) t.pairings = data.pairings;
     state.trips.push(t);
     state.scores[t.id] = {};
     if (!state.activity) state.activity = [];
-    state.activity.push({type:"trip_created",name:t.name,dates:t.dates,ts:Date.now(),date:localDateStr()});
+    state.activity.push({type: t.type === "tournament" ? "tournament_created" : "trip_created", name:t.name, dates:t.dates, ts:Date.now(), date:localDateStr()});
     save();
+    // Persist to Firestore so the rest of the league sees the event (syncTrip is a
+    // no-op when offline / solo). Previously addTrip stayed local-only because
+    // syncTrip was never wired into the creation path.
+    if (typeof syncTrip === "function") syncTrip(t);
     return t;
   }
 

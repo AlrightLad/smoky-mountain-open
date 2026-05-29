@@ -8,14 +8,38 @@ function getActiveLeague() {
 
 // Cache the active league name for display (loaded from leagues collection)
 window._activeLeagueName = "Parbaughs";
+window._activeLeagueCommissioner = null; // uid of the active league's commissioner
 function loadActiveLeagueName() {
   if (!db) return;
   var lid = getActiveLeague();
   db.collection("leagues").doc(lid).get().then(function(doc) {
-    if (doc.exists && doc.data().name) {
-      window._activeLeagueName = doc.data().name;
+    if (doc.exists) {
+      var d = doc.data();
+      if (d.name) window._activeLeagueName = d.name;
+      window._activeLeagueCommissioner = d.commissioner || null;
     }
   }).catch(function(){});
+}
+
+// Synchronous commissioner check for the active league. Relies on the cached
+// commissioner uid from loadActiveLeagueName(); callers that render before the
+// cache is warm should also confirm async (see ensureActiveLeagueCommissioner).
+function isActiveLeagueCommissioner() {
+  return !!(typeof currentUser !== "undefined" && currentUser &&
+            window._activeLeagueCommissioner &&
+            currentUser.uid === window._activeLeagueCommissioner);
+}
+
+// Fetch the active league's commissioner uid and invoke cb(isCommissioner).
+// Used by surfaces that gate UI on commissioner status and may render before
+// loadActiveLeagueName() has populated the cache.
+function ensureActiveLeagueCommissioner(cb) {
+  if (window._activeLeagueCommissioner !== null) { cb(isActiveLeagueCommissioner()); return; }
+  if (!db) { cb(false); return; }
+  db.collection("leagues").doc(getActiveLeague()).get().then(function(doc) {
+    if (doc.exists) window._activeLeagueCommissioner = doc.data().commissioner || null;
+    cb(isActiveLeagueCommissioner());
+  }).catch(function(){ cb(false); });
 }
 
 // ========== LEAGUE-SCOPED WRITE HELPER ==========

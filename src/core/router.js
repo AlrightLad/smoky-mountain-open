@@ -470,7 +470,7 @@ var ROUND_GRACE_HOURS = 48;
 /* ── Shared infrastructure: notifications, AI tournament, share cards, presence, feed, overrides ── */
 
 // Extracted to src/core/router-notifications.js per W1.A5. Originally lines 452-720 of this file.
-// Extracted to src/core/router-ai-tournament.js per W1.A5. Originally lines 721-875 of this file.
+// Tournament generation lives in src/core/tournament-engine.js (free, algorithmic — no LLM API).
 // Extracted to src/core/router-sharecard.js per W1.A5. Originally lines 876-1543 of this file.
 // ========== PRESENCE / WHO'S ONLINE ==========
 var onlineMembers = {};

@@ -36,6 +36,8 @@ export function loadSource(relPath, exportNames, stubs = {}) {
     },
     currentUser: stubs.currentUser || null,
     currentProfile: stubs.currentProfile || null,
+    PB: stubs.PB || null,
+    window: stubs.window || {},
     fbMemberCache: stubs.fbMemberCache || {},
     pbLog: stubs.pbLog || (() => {}),
     pbWarn: stubs.pbWarn || (() => {}),

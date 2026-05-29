@@ -114,9 +114,6 @@ function renderTripCreate() {
   h += '<div id="tc-course-list" style="margin-top:8px"></div>';
   h += '</div>';
 
-  // AI Tournament Generator button (gated — needs API key)
-  h += '<div class="form-section"><div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border:1px dashed var(--border);border-radius:var(--radius);opacity:.5;margin-bottom:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16" style="color:var(--muted)"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="8.5" cy="16" r="1.5"/><circle cx="15.5" cy="16" r="1.5"/><path d="M12 2v4M8 6h8"/></svg><span style="font-size:12px;color:var(--muted)">AI Tournament Generator</span><span style="font-size:9px;background:rgba(var(--gold-rgb),.1);color:var(--gold);padding:2px 8px;border-radius:4px;font-weight:600">COMING SOON</span></div></div>';
-  
   // Step 4: Smart Tournament Generator
   h += '<div class="form-section"><div class="form-title">Tournament Format</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Select a preset or customize. The generator builds fair pairings based on player handicaps.</div>';
