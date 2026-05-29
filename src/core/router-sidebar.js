@@ -12,19 +12,48 @@
 // link is removed.
 var _sidebarRoutes = ["home","rounds","feed","standings","members","shop","trophyroom"];
 
+// BL-008 (2026-05-29): Band A (720-959px) is the ONLY band where #rrSidebar
+// behaves as a modal off-canvas drawer. At desktop (>=960px) the same element
+// is a persistent visible nav rail; below 720px it is CSS-hidden (bottom-sheet
+// nav is used). Dialog semantics (role=dialog + aria-modal + aria-hidden
+// gating) must therefore apply ONLY in drawer mode. Applying them at all bands
+// (the pre-fix A.8 behavior) left the visible desktop nav aria-hidden="true"
+// and mislabeled role="dialog" — i.e. hidden from screen readers (WCAG 4.1.2 /
+// 2.4.1 / 1.3.1). _applyDrawerA11y() sets the correct semantics for the
+// current band + open state; the matchMedia listener re-applies on band flips.
+var _drawerBandMQ = window.matchMedia("(min-width: 720px) and (max-width: 959px)");
+
+function _applyDrawerA11y() {
+  var sidebar = document.getElementById("rrSidebar");
+  if (!sidebar) return;
+  if (_drawerBandMQ.matches) {
+    // Drawer mode: modal dialog, hidden from AT unless open.
+    sidebar.setAttribute("role", "dialog");
+    sidebar.setAttribute("aria-modal", window._drawerOpen ? "true" : "false");
+    sidebar.setAttribute("aria-hidden", window._drawerOpen ? "false" : "true");
+    sidebar.setAttribute("aria-label", "Navigation drawer");
+  } else {
+    // Persistent nav rail (desktop) or CSS-hidden (mobile): plain landmark,
+    // never hidden from or mislabeled to assistive tech.
+    sidebar.removeAttribute("role");
+    sidebar.removeAttribute("aria-modal");
+    sidebar.removeAttribute("aria-hidden");
+    sidebar.setAttribute("aria-label", "Primary navigation");
+  }
+}
+
 function _wireSidebar() {
   var sidebar = document.getElementById("rrSidebar");
   if (!sidebar || sidebar._pbWired) return;
   sidebar._pbWired = true;
   _bindHQDrawerSwipe();
-  // A.8 (2026-05-22): a11y semantics for drawer mode (Band A 720-959px).
-  // role=dialog + aria-modal=true wired so screen readers treat the
-  // sidebar as a modal focus context when open. aria-hidden gates
-  // visibility per band; aria-label provides accessible name.
-  sidebar.setAttribute("aria-hidden", "true");
-  sidebar.setAttribute("role", "dialog");
-  sidebar.setAttribute("aria-modal", "false"); // becomes "true" when opened at Band A
-  sidebar.setAttribute("aria-label", "Navigation drawer");
+  // Apply band-aware a11y semantics now + on every band change.
+  _applyDrawerA11y();
+  _drawerBandMQ.addEventListener("change", function() {
+    // Leaving drawer band while open: collapse to persistent-nav semantics.
+    if (!_drawerBandMQ.matches && window._drawerOpen) { _closeHQDrawer(); return; }
+    _applyDrawerA11y();
+  });
   sidebar.addEventListener("click", function(e) {
     var item = e.target.closest(".rr-sidebar__item");
     if (!item) return;
@@ -74,8 +103,7 @@ window._openHQDrawer = function() {
   _drawerLastFocused = document.activeElement;
   window._drawerOpen = true;
   document.body.classList.add("hq-drawer-open");
-  sidebar.setAttribute("aria-hidden", "false");
-  sidebar.setAttribute("aria-modal", "true"); // A.8 — modal focus context when drawer is open
+  _applyDrawerA11y(); // aria-hidden=false + aria-modal=true (drawer band)
   // Build focusable list inside drawer. Skip aria-disabled (Notifications stub).
   _drawerFocusables = Array.prototype.slice.call(
     sidebar.querySelectorAll('a, button:not([aria-disabled="true"]), [tabindex]:not([tabindex="-1"])')
@@ -91,8 +119,7 @@ window._closeHQDrawer = function() {
   if (!sidebar) return;
   window._drawerOpen = false;
   document.body.classList.remove("hq-drawer-open");
-  sidebar.setAttribute("aria-hidden", "true");
-  sidebar.setAttribute("aria-modal", "false"); // A.8 — release modal focus context on close
+  _applyDrawerA11y(); // closed-drawer (or desktop persistent-nav) semantics
   document.removeEventListener("keydown", _drawerKeydown);
   // Restore focus to the element that opened the drawer (typically hamburger).
   if (_drawerLastFocused && typeof _drawerLastFocused.focus === "function") {
