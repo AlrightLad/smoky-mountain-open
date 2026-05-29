@@ -5,3 +5,22 @@
 [scan-shipped] approved/ is empty; nothing to scan
 
 --- scripts/aggregate-telemetry.py ---
+[aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json (write-content-changed)
+[aggregate] meter_status=wired-real
+[aggregate] events=15946 handoffs=1 bubbles=7 proposals_pending=0
+
+--- scripts/ingest-session-transcripts.py ---
+[ingest-session-transcripts] scanned a3e3471a-7db9-4c9d-a1f1-37284a43520d.jsonl: +173 new entries (offset 225587355\u2192227102744)
+[ingest-session-transcripts] scanned 226 JSONL file(s), found 173 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (275 buckets, 12012335398 total tokens, 230 sessions) [write-content-changed]
+
+--- scripts/aggregate-token-usage.py ---
+[aggregate-token] real_events=276 estimated_events=9079 manual_entries=0
+[aggregate-token] all-time: real=12012437398 estimated=13422450 manual=0
+[aggregate-token] snapshot write=True (write-content-changed) -> .claude\state\telemetry\aggregates\token-usage-snapshot.json
+[aggregate-token] cursor   write=True (write-content-changed) -> .claude\state\telemetry\aggregates\.token-usage-cursor.json
+
+--- scripts/aggregate-test-health.py ---
+[aggregate-test-health] OK status=green timestamp=2026-05-29T14:50:51Z write=False (skip-idempotent-grace-content-unchanged-21514s)
+
+--- scripts/aggregate-security-health.py ---
