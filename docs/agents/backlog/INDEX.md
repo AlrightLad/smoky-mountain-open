@@ -13,7 +13,6 @@ Open backlog items for PARBAUGHS. Hybrid structure: this index file lists all op
 
 | ID | Title | Severity | Wave / Phase | Status | File |
 |---|---|---|---|---|---|
-| BL-001 | Play Now: hole par/yardage adjustment during live play | P2 | Wave 2 | Open | [BL-001.md](./BL-001.md) |
 | BL-002 | Delete legacy loading system (.skeleton/.spinner CSS + helpers) | P3 | Wave 2 | Open | [BL-002.md](./BL-002.md) |
 | BL-003 | Extract shared helpers from home.js → src/core/page-helpers.js | P3 | Wave 2 | Open | [BL-003.md](./BL-003.md) |
 | BL-004 | Live round card LEAD column (re-introduce when leaderboard infra reliable) | P3 | Wave 2 | Open | [BL-004.md](./BL-004.md) |
