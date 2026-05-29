@@ -24,7 +24,7 @@ Router.register("partygames", function() {
     // courses/feed pattern. Adds preview chips of party games members can
     // unlock on starting a round (teaching aid per peer-anchor empty state).
     h += '<div style="margin:14px 16px;padding:30px 24px;text-align:center;background:var(--bg2);border:1px dashed var(--border);border-radius:12px">';
-    h += '<div style="font-size:32px;margin-bottom:8px;opacity:0.7">🎲</div>';
+    h += '<div style="margin-bottom:8px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5"><rect x="9" y="9" width="30" height="30" rx="6"/><circle cx="18" cy="18" r="2" fill="var(--gold)" stroke="none"/><circle cx="30" cy="18" r="2" fill="var(--gold)" stroke="none"/><circle cx="24" cy="24" r="2" fill="var(--gold)" stroke="none"/><circle cx="18" cy="30" r="2" fill="var(--gold)" stroke="none"/><circle cx="30" cy="30" r="2" fill="var(--gold)" stroke="none"/></svg></div>';
     h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--cream);margin-bottom:6px">Party games unlock mid-round.</div>';
     h += '<div style="font-size:12px;color:var(--muted);line-height:1.5;max-width:300px;margin:0 auto 14px">Start a round in Play Now and the games light up: bet a hole, run a Wolf line, call a Nassau, claim closest-to-the-pin.</div>';
     h += '<button class="btn-sm green" style="font-size:11px;padding:9px 22px" onclick="Router.go(\'playnow\')">Play Now</button>';

@@ -114,7 +114,7 @@ Router.register("courses", function(params) {
   // clear CTA to seed the first course.
   if (courses.length === 0) {
     h += '<div style="margin:24px 16px;padding:32px 24px;text-align:center;background:var(--bg2);border:1px dashed var(--border);border-radius:12px">';
-    h += '<div style="font-size:32px;margin-bottom:8px;opacity:0.7">⛳</div>';
+    h += '<div style="margin-bottom:8px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M18 6v30"/><path d="M18 6l13 4-13 4"/><ellipse cx="22" cy="38" rx="14" ry="3.5"/></svg></div>';
     h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--cream);margin-bottom:6px">';
     h += showOurs ? "No league courses yet." : "Your directory is quiet.";
     h += '</div>';
