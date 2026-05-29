@@ -722,3 +722,96 @@ Heartbeat-only self-check — **Is tonight's substantive output real?** YES, and
 - `docs/reports/app-health.html` — regen output (10-ins/10-del: clock + audit_trigger commit-pointer re-point to HEAD + A12 skip-dirty 8→9; overall_score 87.1 / grade A- / attention_items count 1 all unchanged vs HEAD)
 
 NOT committed by this cycle (left for Founder): the 49-file coherence-verify in-flight WIP set + its PNGs + `.claude/state/overnight-agent/reports/2026-05-29.md` (Blockers #1). No code changes by this cycle. No proposals. No FIQ writes. No bug-report state moves (inbox absent).
+
+---
+
+# Overnight triage — 2026-05-29 (cycle AA)
+
+**Started:** 2026-05-29T08:01:45Z (cron-fired; regen-all START)
+**Finished:** 2026-05-29T08:01:50Z (regen-all "ALL DASHBOARDS REGENERATED" timestamp)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both absent)
+**Cycle:** AA (61st consecutive empty-inbox cycle; ~60 min wall-clock gap from cycle Z's 07:01:50Z close — FIFTEENTH consecutive ~1h-cadence cycle since cycle M). Ninth cycle of the 2026-05-29 UTC date; appended to the cycle-S file per the shared-date-file convention (cycle naming rolls Z → AA).
+
+## Inbox state at run-start (cycle AA)
+
+- `.claude/state/founder-input-queue/` — **directory does not exist** (`find -type d` → no match)
+- `.claude/state/bug-reports/inbox/` — **directory does not exist**; the entire `.claude/state/bug-reports/` tree is absent (inbox/ + triaged/)
+- `.claude/state/proposals/pending/` — only `.gitkeep` (no pending proposals)
+- **Working tree CLEAN at run-start** (`git status --short` empty); HEAD = `e83b92eb`. Notable change from cycle Z, whose run-start tree held a 49-file in-flight coherence-verify design pass + PNGs (Blockers #1). That WIP has since been committed (`git log --oneline`: `6d3e7860 fix: complete member-facing em-dash sweep (v8.23.9)` + `268ddd2c` cron regen + `e83b92eb cron(routine): auto-commit telemetry output before watcher preflight`). The dominant cycle-Z blocker is **resolved**.
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle AA)
+
+- FIQ entries triaged: **0** (queue directory absent)
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0
+- IDs: none
+
+## Step 2 — Bug-report triage (cycle AA)
+
+- Bug reports processed: **0** (inbox directory absent)
+- Dispositions: none
+- No P3e discussion bubbles opened (nothing to deliberate)
+
+## Step 3 — Heartbeat (cycle AA)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end 08:01:45Z → 08:01:50Z: **ALL CHECKS PASSED**, **round-trip test PASS**. Heartbeat `regen-all-last-pass.json` written.
+- Telemetry snapshot: events=15520 handoffs=1 bubbles=7 proposals_pending=0, meter_status=**wired-real** (→ no HALT 25). Token aggregate: real=11,650,611,716 estimated=12,764,780 manual=0.
+- All ~30 guards green: theme convergence (7/7 no raw hex), no-charts, protected-layouts (discussion-bubbles 5/5 + main-flows 23/23 + design-system 17 swatches/9 type rows + W1.S1 primitives), proposal-readiness (0 deferred), install-scripts (7 parse), install-cmd-surface, scroll-reachability (5/0), escalations (applied=3/pending=0), quota-status sidecar (auto-derived), pause-discipline (no fictional-cap refs), wiring (5/5), meter-wiring (7/7), founder-queue (7/7), quota-type-enum, cross-dash consistency (proposals_pending=0), lifecycle schemas (proposals shipped=7 + amendments applied=28), app-health **A- 89.1 / 0 attention items**, founder-checklist open=3 red=0 yellow=2 green=1 closed=25, index ships=0 git=e83b92eb. **16th consecutive clean canonical regen-all (cycles L–AA).**
+- One INFORMATIONAL `~` (not a failure): `user-context-gate` flags `main-flows.html` modified 20514.2 min after the last user-context capture (2026-05-14T23-07-48Z). Benign on a heartbeat-only night with no visual ship-close.
+
+**Working-tree diff after regen (my heartbeat output only):** `docs/reports/app-health.html` (18-ins/45-del). Inspected the `git diff HEAD` hunk verbatim — this is **NOT timestamp-only**; it is a genuine, verifiable **recovery**:
+- `generated_at` 2026-05-29T07:45:30Z → 08:01:49Z (clock — expected).
+- **A12_operational 75/yellow → 100/green.** skip-dirty `6 of last 10` → `2 of last 10`; `watcher_exit_reason` `"skip-dirty"` → `"no-new-files"`; `weak_points` `[1 item]` → `[]`.
+- `attention_items` `[1 item]` → `[]`; `agent_attention` `[1 item]` → `[]`.
+- `overall_score` 87.8 → **89.1** (`pre_deduction_score` 92.8 → 94.1; sev1 deduction 5 unchanged); `overall_grade` **A-** holds.
+- `audit_trigger` re-pointed `6d3e7860` (app-commit, "em-dash sweep v8.23.9", 7 files) → `e83b92eb` (cron, "auto-commit telemetry output before watcher preflight", `is_app_commit:false`, 8 files; current HEAD).
+
+**Cycle-Z prediction validated (substantive finding):** Cycle Z root-caused the A12 skip-dirty climb (which had reached 9/10, score 60) to the **uncommitted 49-file coherence-verify WIP tree** — the downloads-watcher was correctly refusing to auto-commit over a large non-routine change set — and **declined to manufacture a hook-fix proposal**, flagging the WIP for Founder commit/discard instead (Blockers #1). The WIP is now committed (v8.23.9 + routine auto-commits), the tree is clean, the watcher's last run is `no-new-files`, and **A12 self-resolved to 100/green with zero attention items.** The disciplined hold-back was correct: no proposal was needed; clearing the WIP fixed it. This is exactly the outcome cycle Z predicted. (The longstanding structural post-commit-hook question — carry-over #2 below — remains distinct and unaffected.)
+
+### 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — updated for cycle AA (only agent participating on a heartbeat-only night). Status `active`; token threshold remains crossed (cumulative ~600k since last rest, 25th cross-cycle); no rest triggered — heartbeat-only nights are genuinely light per-cycle (one script run + two state-file writes). Lightweight counter refresh, not a full self-healing pass; no drift detected (cycle used only established patterns — canonical wrapper + journal append; no design tokens / naming / scope concerns). Same disposition as cycles L–Z. No critic/data-integrity/design-bot wellness files (no deliberation occurred; queues empty).
+
+## Step 4 — Session journal
+
+**This section.**
+
+## Cycle AA counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 |
+| Bug reports processed | 0 |
+| New proposals authored | 0 |
+| Wellness state changes | 1 (engineer.json cycle AA refresh) |
+
+## Blockers requiring Founder attention (cycle AA)
+
+**No ship-blocking issues.** Awareness/carry-over items:
+
+1. **RESOLVED (was cycle-Z Blockers #1 + #2) — the large uncommitted in-flight WIP has been committed.** At cycle Z the tree held a 49-file member-facing coherence-verify design pass + PNGs that drove A12 skip-dirty to 9/10. That WIP is now committed (HEAD `e83b92eb`, via v8.23.9 em-dash sweep + routine auto-commits); the tree is clean and A12 recovered to 100/green this cycle. No Founder action remains for this item.
+2. **Carry-over — maintenance/post-commit-hook regen context differs from canonical wrapper.** The post-commit hook has logged `GATE-FAIL` / `regen-all exit=1` in partial/non-admin context, while the authoritative `scripts/regen-all.ps1` passes clean (16th consecutive clean canonical run, cycles L–AA). Not blocking — canonical gate is green. The longstanding structural question (does `.husky/post-commit` dirty the tree mid-run; does `routinePatterns` cover all auto-generated outputs) is distinct from the now-resolved dirty-WIP driver.
+3. **Carry-over — writer-side BOM fix (`common.ps1:117`) remains unauthored as a proposal.** Consumer-side `utf-8-sig` tolerance (aggregate-telemetry.py:70) has now held SIXTEEN consecutive clean regen-all runs (cycles L–AA). Recommended remediation documented since cycle L. Deliberately not auto-promoted without Founder priority signal — refusing to inflate proposal counts.
+4. **Carry-over — `scripts/aggregate-self-tests.py` post-commit warning** (flagged cycle L) — separate from regen-all's pipeline; out-of-scope for step 3a. Still flagged for a future cycle.
+5. **Cron cadence** — cycles M–AA all ~1h apart (fifteenth consecutive ~1h gap). Cadence steady at ~1h since cycle M. No Founder action required; awareness only.
+
+## Cycle AA Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox absent). Absence verified by directory check → MISSING on the entire `.claude/state/bug-reports/` tree. Cannot wave off what doesn't exist.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals tonight. Critically, the A12 skip-dirty item that cycle Z held back from proposal-promotion **self-resolved on WIP commit this cycle** — validating that NOT manufacturing a hook-fix proposal was correct (it would have misdiagnosed a symptom of uncommitted WIP as a hook regression). The writer-side BOM remediation likewise held back (honest scoping, not inflation).
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero FIQ entries tonight. Queue absent; the only `FIQ-` ids on disk are governance-doc template examples — explicitly distinguished rather than mis-counted as triageable work.
+
+Heartbeat-only self-check — **Is tonight's substantive output real?** YES, and genuinely so. This cycle's app-health diff was the OPPOSITE of the usual timestamp-only heartbeat churn: it captured a real A12_operational recovery (75/yellow → 100/green, attention 1 → 0, overall 87.8 → 89.1) that I read line-by-line from the `git diff HEAD` hunk rather than hand-waving as "clock bump." More importantly, this cycle **closed the loop on cycle Z's root-cause discipline**: cycle Z declined to manufacture a hook-fix proposal because it diagnosed the skip-dirty as a symptom of uncommitted WIP, not a hook bug — and tonight, with the WIP committed and the tree clean, A12 self-healed to green exactly as predicted. The disciplined hold-back was vindicated by observed state, not asserted. Every claim is anchored to a quoted regen-all log line, the `git diff HEAD` hunk read verbatim, the heartbeat JSON, `git log --oneline` for the committed-WIP confirmation, or directory-absence checks. No invented productivity on an empty-queue night; the recovery is reproducible from clean disk.
+
+**Critic attests cleanly: substantive heartbeat cycle, ship closes.**
+
+## Files changed in this cycle AA run
+
+- `.claude/state/wellness/engineer.json` — cycle AA update
+- `.claude/state/cron/2026-05-29-overnight-run.md` — this journal (cycle AA section appended)
+- `docs/reports/app-health.html` — regen output (18-ins/45-del: A12_operational 75/yellow → 100/green, attention_items + agent_attention 1 → 0, overall_score 87.8 → 89.1, audit_trigger re-pointed to HEAD `e83b92eb` + generated_at clock bump). A genuine recovery, NOT timestamp-only — driven by the cycle-Z WIP now being committed and the tree clean.
+
+No code changes in cycle AA. No proposals. No FIQ writes. No bug-report state moves (inbox absent). Working tree was clean at run-start (cycle-Z Blockers #1 resolved).
