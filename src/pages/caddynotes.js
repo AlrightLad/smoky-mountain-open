@@ -22,6 +22,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · The polish pass</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    { item: "Privacy Policy and Terms of Service are now one tap away in Settings, and the privacy policy spells out exactly what we store, what stays opt-in (like location for weather), and what we never touch.", tag: "NEW" },
     { item: "Home greets you by time of day — Good morning / Good afternoon / Good evening / Welcome back.", tag: "IMPROVED" },
     { item: "\"The league this week\" stat strip on the home page — rounds, average, low score, and momentum vs last week.", tag: "NEW" },
     { item: "Your handicap stat now shows a trend arrow when you have 5+ rounds — ▼ improving / ▲ heavier / ● steady.", tag: "IMPROVED" },

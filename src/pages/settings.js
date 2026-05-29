@@ -219,9 +219,16 @@ Router.register("settings", function(params) {
     h += '<div style="font-size:9px;color:var(--muted2);margin-top:4px;text-align:center">This permanently removes your account and all associated data</div></div>';
   }
 
+  // Legal
+  h += '<div class="form-section"><div class="form-title">Legal</div>';
+  h += '<div style="margin-bottom:12px"><button class="btn full outline" onclick="window.open(\'privacy.html\',\'_blank\',\'noopener\')">Privacy Policy</button></div>';
+  h += '<div style="margin-bottom:12px"><button class="btn full outline" onclick="window.open(\'terms.html\',\'_blank\',\'noopener\')">Terms of Service</button></div>';
+  h += '<div style="font-size:11px;color:var(--muted2);text-align:center">Questions? <a href="mailto:support@parbaughs.golf" style="color:var(--gold)">support@parbaughs.golf</a></div>';
+  h += '</div>';
+
   h += '<div class="form-section"><div class="form-title">About</div>';
   h += '<div style="font-size:12px;color:var(--muted);line-height:1.6">';
-  h += 'The Parbaughs Golf Platform v5.22.2<br>';
+  h += 'The Parbaughs Golf Platform v' + APP_VERSION + '<br>';
   h += 'Founded 2026 · York, PA<br>';
   h += 'Built by The Commissioner<br>';
   h += '<span style="color:var(--muted2)">Firebase-powered · Real-time sync</span>';
