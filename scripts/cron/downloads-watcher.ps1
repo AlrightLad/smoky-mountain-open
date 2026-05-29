@@ -166,7 +166,33 @@ try {
         # own canary at proposals/pending/TEST-PIPELINE-CANARY.md, neither of
         # which AMD-023's earlier widening covered.
         '^\.claude/worktrees/.+',
-        '^\.claude/state/proposals/pending/TEST-PIPELINE-CANARY\.md$'
+        '^\.claude/state/proposals/pending/TEST-PIPELINE-CANARY\.md$',
+
+        # 2026-05-24 third-pass — Founder report "10/10 watcher SKIP". Two
+        # files pulse every cycle from agent activity:
+        #   - .claude/state/wellness/*.json (agent wellness heartbeat
+        #     updated continuously by the meta-loop; never a real change)
+        #   - tests/visual-regression/last-run/summary.json (rewritten by
+        #     every `npm run visual:check` — diagnostic output)
+        # Adding both as Class A routine closes the A12 operational dim
+        # weak_point (was 60; expected to recover to 90+).
+        '^\.claude/state/wellness/.+\.json$',
+        '^tests/visual-regression/last-run/.+\.(json|png)$',
+
+        # Per-cycle Sentry triage payloads — agent reads + commits these
+        # mid-cycle when the per-cycle Sentry repair loop activates.
+        '^\.claude/state/sentry/.+\.json$',
+
+        # Ralph loop journal + per-cycle stdout logs (when Ralph controller
+        # is running) — Class A routine, never a real change.
+        '^\.claude/state/loops/LOOP_JOURNAL\.md$',
+        '^\.claude/state/loops/cycles/.+\.log$',
+
+        # Design-pass capture artifacts. Every visual:check or capture cycle
+        # writes 30+ PNGs. Already covered by .claude/state/.. catch-all in
+        # some pattern blocks, but adding explicit pattern guards against
+        # gitignore drift.
+        '^\.claude/state/design-pass-2026-05-22/.+\.(png|json|md)$'
     )
     $allDirtyRaw = @()
     $allDirtyRaw += (& git diff --name-only HEAD 2>$null)
