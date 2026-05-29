@@ -2292,7 +2292,10 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 600;
-  color: var(--cb-brass);
+  /* Copper, not brass: brass on chalk is ~2.78:1 (fails WCAG AA) and this is
+     the winner's title, essential content. Copper clears AA (~4.56:1) and
+     reads as trophy-metal warmth. */
+  color: var(--cb-copper);
 }
 .tourn-masthead__rule {
   height: 1px;
@@ -2336,7 +2339,7 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 1px;
-  color: var(--cb-brass);
+  color: var(--cb-copper);
   flex-shrink: 0;
 }
 .tourn-sec__title {
@@ -2453,7 +2456,7 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   font-family: var(--font-mono);
   font-size: 17px;
   font-weight: 700;
-  color: var(--cb-brass);
+  color: var(--cb-copper);
 }
 
 /* --- Member picker --- */
@@ -2560,7 +2563,7 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .tourn-team-card__hcp {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--cb-brass);
+  color: var(--cb-copper);
 }
 .tourn-team-card__members {
   font-family: var(--font-ui);
@@ -2598,7 +2601,7 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .tourn-match__vs {
   font-family: var(--font-mono);
   font-size: 10px;
-  color: var(--cb-brass);
+  color: var(--cb-copper);
   text-transform: uppercase;
   flex-shrink: 0;
 }
@@ -2613,7 +2616,7 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
-  color: var(--cb-brass);
+  color: var(--cb-copper);
   flex-shrink: 0;
   width: 64px;
 }
@@ -2635,7 +2638,7 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 700;
-  color: var(--cb-brass);
+  color: var(--cb-copper);
   width: 28px;
   flex-shrink: 0;
 }
@@ -2825,7 +2828,10 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   border-radius: var(--r-2);
   border-bottom-color: transparent;
 }
-.tourn-lead-row--lead .tourn-lead-rank { color: var(--cb-brass); }
+/* Ink, not brass: the gold cue is the row's brass-tinted background; brass text on
+   that tint is ~2.55:1 (gold-on-gold) and copper only reaches ~4.18:1. Ink clears AA
+   strongly and reads as the most-emphasized rank in the column. */
+.tourn-lead-row--lead .tourn-lead-rank { color: var(--cb-ink); }
 .tourn-lead-row--lead .tourn-lead-val { color: var(--cb-ink); }
 
 /* Subtle staggered entrance for the leaderboard + champion crown. */

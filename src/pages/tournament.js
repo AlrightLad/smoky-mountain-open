@@ -185,7 +185,7 @@ function _tournMemberRows(s) {
     h += '<div class="tourn-member' + (on ? ' tourn-member--on' : '') + '" id="tourn-m-' + p.id + '" onclick="toggleTournPlayer(\'' + p.id + '\')">';
     h += '<div class="tourn-member__left">' + renderAvatar(p, 28, false) + '<span class="tourn-member__name">' + renderUsername(p, '', false) + '</span></div>';
     var stat = tournamentPlayerStat(p.id);
-    var hcp = stat.established ? ('HCP ' + stat.handicap) : 'New';
+    var hcp = stat.established ? ('HCP ' + _tournHcp(stat.handicap)) : 'New';
     h += '<div class="tourn-member__right"><span class="tourn-member__hcp">' + hcp + '</span>';
     h += '<span class="tourn-member__check">' + (on ? '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6"/></svg>' : '') + '</span></div>';
     h += '</div>';
@@ -228,7 +228,7 @@ function _tournReview(s) {
     var r = plan.field.result;
     r.teams.forEach(function (t) {
       h += '<div class="tourn-team-card">';
-      h += '<div class="tourn-team-card__head"><span class="tourn-team-card__name">' + escHtml(t.name) + '</span><span class="tourn-team-card__hcp">combined ' + t.combinedHandicap + '</span></div>';
+      h += '<div class="tourn-team-card__head"><span class="tourn-team-card__name">' + escHtml(t.name) + '</span><span class="tourn-team-card__hcp">combined ' + _tournHcp(t.combinedHandicap) + '</span></div>';
       h += '<div class="tourn-team-card__members">' + t.members.map(function (m) { return escHtml(m.name); }).join(', ') + '</div>';
       h += '</div>';
     });
