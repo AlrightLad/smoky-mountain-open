@@ -821,9 +821,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-29T18:01:47.670579Z",
+  "generated_at": "2026-05-29T18:11:17.106288Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 87.7,
+  "overall_score": 86.9,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -837,9 +837,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 92.7,
+    "pre_deduction_score": 91.9,
     "deduction": 5,
-    "post_deduction_score": 87.7
+    "post_deduction_score": 86.9
   },
   "dimensions": {
     "A1_roadmap": {
@@ -968,9 +968,9 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 75,
+      "score": 60,
       "status": "yellow",
-      "label": "pipeline=yellow · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
@@ -1003,10 +1003,10 @@
     }
   ],
   "audit_trigger": {
-    "sha": "a198fc71",
-    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
-    "committed_at": "2026-05-29T13:27:50-04:00",
-    "trigger": "cron",
+    "sha": "d0f41c68",
+    "subject": "Overnight triage 2026-05-29 - 0 reports, 0 proposals, 0 FIQ entries graded",
+    "committed_at": "2026-05-29T14:10:10-04:00",
+    "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
     "total_files_touched": 4
