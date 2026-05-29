@@ -572,13 +572,22 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
    as one composed stack rather than a left-hung block beside an off-axis footer.
    The cap only bites once the content area exceeds it (viewport ≳968px); at
    narrower HQ bands the content area is already smaller, so this is a no-op.
+
+   feed (v8.23.11) joins the same family: it also predates PageShell, rendering
+   .sh + composer + toggle-bar + #feedStream straight into [data-page="feed"].
+   At 1152px its post-header score (right-aligned) stranded ~1100px from the
+   post body on the left, and its flex:1 action row (Scorecard·Kudos·Comment·
+   Share) dispersed edge-to-edge. The same 680px reading column pulls the score
+   back beside the post and clusters the actions, matching peer social feeds
+   (X ≈600px, Strava ≈660px) and the mobile single-column layout.
    ═══════════════════════════════════════════════════════════════════════════ */
 @media (min-width: 960px) {
   [data-page="scramble"],
   [data-page="trips"],
   [data-page="bounties"],
   [data-page="wagers"],
-  [data-page="challenges"] {
+  [data-page="challenges"],
+  [data-page="feed"] {
     max-width: 680px;
     margin-left: auto;
     margin-right: auto;
