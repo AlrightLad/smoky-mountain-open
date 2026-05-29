@@ -28,6 +28,11 @@ var liveState = {
 // Per-hole "Advanced stats" expander open state (module-scoped, not persisted)
 var advancedOpen = {};
 
+// Per-hole "Adjust hole" (par/yardage edit) expander open state. Module-scoped,
+// not persisted — mirrors advancedOpen. BL-001: lets a member correct the
+// current hole's par/yardage during live play when the course record is wrong.
+var holeEditOpen = {};
+
 // ── liveState crash recovery ──────────────────────────────────────────────
 // If the phone restarts or browser crashes mid-round, we restore from this.
 // Stored under a separate key — never mixed with PB state.
@@ -117,6 +122,7 @@ function _clearLiveStateLocally() {
   liveState.penalty = Array(18).fill(0);
   liveState.deviceOwnership = "local";
   advancedOpen = {};
+  holeEditOpen = {};
   try { localStorage.removeItem("pb_liveState"); } catch(e) {}
 }
 
@@ -705,7 +711,11 @@ function startLiveRound() {
     rating: parseFloat(document.getElementById("pn-rating").value) || 72,
     slope: parseInt(document.getElementById("pn-slope").value) || 113,
     par: coursePar,
-    holes: holes,
+    // BL-001 — deep-copy per-hole data so in-round par/yardage edits stay
+    // scoped to this round. PB.getCourse / getCourseByName return live
+    // references to the cached course object (data.js); without this clone,
+    // editing a hole's par would mutate the shared course master in memory.
+    holes: (holes && holes.length) ? holes.map(function(hh) { return Object.assign({}, hh); }) : [],
     format: fmt,
     holesMode: holesMode,
     scrambleTeamId: scrambleTeamId,
@@ -727,6 +737,7 @@ function startLiveRound() {
     roundId: typeof genId === "function" ? genId() : (Date.now().toString(36) + Math.random().toString(36).substr(2, 6))
   };
   advancedOpen = {};
+  holeEditOpen = {};
 
   Router.toast("Let's go!");
   saveLiveState(); // persist round start immediately for crash recovery

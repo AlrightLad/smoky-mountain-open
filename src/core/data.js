@@ -375,6 +375,7 @@ var PB = (function() {
     // Preserve Play Now / Log a Round fields when present
     if (data.holeScores) r.holeScores = data.holeScores;
     if (data.holePars) r.holePars = data.holePars;
+    if (data.holeYards) r.holeYards = data.holeYards;
     if (data.holesPlayed) r.holesPlayed = data.holesPlayed;
     if (data.holesMode) r.holesMode = data.holesMode;
     if (data.firData) r.firData = data.firData;

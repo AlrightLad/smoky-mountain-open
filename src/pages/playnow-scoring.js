@@ -74,7 +74,14 @@ function _renderLiveScoringInner() {
   // Top row: hole number + tee label
   h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">';
   h += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:2px">Hole ' + (hole+1) + '</div>';
+  h += '<div style="display:flex;align-items:center;gap:8px">';
   if (liveState.tee) h += '<div style="font-size:9px;color:var(--muted2);background:var(--bg2);padding:2px 8px;border-radius:10px;border:1px solid var(--border)">' + escHtml(liveState.tee) + '</div>';
+  // BL-001 — "Adjust" toggle reveals the inline par/yardage editor below the stats.
+  var heOpen = !!holeEditOpen[hole];
+  h += '<button id="pn-holeedit-toggle-' + hole + '" onclick="toggleHoleEdit(' + hole + ')" aria-expanded="' + (heOpen ? 'true' : 'false') + '" style="display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:' + (heOpen ? 'var(--gold)' : 'var(--muted)') + ';background:transparent;border:1px solid ' + (heOpen ? 'rgba(var(--gold-rgb),.35)' : 'var(--border)') + ';border-radius:10px;padding:4px 9px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
+  h += '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M11.5 2.5l2 2L5 13l-2.6.6.6-2.6z"/></svg>';
+  h += (heOpen ? 'Done' : 'Adjust') + '</button>';
+  h += '</div>';
   h += '</div>';
   // Stats row: Par / Yardage / Hdcp
   h += '<div style="display:flex;align-items:center;gap:0">';
@@ -95,6 +102,26 @@ function _renderLiveScoringInner() {
     h += '</div>';
   }
   h += '</div>';
+  // BL-001 — inline par/yardage editor, revealed by the header "Adjust" toggle.
+  // Writes to the round-scoped liveState.holes copy; a full re-render on each
+  // commit refreshes every par-derived value (diff label, running +/-, turn
+  // summary, par-3 FIR gating, and the saved round's holePars -> differential).
+  if (holeEditOpen[hole]) {
+    h += '<div id="pn-holeedit-' + hole + '" style="margin-top:12px;padding:12px 14px;background:var(--bg2);border:1px solid rgba(var(--gold-rgb),.2);border-radius:10px">';
+    h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">';
+    h += '<span style="font-size:12px;color:var(--cream);font-weight:600">Par</span>';
+    h += '<div class="adv-stepper">';
+    h += '<button class="adv-step-btn" onclick="adjustHolePar(' + hole + ',-1)"' + (par <= 3 ? ' disabled' : '') + ' aria-label="Decrease par">−</button>';
+    h += '<span class="adv-step-val" id="pn-holepar-val-' + hole + '">' + par + '</span>';
+    h += '<button class="adv-step-btn" onclick="adjustHolePar(' + hole + ',1)"' + (par >= 6 ? ' disabled' : '') + ' aria-label="Increase par">+</button>';
+    h += '</div></div>';
+    h += '<div style="display:flex;align-items:center;justify-content:space-between">';
+    h += '<span style="font-size:12px;color:var(--cream);font-weight:600">Yards</span>';
+    h += '<input type="number" inputmode="numeric" id="pn-holeyards-' + hole + '" value="' + (yardage || '') + '" placeholder="—" onchange="setHoleYardage(' + hole + ',this.value)" style="width:100px;text-align:center;font-size:15px;font-weight:600;color:var(--cream);background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 8px;-webkit-appearance:none;min-height:44px">';
+    h += '</div>';
+    h += '<div style="font-size:9px;color:var(--muted);margin-top:10px;line-height:1.4">Applies to this round only. The course record stays unchanged.</div>';
+    h += '</div>';
+  }
   // Parbaugh stroke indicator
   if (liveState.format === "parbaugh" && holeHdcp) {
     if (strokesOnHole > 0) {
@@ -596,6 +623,59 @@ function adjustPenalty(hole, delta) {
   _redrawBottomNav();
 }
 
+// ── BL-001: in-round par/yardage edit ─────────────────────────────────────
+// The "Adjust" toggle on the hole info card reveals an inline editor. Edits
+// write to the round-scoped liveState.holes copy (deep-copied at round start),
+// so the shared course master is never mutated. Each commit triggers a full
+// re-render so every par-derived value recomputes (score diff, running +/-,
+// turn summary, par-3 FIR gating, and finishLiveRound's holePars -> differential).
+function toggleHoleEdit(hole) {
+  holeEditOpen[hole] = !holeEditOpen[hole];
+  saveLiveState();
+  Router.go("playnow");
+}
+
+// Materialize a dense 18-hole array on first edit. A course with no per-hole
+// data would otherwise yield a sparse holePars on finish, which under-counts
+// the handicap differential (handicap.js skips NaN pars). Existing hole objects
+// are preserved; only gaps are filled with the same defaultPar the renderer
+// already falls back to, so this changes nothing downstream except density.
+function _ensureLiveHole(hole) {
+  var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+  if (!Array.isArray(liveState.holes)) liveState.holes = [];
+  for (var i = 0; i < 18; i++) {
+    if (!liveState.holes[i]) liveState.holes[i] = { par: defaultPar[i] || 4 };
+  }
+  return liveState.holes[hole];
+}
+
+function adjustHolePar(hole, delta) {
+  var hd = _ensureLiveHole(hole);
+  var cur = parseInt(hd.par, 10) || 4;
+  var next = cur + delta;
+  if (next < 3) next = 3;
+  if (next > 6) next = 6;
+  if (next === cur) return;
+  liveState.holes[hole] = Object.assign({}, hd, { par: next });
+  saveLiveState();
+  if (typeof hapticLight === "function") hapticLight();
+  Router.go("playnow");
+}
+
+function setHoleYardage(hole, value) {
+  var hd = _ensureLiveHole(hole);
+  var y = parseInt(value, 10);
+  if (isNaN(y) || y < 0) y = 0;
+  if (y > 999) y = 999;
+  // Normalize onto .yardage and drop any legacy .yards so the renderer reads
+  // a single field (it checks .yardage || .yards).
+  var next = Object.assign({}, hd, { yardage: y });
+  delete next.yards;
+  liveState.holes[hole] = next;
+  saveLiveState();
+  Router.go("playnow");
+}
+
 function finishLiveRound() {
   var startHole = liveState.holesMode === "back9" ? 9 : 0;
   var endHole = liveState.holesMode === "front9" ? 9 : 18;
@@ -626,6 +706,7 @@ function finishLiveRound() {
     holesMode: liveState.holesMode || "18",
     holeScores: liveState.scores.slice(),
     holePars: liveState.holes && liveState.holes.length ? liveState.holes.map(function(h){return h.par||4;}) : null,
+    holeYards: liveState.holes && liveState.holes.length ? liveState.holes.map(function(h){return (h.yardage!=null?h.yardage:(h.yards||0));}) : null,
     firData: liveState.fir.slice(),
     girData: liveState.gir.slice(),
     puttsData: liveState.putts.slice(),
@@ -648,15 +729,18 @@ function finishLiveRound() {
   // Calculate stats
   var firCount = 0, girCount = 0, totalPutts = 0;
   var defaultPar = [4,4,3,4,5,4,4,3,5,4,3,4,5,4,4,3,4,5];
+  // BL-001 — read per-round edited pars (liveState.holes) with default fallback so
+  // a corrected hole par flows into the differential and par-3 FIR gating.
+  function _holePar(i) { var hd = liveState.holes && liveState.holes[i]; return (hd && hd.par) ? hd.par : (defaultPar[i] || 4); }
   var parTotal = 0;
   for (var i = 0; i < completed; i++) {
-    if (defaultPar[i] !== 3 && liveState.fir[i]) firCount++;
+    if (_holePar(i) !== 3 && liveState.fir[i]) firCount++;
     if (liveState.gir[i]) girCount++;
     if (liveState.putts[i]) totalPutts += liveState.putts[i];
-    parTotal += defaultPar[i] || 4;
+    parTotal += _holePar(i);
   }
   var firHoles = 0;
-  for (var j = 0; j < completed; j++) { if (defaultPar[j] !== 3) firHoles++; }
+  for (var j = 0; j < completed; j++) { if (_holePar(j) !== 3) firHoles++; }
 
   // Capture state BEFORE clearing — clearLiveState wipes everything
   var savedScores = liveState.scores.slice();
