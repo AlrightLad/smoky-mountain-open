@@ -49,6 +49,7 @@ Router.register("caddynotes", function() {
     { item: "Toasts and notifications wear a cleaner full outline instead of a side stripe, so success and error states read clearly at a glance.", tag: "IMPROVED" },
     { item: "More of the app now shares one clean card outline: the handicap callout, league pulse, range sessions, feed cards, and calendar event chips dropped their colored edge-stripes for a single cohesive look.", tag: "IMPROVED" },
     { item: "Copy across the app reads cleaner: toasts, empty states, help text, the Caddy's post-round notes, and the FAQ now use consistent punctuation instead of stray dashes.", tag: "IMPROVED" },
+    { item: "Behind the scenes: the app now ships its code compressed, with comments and extra spacing stripped out, so there's less to download and read the first time you open it. It loads a little quicker, especially on a phone.", tag: "INFRA" },
     { item: "Behind the scenes: visual regression suite catches design drift; pre-commit blocks accidental credential leaks; A- app-health floor maintained.", tag: "INFRA" }
   ];
 

@@ -1,6 +1,25 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig, loadEnv, minifySync } from 'vite';
 import { resolve } from 'path';
 import { readFileSync, readdirSync } from 'fs';
+
+// 2026-05-29 A8 perf lift: the inline CORE+IMMEDIATE block (transformIndexHtml)
+// and deferred.js (generateBundle) are emitted as raw concatenated source via
+// readFileSync + emitFile, which bypasses Rollup/Oxc minification entirely
+// (build.minify only touches module-graph chunks, not emitted assets). We run
+// the concatenated blobs through Vite's own bundled Oxc minifier here.
+// compress:true strips comments + whitespace + does safe syntax compaction;
+// mangle:false keeps EVERY identifier name, which is required because this is a
+// global-namespace app: Router/PB/Handicap are shared across the separately
+// minified core and deferred blobs and are referenced inside inline
+// onclick="..." string literals the minifier cannot see into. Renaming any of
+// them would break those references. Measured savings: core -37%, deferred -25%.
+function minifyBlock(code, label) {
+  var result = minifySync(label + '.js', code, { compress: true, mangle: false });
+  if (result.errors && result.errors.length) {
+    throw new Error('Oxc minify failed for ' + label + ': ' + JSON.stringify(result.errors));
+  }
+  return result.code;
+}
 
 var CORE_FILES = ['utils.js', 'notification-types.js', 'theme.js', 'animate.js', 'handicap.js', 'firebase.js', 'firebase-photos.js', 'data.js', 'sync.js', 'sync-attestation.js', 'parcoins.js', 'weather.js', 'caddie.js', 'charts.js', 'analytics.js', 'transitions.js', 'router.js', 'router-notifications.js', 'router-ai-tournament.js', 'router-sharecard.js', 'router-achievement.js', 'router-activity-feed.js', 'router-sidebar.js', 'router-empty-states.js', 'page-shell.js', 'bottomsheet.js', 'haptics.js', 'loading.js', 'crisis-banner.js', 'quick-search.js',
   // M1 Capacitor native runtime abstraction — each module attaches to PB.native.<name>
@@ -74,7 +93,7 @@ function coreScriptsPlugin() {
         // ~1.3MB deferred chunk. Lighthouse FCP/LCP measure initial paint only.
         // The generateBundle phase below writes the deferred.js file.
         return [
-          { tag: 'script', children: coreCode + '\n' + immediateCode, injectTo: 'body' },
+          { tag: 'script', children: minifyBlock(coreCode + '\n' + immediateCode, 'core-immediate'), injectTo: 'body' },
           { tag: 'script', attrs: { defer: true, src: 'assets/deferred.js' }, injectTo: 'body' }
         ];
       } else {
@@ -124,7 +143,7 @@ export default defineConfig(function(configEnv) {
         this.emitFile({
           type: 'asset',
           fileName: 'assets/deferred.js',
-          source: deferredCode
+          source: minifyBlock(deferredCode, 'deferred')
         });
       }
     },
