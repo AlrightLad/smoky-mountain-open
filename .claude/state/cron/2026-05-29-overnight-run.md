@@ -1094,3 +1094,104 @@ Heartbeat-only self-check — **Is tonight's substantive output real?** YES, and
 - `docs/reports/app-health.html` — regen output (generated_at timestamp + watcher_exit_reason skip-dirty→no-new-files + audit_trigger commit-pointer; overall_score 87.1 / grade A- identical vs HEAD `8aa49fe2`)
 
 No code changes in cycle AD. No proposals. No FIQ writes. No bug-report state moves (inbox absent). The GDPR account-deletion ship (`67f66b87`) + the AMD-020 auto-clean cron commit (`8aa49fe2`) were authored by concurrent infra, NOT by this triage cycle. Committed with explicit pathspec per the cycle-AB/AC index-race lesson.
+
+---
+
+# Overnight triage — 2026-05-29 (cycle AE)
+
+**Started:** 2026-05-29T12:03:04Z (session open; regen-all START 12:03:47Z)
+**Finished:** 2026-05-29T12:03:52Z (regen-all "ALL DASHBOARDS REGENERATED"; WRAPPER_EXIT=0)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both absent)
+**Cycle:** AE (65th consecutive empty-inbox cycle; ~1h wall-clock gap from cycle AD's ~11:02Z close — NINETEENTH consecutive ~1h-cadence cycle since cycle M). Thirteenth cycle of the 2026-05-29 UTC date; appended to the shared date-file per the convention used by cycles S–AD.
+
+## Inbox state at run-start (cycle AE)
+
+- `.claude/state/founder-input-queue/` — **directory does not exist** (`test -d` → FIQ-MISSING; Glob → no files)
+- `.claude/state/bug-reports/` — **entire tree absent** (inbox/ + triaged/ both MISSING; `test -d` → BUGREPORTS-MISSING + INBOX-MISSING)
+- `.claude/state/proposals/pending/` — empty (no pending proposals)
+- Working tree at run-start: clean except concurrent-process churn (31 critique PNGs under `.claude/state/design-pass-2026-05-22/critique-2026-05-29/`, re-captured by the concurrent wave-2 design-critique infra — `fb4c22ca` lineage). **None of this is this triage cycle's output.** HEAD = `adf9e513` (`cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)`).
+
+Note: the only `FIQ-` ids discoverable on disk live in `docs/FOUNDER_INPUT_QUEUE.md` as the FIQ-001 template examples (schema illustration), NOT live queue entries. No runtime FIQ store exists.
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle AE)
+
+- FIQ entries triaged: **0** (queue directory absent)
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0
+- IDs: none
+
+## Step 2 — Bug-report triage (cycle AE)
+
+- Bug reports processed: **0** (inbox directory absent)
+- Dispositions: none
+- No P3e discussion bubbles opened (nothing to deliberate)
+
+## Step 3 — Heartbeat (cycle AE)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end 12:03:47Z → 12:03:52Z (WRAPPER_EXIT=0): **ALL CHECKS PASSED**, **round-trip test PASS**.
+- Heartbeat `regen-all-last-pass.json` written.
+- Telemetry snapshot: events=15781 handoffs=1 bubbles=7 proposals_pending=0, meter_status=wired-real (→ HALT 25 not in effect). Token aggregate (all_time): real=11,897,778,087 estimated=13,188,320 manual=0; cross-panel sums match.
+- All ~30 guards green (round-trip dashboard swap + nav audit 9-links-each + transcript verify, design-tokens 11/11 + theme convergence 7/7 no raw hex, token-usage schema valid, no-charts, protected-layouts 5/5 + 23/23 + 17 swatches + W1.S1, proposal-readiness 0 deferred, install-scripts 7 parse, install-cmd-surface, scroll-reachability 5/0/0, escalations applied=3/pending=0, quota-status sidecar data_source=auto-derived, pause-discipline clean, wiring 5/5, lifecycle proposals shipped=7 + amendments applied=28). **20th consecutive clean canonical regen-all (cycles L–AE).**
+- One INFORMATIONAL `~` (not a failure): `user-context-gate` flags `main-flows.html` modified 20756.3 min after the last user-context capture (2026-05-14T23-07-48Z). Benign on a heartbeat-only night with no visual ship-close.
+- One benign WARN (carry-over, NOT new this cycle): `regen-main-flows` reports 6 orphan components in the grid (`actor.guest`, `actor.invitee`, `dist.capacitor-ios`, `ext.open-meteo`, `fn.expire-suspensions`, `fn.join-league`) — referenced by no flow's path. Pre-existing structural note, not introduced by this cycle; round-trip still PASS (`62 flows, 248 steps — all refs resolve`).
+
+**ONE GENUINE MOVEMENT THIS CYCLE — INVESTIGATED to root cause, and it CLOSES a multi-cycle prediction:**
+
+**app-health 87.8 (A-) → 88.6 (A-) — driven SOLELY by A12_operational (75 → 90, yellow → GREEN). This is the A12 SELF-HEAL explicitly predicted across cycles Z/AA/AB/AC/AD.** Evidence: the ENTIRE `docs/reports/app-health.html` working-tree diff contains **exactly ONE dimension score change** (`-"score": 75 / +"score": 90` for `A12_operational`); all 11 other dimensions are **byte-identical** (A1_roadmap 80, A2_fiq 100, A3_security 98, A4_uiux 93, A5_code_quality 94, A6_architecture 92, A7_data_integrity 100, A8_performance 80, A9_accessibility 95, A10_mobile_first 100, A11_testing 88). A12's `status` moved yellow → green; `watcher_exit_reason` moved `skip-dirty` → `no-new-files`; both `attention_items` and `agent_attention` were **emptied** (the "5 of last 10 cron watcher runs hit skip-dirty" item resolved because the symptom self-healed). `overall_score` 87.8 → 88.6, `pre_deduction_score` 92.8 → 93.6, `incidents_deduction` unchanged at 5 (sev1=0). The cron-watcher skip-dirty rolling-window metric — which dipped to 60 at cycle AD from the heavy concurrent-ship window (v8.23.12→.15 design-coherence ships + the GDPR account-deletion ship `67f66b87`), partially recovered to 75 by concurrent crons — has now recovered **fully** to 90/green as clean cron runs accumulated and the dirty-tree window cleared. **This retroactively VALIDATES the cycle Z–AD discipline of refusing to manufacture an A12 hook-fix proposal: it was a self-healing dirty-tree symptom, exactly as diagnosed, NOT a regression.** The heartbeat did NOT *cause* the rise (the dip and recovery are both rolling-window artifacts of concurrent-ship tree-dirtiness, not heartbeat actions) — no fix was authored or warranted. App-health back to **0 attention items**.
+
+**founder-checklist open=4 (red=0 yellow=3 green=1) closed_total=25 — UNCHANGED carry-overs, none new this cycle.** The 4 open items remain: (1) deploy `deleteMyAccount` Cloud Function (AMD-018 gate #1, surfaced cycle AD from GDPR ship `67f66b87`), (2) GH Actions staging deploy secret `FIREBASE_SERVICE_ACCOUNT_STAGING`, (3) Sentry auth token scopes, (4) morning handoff. No new Founder-action item generated this cycle.
+
+**Concurrent-process churn (NOT my output):** 31 critique PNGs under `.claude/state/design-pass-2026-05-22/critique-2026-05-29/` were modified by the concurrent wave-2 design-critique capture infra (`fb4c22ca` lineage — "wave-2 design critique capture scripts + 2026-05-29 fold/fullpage baselines"). `audit_trigger` commit-pointer moved `b5fc5409` (cron, 3 files) → `adf9e513` (cron, 4 files; AMD-020 Class A auto-clean). These PNGs were **excluded** from my commit via explicit pathspec.
+
+### 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — updated for cycle AE (counters ~685k tokens cumulative / ~1.0h; status `active`; `_note` + `substantive_output_at_checkpoint` rewritten for cycle AE, incl. the 20th-consecutive-clean-regen observation and the A12 self-heal root-cause + multi-cycle-prediction closure). Token threshold remains crossed (29th cross-cycle); no rest triggered — heartbeat-only nights are genuinely light.
+- `.claude/state/wellness/critic.json` — updated for cycle AE (counters ~98k tokens / ~1.0h; status `active`; threshold not crossed). Critic independently read the FULL app-health diff to confirm exactly one dimension moved and that the rise is the predicted self-heal, NOT heartbeat-caused (no false credit-claiming).
+
+## Step 4 — Session journal
+
+**This section.**
+
+## Cycle AE counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 |
+| Bug reports processed | 0 |
+| New proposals authored | 0 |
+| Wellness state changes | 2 (engineer.json + critic.json cycle AE refresh) |
+
+## Blockers requiring Founder attention (cycle AE)
+
+**No ship-blocking issues.** Awareness / Founder-action items (all carry-overs from cycle AD):
+
+1. **Carry-over (Founder-action, AMD-018 gate #1) — deploy `deleteMyAccount` Cloud Function.** The GDPR/account-deletion ship `67f66b87` (landed cycle AD via concurrent infra) committed the `deleteMyAccount` Cloud Function code, but `firebase deploy --only functions` is an AMD-018 pre-authorization gate requiring a Founder authorization in `task-queue/founder/` (walkthrough already exists at `task-queue/founder/deploy-deleteMyAccount-function.md`). The function is **not yet live** pending Founder-gated deploy. Surfaced as founder-checklist open item; unchanged this cycle.
+2. **Awareness — app-health 87.8 → 88.6 (A- holds), driven SOLELY by A12_operational recovering 75 → 90 (green).** The cron-watcher skip-dirty rolling-window symptom (dipped to 60 at cycle AD) has SELF-HEALED as predicted; app-health back to 0 attention items. Not blocking — canonical `regen-all.ps1` gate is green (20th consecutive clean run).
+3. **Carry-over — git index race on triage commit (cycle AB lesson).** overnight-triage cron and the concurrent feature/design-critique/auto-clean crons share one git index; a bare `git commit` is not race-safe. Cycle AE commits with an **explicit pathspec** capturing ONLY this cycle's files (the 31 concurrent critique PNGs are deliberately left for their owning process).
+4. **Carry-over — writer-side BOM fix (`common.ps1:117`) remains unauthored as a proposal.** Consumer-side `utf-8-sig` tolerance (aggregate-telemetry.py:70) has held across all 20 canonical clean runs since cycle L. Deliberately not auto-promoted without a Founder priority signal — refusing to inflate proposal counts.
+5. **Carry-over — `scripts/aggregate-self-tests.py` post-commit warning** (flagged cycle L) — separate from regen-all's pipeline; out-of-scope for step 3a. Still flagged for a future cycle.
+6. **Cron cadence** — cycles M–AE all ~1h apart (nineteenth consecutive ~1h gap). No Founder action required; awareness only.
+
+No HALT criteria tripped (meter_status `wired-real` → HALT 25 not in effect). No scope-creep candidates.
+
+## Cycle AE Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox absent). Absence verified by `test -d` → BUGREPORTS-MISSING + INBOX-MISSING and Glob → no files. Cannot wave off what doesn't exist.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals tonight. On a positive-movement night it would have been easy to either manufacture an "A12 fix" proposal or claim the heartbeat fixed app-health; the Critic specifically validated that NOT authoring a proposal was correct (A12 self-healed exactly as the cycle Z–AD diagnosis predicted) and that the heartbeat did NOT cause the rise. Honest scoping, not inflation, and no false credit-claiming.
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero FIQ entries tonight. Queue absent; no gradeable live entries exist.
+
+Heartbeat-only self-check — **Is tonight's substantive output real?** YES. This cycle did NOT rubber-stamp a clean regen: it surfaced ONE genuine movement (app-health 87.8 → 88.6) and **investigated it to root cause** by reading the full app-health diff verbatim — confirming exactly ONE dimension moved (A12_operational 75 → 90, all 11 other dims byte-identical) and that this is the **self-heal predicted across five prior cycles** (Z–AD), which retroactively vindicates the discipline of refusing to manufacture an A12 hook-fix proposal. The Critic guarded against both inflation (no fake proposal) and false credit-claiming (heartbeat did not cause the rise — rolling-window artifact). The 31 modified critique PNGs were correctly identified as concurrent design-capture churn and excluded from the commit. Every claim anchors to a quoted regen-all log line, the `git diff` output read verbatim (exactly one score-pair changed), the founder-checklist data block, the heartbeat JSON, or directory-absence checks. No invented productivity on an empty-queue night.
+
+**Critic attests cleanly: substantive heartbeat cycle, ship closes.**
+
+## Files changed in this cycle AE run
+
+- `.claude/state/wellness/engineer.json` — cycle AE update
+- `.claude/state/wellness/critic.json` — cycle AE update
+- `.claude/state/cron/2026-05-29-overnight-run.md` — this journal (cycle AE section appended)
+- `docs/reports/app-health.html` — regen output (generated_at timestamp + A12_operational 75→90/yellow→green + attention_items emptied + audit_trigger commit-pointer `b5fc5409`→`adf9e513`; overall_score 88.6 / grade A-; only A12 moved, 11 dims byte-identical)
+
+No code changes in cycle AE. No proposals. No FIQ writes. No bug-report state moves (inbox absent). The 31 critique PNGs in the working tree were authored by concurrent design-critique infra, NOT by this triage cycle, and were excluded from the commit via explicit pathspec per the cycle-AB/AC/AD index-race lesson.
