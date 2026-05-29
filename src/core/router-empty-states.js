@@ -36,7 +36,7 @@ function skeletonFeed() {
 // ========== CONTEXTUAL EMPTY STATES ==========
 var contextualEmptyStates = {
   rounds: {
-    icon: "<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='4' r='3'/><path d='M3 14l5-5 5 5'/><line x1='8' y1='9' x2='8' y2='16'/></svg>",
+    icon: "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' width='28' height='28' style='color:var(--muted)'><path d='M6 21V4l11 3.5L6 11'/><path d='M3.5 21h7'/></svg>",
     text: "No rounds logged yet",
     sub: "Your first round earns 100 XP and the First Blood badge",
     action: "Play Now →",

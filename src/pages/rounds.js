@@ -171,7 +171,7 @@ function renderRoundsList() {
     });
     h += '</div></div>';
   } else {
-    h += '<div class="section"><div class="card"><div class="empty"><div class="empty-text">No rounds logged yet. Tap "+ Log a round" above to add one.</div></div></div></div>';
+    h += '<div class="section"><div class="card">' + renderContextualEmpty('rounds') + '</div></div>';
   }
 
   h += renderPageFooter();
