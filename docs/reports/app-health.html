@@ -821,7 +821,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-29T19:12:30.684792Z",
+  "generated_at": "2026-05-29T19:14:25.296314Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.4,
   "overall_grade": "A-",
@@ -1008,13 +1008,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "60d6e2cc",
-    "subject": "test(playnow): BL-001 in-round par/yardage edit regression spec + close backlog",
-    "committed_at": "2026-05-29T15:12:07-04:00",
+    "sha": "8aa160be",
+    "subject": "chore(state): emulator log from BL-001 spec run (routine)",
+    "committed_at": "2026-05-29T15:14:07-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 4
+    "total_files_touched": 1
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
