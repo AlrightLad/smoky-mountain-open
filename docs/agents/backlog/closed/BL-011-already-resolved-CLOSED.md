@@ -3,7 +3,11 @@
 **Severity:** P3
 **Captured:** v8.6.x CSS audit
 **Wave/Phase target:** Wave 2 (Ship 3b or design system codification)
-**Status:** Open
+**Status:** Closed (premise resolved — verified 2026-05-29, v8.23.26)
+
+## Audit update (2026-05-29, v8.23.26)
+
+Re-audited the concrete claim. The duplicate `.rr-sidebar__footer` rules are already resolved: an in-code v8.7.1 note records the v8.6.2.2 footer rule being consolidated to a single rule, and a v8.8.0 note explicitly states the remaining retained sub-rules are intentional ("Do not 'fix' by consolidating — the duplication is the design") for the `display:none` footer kept for future reuse. The line numbers cited below (858/928) no longer exist at current revision. No duplicate-rule defect remains. Closing; the vague "stranded v8.5.x–v8.6.x artifacts" sweep is not a tracked defect and is covered by ongoing Wave-2 coherence passes.
 
 ## Description
 
