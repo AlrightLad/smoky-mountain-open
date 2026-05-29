@@ -1195,3 +1195,13 @@ Heartbeat-only self-check — **Is tonight's substantive output real?** YES. Thi
 - `docs/reports/app-health.html` — regen output (generated_at timestamp + A12_operational 75→90/yellow→green + attention_items emptied + audit_trigger commit-pointer `b5fc5409`→`adf9e513`; overall_score 88.6 / grade A-; only A12 moved, 11 dims byte-identical)
 
 No code changes in cycle AE. No proposals. No FIQ writes. No bug-report state moves (inbox absent). The 31 critique PNGs in the working tree were authored by concurrent design-critique infra, NOT by this triage cycle, and were excluded from the commit via explicit pathspec per the cycle-AB/AC/AD index-race lesson.
+
+## Post-commit reconciliation (cycle AE) — index race manifested as concurrent-cron file capture
+
+**Honest correction to the attribution above.** The cycle-AB/AC/AD index-race lesson anticipated a *HEAD-pointer* race; this cycle the race went one step further — the concurrent crons **committed three of my four files before my own `git add` ran**. Verified post-commit:
+
+- `.claude/state/wellness/engineer.json` + `.claude/state/wellness/critic.json` — captured by `91d6b796` (`cron(routine): post-watcher-commit drift sweep`, 2026-05-29T12:06:38Z). Committed content confirmed = my cycle-AE writes (`git show 91d6b796:…engineer.json` / `…critic.json` both contain "cycle AE overnight-triage").
+- `.claude/state/cron/2026-05-29-overnight-run.md` (the cycle-AE section) — captured by **my own** explicit-pathspec commit `2247ec9b` (`Overnight triage 2026-05-29 - 0 reports, 0 proposals, 0 FIQ entries graded`). By the time my `git add` ran, the journal was the only one of my four files still unstaged — hence "1 file changed, 101 insertions(+)".
+- `docs/reports/app-health.html` — captured by `b813067d` (`cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)`). Committed content confirmed = my regen output (`overall_score: 88.6`, `A12_operational.score: 90`).
+
+**Net effect: ALL FOUR cycle-AE files are committed with my content; nothing lost or stale.** HEAD = `b813067d`; working tree clean (`git status --short` → 0 lines). The 31 concurrent critique PNGs were committed by their owning design-critique cron, never swept into my commit. The explicit-pathspec discipline held (my commit captured only the journal, never a concurrent file); the only deviation from the prose above is that the drift-sweep/regen crons beat me to staging three of my own outputs — a benign acceleration, not a loss. This is a sharper instance of the documented A12 concurrent-process window and reinforces the cycle-AB lesson: on a shared git index, even a clean explicit-pathspec commit may find its targets already committed by a faster concurrent cron.
