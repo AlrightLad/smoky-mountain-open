@@ -821,7 +821,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-29T15:07:27.343671Z",
+  "generated_at": "2026-05-29T15:12:17.602625Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 88.0,
   "overall_grade": "A-",
@@ -993,13 +993,24 @@
     }
   ],
   "audit_trigger": {
-    "sha": "a4f59e5d",
-    "subject": "Overnight triage 2026-05-29 - 0 reports, 0 proposals, 0 FIQ entries graded",
-    "committed_at": "2026-05-29T11:06:21-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 4
+    "sha": "e2c5db50",
+    "subject": "fix: route all user-facing errors through pbErrMsg (no raw SDK leak) + v8.23.24",
+    "committed_at": "2026-05-29T11:11:53-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "public/sw.js",
+      "src/core/router-activity-feed.js",
+      "src/core/sync-attestation.js",
+      "src/core/utils.js",
+      "src/pages/admin.js",
+      "src/pages/bounties.js",
+      "src/pages/caddynotes.js",
+      "src/pages/calendar.js",
+      "src/pages/courses.js",
+      "src/pages/feed.js"
+    ],
+    "total_files_touched": 17
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
