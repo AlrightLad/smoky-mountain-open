@@ -41,7 +41,7 @@ var IMMEDIATE_PAGES = ['home.js', 'home-hq.js', 'home-hq-league-week.js', 'home-
 // Pages loaded after initial render (deferred for faster first paint)
 var DEFERRED_PAGES = [
   'merch.js', 'rules.js', 'members.js', 'members-detail.js', 'members-graph.js', 'members-edit.js', 'scramble.js', 'aces.js',
-  'playnow.js', 'playnow-scoring.js', 'standings.js', 'challenges.js', 'trips.js',
+  'playnow.js', 'playnow-scoring.js', 'standings.js', 'challenges.js', 'trips.js', 'tournament.js',
   'scorecard.js', 'rounds.js', 'rounds-loghole.js', 'courses.js', 'courses-detail.js', 'records.js',
   'teetimes.js', 'range.js', 'activity.js', 'rangelive.js', 'calendar.js',
   'more.js', 'feed.js', 'feed-comments.js', 'chat.js', 'chat-calendar.js', 'dms.js', 'invite.js', 'admin.js', 'admin-diagnostic.js',

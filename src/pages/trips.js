@@ -19,6 +19,10 @@ Router.register("trips", function(params) {
 
   var h = '<div class="sh"><h2>Events</h2><button class="btn-sm green" onclick="Router.go(\'trips\',{create:true})">+ New event</button></div>';
 
+  // Commissioner-only tournament CTA — revealed async after the league-doc
+  // commissioner cache warms (see reveal block after innerHTML below).
+  h += '<div id="commish-tourn-cta"></div>';
+
   function tripCard(t) {
     var memberAvatars = (t.members || []).slice(0, 4).map(function(id) {
       var p = PB.getPlayer(id) || (typeof fbMemberCache !== "undefined" && fbMemberCache[id]);
@@ -69,6 +73,21 @@ Router.register("trips", function(params) {
 
   h += renderPageFooter();
   document.querySelector('[data-page="trips"]').innerHTML = h;
+
+  // Reveal the tournament CTA only for this league's commissioner. The route
+  // itself is also commissioner-gated (defense in depth in tournament.js).
+  if (typeof ensureActiveLeagueCommissioner === "function") {
+    ensureActiveLeagueCommissioner(function (isCommish) {
+      var cta = document.getElementById("commish-tourn-cta");
+      if (!cta || !isCommish) return;
+      var c = '<div class="tourn-cta" onclick="Router.go(\'tournament\',{create:true})">';
+      c += '<div class="tourn-cta__icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 9H4.5a2.5 2.5 0 010-5C7 4 7 7 7 7"/><path d="M18 9h1.5a2.5 2.5 0 000-5C17 4 17 7 17 7"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg></div>';
+      c += '<div class="tourn-cta__body"><div class="tourn-cta__title">Run a tournament</div><div class="tourn-cta__sub">Generate fair pairings, formats, and a leaderboard from your players’ stats.</div></div>';
+      c += '<svg class="tourn-cta__chev" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>';
+      c += '</div>';
+      cta.innerHTML = c;
+    });
+  }
 });
 
 function togglePastEvents() {
