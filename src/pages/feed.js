@@ -185,6 +185,26 @@ function _feedStatChips(item) {
   return ch;
 }
 
+// ── Date-group dividers (timeline rhythm) ──
+// A flat reverse-chron stream of 40+ posts reads as an undifferentiated wall.
+// Bucketing by recency gives the eye scannable anchors (Strava / Linear pattern).
+function _feedDateBucket(ts) {
+  if (!ts) return "Earlier";
+  var now = new Date();
+  var startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  var dayMs = 86400000;
+  if (ts >= startOfToday) return "Today";
+  if (ts >= startOfToday - dayMs) return "Yesterday";
+  if (ts >= startOfToday - 6 * dayMs) return "This Week";
+  var d = new Date(ts);
+  if (d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()) return "Earlier This Month";
+  var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  return months[d.getMonth()] + " " + d.getFullYear();
+}
+function _feedDateDivider(label) {
+  return '<div class="feed-day-divider"><span>' + escHtml(label) + '</span></div>';
+}
+
 function _renderFeedItems() {
   var items = window._feedItems || [];
   var filtered = _feedFilter === "all" ? items : items.filter(function(i) { return i.type === _feedFilter; });
@@ -221,7 +241,13 @@ function _renderFeedItems() {
     }
     fh += '</div>';
   }
+  var lastBucket = null;
   filtered.slice(0, 60).forEach(function(item) {
+    var bucket = _feedDateBucket(item.ts);
+    if (bucket !== lastBucket) {
+      fh += _feedDateDivider(bucket);
+      lastBucket = bucket;
+    }
     if (item.type === "round") {
       fh += _renderRoundCard(item);
     } else if (item.type === "chat") {
