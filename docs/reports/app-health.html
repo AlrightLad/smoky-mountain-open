@@ -821,7 +821,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-29T06:06:49.509510Z",
+  "generated_at": "2026-05-29T06:08:51.849954Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.8,
   "overall_grade": "A-",
@@ -993,13 +993,19 @@
     }
   ],
   "audit_trigger": {
-    "sha": "ef61d241",
-    "subject": "Overnight triage 2026-05-29 - 0 reports, 0 proposals, 0 FIQ entries graded",
-    "committed_at": "2026-05-29T02:05:45-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 3
+    "sha": "e8b4fbfb",
+    "subject": "refactor(calendar): event-chip side-stripes to full tinted borders (v8.23.6)",
+    "committed_at": "2026-05-29T02:08:29-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "public/sw.js",
+      "src/core/utils.js",
+      "src/pages/caddynotes.js",
+      "src/pages/calendar.js",
+      "src/pages/chat-calendar.js"
+    ],
+    "total_files_touched": 10
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
