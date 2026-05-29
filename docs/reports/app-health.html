@@ -821,9 +821,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-29T20:34:29.923377Z",
+  "generated_at": "2026-05-29T21:01:24.406355Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 86.6,
+  "overall_score": 87.1,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -837,9 +837,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 91.6,
+    "pre_deduction_score": 92.1,
     "deduction": 5,
-    "post_deduction_score": 86.6
+    "post_deduction_score": 87.1
   },
   "dimensions": {
     "A1_roadmap": {
@@ -966,7 +966,7 @@
       "weak_points": []
     },
     "A11_testing": {
-      "score": 88,
+      "score": 92,
       "status": "green",
       "label": "9 specs · 1058 LOC · unit-test=True · coverage-tool=True",
       "source": "tests/e2e/flows/, package.json, smoke-test.txt",
@@ -1008,19 +1008,20 @@
     }
   ],
   "audit_trigger": {
-    "sha": "0c322157",
-    "subject": "feat(feed): date-group dividers for activity timeline (v8.23.33)",
-    "committed_at": "2026-05-29T16:34:06-04:00",
+    "sha": "20885626",
+    "subject": "feat(tournament): free algorithmic tournament engine + data model + commissioner gate (Increment 1)",
+    "committed_at": "2026-05-29T17:00:46-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
-      "public/sw.js",
-      "src/core/utils.js",
-      "src/pages/caddynotes.js",
-      "src/pages/feed.js",
-      "src/styles/components.css"
+      "src/core/data.js",
+      "src/core/router-ai-tournament.js",
+      "src/core/router.js",
+      "src/core/sync.js",
+      "src/core/tournament-engine.js",
+      "src/pages/trips.js"
     ],
-    "total_files_touched": 7
+    "total_files_touched": 10
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
