@@ -48,6 +48,7 @@ const SURFACES = [
     { key: "wagers",     route: "/wagers",     wait: "[data-page='wagers']" },
     { key: "scramble",   route: "/scramble",   wait: "[data-page='scramble']" },
     { key: "trips",      route: "/trips",      wait: "[data-page='trips']" },
+    { key: "challenges", route: "/challenges", wait: "[data-page='challenges']" },
     { key: "trophyroom", route: "/trophyroom", wait: "[data-page='trophyroom']" },
     { key: "range",      route: "/range",      wait: "[data-page='range-detail'], [data-page='range']" },
     { key: "onboarding", route: "/onboarding", wait: "[data-page='onboarding']" },

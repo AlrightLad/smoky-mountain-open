@@ -558,6 +558,34 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   HQ RAW-LIST CONTENT WIDTH (v8.23.10 · design-coherence Wave-2)
+   These pages predate PageShell: they render .sh + .card straight into
+   [data-page] with no width cap, so on HQ desktop the cards stretch the full
+   1152px content area. Their headers, cards, chips, and empty states were all
+   composed mobile-first for the ~680px reading column (body cap, base.css:33),
+   so at full width a title-left / action-right row strands its control across a
+   void and short idea-chips float in oversized pills. Cap the column at that
+   same reading width and centre it (margin:0 auto), matching both the shell
+   convention (.page-shell__container) and the existing narrow-content precedent
+   in round.js (600-640px centred). Centring keeps the column on the same axis as
+   the full-width global status line ("THE PARBAUGHS · EST …") so the page reads
+   as one composed stack rather than a left-hung block beside an off-axis footer.
+   The cap only bites once the content area exceeds it (viewport ≳968px); at
+   narrower HQ bands the content area is already smaller, so this is a no-op.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (min-width: 960px) {
+  [data-page="scramble"],
+  [data-page="trips"],
+  [data-page="bounties"],
+  [data-page="wagers"],
+  [data-page="challenges"] {
+    max-width: 680px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    HQ RESPONSIVE TYPOGRAPHY OVERRIDES (v8.6.0)
    Cascade: defaults in :root = Band D (1440+). Each max-width query below
    overrides only the tokens that change at narrower bands. .98 boundaries
