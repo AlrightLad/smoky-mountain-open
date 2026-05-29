@@ -18,11 +18,17 @@ const OUT = process.env.CAPTURE_OUT || '.claude/state/design-pass-2026-05-22/cri
 if (!existsSync(OUT)) mkdirSync(OUT, { recursive: true });
 
 const DEVICE = process.env.CAPTURE_DEVICE;
+// CAPTURE_VH overrides desktop viewport height (default 900). CAPTURE_FULLPAGE=0
+// captures viewport-only (top of page at full res) for close-inspection loops.
+const VH = process.env.CAPTURE_VH ? parseInt(process.env.CAPTURE_VH, 10) : 900;
+const FULLPAGE = process.env.CAPTURE_FULLPAGE !== '0';
 const ctxOptions = (DEVICE && devices[DEVICE])
     ? devices[DEVICE]
-    : { viewport: { width: 1440, height: 900 } };
+    : { viewport: { width: 1440, height: VH } };
 
-const PAGES = [
+// CAPTURE_PAGES (comma-separated) narrows the run to specific surfaces for
+// fast fix-verify loops; unset captures the full HQ-tier sweep.
+const ALL_PAGES = [
     'home',
     'feed',
     'rounds',
@@ -54,6 +60,9 @@ const PAGES = [
     'settings',
     'more',
 ];
+const PAGES = process.env.CAPTURE_PAGES
+    ? process.env.CAPTURE_PAGES.split(',').map(s => s.trim()).filter(Boolean)
+    : ALL_PAGES;
 
 const b = await chromium.launch();
 const ctx = await b.newContext(ctxOptions);
@@ -78,7 +87,7 @@ for (const p of PAGES) {
     try {
         await page.evaluate((name) => Router.go(name), p);
         await page.waitForTimeout(1600);
-        await page.screenshot({ path: OUT + '/' + p + '.png', fullPage: true });
+        await page.screenshot({ path: OUT + '/' + p + '.png', fullPage: FULLPAGE });
         console.log('  ok ' + p);
     } catch (e) {
         errs.push({ page: p, err: e.message.slice(0, 100) });
