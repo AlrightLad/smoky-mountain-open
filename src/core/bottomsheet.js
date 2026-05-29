@@ -215,8 +215,10 @@ function _bsBuildDOM(sheet) {
   _bsWireDrag(sheet, handle);
   if (headerEl) _bsWireDrag(sheet, headerEl);
 
-  // visualViewport keyboard handling for Full sheets.
-  if (sheet.size === "full") _bsWireKeyboard(sheet, body);
+  // visualViewport keyboard handling for sheets that host text inputs
+  // (full + half). Lifts the focused field above the on-screen keyboard.
+  // Compact is button-only / auto-height, so it is skipped.
+  if (sheet.size === "full" || sheet.size === "half") _bsWireKeyboard(sheet, body);
 
   document.body.appendChild(el);
   sheet.el = el;

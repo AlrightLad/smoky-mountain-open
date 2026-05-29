@@ -461,43 +461,158 @@ function doLogout() {
   auth.signOut();
 }
 
+// Account deletion (App Store 5.1.1(v) / GDPR erasure). Branded confirmation
+// via the bottom-sheet atom rather than native confirm(). Two safeguards:
+//   1. Re-authentication FIRST (password). This satisfies Firebase's
+//      requires-recent-login rule up front, so the destructive chain never
+//      starts unless the user proved identity. Eliminates the old half-deleted
+//      state (profile gone, auth account stranded) that happened when
+//      currentUser.delete() threw requires-recent-login after data was wiped.
+//   2. A typed confirmation word that autofill cannot satisfy.
+// Firestore rules (firestore.rules: members allow delete: if amIFounder())
+// correctly forbid a client from deleting its own member doc, so deletion
+// runs server-side via the deleteMyAccount Cloud Function (Admin SDK bypasses
+// rules). The client re-authenticates, then calls the function with a fresh
+// ID token. The function removes the member doc + photos + auth account, which
+// matches the copy below. Deploy is AMD-018 gate 1 (Founder-approved); until
+// then the call returns 404 and the catch routes the user to support.
+var DELETE_CONFIRM_WORD = "DELETE";
+// Resolved at call time (not load time): window._pbEmulator is set during
+// firebase init, after this module is parsed. In emulator mode the request
+// goes to the local functions emulator so the full flow is verifiable.
+function deleteAccountFnUrl() {
+  if (typeof window !== "undefined" && window._pbEmulator === true) {
+    return "http://127.0.0.1:5001/parbaughs/us-central1/deleteMyAccount";
+  }
+  return "https://us-central1-parbaughs.cloudfunctions.net/deleteMyAccount";
+}
+
 function deleteMyAccount() {
   if (!currentUser || !db) { Router.toast("Not signed in"); return; }
-  if (!confirm("DELETE YOUR ACCOUNT?\n\nThis will permanently remove:\n• Your member profile\n• Your photos\n• Your Firebase auth account\n\nThis CANNOT be undone.")) return;
-  if (!confirm("Are you absolutely sure? Type YES to confirm.")) return;
-  
-  var uid = currentUser.uid;
-  
-  // Delete Firestore member doc
-  db.collection("members").doc(uid).delete()
-    .then(function() {
-      pbLog("[Account] Member doc deleted");
-      // Delete photos uploaded by this user
-      return db.collection("photos").where("uploadedBy","==",uid).get();
-    })
-    .then(function(snap) {
-      var batch = db.batch();
-      snap.forEach(function(doc) { batch.delete(doc.ref); });
-      return batch.commit();
-    })
-    .then(function() {
-      pbLog("[Account] Photos deleted");
-      // Delete the Firebase Auth account
-      return currentUser.delete();
-    })
-    .then(function() {
-      Router.toast("Account deleted");
-      currentUser = null;
-      currentProfile = null;
-      exitApp();
-    })
-    .catch(function(e) {
-      if (e.code === "auth/requires-recent-login") {
-        Router.toast("Please sign out, sign back in, then try again (security requirement)");
-      } else {
-        Router.toast("Error: " + e.message);
-      }
+
+  var content =
+    '<div style="padding-top:6px;display:flex;flex-direction:column;gap:16px">' +
+      '<p style="font-size:14px;line-height:1.55;color:var(--cb-charcoal);margin:0">' +
+        'This removes your profile, photos, and sign-in from Parbaughs. This cannot be undone.' +
+      '</p>' +
+      '<div style="display:flex;flex-direction:column;gap:6px">' +
+        '<label for="delAcctPw" style="font-size:11px;letter-spacing:.4px;text-transform:uppercase;color:var(--cb-mute)">Confirm your password</label>' +
+        '<input id="delAcctPw" type="password" autocomplete="current-password" placeholder="Your password" style="padding:12px 14px;border:1px solid var(--cb-chalk-3);border-radius:8px;font-size:14px;font-family:var(--font-ui);background:#fff;color:var(--cb-ink)">' +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:6px">' +
+        '<label for="delAcctWord" style="font-size:11px;letter-spacing:.4px;text-transform:uppercase;color:var(--cb-mute)">Type ' + DELETE_CONFIRM_WORD + ' to confirm</label>' +
+        '<input id="delAcctWord" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="' + DELETE_CONFIRM_WORD + '" style="padding:12px 14px;border:1px solid var(--cb-chalk-3);border-radius:8px;font-size:14px;font-family:var(--font-ui);letter-spacing:1px;background:#fff;color:var(--cb-ink)">' +
+      '</div>' +
+      '<div id="delAcctErr" role="alert" style="display:none;font-size:12.5px;color:var(--cb-claret);line-height:1.45"></div>' +
+      '<div style="display:flex;gap:8px;margin-top:4px">' +
+        '<button id="delAcctCancel" class="tappable" style="flex:1;padding:13px;background:transparent;border:1px solid var(--cb-chalk-3);border-radius:8px;font-size:14px;color:var(--cb-ink);cursor:pointer">Cancel</button>' +
+        '<button id="delAcctConfirm" class="tappable" disabled style="flex:1;padding:13px;background:var(--cb-claret);border:none;border-radius:8px;font-size:14px;font-weight:700;color:#fff;cursor:not-allowed;opacity:.5">Delete account</button>' +
+      '</div>' +
+    '</div>';
+
+  var sheetId = openBottomSheet({ size: "half", title: "Delete your account", content: content, dismissible: true });
+  if (sheetId == null) { Router.toast("Could not open the deletion dialog"); return; }
+
+  setTimeout(function() {
+    var pw = document.getElementById("delAcctPw");
+    var word = document.getElementById("delAcctWord");
+    var err = document.getElementById("delAcctErr");
+    var btnCancel = document.getElementById("delAcctCancel");
+    var btnConfirm = document.getElementById("delAcctConfirm");
+    if (!pw || !word || !btnConfirm || !btnCancel) return;
+
+    function showErr(m) { if (err) { err.textContent = m; err.style.display = "block"; } }
+    function clearErr() { if (err) { err.style.display = "none"; err.textContent = ""; } }
+    function isReady() { return pw.value.length > 0 && word.value.trim().toUpperCase() === DELETE_CONFIRM_WORD; }
+    function refresh() {
+      var ok = isReady();
+      btnConfirm.disabled = !ok;
+      btnConfirm.style.opacity = ok ? "1" : ".5";
+      btnConfirm.style.cursor = ok ? "pointer" : "not-allowed";
+    }
+    pw.addEventListener("input", function() { clearErr(); refresh(); });
+    word.addEventListener("input", function() { clearErr(); refresh(); });
+    refresh();
+    setTimeout(function() { try { pw.focus(); } catch(e) {} }, 80);
+
+    btnCancel.addEventListener("click", function() { closeBottomSheet(sheetId); });
+
+    btnConfirm.addEventListener("click", function() {
+      if (btnConfirm.disabled || !isReady()) return;
+      if (!currentUser) { showErr("You are no longer signed in. Close this and sign in again."); return; }
+      var email = currentUser.email || "";
+      if (!email) { showErr("We could not verify your sign-in. Sign out, sign back in, then try again. Nothing was deleted."); return; }
+
+      btnConfirm.disabled = true;
+      btnConfirm.style.cursor = "wait";
+      btnConfirm.textContent = "Deleting...";
+      pw.disabled = true; word.disabled = true; btnCancel.disabled = true;
+      clearErr();
+
+      var cred = firebase.auth.EmailAuthProvider.credential(email, pw.value);
+
+      // Re-authenticate FIRST so deletion only proceeds once identity is proven.
+      // If reauth rejects (wrong password), nothing is deleted. Then mint a fresh
+      // ID token and hand off to the server: Firestore rules forbid a client from
+      // deleting its own member doc (members allow delete: if amIFounder()), so the
+      // erasure runs server-side in the deleteMyAccount Cloud Function under the
+      // Admin SDK, which removes the member doc, photos, and the auth account.
+      currentUser.reauthenticateWithCredential(cred)
+        .then(function() {
+          return currentUser.getIdToken(true);
+        })
+        .then(function(idToken) {
+          return fetch(deleteAccountFnUrl(), {
+            method: "POST",
+            headers: { "Authorization": "Bearer " + idToken, "Content-Type": "application/json" },
+            body: "{}"
+          });
+        })
+        .then(function(res) {
+          if (!res || !res.ok) {
+            var statusErr = new Error("delete-failed");
+            statusErr._status = res ? res.status : 0;
+            throw statusErr;
+          }
+          return res.json().catch(function() { return {}; });
+        })
+        .then(function() {
+          pbLog("[Account] Account erased server-side");
+          closeBottomSheet(sheetId);
+          Router.toast("Account deleted");
+          currentUser = null;
+          currentProfile = null;
+          if (auth && auth.signOut) { auth.signOut().catch(function() {}); }
+          exitApp();
+        })
+        .catch(function(e) {
+          // Restore the form so the user can retry or cancel.
+          pw.disabled = false; word.disabled = false; btnCancel.disabled = false;
+          btnConfirm.textContent = "Delete account";
+          refresh();
+          var code = e && e.code ? e.code : "";
+          var status = e && e._status ? e._status : 0;
+          if (code === "auth/wrong-password" || code === "auth/invalid-credential" || code === "auth/invalid-login-credentials") {
+            showErr("That password is not correct. Nothing was deleted.");
+            try { pw.value = ""; pw.focus(); } catch(err2) {}
+          } else if (code === "auth/too-many-requests") {
+            showErr("Too many attempts. Wait a moment, then try again. Nothing was deleted.");
+          } else if (code === "auth/network-request-failed") {
+            showErr("Network problem. Check your connection and try again. Nothing was deleted.");
+          } else if (status === 404) {
+            showErr("Account deletion is being finalized on our end. Email support@parbaughs.golf and we will remove your account right away. Nothing was deleted yet.");
+          } else if (status === 401 || status === 403) {
+            showErr("We could not verify your sign-in. Sign out, sign back in, then try again. Nothing was deleted.");
+          } else if (status === 429) {
+            showErr("Too many attempts. Wait a moment, then try again. Nothing was deleted.");
+          } else if (status >= 500) {
+            showErr("Something went wrong on our end. Try again in a moment. Nothing was deleted.");
+          } else {
+            showErr("Could not delete your account. Email support@parbaughs.golf and we will help. Nothing was deleted.");
+          }
+        });
     });
+  }, 50);
 }
 
 // ========== APPEARANCE → THEME (retired in v8.3.5, Ship 0d-i) ==========

@@ -74,14 +74,16 @@ function clientIp(req) {
 
 /**
  * Limits (per 60s window):
- *   validateInvite: 30 requests per IP (signup is occasional; this catches brute-force)
- *   joinLeague:     10 requests per uid (joining a league is a deliberate action)
- *   searchCourses:  60 requests per IP (typing-search debounce-able; cap cost)
+ *   validateInvite:  30 requests per IP (signup is occasional; this catches brute-force)
+ *   joinLeague:      10 requests per uid (joining a league is a deliberate action)
+ *   searchCourses:   60 requests per IP (typing-search debounce-able; cap cost)
+ *   deleteMyAccount:  5 requests per uid (rare, deliberate; reauth already gates it)
  */
 const LIMITS = {
   validateInvite: 30,
   joinLeague: 10,
   searchCourses: 60,
+  deleteMyAccount: 5,
 };
 
 module.exports = { check, clientIp, LIMITS, WINDOW_MS };

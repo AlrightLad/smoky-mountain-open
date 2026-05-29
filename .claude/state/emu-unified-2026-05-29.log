@@ -1,0 +1,65 @@
+[36m[1mi  emulators:[22m[39m Starting emulators: auth, functions, firestore, pubsub
+[33m[1m!  functions:[22m[39m The following emulators are not running, calls to these services from the Functions emulator will affect production: [1mapphosting, database, hosting, storage, dataconnect[22m
+[36m[1mi  firestore:[22m[39m Firestore Emulator logging to [1mfirestore-debug.log[22m
+[32m[1m+  firestore:[22m[39m Firestore Emulator was started in standard edition.
+[32m[1m+  firestore:[22m[39m Firestore Emulator UI websocket is running on 9150.
+[36m[1mi  pubsub:[22m[39m Pub/Sub Emulator logging to [1mpubsub-debug.log[22m
+(node:43336) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[36m[1mi  functions:[22m[39m Watching "C:\Users\Zach\smoky-mountain-open\functions" for Cloud Functions...
+[33m[1m!  functions:[22m[39m Your requested "node" version "22" doesn't match your global version "24". Using node@24 from host.
+Serving at port 8056
+
+[32m[1m+  functions:[22m[39m Loaded functions definitions from source: searchCourses, validateInvite, deleteMyAccount, sendPushNotification, onMemberRoleChange, onLeagueDelete, joinLeague, onFounderAccessLog, expireSuspensionsAndTransfers.
+[32m[1m+  functions[us-central1-searchCourses]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/parbaughs/us-central1/searchCourses).
+[32m[1m+  functions[us-central1-validateInvite]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/parbaughs/us-central1/validateInvite).
+[32m[1m+  functions[us-central1-deleteMyAccount]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/parbaughs/us-central1/deleteMyAccount).
+[32m[1m+  functions[us-central1-sendPushNotification]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  functions[us-central1-onMemberRoleChange]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  functions[us-central1-onLeagueDelete]:[22m[39m [1mfirestore[22m function initialized.
+[32m[1m+  functions[us-central1-joinLeague]:[22m[39m [1mhttp[22m function initialized (http://127.0.0.1:5001/parbaughs/us-central1/joinLeague).
+[32m[1m+  functions[us-central1-onFounderAccessLog]:[22m[39m [1mfirestore[22m function initialized.
+(node:43336) MetadataLookupWarning: received unexpected error = All promises were rejected code = UNKNOWN
+(node:43336) MetadataLookupWarning: received unexpected error = All promises were rejected code = UNKNOWN
+[32m[1m+  functions[us-central1-expireSuspensionsAndTransfers]:[22m[39m [1mpubsub[22m function initialized.
+
+[90m┌─────────────────────────────────────────────────────────────┐[39m
+[90m│[39m [32m✔[39m  [1mAll emulators ready! It is now safe to connect your app.[22m [90m│[39m
+[90m│[39m [36mi[39m  View Emulator UI at [4m[1mhttp://127.0.0.1:4000/[22m[24m               [90m│[39m
+[90m└─────────────────────────────────────────────────────────────┘[39m
+
+[90m┌────────────────[39m[90m┬────────────────[39m[90m┬─────────────────────────────────┐[39m
+[90m│[39m[33m Emulator       [39m[90m│[39m[33m Host:Port      [39m[90m│[39m[33m View in Emulator UI             [39m[90m│[39m
+[90m├────────────────[39m[90m┼────────────────[39m[90m┼─────────────────────────────────┤[39m
+[90m│[39m Authentication [90m│[39m 127.0.0.1:9099 [90m│[39m [4m[1mhttp://127.0.0.1:4000/auth[22m[24m      [90m│[39m
+[90m├────────────────[39m[90m┼────────────────[39m[90m┼─────────────────────────────────┤[39m
+[90m│[39m Functions      [90m│[39m 127.0.0.1:5001 [90m│[39m [4m[1mhttp://127.0.0.1:4000/functions[22m[24m [90m│[39m
+[90m├────────────────[39m[90m┼────────────────[39m[90m┼─────────────────────────────────┤[39m
+[90m│[39m Firestore      [90m│[39m 127.0.0.1:8080 [90m│[39m [4m[1mhttp://127.0.0.1:4000/firestore[22m[24m [90m│[39m
+[90m├────────────────[39m[90m┼────────────────[39m[90m┼─────────────────────────────────┤[39m
+[90m│[39m Pub/Sub        [90m│[39m 127.0.0.1:8085 [90m│[39m n/a                             [90m│[39m
+[90m└────────────────[39m[90m┴────────────────[39m[90m┴─────────────────────────────────┘[39m
+[90m  Emulator Hub host: 127.0.0.1 port: 4400[39m
+[90m  Other reserved ports:[39m 4500, 9150
+
+Issues? Report them at [4m[1mhttps://github.com/firebase/firebase-tools/issues[22m[24m and attach the *-debug.log files.
+ 
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 9.815ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.3408ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.8716ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.706ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for del_test_uid_2905 (Delete Test) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 228.3895ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-deleteMyAccount"
+[36m[1mi  functions:[22m[39m Finished "us-central1-deleteMyAccount" in 1.8724ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-deleteMyAccount"
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.6844ms
+[90m> [39m [DeleteAccount] Erased del_test_uid_2905 (photos: 1)
+[36m[1mi  functions:[22m[39m Finished "us-central1-deleteMyAccount" in 252.361ms

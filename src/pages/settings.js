@@ -216,7 +216,7 @@ Router.register("settings", function(params) {
   if (currentUser) {
     h += '<div class="form-section"><button class="btn full" style="background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);color:var(--red)" onclick="doLogout()">Sign Out</button>';
     h += '<button class="btn full" style="margin-top:8px;background:rgba(var(--red-rgb),.12);border:1px solid rgba(var(--red-rgb),.25);color:var(--red)" onclick="deleteMyAccount()">Delete My Account</button>';
-    h += '<div style="font-size:9px;color:var(--muted2);margin-top:4px;text-align:center">This permanently removes your account and all associated data</div></div>';
+    h += '<div style="font-size:9px;color:var(--muted2);margin-top:4px;text-align:center">Removes your profile, photos, and sign-in. This cannot be undone.</div></div>';
   }
 
   // Legal

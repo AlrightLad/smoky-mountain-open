@@ -51,7 +51,13 @@ const messaging = admin.messaging();
 // 'https://alrightlad.github.io.evil.com' against 'https://alrightlad.github.io'.
 // New helper parses URLs and exact-matches hostname; file:// is allow-listed
 // for the Capacitor mobile shell (no hostname).
-const ALLOWED_HOSTNAMES = ['alrightlad.github.io', 'localhost'];
+const ALLOWED_HOSTNAMES = [
+  'alrightlad.github.io',          // production (GitHub Pages)
+  'parbaughs-staging.web.app',     // staging (Firebase Hosting)
+  'parbaughs-staging.firebaseapp.com',
+  'localhost',                     // local dev (Vite)
+  '127.0.0.1',                     // local dev (loopback)
+];
 function isAllowedOrigin(origin) {
   if (!origin) return false;
   if (origin.startsWith('file://')) return true;
@@ -229,6 +235,114 @@ exports.validateInvite = functions.https.onRequest(async (req, res) => {
   } catch (err) {
     console.error('validateInvite error:', err);
     res.status(500).json({ valid: false, reason: 'Could not validate invite. Try again.' });
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════════
+// deleteMyAccount — HTTP. App Store 5.1.1(v) / GDPR Art. 17 self-erasure.
+//
+// The client re-authenticates the user (password) in the app, mints a
+// FRESH ID token via getIdToken(true), and POSTs here with
+// `Authorization: Bearer <idToken>`. Firestore rules forbid a client from
+// deleting its own member doc (members allow delete: if amIFounder()), so
+// erasure runs here under the Admin SDK, which bypasses rules. Scope
+// matches the in-app copy exactly: the member doc, the member's photos,
+// and the Firebase Auth account.
+//
+// Defense-in-depth: we require auth_time within the last 5 minutes. Reauth
+// updates auth_time and the forced token refresh carries it, so a real
+// request always satisfies this while a replayed stale token does not.
+//
+// Partial-failure safety: the auth account is deleted LAST. If Firestore
+// cleanup throws, the user's sign-in still works so they can retry;
+// deleting auth first would strand orphaned docs with no retry path.
+//
+// AMD-018 gate 1: deploy requires Founder pre-authorization. Until deployed
+// the endpoint 404s and the client routes the user to support (nothing is
+// deleted), which is the correct fail-closed behavior.
+// ══════════════════════════════════════════════════════════════════════
+
+const ACCOUNT_DELETE_MAX_AUTH_AGE_MS = 5 * 60 * 1000;
+
+exports.deleteMyAccount = functions.https.onRequest(async (req, res) => {
+  const origin = req.headers.origin || req.headers.referer || '';
+  const isAllowed = isAllowedOrigin(origin);
+  if (!isAllowed && origin) { res.status(403).json({ deleted: false, reason: 'Not authorized' }); return; }
+  // Reflect the validated origin so production + staging hosting both work.
+  res.set('Access-Control-Allow-Origin', isAllowed ? origin : 'https://alrightlad.github.io');
+  res.set('Vary', 'Origin');
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+  if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
+  if (req.method !== 'POST') { res.status(405).json({ deleted: false, reason: 'Method not allowed' }); return; }
+
+  // Verify the bearer token. checkRevoked=true rejects tokens revoked since issue.
+  const authHeader = req.headers.authorization || '';
+  const m = authHeader.match(/^Bearer (.+)$/);
+  if (!m) { res.status(401).json({ deleted: false, reason: 'Missing credentials' }); return; }
+  let decoded;
+  try {
+    decoded = await admin.auth().verifyIdToken(m[1], true);
+  } catch (err) {
+    res.status(401).json({ deleted: false, reason: 'Invalid or expired session' });
+    return;
+  }
+  const uid = decoded.uid;
+
+  // Rate limit per uid (5/min) — deletion is rare and reauth already gates it.
+  const limit = rateLimit.check('deleteMyAccount', uid, rateLimit.LIMITS.deleteMyAccount);
+  if (!limit.allowed) {
+    res.status(429).json({ deleted: false, reason: 'Too many attempts. Try again in a minute.' });
+    return;
+  }
+
+  // Require a recently-minted token (reauth within 5 min). auth_time is in
+  // seconds since epoch; reject stale/replayed tokens.
+  const authTimeMs = (decoded.auth_time || 0) * 1000;
+  if (!authTimeMs || (Date.now() - authTimeMs) > ACCOUNT_DELETE_MAX_AUTH_AGE_MS) {
+    res.status(401).json({ deleted: false, reason: 'Please re-enter your password and try again' });
+    return;
+  }
+
+  try {
+    // 1. Member doc.
+    await db.collection('members').doc(uid).delete();
+
+    // 2. Photos uploaded by this member (paginated batched delete, 500/batch).
+    let photosDeleted = 0;
+    while (true) {
+      const snap = await db.collection('photos')
+        .where('uploadedBy', '==', uid).limit(500).get();
+      if (snap.empty) break;
+      const batch = db.batch();
+      snap.docs.forEach(d => batch.delete(d.ref));
+      await batch.commit();
+      photosDeleted += snap.size;
+      if (snap.size < 500) break;
+    }
+
+    // 3. Compliance audit trail (no PII — uid + action only). Written before
+    //    auth deletion so it always lands.
+    try {
+      await writePlatformAuditLog({
+        targetUid: uid,
+        action: 'account_self_deleted',
+        issuedBy: uid,
+        reason: 'App Store 5.1.1(v) / GDPR Art. 17 self-service erasure',
+        after: { photosDeleted: photosDeleted },
+      });
+    } catch (logErr) {
+      console.error('[DeleteAccount] audit log failed (non-fatal):', logErr.message);
+    }
+
+    // 4. Auth account LAST so Firestore failures above stay retryable.
+    await admin.auth().deleteUser(uid);
+
+    console.log(`[DeleteAccount] Erased ${uid} (photos: ${photosDeleted})`);
+    res.status(200).json({ deleted: true });
+  } catch (err) {
+    console.error('[DeleteAccount] error:', err.message);
+    res.status(500).json({ deleted: false, reason: 'Could not complete deletion. Try again.' });
   }
 });
 
