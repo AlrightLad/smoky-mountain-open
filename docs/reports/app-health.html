@@ -821,7 +821,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-29T21:06:17.535731Z",
+  "generated_at": "2026-05-29T21:22:57.335658Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.1,
   "overall_grade": "A-",
@@ -961,7 +961,7 @@
     "A10_mobile_first": {
       "score": 100,
       "status": "green",
-      "label": "11 touch-target rules · mobile-spec=True · lhci=True · manifest=True",
+      "label": "13 touch-target rules · mobile-spec=True · lhci=True · manifest=True",
       "source": "src/styles/, tests/e2e/, public/manifest.json",
       "weak_points": []
     },
@@ -1008,13 +1008,17 @@
     }
   ],
   "audit_trigger": {
-    "sha": "cc2d0f58",
-    "subject": "Overnight triage 2026-05-29 - 0 reports, 0 proposals, 0 FIQ entries graded",
-    "committed_at": "2026-05-29T17:05:56-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 3
+    "sha": "550abd8c",
+    "subject": "feat(tournament): commissioner-gated builder UI + locked view (Increment 2)",
+    "committed_at": "2026-05-29T17:22:35-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "src/pages/tournament.js",
+      "src/pages/trips.js",
+      "src/styles/components.css"
+    ],
+    "total_files_touched": 5
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
