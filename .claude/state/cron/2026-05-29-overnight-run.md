@@ -1412,3 +1412,110 @@ Heartbeat-only self-check — **Is tonight's substantive output real?** YES. Thi
 - `docs/reports/app-health.html` — regen output (generated_at timestamp + A12_operational 75→90 + attention_items/agent_attention cleared to [] + audit_trigger commit-pointer `cde286c8`→`4192117a`; overall_score 88.6 / grade A-; only A12 moved)
 
 No code changes in cycle AG. No proposals. No FIQ writes. No bug-report state moves (inbox absent). The 3 modified `src/pages/*.js` files + 31 critique PNGs + emu log are concurrent-process churn, NOT committed by this triage cycle.
+
+---
+
+# Overnight triage — 2026-05-29 (cycle AH)
+
+**Started:** 2026-05-29T15:01:40Z (session open; regen-all START 15:02:05Z)
+**Finished:** 2026-05-29T15:02:10Z (regen-all "ALL DASHBOARDS REGENERATED"; WRAPPER_EXIT=0)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both absent)
+**Cycle:** AH (68th consecutive empty-inbox cycle; ~1h wall-clock gap from cycle AG's ~14:02Z close — TWENTY-SECOND consecutive ~1h-cadence cycle since cycle M). Sixteenth cycle of the 2026-05-29 UTC date; appended to the shared date-file per the convention used by cycles S–AG.
+
+## Inbox state at run-start (cycle AH)
+
+- `.claude/state/founder-input-queue/` — **directory does not exist** (`find -type d` → no match; the only `FIQ-` ids on disk are the FIQ-001 template examples inside `docs/FOUNDER_INPUT_QUEUE.md`, not live queue entries)
+- `.claude/state/bug-reports/` — **entire tree absent** (inbox/ + triaged/ both MISSING; `find -type d` → no match)
+- `.claude/state/proposals/pending/` — empty (no pending proposals)
+- Working tree at session-start: **clean** (`git status --short` empty). HEAD = `32561c73`.
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle AH)
+
+- FIQ entries triaged: **0** (queue directory absent)
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0
+- IDs: none
+
+## Step 2 — Bug-report triage (cycle AH)
+
+- Bug reports processed: **0** (inbox directory absent)
+- Dispositions: none
+- No P3e discussion bubbles opened (nothing to deliberate)
+
+## Step 3 — Heartbeat (cycle AH)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end 15:02:05Z → 15:02:10Z (WRAPPER_EXIT=0): **ALL CHECKS PASSED**, **round-trip test PASS**. 23rd consecutive clean canonical regen-all (cycles L–AH).
+- Heartbeat `regen-all-last-pass.json` written.
+- Telemetry snapshot: events=15957 handoffs=1 bubbles=7 proposals_pending=0, meter_status=wired-real (HALT 25 not in effect). Token aggregate: all-time real=12,012,437,398 estimated=13,422,580 manual=0.
+- All ~30 guards green (round-trip dashboard swap + nav audit 9 links each + transcript verify; meter-wiring 7/7; founder-queue 7/7; quota-type-enum; cross-dash consistency proposals_pending=0; lifecycle proposals shipped=7 + amendments applied=28; escalations applied=3; protected-layouts 5/5 + 23/23 + 17 swatches + W1.S1; design-tokens 11/11 + theme convergence 7/7 no raw hex; token-usage schema cross-panel sums match; no-charts; proposal-readiness 0 deferred; install-scripts 7 parse; install-cmd-surface; scroll-reachability 5/0/0; quota-status sidecar auto-derived; pause-discipline clean; wiring 5/5; app-health **A- 88.7** / 0 attention items; founder-checklist open=4 red=0 yellow=3 green=1 closed_total=25; index ships=0 git=32561c73).
+- One INFORMATIONAL `~` (not a failure): `user-context-gate` flags `main-flows.html` modified 20934.6 min after the last user-context capture (2026-05-14T23-07-48Z). Benign on a heartbeat-only night with no visual ship-close.
+- One benign WARN (carry-over, NOT new this cycle): `regen-main-flows` reports 6 orphan components in the grid (`actor.guest`, `actor.invitee`, `dist.capacitor-ios`, `ext.open-meteo`, `fn.expire-suspensions`, `fn.join-league`) — referenced by no flow's path. Pre-existing structural note; round-trip still PASS (62 flows, 248 steps — all refs resolve).
+
+**GENUINE MOVEMENT THIS CYCLE — INVESTIGATED to root cause WITH EVIDENCE, and it is a REAL performance improvement from a concurrent ship (distinct from the cycle Z–AG A12 oscillation):**
+
+app-health on disk moved **88.6 (A-) → 88.7 (A-)**, driven SOLELY by **A8_performance (80 → 83)**. Evidence read verbatim from `git diff docs/reports/app-health.html`:
+- `overall_score` 88.6 → 88.7; `pre_deduction_score` 93.6 → 93.7; `post_deduction_score` 88.6 → 88.7.
+- The ONLY dimension score that moved is A8: `-"score": 80` → `+"score": 83`; label `Lighthouse Performance 80/100 across 6 pages` → `83/100 across 6 pages`; source `.claude/state/aggregates/lighthouse-scores.json`.
+- **A12_operational HELD at 90/green** (score unchanged) — only its label drained `pipeline=green · 7 recent skip-dirty` → `· 5 recent skip-dirty` and the matching weak-point text `7 of last 10` → `5 of last 10`. The rolling skip-dirty window is settling, but with **no score impact this cycle** (contrast cycle AG, where A12 was the mover).
+- `attention_items` and `agent_attention` both remain **`[]`** (0 attention items throughout).
+- `audit_trigger` re-pointed `b54d9584` (post-watcher-commit drift sweep) → `32561c73` (cron post-commit dashboard regen), `total_files_touched` 3 → 2.
+
+**Causal chain traced with evidence (no guessing):** `lighthouse-scores.json` (gitignored — confirmed via `git check-ignore` exit 0) was regenerated at **2026-05-29T14:57:30Z** with `performance` avg = **83** across 6 pages. The perf-minify ship `3ce96fd0` **perf: minify inline CORE+IMMEDIATE block + deferred.js via Oxc** landed **2026-05-29T14:50:41-04:00 = 14:50:41Z** — ~7 min BEFORE that fresh Lighthouse sample. So: concurrent perf ship → fresh Lighthouse measured 83 (up from 80) → my `regen-app-health` at 15:02:09Z recomputed A8 80→83 → overall 88.6→88.7. **The heartbeat did NOT cause the rise; it SURFACED an already-measured improvement from a concurrent process.** A- throughout. No fix authored or warranted — the improvement is the concurrent perf ship's, not a triage finding to propose.
+
+**Working-tree state after regen:** a SINGLE modified file — `docs/reports/app-health.html` (this cycle's regen output). NO concurrent `src/pages` churn observed in this cycle's window (unlike cycle AG). This triage cycle commits ONLY its own 4 files via **explicit pathspec** (cycle-AB index-race lesson applied).
+
+**founder-checklist open=4 (red=0 yellow=3 green=1) closed_total=25 — UNCHANGED carry-overs, none new this cycle:** (1) deploy `deleteMyAccount` Cloud Function (AMD-018 gate #1), (2) GH Actions staging secret `FIREBASE_SERVICE_ACCOUNT_STAGING`, (3) Sentry auth token scopes, (4) morning handoff.
+
+### 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — updated for cycle AH (counters ~730k tokens cumulative / ~1.0h; status `active`; `_note` + `substantive_output_at_checkpoint` rewritten for cycle AH incl. the 23rd-consecutive-clean-regen observation and the A8 80→83 evidence-backed causation trace). Token threshold remains crossed (32nd cross-cycle); no rest triggered — heartbeat-only nights are genuinely light.
+- `.claude/state/wellness/critic.json` — updated for cycle AH (counters ~101k tokens / ~1.0h; **token threshold crossed this cycle — first crossing**; status `active`, no rest — heartbeat-only critic load is light, same treatment the engineer gives its long-crossed threshold). Critic independently read the full app-health diff to confirm exactly one dimension moved (A8 80→83, 11 others byte-identical, A12 score held at 90) AND demanded evidence for causation (lighthouse-scores.json 14:57:30Z regeneration + perf-minify commit 14:50:41Z), confirming the heartbeat *surfaced* rather than *caused* the perf rise.
+
+## Step 4 — Session journal
+
+**This section.**
+
+## Cycle AH counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 |
+| Bug reports processed | 0 |
+| New proposals authored | 0 |
+| Wellness state changes | 2 (engineer.json + critic.json cycle AH refresh) |
+
+## Blockers requiring Founder attention (cycle AH)
+
+**No ship-blocking issues.** Awareness / Founder-action items (all carry-overs):
+
+1. **Carry-over (Founder-action, AMD-018 gate #1) — deploy `deleteMyAccount` Cloud Function.** Code committed (ship `67f66b87`); `firebase deploy --only functions` is an AMD-018 pre-authorization gate (walkthrough at `task-queue/founder/deploy-deleteMyAccount-function.md`). Not yet live. Unchanged this cycle.
+2. **Awareness — app-health 88.6 → 88.7 (A- holds), A8_performance 80 → 83 (green).** A REAL Lighthouse performance improvement measured at 14:57:30Z, ~7 min after the concurrent perf-minify ship `3ce96fd0` (Oxc minification) landed 14:50:41Z. Surfaced by this heartbeat, not caused by it. 0 attention items. Founder may wish to note the perf-minify ship is now reflected in the health score.
+3. **Awareness — A12_operational skip-dirty window draining (7 → 5 of last 10), score held at 90/green.** Continuation of the cycle Z–AG rolling-window settling; no score impact this cycle. Not blocking.
+4. **Carry-over — git index race on triage commit (cycle AB lesson).** Commit uses an explicit pathspec capturing ONLY this cycle's 4 files.
+5. **Carry-over — writer-side BOM fix (`common.ps1:117`) remains unauthored as a proposal.** Consumer-side `utf-8-sig` tolerance (aggregate-telemetry.py:70) has held across all 23 canonical clean runs since cycle L. Not auto-promoted without a Founder priority signal — refusing to inflate proposal counts.
+6. **Carry-over — `scripts/aggregate-self-tests.py` post-commit warning** (flagged cycle L) — separate from regen-all's pipeline; out-of-scope for step 3a. Still flagged for a future cycle.
+7. **Cron cadence** — cycles M–AH all ~1h apart (twenty-second consecutive ~1h gap). No Founder action required; awareness only.
+
+No HALT criteria tripped (meter_status `wired-real` → HALT 25 not in effect). No scope-creep candidates.
+
+## Cycle AH Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox absent). Absence verified by `find -type d` → no match. Cannot wave off what doesn't exist.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals tonight. On a positive-movement night the easy spin is "the heartbeat improved performance" or to manufacture an "A8 perf" proposal; the Critic specifically validated that NOT authoring a proposal was correct (the A8 improvement belongs to the concurrent perf-minify ship `3ce96fd0`, MEASURED by a fresh Lighthouse run, merely surfaced by this regen) and that no false credit was claimed. Honest scoping, not inflation.
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero FIQ entries tonight. Queue absent; no gradeable live entries exist.
+
+Heartbeat-only self-check — **Is tonight's substantive output real?** YES. This cycle did NOT rubber-stamp a clean regen: it surfaced a genuine signal and investigated it to root cause by reading raw `git diff` / `git log` / `git check-ignore` output verbatim — app-health 88.6 → 88.7, traced to the SINGLE moving dimension (A8 80→83, 11 others byte-identical, A12 score held at 90), then traced A8's driver to a concrete evidence pair: the gitignored `lighthouse-scores.json` regeneration timestamp (14:57:30Z, perf avg 83) and the concurrent perf-minify commit timestamp (14:50:41Z). The crucial honesty move was distinguishing **surfaced** from **caused** — the heartbeat reflected a concurrent ship's already-measured improvement and claimed no credit for it. Every claim anchors to a quoted regen-all log line, the `git diff` read verbatim (exactly one score-pair changed), the lighthouse-scores.json `generated_at` + `averages` read directly, the perf-commit `git log` timestamp, the founder-checklist data block, or directory-absence checks. No invented productivity on an empty-queue night.
+
+**Critic attests cleanly: substantive heartbeat cycle, ship closes.**
+
+## Files changed in this cycle AH run
+
+- `.claude/state/wellness/engineer.json` — cycle AH update
+- `.claude/state/wellness/critic.json` — cycle AH update
+- `.claude/state/cron/2026-05-29-overnight-run.md` — this journal (cycle AH section appended)
+- `docs/reports/app-health.html` — regen output (generated_at timestamp + A8_performance 80→83 + A12 skip-dirty label 7→5 (score held at 90) + audit_trigger commit-pointer `b54d9584`→`32561c73`; overall_score 88.7 / grade A-; only A8 score moved)
+
+No code changes in cycle AH. No proposals. No FIQ writes. No bug-report state moves (inbox absent). The A8 performance improvement is the concurrent perf-minify ship's (`3ce96fd0`), surfaced by this heartbeat's regen, NOT authored by this triage cycle.

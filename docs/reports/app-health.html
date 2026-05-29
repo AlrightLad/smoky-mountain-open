@@ -821,9 +821,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-29T14:51:03.745044Z",
+  "generated_at": "2026-05-29T15:02:09.474828Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 88.6,
+  "overall_score": 88.7,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -837,9 +837,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 93.6,
+    "pre_deduction_score": 93.7,
     "deduction": 5,
-    "post_deduction_score": 88.6
+    "post_deduction_score": 88.7
   },
   "dimensions": {
     "A1_roadmap": {
@@ -930,9 +930,9 @@
       "weak_points": []
     },
     "A8_performance": {
-      "score": 80,
+      "score": 83,
       "status": "green",
-      "label": "Lighthouse Performance 80/100 across 6 pages",
+      "label": "Lighthouse Performance 83/100 across 6 pages",
       "source": ".claude/state/aggregates/lighthouse-scores.json",
       "weak_points": []
     },
@@ -960,11 +960,11 @@
     "A12_operational": {
       "score": 90,
       "status": "green",
-      "label": "pipeline=green · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=green · 5 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "7 of last 10 cron watcher runs hit skip-dirty",
+          "what": "5 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -979,13 +979,13 @@
   "founder_attention": [],
   "agent_attention": [],
   "audit_trigger": {
-    "sha": "b54d9584",
-    "subject": "cron(routine): post-watcher-commit drift sweep (2026-05-29T14:50:52.4616549Z)",
-    "committed_at": "2026-05-29T10:50:52-04:00",
+    "sha": "32561c73",
+    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
+    "committed_at": "2026-05-29T10:52:05-04:00",
     "trigger": "cron",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 3
+    "total_files_touched": 2
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
