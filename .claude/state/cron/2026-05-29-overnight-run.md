@@ -84,3 +84,90 @@ Heartbeat-only self-check — **Is tonight's substantive output real?** YES, mod
 - `docs/reports/app-health.html` — regen output (5-ins/5-del: generated_at timestamp + audit_trigger commit-pointer metadata only; score/grade/dims unchanged)
 
 No code changes in cycle S. No proposals. No FIQ writes. No bug-report state moves (inbox absent).
+
+---
+
+# Overnight triage — 2026-05-29 (cycle T)
+
+**Started:** 2026-05-29T01:00:52Z (cron-fired; regen-all START)
+**Finished:** 2026-05-29T01:01:00Z (regen-all "ALL DASHBOARDS REGENERATED" timestamp)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both absent)
+**Cycle:** T (54th consecutive empty-inbox cycle; ~60 min wall-clock gap from cycle S's 00:01:40Z close — EIGHTH consecutive ~1h-cadence cycle since cycle M). Second cycle of the 2026-05-29 UTC date; appended to the cycle-S file per the shared-date-file convention used by cycles L–R on 2026-05-28.
+
+## Inbox state at run-start (cycle T)
+
+- `.claude/state/founder-input-queue/` — **directory does not exist** (`find -type d` → no match)
+- `.claude/state/bug-reports/inbox/` — **directory does not exist**; the entire `.claude/state/bug-reports/` tree is absent
+- `.claude/state/proposals/pending/` — only `.gitkeep` (no pending proposals)
+- Working tree clean at run-start (`git status --short` empty); HEAD = `fb53b4b8`
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle T)
+
+- FIQ entries triaged: **0** (queue directory absent)
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0
+- IDs: none
+
+## Step 2 — Bug-report triage (cycle T)
+
+- Bug reports processed: **0** (inbox directory absent)
+- Dispositions: none
+- No P3e discussion bubbles opened (nothing to deliberate)
+
+## Step 3 — Heartbeat (cycle T)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end 01:00:52Z → 01:01:00Z: **ALL CHECKS PASSED**, **round-trip test PASS**.
+- Heartbeat `regen-all-last-pass.json` written `status:"PASS"`.
+- Telemetry snapshot: events=15105 handoffs=1 bubbles=7 proposals_pending=0, meter_status=wired-real. Token aggregate: real=11,337,846,569 estimated=12,292,360 manual=0.
+- All ~30 guards green (meter-wiring 7/7, founder-queue 7/7, quota-type-enum, cross-dash consistency proposals_pending=0, lifecycle schemas proposals shipped=7 + amendments applied=28, escalations applied=3, protected-layouts 5/5 + 23/23 + 17 swatches, scroll-reachability 5/5, install-scripts 7 parse, quota-status sidecar, pause-discipline, wiring 5/5, app-health **A- 89.1** / 0 attention items, founder-checklist open=3 red=0 yellow=2 green=1 closed=25, index ships=12 git=fb53b4b8).
+- One INFORMATIONAL `~` (not a failure): `user-context-gate` flags `main-flows.html` modified 20093.4 min after the last user-context capture (2026-05-14T23-07-48Z). Benign on a heartbeat-only night with no visual ship-close.
+
+**Working-tree diff after regen:** only `docs/reports/app-health.html` (6-ins/6-del). Inspected the actual hunk: it is PURELY the `generated_at` timestamp (2026-05-29T00:04:49Z → 2026-05-29T01:01:00Z) plus the `audit_trigger` metadata block re-pointing from `a9ed39cf` to the newer HEAD `fb53b4b8` (sha/subject/committed_at/trigger=substrate-commit→cron, total_files_touched 3→4). `overall_score` (89.1), `overall_grade` (A-), and all 12 dimension values are UNCHANGED — deterministic clock + commit-pointer re-render keyed to latest HEAD, not a dimension-value change (same honest characterization as cycles R, S).
+
+### 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — updated for cycle T (counters ~510k tokens / ~1.0h; status `active`; `_note` + `substantive_output_at_checkpoint` rewritten for cycle T, including the NINTH-consecutive-clean-regen-all observation since cycle L's BOM fix).
+- No other agent wellness files created — Critic + Data-Integrity were thinking-roles only tonight (attestation + inbox verification); no counter-reset-significant state to merit fresh files. Same disposition as cycles L–S.
+
+## Step 4 — Session journal
+
+**This section.**
+
+## Cycle T counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 |
+| Bug reports processed | 0 |
+| New proposals authored | 0 |
+| Wellness state changes | 1 (engineer.json cycle T refresh) |
+
+## Blockers requiring Founder attention (cycle T)
+
+**No ship-blocking issues.** Awareness/carry-over items (all unchanged from cycle S):
+
+1. **Carry-over — maintenance/post-commit-hook regen context differs from canonical wrapper.** The scheduled maintenance cron has logged `regen-all exit=1 (error)` in partial/non-admin context, while the authoritative manual run of `scripts/regen-all.ps1` passes clean (9th consecutive clean canonical run, cycles L–T). Not blocking — canonical gate is green.
+2. **Carry-over — writer-side BOM fix (`common.ps1:117`) remains unauthored as a proposal.** Consumer-side `utf-8-sig` tolerance (aggregate-telemetry.py:70) has now held NINE consecutive clean regen-all runs (cycles L–T). Recommended remediation documented since cycle L. Deliberately not auto-promoted without Founder priority signal — refusing to inflate proposal counts.
+3. **Carry-over — `scripts/aggregate-self-tests.py` post-commit warning** (flagged cycle L) — separate from regen-all's pipeline; out-of-scope for step 3a. Still flagged for a future cycle.
+4. **Cron cadence** — cycles M–T all ~1h apart. Cadence steady at ~1h since cycle M. No Founder action required; awareness only.
+
+## Cycle T Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox absent). Cannot wave off what doesn't exist; absence verified by directory check → MISSING.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals tonight. The writer-side BOM remediation is held back from auto-promotion (honest scoping, not inflation).
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero FIQ entries tonight. Queue absent; no gradeable live entries exist — explicitly distinguished rather than mis-counted as triageable work.
+
+Heartbeat-only self-check — **Is tonight's substantive output real?** YES, modestly. A NINTH consecutive clean canonical regen-all confirms cycle L's BOM fix remains durable. The app-health drift was inspected hunk-by-hunk and characterized precisely (clock + commit-pointer metadata only; score/grade/dims unchanged) rather than overstated. Every claim is anchored to a quoted regen-all log line, the `git diff HEAD` hunk read verbatim, the heartbeat JSON, or the directory-absence checks. No invented productivity on an empty-queue night.
+
+**Critic attests cleanly: substantive heartbeat cycle, ship closes.**
+
+## Files changed in this cycle T run
+
+- `.claude/state/wellness/engineer.json` — cycle T update
+- `.claude/state/cron/2026-05-29-overnight-run.md` — this journal (cycle T section appended)
+- `docs/reports/app-health.html` — regen output (6-ins/6-del: generated_at timestamp + audit_trigger commit-pointer metadata only; score/grade/dims unchanged)
+
+No code changes in cycle T. No proposals. No FIQ writes. No bug-report state moves (inbox absent).
