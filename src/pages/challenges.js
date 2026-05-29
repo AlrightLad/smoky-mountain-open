@@ -50,7 +50,7 @@ function renderChallengeList() {
       "Nassau at Honey Run \u00b7 100 coins"
     ];
     examples.forEach(function(ex) {
-      h += '<div style="padding:8px 12px;margin-bottom:4px;background:var(--bg3);border:1px dashed var(--border);border-radius:var(--radius);font-size:11px;color:var(--muted2);font-style:italic">' + ex + '</div>';
+      h += '<div style="padding:8px 12px;margin-bottom:4px;border:1px dashed var(--border);border-radius:var(--radius);font-size:11px;color:var(--muted);font-style:italic">' + ex + '</div>';
     });
     h += '</div></div>';
   }

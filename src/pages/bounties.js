@@ -46,7 +46,7 @@ function _renderBountyBoard(bounties, uid) {
     eh += '<div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:center">Bounty Ideas</div>';
     var examples = ["Break 80 at Heritage Hills · 100 coins", "Birdie Hole 7 at Briarwood · 50 coins", "Beat Mr Parbaugh\'s 98 at Sequoyah · 75 coins"];
     examples.forEach(function(ex) {
-      eh += '<div style="padding:8px 12px;margin-bottom:4px;background:var(--bg3);border:1px dashed var(--border);border-radius:var(--radius);font-size:11px;color:var(--muted2);font-style:italic">' + ex + '</div>';
+      eh += '<div style="padding:8px 12px;margin-bottom:4px;border:1px dashed var(--border);border-radius:var(--radius);font-size:11px;color:var(--muted);font-style:italic">' + ex + '</div>';
     });
     eh += '</div></div>';
     el.innerHTML = eh;
