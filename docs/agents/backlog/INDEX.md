@@ -13,7 +13,7 @@ Open backlog items for PARBAUGHS. Hybrid structure: this index file lists all op
 
 | ID | Title | Severity | Wave / Phase | Status | File |
 |---|---|---|---|---|---|
-| BL-002 | Delete legacy loading system (.skeleton/.spinner CSS + helpers) | P3 | Wave 2 | Open | [BL-002.md](./BL-002.md) |
+| BL-002 | Migrate to unified loading system, then delete legacy (.spinner/.skeleton still live across ~30 surfaces) | P3 | Wave 2 (blocked on screen-restructure) | Open (reframed 2026-05-29) | [BL-002.md](./BL-002.md) |
 | BL-003 | Extract shared helpers from home.js → src/core/page-helpers.js | P3 | Wave 2 | Open | [BL-003.md](./BL-003.md) |
 | BL-004 | Live round card LEAD column (re-introduce when leaderboard infra reliable) | P3 | Wave 2 | Open | [BL-004.md](./BL-004.md) |
 | BL-005 | HQ live round card group leaderboard (requires sync-round + tee-time pairing infrastructure) | P3 | Wave 2 | Open | [BL-005.md](./BL-005.md) |
