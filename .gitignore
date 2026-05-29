@@ -183,3 +183,11 @@ docs/reports/sessions.html
 # Lighthouse audit output (regen-able)
 .lighthouseci-live/
 .lighthouseci/
+
+# 2026-05-29: transient/local evidence artifacts (not deliverables). Root-level
+# E2E sweep log is regenerated each run; boot-smoke + critique-resume PNGs are
+# local V1 evidence that stays out of the PUBLIC repo (matches visual-gate +
+# critique-probe ignore policy above).
+/.pw-full-sweep.log
+/staging-boot-smoke-*.png
+.claude/state/critique-resume-*/
