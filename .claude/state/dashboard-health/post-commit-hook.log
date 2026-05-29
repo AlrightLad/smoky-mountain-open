@@ -143,3 +143,10 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
 
 visual-gate: ALL 12 PAGES RENDER CONTENT
 [write-regen-heartbeat] OK ts=2026-05-29T08:10:06Z source=post-commit-hook status=PASS
+
+--- P9.5 self-test ---
+[ingest-session-transcripts] scanned 905bb79b-974f-4c85-b056-7543bf2be7de.jsonl: +4 new entries (offset 1051053→1076380)
+[ingest-session-transcripts] scanned a3e3471a-7db9-4c9d-a1f1-37284a43520d.jsonl: +5 new entries (offset 172865053→172894941)
+[ingest-session-transcripts] scanned 220 JSONL file(s), found 9 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (269 buckets, 11678135301 total tokens, 224 sessions) [write-content-changed]
+[ingest-session-transcripts] SELF-TEST OK: 220 JSONLs → 11678135301 tokens across 269 buckets
