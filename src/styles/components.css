@@ -2761,10 +2761,14 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   margin-bottom: var(--sp-3);
 }
 .tourn-lead-when {
+  display: inline-block;
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
-  color: var(--cb-brass);
+  color: var(--cb-ink);
+  background: rgba(var(--cb-brass-rgb), 0.16);
+  padding: 2px 8px;
+  border-radius: var(--r-pill, 999px);
   white-space: nowrap;
 }
 .tourn-lead-row {
@@ -2773,6 +2777,7 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   gap: var(--sp-3);
   padding: var(--sp-3);
   border-bottom: 1px solid var(--border-subtle);
+  animation: tournRowIn 0.3s var(--ease-out) both;
 }
 .tourn-lead-row:last-child { border-bottom: none; }
 .tourn-lead-rank {
@@ -2820,5 +2825,19 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   border-radius: var(--r-2);
   border-bottom-color: transparent;
 }
-.tourn-lead-row--lead .tourn-lead-rank,
-.tourn-lead-row--lead .tourn-lead-val { color: var(--cb-brass); }
+.tourn-lead-row--lead .tourn-lead-rank { color: var(--cb-brass); }
+.tourn-lead-row--lead .tourn-lead-val { color: var(--cb-ink); }
+
+/* Subtle staggered entrance for the leaderboard + champion crown. */
+@keyframes tournRowIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes tournRise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.tourn-champion { animation: tournRise 0.45s var(--ease-out) both; }
+@media (prefers-reduced-motion: reduce) {
+  .tourn-lead-row, .tourn-champion { animation: none; }
+}

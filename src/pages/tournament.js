@@ -535,12 +535,13 @@ function _tournLeaderboard(t) {
     return h;
   }
 
-  st.entries.forEach(function (e) {
+  st.entries.forEach(function (e, i) {
     var leadCls = (st.started || closed) && e.rank === 1 ? ' tourn-lead-row--lead' : '';
     var right = st.started
       ? ((e.points != null ? e.points : 0) + " pts")
       : (st.kind === "teams" ? "HCP " + _tournHcp(e.combinedHandicap) : "HCP " + _tournHcp(e.handicap));
-    h += '<div class="tourn-lead-row' + leadCls + '">';
+    var delay = Math.min(i, 12) * 0.03;
+    h += '<div class="tourn-lead-row' + leadCls + '" style="animation-delay:' + delay + 's">';
     h += '<span class="tourn-lead-rank">' + e.rank + '</span>';
     h += '<div class="tourn-lead-body"><span class="tourn-lead-name">' + escHtml(e.name) + '</span>';
     if (st.kind === "teams") {
