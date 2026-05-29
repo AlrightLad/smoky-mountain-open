@@ -84,6 +84,26 @@ function renderContextualEmpty(type) {
   return h;
 }
 
+// renderLoadError(what, retryOnclick) — P10 actionable error state for a
+// failed Firestore/network load. Distinct from renderContextualEmpty (an
+// empty result is not a failure): an alert glyph + "Couldn't load {what}"
+// names WHAT failed and WHERE, and the "Try again" button is the WHAT-ACTION.
+// Reuses .empty/.empty-icon/.empty-text for centered layout. `what` must be
+// a static literal (not user input — no escaping applied). `retryOnclick` is
+// inlined into a double-quoted onclick attribute, so use single quotes inside
+// (e.g. "Router.go('richlist', {}, true)").
+function renderLoadError(what, retryOnclick) {
+  var h = '<div class="empty" style="padding:20px 16px">';
+  h += '<div class="empty-icon" style="margin-bottom:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" style="color:var(--muted)"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg></div>';
+  h += '<div class="empty-text" style="font-size:12px">Couldn’t load ' + what + '</div>';
+  h += '<div style="font-size:10px;color:var(--muted2);margin-top:4px">Something went wrong on our end.</div>';
+  if (retryOnclick) {
+    h += '<button onclick="' + retryOnclick + '" style="margin-top:12px;min-height:44px;padding:10px 20px;background:rgba(var(--gold-rgb),.1);border:1px solid rgba(var(--gold-rgb),.25);color:var(--gold);border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer">Try again</button>';
+  }
+  h += '</div>';
+  return h;
+}
+
 
 // ========== PULL TO REFRESH ==========
 (function() {

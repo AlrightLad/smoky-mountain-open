@@ -63,7 +63,7 @@ Router.register("richlist", function() {
       el.innerHTML = rh;
     }).catch(function() {
       var el = document.getElementById("rich-list-content");
-      if (el) el.innerHTML = '<div style="padding:16px;font-size:12px;color:var(--muted)">Failed to load</div>';
+      if (el) el.innerHTML = renderLoadError("the rich list", "Router.go('richlist', {}, true)");
     });
   }
 });

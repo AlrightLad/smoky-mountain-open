@@ -357,7 +357,7 @@ function toggleFeedComments(roundId) {
     el.innerHTML = h;
     var input = document.getElementById("feedCmtInput_" + roundId);
     if (input) input.focus();
-  }).catch(function() { el.innerHTML = '<div style="font-size:10px;color:var(--red);padding:4px">Failed to load</div>'; });
+  }).catch(function() { el.innerHTML = renderLoadError("comments", "toggleFeedComments('" + roundId + "');toggleFeedComments('" + roundId + "')"); });
 }
 
 function submitFeedComment(roundId) {

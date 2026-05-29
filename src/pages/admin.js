@@ -139,7 +139,7 @@ function loadAdminFeatureRequests() {
         h += '</div></div></div>';
       });
       el.innerHTML = h;
-    }).catch(function() { el.innerHTML = '<div style="font-size:11px;color:var(--muted)">Could not load requests</div>'; });
+    }).catch(function() { el.innerHTML = renderLoadError("feature requests", "loadAdminFeatureRequests()"); });
   });
 }
 
@@ -179,7 +179,7 @@ function loadAdminErrorLog() {
     });
     h += '<div style="padding:8px;text-align:center"><button class="btn-sm outline" style="font-size:9px" onclick="clearResolvedErrors()">Clear resolved</button></div>';
     el.innerHTML = h;
-  }).catch(function() { el.innerHTML = '<div style="font-size:11px;color:var(--muted)">Could not load errors</div>'; });
+  }).catch(function() { el.innerHTML = renderLoadError("the error log", "loadAdminErrorLog()"); });
 }
 
 function resolveError(errorId) {
@@ -226,7 +226,7 @@ function loadAdminReports() {
     });
     document.getElementById("adminReports").innerHTML = h;
   }).catch(function() {
-    document.getElementById("adminReports").innerHTML = '<div style="font-size:11px;color:var(--muted)">Could not load reports</div>';
+    document.getElementById("adminReports").innerHTML = renderLoadError("reports", "loadAdminReports()");
   });
 }
 
@@ -297,7 +297,7 @@ function loadAdminMemberList() {
 
     document.getElementById("adminMemberList").innerHTML = h || '<div style="font-size:11px;color:var(--muted)">No members</div>';
   }).catch(function() {
-    document.getElementById("adminMemberList").innerHTML = '<div style="font-size:11px;color:var(--muted)">Failed to load</div>';
+    document.getElementById("adminMemberList").innerHTML = renderLoadError("the member list", "loadAdminMemberList()");
   });
 }
 

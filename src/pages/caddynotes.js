@@ -22,6 +22,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">May 2026 · The polish pass</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    { item: "When a list can't load right now, like the Rich List, your open rounds, or feed comments, the app now shows a clear note and a Try again button instead of a vague \"Failed to load\" line. One tap re-checks without leaving the page.", tag: "IMPROVED" },
     { item: "The example tee times shown before anyone has posted one now match the look used on Challenges, Bounties, and Wagers: a clean dashed outline at full width instead of a narrower filled box, so the example ideas across all four pages read as one consistent style.", tag: "IMPROVED" },
     { item: "When you haven't logged a round yet, the Rounds page now greets you properly: a clean golf-flag mark, a note that your first round earns 100 XP and the First Blood badge, and a quick tap to start playing, instead of a single plain line of text.", tag: "IMPROVED" },
     { item: "The What's New card on the More page now uses a clear, evergreen line that always points you to these Caddy Notes, instead of an old fixed blurb that no longer matched recent updates.", tag: "IMPROVED" },

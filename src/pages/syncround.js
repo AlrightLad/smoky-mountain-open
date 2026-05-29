@@ -49,7 +49,7 @@ function renderSyncRoundSetup() {
         rh += '</div></div>';
       });
       el.innerHTML = rh;
-    }).catch(function() { var el = document.getElementById("openSyncRounds"); if (el) el.innerHTML = '<div style="font-size:11px;color:var(--muted)">Could not load</div>'; });
+    }).catch(function() { var el = document.getElementById("openSyncRounds"); if (el) el.innerHTML = renderLoadError("open rounds", "Router.go('syncround', {}, true)"); });
   }
 }
 

@@ -382,7 +382,7 @@ function _loadJoinRequests(lid) {
       rh += '</div></div></div>';
     });
     el.innerHTML = rh;
-  }).catch(function() { el.innerHTML = '<div style="font-size:11px;color:var(--muted)">Could not load requests</div>'; });
+  }).catch(function() { el.innerHTML = renderLoadError("join requests", "_loadJoinRequests('" + lid + "')"); });
 }
 
 function approveJoinRequest(lid, reqUid) {
