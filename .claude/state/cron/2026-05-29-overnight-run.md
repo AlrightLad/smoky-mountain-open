@@ -2052,3 +2052,105 @@ Heartbeat-only self-check — **Is tonight's substantive output real?** YES. Thi
 NOT staged (left for Founder/concurrent-process per cycle-K precedent): `.claude/state/emu-unified-2026-05-29.log` (modified, concurrent emulator log) + `.pw-full-sweep.log` (untracked, playwright-full-sweep log) — these two are the root cause of the A12 re-oscillation and clearing them is Founder territory.
 
 No code changes in cycle AM. No proposals. No FIQ writes. No bug-report state moves (inbox absent). The A12 90→60 re-oscillation is the concurrent watcher cron's rolling-window degradation (8 skip-dirty of last 10 runs 20:00→19:25Z, blocked by two lingering concurrent artifacts), present in the watcher logs before my 20:02 run and surfaced by this heartbeat's regen, NOT caused by this triage cycle — exactly the oscillation cycle AL predicted.
+
+---
+
+# Overnight triage — 2026-05-29 (cycle AN)
+
+**Started:** 2026-05-29T21:01:20Z (cron-fired; regen-all START)
+**Finished:** 2026-05-29T21:01:25Z (regen-all "ALL DASHBOARDS REGENERATED" timestamp)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both absent)
+**Cycle:** AN (74th consecutive empty-inbox cycle; ~1h wall-clock gap from cycle AM's 20:02:40Z close — twenty-eighth consecutive ~1h-cadence cycle since cycle M; twenty-second cycle of the 2026-05-29 UTC date).
+
+## Inbox state at run-start (cycle AN)
+
+- `.claude/state/founder-input-queue/` — **MISSING** (`test -d` → No such file or directory). 74th consecutive absent cycle. Baseline-empty per `FIQ_QUALITY_RUBRIC.md` §6 (auto-created on first write); NOT a HALT-23.1 operational-view failure.
+- `.claude/state/bug-reports/` — **entire tree MISSING** (inbox/ + triaged/ both absent). No reports to diagnose.
+- `.claude/state/proposals/pending/` — empty (`.gitkeep` only).
+- Working tree at run-start: **DIRTY with concurrent-process artifacts** — `M .claude/state/dashboard-health/post-commit-hook.log`, `M .claude/state/emu-unified-2026-05-29.log`, `M .claude/state/telemetry/aggregates/.session-transcript-cursor.json`, `M .claude/state/telemetry/aggregates/session-transcript-summary.json`, `?? .claude/state/critique-resume-2026-05-29/`, `?? .pw-full-sweep.log`. None are this cycle's files. HEAD at run-start = `20885626` (advanced from cycle AM's `82940cae` via concurrent feature + cron-regen commits).
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle AN)
+
+- FIQ entries triaged: **0** (queue directory absent).
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0.
+- IDs: none. The only `FIQ-` ids on disk are the FIQ-001 template examples inside `docs/FOUNDER_INPUT_QUEUE.md` (schema illustration), NOT live queue entries.
+
+## Step 2 — Bug-report triage (cycle AN)
+
+- Bug reports processed: **0** (inbox tree absent).
+- Dispositions: none. No P3e discussion bubbles opened (nothing to deliberate).
+
+## Step 3 — Heartbeat (cycle AN)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end 21:01:20Z → 21:01:25Z: **`=== ALL CHECKS PASSED ===`**, **`round-trip test PASS`**. Heartbeat `regen-all-last-pass.json` written `status:"PASS"`. **29th consecutive clean canonical regen (cycles L–AN).**
+- All ~30 guards green: round-trip 4-view swap + theme convergence 7/7 (no raw hex) + no-charts + protected-layouts 5/5 + 23/23 + 17 swatches + W1.S1 + proposal-readiness 0 deferred + install-scripts 7 parse + install-cmd-surface + scroll-reachability 5/0/0 + escalations applied=3 + quota-status auto-derived (weekly_pct=None) + pause-discipline clean + wiring 5/5. Telemetry snapshot: events=16320 handoffs=1 bubbles=7 proposals_pending=0, meter_status=wired-real.
+- One INFORMATIONAL `~` (not a failure): `user-context-gate` flags `main-flows.html` modified 21293.8 min after the last user-context capture (2026-05-14T23-07-48Z) — benign on a heartbeat-only night.
+
+### 3a.1 — A11_testing 88→92 POSITIVE recovery, surfaced-not-caused (no guessing; the inverse of cycle AM)
+
+**app-health 86.6 (cycle AM, A-) → 87.1 (cycle AN, A-) = +0.5.** A genuine positive movement — the inverse of cycle AM's negative A12 re-oscillation. Traced to root cause:
+
+1. **The +0.5 is driven SOLELY by A11_testing 88 → 92 (+4, still green).** Read the current `app-health.json` dimension block verbatim and compared to cycle AM's recorded scores: A1 80, A2 100, A3 98, A4 93, A5 88, A6 92, A7 100, **A8_performance 83/green (cycle-AH perf-minify gain STILL sustained)**, A9 95, A10 100 — all HELD byte-identical. **A11_testing 88→92 is the ONLY mover.** A12_operational HELD at 60/yellow (still the single `attention_item`; `founder_attention` empty).
+2. **Surfaced-not-caused — strongest possible proof.** `git diff --stat docs/reports/app-health.html` is **EMPTY** after my regen — my regen output is **byte-identical to the HEAD-committed `app-health.html`**. A concurrent post-commit-regen cron had ALREADY committed the 87.1 state (HEAD advanced `82940cae` → `20885626` across the AM→AN window through feature ships + cron regens); my regen reproduced it idempotently (29th clean regen). The heartbeat **CONFIRMS** the committed 87.1 — it did not author a new number.
+3. **Root cause of the A11 gain grounded verbatim:** two test commits landed in the AM→AN window per `git log` — `60d6e2cc test(playnow): BL-001 in-round par/yardage edit regression spec + close backlog` and `4811880a test: repair mobile-viewport collection + harden Online Now badge skip`. New E2E coverage + a repaired mobile-viewport collection lifted A11_testing 88→92 — a **real, evidence-grounded improvement from concurrent ship work**, NOT produced by this heartbeat.
+
+**A12 oscillation status:** still yellow at 60. The same two concurrent artifacts (`.claude/state/emu-unified-2026-05-29.log` modified + `.pw-full-sweep.log` untracked) remain dirty in run-start `git status`, so the downloads-watcher is still skip-dirtying — the cycle-AL-predicted oscillation persists (re-settles green once those two artifacts clear; Founder/concurrent-process territory).
+
+**⚠ HONEST CHARACTERIZATION (the inverse of AM's "don't call the negative move a regression"):** don't call the +0.5 a **heartbeat win**. The credit belongs to the concurrent test ships (`60d6e2cc` + `4811880a`), surfaced by an idempotent regen that confirms the already-committed 87.1. A12 yellow is the same persisting concurrent-artifact oscillation, NOT a new defect and NOT something this heartbeat fixed. **No fix or proposal warranted** — no triage-findable defect; manufacturing one = ship-count gaming per Rule 2.
+
+**Working-tree state after regen:** `app-health.html` is NOT in my dirty tree (concurrent cron already committed the identical 87.1). The pre-existing concurrent artifacts (`emu-unified-2026-05-29.log`, `.pw-full-sweep.log`, the untracked `critique-resume-2026-05-29/` dir) are left untouched for Founder/concurrent-process to clear (cycle-K precedent). This triage cycle commits ONLY its own files via explicit pathspec (cycle-AB index-race lesson).
+
+### 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — updated for cycle AN (status `active`; token threshold remains crossed ~860k cumulative, 38th cross-cycle; no rest — heartbeat-only nights are light). `_note` + `substantive_output_at_checkpoint` rewritten with the 29th-consecutive-clean-regen observation and the A11 88→92 surfaced-not-caused trace (empty app-health.html diff = regen byte-identical to HEAD + the two named test commits + A12 still yellow on the same two artifacts).
+- `.claude/state/wellness/critic.json` — updated for cycle AN (status `active`; threshold crossed ~188k; no rest). Critic independently confirmed exactly one dimension moved (A11 88→92, A12 held at 60, 10 dims held byte-identical), guarded against the false self-credit spin on a positive night (the gain is the concurrent test ships', surfaced by an idempotent regen), and verified surfaced-not-caused via the empty app-health.html diff.
+
+## Step 4 — Session journal
+
+**This section.**
+
+## Cycle AN counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 |
+| Bug reports processed | 0 |
+| New proposals authored | 0 |
+| Wellness state changes | 2 (engineer.json + critic.json cycle AN refresh) |
+
+## Blockers requiring Founder attention (cycle AN)
+
+**No ship-blocking issues. No HALT criteria tripped** (meter_status `wired-real` → HALT 25 not in effect; FIQ dir absence is baseline-empty, not HALT-23.1 operational-view failure). Awareness / Founder-action items:
+
+1. **STANDING (P10 actionable, unchanged from cycle AM) — A12_operational holds at yellow (60).** **WHAT:** the downloads-watcher is still skip-dirtying on two lingering concurrent artifacts. **WHERE:** `.claude/state/emu-unified-2026-05-29.log` (modified) + `.pw-full-sweep.log` (untracked, repo root); evidence in `scripts/cron/logs/*-downloads-watcher.log` + `approvals-pipeline.json`. **WHAT-ACTION:** commit or `.gitignore` the two artifacts to let the watcher resume clean → A12 re-settles green. Not an agent fix (watcher skip-dirty is a safety feature working as designed; clearing concurrent dirty trees is Founder/concurrent-process territory per cycle-K precedent). A12 will continue to oscillate yellow↔green with each in-flight ship/sweep that holds the tree dirty.
+2. **Carry-over (Founder-action, AMD-018 gate #1) — deploy `deleteMyAccount` Cloud Function.** Code committed; `firebase deploy --only functions` is an AMD-018 pre-auth gate (walkthrough at `task-queue/founder/deploy-deleteMyAccount-function.md`). Unchanged from cycle AM (overnight triage cannot cross this gate).
+3. **Awareness — `proposals_inbox` stale artifact.** `.claude/state/proposals/inbox/decisions-2026-05-22T16-32-33.json` was already processed (applied 2026-05-22T16:35:54Z) and has lingered since 05-22. Out of step-1/2 scope; candidate for `inbox/` → `inbox-archive/` housekeeping at Founder's discretion; not auto-moved.
+4. **Carry-over — writer-side BOM fix (`common.ps1:117`) remains unauthored as a proposal.** Consumer-side `utf-8-sig` tolerance has held across all 29 canonical clean runs since cycle L. Not auto-promoted without a Founder priority signal — refusing to inflate proposal counts.
+5. **Carry-over — `scripts/aggregate-self-tests.py` post-commit warning** (flagged cycle L) — separate from regen-all's pipeline; out-of-scope for step 3a. Still flagged for a future cycle.
+6. **Cron cadence** — cycles M–AN all ~1h apart (twenty-eighth consecutive ~1h gap). No Founder action required; awareness only.
+
+No scope-creep candidates.
+
+## Cycle AN Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox tree absent, verified by directory-absence; not waved off).
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals. On a POSITIVE-movement night (A11 88→92, +0.5 overall) the easy spin is self-credit ("the heartbeat improved app-health"). The Critic guarded against it: the +0.5 is the concurrent test ships' gain (`60d6e2cc` + `4811880a`), surfaced by an idempotent regen that reproduces the already-committed 87.1 (empty app-health.html diff). NOT authoring a proposal is correct (no triage-findable defect; A12 yellow is a concurrent-artifact oscillation). Honest scoping, not inflation.
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero live FIQ entries.
+
+Heartbeat-only self-check — **Is tonight's substantive output real?** YES. This cycle did NOT rubber-stamp a clean regen and did NOT take credit for a number it did not author: it surfaced a genuine positive movement (A11_testing 88→92, the inverse of AM's A12 re-oscillation) and investigated it to root cause by reading the `app-health.json` dimension block verbatim (A11 the sole mover, 10 dims held, A12 held at 60), proving surfaced-not-caused via the EMPTY `git diff --stat docs/reports/app-health.html` (regen byte-identical to HEAD — a concurrent cron already committed 87.1), and grounding the A11 gain against the two named test commits in `git log`. The crucial honesty move was refusing to claim the +0.5 as a heartbeat win — it is the symmetric inverse of AM's "don't call the negative move a regression." Every claim anchors to a quoted tool result earlier in this session.
+
+**Critic attests cleanly: substantive heartbeat cycle, ship closes.**
+
+## Files changed in this cycle AN run
+
+- `.claude/state/wellness/engineer.json` — cycle AN update
+- `.claude/state/wellness/critic.json` — cycle AN update
+- `.claude/state/cron/2026-05-29-overnight-run.md` — this journal (cycle AN section appended)
+
+NOT staged (left for Founder/concurrent-process per cycle-K precedent): `.claude/state/emu-unified-2026-05-29.log` (modified, concurrent emulator log), `.pw-full-sweep.log` (untracked, playwright-full-sweep log), `.claude/state/critique-resume-2026-05-29/` (untracked, concurrent), and the concurrently-churning telemetry/post-commit-hook logs. `docs/reports/app-health.html` is NOT staged because it is byte-identical to HEAD (concurrent cron already committed the 87.1).
+
+No code changes in cycle AN. No proposals. No FIQ writes. No bug-report state moves (inbox absent). The A11_testing 88→92 gain is the concurrent test ships' (`60d6e2cc` BL-001 regression spec + `4811880a` mobile-viewport repair), already committed and reproduced byte-identically by this heartbeat's idempotent regen — surfaced, NOT caused by this triage cycle. A12 holds yellow on the same two unchanged concurrent artifacts — the cycle-AL-predicted oscillation persisting.
