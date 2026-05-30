@@ -6,6 +6,8 @@ authored_at: 2026-05-29T11:05:00Z
 authored_by: agent
 founder_action_required: true
 gate: AMD-018 gate 1 (Cloud Functions deploy)
+verify_command: node scripts/verify-delete-fn-deployed.mjs
+verify_expected: PASS
 ---
 
 # Deploy the `deleteMyAccount` Cloud Function (App Store 5.1.1(v) / GDPR)

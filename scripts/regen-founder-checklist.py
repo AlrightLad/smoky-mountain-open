@@ -171,38 +171,59 @@ def extract_walkthrough(text: str, fm: dict) -> str:
     return s[:1500]
 
 
-def load_walkthrough_html(fm: dict) -> str:
-    """Load the full walkthrough_doc file, render markdown -> HTML.
+def strip_frontmatter(text: str) -> str:
+    """Remove the leading YAML front-matter block, returning the body only."""
+    return FRONTMATTER_RE.sub("", text, count=1)
+
+
+def render_markdown(md_text: str) -> str:
+    """Render markdown -> HTML, with a safe <pre> fallback if the lib is absent.
+
+    No nl2br: the Founder docs are hard-wrapped at ~70 chars, and nl2br would
+    insert a <br> at every wrap and shred every paragraph. Without it, markdown
+    re-flows wrapped lines into clean paragraphs.
+    """
+    try:
+        import markdown
+        return markdown.markdown(
+            md_text,
+            extensions=["fenced_code", "tables", "sane_lists"],
+            output_format="html5",
+        )
+    except ImportError:
+        from html import escape
+        return f"<pre>{escape(md_text)}</pre>"
+
+
+def load_walkthrough_html(fm: dict, text: str) -> str:
+    """Full walkthrough rendered as HTML for inline reading on the dashboard.
 
     Per Founder directive 2026-05-21: "walkthroughs should not open source doc
     but just show the full doc in a way I can easily review and read it...
     can even show an image if needed. This makes the dashboard more of a hq".
 
-    Returns sanitized-ish HTML (markdown library output). Empty string if no
-    walkthrough_doc declared or file missing.
+    Resolution order:
+      1. Explicit `walkthrough_doc:` front-matter -> render that separate file.
+      2. Otherwise -> render THIS item's full source .md body (front-matter
+         stripped). Every item therefore shows a COMPLETE, followable
+         walkthrough inline; nothing is truncated. (Prior behavior returned ""
+         here, so the card fell back to a 600/1500-char truncated stub that cut
+         off mid-sentence -- the "walkthroughs are cut off" bug.)
     """
     rel_path = fm.get("walkthrough_doc")
-    if not rel_path:
+    if rel_path:
+        full_path = ROOT / rel_path
+        if not full_path.exists():
+            return f"<p><em>walkthrough_doc not found: {rel_path}</em></p>"
+        try:
+            md_text = full_path.read_text(encoding="utf-8")
+        except OSError:
+            return f"<p><em>walkthrough_doc unreadable: {rel_path}</em></p>"
+        return render_markdown(md_text)
+    body = strip_frontmatter(text).strip()
+    if not body:
         return ""
-    full_path = ROOT / rel_path
-    if not full_path.exists():
-        return f"<p><em>walkthrough_doc not found: {rel_path}</em></p>"
-    try:
-        md_text = full_path.read_text(encoding="utf-8")
-    except OSError:
-        return f"<p><em>walkthrough_doc unreadable: {rel_path}</em></p>"
-    try:
-        import markdown
-        html = markdown.markdown(
-            md_text,
-            extensions=["fenced_code", "tables", "nl2br"],
-            output_format="html5",
-        )
-        return html
-    except ImportError:
-        # Fallback: emit pre-wrapped raw markdown if package missing
-        from html import escape
-        return f"<pre>{escape(md_text)}</pre>"
+    return render_markdown(body)
 
 
 def extract_time(text: str) -> str:
@@ -305,7 +326,7 @@ def main() -> int:
                 "blocker": extract_blocker(text),
                 "howto": extract_howto(text),
                 "walkthrough": extract_walkthrough(text, fm),
-                "walkthrough_html": load_walkthrough_html(fm),
+                "walkthrough_html": load_walkthrough_html(fm, text),
                 "verify_command": fm.get("verify_command", ""),
                 "verify_expected": fm.get("verify_expected", ""),
                 "time_estimate": extract_time(text),

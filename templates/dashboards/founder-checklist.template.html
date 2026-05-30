@@ -231,7 +231,9 @@
 
                 function esc(s) { return s == null ? '' : String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
                 function fmtInline(s) {
-                    return esc(s).replace(/`([^`]+)`/g, '<code>$1</code>');
+                    return esc(s)
+                        .replace(/`([^`]+)`/g, '<code>$1</code>')
+                        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
                 }
 
                 document.querySelector('[data-fc="red-count"]').textContent = counts.red || 0;
@@ -273,7 +275,7 @@
                              + '</div>'
                              + '</div>'
                              + (it.blocker ? '<p class="fc-item-blocker"><strong>Why agent can\'t do this:</strong> ' + fmtInline(it.blocker) + '</p>' : '')
-                             + (it.howto ? '<div class="fc-item-section-label">Quick summary</div><p class="fc-item-howto">' + fmtInline(it.howto) + '</p>' : '')
+                             + (it.howto && !it.walkthrough_html ? '<div class="fc-item-section-label">Quick summary</div><p class="fc-item-howto">' + fmtInline(it.howto) + '</p>' : '')
                              // Walkthrough — prefer full HTML doc; fall back to inline summary if walkthrough_doc absent.
                              // Founder reads here (HQ-style); no need to open external files.
                              + (it.walkthrough_html

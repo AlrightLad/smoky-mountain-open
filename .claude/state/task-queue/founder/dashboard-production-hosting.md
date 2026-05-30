@@ -94,3 +94,24 @@ item closes and re-opens when a second dev is actually onboarding.
   verifies the access gate works, OR
 - You pick Option C (local-only is sufficient for now) and the item is marked
   complete with that note.
+
+## Decision (2026-05-30, Founder-approved "I approve all")
+
+**Chosen: Option C / Option A-deferred — local-only is sufficient for now.**
+
+It is still just the Founder working on the app, so the dev-HQ dashboard is
+served via `npm run hq` (`http://127.0.0.1:8099`, path-traversal-guarded, local
+only, zero internet exposure) and stays current on every commit via the
+post-commit regen. No remote host is stood up, so no internal security posture
+ever reaches the open internet.
+
+When a second developer actually onboards, this item re-opens and the agent
+builds the Option A path (a separate Firebase Hosting site serving
+`docs/reports/`, isolated from the member app's `main` -> Pages pipeline, placed
+behind **Cloudflare Access** with an email allow-list that gates the content
+*before* any page is served). The remote-deploy machinery is intentionally not
+built yet because it depends on the allow-list emails + the Cloudflare Access
+application, which are the 2nd-dev-onboarding inputs.
+
+No gate-10 (domain/DNS) action is taken now. Nothing is deployed. Reversible:
+re-opens the moment a second dev needs access.
