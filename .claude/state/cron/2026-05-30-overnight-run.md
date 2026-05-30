@@ -1197,3 +1197,108 @@ Ran exactly **5 state-changing operations** (regen-all + engineer.json + critic.
 - `docs/reports/app-health.html` — regen output (metadata `generated_at` + `audit_trigger` commit-pointer `18579c36`→`b0740004` + a **real** A12_operational recomputation 60/yellow→90/green → overall 87.1→88.6 (B+→A-) → attention `[1]`→`[]`; 11 other dimension scores byte-unchanged)
 
 Working tree was clean at run-start (no concurrent-session WIP to refuse this cycle). No code changes in cycle BG. No proposals. No FIQ writes. No bug-report state moves (inbox absent). The 87.1→88.6 / A12 60→90 rise **was** produced by this heartbeat's regen reading fresher watcher-log signal (run-start committed baseline was lower at 87.1), correctly credited to the heartbeat — and flagged as an oscillation, not a durable gain.
+
+---
+
+# Cycle BH — overnight triage — 2026-05-30T17:01Z
+
+**Fourteenth cycle of the 2026-05-30 date** (AU 04:04Z → BG 16:01Z → **BH 17:01Z**). Regen START `2026-05-30T17:01:27Z` = 13:01 EDT (York PA, UTC-4) → UTC and Founder-local both read 2026-05-30, **no journal-date convention tension** → appended to this existing one-file-per-date journal. ~59m57s wall-clock gap from BG = **48th consecutive ~1h-cadence cycle** since cycle M. **94th consecutive empty-inbox cycle.**
+
+## Inbox state (verified directly this cycle, not echoed)
+
+| Path | Check | Result |
+|---|---|---|
+| `.claude/state/founder-input-queue/` | `test -d` | **MISSING** |
+| `.claude/state/bug-reports/` (whole tree) | `find` | **MISSING** (no `inbox/`, no `triaged/`) |
+| `.claude/state/proposals/pending/` | `ls -A` | only `.gitkeep` (0 real proposals) |
+| `.claude/state/proactive-backlog.md` | `test -f` | **absent** (no demotions to make) |
+
+→ **HEARTBEAT-ONLY branch** per runbook: *"BOTH empty → steps 3–5 only."* Steps 1 & 2 are no-ops (nothing to triage, nothing to diagnose, nothing to demote).
+
+## Step 1 — FIQ triage (cycle BH)
+
+- FIQ entries triaged: **0** (queue directory absent)
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0
+- IDs: none
+
+## Step 2 — Bug-report triage (cycle BH)
+
+- Bug reports processed: **0** (inbox tree absent)
+- Dispositions: none
+- No P3e discussion bubbles opened (nothing to deliberate)
+
+## Step 3a — `scripts/regen-all.ps1`
+
+Ran end-to-end 17:01:27Z → **`ALL DASHBOARDS REGENERATED at 2026-05-30T17:01:33Z`** with `=== ALL CHECKS PASSED ===` + round-trip test **PASS**. Heartbeat `regen-all-last-pass.json` written. **49th consecutive clean canonical regen-all** (cycles L–BH). All ~30 guards green (round-trip 4-view swap · transcript tallies 3 bubbles · nav 9-link ×9 · meter-wiring 7/7 · founder-queue 7/7 · quota-type-enum · cross-dash proposals_pending=0 · lifecycle shipped=7 · amendments applied=28 · escalations applied=3 · theme no-raw-hex · no-charts · protected-layouts 5/5 · 23/23 · 17 swatches · W1.S1 · proposal-readiness 0 deferred · install-scripts 7 parse · install-cmd-surface · scroll-reachability 5/0/0 · quota-status auto-derived · pause-discipline clean · wiring 5/5).
+
+- **Telemetry:** events=**17480** (up from BG 17423) · handoffs=1 · bubbles=7 · proposals_pending=0 · `meter_status=wired-real` → **HALT-25 NOT in effect**.
+- **Token aggregate (all-time):** real=13,241,056,061 · estimated=15,337,090 · manual=0.
+- **App health:** **A- (87.1)**, 1 attention item. Founder-checklist: open=5 (red=0 yellow=5 green=0) closed_total=27.
+- **Standing informationals (not regressions):** regen-main-flows WARN of 6 orphan components (`actor.guest`, `actor.invitee`, `dist.capacitor-ios`, `ext.open-meteo`, `fn.expire-suspensions`, `fn.join-league`) — long-standing; round-trip still verifies 6 cols / 47 components / 62 flows / 248 steps. `user-context-gate` `~` flags main-flows.html modified 22494 min after last user-context capture — benign on a heartbeat-only night.
+
+## Step 3a — A12 oscillation: the inverse-of-BG attribution catch
+
+**This cycle is the exact inverse of BG, and the metric-integrity discipline is the symmetric catch.** BG saw A12_operational **rise** 60/yellow → 90/green (overall 87.1 → 88.6) and correctly **credited** the rise to its heartbeat (the committed baseline was lower at 87.1). THIS cycle A12_operational is back **down** at **60/yellow** (overall **87.1 (A-)**, 1 attention item) — the predicted oscillation continuing: **BF 88.6 → 15:54 cron 87.1 → BG 88.6 → BH 87.1** on the rolling 10-run skip-dirty window.
+
+**The discipline is to NOT take heartbeat blame for the 88.6→87.1 fall.** The run-start **committed** baseline (`app-health.html` `generated_at` **16:59:54.905342Z**, `audit_trigger` sha **1c4732b0** *"feat: HQ Home lead-column professionalization (v8.23.68)"*, app-commit, 5 app files, total 6) **already read overall 87.1** *before* this cycle's regen. My 17:01:32Z regen **also** computed 87.1 / A12=60/yellow / 1 attention item → my heartbeat **held flat at 87.1**; the 88.6→87.1 drop happened in a **pre-run concurrent cron-regen** between BG's close (16:01:36Z) and this run. The prior `generated_at` 16:59:54Z post-dating BG's close confirms it. **This is the symmetric inverse of BG: there the danger was false-disclaiming a real rise; here the danger would be false-blaming the heartbeat for a fall it did not cause.**
+
+**Visible cause (traceable, not fabricated):** A12's label reads `"pipeline=red · 10 recent skip-dirty"` and the attention item `what` = *"10 of last 10 cron watcher runs hit skip-dirty"* (confirmed by reading `.claude/state/aggregates/app-health.json` L154–168). The working tree carries **concurrent-session/other-tooling artifacts** — `M .claude/state/design-iteration/2026-05-22-staging-live/staging-home-1920.png`, `M .claude/state/emu-unified-2026-05-29.log`, plus 6 untracked verify PNGs (`auth-state-check.png`, `hq-home-full-2026-05-30.png`, `hq-home-v8.23.68.png`, `state-recheck.png`, `verify-ladder-zoom.png`, `verify-newuser-hero.png`, `verify-v8.23.68-ladder.png`) — so **every cron watcher run hits skip-dirty**, pulling A12 to 60. **red=0 throughout, self-clearing** the moment the concurrent session commits/cleans those artifacts. **No proposal manufactured** on a self-resolving oscillating dimension (METRIC_INTEGRITY_PROTOCOL Rule 2); the existing attention-item `what_action` already documents the remedy if it ever sticks red.
+
+**Honest diff characterization — THIS heartbeat's `app-health.html` diff IS purely metadata** (the opposite finding from BG, distinguished honestly). The diff has exactly two change groups: (a) `generated_at` 16:59:54.905342Z → 17:01:32.881018Z; (b) `audit_trigger` **1c4732b0** (app-commit v8.23.68, 5 app files, total 6) → **c14b75b3** (*"cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)"*, cron, 0 app files, total 4). A score-line grep (`overall_score`/`overall_grade`/`score`/`status`/`pre_deduction`/`post_deduction`/`dimension`/`attention`) on the diff returns **EMPTY** → all 12 dimension scores **and** overall byte-unchanged at 87.1. Because both the committed baseline and my regen computed the same 87.1, "purely metadata" is the **honest** label this cycle (whereas BG's was a "real recomputation, not metadata") — the characterization is matched to the actual diff content, not reflexively reused.
+
+## Step 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — cycle BH update (counters ~1,650k tokens cumulative / 1.0h discrete-context; status `active`; `thresholds_crossed=['tokens_consumed']` preserved **58th** cross-cycle; full cycle-BH `_note` incl. the inverse-of-BG fall-attribution + A12-oscillation visible-cause + metadata-only diff honesty).
+- `.claude/state/wellness/critic.json` — cycle BH update. Critic participated via the closing METRIC_INTEGRITY_PROTOCOL 3.1 attestation + independent verification, this cycle confirming via timestamp ordering that the 88.6→87.1 fall belongs to a **pre-run cron-regen** (run-start committed baseline already 87.1) — preventing the inverse error of *blaming* the heartbeat for a fall it did not cause. Counters ~340k tokens cumulative / 1.0h; status `active`; threshold preserved.
+
+## Step 4 — Session journal
+
+**This section** (cycle BH appended to the existing 2026-05-30 date journal).
+
+## Cycle BH counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 (queue absent) |
+| Bug reports processed | 0 (inbox absent) |
+| New proposals authored | 0 |
+| Wellness state changes | 2 (engineer.json + critic.json cycle BH refresh) |
+
+FIQ grade distribution: A=0 B=0 C=0 D=0 F=0 (no entries graded — queue absent).
+
+## Blockers requiring Founder attention (cycle BH)
+
+**No ship-blocking issues introduced by triage.** Awareness / carry-over items:
+
+1. **app-health A12_operational continues to oscillate** (BF 88.6 → 15:54 cron 87.1 → BG 88.6 → BH 87.1) on the rolling 10-run skip-dirty window. **red=0 throughout, self-clearing.** Currently 60/yellow because the tree is dirty with concurrent-session/other-tooling artifacts (staging PNG + emu log + 6 untracked verify PNGs). The existing attention-item `what_action` documents the remedy if it ever sticks red. **No proposal manufactured** on a self-resolving dimension. *If* a future cycle finds A12 stuck red across ≥3 consecutive cycles, that is the signal to author the `.husky/post-commit` / `routinePatterns` diagnosis proposal — not now.
+2. **Founder-checklist `open=5` (red=0 yellow=5 green=0 closed=27)** — steady from BG; concurrent-ship-driven, red=0, nothing ship-blocking.
+3. **Carry-over — concurrent-session artifacts dirty the tree** (`staging-home-1920.png`, `emu-unified-2026-05-29.log`, 6 untracked verify PNGs). A live session's territory — deliberately **not staged**. They are the proximate cause of the A12 yellow.
+4. **Carry-over — writer-side BOM fix (`scripts/common.ps1`)** remains unauthored as a proposal. Consumer-side `utf-8-sig` tolerance has held **49** consecutive clean regen-all runs (cycles L–BH). Deliberately not auto-promoted without a Founder priority signal.
+5. **Carry-over — journal-date convention (UTC vs Founder-local)** for filename + commit date. Not in tension this cycle (both = 2026-05-30) but unresolved as policy.
+6. **Carry-over — wellness token-counter semantics** — `thresholds_crossed=['tokens_consumed']` persists (engineer ~1,650k / critic ~340k cumulative since last rest); status remains `active` because heartbeat-only nights are genuinely light. Founder-decision still LIVE: (a) reset per cron fire, (b) raise threshold, (c) auto-trigger rest when crossed-while-active, (d) leave current convention (current path).
+7. **Cron cadence** — cycles M–BH steady at ~1h (48 consecutive). Awareness only.
+
+## Cycle BH Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox tree absent, verified by directory checks this cycle). Cannot wave off what doesn't exist.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals tonight. The A12 oscillation was deliberately *not* promoted into a proposal (self-clearing, red=0).
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero FIQ entries tonight. Queue absent.
+
+**Heartbeat-only self-check — is tonight's substantive output real?** YES, and the integrity discipline this cycle ran **opposite** to BG, completing a symmetric pair. A 49th consecutive clean canonical regen-all confirms the gate is durable. The substantive observation: A12_operational fell back to 60/yellow (overall 87.1), and rather than reflexively *blaming* the heartbeat for the 88.6→87.1 fall, I verified via the run-start committed baseline timestamp (`generated_at` 16:59:54Z already read the *lower* 87.1) that the fall belongs to a **pre-run cron-regen** — my heartbeat held flat at 87.1. The A12 oscillation and its **visible dirty-tree cause** (concurrent-session artifacts → 10/10 skip-dirty) were surfaced explicitly. THIS heartbeat's app-health diff was honestly characterized as **purely metadata** after a verbatim read + an **empty** score-line grep — the inverse finding from BG, matched to actual diff content rather than reused. Every claim is anchored to a quoted regen-all log line, a `git diff` hunk read verbatim, a `grep` result, a `git log`/`git status` line, or a `test -d` directory-absence check. No invented productivity, no false credit, and — the BG-symmetric risk — no false *blame* for a fall this heartbeat did not cause.
+
+**Critic attests cleanly: substantive heartbeat cycle, the 88.6→87.1 fall correctly attributed to a pre-run cron-regen (not this heartbeat — the inverse-of-BG catch), A12 oscillation + its dirty-tree cause flagged honestly, no proposal manufactured on a self-resolving dimension, app-health honestly characterized as genuinely metadata-only this cycle, commit pathspec scoped to own files, ship closes.**
+
+## Pause-discipline note (cycle BH)
+
+Ran exactly **5 state-changing operations** (regen-all + engineer.json + critic.json + this journal + the commit). **No API-error / org-cap signal** appeared in any tool result. Per the F1a defensive heuristic — *"the actual choice is judgment, not threshold-driven … over-pause beats under-pause"* — exiting clean at op 5 would have left a dirty, uncommitted tree (worse outcome) with no quota pressure to justify it, so I completed the commit. Documented here for retrospective review.
+
+## Files changed in this cycle BH run
+
+- `.claude/state/wellness/engineer.json` — cycle BH update
+- `.claude/state/wellness/critic.json` — cycle BH update
+- `.claude/state/cron/2026-05-30-overnight-run.md` — this journal (cycle BH section appended)
+- `docs/reports/app-health.html` — regen output (metadata `generated_at` + `audit_trigger` commit-pointer `1c4732b0`→`c14b75b3`; score-line grep EMPTY → all 12 dimensions + overall byte-unchanged at 87.1)
+
+NOT staged (concurrent-session / other-tooling territory, via explicit pathspec): `.claude/state/design-iteration/2026-05-22-staging-live/staging-home-1920.png`, `.claude/state/emu-unified-2026-05-29.log`, and the 6 untracked verify PNGs (`auth-state-check.png`, `hq-home-full-2026-05-30.png`, `hq-home-v8.23.68.png`, `state-recheck.png`, `verify-ladder-zoom.png`, `verify-newuser-hero.png`, `verify-v8.23.68-ladder.png`) — a live session's artifacts and the proximate cause of A12=60/yellow, left for that session / Founder.
+
+No code changes in cycle BH. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall **FLAT at 87.1 (A-)** across this heartbeat; the 88.6→87.1 / A12 90→60 fall was a pre-run concurrent cron-regen, correctly **NOT** blamed on the heartbeat.
