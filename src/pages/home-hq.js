@@ -40,27 +40,11 @@ function _renderHQPlaceholder(label, state) {
 
 // ─── Shared derivation helpers ──────────────────────────────────────────────
 
-// Sum hole pars on a round if available, else look up course par, else 72.
-// Used by streak detection and round-vs-par display in recent rows.
+// Round par total for streak detection and round-vs-par display in recent rows.
+// Delegates to the canonical roundParTotal (handicap.js) so 9-hole rounds whose
+// holePars carries the full 18 are summed over only the 9 played holes.
 function _hqRoundParTotal(r) {
-  if (r.holePars && r.holePars.length) {
-    var sum = 0, ok = true;
-    for (var i = 0; i < r.holePars.length; i++) {
-      var p = parseInt(r.holePars[i]);
-      if (!p) { ok = false; break; }
-      sum += p;
-    }
-    if (ok && sum > 0) return sum;
-  }
-  if (r.course && typeof PB !== "undefined" && PB.getCourseByName) {
-    var c = PB.getCourseByName(r.course);
-    if (c && c.par) {
-      // 9-hole rounds use half par
-      if (r.holesPlayed && r.holesPlayed <= 9) return Math.round(c.par / 2);
-      return c.par;
-    }
-  }
-  return r.holesPlayed && r.holesPlayed <= 9 ? 36 : 72;
+  return roundParTotal(r);
 }
 
 // Consecutive most-recent under-par individual non-scramble rounds.

@@ -357,18 +357,11 @@ function renderMemberDetailWithData(p) {
     last3.forEach(function(r) {
       var c = PB.generateRoundCommentary(r);
       var quip = c.roasts.length ? c.roasts[0] : (c.highlights.length ? c.highlights[0] : "");
-      // Par-relative tag, matching the rounds-list card this mirrors: score minus par
-      // totals (holePars sum > course par, halved for 9 > 72). Under reads quiet green;
-      // even and over stay neutral, never alarm-red on a member's own round. Replaces an
-      // old score-minus-rating decimal that was computed here but never rendered.
-      var mdPar = 72;
-      if (r.holePars && r.holePars.length) {
-        var mdSum = 0; for (var mdi = 0; mdi < r.holePars.length; mdi++) { mdSum += (parseInt(r.holePars[mdi]) || 0); }
-        if (mdSum > 0) mdPar = mdSum;
-      } else if (r.course && typeof PB !== "undefined" && PB.getCourseByName) {
-        var mdc = PB.getCourseByName(r.course);
-        if (mdc && mdc.par) mdPar = (r.holesPlayed && r.holesPlayed <= 9) ? Math.round(mdc.par / 2) : mdc.par;
-      }
+      // Par-relative tag, matching the rounds-list card this mirrors: score minus the
+      // canonical par total (handicap.js; 9-hole rounds sum only the holes played).
+      // Under reads quiet green; even and over stay neutral, never alarm-red on a
+      // member's own round. Replaces an old score-minus-rating decimal never rendered.
+      var mdPar = roundParTotal(r);
       var mdVsPar = (r.score && r.score > 0) ? (r.score - mdPar) : null;
       var mdVsParStr = "";
       var mdVsParColor = "var(--cb-mute, var(--muted))";

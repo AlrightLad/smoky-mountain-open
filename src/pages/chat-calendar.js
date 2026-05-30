@@ -275,7 +275,7 @@ function refreshClubCal() {
           eh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(course) + '</div>';
           group.forEach(function(r) {
             // Community-safe par-relative: neutral score + signed delta, no red.
-            var _par = (typeof _hqRoundParTotal === "function") ? _hqRoundParTotal(r) : (r.holesPlayed && r.holesPlayed <= 9 ? 36 : 72);
+            var _par = roundParTotal(r);
             var _diff = (r.score && _par) ? r.score - _par : null;
             var _diffStr = _diff === null ? "" : (_diff === 0 ? "E" : (_diff > 0 ? "+" + _diff : String(_diff)));
             var _diffColor = (_diff !== null && _diff <= 0) ? "var(--birdie)" : "var(--muted2)";

@@ -271,7 +271,7 @@ function _renderRoundCard(item) {
   // stays neutral; small signed par-delta carries over/under. No alarm-red on
   // the social feed ("community over competition"). Also fixes the old absolute
   // <=72 threshold that mis-colored 9-hole rounds (e.g. a 44 = +8 over par-36).
-  var _par = (typeof _hqRoundParTotal === "function") ? _hqRoundParTotal(item) : (item.holesPlayed && item.holesPlayed <= 9 ? 36 : 72);
+  var _par = roundParTotal(item);
   var _diff = (item.score && _par) ? item.score - _par : null;
   var _diffStr = _diff === null ? "" : (_diff === 0 ? "E" : (_diff > 0 ? "+" + _diff : String(_diff)));
   var _diffColor = (_diff !== null && _diff <= 0) ? "var(--birdie)" : "var(--muted)";

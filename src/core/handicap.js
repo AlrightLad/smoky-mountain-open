@@ -164,3 +164,39 @@ function getHandicapDetails(rounds) {
     index: calculateHandicapIndex(rounds)
   };
 }
+
+// Canonical par total for a round's to-par display (score − parTotal).
+// 9-hole rounds whose holePars array still carries the full 18 (seed/legacy
+// shape) must sum only the 9 holes actually played; otherwise a 9-hole score is
+// compared against an 18-hole par and renders a falsely-good to-par. Slice
+// convention matches _feedHoleDots / caddie / playnow-scoring: back9 → holes
+// 9-17, else front 0-8.
+function roundParTotal(r) {
+  if (!r) return 72;
+  var is9 = r.holesPlayed && r.holesPlayed <= 9;
+  if (r.holePars && r.holePars.length) {
+    if (is9 && r.holePars.length > r.holesPlayed) {
+      var start = r.holesMode === "back9" ? 9 : 0;
+      var nine = 0, ok9 = true;
+      for (var k = start; k < start + 9 && k < r.holePars.length; k++) {
+        var pk = parseInt(r.holePars[k]);
+        if (!pk) { ok9 = false; break; }
+        nine += pk;
+      }
+      if (ok9 && nine > 0) return nine;
+    } else {
+      var sum = 0, ok = true;
+      for (var i = 0; i < r.holePars.length; i++) {
+        var p = parseInt(r.holePars[i]);
+        if (!p) { ok = false; break; }
+        sum += p;
+      }
+      if (ok && sum > 0) return sum;
+    }
+  }
+  if (r.course && typeof PB !== "undefined" && PB.getCourseByName) {
+    var c = PB.getCourseByName(r.course);
+    if (c && c.par) return is9 ? Math.round(c.par / 2) : c.par;
+  }
+  return is9 ? 36 : 72;
+}

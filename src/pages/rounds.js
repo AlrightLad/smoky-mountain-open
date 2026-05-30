@@ -128,15 +128,9 @@ function renderRoundsList() {
         var histCourse = PB.getCourseByName(r.course);
         var histTee = r.tee || (histCourse ? histCourse.tee : "") || "";
         var fmtLabel = r.format && r.format !== 'stroke' ? ' · ' + r.format.charAt(0).toUpperCase() + r.format.slice(1) : "";
-        // ±N to par delta — score minus par totals (uses holePars when present, else 72)
-        var rPar = 72;
-        if (r.holePars && r.holePars.length) {
-          var pSum = 0; for (var pi = 0; pi < r.holePars.length; pi++) { pSum += (parseInt(r.holePars[pi]) || 0); }
-          if (pSum > 0) rPar = pSum;
-        } else if (r.course && typeof PB !== "undefined" && PB.getCourseByName) {
-          var rc = PB.getCourseByName(r.course);
-          if (rc && rc.par) rPar = (r.holesPlayed && r.holesPlayed <= 9) ? Math.round(rc.par / 2) : rc.par;
-        }
+        // ±N to par delta — score minus canonical par total (handicap.js;
+        // 9-hole rounds sum only the holes actually played).
+        var rPar = roundParTotal(r);
         var vsPar = (r.score && r.score > 0) ? (r.score - rPar) : null;
         var vsParStr = "";
         var vsParColor = "var(--cb-mute, var(--muted))";
@@ -352,7 +346,7 @@ function shareRoundCard(roundId) {
   if (!round) return;
   // Par-relative so the shared text agrees with what the app shows everywhere else
   // (the old rating diff read an unlabeled decimal like +29.6). Phrased for non-golfers.
-  var _par = (typeof _hqRoundParTotal === "function") ? _hqRoundParTotal(round) : (round.holesPlayed && round.holesPlayed <= 9 ? 36 : 72);
+  var _par = roundParTotal(round);
   var diff = (round.score && _par) ? round.score - _par : null;
   var label = diff === null ? "" : (diff === 0 ? "even par" : (diff > 0 ? "+" + diff + " to par" : diff + " to par"));
   var text = round.playerName + " shot " + round.score + (label ? " (" + label + ")" : "") + " at " + round.course + " on " + round.date + ". The Parbaughs";
@@ -381,7 +375,7 @@ function renderRoundDetail(roundId) {
   // rating diff produced an unlabeled decimal (e.g. +29.6) that disagreed with the
   // "+26 to par" the same round shows in the list/feed. Under or even reads quiet
   // green; over stays neutral. No alarm-red on a member's own round.
-  var _par = (typeof _hqRoundParTotal === "function") ? _hqRoundParTotal(round) : (round.holesPlayed && round.holesPlayed <= 9 ? 36 : 72);
+  var _par = roundParTotal(round);
   var diff = (round.score && _par) ? round.score - _par : null;
   var diffColor = (diff !== null && diff <= 0) ? "var(--birdie)" : "var(--muted)";
   var diffStr = diff === null ? "" : (diff === 0 ? "E" : (diff > 0 ? "+" + diff : String(diff)));
