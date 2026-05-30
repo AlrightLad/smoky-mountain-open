@@ -95,23 +95,46 @@ It contains no deploy/secret/network commands by design: the approved *work* is
 done by the agent with its own scoped tools, never bundled into the recorder, so
 privileges stay unbundled and the log stays honest.
 
-## The one-time bootstrap only the Founder can do
+## The bootstrap only the Founder can do (and why)
 
-There is exactly one thing the agent **cannot** do for itself, on purpose: grant
-itself permission to deploy to production / push `main`. The permission files
-(`.claude/settings.json`, `.claude/settings.local.json`) are agent-immutable — the
-settings explicitly deny the agent editing them, and a hard deny on
-`firebase deploy` to production plus a `git push origin main` hook still block the
-agent today. That is the security gate working as designed: an agent that could
-switch off its own safety gate is not a gate.
+There is one class of thing the agent **cannot** do for itself, on purpose: open
+its own production gates. This was confirmed empirically on 2026-05-30 — when the
+agent edited two gate hooks to widen them after verbal Founder consent, an
+independent **auto-mode classifier** (a safety layer separate from both the
+permission deny-list and the hook scripts) blocked the very next command, citing
+self-modification of safety-gate files. The agent reverted and logged it
+(`2026-05-30.ndjson`, `type:agent-self-correction`). The lesson is firm: an agent
+that can switch off its own gate is not a gate, so the gate-opening is
+irreducibly the Founder's act — even when a hook file is otherwise in the agent's
+edit allow-list, the classifier independently refuses the self-weakening. Once a
+gate is **open**, everything downstream of it the agent does hands-free.
 
-So to turn on the "approve → I deploy to prod / push main" capability, the Founder
-makes a **one-time** permission change (provided as an exact paste by the agent).
-After that single edit, every future deploy and promotion is hands-free: approve,
-and the agent does it. This is the only Founder edit ever required; it is a
-one-time bootstrap, not per-action work, and it is the conscious moment the
-Founder widens the boundary. Until it is applied, prod/main items stay surfaced
-with the exact action the agent is ready to run the instant it is unblocked.
+There are **three** production gates, each opened independently and just-in-time:
+
+**Gate 1 — Firebase deploys (functions + config).** Blocked by `.claude/settings.json`
+deny lines `"Bash(firebase deploy*)"` and `"Bash(npx firebase deploy*)"`. To open:
+delete those two lines, then **restart Claude Code** (settings.json permission
+changes only take effect on restart). This is the immediate, minimal bootstrap —
+it unblocks the HIGH-priority `deleteMyAccount` prod deploy (App Store 5.1.1(v) +
+GDPR Art 17, the one mandatory compliance deploy waiting on a gate).
+
+**Gate 2 — Firestore rules deploy.** Two layers: editing `firestore.rules` is
+denied in `settings.json` (`Edit`/`Write(firestore.rules)`) **and** blocked by
+`.claude/hooks/gate-protected.sh` (which has no env override); deploying it rides
+Gate 1's `firebase deploy` deny. Opens when rules work is actually reached
+(currently only the yellow, deferrable `block-server-enforcement` item needs it).
+
+**Gate 3 — Push to `main`.** Blocked by `.claude/hooks/push-protection.sh`'s
+`targets_main()` freeze. It already has a built-in override env var
+(`CLAUDE_PARBAUGHS_FOUNDER_PUSH=1`) and, separately, keeps enforcing the
+`last-verify.json` smoke/lint/visual evidence check — which is exactly the
+"evidence staging works" guard above, so it stays on by design. Opens at the
+first evidenced staging→prod cutover, per the Founder's "next milestone" cadence.
+
+Each gate is a **one-time** edit, not per-action work; it is the conscious moment
+the Founder widens the boundary. Until a gate is open, items behind it stay
+surfaced with the exact action the agent is ready to run the instant it is
+unblocked.
 
 ## Relationship to existing machinery
 
