@@ -648,7 +648,7 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
    the composer anchors at the bottom. padding-bottom reserves room for the
    fixed tab bar so the composer never hides behind it. Mirrors the shipped
    .dm-page-wrap pattern (single-surface chat) for the multi-section Clubhouse. */
-[data-page="chat"]{display:flex;flex-direction:column;height:calc(100vh - 52px);height:calc(100dvh - 52px);overflow:hidden;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+[data-page="chat"]{display:flex;flex-direction:column;height:calc(100vh - 52px);height:calc(100dvh - 52px);overflow:hidden;padding-bottom:calc(66px + max(env(safe-area-inset-bottom, 20px), 20px))}
 [data-page="chat"] > *{flex-shrink:0}
 #chatFeed{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .chat-input-row{display:flex;gap:var(--sp-2);padding:var(--sp-3) var(--sp-4);padding-bottom:var(--sp-3);border-top:1px solid var(--border);background:var(--bg);z-index:10}
