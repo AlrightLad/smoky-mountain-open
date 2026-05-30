@@ -292,7 +292,7 @@ function _renderLiveScoringInner() {
   // early taps via Router.toast — no state corruption risk.
   if (holesPlayed >= 1) {
     var totalHoles = liveState.holesMode === "front9" || liveState.holesMode === "back9" ? 9 : 18;
-    h += '<button onclick="showFinishOptions()" style="display:block;width:100%;margin-top:12px;padding:14px;background:linear-gradient(135deg,var(--birdie),var(--cb-green-3));color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;letter-spacing:0.3px;cursor:pointer">\u2714 Submit Round (' + holesPlayed + '/' + totalHoles + ')</button>';
+    h += '<button id="liveBodyFinishBtn" onclick="showFinishOptions()" style="display:block;width:100%;margin-top:12px;padding:14px;background:linear-gradient(135deg,var(--birdie),var(--cb-green-3));color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;letter-spacing:0.3px;cursor:pointer">\u2714 Submit Round (<span id="liveBodyFinishCount">' + holesPlayed + '</span>/' + totalHoles + ')</button>';
   }
 
   // Quit confirm panel
@@ -378,8 +378,13 @@ function _renderBottomNavInner(hole) {
 // strip). Cost: idempotent innerHTML swap, ~negligible per call.
 function _redrawBottomNav() {
   var nav = document.getElementById("liveBottomNav");
-  if (!nav) return;
-  nav.innerHTML = _renderBottomNavInner(liveState.currentHole);
+  if (nav) nav.innerHTML = _renderBottomNavInner(liveState.currentHole);
+  // Keep the body backup "Submit Round (n/total)" count truthful on every score
+  // change. It's emitted once per full page render, so without this it lags the
+  // real scored-hole count by one between scoring the current hole and the next
+  // hole navigation (P9 visible-truth).
+  var bodyCount = document.getElementById("liveBodyFinishCount");
+  if (bodyCount) bodyCount.textContent = liveState.scores.filter(function(s){ return s !== ""; }).length;
 }
 
 function adjustLiveScore(delta) {

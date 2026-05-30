@@ -61,6 +61,14 @@ var Router = (function() {
   function renderNav() {
     var nav = document.getElementById("bottomNav");
     if (!nav) return;
+    // Hide the global tab bar during an active live round on Play Now. The live
+    // scoring screen renders its own fixed #liveBottomNav (Prev / Next / Finish).
+    // Both bars are position:fixed;bottom:0;z-index:100; the global bar is later
+    // in the DOM, so without this it paints over the round controls and steals
+    // every tap (a stray tap navigates out of the round). Re-evaluated on every
+    // navigation, so it restores when the round ends or the user steps away.
+    var inLiveRound = typeof liveState !== "undefined" && liveState && liveState.active && current.page === "playnow";
+    nav.style.display = inLiveRound ? "none" : "";
     var tabs = [
       { match: ["home","round","standings","seasonrecap","awards","feed"] },
       { match: ["activity","rounds","playnow","range","scramble-live","syncround"] },
