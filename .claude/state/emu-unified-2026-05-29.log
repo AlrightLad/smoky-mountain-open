@@ -8865,3 +8865,344 @@ Issues? Report them at [4m[1mhttps://github.com/firebase/firebase-tools/issues
 [36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.5724ms
 [36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
 [36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.4366ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onLeagueDelete"
+[90m> [39m [LeagueDelete] REFUSING cascade on founding league test-league-01
+[36m[1mi  functions:[22m[39m Finished "us-central1-onLeagueDelete" in 53.7721ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onLeagueDelete"
+[90m> [39m [LeagueDelete] Cascading cleanup for test-league-02 ("Test Weekend League")
+[90m> [39m [LeagueDelete]   members updated: 0
+[36m[1mi  functions:[22m[39m Finished "us-central1-onLeagueDelete" in 279.5782ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 41.7276ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.6773ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.6904ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.5509ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3116ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2118ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2488ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.4604ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.5414ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2932ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.5598ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.113ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 4.7584ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 3.9323ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.6142ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.5174ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 4.3074ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.9923ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 3.0011ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 4.2677ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 3.4117ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 4.5904ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.2268ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.3676ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 3.5374ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 14.5144ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.9159ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.7069ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.34ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.0056ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.1169ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.0353ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 0.7101ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.0122ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.0602ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.0794ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 0.9333ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 0.8904ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.0107ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 0.8161ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 0.93ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 0.7526ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 0.7678ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.1314ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 0.7946ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 0.7952ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.074ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.0348ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 0.9436ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 0.8862ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 0.8614ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 0.7865ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.7189ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.7763ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.8962ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 239.7875ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3972ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.727ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 71.3291ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.5915ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 72.6447ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.4409ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onLeagueDelete"
+[90m> [39m [LeagueDelete] REFUSING cascade on founding league test-league-01
+[36m[1mi  functions:[22m[39m Finished "us-central1-onLeagueDelete" in 1.9358ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onLeagueDelete"
+[90m> [39m [LeagueDelete] Cascading cleanup for test-league-02 ("Test Weekend League")
+[90m> [39m [LeagueDelete]   members updated: 0
+[36m[1mi  functions:[22m[39m Finished "us-central1-onLeagueDelete" in 240.1956ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.7898ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.8447ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.6278ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2617ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3407ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3334ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.4757ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.8058ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.6299ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2961ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2723ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 7.3338ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.8004ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.6233ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.565ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.43ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.5601ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.324ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2325ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2556ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2636ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2746ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2036ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2427ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2658ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.5299ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.4681ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.206ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.1217ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.4518ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.1893ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.0833ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.8958ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.6015ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2516ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.1899ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.4097ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 0.9764ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.7158ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3105ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.1595ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.6756ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.0977ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.0827ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2043ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.1515ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2049ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3152ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.7447ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.6479ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.9037ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.0905ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 0.9982ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.1151ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 63.0096ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.1978ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3886ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 66.0893ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.4567ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (testZach) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 82.8936ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.5603ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3178ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.774ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.2176ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_scen_0r_01 (scenarioNoRounds) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 9605.0284ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_scen_0r_01 (scenarioNoRounds) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 101.7219ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.4889ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.7159ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 5.6006ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m {"severity":"WARNING","message":"Snapshot has no readTime. Using now()"}
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.4096ms
