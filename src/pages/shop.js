@@ -100,22 +100,53 @@ var COSMETIC_CATS = {
 
 var _shopCat = "border";
 
+// Economy entry cards — route to existing, live feature pages (P10: real destinations).
+var _shopEconomy = [
+  {route:"wagers",     name:"Wagers",     desc:"Back yourself against a friend.", icon:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6"/><path d="M4 12v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg>'},
+  {route:"bounties",   name:"Bounties",   desc:"Post a prize, best round wins.",  icon:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg>'},
+  {route:"challenges", name:"Challenges", desc:"Head to head, your terms.",       icon:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/></svg>'},
+  {route:"richlist",   name:"Rich List",  desc:"Who is holding the most.",        icon:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 18h16"/><path d="M4 18L3 7l5 4 4-7 4 7 5-4-1 11"/></svg>'}
+];
+
+// Small inline coin glyph for buy buttons.
+var _shopCoinSvg = '<svg viewBox="0 0 20 20" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" style="flex-shrink:0"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7.5 7.5h4a1.8 1.8 0 010 3.6H7.5"/></svg>';
+
 Router.register("shop", function() {
   var uid = currentUser ? currentUser.uid : null;
   var balance = getParCoinBalance(uid);
+  var lifetime = getParCoinLifetime(uid);
   var owned = (currentProfile && currentProfile.ownedCosmetics) || [];
 
-  var h = '<div class="sh"><h2>Shop</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
-
-  // Balance bar
-  h += '<div style="padding:0 16px 12px;display:flex;align-items:center;gap:10px">';
-  h += '<div style="width:28px;height:28px;border-radius:50%;background:rgba(var(--gold-rgb),.12);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="var(--gold)" stroke-width="1.3"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg></div>';
-  h += '<div style="font-size:18px;font-weight:700;color:var(--gold)">' + balance.toLocaleString() + '</div>';
-  h += '<div style="font-size:10px;color:var(--muted);letter-spacing:.5px">PARCOINS</div>';
+  // Skip link + editorial masthead (matches roster/HQ pattern)
+  var h = '<button type="button" class="roster-skip" onclick="var el=document.getElementById(\'shopCosmetics\');if(el){el.focus();el.scrollIntoView();}">Skip to cosmetics</button>';
+  h += '<div class="shop-wrap">';
+  h += '<div class="roster-masthead">';
+  h += '<div class="roster-eyebrow">THE SHOP · THE PARBAUGHS</div>';
+  h += '<h1 class="roster-headline">What you\'ve got.</h1>';
   h += '</div>';
 
+  // 3m.A Wallet hero — brass double-rule balance card
+  h += '<section class="shop-wallet" aria-label="Your wallet">';
+  h += '<div class="shop-wallet__eyebrow">Your balance</div>';
+  h += '<div class="shop-wallet__balance" aria-live="polite" aria-label="Your Parcoin balance, ' + balance + '">' + balance.toLocaleString() + '</div>';
+  h += '<div class="shop-wallet__sub">Parcoin' + (lifetime ? ' · ' + lifetime.toLocaleString() + ' earned all-time' : '') + '</div>';
+  h += '</section>';
+
+  // 3m.A.2 Recent activity ledger (async, truthful grouped render)
+  h += '<section class="shop-ledger" aria-label="Recent activity">';
+  h += '<div class="shop-sec-head"><h2 class="shop-sec-title">Recent activity</h2>';
+  if (uid) h += '<button type="button" class="shop-sec-link" onclick="Router.go(\'members\',{id:\'' + uid + '\'})">Full history</button>';
+  h += '</div>';
+  h += '<div id="shopLedger" class="shop-ledger__body"><div class="shop-ledger__loading">Loading activity</div></div>';
+  h += '</section>';
+
+  // 3m.B Cosmetics section
+  h += '<section class="shop-cosmetics" id="shopCosmetics" tabindex="-1" aria-label="Cosmetics">';
+  h += '<div class="shop-sec-head"><h2 class="shop-sec-title">Make your shelf yours.</h2></div>';
+  h += '<div class="shop-sec-sub">Earned Parcoin, spent on looks. Rings, banners, card skins, name effects, and titles.</div>';
+
   // Category tabs
-  h += '<div class="toggle-bar" id="shop-tabs">';
+  h += '<div class="toggle-bar shop-tabs" id="shop-tabs">';
   Object.keys(COSMETIC_CATS).forEach(function(catKey) {
     var cat = COSMETIC_CATS[catKey];
     var isActive = catKey === _shopCat;
@@ -148,13 +179,13 @@ Router.register("shop", function() {
 
   // Items grid
   var items = COSMETICS_CATALOG.filter(function(c) { return c.cat === _shopCat; });
-  h += '<div style="padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+  h += '<div class="shop-grid">';
   items.forEach(function(item) {
     var isOwned = owned.indexOf(item.id) !== -1 || item.price === 0;
     var canAfford = balance >= item.price;
     var equipped = currentProfile && currentProfile.equippedCosmetics && currentProfile.equippedCosmetics[item.cat] === item.id;
 
-    h += '<div style="background:var(--card);border:1px solid ' + (equipped ? 'var(--gold)' : 'var(--border)') + ';border-radius:var(--radius-lg);padding:14px;text-align:center;position:relative">';
+    h += '<div class="shop-item' + (equipped ? ' shop-item--equipped' : '') + '">';
 
     // ── LIVE PREVIEW ──
     if (item.cat === "border") {
@@ -185,29 +216,108 @@ Router.register("shop", function() {
       h += '</div>';
     }
 
-    h += '<div style="font-size:12px;font-weight:700;color:var(--cream)">' + item.name + '</div>';
-    h += '<div style="font-size:9px;color:var(--muted);margin-top:2px;line-height:1.3">' + item.desc + '</div>';
+    h += '<div class="shop-item__name">' + item.name + '</div>';
+    h += '<div class="shop-item__desc">' + item.desc + '</div>';
 
     if (item.reserved) {
-      h += '<div style="margin-top:8px;font-size:9px;font-weight:600;color:var(--muted2);letter-spacing:.5px;padding:6px;background:var(--bg3);border-radius:var(--radius)">RESERVED</div>';
+      h += '<div class="shop-item__state shop-item__state--reserved">Reserved</div>';
     } else if (isOwned && equipped) {
-      h += '<div style="margin-top:8px;font-size:9px;font-weight:700;color:var(--gold);letter-spacing:.5px;padding:6px;background:rgba(var(--gold-rgb),.08);border-radius:var(--radius)">EQUIPPED</div>';
+      h += '<div class="shop-item__state shop-item__state--equipped">Equipped</div>';
     } else if (isOwned) {
-      h += '<button class="btn-sm green" onclick="equipCosmetic(\'' + item.id + '\',\'' + item.cat + '\')" style="margin-top:8px;width:100%;font-size:10px;padding:8px">Equip</button>';
+      h += '<button class="shop-item__equip" onclick="equipCosmetic(\'' + item.id + '\',\'' + item.cat + '\')">Equip</button>';
     } else if (canAfford) {
-      h += '<button class="btn-sm" onclick="purchaseCosmetic(\'' + item.id + '\')" style="margin-top:8px;width:100%;font-size:10px;padding:8px;background:rgba(var(--gold-rgb),.1);border:1px solid rgba(var(--gold-rgb),.2);color:var(--gold)"><svg viewBox="0 0 20 20" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><circle cx="10" cy="10" r="8"/></svg> ' + item.price + '</button>';
+      h += '<button class="shop-item__buy" onclick="purchaseCosmetic(\'' + item.id + '\')">' + _shopCoinSvg + ' ' + item.price + '</button>';
     } else {
-      h += '<div style="margin-top:8px;font-size:10px;color:var(--muted2);padding:6px"><svg viewBox="0 0 20 20" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><circle cx="10" cy="10" r="8"/></svg> ' + item.price + ' <span style="font-size:8px">(need ' + (item.price - balance) + ' more)</span></div>';
+      h += '<div class="shop-item__state shop-item__state--locked">' + item.price + ' · need ' + (item.price - balance) + ' more</div>';
     }
 
     h += '</div>';
   });
   h += '</div>';
+  h += '</section>';
 
-  h += '<div style="text-align:center;padding:16px;font-size:9px;color:var(--muted2);line-height:1.5">ParCoins are cosmetic-only with zero real-world cash value.<br>Earn coins by playing rounds, practicing, and competing.</div>';
+  // 3m.D The Economy — entry cards to live feature pages
+  h += '<section class="shop-economy" aria-label="The economy">';
+  h += '<div class="shop-sec-head"><h2 class="shop-sec-title">Put them to work.</h2></div>';
+  h += '<div class="shop-econ-grid">';
+  _shopEconomy.forEach(function(e) {
+    h += '<button type="button" class="shop-econ-card" onclick="Router.go(\'' + e.route + '\')">';
+    h += '<span class="shop-econ-card__icon">' + e.icon + '</span>';
+    h += '<span class="shop-econ-card__name">' + e.name + '</span>';
+    h += '<span class="shop-econ-card__desc">' + e.desc + '</span>';
+    h += '</button>';
+  });
+  h += '</div>';
+  h += '</section>';
+
+  // Cosmetic-only disclaimer (legal posture — not gambling)
+  h += '<p class="shop-disclaimer">Parcoin is cosmetic-only with zero real-world cash value. Earn it by playing rounds, practicing, and competing.</p>';
+
+  h += '</div>'; // .shop-wrap
 
   document.querySelector('[data-page="shop"]').innerHTML = h;
+  _renderShopLedger(uid);
 });
+
+/* Recent-activity ledger. Reuses the truthful grouped-digest pattern from the
+   profile earnings list: consecutive same-label runs collapse into one row with
+   a count and summed amount, so a week of daily logins reads as "Daily login x7"
+   rather than seven identical rows. Chip + sign derive from the transaction's
+   own reason/amount so nothing is fabricated (P9). */
+function _renderShopLedger(uid) {
+  var el = document.getElementById("shopLedger");
+  if (!el) return;
+  if (!uid) { el.innerHTML = '<div class="shop-ledger__empty">Sign in to see your activity.</div>'; return; }
+  loadTransactionHistory(uid, 20).then(function(txns) {
+    if (!txns.length) {
+      el.innerHTML = '<div class="shop-ledger__empty">No activity yet. Your first round bonus, wager, or bounty will start the ledger.</div>';
+      return;
+    }
+    function fmtDate(t) {
+      if (t && t.createdAt && t.createdAt.toDate) {
+        var d = t.createdAt.toDate();
+        return (d.getMonth() + 1) + "/" + d.getDate();
+      }
+      return "";
+    }
+    function cleanLabel(s) {
+      return String(s || "").replace(/ at (null|undefined)(?=\s*\(|$)/i, "");
+    }
+    function chipFor(t) {
+      var amt = t.amount || 0;
+      var r = String(t.reason || "").toLowerCase();
+      if (r.indexOf("purchase") >= 0) return { txt: "Purchased", out: true };
+      if (r.indexOf("gift") >= 0) return { txt: "Gifted", out: amt < 0 };
+      if (r.indexOf("wager") >= 0 || r.indexOf("bet") >= 0 || r.indexOf("bounty") >= 0) return amt >= 0 ? { txt: "Won", out: false } : { txt: "Lost", out: true };
+      return amt >= 0 ? { txt: "Earned", out: false } : { txt: "Spent", out: true };
+    }
+    var groups = [];
+    txns.forEach(function(t) {
+      var label = cleanLabel(t.label || t.reason || "Activity");
+      var last = groups[groups.length - 1];
+      if (last && last.label === label) {
+        last.count += 1; last.amount += (t.amount || 0); last.earliest = t;
+      } else {
+        groups.push({ label: label, count: 1, amount: (t.amount || 0), latest: t, earliest: t });
+      }
+    });
+    var html = '';
+    groups.forEach(function(g) {
+      var chip = chipFor(g.latest);
+      var lateStr = fmtDate(g.latest), earlyStr = fmtDate(g.earliest);
+      var dateStr = (g.count > 1 && earlyStr && lateStr && earlyStr !== lateStr) ? (earlyStr + " – " + lateStr) : lateStr;
+      var countTxt = g.count > 1 ? ' x' + g.count : '';
+      var amtClass = g.amount >= 0 ? 'shop-txn__amt--in' : 'shop-txn__amt--out';
+      var amtStr = (g.amount >= 0 ? '+' : '') + g.amount.toLocaleString();
+      html += '<div class="shop-txn">';
+      html += '<span class="shop-txn__chip ' + (chip.out ? 'shop-txn__chip--out' : 'shop-txn__chip--in') + '">' + chip.txt + '</span>';
+      html += '<div class="shop-txn__main"><div class="shop-txn__label">' + escHtml(g.label) + countTxt + '</div>' + (dateStr ? '<div class="shop-txn__date">' + dateStr + '</div>' : '') + '</div>';
+      html += '<div class="shop-txn__amt ' + amtClass + '">' + amtStr + '</div>';
+      html += '</div>';
+    });
+    el.innerHTML = html;
+  });
+}
 
 function purchaseCosmetic(itemId) {
   if (!currentUser || !db) { Router.toast("Sign in required"); return; }
