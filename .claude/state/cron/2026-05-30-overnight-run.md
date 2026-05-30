@@ -1710,3 +1710,99 @@ Ran **6 state-changing operations** this cycle (regen-all + engineer.json + crit
 **NOT in this commit** (already committed by the external watcher before I could stage them): `docs/reports/app-health.html` (metadata-only diff, committed at `a1d2f689`). **NOT touched / not re-credited** (the concurrent session's own committed work): `90a91d76` (W1.S4) and `f2205fa3` (W1.S6).
 
 No code changes in cycle BL. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall **FELL 87.6 → 86.8 (A-)** across two member-facing ships (W1.S4 + W1.S6) — a genuine, traceable fall on a single dimension (A12 75→60, pipeline yellow→red), honestly attributed to the live concurrent two-ship build and noted as a sub-3min transient already recovered to green (not a phantom, not waved off, not blamed on the heartbeat).
+
+---
+
+# Cycle BM — overnight triage (2026-05-30, 19th cycle of date)
+
+**Branch decision: inbox empty; heartbeat only.** FIQ + bug-reports inbox both ABSENT for the **99th consecutive cycle** — verified directly this cycle (not echoed from BL): `.claude/state/founder-input-queue/` does not exist (`test -d` → MISSING); `.claude/state/bug-reports/` tree (no `inbox/`, no `triaged/`) does not exist; `proposals/pending/` holds only `.gitkeep` (0 real proposals); `proactive-backlog.md` ABSENT (no demotions). Per runbook "BOTH empty → steps 3-5 only."
+
+**Cadence:** Cycle BL opened regen START 21:04:27Z; cycle BM opens 22:01:27Z = ~57m wall-clock gap — **53rd consecutive ~1h-cadence cycle** since cycle M. Both the UTC clock (22:01Z) and the Founder-local clock (18:01 EDT, York PA UTC-4) agree on 2026-05-30, so **no journal-date convention tension** — cycle BM appended to the existing 2026-05-30 date journal per the multi-cycle-per-date convention (AU…BL already in this file). Regen START 22:01:27Z = 18:01 EDT = early evening, NOT overnight; the "overnight" cron fired during active daytime/evening development.
+
+## Step 1 — FIQ triage (cycle BM)
+
+- FIQ entries triaged: **0** (queue directory absent)
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0
+- IDs: none
+
+## Step 2 — Bug-report triage (cycle BM)
+
+- Bug reports processed: **0** (inbox tree absent)
+- Dispositions: none
+- No P3e discussion bubbles opened (nothing to deliberate)
+
+## Step 3 — Heartbeat (cycle BM)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end 22:01:27Z → 22:01:32Z: **=== ALL CHECKS PASSED ===**, **round-trip test PASS**. **54th consecutive clean canonical regen-all** (cycles L–BM).
+- Heartbeat `regen-all-last-pass.json` written.
+- Telemetry snapshot: events=17761 (up from BL 17709) handoffs=1 bubbles=7 proposals_pending=0, meter_status=**wired-real** → HALT-25 NOT in effect. Token aggregate (all-time): real=13,458,059,067 estimated=15,793,650 manual=0.
+- All ~30 guards green (round-trip 4-view swap + transcript tallies 3 bubbles + nav 9-link ×9 + meter-wiring 7/7 + founder-queue 7/7 + quota-type-enum + cross-dash proposals_pending=0 + lifecycle proposals shipped=7 + amendments applied=28 + escalations applied=3 + theme convergence no raw hex + no-charts + protected-layouts 5/5 + 23/23 + 17 swatches + W1.S1 + proposal-readiness 0 deferred + install-scripts 7 parse + install-cmd-surface + scroll-reachability 5/0/0 + quota-status auto-derived + pause-discipline clean + wiring 5/5).
+- App health: **A- (88.3)**, **0 attention items**. Founder-checklist: open=4 (red=0 yellow=4 green=0) closed_total=28.
+- One INFORMATIONAL `~` (not a failure): `user-context-gate` flags `main-flows.html` modified 22794.0 min after the last user-context capture (2026-05-14T23-07-48Z). Benign on a heartbeat-only night with no visual ship-close.
+
+**Working-tree diff after regen — `docs/reports/app-health.html` is a REAL, SINGLE-DIMENSION RISE this cycle (NOT metadata-only): app-health ROSE 86.8 → 88.3 (A- both).** This is the **honest mirror of BL's fall** and the **recovery half of BL's documented A12 transient**. Read verbatim from the `git diff`:
+- `overall_score` 86.8 → **88.3**; `pre_deduction_score` 91.8 → 93.3; `post_deduction_score` 86.8 → 88.3.
+- **SOLE dimension delta — A12_operational: score 60 → 90, status yellow → green.** Label `pipeline=red · 7 recent skip-dirty · error-tracking=True · incident-doc=True` → `pipeline=green · 5 recent skip-dirty · …`; weak_point.what `7 of last 10 cron watcher runs hit skip-dirty` → `5 of last 10`; `watcher_exit_reason` **skip-dirty → no-new-files**.
+- `attention_items` and `agent_attention` both collapsed from one A12 entry → **`[]`** (0 attention items).
+- No A1–A11 dimension value appears in the diff = **byte-unchanged** (A1 80, A2 100, A3 98, A4 93, A5 85, A6 92, A7 100, A8 83, A9 95, A10 100, A11 92 all held).
+- `audit_trigger` re-pointed FROM `2d6aab2d` *"feat: W1.S8 Calendar redesign to editorial Clubhouse datebook (HQ-3f) v8.23.72"* (app-commit, 15 files, committed 17:43:45-04:00) TO `41300f61` *"cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)"* (cron, 4 files, 17:45:17-04:00) — the current cron-regen HEAD.
+
+**Mechanism (honest attribution, no invented cause):** BL (and the 21:44:11Z 5-min-watcher regen between BL and BM) caught A12 at the **bottom** of a `pipeline=red` skip-dirty transient driven by the live W1.S4/W1.S6/**W1.S8** build dirtying the tree across 7-of-10 trailing watcher runs. By my 22:01:32Z regen the build had **committed** (W1.S8 = `2d6aab2d`) and the tree gone **clean**, so clean post-ship watcher runs (`exit_reason=no-new-files`) **displaced the skip-dirty runs from the trailing 10-run window** (7→5) and the pipeline sub-state recomputed **green** → A12 60→90. The `watcher_exit_reason` flip skip-dirty→no-new-files in the diff is the **direct on-disk evidence** the dirty window closed — not a guess. The engineer **claims no credit** for the recovery: it is the natural consequence of the concurrent build committing, attributed rather than re-claimed.
+
+### 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — updated for cycle BM (counters ~1,950k tokens cumulative / 1.0h discrete-context; status `active`; thresholds_crossed=['tokens_consumed'] preserved; full cycle-BM `_note` + `substantive_output_at_checkpoint`).
+- `.claude/state/wellness/critic.json` — updated for cycle BM. Critic participated via the closing METRIC_INTEGRITY_PROTOCOL 3.1 attestation + independent verbatim-diff verification of the RISE attribution. Counters ~380k tokens cumulative / 1.0h; status `active`; threshold preserved.
+
+## Step 4 — Session journal
+
+**This section** (cycle BM appended to the existing 2026-05-30 date journal).
+
+## Cycle BM counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 (queue absent) |
+| Bug reports processed | 0 (inbox absent) |
+| New proposals authored | 0 |
+| Wellness state changes | 2 (engineer.json + critic.json cycle BM refresh) |
+
+FIQ grade distribution: A=0 B=0 C=0 D=0 F=0 (no entries graded — queue absent).
+
+## Blockers requiring Founder attention (cycle BM)
+
+**No ship-blocking issues introduced by triage.** Awareness / carry-over items:
+
+1. **A12_operational RECOVERED 60→90 (yellow→green); BL's transient is RESOLVED.** The `pipeline=red` skip-dirty dip BL caught at 21:04 self-cleared to green by 22:01 as the live multi-ship build committed and its dirty window aged out of the trailing watcher window. **No proposal manufactured** — the standing escalation trigger (author the post-commit/routinePatterns diagnosis proposal ONLY if A12 stays `pipeline=red` ≥3 **consecutive** cycles) is **UNMET**; a transient that self-cleared within one cycle is not "stuck red", and proposing remediation on it would be proposal-count gaming per METRIC_INTEGRITY_PROTOCOL Rule 2.
+2. **Third member ship since BL committed cleanly — W1.S8 Calendar redesign (`2d6aab2d`, v8.23.72, HQ-3f).** Founder review of that commit (and the W1.S4 `90a91d76` / W1.S6 `f2205fa3` ships from BL) is normal post-commit review, not a triage blocker. The concurrent session's own committed work — correctly **not re-touched or re-credited** by this heartbeat.
+3. **Carry-over — `members.js` AMD-027 budget (committed 863 lines > 800).** Now **off** the app-health attention list entirely (A12 green, `attention_items=[]`). The module-split reconciliation belongs to the owning Members-feature session's ship-close, NOT an overnight heartbeat proposal.
+4. **Carry-over — writer-side BOM fix (`scripts/common.ps1`) remains unauthored as a proposal.** Consumer-side `utf-8-sig` tolerance has now held **54 consecutive** clean regen-all runs (cycles L–BM). Deliberately not auto-promoted without a Founder priority signal.
+5. **Carry-over — journal-date convention (UTC vs Founder-local) for filename + commit date.** Not in tension this cycle (both = 2026-05-30) but unresolved as policy; Founder may want to lock which is canonical.
+6. **Cron cadence** — cycles M–BM steady at ~1h. Awareness only.
+
+## Cycle BM Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox tree absent, verified by `test -d` this cycle). Cannot wave off what doesn't exist.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals tonight. The A12 recovery and the `members.js` budget item were deliberately *not* promoted — a self-cleared single-cycle transient is Rule 2 gaming if proposed, and `members.js` is an actively-iterated feature file whose AMD-027 reconciliation belongs to its owning session's ship-close.
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero FIQ entries tonight. Queue absent.
+
+**Heartbeat-only self-check — is tonight's substantive output real?** YES. Cycle BM is the **REAL-RISE RECOVERY case** — the honest **mirror** of BL's real-fall (seventh distinct attribution case: BG credit-for-rise, BH decline-of-blame, BI flat-hold, BJ fall-from-concurrent-WIP, BK fall-on-a-clean-tree, BL fall-from-two-ships-that-already-recovered, **BM real-RISE-recovery-of-BL's-transient**). The discipline this cycle was: (a) report the 86.8 → 88.3 **rise** honestly to a single named dimension (A12 60→90, pipeline yellow→green), every score/status/label/weak_point/exit_reason delta read **verbatim** from the `git diff`; (b) attribute it to the **dirty window closing** as the live W1.S4/W1.S6/W1.S8 build committed — the `watcher_exit_reason` skip-dirty→no-new-files flip is the direct on-disk evidence, not an invented cause; (c) **claim no credit** for the recovery (it is the concurrent build's consequence, not the heartbeat's action); (d) document the third member ship (W1.S8 `2d6aab2d`) + the cron-watcher chain; (e) decline to manufacture a proposal on a self-cleared transient. Every claim is anchored to a quoted regen-all log line, a verbatim `git diff` hunk of `app-health.html`, a `git log`/`git status` line, or a `test -d`/`test -f` absence check. No invented productivity, no false credit, no false blame, no false ownership, no wave-off.
+
+**Critic attests cleanly: substantive heartbeat cycle, 54th consecutive clean regen-all, app-health recorded a REAL RISE 86.8 → 88.3 diagnosed to a single named dimension (A12 60→90, pipeline yellow→green) honestly attributed to the live multi-ship build's dirty window closing (watcher_exit_reason skip-dirty→no-new-files read verbatim), the third member ship (W1.S8 Calendar) documented, no credit claimed for the recovery, no proposal manufactured on a self-cleared transient or an actively-iterated feature file, commit pathspec scoped to own files, ship closes.**
+
+## Pause-discipline note (cycle BM)
+
+Ran **5 state-changing operations** this cycle (regen-all + engineer.json + critic.json + this journal append + the commit). **No API-error / org-cap signal** appeared in any tool result, and the telemetry meter is `wired-real` (HALT-25 not in effect), so there was **no quota wall to honor**. Per the F1a defensive heuristic — *"the actual choice is judgment, not threshold-driven … over-pause beats under-pause"* — with zero quota pressure, exiting clean mid-cycle would have left a dirty/incomplete journal+wellness state (the worse outcome). Completed the commit to close the cycle cleanly.
+
+## Files changed in this cycle BM run
+
+- `.claude/state/wellness/engineer.json` — cycle BM update
+- `.claude/state/wellness/critic.json` — cycle BM update
+- `.claude/state/cron/2026-05-30-overnight-run.md` — this journal (cycle BM section appended)
+- `docs/reports/app-health.html` — regen output (REAL single-dimension RISE: A12_operational 60→90 yellow→green; overall 86.8→88.3; attention_items 1→0; audit_trigger re-point `2d6aab2d`→`41300f61`) — staged as the engineer's own regen output via explicit pathspec **unless** the external AMD-020 watcher commits it first (as happened in BL), in which case the commit narrows to wellness + journal.
+
+**NOT touched / not re-credited** (the concurrent session's own committed work): `2d6aab2d` (W1.S8 Calendar redesign), and BL's `90a91d76` (W1.S4) / `f2205fa3` (W1.S6).
+
+No code changes in cycle BM. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall **ROSE 86.8 → 88.3 (A-)** — a genuine, traceable single-dimension rise (A12 60→90, pipeline yellow→green) recovering BL's transient as the live multi-ship build's dirty window closed, with no credit claimed by the heartbeat.
