@@ -339,7 +339,19 @@ textarea.ff-input{min-height:60px;resize:vertical}
 .course-row:hover{background:var(--bg3)}
 .c-thumb{width:60px;height:42px;border-radius:var(--r-2);background:var(--bg3);overflow:hidden;flex-shrink:0}
 .c-thumb img{width:100%;height:100%;object-fit:cover}
-.c-thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:var(--text-xl)}
+/* Branded per-course monogram placeholder (v8.23.53). Courses with no uploaded
+   photo render a Clubhouse duotone tile + initials instead of one shared dark
+   stock image. Lane chosen by a stable name hash in courseThumbLane(); the same
+   lane drives .course-hero-mono on the detail page. text-shadow guarantees the
+   chalk monogram stays legible across all six lanes. */
+.c-thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-style:italic;font-weight:700;font-size:15px;letter-spacing:-.02em;color:var(--cb-chalk);text-transform:uppercase;text-shadow:0 1px 3px rgba(20,19,15,.45)}
+.c-thumb-ph--0{background:linear-gradient(135deg,var(--cb-green-2),var(--cb-green))}
+.c-thumb-ph--1{background:linear-gradient(135deg,var(--cb-brass),var(--cb-copper))}
+.c-thumb-ph--2{background:linear-gradient(135deg,var(--cb-slate),var(--cb-green-2))}
+.c-thumb-ph--3{background:linear-gradient(135deg,var(--cb-claret),var(--cb-ink-2))}
+.c-thumb-ph--4{background:linear-gradient(135deg,var(--cb-moss),var(--cb-green-2))}
+.c-thumb-ph--5{background:linear-gradient(135deg,var(--cb-copper),var(--cb-brass-2))}
+.course-hero-mono{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:46px;letter-spacing:-.03em;color:var(--cb-chalk);text-transform:uppercase;text-shadow:0 2px 8px rgba(20,19,15,.4)}
 .c-info{flex:1}
 .c-name{font-size:var(--text-base);font-weight:600}
 .c-loc{font-size:var(--text-sm);color:var(--muted);margin-top:1px}

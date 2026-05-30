@@ -17,7 +17,9 @@ function renderCourseDetail(courseId) {
   if (coursePhotoSrc && coursePhotoSrc !== COURSE_DEFAULT_IMG) {
     h += '<div id="course-photo-area" class="course-banner"><img alt="" src="' + coursePhotoSrc + '" onerror="this.parentElement.style.display=\'none\'"></div>';
   } else {
-    h += '<div id="course-photo-area" style="height:100px;margin:0 16px;border-radius:var(--radius);background:linear-gradient(135deg,var(--bg3),var(--bg2));display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="var(--muted2)" stroke-width="1" width="36" height="36"><circle cx="12" cy="12" r="3"/><path d="M5 21l3-3 4 4 4-5 3 3"/><rect x="2" y="3" width="20" height="16" rx="2"/></svg></div>';
+    // No photo: branded per-course monogram hero (v8.23.53), same lane identity
+    // as the directory thumbnail (courseThumbLane/courseThumbInitials in courses.js).
+    h += '<div id="course-photo-area" class="c-thumb-ph--' + courseThumbLane(c.name) + '" style="height:110px;margin:0 16px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;overflow:hidden"><span class="course-hero-mono">' + escHtml(courseThumbInitials(c.name)) + '</span></div>';
   }
   h += '<div class="section"><div class="c-detail-info">' + c.loc + ' · Rating: ' + c.rating + ' · Slope: ' + c.slope + ' · Par: ' + c.par + '</div>';
   if (c.tee || c.yards) {

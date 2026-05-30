@@ -1,6 +1,33 @@
 /* ================================================
    PAGE: COURSES
    ================================================ */
+
+// ── Branded per-course thumbnail (v8.23.53) ─────────────────────────────────
+// Courses without an uploaded photo used to all render one identical dark stock
+// image (COURSE_DEFAULT_IMG), which made the directory read as broken/monotonous.
+// Instead derive a deterministic branded monogram tile: a Clubhouse duotone lane
+// (one of 6, chosen by a stable hash of the name — same convention as getAvatar)
+// plus the course initials. The same lane identity is reused on the detail hero.
+function courseThumbLane(name) {
+  var s = name || "";
+  var hash = 0;
+  for (var i = 0; i < s.length; i++) hash = ((hash << 5) - hash) + s.charCodeAt(i);
+  return Math.abs(hash) % 6;
+}
+function courseThumbInitials(name) {
+  var words = (name || "").trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return "?";
+  if (words.length === 1) return words[0].substring(0, 2).toUpperCase();
+  return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
+}
+function courseThumbHTML(c, thumbSrc) {
+  var ph = '<div class="c-thumb-placeholder c-thumb-ph--' + courseThumbLane(c.name) + '"' + (thumbSrc ? ' style="display:none"' : '') + '>' + escHtml(courseThumbInitials(c.name)) + '</div>';
+  if (thumbSrc) {
+    return '<img alt="" src="' + thumbSrc + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' + ph;
+  }
+  return ph;
+}
+
 Router.register("courses", function(params) {
   if (params.add) { renderAddCourseForm(); return; }
   if (params.id) { renderCourseDetail(params.id); return; }
@@ -82,7 +109,7 @@ Router.register("courses", function(params) {
     
     h += '<div class="card course-dir-item" data-name="' + escHtml(c.name.toLowerCase()) + '" data-loc="' + escHtml((c.loc||"").toLowerCase()) + '" onclick="Router.go(\'courses\',{id:\'' + c.id + '\'})">';
     var thumbSrc = photoCache["course:" + c.id] || c.photo || '';
-    h += '<div class="course-row"><div class="c-thumb">' + (thumbSrc ? '<img alt="" src="' + thumbSrc + '" onerror="this.src=COURSE_DEFAULT_IMG">' : '<img alt="" src="' + COURSE_DEFAULT_IMG + '">') + '</div>';
+    h += '<div class="course-row"><div class="c-thumb">' + courseThumbHTML(c, thumbSrc) + '</div>';
     h += '<div class="c-info"><div class="c-name">' + c.name + '</div><div class="c-loc">' + c.loc + ' · ' + c.rating + '/' + c.slope + '</div>';
     if (showOurs) {
       var lPlays = leagueCoursePlays[c.name] || 0;
