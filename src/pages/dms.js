@@ -85,7 +85,7 @@ Router.register("dms", function() {
     members.forEach(function(m) {
       var preview = previews[m.id];
       var previewText = preview ? escHtml(preview.text) : '<span style="color:var(--muted2)">Start a conversation</span>';
-      var timeLabel = preview && preview.time ? '<span style="font-size:9px;color:var(--muted);flex-shrink:0">' + feedTimeAgo(preview.time) + '</span>' : '';
+      var timeLabel = preview && preview.time ? '<span style="font-size:var(--text-xs);color:var(--muted);flex-shrink:0">' + feedTimeAgo(preview.time) + '</span>' : '';
       
       // Unread detection: message from someone else, newer than last read
       var isUnread = false;
@@ -100,9 +100,9 @@ Router.register("dms", function() {
       dh += renderAvatar(m, 40, false);
       dh += '<div class="m-info" style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:6px">';
       dh += '<div class="m-name" style="flex:1;' + (isUnread ? 'color:var(--cream);font-weight:700' : '') + '">' + escHtml(m.name || m.username || m.id) + '</div>';
-      if (isUnread) dh += '<span class="pill pill-new" style="font-size:7px;padding:2px 6px">NEW</span>';
+      if (isUnread) dh += '<span class="pill pill-new">NEW</span>';
       dh += timeLabel + '</div>';
-      dh += '<div style="font-size:11px;color:' + (isUnread ? 'var(--cream)' : 'var(--muted)') + ';margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px;' + (isUnread ? 'font-weight:600' : '') + '">' + previewText + '</div>';
+      dh += '<div style="font-size:var(--text-sm);color:' + (isUnread ? 'var(--cream)' : 'var(--muted)') + ';margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px;' + (isUnread ? 'font-weight:600' : '') + '">' + previewText + '</div>';
       dh += '</div></div>';
     });
     var el = document.getElementById("dmMemberList");
