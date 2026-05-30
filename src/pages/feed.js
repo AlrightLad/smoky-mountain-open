@@ -43,10 +43,13 @@ Router.register("feed", function() {
   h += '<div class="feed-poststoday" id="feedPostsMeta"></div>';
   h += '</div>';
 
-  // Composer prompt — Fraunces italic; posts a league chat message today.
+  // Composer prompt — opens the Chip composer modal (3l.1). Reads like club
+  // stationery, not a chat input; the modal carries the real authoring chrome.
   h += '<div class="feed-composer">';
-  h += '<input class="feed-composer__input" id="feedChatInput" placeholder="What’s on your mind?" aria-label="Post to the feed" onkeydown="if(event.key===\'Enter\')sendFeedChat()">';
-  h += '<button class="feed-composer__send" type="button" aria-label="Post" title="Post" onclick="sendFeedChat()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>';
+  h += '<button class="feed-composer__prompt" type="button" aria-haspopup="dialog" aria-label="Post a Chip to the feed" onclick="openChipComposer()">';
+  h += '<span class="feed-composer__promptText">What’s on your mind?</span>';
+  h += '<span class="feed-composer__pencil" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>';
+  h += '</button>';
   h += '</div>';
 
   h += '<div id="feedStream" class="feed-stream" role="feed" aria-busy="true"><div class="loading"><div class="spinner"></div>Loading the feed…</div></div>';
@@ -271,7 +274,7 @@ function _feedEmptyState(scope) {
     eyebrow = "NOTHING HERE YET";
     head = "The league hasn’t started talking yet. Be the first.";
     body = "Post a Chip or log a round, and the feed wakes up when members post.";
-    cta = '<button class="feed-empty__cta" type="button" onclick="var i=document.getElementById(\'feedChatInput\');if(i)i.focus()">+ Post a Chip →</button>';
+    cta = '<button class="feed-empty__cta" type="button" onclick="openChipComposer(\'league\')">+ Post a Chip →</button>';
   }
   return '<div class="feed-empty">' +
     '<div class="feed-empty__eyebrow">' + eyebrow + '</div>' +
@@ -437,11 +440,129 @@ function _renderRangeCard(item) {
   return h;
 }
 
-function sendFeedChat() {
-  var input = document.getElementById("feedChatInput");
-  if (!input || !input.value.trim() || !db || !currentUser) return;
-  var text = input.value.trim();
-  input.value = "";
+// ─────────────────────────────────────────────────────────────────────────
+// CHIP COMPOSER (3l.1) — modal-overlay editorial composer for the Feed.
+// Shell per CLUBHOUSE_SPEC-HQ-3l: chalk paper, 4px brass top-rule, Fraunces
+// body w/ brass caret + bottom-line-only (writing on paper, not in a form),
+// mono char counter, League/Community scope toggle. Posts a text Chip through
+// the real league-chat write path (renders as a chat card in the stream today).
+//
+// Deferred to follow-on ships (no path on disk yet — not faked here):
+//  · Image attach (§3l.SHELL.5) — needs Firebase Storage upload AND a feed
+//    image render path; neither exists. Lands with the Storage ship.
+//  · @mention autocomplete (§3l.SHELL.7) — chat cards render text-only today
+//    (_renderChatCard escHtml's item.text); no mention render. Lands when the
+//    feed renders mention tokens.
+//  · Community submit — no cross-league write/render exists (the Community feed
+//    tab is itself a truthful empty state). The toggle is present and the note
+//    explains it; submit stays disabled on Community until cross-league lands.
+//  · Cross-session draft — kept in-memory this session (no allow-listed
+//    localStorage key for drafts per CLAUDE.md); upgrades to Preferences later.
+// ─────────────────────────────────────────────────────────────────────────
+var CHIP_LIMIT = 280;
+var _chipDraft = "";        // in-memory draft, survives close/reopen this session
+var _chipScope = "league";  // 'league' | 'community'
+var _chipTrigger = null;    // element to restore focus to on close
+
+function openChipComposer(scope) {
+  if (document.getElementById("chipOverlay")) return; // already open
+  _chipTrigger = document.activeElement;
+  _chipScope = ((scope || _feedScope) === "community") ? "community" : "league";
+  var leagueName = window._activeLeagueName || "your league";
+
+  var ov = document.createElement("div");
+  ov.className = "chip-overlay";
+  ov.id = "chipOverlay";
+  ov.setAttribute("role", "dialog");
+  ov.setAttribute("aria-modal", "true");
+  ov.setAttribute("aria-label", "Post a Chip");
+  ov.onclick = function(e) { if (e.target === ov) closeChipComposer(); };
+
+  var h = '<div class="chip-composer" role="document">';
+  h += '<div class="chip-composer__head">';
+  h += '<div class="chip-composer__eyebrow" id="chipEyebrow"></div>';
+  h += '<button class="chip-composer__close" type="button" aria-label="Close composer" onclick="closeChipComposer()">×</button>';
+  h += '</div>';
+  h += '<div class="chip-scope" role="group" aria-label="Post scope">';
+  h += '<button class="chip-scope__seg" type="button" data-scope="league" onclick="setChipScope(\'league\')">League: ' + escHtml(leagueName) + '</button>';
+  h += '<button class="chip-scope__seg" type="button" data-scope="community" onclick="setChipScope(\'community\')">Community</button>';
+  h += '</div>';
+  h += '<div class="chip-composer__field">';
+  h += '<textarea class="chip-composer__ta" id="chipText" rows="3" maxlength="' + (CHIP_LIMIT + 40) + '" placeholder="What’s on your mind?" aria-label="What’s on your mind?" oninput="updateChipComposer()"></textarea>';
+  h += '</div>';
+  h += '<div class="chip-composer__count" id="chipCount" aria-live="polite"></div>';
+  h += '<div class="chip-composer__note" id="chipNote" style="display:none">Community chips arrive with the cross-league feed. Switch to League to post today.</div>';
+  h += '<div class="chip-composer__actions">';
+  h += '<button class="chip-composer__cancel" type="button" onclick="closeChipComposer()">Cancel</button>';
+  h += '<button class="chip-composer__post" id="chipPost" type="button" disabled aria-label="Post chip" onclick="postChip()">Post →</button>';
+  h += '</div>';
+  h += '</div>';
+  ov.innerHTML = h;
+  document.body.appendChild(ov);
+
+  var ta = document.getElementById("chipText");
+  ta.value = _chipDraft || "";
+  requestAnimationFrame(function() { ov.classList.add("open"); });
+  setTimeout(function() { ta.focus(); var L = ta.value.length; try { ta.setSelectionRange(L, L); } catch (e) {} }, 30);
+  setChipScope(_chipScope);
+  updateChipComposer();
+  document.addEventListener("keydown", _chipKeydown, true);
+}
+
+function _chipKeydown(e) {
+  if (!document.getElementById("chipOverlay")) return;
+  if (e.key === "Escape") { e.preventDefault(); closeChipComposer(); return; }
+  if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); postChip(); return; }
+  if (e.key === "Tab") _chipTrapTab(e);
+}
+
+function _chipTrapTab(e) {
+  var ov = document.getElementById("chipOverlay");
+  if (!ov) return;
+  var f = ov.querySelectorAll("button:not([disabled]), textarea");
+  if (!f.length) return;
+  var first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+}
+
+function setChipScope(scope) {
+  _chipScope = (scope === "community") ? "community" : "league";
+  var ov = document.getElementById("chipOverlay");
+  if (!ov) return;
+  var leagueName = window._activeLeagueName || "your league";
+  ov.querySelectorAll(".chip-scope__seg").forEach(function(b) {
+    b.setAttribute("aria-pressed", b.getAttribute("data-scope") === _chipScope ? "true" : "false");
+  });
+  var eb = document.getElementById("chipEyebrow");
+  if (eb) eb.textContent = "POST A CHIP · " + (_chipScope === "community" ? "COMMUNITY" : leagueName);
+  var note = document.getElementById("chipNote");
+  if (note) note.style.display = (_chipScope === "community") ? "" : "none";
+  updateChipComposer();
+}
+
+function updateChipComposer() {
+  var ta = document.getElementById("chipText");
+  var count = document.getElementById("chipCount");
+  var post = document.getElementById("chipPost");
+  if (!ta || !count || !post) return;
+  _chipDraft = ta.value;
+  var len = ta.value.trim().length;
+  var remaining = CHIP_LIMIT - ta.value.length;
+  ta.style.height = "auto";
+  ta.style.height = Math.min(ta.scrollHeight, 174) + "px";
+  count.textContent = remaining + "/" + CHIP_LIMIT;
+  count.classList.toggle("near", remaining <= 20 && remaining >= 0);
+  count.classList.toggle("over", remaining < 0);
+  ta.classList.toggle("over", remaining < 0);
+  post.disabled = !(len > 0 && remaining >= 0 && _chipScope === "league");
+}
+
+function postChip() {
+  var ta = document.getElementById("chipText");
+  if (!ta || _chipScope !== "league") return;
+  var text = ta.value.trim();
+  if (!text || text.length > CHIP_LIMIT || !db || !currentUser) return;
   var name = currentProfile ? PB.getDisplayName(currentProfile) : "Anon";
   if (window._feedItems) {
     window._feedItems.unshift({ type: "chat", player: currentProfile, playerId: currentUser.uid, author: name, text: text, ts: Date.now(), system: false });
@@ -453,7 +574,20 @@ function sendFeedChat() {
     authorId: currentUser.uid,
     authorName: name,
     createdAt: fsTimestamp()
-  })).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't send your message.")); });
+  })).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn’t post your chip.")); });
+  _chipDraft = "";
+  if (navigator.vibrate) { try { navigator.vibrate(8); } catch (e) {} }
+  closeChipComposer();
+  Router.toast("Posted to the feed.");
+}
+
+function closeChipComposer() {
+  var ov = document.getElementById("chipOverlay");
+  if (!ov) return;
+  document.removeEventListener("keydown", _chipKeydown, true);
+  ov.classList.remove("open");
+  setTimeout(function() { if (ov && ov.parentNode) ov.parentNode.removeChild(ov); }, 220);
+  if (_chipTrigger && _chipTrigger.focus) { try { _chipTrigger.focus(); } catch (e) {} }
 }
 
 // ─────────────────────────────────────────────────────────────────────────
