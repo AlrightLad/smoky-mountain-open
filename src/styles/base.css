@@ -571,13 +571,11 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
    The cap only bites once the content area exceeds it (viewport ≳968px); at
    narrower HQ bands the content area is already smaller, so this is a no-op.
 
-   feed (v8.23.11) joins the same family: it also predates PageShell, rendering
-   .sh + composer + toggle-bar + #feedStream straight into [data-page="feed"].
-   At 1152px its post-header score (right-aligned) stranded ~1100px from the
-   post body on the left, and its flex:1 action row (Scorecard·Kudos·Comment·
-   Share) dispersed edge-to-edge. The same 680px reading column pulls the score
-   back beside the post and clusters the actions, matching peer social feeds
-   (X ≈600px, Strava ≈660px) and the mobile single-column layout.
+   feed: GRADUATED out of this family in W1.S11 (v8.23.74). The Feed v2 editorial
+   redesign (CLUBHOUSE_SPEC-HQ-3k) self-centres via .feed-wrap{max-width:720px;
+   margin:0 auto} in components.css, so [data-page="feed"] is intentionally NOT
+   capped here — the inner wrap owns the 720px reading column (peer feeds:
+   X ≈600px, Strava ≈660px). Capping the outer [data-page] too would double-cap.
 
    v8.23.12 class sweep extends the family to the remaining single-column
    list/form surfaces, triaged from HQ captures (coherence-verify/hq/*.png):
@@ -617,7 +615,6 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
   [data-page="bounties"],
   [data-page="wagers"],
   [data-page="challenges"],
-  [data-page="feed"],
   [data-page="rounds"],
   [data-page="roundhistory"],
   [data-page="settings"],

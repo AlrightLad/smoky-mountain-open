@@ -1,29 +1,59 @@
-// ========== FEED — Instagram-style activity feed ==========
-// v5.37.6: Full redesign with avatars, theme rings, hole dots, stat chips, action rows
-var _feedFilter = "all";
+// ========== FEED — editorial single-column league feed (CLUBHOUSE_SPEC-HQ-3k) ==========
+// W1.S11 (v8.23.74): Feed v2. Replaces the Instagram-card layout with a single
+// editorial column in the Clubhouse register. Reuses the .roster-* masthead +
+// scope-rail conventions from Members (3e) and adds a .feed-* card system:
+// NO card backgrounds, hairline (--cb-chalk-3, the live alias of the spec's
+// --cb-line) delineation, a Fraunces masthead ("What's happening."), and
+// brass day eyebrows that stick under the top bar on scroll.
+//
+// Scope rail is League (default) / Community per spec § 3k.1.4. Community has
+// no cross-league data source wired yet, so it renders the § 3k.4 editorial
+// empty state ("OUTSIDE THE LEAGUE") rather than fabricating posts (P9).
+//
+// Deferred to later ships (data not yet on disk — not fabricated here):
+//   · Card B "Chip post" + the composer-prompt modal → Composer ship (3l).
+//     The prompt below stays functional today by posting a league chat message
+//     (the real write path), and upgrades to the Composer modal when 3l lands.
+//   · Card A "Live round pinned" (state 3k.5) → needs a live-round list source;
+//     none exists in src/ yet, so nothing is pinned (no fabricated liveness).
+//   · Card D "Auto-posted activity" → needs the feed-posts activity stream.
+//
+// The unified reverse-chron stream surfaces the three real sources the league
+// produces today: rounds (public), range sessions, and league chat.
+var _feedScope = "league";
 
-Router.register("feed", function(params) {
-  if (params && params.filter) _feedFilter = params.filter;
-  var h = '<div class="sh"><h2>Feed</h2></div>';
+Router.register("feed", function() {
+  _feedScope = "league";
+  var leagueName = (typeof window !== "undefined" && window._activeLeagueName) || "Parbaughs";
 
-  // Chat input at top
-  h += '<div style="padding:8px 16px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center">';
-  h += '<input class="ff-input" id="feedChatInput" placeholder="Say something..." style="flex:1;margin:0;font-size:13px;padding:10px 14px;border-radius:20px" onkeydown="if(event.key===\'Enter\')sendFeedChat()">';
-  h += '<button aria-label="Send message" title="Send" style="background:var(--gold);border:none;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0" onclick="sendFeedChat()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--bg)" stroke-width="2" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>';
+  var h = '<div class="feed-wrap">';
+
+  // Masthead — editorial, working-surface density (no sub-deck / date line).
+  h += '<header class="roster-masthead feed-masthead">';
+  h += '<div class="roster-eyebrow">THE FEED · ' + escHtml(String(leagueName).toUpperCase()) + '</div>';
+  h += '<h1 class="roster-headline feed-headline">What’s happening.</h1>';
+  h += '</header>';
+
+  // Scope rail — 2-tab League/Community (brass underline) + posts-today meta.
+  h += '<div class="feed-scope">';
+  h += '<div class="roster-tabs" role="tablist" aria-label="Feed scope">';
+  h += '<button class="roster-tab roster-tab--active" role="tab" aria-selected="true" id="feedScopeLeague" onclick="setFeedScope(\'league\')">League</button>';
+  h += '<button class="roster-tab" role="tab" aria-selected="false" id="feedScopeCommunity" onclick="setFeedScope(\'community\')">Community</button>';
+  h += '</div>';
+  h += '<div class="feed-poststoday" id="feedPostsMeta"></div>';
   h += '</div>';
 
-  // Filter tabs
-  h += '<div class="toggle-bar" style="border-bottom:1px solid var(--border)">';
-  ["all","round","chat","range"].forEach(function(f) {
-    var label = f === "all" ? "All" : f === "round" ? "Rounds" : f === "chat" ? "Chat" : "Range";
-    h += '<button' + (_feedFilter === f ? ' class="a"' : '') + ' onclick="_feedFilter=\'' + f + '\';applyFeedFilter()">' + label + '</button>';
-  });
+  // Composer prompt — Fraunces italic; posts a league chat message today.
+  h += '<div class="feed-composer">';
+  h += '<input class="feed-composer__input" id="feedChatInput" placeholder="What’s on your mind?" aria-label="Post to the feed" onkeydown="if(event.key===\'Enter\')sendFeedChat()">';
+  h += '<button class="feed-composer__send" type="button" aria-label="Post" title="Post" onclick="sendFeedChat()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>';
   h += '</div>';
 
-  h += '<div id="feedStream"><div class="loading"><div class="spinner"></div>Loading feed...</div></div>';
+  h += '<div id="feedStream" class="feed-stream" role="feed" aria-busy="true"><div class="loading"><div class="spinner"></div>Loading the feed…</div></div>';
+  h += '</div>';
   document.querySelector('[data-page="feed"]').innerHTML = h;
 
-  // Load all feed items
+  // ── Load the three real sources into one unified stream ──
   window._feedItems = [];
   var items = window._feedItems;
   var pending = 3;
@@ -38,21 +68,18 @@ Router.register("feed", function(params) {
     _renderFeedItems();
   }
 
-  // 1. Rounds — pull rich data for hole dots and stats
+  // 1. Rounds — rich data for hole dots + stats.
   if (db) {
     leagueQuery("rounds").where("visibility", "==", "public").orderBy("createdAt", "desc").limit(40).get().then(function(snap) {
       snap.forEach(function(doc) {
         var r = doc.data();
-        // v8.14.0 — Defense-in-depth render guard. Abandoned rounds are dev-test
-        // artifacts and never surface publicly. Per Gate 8a A1 audit, /rounds
-        // collection writes filter abandoned at write time, but this render-side
-        // guard catches anything that slips through (memory rule on abandoned).
+        // v8.14.0 — render-side guard: abandoned rounds are dev-test artifacts
+        // and never surface publicly (defense-in-depth behind the write filter).
         if (r.status === "abandoned") return;
         var rid = doc.id;
         var isScramble = r.format === "scramble" || r.format === "scramble4";
-        var comm = PB.generateRoundCommentary({score:r.score,rating:r.rating||72,slope:r.slope||113,player:r.player,holesPlayed:r.holesPlayed||18});
+        var comm = PB.generateRoundCommentary({ score: r.score, rating: r.rating || 72, slope: r.slope || 113, player: r.player, holesPlayed: r.holesPlayed || 18 });
         var quip = isScramble ? "" : (comm.roasts.length ? comm.roasts[0] : (comm.highlights.length ? comm.highlights[0] : ""));
-        // Resolve player for avatar/ring
         var player = PB.getPlayer(r.player);
         items.push({
           type: "round",
@@ -77,9 +104,6 @@ Router.register("feed", function(params) {
           ts: tsMillis(r.createdAt),
           roundId: rid,
           isScramble: isScramble,
-          // v8.20.0 (Ship 5+5) — engagement fields surfaced for Kudos / Comment
-          // action row + thread render. Defaults preserve back-compat with rounds
-          // logged before the fields existed.
           likes: r.likes || [],
           comments: r.comments || [],
           commentLikes: r.commentLikes || {}
@@ -89,9 +113,9 @@ Router.register("feed", function(params) {
     }).catch(function() { pending--; tryRender(); });
   } else { pending--; }
 
-  // 2. Range sessions
+  // 2. Range sessions.
   if (typeof liveRangeSessions !== "undefined" && liveRangeSessions.length) {
-    liveRangeSessions.filter(function(s){return s.visibility !== "private";}).slice(0,10).forEach(function(s) {
+    liveRangeSessions.filter(function(s) { return s.visibility !== "private"; }).slice(0, 10).forEach(function(s) {
       var player = PB.getPlayer(s.playerId);
       items.push({
         type: "range",
@@ -108,7 +132,7 @@ Router.register("feed", function(params) {
   }
   pending--;
 
-  // 3. Chat messages
+  // 3. Chat messages.
   if (db) {
     leagueQuery("chat").orderBy("createdAt", "desc").limit(30).get().then(function(snap) {
       snap.forEach(function(doc) {
@@ -129,17 +153,27 @@ Router.register("feed", function(params) {
   } else { pending--; }
 });
 
-// ── Hole dot helper ──
+// ── Scope rail toggle (League / Community) ──
+function setFeedScope(scope) {
+  _feedScope = scope === "community" ? "community" : "league";
+  var lg = document.getElementById("feedScopeLeague");
+  var cm = document.getElementById("feedScopeCommunity");
+  if (lg) { lg.classList.toggle("roster-tab--active", _feedScope === "league"); lg.setAttribute("aria-selected", _feedScope === "league" ? "true" : "false"); }
+  if (cm) { cm.classList.toggle("roster-tab--active", _feedScope === "community"); cm.setAttribute("aria-selected", _feedScope === "community" ? "true" : "false"); }
+  _renderFeedItems();
+}
+
+// ── Hole dot helper (hardcoded hole-dot colors are an allowed exception) ──
 function _feedHoleDots(holeScores, holePars, holesPlayed, holesMode) {
   if (!holeScores || holeScores.length < 9) return '';
   var is9 = holesPlayed && holesPlayed <= 9;
   var numHoles = Math.min(holeScores.length, is9 ? 9 : 18);
   var startHole = is9 && holesMode === "back9" ? 9 : 0;
-  var dh = '<div style="display:flex;gap:2px;flex-wrap:wrap">';
+  var dh = '<div class="feed-dots">';
   for (var i = startHole; i < startHole + numHoles; i++) {
     var hs = parseInt(holeScores[i]);
     var hp = (holePars && holePars[i]) || 4;
-    var color = "#444";
+    var color = "var(--cb-chalk-3)";
     if (hs > 0) {
       var diff = hs - hp;
       if (diff <= -2) color = "#FFD700";
@@ -148,18 +182,18 @@ function _feedHoleDots(holeScores, holePars, holesPlayed, holesMode) {
       else if (diff === 1) color = "#F59E42";
       else color = "#E53935";
     }
-    dh += '<div style="width:' + (is9 ? '8px' : '5px') + ';height:' + (is9 ? '8px' : '5px') + ';border-radius:50%;background:' + color + '"></div>';
+    dh += '<span class="feed-dot' + (is9 ? ' feed-dot--9' : '') + '" style="background:' + color + '"></span>';
   }
   dh += '</div>';
   return dh;
 }
 
-// ── Stat chips helper ──
+// ── Stat chips helper (mono editorial chips) ──
 function _feedStatChips(item) {
   var chips = [];
   if (item.frontScore && item.backScore) {
-    chips.push('F9: ' + item.frontScore);
-    chips.push('B9: ' + item.backScore);
+    chips.push('F9 ' + item.frontScore);
+    chips.push('B9 ' + item.backScore);
   }
   if (item.firData && Array.isArray(item.firData)) {
     var firC = 0, firH = 0;
@@ -174,213 +208,232 @@ function _feedStatChips(item) {
   if (item.puttsData && Array.isArray(item.puttsData)) {
     var pTotal = 0;
     item.puttsData.forEach(function(v) { pTotal += (v || 0); });
-    if (pTotal > 0) chips.push('Putts ' + pTotal);
+    if (pTotal > 0) chips.push('PUTTS ' + pTotal);
   }
   if (!chips.length) return '';
-  var ch = '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">';
-  chips.forEach(function(c) {
-    ch += '<span style="font-size:9px;font-weight:600;color:var(--muted);background:var(--bg3);padding:3px 8px;border-radius:10px">' + c + '</span>';
-  });
+  var ch = '<div class="feed-chips">';
+  chips.forEach(function(c) { ch += '<span class="feed-chip">' + escHtml(c) + '</span>'; });
   ch += '</div>';
   return ch;
 }
 
-// ── Date-group dividers (timeline rhythm) ──
-// A flat reverse-chron stream of 40+ posts reads as an undifferentiated wall.
-// Bucketing by recency gives the eye scannable anchors (Strava / Linear pattern).
-function _feedDateBucket(ts) {
-  if (!ts) return "Earlier";
+// ── Day eyebrows (per calendar day, sticky on scroll) ──
+// Spec § 3k.1.5: mono 11px brass uppercase. Per-day grouping (not bucketed) so
+// each day owns one eyebrow. Format: TODAY · APR 14 / YESTERDAY · APR 13 /
+// APR 12 · SATURDAY (within the last week) / APR 5 (older, same year) /
+// APR 5, 2025 (older, prior year).
+function _feedDayKey(ts) {
+  if (!ts) return "0000-0-0";
+  var d = new Date(ts);
+  return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+}
+function _feedDayLabel(ts) {
+  if (!ts) return "EARLIER";
   var now = new Date();
   var startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
   var dayMs = 86400000;
-  if (ts >= startOfToday) return "Today";
-  if (ts >= startOfToday - dayMs) return "Yesterday";
-  if (ts >= startOfToday - 6 * dayMs) return "This Week";
   var d = new Date(ts);
-  if (d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()) return "Earlier This Month";
-  var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-  return months[d.getMonth()] + " " + d.getFullYear();
+  var mons = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  var wk = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+  var md = mons[d.getMonth()] + " " + d.getDate();
+  if (ts >= startOfToday) return "TODAY · " + md;
+  if (ts >= startOfToday - dayMs) return "YESTERDAY · " + md;
+  if (ts >= startOfToday - 6 * dayMs) return md + " · " + wk[d.getDay()];
+  if (d.getFullYear() === now.getFullYear()) return md;
+  return md + ", " + d.getFullYear();
 }
-function _feedDateDivider(label) {
-  return '<div class="feed-day-divider"><span>' + escHtml(label) + '</span></div>';
+function _feedDayAria(ts) {
+  if (!ts) return "earlier posts";
+  var d = new Date(ts);
+  var mons = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  return "Posts from " + mons[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+}
+function _feedDayEyebrow(ts) {
+  return '<h2 class="feed-day" aria-label="' + escHtml(_feedDayAria(ts)) + '">' + escHtml(_feedDayLabel(ts)) + '</h2>';
+}
+
+// ── Posts-today meta in the scope rail ──
+function _setPostsTodayMeta(n) {
+  var m = document.getElementById("feedPostsMeta");
+  if (!m) return;
+  m.textContent = n > 0 ? (n + (n === 1 ? " post today" : " posts today")) : "";
+}
+
+// ── Editorial empty states (spec § 3k.3 League / § 3k.4 Community) ──
+function _feedEmptyState(scope) {
+  var eyebrow, head, body, cta;
+  if (scope === "community") {
+    eyebrow = "OUTSIDE THE LEAGUE";
+    head = "Quiet across the platform.";
+    body = "Cross-league activity surfaces here. Check back when other leagues post.";
+    cta = "";
+  } else {
+    eyebrow = "NOTHING HERE YET";
+    head = "The league hasn’t started talking yet. Be the first.";
+    body = "Post a Chip or log a round, and the feed wakes up when members post.";
+    cta = '<button class="feed-empty__cta" type="button" onclick="var i=document.getElementById(\'feedChatInput\');if(i)i.focus()">+ Post a Chip →</button>';
+  }
+  return '<div class="feed-empty">' +
+    '<div class="feed-empty__eyebrow">' + eyebrow + '</div>' +
+    '<div class="feed-empty__head">' + head + '</div>' +
+    '<div class="feed-empty__body">' + body + '</div>' +
+    cta +
+    '</div>';
 }
 
 function _renderFeedItems() {
-  var items = window._feedItems || [];
-  var filtered = _feedFilter === "all" ? items : items.filter(function(i) { return i.type === _feedFilter; });
-  var fh = '';
-  if (!filtered.length) {
-    // v8.22+ (design-pass 2026-05-22): empty-state polish — per-filter
-    // copy + dashed-border card treatment mirroring the courses empty state
-    // (Linear empty-as-teaching-moment). The illustration is the smiley
-    // golfer icon already in place — kept for visual continuity.
-    var emptyLabel, emptyCopy, emptyCta, emptyCtaText;
-    if (_feedFilter === "round") {
-      emptyLabel = "No rounds posted yet";
-      emptyCopy = "Once members log rounds, they’ll appear here with score, course, and quips from The Caddy.";
-      emptyCta = "playnow"; emptyCtaText = "Log a Round";
-    } else if (_feedFilter === "chat") {
-      emptyLabel = "Quiet in here";
-      emptyCopy = "Drop a message in the composer above. League chat appears here in reverse-chron, scoped to your league.";
-      emptyCta = null; emptyCtaText = null;
-    } else if (_feedFilter === "range") {
-      emptyLabel = "No range sessions yet";
-      emptyCopy = "Track range work to build long-term skill data. Sessions show alongside rounds in this feed.";
-      emptyCta = "range"; emptyCtaText = "Hit the range";
-    } else {
-      emptyLabel = "No activity yet";
-      emptyCopy = "Play a round, hit the range, or drop a message in the composer above to get things going.";
-      emptyCta = "playnow"; emptyCtaText = "Log a Round";
-    }
-    fh = '<div style="margin:24px 16px;padding:36px 24px;text-align:center;background:var(--bg2);border:1px dashed var(--border);border-radius:12px">';
-    fh += '<div style="margin-bottom:14px;display:flex;justify-content:center"><svg viewBox="0 0 48 48" width="56" height="56" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".7"><circle cx="24" cy="24" r="18"/><path d="M16 28s3 4 8 4 8-4 8-4"/><circle cx="18" cy="18" r="2" fill="var(--gold)"/><circle cx="30" cy="18" r="2" fill="var(--gold)"/></svg></div>';
-    fh += '<div style="font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--cream);margin-bottom:6px">' + emptyLabel + '.</div>';
-    fh += '<div style="font-size:12px;color:var(--muted);line-height:1.55;max-width:320px;margin:0 auto ' + (emptyCta ? '16px' : '0') + '">' + emptyCopy + '</div>';
-    if (emptyCta) {
-      fh += '<button class="btn-sm green" style="font-size:11px;padding:9px 22px" onclick="Router.go(\'' + emptyCta + '\')">' + emptyCtaText + '</button>';
-    }
-    fh += '</div>';
-  }
-  var lastBucket = null;
-  filtered.slice(0, 60).forEach(function(item) {
-    var bucket = _feedDateBucket(item.ts);
-    if (bucket !== lastBucket) {
-      fh += _feedDateDivider(bucket);
-      lastBucket = bucket;
-    }
-    if (item.type === "round") {
-      fh += _renderRoundCard(item);
-    } else if (item.type === "chat") {
-      fh += _renderChatCard(item);
-    } else if (item.type === "range") {
-      fh += _renderRangeCard(item);
-    }
-  });
   var el = document.getElementById("feedStream");
-  if (el) el.innerHTML = fh;
+  if (!el) return;
+  el.setAttribute("aria-busy", "false");
+
+  // Community scope has no cross-league data source yet — truthful empty state.
+  if (_feedScope === "community") {
+    _setPostsTodayMeta(0);
+    el.innerHTML = _feedEmptyState("community");
+    return;
+  }
+
+  var items = window._feedItems || [];
+  var now = new Date();
+  var startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  _setPostsTodayMeta(items.filter(function(i) { return i.ts >= startOfToday; }).length);
+
+  if (!items.length) {
+    el.innerHTML = _feedEmptyState("league");
+    return;
+  }
+
+  var fh = '';
+  var lastDay = null;
+  items.slice(0, 60).forEach(function(item) {
+    var dk = _feedDayKey(item.ts);
+    if (dk !== lastDay) { fh += _feedDayEyebrow(item.ts); lastDay = dk; }
+    if (item.type === "round") fh += _renderRoundCard(item);
+    else if (item.type === "chat") fh += _renderChatCard(item);
+    else if (item.type === "range") fh += _renderRangeCard(item);
+  });
+  el.innerHTML = fh;
 }
 
-// ── ROUND CARD (biggest, richest) ──
+// ── ROUND CARD (Card C — round post) ──
 function _renderRoundCard(item) {
-  var cardCss = item.player ? getPlayerCardCss(item.player) : '';
   var is9h = item.holesPlayed && item.holesPlayed <= 9;
   var holeLabel = is9h ? (item.holesMode === "back9" ? "Back 9" : "Front 9") : "";
   var teeLabel = item.tee ? item.tee + " Tees" : "";
-  var meta = [teeLabel, holeLabel, item.format !== "stroke" ? item.format : ""].filter(Boolean).join(" \u00b7 ");
-  // Community-safe par-relative score (mirrors home-hq recent-row). Big numeral
-  // stays neutral; small signed par-delta carries over/under. No alarm-red on
-  // the social feed ("community over competition"). Also fixes the old absolute
-  // <=72 threshold that mis-colored 9-hole rounds (e.g. a 44 = +8 over par-36).
+  var meta = [teeLabel, holeLabel, item.format !== "stroke" ? item.format : ""].filter(Boolean).join(" · ");
+  // Community-safe par-relative score: brass numeral, mono to-par. No alarm-red
+  // on the social feed ("community over competition").
   var _par = roundParTotal(item);
   var _diff = (item.score && _par) ? item.score - _par : null;
   var _diffStr = _diff === null ? "" : (_diff === 0 ? "E" : (_diff > 0 ? "+" + _diff : String(_diff)));
-  var _diffColor = (_diff !== null && _diff <= 0) ? "var(--birdie)" : "var(--muted)";
-  var roundClick = item.roundId ? "Router.go(\'rounds\',{roundId:\'" + item.roundId + "\'})" : "";
+  var _diffCls = (_diff !== null && _diff <= 0) ? "feed-topar--under" : "feed-topar--over";
+  var roundClick = item.roundId ? "Router.go('rounds',{roundId:'" + item.roundId + "'})" : "";
 
-  var h = '<div class="card" style="margin:6px 16px;overflow:hidden;' + cardCss + '">';
+  var aria = (item.playerName || "A member") + " posted a round at " + (item.course || "a course") + ", " + feedTimeAgo(item.ts);
+  var h = '<article class="feed-card feed-card--round" role="article" aria-label="' + escHtml(aria) + '">';
 
-  // Header: avatar + name + time + score
-  h += '<div style="display:flex;align-items:center;gap:10px;padding:12px 14px 0">';
+  // Header: avatar + name + timestamp ... score numeral (right).
+  h += '<div class="feed-card__head">';
   h += renderAvatar(item.player, 40, true);
-  h += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">' + renderUsername(item.player, 'color:var(--cream);', true) + (item.isScramble ? ' <span style="font-size:9px;color:var(--muted);font-weight:400">(Scramble)</span>' : '') + '</div>';
-  h += '<div style="font-size:10px;color:var(--muted)">' + feedTimeAgo(item.ts) + '</div></div>';
-  h += '<div style="text-align:right;flex-shrink:0">';
-  h += '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cream);line-height:1;font-variant-numeric:lining-nums tabular-nums">' + item.score + '</div>';
-  if (_diffStr) h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:0.5px;color:' + _diffColor + ';margin-top:2px">' + _diffStr + '</div>';
+  h += '<div class="feed-card__who">';
+  h += '<div class="feed-card__name">' + renderUsername(item.player, "font-family:var(--font-display);font-style:italic;font-weight:600;font-size:16px;color:var(--cb-ink);", true) + (item.isScramble ? ' <span class="feed-card__tag">Scramble</span>' : '') + '</div>';
+  h += '<div class="feed-card__time">' + escHtml(feedTimeAgo(item.ts)) + '</div>';
+  h += '</div>';
+  h += '<div class="feed-score">';
+  h += '<div class="feed-score__num">' + (item.score != null ? item.score : "—") + '</div>';
+  if (_diffStr) h += '<div class="feed-topar ' + _diffCls + '">' + _diffStr + '</div>';
   h += '</div>';
   h += '</div>';
 
-  // Course + meta
-  h += '<div style="padding:4px 14px 0;cursor:pointer" onclick="' + roundClick + '">';
-  h += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(item.course) + '</div>';
-  if (meta) h += '<div style="font-size:10px;color:var(--muted);margin-top:1px">' + meta + '</div>';
+  // Course + meta (tap to round detail).
+  h += '<div class="feed-card__course"' + (roundClick ? ' role="button" tabindex="0" onclick="' + roundClick + '" onkeydown="if(event.key===\'Enter\'){' + roundClick + '}"' : '') + '>';
+  h += '<div class="feed-card__coursename">' + escHtml(item.course) + '</div>';
+  if (meta) h += '<div class="feed-card__meta">' + escHtml(meta) + '</div>';
   h += '</div>';
 
-  // Hole dots
   var dots = _feedHoleDots(item.holeScores, item.holePars, item.holesPlayed, item.holesMode);
-  if (dots) h += '<div style="padding:6px 14px 0">' + dots + '</div>';
+  if (dots) h += dots;
 
-  // Stat chips
   var chips = _feedStatChips(item);
-  if (chips) h += '<div style="padding:0 14px">' + chips + '</div>';
+  if (chips) h += chips;
 
-  // AI quip
-  if (item.quip) h += '<div style="padding:6px 14px 0;font-size:11px;color:var(--gold);font-style:italic;line-height:1.4">' + escHtml(item.quip) + '</div>';
+  if (item.quip) h += '<div class="feed-card__quip">' + escHtml(item.quip) + '</div>';
 
-  // v8.20.0 (Ship 5+5) — Action row restored to 4 buttons per Option B:
-  // Scorecard | Kudos | Comment | Share. Kudos was removed in an older ship;
-  // Comment used to navigate to /chat (stub); Share used to call an undefined
-  // function (silent no-op). Now all 4 are functional. Counts shown when > 0.
+  // Action row — Scorecard · Kudos · Comment · Share (functional; counts when > 0).
   var likes = item.likes || [];
   var comments = item.comments || [];
   var iLiked = currentUser && likes.indexOf(currentUser.uid) !== -1;
-  var likeColor = iLiked ? "var(--gold)" : "var(--muted)";
   var likeLabel = "Kudos" + (likes.length ? " " + likes.length : "");
-  var commentLabel = "Comment" + (comments.length ? " " + comments.length : "");
+  var commentLabel = "Reply" + (comments.length ? " " + comments.length : "");
 
-  // S1.2: kudos button carries data-i-liked + data-likes-count for revert-state
-  // capture in feedToggleLike. _patchKudosButton keeps these in sync after
-  // surgical patches. Attribute is `data-likes-count` (not `data-count`) to
-  // avoid namespace collision with src/core/animate.js initCountAnimations,
-  // which scans `[data-count]` and overwrites textContent (wipes child SVG).
-  h += '<div data-feed-action-row="1" data-round-id="' + item.roundId + '" style="display:flex;gap:0;padding:8px 14px 10px;border-top:1px solid var(--border);margin-top:8px">';
-  h += '<div data-action="scorecard" onclick="event.stopPropagation();' + roundClick + '" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--muted)" stroke-width="1.3"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 6h6M5 8h4M5 10h5"/></svg><span style="font-size:10px;color:var(--muted)">Scorecard</span></div>';
-  h += '<div data-action="kudos" data-i-liked="' + (iLiked ? '1' : '0') + '" data-likes-count="' + likes.length + '" onclick="event.stopPropagation();feedToggleLike(\'' + item.roundId + '\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px;color:' + likeColor + '"><svg viewBox="0 0 16 16" width="14" height="14" fill="' + (iLiked ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="1.3"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg><span style="font-size:10px;color:' + likeColor + '">' + likeLabel + '</span></div>';
-  h += '<div data-action="comment" onclick="event.stopPropagation();feedShowCommentInput(\'' + item.roundId + '\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--muted)" stroke-width="1.3"><path d="M14 10a1.5 1.5 0 01-1.5 1.5H5L2 14V3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5z"/></svg><span style="font-size:10px;color:var(--muted)">' + commentLabel + '</span></div>';
-  h += '<div data-action="share" onclick="event.stopPropagation();shareScorecard(\'' + item.roundId + '\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:6px 0;min-height:48px"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--muted)" stroke-width="1.3"><path d="M4 12V8l4-6 4 6v4"/><path d="M4 8h8"/></svg><span style="font-size:10px;color:var(--muted)">Share</span></div>';
+  h += '<div class="feed-actions" data-feed-action-row="1" data-round-id="' + item.roundId + '">';
+  h += '<button class="feed-action" type="button" data-action="scorecard" aria-label="View scorecard" onclick="event.stopPropagation();' + roundClick + '"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 6h6M5 8h4M5 10h5"/></svg><span>Scorecard</span></button>';
+  h += '<button class="feed-action' + (iLiked ? ' feed-action--on' : '') + '" type="button" data-action="kudos" data-i-liked="' + (iLiked ? '1' : '0') + '" data-likes-count="' + likes.length + '" aria-pressed="' + (iLiked ? 'true' : 'false') + '" aria-label="Kudos, ' + likes.length + ' reactions" onclick="event.stopPropagation();feedToggleLike(\'' + item.roundId + '\')"><svg viewBox="0 0 16 16" width="14" height="14" fill="' + (iLiked ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg><span>' + likeLabel + '</span></button>';
+  h += '<button class="feed-action" type="button" data-action="comment" aria-label="Reply" onclick="event.stopPropagation();feedShowCommentInput(\'' + item.roundId + '\')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M14 10a1.5 1.5 0 01-1.5 1.5H5L2 14V3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5z"/></svg><span>' + commentLabel + '</span></button>';
+  h += '<button class="feed-action" type="button" data-action="share" aria-label="Share to DM" onclick="event.stopPropagation();shareScorecard(\'' + item.roundId + '\')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M4 12V8l4-6 4 6v4"/><path d="M4 8h8"/></svg><span>Share</span></button>';
   h += '</div>';
 
-  // S1.2: comment thread via shared helper. Single source of truth across
-  // /feed and HQ Home League Pulse.
+  // Comment thread (shared helper, single source of truth across /feed + HQ Home).
   h += _renderCommentThread(item.roundId, comments, item.commentLikes);
 
-  // Comment input (hidden by default)
-  h += '<div id="feedComment-' + item.roundId + '" style="display:none;padding:6px 14px 8px;gap:6px">';
-  h += '<input type="text" class="ff-input" style="flex:1;padding:6px 10px;font-size:11px" id="feedCommentText-' + item.roundId + '" placeholder="Add a comment..." onkeydown="if(event.key===\'Enter\')feedSubmitComment(\'' + item.roundId + '\')">';
-  h += '<button class="btn-sm green" style="font-size:10px;padding:6px 10px" onclick="event.stopPropagation();feedSubmitComment(\'' + item.roundId + '\')">Post</button>';
+  // Comment input (hidden by default).
+  h += '<div class="feed-commentinput" id="feedComment-' + item.roundId + '" style="display:none">';
+  h += '<input type="text" class="ff-input" id="feedCommentText-' + item.roundId + '" placeholder="Add a reply…" onkeydown="if(event.key===\'Enter\')feedSubmitComment(\'' + item.roundId + '\')">';
+  h += '<button class="feed-commentinput__post" type="button" onclick="event.stopPropagation();feedSubmitComment(\'' + item.roundId + '\')">Post</button>';
   h += '</div>';
 
-  h += '</div>';
+  h += '</article>';
   return h;
 }
 
-// ── CHAT CARD (compact) ──
+// ── CHAT CARD (Chip-style post — member message or The Caddy) ──
 function _renderChatCard(item) {
   var isSystem = item.system;
-  var h = '<div class="card" style="margin:3px 16px' + (isSystem ? ';border-color:rgba(var(--birdie-rgb),.35);background:rgba(var(--birdie-rgb),.06)' : '') + '">';
-  h += '<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 12px">';
-  if (!isSystem) {
-    h += renderAvatar(item.player, 28, true);
-  } else {
-    h += '<div style="width:28px;height:28px;min-width:28px;border-radius:50%;background:rgba(var(--birdie-rgb),.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:14px">\u26f3</span></div>';
-  }
-  h += '<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;align-items:center">';
+  var who = isSystem ? "The Caddy" : (item.author || "Member");
+  var aria = (isSystem ? "The Caddy" : who) + " posted, " + feedTimeAgo(item.ts);
+  var h = '<article class="feed-card feed-card--chat' + (isSystem ? ' feed-card--caddy' : '') + '" role="article" aria-label="' + escHtml(aria) + '">';
+  h += '<div class="feed-card__head">';
   if (isSystem) {
-    h += '<span style="font-size:11px;font-weight:700;color:var(--birdie)">The Caddy</span>';
+    h += '<div class="feed-caddy-av" aria-hidden="true">⛳</div>';
   } else {
-    h += renderUsername(item.player, 'font-size:11px;font-weight:700;color:var(--gold);', true);
+    h += renderAvatar(item.player, 40, true);
   }
-  h += '<span style="font-size:9px;color:var(--muted2);flex-shrink:0">' + feedTimeAgo(item.ts) + '</span></div>';
-  h += '<div style="font-size:12px;color:var(--cream);margin-top:3px;line-height:1.5">' + escHtml(item.text) + '</div>';
-  h += '</div></div></div>';
+  h += '<div class="feed-card__who">';
+  if (isSystem) {
+    h += '<div class="feed-card__name feed-card__name--caddy">The Caddy</div>';
+  } else if (item.player) {
+    h += '<div class="feed-card__name">' + renderUsername(item.player, "font-family:var(--font-display);font-style:italic;font-weight:600;font-size:16px;color:var(--cb-ink);", true) + '</div>';
+  } else {
+    h += '<div class="feed-card__name" style="font-family:var(--font-display);font-style:italic;font-weight:600;font-size:16px;color:var(--cb-ink)">' + escHtml(who) + '</div>';
+  }
+  h += '<div class="feed-card__time">' + escHtml(feedTimeAgo(item.ts)) + '</div>';
+  h += '</div>';
+  h += '</div>';
+  h += '<div class="feed-card__body">' + escHtml(item.text) + '</div>';
+  h += '</article>';
   return h;
 }
 
-// ── RANGE CARD (smaller) ──
+// ── RANGE CARD (Card D — auto-posted activity density) ──
 function _renderRangeCard(item) {
-  var rangeDest = item.sessionId ? "Router.go(\'range-detail\',{sessionId:\'" + item.sessionId + "\'})" : "Router.go(\'range\')";
-  var h = '<div class="card" style="margin:3px 16px;cursor:pointer" onclick="' + rangeDest + '">';
-  h += '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px">';
-  h += renderAvatar(item.player, 36, true);
-  h += '<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600">' + renderUsername(item.player, 'color:var(--cream);', true) + ' <span style="color:var(--muted);font-weight:400">hit the range</span></div>';
+  var rangeDest = item.sessionId ? "Router.go('range-detail',{sessionId:'" + item.sessionId + "'})" : "Router.go('range')";
   var subParts = [];
-  if (item.duration) subParts.push(item.duration + ' min');
+  if (item.duration) subParts.push(item.duration + " min");
   if (item.focus) subParts.push(item.focus);
-  if (item.drills && item.drills.length) subParts.push(item.drills.length + ' drill' + (item.drills.length > 1 ? 's' : ''));
-  h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + (subParts.join(' \u00b7 ') || 'Range session') + '</div></div>';
-  h += '<div style="flex-shrink:0;text-align:right"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--pink)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l2.5 1.5"/></svg>';
-  h += '<div style="font-size:9px;color:var(--muted2);margin-top:2px">' + feedTimeAgo(item.ts) + '</div></div>';
-  h += '</div></div>';
+  if (item.drills && item.drills.length) subParts.push(item.drills.length + " drill" + (item.drills.length > 1 ? "s" : ""));
+  var who = item.playerName || (item.player ? (item.player.name || item.player.username) : "A Parbaugh");
+  var aria = who + " hit the range, " + feedTimeAgo(item.ts);
+  var h = '<article class="feed-card feed-card--range" role="article" aria-label="' + escHtml(aria) + '" tabindex="0" onclick="' + rangeDest + '" onkeydown="if(event.key===\'Enter\'){' + rangeDest + '}">';
+  h += '<div class="feed-card__eyebrow">RANGE</div>';
+  h += '<div class="feed-range__row">';
+  h += renderAvatar(item.player, 32, false);
+  h += '<div class="feed-range__body">';
+  h += '<div class="feed-range__line"><span class="feed-range__who">' + escHtml(who) + '</span> hit the range</div>';
+  h += '<div class="feed-card__meta">' + escHtml(subParts.join(" · ") || "Range session") + '</div>';
+  h += '</div>';
+  h += '<div class="feed-card__time">' + escHtml(feedTimeAgo(item.ts)) + '</div>';
+  h += '</div>';
+  h += '</article>';
   return h;
 }
 
@@ -391,8 +444,8 @@ function sendFeedChat() {
   input.value = "";
   var name = currentProfile ? PB.getDisplayName(currentProfile) : "Anon";
   if (window._feedItems) {
-    window._feedItems.unshift({type:"chat", player:currentProfile, playerId:currentUser.uid, author:name, text:text, ts:Date.now(), system:false});
-    _renderFeedItems();
+    window._feedItems.unshift({ type: "chat", player: currentProfile, playerId: currentUser.uid, author: name, text: text, ts: Date.now(), system: false });
+    if (_feedScope !== "community") _renderFeedItems();
   }
   db.collection("chat").add(leagueDoc("chat", {
     id: genId(),
@@ -403,59 +456,12 @@ function sendFeedChat() {
   })).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't send your message.")); });
 }
 
-function applyFeedFilter() {
-  _renderFeedItems();
-  document.querySelectorAll('[data-page="feed"] .toggle-bar button').forEach(function(btn) {
-    btn.className = btn.textContent.toLowerCase() === (_feedFilter === "all" ? "all" : _feedFilter === "round" ? "rounds" : _feedFilter === "chat" ? "chat" : "range") ? "a" : "";
-  });
-}
-
 // ─────────────────────────────────────────────────────────────────────────
-// v8.20.0 (Ship 5+5) — Round post engagement writers.
-//
-// Mirror chat.js patterns (toggleLike / submitComment / toggleCommentLike /
-// deleteComment): optimistic UI, snapshot-then-revert on rejection, toast,
-// and cluster-typed sendNotification with v8.17.0 two-layer broadcast
-// hardening (league + test/real boundary) on the comment-reply cascade.
-//
-// Why these wrappers exist on /feed instead of router.js: kudos/comment writes
-// target /rounds — same collection as the round detail page would write to,
-// but the specific UI lives on /feed. Helpers stay co-located with the surface
-// that drives them. HQ Home League Pulse cards reuse these same functions
-// (shared engagement model per Ship 5+5 ruling Option B).
+// Round-post engagement writers (feedToggleLike / feedSubmitComment /
+// feedShowCommentInput) + surgical DOM patch helpers + the shared comment
+// render helpers (_renderCommentThread / _renderCommentRow) live in
+// src/pages/feed-comments.js (extracted per W1.A5). They target /rounds and are
+// reused by both /feed round cards and the HQ Home League Pulse cards, so the
+// data attributes on .feed-actions ([data-feed-action-row], [data-action],
+// data-i-liked, data-likes-count) must stay in sync with that module.
 // ─────────────────────────────────────────────────────────────────────────
-
-// ─────────────────────────────────────────────────────────────────────────
-// v8.21.0 (Ship 5+6 Phase 5 / S1.2): SURGICAL DOM PATCHES.
-//
-// CTO ruling: kudos/comment must feel like Instagram/Strava — element-level
-// patches, no page rebuild, no scroll jump, no flicker. S1.1 (full re-render
-// dispatch via _refreshAfterEngagement) was rejected as a sledgehammer.
-//
-// New architecture:
-//   - Render helpers (_renderCommentThread, _renderCommentRow) — shared between
-//     /feed and HQ Home League Pulse so attributes stay in sync (no drift).
-//   - DOM patch helpers (_patchKudosButton, _patchCommentCount,
-//     _appendCommentRowToDOM, _removeCommentRowFromDOM, _patchCommentLike) —
-//     querySelectorAll across both surfaces, mutate elements in place.
-//   - Writers do optimistic patch → Firestore write → reconcile or revert.
-//   - window._suppressRoundsRerender still set during write so the snapshot
-//     listener (sync.js:283) doesn't blow away patches with a re-render echo.
-//   - state.rounds NOT manually mutated — listener will pull canonical state
-//     from Firestore in background; future page renders read it then.
-//
-// All engagement targets carry data attributes so cross-surface selectors
-// work uniformly:
-//   - Action row: [data-feed-action-row="1"][data-round-id="X"]
-//   - Kudos btn:  [data-action="kudos"] (descendant of action row);
-//                 carries data-i-liked + data-likes-count for revert state
-//   - Comment btn: [data-action="comment"] (descendant of action row)
-//   - Thread:     [data-comment-thread="1"][data-round-id="X"]
-//   - Comment row: [data-comment-row="1"][data-round-id="X"][data-comment-idx="N"]
-//   - Heart span:  [data-action="comment-like"][data-round-id="X"][data-comment-idx="N"]
-//   - Delete X:    [data-action="comment-delete"][data-round-id="X"][data-comment-idx="N"]
-// ─────────────────────────────────────────────────────────────────────────
-
-// ── Render helpers (shared between /feed round card + League Pulse card) ──
-
-// Extracted to src/pages/feed-comments.js per W1.A5. Originally lines 395-823 of this file.
